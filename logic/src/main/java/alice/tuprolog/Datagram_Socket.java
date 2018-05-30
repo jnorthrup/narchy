@@ -17,25 +17,25 @@ public class Datagram_Socket extends AbstractSocket {
 
 	@Override
 	public boolean isClientSocket() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isServerSocket() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isDatagramSocket() {
-		// TODO Auto-generated method stub
+		
 		return true;
 	}
 
 	@Override
 	public DatagramSocket getSocket() {
-		// TODO Auto-generated method stub
+		
 		return socket;
 	}
 

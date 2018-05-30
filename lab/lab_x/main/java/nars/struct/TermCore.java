@@ -32,14 +32,14 @@ public class TermCore {
     public final TermSpect spect() { return spect.get(); }
 
     public TermCore(int bytes) {
-        //terms = ByteBuffer.allocateDirect(bytes);
+        
         terms = ByteBuffer.allocate(bytes);
 
         s = new TermCept().size();
     }
 
     public int allocateNext() {
-        //TODO use a bitvector map of the memory but for now just increment the address
+        
         return nextFree++;
     }
 

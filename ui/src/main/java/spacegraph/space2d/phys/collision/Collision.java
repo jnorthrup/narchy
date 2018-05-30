@@ -83,7 +83,7 @@ public class Collision {
         cache.count = 0;
 
         pool.getDistance().distance(output, cache, input);
-        // djm note: anything significant about 10.0f?
+        
         return output.distance < Settings.EPSILON;
     }
 
@@ -105,7 +105,7 @@ public class Collision {
             state2[i] = PointState.NULL_STATE;
         }
 
-        // Detect persists and removes.
+        
         for (int i = 0; i < manifold1.pointCount; i++) {
             ContactID id = manifold1.points[i].id;
 
@@ -119,7 +119,7 @@ public class Collision {
             }
         }
 
-        // Detect persists and adds
+        
         for (int i = 0; i < manifold2.pointCount; i++) {
             ContactID id = manifold2.points[i].id;
 
@@ -146,18 +146,18 @@ public class Collision {
     public static final int clipSegmentToLine(final ClipVertex[] vOut, final ClipVertex[] vIn,
                                               final Tuple2f normal, float offset, int vertexIndexA) {
 
-        // Start with no output points
+        
         int numOut = 0;
         final ClipVertex vIn0 = vIn[0];
         final ClipVertex vIn1 = vIn[1];
         final Tuple2f vIn0v = vIn0.v;
         final Tuple2f vIn1v = vIn1.v;
 
-        // Calculate the distance of end points to the line
+        
         float distance0 = Tuple2f.dot(normal, vIn0v) - offset;
         float distance1 = Tuple2f.dot(normal, vIn1v) - offset;
 
-        // If the points are behind the plane
+        
         if (distance0 <= 0.0f) {
             vOut[numOut++].set(vIn0);
         }
@@ -165,17 +165,17 @@ public class Collision {
             vOut[numOut++].set(vIn1);
         }
 
-        // If the points are on different sides of the plane
+        
         if (distance0 * distance1 < 0.0f) {
-            // Find intersection point of edge and plane
+            
             float interp = distance0 / (distance0 - distance1);
 
             ClipVertex vOutNO = vOut[numOut];
-            // vOut[numOut].v = vIn[0].v + interp * (vIn[1].v - vIn[0].v);
+            
             vOutNO.v.x = vIn0v.x + interp * (vIn1v.x - vIn0v.x);
             vOutNO.v.y = vIn0v.y + interp * (vIn1v.y - vIn0v.y);
 
-            // VertexA is hitting edgeB.
+            
             vOutNO.id.indexA = (byte) vertexIndexA;
             vOutNO.id.indexB = vIn0.id.indexB;
             vOutNO.id.typeA = (byte) ContactID.Type.VERTEX.ordinal();
@@ -186,9 +186,9 @@ public class Collision {
         return numOut;
     }
 
-    // #### COLLISION STUFF (not from collision.h or collision.cpp) ####
+    
 
-    // djm pooling
+    
     private static final Tuple2f d = new v2();
 
     /**
@@ -203,13 +203,13 @@ public class Collision {
     public static void collideCircles(Manifold manifold, final CircleShape circle1,
                                       final Transform xfA, final CircleShape circle2, final Transform xfB) {
         manifold.pointCount = 0;
-        // before inline:
-        // Transform.mulToOut(xfA, circle1.m_p, pA);
-        // Transform.mulToOut(xfB, circle2.m_p, pB);
-        // d.set(pB).subLocal(pA);
-        // float distSqr = d.x * d.x + d.y * d.y;
+        
+        
+        
+        
+        
 
-        // after inline:
+        
         Tuple2f circle1p = circle1.center;
         Tuple2f circle2p = circle2.center;
         float pAx = (xfA.c * circle1p.x - xfA.s * circle1p.y) + xfA.pos.x;
@@ -219,7 +219,7 @@ public class Collision {
         float dx = pBx - pAx;
         float dy = pBy - pAy;
         float distSqr = dx * dx + dy * dy;
-        // end inline
+        
 
         final float radius = circle1.radius + circle2.radius;
         if (distSqr > radius * radius) {
@@ -235,7 +235,7 @@ public class Collision {
         manifold.points[0].id.zero();
     }
 
-    // djm pooling, and from above
+    
 
     /**
      * Compute the collision manifold between a polygon and a circle.
@@ -249,15 +249,15 @@ public class Collision {
     public static void collidePolygonAndCircle(Manifold manifold, final PolygonShape polygon,
                                                final Transform xfA, final CircleShape circle, final Transform xfB) {
         manifold.pointCount = 0;
-        // Vec2 v = circle.m_p;
+        
 
-        // Compute circle position in the frame of the polygon.
-        // before inline:
-        // Transform.mulToOutUnsafe(xfB, circle.m_p, c);
-        // Transform.mulTransToOut(xfA, c, cLocal);
-        // final float cLocalx = cLocal.x;
-        // final float cLocaly = cLocal.y;
-        // after inline:
+        
+        
+        
+        
+        
+        
+        
         final Tuple2f circlep = circle.center;
         final Rot xfBq = xfB;
         final Rot xfAq = xfA;
@@ -267,9 +267,9 @@ public class Collision {
         final float py = cy - xfA.pos.y;
         final float cLocalx = (xfAq.c * px + xfAq.s * py);
         final float cLocaly = (-xfAq.s * px + xfAq.c * py);
-        // end inline
+        
 
-        // Find the min separating edge.
+        
         int normalIndex = 0;
         float separation = -Float.MAX_VALUE;
         final float radius = polygon.radius + circle.radius;
@@ -279,10 +279,10 @@ public class Collision {
         final Tuple2f[] normals = polygon.normals;
 
         for (int i = 0; i < vertexCount; i++) {
-            // before inline
-            // temp.set(cLocal).subLocal(vertices[i]);
-            // float s = Vec2.dot(normals[i], temp);
-            // after inline
+            
+            
+            
+            
             final Tuple2f vertex = vertices[i];
             final float tempx = cLocalx - vertex.x;
             final float tempy = cLocaly - vertex.y;
@@ -290,7 +290,7 @@ public class Collision {
 
 
             if (s > radius) {
-                // early out
+                
                 return;
             }
 
@@ -300,22 +300,22 @@ public class Collision {
             }
         }
 
-        // Vertices that subtend the incident face.
+        
         final int vertIndex1 = normalIndex;
         final int vertIndex2 = vertIndex1 + 1 < vertexCount ? vertIndex1 + 1 : 0;
         final Tuple2f v1 = vertices[vertIndex1];
         final Tuple2f v2 = vertices[vertIndex2];
 
-        // If the center is inside the polygon ...
+        
         if (separation < Settings.EPSILON) {
             manifold.pointCount = 1;
             manifold.type = ManifoldType.FACE_A;
 
-            // before inline:
-            // manifold.localNormal.set(normals[normalIndex]);
-            // manifold.localPoint.set(v1).addLocal(v2).mulLocal(.5f);
-            // manifold.points[0].localPoint.set(circle.m_p);
-            // after inline:
+            
+            
+            
+            
+            
             final Tuple2f normal = normals[normalIndex];
             manifold.localNormal.x = normal.x;
             manifold.localNormal.y = normal.y;
@@ -325,20 +325,20 @@ public class Collision {
             mpoint.localPoint.x = circlep.x;
             mpoint.localPoint.y = circlep.y;
             mpoint.id.zero();
-            // end inline
+            
 
             return;
         }
 
-        // Compute barycentric coordinates
-        // before inline:
-        // temp.set(cLocal).subLocal(v1);
-        // temp2.set(v2).subLocal(v1);
-        // float u1 = Vec2.dot(temp, temp2);
-        // temp.set(cLocal).subLocal(v2);
-        // temp2.set(v1).subLocal(v2);
-        // float u2 = Vec2.dot(temp, temp2);
-        // after inline:
+        
+        
+        
+        
+        
+        
+        
+        
+        
         final float tempX = cLocalx - v1.x;
         final float tempY = cLocaly - v1.y;
         final float temp2X = v2.x - v1.x;
@@ -350,10 +350,10 @@ public class Collision {
         final float temp4X = v1.x - v2.x;
         final float temp4Y = v1.y - v2.y;
         final float u2 = temp3X * temp4X + temp3Y * temp4Y;
-        // end inline
+        
 
         if (u1 <= 0f) {
-            // inlined
+            
             final float dx = cLocalx - v1.x;
             final float dy = cLocaly - v1.y;
             if (dx * dx + dy * dy > radius * radius) {
@@ -362,18 +362,18 @@ public class Collision {
 
             manifold.pointCount = 1;
             manifold.type = ManifoldType.FACE_A;
-            // before inline:
-            // manifold.localNormal.set(cLocal).subLocal(v1);
-            // after inline:
+            
+            
+            
             manifold.localNormal.x = cLocalx - v1.x;
             manifold.localNormal.y = cLocaly - v1.y;
-            // end inline
+            
             manifold.localNormal.normalize();
             manifold.localPoint.set(v1);
             manifold.points[0].localPoint.set(circlep);
             manifold.points[0].id.zero();
         } else if (u2 <= 0.0f) {
-            // inlined
+            
             final float dx = cLocalx - v2.x;
             final float dy = cLocaly - v2.y;
             if (dx * dx + dy * dy > radius * radius) {
@@ -382,28 +382,28 @@ public class Collision {
 
             manifold.pointCount = 1;
             manifold.type = ManifoldType.FACE_A;
-            // before inline:
-            // manifold.localNormal.set(cLocal).subLocal(v2);
-            // after inline:
+            
+            
+            
             manifold.localNormal.x = cLocalx - v2.x;
             manifold.localNormal.y = cLocaly - v2.y;
-            // end inline
+            
             manifold.localNormal.normalize();
             manifold.localPoint.set(v2);
             manifold.points[0].localPoint.set(circlep);
             manifold.points[0].id.zero();
         } else {
-            // Vec2 faceCenter = 0.5f * (v1 + v2);
-            // (temp is faceCenter)
-            // before inline:
-            // temp.set(v1).addLocal(v2).mulLocal(.5f);
-            //
-            // temp2.set(cLocal).subLocal(temp);
-            // separation = Vec2.dot(temp2, normals[vertIndex1]);
-            // if (separation > radius) {
-            // return;
-            // }
-            // after inline:
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             final float fcx = (v1.x + v2.x) * .5f;
             final float fcy = (v1.y + v2.y) * .5f;
 
@@ -414,19 +414,19 @@ public class Collision {
             if (separation > radius) {
                 return;
             }
-            // end inline
+            
 
             manifold.pointCount = 1;
             manifold.type = ManifoldType.FACE_A;
             manifold.localNormal.set(normals[vertIndex1]);
-            manifold.localPoint.x = fcx; // (faceCenter)
+            manifold.localPoint.x = fcx; 
             manifold.localPoint.y = fcy;
             manifold.points[0].localPoint.set(circlep);
             manifold.points[0].id.zero();
         }
     }
 
-    // djm pooling, and from above
+    
     private final Tuple2f temp = new v2();
     private final Transform xf = new Transform();
     private final v2 n = new v2();
@@ -456,11 +456,11 @@ public class Collision {
         int bestIndex = 0;
         float maxSeparation = -Float.MAX_VALUE;
         for (int i = 0; i < count1; i++) {
-            // Get poly1 normal in frame2.
+            
             Rot.mulToOutUnsafe(xfq, n1s[i], n);
             Transform.mulToOutUnsafe(xf, v1s[i], v1);
 
-            // Find deepest point for normal i.
+            
             float si = Float.MAX_VALUE;
             for (int j = 0; j < count2; ++j) {
                 Tuple2f v2sj = v2s[j];
@@ -496,21 +496,21 @@ public class Collision {
         final Rot xf1q = xf1;
         final Rot xf2q = xf2;
 
-        // Get the normal of the reference edge in poly2's frame.
-        // Vec2 normal1 = MulT(xf2.R, Mul(xf1.R, normals1[edge1]));
-        // before inline:
-        // Rot.mulToOutUnsafe(xf1.q, normals1[edge1], normal1); // temporary
-        // Rot.mulTrans(xf2.q, normal1, normal1);
-        // after inline:
+        
+        
+        
+        
+        
+        
         final Tuple2f v = normals1[edge1];
         final float tempx = xf1q.c * v.x - xf1q.s * v.y;
         final float tempy = xf1q.s * v.x + xf1q.c * v.y;
         final float normal1x = xf2q.c * tempx + xf2q.s * tempy;
         final float normal1y = -xf2q.s * tempx + xf2q.c * tempy;
 
-        // end inline
+        
 
-        // Find the incident edge on poly2.
+        
         int index = 0;
         float minDot = Float.MAX_VALUE;
         for (int i = 0; i < count2; ++i) {
@@ -522,11 +522,11 @@ public class Collision {
             }
         }
 
-        // Build the clip vertices for the incident edge.
+        
         int i1 = index;
         int i2 = i1 + 1 < count2 ? i1 + 1 : 0;
 
-        // c0.v = Mul(xf2, vertices2[i1]);
+        
         Tuple2f v1 = vertices2[i1];
         Tuple2f out = c0.v;
         out.x = (xf2q.c * v1.x - xf2q.s * v1.y) + xf2.pos.x;
@@ -536,7 +536,7 @@ public class Collision {
         c0.id.typeA = (byte) ContactID.Type.FACE.ordinal();
         c0.id.typeB = (byte) ContactID.Type.VERTEX.ordinal();
 
-        // c1.v = Mul(xf2, vertices2[i2]);
+        
         Tuple2f v2 = vertices2[i2];
         Tuple2f out1 = c1.v;
         out1.x = (xf2q.c * v2.x - xf2q.s * v2.y) + xf2.pos.x;
@@ -570,13 +570,13 @@ public class Collision {
      */
     public final void collidePolygons(Manifold manifold, final PolygonShape polyA,
                                       final Transform xfA, final PolygonShape polyB, final Transform xfB) {
-        // Find edge normal of max separation on A - return if separating axis is found
-        // Find edge normal of max separation on B - return if separation axis is found
-        // Choose reference edge as min(minA, minB)
-        // Find incident edge
-        // Clip
+        
+        
+        
+        
+        
 
-        // The normal points from 1 to 2
+        
 
         manifold.pointCount = 0;
         float totalRadius = polyA.radius + polyB.radius;
@@ -591,10 +591,10 @@ public class Collision {
             return;
         }
 
-        final PolygonShape poly1;  // reference polygon
-        final PolygonShape poly2;  // incident polygon
+        final PolygonShape poly1;  
+        final PolygonShape poly2;  
         Transform xf1, xf2;
-        int edge1;                 // reference edge
+        int edge1;                 
         boolean flip;
         final float k_tol = 0.1f * Settings.linearSlop;
 
@@ -630,45 +630,45 @@ public class Collision {
         localTangent.y = v12.y - v11.y;
         localTangent.normalize();
 
-        // Vec2 localNormal = Vec2.cross(dv, 1.0f);
+        
         localNormal.x = 1f * localTangent.y;
         localNormal.y = -1f * localTangent.x;
 
-        // Vec2 planePoint = 0.5f * (v11+ v12);
+        
         planePoint.x = (v11.x + v12.x) * .5f;
         planePoint.y = (v11.y + v12.y) * .5f;
 
-        // Rot.mulToOutUnsafe(xf1.q, localTangent, tangent);
+        
         tangent.x = xf1q.c * localTangent.x - xf1q.s * localTangent.y;
         tangent.y = xf1q.s * localTangent.x + xf1q.c * localTangent.y;
 
-        // Vec2.crossToOutUnsafe(tangent, 1f, normal);
+        
         final float normalx = 1f * tangent.y;
         final float normaly = -1f * tangent.x;
 
 
         Transform.mulToOut(xf1, v11, v11);
         Transform.mulToOut(xf1, v12, v12);
-        // v11 = Mul(xf1, v11);
-        // v12 = Mul(xf1, v12);
+        
+        
 
-        // Face offset
-        // float frontOffset = Vec2.dot(normal, v11);
+        
+        
         float frontOffset = normalx * v11.x + normaly * v11.y;
 
-        // Side offsets, extended by polytope skin thickness.
-        // float sideOffset1 = -Vec2.dot(tangent, v11) + totalRadius;
-        // float sideOffset2 = Vec2.dot(tangent, v12) + totalRadius;
+        
+        
+        
         float sideOffset1 = -(tangent.x * v11.x + tangent.y * v11.y) + totalRadius;
         float sideOffset2 = tangent.x * v12.x + tangent.y * v12.y + totalRadius;
 
-        // Clip incident edge against extruded edge1 side edges.
-        // ClipVertex clipPoints1[2];
-        // ClipVertex clipPoints2[2];
+        
+        
+        
         int np;
 
-        // Clip to box side 1
-        // np = ClipSegmentToLine(clipPoints1, incidentEdge, -sideNormal, sideOffset1);
+        
+        
         tangent.negated();
         np = clipSegmentToLine(clipPoints1, incidentEdge, tangent, sideOffset1, iv1);
         tangent.negated();
@@ -677,25 +677,25 @@ public class Collision {
             return;
         }
 
-        // Clip to negative box side 1
+        
         np = clipSegmentToLine(clipPoints2, clipPoints1, tangent, sideOffset2, iv2);
 
         if (np < 2) {
             return;
         }
 
-        // Now clipPoints2 contains the clipped points.
+        
         manifold.localNormal.set(localNormal);
         manifold.localPoint.set(planePoint);
 
         int pointCount = 0;
         for (int i = 0; i < Settings.maxManifoldPoints; ++i) {
-            // float separation = Vec2.dot(normal, clipPoints2[i].v) - frontOffset;
+            
             float separation = normalx * clipPoints2[i].v.x + normaly * clipPoints2[i].v.y - frontOffset;
 
             if (separation <= totalRadius) {
                 ManifoldPoint cp = manifold.points[pointCount];
-                // cp.m_localPoint = MulT(xf2, clipPoints2[i].v);
+                
                 Tuple2f out = cp.localPoint;
                 final float px = clipPoints2[i].v.x - xf2.pos.x;
                 final float py = clipPoints2[i].v.y - xf2.pos.y;
@@ -703,7 +703,7 @@ public class Collision {
                 out.y = (-xf2.s * px + xf2.c * py);
                 cp.id.set(clipPoints2[i].id);
                 if (flip) {
-                    // Swap features
+                    
                     cp.id.flip();
                 }
                 ++pointCount;
@@ -719,15 +719,15 @@ public class Collision {
     private final Tuple2f e1 = new v2();
     private final Tuple2f P = new v2();
 
-    // Compute contact points for edge versus circle.
-    // This accounts for edge connectivity.
+    
+    
     public void collideEdgeAndCircle(Manifold manifold, final EdgeShape edgeA, final Transform xfA,
                                      final CircleShape circleB, final Transform xfB) {
         manifold.pointCount = 0;
 
 
-        // Compute circle in frame of edge
-        // Vec2 Q = MulT(xfA, Mul(xfB, circleB.m_p));
+        
+        
         Transform.mulToOutUnsafe(xfB, circleB.center, temp);
         Transform.mulTransToOutUnsafe(xfA, temp, Q);
 
@@ -735,17 +735,17 @@ public class Collision {
         final Tuple2f B = edgeA.m_vertex2;
         e.set(B).subbed(A);
 
-        // Barycentric coordinates
+        
         float u = Tuple2f.dot(e, temp.set(B).subbed(Q));
         float v = Tuple2f.dot(e, temp.set(Q).subbed(A));
 
         float radius = edgeA.radius + circleB.radius;
 
-        // ContactFeature cf;
+        
         cf.indexB = 0;
         cf.typeB = (byte) ContactID.Type.VERTEX.ordinal();
 
-        // Region A
+        
         if (v <= 0.0f) {
             final Tuple2f P = A;
             d.set(Q).subbed(P);
@@ -754,14 +754,14 @@ public class Collision {
                 return;
             }
 
-            // Is there an edge connected to A?
+            
             if (edgeA.m_hasVertex0) {
                 final Tuple2f A1 = edgeA.m_vertex0;
                 final Tuple2f B1 = A;
                 e1.set(B1).subbed(A1);
                 float u1 = Tuple2f.dot(e1, temp.set(B1).subbed(Q));
 
-                // Is the circle in Region AB of the previous edge?
+                
                 if (u1 > 0.0f) {
                     return;
                 }
@@ -773,13 +773,13 @@ public class Collision {
             manifold.type = Manifold.ManifoldType.CIRCLES;
             manifold.localNormal.setZero();
             manifold.localPoint.set(P);
-            // manifold.points[0].id.key = 0;
+            
             manifold.points[0].id.set(cf);
             manifold.points[0].localPoint.set(circleB.center);
             return;
         }
 
-        // Region B
+        
         if (u <= 0.0f) {
             Tuple2f P = B;
             d.set(Q).subbed(P);
@@ -788,7 +788,7 @@ public class Collision {
                 return;
             }
 
-            // Is there an edge connected to B?
+            
             if (edgeA.m_hasVertex3) {
                 final Tuple2f B2 = edgeA.m_vertex3;
                 final Tuple2f A2 = B;
@@ -796,7 +796,7 @@ public class Collision {
                 e2.set(B2).subbed(A2);
                 float v2 = Tuple2f.dot(e2, temp.set(Q).subbed(A2));
 
-                // Is the circle in Region AB of the next edge?
+                
                 if (v2 > 0.0f) {
                     return;
                 }
@@ -808,17 +808,17 @@ public class Collision {
             manifold.type = Manifold.ManifoldType.CIRCLES;
             manifold.localNormal.setZero();
             manifold.localPoint.set(P);
-            // manifold.points[0].id.key = 0;
+            
             manifold.points[0].id.set(cf);
             manifold.points[0].localPoint.set(circleB.center);
             return;
         }
 
-        // Region AB
+        
         float den = Tuple2f.dot(e, e);
         assert (den > 0.0f);
 
-        // Vec2 P = (1.0f / den) * (u * A + v * B);
+        
         P.set(A).scaled(u).added(temp.set(B).scaled(v));
         P.scaled(1.0f / den);
         d.set(Q).subbed(P);
@@ -840,7 +840,7 @@ public class Collision {
         manifold.type = Manifold.ManifoldType.FACE_A;
         manifold.localNormal.set(n);
         manifold.localPoint.set(A);
-        // manifold.points[0].id.key = 0;
+        
         manifold.points[0].id.set(cf);
         manifold.points[0].localPoint.set(circleB.center);
     }
@@ -1022,7 +1022,7 @@ public class Collision {
             float offset0 = 0.0f, offset2 = 0.0f;
             boolean convex1 = false, convex2 = false;
 
-            // Is there a preceding edge?
+            
             if (hasVertex0) {
                 edge0.set(m_v1).subbed(m_v0);
                 edge0.normalize();
@@ -1031,7 +1031,7 @@ public class Collision {
                 offset0 = Tuple2f.dot(m_normal0, temp.set(m_centroidB).subbed(m_v0));
             }
 
-            // Is there a following edge?
+            
             if (hasVertex3) {
                 edge2.set(m_v3).subbed(m_v2);
                 edge2.normalize();
@@ -1040,7 +1040,7 @@ public class Collision {
                 offset2 = Tuple2f.dot(m_normal2, temp.set(m_centroidB).subbed(m_v2));
             }
 
-            // Determine front or back collision. Determine collision normal limits.
+            
             if (hasVertex0 && hasVertex3) {
                 if (convex1 && convex2) {
                     m_front = offset0 >= 0.0f || offset1 >= 0.0f || offset2 >= 0.0f;
@@ -1202,7 +1202,7 @@ public class Collision {
                 }
             }
 
-            // Get polygonB in frameA
+            
             m_polygonB.count = polygonB.vertices;
             for (int i = 0; i < polygonB.vertices; ++i) {
                 Transform.mulToOutUnsafe(m_xf, polygonB.vertex[i], m_polygonB.vertices[i]);
@@ -1215,7 +1215,7 @@ public class Collision {
 
             computeEdgeSeparation(edgeAxis);
 
-            // If no valid normal can be found than this edge should not collide.
+            
             if (edgeAxis.type == EPAxis.Type.UNKNOWN) {
                 return;
             }
@@ -1229,7 +1229,7 @@ public class Collision {
                 return;
             }
 
-            // Use hysteresis for jitter reduction.
+            
             final float k_relativeTol = 0.98f;
             final float k_absoluteTol = 0.001f;
 
@@ -1248,7 +1248,7 @@ public class Collision {
             if (primaryAxis.type == EPAxis.Type.EDGE_A) {
                 manifold.type = Manifold.ManifoldType.FACE_A;
 
-                // Search for the polygon normal that is most anti-parallel to the edge normal.
+                
                 int bestIndex = 0;
                 float bestValue = Tuple2f.dot(m_normal, m_polygonB.normals[0]);
                 for (int i = 1; i < m_polygonB.count; ++i) {
@@ -1314,24 +1314,24 @@ public class Collision {
             rf.sideOffset1 = Tuple2f.dot(rf.sideNormal1, rf.v1);
             rf.sideOffset2 = Tuple2f.dot(rf.sideNormal2, rf.v2);
 
-            // Clip incident edge against extruded edge1 side edges.
+            
             int np;
 
-            // Clip to box side 1
+            
             np = clipSegmentToLine(clipPoints1, ie, rf.sideNormal1, rf.sideOffset1, rf.i1);
 
             if (np < Settings.maxManifoldPoints) {
                 return;
             }
 
-            // Clip to negative box side 1
+            
             np = clipSegmentToLine(clipPoints2, clipPoints1, rf.sideNormal2, rf.sideOffset2, rf.i2);
 
             if (np < Settings.maxManifoldPoints) {
                 return;
             }
 
-            // Now clipPoints2 contains the clipped points.
+            
             if (primaryAxis.type == EPAxis.Type.EDGE_A) {
                 manifold.localNormal.set(rf.normal);
                 manifold.localPoint.set(rf.v1);
@@ -1350,7 +1350,7 @@ public class Collision {
                     ManifoldPoint cp = manifold.points[pointCount];
 
                     if (primaryAxis.type == EPAxis.Type.EDGE_A) {
-                        // cp.localPoint = MulT(m_xf, clipPoints2[i].v);
+                        
                         Transform.mulTransToOutUnsafe(m_xf, clipPoints2[i].v, cp.localPoint);
                         cp.id.set(clipPoints2[i].id);
                     } else {
@@ -1404,8 +1404,8 @@ public class Collision {
                 n.x = -normalB.x;
                 n.y = -normalB.y;
 
-                // float s1 = Vec2.dot(n, temp.set(vB).subLocal(m_v1));
-                // float s2 = Vec2.dot(n, temp.set(vB).subLocal(m_v2));
+                
+                
                 float tempx = vB.x - m_v1.x;
                 float tempy = vB.y - m_v1.y;
                 float s1 = n.x * tempx + n.y * tempy;
@@ -1415,14 +1415,14 @@ public class Collision {
                 float s = MathUtils.min(s1, s2);
 
                 if (s > m_radius) {
-                    // No collision
+                    
                     axis.type = EPAxis.Type.EDGE_B;
                     axis.index = i;
                     axis.separation = s;
                     return;
                 }
 
-                // Adjacency
+                
                 if (n.x * perp.x + n.y * perp.y >= 0.0f) {
                     if (Tuple2f.dot(temp.set(n).subbed(m_upperLimit), m_normal) < -Settings.angularSlop) {
                         continue;

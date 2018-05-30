@@ -28,7 +28,7 @@ import static jcog.Texts.n4;
  * in their various stages of construction.
  * <p>
  * information is considered negative value by default (spam).
- * see: http://mattmahoney.net/costofai.pdf
+ * see: http:
  * <p>
  * satisfying other goals is necessary to compensate for the
  * perceptual cost.
@@ -57,11 +57,11 @@ public enum MetaGoal {
      */
     Action
 
-//    /**
-//     * pos: prediction confirmed a sensor input
-//     * neg: contradicted a sensor input
-//     */
-//    Accurate
+
+
+
+
+
 
     ;
 
@@ -72,7 +72,7 @@ public enum MetaGoal {
     public void learn(short[] cause, float strength, FasterList<Cause> causes) {
 
         if (Math.abs(strength) < Float.MIN_NORMAL)
-            return; //would have no effect
+            return; 
 
         int n = cause.length;
         if (n == 0)
@@ -125,23 +125,23 @@ public enum MetaGoal {
         Arrays.fill(ne.want, 0);
 
         AgentBuilder b = new AgentBuilder(
-                //DQN::new,
+                
                 HaiQae::new,
-                //() -> Util.tanhFast(a.dexterity())) //reward function
-                () -> a.enabled.get() ? (0.1f + a.dexterity()) * Util.tanhFast(a.reward) /* - lag */ : 0f) //reward function
+                
+                () -> a.enabled.get() ? (0.1f + a.dexterity()) * Util.tanhFast(a.reward) /* - lag */ : 0f) 
 
                 .in(a::dexterity)
                 .in(a.happy)
-//                .in(new FloatNormalized(
-//                        ((Emotivation) n.emotion).cycleDTRealMean::getValue)
-//                        .decay(0.9f)
-//                )
+
+
+
+
                 .in(new FloatNormalized(
-                        //TODO use a Long-specific impl of this:
+                        
                         new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
                 ).relax(0.1f))
                 .in(new FloatNormalized(
-                                //TODO use a Long-specific impl of this:
+                                
                                 new FloatFirstOrderDifference(n::time, () -> n.emotion.premiseFire.getValue().longValue())
                         ).relax(0.1f)
                 ).in(new FloatNormalized(
@@ -171,15 +171,15 @@ public enum MetaGoal {
             });
         }
 
-//        .out(
-//                        new StepController((x) -> n.time.dur(Math.round(x)), 1, n.dur(), n.dur() * 2)
-//                ).out(
-//                        StepController.harmonic(n.confMin::setValue, 0.01f, 0.08f)
-//                ).out(
-//                        StepController.harmonic(n.truthResolution::setValue, 0.01f, 0.08f)
-//                ).out(
-//                        StepController.harmonic(a.curiosity::setValue, 0.01f, 0.16f)
-//                ).get(n);
+
+
+
+
+
+
+
+
+
 
 
         return b;

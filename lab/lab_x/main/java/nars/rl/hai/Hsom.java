@@ -18,7 +18,7 @@ public class Hsom {
     private double gamma = 5.0f;
     private double eta = 0.1f;
     
-    public int winnerx = 0; //winner coordinates
+    public int winnerx = 0; 
     public int winnery = 0;
 
     public double Leak = 0.1;
@@ -37,7 +37,7 @@ public class Hsom {
         this.SomSize = SomSize;
         for (int i1 = 0; i1 < SomSize; i1++) {
             for (int i2 = 0; i2 < SomSize; i2++) {
-                coords1[i1][i2] = i1 * 1.0; //Kartenkoords
+                coords1[i1][i2] = i1 * 1.0; 
                 coords2[i1][i2] = i2 * 1.0;
             }
         }
@@ -73,7 +73,7 @@ public class Hsom {
                     vis[i1][i2][j] = val;
                     summe += val;
                 }
-                if (summe <= minv) //get winner
+                if (summe <= minv) 
                 {
                     minv = summe;
                     winnerx = i1;
@@ -89,7 +89,7 @@ public class Hsom {
         System.arraycopy(links[x][y], 0, outarr, 0, numInputs);
     }
 
-    double hsit(int i1, int i2) {   //neighboorhood-function
+    double hsit(int i1, int i2) {   
         double diff1 = (coords1[i1][i2] - coords1[winnerx][winnery]) 
                         * (coords1[i1][i2] - coords1[winnerx][winnery]);
         double diff2 = (coords2[i1][i2] - coords2[winnerx][winnery]) 
@@ -105,7 +105,7 @@ public class Hsom {
             for (i1 = 0; i1 < SomSize; i1++) {
                 for (i2 = 0; i2 < SomSize; i2++) {
                     double h = hsit(i1, i2);
-                    for (j = 0; j < numInputs; j++) { //adaption
+                    for (j = 0; j < numInputs; j++) { 
                         links[i1][i2][j] += eta * h * (inputs[j] - links[i1][i2][j]);
                     }
                 }

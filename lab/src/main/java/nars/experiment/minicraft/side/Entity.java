@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -154,13 +154,13 @@ public abstract class Entity implements java.io.Serializable {
 				dy += gravityAcceleration;
 			}
 			if (hitBottom) {			
-				// mathemagically derived to mimic the damage from
-				//   counting the number of meters dropped
+				
+				
 				int dmg = ((int) (114 * dy)) - 60;
 				if (dmg > 0) {
 					this.takeDamage(dmg);
 				}
-				dx *= 0.9;  // loss of energy due to friction
+				dx *= 0.9;  
 			}
 		}
 		if (hitTop) {
@@ -267,7 +267,7 @@ public abstract class Entity implements java.io.Serializable {
 		}
 	}
 	
-	// Only living entities have hitpoints; they should override these methods.
+	
 	public void takeDamage(int amount) {
 	}
 	

@@ -1,6 +1,6 @@
 package jcog.grammar.parse.examples.query;
 
-//import javax.swing.*;
+
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.Parser;

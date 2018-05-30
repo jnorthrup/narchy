@@ -32,7 +32,7 @@ import java.util.Map;
 public class Var extends Term {
 
     final static String ANY = "_";
-    // the name identifying the var
+    
     private String name;
     private StringBuilder completeName;     /* Reviewed by Paolo Contessi: String -> StringBuilder */
     public Term link;            /* link is used for unification process */
@@ -51,7 +51,7 @@ public class Var extends Term {
      */
     public Var(String n) {
         link = null;
-        id = -1; //no execCtx owners
+        id = -1; 
         if (n.equals(ANY)) {
             name = null;
             completeName = new StringBuilder();
@@ -110,14 +110,14 @@ public class Var extends Term {
         completeName.delete(0, completeName.length());
 
         if (id > -1) {
-            //completeName = name + "_e" + idExecCtx;
+            
 
             this.completeName = completeName
                     .append(name).append("_e").append(id);
-        } else if (id == ORIGINAL) { //completeName = name;
+        } else if (id == ORIGINAL) { 
             this.completeName = completeName
                     .append(name);
-        } else if (id == PROGRESSIVE) { //completeName = "_"+count;
+        } else if (id == PROGRESSIVE) { 
             this.completeName = completeName
                     .append('_').append(count);
         }
@@ -136,7 +136,7 @@ public class Var extends Term {
     Term copy(Map<Var, Var> vMap, int idExecCtx) {
         Term tt = term();
         if (tt == this) {
-            //No occurence of v before
+            
             return vMap.computeIfAbsent(this, k -> new Var(name, idExecCtx, 0, timestamp));
         } else {
             return tt.copy(vMap, idExecCtx);
@@ -154,7 +154,7 @@ public class Var extends Term {
         Var v;
         Object temp = vMap.get(this);
         if (temp == null) {
-            v = new Var(null, Var.PROGRESSIVE, vMap.size(), timestamp);//name,Var.PROGRESSIVE,vMap.size(),timestamp);
+            v = new Var(null, Var.PROGRESSIVE, vMap.size(), timestamp);
             vMap.put(this, v);
         } else {
             v = (Var) temp;
@@ -188,7 +188,7 @@ public class Var extends Term {
      */
     static void free(Iterable<Var> varsUnified) {
         varsUnified.forEach(t -> t.link = null);
-        //varsUnified.clear();
+        
     }
 
 
@@ -250,7 +250,7 @@ public class Var extends Term {
         timestamp = t;
     }
 
-    //
+    
 
     @Override
     public boolean isEmptyList() {
@@ -288,7 +288,7 @@ public class Var extends Term {
         return t != this && t.isGround();
     }
 
-    //
+    
 
     /**
      * Tests if this variable is ANY
@@ -336,7 +336,7 @@ public class Var extends Term {
 
     }
 
-    //
+    
 
     /**
      * Resolve the occurence of variables in a Term
@@ -352,7 +352,7 @@ public class Var extends Term {
     }
 
 
-    //
+    
 
     /**
      * var unification.
@@ -387,16 +387,16 @@ public class Var extends Term {
             t = t.term();
             if (t instanceof Var) {
                 if (this == t) {
-                    //try{
+                    
                     vl1.add(this);
-                    //} catch(NullPointerException e) {
-                    ///* vl1==null mean nothing intresting for the caller */
-                    //throw new RuntimeException(e); //TODO trap this make sure stack trace not generated routinely
-                    //}
+                    
+                    
+                    
+                    
                     return true;
                 }
             } else if (t instanceof Struct) {
-                // occur-check
+                
                 if (occurCheck(vl2, (Struct) t)) {
                     return false;
                 }
@@ -404,13 +404,13 @@ public class Var extends Term {
                 return false;
             }
             link = t;
-            //try {
+            
             vl1.add(this);
-            //} catch(NullPointerException e) {
-            ///* vl1==null mean nothing intresting for the caller */
-            //throw new RuntimeException(e); //TODO trap this make sure stack trace not generated routinely
-            //}
-            //System.out.println("VAR "+name+" BOUND to "+link+" - time: "+time+" - mark: "+mark);
+            
+            
+            
+            
+            
             return true;
         } else {
             return tt.unify(vl1, vl2, t);
@@ -448,10 +448,10 @@ public class Var extends Term {
         if (tt == this) {
             t = t.term();
             if (!(t instanceof Var)) return false;
-            //System.out.println("Compare di tt "+tt+" con t "+t);
-            //System.out.println("vorder "+vorder);
-            //System.out.println("indice tt "+vorder.indexOf(((Var)tt).getName())+" indice t "+vorder.indexOf(((Var)t).getName()));
-            //return timestamp > ((Var)t).timestamp;
+            
+            
+            
+            
             return vorder.indexOf(((Var) tt).name()) > vorder.indexOf(((Var) t).name());
         } else {
             return tt.isGreaterRelink(t, vorder);

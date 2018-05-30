@@ -47,7 +47,7 @@ public class InfinitePlane extends Shape
     	this.point = new Vector3d(point);
     	this.normal = new Vector3d(normal);
         
-        // Skalarprodukte berechnen:
+        
         pointDotNormal = point.dot(normal);
     }
     
@@ -68,7 +68,7 @@ public class InfinitePlane extends Shape
     @Override
     public void getBoundingPoints(Collection<Vector3d> points)
     {
-        // Die Kugel wird durch das kartesische Koordinatensystem interpoliert:
+        
         points.add(new Vector3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY));
         points.add(new Vector3d(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY));
         points.add(new Vector3d(Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY));
@@ -96,16 +96,16 @@ public class InfinitePlane extends Shape
     @Override
     public double getCentroid(byte axisId)
     {
-        // Unendliche Objekte haben keinen Schwerpunkt:
+        
         throw new UnsupportedOperationException();
     }
 
     @Override
     public byte compareAxis(byte axisId, double axisValue)
     {
-        // Falls der Normalenvektor der unendlichen Ebene nicht linear abh�ngig
-        // von dem Normalenvektor der Abene durch den Achsen-Punkt ist, haben
-        // beide einen Schnittpunkt.
+        
+        
+        
         double coordinate;
         switch (axisId)
         {
@@ -131,7 +131,7 @@ public class InfinitePlane extends Shape
             throw new IllegalArgumentException();
         }
         
-        // Laga des Objekts anhand der Lage eines Punkts auf der Ebene bestimmen:
+        
         if (coordinate < axisValue)
             return (byte) -1;
         if (coordinate > axisValue)
@@ -175,13 +175,13 @@ public class InfinitePlane extends Shape
     @Override
     public void transform(Transformation t)
     {
-        // Punkte der Ebene transformieren:
+        
         t.transformPoint(point);
         
-        // Vektoren der Ebene transformieren:
+        
         t.transformVector(normal);
         
-        // Skalarprodukte neu berechnen:
+        
         pointDotNormal = point.dot(normal);
     }
         
@@ -189,31 +189,31 @@ public class InfinitePlane extends Shape
     @Override
     public boolean intersect(Ray ray)
     {
-        // Lichter ignorieren, falls erw�nscht:
+        
         if ((isLight) && (ray.ignoreLights))
             return false;
         
         double dot = normal.dot(ray.dir);
         
-        // Falls es keinen Schnittpunkt gibt:
+        
         if (dot == 0.0)
             return false;
         
-        // Schnittpunkt berechnen:
+        
         double t = (pointDotNormal-normal.dot(ray.org))/dot;
         
-        // Falls der Schnittpunkt auf der falschen Seite liegt oder
-        // zu nahe am Ursprung liegt:
+        
+        
         if ((double) FloatingPoint.compareTolerated(t, 0.0) <= 0.0)
             return false;
         
-        // Falls der Strahl bereits ein anderes Objekt schneidet, das weiter
-        // vorne liegt:
+        
+        
         if (ray.length <= t)
             return false;
         
-        ray.length = t;     // Strahl schneidet die Ebene
-        ray.hit = this;     // Geschnittenes Objekt
+        ray.length = t;     
+        ray.hit = this;     
     	return true;
     }
 
@@ -227,7 +227,7 @@ public class InfinitePlane extends Shape
     @Override
     public Vector2d getTextureCoords(Vector3d point)
     {
-        // Texturen sind derzeit noch nicht implementiert:
+        
         throw new UnsupportedOperationException();
     }
     
@@ -241,7 +241,7 @@ public class InfinitePlane extends Shape
     @Override
     public void display(GLAutoDrawable drawable)
     {
-        // Anzeige-Funkton derzeit noch nicht implementiert:
+        
         throw new UnsupportedOperationException();
     }
 }

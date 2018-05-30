@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,23 +31,23 @@ import static org.oakgp.TestUtils.integerConstant;
 public class RoundRobinTournamentTest {
     @Test
     public void test() {
-        // test data
+        
         Node a = integerConstant(1);
         Node b = integerConstant(2);
         Node c = integerConstant(3);
         List<Node> input = Arrays.asList(a, b, c);
 
-        // mock
+        
         TwoPlayerGame mockGame = mock(TwoPlayerGame.class);
         given(mockGame.evaluate(a, b)).willReturn(5d);
         given(mockGame.evaluate(a, c)).willReturn(-3d);
         given(mockGame.evaluate(b, c)).willReturn(2d);
 
-        // invoke rank method
+        
         GenerationRanker tournament = new RoundRobinTournament(mockGame);
         Candidates output = tournament.rank(input);
 
-        // assert output
+        
         assertRankedCandidate(output.get(0), a, 2);
         assertRankedCandidate(output.get(1), c, 1);
         assertRankedCandidate(output.get(2), b, -3);

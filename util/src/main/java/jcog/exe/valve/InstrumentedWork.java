@@ -9,7 +9,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
 
     final Work work;
 
-    //final org.HdrHistogram.Histogram startupTime = new org.HdrHistogram.Histogram();
+    
 
     static final int WINDOW = 4;
 
@@ -38,7 +38,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
 
     @Override
     public boolean start() {
-        //TODO measure start-up time
+        
         beforeStart = nanoTime();
         boolean starting = work.start();
         afterStart = nanoTime();
@@ -48,7 +48,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
 
     @Override
     public final boolean next() {
-        //TODO catch interrupted exception etc
+        
 
         long a = nanoTime();
         boolean kontinue = work.next();
@@ -63,7 +63,7 @@ public class InstrumentedWork<Who,What> extends Share<Who,What> implements Work 
         if (iterationsThisCycle > 0) {
             iterTimeNS.addValue(workTimeThisCycleNS);
             iterations.addValue(iterationsThisCycle);
-            //iterMeanTimeNS.addValue(((double)iterationAccum)/iterations );
+            
 
             iterationsThisCycle = 0;
             workTimeThisCycleNS = 0;

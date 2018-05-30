@@ -33,12 +33,12 @@ public class NARLoop extends InstrumentedLoop {
     }
 
 
-//    public long throttleNS() {
-//        float throttle = this.throttle.floatValue();
-//        if (throttle == 1)
-//            return 0;
-//
-//        long periodNS = periodNS();
-//        return Math.round((1f-throttle) * ((double)periodNS));
-//    }
+
+
+
+
+
+
+
+
 }

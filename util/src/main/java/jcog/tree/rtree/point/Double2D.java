@@ -10,7 +10,7 @@ package jcog.tree.rtree.point;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -116,11 +116,11 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
             return new RectDouble2D(point);
         }
 
-//        @Override
-//        public HyperRect getMbr(final HyperPoint p1, final HyperPoint p2) {
-//            final Point2D point1 = (Point2D)p1;
-//            final Point2D point2 = (Point2D)p2;
-//            return new Rect2D(point1, point2);
-//        }
+
+
+
+
+
+
     }
 }

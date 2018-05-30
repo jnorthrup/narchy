@@ -38,7 +38,7 @@ public class TruthletTask extends SignalTask {
      */
     void updateTime(Concept c, long nextStart, long nextEnd) {
         if (nextStart == start() && nextEnd == end())
-            return; //no change
+            return; 
         else
             update(c, t-> {
                 Truthlet u = t.truthlet.stretch(nextStart, nextEnd);
@@ -80,28 +80,28 @@ public class TruthletTask extends SignalTask {
     }
 
 
-//    @Override
-//    public float freq() {
-//        return 0.5f;
-//    }
-//
-//    @Override
-//    public float conf() {
-//        return super.conf();
-//    }
-//
-//    @Override
-//    public float coordF(boolean maxOrMin, int dimension) {
-//        switch (dimension) {
-//            case 0:
-//                return maxOrMin ? end() : start();
-//            case 1:
-//            case 2:
-//                return maxOrMin ? 0 : 1; //entire range, by default
-//            default:
-//                throw new UnsupportedOperationException();
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

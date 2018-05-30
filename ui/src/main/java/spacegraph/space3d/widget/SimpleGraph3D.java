@@ -23,7 +23,7 @@ import java.util.function.Function;
 public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
 
-//    final Random rng = new XoRoShiRo128PlusRandom(1);
+
 
     /** default */
     protected static final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> defaultVis = w -> {
@@ -32,8 +32,8 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
         w.scale(16, 16, 2);
 
-        //w.body.setMass(100);
-        //w.body.setDamping(0.1f, 0.1f);
+        
+        
 
         Draw.colorHash(w.id, w.shapeColor);
 
@@ -43,13 +43,13 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
             x.b = 0;
             x.a = 1;
             x.width = x.pri()*4;
-            //x.priSet(0.5f);
+            
             x.attraction = 1;
             x.attractionDist = 1;
         });
     };
 
-    //private SpatialCache<X, DefaultSpaceWidget<X>> cache;
+    
     private final Map<X, DefaultSpaceWidget<X>> cache = new LinkedHashMap();
 
     protected final SpaceWidget.SimpleNodeVis vis;
@@ -67,17 +67,17 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
     @Override
     public void start(SpaceGraphPhys3D<X> space) {
-        //synchronized (this) {
-            //cache = new SpatialCache<>(space, 512);
-        //}
+        
+            
+        
     }
 
     @Override
     public void stop() {
-        //synchronized (this) {
-//            cache.clear();
-//            cache = null;
-        //}
+        
+
+
+        
     }
 
     @Override
@@ -134,8 +134,8 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
                 Iterables.transform(g.nodes(), x-> x.id),
                 x-> Iterables.transform(
                     g.node(x).edges(false,true),
-                        //zz -> zz.id //edge label
-                        zz -> zz.to.id //edge target
+                        
+                        zz -> zz.to.id 
                 ));
     }
 
@@ -147,19 +147,19 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         List<Spatial<X>> n2 = new FasterList();
 
         nodes.forEach((x)->{
-        //g.nodes().forEach(x -> {
-            //HACK todo use proxyterms in a cache
-            //c.termlinks().clear();
+        
+            
+            
 
             DefaultSpaceWidget<X> src =
-                    //cache.getOrAdd(x, DefaultSpaceWidget::new);
+                    
                     cache.computeIfAbsent(x, DefaultSpaceWidget::new);
 
             edges.apply(x).forEach((X edge) ->
-            //g.successors(x).forEach((Term y) ->
+            
                     src.edges.add(new EDraw<>(
                             src,
-                            //cache.getOrAdd(edge, DefaultSpaceWidget::new)
+                            
                             cache.computeIfAbsent(edge, DefaultSpaceWidget::new)
                             , 0.5f))
             );

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,21 +31,21 @@ public class AddTest extends AbstractFunctionTest {
 
     @Override
     public void testEvaluate() {
-        // int
+        
         evaluate("(+ 3 21)").to(24);
         evaluate("(+ 2147483647 1)").to(-2147483648);
 
-        // long
+        
         evaluate("(+ 3L 21L)").to(24L);
         evaluate("(+ 2147483647L 1L)").to(2147483648L);
         evaluate("(+ 9223372036854775807L 1L)").to(-9223372036854775808L);
 
-        // BigInteger
+        
         evaluate("(+ 3I 21I)").to(new BigInteger("24"));
         evaluate("(+ 2147483647I 1I)").to(new BigInteger("2147483648"));
         evaluate("(+ 9223372036854775807I 1I)").to(new BigInteger("9223372036854775808"));
 
-        // double
+        
         evaluate("(+ 3.0 21.0)").to(24.0);
         evaluate("(+ 7.5 -0.025)").to(7.475);
         evaluate("(+ 5.6 5.8)").to(11.399999999999999);
@@ -53,7 +53,7 @@ public class AddTest extends AbstractFunctionTest {
         evaluate("(+ 9223372036854775807.0 1.0)").to(9223372036854775808.0);
         evaluate("(+ 1.7976931348623157E308 1.0)").to(1.7976931348623157E308);
 
-        // BigDecimal
+        
         evaluate("(+ 3D 21D)").to(new BigDecimal("24"));
         evaluate("(+ 7.5D -0.025D)").to(new BigDecimal("7.475"));
         evaluate("(+ 5.6D 5.8D)").to(new BigDecimal("11.4"));
@@ -66,23 +66,23 @@ public class AddTest extends AbstractFunctionTest {
     public void testCanSimplify() {
         Object[][] assignedValues = {{0, 0}, {1, 21}, {2, 14}, {3, -6}, {7, 3}, {-1, 9}, {-7, 0}};
 
-        // constants get simplified to the result of adding them together
+        
         simplify("(+ 8 3)").to("11").verifyAll(assignedValues);
 
-        // arguments should be consistently ordered
+        
         simplify("(+ 4 v0)").to("(+ 4 v0)").verifyAll(assignedValues);
         simplify("(+ v0 4)").to("(+ 4 v0)").verifyAll(assignedValues);
         simplify("(+ v0 v1)").to("(+ v0 v1)").verifyAll(assignedValues);
         simplify("(+ v1 v0)").to("(+ v0 v1)").verifyAll(assignedValues);
 
-        // anything plus zero is itself
+        
         simplify("(+ v1 0)").to("v1").verifyAll(assignedValues);
         simplify("(+ 0 v1)").to("v1").verifyAll(assignedValues);
 
-        // anything plus itself is equal to itself multiplied by 2
+        
         simplify("(+ v1 v1)").to("(* 2 v1)").verifyAll(assignedValues);
 
-        // convert addition of negative numbers to subtraction
+        
         simplify("(+ v1 -7)").to("(- v1 7)").verifyAll(assignedValues);
         simplify("(+ -7 v1)").to("(- v1 7)").verifyAll(assignedValues);
 

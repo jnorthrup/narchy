@@ -14,12 +14,12 @@ import static nars.time.Tense.ETERNAL;
 @Disabled
 public class TestProloglike {
 
-//    static {
-//        Param.TRACE = true;
-//    }
+
+
+
 
     /**
-     * http://www.doc.gold.ac.uk/~mas02gw/prolog_tutorial/prologpages/rules.html
+     * http:
      */
     @Test
     public void testProloglike1() throws Narsese.NarseseException {
@@ -44,10 +44,10 @@ public class TestProloglike {
                 "(red($x) <=> (--,blue($x)))",
                 "car(vw_beatle)", "car(ford_escort)", "bike(harley_davidson)", "red(vw_beatle)", "blue(ford_escort)", "blue(harley_davidson)"
         );
-        //n.log();
+        
         n.questionPriDefault.set(0.99f);
         n.question("fun(?x)", ETERNAL, (q, a) -> {
-            //System.out.println(a.term() + " " + a.truth());
+            
             System.out.println(a.proof());
         });
         n.run(1000);
@@ -57,7 +57,7 @@ public class TestProloglike {
 
     @Test
     public void testRiddle1() throws Exception {
-        //
+        
         NAR n = NARS.tmp();
 
         n.termVolumeMax.set(1024);
@@ -74,7 +74,7 @@ public class TestProloglike {
     public void testMetagol() throws Exception {
         NAR n = NARS.tmp();
 
-        //n.termVolumeMax.setValue(1024);
+        
         n.log();
         n.inputNarsese(
                 TestProloglike.class.getResource("metagol.nal")
@@ -102,7 +102,7 @@ public class TestProloglike {
 
     @Test public void testTuring() throws Narsese.NarseseException {
         /*
-        http://www.thefullwiki.org/Prolog
+        http:
         Pure Prolog is based on a subset of first-order predicate logic, Horn clauses, which is Turing-complete. The completeness of Prolog can be shown by using it to simulate a Turing machine:
 
         turing(Tape0, Tape) :-
@@ -153,12 +153,12 @@ public class TestProloglike {
         "        left((), (), #Rs0, concat(b,#Rs0)).\n" +
         "        left(concat(#L,#Ls), #Ls, #Rs, concat(#L,#Rs)).\n" +
 
-        //"        A simple example Turing machine is specified by the facts:\n" +
+        
         "\n" +
         "        rule(q0, 1, q0, 1, right).\n" +
         "        rule(q0, b, qf, 1, stay).\n" +
 
-        //"        This machine performs incrementation by one of a number in unary encoding: It loops over any number of \"1\" cells and appends an additional \"1\" at the end. Example query and result:\n" +
+        
         "\n" +
         "        turing((1,1,1), #Ts)?\n");
         n.run(100);

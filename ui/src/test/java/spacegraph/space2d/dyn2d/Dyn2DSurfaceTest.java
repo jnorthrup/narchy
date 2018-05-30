@@ -30,12 +30,12 @@ public class Dyn2DSurfaceTest {
     public static class Dyn2DEmbedded {
         public static void main(String[] args) {
             Dyn2DSurface s = new Dyn2DSurface()
-                    //.scale(16f)
+                    
                     .enclose()
             ;
 
             Dyn2DSurface t = new Dyn2DSurface()
-                    //.scale(16f)
+                    
                     .enclose()
                     ;
 
@@ -47,12 +47,12 @@ public class Dyn2DSurfaceTest {
                         ),
                         new Clipped(t),
                         new Clipped(s)),
-                    //.pos(0, 0, 1000, 1000)
+                    
                 1400, 1000
             );
-            //demo(p);
-//            Dyn2DSurface.PhyWindow w = s.put(WidgetTest.widgetDemo(),
-//                    RectFloat2D.XYXY(10f, 10f, 400f, 300f));
+            
+
+
 
             for (int i = 0; i < 80; i++)
                 s.W.newDynamicBody(PolygonShape.box(30,30), 0.01f, 0.1f);
@@ -77,7 +77,7 @@ public class Dyn2DSurfaceTest {
         ).getOne().sprout(
                 new Gridding(0.1f, 1f, new PushButton("wtf")),
                 0.3f
-        );//.getOne().sproutBranch("Other", 0.5f, ()->{
+        );
 
         w.sproutBranch("Other", 0.25f, 0.33f, () -> {
                     return new Surface[]{
@@ -88,15 +88,15 @@ public class Dyn2DSurfaceTest {
                 }
         );
 
-//            {
-//                w.sprout(new WebCam().view(), 1f, 1f);
-//            }
 
-//            {
-//                WaveCapture au = new WaveCapture(new AudioSource(20));
-//                au.runFPS(20f);
-//                w.sprout(au.view(), 1f, 1f);
-//            }
+
+
+
+
+
+
+
+
 
         for (int i = 0; i < 4; i++)
             w.sprout(new Port(), (float) (0.1f + Math.random() * 0.1f));
@@ -110,21 +110,21 @@ public class Dyn2DSurfaceTest {
                     RectFloat2D.XYWH(rx, ry, rw, rh));
         }
 
-        //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
-        //d.children.add(new GridTex(16).pos(0,0,1000,1000));
+        
+        
     }
 
     public static class Box2DTest2_Raw_Geom_Rendered__No_Surfaces {
         public static void main(String[] args) {
 
             Dyn2DSurface s = SpaceGraph.wall(800, 800);
-            //s.scale(2f);
+            
 
-            //s.W.invoke(()->{
+            
             for (int i = 0; i < 200; i++)
                 s.W.newDynamicBody(PolygonShape.box(0.1f+rng.nextFloat()*0.2f, 0.1f), 1, 0.1f);
-            //s.W.newDynamicBody(PolygonShape.box(100, 100), 1, 0.1f).pos.add(-100, -100);
-            //});
+            
+            
 
         }
     }
@@ -157,15 +157,15 @@ public class Dyn2DSurfaceTest {
             Dyn2DSurface.PhyWindow a = s.put(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
 
-            Port B = //LabeledPort.generic();
+            Port B = 
                     new Port();
             Dyn2DSurface.PhyWindow b = s.put(B, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
             TogglePort AB = new TogglePort();
             s.put(AB, RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
 
-//            A.link(AB.port);
-//            AB.port.link(B);
+
+
 
             Loop.of(() -> {
                 A.out(String.valueOf(s.rng.nextInt(5)));
@@ -186,8 +186,8 @@ public class Dyn2DSurfaceTest {
 
         public static void main(String[] args) {
             Dyn2DSurface s = SpaceGraph.wall(800, 800);
-//            ((Ortho) s.root()).scaleMin = 100f;
-//            ((Ortho) s.root()).scaleMax = 500;
+
+
 
             Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
                     new Port(),
@@ -232,11 +232,11 @@ public class Dyn2DSurfaceTest {
             og.forEachNode(n -> {
                 Dyn2DSurface.PhyWindow oo = s.put(new PushButton(n.id.getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
             });
-//            og.forEachNode(n->{
-//                s.links.node(n)
-//            }
-//            n.edges()
-//            oo.link()
+
+
+
+
+
 
         }
     }

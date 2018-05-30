@@ -26,15 +26,15 @@ public class TreeTaskIndex implements TaskIndex {
     public @Nullable final Task addIfAbsent(@NotNull Task x) {
 
         Task y = tasks.putIfAbsent(key(x), x);
-        //return y == x ? null : y;
+        
         if (y == x)
             return null;
         else {
-//            if (!y.equals(x)) {
-//                System.err.println("serialization inconsisency:\n" + x + "\t" + key(x) + "\n" + y + "\t" + key(y) );
-//                System.out.println("\tarray equality=" + Arrays.equals(key(x).array(), key(y).array()));
-//                Task z = tasks.putIfAbsent(key(x), x);
-//            }
+
+
+
+
+
             return y;
         }
     }

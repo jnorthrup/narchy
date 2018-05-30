@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 20.11.2003 by RST.
-// $Id: mvertex_t.java,v 1.2 2004-09-22 19:22:15 salomo Exp $
+
+
 package jake2.render;
 
 import jake2.Defines;

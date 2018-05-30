@@ -44,22 +44,22 @@ public class TaskWithTruthAndOccurrence extends TaskProxy {
     @Override
     public @Nullable Truth truth() {
         return truth;
-//            Object tt = this.truthCached;
-//
-//            if (tt instanceof Function) {
-//                Truth computed = ((Function<Task,Truth>) tt).apply(task);
-//                if (computed != null) {
-//                    if (negated) {
-//                        computed = computed.neg();
-//                    }
-//                    this.truthCached = computed;
-//                    return computed;
-//                } else {
-//                    this.truthCached = null;
-//                    return null;
-//                }
-//            }
-//            return (Truth) tt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 }

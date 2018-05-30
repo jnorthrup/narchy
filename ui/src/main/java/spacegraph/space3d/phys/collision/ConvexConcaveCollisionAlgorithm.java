@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -77,8 +77,8 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 				resultOut.setPersistentManifold(btConvexTriangleCallback.manifoldPtr);
 				btConvexTriangleCallback.setTimeStepAndCounters(collisionMarginTriangle, dispatchInfo, resultOut);
 
-				// Disable persistency. previously, some older algorithm calculated all contacts in one go, so you can clear it here.
-				//m_dispatcher->clearManifold(m_btConvexTriangleCallback.m_manifoldPtr);
+				
+				
 
 				btConvexTriangleCallback.manifoldPtr.setBodies(convexBody, triBody);
 
@@ -99,10 +99,10 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 		Collidable convexbody = isSwapped ? body1 : body0;
 		Collidable triBody = isSwapped ? body0 : body1;
 
-		// quick approximation using raycast, todo: hook up to the continuous collision detection (one of the btConvexCast)
+		
 
-		// only perform CCD above a certain threshold, this prevents blocking on the long run
-		// because object in a blocked ccd state (hitfraction<1) get their linear velocity halved each frame...
+		
+		
 		tmp.sub(convexbody.getInterpolationWorldTransform(new Transform()), convexbody.getWorldTransform(new Transform()));
 		float squareMot0 = tmp.lengthSquared();
 		if (squareMot0 < convexbody.getCcdSquareMotionThreshold()) {
@@ -111,9 +111,9 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 
 		Transform tmpTrans = new Transform();
 
-		//const btVector3& from = convexbody->m_worldTransform.getOrigin();
-		//btVector3 to = convexbody->m_interpolationWorldTransform.getOrigin();
-		//todo: only do if the motion exceeds the 'radius'
+		
+		
+		
 
 		Transform triInv = triBody.getWorldTransform(new Transform());
 		triInv.inverse();
@@ -137,7 +137,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 			rayAabbMin.sub(tmp);
 			rayAabbMax.add(tmp);
 
-			float curHitFraction = 1f; // is this available?
+			float curHitFraction = 1f; 
 			LocalTriangleSphereCastCallback raycastCallback = new LocalTriangleSphereCastCallback(convexFromLocal, convexToLocal, convexbody.getCcdSweptSphereRadius(), curHitFraction);
 
 			raycastCallback.hitFraction = convexbody.getHitFraction();
@@ -170,7 +170,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 		btConvexTriangleCallback.clearCache();
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	private static class LocalTriangleSphereCastCallback extends TriangleCallback {
 		public final Transform ccdSphereFromTrans = new Transform();
@@ -188,16 +188,16 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 			this.ccdSphereRadius = ccdSphereRadius;
 			this.hitFraction = hitFraction;
 
-			// JAVA NOTE: moved here from processTriangle
+			
 			ident.setIdentity();
 		}
 
 		@Override
         public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-			// do a swept sphere for now
+			
 
-			//btTransform ident;
-			//ident.setIdentity();
+			
+			
 
 			ConvexCast.CastResult castResult = new ConvexCast.CastResult();
 			castResult.fraction = hitFraction;
@@ -205,9 +205,9 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 			TriangleShape triShape = new TriangleShape(triangle[0], triangle[1], triangle[2]);
 			VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
 			SubsimplexConvexCast convexCaster = new SubsimplexConvexCast(pointShape, triShape, simplexSolver);
-			//GjkConvexCast	convexCaster(&pointShape,convexShape,&simplexSolver);
-			//ContinuousConvexCollision convexCaster(&pointShape,convexShape,&simplexSolver,0);
-			//local space?
+			
+			
+			
 
 			if (convexCaster.calcTimeOfImpact(ccdSphereFromTrans, ccdSphereToTrans, ident, ident, castResult)) {
 				if (hitFraction > castResult.fraction) {
@@ -217,7 +217,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static class CreateFunc extends CollisionAlgorithmCreateFunc {
 

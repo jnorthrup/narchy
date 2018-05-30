@@ -34,7 +34,7 @@ import static jcog.bag.impl.HijackBag.Mode.*;
  * it uses a AtomicReferenceArray<> to hold the data but Unsafe CAS operations might perform better (i couldnt get them to work like NBHM does).  this is necessary when an index is chosen for replacement that it makes certain it was replacing the element it thought it was (that it hadnt been inter-hijacked by another thread etc).  on an insert i issue a ticket to the thread and store this in a small ConcurrentHashMap<X,Integer>.  this spins in a busy putIfAbsent loop until it can claim the ticket for the object being inserted. this is to prevent the case where two threads try to insert the same object and end-up puttnig two copies in adjacent hash indices.  this should be rare so the putIfAbsent should usually work on the first try.  when it exits the update critical section it removes the key,value ticket freeing it for another thread.  any onAdded and onRemoved subclass event handling happen outside of this critical section, and all cases seem to be covered.
  */
 @Paper
-@Skill("https://en.wikipedia.org/wiki/Concurrent_computing")
+@Skill("Concurrent_computing")
 public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     private static final AtomicIntegerFieldUpdater<HijackBag> sizeUpdater =
@@ -75,13 +75,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     static final float growthLerpRate = 0.5f;
 
-//    final static float PRESSURE_THRESHOLD = 0.05f;
+
 
     static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
 
     public final int reprobes;
 
-    //TODO use atomic field updater
+    
     public final AtomicFloat pressure = new AtomicFloat();
 
 
@@ -94,11 +94,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         this.id = serial.getAndIncrement();
 
         this.rng =
-                new SplitMix64Random(id); //supposedly even faster
-                //new XorShift128PlusRandom(id); //lighter-weight, non-atomic
-                //new XoRoShiRo128PlusRandom(id);
+                new SplitMix64Random(id); 
+                
+                
 
-        assert(reprobes < Byte.MAX_VALUE-1); //for sizing of byte[] rank in update(..)
+        assert(reprobes < Byte.MAX_VALUE-1); 
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
 
@@ -129,7 +129,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         for (int c = map.length(), j = 0; j < c; j++) {
             Y v = map
                     .get(j);
-                    //.getPlain(j);
+                    
             if (v != null && accept.test(v)) {
                 e.accept(v);
             }
@@ -140,7 +140,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         for (int c = map.length(), j = -1; ++j < c; ) {
             Y v = map
                     .get(j);
-                    //.getPlain(j);
+                    
             if (v != null) {
                 e.accept(v);
             }
@@ -161,17 +161,17 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             }
 
 
-            //return true;
+            
         }
 
-        //return false;
+        
     }
 
     protected void resize(int newSpace) {
         final AtomicReferenceArray<V>[] prev = new AtomicReferenceArray[1];
 
-        //ensures sure only the thread successful in changing the map instance is the one responsible for repopulating it,
-        //in the case of 2 simultaneous threads deciding to allocate a replacement:
+        
+        
         AtomicReferenceArray<V> next = newSpace != 0 ? new AtomicReferenceArray<>(newSpace) : EMPTY_ARRAY;
         if (next == mapUpdater.updateAndGet(this, (x) -> {
             if (x.length() != newSpace) {
@@ -181,7 +181,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         })) {
 
 
-            //copy items from the previous map into the new map. they will be briefly invisibile while they get transferred.  TODO verify
+            
             forEachActive(this, prev[0], (b) -> {
                 if (put(b) == null)
                     _onRemoved(b);
@@ -273,9 +273,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         V toAdd = null, toRemove = null, toReturn = null;
         try {
 
-            int start = (hash % c); //Math.min(Math.abs(hash), Integer.MAX_VALUE - reprobes - 1); //dir ? iStart : (iStart + reprobes) - 1;
+            int start = (hash % c); 
             if (start < 0)
-                start += c; //Fair wraparound: ex, -1 -> (c-1)
+                start += c; 
 
             if (mode != GET) {
                 mutexTicket = mutex.start(id, hash);
@@ -284,9 +284,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             probing:
             for (int i = start, probe = reprobes; probe > 0; probe--) {
 
-                V p = map.get(i); //probed value 'p'
+                V p = map.get(i); 
 
-                if (p != null && keyEquals(k, p)) { //existing, should only occurr at most ONCE in this loop
+                if (p != null && keyEquals(k, p)) { 
                     switch (mode) {
 
                         case GET:
@@ -295,12 +295,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                         case PUT:
                             if (p == incoming) {
-                                toReturn = p; //identical match found, keep original
+                                toReturn = p; 
                             } else {
                                 V next = merge(p, incoming, overflowing);
                                 if (next != null && (next == p || map.compareAndSet(i, p, next))) {
                                     if (next != p) {
-                                        toRemove = p; //replaced
+                                        toRemove = p; 
                                         toAdd = next;
                                     }
                                     toReturn = next;
@@ -315,16 +315,16 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                             break;
                     }
 
-                    break probing; //successful if y!=null
+                    break probing; 
                 }
 
-                if (++i == c) i = 0; //continue to next probed location
+                if (++i == c) i = 0; 
             }
 
             if (mode == PUT && toReturn == null) {
-                //attempt insert
+                
 
-                //sort - this is only an approximation since values may change while this occurrs
+                
 
 
                 byte j=0;
@@ -334,46 +334,46 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     float mp;
                     if (mi == null || ((mp = pri(mi))!=mp)) {
                         if (map.compareAndSet(i, mi, incoming)) {
-                            //take empty slot
+                            
                             toReturn = toAdd = incoming;
                             break;
                         } else {
-                            mp = 0; //value has changed, assume 0
+                            mp = 0; 
                         }
                     }
                     rpri[j++] = mp;
-                    if (++i == c) i = 0; //continue to next probed location
+                    if (++i == c) i = 0; 
                 }
 
-                if (toReturn == null) { //if still havent gotten a slot
+                if (toReturn == null) { 
 
                     ArrayUtils.sort(rank, r -> -rpri[r]);
 
                     float power = incomingPri;
 
-                    //FIGHT! starting with weakest
+                    
                     combative_insert: for (int f = 0; f < reprobes; f++) {
-                        int i = rank[f]+start; //try against next weakest opponent
+                        int i = rank[f]+start; 
                         if (i >= c) i-=c;
 
                         V existing = map.compareAndExchange(i, null, incoming);
                         if (existing == null) {
 
                             toReturn = toAdd = incoming;
-                            break combative_insert; //took empty slot, done
+                            break combative_insert; 
 
                         } else {
-                            //attempt HIJACK (tm)
+                            
 
                             float resultPower = replace(power, existing);
                             if (resultPower!=resultPower) {
-                                if (map.compareAndSet(i, existing, incoming)) { //inserted
+                                if (map.compareAndSet(i, existing, incoming)) { 
                                     toRemove = existing;
                                     toReturn = toAdd = incoming;
-                                    break combative_insert; //hijacked replaceable slot, done
+                                    break combative_insert; 
                                 }
                             } else {
-                                power = resultPower; //lost, apply the damage
+                                power = resultPower; 
                             }
                         }
 
@@ -391,7 +391,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
         } catch (Throwable t) {
-            t.printStackTrace(); //should not happen
+            t.printStackTrace(); 
         } finally {
             if (mode != GET) {
                 mutex.end(mutexTicket);
@@ -403,9 +403,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             int size = size();
             if (attemptRegrowForSize(toRemove != null ? (size + 1) /* hypothetical size if we can also include the displaced */ : size /* size which has been increased by the insertion */)) {
-                //the insert has regrown the map so try reinserting this displaced item
+                
                 if (toRemove != null) {
-                    update(key(toRemove), toRemove, Mode.PUT, null); //recurse, maybe set a limit on this cuckoo-like resize
+                    update(key(toRemove), toRemove, Mode.PUT, null); 
                     toRemove = null;
                 }
             }
@@ -418,7 +418,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (mode == PUT && toAdd == null) {
 
             if (attemptRegrowForSize(size() + 1)) {
-                return update(k, incoming, PUT, overflowing); //try once more
+                return update(k, incoming, PUT, overflowing); 
             }
 
         }
@@ -427,18 +427,18 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     protected boolean keyEquals(Object k, V p) {
-        return k.equals(key(p)); //this might be the reverse of Map.get() key equality semantics, TODO verify
+        return k.equals(key(p)); 
     }
 
 
     protected int hash(Object x) {
 
-        //return x.hashCode(); //default
+        
 
-        //identityComparisons ? System.identityHashCode(key)
+        
 
-        // "Applies a supplemental hash function to a given hashCode, which defends against poor quality hash functions."
-        //return Util.hashWangJenkins(x.hashCode());
+        
+        
 
         return x.hashCode();
     }
@@ -478,11 +478,11 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     protected float replace(float incomingPower, V existing) {
         float e = pri(existing);
         if (e != e) {
-            return Float.NaN; //win, opponent already dead
+            return Float.NaN; 
         } else {
             if (replace(incomingPower, e)) {
                 priAdd(existing, -incomingPower/reprobes);
-                return Float.NaN; //win
+                return Float.NaN; 
             } else {
                 return Util.max(0, incomingPower - e/reprobes);
             }
@@ -511,7 +511,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         float priEpsilon = Prioritized.EPSILON;
 
         if (oldPri > priEpsilon) {
-            //assert (temperature < reprobes);
+            
 
             float newPriSlice = temperature * newPri / reprobes;
             float thresh = newPriSlice / (newPriSlice + oldPri);
@@ -523,16 +523,16 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
     protected boolean hijackSoftmax2(float newPri, float oldPri, Random random) {
-        //newPri = (float) Math.exp(newPri*2*reprobes); //divided by temperature, reprobes ~ 0.5/temperature
-        //oldPri = (float) Math.exp(oldPri*2*reprobes);
+        
+        
         newPri = newPri * newPri * reprobes;
         oldPri = oldPri * oldPri * reprobes;
         if (oldPri > 2 * Float.MIN_VALUE) {
             float thresh = 1.0f - (1.0f - (oldPri / (newPri + oldPri)));
             return random.nextFloat() > thresh;
         } else {
-            return (newPri >= Float.MIN_VALUE) || random.nextBoolean();// / reprobes;
-            // random.nextBoolean(); //50/50 chance
+            return (newPri >= Float.MIN_VALUE) || random.nextBoolean();
+            
         }
     }
 
@@ -541,18 +541,18 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public final V put(/*@NotNull*/ V v,  /* TODO */ @Nullable MutableFloat overflowing) {
 
-//        commitIfPressured();
 
-//        float p = pri(v);
-//        if (p != p)
-//            return null; //already deleted
+
+
+
+
         K k = key(v);
         if (k == null)
             return null;
 
-        //int c = capacity;
-        //int s = size;
-        //if (((float) Math.abs(c - s)) / c < PRESSURE_THRESHOLD)
+        
+        
+        
 
 
         V x = update(k, v, PUT, overflowing);
@@ -593,8 +593,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             boolean direction = random.nextBoolean();
 
             int windowCap = Math.min(s,
-                    //(1 + reprobes) * 2 //ESTIMATE HUERISTIC
-                    (1 + reprobes) //ESTIMATE HUERISTIC
+                    
+                    (1 + reprobes) 
             );
             float[] wPri = new float[windowCap];
             Object[] wVal = new Object[windowCap];
@@ -602,14 +602,14 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             /** emergency null counter, in case map becomes totally null avoids infinite loop*/
             int nulls = 0;
 
-            //0. seek to some non-null item
+            
             int prefilled = 0;
             while ((nulls+prefilled) < c /*&& size > 0*/) {
                 V v = map
                         .get(i);
-                        //.getPlain(i);
+                        
 
-                //move ahead now in case it terminates on the first try, it wont remain on the same value when the next phase starts
+                
                 if (direction) {
                     if (++i == c) i = 0;
                 } else {
@@ -628,35 +628,35 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             }
 
 
-            //2. slide window, roulette sampling from it as it changes
+            
 
             nulls = 0;
             while (nulls < c/* && size > 0*/) {
                 V v0 = map
                         .get(i);
-                        //.getPlain(i);
+                        
                 float p;
                 if (v0 == null) {
                     nulls++;
                 } else  if ((p = pri(v0)) == p /* not deleted*/) {
-                    nulls=0; //reset contiguous null counter
+                    nulls=0; 
 
-                    //shift window down, erasing value (if any) in position 0
+                    
                     System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
                     wVal[windowCap - 1] = v0;
                     System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
-                    wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON); //to differentiate from absolute zero
+                    wPri[windowCap - 1] = Util.max(p, Prioritized.EPSILON); 
 
                     int which = Roulette.selectRoulette(windowCap, r -> wPri[r], random);
                     V v = (V) wVal[which];
                     if (v == null)
-                        continue; //shouldnt happen but just in case
+                        continue; 
 
                     BagSample next = each.next(v);
                     if (next.remove) {
                         if (map.compareAndSet(i, v, null)) {
-                            //modified = true;
-                            //else: already removed
+                            
+                            
 
                             sizeUpdater.decrementAndGet(this);
                             _onRemoved(v);
@@ -666,13 +666,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                     if (next.stop) {
                         break;
                     } else if (next.remove) {
-                        //prevent the removed item from further selection
+                        
                         if (which==windowCap-1) {
-                            //if it's in the last place, it will be replaced in next cycle anyway
+                            
                             wVal[which] = null;
                             wPri[which] = 0;
                         } else if (wVal[0] != null) {
-                            //otherwise swap a non-null value in the 0th place with it, because it will be removed in the next shift
+                            
                             ArrayUtils.swap(wVal, 0, which);
                             ArrayUtils.swap(wPri, 0, which);
                         }
@@ -729,7 +729,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     @Override
     public float depressurize() {
-        return Math.max(0, pressure.getAndSet(0.0f));  //max() in case it becomes negative
+        return Math.max(0, pressure.getAndSet(0.0f));  
     }
 
 
@@ -749,16 +749,16 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
 
-    //final AtomicBoolean busy = new AtomicBoolean(false);
+    
 
     @Override
     public HijackBag<K, V> commit(@Nullable Consumer<V> update) {
 
 
-//        try {
-//        if (update != null) {
-//            update(update);
-//        }
+
+
+
+
 
         float mass = 0;
         float min = Float.POSITIVE_INFINITY;
@@ -772,7 +772,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         for (int i = 0; i < len; i++) {
             V f = a
                     .get(i);
-                    //.getPlain(i);
+                    
             if (f == null)
                 continue;
 
@@ -790,12 +790,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 count++;
             } else {
                 if (a.compareAndSet(i, f, null)) {
-                    _onRemoved(f); //TODO this may call onRemoved unnecessarily if the map has changed (ex: resize)
+                    _onRemoved(f); 
                 }
             }
         }
 
-        //assert(size() == count);
+        
         sizeUpdater.set(this, count);
 
         if (count > 0) {
@@ -807,9 +807,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             this.min = this.max = 0;
         }
 
-//        } finally {
-//            //   busy.set(false);
-//        }
+
+
+
 
         return this;
     }
@@ -821,14 +821,14 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     protected boolean attemptRegrowForSize(int s) {
-        //grow if load is reached
+        
         int sp = space();
         int cp = capacity;
         if (sp < cp && s >= (int) (loadFactor * sp)) {
 
             int ns = Util.lerp(growthLerpRate, sp, cp);
             if ((cp - ns) / ((float) cp) >= loadFactor)
-                ns = cp; //just grow to full capacity, it is close enough
+                ns = cp; 
 
             if (ns != sp) {
                 resize(ns);
@@ -848,44 +848,44 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      * SUSPECT
      */
     public static <X> Stream<X> stream(AtomicReferenceArray<X> a) {
-        return IntStream.range(0, a.length()).mapToObj(a::get);//.filter(Objects::nonNull);
+        return IntStream.range(0, a.length()).mapToObj(a::get);
     }
 
     public static <X> List<X> list(AtomicReferenceArray<X> a) {
         return IntStream.range(0, a.length()).mapToObj(a::get).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-//    /**
-//     * ID of this bag, for use in constructing keys for the global treadmill
-//     */
-//     private final int id = TreadmillMutex.newTarget();
-//
-//    /**
-//     * lock-free int -> int mapping used as a ticket barrier
-//     */
-//    static final class TreadmillMutex {
-//
-//        static final ConcurrentLongSet map = new ConcurrentLongSet(Util.MAX_CONCURRENCY * 2);
-//
-//        static final AtomicInteger ticket = new AtomicInteger(0);
-//
-//        public static int newTarget() {
-//            return ticket.incrementAndGet();
-//        }
-//
-//        public static long start(int target, int hash) {
-//
-//            long ticket = (((long) target) << 32) | hash;
-//
-//            map.putIfAbsentRetry(ticket);
-//
-//            return ticket;
-//        }
-//
-//        public static void end(long ticket) {
-//            map.remove(ticket);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /*private static int i(int c, int hash, int r) {
@@ -893,21 +893,21 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }*/
 
 
-    //    /**
-//     * beam width (tolerance range)
-//     * searchProgress in range 0..1.0
-//     */
-//    private static float tolerance(int j, int jLimit, int b, int batchSize, int cap) {
-//
-//        float searchProgress = ((float) j) / jLimit;
-//        //float selectionRate =  ((float)batchSize)/cap;
-//
-//        /* raised polynomially to sharpen the selection curve, growing more slowly at the beginning */
-//        return Util.sqr(Util.sqr(searchProgress * searchProgress));// * searchProgress);
-//
-//        /*
-//        float exp = 6;
-//        return float) Math.pow(searchProgress, exp);// + selectionRate;*/
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

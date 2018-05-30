@@ -42,7 +42,7 @@ public class Bordering extends MutableContainer {
      */
     public Bordering edge(float size) {
         borderNorth = borderSouth = borderEast = borderWest = size;
-        layout(); //TODO elide if unchanged
+        layout(); 
         return this;
     }
 
@@ -66,7 +66,7 @@ public class Bordering extends MutableContainer {
             default:
                 throw new UnsupportedOperationException();
         }
-        layout(); //TODO elide if unchanged
+        layout(); 
         return this;
     }
 
@@ -151,7 +151,7 @@ public class Bordering extends MutableContainer {
                 default:
                     throw new TODO();
             }
-            //assert (x2 >= x1 && y2 >= y1);
+            
             c.pos(X + x1, Y + y1, X + x2, Y + y2);
         }
 
@@ -174,7 +174,7 @@ public class Bordering extends MutableContainer {
         synchronized (this) {
             int empties = index - (childrenCount() - 1);
             for (int i = 0; i < empties; i++)
-                add(new EmptySurface()); //placeholders
+                add(new EmptySurface()); 
 
             super.set(index, next);
             return this;

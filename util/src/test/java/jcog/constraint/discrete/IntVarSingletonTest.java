@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *     
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class IntVarSingletonTest {
 
-  // All values should be contained in the initial domain
+  
   @Test
   public void test1() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -31,7 +31,7 @@ public class IntVarSingletonTest {
     assertTrue(x.contains(5));
   }
 
-  // Contains should return false if value is not in the domain
+  
   @Test
   public void test3() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -42,8 +42,8 @@ public class IntVarSingletonTest {
     assertFalse(x.contains(6));
   }
 
-  // UpdateMin with a lesser or equal value than min should not impact the
-  // domain
+  
+  
   @Test
   public void test5() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -58,7 +58,7 @@ public class IntVarSingletonTest {
     assertEquals(x.max(), 5);
   }
 
-  // UpdateMin greater than max should fail
+  
   @Test
   public void test7() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -66,8 +66,8 @@ public class IntVarSingletonTest {
     assertFalse(x.updateMin(6));
   }
 
-  // UpdateMax with a greater or equal value than max should not impact the
-  // domain
+  
+  
   @Test
   public void test9() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -82,7 +82,7 @@ public class IntVarSingletonTest {
     assertEquals(x.max(), 5);
   }
 
-  // UpdateMax lesser than min should fail
+  
   @Test
   public void test11() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -90,7 +90,7 @@ public class IntVarSingletonTest {
     assertFalse(x.updateMax(0));
   }
 
-  // Assign the assigned value should do nothing.
+  
   @Test
   public void test14() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -102,7 +102,7 @@ public class IntVarSingletonTest {
     assertEquals(x.max(), 5);
   }
 
-  // Assign an out of bounds value should fail
+  
   @Test
   public void test16() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -110,7 +110,7 @@ public class IntVarSingletonTest {
     assertFalse(x.assign(20));
   }
 
-  // Remove a removed value should not impact the domain
+  
   @Test
   public void test19() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -121,7 +121,7 @@ public class IntVarSingletonTest {
     assertTrue(x.isAssigned());
   }
 
-  // Remove the assigned value should fail
+  
   @Test
   public void test23() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -129,7 +129,7 @@ public class IntVarSingletonTest {
     assertFalse(x.remove(5));
   }
 
-  // Copy domain and to Array
+  
   @Test
   public void test28() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();

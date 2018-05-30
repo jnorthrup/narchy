@@ -26,9 +26,9 @@ public class RepetitionTest extends AbstractParsingTest {
 
 	@Test
 	public void fullMatch() {
-		// assertCompleteMatch("abc");
+		
 		assertCompleteMatch("");
-		// assertCompleteMatch("abc abc abc abc");
+		
 	}
 
 	@Test

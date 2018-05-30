@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -92,12 +92,12 @@ public class RTree2DTest {
             }
 
             final int expectedCount = 9;
-            //assertEquals("[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount, expectedCount, foundCount);
+            
             assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
 
             Collections.sort(results);
 
-            // If the order of nodes in the tree changes, this test may fail while returning the correct results.
+            
             for (int i = 0; i < resultCount; i++) {
                 assertTrue(results.get(i).min.x == i + 2 && results.get(i).min.y == i + 2 && results.get(i).max.x == i + 5 && results.get(i).max.y == i + 5, "Unexpected result found");
             }
@@ -145,7 +145,7 @@ public class RTree2DTest {
      * more visible.
      */
     @Disabled
-    // This test ignored because output needs to be manually evaluated.
+    
     public void treeStructureStatsTest() {
 
         final int entryCount = 50_000;
@@ -171,7 +171,7 @@ public class RTree2DTest {
      *  - QUADRATIC seems to be ideal for small search bounding boxes.
      */
     @Disabled
-    // This test ignored because output needs to be manually evaluated.
+    
     public void treeSearchStatsTest() {
 
         final int entryCount = 5000;
@@ -231,7 +231,7 @@ public class RTree2DTest {
     }
 
     @Disabled
-    // This test ignored because output needs to be manually evaluated.
+    
     public void treeRemoveAndRebalanceTest() {
         final RTree<RectDouble2D> rTree = createRect2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
@@ -292,7 +292,7 @@ public class RTree2DTest {
     public static RectDouble2D[] generateRandomRects(int count) {
         final Random rand = new XoRoShiRo128PlusRandom(1);
 
-        // changing these values changes the rectangle sizes and consequently the distribution density
+        
         final int minX = 500;
         final int minY = 500;
         final int maxXRange = 25;
@@ -324,7 +324,7 @@ public class RTree2DTest {
     public static RectFloatND[] generateRandomRects(int dimension, int count) {
         final Random rand = new Random(13);
 
-        // changing these values changes the rectangle sizes and consequently the distribution density
+        
         final int minX = 500;
         final int maxXRange = 25;
 
@@ -355,7 +355,7 @@ public class RTree2DTest {
     public static RectFloatND[] generateRandomRectsWithOneDimensionRandomlyInfinite(int dimension, int count) {
         final Random rand = new Random(13);
 
-        // changing these values changes the rectangle sizes and consequently the distribution density
+        
         final int minX = 500;
         final int maxXRange = 25;
 
@@ -372,11 +372,11 @@ public class RTree2DTest {
                 max[d] = x1 + rand.nextInt(maxXRange);
             }
 
-            //zero or one dimension will have infinite range, 50% probability of being infinite
-            //int infDim = rand.nextInt(dimension*2);
-            //if (infDim < dimension) {
+            
+            
+            
 
-            //one dimension (0) randomly infinite:
+            
             if (rand.nextBoolean()) {
                 int infDim = 0;
                 min[infDim] = Float.NEGATIVE_INFINITY;

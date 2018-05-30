@@ -124,7 +124,7 @@ public class PathGeom
       path = enumerationIterator.getNextElement();
       this.pathU.loadFromXML(path);
 
-      //
+      
 
       enumerationIterator = markupXML.obtainChildren(ConstantsXML.MARKUP_PATH_V);
       if(enumerationIterator.hasMoreElements() == false)

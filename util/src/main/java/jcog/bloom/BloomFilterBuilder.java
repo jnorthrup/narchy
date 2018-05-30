@@ -9,7 +9,7 @@ import java.util.Random;
  * {@link BloomFilterBuilder}s are the entry point to builder different types of {@link LeakySet}s.
  *
  * References:
- * [1] Phillip Bradford and Michael Katehakis. 2007. A probabilistic study on combinatorial expanders and hashing. DOI=http://dx.doi.org/10.1137/S009753970444630X
+ * [1] Phillip Bradford and Michael Katehakis. 2007. A probabilistic study on combinatorial expanders and hashing. DOI=http:
  */
 public class BloomFilterBuilder<E> {
 

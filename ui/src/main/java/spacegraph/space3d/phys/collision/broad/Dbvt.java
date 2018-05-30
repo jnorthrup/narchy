@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -21,7 +21,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-// Dbvt implementation by Nathanael Presson
+
 
 package spacegraph.space3d.phys.collision.broad;
 
@@ -60,7 +60,7 @@ public final class Dbvt {
 		if (root != null) {
 			recursedeletenode(this, root);
 		}
-		//btAlignedFree(m_free);
+		
 		free = null;
 	}
 
@@ -73,7 +73,7 @@ public final class Dbvt {
 			FasterList<Node> leaves = new FasterList<>(this.leaves);
 			fetchleaves(this, root, leaves);
 			bottomup(this, leaves);
-            //return array[index];
+            
             root = leaves.get(0);
 		}
 	}
@@ -228,7 +228,7 @@ public final class Dbvt {
 	}
 
 	public static void enumNodes(Node root, ICollide policy) {
-		//DBVT_CHECKTYPE
+		
 		policy.process(root);
 		if (root.isinternal()) {
 			enumNodes(root.childs[0], policy);
@@ -237,7 +237,7 @@ public final class Dbvt {
 	}
 
 	public static void enumLeaves(Node root, ICollide policy) {
-		//DBVT_CHECKTYPE
+		
 		if (root.isinternal()) {
 			enumLeaves(root.childs[0], policy);
 			enumLeaves(root.childs[1], policy);
@@ -247,11 +247,11 @@ public final class Dbvt {
 		}
 	}
 
-	//static Node[] sStkNN(Node a, Node b) { return new Node[] { a, b }; }
+	
 	static Node[] sStkNN(Node... x) { return x; }
 
 	public static void collideTT(Node root0, Node root1, ICollide policy, OArrayList<Node[]> stack) {
-		//DBVT_CHECKTYPE
+		
 		if (root0 != null && root1 != null) {
 			stack.add(sStkNN(root0, root1));
 			do {
@@ -289,7 +289,7 @@ public final class Dbvt {
 	}
 
 	public static void collideTT(Node root0, Node root1, Transform xform, ICollide policy) {
-		//DBVT_CHECKTYPE
+		
 		if (root0 != null && root1 != null) {
 			OArrayList<sStkNN> stack = new OArrayList<>(DOUBLE_STACKSIZE);
 			stack.add(new sStkNN(root0, root1));
@@ -338,7 +338,7 @@ public final class Dbvt {
 	}
 
 	public static void collideTV(Node root, DbvtAabbMm volume, ICollide policy) {
-		//DBVT_CHECKTYPE
+		
 		if (root != null) {
 			OArrayList<Node> stack = new OArrayList<>(SIMPLE_STACKSIZE);
 			stack.add(root);
@@ -359,7 +359,7 @@ public final class Dbvt {
 	}
 
 	public static void collideRAY(Node root, v3 origin, v3 direction, ICollide policy) {
-		//DBVT_CHECKTYPE
+		
 		if (root != null) {
 			v3 normal = new v3();
 			normal.normalize(direction);
@@ -385,7 +385,7 @@ public final class Dbvt {
 	}
 
 	public static void collideKDOP(Node root, v3[] normals, float[] offsets, int count, ICollide policy) {
-		//DBVT_CHECKTYPE
+		
 		if (root != null) {
 			int inside = (1 << count) - 1;
 			OArrayList<sStkNP> stack = new OArrayList<>(SIMPLE_STACKSIZE);
@@ -434,7 +434,7 @@ public final class Dbvt {
 	}
 
 	public static void collideOCL(Node root, v3[] normals, float[] offsets, v3 sortaxis, int count, ICollide policy, boolean fullsort) {
-		//DBVT_CHECKTYPE
+		
 		if (root != null) {
 			int srtsgns = (sortaxis.x >= 0 ? 1 : 0) +
 					(sortaxis.y >= 0 ? 2 : 0) +
@@ -450,14 +450,14 @@ public final class Dbvt {
 						((normals[i].y >= 0) ? 2 : 0) +
 						((normals[i].z >= 0) ? 4 : 0);
 			}
-			//stock.reserve(SIMPLE_STACKSIZE);
-			//stack.reserve(SIMPLE_STACKSIZE);
-			//ifree.reserve(SIMPLE_STACKSIZE);
+			
+			
+			
 			stack.add(allocate(ifree, stock, new sStkNPS(root, 0, root.volume.ProjectMinimum(sortaxis, srtsgns))));
 			do {
-				// JAVA NOTE: check
+				
 				int id = stack.remove(stack.size() - 1);
-                //return array[index];
+                
                 sStkNPS se = stock.get(id);
 				ifree.add(id);
 				if (se.mask != inside) {
@@ -491,23 +491,23 @@ public final class Dbvt {
 							/* Insert 0	*/
 							j = nearest(stack, stock, nes[q].value, 0, stack.size());
 							stack.add(0);
-							//#if DBVT_USE_MEMMOVE
-							//memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
-							//#else
+							
+							
+							
 							for (int k = stack.size() - 1; k > j; --k) {
 								stack.set(k, stack.get(k - 1));
-							//#endif
+							
 							}
 							stack.set(j, allocate(ifree, stock, nes[q]));
 							/* Insert 1	*/
 							j = nearest(stack, stock, nes[1 - q].value, j, stack.size());
 							stack.add(0);
-							//#if DBVT_USE_MEMMOVE
-							//memmove(&stack[j+1],&stack[j],sizeof(int)*(stack.size()-j-1));
-							//#else
+							
+							
+							
 							for (int k = stack.size() - 1; k > j; --k) {
 								stack.set(k, stack.get(k - 1));
-							//#endif
+							
 							}
 							stack.set(j, allocate(ifree, stock, nes[1 - q]));
 						}
@@ -526,7 +526,7 @@ public final class Dbvt {
 	}
 
 	public static void collideTU(Node root, ICollide policy) {
-		//DBVT_CHECKTYPE
+		
 		if (root != null) {
 			OArrayList<Node> stack = new OArrayList<>(SIMPLE_STACKSIZE);
 			stack.add(root);
@@ -550,7 +550,7 @@ public final class Dbvt {
 		int m = 0;
 		while (l < h) {
 			m = (l + h) >> 1;
-            //return array[index];
+            
             if (a.get(i.get(m)).value >= v) {
 				l = m + 1;
 			}
@@ -565,9 +565,9 @@ public final class Dbvt {
 		int i;
 		int size = ifree.size();
 		if (size > 0) {
-			//i = ifree.get(size - 1);
+			
 			i = ifree.remove(size - 1);
-            //return array[index];
+            
             stock.get(i).set(value);
 		}
 		else {
@@ -577,7 +577,7 @@ public final class Dbvt {
 		return (i);
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	private static int indexof(Node node) {
 		return (node.parent.childs[1] == node)? 1:0;
@@ -588,7 +588,7 @@ public final class Dbvt {
 		return out;
 	}
 
-	// volume+edge lengths
+	
 	private static float size(DbvtAabbMm a) {
 		v3 edges = a.lengths(new v3());
 
@@ -598,7 +598,7 @@ public final class Dbvt {
 
 
 	private static void deletenode(Dbvt pdbvt, Node node) {
-		//btAlignedFree(pdbvt->m_free);
+		
 		pdbvt.free = node;
 	}
 
@@ -730,7 +730,7 @@ public final class Dbvt {
 		MiscUtil.resize(left, 0, Node.class);
 		MiscUtil.resize(right, 0, Node.class);
 		for (int i=0, ni=leaves.size(); i<ni; i++) {
-            //return array[index];
+            
 			Node li = leaves.get(i);
 			li.volume.center(tmp);
 			tmp.sub(org);
@@ -739,10 +739,10 @@ public final class Dbvt {
 	}
 
 	private static DbvtAabbMm bounds(List<Node> leaves) {
-        //return array[index];
+        
         DbvtAabbMm volume = new DbvtAabbMm(leaves.get(0).volume);
 		for (int i=1, ni=leaves.size(); i<ni; i++) {
-            //return array[index];
+            
             merge(volume, leaves.get(i).volume, volume);
 		}
 		return volume;
@@ -757,8 +757,8 @@ public final class Dbvt {
 			for (int i = 0; i< num; i++) {
 				Node li = leaves.get(i);
 				for (int j = i+1; j< num; j++) {
-                    //return array[index];
-                    //return array[index];
+                    
+                    
 					float sz = size(merge(li.volume, leaves.get(j).volume, tmpVolume));
 					if (sz < minsize) {
 						minsize = sz;
@@ -767,15 +767,15 @@ public final class Dbvt {
 					}
 				}
 			}
-            //return array[index];
-            //return array[index];
+            
+            
             Node[] n = {leaves.get(minidx[0]), leaves.get(minidx[1])};
 			Node p = set(pdbvt, null, merge(n[0].volume, n[1].volume, new DbvtAabbMm()), null);
 			p.childs[0] = n[0];
 			p.childs[1] = n[1];
 			n[0].parent = p;
 			n[1].parent = p;
-			// JAVA NOTE: check
+			
 			leaves.setFast(minidx[0], p);
 			Collections.swap(leaves, minidx[1], num - 1);
 			leaves.removeFast(num - 1);
@@ -800,7 +800,7 @@ public final class Dbvt {
 				v3 x = new v3();
 
 				for (int i=0; i<leaves.size(); i++) {
-                    //return array[index];
+                    
                     leaves.get(i).volume.center(x);
 					x.sub(org);
 					for (int j=0; j<3; j++) {
@@ -817,15 +817,15 @@ public final class Dbvt {
 					}
 				}
 				if (bestaxis >= 0) {
-					//sets[0].reserve(splitcount[bestaxis][0]);
-					//sets[1].reserve(splitcount[bestaxis][1]);
+					
+					
 					split(leaves, sets[0], sets[1], org, axis[bestaxis]);
 				}
 				else {
-					//sets[0].reserve(leaves.size()/2+1);
-					//sets[1].reserve(leaves.size()/2);
+					
+					
 					for (int i=0, ni=leaves.size(); i<ni; i++) {
-                        //return array[index];
+                        
                         sets[i & 1].add(leaves.get(i));
 					}
 				}
@@ -839,17 +839,17 @@ public final class Dbvt {
 			else {
 				bottomup(pdbvt, leaves);
                 return leaves.get(0);
-                //return array[index];
+                
             }
 		}
         return leaves.get(0);
-        //return array[index];
+        
     }
 
 	private static Node sort(Node n, Node[] r) {
 		Node p = n.parent;
-		//assert (n.isinternal());
-		// JAVA TODO: fix this
+		
+		
 		if (p != null && p.hashCode() > n.hashCode()) {
 			int i = indexof(n);
 			int j = 1 - i;
@@ -885,7 +885,7 @@ public final class Dbvt {
 		return n;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static final class Node {
 		public final DbvtAabbMm volume = new DbvtAabbMm();
@@ -895,7 +895,7 @@ public final class Dbvt {
 
 		public boolean isLeaf() {
 			return data!=null;
-			//return childs[1] == null;
+			
 		}
 
 		public boolean isinternal() {
@@ -952,15 +952,15 @@ public final class Dbvt {
 		}
 	}
 	
-//	public static class sStkCLN {
-//		public final Node node;
-//		public final Node parent;
-//
-//		public sStkCLN(Node n, Node p) {
-//			node = n;
-//			parent = p;
-//		}
-//	}
+
+
+
+
+
+
+
+
+
 
 	abstract public static class ICollide {
 		void process(Node n1, Node n2) {

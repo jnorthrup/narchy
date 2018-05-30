@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.generations;
 
@@ -85,7 +85,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         
         for (Example example : dataSet.getExamples()) {
             if(!example.match.isEmpty()){
-                //is positive example
+                
                 phrases.add(example.getString());
             }
         }
@@ -113,7 +113,7 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
         Deque<Node> nodes = new LinkedList<>();
         Deque<Node> tmp = new LinkedList<>();
 
-        //String w = this.useWordClasses ? "\\w" : ".";
+        
         String d = this.useWordClasses ? "\\d" : ".";
         Node letters;
         if(useWordClasses){
@@ -138,11 +138,11 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
             }
         }
 
-        //when two adiacent nodes are equal symbols/tokens, a quantifier is used to compact.
-        // /w/w/w is converted to /w++
+        
+        
         if(compact){
             Deque<Node> newNodes = new LinkedList<>();
-            //do compact
+            
             
             while (nodes.size()>0) {
                 Node node = nodes.pollFirst();
@@ -154,10 +154,10 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
 
                     if(nodeValue.equals(nextValue)){
                         isRepeat = true;
-                        //Consume and drop the repetition
+                        
                         nodes.pollFirst();
                     } else {
-                        //They are different, get out
+                        
                         break;
                     } 
                 }    

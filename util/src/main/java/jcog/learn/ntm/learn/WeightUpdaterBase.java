@@ -3,9 +3,9 @@ package jcog.learn.ntm.learn;
 import jcog.learn.ntm.control.Unit;
 
 public interface WeightUpdaterBase extends IWeightUpdater {
-    //abstract void reset();
+    
 
-    //abstract void updateWeight(Unit data);
+    
 
     @Override
     default void updateWeight(Unit[] data) {

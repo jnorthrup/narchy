@@ -1,13 +1,13 @@
 /*
  * Copyright (c) 2011-2017, Peter Abeles. All Rights Reserved.
  *
- * This file is part of BoofCV (http://boofcv.org).
+ * This file is part of BoofCV (http:
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -105,7 +105,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  */
 public class ExampleStereoTwoViewsOneCamera {
 
-	// Disparity calculation parameters
+	
 	private static final int minDisparity = 15;
 	private static final int maxDisparity = 100;
 	private final PointCloudTiltPanel gui;
@@ -167,11 +167,11 @@ public class ExampleStereoTwoViewsOneCamera {
 		r.renderProgressively();
 
 
-		//r.scene.camera.direction.x = -0.577 + 0.25f;
+		
 
 		r.update();
 		if (r.renderProgressively()) {
-			//r.input.waitForInput();
+			
 		}
 		Thread.sleep(500);
 		e.snap(r.image);
@@ -180,10 +180,10 @@ public class ExampleStereoTwoViewsOneCamera {
 
 
 
-				//r.scene.camera.position.x += Math.cos(t)*0.2f;
-				//t+=0.2f;
-//			}
-//		}).start();
+				
+				
+
+
 		new Thread(()->{
 			while (true) {
 				r.scene.camera.position.x = 4 + .15f;
@@ -191,7 +191,7 @@ public class ExampleStereoTwoViewsOneCamera {
 
 				r.update();
 				if (r.renderProgressively()) {
-					//r.input.waitForInput();
+					
 				}
 
 				Util.sleep(500);
@@ -226,24 +226,24 @@ public class ExampleStereoTwoViewsOneCamera {
 	protected boolean update(BufferedImage inLeft) {
 
 
-//		ShowImages.showGrid(2, "source", prev, next);
 
-		// matched features between the two images
+
+		
 		computeMatches(prev, next);
 
-		// convert from pixel coordinates into normalized image coordinates
+		
 		convertToNormalizedCoordinates(matchedFeatures, intrinsic);
 
-		// Robustly estimate camera motion
+		
 		Se3_F64 leftToRight = estimateCameraMotion(intrinsic);
 		if (leftToRight == null)
-			return false; //no motion
+			return false; 
 
 		System.out.println(leftToRight);
 
 		drawInliers(intrinsic, inliers);
 
-		// Rectify and remove lens distortion for stereo processing
+		
 		DMatrixRMaj rectifiedK = new DMatrixRMaj(3, 3);
 		GrayU8 rectifiedLeft =
 				distortedPrev.createSameShape();
@@ -252,31 +252,31 @@ public class ExampleStereoTwoViewsOneCamera {
 
 		rectifyImages(distortedPrev, distortedNext, leftToRight, intrinsic, rectifiedLeft, rectifiedRight, rectifiedK);
 
-		// compute disparity
+		
 		StereoDisparity<GrayS16, GrayF32> disparityAlg =
 				FactoryStereoDisparity.regionSubpixelWta(DisparityAlgorithms.RECT_FIVE,
 						minDisparity, maxDisparity,
 						5, 5, 20, 1,
 						0.1, GrayS16.class);
 
-		// Apply the Laplacian across the image to add extra resistance to changes in lighting or camera gain
+		
 		GrayS16 derivLeft = new GrayS16(rectifiedLeft.width,rectifiedLeft.height);
 		LaplacianEdge.process(rectifiedLeft, derivLeft);
 		GrayS16 derivRight = new GrayS16(rectifiedRight.width,rectifiedRight.height);
 		LaplacianEdge.process(rectifiedRight,derivRight);
 
-		// process and return the results
+		
 		disparityAlg.process(derivLeft, derivRight);
 		GrayF32 disparity = disparityAlg.getDisparity();
 
-		// show results
-//		BufferedImage visualized = VisualizeImageData.disparity(
-//				disparity, null, minDisparity, maxDisparity, 0);
-//		ShowImages.showWindow(visualized, "Disparity");
+		
 
-//		BufferedImage outLeft = ConvertBufferedImage.convertTo(rectifiedLeft, null);
-//		BufferedImage outRight = ConvertBufferedImage.convertTo(rectifiedRight, null);
-//		ShowImages.showWindow(new RectifiedPairPanel(true, outLeft, outRight), "Rectification");
+
+
+
+
+
+
 
 		double baseline = leftToRight.getT().norm();
 
@@ -300,7 +300,7 @@ public class ExampleStereoTwoViewsOneCamera {
 				new ConfigFastHessian(
 						1, 2, 0, 1, 9, 4, 4),
 				null,null, GrayF32.class);
-		//DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(200),null,null);
+		
 
 		ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
 		AssociateDescription<BrightFeature> associate = FactoryAssociation.greedy(scorer, 0.9f, true);
@@ -339,9 +339,9 @@ public class ExampleStereoTwoViewsOneCamera {
 
 		if (!epipolarMotion.process(matchedCalibrated))
 			return null;
-			//throw new RuntimeException("Motion estimation failed");
+			
 
-		// save inlier set for debugging purposes
+		
 		inliers.clear();
 		inliers.addAll(epipolarMotion.getMatchSet());
 
@@ -390,24 +390,24 @@ public class ExampleStereoTwoViewsOneCamera {
 									 DMatrixRMaj rectifiedK) {
 
 		RectifyCalibrated rectifyAlg = RectifyImageOps.createCalibrated();
-		//RectifyFundamental rectifyAlg = RectifyImageOps.createUncalibrated();
+		
 
-		// original camera calibration matrices
+		
 		DMatrixRMaj K = PerspectiveOps.calibrationMatrix(intrinsic, (DMatrixRMaj)null);
 
 		rectifyAlg.process(K, new Se3_F64(), K, leftToRight);
 
-		// rectification matrix for each image
+		
 		DMatrixRMaj rect1 = rectifyAlg.getRect1();
 		DMatrixRMaj rect2 = rectifyAlg.getRect2();
 
-		// New calibration matrix,
+		
 		rectifiedK.set(rectifyAlg.getCalibrationMatrix());
 
-		// Adjust the rectification to make the view area more useful
+		
 		RectifyImageOps.allInsideLeft(intrinsic, rect1, rect2, rectifiedK);
 
-		// undistorted and rectify images
+		
 		FMatrixRMaj rect1_F32 = new FMatrixRMaj(3,3);
 		FMatrixRMaj rect2_F32 = new FMatrixRMaj(3,3);
 		ConvertMatrixData.convert(rect1, rect1_F32);
@@ -442,7 +442,7 @@ public class ExampleStereoTwoViewsOneCamera {
 
 
 
-		// display the results
+		
 
 		assocPanel.setAssociation(pixels);
 		assocPanel.setImages(ConvertBufferedImage.extractBuffered(distortedPrev), ConvertBufferedImage.extractBuffered(distortedNext));
@@ -479,91 +479,91 @@ public class ExampleStereoTwoViewsOneCamera {
 		public static DMatrixRMaj robustFundamental( List<AssociatedPair> matches ,
 													 List<AssociatedPair> inliers ) {
 
-			// used to create and copy new instances of the fit model
+			
 			ModelManager<DMatrixRMaj> managerF = new ModelManagerEpipolarMatrix();
-			// Select which linear algorithm is to be used.  Try playing with the number of remove ambiguity points
+			
 			Estimate1ofEpipolar estimateF = FactoryMultiView.computeFundamental_1(EnumFundamental.LINEAR_7, 2);
-			// Wrapper so that this estimator can be used by the robust estimator
+			
 			GenerateEpipolarMatrix generateF = new GenerateEpipolarMatrix(estimateF);
 
-			// How the error is measured
+			
 			DistanceFromModelResidual<DMatrixRMaj,AssociatedPair> errorMetric =
 					new DistanceFromModelResidual<>(new FundamentalResidualSampson());
 
-			// Use RANSAC to estimate the Fundamental matrix
+			
 			ModelMatcher<DMatrixRMaj,AssociatedPair> robustF =
 					new Ransac<>(123123, managerF, generateF, errorMetric, 6000, 0.1);
 
-			// Estimate the fundamental matrix while removing outliers
+			
 			if( !robustF.process(matches) )
 				throw new IllegalArgumentException("Failed");
 
-			// save the set of features that were used to compute the fundamental matrix
+			
 			inliers.addAll(robustF.getMatchSet());
 
-			// Improve the estimate of the fundamental matrix using non-linear optimization
+			
 			DMatrixRMaj F = new DMatrixRMaj(3,3);
 			ModelFitter<DMatrixRMaj,AssociatedPair> refine =
 					FactoryMultiView.refineFundamental(1e-8, 400, EpipolarError.SAMPSON);
 			if( !refine.fitModel(inliers, robustF.getModelParameters(), F) )
 				throw new IllegalArgumentException("Failed");
 
-			// Return the solution
+			
 			return F;
 		}
 
-//		/**
-//		 * If the set of associated features are known to be correct, then the fundamental matrix can
-//		 * be computed directly with a lot less code.  The down side is that this technique is very
-//		 * sensitive to noise.
-//		 */
-//		public static DMatrixRMaj simpleFundamental( List<AssociatedPair> matches ) {
-//			// Use the 8-point algorithm since it will work with an arbitrary number of points
-//			Estimate1ofEpipolar estimateF = FactoryMultiView.computeFundamental_1(EnumFundamental.LINEAR_8, 0);
-//
-//			DMatrixRMaj F = new DMatrixRMaj(3,3);
-//			if( !estimateF.process(matches,F) )
-//				throw new IllegalArgumentException("Failed");
-//
-//			// while not done here, this initial linear estimate can be refined using non-linear optimization
-//			// as was done above.
-//			return F;
-//		}
 
 
 
-//		public static void main( String args[] ) {
-//
-//			String dir = UtilIO.pathExample("structure/");
-//
-//			BufferedImage imageA = UtilImageIO.loadImage(dir , "undist_cyto_01.jpg");
-//			BufferedImage imageB = UtilImageIO.loadImage(dir , "undist_cyto_02.jpg");
-//
-//			List<AssociatedPair> matches = computeMatches(imageA,imageB);
-//
-//			// Where the fundamental matrix is stored
-//			DMatrixRMaj F;
-//			// List of matches that matched the model
-//			List<AssociatedPair> inliers = new ArrayList<>();
-//
-//			// estimate and print the results using a robust and simple estimator
-//			// The results should be difference since there are many false associations in the simple model
-//			// Also note that the fundamental matrix is only defined up to a scale factor.
-//			F = robustFundamental(matches, inliers);
-//			System.out.println("Robust");
-//			F.print();
-//
-//			F = simpleFundamental(matches);
-//			System.out.println("Simple");
-//			F.print();
-//
-//			// display the inlier matches found using the robust estimator
-//			AssociationPanel panel = new AssociationPanel(20);
-//			panel.setAssociation(inliers);
-//			panel.setImages(imageA,imageB);
-//
-//			ShowImages.showWindow(panel, "Inlier Pairs");
-//		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
 
     /**
@@ -577,12 +577,12 @@ public class ExampleStereoTwoViewsOneCamera {
      */
     public static class ExampleAssociatePoints<T extends ImageGray<T>, TD extends TupleDesc> {
 
-        // algorithm used to detect and describe interest points
+        
         DetectDescribePoint<T, TD> detDesc;
-        // Associated descriptions together by minimizing an error metric
+        
         AssociateDescription<TD> associate;
 
-        // location of interest points
+        
         public List<Point2D_F64> pointsA;
         public List<Point2D_F64> pointsB;
 
@@ -606,7 +606,7 @@ public class ExampleStereoTwoViewsOneCamera {
 			associate(inputA, inputB);
 
 
-			// display the results
+			
 			AssociationPanel panel = new AssociationPanel(20);
 			panel.setAssociation(pointsA,pointsB,associate.getMatches());
 			panel.setImages(imageA,imageB);
@@ -615,19 +615,19 @@ public class ExampleStereoTwoViewsOneCamera {
 		}
 
 		public void associate(T inputA, T inputB) {
-			// stores the location of detected interest points
+			
 			pointsA = new ArrayList<>();
 			pointsB = new ArrayList<>();
 
-			// stores the description of detected interest points
+			
 			FastQueue<TD> descA = UtilFeature.createQueue(detDesc,100);
 			FastQueue<TD> descB = UtilFeature.createQueue(detDesc,100);
 
-			// describe each image using interest points
+			
 			describeImage(inputA,pointsA,descA);
 			describeImage(inputB,pointsB,descB);
 
-			// Associate features between the two images
+			
 			associate.setSource(descA);
 			associate.setDestination(descB);
 			associate.associate();
@@ -650,17 +650,17 @@ public class ExampleStereoTwoViewsOneCamera {
         public static void main( String args[] ) {
 
             Class imageType = GrayF32.class;
-//		Class imageType = GrayU8.class;
 
-            // select which algorithms to use
+
+            
             DetectDescribePoint detDesc = FactoryDetectDescribe.
                     surfStable(new ConfigFastHessian(1, 2, 300, 1, 9, 4, 4), null,null, imageType);
-//				sift(new ConfigCompleteSift(0,5,600));
+
 
             ScoreAssociation scorer = FactoryAssociation.defaultScore(detDesc.getDescriptionType());
             AssociateDescription associate = FactoryAssociation.greedy(scorer, Double.MAX_VALUE, true);
 
-            // load and match images
+            
             ExampleAssociatePoints app = new ExampleAssociatePoints(detDesc,associate,imageType);
 
             BufferedImage imageA = UtilImageIO.loadImage(UtilIO.pathExample("stitch/kayak_01.jpg"));
@@ -672,42 +672,42 @@ public class ExampleStereoTwoViewsOneCamera {
 
 	public static class DisparityPointCloudViewer extends JPanel {
 		Deque<ColorPoint3D> cloud =
-				new ConcurrentLinkedDeque<>();//HACK
-				//new ArrayDeque<>();
+				new ConcurrentLinkedDeque<>();
+				
 
-		// distance between the two camera centers
+		
 		double baseline;
 
-		// intrinsic camera parameters
+		
 		DMatrixRMaj K;
 		double focalLengthX;
 		double focalLengthY;
 		double centerX;
 		double centerY;
 
-		// minimum disparity
+		
 		int minDisparity;
-		// maximum minus minimum disparity
+		
 		int rangeDisparity;
 
-		// How far out it should zoom.
+		
 		double range = 10;
 
-		// view offset
+		
 		double offsetX;
 		double offsetY;
 
-		// Data structure that contains the visible point at each pixel
-		// size = width*height, row major format
+		
+		
 		Pixel data[] = new Pixel[0];
 
-		// tilt angle in degrees
+		
 		public int tiltAngle = 0;
 		public double radius = 5;
 
-		// converts from rectified pixels into color image pixels
+		
 		Point2Transform2_F64 rectifiedToColor;
-		// storage for color image coordinate
+		
 		Point2D_F64 colorPt = new Point2D_F64();
 
 		/**
@@ -750,39 +750,39 @@ public class ExampleStereoTwoViewsOneCamera {
 
 		private void process(GrayU8 disparity , BufferedImage color ) {
 			throw new TODO();
-//
-//			//cloud.reset();
-//
-//			for( int y = 0; y < disparity.height; y++ ) {
-//				int index = disparity.startIndex + disparity.stride*y;
-//
-//				for( int x = 0; x < disparity.width; x++ ) {
-//					int value = disparity.data[index++] & 0xFF;
-//
-//					if( value >= rangeDisparity )
-//						continue;
-//
-//					value += minDisparity;
-//
-//					if( value == 0 )
-//						continue;
-//
-//					ColorPoint3D p = cloud.grow();
-//
-//					// Note that this will be in the rectified left camera's reference frame.
-//					// An additional rotation is needed to put it into the original left camera frame.
-//					p.z = baseline*focalLengthX/value;
-//					p.x = p.z*(x - centerX)/focalLengthX;
-//					p.y = p.z*(y - centerY)/focalLengthY;
-//
-//					getColor(disparity, color, x, y, p);
-//				}
-//			}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		}
 
 		private void process(GrayF32 disparity , BufferedImage color ) {
 
-//			cloud.reset();
+
 
 			for( int y = 0; y < disparity.height; y++ ) {
 				int index = disparity.startIndex + disparity.stride*y;
@@ -888,8 +888,8 @@ public class ExampleStereoTwoViewsOneCamera {
 		}
 
 		public Se3_F64 createWorldToCamera() {
-			// pick an appropriate amount of motion for the scene
-			double z =  //1;
+			
+			double z =  
 					baseline*focalLengthX/(minDisparity+rangeDisparity);
 
 			double adjust = baseline/20.0;
@@ -911,9 +911,9 @@ public class ExampleStereoTwoViewsOneCamera {
 	 */
 	private static class Pixel
 	{
-		// the pixel's height.  used to see if it is closer to the  camera or not
+		
 		public double height;
-		// Color of the pixel
+		
 		public int rgb;
 
 		private Pixel() {
@@ -928,23 +928,23 @@ public class ExampleStereoTwoViewsOneCamera {
 	public static class PointCloudTiltPanel extends JPanel
 			implements ActionListener, ChangeListener, MouseListener, MouseMotionListener
 	{
-		// Point cloud viewer
+		
 		DisparityPointCloudViewer view;
 
-		// when pressed sets the view to "home"
+		
 		JButton homeButton;
-		// Adjusts the amount of zoom
+		
 		JSpinner rangeSpinner;
-		// Tilts the camera up and down
+		
 		JSlider tiltSlider;
 
 		int maxPoints = 5500;
 
-		// bounds on scale adjustment
+		
 		double minRange = 0;
 		double maxRange = 30;
 
-		// previous mouse location
+		
 		int prevX;
 		int prevY;
 

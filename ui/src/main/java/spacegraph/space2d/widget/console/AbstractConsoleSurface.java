@@ -20,12 +20,12 @@ public abstract class AbstractConsoleSurface extends Container implements Append
 
     @Override
     public final void forEach(Consumer<Surface> o) {
-        //empty
+        
     }
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        //empty
+        
         return true;
     }
 

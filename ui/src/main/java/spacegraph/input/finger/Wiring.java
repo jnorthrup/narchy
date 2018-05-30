@@ -96,7 +96,7 @@ public class Wiring extends FingerDragging {
         if (nextEnd!=end) {
 
             if (nextEnd == start) {
-                end = null; //dont allow self-loop
+                end = null; 
                 return;
             }
 
@@ -106,15 +106,15 @@ public class Wiring extends FingerDragging {
 
             if (nextEnd instanceof Wireable) {
 
-                //start filtering end
-                //if (!(start instanceof Wireable) || ((Wireable)start).acceptWireTo(end)) {
+                
+                
 
-                    // end filtering start
+                    
                     if (((Wireable) nextEnd).onWireIn(this, true)) {
                         this.end = nextEnd;
                         return;
                     }
-                //}
+                
                 this.end = null;
 
             }

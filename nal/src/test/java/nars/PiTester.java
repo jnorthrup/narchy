@@ -43,21 +43,21 @@ import java.util.*;
 import java.util.function.Predicate;
 
 /** executes pitest
- * https://github.com/hcoles/pitest/blob/master/pitest-entry/src/test/java/org/pitest/mutationtest/TestMutationTesting.java
+ * https:
  * */
 public class PiTester {
 
     public static void main(String[] args) {
-        //TestResultCollector resultCollector = findTestsIn(TestClassWithTestAnnotation.class);
+        
 
-//        Collection<TestResult> fb = new ConcurrentLinkedQueue<>();
-//        ConcreteResultCollector rc = new ConcreteResultCollector(fb);
-//        new JUnit5TestUnitFinder().findTestUnits(NAL1Test.class)
-//                .stream()
-//                .forEach(testUnit -> testUnit.execute(rc));
-//        fb.forEach(System.out::println);
 
-        //Predicate<String> testFilter = t -> t.startsWith("nars.nal");
+
+
+
+
+
+
+        
         Predicate<String> testFilter =
                 t ->
                         t.equals(NAL1Test.class.getName())
@@ -73,7 +73,7 @@ public class PiTester {
 
         int concurrency = Util.concurrencyDefault(1);
 
-        //MetaDataExtractor metaDataExtractor = new MetaDataExtractor();
+        
 
         final Collection<MutationResult> results = new FasterList().asSynchronized();
         MutationStatisticsListener stats = new MutationStatisticsListener() {
@@ -89,20 +89,20 @@ public class PiTester {
                         stats
                 )
         );
-//                Collections
-//                        .singletonList(metaDataExtractor));
+
+
 
         final ReportOptions data = new ReportOptions();
 
         data.setNumberOfThreads(concurrency);
         data.setReportDir("/tmp/pitest");
-        //data.setVerbose(true);
+        
 
 
 
 
-//        final Set<Predicate<String>> tests = Collections.singleton(Prelude
-//                .isEqualTo(test.getName()));
+
+
 
         data.setTargetTests(Set.of(testFilter));
         data.setDependencyAnalysisMaxDistance(-1);
@@ -126,7 +126,7 @@ public class PiTester {
                     config,
                     data.isVerbose(), data.getDependencyAnalysisMaxDistance());
 
-            // data.setConfiguration(this.config);
+            
 
             final LaunchOptions launchOptions = new LaunchOptions(agent,
                     new DefaultJavaExecutableLocator(), data.getJvmArgs(),
@@ -149,13 +149,13 @@ public class PiTester {
                                     new UndatedReportDirCreationStrategy()
                             )
                     ),
-                    //new NullCoverageExporter(),
+                    
                     timings, false);
 
             final CoverageDatabase coverageData = coverageGenerator.calculateCoverage();
 
             final EngineArguments arguments = EngineArguments.arguments()
-                    .withMutators(null);//Arrays.asList(mutators));
+                    .withMutators(null);
 
             final MutationEngine engine = new GregorEngineFactory()
                     .createEngine(arguments);

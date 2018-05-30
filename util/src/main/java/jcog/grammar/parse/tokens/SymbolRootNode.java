@@ -21,7 +21,7 @@ import java.io.PushbackReader;
  * @version 1.0
  */
 public class SymbolRootNode extends SymbolNode {
-	//Todo: are rootsChildren really necessary? Couldn't one use the children member from the superclass?
+	
 	private final SymbolNode[] rootsChildren = new SymbolNode[256];
 
 	/**

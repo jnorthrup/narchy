@@ -52,21 +52,21 @@ public class RLBooster implements Consumer<NAR> {
      * @param nothingAction        reserve 0 for nothing
      */
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization, boolean nothingAction) {
-        actionDiscretization = 1; //HACK
-        //assert(actionDiscretization>=1);
+        actionDiscretization = 1; 
+        
 
         this.env = env;
 
 
         conf.set(Util.lerp(0.5f, env.nar().confMin.floatValue(), env.nar().confDefault(GOAL)));
 
-//        env.curiosity().setValue(0f);
+
 
         List<Scalar> sc = $.newArrayList();
-//        env.sensors.keySet().forEach(c -> {
-//            if (c!=env.happy) //exclude the happiness sensor
-//                sc.add(c);
-//        });
+
+
+
+
         env.senseNums.forEach(c -> c.forEach(sc::add));
         env.sensorCam.forEach(c -> c.forEach(sc::add));
 
@@ -81,12 +81,12 @@ public class RLBooster implements Consumer<NAR> {
 
         logger.info("{} {} in={} out={}", rl, env, inD, outD);
 
-//        this.output = new Runnable[outD];
-//
-//        int i = 0;
-//        if (nothingAction) {
-//            output[i++] = () -> {            };
-//        }
+
+
+
+
+
+
 
         in = env.nar().newChannel(this);
 
@@ -100,30 +100,30 @@ public class RLBooster implements Consumer<NAR> {
     }
 
     float[] input() {
-        //TODO replace with a Tensor API vector function
+        
         int i = 0;
         for (Scalar s : inputs) {
             input[i++] = s.asFloat();
         }
 
-        //TODO include previous outputs?
+        
         return input;
     }
 
     @Override
     public void accept(NAR ignored) {
 
-        //TODO provide actual action vector, not what it thinks it enacted by itself
+        
 
-        //NAgent's happiness value, normalized to -1..+1
+        
         float reward = (env.happy.asFloat() - 0.5f) * 2f;
 
         int O = rl.act(reward, input());
-        //System.out.println(now + " "  + o + " " + a.o.floatValue() + " " + " " + a.rewardValue);
+        
 
         float OFFfreq
                 = 0f;
-        // = Float.NaN;
+        
 
 
         NAR nar = env.nar();
@@ -134,15 +134,15 @@ public class RLBooster implements Consumer<NAR> {
         List<Task> e = new FasterList(actions.length);
         for (int o = 0; o < actions.length; o++) {
             Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf.floatValue()) : null;
-//            float value = actionDiscretization==1 ? 1f /* full */ :
-//                    ((float)(j)) / (actionDiscretization-1);
+
+
             float value = 1f;
 
             Truth tK;
             if (o == O) {
                 tK = $.t(value, conf.floatValue());
             } else {
-                tK = off; //cancel all other concept goal signals
+                tK = off; 
             }
             Task tt = new SignalTask(actions[o].term(), GOAL, tK, start, start, end, nar.time.nextStamp());
             if (tt != null)

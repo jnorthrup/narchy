@@ -92,14 +92,14 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
 
     @Override
     protected void starting(NAR nar) {
-        nar.run(this); //initial
+        nar.run(this); 
     }
 
     @Override
     public final void accept(NAR nar) {
-        //long lastNow = this.now;
-        //long now = nar.time();
-        //if (now - lastNow >= durations.floatValue() * nar.dur()) {
+        
+        
+        
         if (!busy.compareAndSet(false, true))
             return;
 
@@ -114,7 +114,7 @@ abstract public class DurService extends NARService implements Consumer<NAR> {
             if (delta >= durCycles) {
                 run(nar, delta);
             } else {
-                //too soon, reschedule
+                
             }
         } catch (Throwable e) {
             logger.error("{} {}", this, e);

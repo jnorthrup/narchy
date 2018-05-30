@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -40,8 +40,8 @@ public class IndexedMesh {
 	public int numVertices;
 	public ByteBuffer vertexBase;
 	public int vertexStride;
-	// The index type is set when adding an indexed mesh to the
-	// TriangleIndexVertexArray, do not set it manually
+	
+	
 	public ScalarType indexType;
 
 }

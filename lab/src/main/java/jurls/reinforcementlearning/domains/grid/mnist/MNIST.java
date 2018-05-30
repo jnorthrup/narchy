@@ -9,7 +9,7 @@ import java.util.zip.GZIPInputStream;
 
 /**
  * This class implements a reader for the MNIST dataset of handwritten digits.
- * The dataset is found at http://yann.lecun.com/exdb/mnist/.
+ * The dataset is found at http:
  *
  * @author Gabe Johnson <johnsogg@cmu.edu>
  */
@@ -19,7 +19,7 @@ public class MNIST {
         public final byte label;
         public final int[][] image;
 
-        //create a blank image
+        
         public MNISTImage(int w, int h) {
             label = -1;
             image = new int[h][];
@@ -111,7 +111,7 @@ public class MNIST {
             if (label <= maxDigit)            
                 images.add(new MNISTImage(label, image));
 
-      // At this point, 'label' and 'image' agree and you can do whatever you like with them.
+      
             if (numLabelsRead % 10 == 0) {
                 System.out.print(".");
             }

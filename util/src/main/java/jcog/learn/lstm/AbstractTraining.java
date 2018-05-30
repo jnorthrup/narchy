@@ -48,39 +48,39 @@ public abstract class AbstractTraining {
         return fit[0] / max_fit[0];
     }
 
-//    @Deprecated public void supervised(SimpleLSTM agent) throws Exception {
-//
-//        List<AgentSupervised.NonResetInteraction> agentNonResetInteraction = new ArrayList<>();
-//
-//        this.interact(inter -> {
-//
-//            if (inter.forget==1f) {
-//                agentExecuteNonResetInteractionsAndFlush(agent, agentNonResetInteraction);
-//            }
-//
-//            AgentSupervised.NonResetInteraction newInteraction = new AgentSupervised.NonResetInteraction();
-//            newInteraction.observation = inter.actual;
-//            newInteraction.target_output = inter.expected;
-//            agentNonResetInteraction.add(newInteraction);
-//
-//            if( agentNonResetInteraction.size() > batchsize ) {
-//                agentExecuteNonResetInteractionsAndFlush(agent, agentNonResetInteraction);
-//            }
-//
-//        });
-//
-//        agentExecuteNonResetInteractionsAndFlush(agent, agentNonResetInteraction);
-//    }
 
-//    private void agentExecuteNonResetInteractionsAndFlush(SimpleLSTM agent, final List<AgentSupervised.NonResetInteraction> nonResetInteractions, float forgetRate)  {
-//        agent.learnBatch(nonResetInteractions, false);
-//
-//        nonResetInteractions.clear();
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     protected final Random random;
-    protected int batches; // need to be set by GenerateInteractions()
+    protected int batches; 
     protected boolean validation_mode;
 
     @Deprecated protected abstract void interact(Consumer<Interaction> each);

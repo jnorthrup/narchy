@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 01.02.2004 by RST.
-// $Id: GameSVCmds.java,v 1.4 2006-01-21 21:53:32 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -166,7 +166,7 @@ public class GameSVCmds {
 
         for (i = 0; i < numipfilters; i++)
             if (ipfilters[i].compare == 0xffffffff)
-                break; // free spot
+                break; 
         if (i == numipfilters) {
             if (numipfilters == MAX_IPFILTERS) {
                 game_import_t.cprintf(null, Defines.PRINT_HIGH,
@@ -231,7 +231,7 @@ public class GameSVCmds {
      */
     static void SVCmd_WriteIP_f() {
         RandomAccessFile f;
-        //char name[MAX_OSPATH];
+        
         String name;
         byte b[];
 

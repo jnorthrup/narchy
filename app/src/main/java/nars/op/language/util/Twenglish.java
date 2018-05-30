@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package nars.op.language.util;
 
@@ -108,16 +108,16 @@ public class Twenglish {
         "within\n" +
         "without").split("\\r?\\n"));
     /**
-     * http://www.really-learn-english.com/list-of-pronouns.html
+     * http:
      */
     public static final ImmutableSet<String> personalPronouns = Sets.immutable.of("i,you,he,she,it,we,they,me,him,her,us,them".split(","));
-//    public static final Atomic GOAL = $.the("exclaims");
-//    public static final Atomic QUESTION = $.the("asks");
-//    //public static final Atom QUEST = $.the("quest");
-//    public static final Atomic JUDGMENT = $.the("declares");
-//    public static final Atomic FRAGMENT = $.the("says");
 
-    //public final ArrayList<String> vocabulary = new ArrayList<>();
+
+
+
+
+
+    
 
     /**
      * substitutions
@@ -125,12 +125,12 @@ public class Twenglish {
     public final Map<String, String> sub = new HashMap();
 
 
-    //boolean languageBooted = true; //set to false to initialize on first twenglish input
+    
     boolean inputProduct = true;
 
 
     public static final Map<String, String> POS = new HashMap<>() {{
-        //https://www.englishclub.com/grammar/parts-of-speech-table.htm
+        
 
         put("i", "pronoun");
         put("it", "pronoun");
@@ -172,9 +172,9 @@ public class Twenglish {
     }};
 
     public Twenglish() {
-        //TODO use word tokenization so that word substitutions dont get applied across words.
+        
         sub.put("go to", "goto");
-        //etc..
+        
     }
 
 
@@ -189,56 +189,56 @@ public class Twenglish {
         }
         if (t.isEmpty()) return Collections.emptyList();
 
-//        Atomic sentenceType = FRAGMENT;
-//        if ((last!=null) && ("punct".equals(last.pattern))) {
-//            switch (last.content) {
-//                case ".": sentenceType = JUDGMENT; break;
-//                case "?": sentenceType = QUESTION; break;
-//                //case "@": sentenceType = QUEST; break;
-//                case "!": sentenceType = GOAL; break;
-//            }
-//        }
-//        if (!"words".equals(sentenceType.toString()))
-//            t.removeLast(); //remove the punctuation, it will be redundant
+
+
+
+
+
+
+
+
+
+
+
 
 
         List<TaskBuilder> tt = new ArrayList();
 
-        //1. add the logical structure of the sequence of terms
+        
         if (inputProduct) {
 
             Term tokens =
                     $.p(t.toArray(new Term[t.size()]));
-//            Term q =
-//                    $.image(2,
-//                            $.the(source),
-//                            sentenceType,
-//                            tokens
-//                    )
+
+
+
+
+
+
 
             Term q = $.func("hear", Atomic.the(source), tokens);
 
-            TaskBuilder newtask = new TaskBuilder(q, BELIEF, 1f, n).present(n); //n.task(q + ". %0.95|0.95%");
-            tt.add(newtask); //TODO non-string construct
+            TaskBuilder newtask = new TaskBuilder(q, BELIEF, 1f, n).present(n); 
+            tt.add(newtask); 
 
 
         }
 
-        //2. add the 'heard' sequence of just the terms
-//        if (inputConjSeq) {
-//            LinkedList<Term> cont = s.stream().map(cp -> lexToTerm(cp.content)).collect(Collectors.toCollection(LinkedList::new));
-//            //separate each by a duration interval
-////cont.add(Interval.interval(memory.duration(), memory));
-//            cont.removeLast(); //remove trailnig interval term
-//
-//            Compound con = Sentence.termOrNull(Conjunction.make(cont.toArray(new Term[cont.size()]), Temporal.ORDER_FORWARD));
-//            if (con!=null) {
-//                throw new RuntimeException("API Upgrade not finished here:");
-//                /*tt.add(
-//                        memory.newTask(con, '.', 1.0f, Parameters.DEFAULT_JUDGMENT_CONFIDENCE, Parameters.DEFAULT_JUDGMENT_PRIORITY, Parameters.DEFAULT_JUDGMENT_DURABILITY)
-//                );*/
-//            }
-//        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         return tt;
 
@@ -250,7 +250,7 @@ public class Twenglish {
         return spanToTerm(c, false);
     }
 
-    //shorthand punctuations
+    
     public static final Atomic EXCLAMATION = $.quote("!");
     public static final Atomic PERIOD = $.quote(".");
     public static final Atomic QUESTION_MARK = $.quote("?");
@@ -260,7 +260,7 @@ public class Twenglish {
     public static Term spanToTerm(@NotNull Span c, boolean includeWordPOS) {
         switch (c.pattern) {
             case "word":
-                //TODO support >1 and probabalistic POS
+                
                 if (!includeWordPOS) {
                     return lexToTerm(c.content);
                 } else {
@@ -288,27 +288,27 @@ public class Twenglish {
     }
 
     public static Term lexToTerm(String c) {
-        //return Atom.the(c, true);
+        
         return $.quote(c);
-        //return Atom.the(Utf8.toUtf8(name));
+        
 
-        //return $.the('"' + t + '"');
+        
 
-//        int olen = name.length();
-//        switch (olen) {
-//            case 0:
-//                throw new RuntimeException("empty atom name: " + name);
-//
-////            //re-use short term names
-////            case 1:
-////            case 2:
-////                return theCached(name);
-//
-//            default:
-//                if (olen > Short.MAX_VALUE/2)
-//                    throw new RuntimeException("atom name too long");
 
-        //  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     }
 
     @NotNull
@@ -361,16 +361,16 @@ public class Twenglish {
         }
 
         if (!results.isEmpty()) {
-//            if (!languageBooted) {
-//
-//
-//                results.add(0, n.task(new StringBuilder(
-//                        "<{word,pronoun,qpronoun,prepos,conjunc} -]- symbol>.").toString()));
-//                results.add(0, n.task(new StringBuilder(
-//                        "$0.90;0.90$ <(*,<$a-->[$d]>,<is-->[verb]>,<$b-->[$d]>) =/> <$a <-> $b>>.").toString()));
-//
-//                languageBooted = true;
-//            }
+
+
+
+
+
+
+
+
+
+
 
         }
 

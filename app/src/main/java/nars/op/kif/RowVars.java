@@ -13,7 +13,7 @@ public class RowVars {
      */
     private static HashSet<String> findRowVars(Formula f) {
 
-        //System.out.println("Info in RowVars.findRowVars(): F: " + f);
+        
         HashSet<String> result = new HashSet<String>();
         if (!StringUtil.emptyString(f.theFormula)
             && f.theFormula.contains(Formula.R_PREF)) {
@@ -51,8 +51,8 @@ public class RowVars {
             Iterator<String> it2 = preds.iterator();
             while (it2.hasNext()) {
                 String pred = it2.next();
-                //System.out.println("INFO in RowVars.getRowVarMaxArities(): " + kb.kbCache.valences);
-                //System.out.println("INFO in RowVars.getRowVarMaxArities(): pred: " + pred);
+                
+                
                 if (kb.kbCache.valences.get(pred) != null) {
                     int arity = kb.kbCache.valences.get(pred).intValue();
                     if (arities.containsKey(pred)) {
@@ -87,8 +87,8 @@ public class RowVars {
             while (it2.hasNext()) {
                 String pred = it2.next();
 
-                // If row variables in an argument list with other arguments,
-                // then #arguments which can be expanded = #arguments in pred - nonRowVar
+                
+                
                 int nonRowVar = 0;
                 int start = f.theFormula.indexOf("("+pred);
                 int end = f.theFormula.indexOf(")", start);
@@ -155,7 +155,7 @@ public class RowVars {
      */
     private static HashMap<String,HashSet<String>> getRowVarRelLogOps(Formula f, String pred) {
     
-        //System.out.println("Info in RowVars.getRowVarRelLogOps(): pred: " + pred + " F: " + f);
+        
         HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
         if (Formula.isQuantifier(pred)) {
             Formula arg2 = new Formula(f.getArgument(2));
@@ -177,7 +177,7 @@ public class RowVars {
             else
                 return result;
         }
-        else {  // AND or OR
+        else {  
             ArrayList<String> args = f.complexArgumentsToArrayList(1);
             for (int i = 1; i < args.size(); i++) {
                 Formula f2 = new Formula(args.get(i));
@@ -195,18 +195,18 @@ public class RowVars {
      */
     private static HashMap<String,HashSet<String>> getRowVarRelations(Formula f) {
         
-        //System.out.println("Info in RowVars.getRowVarRelations(): f: " + f);
+        
         HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
         if (!f.theFormula.contains("@") || f.empty() || f.atom())
             return result;
         String pred = f.getArgument(0);
-        if (!f.theFormula.substring(1).contains("(")) {  // no higher order or functions
-            //System.out.println("Info in RowVars.getRowVarRelations(): simple clause f: " + f);
+        if (!f.theFormula.substring(1).contains("(")) {  
+            
             HashSet<String> rowvars = findRowVars(f);
             Iterator<String> it = rowvars.iterator();
             while (it.hasNext()) {
                 String var = it.next();
-                //System.out.println("Info in RowVars.getRowVarRelations(): adding var,pred: " + var + ", " + pred);
+                
                 addToValueSet(result,var,pred);
             }
             return result;
@@ -214,12 +214,12 @@ public class RowVars {
         if (Formula.isLogicalOperator(pred)) {
             return getRowVarRelLogOps(f,pred);
         }
-        else {  // regular predicate
+        else {  
             ArrayList<String> args = f.complexArgumentsToArrayList(1);
             for (int i = 0; i < args.size(); i++) {
                 Formula f2 = new Formula(args.get(i));
                 if (f2.theFormula.startsWith("@")) {
-                    //System.out.println("Info in RowVars.getRowVarRelations(): adding var,pred: " + f2.theFormula + ", " + pred);
+                    
                     addToValueSet(result,f2.theFormula,pred);
                 }
                 else if (f2.theFormula.contains("@"))
@@ -269,7 +269,7 @@ public class RowVars {
         Set<String> result = new TreeSet<String>();
         ArrayList<Formula> formresult = new ArrayList<Formula>();
         if (!f.theFormula.contains("@")) {
-            // If there are no row variables, return the original formula
+            
             formresult.add(f);
             return formresult;
         }
@@ -318,7 +318,7 @@ public class RowVars {
      * */
     public static void main(String[] args) {
         
-        //String fstring = "(=> (and (subrelation ?REL1 ?REL2) (?REL1 @ROW)) (?REL2 @ROW))";
+        
         String fstring = "(=> (and (contraryAttribute @ROW1) (identicalListItems (ListFn @ROW1) (ListFn @ROW2))) (contraryAttribute @ROW2))"; 
         Formula f = new Formula(fstring);
         System.out.println("Info in RowVars.main(): " + findRowVars(f));

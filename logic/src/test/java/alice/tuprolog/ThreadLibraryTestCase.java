@@ -35,7 +35,7 @@ public class ThreadLibraryTestCase {
 	 * @throws NoSolutionException 
 	 */
 	@Test public void testThread_id_1() throws InvalidTheoryException, MalformedGoalException, NoSolutionException {
-		Solution sinfo = engine.solve("thread_id(ID).");	//unifica ad ID l'identificativo del thread corrente (Root)
+		Solution sinfo = engine.solve("thread_id(ID).");	
 		assertTrue(sinfo.isSuccess());
 		Term id = sinfo.getVarValue("ID");
 		assertEquals(new NumberTerm.Int(0), id);
@@ -107,7 +107,7 @@ public class ThreadLibraryTestCase {
 		Term Y = sinfo.getVarValue("Y");
 		assertEquals(Term.term("genitore(b,b)"), Y);
 		
-		sinfo = engine.solve("thread_create(ID, genitore(bob,X)), thread_join(ID,X), thread_next_sol(ID).");	//il thread stato rimosso
+		sinfo = engine.solve("thread_create(ID, genitore(bob,X)), thread_join(ID,X), thread_next_sol(ID).");	
 		assertFalse(sinfo.isSuccess());
 	}
 
@@ -126,7 +126,7 @@ public class ThreadLibraryTestCase {
 		"loop(I, To, Inc, Action) :- Action, Next is I+Inc, loop(Next, To, Inc, Action).";
 		engine.setTheory(new Theory(theory));
 		
-		//SolveInfo sinfo = engine.solve("thread_create(genitore(bob,X), ID), thread_create(genitore(b,Y), ID2), thread_read(ID2,Y), thread_read(ID,X1), thread_next_sol(ID), thread_read(ID,X).");
+		
 		Solution sinfo = engine.solve("thread_create(ID, genitore(bob,X)), thread_read(ID,X1), thread_create(ID2, loop(1,10,1, thread_read(ID,X2))),  thread_create(ID3, loop(1,2,1, thread_read(ID,X2))), thread_next_sol(ID), thread_read(ID,X).");
 
 		assertTrue(sinfo.isSuccess());
@@ -137,7 +137,7 @@ public class ThreadLibraryTestCase {
 		Term X1 = sinfo.getVarValue("X1");
 		assertEquals(Term.term("genitore(bob,a)"), X1);
 		
-		sinfo = engine.solve("thread_create(ID, genitore(bob,X)), thread_read(ID,X), thread_next_sol(ID).");	//Il thread non stato rimosso
+		sinfo = engine.solve("thread_create(ID, genitore(bob,X)), thread_read(ID,X), thread_next_sol(ID).");	
 		assertTrue(sinfo.isSuccess());
 	}
 
@@ -203,7 +203,7 @@ public class ThreadLibraryTestCase {
 	@Test public void testThread_send_msg_2() throws MalformedGoalException, NoSolutionException, InvalidTheoryException {
 		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio('CODA', 'messaggio molto importante'), lettura(ID,X).\n" +
 		"thread1(X) :- thread_wait_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con 'CODA'
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
@@ -213,9 +213,9 @@ public class ThreadLibraryTestCase {
 		Term X = sinfo.getVarValue("X");
 		assertEquals(new Struct("messaggio molto importante"), X);
 		
-		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio(ID, 'messaggio molto importante'), lettura(ID,X), thread_get_msg('CODA', a(X)).\n" +	//Posso nuovamente prelevare, in quanto il msg non stato eliminato
+		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio(ID, 'messaggio molto importante'), lettura(ID,X), thread_get_msg('CODA', a(X)).\n" +	
 		"thread1(X) :- thread_wait_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con ID
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
@@ -235,7 +235,7 @@ public class ThreadLibraryTestCase {
 	@Test public void testThread_get_msg_2() throws InvalidTheoryException, MalformedGoalException, NoSolutionException {
 		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), thread_sleep(500), invio('CODA', 'messaggio molto importante'), lettura(ID,X).\n" +
 		"thread1(X) :- thread_get_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con 'CODA'
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
@@ -255,16 +255,16 @@ public class ThreadLibraryTestCase {
 	@Test public void testThread_peek_msg_2() throws InvalidTheoryException, MalformedGoalException, NoSolutionException {
 		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), thread_sleep(500), invio('CODA', 'messaggio molto importante'), lettura(ID,X).\n" +
 		"thread1(X) :- thread_peek_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con 'CODA'
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
 		Solution sinfo = engine.solve("start(X).");
 		assertFalse(sinfo.isSuccess());
 		
-		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio(ID, 'messaggio molto importante'), lettura(ID,X), thread_get_msg('CODA', a(X)).\n" +	//Posso nuovamente prelevare, in quanto il msg non stato rimosso
+		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio(ID, 'messaggio molto importante'), lettura(ID,X), thread_get_msg('CODA', a(X)).\n" +	
 		"thread1(X) :- thread_peek_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con ID
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
@@ -293,16 +293,16 @@ public class ThreadLibraryTestCase {
 	public void testThread_wait_msg_2() throws InvalidTheoryException, MalformedGoalException, NoSolutionException {
 		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), thread_sleep(500), invio('CODA', 'messaggio molto importante'), lettura(ID,X).\n" +
 		"thread1(X) :- thread_wait_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con 'CODA'
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
 		Solution sinfo = engine.solve("start(X).");
 		assertTrue(sinfo.isSuccess());
 		
-		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio(ID, 'messaggio molto importante'), lettura(ID,X), thread_get_msg('CODA', a(X)).\n" +	//Posso nuovamente prelevare, in quanto il msg non stato rimosso
+		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio(ID, 'messaggio molto importante'), lettura(ID,X), thread_get_msg('CODA', a(X)).\n" +	
 		"thread1(X) :- thread_wait_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con ID
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
@@ -312,7 +312,7 @@ public class ThreadLibraryTestCase {
 		Term X = sinfo.getVarValue("X");
 		assertEquals(new Struct("messaggio molto importante"), X);
 		
-		//SI BLOCCA IN ATTESA DEL MESSAGGIO
+		
 		/*theory = "start(X) :- message_queue_create('CODA'), thread_create(ID, thread1(X)), lettura(ID,X).\n" +	
 		"thread1(X) :- thread_wait_msg('CODA', a(X)). \n " +
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
@@ -332,7 +332,7 @@ public class ThreadLibraryTestCase {
 	@Test public void testThread_remove_msg_2() throws InvalidTheoryException, MalformedGoalException {
 		theory = "start(X) :- msg_queue_create('CODA'),  invio('CODA', 'messaggio molto importante'), thread_create(ID, thread1(X)), thread_sleep(50), thread_peek_message(ID, X).\n" +
 		"thread1(X) :- thread_remove_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con 'CODA'
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
@@ -351,7 +351,7 @@ public class ThreadLibraryTestCase {
 		theory = "start(X) :- msg_queue_create('CODA'), thread_create(ID, thread1(X)), invio('CODA', 'messaggio molto importante'), lettura(ID,X), msg_queue_destroy('CODA').\n" +
 		"start2(X) :- msg_queue_create('CODA'), invio('CODA', 'messaggio molto importante'), msg_queue_destroy('CODA'), thread_create(ID, thread1(X)),  lettura(ID,X).\n" +
 		"thread1(X) :- thread_wait_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con 'CODA'
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		
@@ -374,7 +374,7 @@ public class ThreadLibraryTestCase {
 		"loop(I, To, Inc, Action) :- Inc < 0,  I < To, !.\n"+
 		"loop(I, To, Inc, Action) :- Action, Next is I+Inc, loop(Next, To, Inc, Action).\n"+
 		"thread1(X) :- thread_wait_msg('CODA', a(X)). \n " +
-		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		//Versione con 'CODA'
+		"invio(ID, M):- thread_send_msg(ID, a(M)). \n" +		
 		"lettura(ID, X):- thread_join(ID, thread1(X)). ";
 		engine.setTheory(new Theory(theory));
 		

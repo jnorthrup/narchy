@@ -39,7 +39,7 @@ public class Editor extends JFrame {
 		JSplitPane levelSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, levelScroll, propsSplit);
 		levelSplit.setDividerLocation(1100);
 
-		// setup status bar
+		
 		statusBar.setBorder(new BevelBorder(BevelBorder.LOWERED));
 		statusBar.add(new JLabel("Hello world"));
 		
@@ -48,7 +48,7 @@ public class Editor extends JFrame {
 		getContentPane().add(levelPnl.getToolBar(), BorderLayout.NORTH);		
 		getContentPane().add(statusBar, BorderLayout.SOUTH);		
 		
-		//setExtendedState(JFrame.MAXIMIZED_BOTH);
+		
 		setVisible(true);
 
 		levelPnl.requestFocusInWindow();
@@ -60,8 +60,8 @@ public class Editor extends JFrame {
 		for (Handle handle : selection) {
 			if (handle.getLevelObject() != null) {
 				LevelObject levelObj = handle.getLevelObject();
-				//propsPnl.load(levelObj.properties);
-				//break;
+				
+				
 				if (props.contains(levelObj) == false) {
 					props.add(levelObj.properties);
 				}
@@ -70,7 +70,7 @@ public class Editor extends JFrame {
 		propsPnl.load(props);
 		*/
 
-		// print selected objects to status bar
+		
 		ArrayList<LevelObject> uniqueObjs = new ArrayList<LevelObject>();
 		String selectionStr = "";
 		for (Handle handle : selection) {

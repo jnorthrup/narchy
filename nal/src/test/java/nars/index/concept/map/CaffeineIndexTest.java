@@ -22,9 +22,9 @@ class CaffeineIndexTest {
                 );
                 log.append("weigh ").append(w).append(' ').append(newWeight).append('\n');
 
-//                System.err.println(w);
-//                Thread.dumpStack();
-//                System.err.println();
+
+
+
 
 
                 return newWeight;

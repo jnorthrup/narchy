@@ -28,7 +28,7 @@ public class CloningOk implements Cloneable {
 			CloningOk co2 = (CloningOk) co.clone();
 			System.out.println(co2);
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

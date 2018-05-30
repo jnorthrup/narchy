@@ -28,7 +28,7 @@ public class FPGrow {
 
         HashMap<String, Integer> itemCount = count(data);
 
-        //Sort items according to itemCount
+        
         data.forEach(transaction -> transaction.sort((o1, o2) ->
                 Integer.compare(itemCount.get(o2), itemCount.get(o1))));
 
@@ -45,10 +45,10 @@ public class FPGrow {
         Map<String, Integer> itemCount = count(data);
         Map<String, FPNode> headerTable = new HashMap<>();
 
-        // set header table
+        
         itemCount.forEach((itemName, count) -> {
 
-            //check the min_support
+            
             if (count >= this.supportThreshold) {
                 FPNode node = new FPNode(itemName);
                 node.support = count;
@@ -60,7 +60,7 @@ public class FPGrow {
 
         if (root == null || root.children.isEmpty()) return;
 
-        //optimization for single path
+        
         if (isSingleBranch(root)) {
             FPNode curr = root;
 
@@ -92,7 +92,7 @@ public class FPGrow {
         for (FPNode header : headerTable.values()) {
 
             List<String> rule = new ArrayList<>();
-            rule.add(header.itemName);// header is item >= min_support
+            rule.add(header.itemName);
 
             if (postModel != null) {
                 rule.addAll(postModel);
@@ -106,13 +106,13 @@ public class FPGrow {
                 newPostPattern.addAll(postModel);
             }
 
-            //new conditional pattern base
+            
             List<List<String>> newCPB = new LinkedList<List<String>>();
             FPNode nextNode = header;
             while ((nextNode = nextNode.next) != null) {
                 int leaf_supp = nextNode.support;
 
-                //get the path from root to this node
+                
                 LinkedList<String> path = new LinkedList<>();
                 FPNode parent = nextNode;
                 while (!(parent = parent.parent).itemName.equals("ROOT")) {
@@ -140,7 +140,7 @@ public class FPGrow {
         double c = Math.pow(2, length);
         for (int i = 1; i < c; i++) {
 
-            String bitmap = Integer.toBinaryString(i); //TODO use real bitset
+            String bitmap = Integer.toBinaryString(i); 
             List<FPNode> combine = new ArrayList<>();
             for (int j = 0; j < bitmap.length(); j++) {
                 if (bitmap.charAt(j) == '1') {
@@ -161,7 +161,7 @@ public class FPGrow {
             Map<String, FPNode> children = prev.children;
 
             for (String itemName : transaction) {
-                //not in headerTable, then not qualify the min support.
+                
                 if (!headerTable.containsKey(itemName)) continue;
 
                 FPNode t;
@@ -174,7 +174,7 @@ public class FPGrow {
                     t.parent = prev;
                     children.put(itemName, t);
 
-                    //add to header
+                    
                     FPNode header = headerTable.get(itemName);
                     if (header != null) {
                         header.attach(t);
@@ -223,14 +223,14 @@ public class FPGrow {
         BufferedReader br = new BufferedReader(new FileReader(new File(filename)));
         List<List<String>> transactions = new ArrayList<>();
 
-        //remove gain= loss=
+        
         Pattern pattern = Pattern.compile("gain=\\w*|loss=\\w*");
 
         String newline;
         while ((newline = br.readLine()) != null) {
             Matcher matcher = pattern.matcher(newline);
             newline = matcher.replaceAll("");
-            newline = newline.replaceAll("( )+", " "); //remove multiple spaces
+            newline = newline.replaceAll("( )+", " "); 
             String[] items = newline.split(" ");
             transactions.add(new ArrayList<String>(Arrays.asList(items)));
         }
@@ -280,7 +280,7 @@ public class FPGrow {
 
     private Stream<Entry<List<String>, Integer>> stream() {
         return freq.entrySet().stream().sorted((e1, e2) -> {
-            //first sort by frequency, then sort by simplicity
+            
             int i = Integer.compare(e2.getValue(), e1.getValue());
             if (i == 0) {
                 int c1 = e1.getKey().size();
@@ -307,7 +307,7 @@ public class FPGrow {
         ...
         */
 
-        //Set the default length of frequent items set >=2
+        
         model.print(2);
     }
 
@@ -316,7 +316,7 @@ public class FPGrow {
         int support;
         String itemName;
         final Map<String, FPNode> children = new HashMap();
-        FPNode next; //use for header table
+        FPNode next; 
         FPNode parent;
 
         public FPNode(String name) {

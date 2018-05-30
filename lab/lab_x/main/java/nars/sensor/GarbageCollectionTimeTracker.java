@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -106,12 +106,12 @@ public class GarbageCollectionTimeTracker extends AbstractSpanTracker {
         return this;
     }
 
-//    public static class Factory extends AbstractSpanTrackerFactory {
-//
-//        @Override
-//        public SpanTracker createTracker(final StatsKey key,
-//                                         final StatsSessionManager sessionManager) {
-//            return new GarbageCollectionTimeTracker(sessionManager.getOrCreateSession(key));
-//        }
-//    }
+
+
+
+
+
+
+
+
 }

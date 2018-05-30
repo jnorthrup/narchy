@@ -17,7 +17,7 @@ package java4k.yoshiscoins4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -63,18 +63,18 @@ public class a extends Applet implements Runnable {
 		g.drawImage(I, 0, 0, 364, 464, null);
 	}
 
-	// NegaMax
-	//
-	// board[y : 8][x : 7]
-	// rows board[0] -- board[5] contain the stones
-	// row board[6] contains stack pointers
-	//     the stack pointers point to the next available space
-	//     stacks are intially empty with pointer set to row y = 5
-	//     a stack pointer of y = -1 indicates the stack is full
-	// row board[7][x > 0] valid only immediately after a call to makeMove()
-	//     board[7][0] contains the heuristic value of the board
-	//     board[7][1] contains the node type
-	//     (board[7][2],board[7][3])-(board[7][4],board[7][5]) win end points
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	private void n(int[][] board, int[][] sorts, int depth, int stone, int alpha, int beta, int maxDepth, int[][] permutations, int[] result) {
 
 		int max = -2 * INFINITY;
@@ -153,7 +153,7 @@ public class a extends Applet implements Runnable {
 		result[1] = bestColumn;
 	}
 
-	// makeMove
+	
 	private void m(int[][] board, int column, int stone) {
 
 		int y = board[6][column]--;
@@ -276,7 +276,7 @@ public class a extends Applet implements Runnable {
 		int blinkCountdown = 0;
 		int blinkIndex = 0;
 
-		// create background image
+		
 		BufferedImage backgroundImage = new BufferedImage(182, 232, 1);
 		Graphics2D g = (Graphics2D) backgroundImage.getGraphics();
 		for (y = 0; y < 232; y++) {
@@ -287,14 +287,14 @@ public class a extends Applet implements Runnable {
 			}
 		}
 
-		// extract ways-to-win table
+		
 		for (y = 0; y < 3; y++) {
 			for (x = 0; x < 4; x++) {
 				W[y][x] = W[5 - y][x] = W[5 - y][6 - x] = W[y][6 - x] = 0x0F & (S.charAt(y) >> (x << 2));
 			}
 		}
 
-		// decompress the coin sprites    
+		
 		for (z = 0; z < 2; z++) {
 			for (i = 0; i < 8; i++) {
 				sprites[(z << 3) + i] = new BufferedImage(24, 24, 2);
@@ -312,7 +312,7 @@ public class a extends Applet implements Runnable {
 			}
 		}
 
-		// decompress the Yoshi sprites
+		
 		for (i = 0; i < 8; i++) {
 			z = i == 7 ? 19 : 16;
 			sprites[16 + i] = new BufferedImage(16, z, 2);
@@ -336,13 +336,13 @@ public class a extends Applet implements Runnable {
 			do {
 				nextFrameStartTime += 16666667;
 
-				// -- update starts ----------------------------------------------------
+				
 
 				if (a[MOUSE_PRESSED] == 0) {
 					mouseReleased = true;
 				}
 
-				// update Yoshi staring
+				
 				if (--stareCountdown < 0) {
 					staring = !staring;
 					stareCountdown = staring ? 64 : (5 + random.nextInt(10)) << 6;
@@ -352,7 +352,7 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// update Yoshi blinking
+				
 				if (--blinkCountdown < 0) {
 					if (++blinkIndex == 4) {
 						blinkIndex = 0;
@@ -425,7 +425,7 @@ public class a extends Applet implements Runnable {
 						}
 					}
 				} else if (state == STATE_O_CHOOSING) {
-					// apply NegaMax
+					
 					n(board, sorts, 0, STONE_O, -INFINITY, INFINITY, level + 3, permutations, result);
 					move = result[1];
 					moveStone = STONE_O;
@@ -456,14 +456,14 @@ public class a extends Applet implements Runnable {
 					if (fadeRadius <= 0) {
 
 						if (advanceLevel && level == 7) {
-							// do not advance beyond level 7
+							
 							fadeDirection = 0;
 							continue;
 						}
 
 						fadeDirection = 4;
 
-						// --- reset game begins ----------
+						
 
 						if (advanceLevel) {
 							level++;
@@ -490,12 +490,12 @@ public class a extends Applet implements Runnable {
 							coinX = a[MOUSE_X] - 12;
 						}
 
-						// intialize board
+						
 						for (x = 0; x < 7; x++) {
 							board[6][x] = 5;
 						}
 
-						// initialize permutations
+						
 						for (i = 0; i < 64; i++) {
 							for (j = 6; j >= 0; j--) {
 								values.add(j);
@@ -507,7 +507,7 @@ public class a extends Applet implements Runnable {
 
 						nextFrameStartTime = System.nanoTime();
 
-						// --- reset game ends ------------
+						
 
 					} else if (fadeRadius > 116) {
 						fading = false;
@@ -523,16 +523,16 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// -- update ends ------------------------------------------------------
+				
 
 			} while (nextFrameStartTime < System.nanoTime());
 
-			// -- render starts ------------------------------------------------------
+			
 
-			// draw background
+			
 			g.drawImage(backgroundImage, 0, 0, null);
 
-			// draw coins
+			
 			for (y = 0; y < 6; y++) {
 				for (x = 0; x < 7; x++) {
 					if (spriteBoard[y][x] > 0) {
@@ -541,12 +541,12 @@ public class a extends Applet implements Runnable {
 				}
 			}
 
-			// draw eggs
+			
 			for (i = 0; i < level; i++) {
 				g.drawImage(sprites[SPRITE_EGG], 5 + i * 26, 0, null);
 			}
 
-			// draw Yoshi
+			
 			g.translate(yoshiX, 0);
 			if (yoshiX > 100) {
 				g.scale(-1, 1);
@@ -558,12 +558,12 @@ public class a extends Applet implements Runnable {
 			g.setTransform(affineTransform);
 
 			if (state == STATE_X_CHOOSING || state == STATE_COIN_DROPPING || state == STATE_WAIT_FOR_PAINT) {
-				// draw moving coin
+				
 				g.drawImage(sprites[coinSprite], coinX, (int) coinY, null);
 			}
 
 			if (state == STATE_BOUNCING) {
-				// draw bouncing coins
+				
 				for (i = 0; i < 4; i++) {
 					g.drawImage(sprites[(int) bouncingCoins[i][COIN_SPRITE]], (int) bouncingCoins[i][COIN_X], (int) bouncingCoins[i][COIN_Y], null);
 				}
@@ -582,13 +582,13 @@ public class a extends Applet implements Runnable {
 			}
 
 			if (state == STATE_WAIT_FOR_PAINT) {
-				// make sure a paint occurs before applying NegaMax
+				
 				state = STATE_EVALUATE_MOVE;
 			}
 
-			// -- render ends --------------------------------------------------------
+			
 
-			// show the hidden buffer
+			
 			if (g2 == null) {
 				g2 = (Graphics2D) getGraphics();
 				requestFocus();
@@ -596,7 +596,7 @@ public class a extends Applet implements Runnable {
 				paint(g2);
 			}
 
-			// burn off extra cycles
+			
 			while (nextFrameStartTime - System.nanoTime() > 0) {
 				Thread.yield();
 			}
@@ -610,7 +610,7 @@ public class a extends Applet implements Runnable {
 		return false;
 	}
 
-	// to run in window, uncomment below
+	
 	/*public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Yoshi's Coins 4K");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

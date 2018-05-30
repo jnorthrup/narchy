@@ -32,13 +32,13 @@ public class TaskAddTask extends NativeTask {
         /* the tasks pri may change after starting insertion, so cache here */
         float pri = task.pri();
         if (pri!=pri)
-            return null; //deleted
+            return null; 
 
         n.emotion.onInput(task, n);
 
         @Nullable Concept c = task.concept(n, true);
         if (c == null) {
-            return null; //may not have capacity in the concept index
+            return null; 
         } else if (!(c instanceof TaskConcept)) {
             if (task.isBeliefOrGoal() || Param.DEBUG_EXTRA) {
                 task.delete();

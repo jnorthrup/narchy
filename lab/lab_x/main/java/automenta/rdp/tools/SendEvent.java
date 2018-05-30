@@ -258,7 +258,7 @@ public class SendEvent extends JFrame {
 			jButton1.setText("Apply Mask");
 			jButton1.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					// apply the mask to the flags field
+					
 					flagsField.setText("0x"
 							+ Integer.toHexString(Integer.decode(
 									flagsField.getText()).intValue()

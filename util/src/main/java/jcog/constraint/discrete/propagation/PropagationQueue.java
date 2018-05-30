@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,9 @@ import java.util.ArrayDeque;
  */
 public class PropagationQueue {
 
-    // The propagation queue that contains all the propagators waiting for
-    // propagation. A propagator is considered to be enqueued only if its
-    // enqueued boolean is set to true.
+    
+    
+    
     private final ArrayDeque<Propagator> queue = new ArrayDeque<>();
 
     /**
@@ -66,13 +66,13 @@ public class PropagationQueue {
         boolean feasible = true;
         while (!queue.isEmpty()) {
             Propagator propagator = queue.removeFirst();
-            // Dequeue the propagator only if it is not idempotent. This allows the
-            // propagator to enqueue itself back in the propagation queue if it
-            // changed the domain of at least one of its variable.
+            
+            
+            
             propagator.enqueued = propagator.idempotent;
-            // Propagate only if the problem is still feasible.
+            
             feasible = feasible && propagator.propagate();
-            // Dequeue the propagator no matter what.
+            
             propagator.enqueued = false;
         }
         return feasible;

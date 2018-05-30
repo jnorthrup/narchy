@@ -24,7 +24,7 @@ abstract public class InstrumentedDerivationPredicate extends AbstractPred<Deriv
                 p = (PrediTerm) s0;
             else {
                 throw new UnsupportedOperationException();
-                //((PrediTerm)(ref.sub(0)));
+                
             }
         }
 

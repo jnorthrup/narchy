@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -120,25 +120,25 @@ class GeometryOperations {
 		N.cross(AD, BD);
 		float[] tp = { N.lengthSquared() };
 
-		Vector4f _M = new Vector4f();//plane
+		Vector4f _M = new Vector4f();
 
-		if (tp[0] < BulletGlobals.SIMD_EPSILON)//ARE PARALELE
+		if (tp[0] < BulletGlobals.SIMD_EPSILON)
 		{
-			// project B over A
+			
 			boolean invert_b_order = false;
 			_M.x = vB1.dot(AD);
 			_M.y = vB2.dot(AD);
 
 			if (_M.x > _M.y) {
 				invert_b_order = true;
-				//BT_SWAP_NUMBERS(_M[0],_M[1]);
+				
 				_M.x = _M.x + _M.y;
 				_M.y = _M.x - _M.y;
 				_M.x = _M.x - _M.y;
 			}
 			_M.z = vA1.dot(AD);
 			_M.w = vA2.dot(AD);
-			// mid points
+			
 			N.x = (_M.x + _M.y) * 0.5f;
 			N.y = (_M.z + _M.w) * 0.5f;
 
@@ -176,7 +176,7 @@ class GeometryOperations {
 		N.cross(N, BD);
 		_M.set(N.x, N.y, N.z, vB1.dot(N));
 
-		// get point A as the plane collision point
+		
 		line_plane_collision(_M, AD, vA1, vPointA, tp, 0f, 1f);
 
 		/*Closest point on segment*/

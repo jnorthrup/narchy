@@ -17,21 +17,21 @@ public class ShowStructureUnification {
 	 */
 	public static void main(String args[]) {
 
-		// city(denver, 5280)
+		
 		Structure denver = new Structure("denver");
 		Structure altitude = new Structure(new Integer(5280));
 		Structure city = new Structure("city", new Structure[] { denver, altitude });
 
-		// city(Name, Altitude)
+		
 		Variable name = new Variable("Name");
 		Variable alt = new Variable("Altitude");
 		Structure vCity = new Structure("city", new Term[] { name, alt });
 
-		// show the cities
+		
 		System.out.println(city);
 		System.out.println(vCity);
 
-		// unify, and show the variables
+		
 		vCity.unify(city);
 
 		System.out.println("\n    After unifying: \n");

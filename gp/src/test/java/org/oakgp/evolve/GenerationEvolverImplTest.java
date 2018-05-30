@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import static org.oakgp.TestUtils.mockNode;
 public class GenerationEvolverImplTest {
     @Test
     public void test() {
-        // create mock objects to pass as arguments to constructor
+        
         int elitismSize = 3;
         NodeSelectorFactory selectorFactory = mock(NodeSelectorFactory.class);
         Map<GeneticOperator, Integer> operators = new HashMap<>();
@@ -44,31 +44,31 @@ public class GenerationEvolverImplTest {
         operators.put(generator1, 3);
         operators.put(generator2, 5);
 
-        // create mock objects to return from evolve method
-        // 10 = 3 selected by elitism, 3 selected by first generator, 4 selected by second generator (excluding duplicate)
+        
+        
         Node[] expectedOutput = new Node[10];
         for (int i = 0; i < expectedOutput.length; i++) {
             expectedOutput[i] = mockNode();
         }
 
-        // create objects to pass as argument to evolve method
+        
         Candidates input = new Candidates(new RankedCandidate[]{new RankedCandidate(expectedOutput[0], 1),
                 new RankedCandidate(expectedOutput[1], 2), new RankedCandidate(expectedOutput[2], elitismSize), new RankedCandidate(mockNode(), 4),
                 new RankedCandidate(mockNode(), 5)});
 
-        // set expectations
+        
         NodeSelector selector = mock(NodeSelector.class);
         when(selectorFactory.getSelector(input)).thenReturn(selector);
         when(generator1.evolve(selector)).thenReturn(expectedOutput[3], expectedOutput[4], expectedOutput[5]);
-        // note: although expectedOutput[7] is returned twice it should only appear once in the actual output -
-        // that will be confirmed when we check actualOutput.size()
+        
+        
         when(generator2.evolve(selector)).thenReturn(expectedOutput[6], expectedOutput[7], expectedOutput[8], expectedOutput[7], expectedOutput[9]);
 
-        // execute evolve method
+        
         GenerationEvolverImpl evolver = new GenerationEvolverImpl(elitismSize, selectorFactory, operators);
         Collection<Node> actualOutput = evolver.evolve(input);
 
-        // check output
+        
         assertEquals(expectedOutput.length, actualOutput.size());
         for (Node n : expectedOutput) {
             assertTrue(actualOutput.contains(n));

@@ -144,13 +144,13 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             Long low, high;
             low = at.lowerKey(minT);
             if (low == null)
-                low = at.floorKey(minT); //TODO is this necessary?
+                low = at.floorKey(minT); 
             if (low == null)
                 low = minT;
 
             high = at.higherKey(maxT);
             if (high == null)
-                high = at.ceilingKey(maxT); //TODO is this necessary?
+                high = at.ceilingKey(maxT); 
             if (high == null)
                 high = maxT;
 
@@ -171,7 +171,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
             SignalTask nextTask = null;
 
-            synchronized (this) { //TODO try to make this synch free but for now this works
+            synchronized (this) { 
 
                 Map.Entry<Long, Task> lastEntry = at.lastEntry();
                 boolean removePrev = false;
@@ -182,13 +182,13 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                     lastEntryKey = lastEntry.getKey();
                     long lastStart = last.start();
                     if (lastStart > nextStart)
-                        return null; //too late
+                        return null; 
 
                     long lastEnd = last.end();
                     if (nextStart - lastEnd <= dur) {
                         Truth lastEnds = last.truth(lastEnd, dur);
                         if (lastEnds.equals(next)) {
-                            //stretch previous task
+                            
                             nextStart = lastStart;
                             lastStamp = last.stamp()[0];
                             removePrev = true;
@@ -212,8 +212,8 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
                 if (removePrev) {
                     Task p = at.remove(lastEntryKey);
-//                    if (p!=null)
-//                        p.delete();
+
+
                 }
 
                 if (nextTask!=null)
@@ -233,7 +233,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
             try {
 
-                //TODO add better lossy merging etc
+                
                 while (at.size() > cap) {
                     at.remove(at.firstKey()).delete();
                 }
@@ -243,7 +243,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             }
         }
 
-//        final static int SELECT_ALL_THRESHOLD = 3;
+
         final static int MAX_TASKS_TRUTHPOLATED = Param.STAMP_CAPACITY - 1;
 
         @Override
@@ -254,11 +254,11 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 return null;
 
             DynTruth d = new DynTruth(MAX_TASKS_TRUTHPOLATED);
-//            if (size <= SELECT_ALL_THRESHOLD) {
-//                at.values().forEach(d::add);
-//            } else {
+
+
+
                 forEach(start, end, MAX_TASKS_TRUTHPOLATED, d::add);
-//            }
+
 
             return d;
         }
@@ -285,15 +285,15 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                 }
             }
 
-//            if (n < 1 /*MIN_TASKS_TRUTHPOLATED */) {
-//                Map.Entry<Long, Task> above = at.higherEntry(end);
-//                if (above != null) { target.accept(above.getValue()); n++; }
-//
-//                if (n < limit) {
-//                    Map.Entry<Long, Task> below = at.lowerEntry(start);
-//                    if (below != null) { target.accept(below.getValue()); n++; }
-//                }
-//            }
+
+
+
+
+
+
+
+
+
             return n;
         }
     }
@@ -334,7 +334,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
         float confRes =
-                0; //nar.confResolution.floatValue();
+                0; 
         float eviMin = Float.MIN_NORMAL;
         return d.eval(term, (dd, n) -> pp, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
     }
@@ -399,7 +399,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
     public void clean(NAR nar) {
 
-        //finds any tasks which have completely entered the past and contradict the sensor table
+        
         if (!series.isEmpty()) {
             try {
                 long sstart = series.start();
@@ -408,14 +408,14 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
                 List<Task> deleteAfter = new FasterList(4);
                 temporal.whileEach(sstart, send, t -> {
-                    if (t.end() < send) { //dont delete if future predictive component
+                    if (t.end() < send) { 
                         deleteAfter.add(t);
                     }
                     return true;
                 });
                 deleteAfter.forEach(temporal::removeTask);
             } catch (NoSuchElementException e) {
-                //must have gotten emptied while cleaning
+                
             }
         }
     }
@@ -444,8 +444,8 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
     static final class ScalarSignalTask extends SignalTask {
 
-//        /** the tasklink, so it can be removed if this task is stretched (replaced by another and its tasklink) */
-//        private TaskLink.GeneralTaskLink link;
+
+
 
         ScalarSignalTask(Term term, byte punc, Truth value, long start, long end, long stamp) {
             super(term, punc, value, start, end, stamp);
@@ -456,19 +456,19 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             return new TaskAddTaskAuto(result);
         }
 
-        //        @Override
-//        public boolean delete() {
-//            if (super.delete()) {
-//                TaskLink.GeneralTaskLink l = link;
-//                if (l!=null) {
-//                    l.delete();
-//                    link = null;
-//                }
-//                return true;
-//            }
-//
-//            return false;
-//        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     }
@@ -481,7 +481,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         @Override
         protected boolean add(NAR n, TaskConcept c) {
-            return true; //pretend as if already added
+            return true; 
         }
     }
 

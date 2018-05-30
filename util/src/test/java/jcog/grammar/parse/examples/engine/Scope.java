@@ -97,7 +97,7 @@ public class Scope implements PubliclyCloneable<Scope> {
 			clone.dictionary = (Map<String, Variable>) ((Hashtable) dictionary).clone();
 			return clone;
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

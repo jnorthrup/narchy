@@ -17,7 +17,7 @@ package java4k.rainbowroad;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public class ap extends GamePanel {
 
-  // keys
+  
   private final boolean[] a = new boolean[65535];
   
   public ap() {
@@ -40,9 +40,9 @@ public class ap extends GamePanel {
   @Override
   public void run() {
     
-    // Rainbow Road track from Mario Kart 64
-    // 8 sprites (player, shell, mushroom, item box, fake item box, thunderbolt,
-    //     star, banana peel)
+    
+    
+    
     final String S = "\uff5b\u8dae\uff29\u6c32\u8f32\u7134\u76fe\uff14\u8d2a"
         + "\uff1c\u7688\uff16\u8a24\uff32\u91b4\u71f6\uff1e\u7428\u8b28\uff13"
         + "aaaaaaaaaaaabbaaaaaaaaaabbccaaaaaaaaabccccaaaaaaaabcccccaaaaaaabcccc"
@@ -190,8 +190,8 @@ public class ap extends GamePanel {
     int gameReset = 1;
     int startingLine = 0;
     
-    // decompress map XZ's (all flat map)
-    float[][][] map = new float[MAP_LENGTH][4][3]; // o, u, v, w vectors
+    
+    float[][][] map = new float[MAP_LENGTH][4][3]; 
     float vy = -1;
     float py = 1;    
     float px = 0;
@@ -200,7 +200,7 @@ public class ap extends GamePanel {
       int c = S.charAt(i);
       q = c & 0xFF;
       if ((c >> 8) == 0xFF) {
-        // line
+        
         for(j = 0; j < q; j++) {
           px += vx;
           py += vy;
@@ -210,7 +210,7 @@ public class ap extends GamePanel {
           m[MAP_O][MAP_Z] = py;          
         }
       } else {
-        // arc
+        
         r = (c >> 8) - 128; 
             
         float centerX = -r * vy;
@@ -248,13 +248,13 @@ public class ap extends GamePanel {
       }
     } 
     
-    // add map Ys (elevations)
+    
     for(i = 0; i < MAP_LENGTH; i++) {
       map[i][MAP_O][MAP_Y] = 5 
           * (((float)Math.cos(0.088871f * i - 0.6f)) - 1);
     }
     
-    // compute map ONBs
+    
     for(i = 0; i < MAP_LENGTH; i++) {
       float[][] m0 = map[i];
       float[][] m1 = map[(i + 1) % MAP_LENGTH];
@@ -275,7 +275,7 @@ public class ap extends GamePanel {
       m0[MAP_V][MAP_Z] = -y * z;
     }   
     
-    // decompress the sprites
+    
     for(i = 0; i < 17; i++) {
       if (i < 8) {
         sprites[i] = new BufferedImage(28, 30, BufferedImage.TYPE_INT_ARGB_PRE);
@@ -325,22 +325,22 @@ public class ap extends GamePanel {
     while(true) {
 
       do {
-        nextFrameStartTime += 10000000; // 100 frames per second                              
+        nextFrameStartTime += 10000000; 
 
-        // -- update starts ----------------------------------------------------
+        
                 
         if (gameState == GAME_STATE_ENDING && --gameReset == 0) {
-          // reset game (also happens on start up)
+          
           gameState = GAME_STATE_ATTRACT_MODE;
           rank = 0;
           lap = 1;
           
-          // initialize players  
+          
           elements.clear();
           for(i = 0; i < PLAYERS; i++) {
             
             if (i < 7) {
-              // initialize item boxes
+              
               for(j = 0; j < 4; j++) {
                 element = new float[32];
                 elements.add(element);
@@ -358,7 +358,7 @@ public class ap extends GamePanel {
             players[i][ELEMENT_ITEM] = SPRITE_NONE;
             shells[i] = new ArrayList<float[]>();
             
-            // generate road colors
+            
             roadColors[i] = new Color(
                 Color.getHSBColor(i / (float)ROAD_COLORS, 1, 1).hashCode() 
                     & 0x80FFFFFF, true);
@@ -378,17 +378,17 @@ public class ap extends GamePanel {
           continue;
         }
         
-        // update flashing starting line
+        
         startingLine = (startingLine + 1) & 15;
         
-        // update other players
+        
         lap = 1 + (int)(players[HUMAN][ELEMENT_D] / MAP_LENGTH);
         r = rank;
         rank = 1;        
         for(i = 0; i < 8; i++) {
           if (i != 0) {
             
-            // compute rank
+            
             if (players[i][ELEMENT_D] > players[HUMAN][ELEMENT_D]) {
               rank++;
             }
@@ -421,9 +421,9 @@ public class ap extends GamePanel {
           
           if (players[i][ELEMENT_ITEM_RANDOMIZER] > 0) {
             if (--players[i][ELEMENT_ITEM_RANDOMIZER] % 10 == 0) {
-              // item randomly selected
-              // human always gets mushroom if in 8th on lap 1,
-              //     >= 6th on lap 2, >= 4th on lap 3
+              
+              
+              
               players[i][ELEMENT_ITEM_COUNT] = 1;
               players[i][ELEMENT_ITEM] = 
                   i == HUMAN && r > 9 - (lap << 1)
@@ -439,9 +439,9 @@ public class ap extends GamePanel {
                           && (rareItem 
                               || players[i][ELEMENT_ITEM] == SPRITE_MUSHROOM))
                       || (rareItem && (int)(7 * (float)Math.random()) != 3))) {
-                // Fix the odds by making blue shells, thunderbolts 
-                // and stars rare. Also, the human player cannot get any of 
-                // those items or the mushroom if he is in 1st.
+                
+                
+                
                 players[i][ELEMENT_ITEM_RANDOMIZER] = 1;
               }      
               if (players[i][ELEMENT_ITEM] == SPRITE_MUSHROOM) {
@@ -462,12 +462,12 @@ public class ap extends GamePanel {
               || (i > 0 && players[i][ELEMENT_ITEM_TRIGGER] == 1))
               && players[i][ELEMENT_EXPLODING] == 0
               && players[i][ELEMENT_FALLING] == 0) {          
-            // player triggers carried-item (launches weapon)
+            
             if (i == 0) {
               releasedC = false;
             }
             if (shells[i].size() > 0) {
-              // player launches orbiting shell
+              
               element = shells[i].remove(0);
               element[ELEMENT_ORBITING] = 0;
               element[ELEMENT_D] = players[i][ELEMENT_D] + 0.6f;
@@ -485,13 +485,13 @@ public class ap extends GamePanel {
               if (j != SPRITE_NONE) {
 
                 if (j == SPRITE_MUSHROOM) {
-                  // player uses mushroom (speed up player)
+                  
                   players[i][ELEMENT_MUSHROOMING] = 200;                
                 } else if (j == SPRITE_STAR) {
-                  // player uses star (speed up player and make invincible/bomb)
+                  
                   players[i][ELEMENT_STARING] = 800;              
                 } else if (j == SPRITE_THUNDERBOLT) {
-                  // player uses thunderbolt (shrink other players)
+                  
                   lightning = 50;
                   for(k = 0; k < PLAYERS; k++) {
                     if (k != i && players[k][ELEMENT_STARING] == 0) {
@@ -500,7 +500,7 @@ public class ap extends GamePanel {
                   }
                 } else if (j < SPRITE_MUSHROOM
                     && players[i][ELEMENT_ITEM_COUNT] == 3) {
-                  // create orbiting shells
+                  
                   players[i][ELEMENT_ITEM_COUNT] = 1;
                   for(k = 0; k < 3; k++) {
                     element = new float[32];
@@ -586,7 +586,7 @@ public class ap extends GamePanel {
           maxVd /= 2;
         }
         
-        // player moves left and right
+        
         if (players[HUMAN][ELEMENT_VD] > 0 
             && players[HUMAN][ELEMENT_FALLING] == 0) {
           if (a[KEY_LEFT]) {          
@@ -596,7 +596,7 @@ public class ap extends GamePanel {
           }
         }
         
-        // player accelerates
+        
         if (a[KEY_X] && players[HUMAN][ELEMENT_BANANAING] == 0) {
           if (players[HUMAN][ELEMENT_VD] < maxVd) {
             players[HUMAN][ELEMENT_VD] += AD;
@@ -613,10 +613,10 @@ public class ap extends GamePanel {
           }
         }
         
-        // player advances
+        
         players[HUMAN][ELEMENT_D] += players[HUMAN][ELEMENT_VD];
         
-        // player affected by centrifugal force
+        
         if (players[HUMAN][ELEMENT_FALLING] == 0) {
           band0 = ((int)players[HUMAN][ELEMENT_D]) % MAP_LENGTH;        
           band1 = (band0 + 1) % MAP_LENGTH;
@@ -628,7 +628,7 @@ public class ap extends GamePanel {
                       || players[HUMAN][ELEMENT_STARING] > 0) ? 0.25f : 0.9f);
         }
         
-        // player restricted to the track
+        
         if ((players[HUMAN][ELEMENT_X] < -HUMAN_EDGE_X 
             || players[HUMAN][ELEMENT_X] > HUMAN_EDGE_X)
               && players[HUMAN][ELEMENT_FALLING] == 0) {
@@ -638,16 +638,16 @@ public class ap extends GamePanel {
           shells[HUMAN].clear();
         } 
         
-        // clear release key
+        
         if (!(releasedC  || a[KEY_C])) {
           releasedC = true;
         }
         
-        // update objects
+        
         for(k = elements.size() - 1; k >= 0; k--) {
           element = elements.get(k);
 
-          // test for collision between objects and players
+          
           for(i = 0; i < 8; i++) {
             if (element != players[i] && players[i][ELEMENT_EXPLODING] == 0
                 && element[ELEMENT_EXPLODING] == 0) {
@@ -667,7 +667,7 @@ public class ap extends GamePanel {
                     players[i][ELEMENT_ITEM_RANDOMIZER] = 300;
                   }
                 } else if (element[ELEMENT_SPRITE] > SPRITE_PLAYER_7) {
-                  // player hit banana, fake item box or shell                  
+                  
                   if (element[ELEMENT_SPRITE] == SPRITE_BANANA) {
                     if (players[i][ELEMENT_STARING] == 0) {
                       players[i][ELEMENT_BANANAING] = 100;
@@ -675,7 +675,7 @@ public class ap extends GamePanel {
                     elements.remove(k);
                   } else if (element[ELEMENT_ORBITING] == 0 
                         || element[ELEMENT_PLAYER] != i) {
-                    // make sure player is immune to his own orbiting shell
+                    
                     if (players[i][ELEMENT_STARING] == 0) {
                       players[i][ELEMENT_EXPLODING] = 200;
                     }
@@ -688,26 +688,26 @@ public class ap extends GamePanel {
                   }       
                 } else if (element[ELEMENT_STARING] > 0
                     || players[i][ELEMENT_TINYING] > 0) {
-                  // player hit star-player and potentially explodes
+                  
                   if (players[i][ELEMENT_STARING] == 0) {
                     players[i][ELEMENT_EXPLODING] = 200;
                   }
                 } else if (players[i][ELEMENT_STARING] == 0 
                     && element[ELEMENT_TINYING] == 0
                     && players[i][ELEMENT_D] < element[ELEMENT_D]) {
-                  // player bumped into another player
+                  
                   players[i][ELEMENT_VD] *= 0.5f;
                 }
               }
             }
           }
           
-          // update shells
+          
           if (element[ELEMENT_SPRITE] > SPRITE_PLAYER_7 
               && element[ELEMENT_SPRITE] < SPRITE_MUSHROOM) {
             
             if (element[ELEMENT_ORBITING] == 1) {
-              // shell orbits around associated player
+              
               element[ELEMENT_TIMER] += ORBIT_VANG;
               element[ELEMENT_X] 
                   = players[(int)element[ELEMENT_PLAYER]][ELEMENT_X]
@@ -718,16 +718,16 @@ public class ap extends GamePanel {
                       + ORBIT_RADIUS_D 
                           * (float)Math.sin(element[ELEMENT_TIMER]);
             } else if (element[ELEMENT_TIMER] == 0) {
-              // shells expire after a timeout
+              
               elements.remove(k);
             } else {
-              // move forward at fixed rate
+              
               element[ELEMENT_D] += SHELL_VD;
               
               element[ELEMENT_TIMER]--;
 
               if (element[ELEMENT_SPRITE] == SPRITE_RED_SHELL) {
-                // red shell home in on the opponent whose rank is one higher                
+                
                 float best = 1024;
                 j = 0;
                 for(i = 0; i < PLAYERS; i++) {
@@ -743,7 +743,7 @@ public class ap extends GamePanel {
                   element[ELEMENT_X] -= VX;
                 }
               } else if (element[ELEMENT_SPRITE] == SPRITE_BLUE_SHELL) { 
-                // blue shell home in on the opponent whose rank is 1st
+                
                 j = 0;
                 for(i = 0; i < PLAYERS; i++) {
                   if (players[i][ELEMENT_D] > players[j][ELEMENT_D]) {
@@ -764,13 +764,13 @@ public class ap extends GamePanel {
           lightning--;
         }
                
-        // -- update ends ------------------------------------------------------
+        
 
       } while(nextFrameStartTime < System.nanoTime());
 
-      // -- render starts ------------------------------------------------------
+      
 
-      // clear frame
+      
       g.setColor(((lightning >> 1) & 1) == 1 ? Color.WHITE : Color.BLACK);
       g.fillRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);            
 
@@ -778,7 +778,7 @@ public class ap extends GamePanel {
       band0 = ((int)players[HUMAN][ELEMENT_D]) % MAP_LENGTH;        
       band1 = (band0 + 1) % MAP_LENGTH;
 
-      // interpolate band end-points to create orthonormal basis vectors
+      
       for(i = 0; i < 4; i++) {
         for(j = 0; j < 3; j++) {
           onb[i][j] = map[band0][i][j] 
@@ -786,38 +786,38 @@ public class ap extends GamePanel {
         }
       }        
 
-      // adjust for X
+      
       for(i = 0; i < 3; i++) {
         onb[MAP_O][i] += players[HUMAN][ELEMENT_X] * onb[MAP_U][i];        
       }      
       
-      // draw road
+      
       for(k = MAP_LENGTH; k >= 0; k--) {
         int band = k % MAP_LENGTH;
         float[][] m = map[band];
         
-        // loop over both end-points
+        
         for(p = 0; p < 2; p++) {
           
-          // compute end-point of the band relative to player-origin
+          
           for(i = 0; i < 3; i++) {
             ps[0][i] = SCALE * (m[MAP_O][i] - onb[MAP_O][i] 
                 + m[MAP_U][i] * ((p << 1) - 1)); 
             ps[1][i] = 0;
           }
           
-          // apply inverse ONB (ONB transpose) to end-point
+          
           for(i = 0; i < 3; i++) {
             for(j = 0; j < 3; j++) {
               ps[1][j] += onb[j + 1][i] * ps[0][i]; 
             }
           }
           
-          // move point away from camera
+          
           ps[1][MAP_Y] -= CAMERA_Y;
           ps[1][MAP_Z] -= CAMERA_Z;
           
-          // project point from 3D to 2D          
+          
           if (ps[1][MAP_Z] > CAMERA_Z) {
             polygonXs[0] = 0;
             polygonXs[1] = SCREEN_WIDTH;
@@ -835,20 +835,20 @@ public class ap extends GamePanel {
             && polygonYs[1] > -128
             && polygonYs[2] > -128
             && polygonYs[3] > -128) {
-          // draw road band polygon
+          
           g.setColor(roadColors[
               k == 0 ? (startingLine >> 1) : (band % ROAD_COLORS)]);
           g.fillPolygon(polygonXs, polygonYs, 4);
         }
         
-        // shift end-points for next polygon
+        
         polygonXs[2] = polygonXs[1];
         polygonYs[2] = polygonYs[1];
         polygonXs[3] = polygonXs[0];
         polygonYs[3] = polygonYs[0];
       }   
       
-      // project game element sprites from 3D to 2D
+      
       for(k = elements.size() - 1; k >= 0; k--) {
         
         element = elements.get(k);
@@ -857,7 +857,7 @@ public class ap extends GamePanel {
         band0 = ((int)element[ELEMENT_D]) % MAP_LENGTH;        
         band1 = (band0 + 1) % MAP_LENGTH;
 
-        // interpolate band end-points to create orthonormal basis vectors
+        
         for(i = 0; i < 4; i++) {
           for(j = 0; j < 3; j++) {
             onb2[i][j] = map[band0][i][j] 
@@ -866,14 +866,14 @@ public class ap extends GamePanel {
           }
         }
         
-        // adjust for X, center around player and scale
+        
         for(i = 0; i < 3; i++) {
           onb2[MAP_O][i] += element[ELEMENT_X] * onb2[MAP_U][i]
               - onb[MAP_O][i];
           onb2[MAP_O][i] *= SCALE;
         }     
         
-        // apply player ONB to element ONB
+        
         for(i = 0; i < 4; i++) {                          
           for(j = 0; j < 3; j++) {                        
             for(p = 0; p < 3; p++) {                      
@@ -882,11 +882,11 @@ public class ap extends GamePanel {
           }
         }
         
-        // move element away from camera
+        
         onb3[MAP_O][MAP_Z] -= CAMERA_Z;
         onb3[MAP_O][MAP_Y] -= CAMERA_Y;        
         
-        // project element
+        
         element[ELEMENT_VISIBLE] = 0;
         float K = 1.5f * CAMERA_Z / (CAMERA_Z - onb3[MAP_O][MAP_Z]);
         if (K > 0) {
@@ -900,7 +900,7 @@ public class ap extends GamePanel {
             onb3[MAP_O][j] += onb3[MAP_V][j];
           }
           
-          // capture normal vector
+          
           float mag = K;
           K = 1.5f * CAMERA_Z / (CAMERA_Z - onb3[MAP_O][MAP_Z]);          
           if (K > 0) {            
@@ -918,7 +918,7 @@ public class ap extends GamePanel {
         }
       }
       
-      // insertion sort elements by Z
+      
       for(k = elements.size() - 1; k > 0; k--) {
         element = elements.get(k);
         p = k;
@@ -932,7 +932,7 @@ public class ap extends GamePanel {
         elements.set(p, element);
       }
       
-      // draw element sprites
+      
       flash = !flash;
       for(k = elements.size() - 1; k >= 0; k--) {
         element = elements.get(k);
@@ -942,12 +942,12 @@ public class ap extends GamePanel {
               element[ELEMENT_PROJECTED_NX], -element[ELEMENT_PROJECTED_NY], 
               element[ELEMENT_PROJECTED_X], element[ELEMENT_PROJECTED_Y]);
           if (element[ELEMENT_EXPLODING] > 0) {
-            // player hops in the air exploding
+            
             transform.translate(0, (element[ELEMENT_EXPLODING] / 25 - 8) 
                 * element[ELEMENT_EXPLODING]);
             transform.rotate(-0.063f * element[ELEMENT_EXPLODING]);            
           } else if (element[ELEMENT_FALLING] > 0) {
-            // players falls off of track
+            
             transform.translate(0, 
                 0.5f * element[ELEMENT_FALLING] * element[ELEMENT_FALLING]);
           }
@@ -968,7 +968,7 @@ public class ap extends GamePanel {
       }
       
       if (gameState != GAME_STATE_ATTRACT_MODE) {
-        // display rank
+        
         g.setFont(bigFont);
         g.setColor(lap == 4 && flash ? Color.MAGENTA : Color.YELLOW);
         g.drawString(String.format("%d%s", rank, 
@@ -976,13 +976,13 @@ public class ap extends GamePanel {
             48, 512);  
 
         if (lap != 4) {
-          // display lap
+          
           g.setFont(smallFont);
           g.setColor(Color.MAGENTA);
           g.drawString(String.format("%d/3", lap), 48, 80);
         }
 
-        // draw item
+        
         i = (int)players[HUMAN][ELEMENT_ITEM];
         if (i != SPRITE_NONE) {      
           g.setColor(Color.BLACK);
@@ -1002,16 +1002,16 @@ public class ap extends GamePanel {
         }
       }
       
-      // -- render ends --------------------------------------------------------
+      
 
-      // show the hidden buffer
+      
       if (g2 == null) {
         g2 = (Graphics2D)getGraphics();        
       } else {
         g2.drawImage(imageBuffer, 0, 0, null);
       }
 
-      // burn off extra cycles
+      
       while(nextFrameStartTime > System.nanoTime());
     }
   }
@@ -1021,7 +1021,7 @@ public class ap extends GamePanel {
     return a[e.key] = e.id == 401 || e.id == 403;
   }  
 
-  // to run in window, uncomment below
+  
   public static void main(String[] args) throws Throwable {
 
 

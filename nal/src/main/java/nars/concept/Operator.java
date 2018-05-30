@@ -32,7 +32,7 @@ import static nars.Op.*;
  */
 public class Operator extends NodeConcept implements PermanentConcept, Atomic {
 
-    public static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594)); //RIGHT ARROW
+    public static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594)); 
 
     public final BiFunction<Task, NAR, Task> execute;
 
@@ -71,11 +71,11 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
     }
 
     public static Task error(Task x, Throwable error, long when) {
-        //StringWriter ss = new StringWriter();
-        //ExceptionUtils.printRootCauseStackTrace(error, new PrintWriter(ss));
+        
+        
         return Operator.command("error", when, $.quote(x.toString()),
-                //$.quote(ss.toString())
-                error!=null ? $.quote(error.getMessage()!=null ? error.getMessage() : error.toString()) : $.the("?") //TODO stack trace or something
+                
+                error!=null ? $.quote(error.getMessage()!=null ? error.getMessage() : error.toString()) : $.the("?") 
         );
     }
 
@@ -100,12 +100,12 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         return args(x).arrayShared();
     }
 
-//    public static void log(NAR nar, @NotNull String... msg) {
-//        nar.input( Operator.log(nar, $.the(msg)) );
-//    }
-//
-//    public static void log(NAR nar, @NotNull Object x) {
-//        nar.input( Operator.log(nar, x) );
-//    }
+
+
+
+
+
+
+
 
 }

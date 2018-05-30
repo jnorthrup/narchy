@@ -32,7 +32,7 @@ abstract public class Root implements Contexter {
     }
 
     public static void main(String[] args) {
-        //TEST
+        
         DummyRoot root = new DummyRoot();
 
         ContextBranch x = new ContextBranch("x");
@@ -72,12 +72,12 @@ abstract public class Root implements Contexter {
     }
 
 
-//    static class StateTree  {
-//
-//        /** DFS search */
-//        public StateTree fromRootTo() {
-//            throw new TODO();
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
 }

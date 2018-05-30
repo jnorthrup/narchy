@@ -16,21 +16,21 @@ public class NARSpeakTest {
         NAR n = NARS.tmp();
         StringBuilder b = new StringBuilder();
         Vocalization s = new Vocalization(n, 1f, (w) -> {
-            //System.out.println(n.time() + " " + w);
+            
             b.append(n.time() + ":" + w + " ");
         });
 
-        n.synch(); //activate the service HACK
+        n.synch(); 
 
         s.speak($.the("x"), 1, $.t(1f, 0.9f));
         s.speak($.the("not_x"), 1, $.t(0f, 0.9f));
         s.speak($.the("y"), 2, $.t(1f, 0.9f));
         s.speak($.the("z"), 4, $.t(0.95f, 0.9f));
         s.speak($.the("not_w"), 6, $.t(1f, 0.9f));
-        assertEquals(5, s.vocalize.size()); //not_w, scheduled for a future cycle
+        assertEquals(5, s.vocalize.size()); 
         n.run(5);
         assertEquals("1:x 2:y 4:z ", b.toString());
-        assertEquals(1, s.vocalize.size()); //not_w, scheduled for a future cycle
+        assertEquals(1, s.vocalize.size()); 
 
 
     }

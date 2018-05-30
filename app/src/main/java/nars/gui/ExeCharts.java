@@ -50,7 +50,7 @@ public class ExeCharts {
                 Util.tanhFast(
                         gain.floatValue() * nar.causes.get(i).value()
                 ),
-                //Util.tanhFast(nar.causes.get(i).value()),
+                
                 s, Math.max(1, (int) Math.ceil(Math.sqrt(s))),
                 Draw::colorBipolar) {
 
@@ -81,8 +81,8 @@ public class ExeCharts {
 
         float[] want = n.emotion.want;
         Gridding g = grid(
-//                Stream.concat(
-//                        Stream.of(auto),
+
+
                 IntStream.range(0, want.length).mapToObj(
                         w -> new FloatSlider(want[w], -1f, +1f) {
 
@@ -108,7 +108,7 @@ public class ExeCharts {
     public static Surface exePanel(NAR n) {
         return new Splitting(new AutoSurface<>(n.loop),
                 col(
-                        //metaGoalChart(a),
+                        
                         row(
                                 metaGoalPlot(n),
                                 metaGoalControls(n)
@@ -162,10 +162,10 @@ public class ExeCharts {
 
                 String str = i.toString();
                 if (str.startsWith("class nars."))
-                    str = str.substring("class nars.".length()); //skip default toString
+                    str = str.substring("class nars.".length()); 
 
                 if (str.startsWith("class "))
-                    str = str.substring(5); //skip default toString
+                    str = str.substring(5); 
 
                 item = new CauseVis(i, str);
                 cache.set(id, item);
@@ -191,13 +191,13 @@ public class ExeCharts {
                         b = Math.max(r, g) / 2f * Util.unitize(t);
 
                         i.update(v, r, g, b);
-//                        i.updateMomentum(
-//                                //0.01f + Util.sqr(Util.tanhFast(v)+1),
-//                                //Math.signum(v) *(1+Math.abs(v))*(t),
-//                                //Math.signum(v) * t,
-//                                v,
-//                                0.25f,
-//                                r, g, b);
+
+
+
+
+
+
+
 
                     }, builder);
                 });
@@ -232,21 +232,21 @@ public class ExeCharts {
                 );
                 dur.set(time.durRatio(loop));
             } else {
-                //TODO: IntSpinner dur set
+                
                 time = null;
             }
         }
 
         @Override
         public void update() {
-            //synchronized (this) {
+            
                 super.update();
                 if (loop.isRunning()) {
                     if (time != null) {
                         time.durRatio(loop, dur.floatValue());
                     }
                 }
-            //}
+            
         }
     }
 

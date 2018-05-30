@@ -124,7 +124,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
 
     /**
      * Existuje efektivnejsia implementacia v pripade, ze bodov je viacej.
-     * http://alienryderflex.com/polygon/
+     * http:
      * Este upravena by bola vziat vsetky hrany
      *
      * @param p
@@ -164,9 +164,9 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @return Vrati tazisko polygonu.
      */
     public Tuple2f centroid() {
-        Tuple2f C = new v2(); //centroid
+        Tuple2f C = new v2(); 
         double m = 0;
-        Tuple2f g = new v2(); //pomocne vektor pre medzivypocet
+        Tuple2f g = new v2(); 
         for (int i = 0, j = 1; i != count; i = j, j++) {
             Tuple2f b1 = get(i);
             Tuple2f b2 = get(j == count ? 0 : j);
@@ -232,11 +232,11 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * s referencnou zavislostou (spolocne vrcholy polygonov su rovnake instancie).
      */
     public Polygon[] convexDecomposition() {
-        if (isSystemPolygon()) { //optimalizacia - je zbytocne spustat algoritmus, ked to nieje zapotreby
+        if (isSystemPolygon()) { 
             return new Polygon[]{this};
         }
 
-        //tu pustim triangulacu z poly2tri
+        
         Tuple2f[] reverseArray = new Tuple2f[count];
         for (int i = 0; i < count; ++i) {
             reverseArray[i] = get(count - i - 1);

@@ -147,12 +147,12 @@ public final class Polygon extends glpoly_t {
 
     @Override
     public final void beginScrolling(float value) {
-        // not in use
+        
     }
 
     @Override
     public final void endScrolling() {
-        // not in use
+        
     }
 
     private final int offset(int index) {

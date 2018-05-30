@@ -37,7 +37,7 @@ public class SurfaceRender {
         this.x2 = cx + sxh;
         this.y1 = cy - syh;
         this.y2 = cy + syh;
-        //System.out.println(x1 + ".." + x2 + ": " + scaleX + " " + scaleY);
+        
         return this;
     }
 
@@ -56,9 +56,9 @@ public class SurfaceRender {
         return new v2(pctX, pctY);
     }
 
-//    /** min # of visible pixels in either W,H direction */
-//    public float visP() {
-//        return //Math.min(sw() * pw, sh() * ph);
-//                Math.min(sw(), sh());
-//    }
+
+
+
+
+
 }

@@ -29,26 +29,26 @@ public class Rover extends AbstractPolygonBot {
     private final ChangedTextInput feltSpeedAvg;
     private final ChangedTextInput mouthInput;
 
-    //float tasteDistanceThreshold = 1.0f;
+    
     final static int retinaPixels = 11;
 
 
-    int retinaRaysPerPixel = 2; //rays per vision sensor
+    int retinaRaysPerPixel = 2; 
 
     float aStep = (float)(Math.PI*2f) / retinaPixels;
 
-    float L = 25f; //vision distance
+    float L = 25f; 
 
-    Vec2 mouthPoint = new Vec2(2.7f, 0); //0.5f);
+    Vec2 mouthPoint = new Vec2(2.7f, 0); 
     @Deprecated int distanceResolution = 4;
 
-    double mouthArc = Math.PI/6f; //in radians
+    double mouthArc = Math.PI/6f; 
     float biteDistanceThreshold = 0.05f;
 
 
     float linearDamping = 0.8f;
     float angularDamping = 0.6f;
-    float restitution = 0.9f; //bounciness
+    float restitution = 0.9f; 
     float friction = 0.5f;
 
 
@@ -56,7 +56,7 @@ public class Rover extends AbstractPolygonBot {
     final SimpleAutoRangeTruthFrequency motionAngle;
     final SimpleAutoRangeTruthFrequency facingAngle;
 
-    //public class DistanceInput extends ChangedTextInput
+    
     public Rover(String id, NAR nar) {
         super(id, nar);
 
@@ -73,14 +73,14 @@ public class Rover extends AbstractPolygonBot {
         facingAngle = new SimpleAutoRangeTruthFrequency(nar, nar.term("<motion-->[facing]>"), new BipolarAutoRangeTruthFrequency());
 
         addMotorController();
-        //addMotorOperator();
+        
 
         addAxioms();
 
-        //String p = "$0.99;0.75;0.90$ ";
+        
 
-        //randomActions.add("motor($direction)!");
-        //TODO : randomActions.add("motor($direction,$direction)!");
+        
+        
 
 
 
@@ -98,7 +98,7 @@ public class Rover extends AbstractPolygonBot {
 
         Vec2[] vertices = {new Vec2(3.0f, 0.0f), new Vec2(-1.0f, +2.0f), new Vec2(-1.0f, -2.0f)};
         shape.set(vertices, vertices.length);
-        //shape.m_centroid.set(bodyDef.position);
+        
         BodyDef bd = new BodyDef();
         bd.linearDamping=(linearDamping);
         bd.angularDamping=(angularDamping);
@@ -112,13 +112,13 @@ public class Rover extends AbstractPolygonBot {
 
 
 
-        //for (int i = -pixels / 2; i <= pixels / 2; i++) {
+        
         for (int i = 0; i < retinaPixels; i++) {
             final int ii = i;
             final float angle = /*MathUtils.PI / 2f*/ aStep * i;
             final boolean eats = ((angle < mouthArc / 2f) || (angle > (Math.PI*2f) - mouthArc/2f));
 
-            //System.out.println(i + " " + angle + " " + eats);
+            
 
             VisionRay v = new VisionRay(this, torso,
                     /*eats ?*/ mouthPoint /*: new Vec2(0,0)*/,
@@ -136,7 +136,7 @@ public class Rover extends AbstractPolygonBot {
                             if (di <= biteDistanceThreshold)
                                 eat(touched);
                             /*} else if (di <= tasteDistanceThreshold) {
-                                //taste(touched, di );
+                                
                             }*/
                         }
                     }
@@ -160,13 +160,13 @@ public class Rover extends AbstractPolygonBot {
     protected void addMotorController() {
         new CycleDesire("motor(random)", strongestTask, nar) {
             @Override float onFrame(float desire) {
-                //variable causes random movement
+                
                 double v = Math.random();
                 if (v > (desire - 0.5f)*2f) {
                     return Float.NaN;
                 }
 
-                //System.out.println(v + " " + (desire - 0.5f)*2f);
+                
 
                 float strength = 0.65f;
                 float negStrength = 1f - strength;
@@ -233,26 +233,26 @@ public class Rover extends AbstractPolygonBot {
                 return desire;
             }
         };
-//
-//        new CycleDesire("motor(left)", strongestTask, nar) {
-//            @Override float onCycle(float desire) {
-//
-//                return desire;
-//            }
-//        };
-//        new CycleDesire("motor(right)", strongestTask, nar) {
-//            @Override float onCycle(float desire) {
-//
-//                return desire;
-//            }
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
 
     @Override
     protected void feelMotion() {
-        //radians per frame to angVelocity discretized value
+        
         float xa = torso.getAngularVelocity();
         float angleScale = 1.50f;
         float angVelocity = (float) (Math.log(Math.abs(xa * angleScale) + 1f)) / 2f;
@@ -260,19 +260,19 @@ public class Rover extends AbstractPolygonBot {
         if (angVelocity > maxAngleVelocityFelt) {
             angVelocity = maxAngleVelocityFelt;
         }
-//        if (angVelocity < 0.1) {
-//            feltAngularVelocity.set("rotated(" + RoverEngine.f(0) + "). :|: %0.95;0.90%");
-//            //feltAngularVelocity.set("feltAngularMotion. :|: %0.00;0.90%");
-//        } else {
-//            String direction;
-//            if (xa < 0) {
-//                direction = sim.angleTerm(-MathUtils.PI);
-//            } else /*if (xa > 0)*/ {
-//                direction = sim.angleTerm(+MathUtils.PI);
-//            }
-//            feltAngularVelocity.set("rotated(" + RoverEngine.f(angVelocity) + "," + direction + "). :|:");
-//            // //feltAngularVelocity.set("<" + direction + " --> feltAngularMotion>. :|: %" + da + ";0.90%");
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         float linVelocity = torso.getLinearVelocity().length();
@@ -289,27 +289,27 @@ public class Rover extends AbstractPolygonBot {
         positions.addLast(currentPosition.clone());
 
 
-//        feltOrientation.set("oriented(" + sim.angleTerm(torso.getAngle()) + "). :|:");
-//
-//        if (linVelocity == 0)
-//            feltSpeed.set("moved(0). :|:");
-//        else
-//            feltSpeed.set("moved(" + (lvel < 0 ? "n" : "p") +  "," + RoverEngine.f(linVelocity) + "). :|:");
-
-
-        //String motion = "<(" + RoverEngine.f(linVelocity) + ',' + sim.angleTerm(torso.getAngle()) + ',' + RoverEngine.f(angVelocity) + ") --> motion>. :|:";
 
 
 
-        facingAngle.observe( angVelocity ); // );
-        //nar.inputDirect(nar.task("<facing-->[" +  + "]>. :|:"));
+
+
+
+
+
+        
+
+
+
+        facingAngle.observe( angVelocity ); 
+        
         nar.input(nar.task("<A-->[w" + Sim.angleTerm(torso.getAngle()) + "]>. :|:"));
 
-        //System.out.println("  " + motion);
-        //feltSpeed.set(motion);
+        
+        
 
-        //feltSpeed.set("feltSpeed. :|: %" + sp + ";0.90%");
-        //int positionWindow1 = 16;
+        
+        
 
         /*if (positions.size() >= positionWindow1) {
             Vec2 prevPosition = positions.removeFirst();

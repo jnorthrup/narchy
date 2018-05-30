@@ -13,7 +13,7 @@ public final class RayTracer extends JPanel {
 
     public static void main(String[] args) {
         RayTracer rayTracer = raytracer();
-        // Main loop.
+        
         while (true) {
             rayTracer.update();
             if (rayTracer.renderProgressively()) {
@@ -34,8 +34,8 @@ public final class RayTracer extends JPanel {
         input = new Input();
         input.newSize = frame.getSize();
 
-        // If there are any command-line arguments, use the first argument
-        // as the world definition file. Otherwise default to "default_scene.txt".
+        
+        
         Scene scene = null;
         try {
             String defaults = "camera:\n" +
@@ -86,36 +86,36 @@ public final class RayTracer extends JPanel {
                     "    position: (0, 2, 4)\n" +
                     "    color: 0000ff\n";
 
-//            String simple= "camera:\n" +
-//                    "    position: (4, 4, 4)\n" +
-//                    "    direction: (-1, -1, -1)\n" +
-//                    "    fov: 90\n" +
-//                    "    size: 0\n" +
-//                    "cube:\n" +
-//                    "    position: (0, 0, 0)\n" +
-//                    "    sideLength: 2\n" +
-//                    "    surface: diffuse\n" +
-//                    "light:\n" +
-//                    "    position: (0, -2, 4)\n" +
-//                    "    color: ffffff\n";
+
+
+
+
+
+
+
+
+
+
+
+
 
             scene = new Scene(
                     defaults
-                    //simple
+                    
             );
         } catch (Exception e) {
             System.out.println(e);
             System.exit(1);
         }
         rayTracer = new RayTracer(scene, new Dimension(width, height), input);
-        // Add the ray tracer to the list of Interruptable objects that are
-        // interrupted on input.
+        
+        
         input.addInterruptable(rayTracer::interrupt);
 
         frame.add(rayTracer);
         frame.setVisible(true);
 
-        // Set up keyboard, mouse, and window resizing listeners.
+        
         frame.addKeyListener(input);
         frame.addMouseListener(input);
         frame.addMouseMotionListener(input);
@@ -155,7 +155,7 @@ public final class RayTracer extends JPanel {
 
     @Override
     public void paint(Graphics g) {
-        //super.paint(g);
+        
         if (image != null) {
             g.drawImage(image, 0, 0, this);
         }
@@ -172,8 +172,8 @@ public final class RayTracer extends JPanel {
 
     }
 
-    // Returns true if it rendered completely.
-    // Returns false if rendering was aborted.
+    
+    
     public boolean renderProgressively() {
         double timeSpent = 0.0;
         double fps = 30;
@@ -199,13 +199,13 @@ public final class RayTracer extends JPanel {
         BufferedImage newImage = new BufferedImage((int)size.getWidth(), (int)size.getHeight(), BufferedImage.TYPE_INT_RGB);
         newImage.setAccelerationPriority(1f);
 
-//        if (image != null) {
-//            for (int y = 0; y < image.getHeight() && y < newImage.getHeight(); y++) {
-//                for (int x = 0; x < image.getWidth() && x < newImage.getWidth(); x++) {
-//                    newImage.setRGB(x, y, image.getRGB(x, y));
-//                }
-//            }
-//        }
+
+
+
+
+
+
+
         image = newImage;
         pixelCache = ((DataBufferInt)(newImage.getRaster().getDataBuffer())).getData();
         reset();
@@ -216,75 +216,75 @@ public final class RayTracer extends JPanel {
         W = image.getWidth();
         H = image.getHeight();
         A = size.getWidth() / size.getHeight();
-//        int mx = W / 2;
-//
-//        int my = H / 2;
+
+
+
         final int d = depth - 1;
-//        Graphics2D g = image.createGraphics();
+
         renderDepth(d, 0, 0, W, H);
-//        Thread[] threads = new Thread[]{
-//            new Thread() {
-//                @Override
-//                public void run() {
-//                    //Graphics2D g = image.createGraphics();
-//                    renderDepth(d, 0, 0, mx, my, 0);
-//                    //g.dispose();
-//                }
-//            },
-//            new Thread() {
-//                @Override
-//                public void run() {
-//                    //Graphics2D g = image.createGraphics();
-//                    renderDepth(d, mx, 0, W, my, 1);
-//                    //g.dispose();
-//                }
-//            },
-//            new Thread() {
-//                @Override
-//                public void run() {
-//                    //Graphics2D g = image.createGraphics();
-//                    renderDepth(d, 0, my, mx, H, 2);
-//                    //g.dispose();
-//                }
-//            },
-//            new Thread() {
-//                @Override
-//                public void run() {
-//                    //Graphics2D g = image.createGraphics();
-//                    renderDepth(d, mx, my, W, H, 3);
-//                    //g.dispose();
-//                }
-//            }
-//        };
-//        // Sort threads by how much work they were able to do last frame.
-//        // This way quadrant threads who didn't get as much work done get
-//        // to start first.
-//        for (int i = threads.length - 1; i > 0; i--) {
-//            for (int j = 0; j < i; j++) {
-//                if (threadWork[j] > threadWork[j + 1]) {
-//                    int tw = threadWork[j];
-//                    threadWork[j] = threadWork[j + 1];
-//                    threadWork[j + 1] = tw;
-//                    Thread t = threads[j];
-//                    threads[j] = threads[j + 1];
-//                    threads[j + 1] = t;
-//                }
-//            }
-//        }
-//        for (int i = 0; i < threadWork.length; i++) {
-//            threadWork[i] = 0;
-//        }
-//        for (Thread thread : threads) {
-//            thread.start();
-//        }
-//        try {
-//            for (Thread thread : threads) {
-//                thread.join();
-//            }
-//        } catch(Exception e) {
-//        } finally {
-////            g.dispose();
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     private void reset() {
@@ -292,7 +292,7 @@ public final class RayTracer extends JPanel {
     }
 
     private void renderDepth(int depth, int x1, int y1, int x2, int y2) {
-        // I can't remember why I did this, it's to prevent stuttering and tearing or something.
+        
         if (depth > 5 && progressiveAbort) {
             return;
         }
@@ -317,24 +317,24 @@ public final class RayTracer extends JPanel {
         }
         int mx = (x2 - x1)/2 + x1;
         int my = (y2 - y1)/2 + y1;
-//        int offset = my * W + mx;
-//        int color = pixelCache[offset];
-        //if (color == -1) {
+
+
+        
             int color = getRenderedColor(mx, my);
-//            pixelCache[offset] = color;
+
             pixelsLeft--;
-//            threadWork[thread]++;
-        //}
+
+        
         int ww = x2-x1;
         for (int y = y1; y < y2; y++) {
             int start = y * W + x1;
             Arrays.fill(pixelCache, start, start+ww, color);
         }
-//        g.setColor(new Color(color));
-//        g.fillRect(x1, y1, x2 - x1, y2 - y1);
+
+
     }
 
-    // Cast a ray into the world from a given pixel location and calculate its resultant color.
+    
     private int getRenderedColor(int x, int y) {
         Ray3 ray = scene.camera.getRay(
             (x + 0.5) / W,

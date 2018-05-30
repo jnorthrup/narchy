@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.rl;
 
@@ -63,7 +63,7 @@ public class SarsaLearner {
     public SarsaLearner(int numFeatures, int numActions) {
         this.numActions = numActions;
 
-        // Create the linear models
+        
         createModels(numActions, numFeatures);
     }
 
@@ -124,12 +124,12 @@ public class SarsaLearner {
     public int actAndLearn(double[] features, double pReward) {
         lastAction = action;
 
-        // Get the next action
+        
         action = selectAction(features);
 
-        // If this is not the first step...
+        
         if (lastFeatures != null) {
-            // Perform a SARSA update
+            
             learn(lastFeatures, lastAction, pReward, features, action);
         }
 
@@ -146,32 +146,32 @@ public class SarsaLearner {
      */
     public void learn(double[] lastFeatures, int lastAction,
             double reward, double[] features, int action) {
-        // Compute Q(s,a)
+        
         double oldValue = valueFunction[lastAction].predict(lastFeatures);
 
-        // Early exit for diverging agents
+        
         if (Double.isNaN(oldValue) || oldValue >= 10E7)
             throw new RuntimeException("Diverged.");
 
-        // Compute Q(s',a')
+        
         double newValue;
 
-        // ... if s' is null (terminal state), then Q(s',a') is assumed to be 0
+        
         if (features != null)
             newValue = valueFunction[action].predict(features);
         else
             newValue = 0;
 
-        // Compute the TD error
+        
         double delta = reward + gamma * newValue - oldValue;
 
-        // Update the eligibility traces
+        
         updateTraces(lastFeatures, lastAction);
 
-        // With traces, we update *all* models
+        
         for (int a = 0; a < numActions; a++) {
             LinearModel model = valueFunction[a];
-            // Perform a TD error linear approximation udpate
+            
             model.updateWeightsDelta(traces[a], delta);
         }
     }
@@ -194,8 +194,8 @@ public class SarsaLearner {
         }
         else {
             for (int a = 0; a < numActions; a++) {
-                // For the selected action, decay its trace and add the new
-                //  state vector
+                
+                
                 if (a != lastAction)
                     decayTraces(traces[a], gamma*lambda);
                 else
@@ -222,7 +222,7 @@ public class SarsaLearner {
      */
     protected void replaceTraces(double[] traces, double factor, double[] state) {
         for (int f = 0; f < traces.length; f++) {
-            // If the feature is currently 0, decay its trace
+            
             if (state[f] == 0)
                 traces[f] *= factor;
             else
@@ -244,13 +244,13 @@ public class SarsaLearner {
         int bestAction = -1;
         ArrayList<Integer> ties = new ArrayList<Integer>();
 
-        // E-greedy
+        
         if (Math.random() < epsilon) {
             int r = (int)(Math.random() * numActions);
             return r;
         }
 
-        // Greedy selection, with random tie-breaking
+        
         for (int a = 0; a < numActions; a++) {
             double v = valueFunction[a].predict(pState);
 
@@ -269,7 +269,7 @@ public class SarsaLearner {
                 worstValue = v;
         }
 
-        // Tie-breaker
+        
         if (ties.size() > 1) {
             int r = (int)(Math.random() * ties.size());
             bestAction = ties.get(r);

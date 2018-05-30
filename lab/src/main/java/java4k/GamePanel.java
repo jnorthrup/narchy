@@ -99,7 +99,7 @@ public abstract class GamePanel extends JPanel implements Game, MouseListener, M
 	
 	@Override
 	public void processAWTEvent(AWTEvent e) {
-		// Do nothing
+		
 	}
 
 }

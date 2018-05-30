@@ -40,17 +40,17 @@ public class TermHashTest {
 
     }
 
-//    @Test
-//    public void testTemporalBits() {
-//        Term x = $("<(&&,%1,%2)=\\>%3>");
-//        assertTrue(x
-//                .isAny(Op.TemporalBits));
-//
-//        TestCase.assertFalse(x
-//                .isAny(Op.CONJUNCTION.bit()));
-//        assertTrue(x
-//                .hasAny(Op.CONJUNCTION.bit()));
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

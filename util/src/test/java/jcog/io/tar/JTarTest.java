@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at 
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0 
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software 
  * distributed under the License is distributed on an "AS IS" BASIS, 
@@ -139,7 +139,7 @@ public class JTarTest {
 		assertEquals(TarConstants.HEADER_BLOCK, tis.getCurrentOffset());
 		tis.getNextEntry();
 		TarEntry entry = tis.getNextEntry(); 
-		// All of the files in the tartest.tar file are smaller than DATA_BLOCK
+		
 		assertEquals(TarConstants.HEADER_BLOCK * 3 + TarConstants.DATA_BLOCK * 2, tis.getCurrentOffset());
 		tis.close();
 		
@@ -187,7 +187,7 @@ public class JTarTest {
 		File f = new File(path);
 		String files[] = f.list();
 
-		// is file
+		
 		if (files == null) {
 			files = new String[1];
 			files[0] = f.getName();
@@ -239,7 +239,7 @@ public class JTarTest {
 		long modTime = System.currentTimeMillis() / 1000;
 		int permissions = 0755;
 
-		// Create a header object and check the fields
+		
 		TarHeader fileHeader = TarHeader.createHeader(fileName, fileSize, modTime, false, permissions);
 		assertEquals(fileName, fileHeader.name.toString());
 		assertEquals(TarHeader.LF_NORMAL, fileHeader.linkFlag);
@@ -247,11 +247,11 @@ public class JTarTest {
 		assertEquals(modTime, fileHeader.modTime);
 		assertEquals(permissions, fileHeader.mode);
 
-		// Create an entry from the header
+		
 		TarEntry fileEntry = new TarEntry(fileHeader);
 		assertEquals(fileName, fileEntry.getName());
 
-		// Write the header into a buffer, create it back and compare them
+		
 		byte[] headerBuf = new byte[TarConstants.HEADER_BLOCK];
 		fileEntry.writeEntryHeader(headerBuf);
 		TarEntry createdEntry = new TarEntry(headerBuf);

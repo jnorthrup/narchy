@@ -84,7 +84,7 @@ public class LightingEngine implements Serializable {
 	public void addedTile(int x, int y) {
 		lightFlow[x][y] = Direction.UNKNOWN;
 		if (isSun) {
-			// redo the column for sun
+			
 			boolean sun = true;
 			for (int i = 0; i < height; i++) {
 				if (tiles[x][i].type.lightBlocking != 0) {
@@ -104,7 +104,7 @@ public class LightingEngine implements Serializable {
 	}
 	
 	public List<LightingPoint> getSunSources(int column, List<LightingPoint> sources) {
-		//LinkedList<LightingPoint> sources = new LinkedList<>();
+		
 		for (int y = 0; y < height - 1; y++) {
 			if (tiles[column][y].type.lightBlocking != 0) {
 				break;
@@ -121,7 +121,7 @@ public class LightingEngine implements Serializable {
 		int bottom = Math.min(y + Constants.LIGHT_VALUE_SUN, height - 1);
 		List<LightingPoint> sources = new LinkedList<>();
 		
-		// safely circle around the target zeroed zone
+		
 		boolean bufferLeft = (left > 0);
 		boolean bufferRight = (right < width - 1);
 		boolean bufferTop = (top > 0);
@@ -192,10 +192,10 @@ public class LightingEngine implements Serializable {
         public final int lightValue;
 		public final Direction flow;
 		
-		// public LightingPoint(int x, int y, Direction flow, int lightValue) {
-		// this(x, y, flow, lightValue, true);
-		// }
-		//
+		
+		
+		
+		
 		public LightingPoint(int x, int y, Direction flow, int lightValue) {
 			this.x = x;
 			this.y = y;
@@ -285,8 +285,8 @@ public class LightingEngine implements Serializable {
 		Set<LightingPoint> out = new HashSet<>(sources.size());
 		PriorityQueue<LightingPoint> in = new PriorityQueue<>(sources.size(),
 				new LightValueComparator());
-		// consider that the input sources are done (this is not a good assumption if different
-		// light sources have different values......)
+		
+		
 		out.addAll(sources);
 		
 		in.addAll(sources);

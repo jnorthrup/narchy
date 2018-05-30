@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ public class AssignmentsTest {
         assertEquals(x, assignments.get(0));
         assertEquals(y, assignments.get(1));
 
-        // assert Assignments remains unchanged by subsequent changes to values
+        
         values[0] = 10;
         assertEquals(x, assignments.get(0));
         assertEquals(y, assignments.get(1));
@@ -51,16 +51,16 @@ public class AssignmentsTest {
     public void testNotEquals() {
         Assignments a = new Assignments("hello", true, 42);
 
-        // same arguments, different order
+        
         assertNotEquals(a, new Assignments(42, true, "hello"));
 
-        // different arguments
+        
         assertNotEquals(a, new Assignments("hello", true, 43));
 
-        // one fewer argument
+        
         assertNotEquals(a, new Assignments("hello", true));
 
-        // one extra argument
+        
         assertNotEquals(a, new Assignments("hello", true, 42, 42));
     }
 
@@ -75,7 +75,7 @@ public class AssignmentsTest {
             assignments.get(index);
             fail("");
         } catch (ArrayIndexOutOfBoundsException e) {
-            // expected
+            
         }
     }
 }

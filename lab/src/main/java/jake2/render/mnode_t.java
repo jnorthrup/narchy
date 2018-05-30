@@ -18,29 +18,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: mnode_t.java,v 1.1 2004-07-07 19:59:35 hzi Exp $
+
+
 
 package jake2.render;
 
 import jake2.game.cplane_t;
 
 public class mnode_t {
-	//	common with leaf
-	public int contents; // -1, to differentiate from leafs
-	public int visframe; // node needs to be traversed if current
+	
+	public int contents; 
+	public int visframe; 
 
-	//public float minmaxs[] = new float[6]; // for bounding box culling
-	public final float[] mins = new float[3]; // for bounding box culling
-	public final float[] maxs = new float[3]; // for bounding box culling
+	
+	public final float[] mins = new float[3]; 
+	public final float[] maxs = new float[3]; 
 
 	public mnode_t parent;
 
-	//	node specific
+	
 	public cplane_t plane;
 	public final mnode_t[] children = new mnode_t[2];
 
-	// unsigned short
+	
 	public int firstsurface;
 	public int numsurfaces;
 

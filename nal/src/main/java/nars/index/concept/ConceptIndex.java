@@ -48,12 +48,12 @@ public abstract class ConceptIndex {
     abstract public void clear();
 
 
-//    /**
-//     * called when a concept has been modified, ie. to trigger persistence
-//     */
-//    public void commit(Concept c) {
-//        //by default does nothing
-//    }
+
+
+
+
+
+
 
     public void init(NAR nar) {
         this.nar = nar;
@@ -92,19 +92,19 @@ public abstract class ConceptIndex {
     @Nullable
     public final Concept concept(Term x, boolean createIfMissing) {
         if (x instanceof Bool || x instanceof Variable)
-            return null; //quick filter
+            return null; 
 
         if (x instanceof Concept && elideConceptGets() && !(((Concept) x).isDeleted()))
             return ((Concept)x);
 
         Term xx = x.concept();
         if (!(xx.op().conceptualizable)) {
-//            //for DEBUGGING temporary
-//            Term yy = $$(x.toString());
-//            assert(yy.equals(x));
-//            yy.concept(); //<- breakpoint here
 
-            return null; //this could mean a bad .concept() case
+
+
+
+
+            return null; 
         }
 
         return (Concept) get(xx, createIfMissing);
@@ -129,14 +129,14 @@ public abstract class ConceptIndex {
             Concept ct = (Concept) x;
             if (!ct.isDeleted()) {
                 with.accept(ct);
-                return; //assumes an existing Concept index isnt a different copy than what is being passed as an argument
+                return; 
             }
-            //otherwise if it is deleted, continue
+            
             y = ct.term();
         } else {
             y = x.term().concept();
             if (!y.op().conceptualizable)
-                return; //TODO error?
+                return; 
         }
 
 
@@ -153,7 +153,7 @@ public abstract class ConceptIndex {
     protected final void onRemove(Termed value) {
         if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
-                //refuse deletion
+                
                 nar.runLater(() -> {
                     set(value);
                 });
@@ -171,24 +171,24 @@ public abstract class ConceptIndex {
 
     protected void forget(TaskConcept tc) {
         tc.tasks().forEach(t -> {
-            //this doesnt accurately associate the cause of this forgetting with the causes of the tasks being deleted.
-//            short[] c = t.cause();
-//            if (c.length > 0) {
-//                switch (t.punc()) {
-//                    case BELIEF:
-//                        MetaGoal.Believe.learn(c, -Param.beliefValue(t), nar.causes);
-//                        break;
-//                    case GOAL:
-//                        MetaGoal.Desire.learn(c, -Param.beliefValue(t), nar.causes);
-//                        break;
-//                    case QUESTION:
-//                    case QUEST:
-//                        //TODO
-//                        break;
-//                }
-//            }
+            
 
-            //TODO harvest anything else important from the tasks before deletion?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
             t.delete();
         });
     }

@@ -10,7 +10,7 @@ package jcog.tree.rtree.rect;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -90,33 +90,33 @@ public class RectDoubleND implements HyperRegion<DoubleND>, Serializable {
         return new RectDoubleND(DoubleND.fill(i, NEGATIVE_INFINITY), DoubleND.fill(i, POSITIVE_INFINITY));
     }
 
-//    @Override
-//    public boolean contains(final HyperRegion _inner) {
-//        final RectDoubleND inner = (RectDoubleND) _inner;
-//
-//        int dim = dim();
-//        for (int i = 0; i < dim; i++) {
-//            if (!(min.coord[i] <= inner.min.coord[i] && max.coord[i] >= inner.max.coord[i]))
-//                //if (min.coord[i] > inner.min.coord[i] || max.coord[i] < inner.max.coord[i])
-//                return false;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean intersects(final HyperRegion r) {
-//        final RectDoubleND x = (RectDoubleND) r;
-//
-//        int dim = dim();
-//        for (int i = 0; i < dim; i++) {
-//            /*return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
-//                    (min.y > r2.max.y) || (r2.min.y > max.y));*/
-//
-//            if (min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i])
-//                return false;
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public double cost() {

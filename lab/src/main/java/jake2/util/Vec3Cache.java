@@ -18,7 +18,7 @@ public final class Vec3Cache {
     private static int index;
 
     public static final float[] get() {
-        //max = Math.max(index, max);
+        
         return cache[index++];
     }
     

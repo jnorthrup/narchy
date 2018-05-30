@@ -1,8 +1,8 @@
 package jcog.grammar.parse.examples.query;
 
-//import javax.swing.*;
-//import javax.swing.border.*;
-//import javax.swing.text.*;
+
+
+
 
 import jcog.grammar.parse.examples.utensil.SwingUtensil;
 
@@ -71,7 +71,7 @@ public class JaqlUe {
 			goButton.addActionListener(mediator());
 			goButton.setFont(SwingUtensil.ideFont());
 
-			// ctrl-g keystroke:
+			
 			KeyStroke ctrlg = KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK);
 
 			goButton.registerKeyboardAction(mediator(), ctrlg, JComponent.WHEN_IN_FOCUSED_WINDOW);

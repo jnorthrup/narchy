@@ -107,14 +107,14 @@ public final class BooleanArrayList extends BitSet {
     }
 
 
-//    public boolean get(int index)
-//    {
-////        if (index < size)
-////        {
-//            return get(index);
-////        }
-////        throw newIndexOutOfBoundsException(index);
-//    }
+
+
+
+
+
+
+
+
 
     private IndexOutOfBoundsException newIndexOutOfBoundsException(int index) {
         return new IndexOutOfBoundsException("Index: " + index + " Size: " + size);
@@ -284,13 +284,13 @@ public final class BooleanArrayList extends BitSet {
 
     public boolean retainAll(BooleanIterable source) {
         throw new UnsupportedOperationException();
-//        int oldSize = size();
-//        BooleanSet sourceSet = source instanceof BooleanSet ? (BooleanSet) source : source.toSet();
-//        BooleanArrayList retained = select(sourceSet::contains);
-//
-//        size = retained.size;
-//        items = retained.items;
-//        return oldSize != size();
+
+
+
+
+
+
+
     }
 
 
@@ -329,7 +329,7 @@ public final class BooleanArrayList extends BitSet {
             }
         }
         --size;
-//        clear(size);
+
     }
 
 

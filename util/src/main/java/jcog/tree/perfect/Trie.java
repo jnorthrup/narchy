@@ -3,14 +3,14 @@
  * 
  * This source file is subject to the Open Software License (OSL 3.0) that is 
  * bundled with this package in the file LICENSE.txt. It is also available 
- * through the world-wide-web at http://opensource.org/licenses/osl-3.0.php
+ * through the world-wide-web at http:
  * If you did not receive a copy of the license and are unable to obtain it 
  * through the world-wide-web, please send an email to magnos.software@gmail.com 
  * so we can send you a copy immediately. If you use any of this software please
  * notify me via our website or email, your feedback is much appreciated. 
  * 
- * @copyright   Copyright (c) 2011 Magnos Software (http://www.magnos.org)
- * @license     http://opensource.org/licenses/osl-3.0.php
+ * @copyright   Copyright (c) 2011 Magnos Software (http:
+ * @license     http:
  *              Open Software License (OSL 3.0)
  */
 
@@ -46,10 +46,10 @@ public class Trie<S, T> implements Map<S, T> {
     public final TrieSequencer<S> sequencer;
 
 
-//    private final SequenceSet sequences;
-//    private final ValueCollection values;
-//    private final EntrySet entries;
-//    public final NodeSet nodes;
+
+
+
+
 
     /**
      * Instantiates a new Trie.
@@ -71,10 +71,10 @@ public class Trie<S, T> implements Map<S, T> {
      */
     public Trie(@Nullable TrieSequencer<S> sequencer, T defaultValue) {
         root = new TrieNode<>(null, defaultValue, null, 0, 0, new PerfectHashMap<>());
-//        sequences = new SequenceSet(root);
-//        values = new ValueCollection(root);
-//        entries = new EntrySet(root);
-//        nodes = new NodeSet(root);
+
+
+
+
         this.sequencer = sequencer!=null ? sequencer : (TrieSequencer)this;
     }
 
@@ -120,9 +120,9 @@ public class Trie<S, T> implements Map<S, T> {
         int queryOffset = 0;
         TrieNode<S, T> node = root.children.get(sequencer.hashOf(query, 0));
 
-        // The root doesn't have a child that starts with the given sequence...
+        
         if (node == null) {
-            // Add the sequence and value directly to root!
+            
             return putReturnNull(root, value, query, queryOffset, queryLength);
         }
 
@@ -134,14 +134,14 @@ public class Trie<S, T> implements Map<S, T> {
 
             queryOffset += matches;
 
-            // mismatch in current node
+            
             if (matches != max) {
                 node.split(matches, null, sequencer);
 
                 return putReturnNull(node, value, query, queryOffset, queryLength);
             }
 
-            // partial match to the current node
+            
             if (max < nodeLength) {
                 node.split(max, value, sequencer);
                 node.sequence = query;
@@ -149,26 +149,26 @@ public class Trie<S, T> implements Map<S, T> {
                 return null;
             }
 
-            // Full match to query, replace value and sequence
+            
             if (queryOffset == queryLength) {
                 node.sequence = query;
 
                 return node.setValue(value);
             }
 
-            // full match, end of the query or node
+            
             if (node.children == null) {
                 return putReturnNull(node, value, query, queryOffset, queryLength);
             }
 
-            // full match, end of node
+            
             TrieNode<S, T> next = node.children.get(sequencer.hashOf(query, queryOffset));
 
             if (next == null) {
                 return putReturnNull(node, value, query, queryOffset, queryLength);
             }
 
-            // full match, query or node remaining
+            
             node = next;
         } while (node != null);
 
@@ -534,14 +534,14 @@ public class Trie<S, T> implements Map<S, T> {
     private TrieNode<S, T> search(TrieNode<S, T> root, S query, TrieMatch match) {
         int queryLength = sequencer.lengthOf(query);
 
-        // If the query is empty or matching logic is not given, return null.
+        
         if (queryLength == 0 || match == null || queryLength < root.end) {
             return null;
         }
 
         int queryOffset = root.end;
 
-        // If a non-root root was passed in, it might be the node you are looking for.
+        
         if (root.sequence != null) {
             int matches = sequencer.matches(root.sequence, 0, query, 0, root.end);
 
@@ -563,24 +563,24 @@ public class Trie<S, T> implements Map<S, T> {
 
             queryOffset += matches;
 
-            // Not found
+            
             if (matches != max) {
                 return null;
             }
 
-            // Potentially PARTIAL match
+            
             if (max != nodeLength && matches == max) {
                 return (match != TrieMatch.PARTIAL ? null : node);
             }
 
-            // Either EXACT or STARTS_WITH match
+            
             if (queryOffset == queryLength || node.children == null) {
                 break;
             }
 
             TrieNode<S, T> next = node.children.get(sequencer.hashOf(query, queryOffset));
 
-            // If there is no next, node could be a STARTS_WITH match
+            
             if (next == null) {
                 break;
             }
@@ -588,14 +588,14 @@ public class Trie<S, T> implements Map<S, T> {
             node = next;
         }
 
-        // EXACT matches
+        
         if (node != null && match == TrieMatch.EXACT) {
-            // Check length of last node against query
+            
             if (node.value == null || node.end != queryLength) {
                 return null;
             }
 
-            // Check actual sequence values
+            
             if (sequencer.matches(node.sequence, 0, query, 0, node.end) != node.end) {
                 return null;
             }

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -43,21 +43,21 @@ public class DefaultNearCallback extends NearCallback {
 		Collidable colObj1 = collisionPair.pProxy1.data;
 
 		if (dispatcher.needsCollision(colObj0, colObj1)) {
-			// dispatcher will keep algorithms persistent in the collision pair
+			
 			if (collisionPair.algorithm == null) {
 				collisionPair.algorithm = dispatcher.findAlgorithm(colObj0, colObj1);
 			}
 
 			if (collisionPair.algorithm != null) {
-				//ManifoldResult contactPointResult = new ManifoldResult(colObj0, colObj1);
+				
 				contactPointResult.init(colObj0, colObj1);
 
 				if (dispatchInfo.dispatchFunc == DispatchFunc.DISPATCH_DISCRETE) {
-					// discrete collision detection query
+					
 					collisionPair.algorithm.processCollision(colObj0, colObj1, dispatchInfo, contactPointResult);
 				}
 				else {
-					// continuous collision detection query, time of impact (toi)
+					
 					float toi = collisionPair.algorithm.calculateTimeOfImpact(colObj0, colObj1, dispatchInfo, contactPointResult);
 					if (dispatchInfo.timeOfImpact > toi) {
 						dispatchInfo.timeOfImpact = toi;

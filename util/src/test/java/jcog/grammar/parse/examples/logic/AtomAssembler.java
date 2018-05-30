@@ -26,7 +26,7 @@ public class AtomAssembler implements IAssembler {
 	 */
 	public void accept(Assembly a) {
 		Token t = (Token) a.pop();
-		// remove quotes from quoted string
+		
 		if (t.isQuotedString()) {
 			String s = t.sval();
 			a.push(new Atom(s.substring(1, s.length() - 1)));

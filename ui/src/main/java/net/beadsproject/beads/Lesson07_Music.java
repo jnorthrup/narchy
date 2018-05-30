@@ -27,16 +27,16 @@ public class Lesson07_Music {
              */
             Clock clock = new Clock(ac, 700);
             clock.on(
-                    //this is the on-the-fly bead
+                    
                     new Auvent() {
-                        //this is the method that we override to make the Bead do something
+                        
                         int pitch;
 
                         @Override
                         public void on(Auvent message) {
                             Clock c = (Clock) message;
                             if (c.isBeat()) {
-                                //choose some nice frequencies
+                                
                                 if (random(1) < 0.5) return;
                                 pitch = Pitch.forceToScale((int) random(12), Pitch.dorian);
                                 float freq = Pitch.mtof(pitch + (int) random(5) * 12 + 32);
@@ -48,7 +48,7 @@ public class Lesson07_Music {
                                 ((Envelope) g.getGainUGen()).add(0, random(7000), g.die());
                             }
                             if (c.getCount() % 4 == 0) {
-                                //choose some nice frequencies
+                                
                                 int pitchAlt = pitch;
                                 if (random(1) < 0.2)
                                     pitchAlt = Pitch.forceToScale((int) random(12), Pitch.dorian) + (int) random(2) * 12;

@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package nars.op.kif;
 
@@ -45,10 +45,10 @@ import static nars.Op.*;
 import static nars.op.rdfowl.NQuadsRDF.equi;
 
 /**
- * https://github.com/ontologyportal/sigmakee/blob/master/suo-kif.pdf
- * http://sigma.ontologyportal.org:8080/sigma/Browse.jsp?kb=SUMO&lang=EnglishLanguage&flang=SUO-KIF&term=subclass
- * https://raw.githubusercontent.com/ontologyportal/sumo/master/Merge.kif
- * https://raw.githubusercontent.com/ontologyportal/sumo/master/Mid-level-ontology.kif
+ * https:
+ * http:
+ * https:
+ * https:
  **/
 public class KIFInput {
 
@@ -84,14 +84,14 @@ public class KIFInput {
     }
 
 
-    //usually these quantifiers semantics are inferrable from context.
-    //adding them to the knowledge is at best redundant, at worst it starts
-    //relating things which *should* remain related.
-    //when this is input with varying degrees of confidence
-    //then such statements could just be assigned lower confidence.
+    
+    
+    
+    
+    
     private static final boolean includePredArgCounts = false;
     private static final Set<Term> predExclusions = Set.of(
-            //Object?
+            
             $$("UnaryPredicate"),
             $$("BinaryPredicate"),$$("TernaryPredicate"),
             $$("QuaternaryPredicate"), $$("QuintaryPredicate"),
@@ -101,9 +101,9 @@ public class KIFInput {
             $$("QuintaryRelation"),
             $$("SingleValuedRelation"),$$("TotalValuedRelation"),
 
-            $$("AsymmetricRelation") //product relation is by implicitly asymmetric
+            $$("AsymmetricRelation") 
 
-            //etc
+            
     );
 
     KIFInput(InputStream is) throws Exception {
@@ -116,9 +116,9 @@ public class KIFInput {
         kif.formulaMap.values().forEach(_x -> {
 
             ArrayList<Formula> xx = fpp.preProcess(_x, false, kb);
-//            if (xx.size() > 1) {
-//                System.out.println("expand " + _x + "to:\n" + xx);
-//            }
+
+
+
             xx.forEach(x -> {
                 try {
                     Term y = formulaToTerm(x, 0);
@@ -131,12 +131,12 @@ public class KIFInput {
                 }
             });
 
-            //  => Implies
-            //  <=> Equivalance
+            
+            
             /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
         });
 
-        //apply domain and range predicates
+        
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
             Term[] vt = Util.map(0, ds, i -> $.varDep(1 + i), Term[]::new);
@@ -167,23 +167,23 @@ public class KIFInput {
         });
 
         if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
-            //rewrite symmetric relations
+            
             beliefs.removeIf(belief -> {
                 if (belief.op() == INH) {
                     Term fn = belief.sub(1);
                     if (symmetricRelations.contains(fn)) {
-                        //Term symmetric = INH.the(PROD.the(SETe.the(b.sub(0).subterms())), fn);
+                        
                         Term ab = belief.sub(0);
                         if (ab.op() != PROD) {
-                            return false; //ie  inheritance involving symmetric relation
+                            return false; 
                         }
                         assert(ab.subs()==2);
                         Term a = ab.sub(0);
                         Term b = ab.sub(1);
                         Term symmetric = INH.the(SECTe.the(PROD.the(a, b), PROD.the(b, a)), fn);
-                        //System.out.println(belief + " -> " + symmetric);
+                        
                         beliefs.add(symmetric);
-                        return true; //remove original
+                        return true; 
                     }
                 }
                 return false;
@@ -201,16 +201,16 @@ public class KIFInput {
             }
             return false;
         });
-        //nar.input( beliefs.stream().map(x -> task(x)) );
-
-//        long[] stamp = { new Random().nextLong() };
+        
 
 
-        //nar.believe(y);
+
+
+        
     }
 
     private static Term atomic(String sx) {
-        sx = sx.replace("?", "#"); //query var to depvar HACK
+        sx = sx.replace("?", "#"); 
         try {
             return $.$(sx);
         } catch (Narsese.NarseseException e) {
@@ -230,22 +230,22 @@ public class KIFInput {
 
 
     private Term formulaToTerm(String sx, int level) {
-        sx = sx.replace("?", "#"); //query var to depvar HACK
+        sx = sx.replace("?", "#"); 
 
         Formula f = new Formula(sx);
 
         Term g = formulaToTerm(f, level);
 
         return g;
-//        else {
-//            return atomic(sx);
-//        }
+
+
+
     }
 
     private Term formulaToTerm(final Formula x, int level) {
 
         String xCar = x.car();
-        String root = xCar; //root operate
+        String root = xCar; 
 
         int l = x.listLength();
         if (l == -1)
@@ -260,18 +260,18 @@ public class KIFInput {
         List<Term> args = sargs.stream().map((z) -> formulaToTerm(z, level + 1)).collect(Collectors.toList());
 
         if (args.contains(null)) {
-            //throw new NullPointerException("in: " + args);
+            
             return Null;
         }
 
         if (args.isEmpty())
             return Null;
-        //assert (!args.isEmpty()); //should have been handled first
+        
 
         /**
          *
          *
-         * https://github.com/opencog/opencog/blob/04db8e557a2d67da9025fe455095d2cda0261ea7/opencog/python/sumo/sumo.py
+         * https:
          * def special_link_type(predicate):
          mapping = {
          '=>':types.ImplicationLink,
@@ -297,7 +297,7 @@ public class KIFInput {
 
 
             case "exhaustiveAttribute": {
-                //ex: (exhaustiveAttribute RiskAttribute HighRisk LowRisk)
+                
                 y = INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
                 break;
             }
@@ -321,7 +321,7 @@ public class KIFInput {
                         }
 
                         if (pred.equals(SYMMETRIC_RELATION)) {
-                            return null; //direct subclass of symmetric relation, this is what we make implicit so we dont need this belief
+                            return null; 
                         }
 
                         if (!includePredArgCounts && predExclusions.contains(pred))
@@ -351,20 +351,20 @@ public class KIFInput {
 
             case "equal":
                 if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
-                    //write in impl form
+                    
                     y = impl(args.get(0), args.get(1), false);
                 } else {
-                    //input as-is
+                    
                 }
-                //y = $.func("isEqual", args.get(0), args.get(1)); //"equal" is NARchy built-in
-                //y = $.sim(args.get(0), args.get(1));
+                
+                
                 break;
 
 
             case "forall":
                 String forVar = sargs.get(0);
                 if (forVar.startsWith("(")) {
-                    forVar = forVar.substring(1, forVar.length() - 1); //remove parens
+                    forVar = forVar.substring(1, forVar.length() - 1); 
                 }
                 boolean missingAParamVar = false;
                 String[] forVars = forVar.split(" ");
@@ -375,13 +375,13 @@ public class KIFInput {
                     }
                 }
                 if (!missingAParamVar) {
-                    y = args.get(1); //skip over the for variables since it is contained in the expression
+                    y = args.get(1); 
                 } else {
                     y = impl(args.get(0), args.get(1), true);
                 }
                 break;
             case "exists":
-                y = args.get(1); //skip over the first parameter, since depvar is inherently existential
+                y = args.get(1); 
                 break;
             case "=>":
                 y = impl(args.get(0), args.get(1), true);
@@ -404,19 +404,19 @@ public class KIFInput {
                 break;
 
             case "domain":
-                //TODO use the same format as Range, converting quantity > 1 to repeats in an argument list
+                
                 if (level == 0) {
                     if (args.size() >= 3) {
                         Term subj = (args.get(0));
                         Term arg = (args.get(1));
                         Term type = (args.get(2));
                         if (type.equals(ASYMMETRIC_RELATION)) {
-                            return null; //obvious
+                            return null; 
                         }
                         FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
 
                         d.domain.updateValue(((Int) arg).id, () -> type, domainRangeMerger(type));
-                        //assert (existing == null || existing.equals(type)): x + ": " + type + "!=" + existing;
+                        
                     } else {
                         throw new UnsupportedOperationException("unrecognized domain spec");
                     }
@@ -429,7 +429,7 @@ public class KIFInput {
                         Term subj = args.get(0);
                         Term range = args.get(1);
                         if (range.equals(ASYMMETRIC_RELATION)) {
-                            return null; //obvious
+                            return null; 
                         }
                         FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
                         d.range = range;
@@ -450,7 +450,7 @@ public class KIFInput {
             case "disjoint":
             case "inverse":
             case "contraryAttribute":
-                //like n-ary disjoint
+                
                 Variable v0 = $.varDep(1);
                 y = disjoint(args, v0);
 
@@ -467,7 +467,7 @@ public class KIFInput {
                         try {
                             y = INH.the($.p(subj, desc), lang);
                         } catch (Exception e) {
-                            //e.printStackTrace();
+                            
                             y = null;
                         }
                     } else {
@@ -494,7 +494,7 @@ public class KIFInput {
 
 
             default:
-                //System.out.println("unknown: " + x);
+                
                 break;
         }
 
@@ -517,9 +517,9 @@ public class KIFInput {
                         break;
                     default:
                         if (!z.op().var)
-                            y = INH.the($.p(args), z); //HACK
+                            y = INH.the($.p(args), z); 
                         else {
-                            args.add(0, z); //re-attach
+                            args.add(0, z); 
                             y = $.p(args);
                         }
                         break;
@@ -547,21 +547,21 @@ public class KIFInput {
         return y;
     }
 
-//    private Variable nextVar(Op v) {
-//        return $.v(v, nextVar());
-//    }
 
-//    private final AtomicInteger serial = new AtomicInteger(0);
 
-//    private String nextVar() {
-//        return Integer.toString(Math.abs(serial.incrementAndGet()), 36);
-//    }
 
-    //public final Set<Twin<Term>> impl = new HashSet();
+
+
+
+
+
+
+
+    
 
     public static Term impl(Term a, Term b, boolean implOrEquiv) {
 
-        //reduce as implication first
+        
         Term tmp = IMPL.the(a, b);
         if (tmp.unneg().op() != IMPL) {
             logger.warn("un-impl: {} ==> {} ", a, b);
@@ -591,8 +591,8 @@ public class KIFInput {
             common.forEach(t -> {
                 Variable u = $.v(
                         Op.VAR_INDEP,
-                        //Op.VAR_QUERY,
-                        //Op.VAR_PATTERN,
+                        
+                        
                         t.toString().substring(1));
                 if (!t.equals(u) && !remap.containsKey(u))
                     remap.put(t, u);
@@ -602,8 +602,8 @@ public class KIFInput {
             ab.forEach(aa -> {
                 if (aa.op() == VAR_INDEP && !common.contains(aa)) {
                     String str = aa.toString().substring(1);
-//                    if (str.equals("0"))//HACK avoid writing: #0
-//                        str = "#0_";
+
+
 
                     Variable bb = $.v(Op.VAR_DEP, str);
                     if (!remap.containsKey(bb))
@@ -623,10 +623,10 @@ public class KIFInput {
         }
 
         try {
-//            impl.add(Tuples.twin(conditionTerm, actionTerm));
-//            if (!implOrEquiv) {
-//                impl.add(Tuples.twin(actionTerm, conditionTerm)); //reverse
-//            }
+
+
+
+
 
             return
                     (implOrEquiv ?
@@ -650,7 +650,7 @@ public class KIFInput {
      */
     private static class VarOnlySet extends UnifiedSet {
         @Override
-        public boolean add(Object key) { //HACK
+        public boolean add(Object key) { 
             if (!((Term) key).op().var)
                 return true;
             return super.add(key);

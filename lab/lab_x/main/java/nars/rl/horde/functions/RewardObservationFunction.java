@@ -11,7 +11,7 @@ public class RewardObservationFunction<A> implements RewardFunction, HordeUpdata
 
     public RewardObservationFunction(int index, String label) {
         this.label = label;
-        //observationIndex = legend.indexOf(label);
+        
         observationIndex = index;
         if (observationIndex < 0)
             throw new RuntimeException(label + " not found in the legend");

@@ -24,12 +24,12 @@ public class DrawerRunnable implements Runnable {
             points[i] = new ContactPoint();
         }
 
-        //camera = new PhysicsCamera(getDefaultCameraPos(), getDefaultCameraScale(), ZOOM_SCALE_DIFF);
+        
     }
 
     @Override
     public void run() {
-        // TODO< need to be set from outside >
+        
         float timeStep = 0.0f;
 
         if( !panel.render() ) {
@@ -60,7 +60,7 @@ public class DrawerRunnable implements Runnable {
             final float k_impulseScale = 0.1f;
             final float axisScale = 0.3f;
 
-            // TODO< need to be get from DrawingContactListener >
+            
             int pointCount = 0;
 
             for (int i = 0; i < pointCount; i++) {
@@ -102,7 +102,7 @@ public class DrawerRunnable implements Runnable {
 
     public TestbedPanel panel;
 
-    // mouse physics
+    
     private MouseJoint mouseJoint;
     protected boolean mouseTracing;
 
@@ -125,7 +125,7 @@ public class DrawerRunnable implements Runnable {
 
     private DebugDraw draw;
 
-    // colors
+    
     private final Color3f color1 = new Color3f(.3f, .95f, .3f);
     private final Color3f color2 = new Color3f(.3f, .3f, .95f);
     private final Color3f color3 = new Color3f(.9f, .9f, .9f);
@@ -135,12 +135,12 @@ public class DrawerRunnable implements Runnable {
 
 
 
-    // unknown
+    
 
     private final CircleShape pshape = new CircleShape();
 
     private final AABB paabb = new AABB();
 
-    // misc
+    
     private final Transform identity = new Transform();
 }

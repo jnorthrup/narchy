@@ -24,9 +24,9 @@ public class BufferedCauseChannel implements Consumer {
 
     public final void input(Object x) {
         boolean uniqueAdded = buffer.add(x);
-//        if (!uniqueAdded) {
-//            System.out.println("duplicate detected");
-//        }
+
+
+
     }
 
 

@@ -50,21 +50,21 @@ public class KaratePuzzle {
 	 */
 	protected boolean cluesVerify() {
 		return
-		// Clue 1
+		
 		amy.lastName != "Ellis" && amy.lastName != "Fowler" &&
-		// Clue 2
+		
 				carla.specialty != "Sparring" && dianne.specialty != "Sparring" &&
-				// Clue 3
+				
 				studentNamed("Fowler").specialty != "Shoot Fighting" && studentNamed("Fowler").specialty != "Pressure Points" &&
-				// Clue 4
+				
 				dianne.specialty != "Childrens" &&
-				// Clue 5
+				
 				amy.lastName != "Goodrich" && amy.specialty != "Pressure Points" &&
-				// Clue 6
+				
 				betti.lastName != "Fowler" &&
-				// Clue 7
+				
 				studentNamed("Hightower").specialty != "Sparring" &&
-				// Clue 4, 1
+				
 				dianne.lastName != "Ellis";
 	}
 

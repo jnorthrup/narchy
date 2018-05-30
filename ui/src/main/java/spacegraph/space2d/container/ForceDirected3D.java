@@ -31,25 +31,25 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
     final v3 boundsMin, boundsMax;
     final float maxRepelDist;
 
-//        public static class Edge<X> extends MutablePair<X,X> {
-//            public final X a, b;
-//            public Object aData;
-//            public Object bData;
-//
-//            public Edge(X a, X b) {
-//                super(a, b);
-//                this.a = a;
-//                this.b = b;
-//            }
-//        }
-//
-//        final SimpleGraph<X,Edge> graph = new SimpleGraph((a,b)->new Edge(a,b));
-//
-//        public Edge get(X x, X y) {
-//            graph.addVertex(x);
-//            graph.addVertex(y);
-//            graph.getEdge(x, y);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public ForceDirected3D() {
         float r = 800;
@@ -75,16 +75,16 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
                     x.stabilize(boundsMin, boundsMax);
             });
 
-            //System.out.print("Force direct " + objects.size() + ": ");
-            //final int[] count = {0};
-            //count[0] += l.size();
-            //System.out.print(l.size() + "  ");
+            
+            
+            
+            
             int clusters = (int) Math.ceil(/*Math.log*/(((float)n) / 32));
             if (clusters % 2 == 0)
-                clusters++; //odd to break symmetry
+                clusters++; 
 
             b.forEach((int) Math.ceil((float) n / clusters), objects, this::batch);
-            //System.out.println(" total=" + count[0]);
+            
 
 
             if (center) {
@@ -141,15 +141,15 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
 
         delta.normalize();
 
-        //constant speed
-        //delta.scale( speed );
+        
+        
 
-        //speed proportional to length
+        
         float len = (float) Math.sqrt(lenSq);
         delta.scale( Math.min(len, len*  speed ) );
 
         ((Body3D) x).velAdd(delta);
-        //delta2.scale(-(speed * (yp.mass() /* + yp.mass()*/) ) * len  );
+        
         delta.scale(-1 );
         ((Body3D) y).velAdd(delta);
 

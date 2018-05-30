@@ -45,11 +45,11 @@ public class ParenFunctioning implements AfterLevelPopHandler {
                 if (functions.contains(currentLevel.get(itr).tokenValue)) {
                     if (debug) System.err.println("currentLevel before: " + currentLevel);
                     List<Token<Object>> mkFuncList = currentLevel.subList(itr, currentLevel.size());
-                    // System.err.println(mkFuncList);
+                    
                     Token<Object> parsedFunc = levelParser.parseLevel(functioningTokenPair, new TokenList<>(mkFuncList));
                     mkFuncList.clear();
                     mkFuncList.add(parsedFunc);
-                    // System.err.println(mkFuncList);
+                    
                     if (debug) System.err.println("currentLevel after:  " + currentLevel);
                 }
                 break;

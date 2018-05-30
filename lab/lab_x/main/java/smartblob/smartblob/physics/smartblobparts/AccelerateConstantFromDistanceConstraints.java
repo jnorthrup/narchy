@@ -31,7 +31,7 @@ public class AccelerateConstantFromDistanceConstraints extends AbstractChangeSpe
 			float dx = b.x - a.x;
 			float distance = (float)Math.sqrt(dx*dx+dy*dy);
 			if(distance == 0) continue;
-			float wantToAddToDistance = ld.targetDistance-distance; //positive or negative
+			float wantToAddToDistance = ld.targetDistance-distance; 
 			float addToEachSpeed = 0<wantToAddToDistance ? accNow : -accNow;
 			float normDy = dy/distance, normDx = dx/distance;
 			float addToSpeedY = normDy*addToEachSpeed;

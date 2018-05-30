@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,14 +28,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class RoaringBitmapFactoryTest {
 
-    // testing https://github.com/metamx/bytebuffer-collections/issues/26
+    
     @Test
     public void testIssue26() throws Exception {
-        //checkEmptyComplement(new ConciseBitmapFactory());
+        
         checkEmptyComplement(new RoaringBitmapFactory());
     }
 
-    // used by issue 26
+    
     private void checkEmptyComplement(BitmapFactory bitmapFactory) throws Exception {
         int numRow = 5104234;
         ImmutableBitmap bitmap = bitmapFactory.complement(bitmapFactory.makeEmptyImmutableBitmap(), numRow);

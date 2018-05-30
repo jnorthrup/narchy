@@ -10,7 +10,7 @@ public class SequenceGenerator
     static final Random rng = new XorShift128PlusRandom(8L);
 
     public static TrainingSequence generateSequenceSawtooth(int length, int vectorSize) {
-        length = length*2+2; //to be consistent with the WTF sequence below
+        length = length*2+2; 
 
         double[][] input = new double[length][vectorSize];
         double[][] output = new double[length][vectorSize];
@@ -37,7 +37,7 @@ public class SequenceGenerator
     }
 
     public static TrainingSequence generateSequenceXOR(int vectorSize) {
-        //length = length*1+2; //to be consistent with the WTF sequence below
+        
 
         int length = (int) (vectorSize * (1.0 + rng.nextFloat()));
 
@@ -49,7 +49,7 @@ public class SequenceGenerator
 
         for (int i = 0; i < length; i++) {
             int index = ((j)^(i)) % vectorSize;
-            //int reflected = (vectorSize-1) - index;
+            
 
             if (i < vectorSize/2)
                 input[i][i] = 1;
@@ -78,17 +78,17 @@ public class SequenceGenerator
 
         for (int i = 0;i < sequenceLength;i++)
         {
-            //input[i] = new double[inputVectorSize]; REMOVE
+            
             if (i == 0) {
-                //start code
+                
                 input[0][vectorSize] = 1.0;
             }
             else if (i <= length) {
-                //copy of one loop
+                
                 System.arraycopy(data[i - 1], 0, input[i], 0, vectorSize);
             }
             else if (i == (length + 1)) {
-                //end code
+                
                 input[i][vectorSize + 1] = 1.0;
             }
                
@@ -96,7 +96,7 @@ public class SequenceGenerator
         double[][] output = new double[sequenceLength][vectorSize];
         for (int i = 0;i < sequenceLength;i++)
         {
-            //output[i] = new double[vectorSize]; REMOVE
+            
             if (i >= (length + 2))
             {
                 System.arraycopy(data[i - (length + 2)], 0, output[i], 0, vectorSize);

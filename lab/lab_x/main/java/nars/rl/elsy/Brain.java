@@ -35,11 +35,11 @@ public class Brain implements Serializable {
     /**
      * Weight matrix [layer][i][j]
      */
-    private double w[][][]; // weight   matrix [layer][i][j]
+    private double w[][][]; 
     /**
      * Eligibility traces matrix [layer][i][j]
      */
-    private double e[][][]; // eligibility traces matrix [layer][i][j]
+    private double e[][][]; 
     /**
      * Gradient matrix [layer][i]
      */
@@ -167,7 +167,7 @@ public class Brain implements Serializable {
         this(
                 perception,
                 actionsArray,
-                new int[]{} // no hidden layers
+                new int[]{} 
         );
     }
 
@@ -181,12 +181,12 @@ public class Brain implements Serializable {
     public void count() {
         a = selectAction();
         if (tactCounter > 0) {
-            double r = perception.getReward();		// r(t-1)
+            double r = perception.getReward();		
             double error = r + gamma * Qmax - QPrev;
-            updateWeights(error);		// w(t)
+            updateWeights(error);		
         }
         propagate();
-        countEligibilities(a);		// e(t), g(t)
+        countEligibilities(a);		
         tactCounter++;
         QPrev = Q[a];
     }
@@ -209,7 +209,7 @@ public class Brain implements Serializable {
                 Qmax = Q[a];
             }
         }
-        //int aMax = a;
+        
         if (useBoltzmann) {
             a = RR.pickBestIndex(boltzValues);
         }
@@ -246,9 +246,9 @@ public class Brain implements Serializable {
                 }
                 double activ = activation[l][i];
                 if (unipolar) {
-                    g[l][i] = activ * (1 - activ) * error; //uni
+                    g[l][i] = activ * (1 - activ) * error; 
                 } else {
-                    g[l][i] = 0.5 * (1 - activ * activ) * error; //bi
+                    g[l][i] = 0.5 * (1 - activ * activ) * error; 
                 }
                 double gli = g[l][i];
                 for (int j = 0; j < w[l][i].length; j++) {

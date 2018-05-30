@@ -20,14 +20,14 @@ import static nars.Op.PROD;
 */
 public class EllipsisMatch extends CompoundLight {
 
-    //    public static ArrayEllipsisMatch matchedSubterms(Compound Y, IntObjectPredicate<Term> filter) {
-//        Function<IntObjectPredicate,Term[]> arrayGen =
-//                !(Y instanceof Sequence) ?
-//                        Y::terms :
-//                        ((Sequence)Y)::toArrayWithIntervals;
-//
-//        return new ArrayEllipsisMatch(arrayGen.apply( filter ));
-//    }
+    
+
+
+
+
+
+
+
 
 
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
@@ -61,7 +61,7 @@ public class EllipsisMatch extends CompoundLight {
 
     @Override
     public @Nullable Term transform(TermTransform t) {
-        //dont eval until it's unwrapped
+        
         return this;
     }
 
@@ -85,7 +85,7 @@ public class EllipsisMatch extends CompoundLight {
     public static Term match(Term... matched) {
         switch (matched.length) {
             case 0: return empty;
-            case 1: return matched[0]; //if length==1 it should not be an ellipsismatch, just the raw term
+            case 1: return matched[0]; 
             default: return new EllipsisMatch(matched);
         }
     }
@@ -141,64 +141,64 @@ public class EllipsisMatch extends CompoundLight {
 
         return match( y.toArraySubRange(from, to));
 
-//        } else {
-//            assert(to == y.size());
-//            return ImageMatch.getRemaining(y, from);
-//        }
+
+
+
+
 
     }
 
 
-//    public static Term matchExcept(Term[] x, int index) {
-//        int num = x.length - 1;
-//        switch (num) {
-//            case 0: return empty;
-//            case 1: return x[0].equals(without) ? x[1] : x[0];
-//            default: return new EllipsisMatch(ArrayUtils.removeElement(x, without));
-//        }
-//    }
 
-//    public final boolean forEachWhile(Predicate<? super Term> c) {
-//        int s = subs();
-//        for (int i = 0; i < s; i++) {
-//            if (!c.test(sub(i)))
-//                return false;
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public boolean linearMatch(Subterms y, int from, /*@NotNull*/ Unify subst) {
         int s = subs();
 
         if (s + from > y.subs())
-            return false; //size mismatch: would extend beyond y's size
+            return false; 
 
         for (int i = 0; i < s; i++) {
-            if (!y.sub(i + from).unify(sub(i), subst)) //term mismatch
+            if (!y.sub(i + from).unify(sub(i), subst)) 
                 return false;
         }
         return true;
     }
 
-//    /** HACK */
-//    /*@NotNull*/
-//    static Term[] expand(Term raw) {
-//        return raw instanceof EllipsisMatch ?
-//                ((EllipsisMatch)raw).terms :
-//                new Term[] { raw };
-//    }
-
-//    public EllipsisMatch(/*@NotNull*/ Collection<Term> term, Term except) {
-//        this(term.stream().filter(t -> ((t!=except) )).collect(toList()));
-//    }
-
-//    @Deprecated public EllipsisMatch(/*@NotNull*/ Collection<Term> term, Term except, Term except2) {
-//        this(term.stream().filter(t -> ((t!=except) && (t!=except2) )).collect(toList()));
-//    }
 
 
 
-    //abstract public boolean addContained(Compound Y, Set<Term> target);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     @Override
     public boolean isCommutative() {
@@ -211,8 +211,8 @@ public class EllipsisMatch extends CompoundLight {
         int xs = x.subs();
         for (int i = 0; i < xs; i++) {
             Term e = x.sub(i);
-            //if something in this ellipsis was not present in the matchable subterms
-            //or if something else has matched it
+            
+            
             if (!y.contains(e) || !yFree.remove(e))
                 return false;
         }

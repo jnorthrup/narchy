@@ -56,7 +56,7 @@ public class RegularParser {
 	public Parser expression() {
 		if (expression == null) {
 
-			// expression = term orTerm*;
+			
 			expression = new Seq();
 			expression.get(term());
 			expression.get(new Repetition(orTerm()));

@@ -123,44 +123,44 @@ public class Cause implements Comparable<Cause> {
                 if (b.length == 0)
                     return a;
 
-                //allow multiples because then they will reinforce the undiluted combined value if distinct vaclues are added later
-//                if (Util.equals(a,b))
-//                    return a;
+                
+
+
 
                 return sample(causeCapacity, a, b);
             default:
                 return sample(causeCapacity,
                         Util.map(TaskRegion::cause, short[][]::new,
-                            ArrayUtils.removeNulls(e, TaskRegion[]::new))); //HACK
+                            ArrayUtils.removeNulls(e, TaskRegion[]::new))); 
         }
     }
 
-//    public static short[] append(int maxLen, short[] src, short[] add) {
-//        int addLen = add.length;
-//        if (addLen == 0) return src;
-//
-//        int srcLen = src.length;
-//        if (srcLen + addLen < maxLen) {
-//            return ArrayUtils.addAll(src, add);
-//        } else {
-//            if (addLen >= srcLen) {
-//                return zip(maxLen, ()->src, ()->add);
-//            } else {
-//                short[] dst = new short[maxLen];
-//                int mid = maxLen - addLen;
-//                System.arraycopy(src, srcLen - mid, dst, 0, mid);
-//                System.arraycopy(add, 0, dst, mid, addLen);
-//                return dst;
-//            }
-//        }
-//    }
 
-//    public static short[] zip(int maxLen, Supplier<short[]>[] s) {
-//        if (s.length == 1) {
-//            return s[0].get();
-//        }
-//        return zip(maxLen, Util.map(Supplier::get, short[][]::new, s));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static short[] sample(int maxLen, short[]... s) {
 
@@ -182,9 +182,9 @@ public class Cause implements Comparable<Cause> {
         if (totalItems == 0)
             return ArrayUtils.EMPTY_SHORT_ARRAY;
 
-        //boolean enough = (totalItems < maxLen);
-//        ShortIterable l;
-//        ShortPredicate adder;
+        
+
+
         AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);
 
         int ls = 0;
@@ -214,12 +214,12 @@ public class Cause implements Comparable<Cause> {
         return lll;
     }
 
-//    /**
-//     * learn the utility of this cause with regard to a goal.
-//     */
-//    public final void learn(MetaGoal p, float v) {
-//        MetaGoal.learn(goal, p.ordinal(), v);
-//    }
+
+
+
+
+
+
 
 
     public void commit(RecycledSummaryStatistics[] valueSummary) {
@@ -267,16 +267,15 @@ public class Cause implements Comparable<Cause> {
     }
 
 }
-//    /** calculate the value scalar  from the distinctly tracked positive and negative values;
-//     * any function could be used here. for example:
-//     *      simplest:           pos - neg
-//     *      linear combination: x * pos - y * neg
-//     *      quadratic:          pos*pos - neg*neg
-//     *
-//     * pos and neg will always be positive.
-//     * */
-//    public float value(float pos, float neg) {
-//        return pos - neg;
-//        //return pos * 2 - neg;
-//        //return Util.tanhFast( pos ) - Util.tanhFast( neg );
-//    }
+
+
+
+
+
+
+
+
+
+
+
+

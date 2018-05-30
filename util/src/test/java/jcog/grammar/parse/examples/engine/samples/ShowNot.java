@@ -17,7 +17,7 @@ public class ShowNot {
 
 		Program p = new Program();
 
-		// bachelor(X) :- male(X), not married(X);
+		
 
 		Variable x = new Variable("X");
 		Structure s0 = new Structure("bachelor", new Term[] { x });
@@ -26,11 +26,11 @@ public class ShowNot {
 		Rule r0 = new Rule(new Structure[] { s0, s1, s2 });
 		p.addAxiom(r0);
 
-		// married(jim)
+		
 
 		p.addAxiom(new Fact("married", "jim"));
 
-		// male(jeremy); male(jim);
+		
 
 		p.addAxiom(new Fact("male", "jeremy"));
 		p.addAxiom(new Fact("male", "jim"));

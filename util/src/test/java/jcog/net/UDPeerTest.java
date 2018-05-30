@@ -19,7 +19,7 @@ public class UDPeerTest {
 
         Util.sleep(3000);
 
-        //discovered each other via multicast despite no explicit ping
+        
         assertTrue(x.them.contains(y.me));
         assertTrue(y.them.contains(x.me));
     }

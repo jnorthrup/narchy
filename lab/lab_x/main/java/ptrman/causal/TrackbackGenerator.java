@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-// TODO< remove elements from workingset if it is written out ??? >
+
 public class TrackbackGenerator
 {
     static public ArrayList<Integer> generate(Random random, DecoratedCausalGraph causalGraph)
     {
         ArrayList<Integer> result;
         
-        // list with all indices of nodes which can be added to the output
-        // node could also be linked indirectly
+        
+        
         List<Integer> workingNodeIndices;
         
         result = new ArrayList<>();
         
         causalGraph.resetAnnotation();
         
-        // add all root indices
+        
         workingNodeIndices = causalGraph.getRootIndices();
         
         for(;;)
@@ -29,16 +29,16 @@ public class TrackbackGenerator
                 break;
             }
             
-            // get and remove random node from workingset
+            
             int currentElementIndexIndex = random.nextInt(workingNodeIndices.size());
             int currentElementIndex = workingNodeIndices.get(currentElementIndexIndex);
             workingNodeIndices.remove(currentElementIndexIndex);
 
             assert !causalGraph.nodes.get(currentElementIndex).anotation.isInOutput();
 
-            // walk all outgoing edges and remove red flag if its there,
-            // if there is a redflag count the redflag counter down,
-            // if the counter hits zero, add it to the workingNodes
+            
+            
+            
             int outgoingEdgeI;
 
             for( outgoingEdgeI = 0; outgoingEdgeI < causalGraph.nodes.get(currentElementIndex).outgoingEdgeElementIndices.length; outgoingEdgeI++ )
@@ -64,7 +64,7 @@ public class TrackbackGenerator
                     {
                         causalGraph.nodes.get(outgoingNodeIndex).anotation.isOrWasInWorkingSet = true;
 
-                        // add it to the workingNodes
+                        
                         workingNodeIndices.add(new Integer(outgoingNodeIndex));
                     }
                 }
@@ -79,8 +79,8 @@ public class TrackbackGenerator
 
 
 
-            // repeat for all outgoing edges of the current element:
-            //    mark all incomming edges of the outgoing nodes as red if they don't point at an element which is allready in the output
+            
+            
 
             for( outgoingEdgeI = 0; outgoingEdgeI < causalGraph.nodes.get(currentElementIndex).outgoingEdgeElementIndices.length; outgoingEdgeI++ )
             {
@@ -106,8 +106,8 @@ public class TrackbackGenerator
                 causalGraph.nodes.get(outgoingNodeIndex).anotation.recountIncommingRedFlags();
             }
             
-            // now we add outgoing nodes if they don't have any red flaged incomming edges
-            // (means that all nodes which point at that node are allready in the output)
+            
+            
             
             for( outgoingEdgeI = 0; outgoingEdgeI < causalGraph.nodes.get(currentElementIndex).outgoingEdgeElementIndices.length; outgoingEdgeI++ )
             {
@@ -129,7 +129,7 @@ public class TrackbackGenerator
             
         }
         
-        // we must have the same amount of nodes in the graph and nodes in the result
+        
         assert result.size() == causalGraph.nodes.size();
         
         return result;

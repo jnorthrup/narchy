@@ -87,7 +87,7 @@ public class OpjectsTest {
         StringBuilder sb = new StringBuilder();
         n.onTask(sb::append);
 
-        //n.input("x(getClass,(),#y)! :|:");
+        
         n.input("hashCode(x,#h)! :|:");
         n.run(1);
         n.run(1);
@@ -134,8 +134,8 @@ public class OpjectsTest {
     @Disabled
     @Test
     public void learnMethodGoal() throws Narsese.NarseseException {
-//         StringBuilder sb = new StringBuilder();
-//        n.onTask(sb::append);
+
+
 
         final NAR n = NARS.tmp();
 
@@ -154,12 +154,12 @@ public class OpjectsTest {
         n.termVolumeMax.set(30);
 
         n.logPriMin(System.out, 0.02f);
-//        n.onTask(xx -> {
-//           if (xx instanceof DerivedTask) {
-//               if (xx.isGoal())
-//                System.out.println(xx);
-//           }
-//        });
+
+
+
+
+
+
 
         int N = 2;
 
@@ -183,36 +183,36 @@ public class OpjectsTest {
 
 
 
-//                n.input("$0.5 (0<->2)?");
-//                n.input("$0.5 (1<->2)?");
+
+
                 n.input("$1.0 x(get,(),2)!");
 
                 n.run(50);
             }
 
-            //n.input("$1.0 x(set,2)! :|:");
-//            n.input("$1.0 SimpleClass(get,x,(),2)! :|:");
-//            n.input("$1.0 SimpleClass(get,x,(),_)! :|:");
-//        n.input("$1.0 --SimpleClass(get,x,(),0)! :|:");
-//        n.input("$1.0 --SimpleClass(get,x,(),1)! :|:");
+            
+
+
+
+
             n.run(50);
         }
 
-//        while (x.v!=3) {
-//
-//        }
-
-//        n.input("$0.5 (0<->1)?");
-//        n.input("$0.5 (1<->2)?");
-//        n.input("$0.5 (2<->3)?");
-//        n.input("$0.5 (3<->4)?");
-//        n.input("$1.0 (SimpleClass(set,x,$x) ==> SimpleClass(get,x,(),$x))?");
-        //n.run(100);
 
 
-//        n.tasks().forEachOrdered(z -> {
-//            System.out.println(z);
-//        });
+
+
+
+
+
+
+
+        
+
+
+
+
+
 
     }
 }

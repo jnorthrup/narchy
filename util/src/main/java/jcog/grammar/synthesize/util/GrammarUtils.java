@@ -1,16 +1,16 @@
-// Copyright 2015-2016 Stanford University
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package jcog.grammar.synthesize.util;
 
@@ -28,8 +28,8 @@ public class GrammarUtils {
 
     @SafeVarargs
     public static <T> List<T> getList(T... ts) {
-//        List<T> tlist = new ArrayList<>(ts.length);
-//        Collections.addAll(tlist, ts);
+
+
         return List.of(ts);
     }
 
@@ -158,10 +158,10 @@ public class GrammarUtils {
 
         public List<Node> getChildren() {
             return List.of(first, second);
-//            List<Node> children = new ArrayList<>();
-//            children.add(this.first);
-//            children.add(this.second);
-//            return children;
+
+
+
+
         }
 
         public NodeData getData() {
@@ -175,16 +175,16 @@ public class GrammarUtils {
 
     public static class MultiAlternationNode implements Node {
         private final NodeData data;
-        private final List<Node> children;// = new ArrayList<>();
+        private final List<Node> children;
 
         public MultiAlternationNode(NodeData data, List<Node> children) {
             this.data = data;
-            //this.children.addAll(children);
+            
             this.children = children;
         }
 
         public List<Node> getChildren() {
-            //return new ArrayList<>(this.children);
+            
             return children;
         }
 
@@ -216,11 +216,11 @@ public class GrammarUtils {
 
         public List<Node> getChildren() {
             return List.of(start, rep, end);
-//            List<Node> children = new ArrayList<>();
-//            children.add(this.start);
-//            children.add(this.rep);
-//            children.add(this.end);
-//            return children;
+
+
+
+
+
         }
 
         public NodeData getData() {
@@ -327,8 +327,8 @@ public class GrammarUtils {
             return this.t != null;
         }
 
-//        public T getTOr(T t) {
-//            return this.hasT() ? this.getT() : t;
-//        }
+
+
+
     }
 }

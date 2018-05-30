@@ -3222,7 +3222,7 @@ public abstract class HashmapedBinarizable
          }
       }
 
-      // Terminate whith a null name
+      
       byteArray.writeString(null);
    }
 }

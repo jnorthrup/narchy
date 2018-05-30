@@ -15,12 +15,12 @@ public class UCTNode {
         children = new IntObjectHashMap();
     }
 
-    private final IntObjectHashMap<UCTNode> children; // stores the children
-    private final boolean isChanceNode; // true if this node is a chance node
-    private double mean; // the expected reward of this node
-    private int visits; // number of times the search node has been visited
-    private final double explorationRatio = 1.41; // Exploration-Exploitation
-    // constant
+    private final IntObjectHashMap<UCTNode> children; 
+    private final boolean isChanceNode; 
+    private double mean; 
+    private int visits; 
+    private final double explorationRatio = 1.41; 
+    
 
     /**
      * Returns the action with the highest expected reward.
@@ -54,8 +54,8 @@ public class UCTNode {
         final double[] maxValue = {Double.MIN_VALUE};
         final int[] selectedAction = {0};
 
-        // If we haven't explored all possible actions, choose one uniformly
-        // at random
+        
+        
         if (children.size() < agent.numActions()) {
             IntArrayList unexplored = new IntArrayList();
             for (int a = 0; a < agent.numActions(); a++) {
@@ -65,9 +65,9 @@ public class UCTNode {
             }
             selectedAction[0] = unexplored.get(Util.randRange(unexplored.size()));
         } else {
-            // The general idea is to explore the most promising(with the
-            // highest expected reward) actions. But also
-            // explore other actions not to get stuck with wrong decisions.
+            
+            
+            
 
             children.forEachKeyValue((i, currNode) -> {
 
@@ -116,7 +116,7 @@ public class UCTNode {
         double futureTotalReward;
 
         if (m == 0) {
-            // we have reached the horizon of the agent
+            
             return agent.reward();
         } else if (isChanceNode) {
             int p = agent.genPerceptAndUpdate();
@@ -134,18 +134,18 @@ public class UCTNode {
             futureTotalReward = children.get(a).sample(agent, m);
         }
 
-        // Calculate the expected average reward
+        
         double reward = futureTotalReward - undo.reward();
 
-        // update the mean reward
+        
         mean = 1.0 / (double) (visits + 1) * (reward + (double) visits * mean);
 
         visits++;
 
-        // System.out.println("m: " + m + " visits: " + visits + " mean: " +
-        // mean
-        // + " sample rew: " + reward + " future tot rew: "
-        // + futureTotalReward + " undo.getRew: " + undo.getReward());
+        
+        
+        
+        
 
         agent.modelRevert(undo);
 

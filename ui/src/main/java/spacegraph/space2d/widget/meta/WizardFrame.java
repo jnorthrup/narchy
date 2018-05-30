@@ -19,12 +19,12 @@ public class WizardFrame extends Splitting {
         split(0.9f);
 
         set(new Gridding(
-            //Undo?
+            
             this.backButton = new PushButton("<-", this::pop),
 
             new EmptySurface(), new EmptySurface(),
 
-            //Hide/Delete
+            
             new PushButton("X", this::close)
 
         ), next);
@@ -69,9 +69,9 @@ public class WizardFrame extends Splitting {
         synchronized (this) {
             parent(Dyn2DSurface.PhyWindow.class).remove();
         }
-//        if (!parent(PhyWall.class).remove()) { //HACK
-//            throw new RuntimeException("not completely removed");
-//        }
-//            //((MutableContainer)(this.parent)).remove(this);
+
+
+
+
     }
 }

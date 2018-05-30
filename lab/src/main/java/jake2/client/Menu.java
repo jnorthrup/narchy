@@ -65,15 +65,15 @@ public final class Menu extends Key {
 
     static final String menu_out_sound = "misc/menu3.wav";
 
-    static boolean m_entersound; // play after drawing a frame, so caching
+    static boolean m_entersound; 
 
-    // won't disrupt the sound
+    
 
     static xcommand_t m_drawfunc;
 
     static keyfunc_t m_keyfunc;
 
-    //	  =============================================================================
+    
     /* Support Routines */
 
     public final static int MAX_MENU_DEPTH = 8;
@@ -97,7 +97,7 @@ public final class Menu extends Key {
 
         String statusbar;
 
-        //void (*cursordraw)( struct _tag_menuframework *m );
+        
         mcallback cursordraw;
 
     }
@@ -121,7 +121,7 @@ public final class Menu extends Key {
 
         int flags;
 
-        int n = -1; //position in an array.
+        int n = -1; 
 
         String statusbar;
 
@@ -135,8 +135,8 @@ public final class Menu extends Key {
     }
 
     static class menufield_s extends menucommon_s {
-        //char buffer[80];
-        StringBuffer buffer; //allow deletion.
+        
+        StringBuffer buffer; 
 
         int cursor;
 
@@ -184,15 +184,15 @@ public final class Menu extends Key {
                 viddef.getHeight() / 2 - 110, name);
     }
 
-    static void PushMenu(xcommand_t draw, keyfunc_t key) { //, String(*key)
-                                                           // (int k) ) {
+    static void PushMenu(xcommand_t draw, keyfunc_t key) { 
+                                                           
         int i;
 
         if (Cvar.VariableValue("maxclients") == 1 && Globals.server_state != 0)
             Cvar.Set("paused", "1");
 
-        // if this menu is already present, drop back to that level
-        // to avoid stacking menus by hotkeys
+        
+        
         for (i = 0; i < m_menudepth; i++)
             if (m_layers[i].draw == draw && m_layers[i].key == key) {
                 m_menudepth = i;
@@ -202,8 +202,8 @@ public final class Menu extends Key {
             if (m_menudepth >= MAX_MENU_DEPTH)
                 Com.Error(ERR_FATAL, "PushMenu: MAX_MENU_DEPTH");
 
-            m_layers[m_menudepth].draw = draw;//m_drawfunc;
-            m_layers[m_menudepth].key = key;//m_keyfunc;     
+            m_layers[m_menudepth].draw = draw;
+            m_layers[m_menudepth].key = key;
         }
         m_menudepth++;
         m_drawfunc = draw;
@@ -334,10 +334,10 @@ public final class Menu extends Key {
     }
 
     public static void Print(int cx, int cy, String str) {
-        //while (*str)
+        
         for (int n = 0; n < str.length(); n++) {
             DrawCharacter(cx, cy, str.charAt(n) + 128);
-            //str++;
+            
             cx += 8;
         }
     }
@@ -345,7 +345,7 @@ public final class Menu extends Key {
     public static void PrintWhite(int cx, int cy, String str) {
         for (int n = 0; n < str.length(); n++) {
             DrawCharacter(cx, cy, str.charAt(n));
-            //str++;
+            
             cx += 8;
         }
     }
@@ -381,7 +381,7 @@ public final class Menu extends Key {
         int cx, cy;
         int n;
 
-        // draw left side
+        
         cx = x;
         cy = y;
         DrawCharacter(cx, cy, 1);
@@ -392,7 +392,7 @@ public final class Menu extends Key {
         }
         DrawCharacter(cx, cy + 8, 7);
 
-        // draw middle
+        
         cx += 8;
         while (width > 0) {
             cy = y;
@@ -408,7 +408,7 @@ public final class Menu extends Key {
             cx += 8;
         }
 
-        // draw right side
+        
         cy = y;
         DrawCharacter(cx, cy, 3);
         for (n = 0; n < lines; n++) {
@@ -466,7 +466,7 @@ public final class Menu extends Key {
                 Globals.re.DrawPic(xoffset, ystart + i * 40 + 13, names[i]);
         }
 
-        //strcat(litname, "_sel");
+        
         litname = names[m_main_cursor] + "_sel";
         Globals.re.DrawPic(xoffset, ystart + m_main_cursor * 40 + 13, litname);
 
@@ -1209,11 +1209,11 @@ public final class Menu extends Key {
 
         if (bind_grab) {
             if (key != K_ESCAPE && key != '`') {
-                //char cmd[1024];
+                
                 String cmd;
 
-                //Com_sprintf(cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n",
-                // Key_KeynumToString(key), bindnames[item.localdata[0]][0]);
+                
+                
                 cmd = "bind \"" + Key.KeynumToString(key) + "\" \""
                         + bindnames[item.localdata[0]][0] + '"';
                 Cbuf.InsertText(cmd);
@@ -1230,8 +1230,8 @@ public final class Menu extends Key {
         case K_ENTER:
             KeyBindingFunc(item);
             return menu_in_sound;
-        case K_BACKSPACE: // delete bindings
-        case K_DEL: // delete bindings
+        case K_BACKSPACE: 
+        case K_DEL: 
         case K_KP_DEL:
             UnbindCommand(bindnames[item.localdata[0]][0]);
             return menu_out_sound;
@@ -1301,7 +1301,7 @@ public final class Menu extends Key {
 
     static final menulist_s s_options_quality_list = new menulist_s();
 
-    //static menulist_s s_options_compatibility_list = new menulist_s();
+    
     static final menuaction_s s_options_console_action = new menuaction_s();
 
     static void CrosshairFunc(Object unused) {
@@ -1345,8 +1345,8 @@ public final class Menu extends Key {
         s_options_sfxvolume_slider.curvalue = Cvar.VariableValue("s_volume") * 10;
         s_options_cdvolume_box.curvalue = 1 - ((int) Cvar
                 .VariableValue("cd_nocd"));
-        //s_options_quality_list.curvalue = 1 - ((int)
-        // Cvar.VariableValue("s_loadas8bit"));
+        
+        
         String s = Cvar.VariableString("s_impl");
         for (int i = 0; i < s_drivers.length; i++) {
         	if (s.equals(s_drivers[i])) {
@@ -1428,19 +1428,19 @@ public final class Menu extends Key {
         boolean driverNotChanged = false;
         String current = s_drivers[s_options_quality_list.curvalue];
         driverNotChanged = S.getDriverName().equals(current);
-//        if (s_options_quality_list.curvalue != 0) {
-//            //			Cvar.SetValue("s_khz", 22);
-//            //			Cvar.SetValue("s_loadas8bit", 0);
-//            driverNotChanged = S.getDriverName().equals("dummy");
-//            Cvar.Set("s_impl", "dummy");
-//        } else {
-//            //			Cvar.SetValue("s_khz", 11);
-//            //			Cvar.SetValue("s_loadas8bit", 1);
-//            driverNotChanged = S.getDriverName().equals("joal");
-//            Cvar.Set("s_impl", "joal");
-//        }
 
-        //Cvar.SetValue("s_primary", s_options_compatibility_list.curvalue);
+
+
+
+
+
+
+
+
+
+
+
+        
 
         if (driverNotChanged) {
             re.EndFrame();
@@ -1452,7 +1452,7 @@ public final class Menu extends Key {
             Print(16 + 16, 120 - 48 + 16, "could take up to a minute, so");
             Print(16 + 16, 120 - 48 + 24, "please be patient.");
 
-            // the text box won't show up unless we do a buffer swap
+            
             re.EndFrame();
 
             CL.Snd_Restart_f.execute();
@@ -1674,7 +1674,7 @@ public final class Menu extends Key {
 
         Menu_AddItem(s_options_menu, s_options_cdvolume_box);
         Menu_AddItem(s_options_menu, s_options_quality_list);
-        //		Menu_AddItem(s_options_menu, s_options_compatibility_list);
+        
         Menu_AddItem(s_options_menu, s_options_sensitivity_slider);
         Menu_AddItem(s_options_menu, s_options_alwaysrun_box);
         Menu_AddItem(s_options_menu, s_options_invertmouse_box);
@@ -1682,7 +1682,7 @@ public final class Menu extends Key {
         Menu_AddItem(s_options_menu, s_options_lookstrafe_box);
         Menu_AddItem(s_options_menu, s_options_freelook_box);
         Menu_AddItem(s_options_menu, s_options_crosshair_box);
-        //		Menu_AddItem(s_options_menu, s_options_joystick_box);
+        
         Menu_AddItem(s_options_menu, s_options_customize_options_action);
         Menu_AddItem(s_options_menu, s_options_defaults_action);
         Menu_AddItem(s_options_menu, s_options_console_action);
@@ -1941,7 +1941,7 @@ public final class Menu extends Key {
         switch (key) {
         case K_ESCAPE:
             if (creditsBuffer != null)
-                //FS.FreeFile(creditsBuffer);
+                
                 ;
             PopMenu();
             break;
@@ -1977,9 +1977,9 @@ public final class Menu extends Key {
         } else {
             isdeveloper = FS.Developer_searchpath(1);
 
-            if (isdeveloper == 1) // xatrix
+            if (isdeveloper == 1) 
                 credits = xatcredits;
-            else if (isdeveloper == 2) // ROGUE
+            else if (isdeveloper == 2) 
                 credits = roguecredits;
             else {
                 credits = idcredits;
@@ -2028,13 +2028,13 @@ public final class Menu extends Key {
     static final menuseparator_s s_blankline = new menuseparator_s();
 
     static void StartGame() {
-        // disable updates and start the cinematic going
+        
         cl.servercount = -1;
         ForceMenuOff();
         Cvar.SetValue("deathmatch", 0);
         Cvar.SetValue("coop", 0);
 
-        Cvar.SetValue("gamerules", 0); //PGM
+        Cvar.SetValue("gamerules", 0); 
 
         Cbuf.AddText("loading ; killserver ; wait ; newgame\n");
         cls.key_dest = key_game;
@@ -2215,7 +2215,7 @@ public final class Menu extends Key {
             s_loadgame_actions[n] = new menuaction_s();
     }
 
-    //String m_savestrings[] = new String [MAX_SAVEGAMES][32];
+    
     static final String[] m_savestrings = new String[MAX_SAVEGAMES];
 
     static {
@@ -2285,7 +2285,7 @@ public final class Menu extends Key {
 
             s_loadgame_actions[i].x = 0;
             s_loadgame_actions[i].y = (i) * 10;
-            if (i > 0) // separate from autosave
+            if (i > 0) 
                 s_loadgame_actions[i].y += 10;
 
             s_loadgame_actions[i].type = MTYPE_ACTION;
@@ -2296,7 +2296,7 @@ public final class Menu extends Key {
 
     static void LoadGame_MenuDraw() {
         Banner("m_banner_load_game");
-        //		Menu_AdjustCursor( &s_loadgame_menu, 1 );
+        
         Menu_Draw(s_loadgame_menu);
     }
 
@@ -2338,7 +2338,7 @@ public final class Menu extends Key {
      * 
      * =============================================================================
      */
-    //static menuframework_s s_savegame_menu;
+    
     static final menuaction_s[] s_savegame_actions = new menuaction_s[MAX_SAVEGAMES];
 
     static {
@@ -2369,7 +2369,7 @@ public final class Menu extends Key {
 
         Create_Savestrings();
 
-        // don't include the autosave slot
+        
         for (i = 0; i < MAX_SAVEGAMES - 1; i++) {
             s_savegame_actions[i].name = m_savestrings[i + 1];
             s_savegame_actions[i].localdata[0] = i + 1;
@@ -2408,7 +2408,7 @@ public final class Menu extends Key {
 
     static void Menu_SaveGame_f() {
         if (0 == Globals.server_state)
-            return; // not playing a game
+            return; 
 
         SaveGame_MenuInit();
         PushMenu(new xcommand_t() {
@@ -2443,12 +2443,12 @@ public final class Menu extends Key {
 
     static final netadr_t[] local_server_netadr = new netadr_t[MAX_LOCAL_SERVERS];
 
-    static final String[] local_server_names = new String[MAX_LOCAL_SERVERS]; //[80];
+    static final String[] local_server_names = new String[MAX_LOCAL_SERVERS]; 
 
     static final menuaction_s[] s_joinserver_server_actions = new menuaction_s[MAX_LOCAL_SERVERS];
 
-    //	   user readable information
-    //	   network address
+    
+    
     static {
         for (int n = 0; n < MAX_LOCAL_SERVERS; n++) {
             local_server_netadr[n] = new netadr_t();
@@ -2468,7 +2468,7 @@ public final class Menu extends Key {
 
         String x = info.trim();
 
-        // ignore if duplicated
+        
 
         for (i = 0; i < m_num_servers; i++)
             if (x.equals(local_server_names[i]))
@@ -2517,10 +2517,10 @@ public final class Menu extends Key {
         Print(16 + 16, 120 - 48 + 16, "could take up to a minute, so");
         Print(16 + 16, 120 - 48 + 24, "please be patient.");
 
-        // the text box won't show up unless we do a buffer swap
+        
         re.EndFrame();
 
-        // send out info packets
+        
         CL.PingServers_f.execute();
     }
 
@@ -2659,47 +2659,47 @@ public final class Menu extends Key {
     }
 
     static void RulesChangeFunc(Object self) {
-        // DM
+        
         if (s_rules_box.curvalue == 0) {
             s_maxclients_field.statusbar = null;
             s_startserver_dmoptions_action.statusbar = null;
         } else if (s_rules_box.curvalue == 1)
-        // coop // PGM
+        
         {
             s_maxclients_field.statusbar = "4 maximum for cooperative";
             if (Lib.atoi(s_maxclients_field.buffer.toString()) > 4)
                 s_maxclients_field.buffer = new StringBuffer("4");
             s_startserver_dmoptions_action.statusbar = "N/A for cooperative";
         }
-        //	  =====
-        //	  PGM
-        // ROGUE GAMES
+        
+        
+        
         else if (FS.Developer_searchpath(2) == 2) {
-            if (s_rules_box.curvalue == 2) // tag
+            if (s_rules_box.curvalue == 2) 
             {
                 s_maxclients_field.statusbar = null;
                 s_startserver_dmoptions_action.statusbar = null;
             }
             /*
-             * else if(s_rules_box.curvalue == 3) // deathball {
+             * else if(s_rules_box.curvalue == 3) 
              * s_maxclients_field.statusbar = null;
              * s_startserver_dmoptions_action.statusbar = null; }
              */
         }
-        //	  PGM
-        //	  =====
+        
+        
     }
 
     static void StartServerActionFunc(Object self) {
-        //char startmap[1024];
+        
         String startmap;
         int timelimit;
         int fraglimit;
         int maxclients;
         String spot;
 
-        //strcpy(startmap, strchr(mapnames[s_startmap_list.curvalue], '\n') +
-        // 1);
+        
+        
         String x = mapnames[s_startmap_list.curvalue];
 
         int pos = x.indexOf('\n');
@@ -2716,25 +2716,25 @@ public final class Menu extends Key {
         Cvar.SetValue("timelimit", ClampCvar(0, timelimit, timelimit));
         Cvar.SetValue("fraglimit", ClampCvar(0, fraglimit, fraglimit));
         Cvar.Set("hostname", s_hostname_field.buffer.toString());
-        //		Cvar.SetValue ("deathmatch", !s_rules_box.curvalue );
-        //		Cvar.SetValue ("coop", s_rules_box.curvalue );
+        
+        
 
-        //	  PGM
+        
         if ((s_rules_box.curvalue < 2) || (FS.Developer_searchpath(2) != 2)) {
             Cvar.SetValue("deathmatch", 1 - s_rules_box.curvalue);
             Cvar.SetValue("coop", s_rules_box.curvalue);
             Cvar.SetValue("gamerules", 0);
         } else {
             Cvar.SetValue("deathmatch", 1);
-            // deathmatch is always true for rogue games, right?
+            
             Cvar.SetValue("coop", 0);
-            // FIXME - this might need to depend on which game we're running
+            
             Cvar.SetValue("gamerules", s_rules_box.curvalue);
         }
-        //	  PGM
+        
 
         spot = null;
-        if (s_rules_box.curvalue == 1) // PGM
+        if (s_rules_box.curvalue == 1) 
         {
             if (Lib.Q_stricmp(startmap, "bunk1") == 0)
                 spot = "start";
@@ -2771,9 +2771,9 @@ public final class Menu extends Key {
 
     static void StartServer_MenuInit() {
 
-        //	  =======
-        //	  PGM
-        //	  =======
+        
+        
+        
 
         byte[] buffer = null;
         String mapsname;
@@ -2789,8 +2789,8 @@ public final class Menu extends Key {
         if ((fp = Lib.fopen(mapsname, "r")) == null) {
             buffer = FS.LoadFile("maps.lst");
             if (buffer == null)
-                //if ((length = FS_LoadFile("maps.lst", (Object *) & buffer))
-                // == -1)
+                
+                
                 Com.Error(ERR_DROP, "couldn't find maps.lst\n");
         } else {
             try {
@@ -2848,12 +2848,12 @@ public final class Menu extends Key {
         s_rules_box.y = 20;
         s_rules_box.name = "rules";
 
-        //	  PGM - rogue games only available with rogue DLL.
+        
         if (FS.Developer_searchpath(2) == 2)
             s_rules_box.itemnames = dm_coop_names_rogue;
         else
             s_rules_box.itemnames = dm_coop_names;
-        //	  PGM
+        
 
         if (Cvar.VariableValue("coop") != 0)
             s_rules_box.curvalue = 1;
@@ -2956,7 +2956,7 @@ public final class Menu extends Key {
 
         Menu_Center(s_startserver_menu);
 
-        // call this now to set proper inital state
+        
         RulesChangeFunc(null);
     }
 
@@ -3011,7 +3011,7 @@ public final class Menu extends Key {
      * 
      * =============================================================================
      */
-    static String dmoptions_statusbar; //[128];
+    static String dmoptions_statusbar; 
 
     static final menuframework_s s_dmoptions_menu = new menuframework_s();
 
@@ -3045,7 +3045,7 @@ public final class Menu extends Key {
 
     static final menulist_s s_quad_drop_box = new menulist_s();
 
-    //	  ROGUE
+    
     static final menulist_s s_no_mines_box = new menulist_s();
 
     static final menulist_s s_no_nukes_box = new menulist_s();
@@ -3054,7 +3054,7 @@ public final class Menu extends Key {
 
     static final menulist_s s_no_spheres_box = new menulist_s();
 
-    //	  ROGUE
+    
 
     static void setvalue(int flags) {
         Cvar.SetValue("dmflags", flags);
@@ -3136,8 +3136,8 @@ public final class Menu extends Key {
             bit = DF_QUAD_DROP;
         }
 
-        //	  =======
-        //	  ROGUE
+        
+        
         else if (FS.Developer_searchpath(2) == 2) {
             if (f == s_no_mines_box) {
                 bit = DF_NO_MINES;
@@ -3149,8 +3149,8 @@ public final class Menu extends Key {
                 bit = DF_NO_SPHERES;
             }
         }
-        //	  ROGUE
-        //	  =======
+        
+        
 
         if (f != null) {
             if (f.curvalue == 0)
@@ -3165,7 +3165,7 @@ public final class Menu extends Key {
 
     }
 
-    //static String yes_no_names[] = { "no", "yes", 0 };
+    
     static final String[] teamplay_names = { "disabled", "by skin", "by model" };
 
     static void DMOptions_MenuInit() {
@@ -3375,8 +3375,8 @@ public final class Menu extends Key {
         s_friendlyfire_box.curvalue = (dmflags & DF_NO_FRIENDLY_FIRE) == 0 ? 1
                 : 0;
 
-        //	  ============
-        //	  ROGUE
+        
+        
         if (FS.Developer_searchpath(2) == 2) {
             s_no_mines_box.type = MTYPE_SPINCONTROL;
             s_no_mines_box.x = 0;
@@ -3431,8 +3431,8 @@ public final class Menu extends Key {
             s_no_spheres_box.curvalue = (dmflags & DF_NO_SPHERES) != 0 ? 1 : 0;
 
         }
-        //	  ROGUE
-        //	  ============
+        
+        
 
         Menu_AddItem(s_dmoptions_menu, s_falls_box);
         Menu_AddItem(s_dmoptions_menu, s_weapons_stay_box);
@@ -3450,20 +3450,20 @@ public final class Menu extends Key {
         Menu_AddItem(s_dmoptions_menu, s_quad_drop_box);
         Menu_AddItem(s_dmoptions_menu, s_friendlyfire_box);
 
-        //	  =======
-        //	  ROGUE
+        
+        
         if (FS.Developer_searchpath(2) == 2) {
             Menu_AddItem(s_dmoptions_menu, s_no_mines_box);
             Menu_AddItem(s_dmoptions_menu, s_no_nukes_box);
             Menu_AddItem(s_dmoptions_menu, s_stack_double_box);
             Menu_AddItem(s_dmoptions_menu, s_no_spheres_box);
         }
-        //	  ROGUE
-        //	  =======
+        
+        
 
         Menu_Center(s_dmoptions_menu);
 
-        // set the original dmflags statusbar
+        
         DMFlagCallback(null);
         Menu_SetStatusBar(s_dmoptions_menu, dmoptions_statusbar);
     }
@@ -3636,7 +3636,7 @@ public final class Menu extends Key {
 
         Menu_Center(s_downloadoptions_menu);
 
-        // skip over title
+        
         if (s_downloadoptions_menu.cursor == 0)
             s_downloadoptions_menu.cursor = 1;
     }
@@ -3701,7 +3701,7 @@ public final class Menu extends Key {
             s_addressbook_fields[i].x = 0;
             s_addressbook_fields[i].y = i * 18 + 0;
             s_addressbook_fields[i].localdata[0] = i;
-            // put the cursor to the end of text for editing
+            
             s_addressbook_fields[i].cursor = adr.string.length();
             s_addressbook_fields[i].length = 60;
             s_addressbook_fields[i].visible_length = 30;
@@ -3796,10 +3796,10 @@ public final class Menu extends Key {
 
         String skindisplaynames[];
 
-        //char displayname[MAX_DISPLAYNAME];
+        
         String displayname;
 
-        //char directory[MAX_QPATH];
+        
         String directory;
     }
 
@@ -3823,9 +3823,9 @@ public final class Menu extends Key {
     }
 
     static void RateCallback(Object unused) {
-        if (s_player_rate_box.curvalue != rate_tbl.length - 1) //sizeof(rate_tbl)
-                                                               // / sizeof(*
-                                                               // rate_tbl) - 1)
+        if (s_player_rate_box.curvalue != rate_tbl.length - 1) 
+                                                               
+                                                               
             Cvar.SetValue("rate", rate_tbl[s_player_rate_box.curvalue]);
     }
 
@@ -3839,7 +3839,7 @@ public final class Menu extends Key {
  
         String scratch;
 
-        //strcpy(scratch, skin);
+        
         scratch = skin;
         int pos = scratch.lastIndexOf('.');
         if (pos != -1)
@@ -3857,9 +3857,9 @@ public final class Menu extends Key {
     }
 
     static boolean PlayerConfig_ScanDirectories() {
-        //char findname[1024];
+        
         String findname;
-        //char scratch[1024];
+        
         String scratch;
 
         int ndirs = 0, npms = 0;
@@ -3870,7 +3870,7 @@ public final class Menu extends Key {
 
         int i;
 
-        //extern String * FS_ListFiles(String , int *, unsigned, unsigned);
+        
 
         s_numplayermodels = 0;
 
@@ -3899,7 +3899,7 @@ public final class Menu extends Key {
 
         for (i = 0; i < npms; i++) {
             int k, s;
-            //String a, b, c;
+            
             String pcxnames[];
             String skinnames[];
             int npcxfiles;
@@ -3908,18 +3908,18 @@ public final class Menu extends Key {
             if (dirnames[i] == null)
                 continue;
 
-            // verify the existence of tris.md2
+            
             scratch = dirnames[i];
             scratch += "/tris.md2";
             if (Sys.FindFirst(scratch, 0, SFF_SUBDIR | SFF_HIDDEN | SFF_SYSTEM) == null) {
-                //free(dirnames[i]);
+                
                 dirnames[i] = null;
                 Sys.FindClose();
                 continue;
             }
             Sys.FindClose();
 
-            // verify the existence of at least one pcx skin
+            
             scratch = dirnames[i] + "/*.pcx";
             pcxnames = FS.ListFiles(scratch, 0, 0);
             npcxfiles = pcxnames.length;
@@ -3930,11 +3930,11 @@ public final class Menu extends Key {
                 continue;
             }
 
-            // count valid skins, which consist of a skin with a matching "_i"
-            // icon
+            
+            
             for (k = 0; k < npcxfiles - 1; k++) {
                 if (!pcxnames[k].endsWith("_i.pcx")) {
-                    //if (!strstr(pcxnames[k], "_i.pcx")) {
+                    
                     if (IconOfSkinExists(pcxnames[k], pcxnames, npcxfiles - 1)) {
                         nskins++;
                     }
@@ -3943,11 +3943,11 @@ public final class Menu extends Key {
             if (nskins == 0)
                 continue;
 
-            skinnames = new String[nskins + 1]; //malloc(sizeof(String) *
-                                                // (nskins + 1));
-            //memset(skinnames, 0, sizeof(String) * (nskins + 1));
+            skinnames = new String[nskins + 1]; 
+                                                
+            
 
-            // copy the valid skins
+            
             for (s = 0, k = 0; k < npcxfiles - 1; k++) {
 
                 if (!pcxnames[k].contains("_i.pcx")) {
@@ -3972,14 +3972,14 @@ public final class Menu extends Key {
                 }
             }
 
-            // at this point we have a valid player model
+            
             if (s_pmi[s_numplayermodels] == null)
                 s_pmi[s_numplayermodels] = new playermodelinfo_s();
 
             s_pmi[s_numplayermodels].nskins = nskins;
             s_pmi[s_numplayermodels].skindisplaynames = skinnames;
 
-            // make short name for the model
+            
             a = dirnames[i].lastIndexOf('/');
             b = dirnames[i].lastIndexOf('\\');
 
@@ -4024,9 +4024,9 @@ public final class Menu extends Key {
         /*
          * extern cvar_t * name; extern cvar_t * team; extern cvar_t * skin;
          */
-        //har currentdirectory[1024];
+        
         String currentdirectory;
-        //char currentskin[1024];
+        
         String currentskin;
 
         int i = 0;
@@ -4057,10 +4057,10 @@ public final class Menu extends Key {
             currentskin = "grunt";
         }
 
-        //qsort(s_pmi, s_numplayermodels, sizeof(s_pmi[0]), pmicmpfnc);
+        
         Arrays.sort(s_pmi, 0, s_numplayermodels, (o1, o2) -> pmicmpfnc(o1, o2));
 
-        //memset(s_pmnames, 0, sizeof(s_pmnames));
+        
         s_pmnames = new String[MAX_PLAYERMODELS];
 
         for (i = 0; i < s_numplayermodels; i++) {
@@ -4205,10 +4205,10 @@ public final class Menu extends Key {
     static void PlayerConfig_MenuDraw() {
 
         refdef_t refdef = new refdef_t();
-        //char scratch[MAX_QPATH];
+        
         String scratch;
 
-        //memset(refdef, 0, sizeof(refdef));
+        
 
         refdef.x = viddef.getWidth() / 2;
         refdef.y = viddef.getHeight() / 2 - 72;
@@ -4388,7 +4388,7 @@ public final class Menu extends Key {
         });
     }
 
-    //	  =============================================================================
+    
     /* Menu Subsystem */
 
     /**
@@ -4424,10 +4424,10 @@ public final class Menu extends Key {
         if (cls.key_dest != key_menu)
             return;
 
-        // repaint everything next frame
+        
         SCR.DirtyScreen();
 
-        // dim everything behind it down
+        
         if (cl.cinematictime > 0)
             re.DrawFill(0, 0, viddef.getWidth(), viddef.getHeight(), 0);
         else
@@ -4435,9 +4435,9 @@ public final class Menu extends Key {
 
         m_drawfunc.execute();
 
-        // delay playing the enter sound until after the
-        // menu has been drawn, to avoid delay while
-        // caching images
+        
+        
+        
         if (m_entersound) {
             S.StartLocalSound(menu_in_sound);
             m_entersound = false;
@@ -4491,13 +4491,13 @@ public final class Menu extends Key {
     public static void Field_Draw(menufield_s f) {
         int i;
         String tempbuffer;
-        //[128] = "";
+        
 
         if (f.name != null)
             Menu_DrawStringR2LDark(f.x + f.parent.x + LCOLUMN_OFFSET, f.y
                     + f.parent.y, f.name);
 
-        //strncpy(tempbuffer, f.buffer + f.visible_offset, f.visible_length);
+        
         String s = f.buffer.toString();
         tempbuffer = s.substring(f.visible_offset, s.length());
         re.DrawChar(f.x + f.parent.x + 16, f.y + f.parent.y - 4, 18);
@@ -4601,10 +4601,10 @@ public final class Menu extends Key {
             String cbd;
 
             if ((cbd = Sys.GetClipboardData()) != null) {
-                //strtok(cbd, "\n\r\b");
+                
                 String lines[] = NEWLINE.split(cbd);
                 if (lines.length > 0 && lines[0].length() != 0) {
-                    //strncpy(f.buffer, cbd, f.length - 1);
+                    
                     f.buffer = new StringBuffer(lines[0]);
                     f.cursor = f.buffer.length();
 
@@ -4623,8 +4623,8 @@ public final class Menu extends Key {
         case K_BACKSPACE:
             if (f.cursor > 0) {
                 f.buffer.deleteCharAt(f.cursor - 1);
-                //memmove(f.buffer[f.cursor - 1], f.buffer[f.cursor], strlen(&
-                // f.buffer[f.cursor]) + 1);
+                
+                
                 f.cursor--;
 
                 if (f.visible_offset != 0) {
@@ -4635,8 +4635,8 @@ public final class Menu extends Key {
 
         case K_KP_DEL:
         case K_DEL:
-            //memmove(& f.buffer[f.cursor], & f.buffer[f.cursor + 1], strlen(&
-            // f.buffer[f.cursor + 1]) + 1);
+            
+            
             f.buffer.deleteCharAt(f.cursor);
             break;
 
@@ -4856,10 +4856,10 @@ public final class Menu extends Key {
                 Action_DoEnter((menuaction_s) item);
                 return true;
             case MTYPE_LIST:
-                //			Menulist_DoEnter( ( menulist_s ) item );
+                
                 return false;
             case MTYPE_SPINCONTROL:
-                //			SpinControl_DoEnter( ( menulist_s ) item );
+                
                 return false;
             }
         }

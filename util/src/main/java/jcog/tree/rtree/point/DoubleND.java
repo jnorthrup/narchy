@@ -68,7 +68,7 @@ public class DoubleND implements HyperPoint, Serializable {
 
     @Override
     public int hashCode() {
-        //TODO compute each component rounded to nearest epsilon?
+        
         return Arrays.hashCode(coord);
     }
 
@@ -77,13 +77,13 @@ public class DoubleND implements HyperPoint, Serializable {
         return '(' + Arrays.toString(coord) + ')';
     }
 
-//    @Override
-//    public final boolean isInfNeg() {
-//        return this.isEntirely(Double.NEGATIVE_INFINITY);
-//    }
 
-//    @Override
-//    public final boolean isInfPos() {
-//        return this.isEntirely(Double.POSITIVE_INFINITY);
-//    }
+
+
+
+
+
+
+
+
 }

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -42,7 +42,7 @@ import java.util.List;
  */
 public class Islands {
 
-    //public final UnionFind find = new UnionFind();
+    
     public final UnionFind2 find = new UnionFind2();
 
     private final FasterList<PersistentManifold> islandmanifold = new FasterList<>();
@@ -52,12 +52,12 @@ public class Islands {
         FasterList<BroadphasePair> pairPtr = colWorld.pairs().getOverlappingPairArray();
         int n = pairPtr.size();
 
-//        if (n > 0) {
-//            System.out.println(pairPtr.size() + " pairPtr in");
-//        }
+
+
+
 
         for (int i = 0; i < n; i++) {
-            //return array[index];
+            
             BroadphasePair collisionPair = pairPtr.get(i);
 
             Collidable colObj0 = collisionPair.pProxy0.data;
@@ -88,7 +88,7 @@ public class Islands {
     }
 
     public final void storeIslandActivationState(Collisions<?> world) {
-        // put the islandId ('find' value) into m_tag
+        
         int i = 0;
         List<Collidable> collidables = world.collidables();
         for (int i1 = 0, collidablesSize = collidables.size(); i1 < collidablesSize; i1++) {
@@ -117,13 +117,13 @@ public class Islands {
 
     public void buildIslands(Intersecter intersecter, List<Collidable> collidables) {
 
-        //System.out.println("builder islands");
+        
 
 
             islandmanifold.clearFast();
 
-            // we are going to sort the unionfind array, and store the element id in the size
-            // afterwards, we clean unionfind, to make sure no-one uses it anymore
+            
+            
 
             find.sortIslands();
             int numElem = find.size();
@@ -131,13 +131,13 @@ public class Islands {
             int endIslandIndex = 1;
             int startIslandIndex;
 
-            // update the sleeping state for bodies, if all are sleeping
+            
             for (startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
                 int islandId = find.id(startIslandIndex);
                 for (endIslandIndex = startIslandIndex + 1; (endIslandIndex < numElem) && (find.id(endIslandIndex) == islandId); endIslandIndex++) {
                 }
 
-                //int numSleeping = 0;
+                
 
                 boolean allSleeping = true;
 
@@ -145,7 +145,7 @@ public class Islands {
                 for (idx = startIslandIndex; idx < endIslandIndex; idx++) {
                     int i = find.sz(idx);
 
-                    //return array[index];
+                    
                     final Collidable colObj0 = collidables.get(i);
                     final int tag0 = colObj0.tag();
 
@@ -154,7 +154,7 @@ public class Islands {
                         continue;
                     }
 
-                    //assert ((tag0 == islandId) || (tag0 == -1));
+                    
                     if (tag0 == islandId) {
                         int s = colObj0.getActivationState();
                         if (s == Collidable.ACTIVE_TAG || s == Collidable.DISABLE_DEACTIVATION) {
@@ -165,10 +165,10 @@ public class Islands {
 
 
                 if (allSleeping) {
-                    //int idx;
+                    
                     for (idx = startIslandIndex; idx < endIslandIndex; idx++) {
                         int i = find.sz(idx);
-                        //return array[index];
+                        
                         final Collidable colObj0 = collidables.get(i);
                         int tag0 = colObj0.tag();
                         if ((tag0 != islandId) && (tag0 != -1)) {
@@ -182,11 +182,11 @@ public class Islands {
                     }
                 } else {
 
-                    //int idx;
+                    
                     for (idx = startIslandIndex; idx < endIslandIndex; idx++) {
                         int i = find.sz(idx);
 
-                        //return array[index];
+                        
                         Collidable colObj0 = collidables.get(i);
                         int tag0 = colObj0.tag();
                         if ((tag0 != islandId) && (tag0 != -1)) {
@@ -207,9 +207,9 @@ public class Islands {
             int i;
             int maxNumManifolds = intersecter.manifoldCount();
 
-            //#define SPLIT_ISLANDS 1
-            //#ifdef SPLIT_ISLANDS
-            //#endif //SPLIT_ISLANDS
+            
+            
+            
 
             for (i = 0; i < maxNumManifolds; i++) {
                 PersistentManifold manifold = intersecter.manifold(i);
@@ -219,12 +219,12 @@ public class Islands {
                     Collidable colObj1 = (Collidable) manifold.getBody1();
                     if (colObj1!=null) {
 
-                        // todo: check sleeping conditions!
+                        
                         int s0 = colObj0.getActivationState();
                         int s1 = colObj1.getActivationState();
                         if ((s0 != Collidable.ISLAND_SLEEPING) || (s1 != Collidable.ISLAND_SLEEPING)) {
 
-                            // kinematic objects don't merge islands, but wake up all connected objects
+                            
                             if (s0 != Collidable.ISLAND_SLEEPING && colObj0.isKinematicObject()) {
                                 colObj1.activate(true);
                             }
@@ -232,12 +232,12 @@ public class Islands {
                                 colObj0.activate(true);
                             }
 
-                            //#ifdef SPLIT_ISLANDS
-                            //filtering for response
+                            
+                            
                             if (intersecter.needsResponse(colObj0, colObj1)) {
                                 islandmanifold.add(manifold);
                             }
-                            //#endif //SPLIT_ISLANDS
+                            
                         }
                     }
                 }
@@ -257,41 +257,41 @@ public class Islands {
         int numElem = find.size();
 
 
-            //#ifndef SPLIT_ISLANDS
-            //btPersistentManifold** manifold = dispatcher->getInternalManifoldPointer();
-            //
-            //callback->ProcessIsland(&collisionObjects[0],collisionObjects.size(),manifold,maxNumManifolds, -1);
-            //#else
-            // Sort manifolds, based on islands
-            // Sort the vector using predicate and std::sort
-            //std::sort(islandmanifold.begin(), islandmanifold.end(), btPersistentManifoldSortPredicate);
+            
+            
+            
+            
+            
+            
+            
+            
 
             int numManifolds = islandmanifold.size();
 
-            // we should do radix sort, it it much faster (O(n) instead of O (n log2(n))
-            //islandmanifold.heapSort(btPersistentManifoldSortPredicate());
+            
+            
 
-            // JAVA NOTE: memory optimized sorting with caching of temporary array
-            //Collections.sort(islandmanifold, persistentManifoldComparator);
+            
+            
             MiscUtil.quickSort(islandmanifold, persistentManifoldComparator);
 
-            // now process all active islands (sets of manifolds for now)
+            
 
             int startManifoldIndex = 0;
             int endManifoldIndex = 1;
 
-            //int islandId;
+            
 
-            //printf("Start Islands\n");
+            
 
-            // traverse the simulation islands, and call the solver, unless all objects are sleeping/deactivated
+            
             for (startIslandIndex = 0; startIslandIndex < numElem; startIslandIndex = endIslandIndex) {
                 int islandId = find.id(startIslandIndex);
                 boolean islandSleeping = false;
 
                 for (endIslandIndex = startIslandIndex; (endIslandIndex < numElem) && ((find.id(endIslandIndex) == islandId)); endIslandIndex++) {
                     int i = find.sz(endIslandIndex);
-                    //return array[index];
+                    
                     Collidable colObj0 = collidables.get(i);
                     islandBodies.add(colObj0);
                     if (!colObj0.isActive()) {
@@ -300,24 +300,24 @@ public class Islands {
                 }
 
 
-                // find the accompanying contact manifold for this islandId
+                
                 int numIslandManifolds = 0;
-                //ObjectArrayList<PersistentManifold> startManifold = null;
+                
                 int startManifold_idx = -1;
 
                 if (startManifoldIndex < numManifolds) {
-                    //return array[index];
+                    
                     int curIslandId = getIslandId(islandmanifold.get(startManifoldIndex));
                     if (curIslandId == islandId) {
-                        //startManifold = &m_islandmanifold[startManifoldIndex];
-                        //startManifold = islandmanifold.subList(startManifoldIndex, islandmanifold.size());
+                        
+                        
                         startManifold_idx = startManifoldIndex;
 
-                        //return array[index];
+                        
                         for (endManifoldIndex = startManifoldIndex + 1; (endManifoldIndex < numManifolds) && (islandId == getIslandId(islandmanifold.get(endManifoldIndex))); endManifoldIndex++) {
 
                         }
-                        // Process the actual simulation, only if not sleeping/deactivated
+                        
                         numIslandManifolds = endManifoldIndex - startManifoldIndex;
                     }
 
@@ -326,7 +326,7 @@ public class Islands {
 
                 if (!islandSleeping) {
                     callback.processIsland(islandBodies, islandmanifold, startManifold_idx, numIslandManifolds, islandId);
-                    //printf("Island callback of size:%d bodies, %d manifolds\n",islandBodies.size(),numIslandManifolds);
+                    
                 }
 
                 if (numIslandManifolds != 0) {
@@ -337,11 +337,11 @@ public class Islands {
             }
 
 
-            //#endif //SPLIT_ISLANDS
+            
 
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    
 
     public static abstract class IslandCallback {
         public abstract void processIsland(Collection<Collidable> bodies, FasterList<PersistentManifold> manifolds, int manifolds_offset, int numManifolds, int islandId);

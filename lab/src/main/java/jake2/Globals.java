@@ -120,7 +120,7 @@ public class Globals extends Defines {
 	public static final byte[] cmd_text_buf = new byte[8192];
 	public static cmdalias_t cmd_alias;
 
-	//=============================================================================
+	
 
 	public static final byte[] net_message_buffer = new byte[MAX_MSGLEN];
 
@@ -138,9 +138,9 @@ public class Globals extends Defines {
 
 	public static cvar_t cl_lightlevel;
 
-	//
-	//	   userinfo
-	//
+	
+	
+	
 	public static cvar_t info_password;
 	public static cvar_t info_spectator;
 	public static cvar_t name;
@@ -182,7 +182,7 @@ public class Globals extends Defines {
 
 	public static cvar_t cl_paused;
 
-	// client/anorms.h
+	
 	public static final float bytedirs[][] = { /**
 								*/
 		{ -0.525731f, 0.000000f, 0.850651f }, {
@@ -355,7 +355,7 @@ public class Globals extends Defines {
 	public static final console_t con = new console_t();
 	public static cvar_t con_notifytime;
 	public static final viddef_t viddef = new viddef_t();
-	// Renderer interface used by VID, SCR, ...
+	
 	public static refexport_t re = new DummyRenderer();
 
 	public static final String[] keybindings = new String[256];
@@ -379,7 +379,7 @@ public class Globals extends Defines {
 	public static model_t gun_model;
 	public static final netadr_t net_from = new netadr_t();
 	
-	// logfile
+	
 	public static RandomAccessFile logfile;
 	
 	public static final float[] vec3_origin = { 0.0f, 0.0f, 0.0f };
@@ -389,13 +389,13 @@ public class Globals extends Defines {
 	
 	public static final Random rnd = new Random();
 
-	//=============================================================================
+	
 
-//        // Information used when we're running as an applet
-//        // Whether we're running as an applet
-//        public static boolean appletMode;
-//        // The applet, represented as an Object to avoid an AWT dependency here
-//        public static Object applet;
-        // A listener to receive video mode changes
+
+
+
+
+
+        
         public static SizeChangeListener sizeChangeListener;
 }

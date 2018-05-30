@@ -32,8 +32,8 @@ public class CGMethod {
     public List<String> argumentTypes = new ArrayList<>();
     public String returnType;
     public List<String> throwing = new ArrayList<>();
-    //public final List<CGMethod> invoking = new ArrayList<>();
-    //public final List<CGMethod> invokedBy = new ArrayList<>();
+    
+    
     public CGMethod overriding;
     private String key;
 

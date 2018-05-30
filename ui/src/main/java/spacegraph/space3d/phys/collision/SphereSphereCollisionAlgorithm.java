@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -82,16 +82,16 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		float radius0 = sphere0.getRadius();
 		float radius1 = sphere1.getRadius();
 
-		//#ifdef CLEAR_MANIFOLD
-		//manifoldPtr.clearManifold(); // don't do this, it disables warmstarting
-		//#endif
+		
+		
+		
 
-		// if distance positive, don't generate a new contact
+		
 		float r01 = radius0 + radius1;
 		if (lenSq > r01*r01) {
-			//#ifndef CLEAR_MANIFOLD
+			
 			resultOut.refreshContactPoints();
-			//#endif //CLEAR_MANIFOLD
+			
 			return;
 		}
 
@@ -99,7 +99,7 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		v3 normalOnSurfaceB = new v3(1, 0, 0);
 
 		float len = (float) Math.sqrt(lenSq);
-		// distance (negative means penetration)
+		
 		float dist = len - r01;
 
 		if (len > BulletGlobals.FLT_EPSILON) {
@@ -108,22 +108,22 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 
 		v3 tmp = new v3();
 
-		// point on A (worldspace)
+		
 		v3 pos0 = new v3();
 		tmp.scale(radius0, normalOnSurfaceB);
 		pos0.sub(col0.transform, tmp);
 
-		// point on B (worldspace)
+		
 		v3 pos1 = new v3();
 		tmp.scale(radius1, normalOnSurfaceB);
 		pos1.add(col1.transform, tmp);
 
-		// report a contact. internally this will be kept persistent, and contact reduction is done
+		
 		resultOut.addContactPoint(normalOnSurfaceB, pos1, dist, manifoldPtr.getContactBreakingThreshold());
 
-		//#ifndef CLEAR_MANIFOLD
+		
 		resultOut.refreshContactPoints();
-		//#endif //CLEAR_MANIFOLD
+		
 	}
 
 	@Override
@@ -138,7 +138,7 @@ public class SphereSphereCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static class CreateFunc extends CollisionAlgorithmCreateFunc {
 		@Override

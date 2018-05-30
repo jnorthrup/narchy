@@ -13,28 +13,28 @@ import java.util.stream.Collectors;
 
 public final class ArrayLists {
     
-//    public static void main(String[] args) {
-//        ArrayList<Object> toSplit = new ArrayList<Object>();
-//        toSplit.add("good");
-//        toSplit.add("bald");
-//        toSplit.add("bad");
-//        toSplit.add("bad");
-//        toSplit.add("not");
-//        toSplit.add("not");
-//        toSplit.add("bad");
-//        toSplit.add("good");
-//        toSplit.add("not");
-//        toSplit.add("bad");
-//        Object[] splitOn = {"good", "bad"};
-//        ArrayList<Object> objectFound = new ArrayList<Object>();
-//
-//        System.out.println(toSplit);
-//        System.out.println("splitOn: " + Arrays.toString(splitOn));
-//        System.out.println(" 0: " + split(toSplit, splitOn, 0, objectFound) + "\n    " + objectFound);
-//        System.out.println("-1: " + split(toSplit, splitOn, -1, objectFound) + "\n    " + objectFound);
-//        System.out.println(" 1: " + split(toSplit, splitOn, 1, objectFound) + "\n    " + objectFound);
-//        System.out.println(" 2: " + split(toSplit, splitOn, 2, objectFound) + "\n    " + objectFound);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     public static <T extends ArrayList> ArrayList<List<T>> split(ArrayList<T> arrayList, T[] splitOn) {
         return split(arrayList, splitOn, 0);
@@ -53,7 +53,7 @@ public final class ArrayLists {
         ArrayList<List<T>> splitted = new ArrayList();
         objectFound.clear();
 
-        //noinspection IfStatementWithTooManyBranches
+        
         if (direction == 0) {
             while (containsIn(arrayList, splitOn)) {
                 List<? extends T> subList = arrayList.subList(0, indexIn(arrayList, splitOn, objectFound));

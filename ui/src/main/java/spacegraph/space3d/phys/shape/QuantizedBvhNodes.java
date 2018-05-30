@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -45,7 +45,7 @@ public class QuantizedBvhNodes implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final int STRIDE = 4; // 16 bytes
+	private static final int STRIDE = 4; 
 	
 	private int[] buf;
 	private int size;
@@ -87,9 +87,9 @@ public class QuantizedBvhNodes implements Serializable {
 	}
 	
 	public void set(int destId, QuantizedBvhNodes srcNodes, int srcId) {
-		//assert (STRIDE == 4);
+		
 
-		// save field access:
+		
 		int[] buf = this.buf;
 		int[] srcBuf = srcNodes.buf;
 		
@@ -102,7 +102,7 @@ public class QuantizedBvhNodes implements Serializable {
 	public void swap(int id1, int id2) {
 		assert (STRIDE == 4);
 		
-		// save field access:
+		
 		int[] buf = this.buf;
 		
 		int temp0 = buf[id1*STRIDE+0];
@@ -182,7 +182,7 @@ public class QuantizedBvhNodes implements Serializable {
 	}
 	
 	public boolean isLeafNode(int nodeId) {
-		// skipindex is negative (internal node), triangleindex >=0 (leafnode)
+		
 		return (getEscapeIndexOrTriangleIndex(nodeId) >= 0);
 	}
 
@@ -193,13 +193,13 @@ public class QuantizedBvhNodes implements Serializable {
 
 	public int getTriangleIndex(int nodeId) {
 		assert (isLeafNode(nodeId));
-		// Get only the lower bits where the triangle index is stored
+		
 		return (getEscapeIndexOrTriangleIndex(nodeId) & ~((~0) << (31 - OptimizedBvh.MAX_NUM_PARTS_IN_BITS)));
 	}
 
 	public int getPartId(int nodeId) {
 		assert (isLeafNode(nodeId));
-		// Get only the highest bits where the part index is stored
+		
 		return (getEscapeIndexOrTriangleIndex(nodeId) >>> (31 - OptimizedBvh.MAX_NUM_PARTS_IN_BITS));
 	}
 	

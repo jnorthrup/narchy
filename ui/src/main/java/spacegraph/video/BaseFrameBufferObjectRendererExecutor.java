@@ -2,12 +2,12 @@ package spacegraph.video;
 
 /**
  * *   __ __|_  ___________________________________________________________________________  ___|__ __
- * *  //    /\                                           _                                  /\    \\
- * * //____/  \__     __ _____ _____ _____ _____ _____  | |     __ _____ _____ __        __/  \____\\
+ * *  
+ * * 
  * *  \    \  / /  __|  |     |   __|  _  |     |  _  | | |  __|  |     |   __|  |      /\ \  /    /
  * *   \____\/_/  |  |  |  |  |  |  |     | | | |   __| | | |  |  |  |  |  |  |  |__   "  \_\/____/
  * *  /\    \     |_____|_____|_____|__|__|_|_|_|__|    | | |_____|_____|_____|_____|  _  /    /\
- * * /  \____\                       http://jogamp.org  |_|                              /____/  \
+ * * /  \____\                       http:
  * * \  /   "' _________________________________________________________________________ `"   \  /
  * *  \/____.                                                                             .____\/
  * *
@@ -60,13 +60,13 @@ public class BaseFrameBufferObjectRendererExecutor {
     }
 
     public void start(GL2 inGL) {
-        //BaseLogging.getInstance().info("INITIALIZING BaseFrameBufferObjectRendererExecutor ... " + mTextureWidth + "x" + mTextureHeight);
-        //allocate the framebuffer object ...
+        
+        
         int[] result = new int[1];
         inGL.glGenFramebuffers(1, result, 0);
         mFrameBufferObjectID = result[0];
         inGL.glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferObjectID);
-        //allocate the colour texture ...
+        
         inGL.glGenTextures(1, result, 0);
         mColorTextureID = result[0];
         inGL.glBindTexture(GL_TEXTURE_2D, mColorTextureID);
@@ -75,7 +75,7 @@ public class BaseFrameBufferObjectRendererExecutor {
         inGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         inGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         inGL.glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mTextureWidth, mTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-        //allocate the depth texture ...
+        
         inGL.glGenTextures(1, result, 0);
         mDepthTextureID = result[0];
         inGL.glBindTexture(GL_TEXTURE_2D, mDepthTextureID);
@@ -84,33 +84,33 @@ public class BaseFrameBufferObjectRendererExecutor {
         inGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         inGL.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         inGL.glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32, mTextureWidth, mTextureHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, null);
-        //attach the textures to the framebuffer
+        
         inGL.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mColorTextureID, 0);
         inGL.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, mDepthTextureID, 0);
         inGL.glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        //check if fbo is set up correctly ...
+        
         checkFrameBufferObjectCompleteness(inGL);
         if (func != null) {
-            //initialize the assigned fbo renderer ...
+            
             func.init_FBORenderer(inGL);
         } else {
-            //BaseLogging.getInstance().warning("BaseFrameBufferObjectRendererInterface FOR THIS EXECUTOR IS NULL! init_FBORenderer() SKIPPED!");
+            
         }
     }
 
     public void renderToFrameBuffer(int inFrameNumber, GL2 inGL) {
         inGL.glPushAttrib(GL_TRANSFORM_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT);
-        //bind the framebuffer ...
+        
         inGL.glBindFramebuffer(GL_FRAMEBUFFER, mFrameBufferObjectID);
         inGL.glPushAttrib(GL_VIEWPORT_BIT);
         inGL.glViewport(0, 0, mTextureWidth, mTextureHeight);
         if (func != null) {
             func.mainLoop_FBORenderer(inFrameNumber, inGL);
         } else {
-            //BaseLogging.getInstance().warning("BaseFrameBufferObjectRendererInterface FOR THIS EXECUTOR IS NULL! renderToFrameBuffer() SKIPPED!");
+            
         }
         inGL.glPopAttrib();
-        //unbind the framebuffer ...
+        
         inGL.glBindFramebuffer(GL_FRAMEBUFFER, 0);
         inGL.glPopAttrib();
     }
@@ -119,7 +119,7 @@ public class BaseFrameBufferObjectRendererExecutor {
         inGL.glPushAttrib(GL_TEXTURE_BIT);
         inGL.glActiveTexture(inTextureUnitID);
         inGL.glBindTexture(GL_TEXTURE_2D, mColorTextureID);
-        //set the texture up to be used for painting a surface ...
+        
         int textureTarget = GL_TEXTURE_2D;
         inGL.glEnable(textureTarget);
         inGL.glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -131,57 +131,57 @@ public class BaseFrameBufferObjectRendererExecutor {
 
     public void stopColouredRendering(GL2 inGL) {
         inGL.glBindTexture(GL_TEXTURE_2D, 0);
-        //restore the active texture ...
+        
         inGL.glPopAttrib();
     }
 
-//    public void renderFBOAsFullscreenBillboard(GL2 inGL) {
-//        renderFBOAsFullscreenBillboard(inGL, false);
-//    }
-//
-//    public void renderFBOAsFullscreenBillboard_FLIPPED(GL2 inGL) {
-//        renderFBOAsFullscreenBillboard(inGL, true);
-//    }
-//
-//    public void renderFBOAsFullscreenBillboard(GL2 inGL, boolean inFlipped) {
-//        //reset frustum to default state ...
-//        BaseRoutineRuntime.resetFrustumToDefaultState(inGL);
-//        inGL.glShadeModel(GL_SMOOTH);
-//        inGL.glDisable(GL_LIGHTING);
-//        inGL.glFrontFace(GL_CCW);
-//        inGL.glDisable(GL_CULL_FACE);
-//        //disable depth test so that billboards can be rendered on top of each other ...
-//        inGL.glDisable(GL_DEPTH_TEST);
-//        inGL.glMatrixMode(GL_PROJECTION);
-//        inGL.glLoadIdentity();
-//        inGL.glOrtho(0, BaseGlobalEnvironment.getInstance().getScreenWidth(), BaseGlobalEnvironment.getInstance().getScreenHeight(), 0, -1, 1);
-//        inGL.glMatrixMode(GL_MODELVIEW);
-//        inGL.glLoadIdentity();
-//        this.prepareForColouredRendering(inGL, GL_TEXTURE0);
-//        inGL.glBegin(GL_QUADS);
-//        if (inFlipped) {
-//            //flipped billboard
-//            inGL.glTexCoord2f(0.0f, 0.0f);
-//            inGL.glVertex2f(0.0f, 0.0f);
-//            inGL.glTexCoord2f(1.0f, 0.0f);
-//            inGL.glVertex2f(BaseGlobalEnvironment.getInstance().getScreenWidth(), 0.0f);
-//            inGL.glTexCoord2f(1.0f, 1.0f);
-//            inGL.glVertex2f(BaseGlobalEnvironment.getInstance().getScreenWidth(), BaseGlobalEnvironment.getInstance().getScreenHeight());
-//            inGL.glTexCoord2f(0.0f, 1.0f);
-//            inGL.glVertex2f(0.0f, BaseGlobalEnvironment.getInstance().getScreenHeight());
-//        } else {
-//            inGL.glTexCoord2f(0.0f, 1.0f);
-//            inGL.glVertex2f(0.0f, 0.0f);
-//            inGL.glTexCoord2f(1.0f, 1.0f);
-//            inGL.glVertex2f(BaseGlobalEnvironment.getInstance().getScreenWidth(), 0.0f);
-//            inGL.glTexCoord2f(1.0f, 0.0f);
-//            inGL.glVertex2f(BaseGlobalEnvironment.getInstance().getScreenWidth(), BaseGlobalEnvironment.getInstance().getScreenHeight());
-//            inGL.glTexCoord2f(0.0f, 0.0f);
-//            inGL.glVertex2f(0.0f, BaseGlobalEnvironment.getInstance().getScreenHeight());
-//        }
-//        inGL.glEnd();
-//        this.stopColouredRendering(inGL);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void stop(GL2 inGL) {
         inGL.glDeleteFramebuffers(1, Buffers.newDirectIntBuffer(mFrameBufferObjectID));
@@ -190,51 +190,51 @@ public class BaseFrameBufferObjectRendererExecutor {
         if (func != null) {
             func.cleanup_FBORenderer(inGL);
         } else {
-            //BaseLogging.getInstance().warning("BaseFrameBufferObjectRendererInterface FOR THIS EXECUTOR IS NULL! cleanup() SKIPPED!");
+            
         }
     }
 
     private void checkFrameBufferObjectCompleteness(GL2 inGL) {
-        //BaseLogging.getInstance().info("CHECKING FRAMEBUFFEROBJECT COMPLETENESS ...");
+        
         int tError = inGL.glCheckFramebufferStatus(GL_FRAMEBUFFER);
         switch (tError) {
             case GL_FRAMEBUFFER_COMPLETE:
-                //BaseLogging.getInstance().info("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_COMPLETE_EXT");
+                
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
-                //BaseLogging.getInstance().error("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT");
+                
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
-                //BaseLogging.getInstance().error("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT");
+                
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS:
-                //BaseLogging.getInstance().error("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT");
+                
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_FORMATS:
-                //BaseLogging.getInstance().error("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT");
+                
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
-                //BaseLogging.getInstance().error("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT");
+                
                 break;
             case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
-                //BaseLogging.getInstance().error("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT");
+                
                 break;
             case GL_FRAMEBUFFER_UNSUPPORTED:
-                //BaseLogging.getInstance().error("FRAMEBUFFEROBJECT CHECK RESULT=GL_FRAMEBUFFER_UNSUPPORTED_EXT");
+                
                 break;
             default:
-                //BaseLogging.getInstance().error("FRAMEBUFFER CHECK RETURNED UNKNOWN RESULT ...");
+                
         }
     }
 
     /**
      **   __ __|_  ___________________________________________________________________________  ___|__ __
-     **  //    /\                                           _                                  /\    \\  
-     ** //____/  \__     __ _____ _____ _____ _____ _____  | |     __ _____ _____ __        __/  \____\\ 
+     **  
+     ** 
      **  \    \  / /  __|  |     |   __|  _  |     |  _  | | |  __|  |     |   __|  |      /\ \  /    /  
      **   \____\/_/  |  |  |  |  |  |  |     | | | |   __| | | |  |  |  |  |  |  |  |__   "  \_\/____/   
      **  /\    \     |_____|_____|_____|__|__|_|_|_|__|    | | |_____|_____|_____|_____|  _  /    /\     
-     ** /  \____\                       http://jogamp.org  |_|                              /____/  \    
+     ** /  \____\                       http:
      ** \  /   "' _________________________________________________________________________ `"   \  /    
      **  \/____.                                                                             .____\/     
      **

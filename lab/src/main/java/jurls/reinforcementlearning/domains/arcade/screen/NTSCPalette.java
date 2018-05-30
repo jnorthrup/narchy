@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.screen;
 
@@ -25,7 +25,7 @@ import java.awt.*;
  * @author Marc G. Bellemare <mgbellemare@ualberta.ca>
  */
 public class NTSCPalette extends ColorPalette {
-    // 128 unique colors, with odd indices being mapped to the color below
+    
 
     protected int[] colorData = new int[]{
         0x000000, 0, 0x4a4a4a, 0, 0x6f6f6f, 0, 0x8e8e8e, 0,
@@ -68,7 +68,7 @@ public class NTSCPalette extends ColorPalette {
     public NTSCPalette() {
         super();
 
-        // Set the palette as given above
+        
         for (int index = 0; index < colorData.length; index++) {
             int v = colorData[index & ~0x1];
             int r = (v & 0xFF0000) >> 16;

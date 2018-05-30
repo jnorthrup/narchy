@@ -151,9 +151,9 @@ public class Terminal extends Parser {
 	 */
 	@Override
 	public List<String> randomExpansion(int maxDepth, int depth) {
-//		List<String> v = new ArrayList<>();
-//		v.add(this.toString());
-//		return v;
+
+
+
 		return List.of(this.toString());
 	}
 

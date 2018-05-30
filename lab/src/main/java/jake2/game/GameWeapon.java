@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on on 12.11.2003 by RST.
+
 
 package jake2.game;
 
@@ -57,7 +57,7 @@ public class GameWeapon {
                 else
                     mod = Defines.MOD_BLASTER;
     
-                // bugfix null plane rst
+                
                 float[] normal;
                 if (plane == null)
                     normal = new float[3];
@@ -95,8 +95,8 @@ public class GameWeapon {
                 PlayerWeapon.PlayerNoise(ent.owner, ent.s.origin,
                         Defines.PNOISE_IMPACT);
     
-            //FIXME: if we are onground then raise our Z just a bit since we
-            // are a point?
+            
+            
             if (ent.enemy != null) {
                 float points = 0;
                 float[] v = { 0, 0, 0 };
@@ -208,7 +208,7 @@ public class GameWeapon {
                 PlayerWeapon.PlayerNoise(ent.owner, ent.s.origin,
                         Defines.PNOISE_IMPACT);
     
-            // calculate position for the explosion entity
+            
             Math3D.VectorMA(ent.s.origin, -0.02f, ent.velocity, origin);
     
             if (other.takedamage != 0) {
@@ -216,7 +216,7 @@ public class GameWeapon {
                         ent.s.origin, plane.normal, ent.dmg, 0, 0,
                         Defines.MOD_ROCKET);
             } else {
-                // don't throw any debris in net games
+                
                 if (GameBase.deathmatch.value == 0 && 0 == GameBase.coop.value) {
                     if ((surf != null)
                             && 0 == (surf.flags & (Defines.SURF_WARP
@@ -263,7 +263,7 @@ public class GameWeapon {
             EdictIterator edit = null;
     
             if (self.s.frame == 0) {
-                // the BFG effect
+                
                 ent = null;
                 while ((edit = GameBase.findradius(edit, self.s.origin,
                         self.dmg_radius)) != null) {
@@ -323,7 +323,7 @@ public class GameWeapon {
                 PlayerWeapon.PlayerNoise(self.owner, self.s.origin,
                         Defines.PNOISE_IMPACT);
     
-            // core explosion - prevents firing it into the wall/floor
+            
             if (other.takedamage != 0)
                 GameCombat.T_Damage(other, self, self.owner, self.velocity,
                         self.s.origin, plane.normal, 200, 0, 0,
@@ -407,7 +407,7 @@ public class GameWeapon {
                     if (null == tr.ent)
                         break;
     
-                    // hurt it if we can
+                    
                     if ((tr.ent.takedamage != 0)
                             && 0 == (tr.ent.flags & Defines.FL_IMMUNE_LASER)
                             && (tr.ent != self.owner))
@@ -415,8 +415,8 @@ public class GameWeapon {
                                 tr.endpos, Globals.vec3_origin, dmg, 1,
                                 Defines.DAMAGE_ENERGY, Defines.MOD_BFG_LASER);
     
-                    // if we hit something that's not a monster or player we're
-                    // done
+                    
+                    
                     if (0 == (tr.ent.svflags & Defines.SVF_MONSTER)
                             && (null == tr.ent.client)) {
                         game_import_t.WriteByte(Defines.svc_temp_entity);
@@ -460,7 +460,7 @@ public class GameWeapon {
         trace_t tr;
         float eta;
     
-        // easy mode only ducks one quarter the time
+        
         if (GameBase.skill.value == 0) {
             if (Lib.random() > 0.25)
                 return;
@@ -492,19 +492,19 @@ public class GameWeapon {
         float range;
         float[] dir = { 0, 0, 0 };
     
-        //see if enemy is in range
+        
         Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, dir);
         range = Math3D.VectorLength(dir);
         if (range > aim[0])
             return false;
     
         if (aim[1] > self.mins[0] && aim[1] < self.maxs[0]) {
-            // the hit is straight on so back the range up to the edge of their
-            // bbox
+            
+            
             range -= self.enemy.maxs[0];
         } else {
-            // this is a side hit so adjust the "right" value out to the edge of
-            // their bbox
+            
+            
             if (aim[1] < 0)
                 aim[1] = self.enemy.mins[0];
             else
@@ -518,8 +518,8 @@ public class GameWeapon {
         if (tr.fraction < 1) {
             if (0 == tr.ent.takedamage)
                 return false;
-            // if it will hit any client/monster then hit the one we wanted to
-            // hit
+            
+            
             if ((tr.ent.svflags & Defines.SVF_MONSTER) != 0
                     || (tr.ent.client != null))
                 tr.ent = self.enemy;
@@ -531,7 +531,7 @@ public class GameWeapon {
         Math3D.VectorMA(point, aim[2], up, point);
         Math3D.VectorSubtract(point, self.enemy.s.origin, dir);
     
-        // do the damage
+        
         GameCombat.T_Damage(tr.ent, self, self, dir, point, Globals.vec3_origin,
                 damage, kick / 2, Defines.DAMAGE_NO_KNOCKBACK, Defines.MOD_HIT);
     
@@ -539,7 +539,7 @@ public class GameWeapon {
                 && (null == tr.ent.client))
             return false;
     
-        // do our special form of knockback here
+        
         Math3D.VectorMA(self.enemy.absmin, 0.5f, self.enemy.size, v);
         Math3D.VectorSubtract(v, point, v);
         Math3D.VectorNormalize(v);
@@ -589,7 +589,7 @@ public class GameWeapon {
     
             tr = game_import_t.trace(start, null, null, end, self, content_mask);
     
-            // see if we hit water
+            
             if ((tr.contents & Defines.MASK_WATER) != 0) {
                 int color;
     
@@ -619,7 +619,7 @@ public class GameWeapon {
                         game_import_t.multicast(tr.endpos, Defines.MULTICAST_PVS);
                     }
     
-                    // change bullet's course when it enters water
+                    
                     Math3D.VectorSubtract(end, start, dir);
                     Math3D.vectoangles(dir, dir);
                     Math3D.AngleVectors(dir, forward, right, up);
@@ -630,13 +630,13 @@ public class GameWeapon {
                     Math3D.VectorMA(end, u, up, end);
                 }
     
-                // re-trace ignoring water this time
+                
                 tr = game_import_t.trace(water_start, null, null, end, self,
                         Defines.MASK_SHOT);
             }
         }
     
-        // send gun puff / flash
+        
         if (!((tr.surface != null) && 0 != (tr.surface.flags & Defines.SURF_SKY))) {
             if (tr.fraction < 1.0) {
                 if (tr.ent.takedamage != 0) {
@@ -659,8 +659,8 @@ public class GameWeapon {
             }
         }
     
-        // if went through water, determine where the end and make a bubble
-        // trail
+        
+        
         if (water) {
             float[] pos = { 0, 0, 0 };
     
@@ -730,12 +730,12 @@ public class GameWeapon {
     
         bolt = GameUtil.G_Spawn();
         bolt.svflags = Defines.SVF_DEADMONSTER;
-        // yes, I know it looks weird that projectiles are deadmonsters
-        // what this means is that when prediction is used against the object
-        // (blaster/hyperblaster shots), the player won't be solid clipped
-        // against
-        // the object. Right now trying to run into a firing hyperblaster
-        // is very jerky since you are predicted 'against' the shots.
+        
+        
+        
+        
+        
+        
         Math3D.VectorCopy(start, bolt.s.origin);
         Math3D.VectorCopy(start, bolt.s.old_origin);
         Math3D.vectoangles(dir, bolt.s.angles);
@@ -916,8 +916,8 @@ public class GameWeapon {
                 mask &= ~(Defines.CONTENTS_SLIME | Defines.CONTENTS_LAVA);
                 water = true;
             } else {
-                //ZOID--added so rail goes through SOLID_BBOX entities (gibs,
-                // etc)
+                
+                
                 if ((tr.ent.svflags & Defines.SVF_MONSTER) != 0
                         || (tr.ent.client != null)
                         || (tr.ent.solid == Defines.SOLID_BBOX))
@@ -934,13 +934,13 @@ public class GameWeapon {
             Math3D.VectorCopy(tr.endpos, from);
         }
     
-        // send gun puff / flash
+        
         game_import_t.WriteByte(Defines.svc_temp_entity);
         game_import_t.WriteByte(Defines.TE_RAILTRAIL);
         game_import_t.WritePosition(start);
         game_import_t.WritePosition(tr.endpos);
         game_import_t.multicast(self.s.origin, Defines.MULTICAST_PHS);
-        // gi.multicast (start, MULTICAST_PHS);
+        
         if (water) {
             game_import_t.WriteByte(Defines.svc_temp_entity);
             game_import_t.WriteByte(Defines.TE_RAILTRAIL);

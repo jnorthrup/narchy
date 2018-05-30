@@ -66,20 +66,20 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
             super($.func("unify", label(subterm), pattern, eachMatch), pattern);
             this.subterm = subterm;
             this.eachMatch = eachMatch;
-            //final int requiredVars = conc.uniqueVars!=null ? conc.uniqueVars.size() : 0;
-//            this.eachMatch = requiredVars > 0 ? AndCondition.the(new AbstractPred<Derivation>($.func("mustAssign", $.sete(conc.uniqueVars))) {
-//                @Override public boolean test(Derivation d) {
-//
-//                    long matchedVars = d.xy.map.entrySet().stream().filter(x ->
-//                            x.getValue().get()!=null && x.getKey() instanceof VarPattern).count();
-//
-//                    if (requiredVars <= matchedVars) {
-//                        return true;
-//                    }
-//
-//                    return false; //impossible to complete
-//                }
-//            }, eachMatch) : eachMatch;
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         @Override

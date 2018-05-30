@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.dynamics;
 
-//updated to rev 100
+
 
 /**
  * This is an internal structure.

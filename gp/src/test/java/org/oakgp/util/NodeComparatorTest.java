@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,17 +40,17 @@ public class NodeComparatorTest {
 
     @Test
     public void testCompareFunctionsSameReturnType() {
-        // ordering of function nodes is a bit arbitrary (relies on hashCode of Function class name and arguments)
-        // the important thing is that it is consistent
+        
+        
         assertOrdered(readNode("(+ 1 1)"), readNode("(- 1 1)"));
         assertOrdered(readNode("(* 3 3)"), readNode("(* 3 4)"));
     }
 
     @Test
     public void testCompareFunctionsDifferentReturnTypes() {
-        // ordering of function nodes is a bit arbitrary (relies on hashCode of Function class name and arguments)
-        // the important thing is that it is consistent
-        // pos? returns boolean, + returns integer
+        
+        
+        
         assertOrdered(readNode("(pos? 1)"), readNode("(+ 1 1)"));
     }
 
@@ -111,12 +111,12 @@ public class NodeComparatorTest {
 
 
 
-//        assertEquals("-1", nodes.get(0).toString());
-//        assertEquals("3", nodes.get(1).toString());
-//        assertEquals("v0", nodes.get(2).toString());
-//        assertEquals("v1", nodes.get(3).toString());
-//        assertEquals(f2, nodes.get(4));
-//        assertEquals(f1, nodes.get(5));
-//        assertEquals(f3, nodes.get(6));
+
+
+
+
+
+
+
     }
 }

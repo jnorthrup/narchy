@@ -27,10 +27,10 @@ public class RelationClustering extends ChainClustering {
 
     @Override
     protected void link(Task tx, Task ty) {
-        assert (tx.isBelief() && ty.isBelief()); //TODO abstract
+        assert (tx.isBelief() && ty.isBelief()); 
 
 
-        //TODO Allen interval
+        
         String relation;
         if (tx.intersects(ty.start(), ty.end())) {
             relation = "simul";
@@ -64,7 +64,7 @@ public class RelationClustering extends ChainClustering {
                 if (tru == null)
                     return;
 
-                //TODO enum
+                
                 Term t;
                 switch (relation) {
                     case "simul":

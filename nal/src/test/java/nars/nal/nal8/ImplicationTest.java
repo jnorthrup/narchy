@@ -22,7 +22,7 @@ public class ImplicationTest {
     static final boolean[] B = new boolean[] { true, false };
 
     @Test public void testBelief() {
-        //Z, X==>Y
+        
         StringBuilder o = new StringBuilder();
         for (float condFreq : new float[] { 0, 1, 0.5f }) {
             for (boolean sp : B) {
@@ -41,13 +41,13 @@ public class ImplicationTest {
 
                         Term nz = sp ? y : x;
 
-//                        BeliefTable nzb = n.concept(nz).beliefs();
-//                        int bs = nzb.size();
-//                        if (bs == 2) {
-//                            nzb.print();
-//                            System.out.println();
-//                        }
-                        //assert(bs == 0 || bs == 1 || bs == 3); //either one answer, or something revised to 0.5 via 2
+
+
+
+
+
+
+                        
 
                         @Nullable Truth nzt = n.beliefTruth(nz, ETERNAL);
 
@@ -63,14 +63,14 @@ public class ImplicationTest {
         assertContains(oo, "x. %0.0% ((--,x)==>y). y=%1.0;.81%");
         assertContains(oo, "y. %0.0% ((--,x)==>y). x=%1.0;.45%");
         assertContains(oo, "y. %0.0% (--,((--,x)==>y)). x=%0.0;.81%");
-        //...
+        
 
     }
 
 
 
     @Test public void testGoal() {
-        //Z, X==>Y
+        
         StringBuilder o = new StringBuilder();
         for (boolean sp : B) {
             Term z = sp ? x : y;
@@ -98,16 +98,16 @@ public class ImplicationTest {
 
         System.out.println(oo);
 
-        //strong
+        
         assertContains(oo, "y! (x==>y). x=%1.0;.81%");
         assertContains(oo, "y! ((--,x)==>y). x=%0.0;.81%");
         assertContains(oo, "(--,y)! (--,(x==>y)). x=%1.0;.81%");
         assertContains(oo, "(--,y)! (--,((--,x)==>y)). x=%0.0;.81%");
 
-        //weak
+        
         assertContains(oo, "x! (x==>y). y=%1.0;.45%");
         assertContains(oo, "x! (--,(x==>y)). y=%0.0;.45%");
-        //...
+        
 
 
     }

@@ -18,54 +18,54 @@ public abstract class AbstractSocket extends Term{
 
 	@Override
 	public boolean isEmptyList() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isAtom() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isCompound() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isAtomic() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isList() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isGround() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isGreater(Term t) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 	@Override
 	public boolean isGreaterRelink(Term t, ArrayList<String> vorder) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 
 	@Override
 	public boolean isEqual(Term t) {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 

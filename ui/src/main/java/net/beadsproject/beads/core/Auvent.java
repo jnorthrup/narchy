@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.core;
 

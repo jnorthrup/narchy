@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.agents;
 
@@ -66,7 +66,7 @@ public class HumanAgent extends AbstractAgent {
 
         this.exportFrames = exportFrames;
 
-        // If we want to export frames, we also need to create the relevant object
+        
         if (this.exportFrames) {
             movieGenerator = new MovieGenerator(exportFrameBasename);
         }
@@ -85,19 +85,19 @@ public class HumanAgent extends AbstractAgent {
     }
 
     public boolean shouldTerminate() {
-        // Terminate if the 'q' key was pressed on the UI
+        
         return ui.quitRequested();
     }
 
     @Override
     public long getPauseLength() {
-        // The idea here is to try and compensate for I/O delays by adjusting
-        //  the pause length from step to step
+        
+        
         long targetDelta = 1000 / framesPerSecond;
         long deltaRemainder = 1000 % framesPerSecond;
         millisFraction += deltaRemainder;
 
-        // Correct for fractional deltas
+        
         while (millisFraction > framesPerSecond) {
             targetDelta += 1;
             millisFraction -= framesPerSecond;
@@ -109,7 +109,7 @@ public class HumanAgent extends AbstractAgent {
         }
         else {
             long deltaTime = time - lastFrameTime;
-            // Correct the timing by how much elapsed
+            
             timeError += targetDelta - (deltaTime - lastWaitTime);
         }
 
@@ -120,7 +120,7 @@ public class HumanAgent extends AbstractAgent {
             timeError = 0;
             return lastWaitTime;
         }
-        else { // Don't wait if we're behind
+        else { 
             lastWaitTime = 0;
             return 0;
         }
@@ -128,7 +128,7 @@ public class HumanAgent extends AbstractAgent {
 
     @Override
     public int selectAction() {
-        // Obtain the action from the UI
+        
         int action = ui.getKeyboardAction();
 
         return action;
@@ -136,16 +136,16 @@ public class HumanAgent extends AbstractAgent {
     
     @Override
     public void observe(ScreenMatrix screen, ConsoleRAM ram, RLData rlData) {
-        // Export frames if so desired
+        
         if (exportFrames) {
             BufferedImage image = converter.convert(screen);
             movieGenerator.record(image);
         }
 
-        // Display reward information via messages
+        
         if (rlData.reward != 0)
             ui.addMessage("Reward: "+rlData.reward);
-        // Also print out 'game over' when we received the terminal bit
+        
         if (rlData.isTerminal) {
             if (!displayedGameOver) {
                 ui.addMessage("GAME OVER");
@@ -161,42 +161,42 @@ public class HumanAgent extends AbstractAgent {
      * @param args
      */
     public static void main(String[] args) {
-        // Parameters; default values
+        
         boolean useGUI = true;
         String namedPipesName = null;
         boolean exportFrames = false;
         
-        // Parse arguments
+        
         int argIndex = 0;
 
         boolean doneParsing = (args.length == 0);
 
-        // Loop through the list of arguments
+        
         while (!doneParsing) {
-            // -nogui: do not display the Java GUI
+            
             if (args[argIndex].equals("-nogui")) {
                 useGUI = false;
                 argIndex++;
             }
-            // -named_pipes <basename>: use to communicate with ALE via named pipes
-            //  (instead of stdin/out)
+            
+            
             else if (args[argIndex].equals("-named_pipes") && (argIndex + 1) < args.length) {
                 namedPipesName = args[argIndex+1];
 
                 argIndex += 2;
             }
-            // -export_frames: use this to save frames as PNG images
+            
             else if (args[argIndex].equals("-export_frames")) {
                 exportFrames = true;
                 argIndex++;
             }
-            // If the argument is unrecognized, exit
+            
             else {
                 printUsage();
                 System.exit(-1);
             }
 
-            // Once we have parsed all arguments, stop
+            
             if (argIndex >= args.length)
                 doneParsing = true;
         }

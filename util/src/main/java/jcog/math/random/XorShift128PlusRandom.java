@@ -16,7 +16,7 @@ package jcog.math.random;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  *
  */
 
@@ -27,12 +27,12 @@ import java.util.Random;
 /**
  * An unbelievably fast, top-quality {@linkplain Random pseudorandom number generator} that
  * returns the sum of consecutive outputs of a Marsaglia Xorshift generator (described in <a
- * href="http://www.jstatsoft.org/v08/i14/paper/">&ldquo;Xorshift RNGs&rdquo;</a>, <i>Journal of
+ * href="http:
  * Statistical Software</i>, 8:1&minus;6, 2003) with 128 bits of state.
  * <p>
- * <p>More details can be found on the <a href="http://xorshift.di.unimi.it/"><code>xorshift*</code>/<code>xorshift+</code> generators and the PRNG shootout</a> page.
+ * <p>More details can be found on the <a href="http:
  * The basic idea is taken from Mutsuo Saito and Makuto Matsumoto's
- * <a href="http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/XSADD/"><code>XSadd</code></a> generator, which
+ * <a href="http:
  * is however based on 32-bit shifts and fails several statistical tests when reversed.
  * <p>
  * <p>Note that this is
@@ -92,8 +92,8 @@ public class XorShift128PlusRandom extends AtomicRandom {
     public int nextInt(int n) {
 
         int v = Math.abs((int) (nextLong())) % n;
-        //if (v >= n || v < 0)
-        //throw new UnsupportedOperationException();
+        
+        
         return v;
     }
 
@@ -110,7 +110,7 @@ public class XorShift128PlusRandom extends AtomicRandom {
     public long nextLong(long n) {
         if (n <= 0)
             throw new IllegalArgumentException();
-        // No special provision for n power of two: all our bits are good.
+        
         while (true) {
             long bits = nextLong() >>> 1;
             long value = bits % n;
@@ -159,17 +159,17 @@ public class XorShift128PlusRandom extends AtomicRandom {
     }
 
 
-//    /**
-//     * Sets the state of this generator.
-//     * <p>
-//     * <p>The internal state of the generator will be reset, and the state array filled with the provided array.
-//     *
-//     * @param state an array of 16 longs; at least one must be nonzero.
-//     */
-//    public void setState(long[] state) {
-//        if (state.length != 2)
-//            throw new IllegalArgumentException("The argument array contains " + state.length + " longs instead of " + 2);
-//        s0 = state[0];
-//        s1 = state[1];
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

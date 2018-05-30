@@ -23,7 +23,7 @@ public class EpsilonGreedyActionSelector implements ActionSelector {
             }
         }
 
-        //probably unnecessary to allocate a new set, just modify the input parameter array values
+        
 
         ActionValuePair[] ret = new ActionValuePair[actionValuePairs.length];
 

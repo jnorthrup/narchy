@@ -54,15 +54,15 @@ public class SideCraft extends NAgentX {
         pixels = senseCamera("cra", cam);
 
 
-//        new NObj("cra", craft, nar)
-//                .read(
-//                    "player.health",
-//                    "player.dir",
-//                    "player.getTile().connectsToGrass",
-//                    "player.getTile().connectsToWater"
-//                ).into(this);
 
-//        InputHandler input = craft.input;
+
+
+
+
+
+
+
+
         actionToggle($("cra(key,left)"), (b) -> {
             if (b) craft.player.startLeft(false /* slow */);
             else craft.player.stopLeft();
@@ -94,10 +94,10 @@ public class SideCraft extends NAgentX {
         });
 
 
-//        addToggleAction("cra:up", (b) -> input.up.toggle(b) );
-//        addToggleAction("cra:down", (b) -> input.down.toggle(b) );
-//        addToggleAction("cra:left", (b) -> input.left.toggle(b) );
-//        addToggleAction("cra:right", (b) -> input.right.toggle(b) );
+
+
+
+
 
         craft.startGame(false, 512);
     }

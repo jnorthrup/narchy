@@ -59,7 +59,7 @@ public class Grid2DSimple implements World {
         
         this.action = action;
         
-        //# At random intervals, jump to a random position in the world
+        
         if (Math.random() < JUMP_FRACTION) {
             focusPositionW = w * Math.random();
             focusPositionH = h * Math.random();
@@ -90,7 +90,7 @@ public class Grid2DSimple implements World {
         
         
         
-        final double exp = 3.0; //sharpen
+        final double exp = 3.0; 
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
                 double dx = Math.abs(x - focusPositionW);
@@ -137,7 +137,7 @@ public class Grid2DSimple implements World {
     
     public static void main(String[] args) throws Exception {
         Class<? extends Agent> a = RandomAgent.class;
-        //Class<? extends Agent> a = QLAgent.class;
+        
         
         new Simulation(a, new Grid2DSimple(4,4, 11990000, 0.01, 0.005));
         

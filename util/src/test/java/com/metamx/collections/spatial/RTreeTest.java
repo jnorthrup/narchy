@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -38,36 +38,36 @@ public class RTreeTest {
 
     }
 
-//    @Test
-//    public void testInsertNoSplit() {
-//        float[] elem = new float[]{5, 5};
-//        tree.insert(elem, 1);
-//        assertTrue(Arrays.equals(elem, tree.getRoot().getMinCoordinates()));
-//        assertTrue(Arrays.equals(elem, tree.getRoot().getMaxCoordinates()));
-//
-//        tree.insert(new float[]{6, 7}, 2);
-//        tree.insert(new float[]{1, 3}, 3);
-//        tree.insert(new float[]{10, 4}, 4);
-//        tree.insert(new float[]{8, 2}, 5);
-//
-//        assertEquals(tree.getRoot().getChildren().size(), 5);
-//
-//        float[] expectedMin = new float[]{1, 2};
-//        float[] expectedMax = new float[]{10, 7};
-//
-//        assertTrue(Arrays.equals(expectedMin, tree.getRoot().getMinCoordinates()));
-//        assertTrue(Arrays.equals(expectedMax, tree.getRoot().getMaxCoordinates()));
-//        assertEquals(tree.getRoot().getArea(), 45.0d);
-//    }
-//
-//    @Test
-//    public void testInsertDuplicatesNoSplit() {
-//        tree.insert(new float[]{1, 1}, 1);
-//        tree.insert(new float[]{1, 1}, 1);
-//        tree.insert(new float[]{1, 1}, 1);
-//
-//        assertEquals(tree.getRoot().getChildren().size(), 3);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testInsertDuplicatesNoSplitRoaring() {
@@ -94,19 +94,19 @@ public class RTreeTest {
         assertEquals(2, R.root().children.size());
         assertFalse(R.root().contains(new float[]{1, 3}));
 
-        assertEquals(2, R.root().max[1], 0.01f); //y coord = 2, not 3 (which was just removed)
+        assertEquals(2, R.root().max[1], 0.01f); 
 
     }
 
-//    @Test
-//    public void testSplitOccurs() {
-//        Random rand = new Random();
-//        for (int i = 0; i < 100; i++) {
-//            tree.insert(new float[]{rand.nextFloat(), rand.nextFloat()}, i);
-//        }
-//
-//        assertTrue(tree.getRoot().getChildren().size() > 1);
-//    }
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testSplitOccursRoaring() {

@@ -15,5 +15,5 @@ public class wavinfo_t {
 	public int channels;
 	public int loopstart;
 	public int samples;
-	public int dataofs; // chunk starts this many bytes from file start
+	public int dataofs; 
 }

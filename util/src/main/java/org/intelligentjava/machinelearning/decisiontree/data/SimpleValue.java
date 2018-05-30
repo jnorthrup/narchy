@@ -46,10 +46,10 @@ public class SimpleValue<L> implements Function<String,L> {
         return values.get(column);
     }
 
-//    @Override
-//    public L get() {
-//        return values.get(labelColumn);
-//    }
+
+
+
+
 
     /**
      * {@inheritDoc}

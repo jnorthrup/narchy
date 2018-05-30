@@ -94,7 +94,7 @@ public class AllIntervalSeries extends AbstractProblem {
         ALLDIFF[1] = (IntConstraintFactory.alldifferent(dist, "BC"));
         solver.post(ALLDIFF);
 
-        // break symetries
+        
         OTHERS = new Constraint[2];
         OTHERS[0] = (IntConstraintFactory.arithm(vars[1], ">", vars[0]));
         OTHERS[1] = (IntConstraintFactory.arithm(dist[0], ">", dist[m - 2]));

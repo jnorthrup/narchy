@@ -28,7 +28,7 @@ public abstract class Service<C> extends AtomicReference<Services.ServiceState> 
     public String toString() {
         String nameString = getClass().getName();
 
-        //quick common package name filters
+        
         if (nameString.startsWith("jcog.") || nameString.startsWith("nars."))
             nameString = getClass().getSimpleName();
 

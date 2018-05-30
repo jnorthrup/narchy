@@ -55,12 +55,12 @@ public class Vocalization extends NARService {
         if (word == null)
             return;
 
-        //String wordString = word instanceof Atom ? $.unquote(word) : word.toString();
+        
 
-//        if (Twenglish.prepositions.contains(wordString))
-//            nar.believe($.instprop(word, PREPOSITION), Tense.Eternal);
-//        if (Twenglish.personalPronouns.contains(wordString))
-//            nar.believe($.instprop(word, PRONOUN), Tense.Eternal);
+
+
+
+
 
         if (when < nar.time() - nar.dur() * durationsPerWord) {
             return;
@@ -87,7 +87,7 @@ public class Vocalization extends NARService {
 
     public boolean next() {
 
-        //long start = nar.time();
+        
         float dur = nar.dur() * durationsPerWord;
         long now = nar.time();
         long startOfNow = now - (int) Math.ceil(dur);
@@ -96,13 +96,13 @@ public class Vocalization extends NARService {
 
         FasterList<Pair<Term, Truth>> pending = new FasterList<>(0);
         synchronized (vocalize) {
-            //vocalize.rowKeySet().tailSet(startOfNow-1).clear();
+            
 
             SortedSet<Long> tt = vocalize.rowKeySet().headSet(endOfNow);
 
             if (!tt.isEmpty()) {
                 LongArrayList ll = new LongArrayList(tt.size());
-                tt.forEach(ll::add); //copy to array so we can modify the vocalize rows
+                tt.forEach(ll::add); 
 
                 ll.forEach(t -> {
                     Set<Map.Entry<Term, TruthAccumulator>> entries = vocalize.row(t).entrySet();
@@ -121,17 +121,17 @@ public class Vocalization extends NARService {
             return true;
 
 
-        //TODO decide word..
+        
         Term spoken = decide(pending);
         if (spoken!=null)
             speak.accept(spoken);
 
-//            {
-//                //n.believe(tt, Tense.Present);
-//                //System.out.println(wordString);
-//                bot.send(wordString);
-//
-//            }
+
+
+
+
+
+
 
         return true;
     }

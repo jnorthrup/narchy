@@ -19,7 +19,7 @@ public class Gravity implements GlobalChangeSpeed {
 	}
 	
 	public void globalChangeSpeed(SmartblobSim sim, float secondsSinceLastCall){
-		boolean downIsPositive = true; //in java graphics down is positive y
+		boolean downIsPositive = true; 
 		float amount = secondsSinceLastCall*acceleration;
 		float addToSpeed = downIsPositive ? amount : -amount;
 		Smartblob blobArray[];

@@ -57,9 +57,9 @@ public class TheoryManager {
     private final PrimitiveManager primitiveManager;
     private final Deque<Term> startGoalStack;
 
-//	public TheoryManager(Prolog vm) {
-//		this(vm, new MutableClauseIndex());
-//	}
+
+
+
 
     public TheoryManager(Prolog vm, ClauseIndex dynamics) {
         engine = vm;
@@ -110,16 +110,16 @@ public class TheoryManager {
         Struct clause = toClause(cl);
         Struct struct = ((Struct) clause.sub(0));
         Deque<ClauseInfo> family = dynamicDBase.clauses(struct.key());
-        //final ExecutionContext ctx = engine.getEngineManager().getCurrentContext();
+        
 
 		/*creo un nuovo clause database x memorizzare la teoria all'atto della retract 
 		 * questo lo faccio solo al primo giro della stessa retract 
 		 * (e riconosco questo in base all'id del contesto)
 		 * sara' la retract da questo db a restituire il risultato
 		 */
-//		FamilyClausesList familyQuery = retractDBase.computeIfAbsent("ctxId "+ctx.getId(), (c) -> {
-//			return new FamilyClausesList(family);
-//		});
+
+
+
 
         if (family == null)
             return 0;
@@ -136,26 +136,26 @@ public class TheoryManager {
         });
 
 
-//		//fa la retract dalla teoria base
-//		if (family != null){
-//			for (Iterator<ClauseInfo> it = family.iterator(); it.hasNext();) {
-//				ClauseInfo d = it.next();
-//				if (clause.match(d.getClause())) {
-//					it.remove();
-//					break;
-//				}
-//			}
-//		}
-//		//fa la retract dal retract db
-//		for (Iterator<ClauseInfo> i = familyQuery.iterator(); i.hasNext();) {
-//			ClauseInfo d = i.next();
-//			if (clause.match(d.getClause())) {
-//				i.remove();
-//				if (engine.isSpy())
-//					engine.spy("DELETE: " + d.getClause() + '\n');
-//				return new ClauseInfo(d.getClause(), null);
-//			}
-//		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return removals[0];
     }
 
@@ -189,7 +189,7 @@ public class TheoryManager {
     public /*synchronized*/ Deque<ClauseInfo> find(Term headt) {
 
         if (headt instanceof Struct) {
-            //String key = ((Struct) headt).getPredicateIndicator();
+            
             Struct s = (Struct) headt;
             Deque<ClauseInfo> list = dynamicDBase.predicates(s);
             if (list == null) {
@@ -202,13 +202,13 @@ public class TheoryManager {
         }
 
         if (headt instanceof Var) {
-            //            List l = new LinkedList();
-            //            for (Iterator iterator = clauseDBase.iterator(); iterator.hasNext();) {
-            //                ClauseInfo ci =  (ClauseInfo) iterator.next();
-            //                if(ci.dynamic)
-            //                    l.add(ci);
-            //            }
-            //            return l;
+            
+            
+            
+            
+            
+            
+            
             throw new RuntimeException();
         }
         return EMPTY_ARRAYDEQUE;
@@ -253,7 +253,7 @@ public class TheoryManager {
 		/*Castagna 06/2011*/
         int clause = 0;
 		/**/
-        // iterate all clauses in theory and assert them
+        
         try {
             for (Iterator<? extends Term> it = theory.iterator(engine.ops); it.hasNext(); ) {
 				/*Castagna 06/2011*/
@@ -265,7 +265,7 @@ public class TheoryManager {
             }
         } catch (InvalidTermException e) {
 			/*Castagna 06/2011*/
-            //throw new InvalidTheoryException(e.getMessage());
+            
             throw new InvalidTheoryException(e.getMessage(), clause, e.line, e.pos);
 			/**/
         }
@@ -301,7 +301,7 @@ public class TheoryManager {
             ClauseInfo d = allClauses.next();
             if (libName.equals(d.libName)) {
                 try {
-                    // Rimuovendolo da allClauses si elimina solo il valore e non la chiave
+                    
                     allClauses.remove();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -330,8 +330,8 @@ public class TheoryManager {
     /**
      * Gets a clause from a generic Term
      */
-    private Struct toClause(Struct t) {        //PRIMITIVE
-        // TODO bad, slow way of cloning. requires approx twice the time necessary
+    private Struct toClause(Struct t) {        
+        
         t = (Struct) Term.term(t.toString(), this.engine.ops);
         if (!t.isClause())
             t = new Struct(":-", t, TRUE);
@@ -354,7 +354,7 @@ public class TheoryManager {
                 engine.solve(s);
             } catch (Exception ex) {
                 Prolog.logger.error("solveTheoryGoal {}", ex);
-                //ex.printStackTrace();
+                
             }
         }
     }

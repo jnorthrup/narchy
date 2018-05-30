@@ -49,8 +49,8 @@ public final class M {
             return;
         }
 
-        // if the hull point one-quarter unit down is solid the entity is on
-        // ground
+        
+        
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] - 0.25f;
@@ -58,16 +58,16 @@ public final class M {
         trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, point, ent,
                 Defines.MASK_MONSTERSOLID);
 
-        // check steepness
+        
         if (trace.plane.normal[2] < 0.7 && !trace.startsolid) {
             ent.groundentity = null;
             return;
         }
 
-        // ent.groundentity = trace.ent;
-        // ent.groundentity_linkcount = trace.ent.linkcount;
-        // if (!trace.startsolid && !trace.allsolid)
-        //   VectorCopy (trace.endpos, ent.s.origin);
+        
+        
+        
+        
         if (!trace.startsolid && !trace.allsolid) {
             Math3D.VectorCopy(trace.endpos, ent.s.origin);
             ent.groundentity = trace.ent;
@@ -94,9 +94,9 @@ public final class M {
         Math3D.VectorAdd(ent.s.origin, ent.mins, mins);
         Math3D.VectorAdd(ent.s.origin, ent.maxs, maxs);
 
-        //	   if all of the points under the corners are solid world, don't bother
-        //	   with the tougher checks
-        //	   the corners must be within 16 of the midpoint
+        
+        
+        
         start[2] = mins[2] - 1;
         for (x = 0; x <= 1; x++)
 
@@ -107,12 +107,12 @@ public final class M {
                 start[1] = y != 0 ? maxs[1] : mins[1];
                 if (GameBase.gi.pointcontents.pointcontents(start) != Defines.CONTENTS_SOLID) {
                     GameBase.c_no++;
-                    //
-                    //	   check it for real...
-                    //
+                    
+                    
+                    
                     start[2] = mins[2];
 
-                    //	   the midpoint must be within 16 of the bottom
+                    
                     start[0] = stop[0] = (mins[0] + maxs[0]) * 0.5f;
                     start[1] = stop[1] = (mins[1] + maxs[1]) * 0.5f;
                     stop[2] = start[2] - 2 * GameBase.STEPSIZE;
@@ -124,7 +124,7 @@ public final class M {
                         return false;
                     mid = bottom = trace.endpos[2];
 
-                    //	   the corners must be within 16 of the midpoint
+                    
                     for (x = 0; x <= 1; x++)
 
                         start[0] = stop[0] = x != 0 ? maxs[0] : mins[0];
@@ -151,7 +151,7 @@ public final class M {
             }
 
         GameBase.c_yes++;
-        return true; // we got out easy
+        return true; 
     }
 
     /** 
@@ -199,11 +199,11 @@ public final class M {
                 && (ent.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == 0)
             return;
 
-        //	   if the next step hits the enemy, return immediately
+        
         if (ent.enemy != null && SV.SV_CloseEnough(ent, ent.enemy, dist))
             return;
 
-        //	   bump around...
+        
         if ((Lib.rand() & 3) == 1
                 || !SV.SV_StepDirection(ent, ent.ideal_yaw, dist)) {
             if (ent.inuse)
@@ -234,9 +234,9 @@ public final class M {
         float[] point = { 0, 0, 0 };
         int cont;
 
-        //
-        //	get waterlevel
-        //
+        
+        
+        
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] + ent.mins[2] + 1;
@@ -270,7 +270,7 @@ public final class M {
                 if (ent.waterlevel < 3) {
                     ent.air_finished = GameBase.level.time + 12;
                 } else if (ent.air_finished < GameBase.level.time) {
-                    // drown!
+                    
                     if (ent.pain_debounce_time < GameBase.level.time) {
                         dmg = (int) (2f + 2f * Math.floor(GameBase.level.time
                                 - ent.air_finished));
@@ -287,7 +287,7 @@ public final class M {
                 if (ent.waterlevel > 0) {
                     ent.air_finished = GameBase.level.time + 9;
                 } else if (ent.air_finished < GameBase.level.time) {
-                    // suffocate!
+                    
                     if (ent.pain_debounce_time < GameBase.level.time) {
                         dmg = (int) (2 + 2 * Math.floor(GameBase.level.time
                                 - ent.air_finished));
@@ -409,9 +409,9 @@ public final class M {
         }
     }
 
-    //ok
+    
     public static void M_MoveFrame(edict_t self) {
-        mmove_t move; //ptr
+        mmove_t move; 
         int index;
 
         move = self.monsterinfo.currentmove;
@@ -427,10 +427,10 @@ public final class M {
                 if (move.endfunc != null) {
                     move.endfunc.think(self);
 
-                    // regrab move, endfunc is very likely to change it
+                    
                     move = self.monsterinfo.currentmove;
 
-                    // check for death
+                    
                     if ((self.svflags & Defines.SVF_DEADMONSTER) != 0)
                         return;
                 }

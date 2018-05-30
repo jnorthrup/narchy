@@ -41,7 +41,7 @@ public class WaveCapture extends Loop {
     @Deprecated public float[] dataNorm = new float[freqSamplesPerFrame];
     @Deprecated public float[] data = new float[historyFrames * freqSamplesPerFrame];
 
-    //private final boolean normalizeDisplayedWave = false;
+    
 
     public Surface view() {
 
@@ -55,7 +55,7 @@ public class WaveCapture extends Loop {
 
                 float[] samples = WaveCapture.this.samples;
                 if (samples == null) return;
-                //samples[0] = null;
+                
 
 
                 int chans = WaveCapture.this.source.channelsPerSample();
@@ -67,42 +67,42 @@ public class WaveCapture extends Loop {
                         break;
                     case 2:
                         for (int i = 0; i < bufferSamples; )
-                            add((samples[i++] + samples[i++]) / 2f); //to mono
+                            add((samples[i++] + samples[i++]) / 2f); 
                         break;
                     default:
                         throw new UnsupportedOperationException();
                 }
 
 
-                //minValue = -0.5f;
-                //maxValue = 0.5f;
+                
+                
 
-//                if (normalizeDisplayedWave) {
-//                    autorange();
-//                } else {
-//                    minValue = -1;
-//                    maxValue = +1;
-//                }
 
-//                final FloatArrayList history = this.history;
-//
-//                for (int i = 0; i < nSamplesRead; i++) {
-//                    history.add((float) samples[i]);
-//                }
-//
-//                while (history.size() > maxHistory)
-//                    history.removeAtIndex(0);
 
-//                                        minValue = Float.POSITIVE_INFINITY;
-//                                        maxValue = Float.NEGATIVE_INFINITY;
-//
-//                                        history.forEach(v -> {
-//                                            if (Double.isFinite(v)) {
-//                                                if (v < minValue) minValue = v;
-//                                                if (v > maxValue) maxValue = v;
-//                                            }
-//                                            //mean += v;
-//                                        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
 
         };
@@ -120,62 +120,62 @@ public class WaveCapture extends Loop {
 
                     FloatArrayList history = this;
 
-                    //                        for (short s : ss) {
-                    //                            history.add((float)s);
-                    //                        }
-                    //
-                    //
-                    //                        while (history.size() > maxHistory)
-                    //                            history.removeAtIndex(0);
-                    //
-                    //                        while (history.size() < maxHistory)
-                    //                            history.add(0);
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
 
 
                     final int bufferSamples = Math.min(samples.length, WaveCapture.this.bufferSamples);
 
                     float[] ss = transformedSamples;
-                    //1d haar wavelet transform
-                    //OneDHaar.displayOrderedFreqsFromInPlaceHaar(x);
-                    System.arraycopy(samples, 0, ss, 0, bufferSamples); //the remainder will be zero
+                    
+                    
+                    System.arraycopy(samples, 0, ss, 0, bufferSamples); 
                     OneDHaar.inPlaceFastHaarWaveletTransform(ss);
                     sampleFrequency(ss);
-                    //OneDHaar.displayOrderedFreqsFromInPlaceHaar(samples, System.out);
+                    
 
-//                //apache commons math - discrete cosine transform
-//                {
-//                    double[] dsamples = new double[samples.length + 1];
-//                    for (int i = 0; i < samples.length; i++)
-//                        dsamples[i] = samples[i];
-//                    dsamples = new FastCosineTransformer(DctNormalization.STANDARD_DCT_I).transform(dsamples, TransformType.FORWARD);
-//                    for (int i = 0; i < samples.length; i++)
-//                        samples[i] = (float) dsamples[i];
-//                }
+
+
+
+
+
+
+
+
+
 
                     history.clear();
                     for (int i = 0; i < bufferSamples; i++)
                         history.addAll(ss[i]);
 
-//                minValue = Short.MIN_VALUE;
-//                maxValue = Short.MAX_VALUE;
 
-//                if (normalizeDisplayedWave) {
-//                    minValue = Float.POSITIVE_INFINITY;
-//                    maxValue = Float.NEGATIVE_INFINITY;
-//
-//                    history.forEach(v -> {
-//                        //if (Float.isFinite(v)) {
-//                        if (v < minValue) minValue = v;
-//                        if (v > maxValue) maxValue = v;
-//                        //}
-//                        //mean += v;
-//                    });
-//                } else {
-//                    minValue = -1f;
-//                    maxValue = 1f;
-//                }
 
-                    //System.out.println(maxHistory + " " + start + " " + end + ": " + minValue + " " + maxValue);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    
 
                     busy.set(false);
 
@@ -198,15 +198,15 @@ public class WaveCapture extends Loop {
 
                 System.arraycopy(data, 0, data, freqSamplesPerFrame, lastFrameIdx);
 
-                //TODO double-buffer these buffers
+                
                 float[] data = WaveCapture.this.data;
 
-//                int f = freqOffset;
-//                int freqSkip = 1;
-//                for (int i = 0; i < freqSamplesPerFrame; i++) {
-//                    h[n++] = freqSamples[f];
-//                    f+=freqSkip*2;
-//                }
+
+
+
+
+
+
                 float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
                 for (int i = 0; i < freqSamplesPerFrame; i++) {
 
@@ -223,13 +223,13 @@ public class WaveCapture extends Loop {
                     data[i] = s;
                 }
 
-                if (max != min) { //TODO epsilon check
+                if (max != min) { 
                     float range = max - min;
                     for (int i = 0; i < freqSamplesPerFrame; i++)
                         dataNorm[i] = (WaveCapture.this.data[i] - min) / range;
                 }
 
-                //System.arraycopy(freqSamples, 0, history, 0, freqSamplesPerFrame);
+                
             }
 
         };
@@ -238,7 +238,7 @@ public class WaveCapture extends Loop {
         wavelet1d.range(-1, +1);
 
 
-        Plot2D audioPlot = new Plot2D(bufferSamples, Plot2D.Line);//, bufferSamples, 450, 60);
+        Plot2D audioPlot = new Plot2D(bufferSamples, Plot2D.Line);
         audioPlot.add(rawWave);
 
         Plot2D audioPlot2 = new Plot2D(bufferSamples, Plot2D.Line);
@@ -246,9 +246,9 @@ public class WaveCapture extends Loop {
 
         BitmapMatrixView freqHistory = new BitmapMatrixView(freqSamplesPerFrame, historyFrames, (x, y) -> {
             if (data == null)
-                return 0; //HACK
+                return 0; 
             float kw = (data[y * freqSamplesPerFrame + x]);
-            //int kw = (int)(v*255);
+            
             return Draw.rgbInt(kw >= 0 ? kw : 0, kw < 0 ? -kw : 0, 0);
         });
 
@@ -271,33 +271,33 @@ public class WaveCapture extends Loop {
             freqHistory.update();
             audioPlot.update();
             audioPlot2.update();
-            //wav2.update();
+            
         });
 
 
-//
-//        //noinspection OverlyComplexAnonymousInnerClass
-//        ChangeListener onParentChange = new ChangeListener() {
-//
-//            public On observe;
-//
-//            @Override
-//            public void changed(ObservableValue observableValue, Object o, Object t1) {
-//
-//                if (t1 == null) {
-//                    if (observe != null) {
-//                        //System.out.println("stopping view");
-//                        this.observe.off();
-//                        this.observe = null;
-//                    }
-//                } else {
-//                    if (observe == null) {
-//                        //System.out.println("starting view");
-//                        observe = nextReady.on(u);
-//                    }
-//                }
-//            }
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         return v;
     }
@@ -312,10 +312,10 @@ public class WaveCapture extends Loop {
         setSource(source);
 
 
-        //                double nextDouble[] = new double[1];
-        //                DoubleSupplier waveSupplier = () -> {
-        //                    return nextDouble[0];
-        //                };
+        
+        
+        
+        
     }
 
     public final void setSource(WaveSource source) {
@@ -332,7 +332,7 @@ public class WaveCapture extends Loop {
 
                 bufferSamples = audioBufferSize;
 
-                //System.out.println("bufferSamples=" + bufferSamples + ", sampleRate=" + sampleRate + ", numChannels=" + numChannels);
+                
 
                 if (samples == null || samples.length != audioBufferSize)
                     samples = new float[Util.largestPowerOf2NoGreaterThan(audioBufferSize)];

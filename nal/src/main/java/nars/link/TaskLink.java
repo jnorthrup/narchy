@@ -21,17 +21,17 @@ public interface TaskLink extends Priority, Termed {
      * resolves a task in the provided NAR
      */
     Task get(NAR n);
-//
-//    /**
-//     * after it has been deleted, give an opportunity to re-insert
-//     * any forwarded task in a bag where it was just removed
-//     */
-//    void reincarnate(TaskLinkCurveBag taskLinks);
+
+
+
+
+
+
 
     /** Tasklike productions */
     class Tasklike  /* ~= Pair<Term, ByteLongPair> */ {
         final Term term;
-        //final byte[] term;
+        
         final byte punc;
         final long when;
         private final int hash;
@@ -48,12 +48,12 @@ public interface TaskLink extends Priority, Termed {
             this.term = term;
             assert(term.op().conceptualizable && term.op()!=NEG);
 
-            //this.term = IO.termToBytes(term);
+            
             this.hash = Util.hashCombine(term.hashCode(), punc, Long.hashCode(when));
         }
 
         public final Term term() {
-            //return IO.termFromBytes(term);
+            
             return term;
         }
 
@@ -67,12 +67,12 @@ public interface TaskLink extends Priority, Termed {
         @Override public boolean equals(Object o) {
             if (this == o) return true;
 
-            //if (o == null || getClass() != o.getClass()) return false;
+            
             Tasklike tasklike = (Tasklike) o;
             if (hash != tasklike.hash) return false;
 
             return punc == tasklike.punc && when == tasklike.when &&
-                    //Arrays.equals(term, tasklike.term);
+                    
                     term.equals(tasklike.term);
         }
 
@@ -103,9 +103,9 @@ public interface TaskLink extends Priority, Termed {
      */
     class GeneralTaskLink extends PLink<Tasklike> implements TaskLink {
 
-//        public GeneralTaskLink(Task template, NAR nar, float pri) {
-//            this(template.term().concept(), template.punc(), Tense.dither(template.mid(), nar), pri);
-//        }
+
+
+
 
         public GeneralTaskLink(Task t, NAR n, float pri) {
             this(t, false, n, pri);
@@ -130,7 +130,7 @@ public interface TaskLink extends Priority, Termed {
         public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
             Term tt = t.term();
             long when = t.isEternal() ? ETERNAL : Tense.dither(
-                    //t.mid()
+                    
                     t.mid() + tt.dtRange() / 2
                     , n);
             return seed(
@@ -165,10 +165,10 @@ public interface TaskLink extends Priority, Termed {
             return id.when;
         }
 
-//        @Override
-//        public final void reincarnate(TaskLinkCurveBag taskLinks) {
-//            //N/A
-//        }
+
+
+
+
 
         @Override
         public Task get(NAR n) {
@@ -196,36 +196,36 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public Task get(NAR n) {
-            //TODO may want to check if the task is still active in the NAR
+            
             return get();
         }
 
-//        @Override
-//        public void reincarnate(TaskLinkCurveBag bag) {
-//            float p = this.priBeforeDeletion;
-//            if (p == p) {
-//                // this link was deleted due to the referent being deleted,
-//                // not because the link was deleted.
-//                // so see if a forwarding exists
-//
-//                Task x = this.get();
-//                Task px = x;
-//                Task y;
-//
-//                //TODO maybe a hard limit should be here for safety in case anyone wants to create loops of forwarding tasks
-//                int hopsRemain = Param.MAX_TASK_FORWARD_HOPS;
-//                do {
-//                    y = x.meta("@");
-//                    if (y != null)
-//                        x = y;
-//                } while (y != null && --hopsRemain > 0);
-//
-//                if (x != px && !x.isDeleted()) {
-//                    Tasklinks.linkTask(x, p, bag);
-//                }
-//            }
-//
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 }

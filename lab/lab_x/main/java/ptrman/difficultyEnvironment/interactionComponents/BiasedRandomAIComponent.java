@@ -16,7 +16,7 @@ public class BiasedRandomAIComponent implements IComponent {
     public float remainingTimerNextMovechange = -0.01f;
     public float angleScale;
 
-    public TopDownViewWheeledControllerComponent topDownViewWheeledControllerComponent; // can be null
+    public TopDownViewWheeledControllerComponent topDownViewWheeledControllerComponent; 
 
     public BiasedRandomAIComponent(float timerNextMovechange, float ratioOfMoveRotation, float angleScale) {
         this.timerNextMovechange = timerNextMovechange;

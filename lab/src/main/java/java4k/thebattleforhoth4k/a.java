@@ -17,7 +17,7 @@ package java4k.thebattleforhoth4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -32,7 +32,7 @@ import java.util.Random;
 
 public class a extends GamePanel {
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 	@Override
@@ -183,12 +183,12 @@ public class a extends GamePanel {
 
 		Color[] firePalette = new Color[32];
 
-		// generate fire palette
+		
 		for (i = 0; i < 32; i++) {
 			firePalette[i] = new Color(255 - ((255 * i) >> 5), 80 - ((80 * i) >> 5), 0, 255 - (i << 3));
 		}
 
-		// decompress sprites
+		
 		for (k = 0; k < 2; k++) {
 			int width = 8;
 			int height = 55;
@@ -208,7 +208,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// generate floor texture    
+		
 		for (y = 0; y < 256; y++) {
 			for (x = 0; x < 256; x++) {
 				floorTexture[y][x] = 128;
@@ -251,10 +251,10 @@ public class a extends GamePanel {
 			do {
 				nextFrameStartTime += 16666667;
 
-				// -- update starts ----------------------------------------------------
+				
 
 				if (fading) {
-					// update fade
+					
 
 					if (fadingIn) {
 						fadeIntensity -= 4;
@@ -271,7 +271,7 @@ public class a extends GamePanel {
 						fadeIntensity = 255;
 
 						if (level == MAX_LEVEL) {
-							// kill screen
+							
 							continue;
 						}
 
@@ -293,7 +293,7 @@ public class a extends GamePanel {
 						lasers.clear();
 						enemies.clear();
 
-						// reset game
+						
 						for (i = 0; i < (level << 2) + 3; i++) {
 							X = random.nextFloat() * 6.28f;
 							Y = random.nextFloat() * 16384;
@@ -311,15 +311,15 @@ public class a extends GamePanel {
 				}
 
 				if (enemies.size() == 0) {
-					// advance the level when there are no more enemies to kill
+					
 					level++;
 					fading = true;
 					fadingIn = false;
 					continue;
 				}
 
-				// the game starts out paused
-				// hit fire to begin
+				
+				
 				if (paused) {
 					if (a[VK_ATTACK]) {
 						paused = false;
@@ -340,7 +340,7 @@ public class a extends GamePanel {
 				} else {
 					enemyLaserDelay = LASER_DELAY;
 					if (lastEnemyDrawn >= 0 && enemies.size() > 0) {
-						// enemy shoots at player
+						
 						int[] enemy = enemies.get(lastEnemyDrawn);
 						float[] laser = new float[8];
 						laser[LASER_X] = enemy[ENEMY_X];
@@ -364,7 +364,7 @@ public class a extends GamePanel {
 				} else {
 					k = HIGH_SPEED;
 					if (a[VK_ATTACK]) {
-						// player shoots dual lasers
+						
 						laserDelay = LASER_DELAY;
 						float[] laser = new float[8];
 						laser[LASER_RX] = yawSin;
@@ -383,7 +383,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// player moves forward
+				
 				xo += k * yawSin;
 				zo -= k * yawCos;
 
@@ -391,8 +391,8 @@ public class a extends GamePanel {
 				roll = ROLL_SCALE * yawVelocity;
 
 				if (xo * xo + zo * zo > MAX_BATTLE_DISTANCE_2) {
-					// autopilot takes control and turns the player back into battle
-					//    if the player leaves the battle area
+					
+					
 
 					X = yaw + 0.01f;
 					Y = yaw - 0.01f;
@@ -408,9 +408,9 @@ public class a extends GamePanel {
 					}
 				} else {
 
-					// autopilot off
+					
 
-					// player controls yaw
+					
 					if (a[VK_LEFT]) {
 						if (yawVelocity > -MAX_YAW_VELOCITY) {
 							yawVelocity -= YAW_ACCELERATION;
@@ -427,7 +427,7 @@ public class a extends GamePanel {
 						yawVelocity = 0;
 					}
 
-					// player controls altitude
+					
 					if (a[VK_DOWN]) {
 						if (heightVelocity > -MAX_HEIGHT_VELOCITY) {
 							heightVelocity -= HEIGHT_ACCELERATION;
@@ -454,7 +454,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update lasers
+				
 				for (i = lasers.size() - 1; i >= 0; i--) {
 					float[] laser = lasers.get(i);
 					laser[LASER_X] += LASER_SPEED * laser[LASER_RX];
@@ -478,11 +478,11 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update enemies
+				
 				outter2: for (j = enemies.size() - 1; j >= 0; j--) {
 					int[] enemy = enemies.get(j);
 					if (enemy[ENEMY_TYPE] == ENEMY_TYPE_EXPLOSION) {
-						// animate explosion
+						
 						if (++enemy[ENEMY_POWER] >= 32) {
 							enemies.remove(j);
 						} else {
@@ -491,20 +491,20 @@ public class a extends GamePanel {
 							enemy[ENEMY_Z] += enemy[ENEMY_RZ];
 						}
 					} else {
-						// test for collision between player and enemy
+						
 						X = enemy[ENEMY_X] - xo;
 						Z = enemy[ENEMY_Z] - zo;
 
 						float xe = yawCos;
 						float ze = yawSin;
-						float dot = X * xe + Z * ze; // x-coordinate
+						float dot = X * xe + Z * ze; 
 						xe *= dot;
 						ze *= dot;
 						float x2 = X - xe;
 						float z2 = Z - ze;
 
 						if (x2 * x2 + z2 * z2 < 1024) {
-							// player is very close to enemy surface; execute collision test
+							
 							if (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT) {
 								u = 16;
 								v = 40;
@@ -521,7 +521,7 @@ public class a extends GamePanel {
 							x = (int) (v - dot / u);
 							y = (int) (w - yo / u);
 
-							// pixel test on sprite
+							
 							if (x >= 0 && y >= 0 && x < p && y < q && (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATST || sprites[SPRITE_ATAT].getRGB(x, y) != 0)) {
 								dying = true;
 								fading = true;
@@ -529,7 +529,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// test for collisions between laser and enemy
+						
 						outter: for (i = lasers.size() - 1; i >= 0; i--) {
 							float[] laser = lasers.get(i);
 							if (laser[LASER_TYPE] == LASER_TYPE_PLAYER) {
@@ -539,15 +539,15 @@ public class a extends GamePanel {
 
 									xe = yawCos;
 									ze = yawSin;
-									dot = X * xe + Z * ze; // x-coordinate
+									dot = X * xe + Z * ze; 
 									xe *= dot;
 									ze *= dot;
 									x2 = X - xe;
 									z2 = Z - ze;
 
 									if (x2 * x2 + z2 * z2 < 1024) {
-										// laser is very close to enemy surface
-										// execute collision test
+										
+										
 										if (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATAT) {
 											u = 16;
 											v = 40;
@@ -564,25 +564,25 @@ public class a extends GamePanel {
 										x = (int) (v - dot / u);
 										y = (int) (w - laser[LASER_Y] / u);
 
-										// pixel test on sprite
+										
 										if (x >= 0 && y >= 0 && x < p && y < q && (enemy[ENEMY_TYPE] == ENEMY_TYPE_ATST || sprites[SPRITE_ATAT].getRGB(x, y) != 0)) {
 
 											lasers.remove(i);
 
 											enemy[ENEMY_POWER] -= 2;
 											if (enemy[ENEMY_POWER] <= 0) {
-												// big explosion
+												
 												v = 128;
 												w = 45;
 												p = 22;
 											} else {
-												// tiny explosion
+												
 												v = 8;
 												w = 9;
 												p = 5;
 											}
 
-											// generate explosions
+											
 											for (u = 0; u < v; u++) {
 												int[] explosion = new int[8];
 												explosion[ENEMY_TYPE] = ENEMY_TYPE_EXPLOSION;
@@ -614,40 +614,40 @@ public class a extends GamePanel {
 					}
 				}
 
-				// -- update ends ------------------------------------------------------
+				
 
 			} while (nextFrameStartTime < System.nanoTime());
 
-			// -- render starts ------------------------------------------------------
+			
 
-			// draw ground and sky
-			for (i = 0; i < 362; i++) { // rows
+			
+			for (i = 0; i < 362; i++) { 
 
-				// compute normalized ray in direction of scanline
+				
 				float ry = HALF_SCREEN_SIZE - i;
 				float rz = -SCREEN_DISTANCE;
 				float mag = (float) Math.sqrt(ry * ry + rz * rz);
 				ry /= mag;
 				rz /= mag;
 
-				// compute hit time
+				
 				for (k = 0; k < 2; k++) {
 					float t = (SKY_Y * k - yo) / ry;
 					int[][] texture = k == 0 ? floorTexture : skyTexture;
 					int textureScale = k == 0 ? 4 : 8;
 					if (t > 0) {
-						// compute scale and left of scanline on floor
+						
 						float scale = t / SCREEN_DISTANCE;
 						float floorX = -scale * HALF_SCREEN_SIZE;
 						float floorZ = rz * t;
 
-						// rotate the scanline based on yaw angle
+						
 						float fx = floorX * yawCos - floorZ * yawSin;
 						float fz = floorX * yawSin + floorZ * yawCos;
 						float dfx = scale * yawCos;
 						float dfz = scale * yawSin;
 
-						// scanning across row
+						
 						for (j = 0; j < 362; j++) {
 							pixels[j] = texture[((int) (zo + fz) >> textureScale) & 0xFF][((int) (xo + fx) >> textureScale) & 0xFF];
 
@@ -660,7 +660,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// find visible sprites and perform 3D projection onto 2D plane
+			
 			spriteCount = 0;
 			for (i = enemies.size() - 1; i >= 0; i--) {
 				int[] enemy = enemies.get(i);
@@ -668,7 +668,7 @@ public class a extends GamePanel {
 				float x0 = enemy[ENEMY_X] - xo;
 				float z0 = enemy[ENEMY_Z] - zo;
 
-				// apply inverse transform to rotate into view
+				
 				float x1 = yawCos * x0 + yawSin * z0;
 				float z1 = yawCos * z0 - yawSin * x0;
 
@@ -707,7 +707,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw sprites in sorted order
+			
 			lastEnemyDrawn = -1;
 			for (i = 0; i < spriteCount; i++) {
 				int[] scaledSprite = null;
@@ -718,7 +718,7 @@ public class a extends GamePanel {
 				}
 				scaledSprite[SPRITE_DRAWN] = 1;
 				if (scaledSprite[SPRITE_INDEX] == ENEMY_TYPE_EXPLOSION) {
-					// draw explosion
+					
 					g.setColor(firePalette[scaledSprite[SPRITE_PALETTE]]);
 					g.fillOval(scaledSprite[SPRITE_X], scaledSprite[SPRITE_Y], scaledSprite[SPRITE_WIDTH], scaledSprite[SPRITE_HEIGHT]);
 				} else {
@@ -729,12 +729,12 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw lasers
+			
 			g.setColor(Color.RED);
 			for (i = lasers.size() - 1; i >= 0; i--) {
 				float[] laser = lasers.get(i);
 
-				// find end points relative to player ship position
+				
 				float x1 = laser[LASER_X] - xo;
 				float y1 = laser[LASER_Y] - yo;
 				float z1 = laser[LASER_Z] - zo;
@@ -743,14 +743,14 @@ public class a extends GamePanel {
 				float y2 = y1 + LASER_LENGTH * laser[LASER_RY];
 				float z2 = z1 + LASER_LENGTH * laser[LASER_RZ];
 
-				// apply inverse transform to rotate into view
+				
 				float _x1 = yawCos * x1 + yawSin * z1;
 				float _x2 = yawCos * x2 + yawSin * z2;
 
 				float _z1 = yawCos * z1 - yawSin * x1;
 				float _z2 = yawCos * z2 - yawSin * x2;
 
-				// if in front of player, draw laser
+				
 				if (_z1 < 0 && _z2 < 0) {
 					float k1 = SCREEN_DISTANCE / -_z1;
 					float k2 = SCREEN_DISTANCE / -_z2;
@@ -769,23 +769,23 @@ public class a extends GamePanel {
 				}
 			}
 
-			// rotate the hidden buffer by the player angle
+			
 			g2.translate(-107, -107);
 			g2.rotate(roll, 362, 362);
 			g2.drawImage(image, 0, 0, 724, 724, null);
 			g2.setTransform(transform);
 
-			// draw target
+			
 			g2.setColor(Color.GREEN);
 			g2.drawRect(240, 250, 32, 32);
 
 			if (enemyHitCountdown > 0) {
-				// draw enemy hit power bar and sprite (HUD)
+				
 				g2.drawImage(sprites[enemyHitSpriteIndex], 432, 16, null);
 				g2.drawRect(428, 96, 64, 8);
 				g2.fillRect(428, 96, enemyHitPower, 8);
 			} else {
-				// draw radar (HUD)        
+				
 				g2.translate(464, 48);
 				g2.drawOval(-32, -32, 64, 64);
 				g2.fillOval(-2, -2, 4, 4);
@@ -805,19 +805,19 @@ public class a extends GamePanel {
 				g2.setTransform(transform);
 			}
 
-			// draw player power bar (HUD)
+			
 			g2.drawRect(20, 20, 64, 8);
 			g2.fillRect(20, 20, playerPower, 8);
 
 			if (fading) {
-				// draw fade
+				
 				g2.setColor(new Color(dying ? 255 : 0, 0, 0, fadeIntensity));
 				g2.fillRect(0, 0, 512, 512);
 			}
 
-			// -- render ends --------------------------------------------------------
+			
 
-			// show the hidden buffer
+			
 			if (g3 == null) {
 				g3 = (Graphics2D) getGraphics();
 				requestFocus();
@@ -825,7 +825,7 @@ public class a extends GamePanel {
 				g3.drawImage(image2, 0, 0, null);
 			}
 
-			// burn off extra cycles
+			
 			while (nextFrameStartTime - System.nanoTime() > 0) {
 				Thread.yield();
 			}
@@ -851,7 +851,7 @@ public class a extends GamePanel {
 		}
 	}
 
-	// to run in window, uncomment below
+	
 	public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame(
 	      "Star Wars: The Battle for Hoth 4K");

@@ -33,14 +33,14 @@ public class SyntaxTree {
         this.regex = regex;
         itemTerminated = false;
         normalize();
-//        System.out.println(nodeList);
+
         shunt();
-//        System.out.println(nodeStack);
+
 
 
         OperatingStack operatingStack = new OperatingStack();
-//        nodeStack.forEach(e->e.accept(operatingStack));
-//        nodeStack.clear();
+
+
         while (!nodeStack.isEmpty()) {
             Node node = nodeStack.removeLast();
             node.accept(operatingStack);
@@ -116,7 +116,7 @@ public class SyntaxTree {
                         }
                     }
                     least = Texts.i(sb.toString());
-                    //least = Integer.parseInt(sb.toString());
+                    
 
                     int most = -1;
                     if (!deterministicLength) {
@@ -184,7 +184,7 @@ public class SyntaxTree {
         }
     }
 
-    // look back for a completed term
+    
     private void performMany(int least, int most) {
         if (!(least == 1 && most == 1)) {
             FasterList<Node> nodeList = this.nodeList;

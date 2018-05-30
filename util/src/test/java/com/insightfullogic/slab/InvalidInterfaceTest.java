@@ -31,7 +31,7 @@ public class InvalidInterfaceTest {
         });
     }
 
-    // ---------------------------------------------------
+    
 
     public interface NoGettersOrSetters extends Cursor {
         void neitherGetterNorSetter();

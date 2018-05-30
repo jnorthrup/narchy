@@ -14,7 +14,7 @@ public class JoglGL2ES1 implements QGL {
 
     private GL2ES1 gl;
     protected ImmModeSink ims;
-    private boolean inBlock; // within begin/end
+    private boolean inBlock; 
 
     JoglGL2ES1() {
     }
@@ -22,10 +22,10 @@ public class JoglGL2ES1 implements QGL {
     void setGL(GL2ES1 gl) {
         this.gl = gl;
         ims = ImmModeSink.createFixed(4,
-                3, GL.GL_FLOAT,  // vertex
-                4, GL.GL_FLOAT,  // color (for R_RenderDlights)
-                0, 0,            // normal
-                2, GL.GL_FLOAT,  // texture
+                3, GL.GL_FLOAT,  
+                4, GL.GL_FLOAT,  
+                0, 0,            
+                2, GL.GL_FLOAT,  
                 GL.GL_STATIC_DRAW);
     }
 
@@ -193,12 +193,12 @@ public class JoglGL2ES1 implements QGL {
             }
         } else { */
             gl.glDrawArrays(mode, first, count);
-        // }
+        
     }
 
     @Override
     public void glDrawBuffer(int mode) {
-        // FIXME: ignored  
+        
         if(GL.GL_BACK != mode) {
             System.err.println("IGNORED: glDrawBuffer(0x"+Integer.toHexString(mode)+ ')');
         }
@@ -224,7 +224,7 @@ public class JoglGL2ES1 implements QGL {
             }
         } else { */
             gl.glDrawElements(mode, idxLen, GL.GL_UNSIGNED_SHORT, indices);
-        // }
+        
     }
 
     @Override
@@ -284,8 +284,8 @@ public class JoglGL2ES1 implements QGL {
 
     @Override
     public void glInterleavedArrays(int format, int stride, FloatBuffer pointer) {
-        // gl.glInterleavedArrays(GL_T2F_V3F, glpoly_t.BYTE_STRIDE, globalPolygonInterleavedBuf);        
-        // gl.glInterleavedArrays(format, stride, pointer);
+        
+        
         if(GL_T2F_V3F == format) {
             glInterleavedArraysT2F_V3F(stride, pointer);
             return;
@@ -332,7 +332,7 @@ public class JoglGL2ES1 implements QGL {
 
     @Override
     public void glPolygonMode(int face, int mode) {
-        if( GL_FRONT_AND_BACK != face || GL_FILL != mode ) { // if !default
+        if( GL_FRONT_AND_BACK != face || GL_FILL != mode ) { 
             System.err.println("IGNORED: glPolygonMode(0x"+Integer.toHexString(face)+", 0x"+Integer.toHexString(mode)+ ')');
         }
     }
@@ -435,7 +435,7 @@ public class JoglGL2ES1 implements QGL {
 
     @Override
     public void glColorTable(int target, int internalFormat, int width, int format, int type, ByteBuffer data) {
-        // nop / FIXME gl.glColorTable(target, internalFormat, width, format, type, data);
+        
         System.err.println("IGNORED: glColorTable(0x"+Integer.toHexString(target)+", 0x"+Integer.toHexString(internalFormat)+", ..)");
     }
 
@@ -466,25 +466,25 @@ public class JoglGL2ES1 implements QGL {
 
     @Override
     public void glLockArraysEXT(int first, int count) {
-        // nop / FIXME gl.glLockArraysEXT(first, count);
+        
         System.err.println("IGNORED: glLockArraysEXT(0x"+Integer.toHexString(first)+", 0x"+Integer.toHexString(count)+", ..)");
     }
 
     @Override
     public void glArrayElement(int index) {
-        // nop / FIXME gl.glArrayElement(index);
+        
         System.err.println("IGNORED: glArrayElement(0x"+Integer.toHexString(index)+ ')');
     }
 
     @Override
     public void glUnlockArraysEXT() {
-        // nop / FIXME gl.glUnlockArraysEXT();
+        
         System.err.println("IGNORED: glUnlockArraysEXT()");
     }
 
     @Override
     public void glMultiTexCoord2f(int target, float s, float t) {
-        // nop / FIXME gl.glMultiTexCoord2f(target, s, t);
+        
         System.err.println("IGNORED: glMultiTexCoord2f(0x"+Integer.toHexString(target)+", "+s+", "+t+ ')');
     }
 

@@ -57,13 +57,13 @@ public final class Debug
     */
    private static void printMessage(final DebugLevel debugLevel, final StackTraceElement stackTraceElement, final Object... message)
    {
-      // Level test
+      
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
       {
          return;
       }
 
-      // Print time
+      
       final GregorianCalendar gregorianCalendar = new GregorianCalendar();
 
       Debug.printInteger(gregorianCalendar.get(Calendar.DAY_OF_MONTH), 2);
@@ -81,10 +81,10 @@ public final class Debug
       Debug.printInteger(gregorianCalendar.get(Calendar.MILLISECOND), 3);
       System.out.print("ms : ");
 
-      // Print level
+      
       System.out.print(debugLevel.getHeader());
 
-      // Print code location
+      
       System.out.print(stackTraceElement.getClassName());
       System.out.print('.');
       System.out.print(stackTraceElement.getMethodName());
@@ -92,7 +92,7 @@ public final class Debug
       System.out.print(stackTraceElement.getLineNumber());
       System.out.print(" : ");
 
-      // Print message
+      
       for(final Object element : message)
       {
          Debug.printObject(element);
@@ -292,13 +292,13 @@ public final class Debug
     */
    private static void printTrace(final DebugLevel debugLevel, Throwable throwable, int start)
    {
-      // Level test
+      
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
       {
          return;
       }
 
-      // Print trace
+      
       StackTraceElement[] stackTraceElements;
       StackTraceElement stackTraceElement;
       int length;
@@ -354,7 +354,7 @@ public final class Debug
     */
    public static void printCalledFrom(final DebugLevel debugLevel)
    {
-      // Level test
+      
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
       {
          return;
@@ -386,7 +386,7 @@ public final class Debug
     */
    public static void printError(final Error error, final Object... message)
    {
-      // Level test
+      
       if(DebugLevel.ERROR.getLevel() > Debug.debugLevel.getLevel())
       {
          return;
@@ -423,7 +423,7 @@ public final class Debug
     */
    public static void printException(final Exception exception, final Object... message)
    {
-      // Level test
+      
       if(DebugLevel.WARNING.getLevel() > Debug.debugLevel.getLevel())
       {
          return;
@@ -460,7 +460,7 @@ public final class Debug
     */
    public static void println(final DebugLevel debugLevel, final Object... message)
    {
-      // Level test
+      
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
       {
          return;
@@ -488,7 +488,7 @@ public final class Debug
     */
    public static void printMark(final DebugLevel debugLevel, final String mark)
    {
-      // Level test
+      
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
       {
          return;
@@ -528,7 +528,7 @@ public final class Debug
     */
    public static void printTodo(final Object... message)
    {
-      // Level test
+      
       if((DebugLevel.VERBOSE.getLevel() > Debug.debugLevel.getLevel()) || (message == null))
       {
          return;
@@ -562,7 +562,7 @@ public final class Debug
     */
    public static void printTrace(final DebugLevel debugLevel, final Object... message)
    {
-      // Level test
+      
       if(debugLevel.getLevel() > Debug.debugLevel.getLevel())
       {
          return;

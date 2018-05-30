@@ -59,20 +59,20 @@ public class DiskChannel extends VChannel implements DiskConst {
     @Override
     public void process(AbstractRdpPacket data) throws RdesktopException, IOException,
             CryptoException {
-//        int size = data.size();
-//        boolean mark = false;
-//        if(size > 0x60) {
-//            size = 0x60;
-//            mark = true;
-//        }
-//        int position = data.getPosition();
-//        byte[] dump = new byte[size-position];
-//        data.copyToByteArray(dump, 0, position, size-position);
-//        System.out.print("\n"+(receive_packet_index++)+"------------------->>>>>>>>>>>>>>> data recieved.");
-//        System.out.println(HexDump.dumpHexString(dump));
-//        if(mark) {
-//            System.out.println(".....");
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         int component = data.getLittleEndian16();
         int packetId = data.getLittleEndian16();
@@ -98,8 +98,8 @@ public class DiskChannel extends VChannel implements DiskConst {
                 break;
             case PAKID_CORE_DEVICE_REPLY:
                 System.out.println(data.getLittleEndian32() + " status = " + data.getLittleEndian32());
-//                /*int deviceID = */data.getLittleEndian32();
-//                /*int status = */data.getLittleEndian32();
+
+
                 break;
             case PAKID_CORE_DEVICE_IOREQUEST:
                 rdpdr_process_irp(data);
@@ -118,12 +118,12 @@ public class DiskChannel extends VChannel implements DiskConst {
         RdpPacket s = new RdpPacket(12);
         s.setLittleEndian16(RDPDR_CTYP_CORE);
         s.setLittleEndian16(PAKID_CORE_CLIENTID_CONFIRM);
-        s.setLittleEndian16(1);// versionMajor, must be set to 1
-        s.setLittleEndian16(versionMinor);// versionMinor
+        s.setLittleEndian16(1);
+        s.setLittleEndian16(versionMinor);
         if (clientID > 0) {
-            s.setLittleEndian32(clientID); // clientID, given by the server in a Server Announce Request
+            s.setLittleEndian32(clientID); 
         } else {
-            s.setLittleEndian32(0x815ed39d);// /* IP address (use 127.0.0.1) // 0x815ed39d */
+            s.setLittleEndian32(0x815ed39d);
         }
         s.markEnd();
 
@@ -142,7 +142,7 @@ public class DiskChannel extends VChannel implements DiskConst {
         s.setLittleEndian16(PAKID_CORE_CLIENT_NAME);
         s.setLittleEndian32(0x00000001);/* unicodeFlag, 0 for ASCII and 1 for Unicode */
         s.setLittleEndian32(0);/* codePage, must be set to zero */
-        s.setLittleEndian32(clientNameLen + 2); //ComputerNameLen,including null terminator.
+        s.setLittleEndian32(clientNameLen + 2); 
         if (clientNameLen > 0) {
             try {
                 s.copyFromByteArray(CLIENT_NAME.getBytes("UTF-16LE"), 0,
@@ -152,7 +152,7 @@ public class DiskChannel extends VChannel implements DiskConst {
             }
             s.positionAdd(clientNameLen);
         }
-        s.setLittleEndian16(0);//the null terminator of client name
+        s.setLittleEndian16(0);
         s.markEnd();
 
         try {
@@ -164,7 +164,7 @@ public class DiskChannel extends VChannel implements DiskConst {
     
     private static void rdpdr_process_capability_request(AbstractRdpPacket data) {
         int numCapabilities = data.getLittleEndian16();
-        data.positionAdd(2);//2 bytes padding
+        data.positionAdd(2);
         
         for(int i = 0; i < numCapabilities; i++) {
             int capabilityType = data.getLittleEndian16();
@@ -188,39 +188,39 @@ public class DiskChannel extends VChannel implements DiskConst {
         s.setLittleEndian16(PAKID_CORE_CLIENT_CAPABILITY);
         
         s.setLittleEndian16(5);
-        s.setLittleEndian16(0);// padding
+        s.setLittleEndian16(0);
         
-        //general
+        
         s.setLittleEndian16(CAP_GENERAL_TYPE);
         s.setLittleEndian16(44);
-        s.setLittleEndian32(GENERAL_CAPABILITY_VERSION_02);//header
-        s.setLittleEndian32(0);// osType, ignored on receipt
-        s.setLittleEndian32(0);// osVersion, unused and must be set to zero
-        s.setLittleEndian16(1); // protocolMajorVersion, must be set to 1
-        s.setLittleEndian16(versionMinor);// protocolMinorVersion
-        s.setLittleEndian32(0x0000FFFF); // ioCode1
-        s.setLittleEndian32(0);// ioCode2, must be set to zero, reserved for future use
+        s.setLittleEndian32(GENERAL_CAPABILITY_VERSION_02);
+        s.setLittleEndian32(0);
+        s.setLittleEndian32(0);
+        s.setLittleEndian16(1); 
+        s.setLittleEndian16(versionMinor);
+        s.setLittleEndian32(0x0000FFFF); 
+        s.setLittleEndian32(0);
         s.setLittleEndian32(RDPDR_DEVICE_REMOVE_PDUS | RDPDR_CLIENT_DISPLAY_NAME_PDU | RDPDR_USER_LOGGEDON_PDU);
         s.setLittleEndian32(ENABLE_ASYNCIO);
         s.setLittleEndian32(0);
         s.setLittleEndian32(0);
         
-        //printer
+        
         s.setLittleEndian16(CAP_PRINTER_TYPE);
         s.setLittleEndian16(8);
         s.setLittleEndian32(PRINT_CAPABILITY_VERSION_01);
         
-        //port
+        
         s.setLittleEndian16(CAP_PORT_TYPE); /* third */
         s.setLittleEndian16(8); /* length */
         s.setLittleEndian32(PORT_CAPABILITY_VERSION_01);
         
-        //driver
+        
         s.setLittleEndian16(CAP_DRIVE_TYPE); /* fourth */
         s.setLittleEndian16(8); /* length */
         s.setLittleEndian32(DRIVE_CAPABILITY_VERSION_01);
         
-        //smartcard
+        
         s.setLittleEndian16(CAP_SMARTCARD_TYPE); /* fifth */
         s.setLittleEndian16(8); /* length */
         s.setLittleEndian32(SMARTCARD_CAPABILITY_VERSION_01);
@@ -249,11 +249,11 @@ public class DiskChannel extends VChannel implements DiskConst {
         size = 8; /* static announce size */
         size += devices.size() * 0x14;
 
-//        for (RdpdrDevice dev : devices) {
-//            if (dev.type == RDPDR_DTYP_PRINT) {
-//                size += dev.deviceData.size();
-//            }
-//        }
+
+
+
+
+
 
         return size;
     }
@@ -268,15 +268,15 @@ public class DiskChannel extends VChannel implements DiskConst {
         for(int i = 0; i < devices.size(); i++) {
             Device dev = devices.get(i);
             s.setLittleEndian32(dev.getType());
-            s.setLittleEndian32(i);//device id
+            s.setLittleEndian32(i);
             String name = dev.getName().replace(" ", "_").substring(0,
                     dev.getName().length() > 8 ? 8 : dev.getName().length());
             s.copyFromByteArray(name.getBytes(), 0, s.position(),
                     name.length());
             s.positionAdd(8);
             
-            s.setLittleEndian32(0);//datalength
-            //TODO write data,but disk has no data, so ignore now.
+            s.setLittleEndian32(0);
+            
             
         }
         s.markEnd();
@@ -324,9 +324,9 @@ public class DiskChannel extends VChannel implements DiskConst {
             }
             
             if(ioStatus != RD_STATUS_PENDING) {
-                //device i/o response header
+                
                 RdpPacket s = new RdpPacket(16 + (ioStatus == RD_STATUS_CANCELLED ? 4 : buffer.length));
-                s.setLittleEndian16(RDPDR_CTYP_CORE);// PAKID_CORE_DEVICE_REPLY?
+                s.setLittleEndian16(RDPDR_CTYP_CORE);
                 s.setLittleEndian16(PAKID_CORE_DEVICE_IOCOMPLETION);
                 s.setLittleEndian32(deviceId);
                 s.setLittleEndian32(completionId);
@@ -355,19 +355,19 @@ public class DiskChannel extends VChannel implements DiskConst {
             super.send_packet(s);
         }
 
-//        int size = s.size();
-//        boolean mark = false;
-//        if(size > 0x60) {
-//            size = 0x60;
-//            mark = true;
-//        }
-//        byte[] dump = new byte[size];
-//        s.copyToByteArray(dump, 0, 0, size);
-//        System.out.print("\n"+(send_packet_index++)+"=======================>>>>>>>> data sent");
-//        System.out.println(HexDump.dumpHexString(dump));
-//        if(mark) {
-//            System.out.println(".....");
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 }

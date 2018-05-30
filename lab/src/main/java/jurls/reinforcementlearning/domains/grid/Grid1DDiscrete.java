@@ -50,12 +50,12 @@ public class Grid1DDiscrete implements World {
         
         this.action = action;
         
-        //# At random intervals, jump to a random position in the world
+        
                   
         focusPosition++;
         
         
-        //# Ensure that the world state falls between 0 and 9
+        
         if (focusPosition > size) focusPosition = 0;
         if (focusPosition < 0) focusPosition = size + focusPosition;
         
@@ -64,7 +64,7 @@ public class Grid1DDiscrete implements World {
         # Represent the presence or absence of the current position in the bin.
         */
 
-        //blur the action
+        
         /*if (action2 == null) action2 = new double[action.length];
         for (int i = 0; i < action2.length; i++) {
             action2[i] = action[i];
@@ -85,14 +85,14 @@ public class Grid1DDiscrete implements World {
         
         
         for (int i = 0; i < size; i++) {
-            final double exp = 3.0; //sharpen
+            final double exp = 3.0; 
             if (i == focusPosition)
                 sensor[i] = 1.0;
             else
                 sensor[i] = 0.0;            
         }
         /*
-        //normalize
+        
         for (int i = 0; i < size; i++) {
             sensor[i] = (max-min)*(sensor[i] - min);
         }

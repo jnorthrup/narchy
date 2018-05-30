@@ -17,7 +17,7 @@ package java4k.doubledragon4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -32,7 +32,7 @@ import java.util.Random;
 
 public class a extends GamePanel {
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 
@@ -180,7 +180,7 @@ public class a extends GamePanel {
 		ArrayList<float[]> queue = new ArrayList<float[]>();
 		float[] player = null;
 
-		// decompress the sprites
+		
 		for (int alpha = 0; alpha < 64; alpha++) {
 			for (int colors = 0; colors < 64; colors++) {
 				for (i = 0, k = 0; i < SPRITE_COUNT; i++) {
@@ -228,7 +228,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// generate floor image
+		
 		int[][] floorPixels = new int[128][256];
 		for (x = 0; x < 256; x++) {
 			for (y = 0; y < 128; y++) {
@@ -250,7 +250,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// generate floor mapping
+		
 		int[][][] floorMapping = new int[64][256][2];
 		for (y = 0; y < 64; y++) {
 			for (x = 0; x < 256; x++) {
@@ -266,7 +266,7 @@ public class a extends GamePanel {
 			do {
 				nextFrameStartTime += 16666667;
 
-				// -- update starts ----------------------------------------------------
+				
 
 				counter++;
 				if (enemyPowerCounter > 0) {
@@ -277,11 +277,11 @@ public class a extends GamePanel {
 					attackReleased = true;
 				}
 
-				// update fade
+				
 				if (fadeState == FADE_IN) {
 
 					if (level == 6) {
-						// kill screen at level 6
+						
 						continue;
 					}
 
@@ -303,7 +303,7 @@ public class a extends GamePanel {
 							advanceLevel = false;
 						}
 
-						// ---- reset level begin ----
+						
 
 						counter = 0;
 						cameraX = 0;
@@ -317,7 +317,7 @@ public class a extends GamePanel {
 						createBoss = false;
 						hitPoints = 25 - (level << 1);
 
-						// create player
+						
 						player = new float[64];
 						player[OBJ_Y] = FLOOR_Y;
 						player[OBJ_Z] = 64;
@@ -328,7 +328,7 @@ public class a extends GamePanel {
 						queue.clear();
 						queue.add(player);
 
-						// generate cityscape
+						
 						x = 0;
 						int lastColor = 0;
 						int lastHeight = 0;
@@ -349,7 +349,7 @@ public class a extends GamePanel {
 							x += y;
 						}
 
-						// generate sky image
+						
 						for (i = 0; i < 96; i++) {
 							for (j = 0; j < 256; j++) {
 								pixels[(i << 8) | j] = Color.HSBtoRGB(.06f + 0.17f * level, .92f, i / 95f);
@@ -358,10 +358,10 @@ public class a extends GamePanel {
 						skyImage = new BufferedImage(256, 96, 1);
 						skyImage.setRGB(0, 0, 256, 96, pixels, 0, 256);
 
-						// reset timer
+						
 						nextFrameStartTime = System.nanoTime();
 
-						// ---- reset level end ----
+						
 					}
 
 					continue;
@@ -370,7 +370,7 @@ public class a extends GamePanel {
 				if (cameraX >= minCameraX && --enemyCountdown < 0) {
 					enemyCountdown = 255;
 					if (enemiesRemaining > 0) {
-						// create enemy
+						
 						float[] enemy = new float[64];
 						queue.add(enemy);
 						enemy[OBJ_Z] = random.nextInt(123);
@@ -392,13 +392,13 @@ public class a extends GamePanel {
 				}
 
 				if (enemiesRemaining == 0 && enemiesAlive == 0) {
-					// advance to the next segment
+					
 					enemyCountdown = 0;
 					minCameraX += 256 + random.nextInt(128);
 					enemiesRemaining = level + 4 + random.nextInt(6);
 					if (advancesRemaining > 0) {
 						if (--advancesRemaining == 0) {
-							// create boss
+							
 							createBoss = true;
 							enemiesRemaining = 12;
 						}
@@ -409,7 +409,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update player
+				
 				if (player[OBJ_STATE] < STATE_STUNNED) {
 					if (player[OBJ_PUNCHING] == 0) {
 						if (attackReleased && a[VK_ATTACK]) {
@@ -439,7 +439,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// do not allow the player to walk beyond the frame boundaries
+						
 						while (true) {
 							float MAX_X = 128 - 0.5f * player[OBJ_Z];
 							float X = player[OBJ_X] - cameraX;
@@ -461,7 +461,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update camera position
+				
 				if (player[OBJ_X] < cameraX) {
 					if (player[OBJ_X] >= minCameraX) {
 						cameraX--;
@@ -472,7 +472,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update objects
+				
 				for (i = queue.size() - 1; i >= 0; i--) {
 					float[] object = queue.get(i);
 
@@ -480,7 +480,7 @@ public class a extends GamePanel {
 
 						if (object[OBJ_STATE] == STATE_STANDING) {
 
-							// person stands back up
+							
 
 							if (object[OBJ_ANGLE] > STANDING_ANGLE_SPEED) {
 								object[OBJ_ANGLE] -= STANDING_ANGLE_SPEED;
@@ -495,22 +495,22 @@ public class a extends GamePanel {
 							}
 						} else if (object[OBJ_STATE] == STATE_GROUNDED) {
 
-							// person lies on the ground
+							
 
 							if (object[OBJ_POWER] == 0) {
 								if (--object[OBJ_FADE] < 0) {
 
 									queue.remove(i);
 									if (object == player) {
-										// player killed
+										
 										fadeRed = true;
 										fadeState = FADE_OUT;
 									} else {
-										// enemy killed
+										
 										enemiesAlive--;
 
 										if (object[OBJ_BOSS] == 1) {
-											// kill all remaining enemies when the boss is killed
+											
 											enemiesRemaining = 0;
 											for (j = 0; j < queue.size(); j++) {
 												float[] enemy = queue.get(j);
@@ -533,7 +533,7 @@ public class a extends GamePanel {
 										}
 
 										if (random.nextInt(player[OBJ_POWER] < 25 ? 2 : 10) == 0) {
-											// create meat
+											
 											float[] meat = new float[64];
 											queue.add(meat);
 											meat[OBJ_COUNTER] = 512;
@@ -555,7 +555,7 @@ public class a extends GamePanel {
 							}
 						} else if (object[OBJ_STATE] == STATE_FLYING) {
 
-							// person flies across the frame
+							
 
 							object[OBJ_VY] += GRAVITY;
 							object[OBJ_Y] += object[OBJ_VY];
@@ -567,7 +567,7 @@ public class a extends GamePanel {
 								object[OBJ_COUNTER] = 32;
 							}
 
-							// do not allow the person to fly beyond the frame boundaries
+							
 							while (true) {
 								float X = object[OBJ_X] - cameraX;
 								float MAX_X = 128 - 0.5f * object[OBJ_Z];
@@ -591,14 +591,14 @@ public class a extends GamePanel {
 
 						if (player[OBJ_STATE] < STATE_STUNNED && object[OBJ_STATE] < STATE_STUNNED) {
 
-							// collision detection
+							
 							j = (int) (object[OBJ_Z] - player[OBJ_Z]);
 							j = j < 0 ? -j : j;
 							boolean leftOverlap = object[OBJ_X] < player[OBJ_X] && object[OBJ_X] > player[OBJ_X] - 24;
 							boolean rightOverlap = object[OBJ_X] > player[OBJ_X] && object[OBJ_X] < player[OBJ_X] + 24;
 							if (j < 16) {
 								if (((leftOverlap && player[OBJ_REVERSED] == 0) || (rightOverlap && player[OBJ_REVERSED] == 1)) && player[OBJ_PUNCHING] == 10) {
-									// player punches enemy
+									
 									object[OBJ_STATE] = STATE_STUNNED;
 									object[OBJ_COUNTER] = 8;
 									enemyPowerCounter = 128;
@@ -624,7 +624,7 @@ public class a extends GamePanel {
 									enemyPower = (int) object[OBJ_POWER];
 								} else if ((leftOverlap || rightOverlap) && object[OBJ_PUNCHING] == 0) {
 									if (--object[OBJ_PUNCH_DELAY] <= 0) {
-										// enemy punches player
+										
 										object[OBJ_LEGS_INDEX] = SPRITE_MAN_LEGS_1;
 										object[OBJ_PUNCHING] = 12;
 										object[OBJ_PUNCH_DELAY] = random.nextInt(63);
@@ -711,16 +711,16 @@ public class a extends GamePanel {
 					}
 				}
 
-				// -- update ends ------------------------------------------------------
+				
 
 			} while (nextFrameStartTime < System.nanoTime());
 
-			// -- render starts ------------------------------------------------------
+			
 
-			// draw sky
+			
 			g.drawImage(skyImage, 0, 0, null);
 
-			// draw cityscape
+			
 			i = cameraX >> 4;
 			j = cameraX & 15;
 			for (y = 0; y < 24; y++) {
@@ -731,7 +731,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw floor
+			
 			for (y = 0, k = 0; y < 64; y++) {
 				for (x = 0; x < 256; x++, k++) {
 					pixels[k] = floorPixels[floorMapping[y][x][1]][0xFF & (floorMapping[y][x][0] + cameraX)];
@@ -739,11 +739,11 @@ public class a extends GamePanel {
 			}
 			image.setRGB(0, 192, 256, 64, pixels, 0, 256);
 
-			// draw sprites      
+			
 			for (j = 0; j < 123; j++) {
 				for (i = 0; i < queue.size(); i++) {
 					float[] object = queue.get(i);
-					if (j == (int) object[OBJ_Z]) { // draw in sorted order
+					if (j == (int) object[OBJ_Z]) { 
 						float K = Z0 / (Z0 - object[OBJ_Z]);
 						g.translate(K * (object[OBJ_X] - cameraX) + 128, 128 - K * object[OBJ_Y]);
 						if (object[OBJ_ANGLE] != 0) {
@@ -791,14 +791,14 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw player power bar
+			
 			g.setColor(COLOR_POWER_BAR_2);
 			g.fillRect(16, 16, 100, 8);
 			g.setColor(COLOR_POWER_BAR_1);
 			g.drawRect(16, 16, 100, 8);
 			g.fillRect(16, 16, (int) player[OBJ_POWER], 8);
 
-			// draw enemy power bar
+			
 			if (enemyPowerCounter > 0) {
 				g.setColor(COLOR_POWER_BAR_2);
 				g.fillRect(139, 16, 100, 8);
@@ -807,18 +807,18 @@ public class a extends GamePanel {
 				g.fillRect(139, 16, enemyPower, 8);
 			}
 
-			// draw fade
+			
 			if (fadeState != FADE_NONE) {
 				g.setColor(new Color(fadeRed ? 255 : 0, 0, 0, fadeCount));
 				g.fillRect(0, 0, 256, 256);
 			} else if (cameraX < minCameraX && (counter & 32) == 32) {
-				// draw hand
+				
 				g.drawImage(fadedSprites[63][0][SPRITE_HAND], 192, 120, 24, 16, null);
 			}
 
-			// -- render ends --------------------------------------------------------
+			
 
-			// show the hidden buffer
+			
 			if (g2 == null) {
 				g2 = (Graphics2D) getGraphics();
 				requestFocus();
@@ -826,7 +826,7 @@ public class a extends GamePanel {
 				g2.drawImage(image, 0, 0, 512, 512, null);
 			}
 
-			// burn off extra cycles
+			
 			while (nextFrameStartTime - System.nanoTime() > 0) {
 				Thread.yield();
 			}
@@ -852,7 +852,7 @@ public class a extends GamePanel {
 		}
 	}
 
-	// to run in window, uncomment below
+	
 	/*public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Double Dragon 4K");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

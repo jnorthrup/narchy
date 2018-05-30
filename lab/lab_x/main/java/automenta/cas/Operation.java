@@ -9,19 +9,19 @@ public abstract class Operation extends Expr {
     
     public abstract ArrayList<Expr> getExprs();
     
-//    // to be overrided
-//    static Expr make(ArrayList<? extends Expr> exprs) {
-//        throw new UnsupportedOperationException();
-//    }
 
-//    // to be overrided
-//    public static Expr makeDefined(ArrayList<Expr> exprs) {
-//        throw new UnsupportedOperationException();
-//    }
+
+
+
+
+
+
+
+
     
-//    public <E extends Expr> Expr make(ArrayList<E> exprs) {
-//        return make((ArrayList)new ArrayList<E>(exprs));
-//    }
+
+
+
     
     public Expr getExpr(int index) {
         return getExprs().get(index);
@@ -59,9 +59,9 @@ public abstract class Operation extends Expr {
         for (int i = 0; i < exprs.size(); i++) {
             Expr exprOn = exprs.get(i);
             if (exprOn instanceof Undef) {
-//                 exprs.remove(i);
-//                 i--;
-//                 continue;
+
+
+
                 return null;
             }
             if (exprOn instanceof Conditional) {
@@ -71,11 +71,11 @@ public abstract class Operation extends Expr {
         return exprs;
     }
     
-//     public static Expr conditionsAndDefineds(ArrayList<? extends Expr> exprs) {
-//         Expr conditions = conditions(exprs);
-//         exprs = defineds(exprs);
-//         return conditions;
-//     }
+
+
+
+
+
     
     public Expr conditioned() {
         Expr conditions = conditions();
@@ -121,23 +121,23 @@ public abstract class Operation extends Expr {
         return diffYet;
     }
     
-//     public Expr printSimplify() {
-//         ArrayList<Expr> simplified = new ArrayList<Expr>();
-//         for (Expr expr : this.getExprs()) {
-//             simplified.add(expr.printSimplify());
-//         }
-//         
-//         try {
-//             return ((Expr) this.getClass().getMethod("make", ArrayList.class).invoke(null, simplified)).printSimplifyPass();
-//         } catch(Exception e) {
-//             throw new RuntimeException();
-//         }
-//     }
+
+
+
+
+
+
+
+
+
+
+
+
     
-//     public Expr condAndSimplify() {
-//         Expr conditioned = this.conditioned();
-//         if (conditioned != null) return conditioned;
-//         return this.simplify();
-//     }
+
+
+
+
+
     
 }

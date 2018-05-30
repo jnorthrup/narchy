@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  */
 public abstract class ChainClustering extends DurService {
 
-    //private static final Logger logger = LoggerFactory.getLogger(MySTMClustered.class);
+    
 
 
     public final BagClustering<Task> bag;
@@ -35,17 +35,17 @@ public abstract class ChainClustering extends DurService {
     protected int dur;
 
 
-//    final static BagClustering.Dimensionalize<Task> STMClusterModel0 = new BagClustering.Dimensionalize<Task>(4) {
-//
-//        @Override
-//        public void coord(Task t, double[] c) {
-//            c[0] = t.start();
-//            c[1] = t.end();
-//            c[2] = t.truth().isNegative() ? (1f - t.freq()) : t.freq(); //0..+1 //if negative, will be negated in subterms
-//            c[3] = t.conf(); //0..+1
-//        }
-//
-//    };
+
+
+
+
+
+
+
+
+
+
+
 
     final static BagClustering.Dimensionalize<Task> TimeClusterModel = new BagClustering.Dimensionalize<>(2) {
 
@@ -96,7 +96,7 @@ public abstract class ChainClustering extends DurService {
             if (y.centroid!=current) {
                 current = y.centroid;
             } else {
-                //link to previous item
+                
                 Task tx = x.get();
                 Task ty = y.get();
                 link(tx, ty);
@@ -118,11 +118,11 @@ public abstract class ChainClustering extends DurService {
             float p = accept.floatValueOf(t);
             if (p == p) {
                 bag.put(t, p);
-                //t.conf(now, dur)
-                //Util.or(t.priElseZero() , t.conf(now, dur))
-                //t.priElseZero()
-                //t.conf()
-                //t.conf() * t.priElseZero()
+                
+                
+                
+                
+                
             }
         }
     }
@@ -135,15 +135,15 @@ public abstract class ChainClustering extends DurService {
 
         dur = nar.dur();
 
-        //LongObjectHashMap<ObjectFloatPair<TasksNode>> selected = new LongObjectHashMap<>();
+        
 
-        //clusters where all terms occurr simultaneously at precisely the same time
-        //cluster(maxConjunctionSize, 1.0f, freqCoherenceThresh);
+        
+        
 
 
-        //int maxVol = nar.termVolumeMax.intValue() - 2;
+        
 
-        //bag.commit(1, this::linkClusters);
+        
         bag.commitGroups(1, nar, nar.forgetRate.floatValue(), this::linkClustersChain);
 
 

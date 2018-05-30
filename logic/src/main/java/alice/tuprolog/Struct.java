@@ -59,53 +59,53 @@ public class Struct extends Term {
         this(f, 0);
     }
 
-//    /**
-//     * Builds a compound, with one argument
-//     */
-//    public Struct(String f, Term at0) {
-//        this(f, new Term[]{at0});
-//    }
-//    /**
-//     * Builds a compound, with two arguments
-//     */
-//    public Struct(String f, Term at0, Term at1) {
-//        this(f, at0, at1);
-//    }
-//
-//    /**
-//     * Builds a compound, with three arguments
-//     */
-//    public Struct(String f, Term at0, Term at1, Term at2) {
-//        this(f, new Term[]{at0, at1, at2});
-//    }
-//
-//    /**
-//     * Builds a compound, with four arguments
-//     */
-//    public Struct(String f, Term at0, Term at1, Term at2, Term at3) {
-//        this(f, new Term[]{at0, at1, at2, at3});
-//    }
-//
-//    /**
-//     * Builds a compound, with five arguments
-//     */
-//    public Struct(String f, Term at0, Term at1, Term at2, Term at3, Term at4) {
-//        this(f, new Term[]{at0, at1, at2, at3, at4});
-//    }
-//
-//    /**
-//     * Builds a compound, with six arguments
-//     */
-//    public Struct(String f, Term at0, Term at1, Term at2, Term at3, Term at4, Term at5) {
-//        this(f, new Term[]{at0, at1, at2, at3, at4, at5});
-//    }
-//
-//    /**
-//     * Builds a compound, with seven arguments
-//     */
-//    public Struct(String f, Term at0, Term at1, Term at2, Term at3, Term at4, Term at5, Term at6) {
-//        this(f, new Term[]{at0, at1, at2, at3, at4, at5, at6});
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Builds a compound, with an array of arguments
@@ -151,7 +151,7 @@ public class Struct extends Term {
             subs[0] = argList[index];
             subs[1] = new Struct(argList, index + 1);
         } else {
-            // builder an empty list TODO build from a static constructor and share instances like this
+            
             name = "[]";
             subCount = 0;
             subs = null;
@@ -284,10 +284,10 @@ public class Struct extends Term {
     }
 
 
-    // checking type and properties of the Term
+    
 
 
-    // check type services
+    
 
     @Override
     public boolean isAtom() {
@@ -325,7 +325,7 @@ public class Struct extends Term {
      */
     public boolean isClause() {
         return subCount > 1 && name.equals(":-") && subs[0].term() instanceof Struct;
-        //return(name.equals(":-") && arity == 2 && arg[0].getTerm() instanceof Struct);
+        
     }
 
     @Override
@@ -333,7 +333,7 @@ public class Struct extends Term {
         return this;
     }
 
-    //
+    
 
     /**
      * Gets an argument inside this structure, given its name
@@ -366,7 +366,7 @@ public class Struct extends Term {
     }
 
 
-    //
+    
 
     /**
      * Test if a term is greater than other
@@ -416,12 +416,12 @@ public class Struct extends Term {
             if (subCount > tarity) {
                 return true;
             } else if (subCount == tarity) {
-                //System.out.println("Compare di "+name+" con "+ts.name);
+                
                 if (name.compareTo(ts.name) > 0) {
                     return true;
                 } else if (name.compareTo(ts.name) == 0) {
                     for (int c = 0; c < subCount; c++) {
-                        //System.out.println("Compare di "+arg[c]+" con "+ts.arg[c]);
+                        
                         if (subs[c].isGreaterRelink(ts.subs[c], vorder)) {
                             return true;
                         } else if (!subs[c].isEqual(ts.subs[c])) {
@@ -445,14 +445,14 @@ public class Struct extends Term {
 
         if (t instanceof Struct) {
             Struct ts = (Struct) t;
-            if (subCount == ts.subCount && name.equals(ts.name)) { //key.equals(ts.key)) {
+            if (subCount == ts.subCount && name.equals(ts.name)) { 
                 if (this.subs != ts.subs) {
                     for (int c = 0; c < subCount; c++) {
                         if (!subs[c].equals(ts.subs[c])) {
                             return false;
                         }
                     }
-                    //subs = ts.subs; //share the array
+                    
                 }
                 return true;
             } else {
@@ -463,7 +463,7 @@ public class Struct extends Term {
         }
     }
 
-    //
+    
 
 
     public boolean isConstant() {
@@ -492,17 +492,17 @@ public class Struct extends Term {
         final int arity = this.subCount;
         Term[] targ = new Term[arity];
         Term[] arg = this.subs;
-//        boolean changed = false;
+
         for (int c = 0; c < arity; c++) {
             Term x = arg[c];
             Term y = x.copy(vMap, idExecCtx);
-//            if (x != y) {
-//                changed = true;
-//            }
+
+
+
             targ[c] = y;
         }
-//        if (!changed)
-//            return this;
+
+
 
         Struct t = new Struct(name, targ);
         t.resolved = resolved;
@@ -571,16 +571,16 @@ public class Struct extends Term {
         for (int c = 0; c < arity; c++) {
             Term term = arg[c];
             if (term != null) {
-                //--------------------------------
-                // we want to resolve only not linked variables:
-                // so linked variables must get the linked term
+                
+                
+                
                 term = term.term();
-                //--------------------------------
+                
                 if (term instanceof Var) {
                     Var t = (Var) term;
                     t.setTimestamp(count);
                     if (!t.isAnonymous()) {
-                        // searching a variable with the same name in the list
+                        
                         String name = t.name();
                         Iterator<Var> it = vl.iterator();
                         Var found = null;
@@ -605,7 +605,7 @@ public class Struct extends Term {
         resolved = true;
     }
 
-    // services for list structures
+    
 
     /**
      * Is this structure an empty list?
@@ -684,7 +684,7 @@ public class Struct extends Term {
         return new StructIterator(this);
     }
 
-    // hidden services
+    
 
     /**
      * Gets a list Struct representation, with the functor as first element.
@@ -739,18 +739,18 @@ public class Struct extends Term {
     }
 
 
-//    /**
-//     * Inserts (at the head) an element to this structure supposed to be a list
-//     */
-//    void insert(Term t) {
-//        Struct co = emptyList();
-//        co.subs[0] = subs[0];
-//        co.subs[1] = subs[1];
-//        subs[0] = t;
-//        subs[1] = co;
-//    }
 
-    //
+
+
+
+
+
+
+
+
+
+
+    
 
     /**
      * Try to unify two terms
@@ -764,7 +764,7 @@ public class Struct extends Term {
     boolean unify(List<Var> vl1, List<Var> vl2, Term t) {
         if (this == t) return true;
 
-        t = t.term(); // In fase di unificazione bisogna annotare tutte le variabili della struct completa.
+        t = t.term(); 
 
         if (this == t) return true;
 
@@ -788,7 +788,7 @@ public class Struct extends Term {
     }
 
 
-    //
+    
 
     /**
      * Set primitive behaviour associated at structure
@@ -812,7 +812,7 @@ public class Struct extends Term {
         return primitive != null;
     }
 
-    //
+    
 
     /**
      * Gets the string representation of this structure
@@ -824,7 +824,7 @@ public class Struct extends Term {
 
         switch (name) {
             case "[]":
-                if (subCount == 0) return "[]"; // empty list case
+                if (subCount == 0) return "[]"; 
                 break;
             case ".":
                 if (subCount == 2) return '[' + toString0() + ']';
@@ -865,7 +865,7 @@ public class Struct extends Term {
         } else if (subCount == 1 && !((subs[0] instanceof Struct) && ((Struct) subs[0]).name().equals(","))) {
             return subs[0].term().toString();
         } else {
-            // comma case 
+            
             Term head = ((Struct) subs[0]).subResolve(0);
             Term tail = ((Struct) subs[0]).subResolve(1);
             StringBuilder buf = new StringBuilder(head.toString());
@@ -876,7 +876,7 @@ public class Struct extends Term {
             }
             buf.append(',').append(tail);
             return buf.toString();
-            //    return arg[0]+","+((Struct)arg[1]).toString0_bracket();
+            
         }
     }
 
@@ -928,7 +928,7 @@ public class Struct extends Term {
                         subs[1].toStringAsArgY(op, p) +
                         ((x ? p >= prio : p > prio) ? ")" : "") : ((x ? p >= prio : p > prio) ? "(" : "") +
                         subs[0].toStringAsArgX(op, p) +
-                        //",\n\t"+
+                        
                         ',' +
                         subs[1].toStringAsArgY(op, p) +
                         ((x ? p >= prio : p > prio) ? ")" : "");
@@ -1005,9 +1005,9 @@ public class Struct extends Term {
         public Term next() {
             if (list.isEmptyList())
                 throw new NoSuchElementException();
-            // Using Struct#getTerm(int) instead of Struct#listHead and Struct#listTail
-            // to avoid redundant Struct#isList calls since it is only possible to get
-            // a StructIterator on a Struct instance which is already a list.
+            
+            
+            
             Term head = list.subResolve(0);
             list = (Struct) list.subResolve(1);
             return head;

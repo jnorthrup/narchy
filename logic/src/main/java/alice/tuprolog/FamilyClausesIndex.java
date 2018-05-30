@@ -49,13 +49,13 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
             varsClauses.addLast(clause);
         }
 
-        //Aggiorna tutti i nodi che ci sono
+        
         if(root != null){
             if (root.left==null && root.right == null) {
-                //just set the value
+                
                 setValue(clause, first, root);
             } else {
-                //rebalance
+                
 
                 Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
                 buf.add(root);
@@ -114,7 +114,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
                         n = n.left;
                     }
                 } else {
-                    //assert compResult > 0;
+                    
                     if (n.right == null) {
                         insertedNode = n.right = createNewNode(key, clause,first);
                         break;
@@ -127,7 +127,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
             insertedNode.parent = n;
         }
         insertCase1(insertedNode);
-        //verifyProperties();
+        
     }
 
 
@@ -135,9 +135,9 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
         if(varsClauses.remove(clause)){
             if(root != null){
                 if (root.left == null && root.right == null) {
-                    root.value.remove(clause);  //just adjust value
+                    root.value.remove(clause);  
                 } else {
-                    //rebalance
+                    
 
                     Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
                     buf.add(root);

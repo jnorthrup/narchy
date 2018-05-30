@@ -9,7 +9,7 @@ class Maze implements RLEnvironment  {
 
     final int LINEAR = 0;
     final int EXP = 1;
-    private final int RewardType = EXP; //LINEAR;
+    private final int RewardType = EXP; 
 
     private int agent_num;
 
@@ -38,10 +38,10 @@ class Maze implements RLEnvironment  {
         end_state[j] = true;
         conflict_state[i] = true;
         conflict_state[j] = true;
-//        current[i][0] = -1;
-//        current[i][1] = -1;
-//        current[j][0] = -1;
-//        current[j][1] = -1;
+
+
+
+
     }
 
     public boolean check_conflict(int i) {
@@ -85,7 +85,7 @@ class Maze implements RLEnvironment  {
         int x, y;
         double d;
 
-        // limit the agent number between 1 and 10
+        
         if (agt < 1)
             agent_num = 1;
         else if (agt > 10)
@@ -230,30 +230,30 @@ class Maze implements RLEnvironment  {
         int x = pos[0];
         int y = pos[1];
 
-        if ((x == target[0]) && (y == target[1])) // reach target
+        if ((x == target[0]) && (y == target[1])) 
         {
             end_state[agt] = true;
             avs[x][y] = 0;
             return (1);
         }
-        if ((x < 0) || (y < 0)) // out of field
+        if ((x < 0) || (y < 0)) 
             return (-1);
 
-        if (mines[x][y] == 1)       // hit mines
+        if (mines[x][y] == 1)       
             return (0);
 
-//        if( check_conflict( agt, pos, actual ) )
-//            return( 0 );
+
+
 
         if (immediate) {
             if (RewardType == LINEAR) {
                 int r = getRange(agt);
                 if (r > 10) r = 10;
-                return (1.0 - (double) r / 10.0); //adjust intermediate reward
+                return (1.0 - (double) r / 10.0); 
             } else
-                return (1.0 / (double) (1 + getRange(agt))); //adjust intermediate reward
+                return (1.0 / (double) (1 + getRange(agt))); 
         }
-        return 0.0; //no intermediate reward
+        return 0.0; 
     }
 
     public double getRewards(int i, boolean immediate) {
@@ -331,7 +331,7 @@ class Maze implements RLEnvironment  {
         r = 0;
         while (y - r >= 0 && mines[x][y - r] != 1)
             r++;
-        if (r == 0)// || y-r<0)
+        if (r == 0)
             aSonar[0] = 0.0;
         else
             aSonar[0] = 1.0 / (double) r;
@@ -398,7 +398,7 @@ class Maze implements RLEnvironment  {
             new_sonar[k] = aSonar[(currentBearing[agt] + 6 + k) % 8];
             if (binarySonar)
                 if (new_sonar[k] < 1)
-                    new_sonar[k] = 0; // binary sonar signal
+                    new_sonar[k] = 0; 
         }
         return;
     }
@@ -486,7 +486,7 @@ class Maze implements RLEnvironment  {
             new_av_sonar[k] = aSonar[(currentBearing[agt] + 6 + k) % 8];
             if (binarySonar)
                 if (new_av_sonar[k] < 1)
-                    new_av_sonar[k] = 0; // binary sonar signal
+                    new_av_sonar[k] = 0; 
         }
         return;
     }
@@ -568,7 +568,7 @@ class Maze implements RLEnvironment  {
             case 0:
                 if (current[i][1] > 0) current[i][1]--;
                 else {
-                    //                   turn( i );
+                    
                     return (-1);
                 }
                 break;
@@ -577,14 +577,14 @@ class Maze implements RLEnvironment  {
                     current[i][0]++;
                     current[i][1]--;
                 } else {
-                    //                   turn( i );
+                    
                     return (-1);
                 }
                 break;
             case 2:
                 if (current[i][0] < size - 1) current[i][0]++;
                 else {
-//                    turn( i );
+
                     return (-1);
                 }
                 break;
@@ -593,7 +593,7 @@ class Maze implements RLEnvironment  {
                     current[i][0]++;
                     current[i][1]++;
                 } else {
-                    //                   turn( i );
+                    
                     return (-1);
                 }
                 break;
@@ -601,7 +601,7 @@ class Maze implements RLEnvironment  {
                 if (current[i][1] < size - 1)
                     current[i][1]++;
                 else {
-                    //                   turn( i );
+                    
                     return (-1);
                 }
                 break;
@@ -610,14 +610,14 @@ class Maze implements RLEnvironment  {
                     current[i][0]--;
                     current[i][1]++;
                 } else {
-//                    turn( i );
+
                     return (-1);
                 }
                 break;
             case 6:
                 if (current[i][0] > 0) current[i][0]--;
                 else {
-//                    turn( i );
+
                     return (-1);
                 }
                 break;
@@ -626,7 +626,7 @@ class Maze implements RLEnvironment  {
                     current[i][0]--;
                     current[i][1]--;
                 } else {
-//                    turn( i );
+
                     return (-1);
                 }
                 break;
@@ -640,7 +640,7 @@ class Maze implements RLEnvironment  {
     }
 
 
-    // return true if the move still keeps the agent within the field
+    
     public boolean withinField(int i, int d) {
         int testBearing;
 
@@ -680,7 +680,7 @@ class Maze implements RLEnvironment  {
             default:
                 break;
         }
-//	    System.out.println ( "OutOfField: current = ("+current[i][0]+","+current[i][1]+")  testBearing = " + testBearing);
+
         return (false);
     }
 
@@ -705,8 +705,8 @@ class Maze implements RLEnvironment  {
         int[] next_pos = new int[2];
 
         virtual_move(agt, d, next_pos);
-        r = this.getRewards(agt, next_pos, false, immediate); //consider revise
-        // this.undoMove();
+        r = this.getRewards(agt, next_pos, false, immediate); 
+        
         return r;
     }
 

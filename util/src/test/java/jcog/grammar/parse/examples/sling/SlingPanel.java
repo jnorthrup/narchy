@@ -1,6 +1,6 @@
 package jcog.grammar.parse.examples.sling;
 
-//import javax.swing.*;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -87,7 +87,7 @@ public class SlingPanel extends JPanel {
 	 * @param g the Graphics context in which the painting occurs
 	 */
 	public void paintComponent(Graphics g) {
-		super.paintComponent(g); // paint the background
+		super.paintComponent(g); 
 		if (renderables == null || renderables.isEmpty()) {
 			return;
 		}

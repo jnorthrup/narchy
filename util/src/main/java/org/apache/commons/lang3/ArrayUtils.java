@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -134,8 +134,8 @@ public enum ArrayUtils { ;
     private static final int MEDIUM = 40;
 
 
-    // Clone
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Shallow clones an array returning a typecast result and handling
      * {@code null}.
@@ -290,8 +290,8 @@ public enum ArrayUtils { ;
         return array.clone();
     }
 
-    // nullToEmpty
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Defensive programming technique to change a {@code null}
      * reference to an empty one.
@@ -697,8 +697,8 @@ public enum ArrayUtils { ;
         return array;
     }
 
-    // Subarrays
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Produces a new array containing the elements between
      * the start and end indices.
@@ -741,11 +741,11 @@ public enum ArrayUtils { ;
         final int newSize = endIndexExclusive - startIndexInclusive;
         final Class<?> type = array.getClass().getComponentType();
         if (newSize <= 0) {
-            @SuppressWarnings("unchecked") // OK, because array is of type T
+            @SuppressWarnings("unchecked") 
             final T[] emptyArray = (T[]) Array.newInstance(type, 0);
             return emptyArray;
         }
-        @SuppressWarnings("unchecked") // OK, because array is of type T
+        @SuppressWarnings("unchecked") 
         final
         T[] subarray = (T[]) Array.newInstance(type, newSize);
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
@@ -767,7 +767,7 @@ public enum ArrayUtils { ;
         if (newSize <= 0) {
             return builder.apply(0);
         }
-        @SuppressWarnings("unchecked") // OK, because array is of type T
+        @SuppressWarnings("unchecked") 
         final
         T[] subarray = builder.apply(newSize);
         System.arraycopy(array, startIndexInclusive, subarray, 0, newSize);
@@ -1094,8 +1094,8 @@ public enum ArrayUtils { ;
         return subarray;
     }
 
-    // Is same length
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Checks whether two arrays are the same length, treating
      * {@code null} arrays as length {@code 0}.
@@ -1215,7 +1215,7 @@ public enum ArrayUtils { ;
         return getLength(array1) == getLength(array2);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * <p>Returns the length of the specified array.
      * This method can deal with {@code Object} arrays and with primitive arrays.
@@ -1259,8 +1259,8 @@ public enum ArrayUtils { ;
         return array1.getClass().getName().equals(array2.getClass().getName());
     }
 
-    // Reverse
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Reverses the order of the given array.
      *
@@ -1686,8 +1686,8 @@ public enum ArrayUtils { ;
         }
     }
 
-    // Swap
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Swaps two elements in the given array.
      *
@@ -2323,8 +2323,8 @@ public enum ArrayUtils { ;
         }
     }
 
-    // Shift
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * Shifts the order of the given array.
      *
@@ -2536,8 +2536,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -2596,8 +2596,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -2656,8 +2656,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -2716,8 +2716,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -2776,8 +2776,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -2836,8 +2836,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -2896,8 +2896,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -2956,8 +2956,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -3016,8 +3016,8 @@ public enum ArrayUtils { ;
         if (offset < 0) {
             offset += n;
         }
-        // For algorithm explanations and proof of O(n) time complexity and O(1) space complexity
-        // see https://beradrian.wordpress.com/2015/04/07/shift-an-array-in-on-in-place/
+        
+        
         while (n > 1 && offset > 0) {
             final int n_offset = n - offset;
 
@@ -3036,11 +3036,11 @@ public enum ArrayUtils { ;
         }
     }
 
-    // IndexOf search
-    // ----------------------------------------------------------------------
+    
+    
 
-    // Object IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given object in the array.
      *
@@ -3159,8 +3159,8 @@ public enum ArrayUtils { ;
         return indexOf(array, objectToFind) != INDEX_NOT_FOUND;
     }
 
-    // long IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3263,8 +3263,8 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // int IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3367,8 +3367,8 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // short IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3471,8 +3471,8 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // char IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3580,8 +3580,8 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // byte IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3684,8 +3684,8 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // double IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3910,8 +3910,8 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind, 0, tolerance) != INDEX_NOT_FOUND;
     }
 
-    // float IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -4014,8 +4014,8 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // boolean IndexOf
-    //-----------------------------------------------------------------------
+    
+    
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -4120,11 +4120,11 @@ public enum ArrayUtils { ;
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-    // Primitive/Object array converters
-    // ----------------------------------------------------------------------
+    
+    
 
-    // Character array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Characters to primitives.
      *
@@ -4194,8 +4194,8 @@ public enum ArrayUtils { ;
         return result;
      }
 
-    // Long array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Longs to primitives.
      *
@@ -4265,8 +4265,8 @@ public enum ArrayUtils { ;
         return result;
     }
 
-    // Int array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Integers to primitives.
      *
@@ -4336,8 +4336,8 @@ public enum ArrayUtils { ;
         return result;
     }
 
-    // Short array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Shorts to primitives.
      *
@@ -4407,8 +4407,8 @@ public enum ArrayUtils { ;
         return result;
     }
 
-    // Byte array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Bytes to primitives.
      *
@@ -4478,8 +4478,8 @@ public enum ArrayUtils { ;
         return result;
     }
 
-    // Double array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Doubles to primitives.
      *
@@ -4549,8 +4549,8 @@ public enum ArrayUtils { ;
         return result;
     }
 
-    //   Float array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Floats to primitives.
      *
@@ -4620,8 +4620,8 @@ public enum ArrayUtils { ;
         return result;
     }
 
-    // Boolean array converters
-    // ----------------------------------------------------------------------
+    
+    
     /**
      * <p>Converts an array of object Booleans to primitives.
      *
@@ -4691,7 +4691,7 @@ public enum ArrayUtils { ;
         return result;
     }
 
-    // ----------------------------------------------------------------------
+    
     /**
      * <p>Checks if an array of Objects is empty or {@code null}.
      *
@@ -4791,7 +4791,7 @@ public enum ArrayUtils { ;
         return getLength(array) == 0;
     }
 
-    // ----------------------------------------------------------------------
+    
     /**
      * <p>Checks if an array of Objects is not empty and not {@code null}.
      *
@@ -4924,13 +4924,13 @@ public enum ArrayUtils { ;
             return clone(array1);
         }
         final Class<?> type1 = array1.getClass().getComponentType();
-        @SuppressWarnings("unchecked") // OK, because array is of type T
+        @SuppressWarnings("unchecked") 
         final T[] joinedArray = (T[]) Array.newInstance(type1, array1.length + array2.length);
         System.arraycopy(array1, 0, joinedArray, 0, array1.length);
         try {
             System.arraycopy(array2, 0, joinedArray, array1.length, array2.length);
         } catch (final ArrayStoreException ase) {
-            // Check if problem was due to incompatible types
+            
             /*
              * We do this here, rather than before the copy because:
              * - it would be a wasted check most of the time
@@ -4941,7 +4941,7 @@ public enum ArrayUtils { ;
                 throw new IllegalArgumentException("Cannot store " + type2.getName() + " in an array of "
                         + type1.getName(), ase);
             }
-            throw ase; // No, so rethrow original
+            throw ase; 
         }
         return joinedArray;
     }
@@ -5224,7 +5224,7 @@ public enum ArrayUtils { ;
         } else {
             throw new IllegalArgumentException("Arguments cannot both be null");
         }
-        @SuppressWarnings("unchecked") // type must be T
+        @SuppressWarnings("unchecked") 
         final
         T[] newArray = (T[]) copyArrayGrow1(array, type);
         newArray[newArray.length - 1] = element;
@@ -5508,7 +5508,7 @@ public enum ArrayUtils { ;
         } else {
             throw new IllegalArgumentException("Array and element cannot both be null");
         }
-        @SuppressWarnings("unchecked") // the add method creates an array of type clss, which is type T
+        @SuppressWarnings("unchecked") 
         final T[] newArray = (T[]) add(array, index, element, clss);
         return newArray;
     }
@@ -5863,7 +5863,7 @@ public enum ArrayUtils { ;
      * (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
      * @since 2.1
      */
-    @SuppressWarnings("unchecked") // remove() always creates an array of the same type as its input
+    @SuppressWarnings("unchecked") 
     public static <T> T[] remove(final T[] array, final int index) {
         return (T[]) remove((Object) array, index);
     }
@@ -6459,11 +6459,11 @@ public enum ArrayUtils { ;
     }
     public static <X> X[] remove(final X[] input, IntFunction<X[]> outputter, final int index) {
         final int length = input.length;
-        //assert(output.length == length-1);
+        
 
-//        if (index < 0 || index >= length) {
-//            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
-//        }
+
+
+
 
         X[] output = outputter.apply(length - 1);
         System.arraycopy(input, 0, output, 0, index);
@@ -6498,7 +6498,7 @@ public enum ArrayUtils { ;
      * (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
      * @since 3.0.1
      */
-    @SuppressWarnings("unchecked") // removeAll() always creates an array of the same type as its input
+    @SuppressWarnings("unchecked") 
     public static <T> T[] removeAll(final T[] array, final int... indices) {
         return (T[]) removeAll((Object) array, indices);
     }
@@ -6556,7 +6556,7 @@ public enum ArrayUtils { ;
                 toRemove.set(i);
             }
         }
-        @SuppressWarnings("unchecked") // removeAll() always creates an array of the same type as its input
+        @SuppressWarnings("unchecked") 
         final T[] result = (T[]) removeAll(array, toRemove);
         return result;
     }
@@ -7237,7 +7237,7 @@ public enum ArrayUtils { ;
         if (isEmpty(array) || isEmpty(values)) {
             return clone(array);
         }
-        final Map<Boolean, MutableInt> occurrences = new HashMap<>(2); // only two possible values here
+        final Map<Boolean, MutableInt> occurrences = new HashMap<>(2); 
         for (final boolean v : values) {
             final Boolean boxed = v;
             final MutableInt count = occurrences.get(boxed);
@@ -7268,14 +7268,14 @@ public enum ArrayUtils { ;
      * @return new array of same type minus elements specified by unique values of {@code indices}
      * @since 3.0.1
      */
-    // package protected for access by unit tests
+    
     static Object removeAll(final Object array, final int... indices) {
         final int length = getLength(array);
-        int diff = 0; // number of distinct indexes, i.e. number of entries that will be removed
+        int diff = 0; 
         final int[] clonedIndices = clone(indices);
         Arrays.sort(clonedIndices);
 
-        // identify length of result array
+        
         if (isNotEmpty(clonedIndices)) {
             int i = clonedIndices.length;
             int prevIndex = length;
@@ -7292,18 +7292,18 @@ public enum ArrayUtils { ;
             }
         }
 
-        // create result array
+        
         final Object result = Array.newInstance(array.getClass().getComponentType(), length - diff);
         if (diff < length) {
-            int end = length; // index just after last copy
-            int dest = length - diff; // number of entries so far not copied
+            int end = length; 
+            int dest = length - diff; 
             for (int i = clonedIndices.length - 1; i >= 0; i--) {
                 final int index = clonedIndices[i];
-                if (end - index > 1) { // same as (cp > 0)
+                if (end - index > 1) { 
                     final int cp = end - index - 1;
                     dest -= cp;
                     System.arraycopy(array, index + 1, result, dest, cp);
-                    // Afer this copy, we still have room for dest items.
+                    
                 }
                 end = index;
             }
@@ -7322,16 +7322,16 @@ public enum ArrayUtils { ;
      * @return new array of same type minus elements specified by the set bits in {@code indices}
      * @since 3.2
      */
-    // package protected for access by unit tests
+    
     static Object removeAll(final Object array, final BitSet indices) {
         final int srcLength = ArrayUtils.getLength(array);
-        // No need to check maxIndex here, because method only currently called from removeElements()
-        // which guarantee to generate on;y valid bit entries.
-//        final int maxIndex = indices.length();
-//        if (maxIndex > srcLength) {
-//            throw new IndexOutOfBoundsException("Index: " + (maxIndex-1) + ", Length: " + srcLength);
-//        }
-        final int removals = indices.cardinality(); // true bits are items to remove
+        
+        
+
+
+
+
+        final int removals = indices.cardinality(); 
         final Object result = Array.newInstance(array.getClass().getComponentType(), srcLength - removals);
         int srcIndex = 0;
         int destIndex = 0;
@@ -7720,18 +7720,18 @@ public enum ArrayUtils { ;
         return removeAll(array, Arrays.copyOf(indices, count));
     }
 
-    //@Nullable
+    
     public static <T> T[] removeNulls(final T[] array, IntFunction<T[]> builder) {
         int nulls = 0;
         for (Object x : array)
             if (x == null) nulls++;
         if (nulls == 0)
-            return array; // no change
+            return array; 
         else {
             int s = array.length - nulls;
             if (s == 0)
                 return builder.apply(0);
-                //return null;
+                
             else {
 
                 T[] a = builder.apply(s);
@@ -7764,7 +7764,7 @@ public enum ArrayUtils { ;
     public static <T> T[] removeAllOccurences(final T[] array, final T element) {
         int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) {
-            //return clone(array);
+            
             return array;
         }
 
@@ -8211,7 +8211,7 @@ public enum ArrayUtils { ;
         }
 
         final Class<?> type = array.getClass().getComponentType();
-        @SuppressWarnings("unchecked") // OK, because array and values are of type T
+        @SuppressWarnings("unchecked") 
         T[] result = (T[]) Array.newInstance(type, array.length + values.length);
 
         System.arraycopy(values, 0, result, index, values.length);
@@ -8228,7 +8228,7 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(Object[] array) {
@@ -8240,7 +8240,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(Object[] array, Random random) {
@@ -8253,7 +8253,7 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(boolean[] array) {
@@ -8265,7 +8265,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(boolean[] array, Random random) {
@@ -8278,7 +8278,7 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(byte[] array) {
@@ -8290,7 +8290,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(byte[] array, Random random) {
@@ -8303,7 +8303,7 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(char[] array) {
@@ -8315,7 +8315,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(char[] array, Random random) {
@@ -8328,7 +8328,7 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(short[] array) {
@@ -8340,7 +8340,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(short[] array, Random random) {
@@ -8353,32 +8353,32 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(int[] array) {
         shuffle(array, new Random());
     }
 
-//    /**
-//     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-//     *
-//     * @param array   the array to shuffle
-//     * @param random  the source of randomness used to permute the elements
-//     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
-//     * @since 3.6
-//     */
-//    public static void shuffle(int[] array, Random random) {
-//        for (int i = array.length; i > 1; i--) {
-//            swap(array, i - 1, random.nextInt(i), 1);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(long[] array) {
@@ -8390,7 +8390,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(long[] array, Random random) {
@@ -8403,7 +8403,7 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(float[] array) {
@@ -8415,7 +8415,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(float[] array, Random random) {
@@ -8428,7 +8428,7 @@ public enum ArrayUtils { ;
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
      * @param array   the array to shuffle
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(double[] array) {
@@ -8440,7 +8440,7 @@ public enum ArrayUtils { ;
      *
      * @param array   the array to shuffle
      * @param random  the source of randomness used to permute the elements
-     * @see <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffle algorithm</a>
+     * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(double[] array, Random random) {
@@ -8546,7 +8546,7 @@ public enum ArrayUtils { ;
      * <code>comp.apply(array[j], x)</code> is <code>true</code>.
      */
     private static int lowerBound(int mid, int to, int firstCut, IntComparator comp) {
-        // if (comp==null) throw new NullPointerException();
+        
         int len = to - mid;
         while (len > 0) {
             int half = len / 2;
@@ -8596,7 +8596,7 @@ public enum ArrayUtils { ;
 		 */
         int length = to - from;
 
-        // Insertion sort on smallest arrays
+        
         if (length < SMALL) {
             for (int i = from; i < to; i++) {
                 for (int j = i; j > from && (c.compare(j - 1, j) > 0); j--) {
@@ -8606,16 +8606,16 @@ public enum ArrayUtils { ;
             return;
         }
 
-        // Recursively sort halves
+        
         int mid = (from + to) >>> 1;
         mergeSort(from, mid, c, swapper);
         mergeSort(mid, to, c, swapper);
 
-        // If list is already sorted, nothing left to do. This is an
-        // optimization that results in faster sorts for nearly ordered lists.
+        
+        
         if (c.compare(mid - 1, mid) <= 0) return;
 
-        // Merge sorted halves
+        
         inPlaceMerge(from, mid, to, c, swapper);
     }
 
@@ -8634,7 +8634,7 @@ public enum ArrayUtils { ;
      */
     public static void quickSort(int from, int to, IntComparator comp, Swapper swapper) {
         int len = to - from;
-        // Insertion sort on smallest arrays
+        
         if (len < SMALL) {
             for (int i = from; i < to; i++)
                 for (int j = i; j > from && (comp.compare(j - 1, j) > 0); j--) {
@@ -8643,51 +8643,51 @@ public enum ArrayUtils { ;
             return;
         }
 
-        // Choose a partition element, v
-        int m = from + len / 2; // Small arrays, middle element
+        
+        int m = from + len / 2; 
         if (len > SMALL) {
             int l = from;
             int n = to - 1;
-            if (len > MEDIUM) { // Big arrays, pseudomedian of 9
+            if (len > MEDIUM) { 
                 int s = len / 8;
                 l = med3(l, l + s, l + 2 * s, comp);
                 m = med3(m - s, m, m + s, comp);
                 n = med3(n - 2 * s, n - s, n, comp);
             }
-            m = med3(l, m, n, comp); // Mid-size, med of 3
+            m = med3(l, m, n, comp); 
         }
-        // int v = x[m];
+        
 
         int a = from;
         int b = a;
         int c = to - 1;
-        // Establish Invariant: v* (<v)* (>v)* v*
+        
         int d = c;
         while (true) {
             int comparison;
             while (b <= c && ((comparison = comp.compare(b, m)) <= 0)) {
                 if (comparison == 0) {
-                    if (a == m) m = b; // moving target; DELTA to JDK !!!
-                    else if (b == m) m = a; // moving target; DELTA to JDK !!!
+                    if (a == m) m = b; 
+                    else if (b == m) m = a; 
                     swapper.swap(a++, b);
                 }
                 b++;
             }
             while (c >= b && ((comparison = comp.compare(c, m)) >= 0)) {
                 if (comparison == 0) {
-                    if (c == m) m = d; // moving target; DELTA to JDK !!!
-                    else if (d == m) m = c; // moving target; DELTA to JDK !!!
+                    if (c == m) m = d; 
+                    else if (d == m) m = c; 
                     swapper.swap(c, d--);
                 }
                 c--;
             }
             if (b > c) break;
-            if (b == m) m = d; // moving target; DELTA to JDK !!!
-            else if (c == m) m = c; // moving target; DELTA to JDK !!!
+            if (b == m) m = d; 
+            else if (c == m) m = c; 
             swapper.swap(b++, c--);
         }
 
-        // Swap partition elements back to middle
+        
         int s;
         int n = to;
         s = Math.min(a - from, b - a);
@@ -8695,7 +8695,7 @@ public enum ArrayUtils { ;
         s = Math.min(d - c, n - d - 1);
         vecSwap(swapper, b, n - s, s);
 
-        // Recursively sort non-partition-elements
+        
         if ((s = b - a) > 1) quickSort(from, from + s, comp, swapper);
         if ((s = d - c) > 1) quickSort(n - s, n, comp, swapper);
     }
@@ -8713,7 +8713,7 @@ public enum ArrayUtils { ;
      * <code>comp.apply(x, array[j])</code> is <code>false</code>.
      */
     private static int upperBound(int from, int mid, int secondCut, IntComparator comp) {
-        // if (comp==null) throw new NullPointerException();
+        
         int len = mid - from;
         while (len > 0) {
             int half = len / 2;
@@ -8741,7 +8741,7 @@ public enum ArrayUtils { ;
 
     public static void shuffle(int[] array, int len, Random random) {
 
-        //probabality for no shuffle at all:
+        
         if (random.nextInt(factorial(len)) == 0) return;
 
         for (int i = len; i > 1; i--) {
@@ -8757,7 +8757,7 @@ public enum ArrayUtils { ;
 
     public static void shuffle(byte[] array, int len, Random random) {
 
-        //probabality for no shuffle at all:
+        
         if (random.nextInt(factorial(len)) == 0) return;
 
         for (int i = len; i > 1; i--) {
@@ -8800,24 +8800,24 @@ public enum ArrayUtils { ;
 
     /** sorts descending */
     public static void sort(int[] a, int left, int right /* inclusive */, IntToFloatFunction v) {
-//        // Use counting sort on large arrays
-//        if (right - left > COUNTING_SORT_THRESHOLD_FOR_BYTE) {
-//            int[] count = new int[NUM_BYTE_VALUES];
-//
-//            for (int i = left - 1; ++i <= right;
-//                 count[a[i] - Byte.MIN_VALUE]++
-//                    )
-//                ;
-//            for (int i = NUM_BYTE_VALUES, k = right + 1; k > left; ) {
-//                while (count[--i] == 0) ;
-//                byte value = (byte) (i + Byte.MIN_VALUE);
-//                int s = count[i];
-//
-//                do {
-//                    a[--k] = value;
-//                } while (--s > 0);
-//            }
-//        } else { // Use insertion sort on small arrays
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         for (int i = left, j = i; i < right; j = ++i) {
             int ai = a[i + 1];
             while (v.valueOf(ai) > v.valueOf(a[j])) {
@@ -8827,7 +8827,7 @@ public enum ArrayUtils { ;
             }
             a[j + 1] = ai;
         }
-//        }
+
     }
     /** sorts descending */
     public static <X> void sort(X[] a, int left, int right /* inclusive */, ToDoubleFunction<X> v) {
@@ -8840,7 +8840,7 @@ public enum ArrayUtils { ;
             }
             a[j + 1] = ai;
         }
-//        }
+
     }
 
     /** sorts descending */
@@ -8879,7 +8879,7 @@ public enum ArrayUtils { ;
             }
             a[j + 1] = ai;
         }
-//        }
+
     }
 
 

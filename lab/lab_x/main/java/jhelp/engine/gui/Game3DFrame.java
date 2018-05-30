@@ -275,7 +275,7 @@ public abstract class Game3DFrame
          gameName = "JHelpGame3D";
       }
 
-      //gameName = UtilText.replaceWhiteCharactersBy(gameName, '_');
+      
       gameName = "GAMENAME";
 
       if(gameName.length() == 0)

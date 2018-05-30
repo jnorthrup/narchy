@@ -58,7 +58,7 @@ public class ClipBoardManager
       @Override
       public void checkPermission(final Permission perm)
       {
-         // Debug.println("Yes you can do : ", perm);
+         
       }
    }
 

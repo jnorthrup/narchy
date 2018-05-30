@@ -118,8 +118,8 @@ public abstract class VChannel {
 
         int data_offset = 0;
         int packets_sent = 0;
-//		int num_packets = (length / VChannels.CHANNEL_CHUNK_LENGTH);
-//		num_packets += length - (VChannels.CHANNEL_CHUNK_LENGTH) * num_packets;
+
+
 
         while (data_offset < length) {
 

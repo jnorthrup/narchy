@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.terminalsets;
 
@@ -35,7 +35,7 @@ import java.util.*;
  */
 public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
     
-    //Parameters defaults
+    
     private int NUMBER_NGRAMS = 10; 
     private boolean PENALIZE_NEGATIVES_NGRAMS = true;
       
@@ -65,11 +65,11 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
             }
         }
         
-        //This is used later for Ranges computation
+        
         CharHashSet charset = new CharHashSet();
        
-        //Ngrams
-        //Find out the common ngrams into positives examples
+        
+        
         NodeFactory nodeFactory = configuration.getNodeFactory(); 
         Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
         
@@ -90,11 +90,11 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
          * +1 for each positive example which contains it
          */
         for (Example example : positiveExamples) {           
-            //find out all used chars in positive examples
+            
             for (char c : example.getString().toCharArray()) {
                     charset.add(c);
             }
-            //assign scores to ngrams
+            
             Set<String> subparts = Utils.subparts(example.getString());
             for (String x : subparts) {
                 long v = ngrams.containsKey(x) ? ngrams.get(x) : 0;
@@ -121,12 +121,12 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         
         ngrams = sortByValues(ngrams);
         
-        long numberNgrams = 0; //Considering positives only. Is the sum of the ngrams ratios. 
+        long numberNgrams = 0; 
         for (Map.Entry<String, Long> entry : ngrams.entrySet()) {
                 String  ngram = entry.getKey();
                 Long v = entry.getValue();
                 if(v <= 0){
-                    //drops ngrams with negative scores
+                    
                     continue;
                 }
                 Leaf leaf = new Constant(Utils.escape(ngram));
@@ -138,9 +138,9 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
                 }
         }
         
-        //Add all the met characters to the Training Set
-        //All the caracters are added, there is no filtering 
-        //(this is different from ngrams larger than 1) 
+        
+        
+        
         for (char c : charset.toSortedArray()) {
             terminalSet.add(new Constant(Utils.escape(c)));
         }

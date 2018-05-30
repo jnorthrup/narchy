@@ -95,14 +95,14 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
     }
 
 
-//    /**
-//     * Constructs and initializes a Tuple3f from the specified Tuple3d.
-//     *
-//     * @param t1 the Tuple3d containing the initialization x y z data
-//     */
-//    protected Tuple3f(Tuple3d t1) {
-//        set(t1);
-//    }
+
+
+
+
+
+
+
+
 
 
     /**
@@ -131,32 +131,32 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
      * @param z the z coordinate
      */
     public void set(float x, float y, float z) {
-//        if ((x!=x) || (y!=y) || (z!=z))
-//            throw new UnsupportedOperationException();
+
+
 
         this.x = (x);
         this.y = (y);
         this.z = (z);
 
-//        this.x = notNaN(x);
-//        this.y = notNaN(y);
-//        this.z = notNaN(z);
+
+
+
     }
 
     /** assumes z=0 */
     public void set(float x, float y) {
         set(x, y, this.z);
     }
-//    public void setLerp(float x, float y, float z, float speed) {
-//        if (speed == 1f) {
-//            set(x, y, z);
-//        } else if (speed > 0) {
-//            set(Util.lerp(speed, this.x, x),
-//                Util.lerp(speed, this.y, y),
-//                Util.lerp(speed, this.z, z)
-//            );
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
 
     public final void setNegative(Tuple3f v) {
         set(-v.x, -v.y, -v.z);
@@ -188,14 +188,14 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
     }
 
 
-//    /**
-//     * Sets the value of this tuple to the value of tuple t1.
-//     *
-//     * @param t1 the tuple to be copied
-//     */
-//    public final void set(Tuple3d t1) {
-//        set((float) t1.x, (float) t1.y, (float) t1.z);
-//    }
+
+
+
+
+
+
+
+
 
 
     /**
@@ -383,9 +383,9 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
      * @return true or false
      */
     @Deprecated
-    public boolean equals(@Nullable Tuple3f t1) { //TODO add an epsilon tolerance
-        //try {
-        //return (t1 != null) && ((this.x == t1.x) && (this.y == t1.y) && (this.z == t1.z));
+    public boolean equals(@Nullable Tuple3f t1) { 
+        
+        
         return (this==t1) ||
                 ((t1 != null) &&
                 Util.equals(x, t1.x, BulletGlobals.SIMD_EPSILON) &&
@@ -405,42 +405,42 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
      * @return true or false
      */
     public boolean equals(Object t1) {
-        //try {
+        
         Tuple3f t2 = (Tuple3f) t1;
         return equals(t2);
-//        } catch (NullPointerException e2) {
-//            return false;
-//        } catch (ClassCastException e1) {
-//            return false;
-//        }
+
+
+
+
+
     }
 
 
-//    /**
-//     * Returns true if the L-infinite distance between this tuple
-//     * and tuple t1 is less than or equal to the epsilon parameter,
-//     * otherwise returns false.  The L-infinite
-//     * distance is equal to MAX[abs(x1-x2), abs(y1-y2), abs(z1-z2)].
-//     *
-//     * @param t1      the tuple to be compared to this tuple
-//     * @param epsilon the threshold value
-//     * @return true or false
-//     */
-//    public boolean epsilonEquals(Tuple3f t1, float epsilon) {
-//
-//        float diff = x - t1.x;
-//        if (Float.isNaN(diff)) return false;
-//        if ((diff < 0 ? -diff : diff) > epsilon) return false;
-//
-//        diff = y - t1.y;
-//        if (Float.isNaN(diff)) return false;
-//        if ((diff < 0 ? -diff : diff) > epsilon) return false;
-//
-//        diff = z - t1.z;
-//        if (Float.isNaN(diff)) return false;
-//        return (diff < 0 ? -diff : diff) <= epsilon;
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -668,11 +668,11 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
      */
     @Override
     public Object clone() {
-        // Since there are no arrays we can just use Object.clone()
+        
         try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
+            
             throw new InternalError();
         }
     }
@@ -697,69 +697,69 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
     }
 
 
-//    /**
-//     * Get the <i>x</i> coordinate.
-//     *
-//     * @return the  <i>x</i> coordinate.
-//     * @since vecmath 1.5
-//     */
-//    public final float getX() {
-//        return x;
-//    }
 
 
-//    /**
-//     * Set the <i>x</i> coordinate.
-//     *
-//     * @param x value to <i>x</i> coordinate.
-//     * @since vecmath 1.5
-//     */
-//    public final void setX(float x) {
-//        this.x = x;
-//    }
 
 
-//    /**
-//     * Get the <i>y</i> coordinate.
-//     *
-//     * @return the <i>y</i> coordinate.
-//     * @since vecmath 1.5
-//     */
-//    public final float getY() {
-//        return y;
-//    }
 
 
-//    /**
-//     * Set the <i>y</i> coordinate.
-//     *
-//     * @param y value to <i>y</i> coordinate.
-//     * @since vecmath 1.5
-//     */
-//    public final void setY(float y) {
-//        this.y = y;
-//    }
-
-//    /**
-//     * Get the <i>z</i> coordinate.
-//     *
-//     * @return the <i>z</i> coordinate
-//     * @since vecmath 1.5
-//     */
-//    public final float getZ() {
-//        return z;
-//    }
 
 
-//    /**
-//     * Set the <i>Z</i> coordinate.
-//     *
-//     * @param z value to <i>z</i> coordinate.
-//     * @since vecmath 1.5
-//     */
-//    public final void setZ(float z) {
-//        this.z = z;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

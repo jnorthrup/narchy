@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -23,7 +23,7 @@ public class InventoryItem implements java.io.Serializable {
 		this.setItem(item);
 	}
 	
-	// returns left overs
+	
 	public int add(Item item, int count) {
 		if (this.isEmpty()) {
 			this.setItem(item);
@@ -45,7 +45,7 @@ public class InventoryItem implements java.io.Serializable {
 		}
 	}
 	
-	// returns left overs
+	
 	public int remove(int count) {
 		if (0 <= this.getCount() - count) {
 			this.setCount(this.getCount() - count);

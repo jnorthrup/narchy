@@ -20,7 +20,7 @@ public class Double extends Term<Double> {
 
 	@Override
     public <Z> Z/*java.lang.Double*/ toJava() {
-		//return (Z)_theDouble;
+		
 		return uncheckedCast(_theDouble);
 	}
 	

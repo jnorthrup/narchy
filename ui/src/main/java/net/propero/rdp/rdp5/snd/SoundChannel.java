@@ -18,7 +18,7 @@ public class SoundChannel extends VChannel {
 
     @Override
     public void process(RdpPacket data) {
-        // do nothing
+        
 
     }
 

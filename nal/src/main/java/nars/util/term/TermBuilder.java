@@ -69,8 +69,8 @@ public abstract class TermBuilder {
                 if (!(x instanceof AnonID)) {
                     Term ux = x.unneg();
                     if (x != ux && ux instanceof AnonID) {
-                        //allow anon here, but not t.length > 1 there is still some problem probably with commutives
-                        //purelyAnon = true
+                        
+                        
                     } else {
                         purelyAnon = false;
                     }
@@ -83,10 +83,10 @@ public abstract class TermBuilder {
                 case 0:
                     throw new UnsupportedOperationException();
                 case 1:
-                    //return new TermVector1(t[0]);
+                    
                     return new UnitSubterm(t[0]);
-                //case 2:
-                //return new TermVector2(t);
+                
+                
                 default:
                     return new ArrayTermVector(t);
             }
@@ -134,8 +134,8 @@ public abstract class TermBuilder {
     }
 
     public Compound theCompound(Op op, int dt, Subterms subterms) {
-        //HACK predict if compound will differ from its root
-        if (!op.temporal && !subterms.isTemporal()) { //TODO there are more cases
+        
+        if (!op.temporal && !subterms.isTemporal()) { 
             assert(dt == DTERNAL);
             return new CachedCompound.SimpleCachedCompound(op, subterms);
         } else {

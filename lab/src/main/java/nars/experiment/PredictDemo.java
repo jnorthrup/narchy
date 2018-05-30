@@ -28,16 +28,16 @@ public class PredictDemo {
                 .time(new RealTime.CS(true).durFPS(fps))
                 .get();
 
-//        DefaultConceptState s = (DefaultConceptState) n.conceptBuilder.awake();
-//        s.beliefsMaxTemp = 256;
-//        s.beliefsMinTemp = 256;
+
+
+
 
         float[] xf = new float[1];
         @Nullable Concept X = new Scalar($.the("x"), ()->{
             return xf[0];
         }, n);
         n.on(X);
-        //@Nullable Concept T = n.conceptualize($.the("t"));
+        
 
         final FloatFloatToObjectFunction<Truth> truther =
                 (prev, next) -> $.t(next, n.confDefault(BELIEF));
@@ -46,17 +46,17 @@ public class PredictDemo {
             long rt = n.time();
             float t = ((float) rt) / n.dur();
             xf[0] = (float) (0.5f + 0.5f * Math.sin(t / 6f));
-            //n.believe(X.term(), rt, xf, 0.9f);
+            
 
             ((Scalar) X).update(truther, n);
 
-            //n.believe(T.term(), rt, Math.sin(t / 4f) > 0 ? 1f : 0f, 0.9f);
+            
         }).runFPS(15f);
 
-        //n.log();
+        
 
         new BeliefPredict(List.of(X), 8, n.dur()*8, 8,
-                //new LivePredictor.MLPPredictor(0.02f),
+                
                 new LivePredictor.LSTMPredictor(0.15f, 1),
                 n
         );
@@ -64,7 +64,7 @@ public class PredictDemo {
         SpaceGraph.window(new Gridding(Gridding.VERTICAL,
 
                 NARui.beliefCharts(64, List.of(X), n),
-                //Vis.beliefCharts(128, List.of(x), n),
+                
                 NARui.beliefCharts(256, List.of(X), n),
                 NARui.beliefCharts(2048, List.of(X), n)
 

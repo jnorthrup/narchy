@@ -22,7 +22,7 @@ public final class PremiseKey {
 
         DynBytes k = new DynBytes(64);
 
-        //task punc (2 bits) + whether belief is present (1 bit)
+        
         byte taskPuncAndIfDouble;
         switch (d.taskPunc) {
             case BELIEF:  taskPuncAndIfDouble = 0; break;
@@ -35,9 +35,9 @@ public final class PremiseKey {
         taskPuncAndIfDouble |= (d.hasBeliefTruth() ? 1 : 0) << 3;
         k.writeByte(taskPuncAndIfDouble);
 
-//        //2 bits for each polarity, each one offset by +1 (because it ranges from -1..+1)
-//        k.writeByte(((d.taskPolarity+1)<<2) | (d.beliefPolarity+1) );
-        //1 bit for whether the
+
+
+        
 
 
         d.taskTerm.root().append((ByteArrayDataOutput)k);
@@ -54,7 +54,7 @@ public final class PremiseKey {
 
     @Override
     public boolean equals(Object o) {
-        //if (this == o) return true;
+        
         PremiseKey that = (PremiseKey) o;
 
         return hash == that.hash && Arrays.equals(key, that.key);

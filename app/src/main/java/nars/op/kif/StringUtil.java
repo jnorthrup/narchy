@@ -1,7 +1,7 @@
 /** This code is copyright Articulate Software (c) 2003.  Some
 portions copyright Teknowledge (c) 2003 and reused under the terms of
 the GNU license.  This software is released under the GNU Public
-License <http://www.gnu.org/copyleft/gpl.html>.  Users of this code
+License <http:
 also consent, by use of this code, to credit Articulate Software and
 Teknowledge in any writings, briefings, publications, presentations,
 or other representations of any software which incorporates, builds
@@ -11,7 +11,7 @@ publication with references:
 Pease, A., (2003). The Sigma Ontology Development Environment, in
 Working Notes of the IJCAI-2003 Workshop on Ontology and Distributed
 Systems, August 9, Acapulco, Mexico.
-See also http://sigmakee.sourceforge.net
+See also http:
 
 Authors:
 Adam Pease
@@ -20,8 +20,10 @@ Infosys LTD.
 
 package nars.op.kif;
 
-import java.io.*;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -38,7 +40,7 @@ public class StringUtil {
     private static String CHARSET = "UTF-8";
 
     private StringUtil() {
-        // This class should not have any instances.
+        
     }
 
     /** ************************************************************
@@ -203,74 +205,74 @@ public class StringUtil {
         SAFE_NAMESPACE_DELIMITER = str;
         return SAFE_NAMESPACE_DELIMITER;
     }
-//
-//    /***************************************************************
-//     * Given an input String encoded in charset, returns a String
-//     * representing the base-64 encoding of the input.
-//     *
-//     * @param input   A String
-//     * @param charset A String constant denoting a Charset
-//     * @return a base-64 String
-//     */
-//    public static String toBase64(String input, String charset) {
-//
-//        String ans = "";
-//        try {
-//            ans = (new String(Base64.encodeBytes(input.getBytes(charset)).getBytes(), charset)).trim();
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//        return ans;
-//    }
 
-//    /****************************************************************
-//     * Given an input String encoded in base-64, decodes the String
-//     * and returns the original form of input in charset.
-//     *
-//     * @param input   A base-64 String
-//     * @param charset A String constant denoting a Charset, such at UTF-8
-//     * @return a String decoded from base-64 to its original form in
-//     * charset
-//     */
-//    public static String fromBase64(String input, String charset) {
-//
-//        String ans = "";
-//        try {
-//            ans = (new String(Base64.decode(input), charset)).trim();
-//        }
-//        catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//        return ans;
-//    }
 
-//    /****************************************************************
-//     * Converts input, which is assumed to belong to charset, to a
-//     * base 64 representation, and then encrypts the result using the
-//     * SHA algorithm.
-//     *
-//     * @param input   A String in charset
-//     * @param charset A String constant denoting a Charset, such at UTF-8
-//     * @return a String that has been converted to base 64 encoding
-//     * and then encrypted via SHA
-//     */
-//    public static String encrypt(String input, String charset) {
-//
-//        String encrypted = "";
-//        try {
-//            String encoded = toBase64(input, charset);
-//            MessageDigest md = MessageDigest.getInstance("SHA");
-//            md.update(encoded.getBytes(charset));
-//            byte[] raw = md.digest();
-//            encrypted = new String(raw, charset);
-//        }
-//        catch (Exception e) {
-//            System.out.println(e.getMessage());
-//            e.printStackTrace();
-//        }
-//        return encrypted;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /****************************************************************
      *
@@ -421,57 +423,57 @@ public class StringUtil {
         if (StringUtil.emptyString(sentence))
             return sentence;
         m = Pattern.compile("(\\w)\\'re").matcher(sentence);
-        //m = regexPatterns[19].matcher(sentence);
+        
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
         m = Pattern.compile("(\\w)\\'m").matcher(sentence);
-        //m = regexPatterns[20].matcher(sentence);
+        
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
         m = Pattern.compile("(\\w)n\\'t").matcher(sentence);
-        //m = regexPatterns[21].matcher(sentence);
+        
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
         m = Pattern.compile("(\\w)\\'ll").matcher(sentence);
-        //m = regexPatterns[22].matcher(sentence);
+        
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
         m = Pattern.compile("(\\w)\\'s").matcher(sentence);
-        //m = regexPatterns[23].matcher(sentence);
+        
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
         m = Pattern.compile("(\\w)\\'d").matcher(sentence);
-        //m = regexPatterns[24].matcher(sentence);
+        
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
         m = Pattern.compile("(\\w)\\'ve").matcher(sentence);
-        //m = regexPatterns[25].matcher(sentence);
+        
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
@@ -508,13 +510,13 @@ public class StringUtil {
 
         String ans = str;
         if (isNonEmptyString(ans)) {
-            // ans = ans.replaceAll("(?s)\\s", " ");
+            
             ans = ans.replaceAll("\\s+", " ");
             ans = ans.replaceAll("\\(\\s+", "(");
-            // ans = ans.replaceAll("\\.\\s+", ".  ");
-            // ans = ans.replaceAll("\\?\\s+", "?  ");
-            // ans = ans.replaceAll("\\:\\s+", ":  ");
-            // ans = ans.replaceAll("\\!\\s+", "!  ");
+            
+            
+            
+            
         }
         return ans;
     }
@@ -973,11 +975,11 @@ public class StringUtil {
 
         boolean isValidInteger = false;
         try {
-            Integer.parseInt(s.trim()); // s is a valid integer
+            Integer.parseInt(s.trim()); 
             isValidInteger = true;
         }
         catch (NumberFormatException ex) {
-            // s is not an integer
+            
         }
         return isValidInteger;
     }
@@ -1051,7 +1053,7 @@ public class StringUtil {
             return true;
         }
         catch (NumberFormatException e) {
-            // s is not numeric
+            
             return false;
         }
     }
@@ -1519,21 +1521,21 @@ public class StringUtil {
         return result.toString();
     }
 
-    /** *****************************************************************
-     */
-    public static boolean urlExists(String URLName) {
-
-        boolean result = false;
-        try {
-            URL url = new URL("ftp://ftp1.freebsd.org/pub/FreeBSD/");
-            InputStream input = url.openStream();
-            return true;
-        }
-        catch (Exception ex) {
-            System.out.println("error in StringUtil.urlExists()");
-        }
-        return false;
-    }
+//    /** *****************************************************************
+//     */
+//    public static boolean urlExists(String URLName) {
+//
+//        boolean result = false;
+//        try {
+//            URL url = new URL("ftp://ftp1.freebsd.org/pub/FreeBSD/");
+//            InputStream input = url.openStream();
+//            return true;
+//        }
+//        catch (Exception ex) {
+//            System.out.println("error in StringUtil.urlExists()");
+//        }
+//        return false;
+//    }
 
     /** *****************************************************************
      */
@@ -1550,15 +1552,15 @@ public class StringUtil {
      * @param aFile is a file which already exists and can be read.
      */
      public static String getContents(File aFile) {
-        //...checks on aFile are elided
+        
         StringBuilder contents = new StringBuilder();
 
         try {
-            //use buffering, reading one line at a time
-            //FileReader always assumes default encoding is OK!
+            
+            
             BufferedReader input =  new BufferedReader(new FileReader(aFile));
             try {
-                String line = null; //not declared within while loop
+                String line = null; 
         /*
         * readLine is a bit quirky :
         * it returns the content of a line MINUS the newline.
@@ -1587,15 +1589,15 @@ public class StringUtil {
      * @return
      */
     public static String filterHtml(String input)  {
-        // Note use of non-greedy matching.
+        
         String out = input.replaceAll("<.*?>", "");
 
-        // Clean up.
+        
         out = out.replaceAll(" +", " ");
-        // Insert a space anywhere a comma isn't followed by a space.
+        
         out = out.replaceAll(",(\\S)", ", $1");
 
         return out;
     }
 
-} // StringUtil
+} 

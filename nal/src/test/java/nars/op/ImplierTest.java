@@ -41,27 +41,27 @@ public class ImplierTest {
         n.believe(b);
         n.believe(c);
         n.believe(d);
-        //n.believe(t, ..);
-        //n.believe(u, ..);
+        
+        
 
         n.run(15);
 
         System.out.println(imp.impl);
 
-//        for (int i = 0; i < 2; i++) {
-//
-//            n.run(2);
-//            System.out.println(imp.impl);
-//            assertEquals(2, imp.impl.nodeCount());
-//            assertEquals(1, imp.impl.edgeCount());
-//        }
 
-//        n.input("(z ==> x). :|:");
-//        n.run(1);
-//        System.out.println(imp.impl);
-//        n.run(1);
-//        System.out.println(imp.impl);
-//        System.out.println(imp.goalTruth);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 }

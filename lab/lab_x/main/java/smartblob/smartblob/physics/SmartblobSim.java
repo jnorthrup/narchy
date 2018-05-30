@@ -36,13 +36,13 @@ public class SmartblobSim{
 		for(Smartblob blob : blobArray){
 			blob.onEndUpdateSpeeds();
 		}
-		SmartblobUtil.moveAll(this, secondsThisTime); //calls onStart*  and onEnd* *UpdatePositions
+		SmartblobUtil.moveAll(this, secondsThisTime); 
 		for(Smartblob blob : blobArray){
 			blob.onStartUpdateSpeeds();
 		}
 		for(Smartblob blob : blobArray){
-			//blob.nextState(secondsSinceLastCall); //does all SmartblobPhysicsPart and updateShape and maybe more
-			//TODO threads
+			
+			
 
 			ArrayList<ChangeSpeed> mp = blob.mutablePhysics();
 			for (int i = 0; i < mp.size(); i++) {
@@ -52,7 +52,7 @@ public class SmartblobSim{
 
 			blob.onEndUpdateSpeeds();
 		}
-		SmartblobUtil.moveAll(this, secondsThisTime); //calls onStart*  and onEnd* *UpdatePositions
+		SmartblobUtil.moveAll(this, secondsThisTime); 
 	}
 
 }

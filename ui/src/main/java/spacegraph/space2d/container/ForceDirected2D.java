@@ -62,7 +62,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
             MovingRectFloat2D bx = bounds.get(x);
             center.add(bx.cx(), bx.cy());
         }
-        center.scaled(1f/n); //average
+        center.scaled(1f/n); 
         tx = Util.lerp(0.5f, recenterX - center.x, recenterX);
         ty = Util.lerp(0.5f, recenterY - center.y, recenterY);
     }
@@ -106,7 +106,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
     }
 
     protected float weightToVelocity(float weight) {
-        return weight*weight; //curved response
+        return weight*weight; 
     }
 
     private void repel(MovingRectFloat2D a, MovingRectFloat2D b, float repelSpeed) {
@@ -118,7 +118,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X, MovingRectFloat2D> {
         float ar = a.radius();
         float br = b.radius();
 
-        //for proportionality to area, not linear
+        
         ar *= ar;
         br *= br;
 

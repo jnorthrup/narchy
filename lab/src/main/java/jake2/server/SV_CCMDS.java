@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 18.01.2004 by RST.
-// $Id: SV_CCMDS.java,v 1.16 2007-06-07 10:31:10 cawe Exp $
+
+
 
 package jake2.server;
 
@@ -60,19 +60,19 @@ public class SV_CCMDS {
 	public static void SV_SetMaster_f() {
 		int i, slot;
 
-		// only dedicated servers send heartbeats
+		
 		if (Globals.dedicated.value == 0) {
 			Com.Printf("Only dedicated servers use masters.\n");
 			return;
 		}
 
-		// make sure the server is listed public
+		
 		Cvar.Set("public", "1");
 
 		for (i = 1; i < Defines.MAX_MASTERS; i++)
 			SV_MAIN.master_adr[i] = new netadr_t();
 
-		slot = 1; // slot 0 will always contain the id master
+		slot = 1; 
 		for (i = 1; i < Cmd.Argc(); i++) {
 			if (slot == Defines.MAX_MASTERS)
 				break;
@@ -112,7 +112,7 @@ public class SV_CCMDS {
 
 		s = Cmd.Argv(1);
 
-		// numeric values are just slot numbers
+		
 		if (s.charAt(0) >= '0' && s.charAt(0) <= '9') {
 			idnum = Lib.atoi(Cmd.Argv(1));
 			if (idnum < 0 || idnum >= SV_MAIN.maxclients.value) {
@@ -129,7 +129,7 @@ public class SV_CCMDS {
 			return true;
 		}
 
-		// check for a name match
+		
 		for (i = 0; i < SV_MAIN.maxclients.value; i++) {
 			cl = SV_INIT.svs.clients[i];
 			if (0 == cl.state)
@@ -200,7 +200,7 @@ public class SV_CCMDS {
 		int l = -1;
 		byte buffer[] = new byte[65536];
 
-		//Com.DPrintf("CopyFile (" + src + ", " + dst + ")\n");
+		
 		try {
 			f1 = new RandomAccessFile(src, "r");
 		}
@@ -266,7 +266,7 @@ public class SV_CCMDS {
 
 		SV_WipeSavegame(dst);
 
-		// copy the savegame over
+		
 		String name = FS.Gamedir() + "/save/" + src + "/server.ssv";
 		String name2 = FS.Gamedir() + "/save/" + dst + "/server.ssv";
 		FS.CreatePath(name2);
@@ -287,7 +287,7 @@ public class SV_CCMDS {
 
 			CopyFile(name, name2);
 
-			// change sav to sv2
+			
 			name = name.substring(0, name.length() - 3) + "sv2";
 			name2 = name2.substring(0, name2.length() - 3) + "sv2";
 
@@ -336,7 +336,7 @@ public class SV_CCMDS {
 	==============
 	*/
 	public static void SV_ReadLevelFile() {
-		//char name[MAX_OSPATH];
+		
 		String name;
 		QuakeFile f;
 
@@ -390,17 +390,17 @@ public class SV_CCMDS {
 				comment += SV_INIT.sv.configstrings[Defines.CS_NAME];
 			}
 			else {
-				// autosaved
+				
 				comment = "ENTERING " + SV_INIT.sv.configstrings[Defines.CS_NAME];
 			}
 
 			f.writeString(comment);
 			f.writeString(SV_INIT.svs.mapcmd);
 
-			// write the mapcmd
+			
 
-			// write all CVAR_LATCH cvars
-			// these will be things like coop, skill, deathmatch, etc
+			
+			
 			for (var = Globals.cvar_vars; var != null; var = var.next) {
 				if (0 == (var.flags & Defines.CVAR_LATCH))
 					continue;
@@ -419,7 +419,7 @@ public class SV_CCMDS {
 				}
 
 			}
-			// rst: for termination.
+			
 			f.writeString(null);
 			f.close();
 		}
@@ -427,7 +427,7 @@ public class SV_CCMDS {
 			Com.Printf("Couldn't write " + filename + '\n');
 		}
 
-		// write game state
+		
 		filename = FS.Gamedir() + "/save/current/game.ssv";
 		GameSave.WriteGame(filename, autosave);
 	}
@@ -450,14 +450,14 @@ public class SV_CCMDS {
 
 			f = new QuakeFile(filename, "r");
 
-			// read the comment field but ignore
+			
 			f.readString();
 
-			// read the mapcmd
+			
 			mapcmd = f.readString();
 
-			// read all CVAR_LATCH cvars
-			// these will be things like coop, skill, deathmatch, etc
+			
+			
 			while (true) {
 				name = f.readString();
 				if (name == null)
@@ -470,12 +470,12 @@ public class SV_CCMDS {
 
 			f.close();
 
-			// start a new game fresh with new cvars
+			
 			SV_INIT.SV_InitGame();
 
 			SV_INIT.svs.mapcmd = mapcmd;
 
-			// read game state
+			
 			filename = FS.Gamedir() + "/save/current/game.ssv";
 			GameSave.ReadGame(filename);
 		}
@@ -484,7 +484,7 @@ public class SV_CCMDS {
 			e.printStackTrace();
 		}
 	}
-	//=========================================================
+	
 
 	/*
 	==================
@@ -525,17 +525,17 @@ public class SV_CCMDS {
 
 		FS.CreatePath(FS.Gamedir() + "/save/current/");
 
-		// check for clearing the current savegame
+		
 		String map = Cmd.Argv(1);
 		if (map.charAt(0) == '*') {
-			// wipe all the *.sav files
+			
 			SV_WipeSavegame("current");
 		}
-		else { // save the map just exited
+		else { 
 			if (SV_INIT.sv.state == Defines.ss_game) {
-				// clear all the client inuse flags before saving so that
-				// when the level is re-entered, the clients will spawn
-				// at spawn points instead of occupying body shells
+				
+				
+				
 				client_t cl;
 				boolean[] savedInuse = new boolean[(int) SV_MAIN.maxclients.value];
 				for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
@@ -546,7 +546,7 @@ public class SV_CCMDS {
 
 				SV_WriteLevelFile();
 
-				// we must restore these for clients to transfer over correctly
+				
 				for (int i = 0; i < SV_MAIN.maxclients.value; i++) {
 					cl = SV_INIT.svs.clients[i];
 					cl.edict.inuse = savedInuse[i];
@@ -556,13 +556,13 @@ public class SV_CCMDS {
 			}
 		}
 
-		// start up the next map
+		
 		SV_INIT.SV_Map(false, Cmd.Argv(1), false);
 
-		// archive server state
+		
 		SV_INIT.svs.mapcmd = Cmd.Argv(1);
 
-		// copy off the level to the autosave slot
+		
 		if (0 == Globals.dedicated.value) {
 			SV_WriteServerFile(true);
 			SV_CopySaveGame("current", "save0");
@@ -578,10 +578,10 @@ public class SV_CCMDS {
 	*/
 	public static void SV_Map_f() {
 		String map;
-		//char expanded[MAX_QPATH];
+		
 		String expanded;
 
-		// if not a pcx, demo, or cinematic, check to make sure the level exists
+		
 		map = Cmd.Argv(1);
 		if (!map.contains(".")) {
 			expanded = "maps/" + map + ".bsp";
@@ -592,7 +592,7 @@ public class SV_CCMDS {
 			}
 		}
 
-		SV_INIT.sv.state = Defines.ss_dead; // don't save current level when changing
+		SV_INIT.sv.state = Defines.ss_dead; 
 
 		SV_WipeSavegame("current");
 		SV_GameMap_f();
@@ -625,7 +625,7 @@ public class SV_CCMDS {
 			Com.Printf("Bad savedir.\n");
 		}
 
-		// make sure the server.ssv file exists
+		
 		String name = FS.Gamedir() + "/save/" + Cmd.Argv(1) + "/server.ssv";
 		RandomAccessFile f;
 		try {
@@ -646,8 +646,8 @@ public class SV_CCMDS {
 		SV_CopySaveGame(Cmd.Argv(1), "current");
 		SV_ReadServerFile();
 
-		// go to the map
-		SV_INIT.sv.state = Defines.ss_dead; // don't save current level when changing
+		
+		SV_INIT.sv.state = Defines.ss_dead; 
 		SV_INIT.SV_Map(false, SV_INIT.svs.mapcmd, true);
 	}
 	/*
@@ -691,12 +691,12 @@ public class SV_CCMDS {
 		
 		Com.Printf("Saving game...\n");
 
-		// archive current level, including all client edicts.
-		// when the level is reloaded, they will be shells awaiting
-		// a connecting client
+		
+		
+		
 		SV_WriteLevelFile();
 
-		// save server state
+		
 		try {
 			SV_WriteServerFile(false);
 		}
@@ -704,11 +704,11 @@ public class SV_CCMDS {
 			Com.Printf("IOError in SV_WriteServerFile: " + e);
 		}
 
-		// copy it off
+		
 		SV_CopySaveGame("current", dir);
 		Com.Printf("Done.\n");
 	}
-	//===============================================================
+	
 	/*
 	==================
 	SV_Kick_f
@@ -731,11 +731,11 @@ public class SV_CCMDS {
 			return;
 
 		SV_SEND.SV_BroadcastPrintf(Defines.PRINT_HIGH, SV_MAIN.sv_client.name + " was kicked\n");
-		// print directly, because the dropped client won't get the
-		// SV_BroadcastPrintf message
+		
+		
 		SV_SEND.SV_ClientPrintf(SV_MAIN.sv_client, Defines.PRINT_HIGH, "You were kicked from the game\n");
 		SV_MAIN.SV_DropClient(SV_MAIN.sv_client);
-		SV_MAIN.sv_client.lastmessage = SV_INIT.svs.realtime; // min case there is a funny zombie
+		SV_MAIN.sv_client.lastmessage = SV_INIT.svs.realtime; 
 	}
 	/*
 	================
@@ -800,7 +800,7 @@ public class SV_CCMDS {
 		client_t client;
 		int j;
 		String p;
-		String text; // char[1024];
+		String text; 
 
 		if (Cmd.Argc() < 2)
 			return;
@@ -870,7 +870,7 @@ public class SV_CCMDS {
 	==============
 	*/
 	public static void SV_ServerRecord_f() {
-		//char	name[MAX_OSPATH];
+		
 		String name;
 		byte buf_data[] = new byte[32768];
 		sizebuf_t buf = new sizebuf_t();
@@ -892,9 +892,9 @@ public class SV_CCMDS {
 			return;
 		}
 
-		//
-		// open the demo file
-		//
+		
+		
+		
 		name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
 
 		Com.Printf("recording to " + name + ".\n");
@@ -907,27 +907,27 @@ public class SV_CCMDS {
 			return;
 		}
 
-		// setup a buffer to catch all multicasts
+		
 		SZ.Init(SV_INIT.svs.demo_multicast, SV_INIT.svs.demo_multicast_buf, SV_INIT.svs.demo_multicast_buf.length);
 
-		//
-		// write a single giant fake message with all the startup info
-		//
+		
+		
+		
 		SZ.Init(buf, buf_data, buf_data.length);
 
-		//
-		// serverdata needs to go over for all types of servers
-		// to make sure the protocol is right, and to set the gamedir
-		//
-		// send the serverdata
+		
+		
+		
+		
+		
 		MSG.WriteByte(buf, Defines.svc_serverdata);
 		MSG.WriteLong(buf, Defines.PROTOCOL_VERSION);
 		MSG.WriteLong(buf, SV_INIT.svs.spawncount);
-		// 2 means server demo
-		MSG.WriteByte(buf, 2); // demos are always attract loops
+		
+		MSG.WriteByte(buf, 2); 
 		MSG.WriteString(buf, Cvar.VariableString("gamedir"));
 		MSG.WriteShort(buf, -1);
-		// send full levelname
+		
 		MSG.WriteString(buf, SV_INIT.sv.configstrings[Defines.CS_NAME]);
 
 		for (i = 0; i < Defines.MAX_CONFIGSTRINGS; i++)
@@ -937,21 +937,21 @@ public class SV_CCMDS {
 				MSG.WriteString(buf, SV_INIT.sv.configstrings[i]);
 			}
 
-		// write it to the demo file
+		
 		Com.DPrintf("signon message length: " + buf.cursize + '\n');
 		len = EndianHandler.swapInt(buf.cursize);
-		//fwrite(len, 4, 1, svs.demofile);
-		//fwrite(buf.data, buf.cursize, 1, svs.demofile);
+		
+		
 		try {
 			SV_INIT.svs.demofile.writeInt(len);
 			SV_INIT.svs.demofile.write(buf.data, 0, buf.cursize);
 		}
 		catch (IOException e1) {
-			// TODO: do quake2 error handling!
+			
 			e1.printStackTrace();
 		}
 
-		// the rest of the demo file will be individual frames
+		
 	}
 	/*
 	==============
@@ -986,7 +986,7 @@ public class SV_CCMDS {
 		if (!SV_INIT.svs.initialized)
 			return;
 		SV_MAIN.SV_Shutdown("Server was killed.\n", false);
-		NET.Config(false); // close network sockets
+		NET.Config(false); 
 	}
 	/*
 	===============
@@ -999,7 +999,7 @@ public class SV_CCMDS {
 
 		GameSVCmds.ServerCommand();
 	}
-	//===========================================================
+	
 
 	/*
 	==================

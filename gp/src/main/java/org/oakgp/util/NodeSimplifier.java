@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ public final class NodeSimplifier {
      * Private constructor as all methods are static.
      */
     private NodeSimplifier() {
-        // do nothing
+        
     }
 
     /**
@@ -74,12 +74,12 @@ public final class NodeSimplifier {
             previous = output;
             output = simplifyOnce(output);
 
-            // To avoid getting stuck in an infinite loop:
-            // 1. exit if the result of an attempt to simplify equals the result of an earlier simplify
+            
+            
             if (!output.equals(previous) && !s.add(output)) {
                 return output;
             }
-            // 2. if the number of simplifies exceeds a defined limit then throw an exception
+            
             if (ctr++ > MAX_RETRIES) {
                 throw new IllegalArgumentException(input.toString());
             }
@@ -96,9 +96,9 @@ public final class NodeSimplifier {
     }
 
     private static Node simplifyFunctionNode(final FunctionNode input) {
-        // TODO it may be beneficial to add a "isSimplified" flag to FunctionNode to indicate that if it has already been simplified (to avoid trying again here)
+        
 
-        // try to simplify each of the arguments
+        
         Arguments inputArgs = input.args();
         Node[] simplifiedArgs = new Node[inputArgs.length()];
         boolean haveAnyArgumentsBeenSimplified = false;
@@ -114,7 +114,7 @@ public final class NodeSimplifier {
             }
         }
 
-        // if could simplify arguments then use simplified version to create new FunctionNode
+        
         Arguments arguments;
         FunctionNode output;
         Function f = input.func();
@@ -126,15 +126,15 @@ public final class NodeSimplifier {
             output = input;
         }
 
-        // if a function is pure and all its arguments are constants then
-        // the result of evaluating it will always be the same -
-        // so, to avoid unnecessary computation and to reduce bloat,
-        // the function node can be replaced with the result of evaluating it
+        
+        
+        
+        
         if (areAllArgumentsConstants && f.isPure()) {
             return new ConstantNode(output.eval(null), output.returnType());
         }
 
-        // try to simplify using function specific logic
+        
         Node simplifiedByFunctionVersion = f.simplify(arguments);
         if (simplifiedByFunctionVersion == null) {
             return output;

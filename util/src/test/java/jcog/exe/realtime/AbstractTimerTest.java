@@ -26,7 +26,7 @@ public abstract class AbstractTimerTest {
 
     @BeforeEach
     public void before() {
-        // TODO: run tests on different sequences
+        
         timer.assertRunning();
     }
 
@@ -113,7 +113,7 @@ public abstract class AbstractTimerTest {
                     latch.countDown();
 
                     if (latch.getCount() == 0)
-                        return; // to avoid sleep interruptions
+                        return; 
 
                     try {
                         Thread.sleep(50);
@@ -127,8 +127,8 @@ public abstract class AbstractTimerTest {
                 100,
                 TimeUnit.MILLISECONDS);
         assertTrue(latch.await(1, TimeUnit.SECONDS));
-        // time difference between the beginning of second tick and end of first one
-        assertTrue(r.get(2) - r.get(1) <= (50 * 100)); // allow it to wiggle
+        
+        assertTrue(r.get(2) - r.get(1) <= (50 * 100)); 
     }
 
     @Test
@@ -142,7 +142,7 @@ public abstract class AbstractTimerTest {
                     latch.countDown();
 
                     if (latch.getCount() == 0)
-                        return; // to avoid sleep interruptions
+                        return; 
 
                     try {
                         Thread.sleep(50);
@@ -156,7 +156,7 @@ public abstract class AbstractTimerTest {
                 100,
                 TimeUnit.MILLISECONDS);
         assertTrue(latch.await(1, TimeUnit.SECONDS), ()->latch.getCount() + " should be zero");
-        // time difference between the beginning of second tick and end of first one
+        
         assertTrue(r.get(2) - r.get(1) >= 100);
     }
     @Test
@@ -184,7 +184,7 @@ public abstract class AbstractTimerTest {
         CountDownLatch latch = new CountDownLatch(count);
         long start = System.nanoTime();
         Histogram when = new ConcurrentHistogram(
-                1_000L, //1uS
+                1_000L, 
                 1_000_000_000L * 4 /* 4 Sec */, 5);
 
         final long[] last = {start};
@@ -221,14 +221,14 @@ public abstract class AbstractTimerTest {
             long delayNS = TimeUnit.MILLISECONDS.toNanos(delayMS);
             assertTrue(Math.abs(delayNS - w.getMean()) < delayNS / 4);
         }
-        //assertTrue(end - start >= 1000);
+        
     }
 
     @Test
     public void fixedRateSubsequentFireTest() throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(10);
         long start = System.currentTimeMillis();
-        //thre
+        
         timer.scheduleAtFixedRate(latch::countDown,
                 100,
                 100,
@@ -238,11 +238,11 @@ public abstract class AbstractTimerTest {
         assertTrue(end - start >= 900, ()->end-start + "(ms) start to end");
     }
 
-    // TODO: precision test
-    // capture deadline and check the deviation from the deadline for different amounts of tasks
+    
+    
 
-    // DISCLAIMER:
-    // THE FOLLOWING TESTS WERE PORTED FROM NETTY. BIG PROPS TO NETTY AUTHORS FOR THEM.
+    
+    
 
     @Test
     public void testScheduleTimeoutShouldNotRunBeforeDelay() throws InterruptedException {
@@ -254,7 +254,7 @@ public abstract class AbstractTimerTest {
         }, 2, TimeUnit.SECONDS);
         assertFalse(barrier.await(1, TimeUnit.SECONDS));
         assertFalse(timeout.isDone(), "timer should not expire");
-        // timeout.cancel(true);
+        
     }
 
     @Test
@@ -265,23 +265,23 @@ public abstract class AbstractTimerTest {
         assertTrue(timeout.isDone(), "should expire");
     }
 
-//    @Test
-//    public void testTimerShouldThrowExceptionAfterShutdownForNewTimeouts() {
-//        assertThrows(IllegalStateException.class, () -> {
-//            for (int i = 0; i < 3; i++) {
-//                timer.schedule(() -> {
-//                }, 10, TimeUnit.MILLISECONDS);
-//            }
-//
-//            timer.shutdown();
-//            Thread.sleep(1000L); // sleep for a second
-//
-//            timer.schedule(() -> {
-//                fail("This should not run");
-//            }, 1, TimeUnit.SECONDS);
-//
-//        });
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testTimerOverflowWheelLength() throws InterruptedException {
@@ -306,8 +306,8 @@ public abstract class AbstractTimerTest {
         int maxTimeout = (delayTime) + tolerance;
 
         int scheduledTasks =
-                //100000;
-                //8 * 1024;
+                
+                
                 500;
 
         final BlockingQueue<Long> queue = new LinkedBlockingQueue<>();

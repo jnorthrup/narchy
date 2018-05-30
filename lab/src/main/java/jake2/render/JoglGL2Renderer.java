@@ -43,7 +43,7 @@ public final class JoglGL2Renderer extends JoglGL2Driver implements refexport_t,
 
     private final KBD kbd = new NEWTKBD();
 
-    // is set from Renderer factory
+    
     public RenderAPI impl;
 
     static {
@@ -51,29 +51,29 @@ public final class JoglGL2Renderer extends JoglGL2Driver implements refexport_t,
     }
 
     private JoglGL2Renderer() {
-        // singleton
+        
     }
 
-    // ============================================================================
-    // public interface for Renderer implementations
-    //
-    // refexport_t (ref.h)
-    // ============================================================================
+    
+    
+    
+    
+    
 
     /** 
      * @see jake2.client.refexport_t#Init()
      */
     @Override
     public boolean Init(int vid_xpos, int vid_ypos) {
-        // init the OpenGL drivers
+        
         impl.setGLDriver(this);
         
-        // pre init, reads Cvar's
+        
         if (!impl.R_Init(vid_xpos, vid_ypos)) return false;
-        // activates the OpenGL context        
+        
         activateGLContext(true);
         
-        // post init        
+        
         return impl.R_Init2();
     }
 
@@ -258,9 +258,9 @@ public final class JoglGL2Renderer extends JoglGL2Driver implements refexport_t,
     public KBD getKeyboardHandler() {
         return kbd;
     }
-    // ============================================================================
-    // Ref interface
-    // ============================================================================
+    
+    
+    
 
     @Override
     public final String getName() {

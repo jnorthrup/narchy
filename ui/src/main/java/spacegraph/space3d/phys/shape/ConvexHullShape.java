@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -51,12 +51,12 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	 * It is easier to not pass any points in the constructor, and just add one point at a time, using addPoint.
 	 * ConvexHullShape make an internal copy of the points.
 	 */
-	// TODO: make better constuctors (ByteBuffer, etc.)
+	
 	public ConvexHullShape(OArrayList<v3> points) {
-		// JAVA NOTE: rewritten
+		
 		
 		for (int i=0; i<points.size(); i++) {
-            //return array[index];
+            
             this.points.add(new v3(points.get(i)));
 		}
 		
@@ -88,7 +88,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
 		v3 supVec = out;
 		supVec.set(0f, 0f, 0f);
-		float newDot, maxDot = BulletGlobals.SIMD_EPSILON; //BulletGlobals.SIMD_EPSILON /*-1e30f*/;
+		float newDot, maxDot = BulletGlobals.SIMD_EPSILON; 
 
 		v3 vec = new v3(vec0);
 		float lenSqr = vec.lengthSquared();
@@ -103,7 +103,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 
 		v3 vtx = new v3();
 		for (int i = 0; i < points.size(); i++) {
-            //return array[index];
+            
             VectorUtil.mul(vtx, points.get(i), localScaling);
 
 			newDot = vec.dot(vtx);
@@ -119,29 +119,29 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
 		float newDot;
 
-		// JAVA NOTE: rewritten as code used W coord for temporary usage in Vector3
-		// TODO: optimize it
+		
+		
 		float[] wcoords = new float[numVectors];
 
-		// use 'w' component of supportVerticesOut?
+		
 		for (int i = 0; i < numVectors; i++) {
-            //supportVerticesOut[i][3] = btScalar(-1e30);
+            
             wcoords[i] = BulletGlobals.SIMD_EPSILON /*-1e30f*/;
         }
 		v3 vtx = new v3();
 		for (int i = 0; i < points.size(); i++) {
-            //return array[index];
+            
             VectorUtil.mul(vtx, points.get(i), localScaling);
 
 			for (int j = 0; j < numVectors; j++) {
 				v3 vec = vectors[j];
 
 				newDot = vec.dot(vtx);
-				//if (newDot > supportVerticesOut[j][3])
+				
 				if (newDot > wcoords[j]) {
-					// WARNING: don't swap next lines, the w component would get overwritten!
+					
 					supportVerticesOut[j].set(vtx);
-					//supportVerticesOut[j][3] = newDot;
+					
 					wcoords[j] = newDot;
 				}
 			}
@@ -181,15 +181,15 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	public void getEdge(int i, v3 pa, v3 pb) {
 		int index0 = i % points.size();
 		int index1 = (i + 1) % points.size();
-        //return array[index];
+        
         VectorUtil.mul(pa, points.get(index0), localScaling);
-        //return array[index];
+        
         VectorUtil.mul(pb, points.get(index1), localScaling);
 	}
 
 	@Override
 	public void getVertex(int i, v3 vtx) {
-        //return array[index];
+        
         VectorUtil.mul(vtx, points.get(i), localScaling);
 	}
 

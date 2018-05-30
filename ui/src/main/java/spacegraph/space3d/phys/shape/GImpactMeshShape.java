@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -54,7 +54,7 @@ public class GImpactMeshShape extends GImpactShape {
 
 	public GImpactMeshShapePart getMeshPart(int index) {
         return mesh_parts.get(index);
-        //return array[index];
+        
     }
 
 	@Override
@@ -63,7 +63,7 @@ public class GImpactMeshShape extends GImpactShape {
 
 		int i = mesh_parts.size();
 		while ((i--) != 0) {
-            //return array[index];
+            
             GImpactMeshShapePart part = mesh_parts.get(i);
 			part.setLocalScaling(scaling);
 		}
@@ -77,7 +77,7 @@ public class GImpactMeshShape extends GImpactShape {
 
 		int i = mesh_parts.size();
 		while ((i--) != 0) {
-            //return array[index];
+            
             GImpactMeshShapePart part = mesh_parts.get(i);
 			part.setMargin(margin);
 		}
@@ -90,7 +90,7 @@ public class GImpactMeshShape extends GImpactShape {
 	public void postUpdate() {
 		int i = mesh_parts.size();
 		while ((i--) != 0) {
-            //return array[index];
+            
             GImpactMeshShapePart part = mesh_parts.get(i);
 			part.postUpdate();
 		}
@@ -100,7 +100,7 @@ public class GImpactMeshShape extends GImpactShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		//#ifdef CALC_EXACT_INERTIA
+		
 		inertia.set(0f, 0f, 0f);
 
 		int i = getMeshPartCount();
@@ -113,20 +113,20 @@ public class GImpactMeshShape extends GImpactShape {
 			inertia.add(partinertia);
 		}
 
-		////#else
-		//
-		//// Calc box inertia
-		//
-		//btScalar lx= m_localAABB.m_max[0] - m_localAABB.m_min[0];
-		//btScalar ly= m_localAABB.m_max[1] - m_localAABB.m_min[1];
-		//btScalar lz= m_localAABB.m_max[2] - m_localAABB.m_min[2];
-		//const btScalar x2 = lx*lx;
-		//const btScalar y2 = ly*ly;
-		//const btScalar z2 = lz*lz;
-		//const btScalar scaledmass = mass * btScalar(0.08333333);
-		//
-		//inertia = scaledmass * (btVector3(y2+z2,x2+z2,x2+y2));
-		////#endif
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	
 	@Override
@@ -215,7 +215,7 @@ public class GImpactMeshShape extends GImpactShape {
 	public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
 		int i = mesh_parts.size();
 		while ((i--) != 0) {
-            //return array[index];
+            
             mesh_parts.get(i).processAllTriangles(callback, aabbMin, aabbMax);
 		}
 	}
@@ -234,9 +234,9 @@ public class GImpactMeshShape extends GImpactShape {
 		localAABB.invalidate();
 		int i = mesh_parts.size();
 		while ((i--) != 0) {
-            //return array[index];
+            
             mesh_parts.get(i).updateBound();
-            //return array[index];
+            
             localAABB.merge(mesh_parts.get(i).getLocalBox(tmpAABB));
 		}
 	}
@@ -321,8 +321,8 @@ public class GImpactMeshShape extends GImpactShape {
         public void calculateLocalInertia(float mass, v3 inertia) {
             lockChildShapes();
 
-            //#define CALC_EXACT_INERTIA 1
-            //#ifdef CALC_EXACT_INERTIA
+            
+            
             inertia.set(0f, 0f, 0f);
 
             int i = getVertexCount();
@@ -336,22 +336,22 @@ public class GImpactMeshShape extends GImpactShape {
                 inertia.add(pointintertia);
             }
 
-            //#else
-            //
-            //// Calc box inertia
-            //
-            //float lx= localAABB.max.x - localAABB.min.x;
-            //float ly= localAABB.max.y - localAABB.min.y;
-            //float lz= localAABB.max.z - localAABB.min.z;
-            //float x2 = lx*lx;
-            //float y2 = ly*ly;
-            //float z2 = lz*lz;
-            //float scaledmass = mass * 0.08333333f;
-            //
-            //inertia.set(y2+z2,x2+z2,x2+y2);
-            //inertia.scale(scaledmass);
-            //
-            //#endif
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             unlockChildShapes();
         }
 

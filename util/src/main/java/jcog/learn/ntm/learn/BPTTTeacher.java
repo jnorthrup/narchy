@@ -24,7 +24,7 @@ public class BPTTTeacher implements INTMTeacher
         NTM[] machines = new NTM[input.length];
         machine.initializeMemoryState();
 
-        //FORWARD phase
+        
 
         machines[0] = new NTM(machine);
         machines[0].process(input[0]);
@@ -33,17 +33,17 @@ public class BPTTTeacher implements INTMTeacher
             machines[i].process(input[i]);
         }
 
-        //Gradient reset
+        
         gradientResetter.reset();
         machine.updateWeights(gradientResetter);
 
-        //BACKWARD phase
+        
         for (int i = input.length - 1; i >= 0;i--)        {
             machines[i].backwardErrorPropagation(knownOutput[i]);
         }
         machine.backwardErrorPropagation();
 
-        //Weight updates
+        
         weightUpdater.reset();
         machine.updateWeights(weightUpdater);
 

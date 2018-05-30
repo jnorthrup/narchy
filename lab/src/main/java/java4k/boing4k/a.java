@@ -17,7 +17,7 @@ package java4k.boing4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -34,7 +34,7 @@ public class a extends GamePanel {
 	private static final int WIDTH = 512;
 	private static final int HEIGHT = 512;
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 	final int TILE_EMPTY = 0;
@@ -142,7 +142,7 @@ public class a extends GamePanel {
 	public a() {
 		super(true);
 		
-		// create floor map
+		
 		for (y = 0; y < 236; y++) {
 			for (x = 0; x < 256; x++) {
 				float Y = 107.5f - y;
@@ -153,7 +153,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// create shadow map
+		
 		for (y = 0; y < 256; y++) {
 			for (x = 0; x < 256; x++) {
 				i = (x - 129) >> 1;
@@ -164,7 +164,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// decompress tile sprites
+		
 		for (i = 0; i < SPRITE_COUNT; i++) {
 			for (j = 0; j < 2; j++) {
 				for (y = 0; y < 16; y++) {
@@ -178,7 +178,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// create dark versions of tiles for bunny shadow
+		
 		for (i = 0; i < 32; i++) {
 			for (y = 0; y < 16; y++) {
 				for (x = 0; x < 16; x++) {
@@ -189,7 +189,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// decompress bunny
+		
 		for (y = 0; y < 43; y++) {
 			for (x = 0; x < 8; x++) {
 				int color = 0x03 & S.charAt(283 + y) >> (x << 1);
@@ -205,7 +205,7 @@ public class a extends GamePanel {
 	@Override
 	public void paintComponent(Graphics g2) {
 		
-		// burn off extra cycles
+		
 		if (nextFrameStartTime - System.nanoTime() > 0) {
 			return;
 		}
@@ -213,11 +213,11 @@ public class a extends GamePanel {
 		do {
 			nextFrameStartTime += 16666667;
 
-			// -- update starts ----------------------------------------------------
+			
 
 			counter++;
 
-			// move clouds
+			
 			if ((counter & 7) == 7) {
 				cloudX++;
 			}
@@ -248,7 +248,7 @@ public class a extends GamePanel {
 
 						if (beatLevel) {
 							if (level == 13) {
-								// kill screen (14 playable levels in total)
+								
 								fade = 255;
 								fading = true;
 								fadingOut = true;
@@ -260,7 +260,7 @@ public class a extends GamePanel {
 
 						random = new Random(level);
 
-						// decompress level
+						
 						world = new int[128][8];
 						for (y = 127; y >= 0; y--) {
 							for (x = 0; x < 8; x++) {
@@ -292,7 +292,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// create sky
+						
 						g3.setColor(new Color(0x3CBCFC));
 						g3.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 						g3.fillRect(0, 0, 256, 256);
@@ -337,7 +337,7 @@ public class a extends GamePanel {
 			} else {
 
 				if (playerZ > 0) {
-					// update time
+					
 					if (++timeCounter == 60) {
 						timeCounter = 0;
 						time--;
@@ -379,7 +379,7 @@ public class a extends GamePanel {
 							playerRestoring = true;
 						}
 					} else {
-						// update player X-Z plane position
+						
 						if (playerVz == 0) {
 							if (a[VK_UP]) {
 								playerZ++;
@@ -400,13 +400,13 @@ public class a extends GamePanel {
 						}
 					}
 
-					// apply gravity
+					
 					playerVy -= playerGravity;
 					playerY += playerVy;
 					playerAngle += playerVa;
 					if (!playerFalling && playerY <= 0) {
 
-						// test if player is on solid ground
+						
 						i = 0;
 						z = (int) (playerZ + 48) >> 4;
 						if (z >= 0 && z < 128) {
@@ -485,13 +485,13 @@ public class a extends GamePanel {
 				}
 			}
 
-			// -- update ends ------------------------------------------------------
+			
 
 		} while (nextFrameStartTime < System.nanoTime());
 
-		// -- render starts ------------------------------------------------------
+		
 
-		// render floor
+		
 		int offsetX = (int) playerX;
 		int offsetZ = (int) playerZ;
 		for (z = 0; z < 65536; z++) {
@@ -511,7 +511,7 @@ public class a extends GamePanel {
 		}
 		image.setRGB(0, 0, 256, 256, pixels, 0, 256);
 
-		// draw bunny
+		
 		g.translate(128, 134 - playerY);
 		g.scale(2, 2);
 		if (playerAngle != 0) {
@@ -521,7 +521,7 @@ public class a extends GamePanel {
 		g.setTransform(affineTransform);
 
 		if (playerY < 0) {
-			// render floor in front of bunny
+			
 			for (z = 0; z < 21760; z++) {
 				pixels[z] = 0;
 				i = floorMap[z + 38656][0] + offsetX;
@@ -539,22 +539,22 @@ public class a extends GamePanel {
 			g.drawImage(image2, 0, 171, null);
 		}
 
-		// draw time remaining
+		
 		g.setColor(Color.MAGENTA);
 		for (i = 0; i < time; i++) {
 			g.fillRect(128 - (i << 1), 246, 1, 8);
 			g.fillRect(128 + (i << 1), 246, 1, 8);
 		}
 
-		// draw fade
+		
 		if (fading) {
 			g.setColor(new Color(0, 0, 0, fade));
 			g.fillRect(0, 0, 256, 256);
 		}
 
-		// -- render ends --------------------------------------------------------
+		
 
-		// show the hidden buffer
+		
 		g2.drawImage(image, 0, 0, 512, 512, null);
 		
 	}
@@ -577,18 +577,18 @@ public class a extends GamePanel {
 		}
 	}
 
-//	// to run in window, uncomment below
-//	public static void main(String[] args) throws Throwable {
-//		javax.swing.JFrame frame = new javax.swing.JFrame("Boing 4K");
-//		frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-//		a applet = new a();
-//		applet.setPreferredSize(new java.awt.Dimension(512, 512));
-//		frame.add(applet, java.awt.BorderLayout.CENTER);
-//		frame.setResizable(false);
-//		frame.pack();
-//		frame.setLocationRelativeTo(null);
-//		frame.setVisible(true);
-//		Thread.sleep(250);
-//		applet.start();
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

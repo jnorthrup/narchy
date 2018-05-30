@@ -17,12 +17,12 @@ package jcog.grammar.parse.examples.cloning;
  * @version 1.0 
  */
 public class OrderOk implements Cloneable {
-	// this is a demo that skips most of the fields of an 
-	// order
-	// ...
-	// protected Date date;
-	// protected java.util.Vector items;
-	// ... 
+	
+	
+	
+	
+	
+	
 
 	protected Customer customer;
 
@@ -44,7 +44,7 @@ public class OrderOk implements Cloneable {
 			ok.setCustomer((Customer) customer.clone());
 			return ok;
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

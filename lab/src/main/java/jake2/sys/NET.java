@@ -195,7 +195,7 @@ public final class NET {
 
         loop = loopbacks[sock ^ 1];
 
-        // modulo 4
+        
         i = loop.send & (MAX_LOOPBACK - 1);
         loop.send++;
 
@@ -235,9 +235,9 @@ public final class NET {
                 return false;
             }
 
-            // set the size
+            
             net_message.cursize = packetLength;
-            // set the sentinel
+            
             net_message.data[packetLength] = 0;
             return true;
 
@@ -300,7 +300,7 @@ public final class NET {
      */
     public static void Config(boolean multiplayer) {
         if (!multiplayer) {
-            // shut down any existing sockets
+            
             for (int i = 0; i < 2; i++) {
                 if (ip_sockets[i] != null) {
                     ip_sockets[i].close();
@@ -308,7 +308,7 @@ public final class NET {
                 }
             }
         } else {
-            // open sockets
+            
             OpenIP();
         }
     }
@@ -317,7 +317,7 @@ public final class NET {
      * Init
      */
     public static void Init() {
-        // nothing to do
+        
     }
 
     /*
@@ -344,9 +344,9 @@ public final class NET {
                 newsocket.bind(new InetSocketAddress(ia, port));
             }
 
-            // nonblocking channel
+            
             ip_channels[sock].configureBlocking(false);
-            // the socket have to be broadcastable
+            
             newsocket.setBroadcast(true);
         } catch (Exception e) {
             Com.Println("Error: " + e);
@@ -359,7 +359,7 @@ public final class NET {
      * Shutdown - closes the sockets 
      */
     public static void Shutdown() {
-        // close sockets
+        
         Config(false);
     }
 
@@ -367,16 +367,16 @@ public final class NET {
     public static void Sleep(int msec) {
         if (ip_sockets[Defines.NS_SERVER] == null
                 || (Globals.dedicated != null && Globals.dedicated.value == 0))
-            return; // we're not a server, just run full speed
+            return; 
 
         try {
-            //TODO: check for timeout
+            
             Thread.sleep(msec);
         } catch (InterruptedException e) {
         }
-        //ip_sockets[NS_SERVER].
+        
 
-        // this should wait up to 100ms until a packet
+        
         /*
          * struct timeval timeout; 
          * fd_set fdset; 
@@ -384,14 +384,14 @@ public final class NET {
          * extern qboolean stdin_active;
          * 
          * if (!ip_sockets[NS_SERVER] || (dedicated && !dedicated.value))
-         * 		return; // we're not a server, just run full speed
+         * 		return; 
          * 
          * FD_ZERO(&fdset);
          *  
          * if (stdin_active) 
-         * 		FD_SET(0, &fdset); // stdin is processed too 
+         * 		FD_SET(0, &fdset); 
          * 
-         * FD_SET(ip_sockets[NS_SERVER], &fdset); // network socket 
+         * FD_SET(ip_sockets[NS_SERVER], &fdset); 
          * 
          * timeout.tv_sec = msec/1000; 
          * timeout.tv_usec = (msec%1000)*1000; 

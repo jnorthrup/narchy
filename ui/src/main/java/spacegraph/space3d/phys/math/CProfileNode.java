@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -64,7 +64,7 @@ class CProfileNode {
 	}
 
 	public CProfileNode getSubNode(String name) {
-		// Try to find this sub node
+		
 		CProfileNode child = this.child;
 		while (child != null) {
 			if (child.name == name) {
@@ -73,7 +73,7 @@ class CProfileNode {
 			child = child.sibling;
 		}
 
-		// We didn't find it, so add it
+		
 
 		CProfileNode node = new CProfileNode(name, this);
 		node.sibling = this.child;

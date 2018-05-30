@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.postprocessing;
 
@@ -42,7 +42,7 @@ public class JsonPostProcessor extends BasicPostprocessor {
     @Override
     public void elaborate(Configuration config, Results results, long timeTaken) {
         super.elaborate(config, results, timeTaken);
-        //saving results
+        
         System.out.println("Saving results...");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddhhmmss");
 	String dateFormatted = sdf.format(new Date());
@@ -63,9 +63,9 @@ public class JsonPostProcessor extends BasicPostprocessor {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-//        Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().registerTypeAdapter(Double.class, new DoubleTypeAdapter()).create();
-//        String json = gson.toJson(results);
-//        saveFile(json, pathOfFile);
+
+
+
 
     }
 

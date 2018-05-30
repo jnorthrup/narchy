@@ -27,9 +27,9 @@ public class Sensor extends TaskConcept implements PermanentConcept {
 
     public final FloatRange resolution = new FloatRange(Param.TRUTH_EPSILON, 0f, 1f);
 
-//    protected Sensor(Term term, ConceptBuilder b) {
-//        super(term, b);
-//    }
+
+
+
 
     protected Sensor(Term term, BeliefTable beliefs, BeliefTable goals, ConceptBuilder b) {
         super(term, beliefs, goals, b);

@@ -84,11 +84,11 @@ public class TriBltOrder extends PatBltOrder {
 	}
 
 	public void setSrcX(int srcx) {
-		this.srcx = srcx; // corrected
+		this.srcx = srcx; 
 	}
 
 	public void setSrcY(int srcy) {
-		this.srcy = srcy; // corrected
+		this.srcy = srcy; 
 	}
 
 	public void setUnknown(int unknown) {

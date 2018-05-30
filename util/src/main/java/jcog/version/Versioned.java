@@ -8,18 +8,18 @@ import org.jetbrains.annotations.Nullable;
  * Managed by a Versioning context
  */
 public class Versioned<X> extends
-        //FastList<X>
+        
         FasterList<X>
-        //LimitedFasterList<X> //not supported yet
+        
 {
 
 
     protected final Versioning context;
 
-//    public Versioned(Versioned<X> copy) {
-//        super(copy);
-//        this.context = copy.context;
-//    }
+
+
+
+
 
     public Versioned(Versioning sharedContext, int initialCap) {
         super(initialCap);
@@ -35,14 +35,14 @@ public class Versioned<X> extends
         return this == otherVersioned;
     }
 
-//    boolean revertNext(int count) {
-//        int p = size - count;
-//        if (p >= 0) {
-//            popTo(p);
-//            return true;
-//        }
-//        return false;
-//    }
+
+
+
+
+
+
+
+
 
 
 
@@ -62,14 +62,14 @@ public class Versioned<X> extends
      */
     @Nullable
     public Versioned<X> set(X nextValue) {
-//        if (context.add(this) && add(nextValue)) {
-//            System.out.println("set: " + nextValue);
-//            return this;
-//        } else return null;
+
+
+
+
 
         if (context.add(this)) {
             add(nextValue);
-            //addWithoutResizeCheck(nextValue);
+            
             return this;
         } else {
             return null;
@@ -89,9 +89,9 @@ public class Versioned<X> extends
         StringBuilder sb = new StringBuilder("(");
         int s = size();
         for (int i = 0; i < s; i++) {
-            //sb.append('(');
+            
             sb.append(get(i));
-            //sb.append(')');
+            
             if (i < s - 1)
                 sb.append(", ");
         }
@@ -99,30 +99,30 @@ public class Versioned<X> extends
 
     }
 
-//    public final X getAndPop() {
-//        X x = items[--size];
-//        items[size+1] = null;
-//        return x;
-//    }
+
+
+
+
+
 
     public void pop() {
 
-            //if (size > 0) { //HACK wtf would it be empty
-//                Object removed =
-//                    items[--size];
+            
+
+
 
         items[--size] = null;
 
-//                if (removed == null) {
-//                    throw new NullPointerException();
-//                }
-            //}
+
+
+
+            
 
     }
 
-//    /** transparently replace the leading value */
-//    public void replaceTop(X newValue) {
-//        items[size-1] = newValue;
-//    }
+
+
+
+
 
 }

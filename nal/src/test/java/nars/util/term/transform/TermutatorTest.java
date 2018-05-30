@@ -65,7 +65,7 @@ public class TermutatorTest {
 
     static final Term e0;
     static {
-        //HACK
+        
         Term ee0;
         try {
             ee0 = $("%A..+");
@@ -110,7 +110,7 @@ public class TermutatorTest {
             );
         }
 
-        assertTrue(series.size() > 1); //shuffling works
+        assertTrue(series.size() > 1); 
     }
 
 
@@ -138,18 +138,18 @@ public class TermutatorTest {
 
     String assertTermutatorProducesUniqueResults(@NotNull Termutator t, int num) {
 
-        //assertEquals(num, t.getEstimatedPermutations());
+        
 
-        Set<String> s = new LinkedHashSet(); //record the order
+        Set<String> s = new LinkedHashSet(); 
         final int[] actual = {0};
-        //int blocked = 0;
+        
         final int[] duplicates = {0};
 
         unifier.setTTL(TTL);
-        //unifier.freeCount.set( Integer.MAX_VALUE ); //MOCK
+        
 
         t.mutate(unifier, new Termutator[] { t, (f, chain, current) -> {
-            TreeMap t1 = new TreeMap(); //use treemap for sorted keys
+            TreeMap t1 = new TreeMap(); 
             f.xy.map.forEach(t1::put);
 
             if (s.add( t1.toString() )) {

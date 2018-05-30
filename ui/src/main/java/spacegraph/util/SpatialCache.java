@@ -20,19 +20,19 @@ public class SpatialCache<X, Y extends Spatial<X>> {
                 space.remove(entry.getValue());
             }
         };
-//        Cache<X, Spatial<X>> atoms =
-//                //new NonBlockingHashMap(cacheCapacity);
-//                //new ConcurrentHashMap<>(cacheCapacity);
-//                Caffeine.newBuilder()
-//                        //.softValues().builder();
-//                        .removalListener((X k, Spatial<X> v, RemovalCause c) -> {
-//                            if (v!=null)
-//                                v.delete(dyn);
-//                        })
-//                        //.maximumSize(cacheCapacity)
-//                        .weakValues()
-//                        .build();
-//        this.atoms = atoms;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     }

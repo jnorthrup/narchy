@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2007 Erwin Coumans  http://continuousphysics.com/Bullet/
+ * Copyright (c) 2003-2007 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -45,16 +45,16 @@ public class BulletStack {
 		return threadLocal.get();
 	}
 	
-	// common math:
+	
 	public final VectorStackList vectors = new VectorStackList();
 	public final TransformStackList transforms = new TransformStackList();
 	public final MatrixStackList matrices = new MatrixStackList();
 	
-	// others:
-	//public final Vector4StackList vectors4 = new Vector4StackList();
-//	public final QuatStackList quats = new QuatStackList();
+	
+	
 
-	//public final ArrayPool<float[]> floatArrays = new ArrayPool<>(float.class);
+
+	
 	
 	/**
 	 * Pushes Vector3f, Transform and Matrix3f stacks.

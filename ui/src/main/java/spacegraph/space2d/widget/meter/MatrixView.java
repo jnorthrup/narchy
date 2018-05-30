@@ -132,11 +132,11 @@ import java.util.function.Supplier;
             return i < d.length ? view.update(d[i].asFloat(), gl) : Float.NaN;
         });
     }
-//    public MatrixView(Tensor t, int stride, ViewFunction1D view) {
-//        this((int) Math.floor(((float) t.volume()) / stride), stride, (x, y, gl) ->
-//            view.update(t.get(x * stride + y), gl)
-//        );
-//    }
+
+
+
+
+
 
     public static MatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
         float[] d = t.data;
@@ -181,7 +181,7 @@ import java.util.function.Supplier;
 
             for (int x = 0; x < w; x++) {
 
-                //try {
+                
                 float dz = view.update(x, y, gl);
                 if (dz == dz) {
                     Draw.rect(gl, tx + x * dw, yy, dw, dh, dz);
@@ -194,9 +194,9 @@ import java.util.function.Supplier;
             }
         }
 
-//            //border
-//            gl.glColor4f(1f, 1f, 1f, 1f);
-//            Draw.strokeRect(gl, 0, 0, tw + dw, th + dh);
+
+
+
 
     }
 

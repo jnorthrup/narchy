@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Open-NARS.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Open-NARS.  If not, see <http:
  */
 package nars.term;
 
@@ -72,28 +72,28 @@ public interface Term extends Termed, Comparable<Termed> {
 
     ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
 
-//    @Nullable
-//    static byte[] pathTo(ByteArrayList p, Subterms superTerm, Term target) {
-//
-//        int n = superTerm.subs();
-//        for (int i = 0; i < n; i++) {
-//            Term s = superTerm.sub(i);
-//            if (s.equals(target)) {
-//                p.add((byte) i);
-//                return p.toArray();
-//            }
-//            if (s instanceof Compound && !s.impossibleSubTerm(target)) {
-//                byte[] pt = pathTo(p, s.subterms(), target);
-//                if (pt != null) {
-//                    p.add((byte) i);
-//                    return pt;
-//                }
-//
-//            }
-//        }
-//
-//        return null;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static <X> boolean pathsTo(Term that, ByteArrayList p, Predicate<Term> descendIf, Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
         if (!descendIf.test(that))
@@ -106,7 +106,7 @@ public interface Term extends Termed, Comparable<Termed> {
         int n = superTerm.subs();
         for (int i = 0; i < n; i++) {
 
-            p.add((byte) i); //push
+            p.add((byte) i); 
 
             Term s = superTerm.sub(i);
 
@@ -122,7 +122,7 @@ public interface Term extends Termed, Comparable<Termed> {
                     kontinue = false;
             }
 
-            p.removeAtIndex(ppp); //pop
+            p.removeAtIndex(ppp); 
 
             if (!kontinue)
                 return false;
@@ -174,28 +174,28 @@ public interface Term extends Termed, Comparable<Termed> {
     boolean containsRoot(Term t);
 
 
-    //    default boolean recurseTerms(Predicate<Term> parentsMust, Predicate<Term> whileTrue) {
-//        return recurseTerms(parentsMust, whileTrue, this);
-//    }
+    
+
+
 
     void append(ByteArrayDataOutput out);
 
     @Override
     boolean equals(Object o);
 
-//    /**
-//     * returns an int[] path to the first occurrence of the specified subterm
-//     *
-//     * @return null if not a subterm, an empty int[] array if equal to this term, or a non-empty int[] array specifying subterm paths to reach it
-//     */
-//    @Nullable
-//    default byte[] pathTo( Term subterm) {
-//        if (subterm.equals(this)) return ArrayUtils.EMPTY_BYTE_ARRAY;
-//        //if (!containsRecursively(subterm)) return null;
-//        return
-//                this instanceof Compound && !impossibleSubTerm(subterm) ?
-//                        pathTo(new ByteArrayList(0), this.subterms(), subterm) : null;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     int hashCode();
@@ -214,11 +214,11 @@ public interface Term extends Termed, Comparable<Termed> {
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, this);
     }
-//    //TODO
-//    @Override
-//    default int intifyRecurse(Predicate<Term> descendIf, IntObjectToIntFunction<Term> reduce, int v) {
-//        return descendIf.test(this) ? reduce.intValueOf(v, this) : v;
-//    }
+
+
+
+
+
 
     /**
      * whether this term is or contains, as subterms, any temporal terms
@@ -251,7 +251,7 @@ public interface Term extends Termed, Comparable<Termed> {
             throw new RuntimeException("path overflow");
 
         if (!(src instanceof Compound))
-            return src; //path wont continue inside an atom
+            return src; 
 
         Compound csrc = (Compound) src;
         Subterms css = csrc.subterms();
@@ -264,10 +264,10 @@ public interface Term extends Termed, Comparable<Termed> {
         for (int i = 0; i < n; i++) {
             Term x = css.sub(i);
             if (path.get(depth) != i)
-                //unchanged subtree
+                
                 target[i] = x;
             else {
-                //replacement is in this subtree
+                
                 target[i] = x.subs() == 0 ? replacement : x.transform(path, depth + 1, replacement);
             }
 
@@ -299,7 +299,7 @@ public interface Term extends Termed, Comparable<Termed> {
             shortest = Math.min(shortest, subpath.size());
         }
 
-        //find longest common prefix
+        
         int i;
         done:
         for (i = 0; i < shortest; i++) {
@@ -310,10 +310,10 @@ public interface Term extends Termed, Comparable<Termed> {
                 if (j == 0) {
                     needs = pi;
                 } else if (needs != pi) {
-                    break done; //first mismatch, done
-                } //else: continue downwards
+                    break done; 
+                } 
             }
-            //all matched, proceed downward to the next layer
+            
         }
         return i == 0 ? this : subPath(i, subpaths.get(0));
 
@@ -359,17 +359,17 @@ public interface Term extends Termed, Comparable<Termed> {
         return ptr;
     }
 
-//    /** for multiple Op comparsions, use Op.or to produce an int and call isAny(int vector) */
-//    default boolean isA( Op otherOp) {
-//        return op() == otherOp;
-//    }
 
 
-//    default boolean hasAll(int structuralVector) {
-//        final int s = structure();
-//        return (s & structuralVector) == s;
-//    }
-//
+
+
+
+
+
+
+
+
+
 
     /**
      * Commutivity in NARS means that a Compound term's
@@ -385,23 +385,23 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     boolean isCommutative();
 
-//    default public void append(Writer w, boolean pretty) throws IOException {
-//        //try {
-//            name().append(w, pretty);
-////        } catch (IOException e) {
-////            e.printStackTrace();
-////        }
-//    }
 
-    //    default public StringBuilder toStringBuilder(boolean pretty) {
-//        return name().toStringBuilder(pretty);
-//    }
 
-//    @Deprecated
-//    String toString();
-//    default public String toString(boolean pretty) {
-//        return toStringBuilder(pretty).toString();
-//    }
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
 
     /**
      * equlity has already been tested prior to calling this
@@ -457,51 +457,51 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
 
-//    default boolean equalsIgnoringVariables(@NotNull Term other, boolean requireSameTime) {
-//        return (this instanceof Variable) || (other instanceof Variable) || equals(other);
-//    }
 
 
-//    default public boolean hasAll(final Op... op) {
-//        //TODO
-//    }
-//    default public boolean hasAny(final Op... op) {
-//        //TODO
-//    }
-//
-//
-//    default ByteList structureKey() {
-//        return structureKey(new ByteArrayList(volume() * 2 /* estimate */));
-//    }
-//
-//
-//    default ByteList structureKey( ByteArrayList appendTo) {
-//        appendTo.add(op().id);
-//        return appendTo;
-//    }
 
 
-//    default List<ByteList> pathsTo(Term target, int minLengthOfPathToReturn) {
-//
-//        if (impossibleSubTerm(target))
-//            return List.of();
-//
-//        List<ByteList> list = $.newArrayList(0);
-//        pathsTo(target, minLengthOfPathToReturn > 0 ?
-//                (l, t) -> {
-//                    if (l.size() >= minLengthOfPathToReturn)
-//                        list.add(l);
-//                    return true;
-//                }
-//                :
-//                (l, t) -> {
-//                    //simpler version when min=0
-//                    list.add(l.toImmutable());
-//                    return true;
-//                }
-//        );
-//        return list;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * computes the first occuring event's time relative to the start of the
@@ -548,9 +548,9 @@ public interface Term extends Termed, Comparable<Termed> {
         Term y = _y.term();
         if (this == y) return 0;
 
-//        //order first by volume. this is important for conjunctions which rely on volume-dependent ordering for balancing
-//        //left should be heavier
-//        //compareTo semantics state that a -1 value means left is less than right. we want the opposite
+
+
+
         int vc = Integer.compare(y.volume(), this.volume());
         if (vc != 0)
             return vc;
@@ -562,13 +562,13 @@ public interface Term extends Termed, Comparable<Termed> {
 
         if (this instanceof Atomic) {
 
-            //assert (y instanceof Atomic) : "because volume should have been determined to be equal";
+            
             int h = Integer.compare(hashCode(), y.hashCode());
             if (h != 0)
                 return h;
 
-            if (this instanceof NormalizedVariable || this instanceof Int) { //includes Anom (extends Int)
-                return 0; //hashcode was all that needed compared
+            if (this instanceof NormalizedVariable || this instanceof Int) { 
+                return 0; 
             } else if (this instanceof Int.IntRange) {
                 return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) y).hash64());
             } else /*if (this instanceof Atomic)*/ {
@@ -609,8 +609,8 @@ public interface Term extends Termed, Comparable<Termed> {
     default Term eval(Evaluation.TermContext context, Random rng) {
         if (!Evaluation.possiblyNeedsEval(this))
             return this;
-        return Evaluation.solveAny(this, context, rng);// context.applyTermIfPossible(this, null, 0);
-//        return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
+        return Evaluation.solveAny(this, context, rng);
+
     }
 
 
@@ -618,26 +618,26 @@ public interface Term extends Termed, Comparable<Termed> {
         return eval(nar.functors, nar.random());
     }
 
-//    default MutableSet<LongObjectPair<Term>> eventSet(long offset) {
-//        UnifiedSet<LongObjectPair<Term>> events = new UnifiedSet<>(1);
-//        eventsWhile((w, t) -> {
-//            events.add(PrimitiveTuples.pair(w, t));
-//            return true; //continue
-//        }, offset);
-//        events.trimToSize();
-//        return events;
-//    }
 
-//    /**
-//     * @param context
-//     * @param whichSubterm current subterm index being evaluated
-//     * @param remain       recursion limit (valid until decreases to zero)
-//     * @return
-//     */
-//    default Term evalSafe(Evaluation.TermContext context, Op supertermOp, int whichSubterm, int remain) {
-//        return /*remain <= 0 ? Null : */
-//                context.applyTermIfPossible(this, supertermOp, whichSubterm);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * includes itself in the count unless it's a CONJ sequence in which case it becomes the sum of the subterms event counts
@@ -646,24 +646,24 @@ public interface Term extends Termed, Comparable<Termed> {
         return 1;
     }
 
-//    default LongObjectHashMap<Term> eventMap(long offset) {
-//        LongObjectHashMap<Term> events = new LongObjectHashMap();
-//        eventsWhile((w, t) -> {
-//            Term existed = events.put(w, t);
-//            if (existed != null) {
-//                events.put(w, CONJ.the(0, existed, t));
-//            }
-//            return true;
-//        }, offset);
-//        return events;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     /* collects any contained events */
     @Deprecated
     default void events(Consumer<LongObjectPair<Term>> events) {
         eventsWhile((w, t) -> {
             events.accept(PrimitiveTuples.pair(w, t));
-            return true; //continue
+            return true; 
         }, 0);
     }
 
@@ -681,7 +681,7 @@ public interface Term extends Termed, Comparable<Termed> {
             events.add(PrimitiveTuples.pair(
                     (dtDither > 1) ? Tense.dither(w, dtDither) : w,
                     t));
-            return true; //continue
+            return true; 
         }, offset, decomposeParallel, decomposeEternal, false, 0);
         if (events.size() > 1) {
             events.sortThisByLong(LongObjectPair::getOne);
@@ -708,10 +708,10 @@ public interface Term extends Termed, Comparable<Termed> {
         return whileEachEvent.accept(dt, this);
     }
 
-//    /** https://google.github.io/guava/releases/snapshot/api/docs/com/google/common/collect/TreeTraverser.html */
-//    default TreeTraverser<Term> termverse() {
-//        return TreeTraverser.using(x -> x instanceof Compound ? ((Compound)x).subterms() : Collections.emptyList());
-//    }
+
+
+
+
 
     default void printRecursive() {
         printRecursive(System.out);
@@ -722,35 +722,35 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default Term dt(int dt) {
-//        if (dt!=DTERNAL)
-//            throw new UnsupportedOperationException("temporality not supported");
+
+
         return this;
     }
 
-//    /**
-//     * return null if none, cheaper than using an empty iterator
-//     */
-//    @Nullable
-//    default Set<Variable> varsUnique(@Nullable Op type/*, Set<Term> exceptIfHere*/) {
-//        int num = vars(type);
-//        if (num == 0)
-//            return null;
-//
-//        //must check all in case of repeats
-//        MutableSet<Variable> u = new UnifiedSet(num);
-//        final int[] remain = {num};
-//
-//        recurseTerms(parent -> vars(type) > 0,
-//                (sub) -> {
-//                    if (sub instanceof Variable && (type == null || sub.op() == type)) {
-//                        //if (!unlessHere.contains(sub))
-//                        u.add((Variable) sub);
-//                        remain[0]--;
-//                    }
-//                    return (remain[0] > 0);
-//                });
-//        return u.isEmpty() ? null : u;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * returns this term in a form which can identify a concept, or Null if it can't
@@ -779,7 +779,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default Term normalize(byte offset) {
-        return this; //no change
+        return this; 
     }
 
     @Nullable
@@ -792,7 +792,7 @@ public interface Term extends Termed, Comparable<Termed> {
     default Term replace(Map<? extends Term, Term> m) {
         if (m.size()==1) {
             Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
-            return replace(e.getKey(), e.getValue()); //1-ary should be faster
+            return replace(e.getKey(), e.getValue()); 
         }
 
         Subst s = MapSubst.the(m);

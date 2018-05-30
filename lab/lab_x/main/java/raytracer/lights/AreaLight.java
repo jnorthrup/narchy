@@ -68,12 +68,12 @@ public class AreaLight extends Light implements Shader
 		lightDim2.set(dim2);
         lightColor.set(color);
         
-        // Bestimmung der Fl�che des Objekts:
+        
         Vector3d cross = new Vector3d();
         cross.cross(dim1, dim2);
         lightArea = 4.0*cross.length();
         
-        // Sichtbares Objekt zur Szene hinzuf�gen:
+        
         Vector3d  v1 = new Vector3d(lightCenter);
         v1.sub(lightDim1);
         v1.sub(lightDim2);
@@ -112,7 +112,7 @@ public class AreaLight extends Light implements Shader
 	@Override
     public boolean isIlluminated(Vector3d point)
     {
-        // Jeder Punkt wird beleuchtet:
+        
         return true;
 	}
 
@@ -120,8 +120,8 @@ public class AreaLight extends Light implements Shader
     @Override
     public void startRay(Vector3d point)
     {
-        // Bestimme, wie viele Strahlen vom aktuellen Punkt aus zu der Lichtquelle
-        // geschickt werden sollen:
+        
+        
         if (RaytracerConstants.SOFT_SHADOWS_ENABLED)
         {
             this.point.sub(lightCenter, point);
@@ -140,7 +140,7 @@ public class AreaLight extends Light implements Shader
             raysToSend = 1;
         }
         
-        // Punkt festlegen, f�r den Strahlen zum Licht generiert werden:
+        
         this.point.set(point);
     }
 
@@ -154,7 +154,7 @@ public class AreaLight extends Light implements Shader
 	@Override
     public Ray genRay()
     {
-        // Pr�fen, ob noch Strahlen zu senden sind:
+        
         if (raysToSend <= 0)
             return null;
         raysToSend--;
@@ -163,14 +163,14 @@ public class AreaLight extends Light implements Shader
         
         if (RaytracerConstants.SOFT_SHADOWS_ENABLED)
         {
-            // Zuf�lligen Punkt auf der Raute erzeugen und Strahl darauf richten:
+            
             ray.dir.scaleAdd(Math.random()*2.0-1.0, lightDim1, ray.dir);
             ray.dir.scaleAdd(Math.random()*2.0-1.0, lightDim2, ray.dir);
         }
         ray.dir.sub(point);
         ray.length = 1.0;
 		
-        // Entfernung des betrachteten Lichtpunktes merken:
+        
         lastRayLength = (float)ray.dir.length();
         
         ray.ignoreLights = true;
@@ -180,7 +180,7 @@ public class AreaLight extends Light implements Shader
     @Override
     public ColorEx getIlluminance()
     {
-        // Lichtabschw�chung berechnen:
+        
         ColorEx color = new ColorEx(lightColor);
         color.scale(1.0f /(RaytracerConstants.LIGHT_ATTENUATION_CONSTANT +
                 RaytracerConstants.LIGHT_ATTENUATION_LINEAR*lastRayLength +
@@ -247,7 +247,7 @@ public class AreaLight extends Light implements Shader
     
 /*
 	public boolean preTest(Intersection intersection, Vector3d org) {
-		//Test ob Punkt "oberhalb" der Lichtquelle liegt
+		
 		double skalar;
 		Vector3d v = new Vector3d();
 		Vector3d n = new Vector3d();
@@ -261,13 +261,13 @@ public class AreaLight extends Light implements Shader
 		
 		if(!RaytracerConstants.SOFT_SHADOWS_ENABLED) return true;
 		
-		//sendet 4 Teststrahlen, um Kernschatten und Lichtfl�che sofort auszusortieren
+		
 		Ray ray = new Ray();
 		ray.org.set(org);
 		int count = 0;
 		for(int i=0 ; i<4 ; i++) {
 			
-			//Die 4 Eckpunkte des Parallelogramms werden getestet
+			
 			if(i==0) {
 				ray.dir.add(center, dir1);
 				ray.dir.add(dir2);
@@ -285,7 +285,7 @@ public class AreaLight extends Light implements Shader
 				ray.dir.scaleAdd(-1, dir2);
 			}
 			ray.dir.sub(ray.dir, org);
-			//ray = genRay(intersection.getPoint());
+			
 			
     		if (!intersection.scene.occlude(ray)) {
     			count++;
@@ -295,16 +295,16 @@ public class AreaLight extends Light implements Shader
     		}
 		}
 		
-		// Punkt liegt "wahrscheinlich im Schatten
+		
 		if(count == -4){
 			return false;
 		}
-		//Punkt wird "wahrscheinlich" nicht von Objekt verdeckt
+		
 		if(count == 4){
 			lightArea = true;
 		}
 		
-		//Punkt wird teilweise verdeckt
+		
 		return false;
 	}
 */

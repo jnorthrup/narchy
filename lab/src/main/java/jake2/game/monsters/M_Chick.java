@@ -18,9 +18,9 @@
  *  
  */
 
-// Created on 13.11.2003 by RST.
 
-// $Id: M_Chick.java,v 1.4 2005-11-20 22:18:33 salomo Exp $
+
+
 
 package jake2.game.monsters;
 
@@ -895,7 +895,7 @@ public class M_Chick {
                         Defines.ATTN_NORM, 0);
 
             if (GameBase.skill.value == 3)
-                return; // no pain anims in nightmare
+                return; 
 
             if (damage <= 10)
                 self.monsterinfo.currentmove = chick_move_pain1;
@@ -975,7 +975,7 @@ public class M_Chick {
                         int damage, float[] point) {
             int n;
 
-            //		   check for gib
+            
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
@@ -997,7 +997,7 @@ public class M_Chick {
             if (self.deadflag == Defines.DEAD_DEAD)
                 return;
 
-            //		   regular death
+            
             self.deadflag = Defines.DEAD_DEAD;
             self.takedamage = Defines.DAMAGE_YES;
 

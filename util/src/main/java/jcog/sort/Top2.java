@@ -48,7 +48,7 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
 
         if (xx > aa) {
             b = a;
-            bb = aa; //shift down
+            bb = aa; 
             a = x;
             aa = xx;
             return true;

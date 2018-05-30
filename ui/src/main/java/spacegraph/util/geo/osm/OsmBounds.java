@@ -13,7 +13,7 @@ public class OsmBounds {
     public final double maxLon;
 
     public OsmBounds(Element childElement) {
-        //this(minLat, minLon, maxLat, maxLon)
+        
         this(
             Double.parseDouble(childElement.getAttribute("minlat")),
             Double.parseDouble(childElement.getAttribute("minlon")),

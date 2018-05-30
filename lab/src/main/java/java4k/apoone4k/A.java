@@ -104,12 +104,12 @@ public class A extends GamePanel {
 
 	public A() {
 		super(true);
-		// Graphische Grundlagen f�r das Double Buffering
+		
 		offscreenImage = new BufferedImage(640, 480, BufferedImage.TYPE_INT_RGB);
 		offscreennGraphics = offscreenImage.createGraphics();
 		offscreennGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		// Variablen zum Zeitmessen und genau Timen wann geupdatet werden soll
+		
 		lastTime = System.nanoTime();
 		think = lastTime;
 
@@ -130,8 +130,8 @@ public class A extends GamePanel {
 		long delta = now - lastTime;
 		think += delta;
 
-		// Update / think
-		// Wenn 10 ms vergangen sind, dann denke nach
+		
+		
 		while (think >= 10000000L) {
 			think -= 10000000L;
 
@@ -160,21 +160,21 @@ public class A extends GamePanel {
 				p[3] = -1;
 			}
 
-			// wenn das Spiel gestartet ist
+			
 			if ((boolValues[1]) && (!boolValues[3])) {
-				// beweg den Spieler in X-Richtung automatisch
+				
 				p[0] += p[6];
-				// falls in der mittleren Ebene
+				
 				if ((int) (p[2] % 3) == 1) {
 					p[0] -= p[6] * 2;
-					// falls in der mittleren Ebene der Spieler am Rand angekommen dann setze ihn in die 3te Ebene
+					
 					if (p[0] < 0) {
 						p[2] += 1;
 						p[0] = 10;
 						p[1] = 450;
 					}
 				}
-				// falls in der oberen Ebene und am Rand dann in die mittlere Ebene setzen
+				
 				if ((int) (p[2] % 3) == 0) {
 					if (p[0] + 30 > 640) {
 						p[2] += 1;
@@ -182,7 +182,7 @@ public class A extends GamePanel {
 						p[1] = 290;
 					}
 				}
-				// falls in der unteren Ebene, entweder den Spieler in die obere Ebene setzen oder Spiel stoppen wenn alle Level gespielt worden
+				
 				if ((int) (p[2] % 3) == 2) {
 					if (p[0] + 30 > 640) {
 						p[2] += 1;
@@ -206,28 +206,28 @@ public class A extends GamePanel {
 						}
 					}
 				}
-				// Spieler m�chte springen, springt aber derzeit nicht
+				
 				if ((!boolValues[2]) && (boolValues[0])) {
 					boolValues[2] = true;
 					p[5] = -3.2f;
 				}
-				// falls Spieler springt
+				
 				if (boolValues[2]) {
 					p[1] += p[5];
 					p[5] += 0.07f;
 				}
-				// falls Spieler auf dem Boden angekommen dann setze ihn auf den Boden und sag das er nicht mehr springt
+				
 				if (p[1] + 30 > (int) (p[2] % 3 + 1) * 160) {
 					p[1] = (int) (p[2] % 3 + 1) * 160 - 30;
 					p[5] = 0;
 					boolValues[2] = false;
 					boolValues[0] = false;
 				}
-				// �berpr�fe, ob der Spieler gerade mit einem Rechteck kollidiert
+				
 				int lev = (int) (p[2]);
 				for (int i = 0; i < l[lev].length; i += 4) {
 					if ((p[0] + 30 >= l[lev][i]) && (p[1] + 30 >= l[lev][i + 1]) && (p[0] <= l[lev][i] + l[lev][i + 2]) && (p[1] <= l[lev][i + 1] + l[lev][i + 3])) {
-						// falls ja dann Tod += 1 und Partikeleffekte erstellen und Spieler auf die Startposition zur�cksetzen
+						
 						p[3] += 1;
 						ex = new float[5 * (int) (Math.random() * 15 + 20)];
 						for (int z = 0; z < ex.length; z += 5) {
@@ -255,7 +255,7 @@ public class A extends GamePanel {
 					}
 				}
 			}
-			// Partikel bewegen und l�schen falls die Zeit abgelaufen ist
+			
 			if (ex != null) {
 				ex[4] -= 10000000L;
 				if (ex[4] <= 0) {
@@ -272,8 +272,8 @@ public class A extends GamePanel {
 
 		lastTime = now;
 
-		// Renderabschnitt
-		// Hintergrund malen
+		
+		
 		offscreennGraphics.setColor(c[0]);
 		offscreennGraphics.fillRect(0, 0, 640, 160);
 		offscreennGraphics.fillRect(0, 320, 640, 160);
@@ -403,7 +403,7 @@ public class A extends GamePanel {
 			}
 		}
 
-		// Render das Ganze auf den Bildschirm
+		
 		appletGraphics.drawImage(offscreenImage, 0, 0, null);
 
 	}

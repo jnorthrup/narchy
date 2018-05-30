@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 17.01.2004 by RST.
+
 
 package jake2.server;
 
@@ -48,10 +48,10 @@ public class SV_USER {
     static ucmd_t u1 = new ucmd_t("new", SV_USER::SV_New_f);
 
     static final ucmd_t[] ucmds = {
-    // auto issued
+    
             new ucmd_t("new", SV_USER::SV_New_f), new ucmd_t("configstrings", SV_USER::SV_Configstrings_f), new ucmd_t("baselines", SV_USER::SV_Baselines_f), new ucmd_t("begin", SV_USER::SV_Begin_f), new ucmd_t("nextserver", SV_USER::SV_Nextserver_f), new ucmd_t("disconnect", SV_USER::SV_Disconnect_f),
 
-            // issued by hand at client consoles
+            
             new ucmd_t("info", SV_USER::SV_ShowServerinfo_f), new ucmd_t("download", SV_USER::SV_BeginDownload_f), new ucmd_t("nextdl", SV_USER::SV_NextDownload_f) };
 
     public static final int MAX_STRINGCMDS = 8;
@@ -100,19 +100,19 @@ public class SV_USER {
             return;
         }
 
-        // demo servers just dump the file message
+        
         if (SV_INIT.sv.state == Defines.ss_demo) {
             SV_BeginDemoserver();
             return;
         }
 
-        //
-        // serverdata needs to go over for all types of servers
-        // to make sure the protocol is right, and to set the gamedir
-        //
+        
+        
+        
+        
         gamedir = Cvar.VariableString("gamedir");
 
-        // send the serverdata
+        
         MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
                         Defines.svc_serverdata);
         MSG.WriteInt(SV_MAIN.sv_client.netchan.message,
@@ -128,26 +128,26 @@ public class SV_USER {
                 || SV_INIT.sv.state == Defines.ss_pic)
             playernum = -1;
         else
-            //playernum = sv_client - svs.clients;
+            
             playernum = SV_MAIN.sv_client.serverindex;
 
         MSG.WriteShort(SV_MAIN.sv_client.netchan.message, playernum);
 
-        // send full levelname
+        
         MSG.WriteString(SV_MAIN.sv_client.netchan.message,
                 SV_INIT.sv.configstrings[Defines.CS_NAME]);
 
-        //
-        // game server
-        // 
+        
+        
+        
         if (SV_INIT.sv.state == Defines.ss_game) {
-            // set up the entity for the client
+            
             ent = GameBase.g_edicts[playernum + 1];
             ent.s.number = playernum + 1;
             SV_MAIN.sv_client.edict = ent;
             SV_MAIN.sv_client.lastcmd = new usercmd_t();
 
-            // begin fetching configstrings
+            
             MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
                     Defines.svc_stufftext);
             MSG.WriteString(SV_MAIN.sv_client.netchan.message,
@@ -169,7 +169,7 @@ public class SV_USER {
             return;
         }
 
-        // handle the case of a level changing while a client was connecting
+        
         if (Lib.atoi(Cmd.Argv(1)) != SV_INIT.svs.spawncount) {
             Com.Printf("SV_Configstrings_f from different level\n");
             SV_New_f();
@@ -178,7 +178,7 @@ public class SV_USER {
 
         start = Lib.atoi(Cmd.Argv(2));
 
-        // write a packet full of data
+        
 
         while (SV_MAIN.sv_client.netchan.message.cursize < Defines.MAX_MSGLEN / 2
                 && start < Defines.MAX_CONFIGSTRINGS) {
@@ -193,7 +193,7 @@ public class SV_USER {
             start++;
         }
 
-        // send next command
+        
 
         if (start == Defines.MAX_CONFIGSTRINGS) {
             MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
@@ -224,7 +224,7 @@ public class SV_USER {
             return;
         }
 
-        // handle the case of a level changing while a client was connecting
+        
         if (Lib.atoi(Cmd.Argv(1)) != SV_INIT.svs.spawncount) {
             Com.Printf("SV_Baselines_f from different level\n");
             SV_New_f();
@@ -233,10 +233,10 @@ public class SV_USER {
 
         start = Lib.atoi(Cmd.Argv(2));
 
-        //memset (&nullstate, 0, sizeof(nullstate));
+        
         nullstate = new entity_state_t(null);
 
-        // write a packet full of data
+        
 
         while (SV_MAIN.sv_client.netchan.message.cursize < Defines.MAX_MSGLEN / 2
                 && start < Defines.MAX_EDICTS) {
@@ -250,7 +250,7 @@ public class SV_USER {
             start++;
         }
 
-        // send next command
+        
 
         if (start == Defines.MAX_EDICTS) {
             MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
@@ -271,7 +271,7 @@ public class SV_USER {
     public static void SV_Begin_f() {
         Com.DPrintf("Begin() from " + SV_MAIN.sv_client.name + '\n');
 
-        // handle the case of a level changing while a client was connecting
+        
         if (Lib.atoi(Cmd.Argv(1)) != SV_INIT.svs.spawncount) {
             Com.Printf("SV_Begin_f from different level\n");
             SV_New_f();
@@ -280,13 +280,13 @@ public class SV_USER {
 
         SV_MAIN.sv_client.state = Defines.cs_spawned;
 
-        // call the game begin function
+        
         PlayerClient.ClientBegin(SV_USER.sv_player);
 
         Cbuf.InsertFromDefer();
     }
 
-    //=============================================================================
+    
 
     /*
      * ================== SV_NextDownload_f ==================
@@ -332,28 +332,28 @@ public class SV_USER {
         name = Cmd.Argv(1);
 
         if (Cmd.Argc() > 2)
-            offset = Lib.atoi(Cmd.Argv(2)); // downloaded offset
+            offset = Lib.atoi(Cmd.Argv(2)); 
 
-        // hacked by zoid to allow more conrol over download
-        // first off, no .. or global allow check
+        
+        
 
         if (name.contains("..")
-                || SV_MAIN.allow_download.value == 0 // leading dot is no good
-                || name.charAt(0) == '.' // leading slash bad as well, must be
-                                         // in subdir
-                || name.charAt(0) == '/' // next up, skin check
-                || (name.startsWith("players/") && 0 == SV_MAIN.allow_download_players.value) // now
-                                                                                              // models
-                || (name.startsWith("models/") && 0 == SV_MAIN.allow_download_models.value) // now
-                                                                                            // sounds
+                || SV_MAIN.allow_download.value == 0 
+                || name.charAt(0) == '.' 
+                                         
+                || name.charAt(0) == '/' 
+                || (name.startsWith("players/") && 0 == SV_MAIN.allow_download_players.value) 
+                                                                                              
+                || (name.startsWith("models/") && 0 == SV_MAIN.allow_download_models.value) 
+                                                                                            
                 || (name.startsWith("sound/") && 0 == SV_MAIN.allow_download_sounds.value)
-                // now maps (note special case for maps, must not be in pak)
-                || (name.startsWith("maps/") && 0 == SV_MAIN.allow_download_maps.value) // MUST
-                                                                                        // be
-                                                                                        // in a
-                                                                                        // subdirectory
-                || name.indexOf('/') == -1) { // don't allow anything with ..
-                                              // path
+                
+                || (name.startsWith("maps/") && 0 == SV_MAIN.allow_download_maps.value) 
+                                                                                        
+                                                                                        
+                                                                                        
+                || name.indexOf('/') == -1) { 
+                                              
             MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
                     Defines.svc_download);
             MSG.WriteShort(SV_MAIN.sv_client.netchan.message, -1);
@@ -366,7 +366,7 @@ public class SV_USER {
 
         SV_MAIN.sv_client.download = FS.LoadFile(name);
         
-        // rst: this handles loading errors, no message yet visible 
+        
         if (SV_MAIN.sv_client.download == null)
         {        	
         	return;
@@ -378,10 +378,10 @@ public class SV_USER {
         if (offset > SV_MAIN.sv_client.downloadsize)
             SV_MAIN.sv_client.downloadcount = SV_MAIN.sv_client.downloadsize;
 
-        if (SV_MAIN.sv_client.download == null // special check for maps, if it
-                                               // came from a pak file, don't
-                                               // allow
-                							   // download ZOID
+        if (SV_MAIN.sv_client.download == null 
+                                               
+                                               
+                							   
                 || (name.startsWith("maps/") && FS.file_from_pak != 0)) {
             Com.DPrintf("Couldn't download " + name + " to "
                     + SV_MAIN.sv_client.name + '\n');
@@ -402,7 +402,7 @@ public class SV_USER {
                 + '\n');
     }
 
-    //============================================================================
+    
 
     /*
      * ================= SV_Disconnect_f
@@ -411,7 +411,7 @@ public class SV_USER {
      * =================
      */
     public static void SV_Disconnect_f() {
-        //	SV_EndRedirect ();
+        
         SV_MAIN.SV_DropClient(SV_MAIN.sv_client);
     }
 
@@ -427,15 +427,15 @@ public class SV_USER {
     public static void SV_Nextserver() {
         String v;
 
-        //ZOID, ss_pic can be nextserver'd in coop mode
+        
         if (SV_INIT.sv.state == Defines.ss_game
                 || (SV_INIT.sv.state == Defines.ss_pic && 
                         0 == Cvar.VariableValue("coop")))
-            return; // can't nextserver while playing a normal game
+            return; 
 
-        SV_INIT.svs.spawncount++; // make sure another doesn't sneak in
+        SV_INIT.svs.spawncount++; 
         v = Cvar.VariableString("nextserver");
-        //if (!v[0])
+        
         if (v.length() == 0)
             Cbuf.AddText("killserver\n");
         else {
@@ -455,7 +455,7 @@ public class SV_USER {
         if (Lib.atoi(Cmd.Argv(1)) != SV_INIT.svs.spawncount) {
             Com.DPrintf("Nextserver() from wrong level, from "
                     + SV_MAIN.sv_client.name + '\n');
-            return; // leftover from last server
+            return; 
         }
 
         Com.DPrintf("Nextserver() from " + SV_MAIN.sv_client.name + '\n');
@@ -474,7 +474,7 @@ public class SV_USER {
         Cmd.TokenizeString(s.toCharArray(), true);
         SV_USER.sv_player = SV_MAIN.sv_client.edict;
 
-        //	SV_BeginRedirect (RD_CLIENT);
+        
 
         int i = 0;
         for (; i < SV_USER.ucmds.length; i++) {
@@ -488,7 +488,7 @@ public class SV_USER {
         if (i == SV_USER.ucmds.length && SV_INIT.sv.state == Defines.ss_game)
             Cmd.ClientCommand(SV_USER.sv_player);
 
-        //	SV_EndRedirect ();
+        
     }
 
     /*
@@ -532,7 +532,7 @@ public class SV_USER {
         SV_MAIN.sv_client = cl;
         SV_USER.sv_player = SV_MAIN.sv_client.edict;
 
-        // only allow one move command
+        
         move_issued = false;
         stringCmdCount = 0;
 
@@ -564,7 +564,7 @@ public class SV_USER {
 
             case Defines.clc_move:
                 if (move_issued)
-                    return; // someone is trying to cheat...
+                    return; 
 
                 move_issued = true;
                 checksumIndex = Globals.net_message.readcount;
@@ -580,7 +580,7 @@ public class SV_USER {
                     }
                 }
 
-                //memset (nullcmd, 0, sizeof(nullcmd));
+                
                 nullcmd = new usercmd_t();
                 MSG.ReadDeltaUsercmd(Globals.net_message, nullcmd, oldest);
                 MSG.ReadDeltaUsercmd(Globals.net_message, oldest, oldcmd);
@@ -591,7 +591,7 @@ public class SV_USER {
                     break;
                 }
 
-                // if the checksum fails, ignore the rest of the packet
+                
 
                 calculatedChecksum = Com.BlockSequenceCRCByte(
                         Globals.net_message.data, checksumIndex + 1,
@@ -609,9 +609,9 @@ public class SV_USER {
                     net_drop = cl.netchan.dropped;
                     if (net_drop < 20) {
 
-                        //if (net_drop > 2)
+                        
 
-                        //	Com.Printf ("drop %i\n", net_drop);
+                        
                         while (net_drop > 2) {
                             SV_ClientThink(cl, cl.lastcmd);
 
@@ -627,19 +627,19 @@ public class SV_USER {
                     SV_ClientThink(cl, newcmd);
                 }
 
-                // copy.
+                
                 cl.lastcmd.set(newcmd);
                 break;
 
             case Defines.clc_stringcmd:
                 s = MSG.ReadString(Globals.net_message);
 
-                // malicious users may try using too many string commands
+                
                 if (++stringCmdCount < SV_USER.MAX_STRINGCMDS)
                     SV_ExecuteUserCommand(s);
 
                 if (cl.state == Defines.cs_zombie)
-                    return; // disconnect command
+                    return; 
                 break;
             }
         }

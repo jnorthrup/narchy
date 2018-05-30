@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.core;
 
@@ -100,15 +100,15 @@ public abstract class UGen extends Auvent {
 
     protected OutputPauseRegime outputPauseRegime;
 
-//    /**
-//     * Create a new UGen from the given AudioContext but with no inputs or
-//     * outputs.
-//     *
-//     * @param context AudioContext to use.
-//     */
-//    public UGen(AudioContext context) {
-//        this(context, 0, 0);
-//    }
+
+
+
+
+
+
+
+
+
 
     /**
      * Create a new UGen from the given AudioContext with no inputs and the
@@ -137,7 +137,7 @@ public abstract class UGen extends Auvent {
         outputPauseRegime = OutputPauseRegime.ZERO;
         timerMode = false;
         timeTemp = 0;
-//		inputProxy = outputProxy = null;
+
         setIns(ins);
         setOuts(outs);
         setContext(context);
@@ -291,8 +291,8 @@ public abstract class UGen extends Auvent {
      * Tells all UGens up the call chain, and all UGens that are dependents of this UGen, to calculate their ouput buffers.
      */
     private synchronized void pullInputs() {
-        //ArrayList<UGen> dependentsClone = (ArrayList<UGen>) dependents.clone(); //this may be slow, but avoids concurrent mod exceptions
-        //don't need to clone the array any more; we'll just be careful how we traverse the array.
+        
+        
         dependents.removeIf(dependent -> {
             if (dependent.isDeleted()) {
                 return true;
@@ -303,12 +303,12 @@ public abstract class UGen extends Auvent {
         });
 
         int size = dependents.size();
-        //dependents done, now actual inputs
+        
         if (!noInputs) {
             noInputs = true;
             for (int i = 0; i < inputsAtChannel.length; i++) {
-                //ArrayList<BufferPointer> inputsAtChannelICopy = (ArrayList<BufferPointer>) inputsAtChannel[i].clone();
-                //don't need to clone the array any more
+                
+                
                 size = inputsAtChannel[i].size();
                 bufIn[i] = context.getZeroBuf();
                 if (size == 1) {
@@ -317,12 +317,12 @@ public abstract class UGen extends Auvent {
                         removeInputAtChannel(i, bp);
                     } else {
                         bp.ugen.update();
-                        noInputs = false;    //we actually updated something, so we must have inputs
-                        //V1
-                        bufIn[i] = bp.getBuffer(); //here we're just pointing to the buffer that is the input
-                        //this requires that the data in the output buffer is always correct
-                        //but we can't do this for Static and Envelope and stuff like that efficiently
-                        //so these kinds of UGens can make sure their outputs are null in this case, by setting outputInitializationRegime to NULL.
+                        noInputs = false;    
+                        
+                        bufIn[i] = bp.getBuffer(); 
+                        
+                        
+                        
                         if (bufIn[i] == null) {
                             float[] bi = bufIn[i] = context.getBuf();
                             for (int j = 0; j < bufferSize; j++) {
@@ -335,13 +335,13 @@ public abstract class UGen extends Auvent {
                     for (int index = 0; index < size; index++) {
                         BufferPointer bp = inputsAtChannel[i].get(index);
                         if (bp.ugen.isDeleted()) {
-                            // don't need to work with a cloned array if we adjust our indices properly
+                            
                             removeInputAtChannel(i, bp);
                             size--;
                             index--;
                         } else {
                             bp.ugen.update();
-                            noInputs = false;    //we actually updated something, so we must have inputs
+                            noInputs = false;    
                             for (int j = 0; j < bufferSize; j++) {
                                 bi[j] += bp.get(j);
                             }
@@ -368,17 +368,17 @@ public abstract class UGen extends Auvent {
                 if (timerMode) {
                     timeTemp = System.nanoTime();
                 }
-                lastTimeStep = context.getTimeStep(); // do this first to break call chain loops
+                lastTimeStep = context.getTimeStep(); 
                 pullInputs();
-                //this sets up the output buffers - default behaviour is to use dirty buffers from the AudioContexts
-                //buffer reserve. Override this function to get another behaviour.
+                
+                
                 initializeOuts();
                 gen();
                 if (timerMode) {
                     timeTakenLastUpdate = System.nanoTime() - timeTemp;
                 }
             }
-            //by the time we get here, we might have been paused. If so then initialize outs using the pause regime.
+            
             if (isPaused()) setOutsToPause();
         }
     }
@@ -407,7 +407,7 @@ public abstract class UGen extends Auvent {
     public synchronized <X extends UGen> X in(UGen sourceUGen) {
         if (ins != 0 && sourceUGen.outs != 0) {
             for (int i = 0; i < ins; i++) {
-                //System.out.println("adding " + i);
+                
                 addInput(i, sourceUGen, i % sourceUGen.outs);
             }
         }
@@ -425,7 +425,7 @@ public abstract class UGen extends Auvent {
      */
     public synchronized void addInput(int inputIndex, UGen sourceUGen, int sourceOutputIndex) {
         inputsAtChannel[inputIndex].add(new BufferPointer(sourceUGen, sourceOutputIndex));
-        //System.out.println("new input added, channel=" + inputIndex + " total=" + inputsAtChannel[inputIndex].size());
+        
         noInputs = false;
     }
 
@@ -438,13 +438,13 @@ public abstract class UGen extends Auvent {
      */
     public synchronized void crossfadeInput(UGen source, final UGen destination, float crossoverTime) {
         removeAllConnections(source);
-        //fade the old one out
+        
         Envelope fadeOut = new Envelope(context, 1f);
         Gain gOut = new Gain(context, source.outs, fadeOut);
         fadeOut.add(0f, crossoverTime, new KillTrigger(gOut));
         gOut.in(source);
         in(gOut);
-        //fade the new one in
+        
         Envelope fadeIn = new Envelope(context, 0f);
         final Gain gIn = new Gain(context, destination.outs, fadeIn);
         fadeIn.add(1f, crossoverTime, new Auvent() {
@@ -514,27 +514,27 @@ public abstract class UGen extends Auvent {
         return Collections.unmodifiableList(dependents);
     }
 
-//	/**
-//	 * Checks if this UGen has the given UGen plugged into it.
-//	 * @param ugen the UGen to test.
-//	 * @return true if the given UGen is plugged into this UGen.
-//	 */
-//	@SuppressWarnings("unchecked")
-//	public synchronized boolean containsInput(UGen ugen) {
-//		if(noInputs) {
-//			return false;
-//		} else {
-//			for (int i = 0; i < inputsAtChannel.length; i++) {
-//				ArrayList<BufferPointer> bplist = (ArrayList<BufferPointer>) inputsAtChannel[i].clone();
-//				for (BufferPointer bp : bplist) {
-//					if (ugen.equals(bp.ugen)) {
-//						return true;
-//					}
-//				}
-//			}
-//			return false;
-//		}
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Returns a flat Set (i.e. no copies) of all the UGens connected to the inputs of this one.
@@ -594,7 +594,7 @@ public abstract class UGen extends Auvent {
             try {
                 envelopes.put(stringMethodEntry.getKey(), (UGen) m.invoke(this, ArrayUtils.EMPTY_OBJECT_ARRAY));
             } catch (Exception e) {
-//				e.printStackTrace();		//
+
             }
         }
         return envelopes;
@@ -643,7 +643,7 @@ public abstract class UGen extends Auvent {
     @SuppressWarnings("unchecked")
     public synchronized boolean removeConnection(int inputChannel,
                                                  UGen sourceUGen, int sourceOutputChannel) {
-        // Added by Benito
+        
         if (!noInputs) {
             int inputCount = 0;
             boolean ret = false;
@@ -658,7 +658,7 @@ public abstract class UGen extends Auvent {
                 }
             }
             if (inputCount == 0) {
-                // include inputs on all channels in count
+                
                 for (List<BufferPointer> ch : inputsAtChannel)
                     inputCount += ch.size();
             }
@@ -825,7 +825,7 @@ public abstract class UGen extends Auvent {
         this.timerMode = timerMode;
     }
 
-    /// nanoseconds
+    
     public long getTimeTakenLastUpdate() {
         return timeTakenLastUpdate;
     }

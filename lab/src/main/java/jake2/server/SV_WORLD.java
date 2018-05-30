@@ -17,7 +17,7 @@
  * Place - Suite 330, Boston, MA 02111-1307, USA.
  *  
  */
-// Created on 07.01.2000 by RST.
+
 
 package jake2.server;
 
@@ -29,15 +29,15 @@ import jake2.qcommon.Com;
 import jake2.util.Math3D;
 
 public class SV_WORLD {
-    // world.c -- world query functions
-    //
-    //
-    //===============================================================================
-    //
-    //ENTITY AREA CHECKING
-    //
-    //FIXME: this use of "area" is different from the bsp file use
-    //===============================================================================
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public static final areanode_t[] sv_areanodes = new areanode_t[Defines.AREA_NODES];
     static {
         SV_WORLD.initNodes();
@@ -59,10 +59,10 @@ public class SV_WORLD {
 
     static final int[] clusters = new int[MAX_TOTAL_ENT_LEAFS];
 
-    //===========================================================================
+    
     static final edict_t[] touch = new edict_t[Defines.MAX_EDICTS];
 
-    //===========================================================================
+    
     static final edict_t[] touchlist = new edict_t[Defines.MAX_EDICTS];
 
     public static void initNodes() {
@@ -70,7 +70,7 @@ public class SV_WORLD {
             SV_WORLD.sv_areanodes[n] = new areanode_t();
     }
 
-    // ClearLink is used for new headnodes
+    
     public static void ClearLink(link_t l) {
         l.prev = l.next = l;
     }
@@ -100,9 +100,9 @@ public class SV_WORLD {
         float[] mins1 = { 0, 0, 0 }, maxs1 = { 0, 0, 0 }, mins2 = { 0, 0, 0 }, maxs2 = {
                 0, 0, 0 };
         anode = SV_WORLD.sv_areanodes[SV_WORLD.sv_numareanodes];
-        // just for debugging (rst)
-//        Math3D.VectorCopy(mins, anode.mins_rst);
-//        Math3D.VectorCopy(maxs, anode.maxs_rst);
+        
+
+
         SV_WORLD.sv_numareanodes++;
         ClearLink(anode.trigger_edicts);
         ClearLink(anode.solid_edicts);
@@ -153,7 +153,7 @@ public class SV_WORLD {
      */
     public static void SV_UnlinkEdict(edict_t ent) {
         if (null == ent.area.prev)
-            return; // not linked in anywhere
+            return; 
         RemoveLink(ent.area);
         ent.area.prev = ent.area.next = null;
     }
@@ -165,29 +165,29 @@ public class SV_WORLD {
         int area;
         int topnode = 0;
         if (ent.area.prev != null)
-            SV_UnlinkEdict(ent); // unlink from old position
+            SV_UnlinkEdict(ent); 
         if (ent == GameBase.g_edicts[0])
-            return; // don't add the world
+            return; 
         if (!ent.inuse)
             return;
-        // set the size
+        
         Math3D.VectorSubtract(ent.maxs, ent.mins, ent.size);
-        // encode the size into the entity_state for client prediction
+        
         if (ent.solid == Defines.SOLID_BBOX
                 && 0 == (ent.svflags & Defines.SVF_DEADMONSTER)) {
-            // assume that x/y are equal and symetric
+            
             int i = (int) (ent.maxs[0] / 8);
             if (i < 1)
                 i = 1;
             if (i > 31)
                 i = 31;
-            // z is not symetric
+            
             j = (int) ((-ent.mins[2]) / 8);
             if (j < 1)
                 j = 1;
             if (j > 31)
                 j = 31;
-            // and z maxs can be negative...
+            
             k = (int) ((ent.maxs[2] + 32) / 8);
             if (k < 1)
                 k = 1;
@@ -195,13 +195,13 @@ public class SV_WORLD {
                 k = 63;
             ent.s.solid = (k << 10) | (j << 5) | i;
         } else if (ent.solid == Defines.SOLID_BSP) {
-            ent.s.solid = 31; // a solid_bbox will never create this value
+            ent.s.solid = 31; 
         } else
             ent.s.solid = 0;
-        // set the abs box
+        
         if (ent.solid == Defines.SOLID_BSP
                 && (ent.s.angles[0] != 0 || ent.s.angles[1] != 0 || ent.s.angles[2] != 0)) {
-            // expand for rotation
+            
             float max, v;
             max = 0;
             for (int i = 0; i < 3; i++) {
@@ -218,34 +218,34 @@ public class SV_WORLD {
                 ent.absmax[i] = ei + max;
             }
         } else {
-            // normal
+            
             Math3D.VectorAdd(ent.s.origin, ent.mins, ent.absmin);
             Math3D.VectorAdd(ent.s.origin, ent.maxs, ent.absmax);
         }
-        // because movement is clipped an epsilon away from an actual edge,
-        // we must fully check even when bounding boxes don't quite touch
+        
+        
         ent.absmin[0]--;
         ent.absmin[1]--;
         ent.absmin[2]--;
         ent.absmax[0]++;
         ent.absmax[1]++;
         ent.absmax[2]++;
-        // link to PVS leafs
+        
         ent.num_clusters = 0;
         ent.areanum = 0;
         ent.areanum2 = 0;
-        // get all leafs, including solids
+        
         int iw[] = { topnode };
         num_leafs = CM.CM_BoxLeafnums(ent.absmin, ent.absmax, SV_WORLD.leafs,
                 SV_WORLD.MAX_TOTAL_ENT_LEAFS, iw);
         topnode = iw[0];
-        // set areas
+        
         for (int i = 0; i < num_leafs; i++) {
             SV_WORLD.clusters[i] = CM.CM_LeafCluster(SV_WORLD.leafs[i]);
             area = CM.CM_LeafArea(SV_WORLD.leafs[i]);
             if (area != 0) {
-                // doors may legally straggle two areas,
-                // but nothing should evern need more than that
+                
+                
                 if (ent.areanum != 0 && ent.areanum != area) {
                     if (ent.areanum2 != 0 && ent.areanum2 != area
                             && SV_INIT.sv.state == Defines.ss_loading)
@@ -258,20 +258,20 @@ public class SV_WORLD {
             }
         }
         if (num_leafs >= SV_WORLD.MAX_TOTAL_ENT_LEAFS) {
-            // assume we missed some leafs, and mark by headnode
+            
             ent.num_clusters = -1;
             ent.headnode = topnode;
         } else {
             ent.num_clusters = 0;
             for (int i = 0; i < num_leafs; i++) {
                 if (SV_WORLD.clusters[i] == -1)
-                    continue; // not a visible leaf
+                    continue; 
                 for (j = 0; j < i; j++)
                     if (SV_WORLD.clusters[j] == SV_WORLD.clusters[i])
                         break;
                 if (j == i) {
                     if (ent.num_clusters == Defines.MAX_ENT_CLUSTERS) {
-                        // assume we missed some leafs, and mark by headnode
+                        
                         ent.num_clusters = -1;
                         ent.headnode = topnode;
                         break;
@@ -280,14 +280,14 @@ public class SV_WORLD {
                 }
             }
         }
-        // if first time, make sure old_origin is valid
+        
         if (0 == ent.linkcount) {
             Math3D.VectorCopy(ent.s.origin, ent.s.old_origin);
         }
         ent.linkcount++;
         if (ent.solid == Defines.SOLID_NOT)
             return;
-        // find the first node that the ent's box crosses
+        
         node = SV_WORLD.sv_areanodes[0];
         while (true) {
             if (node.axis == -1)
@@ -297,9 +297,9 @@ public class SV_WORLD {
             else if (ent.absmax[node.axis] < node.dist)
                 node = node.children[1];
             else
-                break; // crosses the node
+                break; 
         }
-        // link it in
+        
         if (ent.solid == Defines.SOLID_TRIGGER)
             InsertLinkBefore(ent.area, node.trigger_edicts);
         else
@@ -314,7 +314,7 @@ public class SV_WORLD {
     public static void SV_AreaEdicts_r(areanode_t node) {
         link_t l, next, start;
         edict_t check;
-        // touch linked edicts
+        
         if (SV_WORLD.area_type == Defines.AREA_SOLID)
             start = node.solid_edicts;
         else
@@ -323,14 +323,14 @@ public class SV_WORLD {
             next = l.next;
             check = (edict_t) l.o;
             if (check.solid == Defines.SOLID_NOT)
-                continue; // deactivated
+                continue; 
             if (check.absmin[0] > SV_WORLD.area_maxs[0]
                     || check.absmin[1] > SV_WORLD.area_maxs[1]
                     || check.absmin[2] > SV_WORLD.area_maxs[2]
                     || check.absmax[0] < SV_WORLD.area_mins[0]
                     || check.absmax[1] < SV_WORLD.area_mins[1]
                     || check.absmax[2] < SV_WORLD.area_mins[2])
-                continue; // not touching
+                continue; 
             if (SV_WORLD.area_count == SV_WORLD.area_maxcount) {
                 Com.Printf("SV_AreaEdicts: MAXCOUNT\n");
                 return;
@@ -339,8 +339,8 @@ public class SV_WORLD {
             SV_WORLD.area_count++;
         }
         if (node.axis == -1)
-            return; // terminal node
-        // recurse down both sides
+            return; 
+        
         if (SV_WORLD.area_maxs[node.axis] > node.dist)
             SV_AreaEdicts_r(node.children[0]);
         if (SV_WORLD.area_mins[node.axis] < node.dist)
@@ -370,14 +370,14 @@ public class SV_WORLD {
         int i, num;
         int contents, c2;
         int headnode;
-        // get base contents from world
+        
         contents = CM.PointContents(p, SV_INIT.sv.models[1].headnode);
-        // or in contents from all the other entities
+        
         num = SV_AreaEdicts(p, p, SV_WORLD.touch, Defines.MAX_EDICTS,
                 Defines.AREA_SOLID);
         for (i = 0; i < num; i++) {
             hit = SV_WORLD.touch[i];
-            // might intersect, so do an exact clip
+            
             headnode = SV_HullForEntity(hit);
             if (hit.solid != Defines.SOLID_BSP) {
 	    }
@@ -398,16 +398,16 @@ public class SV_WORLD {
      */
     public static int SV_HullForEntity(edict_t ent) {
         cmodel_t model;
-        // decide which clipping hull to use, based on the size
+        
         if (ent.solid == Defines.SOLID_BSP) {
-            // explicit hulls in the BSP model
+            
             model = SV_INIT.sv.models[ent.s.modelindex];
             if (null == model)
                 Com.Error(Defines.ERR_FATAL,
                         "MOVETYPE_PUSH with a non bsp model");
             return model.headnode;
         }
-        // create a temp hull from bounding box sizes
+        
         return CM.HeadnodeForBox(ent.mins, ent.maxs);
     }
 
@@ -419,8 +419,8 @@ public class SV_WORLD {
         float angles[];
         num = SV_AreaEdicts(clip.boxmins, clip.boxmaxs, SV_WORLD.touchlist,
                 Defines.MAX_EDICTS, Defines.AREA_SOLID);
-        // be careful, it is possible to have an entity in this
-        // list removed before we get to it (killtriggered)
+        
+        
         for (i = 0; i < num; i++) {
             touch = SV_WORLD.touchlist[i];
             if (touch.solid == Defines.SOLID_NOT)
@@ -431,18 +431,18 @@ public class SV_WORLD {
                 return;
             if (clip.passedict != null) {
                 if (touch.owner == clip.passedict)
-                    continue; // don't clip against own missiles
+                    continue; 
                 if (clip.passedict.owner == touch)
-                    continue; // don't clip against owner
+                    continue; 
             }
             if (0 == (clip.contentmask & Defines.CONTENTS_DEADMONSTER)
                     && 0 != (touch.svflags & Defines.SVF_DEADMONSTER))
                 continue;
-            // might intersect, so do an exact clip
+            
             headnode = SV_HullForEntity(touch);
             angles = touch.s.angles;
             if (touch.solid != Defines.SOLID_BSP)
-                angles = Globals.vec3_origin; // boxes don't rotate
+                angles = Globals.vec3_origin; 
             if ((touch.svflags & Defines.SVF_MONSTER) != 0)
                 trace = CM.TransformedBoxTrace(clip.start, clip.end,
                         clip.mins2, clip.maxs2, headnode, clip.contentmask,
@@ -498,11 +498,11 @@ public class SV_WORLD {
         if (maxs == null)
             maxs = Globals.vec3_origin;
 
-        // clip to world
+        
         clip.trace = CM.BoxTrace(start, end, mins, maxs, 0, contentmask);
         clip.trace.ent = GameBase.g_edicts[0];
         if (clip.trace.fraction == 0)
-            return clip.trace; // blocked by the world
+            return clip.trace; 
         clip.contentmask = contentmask;
         clip.start = start;
         clip.end = end;
@@ -511,10 +511,10 @@ public class SV_WORLD {
         clip.passedict = passedict;
         Math3D.VectorCopy(mins, clip.mins2);
         Math3D.VectorCopy(maxs, clip.maxs2);
-        // create the bounding box of the entire move
+        
         SV_TraceBounds(start, clip.mins2, clip.maxs2, end, clip.boxmins,
                 clip.boxmaxs);
-        // clip to other solid entities
+        
         SV_ClipMoveToEntities(clip);
         return clip.trace;
     }

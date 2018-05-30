@@ -18,20 +18,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 09.12.2003 by RST.
+
 
 package jake2.server;
 
 import jake2.game.link_t;
 
 public class areanode_t {
-	int axis; // -1 = leaf node
+	int axis; 
 	float dist;
 	final areanode_t[] children = new areanode_t[2];
 	final link_t trigger_edicts = new link_t(this);
 	final link_t solid_edicts = new link_t(this);
 	
-	// used for debugging
-//	float mins_rst[] = {0,0,0};
-//	float maxs_rst[] = {0,0,0};
+	
+
+
 }

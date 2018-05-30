@@ -17,6 +17,6 @@ public abstract class AbstractClassifier<X> {
     abstract public void classify(X x, RoaringBitmap bmp, int offset);
 
     public String name(int i) {
-        return dimension()==1 ? name.toString() : name.toString() + i; //default
+        return dimension()==1 ? name.toString() : name.toString() + i; 
     }
 }

@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -134,7 +134,7 @@ public class CountMinSketchTest {
             cms2.add("Hello");
             cms2.add("Hello");
 
-            // should throw exception
+            
             cms.merge(cms2);
 
         });
@@ -197,7 +197,7 @@ public class CountMinSketchTest {
         CountMinRoar c = new CountMinRoar();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < i; j++)
-                c.add(i); //i x j
+                c.add(i); 
         }
         System.out.println(c.toString() + " " + c.summary());
         assertTrue(c.toString().startsWith("1x1,2x2,3x3,4x4,5x5,6x6,7x7,8x8,9x9"));

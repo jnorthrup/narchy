@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -58,7 +58,7 @@ public class GjkEpaSolver {
 	
 	public static class Results {
 		public ResultsStatus status;
-		//public final v3[] witnesses/*[2]*/ = { new v3(), new v3() };
+		
 		public final v3 witness0 = new v3();
 		public final v3 witness1 = new v3();
 		public final v3 normal = new v3();
@@ -67,7 +67,7 @@ public class GjkEpaSolver {
 		public int gjk_iterations;
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	private static final float cstInf = BulletGlobals.SIMD_INFINITY;
 	private static final float cstPi = BulletGlobals.SIMD_PI;
@@ -81,11 +81,11 @@ public class GjkEpaSolver {
 	private static final float EPA_inface_eps = 0.01f;
 	private static final float EPA_accuracy = 0.001f;
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static class Mkv {
-		public final v3 w = new v3(); // Minkowski vertice
-		public final v3 r = new v3(); // Ray
+		public final v3 w = new v3(); 
+		public final v3 r = new v3(); 
 
 		public void set(Mkv m) {
 			w.set(m.w);
@@ -99,10 +99,10 @@ public class GjkEpaSolver {
 	}
 	
 	protected static class GJK {
-		//protected final BulletStack stack = BulletStack.get();
 		
-		//public btStackAlloc sa;
-		//public Block sablock;
+		
+		
+		
 		public final He[] table = new He[GJK_hashsize];
 		public final Matrix3f[] wrotations/*[2]*/ = { new Matrix3f(), new Matrix3f() };
 		public final v3[] positions/*[2]*/ = { new v3(), new v3() };
@@ -144,8 +144,8 @@ public class GjkEpaSolver {
 			wrotations[1].set(wrot1);
 			positions[1].set(pos1);
 			shapes[1] = shape1;
-			//sa		=psa;
-			//sablock	=sa->beginBlock();
+			
+			
 			margin = pmargin;
 			failed = false;
 		}
@@ -153,7 +153,7 @@ public class GjkEpaSolver {
 		public void destroy() {
 		}
 		
-		// vdh: very dummy hash
+		
 		public static /*unsigned*/ int Hash(v3 v) {
 			int h = (int)(v.x * 15461) ^ (int)(v.y * 83003) ^ (int)(v.z * 15473);
 			return (h * 169639) & GJK_hashmask;
@@ -196,7 +196,7 @@ public class GjkEpaSolver {
 					e = e.n;
 				}
 			}
-			//e = (He*)sa->allocate(sizeof(He));
+			
 			e = new He();
 			e.v.set(ray);
 			e.n = table[h];
@@ -232,7 +232,7 @@ public class GjkEpaSolver {
 		}
 		
 		public boolean SolveSimplex3a(v3 ao, v3 ab, v3 ac, v3 cabc) {
-			// TODO: optimize
+			
 
 			v3 tmp = new v3();
 			tmp.cross(cabc, ab);
@@ -274,7 +274,7 @@ public class GjkEpaSolver {
 		}
 		
 		public boolean SolveSimplex4(v3 ao, v3 ab, v3 ac, v3 ad) {
-			// TODO: optimize
+			
 
 			v3 crs = new v3();
 
@@ -379,10 +379,10 @@ public class GjkEpaSolver {
 			v3 tmp2 = new v3();
 
 			switch (order) {
-				// Point
+				
 				case 0:
 					break;
-				// Line
+				
 				case 1:
                     v3 ab = new v3();
                     ab.sub(simplex[1].w, simplex[0].w);
@@ -419,7 +419,7 @@ public class GjkEpaSolver {
                     r.transform(w);
                     order = 4;
                     return (true);
-                // Triangle
+                
 				case 2:
                     tmp1.sub(simplex[1].w, simplex[0].w);
                     tmp2.sub(simplex[2].w, simplex[0].w);
@@ -433,10 +433,10 @@ public class GjkEpaSolver {
                     Support(tmp, simplex[4]);
                     order = 4;
                     return (true);
-                // Tetrahedron
+                
 				case 3:
 					return (true);
-				// Hexahedron
+				
 				case 4:
 					return (true);
 			}
@@ -445,7 +445,7 @@ public class GjkEpaSolver {
 		
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	private static final int[] mod3 = { 0, 1, 2, 0, 1 };
 
@@ -467,10 +467,10 @@ public class GjkEpaSolver {
 	}
 	
 	protected static class EPA {
-		//protected final BulletStack stack = BulletStack.get();
+		
 		
 		public GJK gjk;
-		//public btStackAlloc* sa;
+		
 		public Face root;
 		public int nfaces;
 		public int iterations;
@@ -490,7 +490,7 @@ public class GjkEpaSolver {
 
 		public EPA(GJK pgjk) {
 			gjk = pgjk;
-			//sa = pgjk->sa;
+			
 		}
 		
 		public static v3 GetCoordinates(Face face) {
@@ -552,7 +552,7 @@ public class GjkEpaSolver {
 			tmp2.sub(c.w, a.w);
 			nrm.cross(tmp1, tmp2);
 
-			//float len = nrm.length();
+			
 			float lenSq = nrm.lengthSquared();
 
 			tmp1.cross(a.w, b.w);
@@ -654,7 +654,7 @@ public class GjkEpaSolver {
 		public float EvaluatePD(float accuracy) {
             v3 tmp = new v3();
 
-            //btBlock* sablock = sa->beginBlock();
+            
             Face bestface = null;
             int markid = 1;
             depth = -cstInf;
@@ -665,12 +665,12 @@ public class GjkEpaSolver {
             failed = false;
             /* Prepare hull		*/
             if (gjk.EncloseOrigin()) {
-                //const U* pfidx = 0;
+                
                 int[][] pfidx_ptr = null;
                 int pfidx_index = 0;
 
                 int nfidx = 0;
-                //const U* peidx = 0;
+                
                 int[][] peidx_ptr = null;
                 int peidx_index = 0;
 
@@ -678,29 +678,29 @@ public class GjkEpaSolver {
                 Mkv[] basemkv = new Mkv[5];
                 Face[] basefaces = new Face[6];
                 switch (gjk.order) {
-                    // Tetrahedron
+                    
                     case 3:
-//pfidx=(const U*)fidx;
+
 pfidx_ptr = tetrahedron_fidx;
 pfidx_index = 0;
 
 nfidx = 4;
 
-//peidx=(const U*)eidx;
+
 peidx_ptr = tetrahedron_eidx;
 peidx_index = 0;
 
 neidx = 6;
 break;
-                    // Hexahedron
+                    
                     case 4:
-//pfidx=(const U*)fidx;
+
 pfidx_ptr = hexahedron_fidx;
 pfidx_index = 0;
 
 nfidx = 6;
 
-//peidx=(const U*)eidx;
+
 peidx_ptr = hexahedron_eidx;
 peidx_index = 0;
 
@@ -721,7 +721,7 @@ break;
                 }
             }
             if (0 == nfaces) {
-                //sa->endBlock(sablock);
+                
                 return (depth);
             }
             /* Expand hull		*/
@@ -784,13 +784,13 @@ break;
             else {
                 failed = true;
             }
-            //sa->endBlock(sablock);
+            
             return (depth);
         }
 		
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	private final GJK gjk = new GJK();
 	
@@ -800,7 +800,7 @@ break;
 			btStackAlloc* stackAlloc*/,
                            Results results) {
 		
-		// Initialize
+		
 		results.witness0.set(0f, 0f, 0f);
 		results.witness1.set(0f, 0f, 0f);
 		results.normal.set(0f, 0f, 0f);

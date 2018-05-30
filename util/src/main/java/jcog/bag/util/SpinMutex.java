@@ -4,7 +4,7 @@ public interface SpinMutex {
 
     default int start(int context, int key) {
         long hash = (context << 32) | key;
-        if (hash == 0) hash = 1; //reserve 0
+        if (hash == 0) hash = 1; 
         return start(hash);
     }
 

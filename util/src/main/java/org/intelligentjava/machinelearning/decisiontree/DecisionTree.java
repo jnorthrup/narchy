@@ -36,7 +36,7 @@ public class DecisionTree<K, V> {
     /**
      * Logger.
      */
-    //private static final Logger log = LoggerFactory.getLogger(DecisionTree.class);
+    
 
     /**
      * Impurity calculation method.
@@ -52,9 +52,9 @@ public class DecisionTree<K, V> {
      */
     private Node<V> root;
 
-    //    protected static <K,V> V label(K value, Collection<Function<K, V>> data) {
-//        return DecisionTree.label(value, data, DEFAULT_PRECISION);
-//    }
+    
+
+
     public DecisionTree maxDepth(int d) {
         this.maxDepth = d;
         return this;
@@ -64,7 +64,7 @@ public class DecisionTree<K, V> {
      * Returns Label if data is homogeneous.
      */
     protected static <K, V> V label(K value, Collection<Function<K, V>> data, float homogenityPercentage) {
-        // group by to map <Label, count>
+        
         Map<V, Long> labelCount = data.stream().collect(groupingBy((x) -> x.apply(value), counting()));
         long totalCount = data.size();
         for (Map.Entry<V, Long> e : labelCount.entrySet()) {
@@ -120,9 +120,9 @@ public class DecisionTree<K, V> {
      * @return Sublists of split data samples.
      */
     static <K, V> Stream<List<Function<K, V>>> split(Predicate<Function<K, V>> p, Collection<Function<K, V>> data) {
-        // TODO:  maybe use sublist streams instead of creating new list just track indexes
-        //  TODO maybe with bitset, Pair<sublist stream, bitset>
-        // http://stackoverflow.com/questions/22917270/how-to-get-a-range-of-items-from-stream-using-java-8-lambda
+        
+        
+        
         Map<Boolean, List<Function<K, V>>> split = data.stream().collect(partitioningBy(p::test));
 
         return Stream.of(split.get(true), split.get(false));
@@ -137,26 +137,26 @@ public class DecisionTree<K, V> {
      */
     protected Node<V> put(K key, Collection<Function<K, V>> data, List<Predicate<Function<K, V>>> features, int currentDepth, IntToFloatFunction depthToPrecision) {
 
-        // if dataset already homogeneous enough (has label assigned) make this node a leaf
+        
         V currentNodeLabel;
         if ((currentNodeLabel = label(key, data, depthToPrecision.valueOf(currentDepth))) != null) {
-            return leaf(currentNodeLabel); //log.debug("New leaf is created because data is homogeneous: {}", currentNodeLabel.name());
+            return leaf(currentNodeLabel); 
         }
 
         int fs = features.size();
         boolean stoppingCriteriaReached = (fs == 0) || currentDepth >= maxDepth;
         if (stoppingCriteriaReached) {
-            return leaf(majority(key, data)); //log.debug("New leaf is created because stopping criteria reached: {}", majorityLabel.name());
+            return leaf(majority(key, data)); 
         }
 
-        Predicate<Function<K, V>> split = bestSplit(key, data, features); // get best set of literals
-        //log.debug("Best split found: {}", bestSplit.toString());
+        Predicate<Function<K, V>> split = bestSplit(key, data, features); 
+        
 
-        // add children to current node according to split
-        // if subset data is empty add a leaf with label calculated from initial data
-        // else grow tree further recursively
+        
+        
+        
 
-        //log.debug("Data is split into sublists of sizes: {}", splitData.stream().map(List::size).collect(Collectors.toList()));
+        
         Node<V> branch = split(split, data).map(
 
                 subsetTrainingData -> subsetTrainingData.isEmpty() ?
@@ -186,8 +186,8 @@ public class DecisionTree<K, V> {
      */
     public V get(Function<K, V> value) {
         Node<V> node = root;
-        while (!node.isLeaf()) { // go through tree until leaf is reached
-            // only binary splits for now - has feature first child node(left branch), does not have feature second child node(right branch).
+        while (!node.isLeaf()) { 
+            
             node = node.get(node.feature.test(value) ? 0 : 1);
         }
         return node.label;
@@ -198,12 +198,12 @@ public class DecisionTree<K, V> {
      */
     protected Predicate<Function<K, V>> bestSplit(K value, Collection<Function<K, V>> data, Iterable<Predicate<Function<K, V>>> features) {
         double currentImpurity = 1;
-        Predicate<Function<K, V>> bestSplitFeature = null; // rename split to feature
+        Predicate<Function<K, V>> bestSplitFeature = null; 
 
         for (Predicate<Function<K, V>> feature : features) {
 
-            // totalSplitImpurity = sum(singleLeafImpurities) / nbOfLeafs
-            // in other words splitImpurity is average of leaf impurities
+            
+            
             double calculatedSplitImpurity =
                     split(feature, data).filter(list -> !list.isEmpty()).mapToDouble(splitData -> impurityCalculator.impurity(value, splitData)).average().orElse(Double.POSITIVE_INFINITY);
             if (calculatedSplitImpurity < currentImpurity) {
@@ -220,22 +220,22 @@ public class DecisionTree<K, V> {
      * is used when tree growth is stopped and everything what is left must be classified so it returns majority label for the data.
      */
     static <K, V> V majority(K value, Collection<Function<K, V>> data) {
-        // group by to map <Label, count> like in getLabels() but return Label with most counts
+        
         return data.stream().collect(groupingBy((x) -> x.apply(value), counting())).entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
     }
 
-    // -------------------------------- TREE PRINTING ------------------------------------
+    
 
-//    public ValueGraph<Iterable<Node<V>>,Boolean> graph() {
-//
-//        MutableValueGraph<Node<V>,Boolean> graph = ValueGraphBuilder
-//                .directed()
-//                .nodeOrder(ElementOrder.unordered())
-//                .allowsSelfLoops(false)
-//                .builder();
-//
-//        return root.graph(graph);
-//    }
+
+
+
+
+
+
+
+
+
+
 
     public void explain(BiConsumer<List<ObjectBooleanPair<Node<V>>>, Node.LeafNode<V>> c) {
         root.explain(c, new FasterList());
@@ -316,7 +316,7 @@ public class DecisionTree<K, V> {
         @Override
         public boolean add(Node<V> newItem) {
             if (contains(newItem))
-                return false; //err
+                return false; 
             return super.add(newItem);
         }
 
@@ -352,9 +352,9 @@ public class DecisionTree<K, V> {
             if (this == that) return true;
             else {
                 if (feature != null)
-                    if (!feature.equals(((Node) that).feature)) //branch
+                    if (!feature.equals(((Node) that).feature)) 
                         return false;
-                return Objects.equals(label, (((Node) that).label)); //leaf
+                return Objects.equals(label, (((Node) that).label)); 
             }
         }
 
@@ -363,11 +363,11 @@ public class DecisionTree<K, V> {
             if (o == this) return 0;
             Node n = (Node) o;
             if (feature != null) {
-                int f = Integer.compare(feature.hashCode(), n.feature.hashCode()); //branch
+                int f = Integer.compare(feature.hashCode(), n.feature.hashCode()); 
                 if (f != 0)
                     return f;
             }
-            return ((Comparable) label).compareTo(n.label); //leaf
+            return ((Comparable) label).compareTo(n.label); 
         }
 
         public void explain(BiConsumer<List<ObjectBooleanPair<Node<V>>>, LeafNode<V>> c, FasterList<ObjectBooleanPair<Node<V>>> path) {
@@ -381,7 +381,7 @@ public class DecisionTree<K, V> {
                 explain(c, path, 1);
 
             } else if (s == 0) {
-                //nothing
+                
             } else {
                 throw new UnsupportedOperationException("predicate?");
             }
@@ -395,27 +395,27 @@ public class DecisionTree<K, V> {
             path.removeLast();
         }
 
-//        public MutableValueGraph<Iterable<Node<V>>,Boolean> graph(MutableValueGraph<Node<V>,Boolean> graph, Iterable<Node<V>> path) {
-//
-//            graph.addNode(Iterables.concat(Collections.singleton(this), path));
-//
-//            int s = size();
-//            if (s ==2) {
-//                Node<V> ifTrue = get(0);
-//                ifTrue.graph(graph);
-//                graph.putEdgeValue(this, ifTrue, true);
-//
-//                Node<V> ifFalse = get(1);
-//                ifFalse.graph(graph);
-//                graph.putEdgeValue(this, ifFalse, false);
-//            } else if (s == 0) {
-//                //nothing
-//            } else {
-//                throw new UnsupportedOperationException("predicate?");
-//            }
-//
-//            return graph;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public static class LeafNode<V> extends Node<V> {
             public LeafNode(V label) {
@@ -446,7 +446,7 @@ public class DecisionTree<K, V> {
                 return label.toString();
             }
 
-            //override other modifying methods
+            
 
             @Override
             public boolean add(Node newItem) {

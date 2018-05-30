@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ public class ImmutableRTree {
     }
 
     private static int calcNumBytes(RTree tree) {
-        int total = 1 + Ints.BYTES; // VERSION and numDims
+        int total = 1 + Ints.BYTES; 
 
         total += calcNodeBytes(tree.root());
 
@@ -80,10 +80,10 @@ public class ImmutableRTree {
     private static int calcNodeBytes(Node node) {
         int total = 0;
 
-        // find size of this node
+        
         total += node.byteSize();
 
-        // recursively find sizes of child nodes
+        
         for (Node child : node.children) {
             total += node.isLeaf ? child.byteSize() : calcNodeBytes(child);
         }

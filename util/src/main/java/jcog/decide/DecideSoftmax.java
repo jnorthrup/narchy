@@ -5,7 +5,7 @@ import jcog.Util;
 import java.util.Random;
 
 /**
- *  https://en.wikipedia.org/wiki/Softmax_function
+ *  https:
  *  For high temperatures ( {\displaystyle \tau \to \infty } \tau \to \infty ),
  *  all actions have nearly the same probability and the lower the temperature,
  *  the more expected rewards affect the probability.
@@ -53,7 +53,7 @@ public class DecideSoftmax implements Deciding {
             motProb = new float[actions];
         }
 
-        //TODO generalize to a function which can select ranges or distort values via curves
+        
         if (onlyPositive) {
             for (int i = 0; i < vector.length; i++)
                 vector[i] = Math.max(0, vector[i]);
@@ -94,7 +94,7 @@ public class DecideSoftmax implements Deciding {
         }
 
         decisiveness = vector[i] / sumMotivation;
-        //System.out.println("decisiveness: " + decisiveness );
+        
 
         return i;
     }

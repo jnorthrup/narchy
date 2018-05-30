@@ -6,11 +6,11 @@ import java.util.NoSuchElementException;
 
 /** recyclable reversable array iterator
  *
- * modified from: http://faculty.washington.edu/moishe/javademos/ch03%20Code/jss2/ArrayIterator.java
+ * modified from: http:
  * */
 public class ReversibleRecyclableListIterator<T> implements Iterator<T> {
-    private int count;    // the number of elements in the collection
-    private int current;  // the current position in the iteration
+    private int count;    
+    private int current;  
     private List<T> a;
     private boolean reverse;
 

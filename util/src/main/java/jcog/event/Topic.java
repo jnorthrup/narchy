@@ -24,7 +24,7 @@ public interface Topic<V> {
 
     void clear();
 
-    //List<Consumer<V>> all();
+    
 
 
     static Ons all(Object obj, BiConsumer<String /* fieldName*/, Object /* value */> f) {
@@ -62,7 +62,7 @@ public interface Topic<V> {
             try {
                 Topic t = ((Topic) field.get(obj));
 
-                // could send start message: f.accept(f.getName(),  );
+                
 
                 s.add(
                         t.on((nextValue) -> f.accept(
@@ -115,15 +115,15 @@ public interface Topic<V> {
     }
 
 
-//    @SafeVarargs
-//    static <V> Active onAll(@NotNull Consumer<V> o, Topic... w) {
-//        Active r = new Active(w.length);
-//
-//        for (Topic<V> c : w)
-//            r.add( c.on(o) );
-//
-//        return r;
-//    }
+
+
+
+
+
+
+
+
+
 
     int size();
 
@@ -135,17 +135,17 @@ public interface Topic<V> {
 
     void emitAsync(V inputted, Executor e, Runnable onFinish);
 
-//    String name();
 
 
-//
-//    @Override
-//    @Deprecated public void emit(Class channel, Object arg) {
-//
-//        if (!(arg instanceof Object[]))
-//            super.emit(channel, new Object[] { arg });
-//        else
-//            super.emit(channel, arg);
-//    }
+
+
+
+
+
+
+
+
+
+
 
 }

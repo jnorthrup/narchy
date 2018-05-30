@@ -58,12 +58,12 @@ public class EfficientCollection extends SceneObjectCollection
         clone.infiniteObjects = new ArrayList<Shape>();
         clone.root = null;
 
-        // Alle endlichen Objekte zum Klon hinzuklonen:
+        
         Iterator<Shape> it = finiteObjects.iterator();
         while (it.hasNext())
             clone.finiteObjects.add(it.next().clone());
 
-        // Alle unendlichen Objekte zum Klon hinzuklonen:
+        
         it = infiniteObjects.iterator();
         while (it.hasNext())
             clone.infiniteObjects.add(it.next().clone());
@@ -75,7 +75,7 @@ public class EfficientCollection extends SceneObjectCollection
     @Override
     public void getShapes(Collection<Shape> shapes)
     {
-        //TODO use a forEach visitor
+        
 
         shapes.addAll(finiteObjects);
         shapes.addAll(infiniteObjects);
@@ -100,11 +100,11 @@ public class EfficientCollection extends SceneObjectCollection
     {
         try
         {
-            // Alle Shapes des neuen Objekts erfragen:
+            
             List<Shape> shapes = new ArrayList<Shape>();
             object.getShapes(shapes);
             
-            // Alle shapes durchlaufen und zur passenden Megne hinzuf�gen:
+            
             for (Shape shape : shapes) {
                 Shape s = shape.clone();
                 if (s.isFinite())
@@ -113,7 +113,7 @@ public class EfficientCollection extends SceneObjectCollection
                     infiniteObjects.add(s);
             }
             
-            // Bisherigen Baum verwerfen:
+            
             root = null;
         }
         catch (CloneNotSupportedException e)
@@ -133,12 +133,12 @@ public class EfficientCollection extends SceneObjectCollection
     public void transform(Transformation t)
     {
 
-        // Endliche Objekte transformieren:
+        
         Iterator<Shape> it = finiteObjects.iterator();
         while (it.hasNext())
             it.next().transform(t);
         
-        // Unendliche Objekte transformieren:
+        
         it = infiniteObjects.iterator();
         while (it.hasNext())
             it.next().transform(t);
@@ -150,7 +150,7 @@ public class EfficientCollection extends SceneObjectCollection
     {
         boolean intersection = false;
 
-        // Alle unendlichen Objekte auf Schnitt pr�fen:
+        
         for (Shape infiniteObject : infiniteObjects)
             if (infiniteObject.intersect(ray))
                 intersection = true;
@@ -159,16 +159,16 @@ public class EfficientCollection extends SceneObjectCollection
         Recursion recursion = new Recursion(ray, true);
         try
         {
-            // KD-Tree erzeugen, falls er noch nicht existiert:
+            
             if (root == null)
                 CreateTree();
             
-            // Alle endlichen Objekte auf Schnitt pr�fen:
+            
             traceRecursive(root, recursion);
         }
         catch (Result r) {}
         
-        // Zur�ckgeben, ob ein Schnittpunkt gefunden wurde:
+        
         return intersection || recursion.intersection;
     }
     
@@ -188,7 +188,7 @@ public class EfficientCollection extends SceneObjectCollection
         }
         catch (Result r) {}
         
-        // Zur�ckgeben, ob ein Schnittpunkt gefunden wurde:
+        
         return recursion.intersection;
     }
     
@@ -197,12 +197,12 @@ public class EfficientCollection extends SceneObjectCollection
     public void display(GLAutoDrawable drawable)
     {
 
-        // Endliche Objekte zeichnen:
+        
         Iterator<Shape> it = finiteObjects.iterator();
         while (it.hasNext())
             it.next().display(drawable);
         
-        // Unendliche Objekte zeichnen:
+        
         it = infiniteObjects.iterator();
         while (it.hasNext())
             it.next().display(drawable);
@@ -223,15 +223,15 @@ public class EfficientCollection extends SceneObjectCollection
     private static void traceRecursive(final Object node, final Recursion r)
     throws Result
     {
-        // Ab hier gild die Bedingung, dass der Strahl auf jeden Fall den Quader
-        // schneidet, der durch 'r' spezifiziert wird.
-        // Falls der Quader in zwei teile gespalten wird, schneidet der Strahl
-        // insbesondere mindestens einen der resultierenden Teilquader.
         
-        // Pr�fen, ob die Rekursion schon bei einem Blatt angekommen ist:
+        
+        
+        
+        
+        
         if (!(node instanceof Node))
         {
-            // Alle Objekte vergleichen:
+            
             boolean intersection = false;
             int count = ((SceneObject[])node).length;
             for (int i = 0; i < count; i++)
@@ -252,52 +252,52 @@ public class EfficientCollection extends SceneObjectCollection
                 }
             }
             
-            // Kein geschnittenes Objekte gefunden. Mache mit der Rekursion
-            // im n�chsten Teilbaum weiter:
+            
+            
             if (!intersection)
                 return;
             r.intersection = true;
         
-            // Pr�fe, ob der Schnittpunkt wirklich innerhalb des aktuell
-            // betrachteten Quaders liegt.
-            // (Da Objekte auf der Trennlinie aufgespalten werden, ist es
-            //  m�glich, dass der Schnittpunkt einen Nachbarquader betrifft.)
-            // ACHTUNG: Hier kann es fatale Rundungsungenauigkeiten geben!
+            
+            
+            
+            
+            
             r.temp.scaleAdd(r.ray.length, r.ray.dir, r.ray.org);
             if ((r.temp.x < r.min[0]) || (r.temp.x > r.max[0]) ||
                     (r.temp.y < r.min[1]) || (r.temp.y > r.max[1]) ||
                     (r.temp.z < r.min[2]) || (r.temp.z > r.max[2]))
                 return;
             
-            // der Schnittpunkt liegt innerhalb des Quaders:
+            
             throw new Result();
         }
 
         final Node nn = (Node)node;
 
-        // Aktuelle Achsen-ID speichern:
+        
         double saved;
         
-        // Gibt an, ob der Teilquader, der bez�glich der Trennebene auf der
-        // selben Seite wie der Strahl ist besucht wird ('first') und ob der
-        // Teilquader auf der anderen Seite besucht wird ('second'):
+        
+        
+        
         boolean first = true, second = true;
         
         if (r.dir[((int) nn.axisId)] == 0.0)
         {
-            // Der Strahl verl�uft parallel zur Trennebene und schneidet deshalb
-            // genau den ersten Teilquader.
+            
+            
             
             second = false;
         }
         else
         {
-            // Schnittpunkt des Strahls mit der Trennebene berechnen:
+            
             double t = ((double) nn.axisValue -r.org[((int) nn.axisId)])/r.dir[((int) nn.axisId)];
             
-            // Schnittpunkte des Strahls mit den 6 Ebenen des Quaders berechnen.
-            // Dabei z�hlen, wie viele Schnittpunkte nicht vor bzw. nicht hinter
-            // dem Schnittpunkte mit der Trennebene liegen:
+            
+            
+            
             byte tCount = (byte) 0;
             for (byte axisId = (byte) 0; (int) axisId < 3; axisId++)
             {
@@ -312,23 +312,23 @@ public class EfficientCollection extends SceneObjectCollection
                 if (saved > t) tCount++;
             }
         
-            // Ermittele, welche der beiden Teilw�rfel tats�chlich vom Strahl
-            // geschnitten werden:
+            
+            
             if (tCount == 0)
             {
-                // Der (unendliche) Strahl schneidet beide Teilw�rfel.
+                
                 
                 if (t < 0.0)
                 {
-                    // Der (endliche) Strahl zeigt nicht auf den zweiten Teilw�rfel.
-                    // Deshalb wird dieser nicht geschnitten:
+                    
+                    
                     second = false;
                 }
             }
             else
             {
-                // Der Strahl schneidet die Trennebene, bevor bzw. nachdem er
-                // durch einen Teilw�rfel gegangen ist.
+                
+                
                 
                 if (t* tCount <= 0.0)
                     second = false;
@@ -337,12 +337,12 @@ public class EfficientCollection extends SceneObjectCollection
             }
         }
         
-        // Berechnen, welchen der beiden Teilquader bez�glich der Trennebene
-        // auf welcher Seite des Strahls sitzt:
+        
+        
         if (r.org[((int) nn.axisId)] < (double) nn.axisValue)
         {
-            // Einen oder beide Teilb�ume des aktuellen Knotens in der
-            // korrekten besuchen:
+            
+            
             if (first)
             {
                 saved = r.max[((int) nn.axisId)];
@@ -360,8 +360,8 @@ public class EfficientCollection extends SceneObjectCollection
         }
         else
         {
-            // Einen oder beide Teilb�ume des aktuellen Knotens in der
-            // verdrehten Reihenfolge besuchen:
+            
+            
             if (first)
             {
                 saved = r.min[((int) nn.axisId)];
@@ -385,7 +385,7 @@ public class EfficientCollection extends SceneObjectCollection
      */
     protected void CreateTree()
     {
-        // KD-Tree berechnen:
+        
         float min[] = {Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY};
         float max[] = {Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY};
         root = CreateTree(finiteObjects.toArray(new Shape[finiteObjects.size()]), min, max, (byte)0, 0, 0);
@@ -408,14 +408,14 @@ public class EfficientCollection extends SceneObjectCollection
     private Object CreateTree(Shape objects[], float min[], float max[],
             byte axisId, int cutUpdateCount, int medianUpdateCount)
     {
-        // Falls die Objekte gen�gend fein verteilt wurden:
-        // (Muss mindestens '1' sein.)
+        
+        
         if (objects.length <= MAX_OBJECTS_IN_LEAF)
             return objects;
         
-        // Falls sich innerhalb von einer festen Anzahl an Schritten nichts
-        // �ndert, breche ab:
-        //TODO extract these constant
+        
+        
+        
         if ((cutUpdateCount > 20) || (medianUpdateCount > 3))
             return objects;
         
@@ -440,16 +440,16 @@ public class EfficientCollection extends SceneObjectCollection
             }
         }
         
-        // Falls kein Zwischenraum gefunden wurde oder der gefundene
-        // Zwischenraum nicht mindestens eine bestimmte Gr��e hat, verwerfe das
-        // Ergebnis:
+        
+        
+        
         if (((int) id >= 0) && (length >= MIN_CUT_EMPTY_RATIO*(max[((int) id)]-min[((int) id)])))
         {
             System.out.println(id + " : " + length + " : " + axisValue);
             return PartitionObjects(objects, min, max, id, axisValue, cutUpdateCount+1, 0);
         }
         
-        // Objeket am (achsen rotierten) Medien aufteilen:
+        
         return PartitionObjects(objects, min, max, axisId, result[((int) axisId)].z, 0, medianUpdateCount+1);
     }
         
@@ -479,7 +479,7 @@ public class EfficientCollection extends SceneObjectCollection
         List<Shape> lowerEqual = new ArrayList<Shape>(objects.length/2);
         List<Shape> higherEqual = new ArrayList<Shape>(objects.length/2);
         
-        // Objekte anhand des Achsen-Wertes partitionieren:
+        
         int count = objects.length;
         for (int i = 0; i < count; i++)
         {
@@ -489,17 +489,17 @@ public class EfficientCollection extends SceneObjectCollection
             if ((int) result >= 0)
                 higherEqual.add(objects[i]);
             
-            // Anzahl der duplizierten Objekte z�hlen:
+            
             if (result == 0)
                 duplicateCount++;
         }
         
-        // Neuen Knoten erzeugen:
+        
         Node node = new Node(axisId, axisValue);
 
-        // Geschnittene Objekte zuweisen:
+        
 
-        // Teilb�ume erzeugen und zuweisen:
+        
         byte newAxisId = (byte)((axisId +1) % 3);
 
         float saved = max[axisId];
@@ -518,26 +518,26 @@ public class EfficientCollection extends SceneObjectCollection
                 (newCount == count) ? medianUpdateCount : 0);
         min[((int) axisId)] = saved;
         
-        // H�he des Baumes verringern, falls m�glich:
+        
         if (node.left == node.right)
         {
-            // Dieser Fall tritt ein, wenn beide Teilb�ume nicht aufgeteilt werden
-            // konnten:
+            
+            
             return objects;
         }
         if ((!(node.left instanceof Node)) && (!(node.right instanceof Node)))
         {
-            // Dieser Fall tritt ein, wenn zu viele Objekte dupliziert wurden:
+            
             if ((float)duplicateCount/ (float) objects.length > MAX_DUPLICATE_RATIO)
                 return objects;
         }
         
-        // Knoten zur�ckgeben:
+        
         return node;
     }
     
     
-    //TODO: Fertig
+    
     /**
      * Findet eine Partition am gr��ten Zwischenraum.<br>
      * Die gefudnene Partition ist unter Umst�nden nicht optimal und muss nicht
@@ -566,14 +566,14 @@ public class EfficientCollection extends SceneObjectCollection
         float maxValue = minRange;
         for (int i = 0; i < objects.length; i++)
         {
-            // Minimalen Achsenwert dieses Objekts speichern:
+            
             float minValue = (float) objects[i].minAxisValue(axisId);
 
             if ((maxValue < minValue) && (minValue < maxRange))
             {
-                // Ein Zwischenraum wurde gefunden. Falls dieser Zwischenraum
-                // gr��er ist als der bisherige gefundene, merke die Gr��e des
-                // Zwischenraumes und die optimalste Aufteilungskoordinate:
+                
+                
+                
                 if (minValue-maxValue > length)
                 {
                     length = minValue-maxValue;
@@ -584,14 +584,14 @@ public class EfficientCollection extends SceneObjectCollection
                 }
             }
             
-            // Maximalen Achsenwert dieses Objekts speichern:
+            
             maxValue = (float)objects[i].maxAxisValue(axisId);
         }
         if ((maxValue < maxRange) && (maxValue > minRange))
         {
-            // Ein Zwischenraum wurde gefunden. Falls dieser Zwischenraum
-            // gr��er ist als der bisherige gefundene, merke die Gr��e des
-            // Zwischenraumes und die optimalste Aufteilungskoordinate:
+            
+            
+            
             if (maxRange-maxValue > length)
             {
                 length = maxRange-maxValue;
@@ -599,7 +599,7 @@ public class EfficientCollection extends SceneObjectCollection
             }
         }
         
-        // Gib die Daten der gefundenen Partitionierung zur�ck:
+        
         return new Vector3f(length, axisValue,
                 (float)objects[objects.length/2].getCentroid(axisId));
     }
@@ -618,25 +618,25 @@ public class EfficientCollection extends SceneObjectCollection
      */
     private static float FindMedian(Shape objects[], byte axisId)
     {
-        int count = objects.length;     // Anzahl der Elemente
-        int k = count/2;                // Index des Medians:
+        int count = objects.length;     
+        int k = count/2;                
 
-        // Pr�fen, ob mindestens ein Element existiert:
+        
         if (count < 1)
             throw new IllegalArgumentException();
         
-        // (Dieser Algorithmus funktioniert nur, wenn die Methode 'getCentroid'
-        //  f�r ein Objekt immer den selben Wert zur�ck gibt.)
+        
+        
         int beginIndex = 0;
         int endIndex = count - 1;
         float referenceValue;
         for (;;)
         {
-            // Referenzwert bestimmen:
+            
             Shape reference = objects[beginIndex + (int) (Math.random() * (endIndex - beginIndex + 1))];
             referenceValue = (float)reference.getCentroid(axisId);
             
-            // Array partitionieren:
+            
             int leftIndex = beginIndex;
             int rightIndex = endIndex;
             do
@@ -646,14 +646,14 @@ public class EfficientCollection extends SceneObjectCollection
                 while ((float)objects[rightIndex].getCentroid(axisId) > referenceValue)
                     rightIndex--;
                 
-                // Abbruch, wenn alle Elemente verarbeitet wurden:
-                // Wenn 'leftIndex' == 'rightIndex', dann liegt an dieser
-                // Stelle ein Element, das gleich dem Referenzelement ist.
-                // Gehe in diesem Fall noch um eins weiter.
+                
+                
+                
+                
                 if (leftIndex > rightIndex)
                     break;
                 
-                // Elemente vertauschen:
+                
                 Shape temp = objects[leftIndex];
                 objects[leftIndex] = objects[rightIndex];
                 objects[rightIndex] = temp;
@@ -663,24 +663,24 @@ public class EfficientCollection extends SceneObjectCollection
             }
             while (leftIndex <= rightIndex);
             
-            // 'rightIndex' zeigt nun auf das letzte Element der ersten
-            // Partition und 'leftIndex' zeigt auf das erste Element der
-            // zweiten Partition:
-            if (rightIndex+1 < k)       // Erste Partition hat < 'k' Elemente
+            
+            
+            
+            if (rightIndex+1 < k)       
             {
-                // Median liegt in der hinteren Partition:
+                
                 beginIndex = leftIndex;
             }
-            else if (rightIndex+1 > k)  // Erste Partition hat > 'k' Elemente
+            else if (rightIndex+1 > k)  
             {
-                // Median liegt in der vorderen Partition:
+                
                 endIndex = rightIndex;
             }
-            else break;                 // Erste Partition hat = 'k' Elemente
+            else break;                 
         }
         
-        // 'referenceValue' entspricht dem Median:
-        // ('float'-Genauigkeit gen�gt hierbei.)
+        
+        
         return referenceValue;
     }
     
@@ -771,16 +771,16 @@ public class EfficientCollection extends SceneObjectCollection
          */
         public Recursion(Ray ray, boolean shortestIntersection)
         {
-            // Referenz auf den Strahl:
+            
             this.ray = ray;
             
-            // Ursprung des Strahles setzen:
+            
             org = new double[3];
             org[0] = ray.org.x;
             org[1] = ray.org.y;
             org[2] = ray.org.z;
             
-            // Richtung des Strahles setzen:
+            
             dir = new double[3];
             dir[0] = ray.dir.x;
             dir[1] = ray.dir.y;
@@ -811,7 +811,7 @@ public class EfficientCollection extends SceneObjectCollection
 
         @Override
         public synchronized Throwable fillInStackTrace() {
-            return this; //skips generating a stack trace
+            return this; 
         }
     }
     

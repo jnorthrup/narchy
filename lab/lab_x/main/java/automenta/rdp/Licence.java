@@ -27,7 +27,7 @@
  * (See gpl.txt for details of the GNU General Public License.)
  * 
  */
-// Created on 02-Jul-2003
+
 package automenta.rdp;
 
 import automenta.rdp.crypto.CryptoException;
@@ -67,8 +67,8 @@ public class Licence {
 	 * private static final int LICENCE_TAG_DEMAND = 0x0201; private static
 	 * final int LICENCE_TAG_AUTHREQ = 0x0202; private static final int
 	 * LICENCE_TAG_ISSUE = 0x0203; private static final int LICENCE_TAG_REISSUE =
-	 * 0x0204; // rdesktop 1.2.0 private static final int LICENCE_TAG_PRESENT =
-	 * 0x0212; // rdesktop 1.2.0 private static final int LICENCE_TAG_REQUEST =
+	 * 0x0204; 
+	 * 0x0212; 
 	 * 0x0213; private static final int LICENCE_TAG_AUTHRESP = 0x0215; private
 	 * static final int LICENCE_TAG_RESULT = 0x02ff;
 	 */
@@ -119,7 +119,7 @@ public class Licence {
 			IOException, CryptoException {
 		int tag = 0;
 		tag = data.get8();
-		data.positionAdd(3); // version, length
+		data.positionAdd(3); 
 
 		switch (tag) {
 
@@ -216,7 +216,7 @@ public class Licence {
 
 		int tokenlen = 0;
 
-		data.positionAdd(6); // unknown
+		data.positionAdd(6); 
 
 		tokenlen = data.getLittleEndian16();
 
@@ -261,7 +261,7 @@ public class Licence {
 		data = secure.init(sec_flags, length + 2);
 
 		data.set8(LICENCE_TAG_AUTHRESP);
-		data.set8(2); // version
+		data.set8(2); 
 		data.setLittleEndian16(length);
 
 		data.setLittleEndian16(1);
@@ -309,7 +309,7 @@ public class Licence {
 		RdpPacket s = secure.init(sec_flags, length + 4);
 
 		s.set8(LICENCE_TAG_PRESENT);
-		s.set8(2); // version
+		s.set8(2); 
 		s.setLittleEndian16(length);
 
 		s.setLittleEndian32(1);
@@ -396,7 +396,7 @@ public class Licence {
 
 		/* deliberately break signature if licencing disabled */
 		if (!Constants.licence) {
-			out_sig = new byte[LICENCE_SIGNATURE_SIZE]; // set to 0
+			out_sig = new byte[LICENCE_SIGNATURE_SIZE]; 
 		}
 
 		/* now crypt the hwid */
@@ -423,7 +423,7 @@ public class Licence {
 		byte[] key = new byte[this.licence_key.length];
 		System.arraycopy(this.licence_key, 0, key, 0, this.licence_key.length);
 
-		data.positionAdd(2); // unknown
+		data.positionAdd(2); 
 		length = data.getLittleEndian16();
 
 		if (data.position() + length > data.getEnd()) {
@@ -438,15 +438,15 @@ public class Licence {
 
 		check = data.getLittleEndian16();
 		if (check != 0) {
-			// return;
+			
 		}
 		secure.licenceIssued = true;
 
 		/*
-		 * data.incrementPosition(2); // in_uint8s(s, 2); // pad
-		 *  // advance to fourth string length = 0; for (int i = 0; i < 4; i++) {
-		 * data.incrementPosition(length); // in_uint8s(s, length); length =
-		 * data.getLittleEndian32(length); // in_uint32_le(s, length); if
+		 * data.incrementPosition(2); 
+		 *  
+		 * data.incrementPosition(length); 
+		 * data.getLittleEndian32(length); 
 		 * (!(data.getPosition() + length <= data.getEnd())) return; }
 		 */
 
@@ -478,7 +478,7 @@ public class Licence {
 		RdpPacket buffer = secure.init(sec_flags, length);
 
 		buffer.set8(LICENCE_TAG_REQUEST);
-		buffer.set8(2); // version
+		buffer.set8(2); 
 		buffer.setLittleEndian16(length);
 
 		buffer.setLittleEndian32(1);
@@ -541,7 +541,7 @@ public class Licence {
 	 */
 	static byte[] load_licence() {
 		logger.debug("load_licence");
-		// String home = "/root"; // getenv("HOME");
+		
 
 		return (new LicenceStore_Localised()).load_licence();
 	}
@@ -558,7 +558,7 @@ public class Licence {
 		logger.debug("save_licence");
 		int len;
 		int startpos = data.position();
-		data.positionAdd(2); // Skip first two bytes
+		data.positionAdd(2); 
 		/* Skip three strings */
 		for (int i = 0; i < 3; i++) {
 			len = data.getLittleEndian32();
@@ -585,12 +585,12 @@ public class Licence {
 		new LicenceStore_Localised().save_licence(databytes);
 
 		/*
-		 * String dirpath = Options.licence_path;//home+"/.rdesktop"; String
+		 * String dirpath = Options.licence_path;
 		 * filepath = dirpath +"/licence."+Options.hostname;
 		 * 
 		 * File file = new File(dirpath); file.mkdir(); try{ FileOutputStream fd =
 		 * new FileOutputStream(filepath);
-		 *  // write to the licence file byte[] databytes = new byte[len];
+		 *  
 		 * data.copyToByteArray(databytes,0,data.getPosition(),len);
 		 * fd.write(databytes); fd.close(); logger.info("Stored licence at " +
 		 * filepath); } catch(FileNotFoundException

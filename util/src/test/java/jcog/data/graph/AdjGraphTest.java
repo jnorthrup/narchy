@@ -23,12 +23,12 @@ public class AdjGraphTest {
         assertEquals(xIndex, g.addNode("x"));
         g.addNode("y");
         assertTrue( g.setEdge("x", "y", "xy") );
-        assertFalse( g.setEdge("x", "y", "xy") ); //duplicate
+        assertFalse( g.setEdge("x", "y", "xy") ); 
         assertEquals("xy", g.edge("x", "y"));
         assertFalse( g.setEdge("x", "z", "xz") );
 
         g.setEdge("y", "x", "yx");
-        g.addNode("z"); //unconnected
+        g.addNode("z"); 
 
         assertTrue( g.removeEdge("x", "y") );
         assertNull( g.edge("x", "y" ));
@@ -38,9 +38,9 @@ public class AdjGraphTest {
         GraphMeter m = new GraphMeter();
 
         List<IntHashSet> wc = m.weakly(g);
-        //assertEquals("[[0, 1], [2]]", wc.toString());
+        
 
-        //TODO strongly should return a similar kind of result as wc
+        
         IntIntHashMap tj = m.strongly(g);
         System.out.println(tj);
 

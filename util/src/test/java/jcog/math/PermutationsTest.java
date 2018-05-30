@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * from http://stackoverflow.com/questions/2920315/permutation-of-array
+ * from http:
  */
 public class PermutationsTest {
 
@@ -56,7 +56,7 @@ public class PermutationsTest {
     public void testShuffleReset(int size, int selected) {
 
         int expected = factorial(size);
-        int attempts = (1+expected/selected)*(1+expected/selected); //just to be safe
+        int attempts = (1+expected/selected)*(1+expected/selected); 
 
         Set<String> sequences = new HashSet();
         Set<String> arrays = new TreeSet();
@@ -80,7 +80,7 @@ public class PermutationsTest {
                 sb.append(aa).append(' ');
             }
 
-            /*System.out.println(//perm.shuffle +
+            /*System.out.println(
                     " " + sb.toString());*/
             sequences.add(sb.toString());
             if (arrays.size() == expected) break;
@@ -88,10 +88,10 @@ public class PermutationsTest {
 
         System.out.println(size + " exhausted all " + expected + " permutations after " + attempt + " attempts when sets of " + selected + " are selected");
 
-        //by this point there should be at least > 1
+        
         assertTrue(sequences.size() >= 1);
 
-        //arrays.forEach(a -> System.out.println(a));
+        
 
         assertTrue(expected >= arrays.size());
     }

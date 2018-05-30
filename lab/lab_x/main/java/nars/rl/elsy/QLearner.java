@@ -87,11 +87,11 @@ public class QLearner  {
         fill(action, 0.0);
         int a = brain.getAction();
         action[a] = 1.0;
-        //brain.printStats();
-        //System.out.println(reward + " " + a);
-        //Util.printArray(brain.getInput());
-        //Util.printArray(brain.getOutput());
-        //Util.printArray(action);
+        
+        
+        
+        
+        
         
         return a;
     }

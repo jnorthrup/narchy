@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ public class Rect2DTest {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
-        // shouldn't affect MBR
+        
         RectDouble2D rectInside = new RectDouble2D(0, 0, 1, 1);
         RectDouble2D mbr = rect.mbr(rectInside);
         double expectedMinX = rect.min.x;
@@ -63,7 +63,7 @@ public class Rect2DTest {
         assertTrue(actualMaxX == expectedMaxX, "Bad maxX - Expected: " + expectedMaxX + " Actual: " + actualMaxX);
         assertTrue(actualMaxY == expectedMaxY, "Bad maxY - Expected: " + expectedMaxY + " Actual: " + actualMaxY);
 
-        // should affect MBR
+        
         RectDouble2D rectOverlap = new RectDouble2D(3, 1, 5, 4);
         mbr = rect.mbr(rectOverlap);
         expectedMinX = 0.0d;
@@ -97,27 +97,27 @@ public class Rect2DTest {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
-        // shares an edge on the outside, not contained
+        
         RectDouble2D rectOutsideNotContained = new RectDouble2D(4, 2, 5, 3);
         assertTrue(!rect.contains(rectOutsideNotContained), "Shares an edge but should not be 'contained'");
 
-        // shares an edge on the inside, not contained
+        
         RectDouble2D rectInsideNotContained = new RectDouble2D(0, 1, 4, 5);
         assertTrue(!rect.contains(rectInsideNotContained), "Shares an edge but should not be 'contained'");
 
-        // shares an edge on the inside, contained
+        
         RectDouble2D rectInsideContained = new RectDouble2D(0, 1, 1, 2);
         assertTrue(rect.contains(rectInsideContained), "Shares an edge and should be 'contained'");
 
-        // intersects
+        
         RectDouble2D rectIntersects = new RectDouble2D(3, 2, 5, 4);
         assertTrue(!rect.contains(rectIntersects), "Intersects but should not be 'contained'");
 
-        // contains
+        
         RectDouble2D rectContained = new RectDouble2D(1, 1, 2, 2);
         assertTrue(rect.contains(rectContained), "Contains and should be 'contained'");
 
-        // does not contain or intersect
+        
         RectDouble2D rectNotContained = new RectDouble2D(5, 0, 6, 1);
         assertTrue(!rect.contains(rectNotContained), "Does not contain and should not be 'contained'");
     }
@@ -127,27 +127,27 @@ public class Rect2DTest {
 
         RectDouble2D rect = new RectDouble2D(0, 0, 4, 3);
 
-        // shares an edge on the outside, intersects
+        
         RectDouble2D rectOutsideIntersects = new RectDouble2D(4, 2, 5, 3);
         assertTrue(rect.intersects(rectOutsideIntersects), "Shares an edge and should 'intersect'");
 
-        // shares an edge on the inside, intersects
+        
         RectDouble2D rectInsideIntersects = new RectDouble2D(0, 1, 4, 5);
         assertTrue(rect.intersects(rectInsideIntersects), "Shares an edge and should 'intersect'");
 
-        // shares an edge on the inside, intersects
+        
         RectDouble2D rectInsideIntersectsContained = new RectDouble2D(0, 1, 1, 2);
         assertTrue(rect.intersects(rectInsideIntersectsContained), "Shares an edge and should 'intersect'");
 
-        // intersects
+        
         RectDouble2D rectIntersects = new RectDouble2D(3, 2, 5, 4);
         assertTrue(rect.intersects(rectIntersects), "Intersects and should 'intersect'");
 
-        // contains
+        
         RectDouble2D rectContained = new RectDouble2D(1, 1, 2, 2);
         assertTrue(rect.intersects(rectContained), "Contains and should 'intersect'");
 
-        // does not contain or intersect
+        
         RectDouble2D rectNotIntersects = new RectDouble2D(5, 0, 6, 1);
         assertTrue(!rect.intersects(rectNotIntersects), "Does not intersect and should not 'intersect'");
     }

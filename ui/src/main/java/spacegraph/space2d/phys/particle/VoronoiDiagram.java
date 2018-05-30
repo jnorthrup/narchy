@@ -19,12 +19,12 @@ public class VoronoiDiagram {
         public VoronoiDiagramTask() {
         }
 
-//        public VoronoiDiagramTask(int x, int y, int i, Generator g) {
-//            m_x = x;
-//            m_y = y;
-//            m_i = i;
-//            m_generator = g;
-//        }
+
+
+
+
+
+
 
         public VoronoiDiagramTask set(int x, int y, int i, Generator g) {
             m_x = x;
@@ -42,7 +42,7 @@ public class VoronoiDiagram {
     private final Generator[] m_generatorBuffer;
     private int m_generatorCount;
     private int m_countX, m_countY;
-    // The diagram is an array of "pointers".
+    
     private Generator[] m_diagram;
 
     public VoronoiDiagram(int generatorCapacity) {

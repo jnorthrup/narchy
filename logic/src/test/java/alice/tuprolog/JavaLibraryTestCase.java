@@ -35,11 +35,11 @@ public class JavaLibraryTestCase {
 		String theory = "demo(X) :- X <- update. \n";
 		prolog.setTheory(new Theory(theory));
 		TestCounter counter = new TestCounter();
-		// check registering behaviour
+		
 		Struct t = lib.register(counter);
 		prolog.solve(new Struct("demo", t));
 		assertEquals(1, counter.getValue());
-		// check unregistering behaviour
+		
 		lib.unregister(t);
 		Solution goal = prolog.solve(new Struct("demo", t));
 		assertFalse(goal.isSuccess());
@@ -62,7 +62,7 @@ public class JavaLibraryTestCase {
 	
 	@Test public void test_java_object() throws PrologException, IOException
 	{
-		// Testing URLClassLoader with a paths' array
+		
 		setPath(true);
 		theory = "demo(C) :- \n" +
 				"set_classpath([" + paths + "]), \n" +
@@ -76,7 +76,7 @@ public class JavaLibraryTestCase {
 		NumberTerm result2 = (NumberTerm) info.getVarValue("Value");
 		assertEquals(2, result2.intValue());
 
-		// Testing URLClassLoader with java.lang.String class
+		
 		theory = 	"demo_string(S) :- \n" +
 				"java_object('java.lang.String', ['MyString'], Obj_str), \n" +
 				"Obj_str <- toString returns S.";
@@ -105,7 +105,7 @@ public class JavaLibraryTestCase {
 	
 	@Test public void test_invalid_path_java_object() throws PrologException, IOException
 	{
-		//Testing incorrect path
+		
 		setPath(false);
 		theory = "demo(Res) :- \n" +
 				"set_classpath([" + paths + "]), \n" + 
@@ -120,7 +120,7 @@ public class JavaLibraryTestCase {
 
 	@Test public void test_java_call_3() throws PrologException, IOException
 	{
-		//Testing java_call_3 using URLClassLoader 
+		
 		setPath(true); 
 		theory = "demo(Value) :- set_classpath([" + paths + "]), class('TestStaticClass') <- echo('Message') returns Value.";
 		prolog.setTheory(new Theory(theory));
@@ -129,7 +129,7 @@ public class JavaLibraryTestCase {
 		result = info.getVarValue("StringValue").toString().replace("'", "");
 		assertEquals("Message", result);
 
-		//Testing get/set static Field 
+		
 		setPath(true);
 		theory = "demo_2(Value) :- set_classpath([" + paths + "]), class('TestStaticClass').'id' <- get(Value).";
 		prolog.setTheory(new Theory(theory));
@@ -148,7 +148,7 @@ public class JavaLibraryTestCase {
 
 	@Test public void test_invalid_path_java_call_4() throws PrologException, IOException
 	{
-		//Testing java_call_4 with invalid path
+		
 		setPath(false);
 		theory = "demo(Value) :- set_classpath([" + paths + "]), class('TestStaticClass') <- echo('Message') returns Value.";
 		prolog.setTheory(new Theory(theory));
@@ -158,7 +158,7 @@ public class JavaLibraryTestCase {
 
 	@Test public void test_java_array() throws PrologException, IOException
 	{
-		//Testing java_array_length using URLClassLoader 
+		
 		setPath(true);
 		theory =  "demo(Size) :- set_classpath([" + paths + "]), java_object('Counter', [], MyCounter), \n"
 				+ "java_object('Counter[]', [10], ArrayCounters), \n"
@@ -170,7 +170,7 @@ public class JavaLibraryTestCase {
 		NumberTerm resultInt = (NumberTerm) info.getVarValue("Value");
 		assertEquals(10, resultInt.intValue());
 
-		//Testing java_array_set and java_array_get
+		
 		setPath(true);
 		theory =  "demo(Res) :- set_classpath([" + paths + "]), java_object('Counter', [], MyCounter), \n"
 				+ "java_object('Counter[]', [10], ArrayCounters), \n"
@@ -188,7 +188,7 @@ public class JavaLibraryTestCase {
 
 	@Test public void test_set_classpath() throws PrologException, IOException
 	{
-		//Testing java_array_length using URLClassLoader 
+		
 		setPath(true);
 		
 		theory =  "demo(Size) :- set_classpath([" + paths + "]), \n "
@@ -205,7 +205,7 @@ public class JavaLibraryTestCase {
 	
 	@Test public void test_get_classpath() throws PrologException, IOException
 	{
-		//Testing get_classpath using DynamicURLClassLoader with not URLs added
+		
 		theory =  "demo(P) :- get_classpath(P).";
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo(Value).");
@@ -213,7 +213,7 @@ public class JavaLibraryTestCase {
         assertTrue(info.getTerm("Value").isList());
 		assertEquals("[]", info.getTerm("Value").toString());
 
-		//Testing get_classpath using DynamicURLClassLoader with not URLs added
+		
 		setPath(true);
 
 		theory =  "demo(P) :- set_classpath([" + paths + "]), get_classpath(P).";
@@ -224,12 +224,12 @@ public class JavaLibraryTestCase {
         assertTrue(info.getTerm("Value").isList());
 		assertEquals("[" + paths + "]", info.getTerm("Value").toString());
 		
-//		// Test if get_classpath(PathList) unifies with the DynamicURLClassLoader urls
-//		theory =  "demo(P) :- set_classpath([" + paths + "]), get_classpath([" + paths + "]).";
-//		
-//		engine.setTheory(new Theory(theory));
-//		info = engine.solve("demo(S).");
-//		assertEquals(true, info.isSuccess());
+
+
+
+
+
+
 	}
 	
 	@Test public void test_register_1() throws PrologException, IOException
@@ -254,7 +254,7 @@ public class JavaLibraryTestCase {
         assertTrue(info2.isSuccess());
 		assertEquals(3, Integer.parseInt(info2.getVarValue("V").toString()));
 	
-		// Test invalid object_id registration
+		
 		theory = "demo(Obj1) :- register(Obj1).";
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo(Res).");
@@ -264,7 +264,7 @@ public class JavaLibraryTestCase {
 	
 	@Test public void test_unregister_1() throws PrologException, IOException
 	{
-		// Test invalid object_id unregistration
+		
 		theory = "demo(Obj1) :- unregister(Obj1).";
 		prolog.setTheory(new Theory(theory));
 		info = prolog.solve("demo(Res).");
@@ -350,7 +350,7 @@ public class JavaLibraryTestCase {
 	{
 		File file = new File(".");
 		
-		// Array paths contains a valid path
+		
 		if(valid)
 		{
 			paths = "'" + file.getCanonicalPath() + "'," +
@@ -363,7 +363,7 @@ public class JavaLibraryTestCase {
 					+ File.separator + "unit" 
 					+ File.separator + "TestInterfaces.jar'";
 		}
-		// Array paths does not contain a valid path
+		
 		else
 		{
 			paths = "'" + file.getCanonicalPath() + "'";

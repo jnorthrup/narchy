@@ -23,8 +23,8 @@ public class TasksView extends MutableContainer {
 
         TasksView t = new TasksView();
         t.loadTasks(new File("/tmp/NALTest/" +
-                //"NAL7Test.induction_on_events_neg2.nal"
-                //"NAL7Test.testPrediction1.nal"
+                
+                
                 "NAL7Test.induction_on_events_composition3.nal"
         ));
 
@@ -45,7 +45,7 @@ public class TasksView extends MutableContainer {
 
         for (Surface cc : children()) {
 
-            TaskIcon c = (TaskIcon) cc;//TODO make window content iteration method
+            TaskIcon c = (TaskIcon) cc;
 
 
             Task t = c.task;
@@ -56,8 +56,8 @@ public class TasksView extends MutableContainer {
                 NodeGraph.Node en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
                     Surface s = new PushButton("_" + ee);
 
-                    //TODO make evidence buttons visibility toggleable
-                    //children.add(s);
+                    
+                    
 
                     graph.addNode(s);
                     return s;
@@ -79,7 +79,7 @@ public class TasksView extends MutableContainer {
                 end = t.end();
             } else {
                 start = t.creation();
-                end = 10; //TODO max time
+                end = 10; 
             }
 
 
@@ -179,7 +179,7 @@ public class TasksView extends MutableContainer {
     }
 
     public void loadTasks(File f) {
-        //NARS.shell().inputBinary(f).tasks().map(TaskIcon::new).collect(Collectors.toCollection(() -> children));
+        
         throw new TODO();
     }
 
@@ -221,18 +221,18 @@ public class TasksView extends MutableContainer {
 
         @Override
         public Surface move(float dxIgnored, float dy) {
-            return super.move(0, dy); //HACK
+            return super.move(0, dy); 
         }
 
         @Override
         public float radius() {
-            return h(); //HACK
+            return h(); 
         }
 
-//        @Override
-//        protected void paintBackColor(GL2 gl) {
-//            gl.glColor4f(r, g, b, a);
-//        }
+
+
+
+
     }
 
 }

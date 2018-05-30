@@ -30,7 +30,7 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
     @Override
     public long getDelay(TimeUnit unit) {
-        //return initialDelay;
+        
         throw new UnsupportedOperationException();
     }
 

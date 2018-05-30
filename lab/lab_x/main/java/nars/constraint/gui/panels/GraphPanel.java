@@ -71,10 +71,10 @@ public class GraphPanel extends MeterVis {
     
     int t = 0;
     public void update() {
-        //metrics.update( t() - start );
+        
         metrics.update(t++);
         metrics.event.notify(FrameEnd.class);
-        //metrics.printCSV(System.out);
+        
     }
 
 

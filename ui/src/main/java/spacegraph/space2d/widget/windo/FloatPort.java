@@ -29,7 +29,7 @@ public class FloatPort extends /*Source*/Port {
 
     @Override
     public void prePaint(int dtMS) {
-        //TODO make this an optional synchronous method of updating
+        
 
         float nextValue = f.get();
         if (!Util.equals(nextValue, curValue, EPSILON)) {
@@ -56,7 +56,7 @@ public class FloatPort extends /*Source*/Port {
 
     @Override
     public boolean onWireIn(@Nullable Wiring w, boolean preOrPost) {
-        return false; //disallow
+        return false; 
     }
 
     @Override

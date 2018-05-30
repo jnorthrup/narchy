@@ -100,7 +100,7 @@ public class Q2DataTool {
         try {
             URL url = new URL(mirror);
             URLConnection conn = url.openConnection();
-            // int length = conn.getContentLength();
+            
 
             in = conn.getInputStream();
 
@@ -171,11 +171,11 @@ public class Q2DataTool {
 
     void copyStream(InputStream in, OutputStream out) throws Exception {
         try {
-            // int c = 0;
+            
             int l;
             while ((l = in.read(buf)) > 0) {
                 out.write(buf, 0, l);
-                // c += l;
+                
             }
         } catch (Exception e) {
             throw e;

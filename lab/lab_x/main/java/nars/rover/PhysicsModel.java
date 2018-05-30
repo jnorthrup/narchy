@@ -105,31 +105,31 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
         for (int i = 0; i < MAX_CONTACT_POINTS; i++) {
             points[i] = new ContactPoint();
         }
-//    destructionListener = new DestructionListener() {
-//      public void sayGoodbye(Fixture fixture) {
-//        fixtureDestroyed(fixture);
-//      }
-//
-//      public void sayGoodbye(Joint joint) {
-//        if (mouseJoint == joint) {
-//          mouseJoint = null;
-//        } else {
-//          jointDestroyed(joint);
-//        }
-//      }
-//    };
 
-//    particleDestructionListener = new ParticleDestructionListener() {
-//      @Override
-//      public void sayGoodbye(int index) {
-//        particleDestroyed(index);
-//      }
-//
-//      @Override
-//      public void sayGoodbye(ParticleGroup group) {
-//        particleGroupDestroyed(group);
-//      }
-//    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         camera = new PhysicsCamera(getDefaultCameraPos(), getDefaultCameraScale(), ZOOM_SCALE_DIFF);
     }
 
@@ -174,7 +174,7 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
         pointCount = 0;
         stepCount = 0;
         bombSpawning = false;
-        //model.getDebugDraw().setViewportTransform(camera.getTransform());
+        
 
         world.setDestructionListener(destructionListener);
 
@@ -348,7 +348,7 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
     }
 
     synchronized public void step(float timeStep, TestbedSettings settings, TestbedPanel panel) {
-    //float hz = settings.getSetting(TestbedSettings.Hz).value;
+    
 
         
         this.timeStep = timeStep;
@@ -367,8 +367,8 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
                 timeStep = 0;
             }
 
-      //debugDraw.drawString(5, m_textLine, "****PAUSED****", Color3f.WHITE);
-            //m_textLine += TEXT_LINE_SPACE;
+      
+            
         }
         
         if (timeStep > 0f) {
@@ -380,7 +380,7 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
         world.setSubStepping(settings.getSetting(TestbedSettings.SubStepping).enabled);
         world.setContinuousPhysics(settings.getSetting(TestbedSettings.ContinuousCollision).enabled);
 
-    //pointCount = 0;
+    
         world.step(timeStep, settings.getSetting(TestbedSettings.VelocityIterations).value, settings.getSetting(TestbedSettings.PositionIterations).value);
         
         if (!drawingQueued.get()) {
@@ -401,80 +401,80 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
             return;
         
  
-//        final DebugDraw debugDraw = model.getDebugDraw();
-//        m_textLine = 20;
-//
-//        if (title != null) {
-//            debugDraw.drawString(camera.getTransform().getExtents().x, 15, title, Color3f.WHITE);
-//            m_textLine += TEXT_LINE_SPACE;
-//        }
-//
-//        int flags = 0;
-//        flags += settings.getSetting(TestbedSettings.DrawShapes).enabled ? DebugDraw.e_shapeBit : 0;
-//        flags += settings.getSetting(TestbedSettings.DrawJoints).enabled ? DebugDraw.e_jointBit : 0;
-//        flags += settings.getSetting(TestbedSettings.DrawAABBs).enabled ? DebugDraw.e_aabbBit : 0;
-//        flags
-//                += settings.getSetting(TestbedSettings.DrawCOMs).enabled ? DebugDraw.e_centerOfMassBit : 0;
-//        flags += settings.getSetting(TestbedSettings.DrawTree).enabled ? DebugDraw.e_dynamicTreeBit : 0;
-//        /*flags +=
-//         settings.getSetting(TestbedSettings.DrawWireframe).enabled
-//         ? wireframeDrawing
-//         : 0;*/
-//        debugDraw.setFlags(flags);
-//
-////world.drawDebugData();
-//        Vec2 cc = getCamera().getTransform().getCenter();
-//
-//        debugDraw.getViewportTranform().setCamera(cc.x, cc.y, getCamera().getTargetScale());
-//
-//        ((SwingDraw) debugDraw).draw(world);
-//
-//
-//
-//    //debugDraw.drawString(5, m_textLine, "Engine Info", color4);
-//        //m_textLine += TEXT_LINE_SPACE;
-//        debugDraw.drawString(5, m_textLine, "Framerate: " + (int) model.getCalculatedFps(), Color3f.WHITE);
-//        m_textLine += TEXT_LINE_SPACE;
-//
-//        if (settings.getSetting(TestbedSettings.DrawStats).enabled) {
-//
-//            m_textLine += TEXT_LINE_SPACE;
-//
-//            debugDraw.drawString(5, m_textLine, "World mouse position: " + mouseWorld.toString(),
-//                    Color3f.WHITE);
-//            m_textLine += TEXT_LINE_SPACE;
-//
-//            statsList.clear();
-//            Profile p = getWorld().getProfile();
-//            p.toDebugStrings(statsList);
-//
-//            for (String s : statsList) {
-//                debugDraw.drawString(5, m_textLine, s, Color3f.WHITE);
-//                m_textLine += TEXT_LINE_SPACE;
-//            }
-//            m_textLine += TEXT_SECTION_SPACE;
-//        }
-//
-//        if (settings.getSetting(TestbedSettings.DrawHelp).enabled) {
-//            debugDraw.drawString(5, m_textLine, "Help", color4);
-//            m_textLine += TEXT_LINE_SPACE;
-//            List<String> help = model.getImplSpecificHelp();
-//            for (String string : help) {
-//                debugDraw.drawString(5, m_textLine, string, Color3f.WHITE);
-//                m_textLine += TEXT_LINE_SPACE;
-//            }
-//            m_textLine += TEXT_SECTION_SPACE;
-//        }
-//
-//        if (!textList.isEmpty()) {
-//            debugDraw.drawString(5, m_textLine, "Test Info", color4);
-//            m_textLine += TEXT_LINE_SPACE;
-//            for (String s : textList) {
-//                debugDraw.drawString(5, m_textLine, s, Color3f.WHITE);
-//                m_textLine += TEXT_LINE_SPACE;
-//            }
-//            textList.clear();
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         if (mouseTracing && mouseJoint == null) {
             float delay = 0.1f;
@@ -498,9 +498,9 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
             draw().drawSegment(p1, p2, mouseColor);
         }
 
-//        if (bombSpawning) {
-//            draw().drawSegment(bombSpawnPoint, bombMousePoint, Color3f.WHITE);
-//        }
+
+
+
 
         if (settings.getSetting(TestbedSettings.DrawContactPoints).enabled) {
             final float k_impulseScale = 0.1f;
@@ -656,7 +656,7 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
             world.destroyBody(bomb);
             bomb = null;
         }
-        // todo optimize this
+        
         BodyDef bd = new BodyDef();
         bd.type = BodyType.DYNAMIC;
         bd.position.set(position);
@@ -731,7 +731,7 @@ public abstract class PhysicsModel extends Bodies implements ContactListener, Ru
             cp.state = state2[i];
             cp.normalImpulse = manifold.points[i].normalImpulse;
             cp.tangentImpulse = manifold.points[i].tangentImpulse;
-            //cp.separation = worldManifold.separations[i];
+            
             ++pointCount;
         }
     }
@@ -762,59 +762,59 @@ class TestQueryCallback implements QueryCallback {
     }
 }
 
-//class SignerAdapter implements ObjectSigner {
-//  private final ObjectSigner delegate;
-//
-//  public SignerAdapter(ObjectSigner argDelegate) {
-//    delegate = argDelegate;
-//  }
-//
-//  public Long getTag(World argWorld) {
-//    return delegate.getTag(argWorld);
-//  }
-//
-//  public Long getTag(Body argBody) {
-//    return delegate.getTag(argBody);
-//  }
-//
-//  public Long getTag(Shape argShape) {
-//    return delegate.getTag(argShape);
-//  }
-//
-//  public Long getTag(Fixture argFixture) {
-//    return delegate.getTag(argFixture);
-//  }
-//
-//  public Long getTag(Joint argJoint) {
-//    return delegate.getTag(argJoint);
-//  }
-//}
-//
-//
-//class ListenerAdapter implements ObjectListener {
-//  private final ObjectListener listener;
-//
-//  public ListenerAdapter(ObjectListener argListener) {
-//    listener = argListener;
-//  }
-//
-//  public void processWorld(World argWorld, Long argTag) {
-//    listener.processWorld(argWorld, argTag);
-//  }
-//
-//  public void processBody(Body argBody, Long argTag) {
-//    listener.processBody(argBody, argTag);
-//  }
-//
-//  public void processFixture(Fixture argFixture, Long argTag) {
-//    listener.processFixture(argFixture, argTag);
-//  }
-//
-//  public void processShape(Shape argShape, Long argTag) {
-//    listener.processShape(argShape, argTag);
-//  }
-//
-//  public void processJoint(Joint argJoint, Long argTag) {
-//    listener.processJoint(argJoint, argTag);
-//  }
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

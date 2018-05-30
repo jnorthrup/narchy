@@ -22,7 +22,7 @@ public class ObjectPropertiesUI extends JPanel {
 		setLayout(new BorderLayout());
 		add(new JLabel("Object properties:"), BorderLayout.NORTH);
 		add(table, BorderLayout.CENTER);
-		//add(storeBtn, BorderLayout.SOUTH);
+		
 	}
 	
 	public void setSelection(ArrayList<LevelObject> selection) {

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -40,7 +40,7 @@ public class DispatcherInfo {
 	public boolean enableSPU = true;
 	public boolean useEpa = true;
 	public final float allowedCcdPenetration = 0.04f;
-	//btStackAlloc*	m_stackAllocator;
+	
 
 	public DispatcherInfo() {
 		dispatchFunc = DispatchFunc.DISPATCH_DISCRETE;

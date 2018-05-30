@@ -26,17 +26,17 @@ public class Test {
         Random r = new XORShiftRandom(1234);
         task = new Training(r);
 
-        //task.batchsize = 1;
+        
 
         task.generateTemplates();
 
-        // 50 cells min? @ 30000 cycles @ 0.01 learning rate @ 2 samples
-        // 30 cells min? @ 25000 cacles @ 0.01 learning rate @ 2 samples
-        final int epochs = 100000; // 200000
+        
+        
+        final int epochs = 100000; 
         final int epochsShake = 25000000;
-        // 10 20 30 50 -70- -90 for 10- 100 200? 300(tried, not finished)
-        int cell_blocks = 300; // 20 50 100 -500-
-        double learningRate = 0.07; // 0.07
+        
+        int cell_blocks = 300; 
+        double learningRate = 0.07; 
         LSTMCL slstm = new LSTMCL(r,
                 task.getInputDimension(),
                 task.getOutputDimension(),
@@ -55,9 +55,9 @@ public class Test {
 
 
                 if (fit == 1.0) {
-                    //String decoded = getDecoded(slstm, "b a++?");
+                    
 
-                    //System.out.println(decoded);
+                    
 
                     final boolean allValidated = validate(task.templateTrainingTuples, slstm);
 
@@ -102,9 +102,9 @@ public class Test {
 
     }
 
-    // double[] actual_output = slstm.predict(input, true);
+    
 
-    // returns true if validation set
+    
     private boolean validate(final List<Training.TrainingTuple> validationSet, LSTMCL slstm) {
         int validationSuccess = 0;
         int validationCount = 0;
@@ -146,10 +146,10 @@ public class Test {
 
             double[] actual_output = lstm.predict(inputVector, true);
 
-            // find out the position where it is maximum
+            
             int maxIndex = util.argmax(actual_output);
 
-            //System.out.println(maxIndex);
+            
         }
 
         String decoded = "";
@@ -159,7 +159,7 @@ public class Test {
 
             double[] actual_output = lstm.predict(inputVector, true);
 
-            // find out the position where it is maximum
+            
             int maxIndex = util.argmax(actual_output) - task.observation_dimension;
 
             decoded += Training.CODEBOOK.charAt(maxIndex);

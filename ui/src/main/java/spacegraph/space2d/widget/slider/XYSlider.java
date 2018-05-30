@@ -73,21 +73,21 @@ public class XYSlider extends Surface {
             });
         }
         return this;
-//
-//        if (finger!=null && leftButton(buttons)) {
-//            pressing = true;
-//            v2 hitPoint = finger.relativeHit(content);
-//            if (hitPoint.inUnit()) {
-//                if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
-//                    knob.set(hitPoint);
-//                    updated();
-//                }
-//                return this;
-//            }
-//        } else {
-//            pressing = false;
-//        }
-//        return super.onTouch(finger, buttons);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
@@ -103,11 +103,11 @@ public class XYSlider extends Surface {
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
-        gl.glColor4f(0f, 0f, 0f, 0.8f); //background
+        gl.glColor4f(0f, 0f, 0f, 0.8f); 
         Draw.rect(gl, bounds);
 
-        //float margin = 0.1f;
-        //float mh = margin / 2.0f;
+        
+        
 
         float px = knob.x;
         float py = knob.y;
@@ -135,11 +135,11 @@ public class XYSlider extends Surface {
                 kw - KTH, kh + KTH,
                 kw + KTH, bounds.y + bh, knobColor, topAlphaCorners);
 
-        //Draw.rectAlphaCorners(gl, kw, kh- KTH, kw+ KTH, bounds.h, knobColor, botAlphaCorners);
+        
 
-//        //gl.glColor4f(0.2f, 0.8f, 0f, 0.75f);
-//        float knobSize = this.knobWidth;
-//        Draw.rect(gl, w1-knobSize/2f, h1-knobSize/2f, knobSize, knobSize, 0); //knob
+
+
+
     }
 
     public XYSlider set(float x, float y) {

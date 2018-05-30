@@ -48,7 +48,7 @@ import jcog.grammar.parse.tokens.Token;
  * the Logikus grammar:
  *
  * <blockquote><pre>
- *     // program
+ *     
  *     member(X, [X | Rest]);
  *     member(X, [Y | Rest]) :- member(X, Rest);
  *     primes([2, 3, 5, 7, 11, 13]);
@@ -56,10 +56,10 @@ import jcog.grammar.parse.tokens.Token;
  *         primes(Primes),
  *         member(P, Primes), member(Q, Primes), =(P*Q, X);
  * <br>
- *     // query
+ *     
  *     factor(91, A, B)
  * <br>
- *     // results
+ *     
  *     A = 7.0, B = 13.0
  *     A = 13.0, B = 7.0
  *     no
@@ -299,7 +299,7 @@ public class LogikusParser {
         if (list == null) {
             list = new SeqEx("list");
 
-            list.get('[') // push this, as a fence
+            list.get('[') 
                     .or(
                             listContents(),
                             new Empty().put(new ListAssembler())
@@ -327,8 +327,8 @@ public class LogikusParser {
                 new SeqEx("bar tail").see('|').or(
                         variable(), list()
                 ).push(a -> {
-                    //Pops the tail and terms of a list from an assembly's stack, builds the list,
-                    //and pushes it.
+                    
+                    
 
                     Term tail = (Term) a.pop();
 
@@ -436,7 +436,7 @@ public class LogikusParser {
             structure = new Seq("structure");
             structure.get(functor()).get(new Alternation(
                     new SeqEx("list in parens")
-                            .get('(') // push this as a fence
+                            .get('(') 
                             .get(commaList(term()))
                             .see(')')
                             .put(new StructureWithTermsAssembler()),

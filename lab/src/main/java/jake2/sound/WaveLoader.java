@@ -46,13 +46,13 @@ public class WaveLoader {
 		if (s.name.charAt(0) == '*')
 			return null;
 
-		// see if still in memory
+		
 		sfxcache_t sc = s.cache;
 		if (sc != null)
 			return sc;
 
 		String name;
-		// load it in
+		
 		if (s.truename != null)
 			name = s.truename;
 		else
@@ -90,7 +90,7 @@ public class WaveLoader {
 		int len = (int) (info.samples / stepscale);
 		len = len * info.width * info.channels;
 
-		// TODO: handle max sample bytes with a cvar
+		
 		/*
 	  This is the maximum sample length in bytes which has to be replaced by
 	  a configurable variable.
@@ -134,8 +134,8 @@ public class WaveLoader {
         if (sc == null)
         	return;
 
-        // again calculate the stretching factor.
-        // this is usually 0.5, 1, or 2
+        
+        
         
         float stepscale;
         if (DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL)
@@ -148,7 +148,7 @@ public class WaveLoader {
         if (sc.loopstart != -1)
                 sc.loopstart = (int) (sc.loopstart / stepscale);
 
-        // if resampled, sample has now the default sample rate
+        
         if (!DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL)
         	sc.speed = S.getDefaultSampleRate();
 
@@ -217,7 +217,7 @@ public class WaveLoader {
 		while (true) {
 			data_p = last_chunk;
 
-			if (data_p >= iff_end) { // didn't find the chunk
+			if (data_p >= iff_end) { 
 				data_p = 0;
 				return;
 			}
@@ -264,7 +264,7 @@ public class WaveLoader {
 		iff_end = wavlength;
 		data_b = wav;
 
-		// find "RIFF" chunk
+		
 		FindChunk("RIFF");
 		String s = new String(data_b, data_p + 8, 4);
 		if (!s.equals("WAVE")) {
@@ -272,9 +272,9 @@ public class WaveLoader {
 			return info;
 		}
 
-		//	   get "fmt " chunk
+		
 		iff_data = data_p + 12;
-		//	   DumpChunks ();
+		
 
 		FindChunk("fmt ");
 		if (data_p == 0) {
@@ -293,31 +293,31 @@ public class WaveLoader {
 		data_p += 4 + 2;
 		info.width = GetLittleShort() / 8;
 
-		//	   get cue chunk
+		
 		FindChunk("cue ");
 		if (data_p != 0) {
 			data_p += 32;
 			info.loopstart = GetLittleLong();
-			//			Com_Printf("loopstart=%d\n", sfx->loopstart);
+			
 
-			// if the next chunk is a LIST chunk, look for a cue length marker
+			
 			FindNextChunk("LIST");
 			if (data_p != 0) {
 				if (data_b.length >= data_p + 32) {
 					s = new String(data_b, data_p + 28, 4);
-					if (s.equals("MARK")) { // this is not a proper parse, but
-											// it works with cooledit...
+					if (s.equals("MARK")) { 
+											
 						data_p += 24;
-						i = GetLittleLong(); // samples in loop
+						i = GetLittleLong(); 
 						info.samples = info.loopstart + i;
-						//					Com_Printf("looped length: %i\n", i);
+						
 					}
 				}
 			}
 		} else
 			info.loopstart = -1;
 
-		//	   find data chunk
+		
 		FindChunk("data");
 		if (data_p == 0) {
 			Com.Printf("Missing data chunk\n");
@@ -346,6 +346,6 @@ public class WaveLoader {
 		int channels;
 		int loopstart;
 		int samples;
-		int dataofs; // chunk starts this many bytes from file start
+		int dataofs; 
 	}
 }

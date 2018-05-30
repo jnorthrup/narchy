@@ -22,7 +22,6 @@ import static nars.Op.NEG;
 
 public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Tasked> {
 
-    //private static final Logger logger = LoggerFactory.getLogger(EternalTaskCondition.class);
 
     @NotNull
     protected final NAR nar;
@@ -33,40 +32,22 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     private final LongPredicate start;
     private final LongPredicate end;
 
-    /** whether to apply meta-feedback to drive the reasoner toward success conditions */
+    /**
+     * whether to apply meta-feedback to drive the reasoner toward success conditions
+     */
     public static final boolean feedback = false;
 
     boolean succeeded;
-    //long successTime = Tense.TIMELESS;
 
-    //final static Logger logger = LoggerFactory.getLogger(EternalTaskCondition.class);
-
-    //@Expose
-
-    //@JsonSerialize(using= JSONOutput.TermSerializer.class)
-    //public  Term term;
-
-    //@Expose
-    //public  byte punc;
 
     public final float freqMin;
     public final float freqMax;
     public final float confMin;
     public final float confMax;
-    public long creationStart, creationEnd; //-1 for not compared
+    public long creationStart, creationEnd; 
 
     /*float tenseCost = 0.35f;
     float temporalityCost = 0.75f;*/
-
-
-    //private final Observed.DefaultObserved.DefaultObservableRegistration taskRemoved;
-
-    //@Expose
-    //protected long creationTime;
-
-
-    //@Expose
-    //public Tense tense = Tense.Eternal;
 
 
     public final List<Task> matched = $.newArrayList(1);
@@ -76,13 +57,8 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
     protected final TreeMap<Float, Task> similar = new TreeMap();
 
-//    @Override
-//    public final Truth getTruth() {
-//        return DefaultTruth.NULL;
-//    }
 
     public TaskCondition(@NotNull NAR n, long creationStart, long creationEnd, @NotNull String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) throws RuntimeException, nars.Narsese.NarseseException {
-        //super(n.task(sentenceTerm + punc).normalize(n.memory));
 
 
         if (freqMax < freqMin) throw new RuntimeException("freqMax < freqMin");
@@ -101,11 +77,11 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         this.confMax = Math.min(1.0f, confMax);
         this.confMin = Math.max(0.0f, confMin);
         this.punc = punc;
-        //return (T) normalizedOrNull(t, Retemporalize.retemporalizeXTERNALToDTERNAL);
+
         Term term =
                 Narsese.term(sentenceTerm, true).term().normalize();
 
-        if (term.op()==NEG) {
+        if (term.op() == NEG) {
             term = term.unneg();
             freqMax = 1f - freqMax;
             freqMin = 1f - freqMin;
@@ -136,7 +112,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
         float dist = 0;
         if (a.op() != b.op()) {
-            //50% for equal term
+
             dist += 0.2f;
             if (dist >= ifLessThan) return dist;
         }
@@ -151,7 +127,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
             if (dist >= ifLessThan) return dist;
         }
 
-        //HACK use toString for now
+
         dist += Util.levenshteinFraction(
                 a.toString(),
                 b.toString()) * 0.4f;
@@ -171,66 +147,6 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
                 " creation: (" + creationStart + ',' + creationEnd + ')';
     }
 
-    //    public double getAcceptableDistanceThreshold() {
-//        return 0.01;
-//    }
-
-//    //how many multiples of the range it is away from the acceptable time interval
-//    public static double rangeError(double value, double min, double max, boolean squash) {
-//        double dt;
-//        if (value < min)
-//            dt = min - value;
-//        else if (value > max)
-//            dt = value - max;
-//        else
-//            return 0;
-//
-//        double result = dt/(max-min);
-//
-//        if (squash)
-//            return Math.tanh(result);
-//        else
-//            return result;
-//    }
-
-//    //time distance function
-//    public double getTimeDistance(long now) {
-//        return rangeError(now, creationStart, creationEnd, true);
-//    }
-
-//    //truth distance function
-//    public double getTruthDistance(Truth t) {
-//        //manhattan distance:
-//        return rangeError(t.getFrequency(), freqMin, freqMax, true) +
-//                rangeError(t.getConfidence(), confMin, confMax, true);
-//
-//        //we could also calculate geometric/cartesian vector distance
-//    }
-
-////    public void setRelativeOccurrenceTime(Tense t, int duration) {
-////        setRelativeOccurrenceTime(Stamp.getOccurrenceTime(t, duration), duration);
-////    }
-//    /** task's tense is compared by its occurence time delta to the current time when processing */
-//    public void setRelativeOccurrenceTime(long ocRelative, int duration) {
-//        //may be more accurate if duration/2
-//
-//        Tense tense;
-//        final float ocRel = ocRelative; //cast to float for this compare
-//        if (ocRel > duration/2f) tense = Tense.Future;
-//        if (ocRel < -duration/2f) tense = Tense.Past;
-//        else tense = Tense.Present;
-//
-//        setRelativeOccurrenceTime(tense, nar.memory.duration());
-//
-//    }
-
-
-//
-//    public void setRelativeOccurrenceTime(long creationTime, int ocRelative, int duration) {
-//        setCreationTime(creationTime);
-//        setRelativeOccurrenceTime(ocRelative, duration);
-//    }
-
 
     public boolean matches(@Nullable Task task) {
         if (task == null)
@@ -238,8 +154,8 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
         Term tt = task.term();
         if (!tt.equals(this.term)) {
-            if (tt.op()==term.op() && tt.volume()==this.term.volume() && tt.structure()==this.term.structure() && this.term.toString().equals(tt.toString())) {
-//                task.term().equals(term); //TEMPORARY FOR DEBUG
+            if (tt.op() == term.op() && tt.volume() == this.term.volume() && tt.structure() == this.term.structure() && this.term.toString().equals(tt.toString())) {
+
                 throw new RuntimeException("term construction problem: " + this.term + " .toString() is equal to " + tt + " but inequal otherwise");
             }
             return false;
@@ -269,12 +185,6 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         }
     }
 
-    //    private boolean relativeTimeMatches(Task t) {
-//        if (term instanceof Compound) {
-//            return ((Compound)term).t() == t.term().t();
-//        }
-//        return true;
-//    }
 
     final boolean creationTimeMatches() {
         long now = nar.time();
@@ -293,8 +203,6 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
             matched.add(t);
             succeeded = true;
 
-//            if (feedback)
-//                MetaGoal.Accurate.learn(t.cause(), (float) 1, nar.causes);
 
             return true;
         } else {
@@ -304,10 +212,10 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
     }
 
     public void recordSimilar(Task task) {
-        //synchronized (similar = this.similar) {
+
         final TreeMap<Float, Task> similar = this.similar;
 
-        //TODO add the levenshtein distance of other task components
+
         float worstDiff = similar.size() >= maxSimilars ? similar.lastKey() : Float.POSITIVE_INFINITY;
 
 
@@ -335,14 +243,12 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
                 return;
         }
 
-        if (task.punc()!=punc)
+        if (task.punc() != punc)
             difference += 4;
 
         if (difference >= worstDiff)
             return;
 
-
-        //TODO more efficient way than this
 
         this.similar.put(difference, task);
 
@@ -350,67 +256,15 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         if (similar.size() > maxSimilars) {
             similar.remove(similar.lastEntry().getKey());
         }
-        //}
+
     }
-
-
-//    public String getFalseReason() {
-//        String x = "Unmatched; ";
-//
-//        if (similar!=null) {
-//            x += "Similar:\n";
-//            for (Map.Entry<Double,Task> et : similar.entrySet()) {
-//                Task tt = et.getValue();
-//                x += Texts.n4(et.getKey().floatValue()) + ' ' + tt.toString() + ' ' + tt.getLog() + '\n';
-//            }
-//        }
-//        else {
-//            x += "No similar: " + term;
-//        }
-//        return x;
-//    }
-
-
-//    public List<Task> getTrueReasons() {
-//        return valid;
-//        //if (!isTrue()) throw new RuntimeException(this + " is not true so has no true reasons");
-//        /*return Lists.newArrayList("match at: " +
-//
-//                Iterables.transform(trueAt, new Function<Task, String>() {
-//                    @Override
-//                    public String apply(Task task) {
-//                        return task.toString() + " @ " + task.sentence.getCreationTime();
-//                    }
-//                }));
-//                */
-//        //return exact;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return succeeded  +": "  + JSONOutput.stringFromFields(this);
-//    }
 
 
     @Override
     public final void accept(Tasked tasked) {
-        if (succeeded) return; //no need to test any further
+        if (succeeded) return;
         test(tasked.task());
     }
-
-//    public final void accept(Task task) {
-//
-//
-//
-//        if (test(task)) {
-//            succeeded = true;
-//            //successTime = nar.time();
-//        } else {
-//            //logger.info("non-matched: {}", task);
-//            //logger.info("\t{}", task.getLogLast());
-//        }
-//
-//    }
 
 
     @Override
@@ -434,8 +288,8 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
             if (matched != null && logger.isTraceEnabled()) {
                 matched.forEach(s -> {
                     logger.trace("\t{}", s);
-                    //logger.debug("\t\t{}", s.getLog());
-                    //logger.debug(s.getExplanation().replace("\n", "\n\t\t"));
+
+
                 });
             }
         } else {
@@ -443,51 +297,48 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
             logger.error(msg);
 
-            //synchronized (similar) {
+
             if (!similar.isEmpty()) {
                 similar.values().forEach(s -> {
                     String pattern = "SIM\n{}";
                     logger.info(pattern, s.proof());
-                    //logger.debug(s.getExplanation().replace("\n", "\n\t\t"));
+
                 });
             }
-            //}
+
         }
 
 
     }
-
-
-
-    /* calculates the "cost" of an execution according to certain evaluated condtions
-     //     *  this is the soonest time at which all output conditions were successful.
-     //     *  if any conditions were not successful, the cost is infinity
-     //     * */
-//    public static double cost(@NotNull Iterable<EternalTaskCondition> conditions) {
-//        long lastSuccess = Tense.TIMELESS;
-//        for (EternalTaskCondition e : conditions) {
-//            long est = e.successTime;
-//            if (est != Tense.TIMELESS) {
-//                if (lastSuccess < est) {
-//                    lastSuccess = est;
-//                }
-//            }
-//        }
-//        if (lastSuccess != Tense.TIMELESS) {
-//            //score = 1.0 + 1.0 / (1+lastSuccess);
-//            return lastSuccess;
-//        }
-//
-//        return Double.POSITIVE_INFINITY;
-//    }
-//
-//    /** returns a function of the cost characterizing the optimality of the conditions
-//     *  monotonically increasing from -1..+1 (-1 if there were errors,
-//     *  0..1.0 if all successful.  limit 0 = takes forever, limit 1.0 = instantaneous
-//     */
-//    public static double score(@NotNull List<EternalTaskCondition> requirements) {
-//        double cost = cost(requirements);
-//        return Double.isFinite(cost) ? 1.0 / (1.0 + cost) : -1;
-//
-//    }
 }
+
+
+
+     
+     
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

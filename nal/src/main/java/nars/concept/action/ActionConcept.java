@@ -37,7 +37,7 @@ public abstract class ActionConcept extends Sensor {
 
         if (t.isGoal()) {
             long now = n.time();
-            if (!t.isBefore(now - n.dur()/2)) { //present or future
+            if (!t.isBefore(now - n.dur()/2)) { 
                 MetaGoal.Action.learn(t.cause(), Param.beliefValue(t) * activation, n.causes);
             }
         }
@@ -62,42 +62,42 @@ public abstract class ActionConcept extends Sensor {
 
         @Nullable Truth apply(@Nullable Truth believed, @Nullable Truth desired);
 
-//        /**
-//         * all desire passes through to affect belief
-//         */
-//        MotorFunction Direct = (believed, desired) -> desired;
-//
-//        /**
-//         * absorbs all desire and doesnt affect belief
-//         */
-//        @Nullable MotorFunction Null = (believed, desired) -> null;
+
+
+
+
+
+
+
+
+
     }
 
 }
 
 
 
-//    @Deprecated public static class CuriosityTask extends GeneratedTask {
-//
-//        public CuriosityTask(Compound term, byte punc, Truth truth, long creation, long start, long end, long[] stamp) {
-//            super(term, punc, truth, creation, start, end, stamp);
-//        }
-//    }
-
-//    public static CuriosityTask curiosity(Compound term, byte punc, float conf, long next, NAR nar) {
-//        long now = nar.time();
-//        CuriosityTask t = new CuriosityTask(term, punc,
-//                $.t(nar.random().nextFloat(), conf),
-//                now,
-//                next,
-//            next + nar.dur(),
-//                new long[] { nar.time.nextStamp() }
-//        );
-//        t.budget( nar );
-//        return t;
-//
-//    }
 
 
-//    /** produces a curiosity exploratoin task */
-//    @Nullable public abstract Task curiosity(float conf, long next, NAR nar);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

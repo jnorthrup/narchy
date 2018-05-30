@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class DCGLibraryExceptionsTestCase {
 
-	// verifico che phrase(X, []) lancia un errore di instanziazione
+	
 	@Test
 	public void test_phrase_2_1() throws Exception {
 		Prolog engine = new Prolog();
@@ -29,7 +29,7 @@ public class DCGLibraryExceptionsTestCase {
         assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che phrase(X, [], []) lancia un errore di instanziazione
+	
 	@Test public void test_phrase_3_1() throws Exception {
 		Prolog engine = new Prolog();
 		engine.addLibrary("alice.tuprolog.lib.DCGLibrary");

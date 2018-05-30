@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -36,8 +36,8 @@ import spacegraph.util.math.v3;
  */
 public class StaticPlaneShape extends ConcaveShape {
 
-	//protected final Vector3f localAabbMin = new Vector3f();
-	//protected final Vector3f localAabbMax = new Vector3f();
+	
+	
 	
 	protected final v3 planeNormal = new v3();
 	protected float planeConstant;
@@ -72,14 +72,14 @@ public class StaticPlaneShape extends ConcaveShape {
 		center.add(aabbMax, aabbMin);
 		center.scale(0.5f);
 
-		// this is where the triangles are generated, given AABB and plane equation (normal/constant)
+		
 
 		v3 tangentDir0 = new v3(), tangentDir1 = new v3();
 
-		// tangentDir0/tangentDir1 can be precalculated
+		
 		TransformUtil.planeSpace1(planeNormal, tangentDir0, tangentDir1);
 
-		//Vector3f supVertex0 = new Vector3f(), supVertex1 = new Vector3f();
+		
 
 		v3 projectedCenter = new v3();
 		tmp.scale(planeNormal.dot(center) - planeConstant, planeNormal);
@@ -144,7 +144,7 @@ public class StaticPlaneShape extends ConcaveShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		//moving concave objects not supported
+		
 		inertia.set(0f, 0f, 0f);
 	}
 

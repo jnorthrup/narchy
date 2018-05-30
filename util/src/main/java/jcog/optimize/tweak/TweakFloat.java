@@ -41,7 +41,7 @@ public class TweakFloat<X> extends Tweak<X,Float> {
 
         this.inc = unknown(this.inc, "inc", hints, unknown);
         if (this.inc!=this.inc && (max==max) && (min==min)) {
-            //infer 'inc' if max and min are known and autoDiscrete hint is provided
+            
             float autoInc = hints.getOrDefault("autoInc", Float.NaN);
             if (autoInc==autoInc) {
                 this.inc = (max-min)/autoInc;

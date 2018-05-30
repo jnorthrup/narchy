@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,7 +56,7 @@ public abstract class AbstractThreadInfoSpanTracker extends AbstractSpanTracker 
                 threadMXBean.setThreadContentionMonitoringEnabled(true);
                 contentionMonitoringEnabled = true;
 
-                //logger.info("Enabling thread contention monitoring");
+                
 
             } else {
                 logger.warning("Thread contention monitoring is not supported in this JVM; "
@@ -77,7 +77,7 @@ public abstract class AbstractThreadInfoSpanTracker extends AbstractSpanTracker 
                 threadMXBean.setThreadCpuTimeEnabled(true);
                 cpuTimeMonitoringEnabled = true;
 
-                //logger.info("Enabling thread CPU time monitoring");
+                
             } else {
                 logger.warning("Thread CPU time monitoring is not supported in this JVM; "
                         + "Thread CPU time related trackers will be silent");

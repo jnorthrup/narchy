@@ -65,7 +65,7 @@ public class Anon {
     };
 
     protected TermTransform newPut() {
-        //return new TermTransform() {
+        
         return new DirectTermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
@@ -75,7 +75,7 @@ public class Anon {
     }
 
     protected TermTransform newGet() {
-        //can not be DirectTermTransform
+        
         return new TermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
@@ -91,14 +91,14 @@ public class Anon {
 
     public Term put(Term x) {
         if (x instanceof AnonID) {
-            //assert (!(x instanceof UnnormalizedVariable));
-//            if (x instanceof UnnormalizedVariable)
-//                throw new RuntimeException("unnormalized variable for Anon: " + x);
-            return x; //ignore normalized variables since they are AnonID
+            
+
+
+            return x; 
         } else if (x instanceof Atomic) {
 
-            if (x instanceof UnnormalizedVariable) return x; //leave unnormalized variables alone
-            if (x instanceof Int.IntRange) return x; //HACK
+            if (x instanceof UnnormalizedVariable) return x; 
+            if (x instanceof Int.IntRange) return x; 
 
             return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
 
@@ -109,11 +109,11 @@ public class Anon {
 
     public Term get(Term x) {
         if (x instanceof Anom) {
-            return rev.get(((Int) x).id - 1); //assume it is an int
+            return rev.get(((Int) x).id - 1); 
         } else if (x instanceof Compound) {
             return GET.transformCompound((Compound) x);
         } else {
-            return x; //ignore variables, ints
+            return x; 
         }
     }
 

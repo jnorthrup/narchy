@@ -47,9 +47,9 @@ import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
  * see:
  * Gnutella
  * GNU WASTE
- * https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/net/p2p/P2pMessageCodes.java
- * https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/net/shh/WhisperImpl.java
- * https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/net/MessageQueue.java
+ * https:
+ * https:
+ * https:
  */
 public class UDPeer extends UDP {
 
@@ -124,13 +124,13 @@ public class UDPeer extends UDP {
     public UDPeer(InetAddress address, int port, boolean discovery) throws IOException {
         super(address, port);
 
-        //super( InetAddress.getLocalHost().getCanonicalHostName(), port);
+        
 
-        //this.me =  new InetSocketAddress( in.getInetAddress(), port );
+        
         /*this.me = new InetSocketAddress(
                 InetAddress.getByName("[0:0:0:0:0:0:0:0]"),
                 port);*/
-        //this.meBytes = bytes(me);
+        
 
         this.rng = new XorShift128PlusRandom(System.nanoTime());
 
@@ -172,13 +172,13 @@ public class UDPeer extends UDP {
 
             @Override
             public void priAdd(UDProfile entry, float amount) {
-                //nothing
+                
             }
 
             @Override
             protected boolean replace(float incoming, float existing) {
                 return super.replace(incoming, existing);
-                //return hijackGreedy(incoming, existing);
+                
             }
 
             @NotNull
@@ -250,7 +250,7 @@ public class UDPeer extends UDP {
     public int tellSome(Msg o, float pri, boolean onlyIfNotSeen) {
 
         if (!connected() || pri <= 0) {
-            //System.err.println(this + " without any peers to broadcast");
+            
             return 0;
         } else {
 
@@ -330,9 +330,9 @@ public class UDPeer extends UDP {
      * send to a specific known recipient
      */
     public void send(Msg o, InetSocketAddress to) {
-//        InetSocketAddress a = o.origin();
-//        if (a != null && a.equals(to))
-//            return;
+
+
+
         outBytes(o.array(), to);
     }
 
@@ -387,7 +387,7 @@ public class UDPeer extends UDP {
         final byte[] inputArray = data;
 
 
-        //TODO verification and add an overridable handler for accepting the unrecognized input (to try another decode method)
+        
 
         Msg m = new Msg(data, len);
         if (/*m == null || */m.id() == me)
@@ -395,11 +395,11 @@ public class UDPeer extends UDP {
 
         Command cmd = Command.get(m.cmd());
         if (cmd == null)
-            return; //bad packet
+            return; 
 
 
         if (m.port() == 0) {
-            //rewrite origin with the actual packet origin as seen by this host
+            
             byte[] msgOriginBytes = bytes(p);
             if (!m.originEquals(msgOriginBytes)) {
                 m = m.clone(cmd.id, msgOriginBytes);
@@ -423,11 +423,11 @@ public class UDPeer extends UDP {
                 you = onPong(p, m, you, now);
                 break;
             case PING:
-                sendPong(p, m); //continue below
+                sendPong(p, m); 
                 break;
-//            case WHO:
-//                m.dataAddresses(this::ping);
-//                break;
+
+
+
             case TELL:
                 receive(you, m);
                 break;
@@ -439,7 +439,7 @@ public class UDPeer extends UDP {
                         switch (h.id()) {
                             case "C":
                                 you.can = h;
-                                //check intersection of our needs and their cans to form a query
+                                
                                 break;
                             case "N":
                                 you.need = h;
@@ -460,7 +460,7 @@ public class UDPeer extends UDP {
 
         if (you == null) {
             if (them.size() < them.capacity()) {
-                //ping them to consider adding as peer
+                
                 ping(p);
             }
         } else {
@@ -519,8 +519,8 @@ public class UDPeer extends UDP {
 
     protected @Nullable UDProfile onPong(InetSocketAddress p, Msg m, @Nullable UDProfile connected, long now) {
 
-        long sent = m.dataLong(0); //TODO dont store the sent time in the message where it can be spoofed. instead store a pending ping table that a pong will lookup by the iniating ping's message hash
-        long latency = now - sent; //TODO should be Long
+        long sent = m.dataLong(0); 
+        long latency = now - sent; 
         if (connected != null) {
             connected.onPing(latency);
         } else {
@@ -533,14 +533,14 @@ public class UDPeer extends UDP {
     }
 
     protected void sendPong(InetSocketAddress from, Msg ping) {
-        Msg p = //ping.clone(PONG.id,null);
+        Msg p = 
                 new Msg(PONG.id, (byte) 1, me, from,
                         ArrayUtils.addAll(
-                                Longs.toByteArray(ping.dataLong(0)), //sent time (local to pinger)
-                                Ints.toByteArray(ping.id()) //pinger ID
+                                Longs.toByteArray(ping.dataLong(0)), 
+                                Ints.toByteArray(ping.id()) 
                         ));
 
-        //logger.debug("({} =/> {})", p, from);
+        
 
         send(p, from);
     }
@@ -597,13 +597,13 @@ public class UDPeer extends UDP {
 
         @Nullable
         public static Command get(byte cmdByte) {
-            switch (cmdByte) { //HACK generate this from the commands
+            switch (cmdByte) { 
                 case 'P':
                     return PING;
                 case 'p':
                     return PONG;
-//                case 'w':
-//                    return WHO;
+
+
                 case 't':
                     return TELL;
                 case 'a':
@@ -732,7 +732,7 @@ public class UDPeer extends UDP {
                     ((char) cmd()) + '+' + ttl() +
                     '[' + dataLength() + ']';
 
-            //origin() + ":" + ((char) cmd());
+            
         }
 
 
@@ -823,26 +823,26 @@ public class UDPeer extends UDP {
         }
 
 
-//        public void dataAddresses(Consumer<InetSocketAddress> a) {
-//            int d = dataLength();
-//            if (d % ORIGIN_BYTE != 0)
-//                return; //corrupt
-//
-//            int addresses = d / ADDRESS_BYTES;
-//            int o = DATA_START_BYTE;
-//            for (int i = 0; i < addresses; i++) {
-//                byte[] addr = Arrays.copyOfRange(bytes, o, o + 16);
-//                try {
-//                    InetAddress aa = InetAddress.getByAddress(addr);
-//                    int port = Shorts.fromBytes(bytes[o + 16], bytes[o + 17]);
-//                    a.accept(new InetSocketAddress(aa, port));
-//                } catch (UnknownHostException e) {
-//                    continue;
-//                }
-//                o += ADDRESS_BYTES;
-//            }
-//
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         @Nullable
         public InetSocketAddress origin() {
@@ -861,7 +861,7 @@ public class UDPeer extends UDP {
             int firstByte = (0x000000FF & ((int) bytes[PORT_BYTE]));
             int secondByte = (0x000000FF & ((int) bytes[PORT_BYTE + 1]));
             return (char) (firstByte << 8 | secondByte);
-            //return (( 0xff & ((int)bytes[PORT_BYTE]) << 8) | ( 0xff & ((int)bytes[PORT_BYTE+1])));
+            
         }
 
 
@@ -924,7 +924,7 @@ public class UDPeer extends UDP {
         @Override
         public boolean equals(Object obj) {
             return id == ((UDProfile) obj).id;
-            //return addr.equals(((UDProfile) obj).addr);
+            
         }
 
         public void onPing(long time) {
@@ -959,7 +959,7 @@ public class UDPeer extends UDP {
     public static byte[] bytes(InetSocketAddress addr) {
         byte[] x = new byte[ADDRESS_BYTES];
         int port = addr.getPort();
-        x[0] = (byte) ((port >> 8) & 0xff); //unsigned;
+        x[0] = (byte) ((port >> 8) & 0xff); 
         x[1] = (byte) (port & 0xff);
         ipv6(addr.getAddress().getAddress(), x, 2);
         return x;

@@ -20,7 +20,7 @@ public class LClosure extends LeafNode {
 
     @Override
     public Node copy() {
-        return this;// new LClosure();
+        return this;
     }
 
     @Override

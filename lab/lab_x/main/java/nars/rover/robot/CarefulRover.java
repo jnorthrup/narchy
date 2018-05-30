@@ -23,7 +23,7 @@ public class CarefulRover extends AbstractPolygonBot {
 
     float linearDamping = 0.9f;
     float angularDamping = 0.6f;
-    float restitution = 0.9f; //bounciness
+    float restitution = 0.9f; 
     float friction = 0.5f;
     int numPixels = 8;
 
@@ -41,7 +41,7 @@ public class CarefulRover extends AbstractPolygonBot {
         Term[] args = operation.args();
         Term t1 = args[0];
 
-        //float priority = operation.getTask().getPriority();
+        
 
         int al = args.length;
         if (args[al - 1].equals(memory.self()))
@@ -100,16 +100,16 @@ public class CarefulRover extends AbstractPolygonBot {
                 String[] sections = command.split(",");
                 if (sections.length == 1) {
 
-//                    switch (sections[0]) {
-//                        case "far":
-//                            dist = 20f;
-//                            break;
-//                        case "near":
-//                            dist = 10f;
-//                            break;
-//                        default:
-//                            return null;
-//                    }
+
+
+
+
+
+
+
+
+
+
                     String angle = sections[0];
 
                     float dist;
@@ -132,16 +132,16 @@ public class CarefulRover extends AbstractPolygonBot {
         }
 
         randomActions.add("motor(left)! :|:");
-        //randomActions.add("motor(left,left)!");
+        
         randomActions.add("motor(right)! :|:");
-        //randomActions.add("motor(right,right)!");
-        //randomActions.add("motor(forward,forward)!"); //too much actions are not good,
-        randomActions.add("motor(forward)! :|:"); //however i would agree if <motor(forward,forward) --> motor(forward)>.
-        //randomActions.add("motor(forward,forward)!");
-        //randomActions.add("motor(forward)!");
+        
+        
+        randomActions.add("motor(forward)! :|:"); 
+        
+        
         randomActions.add("motor(reverse)! :|:");
         randomActions.add("motor(stop)! :|:");
-        //randomActions.add("motor(random)!");
+        
 
         nar.on(new NullOperator("motor") {
 
@@ -150,10 +150,10 @@ public class CarefulRover extends AbstractPolygonBot {
 
                 String command = command(operation, operation.getMemory());
 
-                //System.out.println(operation + " "+ command);
+                
 
                 if (command.equals("$1")) {
-                    //variable causes random movement
+                    
                     double v = Math.random();
                     if (v < 0.25f) {
                         command = "left";
@@ -224,7 +224,7 @@ public class CarefulRover extends AbstractPolygonBot {
 
         Vec2[] vertices = {new Vec2(3.0f, 0.0f), new Vec2(-1.0f, +2.0f), new Vec2(-1.5f, 0), new Vec2(-1.0f, -2.0f)};
         shape.set(vertices, vertices.length);
-        //shape.m_centroid.set(bodyDef.position);
+        
         BodyDef bd = new BodyDef();
         bd.linearDamping = (linearDamping);
         bd.angularDamping = (angularDamping);

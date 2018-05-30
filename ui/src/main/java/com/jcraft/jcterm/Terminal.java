@@ -45,7 +45,7 @@ public interface Terminal {
 
     void redraw(int x, int y, int width, int height);
 
-    //void redraw();
+    
     void clear_area(int x1, int y1, int x2, int y2);
 
     void scroll_area(int x, int y, int w, int h, int dx, int dy);

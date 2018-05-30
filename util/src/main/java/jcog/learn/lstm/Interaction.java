@@ -38,7 +38,7 @@ public final class Interaction {
         return Texts.n4(actual) + "    ||    " +
                 Texts.n4(expected) + "   ||   " +
                 Texts.n4(predicted)
-                //+ (reset ? "RESET" : "")
+                
                 ;
     }
 

@@ -12,8 +12,8 @@ import static jcog.Util.toDouble;
 
 /**
  * NOT TESTED YET
- * http://www.jakob-aungiers.com/articles/a/LSTM-Neural-Network-for-Time-Series-Prediction
- * https://medium.com/making-sense-of-data/time-series-next-value-prediction-using-regression-over-a-rolling-window-228f0acae363
+ * http:
+ * https:
  */
 public class LivePredictor {
 
@@ -27,7 +27,7 @@ public class LivePredictor {
 
 
         double[] shift();
-        //double get(boolean inOrOut, int n);
+        
     }
 
     /*public static class Autoregression implements Framer {
@@ -39,8 +39,8 @@ public class LivePredictor {
         private final LongToFloatFunction[] ins;
         private final LongToFloatFunction[] outs;
 
-        private int past; //how many samples to remember into the past
-        private int dur; //time duration between each history sample
+        private int past; 
+        private int dur; 
 
         /**
          * temporary buffers, re-used
@@ -62,7 +62,7 @@ public class LivePredictor {
             }
 
             int i = 0;
-            for (int t = past-1; t >=0; t--) { //TODO make this inner loop
+            for (int t = past-1; t >=0; t--) { 
                 for (LongToFloatFunction c : ins) {
                     pastVector[i++] = c.valueOf(now - (t+1) * dur);
                 }
@@ -82,7 +82,7 @@ public class LivePredictor {
 
         @Override
         public double[] shift() {
-            //shift
+            
             int stride = ins.length;
             int all = pastVector.length;
             System.arraycopy(pastVector, stride, pastVector, 0, all - stride);
@@ -192,30 +192,30 @@ public class LivePredictor {
         this.framer = framer;
     }
 
-//    /**
-//     * delay line of floats (plural, vector)
-//     */
-//    public static class FloatsDelay extends FasterList<FloatDelay> {
-//
-//        public FloatsDelay(int size) {
-//            super(size);
-//        }
-//
-//        public void next() {
-//            forEach(FloatDelay::next);
-//        }
-//
-//        static FloatsDelay delay(FloatSupplier[] vector, int history) {
-//            FloatsDelay delayed = new FloatsDelay(vector.length);
-//            for (FloatSupplier f : vector)
-//                delayed.add(new FloatDelay(f, history));
-//            return delayed;
-//        }
-//
-//        public void print() {
-//            forEach(System.out::println);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public synchronized double[] next(long when) {
@@ -234,17 +234,17 @@ public class LivePredictor {
         model.learn(((DenseShiftFramer)framer).pastVector, prevOut);
         double[] nextIn = framer.shift();
 
-        return model.predict(); //nextOut
+        return model.predict(); 
     }
 
 
 }
 
-//    public static double[] d(Collection<? extends FloatSupplier> f) {
-//        double[] d = new double[f.size()];
-//        int i = 0;
-//        for (FloatSupplier g : f)
-//            d[i++] = g.asFloat();
-//        return d;
-//    }
+
+
+
+
+
+
+
 

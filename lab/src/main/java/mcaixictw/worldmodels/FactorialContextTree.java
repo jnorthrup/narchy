@@ -12,7 +12,7 @@ public class FactorialContextTree extends ContextTree {
 
 	protected FactorialContextTree(String name, int depth) {
 		super(name, depth);
-		// make the root null because it is not needed
+		
 		root = null;
 	}
 
@@ -30,22 +30,22 @@ public class FactorialContextTree extends ContextTree {
 		return ctwTrees;
 	}
 
-	// @Override
-	// public void clear() {
-	// history.clear();
-	// addedSymbolCount = 0;
-	// ctwTrees = null;
-	// }
+	
+	
+	
+	
+	
+	
 
 	@Override
     protected void update(boolean sym) {
 		int m_currentlyActiveTree = addedSymbolCount % ctwTrees.size();
 		assert (historySize() != 0 || m_currentlyActiveTree == 0);
 
-		// add to correct tree
+		
 		ctwTrees.get(m_currentlyActiveTree).add(sym, history);
 
-		// The symbol is now history...
+		
 		history.add(sym);
 		addedSymbolCount++;
 	}
@@ -55,17 +55,17 @@ public class FactorialContextTree extends ContextTree {
 		if (ctwTrees == null || ctwTrees.size() == 0) {
 			ctwTrees = allocateTrees(symlist.size());
 		}
-		// assume the perception has always the same size (this actually makes
-		// sense, the advantage of making this assumption is that we can don't
-		// have to know the size of a perception when we crate the
-		// FactorialContextTree).
+		
+		
+		
+		
 		if (symlist.size() != ctwTrees.size()) {
 			throw new IllegalArgumentException(
 					"perception has wrong size, there are " + ctwTrees.size()
 							+ " trees but the perception has size "
 							+ symlist.size());
 		}
-		// Update the symbol list
+		
 		for (int i = 0; i < symlist.size(); i++) {
 			update(symlist.get(i));
 		}
@@ -76,8 +76,8 @@ public class FactorialContextTree extends ContextTree {
 		assert (addedSymbolCount > 0);
 		assert (historySize() > 0);
 
-		// we need to access the history otherwise we cannot tell which the
-		// last inserted symbol was.
+		
+		
 
 		prevTree().remove(history.pop(), history, history.size());
 
@@ -140,16 +140,16 @@ public class FactorialContextTree extends ContextTree {
 		return result;
 	}
 
-//	public List<ContextTree> getCtwTrees() {
-//		return ctwTrees;
-//	}
+
+
+
 
 	public int addedSymbolCount() {
 		return addedSymbolCount;
 	}
 
-//	public void setAddedSymbolCount(int addedSymbolCount) {
-//		this.addedSymbolCount = addedSymbolCount;
-//	}
+
+
+
 
 }

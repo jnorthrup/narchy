@@ -91,7 +91,7 @@ public class Noise
         {
             for (int j = 0; j<2; j++)
             {
-                vv[i][j] = noise((pos_x+i)%frequency,(pos_y+j)%frequency);   // noise is continouse
+                vv[i][j] = noise((pos_x+i)%frequency,(pos_y+j)%frequency);   
             }
         }
         double[] v = new double[2];
@@ -118,7 +118,7 @@ public class Noise
         for (i=0;i<2; i++){
             for (j=0;j<2; j++){
                 for (int k = 0; k<2; k++){
-                    vvv[i][j][k] = noise(((pos_x+i))%frequency,((pos_y+j))%frequency,((pos_z+k))%frequency);    // noise is continouse
+                    vvv[i][j][k] = noise(((pos_x+i))%frequency,((pos_y+j))%frequency,((pos_z+k))%frequency);    
                     }
                 }
             }
@@ -142,7 +142,7 @@ public class Noise
     */
     public static double noise_1(double x, int frequency, Vector3d gradient)
     { 
-        // this is very efficient programming :-) 
+        
         double r = noise_3(x, 0.0, 0.0, frequency, gradient);
         gradient.y= 0.0;
         gradient.z= 0.0;
@@ -173,7 +173,7 @@ public class Noise
         for ( i=0;i<2; i++){
             for ( j=0;j<2; j++){
                 for (int k = 0; k<2; k++){
-                    vvv[i][j][k] = noise(((pos_x+i))%frequency,((pos_y+j))%frequency,((pos_z+k))%frequency);    // noise is continouse
+                    vvv[i][j][k] = noise(((pos_x+i))%frequency,((pos_y+j))%frequency,((pos_z+k))%frequency);    
                     }
                 }
             }
@@ -215,8 +215,8 @@ public class Noise
 
     public static double perlin_noise_1(double x, int s, int[] w, int hz)
     {
-        double N= 0.0; //return value
-        int W=0;    //sum of w
+        double N= 0.0; 
+        int W=0;    
         for(int i = 0; i < s ; i++)
         {
             N+=w[i]*noise_1(x,hz);
@@ -228,10 +228,10 @@ public class Noise
         
     public static double perlin_noise_2(double x, double y, int s, int[] w, int hz)
     {
-        //  std::cout << "H"<<std::endl;
         
-        double N= 0.0; //return value
-        int W=0;    //sum of w
+        
+        double N= 0.0; 
+        int W=0;    
         for(int i=0 ; i < s ; i++){
             
             N+=w[i]*noise_2(x,y,hz);
@@ -244,8 +244,8 @@ public class Noise
     
     public static double perlin_noise_3(double x, double y, double z, int s, int[] w, int hz)
     {
-        double N= 0.0; //return value
-        int W=0;    //sum of w
+        double N= 0.0; 
+        int W=0;    
         for (int i=0; i < s ; i++)
         {
             N+=w[i]*noise_3(x,y,z,hz);
@@ -256,8 +256,8 @@ public class Noise
     }
 
     public static double perlin_noise_1(double x, int s, int hz){
-        double N= 0.0; //return value
-        double W= 0.0; //sum of w
+        double N= 0.0; 
+        double W= 0.0; 
         double w = Math.pow(2.0, (double) s);
         for (int i=0; i < s ; i++)
         {
@@ -271,8 +271,8 @@ public class Noise
         
     public static double perlin_noise_2(double x, double y, int s, int hz)
     {
-        double N= 0.0; //return value
-        double W= 0.0; //sum of w
+        double N= 0.0; 
+        double W= 0.0; 
         double w = Math.pow(2.0, (double) s);
         for(int i=0; i < s ; i++)
         {
@@ -286,8 +286,8 @@ public class Noise
     
     public static double perlin_noise_3(double x, double y, double z, int s, int hz)
     {
-        double N= 0.0; //return value
-        double W= 0.0; //sum of w
+        double N= 0.0; 
+        double W= 0.0; 
         double w = Math.pow(2.0, (double) s);
         for (int i=0; i < s ; i++)
         {
@@ -305,8 +305,8 @@ public class Noise
         Vector3d g = new Vector3d();
         
         gradient.x = 0.0; gradient.y = 0.0; gradient.z = 0.0;
-        double W = 0; //sum of w
-        double N = 0; //return value
+        double W = 0; 
+        double N = 0; 
         for (int i=0; i < s ; i++)
         {
             N+=w*noise_1(x,hz,g);
@@ -325,8 +325,8 @@ public class Noise
         Vector3d g = new Vector3d();
         
         gradient.x = 0.0; gradient.y = 0.0; gradient.z = 0.0;
-        double W = 0; //sum of w
-        double N = 0; //return value
+        double W = 0; 
+        double N = 0; 
         for(int i=0; i < s ; i++)
         {
             N+=w*noise_2(x,y,hz,g);
@@ -345,8 +345,8 @@ public class Noise
         Vector3d g = new Vector3d();
         
         gradient.x = 0.0; gradient.y = 0.0; gradient.z = 0.0;
-        double W = 0; //sum of w
-        double N = 0; //return value
+        double W = 0; 
+        double N = 0; 
         for (int i=0; i < s ; i++)
         {
             N+=w*noise_3(x,y+noise(2*hz),z+noise(hz),hz,g);

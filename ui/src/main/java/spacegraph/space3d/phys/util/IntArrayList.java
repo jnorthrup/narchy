@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -58,7 +58,7 @@ public final class IntArrayList {
 
 	public int remove(int index) {
 		int s = this.size;
-		//if (index >= s) throw new IndexOutOfBoundsException();
+		
 		int[] a = this.array;
 		int old = a[index];
 		if (index!= this.size -1)
@@ -68,19 +68,19 @@ public final class IntArrayList {
 	}
 	public void removeQuick(int index) {
 		int s = this.size;
-		//if (index >= s) throw new IndexOutOfBoundsException();
+		
 		int[] a = this.array;
 		if (index!= --this.size)
 			System.arraycopy(a, index+1, a, index, s - index - 1);
 	}
 
 	public int get(int index) {
-		//if (index >= size) throw new IndexOutOfBoundsException();
+		
 		return array[index];
 	}
 
 	public void set(int index, int value) {
-		//if (index >= size) throw new IndexOutOfBoundsException();
+		
 		array[index] = value;
 	}
 	public void setBoth(int indexValue) {

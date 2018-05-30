@@ -33,7 +33,7 @@ public class LayeredZigzag implements Smartblob {
 	/** x[layer][point]. Odd layers have a half point angle offset when in balanced circle view. *
 	public float x[][];
 	*/
-	//TODO public final CornerData corners[][] instead of float x[][] and y[][]
+	
 	
 	/** corners[layer][point] */
 	public final CornerData corners[][];
@@ -42,11 +42,11 @@ public class LayeredZigzag implements Smartblob {
 
 	/** cache for triangle(int layer, int pointInlayer, boolean inward). Often has nulls. */
 	public TriData trianglesInward[][];
-	//protected Shape trianglesInward[][];
+	
 	
 	/** cache for triangle(int layer, int pointInlayer, boolean inward). Often has nulls. */
 	public TriData trianglesOutward[][];
-	//protected Shape trianglesOutward[][];
+	
 	
 	protected final ArrayList<ChangeSpeed> mutablePhysics = new ArrayList();
 	public ArrayList<ChangeSpeed> mutablePhysics(){ return mutablePhysics; }
@@ -67,8 +67,8 @@ public class LayeredZigzag implements Smartblob {
 	/** Can only be cached while !isUpdatingPositions */
 	protected Rectangle cachedBoundingRect;
 	
-	//TODO hold volume constant. Name each triangle by 1 of the points.
-	//Go counterclockwise to next point. Then go inward. Then back to the starting point.
+	
+	
 	
 	/** There must be at least 2 layers, counting the center point
 	which is a layer where all points have equal position.
@@ -80,8 +80,8 @@ public class LayeredZigzag implements Smartblob {
 		this.layers = layers;
 		this.layerSize = layerSize;
 		
-		//y = new float[layers][layerSize];
-		//x = new float[layers][layerSize];
+		
+		
 		corners = new CornerData[layers][layerSize];
 		for(int layer=0; layer<layers; layer++){
 			for(int p=0; p<layerSize; p++){
@@ -92,18 +92,18 @@ public class LayeredZigzag implements Smartblob {
 			}
 		}
 		
-		//trianglesInward = new Shape[layers][layerSize];
-		//trianglesOutward = new Shape[layers][layerSize];
+		
+		
 		trianglesInward = new TriData[layers][layerSize];
 		trianglesOutward = new TriData[layers][layerSize];
 		for(int layer=0; layer<layers; layer++){
 			for(int p=0; p<layerSize; p++){
-				if(0 < layer){ //inward exists
+				if(0 < layer){ 
 					Tri t = new Tri(layer, p, true);
 					boolean edge = layer==layers-1;
 					trianglesInward[layer][p] = new TriData(this, t, edge);
 				}
-				if(layer < layers-1){ //outward exists
+				if(layer < layers-1){ 
 					Tri t = new Tri(layer, p, false);
 					boolean edge = layer==0;
 					trianglesOutward[layer][p] = new TriData(this, t, edge);
@@ -111,16 +111,16 @@ public class LayeredZigzag implements Smartblob {
 			}
 		}
 		
-		//"TODO hook corners to corners"
-		//"TODO hook triangles to triangles"
-		//"TODO for each triangle add to it corner pointers"
-		//"TODO for each corner add to it triangle pointers"
+		
+		
+		
+		
 		for(int layer=0; layer<layers; layer++){
 			for(int p=0; p<layerSize; p++){
-				if(0 < layer){ //inward exists
+				if(0 < layer){ 
 					trianglesInward[layer][p].connectAdjacent();
 				}
-				if(layer < layers-1){ //outward exists
+				if(layer < layers-1){ 
 					trianglesOutward[layer][p].connectAdjacent();
 				}
 			}
@@ -186,8 +186,8 @@ public class LayeredZigzag implements Smartblob {
 			double thisRadius;
 			if(byVolume){
 				double thisVolume = fraction*maxVolume;
-				//volume = pi*r^2
-				//r = sqrt(volume/pi)
+				
+				
 				thisRadius = Math.sqrt(thisVolume/Math.PI);
 			}else{
 				thisRadius = radius*fraction;
@@ -201,7 +201,7 @@ public class LayeredZigzag implements Smartblob {
 				c.x = centerX + (float)(thisRadius*Math.sin(angle));
 			}
 		}
-		//updateBoundingRectangle();
+		
 	}
 	
 	/** Updates each CornerData.startDistance to its current distance */
@@ -221,13 +221,13 @@ public class LayeredZigzag implements Smartblob {
 
 	/*public void nextState(float secondsSinceLastCall){
 		cycle++;
-		//thinkAndChangeSpeed(secondsSinceLastCall);
+		
 		doInternalPhysics(secondsSinceLastCall);
 	}
 	
 	/** does all SmartblobPhysicsPart and updateShape and maybe more *
 	protected void doInternalPhysics(float secondsSinceLastCall){
-		//TODO synchronize on blob.mutablePhysics()?
+		
 		for(ChangeSpeed p : mutablePhysics()){
 			p.doPhysicsPart(this, secondsSinceLastCall);
 		}
@@ -235,7 +235,7 @@ public class LayeredZigzag implements Smartblob {
 	*/
 	
 	/*protected void thinkAndChangeSpeed(float secondsSinceLastCall){
-		//throw new RuntimeException("TODO how can this be done independent of knowing what smartblobsh ave bounced on parts of me? Maybe they add to some force vars in me and I add to them, before this func is called?");
+		
 	}*/
 	
 	/** layer and pointInLayer define the first corner of the triangle.
@@ -329,7 +329,7 @@ public class LayeredZigzag implements Smartblob {
 			float distanceSqr = SmartblobUtil.distanceToOuterLineSegmentSqr(y, x, t);
 			
 			/*
-			//TODO remove this testing code
+			
 			float distScale = 50;
 			float bright = (distScale-distance)/distScale;
 			bright = Math.max(0, Math.min(bright, 1));
@@ -345,7 +345,7 @@ public class LayeredZigzag implements Smartblob {
 		if(SmartblobUtil.isInsideBorder(y, x, closestOuterTri)){
 			return outerTris[closestIndex];
 		}
-		return null; //no collision
+		return null; 
 	}
 	
 	public String toString(){

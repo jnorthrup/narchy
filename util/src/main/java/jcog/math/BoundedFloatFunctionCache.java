@@ -15,10 +15,10 @@ public class BoundedFloatFunctionCache<X> extends MRUCache<X, Float> implements 
         this.f = f;
     }
 
-//    @Override
-//    public final float floatValueOf(X x) {
-//        return computeIfAbsent(x, f::floatValueOf);
-//    }
+
+
+
+
 
 
     @Override

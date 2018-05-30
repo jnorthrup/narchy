@@ -42,18 +42,18 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         byte getIncomingEdgeFirstCharacter();
     }
 
-//    static class NodeCharacterKey implements Prefixed {
-//        private final byte character;
-//
-//        public NodeCharacterKey(byte character) {
-//            this.character = character;
-//        }
-//
-//        @Override
-//        public byte getIncomingEdgeFirstCharacter() {
-//            return this.character;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public interface Node extends Prefixed, Serializable {
 
@@ -79,7 +79,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         } else if (childNodes == null) {
             throw new IllegalStateException("The childNodes argument was null");
         } else {
-            //ensureNoDuplicateEdges(childNodes);
+            
             return childNodes.isEmpty() ?
                     ((value instanceof VoidValue) ?
                             new ByteArrayNodeLeafVoidValue(edgeCharacters) :
@@ -114,9 +114,9 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
     final static Comparator<? super Prefixed> NODE_COMPARATOR = Comparator.comparingInt(Prefixed::getIncomingEdgeFirstCharacter);
 
-    //    private static int cmp(byte o1, byte o2) {
-//        return o1 - o2;
-//    }
+    
+
+
 
     static AbstractBytes getCommonPrefix(AbstractBytes first, AbstractBytes second) {
         if (first == second) return first;
@@ -152,7 +152,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         for (int i = 0, aLength = a.length; i < aLength; i++) {
             Node x = a[i];
             if (x == null)
-                break; //early end of array
+                break; 
             if (x.getIncomingEdgeFirstCharacter() == key)
                 return i;
         }
@@ -168,9 +168,9 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
             if (cmp < 0) low = midIndex + 1;
             else if (cmp > 0) high = midIndex - 1;
-            else return midIndex; // key found
+            else return midIndex; 
         }
-        return -(low + 1);  // key not found
+        return -(low + 1);  
     }
 
 
@@ -190,11 +190,11 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     }
 
     static class ByteArrayNodeLeafVoidValue extends ArrayBytes implements Node {
-        //public final byte[] incomingEdgeCharArray;
+        
 
         public ByteArrayNodeLeafVoidValue(AbstractBytes edgeCharSequence) {
             super(edgeCharSequence.array());
-            //this.incomingEdgeCharArray = edgeCharSequence.array();
+            
         }
 
         @Override
@@ -241,8 +241,8 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
     abstract static class NonLeafNode extends FasterList /*CopyOnWriteArrayList*/<Node> implements Node {
         public final byte[] incomingEdgeCharArray;
-        //private final AtomicReferenceArray<Node> outgoingEdges;
-        //public final CopyOnWriteArrayList<Node> outgoingEdges;
+        
+        
 
         protected NonLeafNode(@NotNull byte[] incomingEdgeCharArray, @NotNull FasterList<Node> outs) {
             super(outs.size(), outs.array());
@@ -261,8 +261,8 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
         @Nullable @Override
         public final Node getOutgoingEdge(byte edgeFirstCharacter) {
-            //AtomicReferenceArrayListAdapter childNodesList = new AtomicReferenceArrayListAdapter<>(childNodes);
-            //NodeCharacterKey searchKey = new NodeCharacterKey(edgeFirstCharacter);
+            
+            
 
             Node[] a = array();
             int index = MyConcurrentRadixTree.search(a, size(), edgeFirstCharacter);
@@ -273,8 +273,8 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
         @Override
         public final void updateOutgoingEdge(@NotNull Node childNode) {
-            //AtomicReferenceArrayListAdapter childNodesList = new AtomicReferenceArrayListAdapter<>(childNodes);
-            //NodeCharacterKey searchKey = new NodeCharacterKey(edgeFirstCharacter);
+            
+            
 
             int index = MyConcurrentRadixTree.search(array(), size(), childNode.getIncomingEdgeFirstCharacter());
             if (index < 0) {
@@ -310,16 +310,16 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
             return null;
         }
 
-        //        public ByteArrayNodeNonLeafNullValue(ByteSeq edgeCharSequence, FasterList<Node> outgoingEdges) {
-//            super(edgeCharSequence, outgoingEdges.toArray(new Node[outgoingEdges.size()]));
-//        }
+        
 
-//        static public ByteArrayNodeNonLeafNullValue the(ByteSeq in, Node... outs) {
-//
-//            Arrays.sort(outs, NODE_COMPARATOR);
-//
-//            return new ByteArrayNodeNonLeafNullValue(in.array(), new CopyOnWriteArrayList<>(outs));
-//        }
+
+
+
+
+
+
+
+
 
 
     }
@@ -388,9 +388,9 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
     public Node root;
 
-    // Write operations acquire write lock.
-    // Read operations are lock-free by default, but can be forced to acquire read locks via constructor flag...
-    // If non-null true, force reading threads to acquire read lock (they will block on writes).
+    
+    
+    
     @Nullable
     private final Lock readLock;
     @NotNull
@@ -439,7 +439,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
     }
 
-    // ------------- Helper methods for serializing writes -------------
+    
 
     /**
      * essentially a version number which increments each acquired write lock, to know if the tree has changed
@@ -480,9 +480,9 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
      * {@inheritDoc}
      */
     public final X put(AbstractBytes key, X value) {
-//        @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-//        O existingValue = (O) putInternal(key, value, true);  // putInternal acquires write lock
-//        return existingValue;
+
+
+
 
         return compute(key, value, (k, r, existing, v) -> v);
     }
@@ -533,14 +533,14 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 case EXACT_MATCH:
                     return getDescendantKeys(prefix, nodeFound);
                 case KEY_ENDS_MID_EDGE:
-                    // Append the remaining characters of the edge to the key.
-                    // For example if we searched for CO, but first matching node was COFFEE,
-                    // the key associated with the first node should be COFFEE...
+                    
+                    
+                    
                     AbstractBytes edgeSuffix = getSuffix(nodeFound.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     prefix = concatenate(prefix, edgeSuffix);
                     return getDescendantKeys(prefix, nodeFound);
                 default:
-                    // Incomplete match means key is not a prefix of any node...
+                    
                     return Collections.emptySet();
             }
         } finally {
@@ -561,9 +561,9 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 case EXACT_MATCH:
                     return getDescendantValues(prefix, Found);
                 case KEY_ENDS_MID_EDGE:
-                    // Append the remaining characters of the edge to the key.
-                    // For example if we searched for CO, but first matching node was COFFEE,
-                    // the key associated with the first node should be COFFEE...
+                    
+                    
+                    
                     return getDescendantValues(
                             concatenate(
                                     prefix,
@@ -572,7 +572,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                                             searchResult.charsMatchedInNodeFound)),
                             Found);
                 default:
-                    // Incomplete match means key is not a prefix of any node...
+                    
                     return Collections.emptySet();
             }
         } finally {
@@ -593,14 +593,14 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 case EXACT_MATCH:
                     return getDescendantKeyValuePairs(prefix, f);
                 case KEY_ENDS_MID_EDGE:
-                    // Append the remaining characters of the edge to the key.
-                    // For example if we searched for CO, but first matching node was COFFEE,
-                    // the key associated with the first node should be COFFEE...
+                    
+                    
+                    
                     AbstractBytes edgeSuffix = getSuffix(f.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     prefix = concatenate(prefix, edgeSuffix);
                     return getDescendantKeyValuePairs(prefix, f);
                 default:
-                    // Incomplete match means key is not a prefix of any node...
+                    
                     return Collections.emptySet();
             }
         } finally {
@@ -647,8 +647,8 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
                 Object v = found.getValue();
                 if (!recurse && ((v == null) || (v == VoidValue.SINGLETON))) {
-                    // This node was created automatically as a split between two branches (implicit node).
-                    // No need to remove it...
+                    
+                    
                     return false;
                 }
 
@@ -659,41 +659,41 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                     boolean removed = tryRemove(xv);
                     if (!recurse) {
                         if (!removed)
-                            return false; //remove was disabled for this entry
+                            return false; 
                     } else {
                         if (!removed) {
-                            reinsertions.add(xv); //continue removing below then reinsert afterward
+                            reinsertions.add(xv); 
                         }
                     }
                 }
 
 
-                // Proceed with deleting the node...
+                
                 FasterList<Node> childEdges = found.getOutgoingEdges();
                 int numChildren = childEdges.size();
                 if (numChildren > 0) {
                     if (!recurse) {
                         if (numChildren > 1) {
-                            // This node has more than one child, so if we delete the value from this node, we still need
-                            // to leave a similar node in place to act as the split between the child edges.
-                            // Just delete the value associated with this node.
-                            // -> Clone this node without its value, preserving its child nodes...
+                            
+                            
+                            
+                            
                             @SuppressWarnings("NullableProblems")
                             Node cloned = createNode(found.getIncomingEdge(), null, found.getOutgoingEdges(), false);
-                            // Re-add the replacement node to the parent...
+                            
                             parent.updateOutgoingEdge(cloned);
                         } else if (numChildren == 1) {
-                            // Node has one child edge.
-                            // Create a new node which is the concatenation of the edges from this node and its child,
-                            // and which has the outgoing edges of the child and the value from the child.
+                            
+                            
+                            
                             Node child = childEdges.get(0);
                             AbstractBytes concatenatedEdges = concatenate(found.getIncomingEdge(), child.getIncomingEdge());
                             Node mergedNode = createNode(concatenatedEdges, child.getValue(), child.getOutgoingEdges(), false);
-                            // Re-add the merged node to the parent...
+                            
                             parent.updateOutgoingEdge(mergedNode);
                         }
                     } else {
-                        //collect all values from the subtree, call onRemove for them. then proceed below with removal of this node and its value
+                        
                         forEach(found, (k, f) -> {
                             boolean removed = tryRemove(f);
                             if (!removed) {
@@ -707,22 +707,22 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 if (numChildren == 0) {
 
                     if (reinsertions.size() == 1) {
-                        //this was a leaf node that was prevented from being removed.
-                        //in this case make no further changes
+                        
+                        
                         return false;
                     }
 
-                    // Node has no children. Delete this node from its parent,
-                    // which involves re-creating the parent rather than simply updating its child edge
-                    // (this is why we need parentNodesParent).
-                    // However if this would leave the parent with only one remaining child edge,
-                    // and the parent itself has no value (is a split node), and the parent is not the root node
-                    // (a special case which we never merge), then we also need to merge the parent with its
-                    // remaining child.
+                    
+                    
+                    
+                    
+                    
+                    
+                    
 
                     FasterList<Node> currentEdgesFromParent = parent.getOutgoingEdges();
-                    // Create a list of the outgoing edges of the parent which will remain
-                    // if we remove this child...
+                    
+                    
 
                     int cen = currentEdgesFromParent.size();
 
@@ -737,30 +737,30 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                         }
                     }
                     if (!differs)
-                        newEdgesOfParent = currentEdgesFromParent; //re-use original
+                        newEdgesOfParent = currentEdgesFromParent; 
 
-                    // Note the parent might actually be the root node (which we should never merge)...
+                    
                     boolean parentIsRoot = (parent == root);
                     Node newParent;
                     if (newEdgesOfParent.size() == 1 && parent.getValue() == null && !parentIsRoot) {
-                        // Parent is a non-root split node with only one remaining child, which can now be merged.
+                        
                         Node parentsRemainingChild = newEdgesOfParent.get(0);
-                        // Merge the parent with its only remaining child...
+                        
                         AbstractBytes concatenatedEdges = concatenate(parent.getIncomingEdge(), parentsRemainingChild.getIncomingEdge());
                         newParent = createNode(concatenatedEdges, parentsRemainingChild.getValue(), parentsRemainingChild.getOutgoingEdges(), parentIsRoot);
                     } else {
-                        // Parent is a node which either has a value of its own, has more than one remaining
-                        // child, or is actually the root node (we never merge the root node).
-                        // Create new parent node which is the same as is currently just without the edge to the
-                        // node being deleted...
+                        
+                        
+                        
+                        
                         newParent = createNode(parent.getIncomingEdge(), parent.getValue(), newEdgesOfParent, parentIsRoot);
                     }
-                    // Re-add the parent node to its parent...
+                    
                     if (parentIsRoot) {
-                        // Replace the root node...
+                        
                         this.root = newParent;
                     } else {
-                        // Re-add the parent node to its parent...
+                        
                         searchResult.parentNodesParent.updateOutgoingEdge(newParent);
                     }
                 }
@@ -792,26 +792,26 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 case EXACT_MATCH:
                     return getDescendantKeys(candidate, searchResult.found);
                 case KEY_ENDS_MID_EDGE:
-                    // Append the remaining characters of the edge to the key.
-                    // For example if we searched for CO, but first matching node was COFFEE,
-                    // the key associated with the first node should be COFFEE...
+                    
+                    
+                    
                     AbstractBytes edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     candidate = concatenate(candidate, edgeSuffix);
                     return getDescendantKeys(candidate, searchResult.found);
                 case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE: {
-                    // Example: if we searched for CX, but deepest matching node was CO,
-                    // the results should include node CO and its descendants...
+                    
+                    
                     AbstractBytes keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
                     AbstractBytes keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
                     return getDescendantKeys(keyOfNodeFound, searchResult.found);
                 }
                 case INCOMPLETE_MATCH_TO_END_OF_EDGE:
                     if (searchResult.charsMatched == 0) {
-                        // Closest match is the root node, we don't consider this a match for anything...
+                        
                         break;
                     }
-                    // Example: if we searched for COFFEE, but deepest matching node was CO,
-                    // the results should include node CO and its descendants...
+                    
+                    
                     AbstractBytes keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
                     return getDescendantKeys(keyOfNodeFound, searchResult.found);
             }
@@ -833,26 +833,26 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 case EXACT_MATCH:
                     return getDescendantValues(candidate, searchResult.found);
                 case KEY_ENDS_MID_EDGE:
-                    // Append the remaining characters of the edge to the key.
-                    // For example if we searched for CO, but first matching node was COFFEE,
-                    // the key associated with the first node should be COFFEE...
+                    
+                    
+                    
                     AbstractBytes edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     candidate = concatenate(candidate, edgeSuffix);
                     return getDescendantValues(candidate, searchResult.found);
                 case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE: {
-                    // Example: if we searched for CX, but deepest matching node was CO,
-                    // the results should include node CO and its descendants...
+                    
+                    
                     AbstractBytes keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
                     AbstractBytes keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
                     return getDescendantValues(keyOfNodeFound, searchResult.found);
                 }
                 case INCOMPLETE_MATCH_TO_END_OF_EDGE:
                     if (searchResult.charsMatched == 0) {
-                        // Closest match is the root node, we don't consider this a match for anything...
+                        
                         break;
                     }
-                    // Example: if we searched for COFFEE, but deepest matching node was CO,
-                    // the results should include node CO and its descendants...
+                    
+                    
                     AbstractBytes keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
                     return getDescendantValues(keyOfNodeFound, searchResult.found);
             }
@@ -893,26 +893,26 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 case EXACT_MATCH:
                     return getDescendantKeyValuePairs(candidate, searchResult.found);
                 case KEY_ENDS_MID_EDGE:
-                    // Append the remaining characters of the edge to the key.
-                    // For example if we searched for CO, but first matching node was COFFEE,
-                    // the key associated with the first node should be COFFEE...
+                    
+                    
+                    
                     AbstractBytes edgeSuffix = getSuffix(searchResult.found.getIncomingEdge(), searchResult.charsMatchedInNodeFound);
                     candidate = concatenate(candidate, edgeSuffix);
                     return getDescendantKeyValuePairs(candidate, searchResult.found);
                 case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE: {
-                    // Example: if we searched for CX, but deepest matching node was CO,
-                    // the results should include node CO and its descendants...
+                    
+                    
                     AbstractBytes keyOfParentNode = getPrefix(candidate, searchResult.charsMatched - searchResult.charsMatchedInNodeFound);
                     AbstractBytes keyOfNodeFound = concatenate(keyOfParentNode, searchResult.found.getIncomingEdge());
                     return getDescendantKeyValuePairs(keyOfNodeFound, searchResult.found);
                 }
                 case INCOMPLETE_MATCH_TO_END_OF_EDGE:
                     if (searchResult.charsMatched == 0) {
-                        // Closest match is the root node, we don't consider this a match for anything...
+                        
                         break;
                     }
-                    // Example: if we searched for COFFEE, but deepest matching node was CO,
-                    // the results should include node CO and its descendants...
+                    
+                    
                     AbstractBytes keyOfNodeFound = getPrefix(candidate, searchResult.charsMatched);
                     return getDescendantKeyValuePairs(keyOfNodeFound, searchResult.found);
             }
@@ -974,7 +974,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         for (int i = 0, lSize = l.size(); i < lSize; i++) {
             int s = _size(l.get(i));
             if (s < 0)
-                return -1; //cascade
+                return -1; 
             sum += s;
             if (sum > limit)
                 return -1;
@@ -1020,7 +1020,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         return (v != null) && v != VoidValue.SINGLETON;
     }
 
-    // ------------- Helper method for put() -------------
+    
     Object putInternal(CharSequence key, Object value, boolean overwrite) {
         throw new UnsupportedOperationException();
     }
@@ -1038,7 +1038,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     @NotNull
     public SearchResult random(@NotNull SearchResult at, float descendProb, Random rng) {
         Node current, parent, parentParent;
-        //if (at != null && at.found != null) {
+        
         current = at.found;
         parent = at.parentNode;
         parentParent = at.parentNodesParent;
@@ -1048,13 +1048,13 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     @NotNull
     public SearchResult random(Node current, Node parent, Node parentParent, float descendProb, Random rng) {
 
-        //}
+        
 
         while (true) {
             FasterList<Node> c = current.getOutgoingEdges();
             int s = c.size();
             if (s == 0) {
-                break; //select it
+                break; 
             } else {
                 if (rng.nextFloat() < descendProb) {
                     int which = rng.nextInt(s);
@@ -1064,7 +1064,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                     parent = current;
                     current = next;
                 } else {
-                    break; //select it
+                    break; 
                 }
             }
         }
@@ -1088,9 +1088,9 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
      * @return The existing value for this key, if there was one, otherwise null
      */
     <V> X compute(@NotNull AbstractBytes key, V value, QuadFunction<AbstractBytes, SearchResult, X, V, X> computeFunc) {
-//        if (key.length() == 0) {
-//            throw new IllegalArgumentException("The key argument was zero-length");
-//        }
+
+
+
 
 
         int version;
@@ -1105,7 +1105,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         acquireReadLockIfNecessary();
         try {
 
-            // Note we search the tree here after we have acquired the write lock...
+            
             result = searchTree(key);
             found = result.found;
             matched = result.charsMatched;
@@ -1123,14 +1123,14 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
             try {
 
                 if (version + 1 != version2) {
-                    //search again because the tree has changed since the initial lookup
+                    
                     result = searchTree(key);
                     found = result.found;
                     matched = result.charsMatched;
                     foundValue = found != null ? found.getValue() : null;
                     foundX = ((matched == key.length()) && (foundValue != VoidValue.SINGLETON)) ? ((X) foundValue) : null;
                     if (foundX == newValue)
-                        return newValue; //no change; the requested value has already been supplied since the last access
+                        return newValue; 
                 }
 
                 SearchResult.Classification classification = result.classification;
@@ -1141,51 +1141,51 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 FasterList<Node> oedges = found.getOutgoingEdges();
                 switch (classification) {
                     case EXACT_MATCH:
-                        // Search found an exact match for all edges leading to this node.
-                        // -> Add or update the value in the node found, by replacing
-                        // the existing node with a new node containing the value...
+                        
+                        
+                        
 
-                        // First check if existing node has a value, and if we are allowed to overwrite it.
-                        // Return early without overwriting if necessary...
+                        
+                        
 
                         if (newValue != foundValue) {
-                            //clone and reattach
+                            
                             cloneAndReattach(result, found, foundValue, oedges);
                         }
                         break;
                     case KEY_ENDS_MID_EDGE: {
-                        // Search ran out of characters from the key while in the middle of an edge in the node.
-                        // -> Split the node in two: Create a new parent node storing the new value,
-                        // and a new child node holding the original value and edges from the existing node...
+                        
+                        
+                        
                         AbstractBytes keyCharsFromStartOfNodeFound = key.subSequence(matched - result.charsMatchedInNodeFound, key.length());
                         AbstractBytes commonPrefix = getCommonPrefix(keyCharsFromStartOfNodeFound, found.getIncomingEdge());
                         AbstractBytes suffixFromExistingEdge = subtractPrefix(found.getIncomingEdge(), commonPrefix);
 
 
-                        // Create new nodes...
+                        
                         Node newChild = createNode(suffixFromExistingEdge, foundValue, oedges, false);
 
                         Node newParent = createNode(commonPrefix, newValue, new FasterList(new Node[] { newChild }), false);
 
-                        // Add the new parent to the parent of the node being replaced (replacing the existing node)...
+                        
                         result.parentNode.updateOutgoingEdge(newParent);
 
                         break;
                     }
                     case INCOMPLETE_MATCH_TO_END_OF_EDGE:
-                        // Search found a difference in characters between the key and the start of all child edges leaving the
-                        // node, the key still has trailing unmatched characters.
-                        // -> Add a new child to the node, containing the trailing characters from the key.
+                        
+                        
+                        
 
-                        // NOTE: this is the only branch which allows an edge to be added to the root.
-                        // (Root node's own edge is "" empty string, so is considered a prefixing edge of every key)
+                        
+                        
 
-                        // Create a new child node containing the trailing characters...
+                        
                         AbstractBytes keySuffix = key.subSequence(matched, key.length());
 
                         Node newChild = createNode(keySuffix, newValue, emptyList, false);
 
-                        // Clone the current node adding the new child...
+                        
                         int numEdges = oedges.size();
                         Node[] edgesArray;
                         if (numEdges > 0) {
@@ -1201,21 +1201,21 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                         break;
 
                     case INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE:
-                        // Search found a difference in characters between the key and the characters in the middle of the
-                        // edge in the current node, and the key still has trailing unmatched characters.
-                        // -> Split the node in three:
-                        // Let's call node found: NF
-                        // (1) Create a new node N1 containing the unmatched characters from the rest of the key, and the
-                        // value supplied to this method
-                        // (2) Create a new node N2 containing the unmatched characters from the rest of the edge in NF, and
-                        // copy the original edges and the value from NF unmodified into N2
-                        // (3) Create a new node N3, which will be the split node, containing the matched characters from
-                        // the key and the edge, and add N1 and N2 as child nodes of N3
-                        // (4) Re-add N3 to the parent node of NF, effectively replacing NF in the tree
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
 
                         AbstractBytes suffixFromKey = key.subSequence(matched, key.length());
 
-                        // Create new nodes...
+                        
                         Node n1 = createNode(suffixFromKey, newValue, emptyList, false);
 
                         AbstractBytes keyCharsFromStartOfNodeFound = key.subSequence(matched - result.charsMatchedInNodeFound, key.length());
@@ -1228,11 +1228,11 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
                         result.parentNode.updateOutgoingEdge(n3);
 
-                        // Return null for the existing value...
+                        
                         break;
 
                     default:
-                        // This is a safeguard against a new enum constant being added in future.
+                        
                         throw new IllegalStateException("Unexpected classification for search result: " + result);
                 }
             } finally {
@@ -1249,7 +1249,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
         Node clonedNode = createNode(ie, foundValue, edges, root);
 
-        // Re-add the cloned node to its parent node...
+        
         if (root) {
             this.root = clonedNode;
         } else {
@@ -1257,7 +1257,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
     }
 
-    // ------------- Helper method for finding descendants of a given node -------------
+    
 
     /**
      * Returns a lazy iterable which will return {@link CharSequence} keys for which the given key is a prefix.
@@ -1285,23 +1285,23 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
                     @Override
                     protected O computeNext() {
-                        // Traverse to the next matching node in the tree and return its key and value...
+                        
                         while (descendantNodes.hasNext()) {
                             NodeKeyPair nodeKeyPair = descendantNodes.next();
                             Object value = nodeKeyPair.node.getValue();
                             if (value != null) {
-                                // Dealing with a node explicitly added to tree (rather than an automatically-added split node).
+                                
 
-                                // We have to cast to generic type here, because Node objects are not generically typed.
-                                // Background: Node objects are not generically typed, because arrays can't be generically typed,
-                                // and we use arrays in nodes. We choose to cast here (in wrapper logic around the tree) rather than
-                                // pollute the already-complex tree manipulation logic with casts.
+                                
+                                
+                                
+                                
                                 @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
                                 O valueTyped = (O) value;
                                 return valueTyped;
                             }
                         }
-                        // Finished traversing the tree, no more matching nodes to return...
+                        
                         return endOfData();
                     }
                 };
@@ -1327,20 +1327,20 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
                     @Override
                     protected Pair<AbstractBytes, O> computeNext() {
-                        // Traverse to the next matching node in the tree and return its key and value...
+                        
                         while (descendantNodes.hasNext()) {
                             NodeKeyPair nodeKeyPair = descendantNodes.next();
                             Object value = nodeKeyPair.node.getValue();
                             if (value != null) {
-                                // Dealing with a node explicitly added to tree (rather than an automatically-added split node).
+                                
 
-                                // Call the transformKeyForResult method to allow key to be transformed before returning to client.
-                                // Used by subclasses such as ReversedRadixTree implementations...
+                                
+                                
 
                                 return pair(transformKeyForResult(nodeKeyPair.key), (O) value);
                             }
                         }
-                        // Finished traversing the tree, no more matching nodes to return...
+                        
                         return endOfData();
                     }
                 };
@@ -1371,7 +1371,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 return new LazyIterator<NodeKeyPair>() {
 
                     final Deque<NodeKeyPair> stack =
-                            //new LinkedList<NodeKeyPair>();
+                            
                             new ArrayDeque();
 
                     {
@@ -1388,9 +1388,9 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                         NodeKeyPair current = stack.pop();
                         FasterList<Node> childNodes = current.node.getOutgoingEdges();
 
-                        // -> Iterate child nodes in reverse order and so push them onto the stack in reverse order,
-                        // to counteract that pushing them onto the stack alone would otherwise reverse their processing order.
-                        // This ensures that we actually process nodes in ascending alphabetical order.
+                        
+                        
+                        
                         for (int i = childNodes.size() - 1; i >= 0; i--) {
                             Node child = childNodes.get(i);
                             stack.push(new NodeKeyPair(child,
@@ -1437,7 +1437,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     }
 
 
-    // ------------- Helper method for searching the tree and associated SearchResult object -------------
+    
 
     /**
      * Traverses the tree and finds the node which matches the longest prefix of the given key.
@@ -1505,8 +1505,8 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         while (charsMatched < keyLength) {
             Node nextNode = currentNode.getOutgoingEdge(key.at(charsMatched));
             if (nextNode == null) {
-                // Next node is a dead end...
-                //noinspection UnnecessaryLabelOnBreakStatement
+                
+                
                 break outer_loop;
             }
 
@@ -1517,8 +1517,8 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
             AbstractBytes currentNodeEdgeCharacters = currentNode.getIncomingEdge();
             for (int i = 0, numEdgeChars = currentNodeEdgeCharacters.length(); i < numEdgeChars && charsMatched < keyLength; i++) {
                 if (currentNodeEdgeCharacters.at(i) != key.at(charsMatched)) {
-                    // Found a difference in chars between character in key and a character in current node.
-                    // Current node is the deepest match (inexact match)....
+                    
+                    
                     break outer_loop;
                 }
                 charsMatched++;
@@ -1550,7 +1550,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
             INCOMPLETE_MATCH_TO_END_OF_EDGE,
             INCOMPLETE_MATCH_TO_MIDDLE_OF_EDGE,
             KEY_ENDS_MID_EDGE,
-            INVALID // INVALID is never used, except in unit testing
+            INVALID 
         }
 
         public SearchResult(Node found, Node parentNode, Node parentParentNode) {
@@ -1569,7 +1569,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
             this.parentNode = parentNode;
             this.parentNodesParent = parentNodesParent;
 
-            // Classify this search result...
+            
             this.classification = c;
         }
 
@@ -1625,34 +1625,34 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
         @Override
         protected AbstractBytes computeNext() {
-            // Traverse to the next matching node in the tree and return its key and value...
+            
             Iterator<NodeKeyPair> nodes = this.descendantNodes;
             while (nodes.hasNext()) {
                 NodeKeyPair nodeKeyPair = nodes.next();
                 Object value = nodeKeyPair.node.getValue();
                 if (value != null) {
-                    // Dealing with a node explicitly added to tree (rather than an automatically-added split node).
+                    
 
-                    // Call the transformKeyForResult method to allow key to be transformed before returning to client.
-                    // Used by subclasses such as ReversedRadixTree implementations...
+                    
+                    
                     AbstractBytes optionallyTransformedKey = transformKeyForResult(nodeKeyPair.key);
 
-                    // -> Convert the CharSequence to a String before returning, to avoid set equality issues,
-                    // because equals() and hashCode() is not specified by the CharSequence API contract...
+                    
+                    
                     return optionallyTransformedKey;
                 }
             }
-            // Finished traversing the tree, no more matching nodes to return...
+            
             return endOfData();
         }
 
 
     }
 
-//    public void forEach(Consumer<? super O> c) {
-//        //TODO rewrite as pure forEach visitor
-//        this.forEach(c);
-//    }
+
+
+
+
 
     @Override
     public Iterator<X> iterator() {

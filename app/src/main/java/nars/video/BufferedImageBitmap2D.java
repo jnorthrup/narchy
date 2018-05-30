@@ -34,25 +34,25 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
         return new BufferedImageBitmap2D(this){
             @Override
             public int width() {
-                return BufferedImageBitmap2D.this.width(); //HACK
+                return BufferedImageBitmap2D.this.width(); 
             }
             @Override
             public int height() {
-                return BufferedImageBitmap2D.this.height(); //HACK
+                return BufferedImageBitmap2D.this.height(); 
             }
         }.mode(c);
     }
 
-    //HACK TODO use better filter
+    
     public BufferedImageBitmap2D blur() {
         return new BufferedImageBitmap2D(this){
             @Override
             public int width() {
-                return BufferedImageBitmap2D.this.width(); //HACK
+                return BufferedImageBitmap2D.this.width(); 
             }
             @Override
             public int height() {
-                return BufferedImageBitmap2D.this.height(); //HACK
+                return BufferedImageBitmap2D.this.height(); 
             }
 
             @Override
@@ -85,23 +85,23 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
 
     @Override
     public void update() {
-        if (this.source!=null) //get next frame
+        if (this.source!=null) 
             out = source.get();
     }
 
-//    public void see(EachPixelRGB p) {
-//        final BufferedImage b = this.out;
-//        if (b == null)
-//            return;
-//
-//        int height = height();
-//        int width = width();
-//        for (int y = 0; y < height; y++) {
-//            for (int x = 0; x < width; x++) {
-//                p.pixel(x, y, b.getRGB(x, y));
-//            }
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -137,13 +137,13 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
         return Float.NaN;
     }
 
-//    public void updateBuffered(EachPixelRGBf m) {
-//        see(
-//                (x, y, p) -> {
-//                    intToFloat(m, x, y, p);
-//                }
-//        );
-//    }
+
+
+
+
+
+
+
 
     public float red(int x, int y) {
         return outsideBuffer(x, y) ? Float.NaN : decodeRed(out.getRGB(x, y));

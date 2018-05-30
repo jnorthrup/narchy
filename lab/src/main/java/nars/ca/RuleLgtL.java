@@ -1,45 +1,45 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Larger than Life rules
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class RuleLgtL {
-	public boolean isHist; // with history?
-	public int iClo; // count of states
-	public int iRng; // range
-	public int iNgh; // neighbourhood type
-	public int iSMin, iSMax; // surviving rules
-	public int iBMin, iBMax; // birth rules
-	public boolean isCentr; // use the center (middle) cell?
+	public boolean isHist; 
+	public int iClo; 
+	public int iRng; 
+	public int iNgh; 
+	public int iSMin, iSMax; 
+	public int iBMin, iBMax; 
+	public boolean isCentr; 
 
 	public static final int MAX_RANGE = 10;
 
-	// ----------------------------------------------------------------
+	
 	public RuleLgtL() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
-		isHist = false; // with history?
-		iClo = 2; // count of colors
-		iRng = 5; // range
-		iNgh = MJRules.NGHTYP_MOOR; // neighbourhood type
+		isHist = false; 
+		iClo = 2; 
+		iRng = 5; 
+		iNgh = MJRules.NGHTYP_MOOR; 
 		iSMin = 34;
-		iSMax = 58; // surviving rules
+		iSMax = 58; 
 		iBMin = 34;
-		iBMax = 45; // birth rules
-		isCentr = true; // use the center (middle) cell?
+		iBMax = 45; 
+		isCentr = true; 
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
-	// Example: "R3,C0,M1,S34..58,B34..45,NM"
+	
+	
+	
 	public void InitFromString(String sStr) {
-		// noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok, sBff;
 		int i, iTmp;
@@ -49,33 +49,33 @@ public class RuleLgtL {
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			sTok = sTok.trim();
-			// System.out.println(sTok);
+			
 
-			// noinspection IfStatementWithTooManyBranches
-			if (sTok.length() > 0 && sTok.charAt(0) == 'R') // range
+			
+			if (sTok.length() > 0 && sTok.charAt(0) == 'R') 
 			{
 				iRng = Integer.valueOf(sTok.substring(1));
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'C') // states
-																	// (history)
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'C') 
+																	
 			{
 				i = Integer.valueOf(sTok.substring(1));
 				if (i >= 3) {
-					isHist = true; // history, get the states count
+					isHist = true; 
 					iClo = i;
 				} else
-					isHist = false; // states count is meaningless
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'M') // center
-																	// cell?
+					isHist = false; 
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'M') 
+																	
 			{
 				isCentr = (Integer.valueOf(sTok.substring(1)) > 0);
-			} else if (sTok.startsWith("NM")) // Moore neighbourhood
+			} else if (sTok.startsWith("NM")) 
 			{
 				iNgh = MJRules.NGHTYP_MOOR;
-			} else if (sTok.startsWith("NN")) // von Neumann neighbourhood
+			} else if (sTok.startsWith("NN")) 
 			{
 				iNgh = MJRules.NGHTYP_NEUM;
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'S') // surviving
-																	// rules
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'S') 
+																	
 			{
 				if (sTok.length() >= 4) {
 					iTmp = sTok.indexOf("..");
@@ -86,8 +86,8 @@ public class RuleLgtL {
 						iSMax = Integer.valueOf(sBff);
 					}
 				}
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'B') // birth
-																	// rules
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'B') 
+																	
 			{
 				if (sTok.length() >= 4) {
 					iTmp = sTok.indexOf("..");
@@ -99,61 +99,61 @@ public class RuleLgtL {
 			}
 		}
 
-		// no more tokens
-		Validate(); // now correct parameters
+		
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	//
+	
+	
 	public void InitFromPrm(boolean is_Hist, int i_Clo, int i_Rng, int i_Ngh,
 			int i_SMin, int i_SMax, int i_BMin, int i_BMax, boolean is_Centr) {
-		isHist = is_Hist; // with history?
-		iClo = i_Clo; // count of colors
-		iRng = i_Rng; // range
-		iNgh = i_Ngh; // neighbourhood type
+		isHist = is_Hist; 
+		iClo = i_Clo; 
+		iRng = i_Rng; 
+		iNgh = i_Ngh; 
 		iSMin = i_SMin;
-		iSMax = i_SMax; // surviving rules
+		iSMax = i_SMax; 
 		iBMin = i_BMin;
-		iBMax = i_BMax; // birth rules
-		isCentr = is_Centr; // use the center (middle) cell?
+		iBMax = i_BMax; 
+		isCentr = is_Centr; 
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the rule string
-	// Example: "R3,C0,M1,S34..58,B34..45,NM"
+	
+	
+	
 	public String GetAsString() {
 		String sBff;
 		int ih;
 
-		// correct parameters first
+		
 		Validate();
 
-		// range
+		
 		sBff = 'R' + String.valueOf(iRng);
 
-		// states
+		
 		ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
-		// center cell
+		
 		sBff = sBff + (isCentr ? ",M1" : ",M0");
 
-		// S rules
+		
 		sBff = sBff + ",S" + iSMin + ".." + iSMax;
 
-		// B rules
+		
 		sBff = sBff + ",B" + iBMin + ".." + iBMax;
 
-		// neighbourhood
+		
 		sBff = sBff + (iNgh == MJRules.NGHTYP_NEUM ? ",NN" : ",NM");
 
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the parameters, correct them if necessary.
+	
+	
 	public void Validate() {
 		int i, iMax;
 
@@ -168,11 +168,11 @@ public class RuleLgtL {
 			iRng = MAX_RANGE;
 
 		if (iNgh != MJRules.NGHTYP_NEUM)
-			iNgh = MJRules.NGHTYP_MOOR; // default - Moore neighbourhood
+			iNgh = MJRules.NGHTYP_MOOR; 
 
 		iMax = isCentr ? 1 : 0;
 		for (i = 1; i <= iRng; i++)
-			// calculate the max. threshold
+			
 			iMax = iMax + i * 8;
 
 		iSMin = BoundInt(1, iSMin, iMax);
@@ -181,7 +181,7 @@ public class RuleLgtL {
 		iBMax = BoundInt(1, iBMax, iMax);
 	}
 
-	// ----------------------------------------------------------------
+	
 	private int BoundInt(int iMin, int iVal, int iMax) {
 		if (iVal < iMin)
 			return iMin;
@@ -190,27 +190,27 @@ public class RuleLgtL {
 		return iVal;
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, j, iCnt;
-		int[] lurd = new int[4]; // 0-left, 1-up, 2-right, 3-down
-		int[] xVector = new int[21]; // 0..9, 10, 11..20
-		int[] yVector = new int[21]; // 0..9, 10, 11..20
+		int[] lurd = new int[4]; 
+		int[] xVector = new int[21]; 
+		int[] yVector = new int[21]; 
 		int colL, colR, rowT, rowB;
 		int ic, ir, iTmp;
 		int iTmpC, iTmpR, iTmpBlobC, iTmpBlobR;
 		int ctrCol, ctrRow;
-		boolean fMoore = (iNgh == MJRules.NGHTYP_MOOR); // Moore neighbourhood?
-														// Else von Neumann.
+		boolean fMoore = (iNgh == MJRules.NGHTYP_MOOR); 
+														
 
 		for (i = 0; i < sizX; i++) {
 			for (j = 0; j < sizY; j++) {
-				// prepare vectors holding proper rows and columns
-				// of the n-range neighbourhood
+				
+				
 				xVector[10] = i;
 				yVector[10] = j;
 				for (iTmp = 1; iTmp <= iRng; iTmp++) {
@@ -227,13 +227,13 @@ public class RuleLgtL {
 					yVector[10 + iTmp] = rowB < sizY ? rowB : rowB - sizY;
 				}
 				bOldVal = crrState[i][j];
-				bNewVal = bOldVal; // default - no change
+				bNewVal = bOldVal; 
 				if (bNewVal >= iClo)
 					bNewVal = (short) (iClo - 1);
 
-				iCnt = 0; // count of firing neighbours
+				iCnt = 0; 
 				if (isHist) {
-					if (bOldVal <= 1) // can survive or be born
+					if (bOldVal <= 1) 
 					{
 						for (ic = 10 - iRng; ic <= 10 + iRng; ic++) {
 							for (ir = 10 - iRng; ir <= 10 + iRng; ir++) {
@@ -248,32 +248,32 @@ public class RuleLgtL {
 								}
 							}
 						}
-						// determine the new cell state
-						if (bOldVal == 0) // was dead
+						
+						if (bOldVal == 0) 
 						{
-							if ((iCnt >= iBMin) && (iCnt <= iBMax)) // rules for
-																	// birth
-								bNewVal = 1; // birth
-						} else // was 1 - alive
+							if ((iCnt >= iBMin) && (iCnt <= iBMax)) 
+																	
+								bNewVal = 1; 
+						} else 
 						{
-							if ((iCnt >= iSMin) && (iCnt <= iSMax)) // rules for
-																	// surviving
+							if ((iCnt >= iSMin) && (iCnt <= iSMax)) 
+																	
 							{
 								bNewVal = 1;
-							} else // isolation or overpopulation
+							} else 
 							{
 								bNewVal = bOldVal < (iClo - 1)
 										? (short) (bOldVal + 1)
 										: 0;
 							}
 						}
-					} else // was older than 1
+					} else 
 					{
 						bNewVal = bOldVal < (iClo - 1)
 								? (short) (bOldVal + 1)
 								: 0;
 					}
-				} else // no history
+				} else 
 				{
 					for (ic = 10 - iRng; ic <= 10 + iRng; ic++) {
 						for (ir = 10 - iRng; ir <= 10 + iRng; ir++) {
@@ -288,39 +288,39 @@ public class RuleLgtL {
 							}
 						}
 					}
-					// determine the cell status
-					if (bOldVal == 0) // was dead
+					
+					if (bOldVal == 0) 
 					{
-						if ((iCnt >= iBMin) && (iCnt <= iBMax)) // rules for
-																// birth
+						if ((iCnt >= iBMin) && (iCnt <= iBMax)) 
+																
 							bNewVal = ColoringMethod == 1
 									? 1
 									: (short) (mjb.Cycle
 											% (mjb.StatesCount - 1) + 1);
-					} else // was alive
+					} else 
 					{
-						if ((iCnt >= iSMin) && (iCnt <= iSMax)) // rules for
-																// surviving
+						if ((iCnt >= iSMin) && (iCnt <= iSMax)) 
+																
 						{
-							if (ColoringMethod == 1) // standard
+							if (ColoringMethod == 1) 
 							{
 								bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
 							} else {
-								// alternate coloring - cells remain not changed
+								
 							}
 						} else
-							bNewVal = 0; // isolation or overpopulation
+							bNewVal = 0; 
 					}
 				}
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) // change detected
+				if (bNewVal != bOldVal) 
 				{
-					modCnt++; // one more modified cell
+					modCnt++; 
 				}
-			} // for j
-		} // for i
+			} 
+		} 
 
 		return modCnt;
 	}
-	// ----------------------------------------------------------------
+	
 }

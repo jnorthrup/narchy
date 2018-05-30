@@ -53,13 +53,13 @@ public class DiskDevice implements Device, DiskConst {
 
     @Override
     public int process(AbstractRdpPacket data, IRP irp) throws IOException {
-//        System.out.print("执行" + irp.majorFunction + ", fileId=" + irp.fileId);
+
         DriveFile df = files.get(irp.fileId);
-//        if(df != null) {
-//            System.out.println(",filePath=" + df.fullPath);
-//        } else {
-//            System.out.println();
-//        }
+
+
+
+
+
         
         switch(irp.majorFunction) {
         case IRP_MJ_READ:
@@ -195,7 +195,7 @@ public class DiskDevice implements Device, DiskConst {
         }
         files.remove(irp.fileId);
         
-        //5 bytes padding
+        
         out.writeInt(0);
         out.write(0);
         
@@ -250,9 +250,9 @@ public class DiskDevice implements Device, DiskConst {
             byte[] bf = new byte[length];
             data.copyToByteArray(bf, 0, data.position(), length);
             raf.write(bf);
-//            for(int l = 0; l < length; l++) {
-//                raf.write(data.get8());
-//            }
+
+
+
             writeIntLe(out, length);
             out.write(0);
         } catch (FileNotFoundException e) {
@@ -271,11 +271,11 @@ public class DiskDevice implements Device, DiskConst {
         
         DriveFile df = files.get(irp.fileId);
         if(df == null || !df.file.exists()) {
-            out.writeInt(1);//length
+            out.writeInt(1);
             out.write(0);
             return RD_STATUS_ACCESS_DENIED;
         }
-        File f = df.file; //new File(df.file);
+        File f = df.file; 
         int file_attributes = 0;
         if (df.file.isDirectory()) {
             file_attributes |= FILE_ATTRIBUTE_DIRECTORY;
@@ -293,17 +293,17 @@ public class DiskDevice implements Device, DiskConst {
         case FileBasicInformation:
 
             long now = System.currentTimeMillis();
-            long createTime = now; //TODO getWindowsTime(subf.getCreationTime());
-            long lastAccessTime = now; //TODO getWindowsTime(subf.getLastAccessTime());
-            long lastWriteTime = now; //TODO getWindowsTime(subf.getLastModifiedTime());
+            long createTime = now; 
+            long lastAccessTime = now; 
+            long lastWriteTime = now; 
 
 
-            /* http://msdn.microsoft.com/en-us/library/cc232094.aspx */
-//            long createTime = getWindowsTime(createTime);
-//            long lastAccessTime = getWindowsTime(f.getLastAccessTime());
-//            long lastWriteTime = getWindowsTime(f.getLastModifiedTime());
+            /* http:
+
+
+
             
-            writeIntLe(out, 36);//length
+            writeIntLe(out, 36);
             writeLongLe(out, createTime);
             writeLongLe(out, lastAccessTime);
             writeLongLe(out, lastWriteTime);
@@ -313,7 +313,7 @@ public class DiskDevice implements Device, DiskConst {
             break;
 
         case FileStandardInformation:
-            /*  http://msdn.microsoft.com/en-us/library/cc232088.aspx */
+            /*  http:
             writeIntLe(out, 22); /* Length */
             writeLongLe(out, df.file.length());/* AllocationSize */
             writeLongLe(out, df.file.length()); /* EndOfFile */
@@ -324,13 +324,13 @@ public class DiskDevice implements Device, DiskConst {
             break;
 
         case FileAttributeTagInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232093.aspx */
+            /* http:
             writeIntLe(out, 8); /* Length */
             writeIntLe(out, file_attributes); /* FileAttributes */
             writeIntLe(out, 0); /* ReparseTag */
             break;
         default:
-            out.writeInt(1);//length
+            out.writeInt(1);
             out.write(0);
             return RD_STATUS_UNSUCCESS;
         }
@@ -345,33 +345,33 @@ public class DiskDevice implements Device, DiskConst {
         data.positionAdd(24);
         DriveFile df = files.get(irp.fileId);
         if(df == null || !df.file.exists()) {
-            out.writeInt(length);//length
-            out.write(0);//padding
+            out.writeInt(length);
+            out.write(0);
             return RD_STATUS_ACCESS_DENIED;
         }
         switch(fsInformationClass) {
         case FileBasicInformation:
-            //do nothing
+            
 
             File f = df.file;
-//            of.file.set
-//            f.set
+
+
             long createTime = data.getLittleEndian32() + (((long)data.getLittleEndian32()) << 32);
             long accessTime = parseWindowsTime((long)data.getLittleEndian32() + ((long)(data.getLittleEndian32()) << 32));
             long writeTime = parseWindowsTime((long)data.getLittleEndian32() + ((long)(data.getLittleEndian32()) << 32));
             long changeTime = parseWindowsTime((long)data.getLittleEndian32() + ((long)(data.getLittleEndian32()) << 32));
             int fileAttributes = data.getLittleEndian32();
             
-//            df.file.setLastModified(writeTime);
-            out.writeInt(length);//length
-            out.write(0);//padding
+
+            out.writeInt(length);
+            out.write(0);
             return RD_STATUS_UNSUCCESS;
             
-//            break;
+
         case FileEndOfFileInformation:
-            // we can do nothing
+            
             break;
-        case FileDispositionInformation://This information class is used to mark a file for deletion
+        case FileDispositionInformation:
             if(length > 0) {
                 df.delete_pending = (data.get8() != 0);
             } else {
@@ -381,8 +381,8 @@ public class DiskDevice implements Device, DiskConst {
                 if(df.file.isDirectory()) {
                     String[] fs = df.file.list();
                     if(fs != null && fs.length > 0) {
-                        out.writeInt(0);//length
-                        out.write(0);//padding
+                        out.writeInt(0);
+                        out.write(0);
                         return RD_STATUS_DIRECTORY_NOT_EMPTY;
                     }
                 }
@@ -390,7 +390,7 @@ public class DiskDevice implements Device, DiskConst {
             break;
         case FileRenameInformation:
             int replaceIfExists = data.get8();
-            int rootDirectory = data.get8();//RootDirectory
+            int rootDirectory = data.get8();
             int pathLength = data.getLittleEndian32();
             String fileName = ""; 
             if(pathLength > 0 && (pathLength / 2) < 256) {
@@ -399,34 +399,34 @@ public class DiskDevice implements Device, DiskConst {
                 fileName = parsePath(pathByte);
                 fileName = fileName.replaceAll("\\\\", "/");
             } else {
-                out.writeInt(length);//length
-                out.write(0);//padding
+                out.writeInt(length);
+                out.write(0);
                 return RD_STATUS_INVALID_PARAMETER;
             }
             if(!df.file.renameTo(new File(basePath, fileName))) {
-                out.writeInt(length);//length
-                out.write(0);//padding
+                out.writeInt(length);
+                out.write(0);
                 return RD_STATUS_ACCESS_DENIED;
             }
             break;
         case FileAllocationInformation:
             break;
         default :
-            out.writeInt(length);//length
-            out.write(0);//padding
+            out.writeInt(length);
+            out.write(0);
             return RD_STATUS_INVALID_PARAMETER;
         }
         
-        out.writeInt(length);//length
-        out.write(0);//padding
+        out.writeInt(length);
+        out.write(0);
         return RD_STATUS_SUCCESS;
     }
     
     private int drive_process_irp_query_volume_information(AbstractRdpPacket data, IRP irp) throws IOException {
         DataOutputStream out = irp.out;
         int fsInformationClass = data.getLittleEndian32();
-//        int length = data.getLittleEndian32();
-//        data.incrementPosition(24);
+
+
         
         int serial = 1;
         
@@ -436,7 +436,7 @@ public class DiskDevice implements Device, DiskConst {
         case FileFsVolumeInformation:
             length = 2 * fs_label.length();
             writeIntLe(out, 17 + length);
-            out.writeLong(0);//VolumeCreationTime
+            out.writeLong(0);
             writeIntLe(out, serial);
             writeIntLe(out, length);
             
@@ -450,16 +450,16 @@ public class DiskDevice implements Device, DiskConst {
             break;
 
         case FileFsSizeInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232107.aspx */
+            /* http:
             writeIntLe(out, 24); /* Length */
             writeLongLe(out, 10L * 1024 * 1024);
-            writeLongLe(out, 5L * 1024 * 1024);//可用
-            writeIntLe(out, 4 * 1024 / 0x200);//8 sectors/unit
-            writeIntLe(out, 0x200);//512 bytes/sector
+            writeLongLe(out, 5L * 1024 * 1024);
+            writeIntLe(out, 4 * 1024 / 0x200);
+            writeIntLe(out, 0x200);
             break;
 
         case FileFsAttributeInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232101.aspx */
+            /* http:
             length = 2 * fs_type.length();
             writeIntLe(out, 12 + length); /* Length */
             writeIntLe(out, FILE_CASE_PRESERVED_NAMES | FILE_CASE_SENSITIVE_SEARCH | FILE_UNICODE_ON_DISK); /* FileSystemAttributes */
@@ -473,17 +473,17 @@ public class DiskDevice implements Device, DiskConst {
             break;
 
         case FileFsFullSizeInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232104.aspx */
+            /* http:
             writeIntLe(out, 32); /* Length */
             writeLongLe(out, 10L * 1024 * 1024);
-            writeLongLe(out, 5L * 1024 * 1024);//可用
-            writeLongLe(out, 6L * 1024 * 1024);//free
+            writeLongLe(out, 5L * 1024 * 1024);
+            writeLongLe(out, 6L * 1024 * 1024);
             writeIntLe(out, 4 * 1024 / 0x200);
             writeIntLe(out, 0x200);
             break;
 
         case FileFsDeviceInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232109.aspx */
+            /* http:
             writeIntLe(out, 8); /* Length */
             writeIntLe(out, FILE_DEVICE_DISK);/* DeviceType */
             writeIntLe(out, 0);/* Characteristics */
@@ -498,7 +498,7 @@ public class DiskDevice implements Device, DiskConst {
     }
     
     private static int drive_process_irp_silent_ignore(AbstractRdpPacket data, IRP irp) throws IOException {
-        irp.out.writeInt(0);//length
+        irp.out.writeInt(0);
         return RD_STATUS_SUCCESS;
     }
     
@@ -508,9 +508,9 @@ public class DiskDevice implements Device, DiskConst {
         case IRP_MN_QUERY_DIRECTORY:
             return drive_process_irp_query_directory(data, irp);
         case IRP_MN_NOTIFY_CHANGE_DIRECTORY:
-            return disk_create_notify(data, irp);//length;
+            return disk_create_notify(data, irp);
         default:
-            out.writeInt(0);//length;
+            out.writeInt(0);
             return RD_STATUS_NOT_SUPPORTED;
         }
     }
@@ -519,7 +519,7 @@ public class DiskDevice implements Device, DiskConst {
         DataOutputStream out = irp.out;
         int fsInformationClass = data.getLittleEndian32();
         
-        out.writeInt(0);//length
+        out.writeInt(0);
 
         int result = RD_STATUS_PENDING;
         
@@ -547,7 +547,7 @@ public class DiskDevice implements Device, DiskConst {
         
         String subFile = null;
         File subJavaFile = null;
-        //javaxt.io.File subf = null;
+        
         
         String pattern = "";
         if (pathLength > 0 && pathLength < 2 * 255) {
@@ -559,13 +559,13 @@ public class DiskDevice implements Device, DiskConst {
         DriveFile df = files.get(irp.fileId);
         if(df == null) {
             writeIntLe(out, 1);
-            out.write(0);//padding
+            out.write(0);
             return RD_STATUS_ACCESS_DENIED;
         }
         
         if(!df.isDir) {
             writeIntLe(out, 1);
-            out.write(0);//padding
+            out.write(0);
             return RD_STATUS_NO_MORE_FILES;
         }
         
@@ -593,13 +593,13 @@ public class DiskDevice implements Device, DiskConst {
         
         if(subFile == null) {
             writeIntLe(out, 1);
-            out.write(0);//padding
-            return RD_STATUS_NO_MORE_FILES;// STATUS_NO_MORE_FILES;
+            out.write(0);
+            return RD_STATUS_NO_MORE_FILES;
         }
         
         subJavaFile = new File(df.file, subFile);
         File subf = subJavaFile;
-        //subf = new javaxt.io.File(subJavaFile);
+        
         
         if (subJavaFile.isDirectory()) {
             file_attributes |= FILE_ATTRIBUTE_DIRECTORY;
@@ -615,15 +615,15 @@ public class DiskDevice implements Device, DiskConst {
         }
 
         long now = System.currentTimeMillis();
-        long createTime = now; //TODO getWindowsTime(subf.getCreationTime());
-        long lastAccessTime = now; //TODO getWindowsTime(subf.getLastAccessTime());
-        long lastWriteTime = now; //TODO getWindowsTime(subf.getLastModifiedTime());
+        long createTime = now; 
+        long lastAccessTime = now; 
+        long lastWriteTime = now; 
         
         int length = 2 * subFile.length() + 2;
         
         switch(fsInformationClass) {
         case FileDirectoryInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232097.aspx */
+            /* http:
             writeIntLe(out, 64 + length); /* Length */
             writeIntLe(out, 0); /* NextEntryOffset */
             writeIntLe(out, 0); /* FileIndex */
@@ -644,7 +644,7 @@ public class DiskDevice implements Device, DiskConst {
             break;
 
         case FileFullDirectoryInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232068.aspx */
+            /* http:
             writeIntLe(out, 68 + length); /* Length */
             writeIntLe(out, 0); /* NextEntryOffset */
             writeIntLe(out, 0); /* FileIndex */
@@ -660,12 +660,12 @@ public class DiskDevice implements Device, DiskConst {
             writeIntLe(out, file_attributes); /* FileAttributes */
             
             writeIntLe(out, length);
-            writeIntLe(out, 0);//EaSize
+            writeIntLe(out, 0);
             writePath(out, subFile);
             break;
 
         case FileBothDirectoryInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232095.aspx */
+            /* http:
             writeIntLe(out, 93 + length); /* Length */
             writeIntLe(out, 0); /* NextEntryOffset */
             writeIntLe(out, 0); /* FileIndex */
@@ -681,16 +681,16 @@ public class DiskDevice implements Device, DiskConst {
             writeIntLe(out, file_attributes); /* FileAttributes */
             
             writeIntLe(out, length);
-            writeIntLe(out, 0);//EaSize
+            writeIntLe(out, 0);
             out.write(0); /* ShortNameLength */
             /* Reserved(1), MUST NOT be added! */
-            ////////////////012345678901
+            
             out.writeChars("            "); /* ShortName, 24 bytes */
             writePath(out, subFile);
             break;
 
         case FileNamesInformation:
-            /* http://msdn.microsoft.com/en-us/library/cc232077.aspx */
+            /* http:
             writeIntLe(out, 12 + length); /* Length */
             writeIntLe(out, 0); /* NextEntryOffset */
             writeIntLe(out, 0); /* FileIndex */
@@ -761,7 +761,7 @@ public class DiskDevice implements Device, DiskConst {
             out.write((byte) c);
             out.write((byte) (c >> 8));
         }
-        out.write(0);//终结符
+        out.write(0);
         out.write(0);
     }
     
@@ -807,9 +807,9 @@ public class DiskDevice implements Device, DiskConst {
             e.printStackTrace();
         }
         if(ioStatus != RD_STATUS_PENDING) {
-            //device i/o response header
+            
             RdpPacket s = new RdpPacket(16 + buffer.length);
-            s.setLittleEndian16(RDPDR_CTYP_CORE);// PAKID_CORE_DEVICE_REPLY?
+            s.setLittleEndian16(RDPDR_CTYP_CORE);
             s.setLittleEndian16(PAKID_CORE_DEVICE_IOCOMPLETION);
             s.setLittleEndian32(irp.deviceId);
             s.setLittleEndian32(irp.completionId);
@@ -896,13 +896,13 @@ public class DiskDevice implements Device, DiskConst {
                 df.delete_pending = true;
             }
             df.desiredAccess = desiredAccess;
-//            if ((desiredAccess & GENERIC_ALL) != 0
-//                    || (desiredAccess & GENERIC_WRITE) != 0
-//                    || (desiredAccess & FILE_WRITE_DATA) != 0
-//                    || (desiredAccess & FILE_APPEND_DATA) != 0) {
-//                df.file.delete();
-//                df.file.createNewFile();
-//            }
+
+
+
+
+
+
+
         }
         
         return true;
@@ -928,7 +928,7 @@ public class DiskDevice implements Device, DiskConst {
                         || (desiredAccess & GENERIC_WRITE) != 0
                         || (desiredAccess & FILE_WRITE_DATA) != 0
                         || (desiredAccess & FILE_APPEND_DATA) != 0)) {
-                    raf.setLength(0);//clean
+                    raf.setLength(0);
                 }
             }
             return raf;

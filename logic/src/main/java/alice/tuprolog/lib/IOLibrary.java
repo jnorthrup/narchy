@@ -172,11 +172,11 @@ public class IOLibrary extends Library {
         }
         Struct arg0 = (Struct) arg.term();
         if (outputStream != stdOut) /* If the current outputStream is the StandardOutput it will not be closed */
-//            try {
+
             outputStream.close();
-//            } catch (IOException e) {
-//                return false;
-//            }
+
+
+
         if (arg0.name().equals(STDOUT_NAME)) { /*No matter what is the StandardOutput ("console", "graphic", etc.). The user does not know what it is*/
             outputStream = stdOut;
             outputStreamName = STDOUT_NAME;
@@ -224,13 +224,13 @@ public class IOLibrary extends Library {
                 if (outputStreamName.equals(STDOUT_NAME)) { /* Changed from "stdout" to STDOUT_NAME */
                     engine.output(ch);
                 } else {
-//                    try {
+
                     outputStream.write((byte) ch.charAt(0));
-//                    } catch (IOException e) {
-//                        throw PrologError.permission_error(engine.engine, "output", "stream",
-//                                new Struct(outputStreamName), new Struct(e
-//                                        .getMessage()));
-//                    }
+
+
+
+
+
                 }
                 return true;
             }
@@ -270,21 +270,21 @@ public class IOLibrary extends Library {
         if (!(arg instanceof NumberTerm.Int))
             throw PrologError.type_error(engine.engine, 1,
                     "integer", arg);
-        // int n = ((Int)arg).intValue(); // OLD BUGGED  VERSION (signaled by MViroli) 
-        int n = ((NumberTerm.Int) arg.term()).intValue(); // NEW CORRECT VERSION (by MViroli, EDenti)
+        
+        int n = ((NumberTerm.Int) arg.term()).intValue(); 
         if (outputStreamName.equals(STDOUT_NAME)) { /* Changed from STDOUT_NAME to STDOUT_NAME */
             for (int i = 0; i < n; i++) {
                 engine.output(" ");
             }
         } else {
             for (int i = 0; i < n; i++) {
-//                try {
+
                 outputStream.write(0x20);
-//                } catch (IOException e) {
-//                    throw PrologError.permission_error(engine.engine, "output", "stream",
-//                            new Struct(outputStreamName), new Struct(e
-//                                    .getMessage()));
-//                }
+
+
+
+
+
             }
         }
         return true;
@@ -295,9 +295,9 @@ public class IOLibrary extends Library {
         int ch = 0;
 
         boolean open_apices = false;
-        // boolean just_open_apices = false;
+        
         boolean open_apices2 = false;
-        // boolean just_open_apices2 = false;
+        
 
         String st = "";
         do {
@@ -334,7 +334,7 @@ public class IOLibrary extends Library {
             unify(arg0, engine.toTerm(st));
         } catch (InvalidTermException e) {
             /*Castagna 06/2011*/
-            //throw PrologError.syntax_error(engine.getEngineManager(), -1, -1, new Struct(st));
+            
             throw PrologError.syntax_error(engine.engine, -1, e.line, e.pos, new Struct(st));
             /**/
         }
@@ -384,13 +384,13 @@ public class IOLibrary extends Library {
         if (outputStreamName.equals(STDOUT_NAME)) { /* Changed from "stdout" to STDOUT_NAME */
             engine.output("\n");
         } else {
-//            try {
+
             outputStream.write('\n');
-//            } catch (IOException e) {
-//                throw PrologError.permission_error(engine.engine,
-//                        "output", "stream", new Struct(outputStreamName),
-//                        new Struct(e.getMessage()));
-//            }
+
+
+
+
+
         }
         return true;
     }
@@ -427,7 +427,7 @@ public class IOLibrary extends Library {
         return unify(text, goal);
     }
 
-    // miscellanea
+    
 
     /**
      * Sets an arbitrary seed for the Random object.
@@ -465,7 +465,7 @@ public class IOLibrary extends Library {
                 + "agent_file(X)  :- text_from_file(X,Y),agent(Y).\n";
     }
 
-    // Java guards for Prolog predicates
+    
 
     public boolean solve_file_goal_guard_2(Term arg0, Term arg1)
             throws PrologError {
@@ -480,7 +480,7 @@ public class IOLibrary extends Library {
         return true;
     }
 
-    // to allow serialization -> nullify streams before serialization
+    
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         InputStream inputStreamBak = inputStream;

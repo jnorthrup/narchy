@@ -27,46 +27,46 @@ package nars.nal.multistep;
  * temporal induction in an effective way?
  */
 public class GoalSequence {
-	// TODO rewrite with TestNAR
+	
 
-	// final int maxCycles = 2000;
-	//
-	// public GoalSequence(int duration, int pause, int interSeqPause/*, float
-	// questionPriority, float questionDurability*/) throws
-	// InvalidInputException {
-	// NAR n = new Default();
-	// n.memory().duration.set(duration);
-	//
-	// System.out.println("duration=" + duration + ", pause=" + pause +
-	// ", interSeqPause=" + interSeqPause );
-	//
-	// OutputContainsCondition c = new OutputContainsCondition(n,
-	// "<(&/, <a-->meta-word>, <b-->meta-word>) =/> <c-->meta-word>>.", 4);
-	// OutputContainsCondition c2 = new OutputContainsCondition(n,
-	// "<<b --> word> =/> <c --> word>>.", 4);
-	//
-	// while (n.time() < maxCycles) {
-	//
-	// n.believe("<a --> word>", Tense.Present, 1.0f, 0.9f);
-	// n.frame(pause);
-	// n.believe("<b --> word>", Tense.Present, 1.0f, 0.9f);
-	// n.frame(pause);
-	// n.believe("<c --> word>", Tense.Present, 1.0f, 0.9f);
-	// n.frame(pause);
-	//
-	// n.ask("<?what =/> <c --> meta-word>>");
-	//
-	// n.frame(interSeqPause);
-	// }
-	//
-	// System.out.println(c);
-	// System.out.println(c2);
-	// System.out.println();
-	// }
-	//
-	// public static void main(String[] args) throws InvalidInputException {
-	// for (int pause = 1; pause < 10; pause++) {
-	// new GoalSequence(5, pause, pause * 10);
-	// }
-	// }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

@@ -18,7 +18,7 @@ public class IRL {
     public final Osm osm = new Osm();
     private final User user;
 
-//    final ConcurrentRTree<RectDoubleND> tree = new ConcurrentRTree(new RTree(new RectDoubleND.Builder(), 2, 3, RTree.DEFAULT_SPLIT_TYPE));
+
 
     public IRL(User u) {
         this.user = u;

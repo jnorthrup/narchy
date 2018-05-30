@@ -36,10 +36,10 @@ public class EventValueControlSensor extends ControlSensor {
     @Override
     public double get() {
         return e.get();
-        //double v = e.signalFirst().get();
-//        if (adaptContrast > 0) {
-//            adaptContrast(adaptContrast, v);
-//        }
-        //return Double.NaN;
+        
+
+
+
+        
     }
 }

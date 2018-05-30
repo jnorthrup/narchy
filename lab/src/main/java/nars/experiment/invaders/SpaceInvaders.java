@@ -7,7 +7,7 @@ import java.util.Arrays;
 public class SpaceInvaders {
 
 	public static void main(String [] args) throws Exception{
-		//showCodes();
+		
 		run();
 
 	}
@@ -15,9 +15,9 @@ public class SpaceInvaders {
 		Memory mem = new Memory();
 		
 		load(mem, "invaders.h", 0);
-		load(mem, "invaders.g", 2048); //0x800
-		load(mem, "invaders.f", 4096); //0x1000
-		load(mem, "invaders.e", 6144); //0x1800
+		load(mem, "invaders.g", 2048); 
+		load(mem, "invaders.f", 4096); 
+		load(mem, "invaders.e", 6144); 
 		
 		
 		CPU cpu = new CPU(mem);
@@ -25,7 +25,7 @@ public class SpaceInvaders {
 		
 	}
 	
-	public static void showCodes() throws Exception{// allows us to see valid ROM hex codes 
+	public static void showCodes() throws Exception{
 		ArrayList<String> arr = new ArrayList<String>();
 		InputStream is = new FileInputStream("invaders.rom");
 		int x = is.read();
@@ -36,11 +36,11 @@ public class SpaceInvaders {
 		}
 		
 		System.out.println(Arrays.toString(arr.toArray()));
-//		Disassembler ds = new Disassembler();
-//		x = 0;
-//		while(x<arr.size()){
-//			x +=ds.getCode(arr, x);
-//		}
+
+
+
+
+
 		
 	}
 	public static void load(Memory mem, String filename, int beginIndex) throws Exception{

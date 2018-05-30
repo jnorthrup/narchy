@@ -46,7 +46,7 @@ public class TaskStatistics {
             return;
 
         i.incrementAndGet();
-        //complexity.addValue(c.complexity());
+        
         volume.addValue(t.volume());
         rootOp.addValue(t.op());
         clazz.addValue(t.getClass().toString());

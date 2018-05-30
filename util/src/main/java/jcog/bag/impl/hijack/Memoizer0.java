@@ -11,7 +11,7 @@ import java.util.*;
 
 /**
  * Agnostic Cache for Method Invokation using Reflection
- * https://raw.githubusercontent.com/ggrandes/memoizer/master/src/main/java/org/javastack/memoizer/Memoizer.java
+ * https:
  * <p>
  * TODO integrate this with HijackMemoize
  */
@@ -23,7 +23,7 @@ class Memoizer0 implements InvocationHandler {
     /**
      * Default: 1000millis
      */
-    public static final long DEFAULT_CACHE_EXPIRE_MILLIS = 1000L; // 1 second
+    public static final long DEFAULT_CACHE_EXPIRE_MILLIS = 1000L; 
 
     private final Object object;
     private final Map<CacheKey, CacheValue> cache;
@@ -36,7 +36,7 @@ class Memoizer0 implements InvocationHandler {
      * @return proxied object
      * @see #memoize(Object, int, long)
      */
-    public static Object memoize(final Object origin) //
+    public static Object memoize(final Object origin) 
     {
         return memoize(origin, DEFAULT_CACHE_MAX_ELEMENTS, DEFAULT_CACHE_EXPIRE_MILLIS);
     }
@@ -49,12 +49,12 @@ class Memoizer0 implements InvocationHandler {
      * @param expireMillis expiration time in millis
      * @return proxied object
      */
-    public static Object memoize(final Object origin, //
-                                 final int maxElements, final long expireMillis) //
+    public static Object memoize(final Object origin, 
+                                 final int maxElements, final long expireMillis) 
     {
         final Class<?> clazz = origin.getClass();
         final Memoizer0 memoizer = new Memoizer0(origin, maxElements, expireMillis);
-        return Proxy.newProxyInstance(clazz.getClassLoader(), //
+        return Proxy.newProxyInstance(clazz.getClassLoader(), 
                 clazz.getInterfaces(), memoizer);
     }
 
@@ -79,11 +79,11 @@ class Memoizer0 implements InvocationHandler {
      * Internal method
      */
     @Override
-    public Object invoke(final Object proxy, //
-                         final Method method, //
+    public Object invoke(final Object proxy, 
+                         final Method method, 
                          final Object[] args) throws Throwable {
         if (method.getReturnType().equals(Void.TYPE)) {
-            // Don't cache void methods
+            
             return invoke(method, args);
         } else {
             final CacheKey key = new CacheKey(method, Arrays.asList(args));
@@ -100,7 +100,7 @@ class Memoizer0 implements InvocationHandler {
         }
     }
 
-    private Object invoke(final Method method, final Object[] args) //
+    private Object invoke(final Method method, final Object[] args) 
             throws Throwable {
         try {
             return method.invoke(object, args);
@@ -127,7 +127,7 @@ class Memoizer0 implements InvocationHandler {
         public boolean equals(final Object obj) {
             if (obj instanceof CacheKey) {
                 final CacheKey o = (CacheKey) obj;
-                return o.method.equals(this.method) && //
+                return o.method.equals(this.method) && 
                         o.params.equals(this.params);
             }
             return false;
@@ -153,7 +153,7 @@ class Memoizer0 implements InvocationHandler {
     }
 
         /**
-     * https://github.com/ggrandes/memoizer/blob/master/src/main/java/org/javastack/memoizer/example/Example.java
+     * https:
      */
     static class Example {
         /**
@@ -177,7 +177,7 @@ class Memoizer0 implements InvocationHandler {
             }
         }
 
-        private static final String getHeader(final Class<?> b1, //
+        private static final String getHeader(final Class<?> b1, 
                                               final Class<?> b2) {
             final String s1 = b1.getSimpleName();
             final String s2 = b2.getSimpleName();
@@ -193,12 +193,12 @@ class Memoizer0 implements InvocationHandler {
             final int TOTAL = (int) 1e6;
             final String TEST_TEXT = "hello world";
             final int cacheElements = 1024;
-            final long cacheMillis = 1000; // 1 second
+            final long cacheMillis = 1000; 
             final SampleInterface[] samples = {
-                    new SampleSlowImpl(), //
+                    new SampleSlowImpl(), 
                     (SampleInterface) Memoizer0.memoize(new SampleSlowImpl(), cacheElements, cacheMillis)
             };
-            //
+            
             for (int k = 0; k < samples.length; k++) {
                 final SampleInterface base = samples[k & ~1];
                 final SampleInterface test = samples[k];
@@ -208,7 +208,7 @@ class Memoizer0 implements InvocationHandler {
                     test.hash(TEST_TEXT);
                 }
                 long diff = System.currentTimeMillis() - ts;
-                System.out.println(hdr + '\t' + "diff=" + diff + "ms" + '\t' + //
+                System.out.println(hdr + '\t' + "diff=" + diff + "ms" + '\t' + 
                         test.hash(TEST_TEXT));
             }
         }

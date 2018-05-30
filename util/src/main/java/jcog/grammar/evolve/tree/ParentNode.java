@@ -13,9 +13,9 @@ abstract public class ParentNode extends AbstractNode {
     protected final List<Node> children;
     private ParentNode parent;
 
-//        public ParentNode() {
-//            this(new ArrayList<>());
-//        }
+
+
+
 
     public abstract int getMinChildrenCount();
     public abstract int getMaxChildrenCount();
@@ -84,7 +84,7 @@ abstract public class ParentNode extends AbstractNode {
 
     @Override
     public final List<Node> children() {
-        //return children;
+        
         return Collections.unmodifiableList(children);
     }
 

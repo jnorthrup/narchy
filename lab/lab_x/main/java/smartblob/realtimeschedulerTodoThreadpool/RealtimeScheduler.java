@@ -2,8 +2,8 @@
 package smartblob.realtimeschedulerTodoThreadpool;
 
 
-//import jselfmodify.JSelfModify;
-//import jsoundcard.JSoundCard;
+
+
 
 import static smartblob.commonfuncs.CommonFuncs.log;
 
@@ -11,18 +11,18 @@ import static smartblob.commonfuncs.CommonFuncs.log;
 public class RealtimeScheduler{
 	private RealtimeScheduler(){}
 	
-	public static final double MAX_INTERVAL = 100.*365.25*24*60*60; //100 years
+	public static final double MAX_INTERVAL = 100.*365.25*24*60*60; 
 	
 	/** relative to 1.0, considering how many digits double has */
 	public static final double epsilon = 1e-40;
 	
 	protected static final double MAX_INTERVAL_PLUS_EPSILONS = MAX_INTERVAL*(1+epsilon);
 	
-	//private static final List<Task> tasks = new ArrayList<Task>();
 	
-	//TODO? private static final List<TaskThread> threads = new ArrayList<TaskThread>();
 	
-	//TODO tasks should say when they want to run again
+	
+	
+	
 	
 
 	private static Map<Task,TaskThread> taskToThread = new TreeMap<Task,TaskThread>(new Comparator<Task>(){
@@ -32,7 +32,7 @@ public class RealtimeScheduler{
 	});
 
 
-	//Collections.synchronizedMap(new HashMap<Task,TaskThread>());
+	
 	
 	/** uses Task.preferredInterval() */
 	public static synchronized void start(Task t){
@@ -47,12 +47,12 @@ public class RealtimeScheduler{
 		if(th == null){
 			th = new TaskThread(t, secondsSleep);
 			taskToThread.put(t, th);
-			//setPriority(th, Thread.NORM_PRIORITY);
-			//setPriority(th, Thread.MAX_PRIORITY);
-			//increaseToMaxPriority(th);
+			
+			
+			
 			th.start();
 		}else{
-			th.secondsSleep = secondsSleep; //has no effect on current sleep. Starts next sleep.
+			th.secondsSleep = secondsSleep; 
 		}
 		log("END RealtimeScheduler.start secondsSleep="+secondsSleep+" task="+t);
 	}
@@ -64,7 +64,7 @@ public class RealtimeScheduler{
 	/** May need some synchronized here...
 	TODO? TaskThread and maybe each Task's loops should check Thread.interrupted()
 	and use InterruptedException to cancel in the middle of any long calculations
-	as described at http://www.ibm.com/developerworks/java/library/j-jtp05236/index.html
+	as described at http:
 	--Ben F Rayfield (sign your comments if you change things)
 	*/
 	public static synchronized void stop(Task t, boolean waitForStop){
@@ -75,14 +75,14 @@ public class RealtimeScheduler{
 		if(th != null){
 			log("TaskThread found for "+t+" Setting keepRunning to false");
 			th.keepRunning = false;
-			//increaseToMaxPriority(th); //so it can see its supposed to stop quickly
-			//th.task = null;
-			//th.interrupt(); //TODO is this line needed?
+			
+			
+			
 		}
-		//will onTaskEnd when it finishes its last run
-		//TODO JSelfModify.logToUser("RealtimeScheduler.stop: TODO is there something I can do to allow ending tasks faster? Thread.interrupted from inside the task more often?");
+		
+		
 		if(waitForStop){
-			//TODO Will this ever create deadlock?
+			
 			while(taskIsRunning(t)){
 				try{
 					Thread.sleep(1L);
@@ -96,12 +96,12 @@ public class RealtimeScheduler{
 		return taskToThread.containsKey(t);
 	}
 	
-//	public static synchronized Set<Task> tasks(){
-//		//return tasks.toArray(new Task[0]);
-//		return Collections.unmodifiableSet(new HashSet<Task>(taskToThread.keySet()));
-//	}
+
+
+
+
 	public static Iterable<Task> tasksSorted(){
-		//return tasks.toArray(new Task[0]);
+		
 		return taskToThread.keySet();
 	}
 
@@ -155,7 +155,7 @@ public class RealtimeScheduler{
 					RealtimeScheduler.onTaskEnd(task);
 					return;
 				}
-				//log("TaskThread.run for "+task+" keepRunning="+keepRunning);
+				
 				long nowNanotime = System.nanoTime();
 				double seconds = (nowNanotime-lastNanotime)*.000000001;
 				lastNanotime = nowNanotime;
@@ -222,9 +222,9 @@ public class RealtimeScheduler{
 		List<Task> testTasks = new ArrayList<Task>();
 		increaseToMaxPriority(Thread.currentThread());
 		for(int i=0; i<200; i++){
-		//for(int i=0; i<20; i++){
-		//for(int i=0; i<5; i++){
-		//for(int i=0; i<1; i++){
+		
+		
+		
 			final int I = i;
 			testTasks.add(new Task(){
 				public final int taskNum = I;
@@ -250,20 +250,20 @@ public class RealtimeScheduler{
 		}
 		boolean tasksExist = true;
 		int i = 0;
-		//Nanotimer timer = new Nanotimer();
+		
 		while(tasksExist){
-			//try{
-			//	JSoundCard.sleepSeconds(.1);
-			//}catch(InterruptedException e){
-			//	System.out.println("Interrupted");
-			//}
+			
+			
+			
+			
+			
 			Iterable<Task> tasksArray = tasksSorted();
 			String s = "Tasks running:";
 			for(Task t : tasksArray) s += " "+t;
 			log(s);
 			if(/*timer.secondsSinceStart() > 2 &&*/ i < testTasks.size()){
-				//log("About to stop and wait on it stopping "+testTasks.get(i));
-				//stop(testTasks.get(i), true);
+				
+				
 				scheduleStop(testTasks.get(i));
 				i++;
 			}

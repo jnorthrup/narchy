@@ -42,9 +42,9 @@ public class QuestTest {
 
 
     public void testQuest(boolean goalFirst, int timeBetween, int timeAfter) throws Narsese.NarseseException {
-        //
+        
         final NAR nar = NARS.tmpEternal();
-        //nar.log();
+        
 
         AtomicBoolean valid = new AtomicBoolean(false);
 
@@ -65,8 +65,8 @@ public class QuestTest {
 
     public void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
         nar.question($("a:?b@"), ETERNAL, QUEST, (q, a) -> {
-            //System.out.println("answer: " + a);
-            //System.out.println(" " + a.getLog());
+            
+            
             if (a.toString().contains("(b-->a)!"))
                 valid.set(true);
         });

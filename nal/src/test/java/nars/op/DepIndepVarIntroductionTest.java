@@ -46,7 +46,7 @@ public class DepIndepVarIntroductionTest {
         assertEquals("[(&&,(c-->#1),(#1-->a),(#1-->b))]",
                 introduce("(&&,(x-->a),(x-->b),(c-->x))", 16).toString());
 
-        //prefer weakest introduction first:
+        
         assertEquals("[(&&,(c-->(a,b,#1)),(#1-->a),(#1-->b)), (&&,(c-->(a,#1,x)),(x-->a),(x-->#1)), (&&,(c-->(#1,b,x)),(x-->b),(x-->#1))]",
                 introduce("(&&,(x-->a),(x-->b),(c-->(a,b,x)))", 32).toString());
 

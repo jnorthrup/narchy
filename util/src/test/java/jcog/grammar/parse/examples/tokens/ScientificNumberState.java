@@ -64,9 +64,9 @@ public class ScientificNumberState extends NumberState {
 				sign = -1;
 			}
 			double dValue = value.doubleValue();
-			dValue *= Math.pow(10, sign * absorbDigits(r, false).doubleValue()); //probably a lot of rounding errors
+			dValue *= Math.pow(10, sign * absorbDigits(r, false).doubleValue()); 
 			value = new BigDecimal(Double.toString(dValue));
-			//value *= Math.pow(10, sign * absorbDigits(r, false)); //original code
+			
 		}
 	}
 

@@ -65,11 +65,11 @@ public class PstCache {
 
             fd.write(toBigEndian32(stamp), 12 + cache_idx
                     * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size()), 4);
-            // rd_lseek_file(fd, 12 + cache_idx * (g_pstcache_Bpp *
-            // MAX_CELL_SIZE + sizeof(CELLHEADER))); // this seems to do nothing
-            // (return 0) in rdesktop
-            // rd_write_file(fd, &stamp, sizeof(stamp)); // same with this
-            // one???
+            
+            
+            
+            
+            
 
         } catch (IOException e) {
             return;
@@ -91,7 +91,7 @@ public class PstCache {
         logger.info("PstCache.pstcache_load_bitmap");
         byte[] celldata = null;
         FileInputStream fd;
-        // CELLHEADER cellhdr;
+        
         Bitmap bitmap;
         byte[] cellHead = null;
 
@@ -106,20 +106,20 @@ public class PstCache {
                 * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size());
         fd.read(cellHead, offset, CELLHEADER.size());
         CELLHEADER c = new CELLHEADER(cellHead);
-        // rd_lseek_file(fd, cache_idx * (g_pstcache_Bpp * MAX_CELL_SIZE +
-        // sizeof(CELLHEADER)));
-        // rd_read_file(fd, &cellhdr, sizeof(CELLHEADER));
-        // celldata = (uint8 *) xmalloc(cellhdr.length);
-        // rd_read_file(fd, celldata, cellhdr.length);
+        
+        
+        
+        
+        
         celldata = new byte[c.length];
         fd.read(celldata);
         logger.debug("Loading bitmap from disk ({}" + ':' + "{})\n", cache_id, cache_idx);
 
         bitmap = new Bitmap(celldata, c.width, c.height, 0, 0, Options.Bpp);
-        // bitmap = ui_create_bitmap(cellhdr.width, cellhdr.height, celldata);
+        
         Orders.cache.putBitmap(cache_id, cache_idx, bitmap, c.stamp);
 
-        // xfree(celldata);
+        
         return true;
     }
 
@@ -135,7 +135,7 @@ public class PstCache {
             return false;
 
         cellhdr.bitmap_id = bitmap_id;
-        // memcpy(cellhdr.bitmap_id, bitmap_id, 8/* sizeof(BITMAP_ID) */);
+        
 
         cellhdr.width = width;
         cellhdr.height = height;
@@ -147,10 +147,10 @@ public class PstCache {
                 * (Options.Bpp * MAX_CELL_SIZE + CELLHEADER.size());
         fd.write(CELLHEADER.toBytes(), offset, CELLHEADER.size());
         fd.write(data);
-        // rd_lseek_file(fd, cache_idx * (g_pstcache_Bpp * MAX_CELL_SIZE +
-        // sizeof(CELLHEADER)));
-        // rd_write_file(fd, &cellhdr, sizeof(CELLHEADER));
-        // rd_write_file(fd, data, length);
+        
+        
+        
+        
         return true;
     }
 
@@ -218,7 +218,7 @@ public class PstCache {
 
     /* initialise the persistent bitmap cache */
     static boolean pstcache_init(int cache_id) {
-        // int fd;
+        
         String filename;
 
         if (g_pstcache_enumerated)
@@ -264,13 +264,13 @@ public class PstCache {
 
 /* Header for an entry in the persistent bitmap cache file */
 class CELLHEADER {
-    byte[] bitmap_id = new byte[8]; // int8 *
+    byte[] bitmap_id = new byte[8]; 
 
-    int width, height; // int8
+    int width, height; 
 
-    int length; // int16
+    int length; 
 
-    int stamp; // int32
+    int stamp; 
 
     public CELLHEADER() {
 

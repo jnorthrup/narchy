@@ -1,6 +1,6 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-// e-mail: info@mirekw.com
+package nars.ca;
+
+
 
 import java.applet.Applet;
 import java.awt.*;
@@ -69,7 +69,7 @@ import java.awt.*;
  *    (Weighted Life)
  */
 
-//-----------------------------------------------------------------------
+
 public class MJCell extends Applet {
 	private static final String VSN_NUM = "1.51";
 
@@ -77,64 +77,64 @@ public class MJCell extends Applet {
 
 	final Button btnStart = new Button();
 
-	public String sBaseURL; // the URL we started from (has '/' at the end)
+	public String sBaseURL; 
 
-	// ----------------------------------------------------------------
-	// Default constructor, some VMs require it
+	
+	
 	public MJCell() {
     }
 
-	// ----------------------------------------------------------------
-	// The main initialization
+	
+	
 	@Override
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void init() {
-		boolean isApplet = true; // applet or application?
+		boolean isApplet = true; 
 
-		mjcUI = new MJCellUI(this); // the user interface class
+		mjcUI = new MJCellUI(this); 
 
-		// detect the location we started from
+		
 		try {
 			sBaseURL = getCodeBase().toString();
 			if (sBaseURL.length() > 0 && sBaseURL.charAt(sBaseURL.length() - 1) == '.')
 				sBaseURL = sBaseURL.substring(0, sBaseURL.length() - 1);
 			if (!(sBaseURL.length() > 0 && sBaseURL.charAt(sBaseURL.length() - 1) == '/'))
 				sBaseURL += "/";
-			//System.out.println("Base: " + sBaseURL);
+			
 		} catch (Exception e) {
-			isApplet = false; // no CodeBase, we run as an application
+			isApplet = false; 
 			sBaseURL = "./";
 		}
 
-		// interprete parameters
+		
 		if (isApplet) {
-			// button
+			
 			String sBtnLabel = getParameter("ButtonLabel");
 			if (sBtnLabel == null)
 				sBtnLabel = "Start MJCell";
 			btnStart.setLabel("  " + sBtnLabel + "  ");
 
-			// background
+			
 			String sColor = getParameter("Background");
 			if (sColor != null)
 				setBackground(Color.decode(sColor));
 
-			// family
+			
 			String sFamily = getParameter("Family");
 			if (sFamily != null)
 				mjcUI.sInitGame = sFamily;
 
-			// rule
+			
 			String sRule = getParameter("Rule");
 			if (sRule != null)
 				mjcUI.sInitRule = sRule;
 
-			// pattern
+			
 			String sPattern = getParameter("Pattern");
 			if (sPattern != null)
 				mjcUI.sInitPatt = sPattern;
 
-			// UI items visibility
+			
 			String sInitPanelLeft = getParameter("ViewPanelControls");
 			if (sInitPanelLeft != null)
 				mjcUI.bInitPanelLeft = sInitPanelLeft.compareTo("1") == 0;
@@ -148,12 +148,12 @@ public class MJCell extends Applet {
 
 		add(btnStart);
 
-		setSize(200, 100); // interpreted only when run from IDE
+		setSize(200, 100); 
 		resize(200, 100);
 	}
 
-	// ----------------------------------------------------------------
-	//
+	
+	
 	@Override
 	public boolean action(Event e, Object arg) {
 		if (e.target == btnStart) {
@@ -164,42 +164,42 @@ public class MJCell extends Applet {
 		return true;
 	}
 
-	// ----------------------------------------------------------------
-	// allow this Applet to run as an application as well
-	//static public void main(String args[])
-	//{
-	//  //System.out.println("main()");
-	//  final MJCell theApplet = new MJCell();
-	//  Frame frame = new Frame("MJCell");
-	//  frame.setVisible(false);
-	//  frame.setSize(200,100);
-	//  theApplet.init();
-	//  frame.add(theApplet);
-	//  frame.validate();
-	//  frame.setVisible(true);
-	//  theApplet.start();
-	//  frame.addWindowListener(new java.awt.event.WindowAdapter()
-	//        {
-	//          public void windowClosing(WindowEvent e)
-	//          {
-	//            theApplet.stop();
-	//            theApplet.destroy();
-	//            System.exit(0);
-	//          } // end WindowClosing
-	//        } // end anonymous class
-	//      ); // end addWindowListener line
-	//} // end main
-	// ----------------------------------------------------------------
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public String getAppletVersion() {
 		return VSN_NUM;
 	}
 
-	// ----------------------------------------------------------------
+	
 	public String getAppletName() {
 		return "Mirek's Java Cellebration v." + getAppletVersion();
 	}
 
-	// ----------------------------------------------------------------
+	
 	@Override
 	@SuppressWarnings("HardcodedFileSeparator")
 	public String getAppletInfo() {
@@ -213,6 +213,6 @@ public class MJCell extends Applet {
 				+ "by K.S. Mueller & Thad Brown\n"
 				+ "http://www.missouri.edu/~polsksm/";
 	}
-	// ----------------------------------------------------------------
+	
 
 }

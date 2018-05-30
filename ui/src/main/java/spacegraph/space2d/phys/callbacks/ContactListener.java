@@ -26,7 +26,7 @@ package spacegraph.space2d.phys.callbacks;
 import spacegraph.space2d.phys.collision.Manifold;
 import spacegraph.space2d.phys.dynamics.contacts.Contact;
 
-// updated to rev 100
+
 
 /**
  * Implement this class to get contact information. You can use these results for

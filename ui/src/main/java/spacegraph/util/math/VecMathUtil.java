@@ -56,7 +56,7 @@ class VecMathUtil {
      * number, after first mapping -0.0f to 0.0f
      */
     static int floatToIntBits(float f) {
-	// Check for +0 or -0
+	
         return f == 0.0f ? 0 : Float.floatToIntBits(f);
     }
 
@@ -80,7 +80,7 @@ class VecMathUtil {
      * number, after first mapping -0.0f to 0.0f
      */
     static long doubleToLongBits(double d) {
-	// Check for +0 or -0
+	
         return d == 0.0 ? 0L : Double.doubleToLongBits(d);
     }
 

@@ -65,7 +65,7 @@ public class DirectionalLight extends Light
 	@Override
     public boolean isIlluminated(Vector3d point)
 	{
-        // Jeder Punkt wird beleuchtet:
+        
         return true;
 	}
 
@@ -73,7 +73,7 @@ public class DirectionalLight extends Light
     @Override
     public void startRay(Vector3d point)
     {
-        // Punkt festlegen, f�r den Strahlen zum Licht generiert werden:
+        
         this.point.set(point);
         rayToSend = true;
     }
@@ -87,7 +87,7 @@ public class DirectionalLight extends Light
     @Override
     public Ray genRay()
     {
-        // F�r jeden Punkt genau einen Strahl setzen:
+        
         if (!rayToSend)
             return null;
         rayToSend = false;
@@ -102,8 +102,8 @@ public class DirectionalLight extends Light
     @Override
     public ColorEx getIlluminance()
     {
-        // Dieses Licht ist sehr weit entfernt, sodass die Lichtabschw�chung
-        // keine Rolle mehr spielt:
+        
+        
         return new ColorEx(lightColor);
     }
     

@@ -34,10 +34,10 @@ public abstract class PixelBag implements Bitmap2D {
     public float Y;
     public float Z;
 
-//    public float minX = 0f;
-//    public float maxX = 1f;
-//    public float minY = 0f;
-//    public float maxY = 1f;
+
+
+
+
 
     public final float[][] pixels;
 
@@ -49,7 +49,7 @@ public abstract class PixelBag implements Bitmap2D {
      */
     float maxZoomOut =
             1.0f;
-            //1.25f;
+            
 
     public boolean vflip;
     public List<ActionConcept> actions;
@@ -57,7 +57,7 @@ public abstract class PixelBag implements Bitmap2D {
     private float fg = 1f;
     private float fb = 1f;
     float minClarity = 1f, maxClarity = 1f;
-    private final boolean inBoundsOnly = false; //true may not be working
+    private final boolean inBoundsOnly = false; 
 
 
     public static PixelBag of(Supplier<BufferedImage> bb, int px, int py) {
@@ -115,8 +115,8 @@ public abstract class PixelBag implements Bitmap2D {
         int sh = sh();
 
         float ew, eh;
-//        ew = max(Z * sw * maxZoomOut, sw * minZoomOut);
-//        eh = max(Z * sh * maxZoomOut, sh * minZoomOut);
+
+
         float z = lerp(Z, maxZoomOut, minZoomOut);
         ew = z * sw;
         eh = z * sh;
@@ -124,8 +124,8 @@ public abstract class PixelBag implements Bitmap2D {
 
         float minX, maxX, minY, maxY;
         if (inBoundsOnly) {
-            //TODO check this
-            //margin size
+            
+            
             float mw, mh;
             if (ew > sw) {
                 mw = 0;
@@ -148,7 +148,7 @@ public abstract class PixelBag implements Bitmap2D {
             maxY = (Y * sh) + eh / 2f;
         }
 
-        //System.out.println(X + "," + Y + "," + Z + ": [" + minX + ".." + maxX + ", " + minY + ".." + maxY + "]");
+        
 
         float cx = px / 2f;
         float cy = py / 2f;
@@ -170,8 +170,8 @@ public abstract class PixelBag implements Bitmap2D {
     private void updateClip(int sw, int sh, float minX, float maxX, float minY, float maxY, float cx, float cy, float pxf, float pyf, float fr, float fg, float fb, float fSum, float xRange, float yRange) {
         int supersampling = Math.min((int) Math.floor(xRange / px / 2f), (int) Math.floor(yRange / py / 2f));
 
-        //not perfect calculation, because it doesnt account for max/min min/max differences due to non-square dimensions
-        //but suffices for now
+        
+        
         float maxCenterDistanceSq = Math.max(cx, cy) * Math.max(cx, cy) * 2;
 
         for (int ly = 0; ly < py; ly++) {
@@ -182,27 +182,27 @@ public abstract class PixelBag implements Bitmap2D {
             float yDistFromCenterSq = dy * dy;
 
             for (int lx = 0; lx < px; lx++) {
-//                //choose a virtual retina pixel
-//                float x =
-//                        //rng.nextFloat();
-//                        Util.clamp(((float) rng.nextGaussian() + 1.0f) / 2.0f); //resolves the center more clearly
-//                float y =
-//                        //rng.nextFloat();
-//                        Util.clamp(((float) rng.nextGaussian() + 1.0f) / 2.0f);
 
-                //project from the local retina plane
-//                int lx = round((px - 1) * x);
-//                int ly = round((py - 1) * y);
+
+
+
+
+
+
+
+                
+
+
                 if (minClarity <1 ||maxClarity < 1) {
                     float dx = Math.abs(lx - cx);
-                    float distFromCenterSq = dx * dx + yDistFromCenterSq; //manhattan distance from center
+                    float distFromCenterSq = dx * dx + yDistFromCenterSq; 
 
                     float clarity = (float) lerp(Math.sqrt(distFromCenterSq / maxCenterDistanceSq), maxClarity, minClarity);
                     if (rng.nextFloat() > clarity)
                         continue;
                 }
 
-                //project to the viewed image plane
+                
                 int sx = Math.round(lerp(lx / pxf, minX, maxX));
 
                 int samples = 0;
@@ -264,8 +264,8 @@ public abstract class PixelBag implements Bitmap2D {
     }
 
     public float setZoom(float f) {
-        Z = (float)Math.sqrt(Util.unitize(f)); //linear to square
-        //Z = f;
+        Z = (float)Math.sqrt(Util.unitize(f)); 
+        
         return f;
     }
 
@@ -323,9 +323,9 @@ public abstract class PixelBag implements Bitmap2D {
         else
             Z = 0.5f;
 
-//        actions.add( a.actionBipolar("see(" + termRoot + ",fr)", this::setRedFilter) );
-//        actions.add( a.actionBipolar("see(" + termRoot + ",fg)", this::setGreenFilter) );
-//        actions.add( a.actionBipolar("see(" + termRoot + ",fb)", this::setBlueFilter) );
+
+
+
         return this;
     }
 

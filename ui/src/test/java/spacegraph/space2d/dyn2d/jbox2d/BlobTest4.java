@@ -42,7 +42,7 @@ public class BlobTest4 implements ICase {
     for (int i = 0; i < nBodies; ++i) {
       float angle = MathUtils.map(i, 0, nBodies, 0, 2 * 3.1415f);
       BodyDef bd = new BodyDef();
-      // bd.isBullet = true;
+      
       bd.fixedRotation = true;
 
       float x = cx + rx * (float) Math.sin(angle);

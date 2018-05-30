@@ -24,8 +24,8 @@
 /*
  * JBox2D - A Java Port of Erin Catto's Box2D
  *
- * JBox2D homepage: http://jbox2d.sourceforge.net/
- * Box2D homepage: http://www.box2d.org
+ * JBox2D homepage: http:
+ * Box2D homepage: http:
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -46,7 +46,7 @@
 
 package spacegraph.space2d.phys.common;
 
-// updated to rev 100
+
 
 /**
  * Similar to javax.vecmath.Color3f holder

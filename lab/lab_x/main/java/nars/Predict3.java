@@ -23,8 +23,8 @@ import nars.util.TreeMLData;
 
 /**
  *
- * https://github.com/encog/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/predict/sunspot/PredictSunspotElman.java
- * https://github.com/encog/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/recurrent/elman/ElmanXOR.java
+ * https:
+ * https:
  *
  * @author me
  */
@@ -58,9 +58,9 @@ public class Predict3 {
 
         NAR n = new NAR(new Default().setInternalExperience(null));
         n.param.duration.set(duration);
-        //n.param.duration.setLinear(0.5);
+        
         n.param.conceptBeliefsMax.set(64);
-        //n.param.conceptForgetDurations.set(16);
+        
         
         Discretize discretize = new Discretize(n, discretization);
 
@@ -75,12 +75,12 @@ public class Predict3 {
         for (int i = 0; i < predictions.length; i++) {
             predictions[i] = new TreeMLData("Pred" + i,
                     Color.getHSBColor(0.25f + i / 4f, 0.85f, 0.85f));
-            //predictions[i].setDefaultValue(0.0);
+            
             
             reflections[i] = new TreeMLData("Refl" + i,
                     Color.getHSBColor(0.25f + i / 4f, 0.85f, 0.85f));
             reflections[i].setDefaultValue(0.0);
-            //predictions[i].setRange(0, 0.5);
+            
         }
         TimelineVis tc = new TimelineVis(
                 new LineChart(observed).thickness(16f).height(128),                          new LineChart(predictions).thickness(16f).height(128),
@@ -88,15 +88,15 @@ public class Predict3 {
                 /*new LineChart(predictions[1]).thickness(16f).height(128),
                 new LineChart(predictions[2]).thickness(16f).height(128),*/
         );
-        //new BarChart(error).height(4)
+        
         new NWindow("_", new PCanvas(tc)).show(800, 800, true);
 
         new TextOutput(n, System.out) {
 
             /** dt = relative to center */
             public double getPredictionEnvelope(double dt, double duration) {
-                //guassian curve width=duration
-                //  e^(-(4*x/(dur))^2)    
+                
+                
                 double p = (4 * dt / duration);
                 return Math.exp( -(p * p) );
             }
@@ -131,7 +131,7 @@ public class Predict3 {
                     
                     if (value != -1) {
 
-                        //predictions[(int)value].addPlus(time, expect);
+                        
                         for (int tt = time - duration / 2; tt <= time + duration / 2; tt++) {
  
                             double smooth = 1;
@@ -157,13 +157,13 @@ public class Predict3 {
         for (Term t : discretize.getValueTerms("x"))
             n.believe(t.toString(), Tense.Present, 0.5f, 0.5f);
         
-        //TODO move this to discretize.getDisjunctionBelief
+        
         n.believe("<(||,y0,y1,y2,y3,y4,y5,y6,y7) --> y>", Tense.Eternal, 1.0f, 0.95f);
         
         n.run(discretization*4);
 
         
-        //new TextOutput(n, System.out);
+        
         
         Concept[] valueBeliefConcepts = discretize.getValueConcepts("x");
         
@@ -176,7 +176,7 @@ public class Predict3 {
             public double[] getTrainedPrediction(double[] input) {
                 
                 
-                //return new double[] { EngineArray.maxIndex(input) };
+                
                 
                 return input;
             }
@@ -184,7 +184,7 @@ public class Predict3 {
             @Override
             public int getPredictionSize() {
                 return getInputSize();
-                //return 1;
+                
             }
 
             
@@ -197,7 +197,7 @@ public class Predict3 {
                 
                 for (int i = 0; i < x.length; i++) {
                 
-                    predictions[i].add((int)t, x[i] ); //- x[i*2+1]);
+                    predictions[i].add((int)t, x[i] ); 
                 }
                 return x;
             }
@@ -205,7 +205,7 @@ public class Predict3 {
             
         };
         
-        //new NARSwing(n);
+        
 
         int prevY = -1, curY = -1;
         long prevT = n.time();
@@ -215,12 +215,12 @@ public class Predict3 {
             n.run(thinkInterval);
 
             Thread.sleep(3);
-            //n.memory.addSimulationTime(1);
+            
 
             signal  = (float)Math.max(0, Math.min(1.0, Math.tan(freq * n.time()) * 0.5f + 0.5f));
             
-            //signal  = (float)Math.sin(freq * n.time()) * 0.5f + 0.5f;
-            //signal = ((float) Math.sin(freq * n.time()) > 0 ? 1f : -1f) * 0.5f + 0.5f;
+            
+            
             
             signal *= 1.0 + (Math.random()-0.5f)* 2f * noiseRate;
 
@@ -237,15 +237,15 @@ public class Predict3 {
 
             discretize.believe("x", signal, 0);
             
-            //input(prevT, Term.get("x_t0"), prevY, Term.get("x_t0"), curY, 1f, n.memory); 
-            //input(prevT, Term.get("x_t0"), prevY, Term.get("x_t0"), 1f-curY, 0.5f, n.memory);             
+            
+            
 
             
-            //n.addInput("notice(x_t0," + value + ",(||,y0,y1))!");
             
-            //input(prevT, Term.get("x_tMin1"), prevY, Term.get("x_t0"), 1f-y, 0f, n.memory); 
             
-            //input(Term.get("x_t0"), Term.get(value), 0.0f, 0.0f, n.memory);              //input(Term.get("x_t0"), Term.get(otherValue), 1.0f, 0f, n.memory);  */
+            
+            
+            
             /*
             n.believe(xFuncEq0, Tense.Present, 1.0f, y);
             n.believe(xFuncEq0, Tense.Present, 0.0f, 1f - y);

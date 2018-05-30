@@ -27,7 +27,7 @@ public class RLNAR extends RLAgent {
         this.nar = nar;
     }
 
-    //initial axioms, etc
+    
     protected void start() {
 
     }

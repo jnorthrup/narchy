@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ public class NodeReaderTest {
                 nr.readNode();
                 fail("");
             } catch (IllegalStateException e) {
-                // expected
+                
             }
         }
     }
@@ -162,7 +162,7 @@ public class NodeReaderTest {
 
     @Test
     public void testFunctionSymbol() {
-        // TODO test functions with other types. e.g. +/Add
+        
         assertParseFunction("pos?", IsPositive.class);
     }
 
@@ -239,7 +239,7 @@ public class NodeReaderTest {
             r.readNode();
             fail("");
         } catch (IllegalArgumentException e) {
-            // expected
+            
             assertEquals("Could not find version of function: TEST in: []", e.getMessage());
         }
     }
@@ -262,20 +262,20 @@ public class NodeReaderTest {
         assertValidDisplayName("hello");
         assertValidDisplayName("?x_Y-z!");
 
-        // can start with a - as long as the second character is not a number
+        
         assertValidDisplayName("-->");
 
-        // can include numbers as long as they are not the first character
+        
         assertValidDisplayName("i5");
     }
 
     @Test
     public void testInvalidDisplayName() {
-        // must contain at least one character
+        
         assertInvalidDisplayName(null);
         assertInvalidDisplayName("");
 
-        // no white space
+        
         assertInvalidDisplayName(" ");
         assertInvalidDisplayName("hel lo");
         assertInvalidDisplayName("x ");
@@ -283,7 +283,7 @@ public class NodeReaderTest {
         assertInvalidDisplayName("x\n");
         assertInvalidDisplayName("\tx");
 
-        // cannot start with a number, or with a minus sign followed by a number
+        
         assertInvalidDisplayName("-9");
         assertInvalidDisplayName("9i");
     }

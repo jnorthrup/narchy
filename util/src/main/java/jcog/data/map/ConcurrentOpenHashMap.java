@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   http:
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * allocations are required to store the values
  *
  * @param <V>
- * from: https://github.com/apache/incubator-pulsar/blob/master/pulsar-common/src/main/java/org/apache/pulsar/common/util/collections/ConcurrentOpenHashMap.java
+ * from: https:
  */
 @SuppressWarnings("unchecked")
 public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
@@ -84,7 +84,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             size += s.size.get();
         }
         if (size >= Integer.MAX_VALUE)
-            return Integer.MAX_VALUE-1; //HACK
+            return Integer.MAX_VALUE-1; 
         return (int) size;
     }
 
@@ -151,7 +151,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
     }
 
     private Section<K, V> getSection(long hash) {
-        // Use 32 msb out of long to get the section
+        
         final int sectionIdx = (int) (hash >>> 32) & (sections.length - 1);
         return sections[sectionIdx];
     }
@@ -194,10 +194,10 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         throw new TODO();
     }
 
-    // A section is a portion of the hash map that is covered by a single
+    
     @SuppressWarnings("serial")
     private static final class Section<K, V> extends StampedLock {
-        // Keys and values are stored interleaved in the table array
+        
         private Object[] table;
 
         private int capacity;
@@ -220,26 +220,26 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
                 while (true) {
-                    // First try optimistic locking
+                    
                     Object[] table = this.table;
                     K storedKey = (K) table[bucket];
                     V storedValue = (V) table[bucket + 1];
 
                     if (!acquiredLock && validate(stamp)) {
-                        // The values we have read are consistent
+                        
                         if (key.equals(storedKey)) {
                             return storedValue;
                         } else if (storedKey == null) {
-                            // Not found
+                            
                             return null;
                         }
                     } else {
 
-                        // Fallback to acquiring read lock
+                        
                         if (!acquiredLock) {
                             stamp = readLock();
                             acquiredLock = true;
-                            table = this.table; //refresh
+                            table = this.table; 
 
                             bucket = signSafeMod(keyHash, capacity);
                             storedKey = (K) table[bucket];
@@ -249,7 +249,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         if (key.equals(storedKey)) {
                             return storedValue;
                         } else if (storedKey == null) {
-                            // Not found
+                            
                             return null;
                     }
                     }
@@ -267,7 +267,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
             long stamp = writeLock();
             int bucket = signSafeMod(keyHash, capacity);
 
-            // Remember where we find the first available spot
+            
             int firstDeletedKey = -1;
 
             try {
@@ -278,15 +278,15 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
                     if (key.equals(storedKey)) {
                         if (!onlyIfAbsent) {
-                            // Over written an old value for same key
+                            
                             table[bucket + 1] = value;
                             return storedValue;
                         } else {
                             return storedValue;
                         }
                     } else if (storedKey == null) {
-                        // Found an empty bucket. This means the key is not in the map. If we've already seen a deleted
-                        // key, we should write at that position
+                        
+                        
                         if (firstDeletedKey != -1) {
                             bucket = firstDeletedKey;
                         } else {
@@ -302,7 +302,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                         table[bucket + 1] = value;
                         return valueProvider != null ? value : null;
                     } else if (storedKey == DeletedKey) {
-                        // The bucket contained a different deleted key
+                        
                         if (firstDeletedKey == -1) {
                             firstDeletedKey = bucket;
                         }
@@ -351,7 +351,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                             return null;
                         }
                     } else if (storedKey == null) {
-                        // Key wasn't found
+                        
                         return null;
                     }
 
@@ -383,21 +383,21 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
 
             try {
 
-                // Validate no rehashing
+                
                 if (!validate(stamp)) {
-                    // Fallback to read lock
+                    
                     stamp = readLock();
                     acquiredReadLock = true;
                     table = this.table;
                 }
 
-                // Go through all the buckets for this section
+                
                 for (int bucket = 0; bucket < table.length; bucket += 2) {
                     K storedKey = (K) table[bucket];
                     V storedValue = (V) table[bucket + 1];
 
                     if (!acquiredReadLock && !validate(stamp)) {
-                        // Fallback to acquiring read lock
+                        
                         stamp = readLock();
                         acquiredReadLock = true;
 
@@ -417,11 +417,11 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
         }
 
         private void rehash() {
-            // Expand the hashmap
+            
             int newCapacity = capacity * 2;
             Object[] newTable = new Object[2 * newCapacity];
 
-            // Re-hash table
+            
             Object[] table = this.table;
             for (int i = 0; i < table.length; i += 2) {
                 K storedKey = (K) table[i];
@@ -444,7 +444,7 @@ public class ConcurrentOpenHashMap<K, V> extends AbstractMap<K,V> {
                 K storedKey = (K) table[bucket];
 
                 if (storedKey == null) {
-                    // The bucket is empty, so we can use it
+                    
                     table[bucket] = key;
                     table[bucket + 1] = value;
                     return;

@@ -13,8 +13,8 @@ public class BlackHoleMap<K, V> extends HashMap<K, V> {
 
     @Override
     public V put(K key, V value) {
-        //do nothing.
-        //this isn't a perfect solution but at least it prevents some unnecessary activity
+        
+        
         return null;
     }
 

@@ -60,18 +60,18 @@ final class LayoutParser {
         }
 
         while (true) {
-            // skip whitespace
+            
             skipwhites();
             if (isEof()) {
                 tokenLength = 0;
                 return;
             }
 
-            // skip // comments
+            
             if (getchar() == '/') {
                 if (nextchar() == '/') {
                     skiptoeol();
-                    // goto skip whitespace
+                    
                     continue;
                 } else {
                     prevchar();
@@ -83,7 +83,7 @@ final class LayoutParser {
 
         int c;
         int len = 0;
-        // handle quoted strings specially
+        
         if (getchar() == '\"') {
             nextchar();
             tokenPos = index;
@@ -100,7 +100,7 @@ final class LayoutParser {
             }
         }
 
-        // parse a regular word
+        
         c = getchar();
         tokenPos = index;
         do {
@@ -156,34 +156,34 @@ final class LayoutParser {
             if (i < max) {
                 digit = Character.digit(s.charAt(p + i++), 10);
                 if (digit < 0) {
-                    return 0; // wrong format
+                    return 0; 
                 } else {
                     result = -digit;
                 }
             }
             while (i < max) {
-                // Accumulating negatively avoids surprises near MAX_VALUE
+                
                 digit = Character.digit(s.charAt(p + i++), 10);
                 if (digit < 0) {
-                    return 0; // wrong format
+                    return 0; 
                 }
                 if (result < multmin) {
-                    return 0; // wrong format
+                    return 0; 
                 }
                 result *= 10;
                 if (result < limit + digit) {
-                    return 0; // wrong format
+                    return 0; 
                 }
                 result -= digit;
             }
         } else {
-            return 0; // wrong format
+            return 0; 
         }
         if (negative) {
             if (i > 1) {
                 return result;
             } else { /* Only got "-" */
-                return 0; // wrong format
+                return 0; 
             }
         } else {
             return -result;

@@ -42,31 +42,31 @@ public class ExamplePoseOfCalibrationTarget {
 
 	public static void main( String args[] ) {
 
-		// Load camera calibration
+		
 		CameraPinholeRadial intrinsic =
-				//CalibrationIO.load(UtilIO.pathExample("calibration/mono/Sony_DSC-HX5V_Chess/intrinsic.yaml"));
+				
 				ExampleStereoTwoViewsOneCamera.intrinsic;
 		LensDistortionNarrowFOV lensDistortion = new LensDistortionRadialTangential(intrinsic);
 
-		// load the video file
-//		String fileName = UtilIO.pathExample("tracking/chessboard_SonyDSC_01.mjpeg");
-//		SimpleImageSequence<GrayF32> video =
-//				DefaultMediaManager.INSTANCE.openVideo(fileName, ImageType.single(GrayF32.class));
+		
+
+
+
 		SimpleImageSequence<GrayF32> cam = DefaultMediaManager.INSTANCE.openCamera(null, 640, 480, ImageType.single(GrayF32.class));
 
-		// Let's use the FiducialDetector interface since it is much easier than coding up
-		// the entire thing ourselves.  Look at FiducialDetector's code if you want to understand how it works.
+		
+		
 		CalibrationFiducialDetector<GrayF32> detector =
 				FactoryFiducial.calibChessboard(new ConfigChessboard(4, 5, 0.03),GrayF32.class);
 
 		detector.setLensDistortion(lensDistortion,intrinsic.width,intrinsic.height);
 
-		// Get the 2D coordinate of calibration points for visualization purposes
+		
 		List<Point2D_F64> calibPts = detector.getCalibrationPoints();
 
-		// Set up visualization
+		
 		PointCloudViewer viewer = new PointCloudViewer(intrinsic, 0.01);
-		// make the view more interest.  From the side.
+		
 		DMatrixRMaj rotY = ConvertRotation3D_F64.rotY(-Math.PI/2.0,null);
 		viewer.setWorldToCamera(new Se3_F64(rotY,new Vector3D_F64(0.75,0,1.25)));
 		ImagePanel imagePanel = new ImagePanel(intrinsic.width, intrinsic.height);
@@ -75,24 +75,24 @@ public class ExamplePoseOfCalibrationTarget {
 		gui.setMaximumSize(gui.getPreferredSize());
 		ShowImages.showWindow(gui,"Calibration Target Pose",true);
 
-		// Allows the user to click on the image and pause
+		
 		MousePauseHelper pauseHelper = new MousePauseHelper(gui);
 
-		// saves the target's center location
+		
 		List<Point3D_F64> path = new ArrayList<>();
 
-		// Process each frame in the video sequence
+		
 		Se3_F64 targetToCamera = new Se3_F64();
 		while( true /*video.hasNext() */ ) {
 
-			// detect calibration points
-			//detector.detect(video.next());
+			
+			
 			detector.detect( cam.next());
 
 			if( detector.totalFound() == 1 ) {
 				detector.getFiducialToCamera(0, targetToCamera);
 
-				// Visualization.  Show a path with green points and the calibration points in black
+				
 				viewer.reset();
 
 				Point3D_F64 center = new Point3D_F64();
@@ -115,10 +115,10 @@ public class ExamplePoseOfCalibrationTarget {
 			viewer.repaint();
 			imagePanel.repaint();
 
-//			BoofMiscOps.pause(30);
-//			while( pauseHelper.isPaused() ) {
-//				BoofMiscOps.pause(30);
-//			}
+
+
+
+
 		}
 	}
 }

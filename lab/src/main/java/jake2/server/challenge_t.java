@@ -18,14 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 14.01.2004 by RST.
+
 
 package jake2.server;
 
 import jake2.qcommon.netadr_t;
 
 public class challenge_t {
-	//mem
+	
 	netadr_t		adr = new netadr_t();
 	int			challenge;
 	int			time;

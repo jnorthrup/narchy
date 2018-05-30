@@ -12,9 +12,9 @@ import java.util.*;
 public class DFA {
 
     public final int[][] transitions;
-    private int is; // init state
-    private int rs; // rejected state
-    private boolean[] fs; // final states
+    private int is; 
+    private int rs; 
+    private boolean[] fs; 
 
     public DFA(List<NFAState> nfaStateList) {
         is = rs = -1;
@@ -40,7 +40,7 @@ public class DFA {
 
         Map<NFAState, Set<NFAState>> closureMap = calculateClosure(nfaStateList);
 
-        // construct a NFA first
+        
         Map<NFAState, CharObjectHashMap<Set<NFAState>>> nfaTransitionMap = new HashMap<>();
         for (NFAState state : nfaStateList) {
             CharObjectHashMap<Set<NFAState>> subMap = new CharObjectHashMap();
@@ -54,11 +54,11 @@ public class DFA {
             nfaTransitionMap.put(state, subMap);
         }
 
-        // Construct an original DFA using the constructed NFA. Each key which is set of nfa states is a new dfa state.
+        
         Map<Set<NFAState>, CharObjectHashMap<Set<NFAState>>> originalDFATransitionMap = new HashMap<>();
         constructOriginalDFA(closureMap.get(initState), nfaTransitionMap, originalDFATransitionMap);
 
-        // construct minimum DFA
+        
         return minimize(originalDFATransitionMap, closureMap.get(initState), finalState);
     }
 
@@ -107,7 +107,7 @@ public class DFA {
             Set<NFAState> stateSet = transitionMap.get(ch);
             if (stateSet != null) {
                 for (NFAState state : stateSet) {
-                    result.addAll(closureMap.get(state)); // closure of all the reachable states by scanning a char of the given closure.
+                    result.addAll(closureMap.get(state)); 
                 }
             }
         }
@@ -121,18 +121,18 @@ public class DFA {
         int initStateAfterRenaming = -1;
         int renamingStateID = 1;
 
-        // rename all states
+        
         for (Set<NFAState> nfaState : oriDFATransitionMap.keySet()) {
             if (initStateAfterRenaming == -1 && nfaState.equals(initClosure)) {
-                initStateAfterRenaming = renamingStateID; // record init state id
+                initStateAfterRenaming = renamingStateID; 
             }
             stateRenamingMap.put(nfaState, renamingStateID++);
         }
 
-        renamedDFATransitionTable.put(0, newRejectState()); // the rejected state 0
+        renamedDFATransitionTable.put(0, newRejectState()); 
         finalFlags.put(0, false);
 
-        // construct renamed dfa transition table
+        
         for (Map.Entry<Set<NFAState>, CharObjectHashMap<Set<NFAState>>> entry : oriDFATransitionMap.entrySet()) {
             Set<NFAState> ek = entry.getKey();
             renamingStateID = stateRenamingMap.get(ek);
@@ -146,7 +146,7 @@ public class DFA {
             finalFlags.put(renamingStateID, ek.contains(finalNFAState));
         }
 
-        // split states to final states and non-final states
+        
         IntIntHashMap groupFlags = new IntIntHashMap();
         for (int i = 0; i < finalFlags.size(); i++) {
             boolean b = finalFlags.get(i);
@@ -155,12 +155,12 @@ public class DFA {
 
         int groupTotal = 2;
         int preGroupTotal;
-        do { // splitting, group id is the final state id
+        do { 
             preGroupTotal = groupTotal;
             for (int sensitiveGroup = 0; sensitiveGroup < preGroupTotal; sensitiveGroup++) {
-                //  <target group table, state id set>
+                
                 Map<Map<Integer, Integer>, Set<Integer>> invertMap = new HashMap<>();
-                for (int sid = 0; sid < groupFlags.size(); sid++) { //use state id to iterate
+                for (int sid = 0; sid < groupFlags.size(); sid++) { 
                     int group = groupFlags.get(sid);
                     if (sensitiveGroup == group) {
                         Map<Integer, Integer> targetGroupTable = new HashMap<>(CommonSets.ENCODING_LENGTH);
@@ -188,13 +188,13 @@ public class DFA {
             }
         } while (preGroupTotal != groupTotal);
 
-        // determine initial group state
+        
         is = groupFlags.get(initStateAfterRenaming);
 
-        // determine rejected group state
+        
         rs = groupFlags.get(0);
 
-        // determine final group states
+        
         Set<Integer> finalGroupFlags = new HashSet<>();
         for (int i = 0, groupFlagsSize = groupFlags.size(); i < groupFlagsSize; i++) {
             Integer groupFlag = groupFlags.get(i);
@@ -208,7 +208,7 @@ public class DFA {
             fs[i] = finalGroupFlags.contains(i);
         }
 
-        // construct the final transition table
+        
         int[][] tt = new int[groupTotal][];
 
         for (int groupID = 0; groupID < groupTotal; groupID++) {
@@ -231,11 +231,11 @@ public class DFA {
 
     private static int[] newRejectState() {
         int[] state = new int[CommonSets.ENCODING_LENGTH];
-        //rejectAll(state);
+        
         return state;
     }
 
-//    private static void rejectAll(int[] state) {
-//        Arrays.fill(state, 0);
-//    }
+
+
+
 }

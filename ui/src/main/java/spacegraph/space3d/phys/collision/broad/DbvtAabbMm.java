@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -21,7 +21,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-// Dbvt implementation by Nathanael Presson
+
 
 package spacegraph.space3d.phys.collision.broad;
 
@@ -118,8 +118,8 @@ public class DbvtAabbMm {
 		return box;
 	}
 	
-	//public static  DbvtAabbMm	FromPoints( btVector3* pts,int n);
-	//public static  DbvtAabbMm	FromPoints( btVector3** ppts,int n);
+	
+	
 	
 	public void Expand(v3 e) {
 		mi.sub(e);
@@ -229,7 +229,7 @@ public class DbvtAabbMm {
 		v3 d1 = new v3();
 		v3 tmp = new v3();
 
-		// JAVA NOTE: check
+		
 		b.center(d0);
 		xform.transform(d0);
 		d0.sub(a.center(tmp));

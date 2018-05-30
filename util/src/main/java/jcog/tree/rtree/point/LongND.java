@@ -68,11 +68,11 @@ public class LongND implements HyperPoint, Serializable, Comparable<LongND> {
         return hash == longND.hashCode() && Arrays.equals(coord, longND.coord);
 
 
-//        for (int i = 0; i < coord.length; i++) {
-//            if (longToIntBits(coord[i])!=longToIntBits(longND.coord[i]))
-//                return false;
-//        }
-//        return true;
+
+
+
+
+
     }
 
     @Override

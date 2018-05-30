@@ -10,8 +10,8 @@ import java.util.List;
  * expect here, like first, second, list, etc. are instead static methods
  * in class SchemeUtils.
  *
- * @author Peter Norvig, peter@norvig.com http://www.norvig.com
- *         Copyright 1998 Peter Norvig, see http://www.norvig.com/license.html
+ * @author Peter Norvig, peter@norvig.com http:
+ *         Copyright 1998 Peter Norvig, see http:
  */
 
 public class Pair implements IPair {
@@ -98,7 +98,7 @@ public class Pair implements IPair {
      */
 
     static void stringify(Object x, boolean quoted, StringBuffer buf) {
-        //noinspection IfStatementWithTooManyBranches
+        
         if (x == null)
             buf.append("()");
         else if (x instanceof Double) {

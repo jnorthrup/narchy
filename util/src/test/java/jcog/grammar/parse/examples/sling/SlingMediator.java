@@ -1,8 +1,8 @@
 package jcog.grammar.parse.examples.sling;
 
-//import javax.swing.*;
-//import javax.swing.text.*;
-//import javax.swing.event.*;
+
+
+
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.examples.imperative.Command;
@@ -209,7 +209,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 	 */
 	protected void setComputing(boolean computing) {
 
-		// computing means everything is disabled, except "Halt"
+		
 
 		goSource.setEnabled(!computing);
 		clearSource.setEnabled(!computing);
@@ -238,7 +238,7 @@ public class SlingMediator implements ActionListener, ChangeListener, Runnable {
 			if (rez.contains(e.getFound())) {
 				throw new RuntimeException(e.getMessage() + "\n> " + e.getFound() + " is a reserved word");
 			} else {
-				throw e; // to a more generic handler
+				throw e; 
 			}
 		}
 	}

@@ -41,11 +41,11 @@ public class Sum extends Operation {
     }
     
     public Expr deriv(Var respected) {
-        // if (debug) System.err.println("derivative of " + dump());
+        
         ArrayList<Expr> exprsDiffed = new ArrayList<>(exprs.size());
         exprsDiffed.addAll(exprs.stream().map(expr -> expr.deriv(respected)).collect(Collectors.toList()));
-        // if (debug) System.err.println(dump() + " => ArrayList: " + exprsDiffed);
-        // if (debug) System.err.println(dump() + " => " + new Sum(exprsDiffed).toString());
+        
+        
         return Sum.make(exprsDiffed);
     }
     
@@ -128,9 +128,9 @@ public class Sum extends Operation {
             
             for (int j = i + 1; j < exprs.size(); j++) {
                 Expr expr2 = exprs.get(j);
-                // if (debug) System.err.println("Sum.simplify: (2 Expr): expr1: " + expr1 + "; expr2: " + expr2);
-//                 if (debug) System.err.println("Sum.simplify: (2 Expr): expr2.getExpr(0): " + ((Operation) expr2).getExpr(0));
-//                 if (debug) System.err.println("Sum.simplify: (2 Expr): -1 == -1: " + Number.make(-1d).equalsExpr(Number.make(-1d)));
+                
+
+
                 
                 Expr expr2mult = Num.make(1);
                 Expr expr2OtherThing = expr2;
@@ -150,8 +150,8 @@ public class Sum extends Operation {
                     expr2Bottoms.remove(0);
                 }
                 
-                // if (debug) System.err.println("Sum.simplify: (2 Expr): expr1: (" + expr1mult + ")*(" + expr1OtherThing + "); "
-                //                                                           + "expr2: (" + expr2mult + ")*(" + expr2OtherThing + ")");
+                
+                
                 
                 if (expr1OtherThing.equalsExpr(expr2OtherThing)) {
                     Expr newElem = Product.make(Sum.make(expr1mult, expr2mult), expr1OtherThing);
@@ -179,15 +179,15 @@ public class Sum extends Operation {
                     i = -1;
                 }
                 
-//                 else if (expr2 instanceof Product && ((Operation) expr2).getExprs().get(0).equalsExpr(Number.make(-1d)) && expr1.equalsExpr(((Operation) expr2).getExprs().get(1))
-//                  || expr1 instanceof Product && ((Operation) expr1).getExprs().get(0).equalsExpr(Number.make(-1d)) && expr2.equalsExpr(((Operation) expr1).getExprs().get(1))) {
-//                     if (debug) System.err.println("Sum.simplify: (2 Expr): canceling");
-//                     
-//                     exprs.remove(j);
-//                     exprs.remove(i);
-//                     j = exprs.size();
-//                     i = -1;
-//                 }
+
+
+
+
+
+
+
+
+
             }
         }
         
@@ -218,10 +218,10 @@ public class Sum extends Operation {
                 constant1OtherThing = Product.make(constant1OtherThing, constant1Bottoms.get(0));
                 constant1Bottoms.remove(0);
             }
-//             if (constant1OtherThing.isNumber()) {
-//                 constant1Mult = Product.make(constant1Mult, constant1OtherThing);
-//                 constant1OtherThing = Number.make(1);
-//             }
+
+
+
+
             
             for (int j = 0; j < constants.size(); j++) {
                 if (i != j) {
@@ -249,10 +249,10 @@ public class Sum extends Operation {
                     
                     boolean combined = false;
                     
-                    // if (debug) System.err.println("Sum.simplify: (2 Constants): constant1: (" + constant1Mult + ")*(" + constant1OtherThing + "); "
-                    //                                                             + "constant2: (" + constant2Mult + ")*(" + constant2OtherThing + ")");
+                    
+                    
 
-                    //noinspection IfStatementWithTooManyBranches
+                    
                     if (number1 != null && number2 != null && number1 + number2 - number1 - number2 == 0 && number2 + number1 - number2 - number1 == 0) {
                         constants.set(i, Num.make(number1 + number2));
                         combined = true;
@@ -306,18 +306,18 @@ public class Sum extends Operation {
         if (expr == this) return true;
         if (!(expr instanceof Sum)) return false;
         
-        // if (debug) System.err.println("Sum.equalsExpr: " + dump() + " =? " + expr);
+        
         ArrayList<Expr> otherExprs = ((Operation) expr).getExprs();
         for (Expr expr2 : exprs) {
-            // if (debug) System.err.println("Sum.equalsExpr: expr2: " + expr2);
+            
             for (Expr otherExpr2 : otherExprs) {
-                // if (debug) System.err.println("Sum.equalsExpr: otherExpr2: " + otherExpr2);
+                
                 if (expr2.equalsExpr(otherExpr2)) {
-                // if (debug) System.err.println("Sum.equalsExpr: " + expr2 + " == " + otherExpr2);
+                
                     otherExprs.remove(otherExpr2);
                     break;
                 }
-                // if (debug) System.err.println("Sum.equalsExpr: " + expr2 + " != " + otherExpr2);
+                
                 return false;
             }
         }

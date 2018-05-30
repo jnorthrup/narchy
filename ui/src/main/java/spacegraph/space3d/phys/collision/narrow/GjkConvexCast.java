@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -36,11 +36,11 @@ import spacegraph.util.math.v3;
  */
 public class GjkConvexCast extends ConvexCast {
 
-//#ifdef BT_USE_DOUBLE_PRECISION
-//	private static final int MAX_ITERATIONS = 64;
-//#else
+
+
+
 	private static final int MAX_ITERATIONS = 32;
-//#endif
+
 	
 	private final SimplexSolverInterface simplexSolver;
 	private final ConvexShape convexA;
@@ -58,8 +58,8 @@ public class GjkConvexCast extends ConvexCast {
 	public boolean calcTimeOfImpact(Transform fromA, Transform toA, Transform fromB, Transform toB, CastResult result) {
 		simplexSolver.reset();
 
-		// compute linear velocity for this interval, to interpolate
-		// assume no rotation/angular velocity, assert here?
+		
+		
 		v3 linVelA = new v3();
 		v3 linVelB = new v3();
 
@@ -81,23 +81,23 @@ public class GjkConvexCast extends ConvexCast {
 		r.sub(linVelA, linVelB);
 
 		float lastLambda = lambda;
-		//btScalar epsilon = btScalar(0.001);
+		
 
 		int numIter = 0;
-		// first solution, using GJK
+		
 
 		Transform identityTrans = new Transform();
 		identityTrans.setIdentity();
 
-		//result.drawCoordSystem(sphereTr);
+		
 
 		PointCollector pointCollector = new PointCollector();
 
-		gjk.init(convexA, convexB, simplexSolver, null); // penetrationDepthSolver);		
+		gjk.init(convexA, convexB, simplexSolver, null); 
 		DiscreteCollisionDetectorInterface.ClosestPointInput input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
 		input.init();
-		// we don't use margins during CCD
-		//	gjk.setIgnoreMargin(true);
+		
+		
 
 		input.transformA.set(fromA);
 		input.transformB.set(fromB);
@@ -111,11 +111,11 @@ public class GjkConvexCast extends ConvexCast {
             dist = pointCollector.distance;
             n.set(pointCollector.normalOnBInWorld);
 
-            // not close enough
+            
             while (dist > radius) {
                 numIter++;
                 if (numIter > maxIter) {
-                    return false; // todo: report a failure
+                    return false; 
                 }
                 float dLambda = 0f;
 
@@ -129,17 +129,17 @@ public class GjkConvexCast extends ConvexCast {
                     return false;
                 }
                 if (lambda < 0f) {
-                    return false;					// todo: next check with relative epsilon
+                    return false;					
                 }
 
                 if (lambda <= lastLambda) {
                     return false;
-                //n.setValue(0,0,0);
-                //break;
+                
+                
                 }
                 lastLambda = lambda;
 
-                // interpolate to next lambda
+                
                 result.debugDraw(lambda);
                 VectorUtil.setInterpolate3(input.transformA, fromA, toA, lambda);
                 VectorUtil.setInterpolate3(input.transformB, fromB, toB, lambda);
@@ -158,14 +158,14 @@ public class GjkConvexCast extends ConvexCast {
                     dist = pointCollector.distance;
                 }
                 else {
-                    // ??
+                    
                     return false;
                 }
 
             }
 
-            // is n normalized?
-            // don't report time of impact for motion away from the contact normal (or causes minor penetration)
+            
+            
             if (n.dot(r) >= -result.allowedPenetration) {
                 return false;
             }

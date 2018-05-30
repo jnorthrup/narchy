@@ -30,16 +30,16 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
         int xs = X.subs();
         assert(xs > 1);
         assert(xs == Y.subs());
-        //itis ok if the terms are equal. they could match in opposite permutations of themselves
+        
 
-//        if (y.subs()==2 && y.sub(0).equals(y.sub(1)))
-//            throw new RuntimeException("pointless permute");
+
+
     }
 
     @Override
     public int getEstimatedPermutations() {
         throw new UnsupportedOperationException();
-        //return perm.total();
+        
     }
 
     @Override

@@ -306,11 +306,11 @@ public class Bitmap {
                                                    int size, RdpPacket data, int Bpp, IndexColorModel cm,
                                                    int left, int top, WrappedImage w) throws RdesktopException {
 
-        // WrappedImage w = null;
+        
 
-        byte[] compressed_pixel = data.array();  //new byte[size];
+        byte[] compressed_pixel = data.array();  
         int input = data.position();
-        //data.copyToByteArray(compressed_pixel, 0, data.position(), size);
+        
         data.positionAdd(size);
 
         int previous = -1, line = 0, prevY = 0;
@@ -380,16 +380,16 @@ public class Bitmap {
                     break;
                 case 8: /* Bicolor */
                     color1 = cvalx(compressed_pixel, input, Bpp);
-                    // (compressed_pixel[input++]&0x000000ff);
+                    
                     input += Bpp;
                 case 3: /* Color */
                     color2 = cvalx(compressed_pixel, input, Bpp);
-                    // color2 = (compressed_pixel[input++]&0x000000ff);
+                    
                     input += Bpp;
                     break;
                 case 6: /* SetMix/Mix */
                 case 7: /* SetMix/FillOrMix */
-                    // mix = compressed_pixel[input++];
+                    
                     mix = cvalx(compressed_pixel, input, Bpp);
                     input += Bpp;
                     opcode -= 5;
@@ -429,13 +429,13 @@ public class Bitmap {
                     case 0: /* Fill */
                         if (insertmix) {
                             if (previous == -1) {
-                                // pixel[line+x] = mix;
+                                
                                 w.setRGB(left + x, top + height, mix);
                             } else {
                                 w.setRGB(left + x, top + height, w.getRGB(left + x,
                                         top + prevY)
                                         ^ mix);
-                                // pixel[line+x] = (pixel[previous+x] ^ mix);
+                                
                             }
 
                             insertmix = false;
@@ -446,14 +446,14 @@ public class Bitmap {
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line+x] = 0;
+                                    
                                     w.setRGB(left + x, top + height, 0);
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line+x] = 0;
+                                
                                 w.setRGB(left + x, top + height, 0);
                                 count--;
                                 x++;
@@ -461,7 +461,7 @@ public class Bitmap {
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line + x] = pixel[previous + x];
+                                    
                                     w.setRGB(left + x, top + height, w.getRGB(left
                                             + x, top + prevY));
                                     count--;
@@ -469,7 +469,7 @@ public class Bitmap {
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line + x] = pixel[previous + x];
+                                
                                 w.setRGB(left + x, top + height, w.getRGB(left + x,
                                         top + prevY));
                                 count--;
@@ -482,14 +482,14 @@ public class Bitmap {
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line + x] = mix;
+                                    
                                     w.setRGB(left + x, top + height, mix);
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line + x] = mix;
+                                
                                 w.setRGB(left + x, top + height, mix);
                                 count--;
                                 x++;
@@ -498,7 +498,7 @@ public class Bitmap {
 
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line + x] = pixel[previous + x] ^ mix;
+                                    
                                     w.setRGB(left + x, top + height, w.getRGB(left
                                             + x, top + prevY)
                                             ^ mix);
@@ -507,7 +507,7 @@ public class Bitmap {
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line + x] = pixel[previous + x] ^ mix;
+                                
                                 w.setRGB(left + x, top + height, w.getRGB(left + x,
                                         top + prevY)
                                         ^ mix);
@@ -528,12 +528,12 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0) {
-                                        // pixel[line + x] = (byte) mix;
+                                        
                                         w
                                                 .setRGB(left + x, top + height,
                                                         (byte) mix);
                                     } else {
-                                        // pixel[line + x] = 0;
+                                        
                                         w.setRGB(left + x, top + height, 0);
                                     }
                                     count--;
@@ -548,10 +548,10 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0) {
-                                    // pixel[line + x] = mix;
+                                    
                                     w.setRGB(left + x, top + height, mix);
                                 } else {
-                                    // pixel[line + x] = 0;
+                                    
                                     w.setRGB(left + x, top + height, 0);
                                 }
                                 count--;
@@ -567,13 +567,13 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0) {
-                                        // pixel[line + x] = (pixel[previous + x] ^
-                                        // mix);
+                                        
+                                        
                                         w.setRGB(left + x, top + height, w.getRGB(
                                                 left + x, prevY + top)
                                                 ^ mix);
                                     } else {
-                                        // pixel[line + x] = pixel[previous + x];
+                                        
                                         w.setRGB(left + x, top + height, w.getRGB(
                                                 left + x, prevY + top));
                                     }
@@ -589,13 +589,13 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0) {
-                                    // pixel[line + x] = (pixel[previous + x] ^
-                                    // mix);
+                                    
+                                    
                                     w.setRGB(left + x, top + height, w.getRGB(left
                                             + x, prevY + top)
                                             ^ mix);
                                 } else {
-                                    // pixel[line + x] = pixel[previous + x];
+                                    
                                     w.setRGB(left + x, top + height, w.getRGB(left
                                             + x, prevY + top));
                                 }
@@ -609,14 +609,14 @@ public class Bitmap {
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = color2;
+                                
                                 w.setRGB(left + x, top + height, color2);
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = color2;
+                            
                             w.setRGB(left + x, top + height, color2);
                             count--;
                             x++;
@@ -627,8 +627,8 @@ public class Bitmap {
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = cvalx(compressed_pixel, input,
-                                // Bpp);
+                                
+                                
                                 w.setRGB(left + x, top + height, cvalx(
                                         compressed_pixel, input, Bpp));
                                 input += Bpp;
@@ -637,8 +637,8 @@ public class Bitmap {
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = cvalx(compressed_pixel, input,
-                            // Bpp);
+                            
+                            
                             w.setRGB(left + x, top + height, cvalx(
                                     compressed_pixel, input, Bpp));
                             input += Bpp;
@@ -651,11 +651,11 @@ public class Bitmap {
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
                                 if (bicolor) {
-                                    // pixel[line + x] = color2;
+                                    
                                     w.setRGB(left + x, top + height, color2);
                                     bicolor = false;
                                 } else {
-                                    // pixel[line + x] = color1;
+                                    
                                     w.setRGB(left + x, top + height, color1);
                                     bicolor = true;
                                     count++;
@@ -666,11 +666,11 @@ public class Bitmap {
                         }
                         while ((count > 0) && (x < width)) {
                             if (bicolor) {
-                                // pixel[line + x] = color2;
+                                
                                 w.setRGB(left + x, top + height, color2);
                                 bicolor = false;
                             } else {
-                                // pixel[line + x] = color1;
+                                
                                 w.setRGB(left + x, top + height, color1);
                                 bicolor = true;
                                 count++;
@@ -684,14 +684,14 @@ public class Bitmap {
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = 0xffffff;
+                                
                                 w.setRGB(left + x, top + height, 0xffffff);
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = 0xffffff;
+                            
                             w.setRGB(left + x, top + height, 0xffffff);
                             count--;
                             x++;
@@ -701,14 +701,14 @@ public class Bitmap {
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = 0x00;
+                                
                                 w.setRGB(left + x, top + height, 0x00);
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = 0x00;
+                            
                             w.setRGB(left + x, top + height, 0x00);
                             count--;
                             x++;
@@ -717,7 +717,7 @@ public class Bitmap {
                         break;
                     default:
                         throw new RdesktopException(
-                                "Unimplemented decompress opcode " + opcode);// ;
+                                "Unimplemented decompress opcode " + opcode);
                 }
             }
         }
@@ -824,16 +824,16 @@ public class Bitmap {
                     break;
                 case 8: /* Bicolor */
                     color1 = cvalx(compressed_pixel, input, Bpp);
-                    // (compressed_pixel[input++]&0x000000ff);
+                    
                     input += Bpp;
                 case 3: /* Color */
                     color2 = cvalx(compressed_pixel, input, Bpp);
-                    // color2 = (compressed_pixel[input++]&0x000000ff);
+                    
                     input += Bpp;
                     break;
                 case 6: /* SetMix/Mix */
                 case 7: /* SetMix/FillOrMix */
-                    // mix = compressed_pixel[input++];
+                    
                     mix = cvalx(compressed_pixel, input, Bpp);
                     input += Bpp;
                     opcode -= 5;
@@ -873,11 +873,11 @@ public class Bitmap {
                     case 0: /* Fill */
                         if (insertmix) {
                             if (previous == -1) {
-                                // pixel[line+x] = mix;
+                                
                                 w.setRGB(x, height, mix);
                             } else {
                                 w.setRGB(x, height, w.getRGB(x, prevY) ^ mix);
-                                // pixel[line+x] = (pixel[previous+x] ^ mix);
+                                
                             }
 
                             insertmix = false;
@@ -888,14 +888,14 @@ public class Bitmap {
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line+x] = 0;
+                                    
                                     w.setRGB(x, height, 0);
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line+x] = 0;
+                                
                                 w.setRGB(x, height, 0);
                                 count--;
                                 x++;
@@ -903,14 +903,14 @@ public class Bitmap {
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line + x] = pixel[previous + x];
+                                    
                                     w.setRGB(x, height, w.getRGB(x, prevY));
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line + x] = pixel[previous + x];
+                                
                                 w.setRGB(x, height, w.getRGB(x, prevY));
                                 count--;
                                 x++;
@@ -922,14 +922,14 @@ public class Bitmap {
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line + x] = mix;
+                                    
                                     w.setRGB(x, height, mix);
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line + x] = mix;
+                                
                                 w.setRGB(x, height, mix);
                                 count--;
                                 x++;
@@ -938,14 +938,14 @@ public class Bitmap {
 
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // pixel[line + x] = pixel[previous + x] ^ mix;
+                                    
                                     w.setRGB(x, height, w.getRGB(x, prevY) ^ mix);
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // pixel[line + x] = pixel[previous + x] ^ mix;
+                                
                                 w.setRGB(x, height, w.getRGB(x, prevY) ^ mix);
                                 count--;
                                 x++;
@@ -964,10 +964,10 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0) {
-                                        // pixel[line + x] = (byte) mix;
+                                        
                                         w.setRGB(x, height, (byte) mix);
                                     } else {
-                                        // pixel[line + x] = 0;
+                                        
                                         w.setRGB(x, height, 0);
                                     }
                                     count--;
@@ -982,10 +982,10 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0) {
-                                    // pixel[line + x] = mix;
+                                    
                                     w.setRGB(x, height, mix);
                                 } else {
-                                    // pixel[line + x] = 0;
+                                    
                                     w.setRGB(x, height, 0);
                                 }
                                 count--;
@@ -1001,12 +1001,12 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0) {
-                                        // pixel[line + x] = (pixel[previous + x] ^
-                                        // mix);
+                                        
+                                        
                                         w.setRGB(x, height, w.getRGB(x, prevY)
                                                 ^ mix);
                                     } else {
-                                        // pixel[line + x] = pixel[previous + x];
+                                        
                                         w.setRGB(x, height, w.getRGB(x, prevY));
                                     }
                                     count--;
@@ -1021,11 +1021,11 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0) {
-                                    // pixel[line + x] = (pixel[previous + x] ^
-                                    // mix);
+                                    
+                                    
                                     w.setRGB(x, height, w.getRGB(x, prevY) ^ mix);
                                 } else {
-                                    // pixel[line + x] = pixel[previous + x];
+                                    
                                     w.setRGB(x, height, w.getRGB(x, prevY));
                                 }
                                 count--;
@@ -1038,14 +1038,14 @@ public class Bitmap {
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = color2;
+                                
                                 w.setRGB(x, height, color2);
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = color2;
+                            
                             w.setRGB(x, height, color2);
                             count--;
                             x++;
@@ -1056,8 +1056,8 @@ public class Bitmap {
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = cvalx(compressed_pixel, input,
-                                // Bpp);
+                                
+                                
                                 w.setRGB(x, height, cvalx(compressed_pixel, input,
                                         Bpp));
                                 input += Bpp;
@@ -1066,13 +1066,13 @@ public class Bitmap {
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = cvalx(compressed_pixel, input,
-                            // Bpp);
+                            
+                            
                             w
                                     .setRGB(x, height, cvalx(compressed_pixel,
                                             input, Bpp));
                             input += Bpp;
-                            // pixel[line+x] = compressed_pixel[input++];
+                            
                             count--;
                             x++;
                         }
@@ -1082,11 +1082,11 @@ public class Bitmap {
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
                                 if (bicolor) {
-                                    // pixel[line + x] = color2;
+                                    
                                     w.setRGB(x, height, color2);
                                     bicolor = false;
                                 } else {
-                                    // pixel[line + x] = color1;
+                                    
                                     w.setRGB(x, height, color1);
                                     bicolor = true;
                                     count++;
@@ -1097,11 +1097,11 @@ public class Bitmap {
                         }
                         while ((count > 0) && (x < width)) {
                             if (bicolor) {
-                                // pixel[line + x] = color2;
+                                
                                 w.setRGB(x, height, color2);
                                 bicolor = false;
                             } else {
-                                // pixel[line + x] = color1;
+                                
                                 w.setRGB(x, height, color1);
                                 bicolor = true;
                                 count++;
@@ -1115,14 +1115,14 @@ public class Bitmap {
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = 0xffffff;
+                                
                                 w.setRGB(x, height, 0xffffff);
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = 0xffffff;
+                            
                             w.setRGB(x, height, 0xffffff);
                             count--;
                             x++;
@@ -1132,14 +1132,14 @@ public class Bitmap {
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // pixel[line + x] = 0x00;
+                                
                                 w.setRGB(x, height, 0x00);
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // pixel[line + x] = 0x00;
+                            
                             w.setRGB(x, height, 0x00);
                             count--;
                             x++;
@@ -1148,7 +1148,7 @@ public class Bitmap {
                         break;
                     default:
                         throw new RdesktopException(
-                                "Unimplemented decompress opcode " + opcode);// ;
+                                "Unimplemented decompress opcode " + opcode);
                 }
             }
         }
@@ -1244,16 +1244,16 @@ public class Bitmap {
                     break;
                 case 8: /* Bicolor */
                     color1 = cvalx(compressed_pixel, input, Bpp);
-                    // (compressed_pixel[input++]&0x000000ff);
+                    
                     input += Bpp;
                 case 3: /* Color */
                     color2 = cvalx(compressed_pixel, input, Bpp);
-                    // color2 = (compressed_pixel[input++]&0x000000ff);
+                    
                     input += Bpp;
                     break;
                 case 6: /* SetMix/Mix */
                 case 7: /* SetMix/FillOrMix */
-                    // mix = compressed_pixel[input++];
+                    
                     mix = cvalx(compressed_pixel, input, Bpp);
                     input += Bpp;
                     opcode -= 5;
@@ -1302,14 +1302,14 @@ public class Bitmap {
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // setli(pixel, line, x, 0);
+                                    
                                     pixel[line + x] = 0;
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // setli(pixel, line, x, 0);
+                                
                                 pixel[line + x] = 0;
                                 count--;
                                 x++;
@@ -1317,14 +1317,14 @@ public class Bitmap {
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // setli(pixel, line, x, pixel[previous + x]);
+                                    
                                     pixel[line + x] = pixel[previous + x];
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // setli(pixel, line, x, pixel[previous + x]);
+                                
                                 pixel[line + x] = pixel[previous + x];
                                 count--;
                                 x++;
@@ -1336,14 +1336,14 @@ public class Bitmap {
                         if (previous == -1) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // setli(pixel, line, x, mix, Bpp);
+                                    
                                     pixel[line + x] = mix;
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // setli(pixel, line, x, mix, Bpp);
+                                
                                 pixel[line + x] = mix;
                                 count--;
                                 x++;
@@ -1352,18 +1352,18 @@ public class Bitmap {
 
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // setli(pixel, line, x, pixel[previous + x] ^
-                                    // mix);
+                                    
+                                    
                                     pixel[line + x] = pixel[previous + x] ^ mix;
-                                    // setli(pixel, line, x, 0, Bpp);
+                                    
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // setli(pixel, line, x, pixel[previous + x] ^ mix);
+                                
                                 pixel[line + x] = pixel[previous + x] ^ mix;
-                                // setli(pixel, line, x, 0, Bpp);
+                                
                                 count--;
                                 x++;
                             }
@@ -1381,10 +1381,10 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0)
-                                        // setli(pixel, line, x, mix, Bpp);
+                                        
                                         pixel[line + x] = (byte) mix;
                                     else
-                                        // setli(pixel, line, x, 0, Bpp);
+                                        
                                         pixel[line + x] = 0;
                                     count--;
                                     x++;
@@ -1398,10 +1398,10 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0)
-                                    // setli(pixel, line, x, mix, Bpp);
+                                    
                                     pixel[line + x] = mix;
                                 else
-                                    // setli(pixel, line, x, 0, Bpp);
+                                    
                                     pixel[line + x] = 0;
                                 count--;
                                 x++;
@@ -1416,13 +1416,13 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0)
-                                        // setli(pixel, line, x,
-                                        // getli(pixel,previous, x, Bpp) ^ mix,
-                                        // Bpp);
+                                        
+                                        
+                                        
                                         pixel[line + x] = (pixel[previous + x] ^ mix);
                                     else
-                                        // setli(pixel, line, x, getli(pixel,
-                                        // previous, x, Bpp), Bpp);
+                                        
+                                        
                                         pixel[line + x] = pixel[previous + x];
                                     count--;
                                     x++;
@@ -1436,12 +1436,12 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0)
-                                    // setli(pixel, line, x, getli(pixel, previous,
-                                    // x, Bpp) ^ mix, Bpp);
+                                    
+                                    
                                     pixel[line + x] = (pixel[previous + x] ^ mix);
                                 else
-                                    // setli(pixel, line, x, getli(pixel, previous,
-                                    // x, Bpp), Bpp);
+                                    
+                                    
                                     pixel[line + x] = pixel[previous + x];
                                 count--;
                                 x++;
@@ -1453,14 +1453,14 @@ public class Bitmap {
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, color2, Bpp);
+                                
                                 pixel[line + x] = color2;
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, color2, Bpp);
+                            
                             pixel[line + x] = color2;
                             count--;
                             x++;
@@ -1471,9 +1471,9 @@ public class Bitmap {
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, cvalx(compressed_pixel,
-                                // input, Bpp), Bpp);
-                                // pixel[line+x] = compressed_pixel[input++];
+                                
+                                
+                                
                                 pixel[line + x] = cvalx(compressed_pixel, input,
                                         Bpp);
                                 input += Bpp;
@@ -1482,11 +1482,11 @@ public class Bitmap {
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, cvalx(compressed_pixel,
-                            // input,Bpp), Bpp);
+                            
+                            
                             pixel[line + x] = cvalx(compressed_pixel, input, Bpp);
                             input += Bpp;
-                            // pixel[line+x] = compressed_pixel[input++];
+                            
                             count--;
                             x++;
                         }
@@ -1496,11 +1496,11 @@ public class Bitmap {
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
                                 if (bicolor) {
-                                    // setli(pixel, line, x, color2, Bpp);
+                                    
                                     pixel[line + x] = color2;
                                     bicolor = false;
                                 } else {
-                                    // setli(pixel, line, x, color1, Bpp);
+                                    
                                     pixel[line + x] = color1;
                                     bicolor = true;
                                     count++;
@@ -1511,11 +1511,11 @@ public class Bitmap {
                         }
                         while ((count > 0) && (x < width)) {
                             if (bicolor) {
-                                // setli(pixel, line, x, color2, Bpp);
+                                
                                 pixel[line + x] = color2;
                                 bicolor = false;
                             } else {
-                                // setli(pixel, line, x, color1, Bpp);
+                                
                                 pixel[line + x] = color1;
                                 bicolor = true;
                                 count++;
@@ -1529,14 +1529,14 @@ public class Bitmap {
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, 0xffffff, Bpp);
+                                
                                 pixel[line + x] = 0xffffff;
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, 0xffffff, Bpp);
+                            
                             pixel[line + x] = 0xffffff;
                             count--;
                             x++;
@@ -1546,14 +1546,14 @@ public class Bitmap {
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, 0x00, Bpp);
+                                
                                 pixel[line + x] = 0x00;
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, 0x00, Bpp);
+                            
                             pixel[line + x] = 0x00;
                             count--;
                             x++;
@@ -1562,7 +1562,7 @@ public class Bitmap {
                         break;
                     default:
                         throw new RdesktopException(
-                                "Unimplemented decompress opcode " + opcode);// ;
+                                "Unimplemented decompress opcode " + opcode);
                 }
             }
         }
@@ -1660,20 +1660,20 @@ public class Bitmap {
                         insertmix = true;
                     break;
                 case 8: /* Bicolor */
-                    // color1 = cvalx(compressed_pixel, input, Bpp); //
-                    // (compressed_pixel[input++]&0x000000ff);
+                    
+                    
                     color1 = (compressed_pixel[input++] & 0x000000ff);
-                    // input += Bpp;
+                    
                 case 3: /* Color */
-                    // color2 = cvalx(compressed_pixel, input, Bpp);
+                    
                     color2 = (compressed_pixel[input++] & 0x000000ff);
-                    // input += Bpp;
+                    
                     break;
                 case 6: /* SetMix/Mix */
                 case 7: /* SetMix/FillOrMix */
                     mix = compressed_pixel[input++];
-                    // mix = cvalx(compressed_pixel, input, Bpp);
-                    // input += Bpp;
+                    
+                    
                     opcode -= 5;
                     break;
                 case 9: /* FillOrMix_1 */
@@ -1713,8 +1713,8 @@ public class Bitmap {
                             if (previous == 0) {
                                 pixel[line + x] = (byte) mix;
                             } else {
-                                // setli(pixel, line, x, getli(pixel, previous, x,
-                                // Bpp) ^ mix, Bpp);
+                                
+                                
                                 pixel[line + x] = (byte) (pixel[previous + x] ^ (byte) mix);
                             }
 
@@ -1726,14 +1726,14 @@ public class Bitmap {
                         if (previous == 0) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // setli(pixel, line, x, 0, Bpp);
+                                    
                                     pixel[line + x] = 0;
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // setli(pixel, line, x, 0, Bpp);
+                                
                                 pixel[line + x] = 0;
                                 count--;
                                 x++;
@@ -1741,16 +1741,16 @@ public class Bitmap {
                         } else {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // setli(pixel, line, x, getli(pixel, previous,
-                                    // x, Bpp), Bpp);
+                                    
+                                    
                                     pixel[line + x] = pixel[previous + x];
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // setli(pixel, line, x, getli(pixel, previous, x,
-                                // Bpp), Bpp);
+                                
+                                
                                 pixel[line + x] = pixel[previous + x];
                                 count--;
                                 x++;
@@ -1762,14 +1762,14 @@ public class Bitmap {
                         if (previous == 0) {
                             while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                                 for (int i = 0; i < 8; i++) {
-                                    // setli(pixel, line, x, mix, Bpp);
+                                    
                                     pixel[line + x] = (byte) mix;
                                     count--;
                                     x++;
                                 }
                             }
                             while ((count > 0) && (x < width)) {
-                                // setli(pixel, line, x, mix, Bpp);
+                                
                                 pixel[line + x] = (byte) mix;
                                 count--;
                                 x++;
@@ -1781,7 +1781,7 @@ public class Bitmap {
                                     setli(pixel, line, x, getli(pixel, previous, x,
                                             1)
                                             ^ mix, 1);
-                                    // setli(pixel, line, x, 0, Bpp);
+                                    
                                     count--;
                                     x++;
                                 }
@@ -1789,7 +1789,7 @@ public class Bitmap {
                             while ((count > 0) && (x < width)) {
                                 setli(pixel, line, x, getli(pixel, previous, x, 1)
                                         ^ mix, 1);
-                                // setli(pixel, line, x, 0, Bpp);
+                                
                                 count--;
                                 x++;
                             }
@@ -1807,10 +1807,10 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0)
-                                        // setli(pixel, line, x, mix, Bpp);
+                                        
                                         pixel[line + x] = (byte) mix;
                                     else
-                                        // setli(pixel, line, x, 0, Bpp);
+                                        
                                         pixel[line + x] = 0;
                                     count--;
                                     x++;
@@ -1824,10 +1824,10 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0)
-                                    // setli(pixel, line, x, mix, Bpp);
+                                    
                                     pixel[line + x] = (byte) mix;
                                 else
-                                    // setli(pixel, line, x, 0, Bpp);
+                                    
                                     pixel[line + x] = 0;
                                 count--;
                                 x++;
@@ -1842,14 +1842,14 @@ public class Bitmap {
                                         mixmask = 1;
                                     }
                                     if ((mask & mixmask) != 0)
-                                        // setli(pixel, line, x, getli(pixel,
-                                        // previous, x, Bpp)
-                                        // ^ mix, Bpp);
+                                        
+                                        
+                                        
                                         pixel[line + x] = (byte) (pixel[previous
                                                 + x] ^ (byte) mix);
                                     else
-                                        // setli(pixel, line, x, getli(pixel,
-                                        // previous, x, Bpp), Bpp);
+                                        
+                                        
                                         pixel[line + x] = pixel[previous + x];
                                     count--;
                                     x++;
@@ -1863,15 +1863,15 @@ public class Bitmap {
                                     mixmask = 1;
                                 }
                                 if ((mask & mixmask) != 0)
-                                    // setli(pixel, line, x, getli(pixel, previous,
-                                    // x,
-                                    // Bpp)
-                                    // ^ mix, Bpp);
+                                    
+                                    
+                                    
+                                    
                                     pixel[line + x] = (byte) (pixel[previous + x] ^ (byte) mix);
                                 else
-                                    // setli(pixel, line, x, getli(pixel, previous,
-                                    // x,
-                                    // Bpp), Bpp);
+                                    
+                                    
+                                    
                                     pixel[line + x] = pixel[previous + x];
                                 count--;
                                 x++;
@@ -1883,14 +1883,14 @@ public class Bitmap {
                     case 3: /* Color */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, color2, Bpp);
+                                
                                 pixel[line + x] = (byte) color2;
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, color2, Bpp);
+                            
                             pixel[line + x] = (byte) color2;
                             count--;
                             x++;
@@ -1901,18 +1901,18 @@ public class Bitmap {
                     case 4: /* Copy */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, cvalx(compressed_pixel,
-                                // input, Bpp), Bpp);
+                                
+                                
                                 pixel[line + x] = compressed_pixel[input++];
-                                // input += Bpp;
+                                
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, cvalx(compressed_pixel, input,
-                            // Bpp), Bpp);
-                            // input += Bpp;
+                            
+                            
+                            
                             pixel[line + x] = compressed_pixel[input++];
                             count--;
                             x++;
@@ -1923,11 +1923,11 @@ public class Bitmap {
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
                                 if (bicolor) {
-                                    // setli(pixel, line, x, color2, Bpp);
+                                    
                                     pixel[line + x] = (byte) color2;
                                     bicolor = false;
                                 } else {
-                                    // setli(pixel, line, x, color1, Bpp);
+                                    
                                     pixel[line + x] = (byte) color1;
                                     bicolor = true;
                                     count++;
@@ -1938,11 +1938,11 @@ public class Bitmap {
                         }
                         while ((count > 0) && (x < width)) {
                             if (bicolor) {
-                                // setli(pixel, line, x, color2, Bpp);
+                                
                                 pixel[line + x] = (byte) color2;
                                 bicolor = false;
                             } else {
-                                // setli(pixel, line, x, color1, Bpp);
+                                
                                 pixel[line + x] = (byte) color1;
                                 bicolor = true;
                                 count++;
@@ -1956,14 +1956,14 @@ public class Bitmap {
                     case 0xd: /* White */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, 0xffffffff, Bpp);
+                                
                                 pixel[line + x] = (byte) 0xff;
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, 0xffffffff, Bpp);
+                            
                             pixel[line + x] = (byte) 0xff;
                             count--;
                             x++;
@@ -1973,14 +1973,14 @@ public class Bitmap {
                     case 0xe: /* Black */
                         while (((count & ~0x7) != 0) && ((x + 8) < width)) {
                             for (int i = 0; i < 8; i++) {
-                                // setli(pixel, line, x, 0, Bpp);
+                                
                                 pixel[line + x] = (byte) 0x00;
                                 count--;
                                 x++;
                             }
                         }
                         while ((count > 0) && (x < width)) {
-                            // setli(pixel, line, x, 0, Bpp);
+                            
                             pixel[line + x] = (byte) 0x00;
                             count--;
                             x++;
@@ -1989,7 +1989,7 @@ public class Bitmap {
                         break;
                     default:
                         throw new RdesktopException(
-                                "Unimplemented decompress opcode " + opcode);// ;
+                                "Unimplemented decompress opcode " + opcode);
                 }
             }
         }

@@ -56,31 +56,31 @@ public class MetricsTest {
         assertEquals(3, tm.numRows());
     }
 
-//    @Test public void testMeterDerivative() {
-//
-//        TemporalMetrics<Integer> tm = new TemporalMetrics<>(3);
-//        tm.add(timeDoubler);
-//        tm.add(new FirstOrderDifference(tm, timeDoubler.signalID(0)));
-//
-//        assertEquals(3, tm.getSignals().size());
-//
-//        tm.update(0.0);
-//        tm.update(1.0);
-//
-//        //check the '1' column ('x')
-//        assertEquals(0, tm.getData(1)[0]);
-//        assertEquals(2, tm.getData(1)[1]);
-//
-//        tm.update(2.0);
-//
-//
-//
-//        //check the '2' column (first order diff)
-//        assertEquals(null, tm.getData(2)[0]);
-//        assertEquals(2.0, tm.getData(2)[1]);
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     @Disabled
     @Test public void testSummaryStatistics() {
@@ -93,7 +93,7 @@ public class MetricsTest {
         }
 
 
-        //noinspection OverlyComplexAnonymousInnerClass
+        
         PrintStream sb = new PrintStream(System.out) {
         
             int line;

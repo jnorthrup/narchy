@@ -49,14 +49,14 @@ class DataSetTest {
 
         Example example = dataSet.getExample(0);
         
-        //Test the boundires merge operation
+        
         marginSize = 20;
         stripedDataset = dataSet.initStripedDatasetView(marginSize);
         expExperimentsNumber = 1;
         assertEquals(expExperimentsNumber, stripedDataset.getNumberExamples());
         for(Example stripedExample : stripedDataset.getExamples()){
             stripedExample.populateAnnotatedStrings();
-            //Example should be unaltered
+            
             assertEquals(example.getString(), stripedExample.getString());
             for(String matchString : stripedExample.getMatchedStrings()){
                 assertEquals("PROVA", matchString);
@@ -97,7 +97,7 @@ class DataSetTest {
 
         for (String x : input) {
 
-            //TODO noise as lambda param
+            
             String n = noise.get();  j += n; i+= n.length();
 
             int a = i;
@@ -111,7 +111,7 @@ class DataSetTest {
         System.out.println(j);
         example.setString(j);
 
-        //example.getUnmatch().add(new Bounds(provaIndex2,provaIndex2+ input.length()));
+        
 
         dataSet.getExamples().add(example);
 

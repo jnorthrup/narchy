@@ -14,7 +14,7 @@ public class LSTMTest {
 	@Test
 	public void testLSTM1() {
 		
-		//System.out.println("Test of SimpleLSTM\n");
+		
 		
 		Random r = new XorShift128PlusRandom(1234);
 
@@ -22,7 +22,7 @@ public class LSTMTest {
 				12, 3, 22, 1000);
 
 		int cell_blocks = 4;
-		//double learningRate = 0.05;
+		
 		SimpleLSTM slstm = task.lstm(cell_blocks);
 
 		int epochs = 150;
@@ -33,7 +33,7 @@ public class LSTMTest {
 			if (epoch % 10 == 0)
 				System.out.println("["+epoch+"] error = " + error);
 		}
-		//System.out.println("done.");
+		
 		assertTrue(error < 0.01f);
 	}
 

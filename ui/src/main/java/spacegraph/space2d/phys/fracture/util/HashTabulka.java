@@ -74,16 +74,16 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
      */
     @Override
     public final boolean add(T value) {
-//        if (contains(value))
-//            return false;
-        if (count >= n) { //ak je v tabulke prilis vela prvkov, tabulku rozsirim (podobny princip ako v ArrayListe) - aby sa minimalizoval pocet kolizii
+
+
+        if (count >= n) { 
             realocate();
         }
-        Node<T> node = new Node<>(value); //novy prvok
+        Node<T> node = new Node<>(value); 
         int code = node.hash & this.n;
         node.next = hashtable[code];
-        hashtable[code] = node; //prvok vlozim do tabulky a spojak, ktory tam existoval prilepim zan
-        count++; //zvysim pocet prvkov struktury
+        hashtable[code] = node; 
+        count++; 
         return true;
     }
 
@@ -101,11 +101,11 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
         int code = value.hashCode() & n;
         Node<T> zaznam = hashtable[code];
         if (zaznam != null) {
-            if (zaznam.value.equals(value)) { //ak je zaznam sucastou tabulky (prvy zaznam v spojaku)
+            if (zaznam.value.equals(value)) { 
                 hashtable[code] = zaznam.next;
                 count--;
                 return true;
-            } else { //ak nieje, bude sa hladat v spojaku medzi zkolidovanymi hodnotami
+            } else { 
                 for (Node<T> dalsi = zaznam.next; dalsi != null; zaznam = dalsi, dalsi = dalsi.next) {
                     if (dalsi.value.equals(value)) {
                         zaznam.next = dalsi.next;
@@ -196,10 +196,10 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
      * Zvacsi hashovaciu tabulku na dvojnasobok a prehashuje vsetky hodnoty v nej.
      */
     private void realocate() {
-        n = (n << 1) | 1; //tabulku rozsirim na dvojnasobok
-        Node<T>[] newTable = new Node[n + 1]; //nova tabulka
-        for (Node<T> chain : hashtable) { //prejdem prvky tabulky
-            while (chain != null) { //prejdem prvky jednotlivych spojovych zoznamov a prehodim prvky do novej tabulky
+        n = (n << 1) | 1; 
+        Node<T>[] newTable = new Node[n + 1]; 
+        for (Node<T> chain : hashtable) { 
+            while (chain != null) { 
                 Node<T> next = chain.next;
                 int code = chain.hash & n;
                 chain.next = newTable[code];
@@ -207,7 +207,7 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
                 chain = next;
             }
         }
-        hashtable = newTable; //novu rozsirenu tabulku vlozim namiesto tej starej
+        hashtable = newTable; 
     }
 
     private void alocate() {
@@ -228,6 +228,6 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
 
     @Override
     public int hashCode() {
-        return System.identityHashCode(this);//super.hashCode();
+        return System.identityHashCode(this);
     }
 }

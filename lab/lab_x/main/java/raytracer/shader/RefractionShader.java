@@ -78,7 +78,7 @@ public class RefractionShader implements Shader
     @Override
     public ColorEx shade(Intersection intersection)
     {
-        // Fortf�hrenden Strahl erzeugen:
+        
         Ray ray = Ray.continueRay(intersection.ray);
         if (ray == null)
             return intersection.scene.getBackgroundColor();
@@ -87,12 +87,12 @@ public class RefractionShader implements Shader
         Vector3d normal = intersection.getNormal();
         Vector3d x = new Vector3d(ray.dir);
         
-        // Richtung der Normale ermitteln. Dadurch wird festgelegt, ob der
-        // Strahl in dieses Objekt eindringt oder ob er es verl�sst:
-        // (Positiv bei Eindringen, negativ bei Verlassen.)
+        
+        
+        
         byte sign = (byte)Math.signum(-normal.dot(x));
         
-        // Aktuellen Lichtbrechnungsindex berechnen:
+        
         if (refractiveIndex < 0.0f)
             n1 = n2 = 0.0f;
         else if ((int) sign >= 0)
@@ -111,7 +111,7 @@ public class RefractionShader implements Shader
             n2 = refractiveIndex;
         }
         
-        // Falls eine Brechung statt findet:
+        
         float mirrorRatio;
         if (FloatingPoint.compareTolerated(n1, n2)==0)
             mirrorRatio = 0.0f;
@@ -124,16 +124,16 @@ public class RefractionShader implements Shader
             Vector3d k = new Vector3d();
             k.scaleAdd(nDotX/nDotN, normal, x);
             
-            // H�he des neuen Richtungsvektors bez�glich der Objekt-Ebene
-            // bestimmen. Falls diese '< 0', findet eine Totalreflexion statt:
+            
+            
             double height2 = 1.0-k.dot(k);
             if (height2 < 0.0)
                 height2 = 0.0;
             
-            // Gebrochenen Strahl bestimmen:
+            
             ray.dir.scaleAdd((double) -(int) sign *Math.sqrt(height2/nDotN), normal, k);
             
-            // Reflektiven Anteil nach der Fresnel'schen Formel berechnen:
+            
             final float cosalpha = (float)Math.abs(normal.dot(intersection.ray.dir)/intersection.ray.dir.length());
             final float cosbeta = (float)Math.abs(normal.dot(ray.dir)/ray.dir.length());
             float Rs = (n1*cosalpha-n2*cosbeta)/(n1*cosalpha+n2*cosbeta);
@@ -141,15 +141,15 @@ public class RefractionShader implements Shader
             mirrorRatio = (Rs*Rs+Rp*Rp)/2.0f;
         }
             
-        // Farbwerte des reflektiven und des gebrochenen Strahls bestimmen und
-        // anteilig verrechnen:
+        
+        
         ColorEx color = new ColorEx();
         if ((double) mirrorRatio < 1.0)
         {
             ray.weight *= 1.0f-mirrorRatio;
             color.scale(1.0f-mirrorRatio, intersection.scene.trace(ray));
             
-            // Verf�rbung anhand der dicke des durchlaufenen Materials:
+            
             if ((int) sign >= 0)
                 color.mulPow(this.color, (float)ray.length);
         }

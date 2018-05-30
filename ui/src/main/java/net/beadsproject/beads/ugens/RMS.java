@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -59,7 +59,7 @@ public class RMS extends UGen {
             index = (index + 1) % memorySize;
             bo[i] = (float) Math.sqrt(sum * memScale);
         }
-        // System.out.println("cb: " + sum);
+        
     }
 
     /**

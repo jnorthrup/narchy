@@ -54,18 +54,18 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
                 ArrayList<Term> sub = new ArrayList<>();
                 for (SubTree sgt : ec.getSubGoalStore().getSubGoals()) {
                     if (!sgt.isLeaf()) {
-                        //SubGoalTree
+                        
                         cerca(sgt);
                         sub.addAll(elementi);
                     } else {
-                        //SubGoalElement
+                        
                         sub.add((Term) sgt);
                     }
                 }
                 if (":-".equals(name))
                     sub.add(0, i + 1 < levels ? eclist.get(i + 1).getCurrentGoal() : s.sub(0));
-                else if (",".equals(name)) name = " ";//don't want to builder the ,-tree
-                else name = null;//indicates that we have a normal compound
+                else if (",".equals(name)) name = " ";
+                else name = null;
                 int pos = sub.indexOf(ec.getCurrentGoal());
                 if (bottom != null) sub.set(pos, bottom);
                 if (name == null) bottom = sub.get(0);
@@ -75,7 +75,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
                 }
             } else bottom = c;
         }
-        return bottom;//is at last the top
+        return bottom;
     }
 
     private void cerca(SubTree sgt) {
@@ -106,10 +106,10 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
    * @throws InvalidTheoryException if we have no valid prolog theory.
    */
   public SpyFrame(Theory theory, final Term goal) throws InvalidTheoryException{
-    //START of visible stuff
+    
     super("SpyFrame");
     Container c=getContentPane();
-    //Panel at NORTH containing the input of steps
+    
     JPanel topp=new JPanel();
 
     topp.add(new JLabel("Number of steps to jump"));
@@ -123,7 +123,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
 
     steps=1;
     c.add(topp, BorderLayout.NORTH);
-    //JSplitPane at CENTER containing the tree and the results
+    
     tree= new Tree<>(contexts2tree);
     results=new JTextArea("", 4, 40);
     JSplitPane jsp=new JSplitPane(
@@ -132,10 +132,10 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
         new JScrollPane(results)
         );
     c.add(jsp, BorderLayout.CENTER);
-    //get the screen dimensions to fill the screen
-    //Dimension screen=Toolkit.getDefaultToolkit().getScreenSize();
-    //jsp.setDividerLocation(screen.height-200);
-    //setSize(screen);
+    
+    
+    
+    
 
     Dimension screen=Toolkit.getDefaultToolkit().getScreenSize();
     int h = screen.height-(screen.height/4);
@@ -145,7 +145,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
 
     setVisible(true);
     setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    //END of the visible stuff
+    
     prolog=new Prolog();
     prolog.setTheory(theory);
     prolog.addSpyListener(this);

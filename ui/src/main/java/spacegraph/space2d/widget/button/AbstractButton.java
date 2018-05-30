@@ -32,10 +32,10 @@ public abstract class AbstractButton extends Widget {
 
     protected abstract void onClick(Finger f);
 
-//    static void label(GL2 gl, String text) {
-//        gl.glColor3f(0.75f, 0.75f, 0.75f);
-//        gl.glLineWidth(2);
-//        Draw.text(gl, text, 1f/(1+text.length()), 0.5f, 0.5f,  0);
-//    }
+
+
+
+
+
 
 }

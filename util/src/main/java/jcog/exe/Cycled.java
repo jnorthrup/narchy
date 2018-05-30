@@ -57,8 +57,8 @@ public interface Cycled extends Runnable {
      */
     @Deprecated default Loop start() {
         throw new TODO();
-        //return startPeriodMS(0);
-        //return startPeriodMS(1);
+        
+        
     }
 
     /**

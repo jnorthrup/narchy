@@ -89,7 +89,7 @@ import static nars.Op.ATOM;
  * change from cycle to cycle.  when a goal concept with an associated AtomicExec operation
  * exceeds a threshold of desire and non-belief it invokes the operation.  when this desire/non-goal
  * threshold decreases or is replaced by either non-desire or sufficient belief (satisfied) then
- * the atomic operation is stopped.  https://github.com/automenta/narchy/blob/skynet5/nal/src/main/java/nars/util/AtomicExec.java#L31
+ * the atomic operation is stopped.  https:
  * ```
  */
 public class Memory {
@@ -126,7 +126,7 @@ public class Memory {
                     }
                 });
             } catch (ArithmeticException f) {
-                return; //TODO check, but probably was empty (no tasks)
+                return; 
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -151,7 +151,7 @@ public class Memory {
             if (x.equals(stdout)) {
                 return Stream.of((t) -> {
                     t.forEach(tt ->
-                            System.out.println(tt) //TODO improve output
+                            System.out.println(tt) 
                     );
                 });
             }
@@ -185,7 +185,7 @@ public class Memory {
                                     return read(url.openStream(), formats);
                                 } catch (Exception e) {
                                     logger.warn("{} {}", u, e);
-                                    return null; //Stream.empty();
+                                    return null; 
                                 }
                             };
                         }
@@ -284,7 +284,7 @@ public class Memory {
         resolvers.add(URIResolver);
         resolvers.add(StdIOResolver);
         on(Tasks_To_Binary);
-        //on(Binary_To_Tasks); //TODO
+        
         on(Tasks_To_BinaryZipped);
         on(BinaryZipped_To_Tasks);
     }
@@ -296,8 +296,8 @@ public class Memory {
 
     @Nullable
     static String extension(URI u) {
-        //TODO real MIME Content-Type resolver
-        ////Files.probeContentType()
+        
+        
 
         String path = u.getPath();
         int afterPeriod = path.lastIndexOf('.');
@@ -319,11 +319,11 @@ public class Memory {
                 URI u = URI.create(s);
                 return Stream.of(u);
             } catch (IllegalArgumentException e) {
-                //..??
+                
             }
         }
 
-        //TODO compound URI patterns, allowing variables etc
+        
         return null;
     }
 
@@ -331,7 +331,7 @@ public class Memory {
         if (readFormats.size() == 1) {
             return readFormats.iterator().next().apply(in);
         } else {
-            //load once into byte buffer then create temporary ByteArrayInputStream over it
+            
             byte[] b = in.readAllBytes();
             return readFormats.stream().flatMap(r -> r.apply(new ByteArrayInputStream(b)));
         }
@@ -398,7 +398,7 @@ public class Memory {
                     if (writers.size() == 1) {
                         writers.iterator().next().accept(toOut);
                     } else {
-                        //HACK find a way that doesnt involve fully buffering the input
+                        
                         List<Task> outs = toOut.collect(toList());
 
                         writers.forEach(w -> w.accept(outs.stream()));

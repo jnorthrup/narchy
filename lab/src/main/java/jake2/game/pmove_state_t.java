@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 31.10.2003 by RST.
+
 
 package jake2.game;
 
@@ -29,16 +29,16 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 public class pmove_state_t {
-	//	this structure needs to be communicated bit-accurate
-	//	from the server to the client to guarantee that
-	//	prediction stays in sync, so no floats are used.
-	//	if any part of the game code modifies this struct, it
-	//	will result in a prediction error of some degree.
+	
+	
+	
+	
+	
 
 	public int pm_type;
 
-	public final short[] origin = { 0, 0, 0 }; // 12.3
-	public final short[] velocity = { 0, 0, 0 }; // 12.3
+	public final short[] origin = { 0, 0, 0 }; 
+	public final short[] velocity = { 0, 0, 0 }; 
 	/** ducked, jump_held, etc. */
 	public byte pm_flags;
 	/** each unit = 8 ms. */

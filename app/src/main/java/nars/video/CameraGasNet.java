@@ -79,9 +79,9 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
             };
             agent.senseNumber($.inh(base, Atomic.the("c")), new FloatNormalized(v, 0f, 1f));
 
-            //TODO
-            //  Size
-            //  ...
+            
+            
+            
         });
 
 
@@ -118,9 +118,9 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
         int pixels = width * height;
 
         net.setAlpha(0.005f);
-        //net.setBeta(0.05f);
+        
         net.setLambda(64);
-        //net.setMaxEdgeAge(32);
+        
         net.setWinnerUpdateRate(0.05f, 0.01f);
 
 
@@ -128,7 +128,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
             for (int h = 0; h < height; h++) {
                 float color = src.brightness(w, h);
                 if (timeAware.random().nextFloat() - 0.05f <= color)
-                //if (color > 0.1f)
+                
                     net.put(w/((float)width), h/((float)height), color );
             }
         }

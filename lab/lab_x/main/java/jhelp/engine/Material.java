@@ -12,7 +12,7 @@ import jhelp.xml.MarkupXML;
 
 import java.util.Hashtable;
 
-//import com.jogamp.opengl.glu.GLU;
+
 
 /**
  * Material for 3D object<br>
@@ -344,7 +344,7 @@ public class Material
    void renderMaterial(final GL2 gl, final GLU glu, final Object3D object3D)
    {
       this.prepareMaterial(gl);
-      //
+      
       if(this.textureDiffuse != null)
       {
          gl.glEnable(GL2.GL_TEXTURE_2D);
@@ -361,26 +361,26 @@ public class Material
       {
          final float transparency = this.transparency;
          this.transparency *= this.sphericRate;
-         //
+         
          this.prepareMaterial(gl);
          gl.glDepthFunc(GL2.GL_LEQUAL);
-         //
+         
          gl.glEnable(GL2.GL_TEXTURE_2D);
          gl.glEnable(GL2.GL_TEXTURE_GEN_S);
          gl.glEnable(GL2.GL_TEXTURE_GEN_T);
-         //
+         
          gl.glTexGeni(GL2.GL_S, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
          gl.glTexGeni(GL2.GL_T, GL2.GL_TEXTURE_GEN_MODE, GL2.GL_SPHERE_MAP);
-         //
+         
          this.textureSpheric.bind(gl);
          object3D.drawObject(gl, glu);
-         //
+         
          gl.glDisable(GL2.GL_TEXTURE_GEN_T);
          gl.glDisable(GL2.GL_TEXTURE_GEN_S);
          gl.glDisable(GL2.GL_TEXTURE_2D);
-         //
+         
          gl.glDepthFunc(GL2.GL_LESS);
-         //
+         
          this.transparency = transparency;
       }
 
@@ -675,15 +675,15 @@ public class Material
       this.colorDiffuse.setAlpha(this.transparency);
       this.colorDiffuse.glColor4f(gl);
       this.colorDiffuse.setAlpha(alpha);
-      //
+      
       gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_DIFFUSE, this.colorDiffuse.putInFloatBuffer());
-      //
+      
       gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, this.colorEmissive.putInFloatBuffer());
-      //
+      
       gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, this.colorSpecular.putInFloatBuffer(this.specularLevel));
-      //
+      
       gl.glMaterialfv(GL2.GL_FRONT_AND_BACK, GL2.GL_AMBIENT, this.colorAmbiant.putInFloatBuffer());
-      //
+      
       gl.glMateriali(GL2.GL_FRONT_AND_BACK, GL2.GL_SHININESS, this.shininess);
    }
 

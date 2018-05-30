@@ -24,8 +24,8 @@
 /*
  * JBox2D - A Java Port of Erin Catto's Box2D
  *
- * JBox2D homepage: http://jbox2d.sourceforge.net/
- * Box2D homepage: http://www.box2d.org
+ * JBox2D homepage: http:
+ * Box2D homepage: http:
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -96,7 +96,7 @@ public class MathUtils extends PlatformMathUtils {
                 x %= index;
             }
 
-            // the next index is 0
+            
             if (index == Settings.SINCOS_LUT_LENGTH - 1) {
                 return ((1 - x) * sinLUT[index] + x * sinLUT[0]);
             } else {

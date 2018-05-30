@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,8 +48,8 @@ import static java.lang.String.format;
  * @since 0.0.1
  *
  * see also:
- *      http://grokconstructor.appspot.com/do/automatic
- *      https://github.com/logstash-plugins/logstash-patterns-core/tree/master/patterns
+ *      http:
+ *      https:
  */
 public class Grok implements Serializable {
 
@@ -58,7 +58,7 @@ public class Grok implements Serializable {
 
         Grok g = Grok.withThe("patterns", "linux-syslog");
         BufferedReader br = new BufferedReader(new FileReader(
-                //"/var/log/popularity-contest"
+                
                 "/var/log/alternatives.log"
         ));
         br.lines().forEach(line -> {
@@ -69,15 +69,15 @@ public class Grok implements Serializable {
             System.out.println(data);
 
 
-//            Match x = g.capture(data, "PATH");
-//            if (!x.isNull())
-//                System.err.println(x);
+
+
+
 
         });
 
     }
 
-    //private static final Logger LOG = LoggerFactory.getLogger(Grok.class);
+    
     /**
      * Named regex of the originalGrokPattern.
      */
@@ -229,7 +229,7 @@ public class Grok implements Serializable {
      */
     private Grok addPatterns(Reader r) throws RuntimeException {
         BufferedReader br = new BufferedReader(r);
-        // We dont want \n and commented line
+        
 
         try {
             String line;
@@ -366,7 +366,7 @@ public class Grok implements Serializable {
 
         String namedRegex = compiled(pattern, namedOnly);
 
-        // Compile the regex
+        
         this.namedRegex = namedRegex;
         compiledNamedRegex = Pattern.compile(namedRegex);
     }
@@ -384,8 +384,8 @@ public class Grok implements Serializable {
         int iterationLeft = 1000;
         Boolean continueIteration = true;
 
-        // Replace %{foo} with the regex (mostly groupname regex)
-        // and then compile the regex
+        
+        
         while (continueIteration) {
             continueIteration = false;
             if (iterationLeft <= 0) {
@@ -394,8 +394,8 @@ public class Grok implements Serializable {
             iterationLeft--;
 
             Matcher m = GROK_PATTERN.matcher(namedRegex);
-            // Match %{Foo:bar} -> pattern name and subname
-            // Match %{Foo=regex} -> add new regex definition
+            
+            
             if (m.find()) {
                 continueIteration = true;
                 Map<String, String> group = namedGroups(m, m.group());
@@ -426,7 +426,7 @@ public class Grok implements Serializable {
                             (gsub != null ? gsub : gname));
                     namedRegex =
                             replace(namedRegex, "%{" + gname + "}", replacement, 1);
-                    // System.out.println(_expanded_pattern);
+                    
                     index++;
                 }
             }
@@ -506,14 +506,14 @@ public class Grok implements Serializable {
         return namedRegexCollection.get(id);
     }
 
-//    /**
-//     * Get the full collection of the named regex.
-//     *
-//     * @return named RegexCollection
-//     */
-//    public Map<String, String> getNamedRegexCollection() {
-//        return namedRegexCollection;
-//    }
+
+
+
+
+
+
+
+
 
     public static Grok withThe(String... patternLibs) {
         Grok g = new Grok();
@@ -607,37 +607,37 @@ public class Grok implements Serializable {
 
             Map<String, Grok> groks = new TreeMap<>();
             Map<String, String> gPatterns = grok.patterns();
-            // Boolean done = false;
+            
             String texte = text;
 
-            // Compile the pattern
+            
             for (Map.Entry<String, String> pairs : gPatterns.entrySet()) {
                 String key = pairs.getKey();
                 Grok g = new Grok();
 
-                // g.patterns.putAll( gPatterns );
+                
                 try {
                     g.addPatterns(gPatterns);
                     g.savedPattern = key;
                     g.compile("%{" + key + "}");
                     groks.put(key, g);
                 } catch (RuntimeException e) {
-                    // Add logger
+                    
                 }
 
             }
 
-            // Sort patterns by complexity
+            
             Map<String, Grok> patterns = this.sort(groks);
 
-            // while (!done){
-            // done = true;
+            
+            
             for (Map.Entry<String, Grok> pairs : patterns.entrySet()) {
                 String key = pairs.getKey();
                 Grok value = pairs.getValue();
 
-                // We want to search with more complex pattern
-                // We avoid word, small number, space....
+                
+                
                 if (this.complexity(value.namedRegex()) < 20) {
                     continue;
                 }
@@ -646,16 +646,16 @@ public class Grok implements Serializable {
                 if (m.isNull()) {
                     continue;
                 }
-                // get the part of the matched text
+                
                 String part = getPart(m, text);
 
-                // we skip boundary word
+                
                 Matcher ma = wordBoundary.matcher(part);
                 if (!ma.find()) {
                     continue;
                 }
 
-                // We skip the part that already include %{Foo}
+                
                 Pattern pattern2 = Pattern.compile("%\\{[^}+]\\}");
                 Matcher ma2 = pattern2.matcher(part);
 
@@ -664,7 +664,7 @@ public class Grok implements Serializable {
                 }
                 texte = replace(texte, part, "%{" + key + "}");
             }
-            // }
+            
 
             return texte;
         }
@@ -753,9 +753,9 @@ public class Grok implements Serializable {
     }
 
 
-//
-// KeyValue
-//
+
+
+
 
     static class KeyValue {
 
@@ -800,9 +800,9 @@ public class Grok implements Serializable {
     }
 
 
-    //
-// Converters
-//
+    
+
+
     @FunctionalInterface
     interface IConverter<T> {
 
@@ -896,7 +896,7 @@ public class Grok implements Serializable {
 
     public static class Match {
 
-        private String subject; // texte
+        private String subject; 
         private final Map<String, Object> capture;
         private final Garbage garbage;
         private Grok grok;
@@ -998,11 +998,11 @@ public class Grok implements Serializable {
                 return;
             }
             capture.clear();
-            boolean automaticConversionEnabled = true; //grok.isAutomaticConversionEnabled();
+            boolean automaticConversionEnabled = true; 
 
 
-            // _capture.put("LINE", this.line);
-            // _capture.put("LENGTH", this.line.length() +"");
+            
+            
 
             Map<String, String> mappedw = namedGroups(this.match, this.subject);
             Iterator<Map.Entry<String, String>> it = mappedw.entrySet().iterator();
@@ -1025,16 +1025,16 @@ public class Grok implements Serializable {
                     if (automaticConversionEnabled) {
                         KeyValue keyValue = Converter.convert(key, value);
 
-                        // get validated key
+                        
                         key = keyValue.getKey();
 
-                        // resolve value
+                        
                         value = keyValue.getValue() instanceof String ? cleanString((String) keyValue.getValue()) : keyValue.getValue();
 
-//                        // set if grok failure
-//                        if (keyValue.hasGrokFailure()) {
-//                            capture.put(key + "_grokfailure", keyValue.getGrokFailure());
-//                        }
+
+
+
+
                     }
                 }
 
@@ -1063,7 +1063,7 @@ public class Grok implements Serializable {
                     capture.put(key, value);
                 }
 
-                it.remove(); // avoids a ConcurrentModificationException
+                it.remove(); 
             }
         }
 
@@ -1083,7 +1083,7 @@ public class Grok implements Serializable {
             char[] tmp = value.toCharArray();
             char t0 = tmp[0];
             if (tmp.length == 1 && (t0 == '"' || t0 == '\'')) {
-                return "";//empty string
+                return "";
             } else {
                 int vlen = value.length();
                 char tl = tmp[vlen - 1];
@@ -1098,44 +1098,44 @@ public class Grok implements Serializable {
         }
 
 
-//        /**
-//         * Get the json representation of the matched element.
-//         * <p>
-//         * example: map [ {IP: 127.0.0.1}, {status:200}] will return {"IP":"127.0.0.1", "status":200}
-//         * </p>
-//         * If pretty is set to true, json will return prettyprint json string.
-//         *
-//         * @return Json of the matched element in the text
-//         */
-//        public String toJson(Boolean pretty) {
-//            if (capture == null) {
-//                return "{}";
-//            }
-//            if (capture.isEmpty()) {
-//                return "{}";
-//            }
-//
-//            this.cleanMap();
-//            Gson gs;
-//            if (pretty) {
-//                gs = PRETTY_GSON;
-//            } else {
-//                gs = GSON;
-//            }
-//            return gs.toJson(/* cleanMap( */capture/* ) */);
-//        }
 
-//        /**
-//         * Get the json representation of the matched element.
-//         * <p>
-//         * example: map [ {IP: 127.0.0.1}, {status:200}] will return {"IP":"127.0.0.1", "status":200}
-//         * </p>
-//         *
-//         * @return Json of the matched element in the text
-//         */
-//        public String toJson() {
-//            return toJson(false);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /**
          * Get the map representation of the matched element in the text.

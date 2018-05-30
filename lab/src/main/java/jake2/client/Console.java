@@ -44,7 +44,7 @@ public final class Console extends Globals {
     public static final xcommand_t ToggleConsole_f = new xcommand_t() {
 	@Override
     public void execute() {
-	    SCR.EndLoadingPlaque(); // get rid of loading plaque
+	    SCR.EndLoadingPlaque(); 
 
 	    if (Globals.cl.attractloop) {
 		Cbuf.AddText("killserver\n");
@@ -52,7 +52,7 @@ public final class Console extends Globals {
 	    }
 
 	    if (Globals.cls.state == Defines.ca_disconnected) {
-		// start the demo loop again
+		
 		Cbuf.AddText("d1\n");
 		return;
 	    }
@@ -96,8 +96,8 @@ public final class Console extends Globals {
 		return;
 	    }
 
-	    // Com_sprintf (name, sizeof(name), "%s/%s.txt", FS_Gamedir(),
-	    // Cmd_Argv(1));
+	    
+	    
 	    name = FS.Gamedir() + '/' + Cmd.Argv(1) + ".txt";
 
 	    Com.Printf("Dumped console text to " + name + ".\n");
@@ -108,7 +108,7 @@ public final class Console extends Globals {
 		return;
 	    }
 
-	    // skip empty lines
+	    
 	    for (l = con.current - con.totallines + 1; l <= con.current; l++) {
 		line = (l % con.totallines) * con.linewidth;
 		for (x = 0; x < con.linewidth; x++)
@@ -118,11 +118,11 @@ public final class Console extends Globals {
 		    break;
 	    }
 
-	    // write the remaining lines
+	    
 	    buffer[con.linewidth] = 0;
 	    for (; l <= con.current; l++) {
 		line = (l % con.totallines) * con.linewidth;
-		// strncpy (buffer, line, con.linewidth);
+		
 		System.arraycopy(con.text, line, buffer, 0, con.linewidth);
 		for (x = con.linewidth - 1; x >= 0; x--) {
 		    if (buffer[x] == ' ')
@@ -134,7 +134,7 @@ public final class Console extends Globals {
 		    buffer[x] &= 0x7f;
 
 		buffer[x] = '\n';
-		// fprintf (f, "%s\n", buffer);
+		
 		try {
 		    f.write(buffer, 0, x + 1);
 		} catch (IOException e) {
@@ -156,9 +156,9 @@ public final class Console extends Globals {
 
 	Com.Printf("Console initialized.\n");
 
-	//
-	// register our commands
-	//
+	
+	
+	
 	Globals.con_notifytime = Cvar.Get("con_notifytime", "3", 0);
 
 	Cmd.AddCommand("toggleconsole", ToggleConsole_f);
@@ -182,7 +182,7 @@ public final class Console extends Globals {
 	if (width == Globals.con.linewidth)
 	    return;
 
-	if (width < 1) { // video hasn't been initialized yet
+	if (width < 1) { 
 	    width = 38;
 	    Globals.con.linewidth = width;
 	    Globals.con.totallines = Defines.CON_TEXTSIZE
@@ -318,19 +318,19 @@ public final class Console extends Globals {
 	    return;
 
 	if (txt.charAt(0) == 1 || txt.charAt(0) == 2) {
-	    mask = 128; // go to colored text
+	    mask = 128; 
 	    txtpos++;
 	} else
 	    mask = 0;
 
 	while (txtpos < txt.length()) {
 	    c = txt.charAt(txtpos);
-	    // count word length
+	    
 	    for (l = 0; l < con.linewidth && l < (txt.length() - txtpos); l++)
 		if (txt.charAt(l + txtpos) <= ' ')
 		    break;
 
-	    // word wrap
+	    
 	    if (l != con.linewidth && (con.x + l > con.linewidth))
 		con.x = 0;
 
@@ -343,7 +343,7 @@ public final class Console extends Globals {
 
 	    if (con.x == 0) {
 		Console.Linefeed();
-		// mark time for transparent overlay
+		
 		if (con.current >= 0)
 		    con.times[con.current % NUM_CON_TIMES] = cls.realtime;
 	    }
@@ -358,7 +358,7 @@ public final class Console extends Globals {
 		cr = 1;
 		break;
 
-	    default: // display character and advance
+	    default: 
 		y = con.current % con.totallines;
 		con.text[y * con.linewidth + con.x] = (byte) (c | mask | con.ormask);
 		con.x++;
@@ -411,28 +411,28 @@ public final class Console extends Globals {
 	if (cls.key_dest == key_menu)
 	    return;
 	if (cls.key_dest != key_console && cls.state == ca_active)
-	    return; // don't draw anything (always draw if not active)
+	    return; 
 
 	text = key_lines[edit_line];
 
-	// add the cursor frame
+	
 	text[key_linepos] = (byte) (10 + (cls.realtime >> 8 & 1));
 
-	// fill out remainder with spaces
+	
 	for (i = key_linepos + 1; i < con.linewidth; i++)
 	    text[i] = ' ';
 
-	// prestep if horizontally scrolling
+	
 	if (key_linepos >= con.linewidth)
 	    start += 1 + key_linepos - con.linewidth;
 
-	// draw it
-	// y = con.vislines-16;
+	
+	
 
 	for (i = 0; i < con.linewidth; i++)
 	    re.DrawChar((i + 1) << 3, con.vislines - 22, text[i]);
 
-	// remove cursor
+	
 	key_lines[edit_line][key_linepos] = 0;
     }
 
@@ -515,7 +515,7 @@ public final class Console extends Globals {
 	if (lines > height)
 	    lines = height;
 
-	// draw the background
+	
 	re.DrawStretchPic(0, -height + lines, width, height, "conback");
 	SCR.AddDirtyPoint(0, 0);
 	SCR.AddDirtyPoint(width - 1, lines - 1);
@@ -526,16 +526,16 @@ public final class Console extends Globals {
 		    .DrawChar(width - 44 + x * 8, lines - 12, 128 + version
 			    .charAt(x));
 
-	// draw the text
+	
 	con.vislines = lines;
 
-	int rows = (lines - 22) >> 3; // rows of text to draw
+	int rows = (lines - 22) >> 3; 
 
 	int y = lines - 30;
 
-	// draw from the bottom up
+	
 	if (con.display != con.current) {
-	    // draw arrows to show the buffer is backscrolled
+	    
 	    for (int x = 0; x < con.linewidth; x += 4)
 		re.DrawChar((x + 1) << 3, y, '^');
 
@@ -550,7 +550,7 @@ public final class Console extends Globals {
 	    if (row < 0)
 		break;
 	    if (con.current - row >= con.totallines)
-		break; // past scrollback wrap point
+		break; 
 
 	    int first = (row % con.totallines) * con.linewidth;
 
@@ -558,9 +558,9 @@ public final class Console extends Globals {
 		re.DrawChar((x + 1) << 3, y, con.text[x + first]);
 	}
 
-	// ZOID
-	// draw the download bar
-	// figure out width
+	
+	
+	
 	if (cls.download != null) {
 	    int text;
 	    if ((text = cls.downloadname.lastIndexOf('/')) != 0)
@@ -583,7 +583,7 @@ public final class Console extends Globals {
 	    dlbar.append(": ");
 	    dlbar.append((char) 0x80);
 
-	    // where's the dot go?
+	    
 	    if (cls.downloadpercent == 0)
 		n = 0;
 	    else
@@ -598,14 +598,14 @@ public final class Console extends Globals {
 	    dlbar.append((char) 0x82);
 	    dlbar.append((cls.downloadpercent < 10) ? " 0" : " ");
 	    dlbar.append(cls.downloadpercent).append('%');
-	    // draw it
+	    
 	    y = con.vislines - 12;
 	    for (i = 0; i < dlbar.length(); i++)
 		re.DrawChar((i + 1) << 3, y, dlbar.charAt(i));
 	}
-	// ZOID
+	
 
-	// draw the input prompt, user text, and cursor if desired
+	
 	DrawInput();
     }
 }

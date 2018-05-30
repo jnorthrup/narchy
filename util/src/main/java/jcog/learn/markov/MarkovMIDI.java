@@ -39,7 +39,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
         MidiMessageWrapper wrap = new MidiMessageWrapper(msg);
         times.add(lastTick);
 
-        // TODO: Assumed Sequence is PPM here
+        
         int resolution = fmt.getResolution();
         long beats = event.getTick() / resolution;
         int adds = 0;

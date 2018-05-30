@@ -1,7 +1,7 @@
 package alice.tuprolog;
 
-//import java.io.File;
-//import java.io.IOException;
+
+
 
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -22,9 +22,9 @@ public class EngineManager implements java.io.Serializable {
     private final AtomicInteger id = new AtomicInteger();
 
 
-    private static final ThreadLocal<Integer> threads = new ThreadLocal<>();    //key: pid; obj: id
+    private static final ThreadLocal<Integer> threads = new ThreadLocal<>();    
      private final ConcurrentHashMap<Integer, EngineRunner> runners
-            = new ConcurrentHashMap<>();    //key: id; obj: runner
+            = new ConcurrentHashMap<>();    
 
     private final ConcurrentHashMap<String, TermQueue> queues
             = new ConcurrentHashMap<>();
@@ -44,7 +44,7 @@ public class EngineManager implements java.io.Serializable {
         if (goal == null)
             return false;
 
-        //TODO Thread.currentThread().getId()
+        
         int id = this.id.incrementAndGet();
 
         if (goal instanceof Var)
@@ -64,14 +64,14 @@ public class EngineManager implements java.io.Serializable {
 
         er.setGoal(goal);
 
-        //synchronized (runners) {
-            //synchronized (runners) {
+        
+            
             runners.put(id, er);
-            //}
-        //}
+            
+        
 
         Thread t = new Thread(er);
-        //addThread(id); //called in EngineRunner.run method
+        
 
         t.start();
         return true;
@@ -191,10 +191,10 @@ public class EngineManager implements java.io.Serializable {
 
     private void removeRunner(int id) {
         runners.remove(id);
-        //if (er == null) return;
-        //synchronized (runners) {
-            //runners.remove(id);
-        //}
+        
+        
+            
+        
 		/*int pid = er.getPid();
 		synchronized (threads) {
 			threads.set(null);
@@ -228,11 +228,11 @@ public class EngineManager implements java.io.Serializable {
         synchronized (er1) {
             er1.setGoal(query);
 
-            //System.out.println("ENGINE MAN solve(Term) risultato: "+s);
+            
             return er1.solve();
         }
 
-        //return er1.solve();
+        
     }
 
     public  void solveEnd() {
@@ -245,7 +245,7 @@ public class EngineManager implements java.io.Serializable {
                     current.solveEnd();
                 }
                 runners.clear();
-                //threads= new Hashtable<>();
+                
                 queues.clear();
                 locks.clear();
                 id.set(0);
@@ -273,53 +273,53 @@ public class EngineManager implements java.io.Serializable {
         }
     }
 
-//    void spy(String action, Engine env) {
-//        EngineRunner runner = runner();
-//        runner.spy(action, env);
-//    }
+
+
+
+
 
     /**
      * @return L'EngineRunner associato al thread di id specificato.
      */
 
     private EngineRunner runner(int id) {
-        //if (!runners.containsKey(id)) return null;
-        //synchronized (runners) {
-        //synchronized (runners) {
+        
+        
+        
             return runners.get(id);
-        //}
-        //}
+        
+        
     }
 
     public final EngineRunner runner() {
-        //int pid = (int) Thread.currentThread().getId();
+        
 		/*if(!threads.containsKey(pid))
 			return er1;*/
-        //synchronized(threads){
+        
         Integer id = threads.get();
-        //synchronized (runners) {
+        
         return id != null ? runner(id) : er1;
 
-        //}
-        //}
+        
+        
     }
 
-    //Ritorna l'identificativo del thread corrente
+    
     public int runnerId() {
         return runner().getId();
     }
 
     public boolean createQueue(String name) {
-        //synchronized (queues) {
+        
             queues.computeIfAbsent(name, (n) -> new TermQueue());
-        //}
+        
         return true;
     }
 
     public void destroyQueue(String name) {
-        //synchronized (queues) {
+        
             queues.remove(name);
-        //}
+        
     }
 
     public int queueSize(int id) {
@@ -332,21 +332,21 @@ public class EngineManager implements java.io.Serializable {
     }
 
     public boolean createLock(String name) {
-        //synchronized (locks) {
+        
 
         locks.computeIfAbsent(name, (n) -> new ReentrantLock());
 
-//            if (locks.containsKey(name)) return true;
-//            ReentrantLock mutex = new ReentrantLock();
-//            locks.put(name, mutex);
-        //}
+
+
+
+        
         return true;
     }
 
     public void destroyLock(String name) {
-        //synchronized (locks) {
+        
             locks.remove(name);
-        //}
+        
     }
 
     public boolean mutexLock(String name) {
@@ -393,7 +393,7 @@ public class EngineManager implements java.io.Serializable {
     }
 
     public void unlockAll() {
-        //synchronized (locks) {
+        
         locks.forEach((k,mutex)->{
             boolean unlocked = false;
             while (!unlocked) {

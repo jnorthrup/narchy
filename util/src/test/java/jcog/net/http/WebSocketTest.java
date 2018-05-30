@@ -46,8 +46,8 @@ public class WebSocketTest {
 
         @Override
         public void onOpen( WebSocket conn, ClientHandshake handshake ) {
-            conn.send("Welcome to the server!"); //This method sends a message to the new client
-            broadcast( "new connection: " + handshake.getResourceDescriptor() ); //This method sends a message to all clients connected
+            conn.send("Welcome to the server!"); 
+            broadcast( "new connection: " + handshake.getResourceDescriptor() ); 
             System.out.println( conn.getRemoteSocketAddress().getAddress().getHostAddress() + " entered the room!" );
         }
 
@@ -74,7 +74,7 @@ public class WebSocketTest {
         public void onError(WebSocket conn, Exception ex ) {
             ex.printStackTrace();
             if( conn != null ) {
-                // some errors like port binding failed may not be assignable to a specific websocket
+                
             }
         }
 

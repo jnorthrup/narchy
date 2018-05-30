@@ -26,7 +26,7 @@ public class CausalReasoningSystem
         inputGraph.connections.add(new InputGraph.Connection(2, 3));
         */
         
-        // TODO< cristal example >
+        
         
         DecoratedCausalGraph causalGraph = ConvertInputGraphToCausalGraph.convert(inputGraph);
         

@@ -21,20 +21,20 @@ public class TaskWithTerm extends TaskProxy {
         this.term = term;
     }
 
-//        @Override
-//        public float freq() {
-//            if (isBeliefOrGoal()) {
-//                float f = super.freq();
-//                if (neg) f = 1-f;
-//                return f;
-//            }
-//            return Float.NaN;
-//        }
-//
-//        @Override
-//        public @Nullable Truth truth() {
-//            return isBeliefOrGoal() ? new PreciseTruth(freq(), conf()) : null;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public Term term() {

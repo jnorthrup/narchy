@@ -22,10 +22,10 @@ public class MLP {
         if (rng == null)rng = new Random(1234);
         this.rng = rng;
 
-        // construct hiddenLayer
+        
         this.hiddenLayer = new HiddenLayer(n_in, n_hidden, null, null, rng, "tanh");
 
-        // construct logisticLayer
+        
         this.logisticLayer = new LogisticRegression(n_hidden, n_out);
     }
 
@@ -41,14 +41,14 @@ public class MLP {
 
             System.arraycopy(train_X[n], 0, hidden_layer_input, 0, n_in);
 
-            // forward hiddenLayer
+            
             hiddenLayer.forward(hidden_layer_input, logistic_layer_input);
 
-            // forward and backward logisticLayer
-            // dy = new double[n_out];  // define delta of y for backpropagation
-            dy = logisticLayer.train(logistic_layer_input, train_Y[n], lr); //, dy);
+            
+            
+            dy = logisticLayer.train(logistic_layer_input, train_Y[n], lr); 
 
-            // backward hiddenLayer
+            
             hiddenLayer.backward(hidden_layer_input, null, logistic_layer_input, dy, logisticLayer.W, lr);
 
         }
@@ -88,15 +88,15 @@ public class MLP {
                 {0, 1},
         };
 
-        // construct MLP
+        
         MLP classifier = new MLP(train_N, n_in, n_hidden, n_out, rng);
 
-        // train
+        
         for(int epoch=0; epoch<n_epochs; epoch++) {
             classifier.train(train_X, train_Y, learning_rate);
         }
 
-        // test data
+        
         double[][] test_X = {
                 {0., 0.},
                 {0., 1.},
@@ -107,7 +107,7 @@ public class MLP {
         double[][] test_Y = new double[test_N][n_out];
 
 
-        // test
+        
         for(int i=0; i<test_N; i++) {
             classifier.predict(test_X[i], test_Y[i]);
             for(int j=0; j<n_out; j++) {

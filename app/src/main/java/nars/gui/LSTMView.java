@@ -18,13 +18,13 @@ public class LSTMView extends Gridding {
 
     public static final MatrixView.ViewFunction1D colorize = (x, gl) -> {
         x = x/2f + 0.5f;
-        //colorPolarized(gl, x);
+        
         gl.glColor3f(0,x, x/2);
         return 0;
     };
     public static final MatrixView.ViewFunction1D colorize1 = (x, gl) -> {
-//        x = x/2f + 0.5f;
-//        gl.glColor3f(x,x/2, 0);
+
+
         Draw.colorBipolar(gl, x);
         return 0;
     };
@@ -56,7 +56,7 @@ public class LSTMView extends Gridding {
 
         float lr = 0.1f;
 
-        //initialize
+        
         task.scoreSupervised(lstm, lr);
 
         SpaceGraph.window(new LSTMView(lstm), 800, 800);

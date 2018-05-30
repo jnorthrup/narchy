@@ -24,13 +24,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw {
 
     private AbstractPolygonBot abstractPolygonBot;
-    final Vec2 point; //where the retina receives vision at
+    final Vec2 point; 
     final float angle;
     protected float distance;
-    //final ChangedTextInput sight =
-            //new SometimesChangedTextInput(nar, minVisionInputProbability);
-            //new ChangedTextInput(abstractPolygonBot.nar);
-    //private final String seenAngleTerm;
+    
+            
+            
+    
 
     RayCastClosestCallback ccallback = new RayCastClosestCallback();
     private final Body body;
@@ -40,7 +40,7 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
     final Color3f laserHitColor = new Color3f(laserUnhitColor.x, laserUnhitColor.y, laserUnhitColor.z);
     public Color3f sparkColor = new Color3f(0.4f, 0.9f, 0.4f);
     public Color3f normalColor = new Color3f(0.9f, 0.9f, 0.4f);
-    final Color3f rayColor = new Color3f(); //current ray color
+    final Color3f rayColor = new Color3f(); 
     public final String angleTerm;
     private float distMomentum = 0f;
     private float hitDist;
@@ -56,7 +56,7 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
         this.point = point;
         this.angle = angle;
         this.angleTerm = abstractPolygonBot.sim.angleTerm(angle);
-        //this.seenAngleTerm = //"see_" + sim.angleTerm(angle);
+        
         this.arc = arc;
         this.resolution = resolution;
         this.distance = length;
@@ -64,7 +64,7 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
 
 
     Collection<Runnable> toDraw =
-            //new ConcurrentLinkedDeque<>();
+            
             new CopyOnWriteArrayList();
 
 
@@ -84,8 +84,8 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
             conceptDurability = angleConcept.getDurability();
             conceptQuality = angleConcept.getQuality();
 
-            //sight.setProbability(Math.max(minVisionInputProbability, Math.min(1.0f, maxVisionInputProbability * conceptPriority)));
-            //sight.setProbability(minVisionInputProbability);
+            
+            
         } else {
             conceptPriority = 0;
             conceptDurability = 0;
@@ -96,11 +96,11 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
         Body hit = null;
 
         final float distance = getDistance();
-        float minDist = distance * 1.1f; //far enough away
+        float minDist = distance * 1.1f; 
         float totalDist = 0;
         float dArc = arc / resolution;
 
-        float angOffset = 0; //(float)Math.random() * (-arc/4f);
+        float angOffset = 0; 
 
         for (int r = 0; r < resolution; r++) {
             float da = (-arc / 2f) + dArc * r + angOffset;
@@ -123,21 +123,21 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
                 if (drawing) {
                     rayColor.set(laserHitColor);
                     rayColor.x = Math.min(1.0f, laserUnhitColor.x + 0.75f * (1.0f - d));
-                    //Vec2 pp = ccallback.m_point.clone();
-//                        toDraw.add(new Runnable() {
-//                            @Override public void run() {
-//
-//                                getDraw().drawPoint(pp, 5.0f, sparkColor);
-//
-//                            }
-//                        });
+                    
+
+
+
+
+
+
+
 
                     endPoint = ccallback.m_point;
                 }
 
-                //pooledHead.set(ccallback.m_normal);
-                //pooledHead.mulLocal(.5f).addLocal(ccallback.m_point);
-                //draw.drawSegment(ccallback.m_point, pooledHead, normalColor, 0.25f);
+                
+                
+                
                 totalDist += d;
                 if (d < minDist) {
                     hit = ccallback.body;
@@ -151,9 +151,9 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
 
             if ((drawing) && (endPoint != null)) {
 
-                //final float alpha = rayColor.x *= 0.2f + 0.8f * (senseActivity + conceptPriority)/2f;
-                //rayColor.z *= alpha - 0.35f * senseActivity;
-                //rayColor.y *= alpha - 0.35f * conceptPriority;
+                
+                
+                
 
                 rayColor.x = conceptPriority;
                 rayColor.y = conceptDurability;
@@ -189,7 +189,7 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
                 conf = 0.9f;
             }
 
-            //perceiveDist(hit, conf, meanDist);
+            
             perceiveDist(hit, conf, meanDist);
         } else {
             perceiveDist(hit, 0.5f, 1.0f);
@@ -235,16 +235,16 @@ public class VisionRay implements AbstractPolygonBot.Sense, SwingDraw.LayerDraw 
     private String inputVisionDiscrete(float dist, String material) {
         float freq = 1f;
         String sdist = Sim.f(dist);
-        //String ss = "<(*," + angleTerm + "," + dist + ") --> " + material + ">. :|: %" + Texts.n1(freq) + ";" + Texts.n1(conf) + "%";
+        
         return "see:(" + material + "," + angleTerm + "," + sdist + "). :|: %" + freq + ";" + conf + "%";
     }
 
     private void inputVisionFreq(float dist, String material) {
         float freq = 0.5f + 0.5f * dist;
-        //String ss = "<(*," + angleTerm + "," + dist + ") --> " + material + ">. :|: %" + Texts.n1(freq) + ";" + Texts.n1(conf) + "%";
-        //String x = "<see_" + angleTerm + " --> [" + material + "]>. %" + freq + "|" + conf + "%";
+        
+        
 
-        //TODO move to constructor
+        
         if (thisAngle == null)
             thisAngle = Atom.the(angleTerm);
         Compound tt =

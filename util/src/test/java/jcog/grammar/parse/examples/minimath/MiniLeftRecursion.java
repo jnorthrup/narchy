@@ -38,7 +38,7 @@ public class MiniLeftRecursion {
 		e.get(n);
 		e.get(s);
 
-		// now hang (or crash)
+		
 		e.completeMatch(new TokenAssembly("25 - 16 - 9"));
 	}
 }

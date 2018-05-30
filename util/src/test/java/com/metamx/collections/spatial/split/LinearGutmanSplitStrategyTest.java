@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ public class LinearGutmanSplitStrategyTest {
 
         for (SplitStrategy strategy : new SplitStrategy[]{
                 new LinearGutmanSplitStrategy(0, 50, bf),
-                //new QuadraticGutmanSplitStrategy(0, 50, bf)
+                
         }) {
 
             Node node = new Node(new float[2], new float[2], true, bf);

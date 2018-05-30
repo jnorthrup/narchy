@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 09.12.2003 by RST.
+
 
 package jake2.server;
 
@@ -29,12 +29,12 @@ import jake2.util.Math3D;
 public class moveclip_t 
 {
 	final float [] boxmins={0,0,0};
-	final float [] boxmaxs={0,0,0};// enclose the test object along entire move
-	float [] mins, maxs;	// size of the moving object
+	final float [] boxmaxs={0,0,0};
+	float [] mins, maxs;	
 	final float [] mins2={0,0,0};
-	final float [] maxs2={0,0,0};	// size when clipping against mosnters
+	final float [] maxs2={0,0,0};	
 	float [] start, end;
-	// mem
+	
 	trace_t	trace	= new trace_t();
 	edict_t	passedict;
 	int contentmask;

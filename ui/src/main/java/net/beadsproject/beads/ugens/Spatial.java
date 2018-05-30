@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * so that multichannel files can be located in the mixer independently.
  * <p>
  * We follow the 'right-handed' ordering of the axes:
- * http://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness
+ * http:
  * <p>
  * The default speaker numbering is as follows:
  * <p>
@@ -47,8 +47,8 @@ public class Spatial extends UGen {
         /**
          * The position controllers.
          */
-        final UGen[][] pos;    //pos[chan][dim] - for each output channel of the source,
-        //the position is given by N Glides (p1, p2, p3...).
+        final UGen[][] pos;    
+        
         /**
          * Does this UGen own it's position? In which case the pos UGen's are Glides.
          */
@@ -64,7 +64,7 @@ public class Spatial extends UGen {
             pos = new UGen[source.getOuts()][dimensions];
             for (int i = 0; i < pos.length; i++) {
                 for (int j = 0; j < dimensions; j++) {
-                    pos[i][j] = new Glide(context, 100f, 5f); //the position is set to be far-far away
+                    pos[i][j] = new Glide(context, 100f, 5f); 
                 }
             }
             ownsPosition = true;
@@ -114,23 +114,23 @@ public class Spatial extends UGen {
          * @param output the output
          */
         void mixInAudio(float[][] output) {
-            //update the source
+            
             source.update();
-            //for each channel
+            
             for (int outputChannel = 0; outputChannel < pos.length; outputChannel++) {
-                //first update the glides
+                
                 for (int dim = 0; dim < dimensions; dim++) {
                     pos[outputChannel][dim].update();
                 }
-                //at each time step
+                
                 for (int time = 0; time < bufferSize; time++) {
-                    //get current position of this channel using pos[outputChannel][dim].getValue(0, time);
+                    
                     float[] currentPos = new float[dimensions];
                     for (int dim = 0; dim < dimensions; dim++) {
                         currentPos[dim] = pos[outputChannel][dim].getValue(0, time);
                     }
                     float[] speakerGains = new float[speakerPositions.length];
-                    //work out speaker gains given current pos (distance of pos from each speaker?)
+                    
                     for (int speaker = 0; speaker < speakerPositions.length; speaker++) {
                         float distance = distance(speakerPositions[speaker], currentPos);
                         float linearGain = Math.max(0, 1f - distance / sphereDiameter);
@@ -139,10 +139,10 @@ public class Spatial extends UGen {
                          * the fastPow01 method doesn't help much either. Surprising this should make such
                          * a great difference.
                          */
-                        speakerGains[speaker] = linearGain;//(float)Math.pow(linearGain, curve);
-//						speakerGains[speaker] = (float)AudioUtils.fastPow01(linearGain, curve);
+                        speakerGains[speaker] = linearGain;
+
                     }
-                    //then mix that channel in
+                    
                     for (int speaker = 0; speaker < speakerPositions.length; speaker++) {
                         output[speaker][time] += speakerGains[speaker] * source.getValue(outputChannel, time);
                     }
@@ -158,7 +158,7 @@ public class Spatial extends UGen {
      * the y-axis follows the line joining 1 and 2
      * the z-axis follows the line joining 1 and 5
      * This follows the 'right-handed' ordering of the axes:
-     * http://en.wikipedia.org/wiki/Cartesian_coordinate_system#Orientation_and_handedness
+     * http:
      *
      */
     /**
@@ -169,7 +169,7 @@ public class Spatial extends UGen {
     /**
      * The speaker positions.
      */
-    private float[][] speakerPositions; //float[speakerNumber][dimension]
+    private float[][] speakerPositions; 
 
     /**
      * The sphere diameter.
@@ -189,10 +189,10 @@ public class Spatial extends UGen {
     /**
      * The curve.
      */
-    private float curve; //values over 1 will focus the sound on individual speakers more
-    //values below 1 will spread the sound, with zero being closer to an equal mix
-    //1 is linear
-    //speakers will not play a sound that is further than 1 diameter away from them
+    private float curve; 
+    
+    
+    
 
     /**
      * Instantiates a new Spatial with given AudioContext and dimensions. The default speaker config for the dimensionality
@@ -411,17 +411,17 @@ public class Spatial extends UGen {
         if (l != null) l.move(channel, newPos);
     }
 
-//	/**
-//	 * Sets the location of a UGen at the give channel immediately. This assumes the UGen's position is not being
-//	 * controlled by other external UGens.
-//	 * 
-//	 * @param source the source
-//	 * @param channel the channel
-//	 * @param newPos the new pos
-//	 */
-//	public void setLocationImmediately(UGen source, int channel, float[] newPos) {
-//		sources.get(source).moveImmediately(channel, newPos);
-//	}
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Removes the source.
@@ -491,9 +491,9 @@ public class Spatial extends UGen {
         return sources.size();
     }
 
-//	public synchronized int getNumberOfSources() {
-//		return sources.size();
-//	}
+
+
+
 
 
 }

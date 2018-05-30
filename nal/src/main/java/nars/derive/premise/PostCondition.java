@@ -14,7 +14,7 @@ import java.io.Serializable;
  * Describes a derivation postcondition
  * Immutable
  */
-public final class PostCondition implements Serializable //since there can be multiple tasks derived per rule
+public final class PostCondition implements Serializable 
 {
 
     public final Term pattern;
@@ -45,9 +45,9 @@ public final class PostCondition implements Serializable //since there can be mu
     );
 
 
-//    private static final Atomic
-//            swap = the("Swap");
-//    private static final Atomic backward = the("Backward");
+
+
+
 
 
     /**
@@ -92,7 +92,7 @@ public final class PostCondition implements Serializable //since there can be mu
     public String toString() {
         return "PostCondition{" +
                 "term=" + pattern +
-                //", modifiers=" + Arrays.toString(modifiers) +
+                
                 ", beliefTruth=" + beliefTruth +
                 ", goalTruth=" + goalTruth +
                 ", puncOverride=" + puncOverride +

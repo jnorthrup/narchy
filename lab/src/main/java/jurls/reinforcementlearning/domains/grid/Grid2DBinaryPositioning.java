@@ -24,7 +24,7 @@ public class Grid2DBinaryPositioning implements World {
     private final int b;
 
     public Grid2DBinaryPositioning(int x, int y, int b, int totalTime, double noise, double focusVelocity) {
-        //TODO calcuate min B necessary from X and Y, log2
+        
         this.b = b;
         
         
@@ -67,7 +67,7 @@ public class Grid2DBinaryPositioning implements World {
         
         this.action = action;
         
-        //# At random intervals, jump to a random position in the world
+        
         if (Math.random() < JUMP_FRACTION) {
             focusPositionW = w * Math.random();
             focusPositionH = h * Math.random();
@@ -93,7 +93,7 @@ public class Grid2DBinaryPositioning implements World {
         
         
         
-        final double exp = 2.0; //sharpen
+        final double exp = 2.0; 
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
                 double dx = Math.abs(x - focusPositionW);
@@ -140,7 +140,7 @@ public class Grid2DBinaryPositioning implements World {
     
     public static void main(String[] args) throws Exception {
         Class<? extends Agent> a = RandomAgent.class;
-        //Class<? extends Agent> a = QLAgent.class;
+        
         
         new Simulation(a, new Grid2DBinaryPositioning(16,16, 4, 11990000, 0.01, 0.005));
         

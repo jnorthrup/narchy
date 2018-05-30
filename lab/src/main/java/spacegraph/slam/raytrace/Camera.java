@@ -10,7 +10,7 @@ public final class Camera extends Ray3 {
         this.size = size;
     }
 
-    // x and y are values that should range between zero and one.
+    
     public Ray3 getRay(double x, double y, double aspectRatio) {
         Vector3 xAxis = direction.cross(new Vector3(0, 0, 1)).normalize();
         Vector3 yAxis = xAxis.cross(direction);
@@ -45,13 +45,13 @@ public final class Camera extends Ray3 {
             plus(direction.cross(new Vector3(0, 0, 1)).normalize().scale(keyboardVector.x()));
     }
 
-    // dx and dy are measured in degrees.
-    // dx is the horizontal amount to rotate by.
-    // dy is the vertical amount to rotate by.
+    
+    
+    
     public void rotate(double dx, double dy) {
         double sin = direction.z();
         double verticalAngle = Math.asin(sin) / Math.PI * 180;
-        // Limit vertical angle to 89 degrees from the horizontal.
+        
         if (verticalAngle + dy > 89) {
             dy = 89 - verticalAngle;
         } else if (verticalAngle + dy < -89) {

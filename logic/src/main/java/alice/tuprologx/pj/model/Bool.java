@@ -16,7 +16,7 @@ package alice.tuprologx.pj.model;
 public class Bool extends Term<Bool> {
 	final Boolean _theBool;
         
-	// public Boolean toJava() { return _theBool; } // ED 2013-05-12
+	
 	@Override
     public <Z> Z toJava() { return uncheckedCast (_theBool); }
 	

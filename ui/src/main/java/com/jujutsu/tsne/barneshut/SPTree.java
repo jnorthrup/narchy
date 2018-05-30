@@ -7,7 +7,7 @@ import static java.lang.Math.sqrt;
 
 public class SPTree {
 
-	  // Fixed constants
+	  
     private final static int QT_NODE_CAPACITY = 1;
         
 	private SPTree parent;
@@ -16,20 +16,20 @@ public class SPTree {
 	int size;
 	int cum_size;
 	
-	 // Axis-aligned bounding box stored as a center with half-dimensions to represent the boundaries of this quad tree
+	 
     Cell boundary;
     
-    // Indices in this space-partitioning tree node, corresponding center-of-mass, and list of all children
+    
     double[] data;
     double[] center_of_mass;
     final int [] index = new int[QT_NODE_CAPACITY];
     
-    // Children
+    
     SPTree [] children;
     int no_children;
 
 	public SPTree(int D, double[] inp_data, int N) {
-		// Compute mean, width, and height of current map (boundaries of SPTree)
+		
 		int nD = 0;
 		double [] mean_Y = new double [D];
 		double []  min_Y = new double [D]; 
@@ -48,14 +48,14 @@ public class SPTree {
 		}
 		for(int d = 0; d < D; d++) mean_Y[d] /= N;
 
-		// Construct SPTree
+		
 		double [] width = new double [D];
 		for(int d = 0; d < D; d++) width[d] = max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5;
 		init(null, D, inp_data, mean_Y, width);
 		fill(N);
 	}
 
-	// Main initialization function
+	
 	private void init(SPTree inp_parent, int D, double[] inp_data, double[] inp_corner, double[] inp_width)
 	{
 		parent = inp_parent;
@@ -79,7 +79,7 @@ public class SPTree {
 		for(int i = 0; i < no_children; i++) children[i] = null;
 	}
 	
-	// Constructor for SPTree with particular size and parent -- build the tree, too!
+	
 	SPTree(int D, double [] inp_data, int N, double [] inp_corner, double [] inp_width)
 	{
 		init(null, D, inp_data, inp_corner, inp_width);
@@ -87,34 +87,34 @@ public class SPTree {
 	}
 
 
-	// Constructor for SPTree with particular size (do not fill the tree)
+	
 	SPTree(int D, double [] inp_data, double [] inp_corner, double [] inp_width)
 	{
 		init(null, D, inp_data, inp_corner, inp_width);
 	}
 
 
-	// Constructor for SPTree with particular size and parent (do not fill tree)
+	
 	SPTree(SPTree inp_parent, int D, double [] inp_data, double [] inp_corner, double [] inp_width) {
 		init(inp_parent, D, inp_data, inp_corner, inp_width);
 	}
 
 
-	// Constructor for SPTree with particular size and parent -- build the tree, too!
+	
 	SPTree(SPTree inp_parent, int D, double [] inp_data, int N, double [] inp_corner, double [] inp_width)
 	{
 		init(inp_parent, D, inp_data, inp_corner, inp_width);
 		fill(N);
 	}
 
-	// Update the data underlying this tree
+	
 	void setData(double [] inp_data)
 	{
 		data = inp_data;
 	}
 
 
-	// Get the parent of the current tree
+	
 	SPTree getParent()
 	{
 		return parent;
@@ -124,16 +124,16 @@ public class SPTree {
 		return new SPTree[no_children];
 	}
 
-	// Insert a point into the SPTree
+	
 	private boolean insert(int new_index)
 	{
-		// Ignore objects which do not belong in this quad tree
+		
 		double [] point = MatrixOps.extractRowFromFlatMatrix(data,new_index,dimension);
 
 		if(!boundary.containsPoint(point))
 			return false;
 
-		// Online update of cumulative size and center-of-mass
+		
 		cum_size++;
 		double mult1 = (double) (cum_size - 1) / cum_size;
 		double mult2 = 1.0 / cum_size;
@@ -142,14 +142,14 @@ public class SPTree {
 			center_of_mass[d] += mult2 * point[d];
 		}
 
-		// If there is space in this quad tree and it is a leaf, add the object here
+		
 		if(is_leaf && size < QT_NODE_CAPACITY) {
 			index[size] = new_index;
 			size++;
 			return true;
 		}
 
-		// Don't add duplicates for now (this is not very nice)
+		
 		boolean any_duplicate = false;
 		for(int n = 0; n < size; n++) {
 			boolean duplicate = true;
@@ -160,23 +160,23 @@ public class SPTree {
 		}
 		if(any_duplicate) return true;
 
-		// Otherwise, we need to subdivide the current cell
+		
 		if(is_leaf) subdivide();
 
-		// Find out where the point can be inserted
+		
 		for(int i = 0; i < no_children; i++) {
 			if(children[i].insert(new_index)) return true;
 		}
 
-		// Otherwise, the point cannot be inserted (this should never happen)
+		
 		assert false;
 		return false;
 	}
 
-	// Create four children which fully divide this cell into four quads of equal area
+	
 	private void subdivide() {
 
-		// Create new children
+		
 		double [] new_corner = new double[dimension];
 		double [] new_width  = new double[dimension];
 		for(int i = 0; i < no_children; i++) {
@@ -190,7 +190,7 @@ public class SPTree {
 			children[i] = getNewTree(this, new_corner, new_width);
 		}
 
-		// Move existing points to correct children
+		
 		for(int i = 0; i < size; i++) {
 			boolean success = false;
 			for(int j = 0; j < no_children; j++) {
@@ -199,7 +199,7 @@ public class SPTree {
 			index[i] = -1;
 		}
 
-		// Empty parent node
+		
 		size = 0;
 		is_leaf = false;
 	}
@@ -208,14 +208,14 @@ public class SPTree {
 		return new SPTree(root, dimension, data, new_corner, new_width);
 	}
 
-	// Build SPTree on dataset
+	
 	private void fill(int N)
 	{
 		for(int i = 0; i < N; i++) insert(i);
 	}
 
 
-	// Checks whether the specified tree is correct
+	
 	private boolean isCorrect()
 	{
 		for(int n = 0; n < size; n++) {
@@ -232,22 +232,22 @@ public class SPTree {
 
 
 
-	// Build a list of all indices in SPTree
+	
 	void getAllIndices(int [] indices)
 	{
 		getAllIndices(indices, 0);
 	}
 
 
-	// Build a list of all indices in SPTree
+	
 	private int getAllIndices(int[] indices, int loc)
 	{
 
-		// Gather indices in current quadrant
+		
         System.arraycopy(index, 0, indices, loc, size);
 		loc += size;
 
-		// Gather indices in children
+		
 		if(!is_leaf) {
 			for(int i = 0; i < no_children; i++) loc = children[i].getAllIndices(indices, loc);
 		}
@@ -263,18 +263,18 @@ public class SPTree {
 	}
 
 
-	// Compute non-edge forces using Barnes-Hut algorithm
+	
 	public double computeNonEdgeForces(int point_index, double theta, double[] neg_f, Object accumulator)
 	{
 		double [] sum_Q = (double []) accumulator;
 		double [] buff = new double[dimension];
-		// Make sure that we spend no time on empty nodes or self-interactions
+		
 		if(cum_size == 0 || (is_leaf && size == 1 && index[0] == point_index)) return 0.0;
 
-		// Compute distance between point and center-of-mass
+		
 		double D = .0;
 		int ind = point_index * dimension;
-		// Check whether we can use this node as a "summary"
+		
 		double max_width = 0.0;
 		double cur_width;
 		for(int d = 0; d < dimension; d++) {
@@ -285,7 +285,7 @@ public class SPTree {
 		} 
 
 		if(is_leaf || max_width / sqrt(D) < theta) {
-			// Compute and add t-SNE force between point and current node
+			
 			D = 1.0 / (1.0 + D);
 			double mult = cum_size * D;
 			sum_Q[0] += mult;
@@ -294,17 +294,17 @@ public class SPTree {
 		}
 		else {
 
-			// Recursively apply Barnes-Hut to children
+			
 			for(int i = 0; i < no_children; i++) children[i].computeNonEdgeForces(point_index, theta, neg_f, sum_Q);
 		}
 		return sum_Q[0];
 	}
 
 
-	// Computes edge forces
+	
 	public void computeEdgeForces(int [] row_P, int [] col_P, double [] val_P, int N, double [] pos_f)
 	{
-		// Loop over all edges in the graph
+		
 		double [] buff = new double[dimension];
 		int ind1 = 0;
 		int ind2 = 0;
@@ -312,7 +312,7 @@ public class SPTree {
 		for(int n = 0; n < N; n++) {
 			for(int i = row_P[n]; i < row_P[n + 1]; i++) {
 
-				// Compute pairwise distance and Q-value
+				
 				D = 1.0;
 				ind2 = col_P[i] * dimension;
 				for(int d = 0; d < dimension; d++) { 
@@ -321,7 +321,7 @@ public class SPTree {
 				} 
 				D = val_P[i] / D;
 
-				// Sum positive force
+				
 				for(int d = 0; d < dimension; d++) pos_f[ind1 + d] += D * buff[d];
 			}
 			ind1 += dimension;
@@ -329,7 +329,7 @@ public class SPTree {
 	}
 
 
-	// Print out tree
+	
 	private void print()
 	{
 		if(cum_size == 0) {
@@ -360,7 +360,7 @@ public class SPTree {
 		final double [] corner;
 		final double [] width;
 		    
-		// Constructs cell
+		
 		Cell(int inp_dimension) {
 			dimension = inp_dimension;
 			corner = new double[dimension];
@@ -391,7 +391,7 @@ public class SPTree {
 			width[d] = val;
 		}
 
-		// Checks whether a point lies in a cell
+		
 		boolean containsPoint(double point[])
 		{
 			for(int d = 0; d < dimension; d++) {

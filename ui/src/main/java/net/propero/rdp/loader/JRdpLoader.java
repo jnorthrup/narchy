@@ -39,11 +39,11 @@ import java.util.StringTokenizer;
 
 public class JRdpLoader {
 
-    // Set of identifiers to be found within the launch file
+    
     private static final String[] identifiers = {"--user", "--password", "--domain",
             "--fullscreen", "--geometry", "--use_rdp5"};
 
-    // Set of command-line options mapping to the launch file identifiers
+    
     private static final String[] pairs = {"-u", "-p", "-d", "-f", "-g",
             "--use_rdp5"};
 
@@ -62,7 +62,7 @@ public class JRdpLoader {
         try {
             String outArgs = "";
 
-            // Open the file specified at the command-line
+            
             FileInputStream fstream = new FileInputStream(launchFile);
             DataInputStream in = new DataInputStream(fstream);
             while (in.available() != 0) {
@@ -98,7 +98,7 @@ public class JRdpLoader {
                 if (!port.isEmpty())
                     outArgs += ':' + port;
 
-                // String[] finArgs = outArgs.split(" ");
+                
                 String[] finArgs = Utilities_Localised.split(outArgs, " ");
 
                 Rdesktop.main(finArgs);

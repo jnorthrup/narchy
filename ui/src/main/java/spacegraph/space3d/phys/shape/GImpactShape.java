@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -43,7 +43,7 @@ public abstract class GImpactShape extends ConcaveShape {
     protected BoxCollision.AABB localAABB = new BoxCollision.AABB();
     protected boolean needs_update;
     protected final v3 localScaling = new v3();
-    GImpactBvh box_set = new GImpactBvh(); // optionally boxset
+    GImpactBvh box_set = new GImpactBvh(); 
 
 	protected GImpactShape() {
 		localAABB.invalidate();

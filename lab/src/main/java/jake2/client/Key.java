@@ -42,15 +42,15 @@ import java.util.Vector;
  * Key
  */
 public class Key extends Globals {
-	//
-	// these are the key numbers that should be passed to Key_Event
-	//
+	
+	
+	
 	public static final int K_TAB = 9;
 	public static final int K_ENTER = 13;
 	public static final int K_ESCAPE = 27;
 	public static final int K_SPACE = 32;
 
-	// normal keys should be passed as lowercased ascii
+	
 
 	public static final int K_BACKSPACE = 127;
 	public static final int K_UPARROW = 128;
@@ -98,16 +98,16 @@ public class Key extends Globals {
 
 	public static final int K_PAUSE = 255;
 
-	//
-	// mouse buttons generate virtual keys
-	//
+	
+	
+	
 	public static final int K_MOUSE1 = 200;
 	public static final int K_MOUSE2 = 201;
 	public static final int K_MOUSE3 = 202;
 
-	//
-	// joystick buttons
-	//
+	
+	
+	
 	public static final int K_JOY1 = 203;
 	public static final int K_JOY2 = 204;
 	public static final int K_JOY3 = 205;
@@ -121,7 +121,7 @@ public class Key extends Globals {
 	static int history_line;
 	static boolean shift_down;
 	static final int[] key_repeats = new int[256];
-	//static int[] keyshift = new int[256];
+	
 	static final boolean[] menubound = new boolean[256];
 	static final boolean[] consolekeys = new boolean[256];
 
@@ -165,10 +165,10 @@ public class Key extends Globals {
 		keynames[K_MOUSE2] = "MOUSE2";
 		keynames[K_MOUSE3] = "MOUSE3";
 
-		//	00092         {"JOY1", K_JOY1},
-		//	00093         {"JOY2", K_JOY2},
-		//	00094         {"JOY3", K_JOY3},
-		//	00095         {"JOY4", K_JOY4},
+		
+		
+		
+		
 
 		keynames[K_KP_HOME] = "KP_HOME";
 		keynames[K_KP_UPARROW] = "KP_UPARROW";
@@ -191,7 +191,7 @@ public class Key extends Globals {
 		keynames[K_MWHEELDOWN] = "MWHEELDOWN";
 
 		keynames[K_PAUSE] = "PAUSE";
-		keynames[';'] = "SEMICOLON"; // because a raw semicolon seperates commands
+		keynames[';'] = "SEMICOLON"; 
 
 		keynames[0] = "NULL";
 	}
@@ -206,9 +206,9 @@ public class Key extends Globals {
 		}
 		Globals.key_linepos = 1;
 
-		//
-		// init ascii characters in console mode
-		//
+		
+		
+		
 		for (int i = 32; i < 128; i++)
 			consolekeys[i] = true;
 		consolekeys[K_ENTER] = true;
@@ -243,39 +243,39 @@ public class Key extends Globals {
 		consolekeys['`'] = false;
 		consolekeys['~'] = false;
 
-//		for (int i = 0; i < 256; i++)
-//			keyshift[i] = i;
-//		for (int i = 'a'; i <= 'z'; i++)
-//			keyshift[i] = i - 'a' + 'A';
-//		keyshift['1'] = '!';
-//		keyshift['2'] = '@';
-//		keyshift['3'] = '#';
-//		keyshift['4'] = '$';
-//		keyshift['5'] = '%';
-//		keyshift['6'] = '^';
-//		keyshift['7'] = '&';
-//		keyshift['8'] = '*';
-//		keyshift['9'] = '(';
-//		keyshift['0'] = ')';
-//		keyshift['-'] = '_';
-//		keyshift['='] = '+';
-//		keyshift[','] = '<';
-//		keyshift['.'] = '>';
-//		keyshift['/'] = '?';
-//		keyshift[';'] = ':';
-//		keyshift['\''] = '"';
-//		keyshift['['] = '{';
-//		keyshift[']'] = '}';
-//		keyshift['`'] = '~';
-//		keyshift['\\'] = '|';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		menubound[K_ESCAPE] = true;
 		for (int i = 0; i < 12; i++)
 			menubound[K_F1 + i] = true;
 
-		//
-		// register our functions
-		//
+		
+		
+		
 		Cmd.AddCommand("bind", Key.Bind_f);
 		Cmd.AddCommand("unbind", Key.Unbind_f);
 		Cmd.AddCommand("unbindall", Key.Unbindall_f);
@@ -283,7 +283,7 @@ public class Key extends Globals {
 	}
 
 	public static void ClearTyping() {
-		Globals.key_lines[Globals.edit_line][1] = 0; // clear any typing
+		Globals.key_lines[Globals.edit_line][1] = 0; 
 		Globals.key_linepos = 1;
 	}
 
@@ -294,20 +294,20 @@ public class Key extends Globals {
 		String kb;
 		String cmd;
 
-		// hack for modal presses
+		
 		if (key_waiting == -1) {
 			if (down)
 				key_waiting = key;
 			return;
 		}
 
-		// update auto-repeat status
+		
 		if (down) {
 			key_repeats[key]++;
 			if (key_repeats[key] > 1
 				&& Globals.cls.key_dest == Defines.key_game
 				&& !(Globals.cls.state == Defines.ca_disconnected))
-				return; // ignore most autorepeats
+				return; 
 
 			if (key >= 200 && Globals.keybindings[key] == null)
 				Com.Printf(Key.KeynumToString(key) + " is unbound, hit F4 to set.\n");
@@ -319,7 +319,7 @@ public class Key extends Globals {
 		if (key == K_SHIFT)
 			shift_down = down;
 
-		// console key is hardcoded, so the user can never unbind it
+		
 		if (key == '`' || key == '~') {
 			if (!down)
 				return;
@@ -328,17 +328,17 @@ public class Key extends Globals {
 			return;
 		}
 
-		// any key during the attract mode will bring up the menu
+		
 		if (Globals.cl.attractloop && Globals.cls.key_dest != Defines.key_menu && !(key >= K_F1 && key <= K_F12))
 			key = K_ESCAPE;
 
-		// menu key is hardcoded, so the user can never unbind it
+		
 		if (key == K_ESCAPE) {
 			if (!down)
 				return;
 
 			if (Globals.cl.frame.playerstate.stats[Defines.STAT_LAYOUTS] != 0 && Globals.cls.key_dest == Defines.key_game) {
-				// put away help computer / inventory
+				
 				Cbuf.AddText("cmd putaway\n");
 				return;
 			}
@@ -359,7 +359,7 @@ public class Key extends Globals {
 			return;
 		}
 
-		// track if any key is down for BUTTON_ANY
+		
 		Globals.keydown[key] = down;
 		if (down) {
 			if (key_repeats[key] == 1)
@@ -371,39 +371,39 @@ public class Key extends Globals {
 				Key.anykeydown = 0;
 		}
 
-		//
-		// key up events only generate commands if the game key binding is
-		// a button command (leading + sign).  These will occur even in console mode,
-		// to keep the character from continuing an action started before a console
-		// switch.  Button commands include the kenum as a parameter, so multiple
-		// downs can be matched with ups
-		//
+		
+		
+		
+		
+		
+		
+		
 		if (!down) {
 			kb = Globals.keybindings[key];
 			if (kb != null && kb.length()>0 && kb.charAt(0) == '+') {
 				cmd = '-' + kb.substring(1) + ' ' + key + ' ' + time + '\n';
 				Cbuf.AddText(cmd);
 			}
-//			if (keyshift[key] != key) {
-//				kb = Globals.keybindings[keyshift[key]];
-//				if (kb != null && kb.length()>0 && kb.charAt(0) == '+') {
-//					cmd = "-" + kb.substring(1) + " " + key + " " + time + "\n";
-//					Cbuf.AddText(cmd);
-//				}
-//			}
+
+
+
+
+
+
+
 			return;
 		}
 
-		//
-		// if not a consolekey, send to the interpreter no matter what mode is
-		//
+		
+		
+		
 		if ((Globals.cls.key_dest == Defines.key_menu && menubound[key])
 			|| (Globals.cls.key_dest == Defines.key_console && !consolekeys[key])
 			|| (Globals.cls.key_dest == Defines.key_game && (Globals.cls.state == Defines.ca_active || !consolekeys[key]))) {
 			kb = Globals.keybindings[key];
 			if (kb != null) {
 				if (kb.length()>0 && kb.charAt(0) == '+') {
-					// button commands add keynum and time as a parm
+					
 					cmd = kb + ' ' + key + ' ' + time + '\n';
 					Cbuf.AddText(cmd);
 				}
@@ -415,10 +415,10 @@ public class Key extends Globals {
 		}
 
 		if (!down)
-			return; // other systems only care about key down events
+			return; 
 
-//		if (shift_down)
-//			key = keyshift[key];
+
+
 
 		switch (Globals.cls.key_dest) {
 			case Defines.key_message :
@@ -497,7 +497,7 @@ public class Key extends Globals {
 		}
 
 		if (key < 32 || key > 127)
-			return; // non printable
+			return; 
 
 		if (key == K_BACKSPACE) {
 			if (Globals.chat_buffer.length() > 2) {
@@ -509,7 +509,7 @@ public class Key extends Globals {
 		}
 
 		if (Globals.chat_buffer.length() > Defines.MAXCMDLINE)
-			return; // all full
+			return; 
 
 		Globals.chat_buffer += (char) key;
 	}
@@ -572,7 +572,7 @@ public class Key extends Globals {
 		}
 
 		if (key == K_ENTER || key == K_KP_ENTER) {
-			// backslash text are commands, else chat
+			
 			if (Globals.key_lines[Globals.edit_line][1] == '\\' || Globals.key_lines[Globals.edit_line][1] == '/')
 				Cbuf.AddText(
 					new String(Globals.key_lines[Globals.edit_line], 2, Lib.strlen(Globals.key_lines[Globals.edit_line]) - 2));
@@ -590,12 +590,12 @@ public class Key extends Globals {
 			Globals.key_lines[Globals.edit_line][0] = ']';
 			Globals.key_linepos = 1;
 			if (Globals.cls.state == Defines.ca_disconnected)
-				SCR.UpdateScreen(); // force an update, because the command may take some time
+				SCR.UpdateScreen(); 
 			return;
 		}
 
 		if (key == K_TAB) {
-			// command completion
+			
 			CompleteCommand();
 			return;
 		}
@@ -613,7 +613,7 @@ public class Key extends Globals {
 			while (history_line != Globals.edit_line && Globals.key_lines[history_line][1] == 0);
 			if (history_line == Globals.edit_line)
 				history_line = (Globals.edit_line + 1) & 31;
-			//Lib.strcpy(Globals.key_lines[Globals.edit_line], Globals.key_lines[history_line]);
+			
 			System.arraycopy(Globals.key_lines[history_line], 0, Globals.key_lines[Globals.edit_line], 0, Globals.key_lines[Globals.edit_line].length);
 			Globals.key_linepos = Lib.strlen(Globals.key_lines[Globals.edit_line]);
 			return;
@@ -631,7 +631,7 @@ public class Key extends Globals {
 				Globals.key_linepos = 1;
 			}
 			else {
-				//Lib.strcpy(Globals.key_lines[Globals.edit_line], Globals.key_lines[history_line]);
+				
 				System.arraycopy(Globals.key_lines[history_line], 0, Globals.key_lines[Globals.edit_line], 0, Globals.key_lines[Globals.edit_line].length);
 				Globals.key_linepos = Lib.strlen(Globals.key_lines[Globals.edit_line]);
 			}
@@ -661,7 +661,7 @@ public class Key extends Globals {
 		}
 
 		if (key < 32 || key > 127)
-			return; // non printable
+			return; 
 
 		if (Globals.key_linepos < Defines.MAXCMDLINE - 1) {
 			Globals.key_lines[Globals.edit_line][Globals.key_linepos] = (byte) key;
@@ -743,8 +743,8 @@ public class Key extends Globals {
 			return;
 		}
 
-		// copy the rest of the command line
-		String cmd = ""; // start out with a null string
+		
+		String cmd = ""; 
 		for (int i = 2; i < c; i++) {
 			cmd += Cmd.Argv(i);
 			if (i != (c - 1))
@@ -758,7 +758,7 @@ public class Key extends Globals {
 		if (keynum == -1)
 			return;
 
-		// free old bindings
+		
 		Globals.keybindings[keynum] = null;
 
 		Globals.keybindings[keynum] = binding;

@@ -1,7 +1,7 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Favourite patterns list
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
@@ -13,7 +13,7 @@ public class MJDiversities {
 	public static final int DIV_SNOVA = 4;
 	public static final int DIV_STRIN = 5;
 
-	public boolean m_Enabled; // enabled?
+	public boolean m_Enabled; 
 
 	public boolean m_BHoleActive;
 	public int m_BHoleCtrX, m_BHoleCtrY;
@@ -31,8 +31,8 @@ public class MJDiversities {
 
 	public final MJDiv_StrIn StrIn;
 
-	// ----------------------------------------------------------------
-	// Constructor
+	
+	
 	MJDiversities() {
 		m_Enabled = false;
 
@@ -43,8 +43,8 @@ public class MJDiversities {
 		ResetItem(DIV_STRIN);
 	}
 
-	// ------------------------------------------------------------------------------
-	// Reset the specified item; defaults
+	
+	
 	public void ResetItem(int itm) {
 		switch (itm) {
 			case DIV_NOISE :
@@ -72,18 +72,18 @@ public class MJDiversities {
 		}
 	}
 
-	// ------------------------------------------------------------------------------
-	// Initialize the specified item from the string
+	
+	
 	public void ItemFromString(String sStr, int sizX, int sizY) {
 		int itm = DIV_NONE;
-		// noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		String sBff;
 		int iTmp;
 
 		try {
-			// noinspection IfStatementWithTooManyBranches
+			
 			if (sStr.startsWith("#SYSTEM"))
 				itm = DIV_SYSTEM;
 			else if (sStr.startsWith("#NOISE"))
@@ -96,7 +96,7 @@ public class MJDiversities {
 				itm = DIV_STRIN;
 
 			if (itm != DIV_NONE) {
-				ResetItem(itm); // first reset it to defaults
+				ResetItem(itm); 
 				st = new StringTokenizer(sStr, ",", false);
 				while (st.hasMoreTokens()) {
 					sTok = st.nextToken().toUpperCase();
@@ -106,7 +106,7 @@ public class MJDiversities {
 								m_Enabled = Integer.valueOf(sTok.substring(4)) != 0;
 							break;
 						case DIV_NOISE :
-							// noinspection IfStatementWithTooManyBranches
+							
 							if (sTok.startsWith("ACT="))
 								m_NoiseActive = Integer.valueOf(sTok
 										.substring(4)) != 0;
@@ -121,7 +121,7 @@ public class MJDiversities {
 										.substring(4));
 							break;
 						case DIV_BHOLE :
-							// noinspection IfStatementWithTooManyBranches
+							
 							if (sTok.startsWith("ACT="))
 								m_BHoleActive = Integer.valueOf(sTok
 										.substring(4)) != 0;
@@ -138,7 +138,7 @@ public class MJDiversities {
 										.valueOf(sTok.substring(5));
 							break;
 						case DIV_SNOVA :
-							// noinspection IfStatementWithTooManyBranches
+							
 							if (sTok.startsWith("ACT="))
 								m_SNovaActive = Integer.valueOf(sTok
 										.substring(4)) != 0;
@@ -169,8 +169,8 @@ public class MJDiversities {
 		}
 	}
 
-	// ------------------------------------------------------------------------------
-	// Get the specified item as a string
+	
+	
 	public String ItemAsString(int itm) {
 		String sRet = "";
 
@@ -213,8 +213,8 @@ public class MJDiversities {
 		return (sRet);
 	}
 
-	// ------------------------------------------------------------------------------
-	// Check, if the specified item is active
+	
+	
 	public boolean ItemActive(int itm) {
 		boolean bRet = false;
 		switch (itm) {
@@ -237,18 +237,18 @@ public class MJDiversities {
 		return (bRet);
 	}
 
-	// ------------------------------------------------------------------------------
-	// Perform diversities
-	// "BeforePass" is True if the procedure is invoked before the cycle,
-	// and False after.
+	
+	
+	
+	
 	public void Perform(boolean BeforePass, MJBoard mjb) {
 		int i, iCol, iRow;
 		int minX, minY;
 		boolean ifRedraw = false;
 
-		// Black hole active?
+		
 		if (m_BHoleActive) {
-			ifRedraw = true; // need for redrawing
+			ifRedraw = true; 
 			minX = m_BHoleCtrX - m_BHoleSize / 2;
 			minY = m_BHoleCtrY - m_BHoleSize / 2;
 			for (iCol = minX; iCol <= minX + m_BHoleSize - 1; iCol++)
@@ -256,9 +256,9 @@ public class MJDiversities {
 					mjb.SetCell(iCol, iRow, (short) 0);
 		}
 
-		// SuperNova active?
+		
 		if (m_SNovaActive) {
-			ifRedraw = true; // need for redrawing
+			ifRedraw = true; 
 			minX = m_SNovaCtrX - m_SNovaSize / 2;
 			minY = m_SNovaCtrY - m_SNovaSize / 2;
 			for (iCol = minX; iCol <= minX + m_SNovaSize - 1; iCol++)
@@ -266,11 +266,11 @@ public class MJDiversities {
 					mjb.SetCell(iCol, iRow, (short) 1);
 		}
 
-		// noise active?
+		
 		if (m_NoiseActive && BeforePass && (m_NoiseCycles > 0)
 				&& (m_NoiseCells > 0)) {
 			if ((mjb.Cycle % m_NoiseCycles) == 0) {
-				ifRedraw = true; // need for redrawing
+				ifRedraw = true; 
 				for (i = 1; i <= m_NoiseCells; i++) {
 					iCol = (int) Math
 							.ceil(Math.random() * (mjb.UnivSize.x - 1));
@@ -281,12 +281,12 @@ public class MJDiversities {
 			}
 		}
 
-		// string injection active?
+		
 		if (StrIn.m_Active && BeforePass) {
 			int iSiz = StrIn.m_Vals.size();
-			if (iSiz > 0) // any items exist?
+			if (iSiz > 0) 
 			{
-				ifRedraw = true; // need for redrawing
+				ifRedraw = true; 
 				if ((StrIn.m_Pos < 0) || (StrIn.m_Pos >= iSiz))
 					StrIn.m_Pos = 0;
 

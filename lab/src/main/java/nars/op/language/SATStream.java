@@ -10,10 +10,10 @@ import nars.Narsese;
 public class SATStream {
 
     public static void main(String[] args) throws Narsese.NarseseException {
-        //this.activeTasks = activeTasks;
+        
         NAR d = new NARS().get();
 
-        //d.inputActivation.setValue(0.2f);
+        
 
 
         d.log();
@@ -25,18 +25,18 @@ public class SATStream {
 
                 "$1.0;1.0;1.0$ (($c:$x && $c:$y) ==> AND({$x,$y})). %1.00;1.00%"
 
-                //"$1.0;1.0;1.0$ ((T:$x && T:(--,$y)) <-> AND:{$x,$y})! %1.00;1.00%"
+                
 
 
-                //"$1.0;1.0;1.0$ ((T:$x & T:$y) ==> AND:{$x,$y}). %1.00;1.00%",
-                //"$1.0;1.0;1.0$ ((T:{$x} & T:{(--,$y)}) ==> XOR:{$x,$y}). %1.00;1.00%"
-                //"$1.0;1.0;1.0$ ((--,(T:$x & T:$y)) ==> XOR:{$x,$y}). %1.00;1.00%"
+                
+                
+                
         );
 
         d.run(10360);
 
 
-        //d.dumpConcepts("/tmp/x.txt");
+        
 
     }
 }

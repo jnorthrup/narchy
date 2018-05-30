@@ -18,9 +18,9 @@
  *  
  */
 
-// Created on 01.11.2003 by RST.
 
-// $Id: GameUtil.java,v 1.15 2005-12-27 21:02:31 salomo Exp $
+
+
 
 package jake2.game;
 
@@ -60,9 +60,9 @@ public class GameUtil {
 
         checkClassname(ent);
 
-        // check for a delay
+        
         if (ent.delay != 0) {
-            // create a temp object to fire at a later time
+            
             t = G_Spawn();
             t.classname = "DelayedUse";
             t.nextthink = GameBase.level.time + ent.delay;
@@ -77,7 +77,7 @@ public class GameUtil {
         }
 
 
-        // print the message
+        
         if ((ent.message != null)
                 && (activator.svflags & Defines.SVF_MONSTER) == 0) {
             game_import_t.centerprintf(activator, "" + ent.message);
@@ -89,7 +89,7 @@ public class GameUtil {
                         .soundindex("misc/talk1.wav"), 1, Defines.ATTN_NORM, 0);
         }
 
-        // kill killtargets
+        
         EdictIterator edit = null;
 
         if (ent.killtarget != null) {
@@ -105,13 +105,13 @@ public class GameUtil {
             }
         }
 
-        // fire targets
+        
         if (ent.target != null) {
             edit = null;
             while ((edit = GameBase.G_Find(edit, GameBase.findByTarget,
                     ent.target)) != null) {
                 t = edit.o;
-                // doors fire area portals in a specific way
+                
                 if (Lib.Q_stricmp("func_areaportal", t.classname) == 0
                         && (Lib.Q_stricmp("func_door", ent.classname) == 0 || Lib
                                 .Q_stricmp("func_door_rotating", ent.classname) == 0))
@@ -136,7 +136,7 @@ public class GameUtil {
         e.inuse = true;
         e.classname = "noclass";
         e.gravity = 1.0f;
-        //e.s.number= e - g_edicts;
+        
         e.s = new entity_state_t(e);
         e.s.number = i;
         e.index = i;
@@ -154,8 +154,8 @@ public class GameUtil {
 
         for (i = (int) GameBase.maxclients.value + 1; i < GameBase.num_edicts; i++) {
             e = GameBase.g_edicts[i];
-            // the first couple seconds of server time can involve a lot of
-            // freeing and allocating, so relax the replacement policy
+            
+            
             if (!e.inuse
                     && (e.freetime < 2 || GameBase.level.time - e.freetime > 0.5)) {
                 e = GameBase.g_edicts[i] = new edict_t(i);
@@ -177,11 +177,11 @@ public class GameUtil {
      * Marks the edict as free
      */
     public static void G_FreeEdict(edict_t ed) {
-        game_import_t.unlinkentity(ed); // unlink from world
+        game_import_t.unlinkentity(ed); 
 
-        //if ((ed - g_edicts) <= (maxclients.value + BODY_QUEUE_SIZE))
+        
         if (ed.index <= (GameBase.maxclients.value + Defines.BODY_QUEUE_SIZE)) {
-            // gi.dprintf("tried to free special edict\n");
+            
             return;
         }
 
@@ -216,17 +216,17 @@ public class GameUtil {
             if (tr.ent == null || tr.ent == GameBase.g_edicts[0])
                 break;
 
-            // nail it
+            
             GameCombat.T_Damage(tr.ent, ent, ent, Globals.vec3_origin, ent.s.origin,
                     Globals.vec3_origin, 100000, 0,
                     Defines.DAMAGE_NO_PROTECTION, Defines.MOD_TELEFRAG);
 
-            // if we didn't kill it, fail
+            
             if (tr.ent.solid != 0)
                 return false;
         }
 
-        return true; // all clear
+        return true; 
     }
 
     /** 
@@ -269,7 +269,7 @@ public class GameUtil {
         cl = ent.client;
 
         if (cl.pers.inventory[cl.pers.selected_item] != 0)
-            return; // valid
+            return; 
 
         GameItems.SelectNextItem(ent, -1);
     }
@@ -360,19 +360,19 @@ public class GameUtil {
                     return false;
             }
             
-            //FIXME look for monsters?
+            
             return false;
         }
 
-        // if we're going to a combat point, just proceed
+        
         if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0)
             return false;
 
-        // if the first spawnflag bit is set, the monster will only wake up on
-        // really seeing the player, not another monster getting angry or
-        // hearing something
-        // revised behavior so they will wake up if they "see" a player make a
-        // noise but not weapon impact/explosion noises
+        
+        
+        
+        
+        
 
         heardit = false;
         if ((GameBase.level.sight_entity_framenum >= (GameBase.level.framenum - 1))
@@ -391,10 +391,10 @@ public class GameUtil {
         } else {
             client = GameBase.level.sight_client;
             if (client == null)
-                return false; // no clients to get mad at
+                return false; 
         }
 
-        // if the entity went away, forget it
+        
         if (!client.inuse)
             return false;
 
@@ -418,8 +418,8 @@ public class GameUtil {
             if (r == Defines.RANGE_FAR)
                 return false;
 
-            // this is where we would check invisibility
-            // is client in an spot too dark to be seen?
+            
+            
             
             if (client.light_level <= 5)
                 return false;
@@ -438,7 +438,7 @@ public class GameUtil {
             }
 
             if (client == self.enemy)
-                return true; // JDC false;
+                return true; 
             
             self.enemy = client;
 
@@ -454,7 +454,7 @@ public class GameUtil {
                 }
             }
         } else {
-            // heard it
+            
             float[] temp = { 0, 0, 0 };
 
             if ((self.spawnflags & 1) != 0) {
@@ -467,12 +467,12 @@ public class GameUtil {
 
             Math3D.VectorSubtract(client.s.origin, self.s.origin, temp);
 
-            if (Math3D.VectorLength(temp) > 1000) // too far to hear
+            if (Math3D.VectorLength(temp) > 1000) 
                 return false;
 
 
-            // check area portals - if they are different and not connected then
-            // we can't hear it
+            
+            
             if (client.areanum != self.areanum)
                 if (!game_import_t.AreasConnected(self.areanum, client.areanum))
                     return false;
@@ -480,16 +480,16 @@ public class GameUtil {
             self.ideal_yaw = Math3D.vectoyaw(temp);
             M.M_ChangeYaw(self);
 
-            // hunt the sound for a bit; hopefully find the real player
+            
             self.monsterinfo.aiflags |= Defines.AI_SOUND_TARGET;
             
             if (client == self.enemy)
-                return true; // JDC false;
+                return true; 
              
             self.enemy = client;             
         }
         
-        // got one
+        
         FoundTarget(self);
 
         if (0 == (self.monsterinfo.aiflags & Defines.AI_SOUND_TARGET)
@@ -500,15 +500,15 @@ public class GameUtil {
     }
 
     public static void FoundTarget(edict_t self) {
-        // let other monsters see this monster for a while
+        
         if (self.enemy.client != null) {
             GameBase.level.sight_entity = self;
             GameBase.level.sight_entity_framenum = GameBase.level.framenum;
             GameBase.level.sight_entity.light_level = 128;
         }
 
-        self.show_hostile = (int) GameBase.level.time + 1; // wake up other
-                                                           // monsters
+        self.show_hostile = (int) GameBase.level.time + 1; 
+                                                           
 
         Math3D.VectorCopy(self.enemy.s.origin, self.monsterinfo.last_sighting);
         self.monsterinfo.trail_time = GameBase.level.time;
@@ -529,15 +529,15 @@ public class GameUtil {
             return;
         }
 
-        // clear out our combattarget, these are a one shot deal
+        
         self.combattarget = null;
         self.monsterinfo.aiflags |= Defines.AI_COMBAT_POINT;
 
-        // clear the targetname, that point is ours!
+        
         self.movetarget.targetname = null;
         self.monsterinfo.pausetime = 0;
 
-        // run for it
+        
         self.monsterinfo.run.think(self);
     }
 
@@ -597,7 +597,7 @@ public class GameUtil {
             trace_t tr;
 
             if (self.enemy.health > 0) {
-                // see if any entities are in the way of the shot
+                
                 Math3D.VectorCopy(self.s.origin, spot1);
                 spot1[2] += self.viewheight;
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
@@ -609,14 +609,14 @@ public class GameUtil {
                                 | Defines.CONTENTS_LAVA
                                 | Defines.CONTENTS_WINDOW);
 
-                // do we have a clear shot?
+                
                 if (tr.ent != self.enemy)
                     return false;
             }
 
-            // melee attack
+            
             if (GameAI.enemy_range == Defines.RANGE_MELEE) {
-                // don't always melee in easy mode
+                
                 if (GameBase.skill.value == 0 && (Lib.rand() & 3) != 0)
                     return false;
                 if (self.monsterinfo.melee != null)
@@ -626,7 +626,7 @@ public class GameUtil {
                 return true;
             }
 
-            // missile attack
+            
             if (self.monsterinfo.attack == null)
                 return false;
 
@@ -687,8 +687,8 @@ public class GameUtil {
                     && 0 == (activator.monsterinfo.aiflags & Defines.AI_GOOD_GUY))
                 return;
 
-            // delay reaction so if the monster is teleported, its sound is
-            // still heard
+            
+            
             self.enemy = activator;
             FoundTarget(self);
         }

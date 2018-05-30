@@ -94,21 +94,21 @@ public class TruthTest {
     }
 
 
-//    @Test public void testEpsilon() {
-//        float e = 0.1f;
-//
-//        Truth a = BasicTruth.genew DefaultTruth(1.0f, 0.9f, e);
-//        assertEquals(a.getEpsilon(), e, 0.0001);
-//
-//        Truth aCopy = BasicTruth.genew DefaultTruth(1.0f, 0.9f, e);
-//        assertEquals(a, aCopy);
-//
-//        Truth aEqualWithinThresh = BasicTruth.genew DefaultTruth(1.0f - a.getEpsilon() / 2, 0.9f, e);
-//        assertEquals(a, aEqualWithinThresh);
-//
-//        Truth aNotWithinThresh = BasicTruth.genew DefaultTruth(1.0f - a.getEpsilon(), 0.9f, e);
-//        assertNotEquals(a, aNotWithinThresh);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test public void testTruthHash() {
         assertEquals( new DiscreteTruth(0.5f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
@@ -118,7 +118,7 @@ public class TruthTest {
 
         assertEquals( new DiscreteTruth(0, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f).hashCode() );
 
-        //0.01 granularity
+        
         assertEquals( new DiscreteTruth(0.504f, 0.5f, 0.01f).hashCode(), new DiscreteTruth(0.5f, 0.5f, 0.01f).hashCode() );
         assertEquals( new DiscreteTruth(0.004f, 0.01f, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f, 0.01f).hashCode() );
         assertNotEquals( new DiscreteTruth(0.006f, 0.01f, 0.01f).hashCode(), new DiscreteTruth(0, 0.01f, 0.01f).hashCode() );
@@ -141,28 +141,28 @@ public class TruthTest {
         assertEquals(t, u);
     }
 
-//    @Test public void testInterpolate() {
-//        {
-//            Truth a = new DefaultTruth(0.75f, 0.5f);
-//            Truth b = new DefaultTruth(0.5f, 0.25f);
-//            assertEquals(new DefaultTruth(0.67f, 0.41f), a.interpolate(b));
-//        }
-//
-//        {
-//            Truth a = new DefaultTruth(0.75f, 0.25f);
-//            Truth b = new DefaultTruth(0.5f, 0.5f);
-//            assertEquals(new DefaultTruth(0.58f, 0.41f), a.interpolate(b));
-//        }
-//
-//        {
-//            Truth a = new DefaultTruth(0.55f, 0.25f);
-//            Truth b = new DefaultTruth(0.5f, 0.5f);
-//            assertEquals(new DefaultTruth(0.52f, 0.48f), a.interpolate(b));
-//        }
-//        Truth a = new DefaultTruth(0.95f, 0.5f);
-//        Truth b = new DefaultTruth(0.5f, 0.01f);
-//        assertEquals(new DefaultTruth(0.94f, 0.28f), a.interpolate(b));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testExpectation() {
@@ -190,30 +190,30 @@ public class TruthTest {
     }
 
 
-//    @Test
-//    public void testXNOR() {
-//
-//        assertEquals(1f, xnor(1f,1f), 0.01f );
-//        assertEquals(0.5f, xnor(0.5f,1f), 0.01f );
-//        assertEquals(0f, xnor(0f,1f), 0.01f );
-//
-//        assertEquals(0.5f, xnor(0.5f,0.5f), 0.01f );
-//        assertEquals(0.48f, xnor(0.4f,0.6f), 0.01f );
-//
-//        assertEquals(1f, xnor(0f,0f), 0.01f );
-//        assertEquals(0.625f, xnor(0.25f,0.25f), 0.01f );
-//    }
 
-//    @Test
-//    public void testANDB() {
-//        assertEquals(1f, andb(1f,1f), 0.01f );
-//        assertEquals(0f, andb(0f,0f), 0.01f );
-//        assertEquals(0.5f, andb(0.5f,0.5f), 0.01f );
-//        assertEquals(0.5f, andb(0.5f,0.75f), 0.01f );
-//
-//        assertEquals(0.5f, andb(0f,1f), 0.01f );
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -117,7 +117,7 @@ public class PJProlog /*extends alice.tuprolog.Prolog*/ {
                     next = null;
                 }
             }
-            return current != null && current.isSuccess();// && next.isSuccess();            
+            return current != null && current.isSuccess();
         }
     }
     

@@ -75,16 +75,16 @@ public class Rand {
 	public static boolean successWithPercent(double percent) {
 		return random.nextDouble() < percent;
 
-//		iPerc++;
-//		if(iPerc>=arrPercent.length) {
-//			kPerc++;
-//			iPerc=0;
-//			if(kPerc>20) {
-//				setArrPercent();
-//				kPerc=0;
-//			}
-//		}
-//		return arrPercent[iPerc] < percent;
+
+
+
+
+
+
+
+
+
+
 	}
 
 	public static double gauss(double scale) {

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,8 +45,8 @@ public final class HoistMutation implements GeneticOperator {
         Predicate<Node> treeWalkerStrategy = n -> n.returnType() == root.returnType();
         int nodeCount = StrategyWalk.getNodeCount(root, treeWalkerStrategy);
         if (nodeCount == 1) {
-            // if node count == 1 then that indicates that the only node with the same return type
-            // as the root node is the root node itself
+            
+            
             return root;
         } else {
             int index = Utils.selectSubNodeIndex(random, nodeCount);

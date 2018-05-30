@@ -65,7 +65,7 @@ public class MultiStatistics<X> implements Consumer<X> {
     public void clear() {
         for (Consumer<X> c : cond) {
 
-            //HACK
+            
             if (c instanceof BooleanClassifierWithStatistics)
                 ((BooleanClassifierWithStatistics)c).clear();
             else if (c instanceof ScalarStats)

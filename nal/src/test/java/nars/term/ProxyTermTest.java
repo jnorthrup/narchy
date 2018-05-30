@@ -28,7 +28,7 @@ public class ProxyTermTest {
 
                 unoverriden++;
             }
-            //assertEquals(0, unoverriden);
+            
         }
 
     }

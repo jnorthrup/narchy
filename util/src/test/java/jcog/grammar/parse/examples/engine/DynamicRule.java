@@ -167,8 +167,8 @@ public class DynamicRule extends Rule implements DynamicAxiom {
 		Structure[] provables = new Structure[structures.length];
 		for (int i = 0; i < structures.length; i++) {
 			Structure s = structures[i];
-			// a "fact" is a rule asks if the fact is a known
-			// fact, and must consult the ps to find out
+			
+			
 			if (s instanceof Fact) {
 				provables[i] = new ConsultingStructure(as, s.functor, s.terms);
 			} else {

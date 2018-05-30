@@ -31,30 +31,30 @@ public class JetpackEmitterSettings extends EmitterSettings {
 			
 			super.particleRenderer = new Entity.ObjectRenderer2D(){
 
-//				@Override
-//				public void render(Renderer renderer, Object ent) {
-//					Gdx.gl20.glEnable(GL20.GL_BLEND);
-//					Gdx.gl20.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-//
-//					Particle p = (Particle)ent;
-//
-//					if(renderer.renderDebug)
-//						renderDebug(renderer, p);
-//					else{
-//
-//
-//						renderer.r2D.setColor(1.0f, 1.0f, 1.0f, 0.75f);
-//						Game.resources.textures.bindTexture("particle-fire");
-//						renderer.r2D.quad.render(p.getWidth(), p.getHeight());
-//					}
-//				}
-//
-//				private void renderDebug(Renderer renderer, Particle p){
-//					renderer.r2D.setColor(0.0f, 1.0f, 1.0f, 0.4f);
-//
-//					Game.resources.textures.bindTexture("blank");
-//					renderer.r2D.quad.render(p.getWidth(), p.getHeight());
-//				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				
 			};
 			
@@ -71,10 +71,10 @@ public class JetpackEmitterSettings extends EmitterSettings {
 
 		@Override
 		protected void onCreateParticle() {
-			// set offset
+			
 			super.offset = new Vec2(rng.nextFloat() * super.xLocationVariance * -0.2f, rng.nextFloat() * super.yLocationVariance * 0.02f);
 			
-			// set particle lifetime
+			
 			if(rng.nextFloat() > 0.9f){
 				float low = 0.8f, high = 1.0f;
 				float liveLong = rng.nextFloat();
@@ -88,7 +88,7 @@ public class JetpackEmitterSettings extends EmitterSettings {
 				super.particleLifetime = rng.nextFloat() * 0.75f;
 			}
 			
-			// set particle force
+			
 			super.particleForce = new Vec2(rng.nextBoolean() ? rng.nextFloat() * -5.0f : rng.nextFloat() * -5.0f, rng.nextFloat() * -50.0f);
 		}
 }

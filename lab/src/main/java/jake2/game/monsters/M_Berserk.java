@@ -18,9 +18,9 @@
  *  
  */
 
-// Created on 11.11.2003 by RST
 
-// $Id: M_Berserk.java,v 1.4 2005-11-20 22:18:33 salomo Exp $
+
+
 
 package jake2.game.monsters;
 
@@ -657,14 +657,14 @@ public class M_Berserk {
      * berserk_runb3 =[ $r_att3 , berserk_runb4 ] {ai_run(21);}; void()
      * berserk_runb4 =[ $r_att4 , berserk_runb5 ] {ai_run(25);}; void()
      * berserk_runb5 =[ $r_att5 , berserk_runb6 ] {ai_run(18);}; void()
-     * berserk_runb6 =[ $r_att6 , berserk_runb7 ] {ai_run(19);}; // running with
+     * berserk_runb6 =[ $r_att6 , berserk_runb7 ] {ai_run(19);}; 
      * arm in air : start loop void() berserk_runb7 =[ $r_att7 , berserk_runb8 ]
      * {ai_run(21);}; void() berserk_runb8 =[ $r_att8 , berserk_runb9 ]
      * {ai_run(11);}; void() berserk_runb9 =[ $r_att9 , berserk_runb10 ]
      * {ai_run(21);}; void() berserk_runb10 =[ $r_att10 , berserk_runb11 ]
      * {ai_run(25);}; void() berserk_runb11 =[ $r_att11 , berserk_runb12 ]
      * {ai_run(18);}; void() berserk_runb12 =[ $r_att12 , berserk_runb7 ]
-     * {ai_run(19);}; // running with arm in air : end loop
+     * {ai_run(19);}; 
      */
 
     static final mframe_t[] berserk_frames_run1 = {
@@ -699,7 +699,7 @@ public class M_Berserk {
             float[] aim = { Defines.MELEE_DISTANCE, 0f, -24f };
 
             GameWeapon.fire_hit(self, aim, (15 + (Lib.rand() % 6)), 400);
-            //	Faster attack -- upwards and backwards
+            
 
             return true;
         }
@@ -737,8 +737,8 @@ public class M_Berserk {
             float aim[] = { 0, 0, 0 };
 
             Math3D.VectorSet(aim, Defines.MELEE_DISTANCE, self.mins[0], -4);
-            GameWeapon.fire_hit(self, aim, (5 + (Lib.rand() % 6)), 400); // Slower
-                                                                   // attack
+            GameWeapon.fire_hit(self, aim, (5 + (Lib.rand() % 6)), 400); 
+                                                                   
 
             return true;
         }
@@ -873,7 +873,7 @@ public class M_Berserk {
                     Defines.ATTN_NORM, 0);
 
             if (GameBase.skill.value == 3)
-                return; // no pain anims in nightmare
+                return; 
 
             if ((damage < 20) || (Lib.random() < 0.5))
                 self.monsterinfo.currentmove = berserk_move_pain1;
@@ -979,7 +979,7 @@ public class M_Berserk {
             return;
         }
 
-        // pre-caches
+        
         sound_pain = game_import_t.soundindex("berserk/berpain2.wav");
         sound_die = game_import_t.soundindex("berserk/berdeth2.wav");
         sound_idle = game_import_t.soundindex("berserk/beridle1.wav");

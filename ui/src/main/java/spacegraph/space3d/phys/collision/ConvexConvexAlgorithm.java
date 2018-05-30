@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -77,25 +77,25 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 	@Override
 	public void processCollision(Collidable body0, Collidable body1, DispatcherInfo dispatchInfo, ManifoldResult resultOut) {
 		if (manifoldPtr == null) {
-			// swapped?
+			
 			manifoldPtr = intersecter.getNewManifold(body0, body1);
 			ownManifold = true;
 		}
 		resultOut.setPersistentManifold(manifoldPtr);
 
-//	#ifdef USE_BT_GJKEPA
-//		btConvexShape*				shape0(static_cast<btConvexShape*>(body0->getCollisionShape()));
-//		btConvexShape*				shape1(static_cast<btConvexShape*>(body1->getCollisionShape()));
-//		const btScalar				radialmargin(0/*shape0->getMargin()+shape1->getMargin()*/);
-//		btGjkEpaSolver::sResults	results;
-//		if(btGjkEpaSolver::Collide(	shape0,body0->getWorldTransform(),
-//									shape1,body1->getWorldTransform(),
-//									radialmargin,results))
-//			{
-//			dispatchInfo.m_debugDraw->drawLine(results.witnesses[1],results.witnesses[1]+results.normal,btVector3(255,0,0));
-//			resultOut->addContactPoint(results.normal,results.witnesses[1],-results.depth);
-//			}
-//	#else
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		ConvexShape min0 = (ConvexShape) body0.shape();
 		ConvexShape min1 = (ConvexShape) body1.shape();
@@ -103,14 +103,14 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 		DiscreteCollisionDetectorInterface.ClosestPointInput input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
 		input.init();
 
-		// JAVA NOTE: original: TODO: if (dispatchInfo.m_useContinuous)
+		
 		gjkPairDetector.setMinkowskiA(min0);
 		gjkPairDetector.setMinkowskiB(min1);
 		input.maximumDistanceSquared = min0.getMargin() + min1.getMargin() + manifoldPtr.getContactBreakingThreshold();
 		input.maximumDistanceSquared *= input.maximumDistanceSquared;
-		//input.m_stackAlloc = dispatchInfo.m_stackAllocator;
+		
 
-		//	input.m_maximumDistanceSquared = btScalar(1e30);
+		
 
 		body0.getWorldTransform(input.transformA);
 		body1.getWorldTransform(input.transformB);
@@ -131,10 +131,10 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 		Transform tmpTrans1 = new Transform();
 		Transform tmpTrans2 = new Transform();
 
-		// Rather then checking ALL pairs, only calculate TOI when motion exceeds threshold
+		
 
-		// Linear motion for one of objects needs to exceed m_ccdSquareMotionThreshold
-		// col0->m_worldTransform,
+		
+		
 		float resultFraction = 1f;
 
 		tmp.sub(col0.getInterpolationWorldTransform(tmpTrans1), col0.getWorldTransform(tmpTrans2));
@@ -152,28 +152,28 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 		Transform tmpTrans3 = new Transform();
 		Transform tmpTrans4 = new Transform();
 
-		// An adhoc way of testing the Continuous Collision Detection algorithms
-		// One object is approximated as a sphere, to simplify things
-		// Starting in penetration should report no time of impact
-		// For proper CCD, better accuracy and handling of 'allowed' penetration should be added
-		// also the mainloop of the physics should have a kind of toi queue (something like Brian Mirtich's application of Timewarp for Rigidbodies)
+		
+		
+		
+		
+		
 
-		// Convex0 against sphere for Convex1
+		
 		{
 			ConvexShape convex0 = (ConvexShape) col0.shape();
 
-			SphereShape sphere1 = new SphereShape(col1.getCcdSweptSphereRadius()); // todo: allow non-zero sphere sizes, for better approximation
+			SphereShape sphere1 = new SphereShape(col1.getCcdSweptSphereRadius()); 
 			ConvexCast.CastResult result = new ConvexCast.CastResult();
 
 			voronoiSimplex.reset();
 
-			//SubsimplexConvexCast ccd0(&sphere,min0,&voronoiSimplex);
-			///Simplification, one object is simplified as a sphere
+			
+			
 			GjkConvexCast ccd1 = new GjkConvexCast(convex0, sphere1, voronoiSimplex);
-			//ContinuousConvexCollision ccd(min0,min1,&voronoiSimplex,0);
+			
 			if (ccd1.calcTimeOfImpact(col0.getWorldTransform(tmpTrans1), col0.getInterpolationWorldTransform(tmpTrans2),
 					col1.getWorldTransform(tmpTrans3), col1.getInterpolationWorldTransform(tmpTrans4), result)) {
-				// store result.m_fraction in both bodies
+				
 
 				if (col0.getHitFraction() > result.fraction) {
 					col0.setHitFraction(result.fraction);
@@ -189,19 +189,19 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 			}
 		}
 
-		// Sphere (for convex0) against Convex1
+		
         ConvexShape convex1 = (ConvexShape) col1.shape();
 
-        SphereShape sphere0 = new SphereShape(col0.getCcdSweptSphereRadius()); // todo: allow non-zero sphere sizes, for better approximation
+        SphereShape sphere0 = new SphereShape(col0.getCcdSweptSphereRadius()); 
         ConvexCast.CastResult result = new ConvexCast.CastResult();
         VoronoiSimplexSolver voronoiSimplex = new VoronoiSimplexSolver();
-        //SubsimplexConvexCast ccd0(&sphere,min0,&voronoiSimplex);
-        ///Simplification, one object is simplified as a sphere
+        
+        
         GjkConvexCast ccd1 = new GjkConvexCast(sphere0, convex1, voronoiSimplex);
-        //ContinuousConvexCollision ccd(min0,min1,&voronoiSimplex,0);
+        
         if (ccd1.calcTimeOfImpact(col0.getWorldTransform(tmpTrans1), col0.getInterpolationWorldTransform(tmpTrans2),
                 col1.getWorldTransform(tmpTrans3), col1.getInterpolationWorldTransform(tmpTrans4), result)) {
-            //store result.m_fraction in both bodies
+            
 
             if (col0.getHitFraction() > result.fraction) {
                 col0.setHitFraction(result.fraction);
@@ -222,7 +222,7 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 
 	@Override
 	public void getAllContactManifolds(OArrayList<PersistentManifold> manifoldArray) {
-		// should we use ownManifold to avoid adding duplicates?
+		
 		if (manifoldPtr != null && ownManifold) {
 			manifoldArray.add(manifoldPtr);
 		}
@@ -232,7 +232,7 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 		return manifoldPtr;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static class CreateFunc extends CollisionAlgorithmCreateFunc {
 

@@ -38,7 +38,7 @@ public class Grid1D implements World {
         this.noise = noise;
         this.cycleSkew = cycleSkew;
         
-        //this.name_long = 'one dimensional grid world'
+        
         
         
         this.worldState = 0.0;
@@ -61,7 +61,7 @@ public class Grid1D implements World {
         
         this.action = action;
         
-        //# Find the step size as combinations of the action commands
+        
         double stepSize = (    action[0] + 
                             2 * action[1] + 
                             3 * action[2] + 
@@ -71,7 +71,7 @@ public class Grid1D implements World {
                             3 * action[6] - 
                             4 * action[7]);
 
-        //# Action cost is an approximation of metabolic energy
+        
         energy=(action[0] + 
                  2 * action[1] + 
                  3 * action[2] + 
@@ -83,7 +83,7 @@ public class Grid1D implements World {
         
         worldState = worldState + stepSize;  
                 
-        //# At random intervals, jump to a random position in the world
+        
         if (Math.random() < JUMP_FRACTION) {
             worldState = size * Math.random();
         }
@@ -91,7 +91,7 @@ public class Grid1D implements World {
             worldState += cycleSkew;
         }
         
-        //# Ensure that the world state falls between 0 and 9
+        
         worldState -= size * Math.floor( worldState / ((double)size) );
         simpleState = (int)Math.floor(worldState);
         if (simpleState == 9) simpleState = 0;
@@ -100,13 +100,13 @@ public class Grid1D implements World {
         # Assign basic_feature_input elements as binary. 
         # Represent the presence or absence of the current position in the bin.
         */
-        //Arrays.fill(sensor, 0);
+        
         for (int i = 0; i < sensor.length; i++) {
             sensor[i] = (Math.random()*noise);
         }            
         sensor[simpleState] = 1 - (Math.random()*noise);
         
-        //System.out.println(toString());
+        
         
         return getReward(sensor);
     }
@@ -117,7 +117,7 @@ public class Grid1D implements World {
         reward -= sensor[8] * REWARD_MAGNITUDE;
         reward += sensor[3] * REWARD_MAGNITUDE;
         
-        //# Punish actions just a little
+        
         reward -= energy  * ENERGY_COST;
         reward = Math.max(reward, -REWARD_MAGNITUDE);
         
@@ -177,6 +177,6 @@ public class Grid1D implements World {
      */
     
     public static void main(String[] args) {
-        //new Simulation(new Grid1D(9, 50000, 0.1, 0.001));
+        
     }
 }

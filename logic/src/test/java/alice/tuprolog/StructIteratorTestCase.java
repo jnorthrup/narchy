@@ -48,13 +48,13 @@ public class StructIteratorTestCase {
 		Struct list = new Struct(new Term[] {new NumberTerm.Int(0), new NumberTerm.Int(1), new NumberTerm.Int(2), new NumberTerm.Int(3), new NumberTerm.Int(5), new NumberTerm.Int(7)});
 		Iterator<? extends Term> i = list.listIterator();
 		assertTrue(i.hasNext());
-		i.next(); // skip the first term
+		i.next(); 
 		assertEquals(new NumberTerm.Int(1), i.next());
 		assertEquals(new NumberTerm.Int(2), i.next());
 		assertEquals(new NumberTerm.Int(3), i.next());
 		assertEquals(new NumberTerm.Int(5), i.next());
 		assertEquals(new NumberTerm.Int(7), i.next());
-		// no more terms
+		
 		assertFalse(i.hasNext());
 		try {
 			i.next();

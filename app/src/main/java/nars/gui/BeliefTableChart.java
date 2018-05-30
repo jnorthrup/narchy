@@ -38,8 +38,8 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     private final boolean showTaskLinks = false;
     @Deprecated
     private final boolean showEternal = false;
-    private TaskConcept cc; //cached concept
-//    private float cp; //cached priority
+    private TaskConcept cc; 
+
 
     /** not finished yet */
     float timeZoom = 1f;
@@ -50,14 +50,14 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
      */
     private final int projections = 32;
     private final long[] range;
-    //private int dur; //cached dur
-    private long now; //cached time
-    private String termString; //cached string
-    private BiFunction<Long, long[], long[]> rangeControl = (now, range) -> range; //default: no change
+    
+    private long now; 
+    private String termString; 
+    private BiFunction<Long, long[], long[]> rangeControl = (now, range) -> range; 
 
-//    public BeliefTableChart(NAR n, Termed term) {
-//        this(n, term, null);
-//    }
+
+
+
 
     public BeliefTableChart(NAR n, Termed term, long[] range) {
         super(new Label(term.toString()), n);
@@ -65,10 +65,10 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
         this.range = range;
 
-//        label.textColor.a(0.5f);
-//        //label.scale(0.5f, 0.5f);
-//
-//        content(label);
+
+
+
+
 
         beliefs = new TruthWave(0);
         beliefProj = new TruthWave(0);
@@ -83,8 +83,8 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         gl.glLineWidth(CROSSHAIR_THICK);
 
 
-        //ge.strokeLine(bcx, border, bcx, geh - border);
-        //ge.strokeLine(border, bcy, gew - border, bcy);
+        
+        
         double r = gew * (0.5f + 0.5f * conf);
 
 
@@ -114,13 +114,13 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
             boolean eternal = (start != start);
             float x;
-//            float pw = baseTaskSize;// + gew / (1f / conf) / 4f;//10 + 10 * conf;
-//            float ph = baseTaskSize;// + geh / (1f / conf) / 4f;//10 + 10 * conf;
 
-            //float mid = (start + end)/2;
+
+
+            
 
             if (eternal) {
-                x = nowX; //???
+                x = nowX; 
             } else if ((start >= minT) && (start <= maxT)) {
                 x = xTime(minT, maxT, start + dMargin);
             } else {
@@ -129,13 +129,13 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
             colorize.colorize(gl, freq, conf);
 
-            //r.renderTask(gl, qua, conf, pw, ph, x, freq);
+            
             float Y = y.apply(freq, conf);
             gl.glVertex2f(x, Y);
 
 
             if (start == end)
-                return; //just the one point
+                return; 
 
             if (eternal)
                 return;
@@ -156,12 +156,12 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     }
 
 
-//    final static ColorMatrix beliefColors = new ColorMatrix(8, 8, (f, c) ->
-//            new Color(0.6f + 0.38f * c, 0.2f, 1f, 0.39f + 0.6f * c)
-//    );
-//    final static ColorMatrix goalColors = new ColorMatrix(8, 8, (f, c) ->
-//            new Color(0.2f + 0.4f * c, 1f, 0.2f, 0.39f + 0.6f * c)
-//    );
+
+
+
+
+
+
 
     @Override
     public void update() {
@@ -170,7 +170,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         Concept ccd = nar.conceptualize(term/* lookup by term, not the termed which could be a dead instance */);
 
         if (!(ccd instanceof TaskConcept)) {
-            //TODO indicate this in the gui
+            
             return;
         }
 
@@ -199,7 +199,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
             long now = this.now = nar.time();
             int dur = /*this.dur = */nar.dur();
-//            cp = 1f; /*nar.pri(cc);*/
+
 
             long nowEnd = now + dur / 2;
             long nowStart = now - dur / 2;
@@ -216,15 +216,15 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             }
 
         }
-//        else {
-////            cp = 0;
-//            beliefs.clear();
-//            beliefs.current = null;
-//            goals.clear();
-//            goals.current = null;
-//            beliefProj.clear();
-//            goalProj.clear();
-//        }
+
+
+
+
+
+
+
+
+
 
 
     }
@@ -237,21 +237,21 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     protected void draw(Concept cc, GL2 gl, long minT, long maxT) {
 
         TruthWave beliefs = this.beliefs;
-        //if (!beliefs.isEmpty()) {
+        
         renderTable(cc, minT, maxT, now, gl, beliefs, true);
-        //}
+        
 
         TruthWave goals = this.goals;
-        //if (!goals.isEmpty()) {
+        
         renderTable(cc, minT, maxT, now, gl, goals, false);
-        //}
+        
 
         if (showTaskLinks) {
             gl.glLineWidth(1f);
             float nowX = xTime(minT, maxT, now);
             cc.tasklinks().forEach(tl -> {
                 if (tl != null) {
-                    //TODO handle GeneralizedTaskLink's specified time directly without this Task lookup
+                    
                     Task x = tl.get(nar);
                     if ((x != null) && (x.isBeliefOrGoal())) {
                         long o = x.start();
@@ -269,10 +269,10 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             });
         }
 
-        //gl.glLineWidth(1f);
-        //gl.glColor4f(1f, 1f, 1f, 0.3f);
-        //Draw.strokeRect(gl, 0, 0, gew, geh);
-        //Draw.strokeRect(gl, gew, 0, tew, teh);
+        
+        
+        
+        
 
     }
 
@@ -283,11 +283,11 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             return;
         }*/
 
-        //swapBuffers();
+        
 
 
-        //clear
-        //clear(1f /*0.5f*/);
+        
+        
 
         Draw.bounds(ggl, bounds, (gl) -> {
 
@@ -299,7 +299,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 maxT = range[1];
             } else {
 
-                //compute bounds from combined min/max of beliefs and goals so they align correctly
+                
                 minT = Long.MAX_VALUE;
                 maxT = Long.MIN_VALUE;
 
@@ -330,14 +330,14 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             }
 
 
-            gl.glColor3f(0, 0, 0); //background
+            gl.glColor3f(0, 0, 0); 
             Draw.rect(gl, 0, 0, 1, 1);
 
             gl.glLineWidth(1f);
-            gl.glColor3f(0.5f, 0.5f, 0.5f); //border
+            gl.glColor3f(0.5f, 0.5f, 0.5f); 
             Draw.rectStroke(gl, 0, 0, 1, 1);
 
-            //String currentTermString = termString;
+            
             if (cc != null) {
                 draw(cc, gl, minT, maxT);
                 if (termString!=null)
@@ -346,12 +346,12 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 if (termString!=null)
                     termString = term.toString();
             }
-            //label.text(termString);
+            
         });
 
-        //        gl.glColor4f(0.75f, 0.75f, 0.75f, 0.8f + 0.2f * cp);
-//        gl.glLineWidth(1);
-//        Draw.text(gl, termString, (1f/termString.length()) * (0.5f + 0.25f * cp), 1 / 2f, 1 / 2f, 0);
+        
+
+
     }
 
     private void renderTable(Concept c, long minT, long maxT, long now, GL2 gl, TruthWave wave, boolean beliefOrGoal) {
@@ -361,26 +361,26 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
         float nowX = xTime(minT, maxT, now);
 
-        //Present axis line
+        
         if ((now <= maxT) && (now >= minT)) {
 
             gl.glColor4f(1f, 1f, 1f, 0.5f);
             Draw.line(gl, nowX, 0, nowX, 1);
 
-            //float nowLineWidth = 0.005f;
-            //Draw.rect(gl, nowX - nowLineWidth / 2f, 0, nowLineWidth, 1);
+            
+            
         }
 
         /** drawn "pixel" dimensions*/
 
         renderWave(nowX, minT, maxT, gl, wave, beliefOrGoal);
 
-        //draw projections
+        
         if (projections > 0 && minT != maxT) {
             for (boolean freqOrExp : new boolean[]{true, false}) {
                 TruthWave pwave = beliefOrGoal ? beliefProj : goalProj;
 
-                if (beliefOrGoal && !freqOrExp) continue; //HACK dont show expectation for beliefs
+                if (beliefOrGoal && !freqOrExp) continue; 
 
                 Colorize colorize;
                 if (freqOrExp) {
@@ -407,7 +407,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 FloatFloatToFloatFunction y =
                         freqOrExp ? (frq, cnf) -> frq : TruthFunctions::expectation;
 
-                //gl.glLineWidth((freqOrExp && !beliefOrGoal) ? 2f : 4f); //HACK show goal freq in thinner line
+                
                 gl.glLineWidth(4f);
 
                 renderWaveLine(nowX, minT, maxT, gl, pwave, y, colorize);
@@ -431,11 +431,11 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
                 this.goalTheta += dTheta;
                 theta = goalTheta;
 
-//                //freq
-//                gl.glColor4f(0f, 1f, 0, 0.2f + 0.8f * conf);
-//                drawCrossHair(gl, nowX, chSize, bc.freq(), conf, theta);
 
-                //expectation
+
+
+
+                
                 gl.glColor4f(0f, 1f, 0, 0.2f + 0.8f * conf);
                 drawCrossHair(gl, nowX, chSize, expectation, expectation, theta);
 
@@ -454,13 +454,13 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
             boolean eternal = (s != s);
 
-            //normalize to range
-            //conf = (conf - confMinMax[0]) / (confMinMax[1] - confMinMax[0]);
+            
+            
 
 
             final float ph =
                     taskHeight;
-            //Util.lerp(conf, 0.2f, /* down to */ baseTaskSize / 64f); //smudge a low confidence task across more of the frequency range
+            
 
             float start, end;
             if (showEternal && eternal) {
@@ -493,16 +493,16 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
     public Surface menu() {
         return new Gridding(
                 PushButton.awesome("search-plus").click(() -> NARui.conceptWindow(term, nar))
-//                new FloatSlider("Time Zoom", 1f, 0.1f, 2f).on(z -> {
-//                    timeZoom = z;
-//                })
-                //...
+
+
+
+                
         );
     }
 
-//    private static float yPos(float f, float eh /* drawn object height, padding */) {
-//        return (eh) * (f);
-//    }
+
+
+
 
     /*private static float eternalX(float width, float b, float w, float cc) {
         return b + (width - b - w) * cc;

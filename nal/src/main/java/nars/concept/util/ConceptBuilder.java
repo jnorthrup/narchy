@@ -54,9 +54,9 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
                 if (dmt == null /*&& (so.atomic || so == PROD || so.isSet())*/) {
                     if ((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi)) {
-                        //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P & S)), (Belief:Intersection)
-                        //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P | S)), (Belief:Union)
-                        //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P - S)), (Belief:Difference) //intensional
+                        
+                        
+                        
                         Compound cpred = (Compound) pred;
                         int s = cpred.subs();
                         Term[] x = new Term[s];
@@ -99,11 +99,11 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
                 if (dmt == null /* && (po.atomic || po == PROD || po.isSet()) */) {
                     if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)
-                        // || (subj instanceof Int.IntRange) || (so == PROD && subj.OR(Int.IntRange.class::isInstance))
+                        
                             ) {
-                        //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((S | P) --> M), (Belief:Intersection)
-                        //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((S & P) --> M), (Belief:Union)
-                        //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((P ~ S) --> M), (Belief:Difference) //extensional
+                        
+                        
+                        
 
 
                         Subterms subjsubs = subj.subterms();
@@ -111,30 +111,30 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
                         Term[] x = new Term[s];
                         for (int i = 0; i < s; i++) {
                             Term y;
-                            //                                if (csi instanceof Int.IntRange) {
-                            //                                    //TODO??
-                            ////                                    lx.add(
-                            ////
-                            ////                                            Int.unroll(subj).forEachRemaining(dsi -> lx.add(INH.the(dsi, pred)));
-                            //
+                            
+                            
+                            
+                            
+                            
+                            
                             if (!validDynamicSubterm.test(y = INH.the(subjsubs.sub(i), pred)))
                                 return null;
                             x[i] = y;
                         }
-//                            if (subj instanceof Int.IntRange || so == PROD && subj.hasAny(INT)) {
-//                                Iterator<Term> iu = Int.unroll(subj);
-//                                if (iu!=null)
-//                                    iu.forEachRemaining(dsi -> lx.add(INH.the(dsi, pred)));
-//                                else {
-//                                    //??
-//                                }
-//                            }
+
+
+
+
+
+
+
+
                         /*if (so != PROD)*/
 
 
                         switch (so) {
-//                                    case INT:
-//                                    case PROD:
+
+
                             case SECTi:
                                 dmt = new DynamicTruthModel.SectIntersection(x);
                                 break;
@@ -155,14 +155,14 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
                 break;
 
             case CONJ:
-                //allow variables onlyif they are not themselves direct subterms of this
+                
                 if (validDynamicSubterms(ts)) {
                     dmt = DynamicTruthModel.Intersection.ConjIntersection.the;
                 }
                 break;
 
             case DIFFe:
-                //root DIFFe (not subj or pred of an inh)
+                
                 if (validDynamicSubterms(ts))
                     dmt = new DynamicTruthModel.Difference(ts.arrayShared());
                 break;
@@ -236,11 +236,11 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
     @Override
     default Termed apply(Term x, Termed prev) {
         if (prev != null) {
-            //if (prev instanceof Concept) {
+            
                 Concept c = ((Concept) prev);
                 if (!c.isDeleted())
                     return c;
-            //}
+            
         }
 
         return apply(x);

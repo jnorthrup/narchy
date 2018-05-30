@@ -30,46 +30,46 @@ public class StateException extends State {
         Term errorTerm = e.currentContext.currentGoal.sub(0);
         e.currentContext = e.currentContext.fatherCtx;
         if (e.currentContext == null) {
-            // passo nello stato HALT se l?errore non pu? essere gestito (sono
-            // arrivato alla radice dell'albero di risoluzione)
+            
+            
             e.nextState = c.END_HALT;
             return;
         }
         while (true) {
-            // visito all'indietro l'albero di risoluzione alla ricerca di un
-            // subgoal catch/3 il cui secondo argomento unifica con l?argomento
-            // dell?eccezione lanciata
+            
+            
+            
             if (e.currentContext.currentGoal.unifiable(catchTerm)
                     && e.currentContext.currentGoal.sub(1).unifiable(errorTerm)) {
-                // ho identificato l?ExecutionContext con il corretto subgoal
-                // catch/3
+                
+                
 
-                // taglio tutti i punti di scelta generati da Goal
+                
                 c.cut();
 
-                // unifico l'argomento di throw/1 con il secondo argomento di
-                // catch/3
+                
+                
                 List<Var> unifiedVars = e.currentContext.trailingVars.head;
                 e.currentContext.currentGoal.sub(1).unify(unifiedVars,
                         unifiedVars, errorTerm);
 
-                // inserisco il gestore dell?errore in testa alla lista dei
-                // subgoal da eseguire, come definito dal terzo argomento di
-                // catch/3. Il gestore deve inoltre essere preparato per
-                // l?esecuzione, mantenendo le sostituzioni effettuate durante
-                // il processo di unificazione tra l?argomento di throw/1 e il
-                // secondo argomento di catch/3
+                
+                
+                
+                
+                
+                
                 Term handlerTerm = e.currentContext.currentGoal.sub(2);
                 Term curHandlerTerm = handlerTerm.term();
                 if (!(curHandlerTerm instanceof Struct)) {
                     e.nextState = c.END_FALSE;
                     return;
                 }
-                // Code inserted to allow evaluation of meta-clause
-                // such as p(X) :- X. When evaluating directly terms,
-                // they are converted to execution of a call/1 predicate.
-                // This enables the dynamic linking of built-ins for
-                // terms coming from outside the demonstration context.
+                
+                
+                
+                
+                
                 if (handlerTerm != curHandlerTerm)
                     handlerTerm = new Struct("call", curHandlerTerm);
                 Struct handler = (Struct) handlerTerm;
@@ -79,15 +79,15 @@ public class StateException extends State {
                 c.pushSubGoal(sgt);
                 e.currentContext.currentGoal = handler;
 
-                // passo allo stato GOAL_SELECTION
+                
                 e.nextState = c.GOAL_SELECTION;
                 return;
             } else {
-                // passo all'ExecutionContext successivo
+                
                 e.currentContext = e.currentContext.fatherCtx;
                 if (e.currentContext == null) {
-                    // passo nello stato HALT se l?errore non pu? essere gestito
-                    // (sono arrivato alla radice dell'albero di risoluzione)
+                    
+                    
                     e.nextState = c.END_HALT;
                     return;
                 }
@@ -100,26 +100,26 @@ public class StateException extends State {
         Term exceptionTerm = cg.subs() > 0 ? cg.sub(0) : null;
         e.currentContext = e.currentContext.fatherCtx;
         if (e.currentContext == null) {
-            // passo nello stato HALT se l?errore non pu? essere gestito (sono
-            // arrivato alla radice dell'albero di risoluzione)
+            
+            
             e.nextState = c.END_HALT;
             return;
         }
         while (true) {
-            // visito all'indietro l'albero di risoluzione alla ricerca di un
-            // subgoal java_catch/3 che abbia un catcher unificabile con
-            // l'argomento dell'eccezione lanciata
+            
+            
+            
             if (e.currentContext.currentGoal.unifiable(javaCatchTerm)
                     && javaMatch(e.currentContext.currentGoal.sub(1),
                             exceptionTerm)) {
-                // ho identificato l?ExecutionContext con il corretto subgoal
-                // java_catch/3
+                
+                
 
-                // taglio tutti i punti di scelta generati da JavaGoal
+                
                 c.cut();
 
-                // unifico l'argomento di java_throw/1 con il catcher
-                // appropriato e recupero l'handler corrispondente
+                
+                
                 List<Var> unifiedVars = e.currentContext.trailingVars.head;
                 Term handlerTerm = javaUnify(e.currentContext.currentGoal
                         .sub(1), exceptionTerm, unifiedVars);
@@ -128,11 +128,11 @@ public class StateException extends State {
                     return;
                 }
 
-                // inserisco il gestore e il finally (se presente) in testa alla
-                // lista dei subgoal da eseguire. I due predicati devono inoltre
-                // essere preparati per l?esecuzione, mantenendo le sostituzioni
-                // effettuate durante il processo di unificazione tra
-                // l'eccezione e il catcher
+                
+                
+                
+                
+                
                 Term curHandlerTerm = handlerTerm.term();
                 if (!(curHandlerTerm instanceof Struct)) {
                     e.nextState = c.END_FALSE;
@@ -140,14 +140,14 @@ public class StateException extends State {
                 }
                 Term finallyTerm = e.currentContext.currentGoal.sub(2);
                 Term curFinallyTerm = finallyTerm.term();
-                // verifico se c'? il blocco finally
+                
                 boolean isFinally = true;
                 if (curFinallyTerm instanceof NumberTerm.Int) {
                     NumberTerm.Int finallyInt = (NumberTerm.Int) curFinallyTerm;
                     if (finallyInt.intValue() == 0)
                         isFinally = false;
                     else {
-                        // errore di sintassi, esco
+                        
                         e.nextState = c.END_FALSE;
                         return;
                     }
@@ -155,11 +155,11 @@ public class StateException extends State {
                     e.nextState = c.END_FALSE;
                     return;
                 }
-                // Code inserted to allow evaluation of meta-clause
-                // such as p(X) :- X. When evaluating directly terms,
-                // they are converted to execution of a call/1 predicate.
-                // This enables the dynamic linking of built-ins for
-                // terms coming from outside the demonstration context.
+                
+                
+                
+                
+                
                 if (handlerTerm != curHandlerTerm)
                     handlerTerm = new Struct("call", curHandlerTerm);
                 if (finallyTerm != curFinallyTerm)
@@ -177,16 +177,16 @@ public class StateException extends State {
                 c.pushSubGoal(sgt);
                 e.currentContext.currentGoal = handler;
 
-                // passo allo stato GOAL_SELECTION
+                
                 e.nextState = c.GOAL_SELECTION;
                 return;
 
             } else {
-                // passo all'ExecutionContext successivo
+                
                 e.currentContext = e.currentContext.fatherCtx;
                 if (e.currentContext == null) {
-                    // passo nello stato HALT se l?errore non pu? essere gestito
-                    // (sono arrivato alla radice dell'albero di risoluzione)
+                    
+                    
                     e.nextState = c.END_HALT;
                     return;
                 }
@@ -194,8 +194,8 @@ public class StateException extends State {
         }
     }
 
-    // verifica se c'? un catcher unificabile con l'argomento dell'eccezione
-    // lanciata
+    
+    
     private static boolean javaMatch(Term arg1, Term exceptionTerm) {
         if (!arg1.isList())
             return false;
@@ -219,8 +219,8 @@ public class StateException extends State {
         return false;
     }
 
-    // unifica l'argomento di java_throw/1 con il giusto catcher e restituisce
-    // l'handler corrispondente
+    
+    
     private static Term javaUnify(Term arg1, Term exceptionTerm, List<Var> unifiedVars) {
         Struct list = (Struct) arg1;
         Iterator<? extends Term> it = list.listIterator();

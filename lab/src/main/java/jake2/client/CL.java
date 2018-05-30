@@ -49,7 +49,7 @@ import java.nio.ByteOrder;
  */
 public final class CL {
     
-    static int precache_check; // for autodownload of precache items
+    static int precache_check; 
 
     static int precache_spawncount;
 
@@ -57,7 +57,7 @@ public final class CL {
 
     static int precache_model_skin;
 
-    static byte precache_model[]; // used for skin checking in alias models
+    static byte precache_model[]; 
 
     public static final int PLAYER_MULT = 5;
 
@@ -106,7 +106,7 @@ public final class CL {
                     return;
                 }
 
-                //	   finish up
+                
                 len = -1;
                 Globals.cls.demofile.writeInt(EndianHandler.swapInt(len));
                 Globals.cls.demofile.close();
@@ -151,9 +151,9 @@ public final class CL {
                     return;
                 }
 
-                //
-                // open the demo file
-                //
+                
+                
+                
                 name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
 
                 Com.Printf("recording to " + name + ".\n");
@@ -165,31 +165,31 @@ public final class CL {
                 }
                 Globals.cls.demorecording = true;
 
-                // don't start saving messages until a non-delta compressed
-                // message is received
+                
+                
                 Globals.cls.demowaiting = true;
 
-                //
-                // write out messages to hold the startup information
-                //
+                
+                
+                
                 SZ.Init(buf, buf_data, Defines.MAX_MSGLEN);
 
-                // send the serverdata
+                
                 MSG.WriteByte(buf, Defines.svc_serverdata);
                 MSG.WriteInt(buf, Defines.PROTOCOL_VERSION);
                 MSG.WriteInt(buf, 0x10000 + Globals.cl.servercount);
-                MSG.WriteByte(buf, 1); // demos are always attract loops
+                MSG.WriteByte(buf, 1); 
                 MSG.WriteString(buf, Globals.cl.gamedir);
                 MSG.WriteShort(buf, Globals.cl.playernum);
 
                 MSG.WriteString(buf, Globals.cl.configstrings[Defines.CS_NAME]);
 
-                // configstrings
+                
                 for (i = 0; i < Defines.MAX_CONFIGSTRINGS; i++) {
                     if (Globals.cl.configstrings[i].length() > 0) {
                         if (buf.cursize + Globals.cl.configstrings[i].length()
                                 + 32 > buf.maxsize) { 
-                            // write it out
+                            
                             Globals.cls.demofile.writeInt(EndianHandler.swapInt(buf.cursize));
                             Globals.cls.demofile
                                     .write(buf.data, 0, buf.cursize);
@@ -203,14 +203,14 @@ public final class CL {
 
                 }
 
-                // baselines
+                
                 nullstate.clear();
                 for (i = 0; i < Defines.MAX_EDICTS; i++) {
                     ent = Globals.cl_entities[i].baseline;
                     if (ent.modelindex == 0)
                         continue;
 
-                    if (buf.cursize + 64 > buf.maxsize) { // write it out
+                    if (buf.cursize + 64 > buf.maxsize) { 
                         Globals.cls.demofile.writeInt(EndianHandler.swapInt(buf.cursize));
                         Globals.cls.demofile.write(buf.data, 0, buf.cursize);
                         buf.cursize = 0;
@@ -224,10 +224,10 @@ public final class CL {
                 MSG.WriteByte(buf, Defines.svc_stufftext);
                 MSG.WriteString(buf, "precache\n");
 
-                // write it to the demo file
+                
                 Globals.cls.demofile.writeInt(EndianHandler.swapInt(buf.cursize));
                 Globals.cls.demofile.write(buf.data, 0, buf.cursize);
-                // the rest of the demo file will be individual frames
+                
 
             } catch (IOException e) {
             }
@@ -246,7 +246,7 @@ public final class CL {
                 return;
             }
 
-            // don't forward the first argument
+            
             if (Cmd.Argc() > 1) {
                 MSG.WriteByte(Globals.cls.netchan.message,
                         Defines.clc_stringcmd);
@@ -261,7 +261,7 @@ public final class CL {
     static final xcommand_t Pause_f = new xcommand_t() {
         @Override
         public void execute() {
-            // never pause in multiplayer
+            
 
             if (Cvar.VariableValue("maxclients") > 1
                     || Globals.server_state == 0) {
@@ -298,7 +298,7 @@ public final class CL {
             }
 
             if (Globals.server_state != 0) {
-                // if running a local server, kill it and reissue
+                
                 SV_MAIN.SV_Shutdown("Server quit\n", false);
             } else {
                 Disconnect();
@@ -306,15 +306,15 @@ public final class CL {
 
             server = Cmd.Argv(1);
 
-            NET.Config(true); // allow remote
+            NET.Config(true); 
 
             Disconnect();
 
             Globals.cls.state = Defines.ca_connecting;
-            //strncpy (cls.servername, server, sizeof(cls.servername)-1);
+            
             Globals.cls.servername = server;
             Globals.cls.connect_time = -99999;
-            // CL_CheckForResend() will fire immediately
+            
         }
     };
 
@@ -334,13 +334,13 @@ public final class CL {
 
             StringBuilder message = new StringBuilder(1024);
 
-            // connection less packet
+            
             message.append('\u00ff');
             message.append('\u00ff');
             message.append('\u00ff');
             message.append('\u00ff');
 
-            // allow remote
+            
             NET.Config(true);
 
             message.append("rcon ");
@@ -385,16 +385,16 @@ public final class CL {
     static final xcommand_t Changing_f = new xcommand_t() {
         @Override
         public void execute() {
-            //ZOID
-            //if we are downloading, we don't change!
-            // This so we don't suddenly stop downloading a map
+            
+            
+            
 
             if (Globals.cls.download != null)
                 return;
 
             SCR.BeginLoadingPlaque();
-            Globals.cls.state = Defines.ca_connected; // not active anymore, but
-                                                      // not disconnected
+            Globals.cls.state = Defines.ca_connected; 
+                                                      
             Com.Printf("\nChanging map...\n");
         }
     };
@@ -407,9 +407,9 @@ public final class CL {
     static final xcommand_t Reconnect_f = new xcommand_t() {
         @Override
         public void execute() {
-            //ZOID
-            //if we are downloading, we don't change! This so we don't suddenly
-            // stop downloading a map
+            
+            
+            
             if (Globals.cls.download != null)
                 return;
 
@@ -428,7 +428,7 @@ public final class CL {
                     Disconnect();
                     Globals.cls.connect_time = Globals.cls.realtime - 1500;
                 } else
-                    Globals.cls.connect_time = -99999; // fire immediately
+                    Globals.cls.connect_time = -99999; 
 
                 Globals.cls.state = Defines.ca_connecting;
                 Com.Printf("reconnecting...\n");
@@ -444,39 +444,39 @@ public final class CL {
         public void execute() {
             int i;
             netadr_t adr = new netadr_t();
-            //char name[32];
+            
             String name;
             String adrstring;
             cvar_t noudp;
             cvar_t noipx;
 
-            NET.Config(true); // allow remote
+            NET.Config(true); 
 
-            // send a broadcast packet
+            
             Com.Printf("pinging broadcast...\n");
 
             noudp = Cvar.Get("noudp", "0", Defines.CVAR_NOSET);
             if (noudp.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST;
                 adr.port = Defines.PORT_SERVER;
-                //adr.port = BigShort(PORT_SERVER);
+                
                 Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
                         + Defines.PROTOCOL_VERSION);
             }
 
-            // we use no IPX
+            
             noipx = Cvar.Get("noipx", "1", Defines.CVAR_NOSET);
             if (noipx.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST_IPX;
-                //adr.port = BigShort(PORT_SERVER);
+                
                 adr.port = Defines.PORT_SERVER;
                 Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
                         + Defines.PROTOCOL_VERSION);
             }
 
-            // send a packet to each address book entry
+            
             for (i = 0; i < 16; i++) {
-                //Com_sprintf (name, sizeof(name), "adr%i", i);
+                
                 name = "adr" + i;
                 adrstring = Cvar.VariableString(name);
                 if (adrstring == null || adrstring.length() == 0)
@@ -488,7 +488,7 @@ public final class CL {
                     continue;
                 }
                 if (adr.port == 0)
-                    //adr.port = BigShort(PORT_SERVER);
+                    
                     adr.port = Defines.PORT_SERVER;
                 Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "info "
                         + Defines.PROTOCOL_VERSION);
@@ -513,7 +513,7 @@ public final class CL {
                         + Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
                         + '\n');
                 SCR.UpdateScreen();
-                Sys.SendKeyEvents(); // pump message loop
+                Sys.SendKeyEvents(); 
                 CL_parse.ParseClientinfo(i);
             }
         }
@@ -545,7 +545,7 @@ public final class CL {
         }
     };
 
-    //	   ENV_CNT is map load, ENV_CNT+1 is first env map
+    
     public static final int ENV_CNT = (Defines.CS_PLAYERSKINS + Defines.MAX_CLIENTS
             * CL.PLAYER_MULT);
 
@@ -560,10 +560,10 @@ public final class CL {
     static final xcommand_t Precache_f = new xcommand_t() {
         @Override
         public void execute() {
-            // Yet another hack to let old demos work the old precache sequence.
+            
             if (Cmd.Argc() < 2) {
 
-                int iw[] = { 0 }; // for detecting cheater maps
+                int iw[] = { 0 }; 
 
                 CM.CM_LoadMap(Globals.cl.configstrings[Defines.CS_MODELS + 1],
                         true, iw);
@@ -584,7 +584,7 @@ public final class CL {
 
     private static int extratime;
 
-    //	  ============================================================================
+    
 
     /**
      * Shutdown
@@ -602,7 +602,7 @@ public final class CL {
     static void WriteDemoMessage() {
         int swlen;
 
-        // the first eight bytes are just packet sequencing stuff
+        
         swlen = Globals.net_message.cursize - 8;
 
         try {
@@ -629,7 +629,7 @@ public final class CL {
         }
         if (adr.port == 0)
             adr.port = Defines.PORT_SERVER;
-        //			adr.port = BigShort(PORT_SERVER);
+        
 
         port = (int) Cvar.VariableValue("qport");
         Globals.userinfo_modified = false;
@@ -645,18 +645,18 @@ public final class CL {
      * Resend a connect message if the last one has timed out.
      */
     static void CheckForResend() {
-        // if the local server is running and we aren't
-        // then connect
+        
+        
         if (Globals.cls.state == Defines.ca_disconnected
                 && Globals.server_state != 0) {
             Globals.cls.state = Defines.ca_connecting;
             Globals.cls.servername = "localhost";
-            // we don't need a challenge on the localhost
+            
             SendConnectPacket();
             return;
         }
 
-        // resend if we haven't gotten a reply yet
+        
         if (Globals.cls.state != Defines.ca_connecting)
             return;
 
@@ -672,7 +672,7 @@ public final class CL {
         if (adr.port == 0)
             adr.port = Defines.PORT_SERVER;
 
-        // for retransmit requests
+        
         Globals.cls.connect_time = Globals.cls.realtime;
 
         Com.Printf("Connecting to " + Globals.cls.servername + "...\n");
@@ -689,7 +689,7 @@ public final class CL {
         CL_fx.ClearEffects();
         CL_tent.ClearTEnts();
 
-        // wipe the entire cl structure
+        
 
         Globals.cl = new client_state_t();
         for (int i = 0; i < Globals.cl_entities.length; i++) {
@@ -737,7 +737,7 @@ public final class CL {
         if (Globals.cls.demorecording)
             Stop_f.execute();
 
-        // send a disconnect message to the server
+        
         fin = (char) Defines.clc_stringcmd + "disconnect";
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
@@ -745,7 +745,7 @@ public final class CL {
 
         ClearState();
 
-        // stop download
+        
         if (Globals.cls.download != null) {
             Lib.fclose(Globals.cls.download);
             Globals.cls.download = null;
@@ -778,7 +778,7 @@ public final class CL {
         String c;
 
         MSG.BeginReading(Globals.net_message);
-        MSG.ReadLong(Globals.net_message); // skip the -1
+        MSG.ReadLong(Globals.net_message); 
 
         s = MSG.ReadStringLine(Globals.net_message);
 
@@ -788,7 +788,7 @@ public final class CL {
         
         Com.Println(Globals.net_from + ": " + c);
 
-        // server connection
+        
         if (c.equals("client_connect")) {
             if (Globals.cls.state == Defines.ca_connected) {
                 Com.Printf("Dup connect received.  Ignored.\n");
@@ -802,13 +802,13 @@ public final class CL {
             return;
         }
 
-        // server responding to a status broadcast
+        
         if (c.equals("info")) {
             ParseStatusMessage();
             return;
         }
 
-        // remote command from gui front end
+        
         if (c.equals("cmd")) {
             if (!NET.IsLocalAddress(Globals.net_from)) {
                 Com.Printf("Command packet from remote host.  Ignored.\n");
@@ -819,7 +819,7 @@ public final class CL {
             Cbuf.AddText("\n");
             return;
         }
-        // print command from somewhere
+        
         if (c.equals("print")) {
             s = MSG.ReadString(Globals.net_message);
             if (s.length() > 0)
@@ -827,20 +827,20 @@ public final class CL {
             return;
         }
 
-        // ping from somewhere
+        
         if (c.equals("ping")) {
             Netchan.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, "ack");
             return;
         }
 
-        // challenge from the server we are connecting to
+        
         if (c.equals("challenge")) {
             Globals.cls.challenge = Lib.atoi(Cmd.Argv(1));
             SendConnectPacket();
             return;
         }
 
-        // echo request from server
+        
         if (c.equals("echo")) {
             Netchan.OutOfBandPrint(Defines.NS_CLIENT, Globals.net_from, Cmd
                     .Argv(1));
@@ -858,21 +858,21 @@ public final class CL {
         while (NET.GetPacket(Defines.NS_CLIENT, Globals.net_from,
                 Globals.net_message)) {
 
-            //
-            // remote command packet
-            //		
+            
+            
+            
             if (Globals.net_message.data[0] == -1
                     && Globals.net_message.data[1] == -1
                     && Globals.net_message.data[2] == -1
                     && Globals.net_message.data[3] == -1) {
-                //			if (*(int *)net_message.data == -1)
+                
                 ConnectionlessPacket();
                 continue;
             }
 
             if (Globals.cls.state == Defines.ca_disconnected
                     || Globals.cls.state == Defines.ca_connecting)
-                continue; // dump it if not connected
+                continue; 
 
             if (Globals.net_message.cursize < 8) {
                 Com.Printf(NET.AdrToString(Globals.net_from)
@@ -880,9 +880,9 @@ public final class CL {
                 continue;
             }
 
-            //
-            // packet from server
-            //
+            
+            
+            
             if (!NET.CompareAdr(Globals.net_from,
                     Globals.cls.netchan.remote_address)) {
                 Com.DPrintf(NET.AdrToString(Globals.net_from)
@@ -890,16 +890,16 @@ public final class CL {
                 continue;
             }
             if (!Netchan.Process(Globals.cls.netchan, Globals.net_message))
-                continue; // wasn't accepted for some reason
+                continue; 
             CL_parse.ParseServerMessage();
         }
 
-        //
-        // check timeout
-        //
+        
+        
+        
         if (Globals.cls.state >= Defines.ca_connected
                 && Globals.cls.realtime - Globals.cls.netchan.last_received > Globals.cl_timeout.value * 1000) {
-            if (++Globals.cl.timeoutcount > 5) // timeoutcount saves debugger
+            if (++Globals.cl.timeoutcount > 5) 
             {
                 Com.Printf("\nServer connection timed out.\n");
                 Disconnect();
@@ -908,7 +908,7 @@ public final class CL {
             Globals.cl.timeoutcount = 0;
     }
 
-    //	  =============================================================================
+    
 
     /**
      * FixUpGender_f
@@ -920,7 +920,7 @@ public final class CL {
         if (Globals.gender_auto.value != 0.0f) {
 
             if (Globals.gender.modified) {
-                // was set directly, don't override the user
+                
                 Globals.gender.modified = false;
                 return;
             }
@@ -937,8 +937,8 @@ public final class CL {
     }
 
     public static void RequestNextDownload() {
-        int map_checksum = 0; // for detecting cheater maps
-        //char fn[MAX_OSPATH];
+        int map_checksum = 0; 
+        
         String fn;
 
         qfiles.dmdl_t pheader;
@@ -949,13 +949,13 @@ public final class CL {
         if (SV_MAIN.allow_download.value == 0 && CL.precache_check < ENV_CNT)
             CL.precache_check = ENV_CNT;
 
-        //	  ZOID
-        if (CL.precache_check == Defines.CS_MODELS) { // confirm map
-            CL.precache_check = Defines.CS_MODELS + 2; // 0 isn't used
+        
+        if (CL.precache_check == Defines.CS_MODELS) { 
+            CL.precache_check = Defines.CS_MODELS + 2; 
             if (SV_MAIN.allow_download_maps.value != 0)
                 if (!CL_parse
                         .CheckOrDownloadFile(Globals.cl.configstrings[Defines.CS_MODELS + 1]))
-                    return; // started a download
+                    return; 
         }
         if (CL.precache_check >= Defines.CS_MODELS
                 && CL.precache_check < Defines.CS_MODELS + Defines.MAX_MODELS) {
@@ -973,12 +973,12 @@ public final class CL {
                         if (!CL_parse
                                 .CheckOrDownloadFile(Globals.cl.configstrings[CL.precache_check])) {
                             CL.precache_model_skin = 1;
-                            return; // started a download
+                            return; 
                         }
                         CL.precache_model_skin = 1;
                     }
 
-                    // checking for skins in the model
+                    
                     if (CL.precache_model == null) {
 
                         CL.precache_model = FS
@@ -986,7 +986,7 @@ public final class CL {
                         if (CL.precache_model == null) {
                             CL.precache_model_skin = 0;
                             CL.precache_check++;
-                            continue; // couldn't load it
+                            continue; 
                         }
                         ByteBuffer bb = ByteBuffer.wrap(CL.precache_model);
                         bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -994,7 +994,7 @@ public final class CL {
                         int header = bb.getInt();
 
                         if (header != qfiles.IDALIASHEADER) {
-                            // not an alias model
+                            
                             FS.FreeFile(CL.precache_model);
                             CL.precache_model = null;
                             CL.precache_model_skin = 0;
@@ -1007,7 +1007,7 @@ public final class CL {
                         if (pheader.version != Defines.ALIAS_VERSION) {
                             CL.precache_check++;
                             CL.precache_model_skin = 0;
-                            continue; // couldn't load it
+                            continue; 
                         }
                     }
 
@@ -1017,8 +1017,8 @@ public final class CL {
                     int num_skins = pheader.num_skins;
 
                     while (CL.precache_model_skin - 1 < num_skins) {
-                        //Com.Printf("critical code section because of endian
-                        // mess!\n");
+                        
+                        
 
                         String name = Lib.CtoJava(CL.precache_model,
                                 pheader.ofs_skins
@@ -1028,7 +1028,7 @@ public final class CL {
 
                         if (!CL_parse.CheckOrDownloadFile(name)) {
                             CL.precache_model_skin++;
-                            return; // started a download
+                            return; 
                         }
                         CL.precache_model_skin++;
                     }
@@ -1046,7 +1046,7 @@ public final class CL {
                 && CL.precache_check < Defines.CS_SOUNDS + Defines.MAX_SOUNDS) {
             if (SV_MAIN.allow_download_sounds.value != 0) {
                 if (CL.precache_check == Defines.CS_SOUNDS)
-                    CL.precache_check++; // zero is blank
+                    CL.precache_check++; 
                 while (CL.precache_check < Defines.CS_SOUNDS
                         + Defines.MAX_SOUNDS
                         && Globals.cl.configstrings[CL.precache_check].length() > 0) {
@@ -1057,7 +1057,7 @@ public final class CL {
                     fn = "sound/"
                             + Globals.cl.configstrings[CL.precache_check++];
                     if (!CL_parse.CheckOrDownloadFile(fn))
-                        return; // started a download
+                        return; 
                 }
             }
             CL.precache_check = Defines.CS_IMAGES;
@@ -1065,20 +1065,20 @@ public final class CL {
         if (CL.precache_check >= Defines.CS_IMAGES
                 && CL.precache_check < Defines.CS_IMAGES + Defines.MAX_IMAGES) {
             if (CL.precache_check == Defines.CS_IMAGES)
-                CL.precache_check++; // zero is blank
+                CL.precache_check++; 
 
             while (CL.precache_check < Defines.CS_IMAGES + Defines.MAX_IMAGES
                     && Globals.cl.configstrings[CL.precache_check].length() > 0) {
                 fn = "pics/" + Globals.cl.configstrings[CL.precache_check++]
                         + ".pcx";
                 if (!CL_parse.CheckOrDownloadFile(fn))
-                    return; // started a download
+                    return; 
             }
             CL.precache_check = Defines.CS_PLAYERSKINS;
         }
-        // skins are special, since a player has three things to download:
-        // model, weapon model and skin
-        // so precache_check is now *3
+        
+        
+        
         if (CL.precache_check >= Defines.CS_PLAYERSKINS
                 && CL.precache_check < Defines.CS_PLAYERSKINS
                         + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
@@ -1087,7 +1087,7 @@ public final class CL {
                         + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
 
                     int i, n;
-                    //char model[MAX_QPATH], skin[MAX_QPATH], * p;
+                    
                     String model, skin;
 
                     i = (CL.precache_check - Defines.CS_PLAYERSKINS)
@@ -1121,60 +1121,60 @@ public final class CL {
                     skin = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].substring(pos2 + 1);
                     
                     switch (n) {
-                    case 0: // model
+                    case 0: 
                         fn = "players/" + model + "/tris.md2";
                         if (!CL_parse.CheckOrDownloadFile(fn)) {
                             CL.precache_check = Defines.CS_PLAYERSKINS + i
                                     * CL.PLAYER_MULT + 1;
-                            return; // started a download
+                            return; 
                         }
                         n++;
                     /* FALL THROUGH */
 
-                    case 1: // weapon model
+                    case 1: 
                         fn = "players/" + model + "/weapon.md2";
                         if (!CL_parse.CheckOrDownloadFile(fn)) {
                             CL.precache_check = Defines.CS_PLAYERSKINS + i
                                     * CL.PLAYER_MULT + 2;
-                            return; // started a download
+                            return; 
                         }
                         n++;
                     /* FALL THROUGH */
 
-                    case 2: // weapon skin
+                    case 2: 
                         fn = "players/" + model + "/weapon.pcx";
                         if (!CL_parse.CheckOrDownloadFile(fn)) {
                             CL.precache_check = Defines.CS_PLAYERSKINS + i
                                     * CL.PLAYER_MULT + 3;
-                            return; // started a download
+                            return; 
                         }
                         n++;
                     /* FALL THROUGH */
 
-                    case 3: // skin
+                    case 3: 
                         fn = "players/" + model + '/' + skin + ".pcx";
                         if (!CL_parse.CheckOrDownloadFile(fn)) {
                             CL.precache_check = Defines.CS_PLAYERSKINS + i
                                     * CL.PLAYER_MULT + 4;
-                            return; // started a download
+                            return; 
                         }
                         n++;
                     /* FALL THROUGH */
 
-                    case 4: // skin_i
+                    case 4: 
                         fn = "players/" + model + '/' + skin + "_i.pcx";
                         if (!CL_parse.CheckOrDownloadFile(fn)) {
                             CL.precache_check = Defines.CS_PLAYERSKINS + i
                                     * CL.PLAYER_MULT + 5;
-                            return; // started a download
+                            return; 
                         }
-                        // move on to next model
+                        
                         CL.precache_check = Defines.CS_PLAYERSKINS + (i + 1)
                                 * CL.PLAYER_MULT;
                     }
                 }
             }
-            // precache phase completed
+            
             CL.precache_check = ENV_CNT;
         }
 
@@ -1214,7 +1214,7 @@ public final class CL {
                         fn = "env/" + Globals.cl.configstrings[Defines.CS_SKY]
                                 + env_suf[n / 2] + ".tga";
                     if (!CL_parse.CheckOrDownloadFile(fn))
-                        return; // started a download
+                        return; 
                 }
             }
             CL.precache_check = TEXTURE_CNT;
@@ -1225,27 +1225,27 @@ public final class CL {
             CL.precache_tex = 0;
         }
 
-        // confirm existance of textures, download any that don't exist
+        
         if (CL.precache_check == TEXTURE_CNT + 1) {
-            // from qcommon/cmodel.c
-            // extern int numtexinfo;
-            // extern mapsurface_t map_surfaces[];
+            
+            
+            
 
             if (SV_MAIN.allow_download.value != 0
                     && SV_MAIN.allow_download_maps.value != 0) {
                 while (CL.precache_tex < CM.numtexinfo) {
-                    //char fn[MAX_OSPATH];
+                    
 
                     fn = "textures/" + CM.map_surfaces[CL.precache_tex++].rname
                             + ".wal";
                     if (!CL_parse.CheckOrDownloadFile(fn))
-                        return; // started a download
+                        return; 
                 }
             }
             CL.precache_check = TEXTURE_CNT + 999;
         }
 
-        //	  ZOID
+        
         CL_parse.RegisterSounds();
         CL_view.PrepRefresh();
 
@@ -1273,9 +1273,9 @@ public final class CL {
         Cvar.Get("adr7", "", Defines.CVAR_ARCHIVE);
         Cvar.Get("adr8", "", Defines.CVAR_ARCHIVE);
 
-        //
-        // register our variables
-        //
+        
+        
+        
         Globals.cl_stereo_separation = Cvar.Get("cl_stereo_separation", "0.4",
                 Defines.CVAR_ARCHIVE);
         Globals.cl_stereo = Cvar.Get("cl_stereo", "0", 0);
@@ -1322,9 +1322,9 @@ public final class CL {
 
         Globals.cl_lightlevel = Cvar.Get("r_lightlevel", "0", 0);
 
-        //
-        // userinfo
-        //
+        
+        
+        
         Globals.info_password = Cvar.Get("password", "", Defines.CVAR_USERINFO);
         Globals.info_spectator = Cvar.Get("spectator", "0",
                 Defines.CVAR_USERINFO);
@@ -1333,7 +1333,7 @@ public final class CL {
         Globals.skin = Cvar.Get("skin", "male/grunt", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
         Globals.rate = Cvar.Get("rate", "25000", Defines.CVAR_USERINFO
-                | Defines.CVAR_ARCHIVE); // FIXME
+                | Defines.CVAR_ARCHIVE); 
         Globals.msg = Cvar.Get("msg", "1", Defines.CVAR_USERINFO
                 | Defines.CVAR_ARCHIVE);
         Globals.hand = Cvar.Get("hand", "0", Defines.CVAR_USERINFO
@@ -1344,14 +1344,14 @@ public final class CL {
                 | Defines.CVAR_ARCHIVE);
         Globals.gender_auto = Cvar
                 .Get("gender_auto", "1", Defines.CVAR_ARCHIVE);
-        Globals.gender.modified = false; // clear this so we know when user sets
-                                         // it manually
+        Globals.gender.modified = false; 
+                                         
 
         Globals.cl_vwep = Cvar.Get("cl_vwep", "1", Defines.CVAR_ARCHIVE);
 
-        //
-        // register our commands
-        //
+        
+        
+        
         Cmd.AddCommand("cmd", ForwardToServer_f);
         Cmd.AddCommand("pause", Pause_f);
         Cmd.AddCommand("pingservers", PingServers_f);
@@ -1376,12 +1376,12 @@ public final class CL {
 
         Cmd.AddCommand("download", CL_parse.Download_f);
 
-        //
-        // forward to server commands
-        //
-        // the only thing this does is allow command completion
-        // to work -- all unknown commands are automatically
-        // forwarded to the server
+        
+        
+        
+        
+        
+        
         Cmd.AddCommand("wave", null);
         Cmd.AddCommand("inven", null);
         Cmd.AddCommand("kill", null);
@@ -1413,8 +1413,8 @@ public final class CL {
         RandomAccessFile f;
         String path;
 
-//        if (Globals.cls.state == Defines.ca_uninitialized)
-//            return;
+
+
 
         path = FS.Gamedir() + "/config.cfg";
         f = Lib.fopen(path, "rw");
@@ -1447,9 +1447,9 @@ public final class CL {
         if ("1".equals(Globals.cl.configstrings[Defines.CS_MAXCLIENTS])
                 || 0 == Globals.cl.configstrings[Defines.CS_MAXCLIENTS]
                         .length())
-            return; // single player can cheat
+            return; 
 
-        // find all the cvars if we haven't done it yet
+        
         if (0 == CL.numcheatvars) {
             while (CL.cheatvars[CL.numcheatvars].name != null) {
                 CL.cheatvars[CL.numcheatvars].var = Cvar.Get(
@@ -1459,7 +1459,7 @@ public final class CL {
             }
         }
 
-        // make sure they are all set to the proper values
+        
         for (i = 0; i < CL.numcheatvars; i++) {
             var = CL.cheatvars[i];
             if (!var.var.string.equals(var.value)) {
@@ -1468,32 +1468,32 @@ public final class CL {
         }
     }
 
-    //	  =============================================================
+    
 
     /**
      * SendCommand
      */
     public static void SendCommand() {
-        // get new key events
+        
         Sys.SendKeyEvents();
 
-        // allow mice or other external controllers to add commands
+        
         IN.Commands();
 
-        // process console commands
+        
         Cbuf.Execute();
 
-        // fix any cheating cvars
+        
         FixCvarCheats();
 
-        // send intentions now
+        
         CL_input.SendCmd();
 
-        // resend a connection request if necessary
+        
         CheckForResend();
     }
 
-    //	private static int lasttimecalled;
+    
 
     /**
      * Frame
@@ -1507,17 +1507,17 @@ public final class CL {
 
         if (Globals.cl_timedemo.value == 0.0f) {
             if (Globals.cls.state == Defines.ca_connected && extratime < 100) {
-                return; // don't flood packets out while connecting
+                return; 
             }
             if (extratime < 1000 / Globals.cl_maxfps.value) {
-                return; // framerate is too high
+                return; 
             }
         }
 
-        // let the mouse activate or deactivate
+        
         IN.Frame();
 
-        // decide the simulation time
+        
         Globals.cls.frametime = extratime / 1000.0f;
         Globals.cl.time += extratime;
         Globals.cls.realtime = Globals.curtime;
@@ -1527,36 +1527,36 @@ public final class CL {
         if (Globals.cls.frametime > (1.0f / 5))
             Globals.cls.frametime = (1.0f / 5);
 
-        // if in the debugger last frame, don't timeout
+        
         if (msec > 5000)
             Globals.cls.netchan.last_received = Timer.Milliseconds();
 
-        // fetch results from server
+        
         ReadPackets();
 
-        // send a new command message to the server
+        
         SendCommand();
 
-        // predict all unacknowledged movements
+        
         CL_pred.PredictMovement();
 
-        // allow rendering DLL change
+        
         VID.CheckChanges();
         if (!Globals.cl.refresh_prepped
                 && Globals.cls.state == Defines.ca_active) {
             CL_view.PrepRefresh();
-            // force GC after level loading
-            // but not on playing a cinematic
+            
+            
             if (Globals.cl.cinematictime == 0) System.gc();
         }
 
         SCR.UpdateScreen();
 
-        // update audio
+        
         S.Update(Globals.cl.refdef.vieworg, Globals.cl.v_forward,
                 Globals.cl.v_right, Globals.cl.v_up);
 
-        // advance local effects for next frame
+        
         CL_fx.RunDLights();
         CL_fx.RunLightStyles();
         SCR.RunCinematic();
@@ -1595,13 +1595,13 @@ public final class CL {
      */
     public static void Init() {
         if (Globals.dedicated.value != 0.0f)
-            return; // nothing running on the client
+            return; 
 
-        // all archived variables will now be loaded
+        
 
-        Console.Init(); //ok
+        Console.Init(); 
 
-        //empty
+        
         new Thread(S::Init).start();
         VID.Init();
 
@@ -1613,7 +1613,7 @@ public final class CL {
         Menu.Init();
 
         SCR.Init();
-        //Globals.cls.disable_screen = 1.0f; // don't draw yet
+        
 
         InitLocal();
         IN.Init();
@@ -1633,8 +1633,8 @@ public final class CL {
 
         Disconnect();
 
-        // drop loading plaque unless this is the initial game start
+        
         if (Globals.cls.disable_servercount != -1)
-            SCR.EndLoadingPlaque(); // get rid of loading plaque
+            SCR.EndLoadingPlaque(); 
     }
 }

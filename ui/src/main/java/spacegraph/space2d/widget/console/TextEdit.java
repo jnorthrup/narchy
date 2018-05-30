@@ -51,20 +51,20 @@ public class TextEdit extends DefaultVirtualTerminal {
 
         textBox = new TextBox(initialContent, multiline ? TextBox.Style.MULTI_LINE : TextBox.Style.SINGLE_LINE) {
 
-//            {
-//                setBacklogSize(8); //???
-//            }
-//
-//            public String getLine(int index) {
-//                if (getLineCount() == 0) return "";
-//                return super.getLine(index);
-//            }
-//
-//            @Override
-//            public String getText() {
-//                if (getLineCount() == 0) return "";
-//                return super.getText();
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             @Override
@@ -91,7 +91,7 @@ public class TextEdit extends DefaultVirtualTerminal {
                 Result r = super.handleKeyStroke(keyStroke);
 
                 if (r == Result.HANDLED) {
-                    //HACK
+                    
                     String after = getText();
                     if (!before.equals(after))
                         textChange(after);
@@ -156,7 +156,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
             @Override
             protected void init(BasicWindow window) {
-                //textBox.setPreferredSize(new TerminalSize(window.getSize().getColumns() - 2, window.getSize().getRows() - 2));
+                
 
                 textBox.takeFocus();
 
@@ -198,7 +198,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
         if (kt == KeyType.Enter) {
             if (keyStroke.isCtrlDown()) {
-                //ctrl-enter
+                
                 onKeyCtrlEnter();
                 return false;
             } else {
@@ -218,10 +218,10 @@ public class TextEdit extends DefaultVirtualTerminal {
      * paste clipboard contents in at cursor location
      */
     public synchronized void paste() {
-        //shift-insert, paste
+        
         try {
 
-            //TODO this probably needs to be run on EDT thread to eliminate the delay involved in reading the clipboard
+            
 
             String result = (String) clipboard().getData(_clipboardEnc);
             addLine(result);
@@ -235,7 +235,7 @@ public class TextEdit extends DefaultVirtualTerminal {
     public boolean limitLines(int limit) {
 
         synchronized (textBox) {
-            //HACK this sucks
+            
 
             String tt = textBox.getText();
             String[] lines = tt.split("\n");
@@ -253,8 +253,8 @@ public class TextEdit extends DefaultVirtualTerminal {
         synchronized (textBox) {
             textBox.addLine(x);
         }
-        //x.chars().forEach(c -> textBox.handleKeyStroke(new KeyStroke((char)c, false, false, false)));
-        //flush();
+        
+        
     }
 
     protected void onKeyCtrlEnter() {

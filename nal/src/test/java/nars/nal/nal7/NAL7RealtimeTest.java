@@ -8,15 +8,15 @@ import org.junit.jupiter.api.Test;
 public class NAL7RealtimeTest {
     @Test
     public void test1() throws Narsese.NarseseException {
-        //dumb test
+        
         NAR n = NARS.realtime(1f).withNAL(1,8).get();
-        //n.log();
+        
         n.input("wake. |");
         n.input("(wake &&+16hours sleep).");
         n.input("(sleep &&+8hours wake).");
         n.input("(wake ==>+30min awake).");
         n.input("(sleep ==>+30min asleep).");
-        n.input("(--(&|,wake,asleep) && --(&|, --wake,--sleep))."); //XOR
+        n.input("(--(&|,wake,asleep) && --(&|, --wake,--sleep))."); 
         n.run(100);
     }
     @Test

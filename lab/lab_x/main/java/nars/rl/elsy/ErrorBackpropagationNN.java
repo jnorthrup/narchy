@@ -39,11 +39,11 @@ public class ErrorBackpropagationNN implements Serializable{
 	/**
 	 * Weight   matrix [layer][i][j]
 	 */
-	private double w[][][]; // weight   matrix [layer][i][j]
+	private double w[][][]; 
 	/**
 	 * Weight   matrix [layer][i][j]
 	 */
-	private double wDelta[][][]; // weight  delta matrix [layer][i][j]
+	private double wDelta[][][]; 
 	/**
 	 * Gradient matrix [layer][i]
 	 */
@@ -117,7 +117,7 @@ public class ErrorBackpropagationNN implements Serializable{
 		this(
 				perception,
 				desiredOutput,
-				new int[] {}	// no hidden layers
+				new int[] {}	
 		);
 	}
 	/**
@@ -127,8 +127,8 @@ public class ErrorBackpropagationNN implements Serializable{
 	 * @see ErrorBackpropagationNN#executeAction() 
 	 */
 	public void learn() {
-		countGradients();		// g(t)
-		updateWeights();		// w(t)
+		countGradients();		
+		updateWeights();		
 	}
 	
 	/**
@@ -152,9 +152,9 @@ public class ErrorBackpropagationNN implements Serializable{
 				}
 				double activ = activation[l][i];
 				if(unipolar) {
-					g[l][i] = activ * (1 - activ) * error; //uni
+					g[l][i] = activ * (1 - activ) * error; 
 				} else {
-					g[l][i] = 0.5 * (1 - activ*activ) * error; //bi
+					g[l][i] = 0.5 * (1 - activ*activ) * error; 
 				}
 			}
 		}

@@ -28,7 +28,7 @@ import spacegraph.space2d.phys.common.*;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-// updated to rev 100
+
 
 /**
  * This is non-static for faster pooling. To get an instance, use the {@link SingletonPool}, don't
@@ -47,12 +47,12 @@ public class Distance {
      * GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
      */
     private static class SimplexVertex {
-        public final Tuple2f wA = new v2(); // support point in shapeA
-        public final Tuple2f wB = new v2(); // support point in shapeB
-        public final Tuple2f w = new v2(); // wB - wA
-        public float a; // barycentric coordinate for closest point
-        public int indexA; // wA index
-        public int indexB; // wB index
+        public final Tuple2f wA = new v2(); 
+        public final Tuple2f wB = new v2(); 
+        public final Tuple2f w = new v2(); 
+        public float a; 
+        public int indexA; 
+        public int indexB; 
 
         public void set(SimplexVertex sv) {
             wA.set(sv.wA);
@@ -114,7 +114,7 @@ public class Distance {
                               DistanceProxy proxyB, Transform transformB) {
             assert (cache.count <= 3);
 
-            // Copy data from cache.
+            
             m_count = cache.count;
 
             for (int i = 0; i < m_count; ++i) {
@@ -129,18 +129,18 @@ public class Distance {
                 v.a = 0.0f;
             }
 
-            // Compute the new simplex metric, if it is substantially different than
-            // old metric then flush the simplex.
+            
+            
             if (m_count > 1) {
                 float metric1 = cache.metric;
                 float metric2 = getMetric();
                 if (metric2 < 0.5f * metric1 || 2.0f * metric1 < metric2 || metric2 < Settings.EPSILON) {
-                    // Reset the simplex.
+                    
                     m_count = 0;
                 }
             }
 
-            // If the cache is empty or invalid ...
+            
             if (m_count == 0) {
                 SimplexVertex v = vertices[0];
                 v.indexA = 0;
@@ -174,16 +174,16 @@ public class Distance {
                     return;
                 case 2:
                     e12.set(m_v2.w).subbed(m_v1.w);
-                    // use out for a temp variable real quick
+                    
                     out.set(m_v1.w).negated();
                     float sgn = Tuple2f.cross(e12, out);
 
                     if (sgn > 0f) {
-                        // Origin is left of e12.
+                        
                         Tuple2f.crossToOutUnsafe(1f, e12, out);
                         return;
                     } else {
-                        // Origin is right of e12.
+                        
                         Tuple2f.crossToOutUnsafe(e12, 1f, out);
                         return;
                     }
@@ -193,7 +193,7 @@ public class Distance {
             }
         }
 
-        // djm pooled
+        
         private final Tuple2f case2 = new v2();
         private final Tuple2f case22 = new v2();
 
@@ -225,7 +225,7 @@ public class Distance {
             }
         }
 
-        // djm pooled, and from above
+        
         private final Tuple2f case3 = new v2();
         private final Tuple2f case33 = new v2();
 
@@ -243,8 +243,8 @@ public class Distance {
                 case 2:
                     case2.set(m_v1.wA).scaled(m_v1.a);
                     pA.set(m_v2.wA).scaled(m_v2.a).added(case2);
-                    // m_v1.a * m_v1.wA + m_v2.a * m_v2.wA;
-                    // *pB = m_v1.a * m_v1.wB + m_v2.a * m_v2.wB;
+                    
+                    
                     case2.set(m_v1.wB).scaled(m_v1.a);
                     pB.set(m_v2.wB).scaled(m_v2.a).added(case2);
 
@@ -256,8 +256,8 @@ public class Distance {
                     case33.set(m_v3.wA).scaled(m_v3.a);
                     pA.addLocal(case3).addLocal(case33);
                     pB.set(pA);
-                    // *pA = m_v1.a * m_v1.wA + m_v2.a * m_v2.wA + m_v3.a * m_v3.wA;
-                    // *pB = *pA;
+                    
+                    
                     break;
 
                 default:
@@ -266,7 +266,7 @@ public class Distance {
             }
         }
 
-        // djm pooled, from above
+        
         public float getMetric() {
             switch (m_count) {
                 case 0:
@@ -282,7 +282,7 @@ public class Distance {
                 case 3:
                     case3.set(m_v2.w).subbed(m_v1.w);
                     case33.set(m_v3.w).subbed(m_v1.w);
-                    // return Vec2.cross(m_v2.w - m_v1.w, m_v3.w - m_v1.w);
+                    
                     return Tuple2f.cross(case3, case33);
 
                 default:
@@ -291,66 +291,66 @@ public class Distance {
             }
         }
 
-        // djm pooled from above
+        
 
         /**
          * Solve a line segment using barycentric coordinates.
          */
         public void solve2() {
-            // Solve a line segment using barycentric coordinates.
-            //
-            // p = a1 * w1 + a2 * w2
-            // a1 + a2 = 1
-            //
-            // The vector from the origin to the closest point on the line is
-            // perpendicular to the line.
-            // e12 = w2 - w1
-            // dot(p, e) = 0
-            // a1 * dot(w1, e) + a2 * dot(w2, e) = 0
-            //
-            // 2-by-2 linear system
-            // [1 1 ][a1] = [1]
-            // [w1.e12 w2.e12][a2] = [0]
-            //
-            // Define
-            // d12_1 = dot(w2, e12)
-            // d12_2 = -dot(w1, e12)
-            // d12 = d12_1 + d12_2
-            //
-            // Solution
-            // a1 = d12_1 / d12
-            // a2 = d12_2 / d12
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             final Tuple2f w1 = m_v1.w;
             final Tuple2f w2 = m_v2.w;
             e12.set(w2).subbed(w1);
 
-            // w1 region
+            
             float d12_2 = -Tuple2f.dot(w1, e12);
             if (d12_2 <= 0.0f) {
-                // a2 <= 0, so we clamp it to 0
+                
                 m_v1.a = 1.0f;
                 m_count = 1;
                 return;
             }
 
-            // w2 region
+            
             float d12_1 = Tuple2f.dot(w2, e12);
             if (d12_1 <= 0.0f) {
-                // a1 <= 0, so we clamp it to 0
+                
                 m_v2.a = 1.0f;
                 m_count = 1;
                 m_v1.set(m_v2);
                 return;
             }
 
-            // Must be in e12 region.
+            
             float inv_d12 = 1.0f / (d12_1 + d12_2);
             m_v1.a = d12_1 * inv_d12;
             m_v2.a = d12_2 * inv_d12;
             m_count = 2;
         }
 
-        // djm pooled, and from above
+        
         private final Tuple2f e13 = new v2();
         private final Tuple2f e23 = new v2();
         private final Tuple2f w1 = new v2();
@@ -370,51 +370,51 @@ public class Distance {
             w2.set(m_v2.w);
             w3.set(m_v3.w);
 
-            // Edge12
-            // [1 1 ][a1] = [1]
-            // [w1.e12 w2.e12][a2] = [0]
-            // a3 = 0
+            
+            
+            
+            
             e12.set(w2).subbed(w1);
             float w1e12 = Tuple2f.dot(w1, e12);
             float w2e12 = Tuple2f.dot(w2, e12);
             float d12_1 = w2e12;
             float d12_2 = -w1e12;
 
-            // Edge13
-            // [1 1 ][a1] = [1]
-            // [w1.e13 w3.e13][a3] = [0]
-            // a2 = 0
+            
+            
+            
+            
             e13.set(w3).subbed(w1);
             float w1e13 = Tuple2f.dot(w1, e13);
             float w3e13 = Tuple2f.dot(w3, e13);
             float d13_1 = w3e13;
             float d13_2 = -w1e13;
 
-            // Edge23
-            // [1 1 ][a2] = [1]
-            // [w2.e23 w3.e23][a3] = [0]
-            // a1 = 0
+            
+            
+            
+            
             e23.set(w3).subbed(w2);
             float w2e23 = Tuple2f.dot(w2, e23);
             float w3e23 = Tuple2f.dot(w3, e23);
             float d23_1 = w3e23;
             float d23_2 = -w2e23;
 
-            // Triangle123
+            
             float n123 = Tuple2f.cross(e12, e13);
 
             float d123_1 = n123 * Tuple2f.cross(w2, w3);
             float d123_2 = n123 * Tuple2f.cross(w3, w1);
             float d123_3 = n123 * Tuple2f.cross(w1, w2);
 
-            // w1 region
+            
             if (d12_2 <= 0.0f && d13_2 <= 0.0f) {
                 m_v1.a = 1.0f;
                 m_count = 1;
                 return;
             }
 
-            // e12
+            
             if (d12_1 > 0.0f && d12_2 > 0.0f && d123_3 <= 0.0f) {
                 float inv_d12 = 1.0f / (d12_1 + d12_2);
                 m_v1.a = d12_1 * inv_d12;
@@ -423,7 +423,7 @@ public class Distance {
                 return;
             }
 
-            // e13
+            
             if (d13_1 > 0.0f && d13_2 > 0.0f && d123_2 <= 0.0f) {
                 float inv_d13 = 1.0f / (d13_1 + d13_2);
                 m_v1.a = d13_1 * inv_d13;
@@ -433,7 +433,7 @@ public class Distance {
                 return;
             }
 
-            // w2 region
+            
             if (d12_1 <= 0.0f && d23_2 <= 0.0f) {
                 m_v2.a = 1.0f;
                 m_count = 1;
@@ -441,7 +441,7 @@ public class Distance {
                 return;
             }
 
-            // w3 region
+            
             if (d13_1 <= 0.0f && d23_1 <= 0.0f) {
                 m_v3.a = 1.0f;
                 m_count = 1;
@@ -449,7 +449,7 @@ public class Distance {
                 return;
             }
 
-            // e23
+            
             if (d23_1 > 0.0f && d23_2 > 0.0f && d123_1 <= 0.0f) {
                 float inv_d23 = 1.0f / (d23_1 + d23_2);
                 m_v2.a = d23_1 * inv_d23;
@@ -459,7 +459,7 @@ public class Distance {
                 return;
             }
 
-            // Must be in triangle123
+            
             float inv_d123 = 1.0f / (d123_1 + d123_2 + d123_3);
             m_v1.a = d123_1 * inv_d123;
             m_v2.a = d123_2 * inv_d123;
@@ -631,26 +631,26 @@ public class Distance {
         Transform transformA = input.transformA;
         Transform transformB = input.transformB;
 
-        // Initialize the simplex.
+        
         simplex.readCache(cache, proxyA, transformA, proxyB, transformB);
 
-        // Get simplex vertices as an array.
+        
         SimplexVertex[] vertices = simplex.vertices;
 
-        // These store the vertices of the last simplex so that we
-        // can check for duplicates and prevent cycling.
-        // (pooled above)
+        
+        
+        
         int saveCount = 0;
 
         simplex.getClosestPoint(closestPoint);
         float distanceSqr1 = closestPoint.lengthSquared();
         float distanceSqr2 = distanceSqr1;
 
-        // Main iteration loop
+        
         int iter = 0;
         while (iter < MAX_ITERS) {
 
-            // Copy simplex so we can identify duplicates.
+            
             saveCount = simplex.m_count;
             for (int i = 0; i < saveCount; i++) {
                 saveA[i] = vertices[i].indexA;
@@ -670,32 +670,32 @@ public class Distance {
                     assert (false);
             }
 
-            // If we have 3 points, then the origin is in the corresponding triangle.
+            
             if (simplex.m_count == 3) {
                 break;
             }
 
-            // Compute closest point.
+            
             simplex.getClosestPoint(closestPoint);
             distanceSqr2 = closestPoint.lengthSquared();
 
-            // ensure progress
+            
             if (distanceSqr2 >= distanceSqr1) {
-                // break;
+                
             }
             distanceSqr1 = distanceSqr2;
 
-            // get search direction;
+            
             simplex.getSearchDirection(d);
 
-            // Ensure the search direction is numerically fit.
+            
             if (d.lengthSquared() < Settings.EPSILON * Settings.EPSILON) {
-                // The origin is probably contained by a line segment
-                // or triangle. Thus the shapes are overlapped.
+                
+                
 
-                // We can't return zero here even though there may be overlap.
-                // In case the simplex is a point, segment, or triangle it is difficult
-                // to determine if the origin is contained in the CSO or very close to it.
+                
+                
+                
                 break;
             }
             /*
@@ -706,23 +706,23 @@ public class Distance {
              * proxyB.GetVertex(vertex.indexB)); vertex.w = vertex.wB - vertex.wA;
              */
 
-            // Compute a tentative new simplex vertex using support points.
+            
             SimplexVertex vertex = vertices[simplex.m_count];
 
             Rot.mulTransUnsafe(transformA, d.negated(), temp);
             vertex.indexA = proxyA.getSupport(temp);
             Transform.mulToOutUnsafe(transformA, proxyA.vertex(vertex.indexA), vertex.wA);
-            // Vec2 wBLocal;
+            
             Rot.mulTransUnsafe(transformB, d.negated(), temp);
             vertex.indexB = proxyB.getSupport(temp);
             Transform.mulToOutUnsafe(transformB, proxyB.vertex(vertex.indexB), vertex.wB);
             vertex.w.set(vertex.wB).subbed(vertex.wA);
 
-            // Iteration count is equated to the number of support point calls.
+            
             ++iter;
             ++GJK_ITERS;
 
-            // Check for duplicate support points. This is the main termination criteria.
+            
             boolean duplicate = false;
             for (int i = 0; i < saveCount; ++i) {
                 if (vertex.indexA == saveA[i] && vertex.indexB == saveB[i]) {
@@ -731,33 +731,33 @@ public class Distance {
                 }
             }
 
-            // If we found a duplicate support point we must exit to avoid cycling.
+            
             if (duplicate) {
                 break;
             }
 
-            // New vertex is ok and needed.
+            
             ++simplex.m_count;
         }
 
         GJK_MAX_ITERS = MathUtils.max(GJK_MAX_ITERS, iter);
 
-        // Prepare output.
+        
         simplex.getWitnessPoints(output.pointA, output.pointB);
         output.distance = MathUtils.distance(output.pointA, output.pointB);
         output.iterations = iter;
 
-        // Cache the simplex.
+        
         simplex.writeCache(cache);
 
-        // Apply radii if requested.
+        
         if (input.useRadii) {
             float rA = proxyA.m_radius;
             float rB = proxyB.m_radius;
 
             if (output.distance > rA + rB && output.distance > Settings.EPSILON) {
-                // Shapes are still no overlapped.
-                // Move the witness points to the outer surface.
+                
+                
                 output.distance -= rA + rB;
                 normal.set(output.pointB).subbed(output.pointA);
                 normal.normalize();
@@ -766,9 +766,9 @@ public class Distance {
                 temp.set(normal).scaled(rB);
                 output.pointB.subLocal(temp);
             } else {
-                // Shapes are overlapped when radii are considered.
-                // Move the witness points to the middle.
-                // Vec2 p = 0.5f * (output.pointA + output.pointB);
+                
+                
+                
                 output.pointA.addLocal(output.pointB).scaled(.5f);
                 output.pointB.set(output.pointA);
                 output.distance = 0.0f;

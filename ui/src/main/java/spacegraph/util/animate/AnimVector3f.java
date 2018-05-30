@@ -32,7 +32,7 @@ public class AnimVector3f extends v3 implements Animated {
         LERP {
             @Override
             public void interp(float dt, AnimVector3f v) {
-                float rate = 0.5f; //v.speed.floatValue() * dt;
+                float rate = 0.5f; 
                 v3 w = v.target;
                 if (rate >= 1) {
                     v.setDirect(w);
@@ -57,7 +57,7 @@ public class AnimVector3f extends v3 implements Animated {
         if (d < Float.MIN_NORMAL)
             return;
 
-        //HACK use constant velocity
+        
         v3 w = this.target;
         float dx = w.x - this.x;
         float dy = w.y - this.y;
@@ -67,31 +67,31 @@ public class AnimVector3f extends v3 implements Animated {
         if (lenSq < Spatialization.sqrtEPSILONf)
             return;
 
-//        if (lenSq < closeEnoughSq) {
-//            //within one distance
-//            //System.out.println(dt + " " + "target==" + target);
-//            return super.setIfChange(target.x, target.y, target.z, BulletGlobals.SIMD_EPSILON);
-//
-//        } else {
+
+
+
+
+
+
         float len = (float) Math.sqrt(lenSq);
         d = Math.min(len*proportion, d) / len;
 
 
-//            float v = Math.min(1,
-//                    (
-//                    //rate //constant speed
-//                    (float) (d * Math.sqrt(lenSq)) //proportional speed
-//            ));
 
 
-        //constant speed
+
+
+
+
+
+        
         this.addDirect(
-                //return super.setIfChange(
+                
                 dx * d,
                 dy * d,
                 dz * d);
-        //, v);
-//        }
+        
+
     }
 
 
@@ -120,7 +120,7 @@ public class AnimVector3f extends v3 implements Animated {
 
         float px = this.x;
         if (px != px) {
-            //invalidated
+            
             super.set(target);
         } else {
             curve.interp(dt, this);
@@ -133,22 +133,22 @@ public class AnimVector3f extends v3 implements Animated {
 
     @Override
     public void set(float x, float y, float z) {
-//        float px = this.x;
-//        if (px != px || x != x)
-//            super.set(x, y, z); //initialization: if invalidated, use the target value immediately
 
-        target.set(x, y, z); //interpolation
+
+
+
+        target.set(x, y, z); 
     }
 
     @Override
     public void add(float dx, float dy, float dz) {
-        //super.add(dx, dy, dz);
+        
         target.add( dx,  dy,  dz);
     }
 
     @Override
     public void add(float dx, float dy) {
-        //super.add(dx, dy, dz);
+        
         target.add( dx,  dy,  0);
     }
 

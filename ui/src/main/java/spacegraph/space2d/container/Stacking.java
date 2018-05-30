@@ -10,7 +10,7 @@ public class Stacking extends MutableContainer {
 
     public Stacking(Surface... children) {
         super(children);
-//        clipTouchBounds = false;
+
     }
 
     @Override

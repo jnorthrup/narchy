@@ -64,14 +64,14 @@ public class CompressiveImage
     */
    public static CompressiveImage encode(final String name, final BufferedImage bufferedImage)
    {
-      // Create compressive image
+      
       final CompressiveImage compressiveImage = new CompressiveImage(name);
-      // Get image pixels
+      
       final int width = bufferedImage.getWidth();
       final int height = bufferedImage.getHeight();
       int[] pixels = new int[width * height];
       pixels = bufferedImage.getRGB(0, 0, width, height, pixels, 0, width);
-      // Update compressive image pixels
+      
       compressiveImage.setPixels(width, height, pixels);
 
       return compressiveImage;
@@ -88,9 +88,9 @@ public class CompressiveImage
     */
    public static CompressiveImage encode(final String name, final Image image)
    {
-      // Create the compressive image
+      
       final CompressiveImage compressiveImage = new CompressiveImage(name);
-      // Get image pixels
+      
       final int width = image.getWidth(null);
       final int height = image.getHeight(null);
       final int[] pixels = new int[width * height];
@@ -102,7 +102,7 @@ public class CompressiveImage
       catch(final InterruptedException e)
       {
       }
-      // Update compressive image pixels
+      
       compressiveImage.setPixels(width, height, pixels);
 
       return compressiveImage;
@@ -282,18 +282,18 @@ public class CompressiveImage
    {
       try
       {
-         // Read image size
+         
          this.width = UtilIO.readInteger(this.inputStream);
          this.height = UtilIO.readInteger(this.inputStream);
          final int nb = this.width * this.height;
          this.pixels = new byte[nb * 4];
-         // If there are a texture to refresh, adjust it's size
+         
          if(this.textureToRefresh != null)
          {
             this.textureToRefresh.setPixels(this.width, this.height, this.pixels);
          }
 
-         // Get each square 2x2
+         
          int s0, s1, p00, p01, p10, p11, y00, y01, y10, y11, cb, cr;
          double uvR, uvG, uvB;
          for(int yy = 0; yy < this.height; yy += 2)
@@ -312,7 +312,7 @@ public class CompressiveImage
                p01 <<= 2;
                p11 <<= 2;
 
-               // read current square
+               
                y00 = this.inputStream.read();
                y10 = this.inputStream.read();
                y01 = this.inputStream.read();
@@ -320,19 +320,19 @@ public class CompressiveImage
                cb = this.inputStream.read();
                cr = this.inputStream.read();
 
-               //
-               // To convert YUV to RGB we use :
-               // R = 1 * Y - 0.0009267*(U-128) + 1.4016868*(V-128)
-               // G = 1 * Y - 0.3436954*(U-128) - 0.7141690*(V-128)
-               // B = 1 * Y + 1.7721604*(U-128) + 0.0009902*(V-128)
-               //
+               
+               
+               
+               
+               
+               
 
-               // For optimize we compute common pixels parts
+               
                uvR = (-0.0009267 * (cb - 128)) + (1.4016868 * (cr - 128));
                uvG = (-0.3436954 * (cb - 128)) - (0.7141690 * (cr - 128));
                uvB = (1.7721604 * (cb - 128)) + (0.0009902 * (cr - 128));
 
-               // Create each pixel
+               
                this.pixels[p00++] = (byte) (CompressiveImage.limite0_255((int) (y00 + uvR)));
                this.pixels[p00++] = (byte) (CompressiveImage.limite0_255((int) (y00 + uvG)));
                this.pixels[p00++] = (byte) (CompressiveImage.limite0_255((int) (y00 + uvB)));
@@ -353,7 +353,7 @@ public class CompressiveImage
                this.pixels[p11++] = (byte) (CompressiveImage.limite0_255((int) (y11 + uvB)));
                this.pixels[p11] = (byte) (255);
 
-               // If there are a texture to refresh, refresh it
+               
                if(this.textureToRefresh != null)
                {
                   this.textureToRefresh.setPixels(this.width, this.height, this.pixels);
@@ -361,14 +361,14 @@ public class CompressiveImage
             }
          }
 
-         // All is done
-         // If there are a texture to refresh, refresh it
+         
+         
          if(this.textureToRefresh != null)
          {
             this.textureToRefresh.setPixels(this.width, this.height, this.pixels);
          }
 
-         // Close the stream
+         
          this.inputStream.closeEntry();
       }
       catch(final IOException e)
@@ -408,11 +408,11 @@ public class CompressiveImage
     */
    public void write(final OutputStream outputStream) throws IOException
    {
-      // Prepare the stream
+      
       final ZipOutputStream zipOutputStream = new ZipOutputStream(outputStream);
       zipOutputStream.setLevel(9);
       zipOutputStream.putNextEntry(new ZipEntry("gg"));
-      // Write dimension
+      
       UtilIO.writeInteger(this.width, zipOutputStream);
       UtilIO.writeInteger(this.height, zipOutputStream);
 
@@ -420,28 +420,28 @@ public class CompressiveImage
       final int[] y = new int[nb];
       final int[] cb = new int[nb];
       final int[] cr = new int[nb];
-      //
-      // To convert RGB to YUV, we use this :
-      // Y = 0.299*R + 0.587*G + 0.114*B
-      // U = -0.169*R - 0.331*G + 0.500*B + 128.0
-      // V = 0.500*R - 0.419*G - 0.081*B + 128.0
-      //
+      
+      
+      
+      
+      
+      
       int r, g, b;
       int index = 0;
       int pix = 0;
-      // Convert RGB pixels value to YUV
+      
       for(index = 0; index < nb; index++)
       {
          r = this.pixels[pix++] & 0xFF;
          g = this.pixels[pix++] & 0xFF;
          b = this.pixels[pix++] & 0xFF;
-         pix++;// Ignore alphas
+         pix++;
 
          y[index] = CompressiveImage.limite0_255(((299 * r) + (587 * g) + (114 * b)) / 1000);
          cb[index] = CompressiveImage.limite0_255(((((-169 * r) - (331 * g)) + (500 * b)) / 1000) + 128);
          cr[index] = CompressiveImage.limite0_255((((500 * r) - (419 * g) - (81 * b)) / 1000) + 128);
       }
-      // We write value by square 2x2 pixels
+      
       index = 0;
       int s0, s1, l, p00, p01, p10, p11;
       final int w = this.width >> 1;
@@ -457,20 +457,20 @@ public class CompressiveImage
             p10 = p00 + 1;
             p01 = s1 + xx;
             p11 = p01 + 1;
-            // We write Y parts as it
+            
             zipOutputStream.write(y[p00]);
             zipOutputStream.write(y[p10]);
             zipOutputStream.write(y[p01]);
             zipOutputStream.write(y[p11]);
-            // We write the average of U and V
+            
             zipOutputStream.write((cb[p00] + cb[p10] + cb[p01] + cb[p11]) >> 2);
             zipOutputStream.write((cr[p00] + cr[p10] + cr[p01] + cr[p11]) >> 2);
-            // So here we write 6 bytes, in RGB we have to write 12, that's why
-            // it
-            // is smaller
+            
+            
+            
          }
       }
-      // Close the stream
+      
       zipOutputStream.closeEntry();
       zipOutputStream.finish();
       zipOutputStream.flush();

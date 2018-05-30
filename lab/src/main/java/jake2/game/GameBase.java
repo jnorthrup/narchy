@@ -18,9 +18,9 @@
 
  */
 
-// Created on 30.11.2003 by RST.
 
-// $Id: GameBase.java,v 1.13 2006-01-21 21:53:31 salomo Exp $
+
+
 
 /** Father of all GameObjects. */
 
@@ -137,9 +137,9 @@ public class GameBase {
 
         blocked = 0;
         if (normal[2] > 0)
-            blocked |= 1; // floor
+            blocked |= 1; 
         if (normal[2] == 0.0f)
-            blocked |= 2; // step
+            blocked |= 2; 
 
         backoff = Math3D.DotProduct(in, normal) * overbounce;
 
@@ -187,7 +187,7 @@ public class GameBase {
         return null;
     }
 
-    // comfort version (rst)
+    
     public static edict_t G_FindEdict(EdictIterator from, EdictFindFilter eff,
             String s) {
         EdictIterator ei = G_Find(from, eff, s);
@@ -299,7 +299,7 @@ public class GameBase {
         int i, num;
         edict_t hit;
 
-        // dead things don't activate triggers!
+        
         if ((ent.client != null || (ent.svflags & Defines.SVF_MONSTER) != 0)
                 && (ent.health <= 0))
             return;
@@ -307,8 +307,8 @@ public class GameBase {
         num = game_import_t.BoxEdicts(ent.absmin, ent.absmax, touch, Defines.MAX_EDICTS,
                 Defines.AREA_TRIGGERS);
 
-        // be careful, it is possible to have an entity in this
-        // list removed before we get to it (killtriggered)
+        
+        
         for (i = 0; i < num; i++) {
             hit = touch[i];
 
@@ -414,8 +414,8 @@ public class GameBase {
         int i;
         edict_t ent;
 
-        // calc the player views now that all pushing
-        // and damage has been added
+        
+        
         for (i = 0; i < maxclients.value; i++) {
             ent = g_edicts[1 + i];
             if (!ent.inuse || null == ent.client)
@@ -443,18 +443,18 @@ public class GameBase {
      */
     public static void EndDMLevel() {
         edict_t ent;
-        //char * s, * t, * f;
-        //static const char * seps = " ,\n\r";
+        
+        
         String s, t, f;
         String seps = " ,\n\r";
 
-        // stay on same level flag
+        
         if (((int) dmflags.value & Defines.DF_SAME_LEVEL) != 0) {
             PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
             return;
         }
 
-        // see if it's in the map list
+        
         if (sv_maplist.string.length() > 0) {
             s = sv_maplist.string;
             f = null;
@@ -463,15 +463,15 @@ public class GameBase {
             while (tk.hasMoreTokens()){
             	t = tk.nextToken();
      
-            	// store first map
+            	
             	if (f == null)
             		f = t;
             	
                 if (t.equalsIgnoreCase(level.mapname)) {
-                    // it's in the list, go to the next one
+                    
                 	if (!tk.hasMoreTokens()) {
-                		// end of list, go to first one
-                        if (f == null) // there isn't a first one, same level
+                		
+                        if (f == null) 
                             PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
                         else
                             PlayerHud.BeginIntermission(CreateTargetChangeLevel(f));
@@ -482,15 +482,15 @@ public class GameBase {
             }
         }
 
-        //not in the map list
-        if (level.nextmap.length() > 0) // go to a specific map
+        
+        if (level.nextmap.length() > 0) 
             PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.nextmap));
-        else { // search for a changelevel
+        else { 
             EdictIterator edit = null;
             edit = G_Find(edit, findByClass, "target_changelevel");
-            if (edit == null) { // the map designer didn't include a
-                                // changelevel,
-                // so create a fake ent that goes back to the same level
+            if (edit == null) { 
+                                
+                
                 PlayerHud.BeginIntermission(CreateTargetChangeLevel(level.mapname));
                 return;
             }
@@ -505,8 +505,8 @@ public class GameBase {
     public static void CheckNeedPass() {
         int need;
 
-        // if password or spectator_password has changed, update needpass
-        // as needed
+        
+        
         if (password.modified || spectator_password.modified) {
             password.modified = spectator_password.modified = false;
 
@@ -573,7 +573,7 @@ public class GameBase {
         level.intermissiontime = 0;
         ClientEndServerFrames();
 
-        // clear some things before going to next level
+        
         for (i = 0; i < maxclients.value; i++) {
             ent = g_edicts[1 + i];
             if (!ent.inuse)
@@ -595,20 +595,20 @@ public class GameBase {
         level.framenum++;
         level.time = level.framenum * Defines.FRAMETIME;
 
-        // choose a client for monsters to target this frame
+        
         GameAI.AI_SetSightClient();
 
-        // exit intermissions
+        
 
         if (level.exitintermission) {
             ExitLevel();
             return;
         }
 
-        //
-        // treat each object in turn
-        // even the world gets a chance to think
-        //
+        
+        
+        
+        
 
         for (i = 0; i < num_edicts; i++) {
             ent = g_edicts[i];
@@ -619,7 +619,7 @@ public class GameBase {
 
             Math3D.VectorCopy(ent.s.origin, ent.s.old_origin);
 
-            // if the ground entity moved, make sure we are still on it
+            
             if ((ent.groundentity != null)
                     && (ent.groundentity.linkcount != ent.groundentity_linkcount)) {
                 ent.groundentity = null;
@@ -637,13 +637,13 @@ public class GameBase {
             G_RunEntity(ent);
         }
 
-        // see if it is time to end a deathmatch
+        
         CheckDMRules();
 
-        // see if needpass needs updated
+        
         CheckNeedPass();
 
-        // builder the playerstate_t structures for all players
+        
         ClientEndServerFrames();
     }
 

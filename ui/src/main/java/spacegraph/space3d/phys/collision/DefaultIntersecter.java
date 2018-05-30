@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -40,17 +40,17 @@ import java.util.Collections;
 public class DefaultIntersecter extends Intersecter {
 
 	private static final int MAX_BROADPHASE_COLLISION_TYPES = BroadphaseNativeType.MAX_BROADPHASE_COLLISION_TYPES.ordinal();
-	//private int count;
+	
 	private final OArrayList<PersistentManifold> manifolds = new OArrayList<>();
-	//private final boolean useIslands = true;
+	
 	private boolean staticWarningReported;
-	//private ManifoldResult defaultManifoldResult;
+	
 	private NearCallback nearCallback;
-	//private PoolAllocator*	m_collisionAlgorithmPoolAllocator;
-	//private PoolAllocator*	m_persistentManifoldPoolAllocator;
+	
+	
 	private final CollisionAlgorithmCreateFunc[][] doubleDispatch = new CollisionAlgorithmCreateFunc[MAX_BROADPHASE_COLLISION_TYPES][MAX_BROADPHASE_COLLISION_TYPES];
 	private CollisionConfiguration collisionConfiguration;
-	//private static int gNumManifold = 0;
+	
 
 	private final CollisionAlgorithmConstructionInfo tmpCI = new CollisionAlgorithmConstructionInfo();
 
@@ -59,8 +59,8 @@ public class DefaultIntersecter extends Intersecter {
 
 		setNearCallback(new DefaultNearCallback());
 
-		//m_collisionAlgorithmPoolAllocator = collisionConfiguration->getCollisionAlgorithmPool();
-		//m_persistentManifoldPoolAllocator = collisionConfiguration->getPersistentManifoldPool();
+		
+		
 
 		for (int i = 0; i < MAX_BROADPHASE_COLLISION_TYPES; i++) {
 			BroadphaseNativeType ti = BroadphaseNativeType.forValue(i);
@@ -110,9 +110,9 @@ public class DefaultIntersecter extends Intersecter {
 
 	@Override
 	public PersistentManifold getNewManifold(Object b0, Object b1) {
-		//gNumManifold++;
+		
 
-		//btAssert(gNumManifold < 65535);
+		
 
 		Collidable body0 = (Collidable)b0;
 		Collidable body1 = (Collidable)b1;
@@ -144,16 +144,16 @@ public class DefaultIntersecter extends Intersecter {
 
 	@Override
 	public void releaseManifold(PersistentManifold manifold) {
-		//gNumManifold--;
+		
 
-		//printf("releaseManifold: gNumManifold %d\n",gNumManifold);
+		
 		clearManifold(manifold);
 
-		// TODO: optimize
+		
 		int findIndex = manifold.index1a;
 		assert (findIndex < manifolds.size());
 		Collections.swap(manifolds, findIndex, manifolds.size()-1);
-        //return array[index];
+        
         manifolds.get(findIndex).index1a = findIndex;
 		manifolds.removeFast(manifolds.size()-1);
 
@@ -171,16 +171,16 @@ public class DefaultIntersecter extends Intersecter {
 
 		boolean needsCollision = true;
 
-		//#ifdef BT_DEBUG
+		
 		if (!staticWarningReported) {
-			// broadphase filtering already deals with this
+			
 			if ((body0.isStaticObject() || body0.isKinematicObject()) &&
 					(body1.isStaticObject() || body1.isKinematicObject())) {
 				staticWarningReported = true;
 				System.err.println("warning CollisionDispatcher.needsCollision: static-static collision!");
 			}
 		}
-		//#endif //BT_DEBUG
+		
 
 		if ((!body0.isActive()) && (!body1.isActive()) || !body0.checkCollideWith(body1)) {
 			needsCollision = false;
@@ -191,8 +191,8 @@ public class DefaultIntersecter extends Intersecter {
 
 	@Override
 	public boolean needsResponse(Collidable body0, Collidable body1) {
-		//here you can do filtering
-		//no response between two static/kinematic bodies:
+		
+		
 		return (body0.hasContactResponse() && body1.hasContactResponse()) && ((!body0.isStaticOrKinematicObject()) || (!body1.isStaticOrKinematicObject()));
 	}
 
@@ -218,10 +218,10 @@ public class DefaultIntersecter extends Intersecter {
 	
 	@Override
 	public void dispatchAllCollisionPairs(OverlappingPairCache pairCache, DispatcherInfo dispatchInfo, Intersecter intersecter) {
-		//m_blockedForChanges = true;
+		
 		collisionPairCallback.init(dispatchInfo, this);
 		pairCache.processAllOverlappingPairs(collisionPairCallback, intersecter);
-		//m_blockedForChanges = false;
+		
 	}
 
 	@Override
@@ -232,7 +232,7 @@ public class DefaultIntersecter extends Intersecter {
 	@Override
 	public PersistentManifold manifold(int index) {
         return manifolds.get(index);
-        //return array[index];
+        
     }
 
 }

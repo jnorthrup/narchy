@@ -50,17 +50,17 @@ import java.awt.event.KeyListener;
 public class PhysicsRun {
     public final PhysicsController controller;
     public final TestbedState model;
-    // private static final Logger log = LoggerFactory.getLogger(TestbedMain.class);
+    
 
     private final float simulationRate;
     public PhysicsRun(float simulationRate, PhysicsModel... tests) {
         this.simulationRate = simulationRate;
-    // try {
-        // UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-        // } catch (Exception e) {
-        // log.warn("Could not set the look and feel to nimbus.  "
-        // + "Hopefully you're on a mac so the window isn't ugly as crap.");
-        // }
+    
+        
+        
+        
+        
+        
         model = new TestbedState();
         controller = new PhysicsController(model, UpdateBehavior.UPDATE_CALLED, MouseBehavior.NORMAL,
             new TestbedErrorHandler() {
@@ -71,7 +71,7 @@ public class PhysicsRun {
                 }
             });
 
-        //PhysPanel panel = new PhysPanel(model, controller);
+        
         GLCapabilities config = new GLCapabilities(GLProfile.getDefault());
         config.setHardwareAccelerated(true);
         config.setAlphaBits(8);
@@ -81,7 +81,7 @@ public class PhysicsRun {
         config.setAccumBlueBits(8);
 
         config.setNumSamples(1);
-        //config.setBackgroundOpaque(false);
+        
 
         JoglAbstractPanel panel = new JoglPanel(model, controller, config) {
 
@@ -93,7 +93,7 @@ public class PhysicsRun {
         joglDraw.setPanel(panel);
         model.setPanel(panel);
 
-        //model.setDebugDraw(new DrawPhy2D(panel, true));
+        
         model.setDebugDraw(joglDraw);
 
         for (PhysicsModel test : tests) {
@@ -105,7 +105,7 @@ public class PhysicsRun {
         window.setLayout(new BorderLayout());
         TestbedSidePanel side = new TestbedSidePanel(model, controller);
         window.add(panel, "Center");
-        //window.add(new JScrollPane(side), "East");
+        
         window.pack();
         window.setVisible(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -141,29 +141,29 @@ public class PhysicsRun {
         
     }
 
-//    class PhysPanelGL extends JoglPanel implements KeyListener {
-//
-//        public PhysPanelGL(final TestbedState model, final PhysicsController controller) {
-//            super(model,controller, config);
-//            this.addKeyListener(this);
-//        }
-//
-//        @Override
-//        public void keyPressed(KeyEvent e) {
-//            PhysicsRun.this.keyPressed(e);
-//        }
-//
-//        @Override
-//        public void keyReleased(KeyEvent e) {
-//
-//        }
-//
-//        @Override
-//        public void keyTyped(KeyEvent e) {
-//
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /*public void start(final int fps) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

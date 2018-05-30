@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.io;
 
@@ -90,7 +90,7 @@ public class ALEPipes {
             out.close();
         }
         catch (IOException e) {
-            // Not sure what to do if we can't close streams...
+            
         }
     }
     
@@ -111,25 +111,25 @@ public class ALEPipes {
      * 
      */
     public void initPipes() throws IOException {
-        // Read in the width and height of the screen
-        // Format: <width>-<height>\n
+        
+        
         String line = in.readLine();
         String[] tokens = line.split("-");
         int width = Integer.parseInt(tokens[0]);
         int height = Integer.parseInt(tokens[1]);
 
-        // Do some error checking - our width and height should be positive
+        
         if (width <= 0 || height <= 0) {
             throw new RuntimeException("Invalid width/height: "+width+"x"+height);
         }
 
-        // Create the data structures used to store received information
+        
         screen = new ScreenMatrix(width, height);
         ram = new ConsoleRAM();
         rlData = new RLData();
 
-        // Now send back our preferences
-        // Format: <wants-screen>,<wants-ram>,<frame-skip>,<wants-rldata>\n
+        
+        
         out.printf("%d,%d,%d,%d\n", updateScreen? 1:0, updateRam? 1:0, frameskip,
                 updateRLData? 1:0);
         out.flush();
@@ -171,8 +171,8 @@ public class ALEPipes {
      *
      */
     public boolean observe() {
-        // Ensure that observe() is not called twice, as it will otherwise block
-        //  as both ALE and the agent wait for data.
+        
+        
         if (hasObserved) {
             throw new RuntimeException("observe() called without subsequent act().");
         }
@@ -181,7 +181,7 @@ public class ALEPipes {
 
         String line = null;
 
-        // First read in a new line from ALE
+        
         try {
             line = in.readLine();
             if (line == null) return true;
@@ -190,29 +190,29 @@ public class ALEPipes {
             return true;
         }
 
-        // Catch the special keyword 'DIE'
+        
         if (line.equals("DIE")) {
             terminateRequested = true;
             return false;
         }
 
-        // Ignore blank lines (still send an action)
+        
         if (line.length() > 0) {
-            // The data format is:
-            // <ram-string>:<screen-string>:<rl-data-string>:\n
-            //  Some of these elements may be missing, in which case the separating
-            //  colons are not sent. For example, if we only want ram and rl data,
-            //  the format is <ram>:<rl-data>:
+            
+            
+            
+            
+            
 
             String[] tokens = line.split(":");
 
             int tokenIndex = 0;
 
-            // If necessary, first read the RAM data
+            
             if (updateRam)
                 readRam(tokens[tokenIndex++]);
 
-            // Then update the screen
+            
             if (updateScreen) {
                 String screenString = tokens[tokenIndex++];
 
@@ -222,7 +222,7 @@ public class ALEPipes {
                     readScreenMatrix(screenString);
             }
 
-            // Finally obtain RL data
+            
             if (updateRLData) {
                 readRLData(tokens[tokenIndex++]);
             }
@@ -237,7 +237,7 @@ public class ALEPipes {
      * @return
      */
     public boolean act(int act) {
-        // Ensure that we called observe() last
+        
         if (!hasObserved) {
             throw new RuntimeException("act() called before observe().");
         }
@@ -251,8 +251,8 @@ public class ALEPipes {
 
     /** Helper function to send out an action to ALE */
     public void sendAction(int act) {
-        // Send player A's action, as well as the NOOP for player B
-        // Format: <player_a_action>,<player_b_action>\n
+        
+        
         out.printf("%d,%d\n", act, 18);
         out.flush();
     }
@@ -262,11 +262,11 @@ public class ALEPipes {
      * @param line
      */
     public void readRLData(String line) {
-        // Parse RL data
-        // Format: <is-terminal>:<reward>\n
+        
+        
         String[] tokens = line.split(",");
 
-        // Parse the terminal bit
+        
         rlData.isTerminal = (Integer.parseInt(tokens[0]) == 1);
         rlData.reward = Integer.parseInt(tokens[1]);
     }
@@ -277,9 +277,9 @@ public class ALEPipes {
     public void readRam(String line) {
         int offset = 0;
 
-        // Read in all of the RAM
-        // Format: <r0><r1><r2>...<r127>
-        //  where ri is 2 characters representing an integer between 0 and 0xFF
+        
+        
+        
         for (int ptr = 0; ptr < ConsoleRAM.RAM_SIZE; ptr++) {
             int v = Integer.parseInt(line.substring(offset, offset + 2), 16);
             ram.ram[ptr] = v;
@@ -296,7 +296,7 @@ public class ALEPipes {
     public void readScreenMatrix(String line) {
         int ptr = 0;
 
-        // 0.3 protocol - send everything
+        
         for (int y = 0; y < screen.height; y++)
             for (int x = 0; x < screen.width; x++) {
                 int v = byteAt(line, ptr);
@@ -322,12 +322,12 @@ public class ALEPipes {
     public void readScreenRLE(String line) {
         int ptr = 0;
 
-        // 0.3 protocol - send everything
+        
         int y = 0;
         int x = 0;
 
         while (ptr < line.length()) {
-            // Read in the next run
+            
             int v = byteAt(line, ptr);
             int l = byteAt(line, ptr + 2);
             ptr += 4;

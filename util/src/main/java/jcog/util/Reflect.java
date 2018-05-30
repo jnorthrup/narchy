@@ -1,6 +1,14 @@
 package jcog.util;
 
-/** from: https://github.com/jOOQ/jOOR/blob/master/jOOR/src/main/java/org/joor/Reflect.java */
+import org.jetbrains.annotations.NotNull;
+
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+/** from: https:
 
 import org.jetbrains.annotations.NotNull;
 
@@ -15,16 +23,16 @@ import java.util.Map;
  * can be made.
  * <p>
  * An example of using <code>Reflect</code> is <code><pre>
- * // Static import all reflection methods to decrease verbosity
+ * 
  * import static org.joor.Reflect.*;
  *
- * // Wrap an Object / Class / class name with the on() method:
+ * 
  * on("java.lang.String")
- * // Invoke constructors using the create() method:
+ * 
  * .create("Hello World")
- * // Invoke methods using the call() method:
+ * 
  * .call("toString")
- * // Retrieve the wrapped object
+ * 
  *
  * @author Lukas Eder
  * @author Irek Matysiewicz
@@ -32,9 +40,9 @@ import java.util.Map;
  */
 public class Reflect {
 
-    // ---------------------------------------------------------------------
-    // Static API used as entrance points to the fluent API
-    // ---------------------------------------------------------------------
+    
+    
+    
 
     /**
      * Wrap a class name.
@@ -122,7 +130,7 @@ public class Reflect {
             }
         }
 
-        // [jOOQ #3392] The accessible flag is set to false by default, also for public members.
+        
         if (!accessible.isAccessible()) {
             accessible.setAccessible(true);
         }
@@ -130,9 +138,9 @@ public class Reflect {
         return accessible;
     }
 
-    // ---------------------------------------------------------------------
-    // Members
-    // ---------------------------------------------------------------------
+    
+    
+    
 
     /* [java-8] */
     private static final Constructor<MethodHandles.Lookup> CACHED_LOOKUP_CONSTRUCTOR;
@@ -160,9 +168,9 @@ public class Reflect {
      */
     private final Object   object;
 
-    // ---------------------------------------------------------------------
-    // Constructors
-    // ---------------------------------------------------------------------
+    
+    
+    
 
     private Reflect(Class<?> type) {
         this(type, type);
@@ -173,9 +181,9 @@ public class Reflect {
         this.object = object;
     }
 
-    // ---------------------------------------------------------------------
-    // Fluent Reflection API
-    // ---------------------------------------------------------------------
+    
+    
+    
 
     /**
      * Get the wrapped object
@@ -205,9 +213,9 @@ public class Reflect {
      * <p>
      * For restrictions of usage regarding setting values on final fields check:
      * <a href=
-     * "http://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection">http://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection</a>
+     * "http:
      * ... and <a href=
-     * "http://pveentjer.blogspot.co.at/2017/01/final-static-boolean-jit.html">http://pveentjer.blogspot.co.at/2017/01/final-static-boolean-jit.html</a>
+     * "http:
      *
      * @param name The field name
      * @param value The new field value
@@ -276,12 +284,12 @@ public class Reflect {
     private Field field0(String name) throws ReflectException {
         Class<?> t = type();
 
-        // Try getting a public field
+        
         try {
             return accessible(t.getField(name));
         }
 
-        // Try again, getting a non-public field
+        
         catch (NoSuchFieldException e) {
             do {
                 try {
@@ -319,7 +327,7 @@ public class Reflect {
     public Map<String, Reflect> fields(boolean instance, boolean statik, boolean nonPublic) {
 
         Map<String, Reflect> result =
-                //new LinkedHashMap<String, Reflect>();
+                
                 new HashMap<>(16);
 
         Class<?> t = type();
@@ -403,15 +411,15 @@ public class Reflect {
     public Reflect call(String name, Object... args) throws ReflectException {
         Class<?>[] types = types(args);
 
-        // Try invoking the "canonical" method, i.e. the one with exact
-        // matching argument types
+        
+        
         try {
             Method method = exactMethod(name, types);
             return on(method, object, args);
         }
 
-        // If there is no exact match, try to find a method that has a "similar"
-        // signature if primitive argument types are converted to their wrappers
+        
+        
         catch (NoSuchMethodException e) {
             try {
                 Method method = similarMethod(name, types);
@@ -432,12 +440,12 @@ public class Reflect {
     private Method exactMethod(String name, Class<?>[] types) throws NoSuchMethodException {
         Class<?> t = type();
 
-        // first priority: find a public method with exact signature match in class hierarchy
+        
         try {
             return t.getMethod(name, types);
         }
 
-        // second priority: find a private method with exact signature match on declaring class
+        
         catch (NoSuchMethodException e) {
             do {
                 try {
@@ -464,15 +472,15 @@ public class Reflect {
     private Method similarMethod(String name, Class<?>[] types) throws NoSuchMethodException {
         Class<?> t = type();
 
-        // first priority: find a public method with a "similar" signature in class hierarchy
-        // similar interpreted in when primitive argument types are converted to their wrappers
+        
+        
         for (Method method : t.getMethods()) {
             if (isSimilarSignature(method, name, types)) {
                 return method;
             }
         }
 
-        // second priority: find a non-public method with a "similar" signature on declaring class
+        
         do {
             for (Method method : t.getDeclaredMethods()) {
                 if (isSimilarSignature(method, name, types)) {
@@ -538,15 +546,15 @@ public class Reflect {
     public Reflect create(Object... args) throws ReflectException {
         Class<?>[] types = types(args);
 
-        // Try invoking the "canonical" constructor, i.e. the one with exact
-        // matching argument types
+        
+        
         try {
             Constructor<?> constructor = type().getDeclaredConstructor(types);
             return on(constructor, args);
         }
 
-        // If there is no exact match, try to find one that has a "similar"
-        // signature if primitive argument types are converted to their wrappers
+        
+        
         catch (NoSuchMethodException e) {
             for (Constructor<?> constructor : type().getDeclaredConstructors()) {
                 if (match(constructor.getParameterTypes(), types)) {
@@ -571,12 +579,12 @@ public class Reflect {
         final InvocationHandler handler = (proxy, method, args) -> {
             String name = method.getName();
 
-            // Actual method name matches always come first
+            
             try {
                 return on(type, object).call(name, args).get();
             }
 
-            // [#14] Emulate POJO behaviour on wrapped map objects
+            
             catch (ReflectException e) {
                 if (isMap) {
                     Map<String, Object> map = (Map<String, Object>) object;
@@ -633,9 +641,9 @@ public class Reflect {
         }
     }
 
-    // ---------------------------------------------------------------------
-    // Object API
-    // ---------------------------------------------------------------------
+    
+    
+    
 
     /**
      * Check whether two arrays of types match, converting primitive types to
@@ -688,9 +696,9 @@ public class Reflect {
         return object.toString();
     }
 
-    // ---------------------------------------------------------------------
-    // Utility methods
-    // ---------------------------------------------------------------------
+    
+    
+    
 
     /**
      * Wrap an object created from a constructor

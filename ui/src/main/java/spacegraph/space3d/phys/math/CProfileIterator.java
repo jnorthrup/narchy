@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -46,7 +46,7 @@ public class CProfileIterator {
 		currentChild = currentParent.getChild();
 	}
 	
-	// Access all the children of the current parent
+	
 	
 	public void first() {
 		currentChild = currentParent.getChild();
@@ -80,7 +80,7 @@ public class CProfileIterator {
 		}
 	}
 	
-	//public void enterLargestChild(); // Make the largest child the new parent
+	
 	
 	/**
 	 * Make the current parent's parent the new parent.
@@ -92,7 +92,7 @@ public class CProfileIterator {
 		currentChild = currentParent.getChild();
 	}
 
-	// Access the current child
+	
 	
 	public String getCurrentName() {
 		return currentChild.getName();
@@ -106,7 +106,7 @@ public class CProfileIterator {
 		return currentChild.getTotalTime();
 	}
 
-	// Access the current parent
+	
 	
 	public String getCurrentParentName() {
 		return currentParent.getName();

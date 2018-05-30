@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at 
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0 
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software 
  * distributed under the License is distributed on an "AS IS" BASIS, 
@@ -136,7 +136,7 @@ public class TarInputStream extends FilterInputStream {
 		theader = new byte[TarConstants.HEADER_BLOCK];
 		int tr = 0;
 
-		// Read full header
+		
 		while (tr < TarConstants.HEADER_BLOCK) {
 			int res = read(theader, 0, TarConstants.HEADER_BLOCK - tr);
 
@@ -148,7 +148,7 @@ public class TarInputStream extends FilterInputStream {
 			tr += res;
 		}
 
-		// Check if record is null
+		
 		boolean eof = true;
 		for (byte b : header) {
 			if (b != 0) {
@@ -182,13 +182,13 @@ public class TarInputStream extends FilterInputStream {
 		if (currentEntry != null) {
 			long currentEntrySize = currentEntry.getSize();
 			if (currentEntrySize > currentFileSize) {
-				// Not fully read, skip rest of the bytes
+				
 				long bs = 0;
 				while (bs < currentEntrySize - currentFileSize) {
 					long res = skip(currentEntrySize - currentFileSize - bs);
 
 					if (res == 0 && currentEntrySize - currentFileSize > 0) {
-						// I suspect file corruption
+						
 						throw new IOException("Possible tar file corruption");
 					}
 
@@ -232,8 +232,8 @@ public class TarInputStream extends FilterInputStream {
 	@Override
 	public long skip(long n) throws IOException {
 		if (defaultSkip) {
-			// use skip method of parent stream
-			// may not work if skip not implemented by parent
+			
+			
 			long bs = super.skip(n);
 			bytesRead += bs;
 

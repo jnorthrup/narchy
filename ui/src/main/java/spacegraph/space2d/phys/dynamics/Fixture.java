@@ -156,7 +156,7 @@ public class Fixture {
             return;
         }
 
-        // Flag associated contacts for filtering.
+        
         ContactEdge edge = body.contacts();
         while (edge != null) {
             Contact contact = edge.contact;
@@ -174,7 +174,7 @@ public class Fixture {
             return;
         }
 
-        // Touch each proxy so that new pairs may be created
+        
         BroadPhase broadPhase = world.contactManager.broadPhase;
         for (int i = 0; i < m_proxyCount; ++i) {
             broadPhase.touchProxy(proxies[i].id);
@@ -317,8 +317,8 @@ public class Fixture {
         return shape.computeDistanceToOut(body, p, childIndex, normalOut);
     }
 
-    // We need separation create/destroy functions from the constructor/destructor because
-    // the destructor cannot access the allocator (no destructor arguments allowed by C++).
+    
+    
 
     public void create(Body2D body, FixtureDef def) {
         data = def.userData;
@@ -334,7 +334,7 @@ public class Fixture {
         isSensor = def.isSensor;
 
 
-        //moj doplneny kod
+        
         material = def.material;
         polygon = def.polygon;
         density = def.density;
@@ -345,7 +345,7 @@ public class Fixture {
     public void setShape(Shape shape) {
         this.shape = shape;
 
-        // Reserve proxy space
+        
         int childCount = this.shape.getChildCount();
         if (proxies == null || proxies.length!=childCount) {
             proxies = new FixtureProxy[childCount];
@@ -373,23 +373,23 @@ public class Fixture {
     }
 
     public void destroy() {
-        // The proxies must be destroyed before calling this.
+        
         assert (m_proxyCount == 0);
 
-        // Free the child shape.
+        
         shape = null;
         proxies = null;
         next = null;
 
-        // TODO pool shapes
-        // TODO pool fixtures
+        
+        
     }
 
-    // These support body activation/deactivation.
+    
     public void createProxies(BroadPhase broadPhase, final Transform xf) {
         assert (m_proxyCount == 0);
 
-        // Create proxies in the broad-phase.
+        
         m_proxyCount = shape.getChildCount();
 
         for (int i = 0; i < m_proxyCount; ++i) {
@@ -407,7 +407,7 @@ public class Fixture {
      * @param broadPhase
      */
     public void destroyProxies(BroadPhase broadPhase) {
-        // Destroy proxies in the broad-phase.
+        
         for (int i = 0; i < m_proxyCount; ++i) {
             FixtureProxy proxy = proxies[i];
             broadPhase.destroyProxy(proxy.id);
@@ -437,7 +437,7 @@ public class Fixture {
         for (int i = 0; i < m_proxyCount; ++i) {
             FixtureProxy proxy = proxies[i];
 
-            // Compute an AABB that covers the swept shape (may miss some rotation effect).
+            
             final AABB aabb1 = pool1;
             final AABB aab = pool2;
             shape.computeAABB(aabb1, transform1, proxy.childIndex);

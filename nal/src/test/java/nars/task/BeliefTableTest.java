@@ -34,8 +34,8 @@ public class BeliefTableTest {
 
         if (!tt.isEmpty()) {
             Task t = tt.get(0);
-            //System.out.println(sim.proof());
-            //System.out.println(sim.start() + ".." + /*sim.occurrence() + ".."*/ + sim.end());
+            
+            
             assertEquals(start, t.start());
             assertEquals(end, t.end());
         }
@@ -94,7 +94,7 @@ public class BeliefTableTest {
         int spacing = 4;
         float conf = 0.9f;
         float[] freqPattern =
-                //new float[]{0, 0.25f, 0.5f, 0.75f, 1f};
+                
                 {0, 0.5f, 1f};
         long[] timing =
                 {0, 2, 4};
@@ -109,7 +109,7 @@ public class BeliefTableTest {
         assertEquals(timing.length, freqPattern.length);
         int k = 0;
         for (float f : freqPattern) {
-            //create linear gradient of belief across time, freq beginning at 0 and increasing to 1
+            
             b.believe(0.5f, freqPattern[k], conf, timing[k]);
             k++;
         }
@@ -123,7 +123,7 @@ public class BeliefTableTest {
         for (int i = -margin; i < spacing * c + margin; i++)
             System.out.println(i + "\t" + table.truth(i,    /* relative to zero */  n));
 
-        //measure exact timing
+        
         for (int i = 0; i < c; i++) {
             long w = timing[i];
             Truth truth = table.truth(w, n);
@@ -134,7 +134,7 @@ public class BeliefTableTest {
             assertEquals(fExpected, match.freq(), 0.01f, "exact belief @" + w + " == " + fExpected);
         }
 
-        //measure midpoint interpolation
+        
         for (int i = 1; i < c - 1; i++) {
             float f = (freqPattern[i-1] + freqPattern[i] + freqPattern[i + 1]) / 3f;
             long w = timing[i];
@@ -142,21 +142,21 @@ public class BeliefTableTest {
         }
 
 
-//        /* first */
-//        @Nullable Truth firstBeliefTruth = table.truth((long) 0, n);
-//        assertEquals(0.43f, firstBeliefTruth.freq(), 0.1f);
-//
-//        /* last */
-//        @Nullable Truth lastBeliefTruth = table.truth((long) (spacing * (c - 1)), n);
-//        assertEquals(0.56f, lastBeliefTruth.freq(), 0.1f);
-//
-//        @Nullable Truth endTruth = table.truth((long) (spacing * (c - 1) + margin), n);
-//        assertEquals(0.55f, endTruth.freq(), 0.2f);
-//        assertTrue(lastBeliefTruth.conf() >= endTruth.conf());
-//
-//        @Nullable Truth startTruth = table.truth((long) (0 - margin), n);
-//        assertEquals(0.44f, startTruth.freq(), 0.2f);
-//        assertTrue(firstBeliefTruth.conf() >= startTruth.conf());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Test
@@ -165,8 +165,8 @@ public class BeliefTableTest {
         n.time.dur(5);
         n.inputAt(10, "(x). :|:");
         n.run(11);
-        //with duration = 5, the evidence surrounding a point
-        // belief/goal will decay in the +/- 2.5 radius of time surrounding it.
+        
+        
 
         n.conceptualize("(x)").print();
 
@@ -176,7 +176,7 @@ public class BeliefTableTest {
         assertEquals(0.90f, n.beliefTruth("(x)", 10).conf(), 0.1f);
         assertEquals(0.88f, n.beliefTruth("(x)", 11).conf(), 0.1f);
         assertEquals(0.86f, n.beliefTruth("(x)", 12).conf(), 0.1f);
-        //assertNull( n.beliefTruth("(x)", 13000) );
+        
 
     }
 
@@ -201,10 +201,10 @@ public class BeliefTableTest {
     @Test
     public void testTemporalIntersection() throws Narsese.NarseseException {
 
-        //this.activeTasks = activeTasks;
+        
         NAR n = NARS.tmp();
 
-        //TODO extend these beliefs so they overlap (intersect), then it will derive the results
+        
         n.inputAt(2, "a:x. :|:");
         n.inputAt(10, "a:y. :|:");
         n.run(128);
@@ -213,8 +213,8 @@ public class BeliefTableTest {
             assertDuration(n, t, 2, 10);
         }
 
-        //n.concept("(x-->a)").print();
-        //n.concept("(y-->a)").print();
+        
+        
     }
 
     @Test
@@ -236,37 +236,37 @@ public class BeliefTableTest {
             n.believe("((a ==>+2 b)-->[pill])", t, 1f, 0.9f);
             n.believe("((a ==>+6 b)-->[pill])", t, 1f, 0.9f);
 
-            //@NotNull Bag<Concept, PLink<Concept>> cb = n.focus.active;
-            //assertTrue(5 <= cb.size());
+            
+            
 
             String abpill = "((a==>b)-->[pill])";
-            TaskConcept cc = (TaskConcept) n.conceptualize(abpill); //iterator().next().get();//((ArrayBag<Concept>) cb).get(0).get();
+            TaskConcept cc = (TaskConcept) n.conceptualize(abpill); 
             assertNotNull(cc);
 
             String correctMerge = "((a ==>+4 b)-->[pill])";
             cc.beliefs().print();
 
-            //test belief match interpolated a result
+            
             long when = t == Present ? 0 : ETERNAL;
             assertEquals(correctMerge, cc.beliefs().match(when, null, n).term().toString());
 
 
-            //test merge after capacity shrink:
+            
 
-            cc.beliefs().setCapacity(1, 1); //set to capacity=1 to force compression
+            cc.beliefs().setCapacity(1, 1); 
 
             cc.print();
 
-            //n.forEachTask(System.out::println);
+            
 
-            //INTERMPOLATION APPLIED AFTER REVECTION:
+            
             assertEquals(correctMerge, cc.beliefs().match(0, null, n).term().toString());
         }
     }
 
     @Test
     public void testBestMatchConjSimple() throws Narsese.NarseseException {
-        //TODO
+        
     }
 
     @Test
@@ -300,7 +300,7 @@ public class BeliefTableTest {
     @Test
     public void testDTDiffSame() {
 
-        //+- matches anything
+        
         float same = dtDiff("(x ==>+5 y)", "(x ==>+5 y)");
         assertEquals(0f, same, 0.001f);
         assertEquals(dtDiff("(x ==>+5 y)", "(x ==>+- y)"), same);
@@ -328,7 +328,7 @@ public class BeliefTableTest {
     @Test
     public void testDTImplEmbeddedConj() {
 
-        //difference in the subterm has less impact than at the root
+        
         float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
         float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
         assertEquals(1, a, 0.1f);

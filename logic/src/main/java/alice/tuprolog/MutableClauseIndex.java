@@ -35,12 +35,12 @@ public class MutableClauseIndex extends ConcurrentHashMap<String,FamilyClausesLi
 		computeIfAbsent(key, (k)->new FamilyClausesList()).add(d, first);
 	}
 
-//	public void addLast(String key, ClauseInfo d) {
-//		FamilyClausesList family = get(key);
-//		if (family == null)
-//			put(key, family = new FamilyClausesList());
-//		family.addLast(d);
-//	}
+
+
+
+
+
+
 
 /*	FamilyClausesList abolish(String key)
 	{
@@ -58,37 +58,37 @@ public class MutableClauseIndex extends ConcurrentHashMap<String,FamilyClausesLi
 	}
 
 
-//	/**
-//	 * Retrieves the list of clauses of the requested family
-//	 *
-//	 * @param key   Goal's Predicate Indicator
-//	 * @return      The family clauses
-//	 */
-//	List<ClauseInfo> getPredicates(String key){
-//		FamilyClausesList family = get(key);
-//		if(family == null){
-//			return new ReadOnlyLinkedList<>();
-//		}
-//		return new ReadOnlyLinkedList<>(family);
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	@Override
 	public Iterator<ClauseInfo> iterator() {
 		return new CompleteIterator(this);
 	}
 
-//	public void forEachClause(Consumer<ClauseInfo> ci) {
-//		values().forEach(x -> x.forEach(ci::accept));
-//	}
+
+
+
 
 	private static class CompleteIterator implements Iterator<ClauseInfo> {
 		final Iterator<FamilyClausesList> values;
 		Iterator<ClauseInfo> workingList;
-		//private boolean busy = false;
+		
 
 		public CompleteIterator(MutableClauseIndex clauseDatabase) {
-			//copy so that this can be done concurrently
-			//values = Lists.newArrayList(clauseDatabase.values()).iterator();
+			
+			
 			values = clauseDatabase.values().iterator();
 		}
 

@@ -46,7 +46,7 @@ public class OsmWay extends OsmElement {
     }
 
     public boolean isClosed() {
-        // TODO: consider the edge case, where way is attached to the edges and it is closed with the edges.
+        
         int s;
         List<? extends OsmElement> c = this.children;
         if (c != null && (s = c.size()) > 3) {
@@ -61,7 +61,7 @@ public class OsmWay extends OsmElement {
         return false;
     }
 
-//    public static OsmWay getOsmWayById(List<OsmWay> ways, String id) {
-//        return (OsmWay) elemById(ways, id);
-//    }
+
+
+
 }

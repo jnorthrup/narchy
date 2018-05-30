@@ -22,7 +22,7 @@ public class ShuffledPermutations extends Permutations {
 
         super.restart(size);
 
-        //shuffle = random.nextInt(num);
+        
         byte[] shuffle = this.shuffle;
         if (shuffle == null || shuffle.length < size)
             this.shuffle = shuffle = new byte[size];

@@ -63,7 +63,7 @@ public class UnicodeHandler extends TypeHandler {
                 thingy += (char) (aByte);
         }
         c.copyToClipboard(new StringSelection(thingy));
-        // return(new StringSelection(thingy));
+        
     }
 
     @Override
@@ -80,10 +80,10 @@ public class UnicodeHandler extends TypeHandler {
                 s = e.toString();
             }
 
-            // TODO: think of a better way of fixing this
+            
             s = s.replace('\n', (char) 0x0a);
-            // s = s.replaceAll("" + (char) 0x0a, "" + (char) 0x0d + (char)
-            // 0x0a);
+            
+            
             s = Utilities_Localised.strReplaceAll(s, "" + (char) 0x0a, ""
                     + (char) 0x0d + (char) 0x0a);
             byte[] sBytes = s.getBytes();

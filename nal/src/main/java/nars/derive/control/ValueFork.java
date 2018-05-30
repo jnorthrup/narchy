@@ -20,7 +20,7 @@ public class ValueFork extends Fork<Derivation> {
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
-//    final PrediTerm<Derivation>[] conc;
+
     /*@Stable*/
     public final Cause[] causes;
 
@@ -69,7 +69,7 @@ public class ValueFork extends Fork<Derivation> {
 
             MutableRoulette.run(paths, d.random,
 
-                    wi -> 0      //once per path only: after a branch is tried, dont try again
+                    wi -> 0      
 
                     , b -> {
 
@@ -80,7 +80,7 @@ public class ValueFork extends Fork<Derivation> {
 
                         d.ttl = subBudget;
 
-                        branchChoice.value(d, b); //fork's return bool is ignored
+                        branchChoice.value(d, b); 
 
                         int spent = subBudget - d.ttl;
                         d.ttl = beforeTTL - Math.max(spent, 0);
@@ -93,68 +93,68 @@ public class ValueFork extends Fork<Derivation> {
     }
 
 
-//    void forkRoulette(Derivation d, short[] choices) {
-//        int N = choices.length;
-//        float[] w =
-//                //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);
-//                Util.softmax(N, i -> branchValue(branches[choices[i]]), Param.TRIE_DERIVER_TEMPERATURE);
-//
-//        //System.out.println(Arrays.toString(choices) + " " + Arrays.toString(w));
-//
-//        int before = d.now();
-//        MutableRoulette.run(w, wi -> wi/N /* harmonic decay */, (i) -> {
-//            int ttlStart = d.ttl;
-//
-//
-//            int fanout = ((ValueFork)(branches[choices[i]])).causes.length;
-//            int ttlSpend = Math.max(
-//                    Math.round(ttlStart * spendRatePerBranch * fanout * spendRatePerFanOut),
-//                    Param.TTL_MIN);
-//            //Math.min(ttlSave, Math.max(fanout * Param.TTL_MIN, Math.round(ttlSave*reserve)));
-//
-//            d.ttl = ttlSpend;
-//
-//            branches[choices[i]].test(d);
-//
-//            int ttlUsed = Math.max(1, ttlSpend - d.ttl);
-//
-//            return ((d.ttl = ttlStart - ttlUsed - Param.TTL_BRANCH) > 0 && d.revertLive(before));
-//        }, d.random);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     @Deprecated
     public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
-        //return new ValueFork(PrediTerm.transform(f, branches), valueBranch, downstream);
+        
         throw new UnsupportedOperationException();
     }
 
-//    @Override
-//    public void accept(Derivation d) {
-//
-//        short[] choices = d.will;
-//        int N = choices.length;
-//        switch (N) {
-//            case 0:
-//                throw new RuntimeException("zero causes should not even reach here");
-//            case 1:
-//
-//                branches[choices[0]].test(d);
-//
-//                break;
-//            default:
-//
-//
-//                forkRoulette(d, choices
-//                        //1f
-//                        //1f/N
-//                        //1f/((float)Math.sqrt(N))
-//                );
-//                //forkTTLBudget(d, choices);
-//
-//                break;
-//        }
-//    }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

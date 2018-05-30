@@ -10,7 +10,7 @@ public class QuantityTermTest {
 
     @Test
     public void test1() {
-        //Unit<?> q = AbstractUnit.parse("km");
+        
 
 
         QuantityTerm q = QuantityTerm.the("5 km");

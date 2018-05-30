@@ -26,7 +26,7 @@ UnitGraph g = new BriefUnitGraph(b);
 
         /*
         DependencyVisitor v = new DependencyVisitor();
-        //new ClassReader(f.getInputStream(e)).accept(v, 0);
+        
         new ClassReader("nars.logic.FireConcept").accept(v, 0);
 
         System.out.println(v.getGlobals());
@@ -47,10 +47,10 @@ UnitGraph g = new BriefUnitGraph(b);
             Analyzer a=new Analyzer(new BasicInterpreter()){
                 @Override protected void newControlFlowEdge(    int src,    int dst){
                     System.out.println(src + " " + dst);
-                    //controlflow.addFlow(src,dst);
-                    //if (src > dst) {
-                    //    controlflow.getFlow(src).setIsWhile(true);
-                    //}
+                    
+                    
+                    
+                    
                 }
             }
             a.analyze(cn.name,method);

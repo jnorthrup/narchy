@@ -34,10 +34,10 @@ class ARFFTest {
         assertEquals(2, arff.attrCount());
         assertEquals(2, arff.data.size());
 
-//            for (String filename : args) {
-//                ARFF arff = load(filename);
-//                System.out.println(arff.dump());
-//            }
+
+
+
+
 
     }
 
@@ -73,7 +73,7 @@ class ARFFTest {
         a.put(new Schema1("def", 0.75f, false));
         assertSame(ARFF.AttributeType.Text, a.attrType("name"));
         assertSame(ARFF.AttributeType.Numeric, a.attrType("score"));
-        assertSame(ARFF.AttributeType.Nominal, a.attrType("ok")); //boolean
+        assertSame(ARFF.AttributeType.Nominal, a.attrType("ok")); 
         a.write(System.out);
         assertEquals(2, a.data.size());
     }

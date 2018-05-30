@@ -36,17 +36,17 @@ public final class VLink<X> extends PLink<X> {
         Arrays.fill(this.coord = new double[dims], Double.NaN);
     }
 
-//    public VLink(X t, float pri, double[] coord, BiConsumer<X,double[]> initializer) {
-//        this(t, pri, coord);
-//        update(initializer);
-//    }
-//
-//    /**
-//     * call this to revectorize, ie. if a dimension has changed
-//     */
-//    public void update(BiConsumer<X,double[]> u) {
-//        u.accept(id, coord);
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     @NotNull
     @Override

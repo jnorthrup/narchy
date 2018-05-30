@@ -16,18 +16,18 @@ public interface DirectTermTransform extends TermTransform {
 
     @Override
     default Term the(Op op, int dt, TermList t) {
-        return Op.terms.compoundInstance(op, dt, t.arrayShared()); //bypass
+        return Op.terms.compoundInstance(op, dt, t.arrayShared()); 
     }
 
     class CachedDirectTermTransform implements DirectTermTransform {
         /** stores constructed Anon's locally, thread-local */
         final QuickMemoize<Pair<Op,TermList>,Term> localIntern;
-        final TermBuilder localBuilder = new HeapTermBuilder(); //ensure no global interning
+        final TermBuilder localBuilder = new HeapTermBuilder(); 
 
         public CachedDirectTermTransform(int capacity) {
             this.localIntern = new QuickMemoize<>(capacity, (ot) ->
                 localBuilder.compound(ot.getOne(), DTERNAL,
-                        ot.getTwo().arraySharedKeep()) //keep the items in the TermList with arraySharedKeep
+                        ot.getTwo().arraySharedKeep()) 
             );
         }
 
@@ -35,9 +35,9 @@ public interface DirectTermTransform extends TermTransform {
         @Override
         public Term the(Op op, int dt, TermList t) {
             if (dt == DTERNAL)
-                return localIntern.apply(pair(op, t)); //interned locally
+                return localIntern.apply(pair(op, t)); 
             else
-                return localBuilder.compound(op, dt, t.arrayShared()); //t is disposable, allow to remove the TermList items
+                return localBuilder.compound(op, dt, t.arrayShared()); 
         }
 
         public void resize(int s) {

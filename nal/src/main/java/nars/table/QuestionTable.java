@@ -25,7 +25,7 @@ public interface QuestionTable extends TaskTable {
      * allows question to pass through it to the link activation phase, but
      * otherwise does not store it
      */
-    ///*@NotNull*/ QuestionTable Unstored = new EmptyQuestionTable();
+    
 
     /*@NotNull*/ QuestionTable Empty = new QuestionTable() {
 
@@ -91,7 +91,7 @@ public interface QuestionTable extends TaskTable {
 
         final Object lock =
                 this;
-        //new Object();
+        
 
         public DefaultQuestionTable() {
             super(0);
@@ -101,21 +101,21 @@ public interface QuestionTable extends TaskTable {
         public void capacity(int newCapacity) {
             synchronized (lock) {
                 setCapacity(newCapacity);
-                //TODO
-                //while (size() > newCapacity) {
-                //   remove(weakest());
-                //}
+                
+                
+                
+                
             }
         }
 
-//        @Override
-//        protected void onEvict(Map.Entry<Task, Task> entry) {
-////            Task x = entry.getKey();
-////            Task y = entry.getValue();
-////            x.delete();
-////            if (y != x)
-////                y.delete();
-//        }
+
+
+
+
+
+
+
+
 
         @Override
         public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
@@ -132,8 +132,8 @@ public interface QuestionTable extends TaskTable {
             }
 
             if (u != t) {
-                //absorbed
-                //t.delete();
+                
+                
             }
 
             return true;
@@ -144,11 +144,11 @@ public interface QuestionTable extends TaskTable {
             return capacity;
         }
 
-//
-//        @Override
-//        public Iterator<Task> iterator() {
-//            return ArrayIterator.get(toArray());
-//        }
+
+
+
+
+
 
         @Override
         public Stream<Task> streamTasks() {
@@ -207,7 +207,7 @@ public interface QuestionTable extends TaskTable {
 
         @Override
         public void priAdd(Task entry, float amount) {
-            //dont affect it
+            
         }
 
         @Override
@@ -247,32 +247,32 @@ public interface QuestionTable extends TaskTable {
     }
 
 
-//    /** untested */
-//    class EmptyQuestionTable extends QuestionTable.NullQuestionTable {
-//
-//        final static HijackQuestionTable common = new HijackQuestionTable(1024, 3);
-//
-//        @Override
-//        public void add(/*@NotNull*/ Task t, BaseConcept c, NAR n) {
-//            Task e = common.get(t);
-//            float activation = t.priElseZero();
-//            if (e ==null) {
-//                common.put(t);
-//
-//
-//                //TaskTable.activate(t, t.priElseZero(), n);
-//            } else {
-//                activation -= e.priElseZero();
-//            }
-//
-//            Activate.activate(t, activation, n);
-//        }
-//
-//        @Override
-//        public int capacity() {
-//            return Integer.MAX_VALUE;
-//        }
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

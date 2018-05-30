@@ -16,7 +16,7 @@ package jcog.data.bit;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  *
  */
 
@@ -131,26 +131,26 @@ public interface BitVector extends RandomAccess {
 	 */
 	BitVector subVector(long from);
 
-//	/** Returns a view of this bit vector as a sorted set of long integers.
-//	 *
-//	 * <P>More formally, this bit vector is infinitely extended to the
-//	 * left with zeros (e.g., all bits beyond {@link #length(long)} are
-//	 * considered zeroes). The resulting infinite string is interpreted as the
-//	 * characteristic function of a set of integers.
-//	 *
-//	 * <P>Note that, in particular, the resulting string representation is
-//	 * exactly that of a {@link java.util.BitSet}.
-//	 *
-//	 */
-//	public LongSortedSet asLongSet();
-//
-//	/** Returns a view of this bit vector as a list of nonnegative integers of specified width.
-//	 *
-//	 * <P>More formally, {@link LongBigList#getLong(long) getLong(p)} will return
-//	 * the nonnegative integer defined by the bits starting at <code>p * width</code> (bit 0, inclusive)
-//	 * and ending at <code>(p + 1) * width</code> (bit <code>width</code> &minus; 1, exclusive).
-//	 */
-//	public LongBigList asLongBigList(int width);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	/** Returns the value of the specified bit.
 	 * 
@@ -433,7 +433,7 @@ public interface BitVector extends RandomAccess {
 	 * <i>Proc. of the Fifth International Conference on Database Systems for Advanced Applications</i>, 1997, pages 215&minus;223).
 	 * 
 	 * <p>The returned value is not a high-quality hash such as 
-	 * <a href="http://sux4j.dsi.unimi.it/docs/it/unimi/dsi/sux4j/mph/Hashes.html#jenkins(it.unimi.dsi.bits.BitVector)">Jenkins's</a>,
+	 * <a href="http:
 	 * but it can be computed very quickly; in any case, 32 bits are too few for a high-quality hash to be used in large-scale applications. 
 	 * 
 	 * <p><strong>Important</strong>: all bit vector implementations are required to return the value defined here.

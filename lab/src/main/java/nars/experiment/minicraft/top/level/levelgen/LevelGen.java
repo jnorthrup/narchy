@@ -402,8 +402,8 @@ public class LevelGen {
 			int h = 128;
 
 			byte[] map = LevelGen.createAndValidateTopMap(w, h)[0];
-			// byte[] map = LevelGen.createAndValidateUndergroundMap(w, h, (d++ % 3) + 1)[0];
-			// byte[] map = LevelGen.createAndValidateSkyMap(w, h)[0];
+			
+			
 
 			BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
 			int[] pixels = new int[w * h];

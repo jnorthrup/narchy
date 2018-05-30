@@ -13,7 +13,7 @@ public class CountGL implements QGL {
     private static final QGL self = new CountGL();
     
     private CountGL() {
-        // singleton
+        
     }
     
     public static QGL getInstance() {

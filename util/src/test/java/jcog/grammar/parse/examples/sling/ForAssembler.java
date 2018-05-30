@@ -52,13 +52,13 @@ public class ForAssembler implements IAssembler {
 	 * @param  Assembly  the assembly to work on
 	 */
 	public void accept(Assembly a) {
-		// pop the elements of a "for" loop
+		
 		CommandSequence cs = popCommandSequence(a);
 		SlingFunction to = (SlingFunction) a.pop();
 		SlingFunction from = (SlingFunction) a.pop();
 		Variable v = (Variable) a.pop();
 
-		// create and push a ForCommand
+		
 		Command setup = new AssignFunctionCommand(v, from);
 		BooleanTerm condition = new FunctionComparison("<=", v, to);
 		SlingFunction step = new Point(1, 1);

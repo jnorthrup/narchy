@@ -50,10 +50,10 @@ public class Equals extends Comparison {
         
         boolean expr1Parens = false;
         if (thisClassOrder > this.expr1.printLevelRight()) expr1Parens = true;
-        // if (debug) System.err.println("Division toString(): for expr=" + expr1 + ", printLevelRight=" + expr1.printLevelRight());
+        
         boolean expr2Parens = false;
         if (thisClassOrder > this.expr2.printLevelLeft()) expr2Parens = true;
-        // if (debug) System.err.println("Division toString(): for expr=" + expr2 + ", printLevelLeft=" + expr2.printLevelLeft());
+        
 
         return new StringBuilder().append(expr1Parens ? "(" : "").append(this.expr1.pretty()).append(expr1Parens ? ")" : "").append("=").append(expr2Parens ? "(" : "").append(this.expr2.pretty()).append(expr2Parens ? ")" : "").toString();
 

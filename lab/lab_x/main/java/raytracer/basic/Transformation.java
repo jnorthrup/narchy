@@ -132,7 +132,7 @@ public class Transformation
      */
     public void reset()
     {
-        // Einheitsmatrix zuweisen:
+        
         byte i;
         for (i = (byte) 0; (int) i < 4; i++)
             for (byte j = (byte) 0; (int) j < 4; j++)
@@ -160,7 +160,7 @@ public class Transformation
      */
     public void move(double x, double y, double z)
     {
-        // Transformationsmatrix erstellen:
+        
         double t[][] = {
                 {1.0, 0.0, 0.0, x},
                 {0.0, 1.0, 0.0, y},
@@ -179,7 +179,7 @@ public class Transformation
      */
     public void scale(double x, double y, double z)
     {
-        // Transformationsmatrix erstellen:
+        
         double t[][] = {
                 {x, 0.0, 0.0, 0.0},
                 {0.0, y, 0.0, 0.0},
@@ -199,13 +199,13 @@ public class Transformation
      */
     public void rotate(double angle, double x, double y, double z)
     {
-        // Rotationsachse normalisieren:
+        
         double length = Math.sqrt(x*x+y*y+z*z);
         x /= length;
         y /= length;
         z /= length;
         
-        // Rotationsmstrix erstellen:
+        
         double cos = Math.cos(angle*Math.PI/180.0);
         double sin = Math.sin(angle*Math.PI/180.0);
         double cos1 = 1.0-cos;
@@ -240,7 +240,7 @@ public class Transformation
         int i, j;
         final double m[][] = new double[4][4];
         
-        // Ergebnis berechnen:
+        
         for (i = 0; i < 4; i++)
             for (j = 0; j < 4; j++)
             {
@@ -249,7 +249,7 @@ public class Transformation
                     m[i][j] += t[i][k]*this.m[k][j];
             }
         
-        // Ergebnis �bernehmen:
+        
         for (i = 0; i < 4; i++)
             for (j = 0; j < 4; j++)
                 this.m[i][j] = m[i][j];

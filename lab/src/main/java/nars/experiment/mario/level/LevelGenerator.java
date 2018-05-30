@@ -415,7 +415,7 @@ public class LevelGenerator
     {
         if (floor < 1) return;
 
-        //        boolean coins = random.nextInt(3) == 0;
+        
         boolean rocks = true;
 
         addEnemyLine(x0 + 1, x1 - 1, floor - 1);
@@ -547,7 +547,7 @@ public class LevelGenerator
                         }
                         else
                         {
-                            // KEEP OLD BLOCK!
+                            
                         }
                     }
                     else

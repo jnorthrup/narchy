@@ -8,7 +8,7 @@ public interface IOpenSet<F> {
 
     F poll();
 
-    //returns node if present otherwise null
+    
     F getNode(F node);
 
     int size();

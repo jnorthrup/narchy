@@ -13,7 +13,7 @@ package jcog.math;
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -69,7 +69,7 @@ public class MutableDouble extends Number implements Comparable, Mutable {
     this.value = value.doubleValue();
   }
 
-  // -----------------------------------------------------------------------
+  
   /**
    * Gets the value as a Double instance.
    * 
@@ -105,8 +105,8 @@ public class MutableDouble extends Number implements Comparable, Mutable {
     setValue(((Number) value).doubleValue());
   }
 
-  // -----------------------------------------------------------------------
-  // shortValue and bytValue rely on Number implementation
+  
+  
   /**
    * Returns the value of this MutableDouble as a int.
    * 
@@ -169,7 +169,7 @@ public class MutableDouble extends Number implements Comparable, Mutable {
     return Double.isInfinite(value);
   }
 
-  // -----------------------------------------------------------------------
+  
   /**
    * Gets this mutable as an instance of Double.
    * 
@@ -179,7 +179,7 @@ public class MutableDouble extends Number implements Comparable, Mutable {
     return doubleValue();
   }
 
-  // -----------------------------------------------------------------------
+  
   /**
    * Increments the value.
    * 
@@ -198,7 +198,7 @@ public class MutableDouble extends Number implements Comparable, Mutable {
     value--;
   }
 
-  // -----------------------------------------------------------------------
+  
   /**
    * Adds a value.
    * 
@@ -251,7 +251,7 @@ public class MutableDouble extends Number implements Comparable, Mutable {
     value -= operand.doubleValue();
   }
 
-  // -----------------------------------------------------------------------
+  
   /**
    * Compares this object against the specified object. The result is
    * <code>true</code> if and only if the argument is not <code>null</code>
@@ -318,7 +318,7 @@ public class MutableDouble extends Number implements Comparable, Mutable {
   public int compareTo(Object obj) {
     MutableDouble other = (MutableDouble) obj;    
     return Double.compare(value, other.value);
-    //return compare(value, anotherVal);
+    
   }
 
   /**
@@ -338,19 +338,19 @@ public class MutableDouble extends Number implements Comparable, Mutable {
     setValue(v);
   }
 
-//  protected int compare(Object o1, Object o2) {
-//
-//    if (o1 == null) {
-//      if (o2 == null) {
-//        return 0;
-//      } else {
-//        return -((Comparable) o2).compareTo(o1);
-//      }
-//    } else {
-//      return ((Comparable) o1).compareTo(o2);
-//    }
-//
-//  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*
@@ -361,7 +361,7 @@ public class MutableDouble extends Number implements Comparable, Mutable {
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT

@@ -72,7 +72,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
             case 0: return Stream.empty();
             case 1: return Stream.of(list[0]);
             case 2: return Stream.of(list[0], list[1]);
-            //..
+            
             default:
                 return Streams.stream(ArrayIterator.get(list, size));
         }

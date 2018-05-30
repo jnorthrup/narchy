@@ -35,14 +35,14 @@ public class Var<X extends Term<?>> extends Term<X> {
 
 	public Var(String name) {_theName = name;}
         
-    //private Var(String name, Term<?> val) {_theName = name; _theValue= (X) val;}
+    
     private Var(String name, Term<?> val) {
     	_theName = name; _theValue = uncheckedCast(val);
     }
     		
 	@Override
     public <Z> Z toJava() {
-		// return _theValue != null ? (Z)_theValue.toJava() : (Z)this;
+		
 		return uncheckedCast( _theValue != null ? _theValue.toJava() : this );
 	}
         
@@ -59,14 +59,14 @@ public class Var<X extends Term<?>> extends Term<X> {
         }
         catch(Exception e) {
             throw new UnsupportedOperationException(e);
-            //return null;
+            
         }
     }
     
     static Term<?> unmarshal(alice.tuprolog.Var a) {
         if (!matches(a))
             throw new UnsupportedOperationException();
-        //return new Var<Term<?>>(a.getName(),a.isBound() ? Term.unmarshal(a.getTerm()) : null);            
+        
         return a.isBound() ? Term.unmarshal(a.term()) : new Var<>(a.name(), null);
     }
     

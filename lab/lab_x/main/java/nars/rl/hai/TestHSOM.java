@@ -30,8 +30,8 @@ public class TestHSOM {
             double reward = 1.0 / (1.0 + Math.abs(target - position));
 
             Arrays.fill(vision, 0);
-            vision[target] = 1.0; //target position in 1st half of vision
-            vision[size + position] = 1.0; //current position in 2nd half of vision
+            vision[target] = 1.0; 
+            vision[size + position] = 1.0; 
             
             System.out.println(Arrays.toString(vision) + " = " + reward + " <- " + nextAction);
             
@@ -45,7 +45,7 @@ public class TestHSOM {
                 position--;
             }
             else {
-                //nothing
+                
             }
             
             if (position < 0) position = size-1;

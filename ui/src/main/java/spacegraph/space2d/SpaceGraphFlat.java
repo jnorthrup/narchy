@@ -14,7 +14,7 @@ public class SpaceGraphFlat extends JoglSpace {
 
     @Override
     protected void initDepth(GL2 gl) {
-        //disabled
+        
     }
 
 }

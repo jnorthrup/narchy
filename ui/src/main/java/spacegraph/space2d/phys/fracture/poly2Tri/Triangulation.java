@@ -36,9 +36,9 @@ public class Triangulation {
      * Other contures must be INNER -> vertices must be CLOCKWISE!
      * Example:
      * numContures = 1 (1 OUTER CONTURE, 1 INNER CONTURE)
-     * numVerticesInContures = { 3, 3 } // triangle with inner triangle as a hol
-     * vertices = { {0, 0}, {7, 0}, {4, 4}, // outer conture, counter clockwise order
-     * {2, 2}, {2, 3}, {3, 3}  // inner conture, clockwise order
+     * numVerticesInContures = { 3, 3 } 
+     * vertices = { {0, 0}, {7, 0}, {4, 4}, 
+     * {2, 2}, {2, 3}, {3, 3}  
      * }
      * <p>
      * If error occurs during triangulation, null is returned.
@@ -51,7 +51,7 @@ public class Triangulation {
     public static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
         Polygon p = new Polygon(numContures, numVerticesInContures, vertices);
         if (debug) {
-            //p.setDebugFile(debugFileName);
+            
             p.setDebugOption(debug);
         } else {
             p.setDebugOption(false);

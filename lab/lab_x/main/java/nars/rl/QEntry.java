@@ -18,18 +18,18 @@ public class QEntry<S extends Term, A extends Term> /*extends ConceptMatrixEntry
 
     private final Concept concept;
     private final ConceptMatrix conceptMatrix;
-    double dq = 0; //delta-Q; current q = q0 + dq, temporary
-    double q0 = 0; //previous Q value, for comparing nar vs. QL influence
-    double q = 0; //current q-value
-    double e = 1; //eligibility trace
+    double dq = 0; 
+    double q0 = 0; 
+    double q = 0; 
+    double e = 1; 
 
-    //TODO modes: average, nar, q
+    
     boolean defaultQMode = true;
 
     public QEntry(Concept c, ConceptMatrix matrix) {
         this.concept = c;
         this.conceptMatrix = matrix;
-        //super(matrix, c);
+        
     }
 
 
@@ -85,9 +85,9 @@ public class QEntry<S extends Term, A extends Term> /*extends ConceptMatrixEntry
         Truth t = s.getTruth();
         if (t == null) return 0f;
 
-        //TODO try expectation
+        
 
-        return ((t.getFrequency() - 0.5f) * 2.0f); // (t.getFrequency() - 0.5f) * 2f * t.getConfidence();
+        return ((t.getFrequency() - 0.5f) * 2.0f); 
     }
 
     /** current delta */
@@ -108,20 +108,20 @@ public class QEntry<S extends Term, A extends Term> /*extends ConceptMatrixEntry
 
     long lastCommit = -1;
     long commitEvery = 0;
-    float lastFreq = 0.5f; //start in neutral
+    float lastFreq = 0.5f; 
 
     public void commitDirect(Task t) {
         TaskProcess.run(conceptMatrix.nar, t);
     }
 
-//    /** inserts the belief directly into the table */
-//    public void commitFast(Task t) {
-//        //concept.beliefs.clear();
-//
-//        //switch(t.punctuation) ..
-//        //concept.processJudgment(null, t);
-//        concept.processGoal(null, t);
-//    }
+
+
+
+
+
+
+
+
 
     /** input to NAR */
     public void commit(byte punctuation, float qUpdateConfidence, float freqThreshold, float priorityGain) {
@@ -134,7 +134,7 @@ public class QEntry<S extends Term, A extends Term> /*extends ConceptMatrixEntry
         if (nq < -1d) nq = -1d;
 
         Term qt = concept.getTerm();
-        //System.out.println(qt + " qUpdate: " + Texts.n4(q) + " + " + dq + " -> " + " (" + Texts.n4(nq) + ")");
+        
 
         float nextFreq = (float)((nq / 2f) + 0.5f);
 

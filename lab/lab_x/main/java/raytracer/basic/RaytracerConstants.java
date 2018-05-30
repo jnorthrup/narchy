@@ -45,7 +45,7 @@ public class RaytracerConstants
      * Nachdem ein Strahl diese L�nge erreicht hat, wird er nicht weiter
      * verfolgt. DISTANCE LIMIT?
      */
-    public final static double MAX_RAY_WAY = 200; //Double.POSITIVE_INFINITY;
+    public final static double MAX_RAY_WAY = 200; 
     
     /**
      * Minimales Gewicht eines Strahls.<br>

@@ -17,10 +17,10 @@ public class MineBP extends BP {
         double mQ = super.getMaxQValue(method, train, env);
 
         Maze maze = (Maze)env;
-        if (maze.isHitMine(agent_num))   //case hit mine
+        if (maze.isHitMine(agent_num))   
             return 0;
         else if (maze.isHitTarget(agent_num))
-            return 1; //case reach target
+            return 1; 
 
         return mQ;
 

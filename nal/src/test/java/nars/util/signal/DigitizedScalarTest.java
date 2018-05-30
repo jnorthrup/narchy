@@ -25,21 +25,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class DigitizedScalarTest {
 
-    //HACK TODO make sure this is smaller
+    
     final static float tolerance = 0.2f;
 
-//    @Test
-//    public void testRewardConceptsFuzzification1() {
-//        NAR d = new Default();
-//        MutableFloat m = new MutableFloat(0f);
-//
-//        testSteadyFreqCondition(m,
-//            new FuzzyScalarConcepts(
-//                new FloatNormalized(() -> m.floatValue()).updateRange(-1).updateRange(1),
-//                d, FuzzyScalarConcepts.FuzzyTriangle, $.p("x")),
-//                (f) -> Util.equals(f, 0.5f + 0.5f * m.floatValue(), tolerance)
-//        );
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Disabled
     @Test
@@ -52,26 +52,26 @@ public class DigitizedScalarTest {
                 $.p("low"), $.p("mid"), $.p("hih"));
 
 
-//        {
-//            f.clear();
-//            m.setValue(0); d.next();
-//            System.out.println(Texts.n4(m.floatValue()) + "\t" + f.toString());
-//            assertEquals("(I-->[sad]) %0.25;.90%\t(I-->[neutral]) %1.0;.90%\t(I-->[happy]) %0.0;.90%", f.toString());
-//        }
-//
-//        {
-//            f.clear();
-//            m.setValue(-1); d.next();
-//            System.out.println(Texts.n4(m.floatValue()) + "\t" + f.toString());
-//            assertEquals("(I-->[sad]) %1.0;.90%\t(I-->[neutral]) %0.0;.90%\t(I-->[happy]) %0.0;.90%", f.toString());
-//        }
-//
-//        {
-//            f.clear();
-//            m.setValue(+1); d.next();
-//            System.out.println(Texts.n4(m.floatValue()) + "\t" + f.toString());
-//            assertEquals("(I-->[sad]) %0.0;.90%\t(I-->[neutral]) %0.0;.90%\t(I-->[happy]) %1.0;.90%", f.toString());
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         testSteadyFreqCondition(m, f, (freqSum) -> {
@@ -82,7 +82,7 @@ public class DigitizedScalarTest {
 
     public void testSteadyFreqCondition(MutableFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
 
-        //run a few oscillations
+        
         for (int i = 0; i < 5; i++) {
             m.set(Math.sin(i / 2f));
             n.run();
@@ -99,7 +99,7 @@ public class DigitizedScalarTest {
                             f + " " +
                             freqSum
 
-                    //confWeightSum(beliefs)
+                    
             );
 
             assertTrue(withFreqSum.accept((float) freqSum));

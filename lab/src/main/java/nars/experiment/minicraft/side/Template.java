@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -22,7 +22,7 @@ public class Template implements java.io.Serializable {
 	
 	public Template(int[][] matrix, int outCount) {
 		if (matrix != null) {
-			// temporary workaround while we convert templates to int[][]
+			
 			this.matrix = new char[matrix.length][matrix[0].length];
 			for (int i = 0; i < matrix.length; i++) {
 				for (int j = 0; j < matrix[0].length; j++) {
@@ -37,12 +37,12 @@ public class Template implements java.io.Serializable {
 		if (matrix == null) {
 			return false;
 		}
-		// boolean foundSomething = false;
+		
 		for (int x = 0; x <= (input.length - matrix.length); x++) {
 			for (int y = 0; y <= (input[0].length - matrix[0].length); y++) {
 				boolean isGood = false;
 				boolean isBad = false;
-				// now try the template here -- some bruteforcing
+				
 				for (int i = 0; i < matrix.length; i++) {
 					for (int j = 0; j < matrix[0].length; j++) {
 						if (matrix[i][j] != input[x + i][y + j]) {

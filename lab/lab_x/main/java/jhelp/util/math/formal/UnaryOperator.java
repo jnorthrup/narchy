@@ -58,17 +58,17 @@ public abstract class UnaryOperator
          final Function f = Function.parse(Function.getArgument(string.substring(UnaryOperator.OPERATORS[indice].length())));
          switch(indice)
          {
-            case 0: // Unary minus
+            case 0: 
                return new MinusUnary(f);
-            case 1: // Exponential
+            case 1: 
                return new Exponential(f);
-            case 2: // Logarithm
+            case 2: 
                return new Logarithm(f);
-            case 3: // Cosinus
+            case 3: 
                return new Cosinus(f);
-            case 4: // Sinus
+            case 4: 
                return new Sinus(f);
-            case 5: // Tangent
+            case 5: 
                return new Tangent(f);
          }
       }

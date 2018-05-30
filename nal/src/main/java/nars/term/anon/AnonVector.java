@@ -26,9 +26,9 @@ public class AnonVector extends TermVector {
 
     /** assumes the array contains only AnonID instances */
     public AnonVector(Term... s) {
-        super(s); //TODO optimize this for certain Anom invariants (ie. no variables etc)
+        super(s); 
 
-        boolean hasNeg = anyNeg(); //HACK quick filterer
+        boolean hasNeg = anyNeg(); 
 
         short[] t = subterms = new short[s.length];
         for (int i = 0, sLength = s.length; i < sLength; i++) {
@@ -55,12 +55,12 @@ public class AnonVector extends TermVector {
         if ((found = indexOf(from))==-1)
             return this;
 
-        short eq = subterms[found]; //the term to look for
+        short eq = subterms[found]; 
         int n = subs();
         TermList t = new TermList(n);
         for (int i = 0; i < n; i++) {
             short si = subterms[i];
-            t.addWithoutResizeCheck(si == eq ? to : idToTermWithNegationTest(si)); //substituted
+            t.addWithoutResizeCheck(si == eq ? to : idToTermWithNegationTest(si)); 
         }
         return t;
     }
@@ -76,7 +76,7 @@ public class AnonVector extends TermVector {
         out.writeByte(ss.length);
         for (short s : ss) {
             if (s < 0) {
-                //wrap (prepend) with a virtual NEG
+                
                 out.writeByte(Op.NEG.id);
                 s = (short)-s;
             }
@@ -108,7 +108,7 @@ public class AnonVector extends TermVector {
         if (t instanceof AnonID)
             return indexOf((AnonID) t, neg);
         else
-            return -1; //super.indexOf(t);
+            return -1; 
     }
 
     @Override
@@ -127,9 +127,9 @@ public class AnonVector extends TermVector {
             }
         }else {
             if (t instanceof AnonID) {
-                return (indexOf((AnonID)t)!=-1)  //the positive version
+                return (indexOf((AnonID)t)!=-1)  
                         ||
-                       (anyNeg() && indexOf((AnonID)t, true)!=-1 && inSubtermsOf.test(t.neg())); //the negative version, and tested as such
+                       (anyNeg() && indexOf((AnonID)t, true)!=-1 && inSubtermsOf.test(t.neg())); 
             }
 
         }
@@ -138,14 +138,14 @@ public class AnonVector extends TermVector {
 
     @Override
     public boolean isTemporal() {
-        return false; //this is limited to atomics so there is no temporal possibility
+        return false; 
     }
 
     private boolean anyNeg() {
         return (structure&NEG.bit) != 0;
-//        for (short s : subterms)
-//            if (s < 0) return true;
-//        return false;
+
+
+
     }
 
 
@@ -181,84 +181,84 @@ public class AnonVector extends TermVector {
         return false;
     }
 
-//    @Override
-//    public boolean unifyLinear(Subterms Y, Unify u) {
-//        int s = subs();
-//        if (Y instanceof AnonVector) {
-//            //accelerated AnonVector vs. AnonVector unification
-//
-//            MetalBitSet ok;
-//            AnonVector yy = (AnonVector) Y;
-//            //1. if both contain constant atoms, check for any conflicting constant terms before attempting any variable matching
-//            if (((structure & ATOM.bit) > 0) && ((yy.structure & ATOM.bit) > 0)) {
-//                ok = MetalBitSet.bits(s);
-//                for (int i = 0; i < s; i++) {
-//                    short xi = subterms[i];
-//                    short yi = yy.subterms[i];
-//                    if ((isAnomOrNegatedAnom(xi) && isAnomOrNegatedAnom(yi))) {
-//                        if (xi != yi)
-//                            return false; //both constants, so not equal
-//                        else
-//                            ok.set(i); //continue
-//                    }
-//                }
-//                if (ok.getCardinality()==s)
-//                    return true; //wtf it was equal?
-//            } else {
-//                ok = null;
-//            }
-//
-//
-//            //2. fully unify any variable-containing indices
-//            for (int i = 0; i < s; i++) {
-//                if (ok!=null && ok.get(i))
-//                    continue; //already checked in first pass
-//
-//                short xi = subterms[i];
-//                short yi = yy.subterms[i];
-//
-//                if (xi < 0 && yi < 0) {
-//                    //both negations so unwrap these simultaneously
-//                    xi = (short) -xi;
-//                    yi = (short) -yi;
-//                }
-//
-//                //one or both are variables, so decode to terms and unify normally
-//                if (!idToTermWithNegationTest(xi).unify(idToTermWithNegationTest(yi), u))
-//                    return false;
-//            }
-//        } else {
-//            //TODO do the constant pass first like the above case
-//
-//            for (int i = 0; i < s; i++) {
-//                short xi = subterms[i];
-//                Term yi = Y.sub(i);
-//                if (isAnomOrNegatedAnom(xi)) {
-//                    //stupid test for constant negation mismatch
-//                    Op yio = yi.op();
-//                    if (!yio.var) {
-//                        //both are constant, only a few possibilities exist...
-//                        // plus opportunity to simultaneously unwrap if both are negated
-//                        if (yio != NEG ^ xi > 0 /* polarity differ, and yi isnt a var */)
-//                            return false;
-//
-//                        if (yio == NEG) {
-//                            //then unwrap simultaneously both
-//                            yi = yi.unneg();
-//                            yio = yi.op();
-//                            xi = (short) -xi;
-//                        }
-//                        if (yio!=ATOM)
-//                            return false; //had to be negated atom
-//                        return idToTerm(xi) == yi; //note the instance equality test, it is all that must be tested
-//                    }
-//                }
-//
-//                Term xxi = idToTermWithNegationTest(xi);
-//                if (!xxi.unify(yi, u))
-//                    return false;
-//            }
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

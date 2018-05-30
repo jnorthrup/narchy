@@ -59,7 +59,7 @@ import java.util.stream.Stream;
 import static jcog.io.arff.ARFF.AttributeType.*;
 
 /**
- * https://weka.wikispaces.com/ARFF%20%28developer%20version%29
+ * https:
  *
  * <p>A class for reading and writing Arff-Files.</p>
  *
@@ -79,10 +79,10 @@ import static jcog.io.arff.ARFF.AttributeType.*;
  *
  * @author Mikio L. Braun, mikio@cs.tu-berlin.de
  * <p>
- * https://github.com/mikiobraun/dataformat
+ * https:
  * <p>
- * https://github.com/renatopp/arff-datasets
- * https://archive.ics.uci.edu/ml/datasets.html?format=&task=&att=&area=&numAtt=&numIns=&type=&sort=instUp&view=table
+ * https:
+ * https:
  */
 public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
@@ -208,7 +208,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         int len = t.length();
 
         if (len > 1 && (t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
-            return false; //already quoted
+            return false; 
 
         for (int i = 0; i < len; i++) {
             char x = t.charAt(i);
@@ -223,7 +223,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
                     return true;
                 case '.':
                     return true;
-                //etc..
+                
             }
         }
 
@@ -314,7 +314,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
             Object[] datum = new Object[num_attributes];
             for (int i = 0; i < num_attributes; i++) {
-                //System.out.printf("line %d token %d: %s%n", lineno, i, tokens[i]);
+                
                 String name = attribute_names.get(i);
                 switch (attrTypes.get(name)) {
                     case Numeric:
@@ -340,9 +340,9 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     private boolean isNominalValueValid(String name, String token) {
         switch (token) {
             case "?":
-                return true; //unknown
+                return true; 
             case "_":
-                return true; //don't care
+                return true; 
         }
 
         String[] values = nominalCats.get(name);
@@ -381,7 +381,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
             int i = 0;
             for (ImmutableList row : data) {
-                //for (int i = 0; i < Math.min(data.size(), 10); i++) {
+                
                 joinWith(row, s, ", ");
                 s.append(NEW_LINE);
                 if (i++ > 10) break;
@@ -516,7 +516,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
      * TODO check data type of each point component
      */
     public boolean add(Object... point) {
-        return add(Lists.immutable.of(point)); //TODO impl ImmutableList to cache hashcode
+        return add(Lists.immutable.of(point)); 
     }
 
     public boolean add(ImmutableList point) {
@@ -685,7 +685,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
                         }
                     });
                 } else {
-                    //default: Text
+                    
                     defineText(n);
                     extractor.add((x) -> {
                         try {
@@ -714,6 +714,6 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             return add(o);
         }
 
-        //TODO get - to set fields of supplied or newly constructable object
+        
     }
 }

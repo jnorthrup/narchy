@@ -50,8 +50,8 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         if (constraints.getCardinality() < 2) {
             return a;
         } else {
-            //identify contiguous runs of constraints
-            List<IntIntPair> ranges = new FasterList<>(1); //inclusive
+            
+            List<IntIntPair> ranges = new FasterList<>(1); 
             int start = -1, end = -1;
             PeekableIntIterator ii = constraints.getIntIterator();
             while (ii.hasNext()) {
@@ -63,10 +63,10 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
                         end++;
                     } else {
                         if (end - start >= 1) {
-                            //compile that range
+                            
                             ranges.add(pair(start, end));
                         }
-                        start = -1; //broken
+                        start = -1; 
                     }
                 }
             }
@@ -128,47 +128,47 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
     }
 
-//    /**
-//     * combine certain types of items in an AND expression
-//     */
-//    public static List<PrediTerm<Derivation>> combineConstraints(List<PrediTerm<Derivation>> p) {
-//        if (p.size() == 1)
-//            return p;
-//
-//        SortedSet<MatchConstraint> constraints = new TreeSet<>((a, b)->Float.compare(a.cost(), b.cost()));
-//        Iterator<PrediTerm<Derivation>> il = p.iterator();
-//        while (il.hasNext()) {
-//            PrediTerm c = il.next();
-//            if (c instanceof MatchConstraint) {
-//                constraints.add((MatchConstraint) c);
-//                il.remove();
-//            }
-//        }
-//
-//
-//        if (!constraints.isEmpty()) {
-//
-//
-//            int iMatchTerm = -1; //first index of a MatchTerm op, if any
-//            for (int j = 0, cccSize = p.size(); j < cccSize; j++) {
-//                PrediTerm c = p.get(j);
-//                if ((c instanceof Fork) && iMatchTerm == -1) {
-//                    iMatchTerm = j;
-//                }
-//            }
-//            if (iMatchTerm == -1)
-//                iMatchTerm = p.size();
-//
-//            //1. sort the constraints and add them at the end
-//            int c = constraints.size();
-//            if (c > 1) {
-//                p.add(iMatchTerm, new CompoundConstraint(constraints.toArray(new MatchConstraint[c])));
-//            } else
-//                p.add(iMatchTerm, constraints.iterator().next()); //just add the singleton at the end
-//        }
-//
-//        return p;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * cost of testing this, for sorting. higher value will be tested later than lower
@@ -178,7 +178,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
     @Override
     public boolean test(Derivation p) {
-        //this will not be called when it is part of a CompoundConstraint group
+        
         return p.constrain(this);
     }
 

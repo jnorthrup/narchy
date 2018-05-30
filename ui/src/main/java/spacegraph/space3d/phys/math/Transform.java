@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -64,8 +64,8 @@ public final class Transform extends v3 {
 		return new Transform();
 	}
 
-//	//TODO make this a ROTransform (read-only)
-//	public static final Transform identity = new Transform().setIdentity();
+
+
 
 	public Transform(Matrix3f mat) {
 		basis.set(mat);
@@ -93,9 +93,9 @@ public final class Transform extends v3 {
 	public void set(Transform tr) {
 		assert(this!=tr);
 
-		super.set(tr); //v3
+		super.set(tr); 
 
-		basis.set(tr.basis); //m3
+		basis.set(tr.basis); 
 	}
 	
 	public void set(Matrix3f mat) {

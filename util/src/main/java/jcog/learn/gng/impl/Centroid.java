@@ -12,7 +12,7 @@ public class Centroid extends ArrayRealVector {
 
     public final int id;
     private double localError;
-    private double localDistanceSq; //caches square of last tested distance
+    private double localDistanceSq; 
 
     public Centroid(int id, int dimensions) {
         super(dimensions);
@@ -37,7 +37,7 @@ public class Centroid extends ArrayRealVector {
         assert (maxErrorNode != maxErrorNeighbour);
         setLocalError(
                 (maxErrorNode.localError)
-                // + maxErrorNeighbour.localError)/2f
+                
         );
 
         double[] a = maxErrorNode.getDataRef();
@@ -61,13 +61,13 @@ public class Centroid extends ArrayRealVector {
         return this;
     }
 
-//    public double[] getWeights() {
-//        return weights;
-//    }
-//
-//    public void setWeights(double[] weights) {
-//        this.weights = weights;
-//    }
+
+
+
+
+
+
+
 
     public double localError() {
         return localError;
@@ -116,7 +116,7 @@ public class Centroid extends ArrayRealVector {
     public void add(final double[] x) {
         final double[] d = getDataRef();
         for (int i = 0; i < d.length; i++) {
-            //assert(Double.isFinite(x[i]));
+            
             d[i] += x[i];
         }
     }

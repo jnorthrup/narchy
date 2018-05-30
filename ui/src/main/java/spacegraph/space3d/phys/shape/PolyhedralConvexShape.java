@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -57,8 +57,8 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 	protected final v3 localAabbMax = new v3(-1f, -1f, -1f);
 	protected boolean isLocalAabbValid;
 
-//	/** optional Hull is for optional Separating Axis Test Hull collision detection, see Hull.cpp */
-//	public Hull optionalHull = null;
+
+
 	
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
@@ -100,13 +100,13 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 		v3 vtx = new v3();
 		float newDot;
 
-		// JAVA NOTE: rewritten as code used W coord for temporary usage in Vector3
-		// TODO: optimize it
+		
+		
 		float[] wcoords = new float[numVectors];
 
 		for (i = 0; i < numVectors; i++) {
-			// TODO: used w in vector3:
-			//supportVerticesOut[i].w = -1e30f;
+			
+			
 			wcoords[i] = -1e30f;
 		}
 
@@ -116,11 +116,11 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 			for (i = 0; i < getNumVertices(); i++) {
 				getVertex(i, vtx);
 				newDot = vec.dot(vtx);
-				//if (newDot > supportVerticesOut[j].w)
+				
 				if (newDot > wcoords[j]) {
-					//WARNING: don't swap next lines, the w component would get overwritten!
+					
 					supportVerticesOut[j].set(vtx);
-					//supportVerticesOut[j].w = newDot;
+					
 					wcoords[j] = newDot;
 				}
 			}
@@ -129,7 +129,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		// not yet, return box inertia
+		
 
 		float margin = getMargin();
 
@@ -155,7 +155,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 	}
 
 	private void getNonvirtualAabb(Transform trans, v3 aabbMin, v3 aabbMax, float margin) {
-		// lazy evaluation of local aabb
+		
 		assert (isLocalAabbValid);
 
 		AabbUtil2.transformAabb(localAabbMin, localAabbMax, margin, trans, aabbMin, aabbMax);
@@ -173,7 +173,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 	public void recalcLocalAabb() {
 		isLocalAabbValid = true;
 
-		//#if 1
+		
 
 		batchedUnitVectorGetSupportingVertexWithoutMargin(_directions, _supporting, 6);
 
@@ -182,18 +182,18 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 			VectorUtil.setCoord(localAabbMin, i, VectorUtil.coord(_supporting[i + 3], i) - collisionMargin);
 		}
 		
-		//#else
-		//for (int i=0; i<3; i++) {
-		//	Vector3f vec = new Vector3f();
-		//	vec.set(0f, 0f, 0f);
-		//	VectorUtil.setCoord(vec, i, 1f);
-		//	Vector3f tmp = localGetSupportingVertex(vec, new Vector3f());
-		//	VectorUtil.setCoord(localAabbMax, i, VectorUtil.getCoord(tmp, i) + collisionMargin);
-		//	VectorUtil.setCoord(vec, i, -1f);
-		//	localGetSupportingVertex(vec, tmp);
-		//	VectorUtil.setCoord(localAabbMin, i, VectorUtil.getCoord(tmp, i) - collisionMargin);
-		//}
-		//#endif
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 
 	@Override
@@ -214,7 +214,7 @@ public abstract class PolyhedralConvexShape extends ConvexInternalShape {
 
 	public abstract void getPlane(v3 planeNormal, v3 planeSupport, int i);
 	
-//	public abstract  int getIndex(int i) const = 0 ; 
+
 	
 	public abstract boolean isInside(v3 pt, float tolerance);
 	

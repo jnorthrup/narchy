@@ -18,8 +18,8 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
     @Override public int opX() { return Term.opX(op(), 10);    }
 
     public UnnormalizedVariable(/*@NotNull*/ Op type, String label) {
-        //super(type, label);
-        //super(ArrayUtils.add(bytes(type, label), 0, IO.SPECIAL_OP));
+        
+        
         super(bytes(IO.SPECIAL_OP, label));
         this.type = type;
     }
@@ -79,21 +79,21 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
     }
 
 
-//    @Override
-//    public Term evalSafe(TermContext index, int remain) {
-//        throw new UnsupportedOperationException();
-//    }
 
-//    @Override
-//    public void append(ByteArrayDataOutput out) {
-//        out.writeByte(SPECIAL_OP);
-//        String s = toString();
-//        out.writeShort(s.length());
-//        out.write(s.getBytes()); //HACK
-//        //byte[] b = bytes();
-//        //out.writeShort(b.length);
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

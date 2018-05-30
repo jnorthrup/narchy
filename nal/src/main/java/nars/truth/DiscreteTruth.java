@@ -20,7 +20,7 @@ public class DiscreteTruth implements Truth {
 
     public DiscreteTruth(float f, float c) {
         this(Truth.truthToInt(f,
-                //Math.min(c, Param.TRUTH_MAX_CONF),
+                
                 c,
                 hashDiscretenessEpsilon));
     }
@@ -81,22 +81,22 @@ public class DiscreteTruth implements Truth {
         return hash;
     }
 
-//    @NotNull
-//    @Override
-//    public final DefaultTruth negated() {
-//        //float fPos = freq;
-//
-//        //if = 0.5, negating will produce same result
-//        //return Util.equals(fPos, 0.5f, Global.TRUTH_EPSILON) ? this :
-//
-//        return new DefaultTruth(1.0f - freq, conf);
-//    }
 
-//    protected boolean equalsFrequency(@NotNull Truth t) {
-//        return (Util.equals(freq, t.freq(), Param.TRUTH_EPSILON));
-//    }
-//
-//    private static final int hashDiscreteness = (int)(1.0f / Param.TRUTH_EPSILON);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -104,43 +104,43 @@ public class DiscreteTruth implements Truth {
         return DEFAULT_TRUTH_EPSILON;
     }*/
 
-//    /** truth with 0.01 resolution */
-//    public static class DefaultTruth01 extends DefaultTruth {
-//
-//        public DefaultTruth01(float f, float c) {
-//            super(f, c);
-//        }
-//    }
-//
-//
-//
-//    /** truth with 0.1 resolution */
-//    public static class DefaultTruth1 extends AbstractDefaultTruth {
-//
-//        @Override
-//        public float getEpsilon() {
-//            return 0.1f;
-//        }
-//    }
-//
-//
-//    /** truth with 0.001 resolution */
-//    public static class DefaultTruth001 extends AbstractDefaultTruth {
-//
-//        @Override
-//        public float getEpsilon() {
-//            return 0.001f;
-//        }
-//    }
-//
-//
-//    /** truth with 0.05 resolution */
-//    public static class DefaultTruth05 extends AbstractDefaultTruth {
-//
-//        @Override
-//        public float getEpsilon() {
-//            return 0.05f;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

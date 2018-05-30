@@ -27,7 +27,7 @@ abstract public class RelationConstraint extends MatchConstraint {
 
     @Override
     public @Nullable PrediTerm<PreDerivation> asPredicate(Term taskPattern, Term beliefPattern) {
-        //forward direction only assuming that the opposite pair is constructed also only one predicate will need generated
+        
         if (x.equals(taskPattern) && y.equals(beliefPattern)) {
             return new ConstraintAsPredicate(this, true);
         }
@@ -40,7 +40,7 @@ abstract public class RelationConstraint extends MatchConstraint {
     @Override
     public final boolean invalid(Term xx, Unify f) {
         Termed yy =
-                //f.xy(yUnneg); //return yy!=null && ..
+                
                 f.apply(yUnneg);
         return yy != yUnneg
                 &&

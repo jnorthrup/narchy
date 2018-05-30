@@ -74,13 +74,13 @@ abstract public class Bool extends AtomicConst implements The {
 
     @Override
     public final Term dt(int dt) {
-        return this; //allow
-        //throw never("dt");
+        return this; 
+        
     }
 
 
-//    UnsupportedOperationException never(String eval) {
-//        return new UnsupportedOperationException(this + " Bool leak attemping: " + eval);
-//    }
+
+
+
 
 }

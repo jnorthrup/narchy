@@ -13,7 +13,7 @@ public abstract class VarIntroduction {
 
     public Pair<Term, Map<Term, Term>> apply(final Term x, Random r) {
 
-        if (x.complexity() < 2) //exclude vars (.volume()) in this count
+        if (x.complexity() < 2) 
             return null;
 
 
@@ -23,7 +23,7 @@ public abstract class VarIntroduction {
 
         int vars = x.vars();
         assert (vars < 127 - 1);
-        //ensure the variables wont collide with existing variables by assigning an introduced variable to unique ID
+        
         Term v = introduce(x, u, (byte)(vars+1));
         if (v == null || v instanceof Bool)
             return null;

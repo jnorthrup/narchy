@@ -73,10 +73,10 @@ public class ByteArrayUntilSplit implements Bits{
 	public static final boolean countWrapBitsAsOneMoreHeight = true;
 	
 	public ByteArrayUntilSplit(byte b[], long siz){
-		//TODO verify size ignores 0-7 bits of last byte
+		
 		bytesOrNull = b;
 		this.siz = siz;
-		long blocksOf16 = (siz+15)>>4; //round up
+		long blocksOf16 = (siz+15)>>4; 
 		byte h = 0;
 		while(1 < blocksOf16){
 			blocksOf16 >>>= 1;
@@ -281,17 +281,17 @@ public class ByteArrayUntilSplit implements Bits{
 	
 	/*Use byteAt instead of this, so dont really need this optimization
 	public int bits(long start, byte howManyBits){
-		if((start&7)==0 && howManyBits==8){ //byte aligned
+		if((start&7)==0 && howManyBits==8){ 
 			return byteAt
 		}else{
 			throw new RuntimeException("TODO");
 		}
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}*/
 	
-	//TODO is there existing byte array code implementing Bits?
 	
-	//TODO
+	
+	
 
 }

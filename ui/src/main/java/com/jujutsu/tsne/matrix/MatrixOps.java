@@ -7,81 +7,81 @@ import org.ejml.data.DMatrixRMaj;
 import java.text.DecimalFormat;
 import java.util.concurrent.ThreadLocalRandom;
 
-//import Jama.Matrix;
-//import org.ejml.data.DMatrixRBlock;
-//import org.ejml.data.Matrix64F;
+
+
+
 
 
 public enum MatrixOps { ;
-//	Random rnd = new Random();
+
 	private static final DecimalFormat mydecimalFormat = new DecimalFormat("00.###E0");
-//	private static final ForkJoinPool pool = new ForkJoinPool();
+
 	private static final String DEFAULT_TITLE  = "Vector";
 	private static final int noDigits = 4;
 
-//	public static String arrToStr(int [] arr, String title) {
-//		String res = "";
-//		res += title + '[' +  arr.length + "]:";
-//		for (int anArr : arr) {
-//			res += anArr + ", ";
-//		}
-//		res += "\n";
-//		return res;
-//	}
-//
-//	public static String arrToStr(double [] arr) {
-//		return arrToStr(arr, DEFAULT_TITLE, Integer.MAX_VALUE);
-//	}
-//
-//	public static String arrToStr(double [] arr, int maxLen) {
-//		return arrToStr(arr, DEFAULT_TITLE, maxLen);
-//	}
-//
-//	public static String arrToStr(double [] arr, String title) {
-//		return arrToStr(arr, title, Integer.MAX_VALUE);
-//	}
-//
-//	private static String arrToStr(double[] arr, String title, int maxLen) {
-//		StringBuilder res = new StringBuilder();
-//		res.append(title).append('[').append(arr.length).append("]:");
-//		for (int j = 0; j < arr.length && j < maxLen; j++) {
-//			res.append(formatDouble(arr[j])).append(", ");
-//		}
-//		return res.toString();
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public static String doubleArrayToPrintString(double[][] m) {
 		return doubleArrayToPrintString(m, ", ", Integer.MAX_VALUE, m.length, Integer.MAX_VALUE, "\n");
 	}
-//
-//	public static String doubleArrayToPrintString(double[][] m, int maxRows) {
-//		return doubleArrayToPrintString(m, ", ", maxRows, maxRows, Integer.MAX_VALUE, "\n");
-//	}
-//
-//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter) {
-//		return doubleArrayToPrintString(m, colDelimiter, Integer.MAX_VALUE, -1, Integer.MAX_VALUE, "\n");
-//	}
-//
-//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim) {
-//		return doubleArrayToPrintString(m, colDelimiter, toprowlim, -1, Integer.MAX_VALUE, "\n");
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public static String doubleArrayToPrintString(double[][] m, int toprowlim, int btmrowlim) {
 		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
 	}
-//
-//	public static String doubleArrayToPrintString(double[][] m, int toprowlim, int btmrowlim, int collim) {
-//		return doubleArrayToPrintString(m, ", ", toprowlim, btmrowlim, collim, "\n");
-//	}
-//
-//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim) {
-//		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, Integer.MAX_VALUE, "\n");
-//	}
-//
-//	public static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim) {
-//		return doubleArrayToPrintString(m, colDelimiter, toprowlim, btmrowlim, collim, "\n");
-//	}
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 	private static String doubleArrayToPrintString(double[][] m, String colDelimiter, int toprowlim, int btmrowlim, int collim, String sentenceDelimiter) {
 		StringBuffer str = new StringBuffer(m.length * m[0].length);
 
@@ -134,137 +134,137 @@ public enum MatrixOps { ;
 	@Deprecated
 	private static String formatDouble(double d) {
 	    return Texts.n4(d);
-//		if ( d == 0.0 ) return "<0.0>";
-//		if ( d<0.0001 && d>0 || d > -0.0001 && d < 0) {
-//			return mydecimalFormat.format(d);
-//		} else {
-//			String formatString = "%." + noDigits + 'f';
-//			return String.format(formatString, d);
-//		}
+
+
+
+
+
+
+
 	}
 
-//	public static String doubleArrayToString(double[][] m) {
-//		return doubleArrayToString(m, ",");
-//	}
 
-//	private static String doubleArrayToString(double[][] m, String colDelimiter) {
-//		StringBuffer str = new StringBuffer(m.length * m[0].length);
-//		for (double[] aM : m) {
-//			for (int j = 0; j < aM.length - 1; j++) {
-//				str = str.append(Double.toString(aM[j]));
-//				str = str.append(colDelimiter);
-//			}
-//			str = str.append(Double.toString(aM[aM.length - 1]));
-//			str = str.append('\n');
-//		}
-//		return str.toString();
-//	}
 
-//	public static double [] rep(double val, int times) {
-//		double [] res = new double[times];
-//		for (int i = 0; i < res.length; i++) {
-//			res[i] = val;
-//		}
-//		return res;
-//	}
-//
-//	public static double [] asVector(double [][] matrix) {
-//		boolean isCol = matrix.length != 1;
-//		int n = matrix.length == 1 ? matrix[0].length : matrix.length;
-//		if(matrix.length != 1 && matrix[0].length!=1) {
-//			throw new IllegalArgumentException("Cannot convert non-row or col matrix to vactor! Matrix dim: "
-//					+ matrix.length + 'x' + matrix[0].length);
-//		}
-//
-//		double [] res = new double[n];
-//
-//		if(isCol) {
-//			for (int j = 0; j < matrix.length; j++) {
-//				res[j] = matrix[j][0];
-//			}
-//		} else {
-//            System.arraycopy(matrix[0], 0, res, 0, matrix[0].length);
-//		}
-//
-//		return res;
-//	}
-//
-//	/**
-//	 * This function returns a new matrix which is centered and scaled, i.e each
-//	 * the global mean is subtracted from each element in the matrix and divided
-//	 * by the global matrix standard deviation
-//	 *
-//	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
-//	 */
-//	public static double [][] centerAndScaleGlobal(double [][] matrix) {
-//		double [][] res = new double[matrix.length][matrix[0].length];
-//		double mean = mean(matrix);
-//		double std = stdev(matrix);
-//		for (int i = 0; i < res.length; i++) {
-//			for (int j = 0; j < res[i].length; j++) {
-//				res[i][j] = (matrix[i][j]-mean) / std;
-//			}
-//		}
-//
-//		return res;
-//	}
-//
-//	/**
-//	 * This function returns a new matrix which is centered and scaled, i.e each
-//	 * the column mean is subtracted from each column element in the matrix and
-//	 * divided by the respective column matrix standard deviation
-//	 *
-//	 * @return new matrix which is centered (subtracted mean) and scaled (divided with stddev)
-//	 */
-//	public static double [][] centerAndScale(double [][] matrix) {
-//		double [][] res = new double[matrix.length][matrix[0].length];
-//		double [] means = colMeans(matrix);
-//		for (int i = 0; i < res.length; i++) {
-//			for (int j = 0; j < res[i].length; j++) {
-//				res[i][j] = (matrix[i][j]-means[j]);
-//			}
-//		}
-//
-//		double [] std = colStddev(res);
-//		for (int i = 0; i < res.length; i++) {
-//			for (int j = 0; j < res[i].length; j++) {
-//				res[i][j] = res[i][j] / (std[j] == 0 ? 1 : std[j]);
-//			}
-//		}
-//
-//		return res;
-//	}
-//
-//	public static double [][] centerAndScaleSametime(double [][] matrix) {
-//		double [][] res = new double[matrix.length][matrix[0].length];
-//		double [] means = colMeans(matrix);
-//		double [] std = colStddev(matrix);
-//		for (int i = 0; i < res.length; i++) {
-//			for (int j = 0; j < res[i].length; j++) {
-//				res[i][j] = (matrix[i][j]-means[j]) / (std[j] == 0 ? 1 : std[j]);
-//			}
-//		}
-//
-//		return res;
-//	}
-//
-//	/**
-//	 * This function returns adds a small amount of noise to each column
-//	 *
-//	 * @return new matrix with added noise
-//	 */
-//	public static double [][] addNoise(double [][] matrix) {
-//		double [][] res = new double[matrix.length][matrix[0].length];
-//		double [] std = colStddev(matrix);
-//		for (int i = 0; i < res.length; i++) {
-//			for (int j = 0; j < res[i].length; j++) {
-//				double noise = rnorm(0, std[j] == 0.0 ? 0.00001 : std[j]/5);
-//				res[i][j] = matrix[i][j] + noise;
-//			}
-//		}
-//
-//		return res;
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Returns a new matrix which is the transpose of input matrix
@@ -284,12 +284,12 @@ public enum MatrixOps { ;
 		return transpose;
 	}
 
-	// Unit Tested
+	
 	public static double[][] transpose(double[][] matrix) {
 		return transpose(matrix, 1000);
 	}
 	
-	// Unit Tested
+	
 	/**
 	 * Returns a new matrix which is the transpose of input matrix
 	 * @param matrix
@@ -299,67 +299,67 @@ public enum MatrixOps { ;
 		int cols = matrix[0].length;
 		int rows = matrix.length;
 		double[][] transpose = new double[cols][rows];
-//		if(rows < 100 ) {
+
 			for (int i = 0; i < cols; i++)
 				for (int j = 0; j < rows; j++)
 					transpose[i][j] = matrix[j][i];
-//		} else {
-//			MatrixTransposer process = new MatrixTransposer(matrix, transpose, 0, rows, ll);
-//			pool.invoke(process);
-//		}
+
+
+
+
 		return transpose;
 	}
 
-//	static class MatrixTransposer extends RecursiveAction {
-//		private static final long serialVersionUID = 1L;
-//		final double [][] orig;
-//		final double [][] transpose;
-//		int startRow = -1;
-//		int endRow = -1;
-//		int limit = 1000;
-//
-//		MatrixTransposer(double[][] orig, double[][] transpose, int startRow, int endRow, int ll) {
-//			this.limit = ll;
-//			this.orig = orig;
-//			this.transpose = transpose;
-//			this.startRow = startRow;
-//			this.endRow = endRow;
-//		}
-//
-//		public MatrixTransposer(double [][] orig, double [][] transpose, int startRow, int endRow) {
-//			this.orig = orig;
-//			this.transpose = transpose;
-//			this.startRow = startRow;
-//			this.endRow = endRow;
-//		}
-//
-//		@Override
-//		protected void compute() {
-//			try {
-//				if ( (endRow-startRow) <= limit ) {
-//					int cols = orig[0].length;
-//					for (int i = 0; i < cols; i++) {
-//						for (int j = startRow; j < endRow; j++) {
-//							transpose[i][j] = orig[j][i];
-//						}
-//					}
-//				}
-//				else {
-//					int range = (endRow-startRow);
-//					int startRow1 = startRow;
-//					int endRow1 = startRow + (range / 2);
-//					int endRow2 = endRow;
-//					invokeAll(new MatrixTransposer(orig, transpose, startRow1, endRow1, limit),
-//							new MatrixTransposer(orig, transpose, endRow1, endRow2, limit));
-//				}
-//			}
-//			catch ( Exception e ) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 
-	// Unit Tested
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 	/**
 	 * Returns a new matrix with values exponentiated
 	 * @param matrix
@@ -375,7 +375,7 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 
-	// Unit Tested
+	
 	/**
 	 * Returns new vetcor with vals sqrt'ed
 	 * @param vector
@@ -389,7 +389,7 @@ public enum MatrixOps { ;
 		return vector;
 	}
 
-	// Unit Tested
+	
 	/**
 	 * @param vector
 	 * @return mean of values in vector
@@ -402,7 +402,7 @@ public enum MatrixOps { ;
 		return sum/vector.length;
 	}
 
-	// Unit Tested
+	
 	/**
 	 * Returns a new matrix with values that are the log of the input matrix
 	 * @param matrix
@@ -467,7 +467,7 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 
-	// Unit Tested
+	
 	/**
 	 * @param matrix
 	 * @return scalar inverse of matrix
@@ -487,7 +487,7 @@ public enum MatrixOps { ;
 		}
 		return result;
 	}
-	// Unit Tested
+	
 	/**
 	 * @param vector
 	 * @return scalar inverse of vector
@@ -545,7 +545,7 @@ public enum MatrixOps { ;
 		return mu + (ThreadLocalRandom.current().nextGaussian() * sigma);
 	}
 
-	// Unit Tested
+	
 	/**
 	 * Returns a new matrix of booleans where true is set if the values to the two matrices are
 	 * the same at that index
@@ -677,11 +677,11 @@ public enum MatrixOps { ;
 		return mean(matrix,2)[0][0];
 	}
 	
-	// Unit Tested
+	
 	public static double [][] mean(double [][] matrix, int axis) {
-		// Axis = 0 => sum columns
-		// Axis = 1 => sum rows
-		// Axis = 2 => global (returns a 1 element array with the result)
+		
+		
+		
 		double [][] result;
 		if( axis == 0) {
 			result = new double[1][matrix[0].length];
@@ -715,11 +715,11 @@ public enum MatrixOps { ;
 		return result;
 	}
 
-	// Unit Tested
-	// Should be called dim-sum! :)
+	
+	
 	public static double [][] sum(double [][] matrix, int axis) {
-		// Axis = 0 => sum columns
-		// Axis = 1 => sum rows
+		
+		
 		double [][] result;
 		if( axis == 0) {
 			result = new double[1][matrix[0].length];
@@ -745,84 +745,84 @@ public enum MatrixOps { ;
 		return result;
 	}
 
-	// Unit Tested
+	
 	/**
 	 * Returns a new matrix which is the transpose of input matrix
 	 * @param matrix
 	 * @return
 	 */
 	public static double sumPar(double[][] matrix) {
-//		int ll = 100;
+
 		int cols = matrix[0].length;
 		int rows = matrix.length;
 		double sum = 0;
-//		double [] sums = new double[rows];
-//		if(rows < ll ) {
+
+
         for (double[] aMatrix : matrix)
             for (int col = 0; col < cols; col++)
                 sum += aMatrix[col];
-//		} else {
-//			MatrixSummer process = new MatrixSummer(matrix, sums, 0, rows, ll);
-//			pool.invoke(process);
-//		}
-//		double sum = 0.0;
-//		for (double sum1 : sums) {
-//			sum += sum1;
-//		}
+
+
+
+
+
+
+
+
 		return sum;
 	}
 
-//	static class MatrixSummer extends RecursiveAction {
-//		private static final long serialVersionUID = 1L;
-//		final double [][] orig;
-//		final double [] sums;
-//		int startRow = -1;
-//		int endRow = -1;
-//		int limit = 1000;
-//
-//		MatrixSummer(double[][] orig, double[] sums, int startRow, int endRow, int ll) {
-//			this.limit = ll;
-//			this.orig = orig;
-//			this.sums = sums;
-//			this.startRow = startRow;
-//			this.endRow = endRow;
-//		}
-//
-//		public MatrixSummer(double [][] orig, double [] transpose, int startRow, int endRow) {
-//			this.orig = orig;
-//			this.sums = transpose;
-//			this.startRow = startRow;
-//			this.endRow = endRow;
-//		}
-//
-//		@Override
-//		protected void compute() {
-//			try {
-//				if ( (endRow-startRow) <= limit ) {
-//					int cols = orig[0].length;
-//					for (int row = startRow; row < endRow; row++) {
-//						for (int i = 0; i < cols; i++) {
-//							sums[row] += orig[row][i];
-//						}
-//					}
-//				}
-//				else {
-//					int range = (endRow-startRow);
-//					int startRow1 = startRow;
-//					int endRow1 = startRow + (range / 2);
-//					int endRow2 = endRow;
-//					invokeAll(new MatrixSummer(orig, sums, startRow1, endRow1, limit),
-//							new MatrixSummer(orig, sums, endRow1, endRow2, limit));
-//				}
-//			}
-//			catch ( Exception e ) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
 
 
-	// Unit Tested
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 	/**
 	 * @param matrix
 	 * @return sum of all values in the matrix
@@ -862,7 +862,7 @@ public enum MatrixOps { ;
 		return maxed;
 	}
 
-	// Unit Tested
+	
 	/**
 	 * All values in matrix that is less than <code>lessthan</code> is assigned
 	 * the value <code>assign</code>
@@ -881,7 +881,7 @@ public enum MatrixOps { ;
 		}
 	}
 
-	// Unit Tested
+	
 	/**
 	 * @param matrix
 	 * @return a new matrix with the values of matrix squared
@@ -979,7 +979,7 @@ public enum MatrixOps { ;
 		return result;
 	}
 
-	// Unit Tested
+	
 	public static double [][] tile(double [][] matrix, int rowtimes, int coltimes) {
 		double [][] result = new double[matrix.length*rowtimes][matrix[0].length*coltimes];
 		for (int i = 0, resultrow = 0; i < rowtimes; i++) {
@@ -1024,7 +1024,7 @@ public enum MatrixOps { ;
 		return result;
 	}
 
-	// Unit Tested
+	
 	public static int [] concatenate(int [] v1,int [] v2) {
 		int [] result = new int[v1.length+v2.length];
 		int index = 0;
@@ -1037,7 +1037,7 @@ public enum MatrixOps { ;
 		return result;
 	}
 	
-	// Unit Tested
+	
 		public static double [] concatenate(double [] v1,double [] v2) {
 			double [] result = new double[v1.length+v2.length];
 			int index = 0;
@@ -1050,7 +1050,7 @@ public enum MatrixOps { ;
 			return result;
 		}
 
-	// Unit Tested
+	
 	public static double [][] concatenate(double [][] m1,double[][] m2) {
 		if(m1.length!=m2.length) throw new IllegalArgumentException("m1 and m2 must have the same number of rows:" + m1.length + " != " + m2.length);
 		double [][] result = new double[m1.length][m1[0].length+m2[0].length];
@@ -1067,7 +1067,7 @@ public enum MatrixOps { ;
 		return result;
 	}
 
-	// Unit Tested
+	
 	public static double [][] concatenate(double [][] m1,double[] v2) {
 		if(m1.length!=v2.length) throw new IllegalArgumentException("m1 and v2 must have the same number of rows:" + m1.length + " != " + v2.length);
 		double [][] result = new double[m1.length][m1[0].length+1];
@@ -1086,7 +1086,7 @@ public enum MatrixOps { ;
 		return parScalarMultiply(m1, m2);
 	}
 	
-	// Unit Tested
+	
 	public static double [][] sMultiply(double [][] v1,double [][] v2) {
 		if( v1.length != v2.length || v1[0].length != v2[0].length ) {
 			throw new IllegalArgumentException("a and b has to be of equal dimensions");
@@ -1102,78 +1102,78 @@ public enum MatrixOps { ;
 	
 	public static double[][] parScalarMultiply(double[][] m1, double[][] m2) {
 		return sMultiply(m1, m2);
-//		int ll = 600;
-//		double [][] result = new double[m1.length][m1[0].length];
-//
-//		MatrixOperator process = new MatrixOperator(m1, m2, result, multiplyop, 0, m1.length, ll);
-//		pool.invoke(process);
-//		return result;
+
+
+
+
+
+
 	}
 
 	public static double[][] parScalarMinus(double[][] m1, double[][] m2) {
 		return sMinus(m1, m2);
-//		int ll = 600;
-//		double [][] result = new double[m1.length][m1[0].length];
-//
-//		MatrixOperator process = new MatrixOperator(m1, m2, result, minusop, 0, m1.length, ll);
-//		pool.invoke(process);
-//		return result;
+
+
+
+
+
+
 	}
 
-//	interface MatrixOp {
-//		double compute(double op1, double op2);
-//	}
-//
-//	private static final MatrixOp multiplyop = (f1, f2) -> f1 * f2;
-//
-//	private static final MatrixOp minusop = (f1, f2) -> f1 - f2;
 
-//	static class MatrixOperator extends RecursiveAction {
-//		final static long serialVersionUID = 1L;
-//		final double [][] matrix1;
-//		final double [][] matrix2;
-//		final double [][] resultMatrix;
-//		int startRow = -1;
-//		int endRow = -1;
-//		int limit = 1000;
-//		final MatrixOp op;
-//
-//		MatrixOperator(double[][] matrix1, double[][] matrix2, double[][] resultMatrix,
-//					   MatrixOp op, int startRow, int endRow, int ll) {
-//			this.op = op;
-//			this.limit = ll;
-//			this.matrix1 = matrix1;
-//			this.matrix2 = matrix2;
-//			this.resultMatrix = resultMatrix;
-//			this.startRow = startRow;
-//			this.endRow = endRow;
-//		}
-//
-//		@Override
-//		protected void compute() {
-//			try {
-//				if ( (endRow-startRow) <= limit ) {
-//					int cols = matrix1[0].length;
-//					for (int i = startRow; i < endRow; i++) {
-//						for (int j = 0; j < cols; j++) {
-//							resultMatrix[i][j] = op.compute(matrix1[i][j], matrix2[i][j]);
-//						}
-//					}
-//				}
-//				else {
-//					int range = (endRow-startRow);
-//					int startRow1 = startRow;
-//					int endRow1 = startRow + (range / 2);
-//					int endRow2 = endRow;
-//					invokeAll(new MatrixOperator(matrix1, matrix2, resultMatrix, op, startRow1, endRow1, limit),
-//							new MatrixOperator(matrix1, matrix2, resultMatrix, op, endRow1, endRow2, limit));
-//				}
-//			}
-//			catch ( Exception e ) {
-//				e.printStackTrace();
-//			}
-//		}
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	public static void assignAtIndex(double[][] num, int[] range, int[] range1, double value) {
@@ -1288,7 +1288,7 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 
-	// Unit Tested
+	
 	public static double[][] scalarPlus(double[][] m1, double m2) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < m1.length; i++)
@@ -1297,7 +1297,7 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 
-	// Unit Tested
+	
 	public static double [] scalarPlus(double[] m1, double m2) {
 		double[] matrix = new double[m1.length];
 		for (int i = 0; i < m1.length; i++)
@@ -1309,7 +1309,7 @@ public enum MatrixOps { ;
 		return parScalarMinus(m1, m2);
 	}
 
-	// Unit Tested
+	
 	public static double[][] sMinus(double[][] m1, double[][] m2) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < m1.length; i++)
@@ -1318,7 +1318,7 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 
-	// Unit Tested
+	
 	public static double[][] scalarDivide(double[][] numerator, double denom) {
 		double[][] matrix = new double[numerator.length][numerator[0].length];
 		for (int i = 0; i < numerator.length; i++)
@@ -1327,7 +1327,7 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 
-	// Unit Tested
+	
 	public static double [] scalarDivide(double numerator, double[] denom) {
 		double[] vector = new double[denom.length];
 		for (int i = 0; i < denom.length; i++)
@@ -1335,7 +1335,7 @@ public enum MatrixOps { ;
 		return vector;
 	}
 
-	// Unit Tested
+	
 	public static double [] scalarDivide(double[] numerator, double denom) {
 		double[] vector = new double[numerator.length];
 		for (int i = 0; i < numerator.length; i++)
@@ -1343,7 +1343,7 @@ public enum MatrixOps { ;
 		return vector;
 	}
 
-	// Unit Tested
+	
 	public static double [] scalarDivide(double [] numerator, double[] denom) {
 		double[] vector = new double[denom.length];
 		for (int i = 0; i < denom.length; i++)
@@ -1351,7 +1351,7 @@ public enum MatrixOps { ;
 		return vector;
 	}
 
-	// Unit Tested
+	
 	public static double[][] scalarDivide(double[][] numerator, double[][] denom) {
 		double[][] matrix = new double[numerator.length][numerator[0].length];
 		for (int i = 0; i < numerator.length; i++)
@@ -1360,7 +1360,7 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 	
-	// Unit Tested
+	
 	public static double[][] scalarMult(double[][] m1, double mul) {
 		double[][] matrix = new double[m1.length][m1[0].length];
 		for (int i = 0; i < m1.length; i++)
@@ -1369,10 +1369,10 @@ public enum MatrixOps { ;
 		return matrix;
 	}
 	
-	// Unit Tested
-	public static double[][] times(double a[][], double b[][]){//a[m][n], b[n][p]
+	
+	public static double[][] times(double a[][], double b[][]){
 		if(a.length == 0) return new double[0][0];
-		if(a[0].length != b.length) return null; //invalid dims
+		if(a[0].length != b.length) return null; 
 
 		int n = a[0].length;
 		int m = a.length;
@@ -1531,15 +1531,15 @@ public enum MatrixOps { ;
 		return res;
 	}
 
-//	public static Integer [] indicesOf(int classIdx, int [] ys) {
-//		List<Integer> indices = new ArrayList<>();
-//		for (int row = 0; row < ys.length; row++) {
-//			if(ys[row]==classIdx) {
-//				indices.add(row);
-//			}
-//		}
-//		return indices.toArray(new Integer[0]);
-//	}
+
+
+
+
+
+
+
+
+
 
 	public static double[][] makeDesignMatrix(double[][] xstmp) {
 		double [][] xs = new double[xstmp.length][xstmp[0].length+1];

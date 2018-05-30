@@ -16,7 +16,7 @@ import java.net.URL;
 
 public class AwtGraphicsHandler extends GraphicsHandler {
 	public final Canvas canvas = new Canvas();
-	//private BufferStrategy strategy;
+	
 	public JFrame container;
 	private Cursor myCursor;
 	public JPanel panel;
@@ -24,8 +24,8 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 
 	@Override
 	public void init(final SideScrollMinicraft game) {
-		//canvas = new Canvas();
-		// create a frame to contain our game
+		
+		
 		container = new JFrame("Minicraft");
 		
 		try {
@@ -39,7 +39,7 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 			System.out.println("myCursor creation failed " + e);
 		}
 		
-		// get hold the content of the frame and set up the resolution of the game
+		
 		panel = (JPanel) container.getContentPane();
 		panel.setPreferredSize(new Dimension(screenWidth, screenHeight));
 		panel.setLayout(null);
@@ -54,32 +54,32 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 			}
 		});
 		
-		// setup our canvas size and put it into the content of the frame
+		
 		canvas.setBounds(0, 0, screenWidth + 10, screenHeight + 10);
 		panel.add(canvas);
 		
-		// Tell AWT not to bother repainting our canvas since we're
-		// going to do that our self in accelerated mode
+		
+		
 		canvas.setIgnoreRepaint(true);
 		
-		// finally make the window visible
+		
 		container.pack();
 		container.setResizable(true);
 		container.setVisible(true);
 		
-		// add a listener to respond to the user closing the window. If they
-		// do we'd like to exit the game
-		// TODO: add this back in
+		
+		
+		
 		container.addWindowListener(new MyWindowAdapter(game));
 
 		
-		// request the focus so key events come to us
+		
 		canvas.requestFocus();
 		
-		// create the buffering strategy which will allow AWT
-		// to manage our accelerated graphics
-		//canvas.createBufferStrategy(2);
-		//strategy = canvas.getBufferStrategy();
+		
+		
+		
+		
 
 		buffer = new BufferedImage(canvas.getWidth(), canvas.getHeight(), BufferedImage.TYPE_INT_RGB);
 		g = (Graphics2D) buffer.getGraphics();
@@ -89,8 +89,8 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 	
 	@Override
 	public void startDrawing() {
-		// Get hold of a graphics context for the accelerated
-		// surface and blank it out
+		
+		
 		g = (Graphics2D) buffer.getGraphics();
 		g.setColor(java.awt.Color.black);
 		g.fillRect(0, 0, screenWidth, screenHeight);
@@ -106,12 +106,12 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 		cg.drawImage(buffer, 0, 0, null);
 		cg.dispose();
 
-        //strategy.show();
+        
 	}
 	
 	@Override
 	public void setColor(Color color) {
-		// TODO: Profile, this might be quite slow "new" every color change
+		
 		g.setColor(new java.awt.Color(color.R, color.G, color.B, color.A));
 	}
 	
@@ -132,7 +132,7 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 	
 	@Override
 	public void drawImage(Sprite sprite, int x, int y) {
-		// TODO: This is inefficient, and serialization should be done more neatly
+		
 		AwtSprite awtSprite = (AwtSprite) sprite;
 		if (awtSprite.image == null) {
 			AwtSprite other = (AwtSprite) SpriteStore.get().loadSprite(awtSprite.ref);
@@ -177,7 +177,7 @@ public class AwtGraphicsHandler extends GraphicsHandler {
 
 		@Override
         public void windowClosing(WindowEvent e) {
-            game.goToMainMenu();  // this saves and cleans up appropriately
+            game.goToMainMenu();  
             SideScrollMinicraft.quit();
         }
 	}

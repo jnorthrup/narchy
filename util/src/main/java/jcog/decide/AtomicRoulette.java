@@ -71,7 +71,7 @@ public class AtomicRoulette<X> {
                 });
             }
             if (!offQueue.isEmpty()) {
-                throw new TODO(); //may need to reassign 'id' if the order changed
+                throw new TODO(); 
             }
 
             if (r != null)
@@ -94,11 +94,11 @@ public class AtomicRoulette<X> {
             if (ci == null)
                 return i;
             else if (ci == x)
-                return -1; //already have it
+                return -1; 
         }
 
         if (i < pri.length())
-            return i; //grow
+            return i; 
 
         throw new RuntimeException("overload");
     }
@@ -114,7 +114,7 @@ public class AtomicRoulette<X> {
         int x = pri.getAndSet(i, y);
         if (y != x) {
             int t = priTotal.addAndGet(y - x);
-            //assert (t >= 0 && t <= PRI_GRANULARITY * pri.length());
+            
         }
         return x;
     }
@@ -122,7 +122,7 @@ public class AtomicRoulette<X> {
     public boolean priGetAndSetIfEquals(int i, int x0, int y) {
         if (pri.compareAndSet(i, x0, y)) {
             int t = priTotal.addAndGet(y - x0);
-            //assert (t >= 0 && t <= PRI_GRANULARITY * pri.length());
+            
             return true;
         }
         return false;
@@ -148,20 +148,20 @@ public class AtomicRoulette<X> {
                 int distance = (int) (rng.nextFloat() * priTotal);
 
 
-//                boolean dir = rng.nextBoolean(); //randomize the direction
-//                int pp;
-//                int start = i;
-//                while (((distance = distance - (pp = pri.get(i))) > 0) && (pp == 0)) {
-//                    if (dir) { //TODO unroll this to two outer loops, not decide this inside
-//                        if (++i == count) i = 0;
-//                    } else {
-//                        if (--i == -1) i = count - 1;
-//                    }
-//                    if (i == start) {
-//                        i = -1; //idle signal that nothing was selected
-//                        break;
-//                    }
-//                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
                 int pp;
@@ -169,7 +169,7 @@ public class AtomicRoulette<X> {
                 while (((pp = pri.get(i)) == 0) || ((distance = distance - pp) > 0)) {
                     if (++i == count) i = 0;
                     if (i == start) {
-                        kontinued = kontinue.test(-1); //idle signal that nothing was selected
+                        kontinued = kontinue.test(-1); 
                         continue restart;
                     }
                 }

@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 09.12.2003 by RST.
-// $Id: Lib.java,v 1.19 2007-05-14 22:18:29 cawe Exp $
+
+
 
 package jake2.util;
 
@@ -166,13 +166,13 @@ public class Lib {
 			charfield.append(readableChar(v));
 			i++;
 	
-			// nach dem letzten, newline einfuegen
+			
 			if ((i & 0xf) == 0) {
 				result.append(charfield);
 				result.append('\n');
 				charfield.setLength(0);
 			}
-			//	in der Mitte ein Luecke einfuegen ?
+			
 			else if ((i & 0xf) == 8) {
 				result.append(' ');
 			}
@@ -312,7 +312,7 @@ public class Lib {
         try {
            return value.getBytes("ISO-8859-1");
         } catch (UnsupportedEncodingException e) {
-            // can't happen: Latin 1 is a standard encoding
+            
             return null;
         }
     }
@@ -326,7 +326,7 @@ public class Lib {
         try {
            return new String(value, "ISO-8859-1");
         } catch (UnsupportedEncodingException e) {
-            // can't happen: Latin 1 is a standard encoding
+            
             return null;
         }
     }

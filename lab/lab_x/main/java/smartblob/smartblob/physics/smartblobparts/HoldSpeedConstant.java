@@ -18,7 +18,7 @@ public class HoldSpeedConstant extends AbstractChangeSpeedLZ{
 		for(int p=0; p<blob.layerSize; p++){
 			CornerData cd = blob.corners[0][p];
 			float speed = (float)Math.sqrt(cd.speedY*cd.speedY + cd.speedX*cd.speedX);
-			if(speed == 0) continue; //TODO random direction?
+			if(speed == 0) continue; 
 			float mult = holdSpeed/speed;
 			cd.speedY *= mult;
 			cd.speedX *= mult;

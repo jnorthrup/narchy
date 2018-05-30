@@ -34,7 +34,7 @@ public class Label extends EmptyContainer {
     }
 
     public Label(String s) {
-        //super(new EmptySurface());
+        
         text(s);
     }
 
@@ -66,7 +66,7 @@ public class Label extends EmptyContainer {
         }
 
         if (textScaleY > 1f) {
-            textScaleX = 1f / (len*textScaleY); //(charAspect * len);
+            textScaleX = 1f / (len*textScaleY); 
             textScaleY = 1f;
 
         }
@@ -96,7 +96,7 @@ public class Label extends EmptyContainer {
 
         textColor.apply(gl);
         gl.glLineWidth(textThickness);
-        //float dz = 0.1f;
+        
         Draw.text(gl, text(), textScaleX, textScaleY, 0, textY, 0, Draw.TextAlignment.Left);
 
     }
@@ -118,19 +118,19 @@ public class Label extends EmptyContainer {
     }
 
 
-//    /**
-//     * label which paints in XOR so it contrasts with what is underneath
-//     */
-//    public static class XorLabel extends Label {
-//        @Override
-//        public void paintIt(GL2 gl) {
-//            //https://www.opengl.org/discussion_boards/showthread.php/179116-drawing-using-xor
-//            gl.glEnable(GL_COLOR_LOGIC_OP);
-//            gl.glLogicOp(GL_INVERT);
-//
-//            super.paint(gl);
-//            gl.glDisable(GL_COLOR_LOGIC_OP);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

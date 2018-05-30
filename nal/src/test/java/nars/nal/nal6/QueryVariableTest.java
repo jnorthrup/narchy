@@ -74,22 +74,22 @@ public class QueryVariableTest {
         Term beliefTerm = $.$(beliefString);
         assertNotNull(beliefTerm);
 
-//        nar.believe(beliefTerm, 1f, 0.9f);
-//        assertEquals(1, nar.tasks().count());
 
-        //nar.log();
+
+
+        
         nar.question(question, Tense.ETERNAL, (q, a) -> {
-            //if (a.term().equals(beliefTerm)) {
+            
             valid.set(true);
             q.delete();
-            //}
+            
         });
 
         nar.believe(beliefTerm, 1f, 0.9f);
 
         nar.run(time);
         assertTrue(valid.get());
-        //assertTrue(2 <= nar.tasks().count());
+        
 
     }
 
@@ -103,11 +103,11 @@ public class QueryVariableTest {
                 "<b --> a>" /* existing solution, to test finding existing solutions */;
 
 
-        //this.activeTasks = activeTasks;
+        
         NAR n = NARS.tmpEternal();
 
 
-//        n.log();
+
         n.input("<a <-> b>. %1.0;0.5%",
                 "<b --> a>. %1.0;0.5%");
         n.run(cyclesBeforeQuestion);
@@ -128,42 +128,42 @@ public class QueryVariableTest {
     }
 
 
-//    /** simple test for solutions to query variable questions */
-//    @Test public void testQueryVariableSolution() throws InvalidInputException {
-//
-//        Global.DEBUG = true;
-//
-//        /*
-//        int time1 = 5;
-//        int time2 = 15;
-//        int time3 = 5;
-//        */
-//
-//        int time1 = 55;
-//        int time2 = 115;
-//        int time3 = 115;
-//
-//        //TextOutput.out(n);
-//        //new TraceWriter(n, System.out);
-//
-//        NAR nar = nar();
-//
-//        nar.frame(time1);
-//        String term = "<a --> b>";
-//        nar.believe(term);
-//        nar.frame(time2);
-//
-//        //should not output 0.81
-//        nar.memory.eventDerived.on( d-> {
-//            if (d.isJudgment() && d.getTerm().toString().equals(term)) {
-//                assertFalse(d + " should not have been derived", Util.isEqual(d.getConfidence(), 0.81f, 0.01f));
-//            }
-//        } );
-//
-//        nar.ask("<?x --> b>");
-//
-//        nar.frame(time3);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

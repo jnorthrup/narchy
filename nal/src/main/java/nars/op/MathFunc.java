@@ -13,8 +13,8 @@ import static nars.Op.Null;
 
 public enum MathFunc { ;
 
-//    public final static Functor _add =
-//            Functor.f2Int("add", true, (i) -> i == 0, (n) -> false, (x, y) -> x + y);
+
+
 
     public final static Functor add =
             new ArithmeticCommutiveBinaryBidiFunctor("add") {
@@ -23,7 +23,7 @@ public enum MathFunc { ;
                 @Nullable protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
 
                     if (!(xi && yi) && x.equals(y))
-                        return $.func("mul", x, Int.TWO); //if not fully numeric, convert add(%x,%x) to mul(%x, 2)
+                        return $.func("mul", x, Int.TWO); 
 
                     if (xi && xx == 0)
                         return y;
@@ -56,7 +56,7 @@ public enum MathFunc { ;
                 @Nullable protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
                     if (xi) {
                         switch (xx) {
-                            case 1: return y; //identity
+                            case 1: return y; 
                             case 0: return Int.ZERO;
                         }
                     }
@@ -78,13 +78,13 @@ public enum MathFunc { ;
                 @Override
                 protected Term uncompute(int xy, int xx) {
                     if (xx == 0)
-                        return Null; //TODO some indicator of div by zero?
+                        return Null; 
                     else
-                        return Int.the(xy/xx); //TODO non-Integer for fractional results?
+                        return Int.the(xy/xx); 
                 }
             };
 
-            //Functor.f2Int("mul", true, (i) -> i == 1, (n) -> n == 0, (x, y) -> x * y);
+            
 
     abstract static class ArithmeticCommutiveBinaryBidiFunctor extends Functor.InlineCommutiveBinaryBidiFunctor {
 
@@ -97,7 +97,7 @@ public enum MathFunc { ;
 
         @Override
         protected Term apply2(Term x, Term y) {
-            return compute(x, y); //skip the superclass's var check
+            return compute(x, y); 
         }
 
         @Override
@@ -127,7 +127,7 @@ public enum MathFunc { ;
             } else {
                 boolean changed = false;
                 if (y.compareTo(x) < 0) {
-                    //swap order to canonical natural ordering
+                    
                     Term t = x;
                     x = y;
                     y = t;
@@ -135,10 +135,10 @@ public enum MathFunc { ;
                     changed = true;
                 }
 
-                //TODO extract and re-arrange any commutive instances of this same function
-//                if (x.contains(term) || y.contains(term)) {
-//                    System.out.println("simplify: " + x + "," + y);
-//                }
+                
+
+
+
 
                 return changed ? $.func((Atomic)term, x, y) : null;
 
@@ -153,7 +153,7 @@ public enum MathFunc { ;
 
         @Override
         protected Term computeFromXY(Term x, Term y, Term xy) {
-            return null; //infinite possibilities, dont bother
+            return null; 
         }
 
         @Override
@@ -169,7 +169,7 @@ public enum MathFunc { ;
                     s.replace(x, X)
                 );
             }
-            return null; //uncomputable; unchanged
+            return null; 
         }
 
 

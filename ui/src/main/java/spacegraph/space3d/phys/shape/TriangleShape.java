@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -37,7 +37,7 @@ public class TriangleShape extends PolyhedralConvexShape {
 	
 	public final v3[] vertices1/*[3]*/ = { new v3(), new v3(), new v3() };
 
-	// JAVA NOTE: added
+	
 	public TriangleShape() {
 	}
 	
@@ -47,7 +47,7 @@ public class TriangleShape extends PolyhedralConvexShape {
 		vertices1[2].set(p2);
 	}
 	
-	// JAVA NOTE: added
+	
 	public void init(v3 p0, v3 p1, v3 p2) {
 		vertices1[0].set(p0);
 		vertices1[1].set(p1);
@@ -86,7 +86,7 @@ public class TriangleShape extends PolyhedralConvexShape {
 
 	@Override
 	public void getAabb(Transform t, v3 aabbMin, v3 aabbMax) {
-//		btAssert(0);
+
 		getAabbSlow(t, aabbMin, aabbMax);
 	}
 
@@ -145,12 +145,12 @@ public class TriangleShape extends PolyhedralConvexShape {
 	public boolean isInside(v3 pt, float tolerance) {
 		v3 normal = new v3();
 		calcNormal(normal);
-		// distance to plane
+		
 		float dist = pt.dot(normal);
 		float planeconst = vertices1[0].dot(normal);
 		dist -= planeconst;
 		if (dist >= -tolerance && dist <= tolerance) {
-			// inside check on edge-planes
+			
 			int i;
 			for (i = 0; i < 3; i++) {
 				v3 pa = new v3(), pb = new v3();

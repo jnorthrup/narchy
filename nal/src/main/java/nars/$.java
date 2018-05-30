@@ -1,9 +1,9 @@
 package nars;
 
-//import ch.qos.logback.classic.Logger;
-//import ch.qos.logback.classic.LoggerContext;
-//import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
-//import ch.qos.logback.core.ConsoleAppender;
+
+
+
+
 
 import com.google.common.base.Strings;
 import jcog.TODO;
@@ -70,72 +70,72 @@ public enum $ {
     static {
         Thread.currentThread().setName("$");
 
-        //System.setProperty("Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");  //http://logging.apache.org/log4j/2.x/log4j-core/apidocs/org/apache/logging/log4j/core/async/AsyncLogger.html
+        
 
-        //System.setProperty("org.slf4j.simpleLogger.cacheOutputStream", "true");
-
-//        ServiceLoader.loadInstalled(DoesntSuckLoggerFactory.class);
-//
-//        DoesntSuckLoggerFactory f = (DoesntSuckLoggerFactory) LoggerFactory.getILoggerFactory();
-
-//        SimpleLogger LOG = (SimpleLogger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-//        System.out.println(LOG);
+        
 
 
-//            //http://logback.qos.ch/manual/layouts.html
-//
-//            Logger LOG = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-//            LoggerContext loggerContext = LOG.getLoggerContext();
-//            // we are not interested in auto-configuration
-//            loggerContext.reset();
-//
-//            PatternLayoutEncoder logEncoder = new PatternLayoutEncoder();
-//            logEncoder.setContext(loggerContext);
-//            //logEncoder.setPattern("\\( %highlight(%level),%green(%thread),%yellow(%logger{0}) \\): \"%message\".%n");
-//            logEncoder.setPattern("\\( %green(%thread),%highlight(%logger{0}) \\): \"%message\".%n");
-//
-//            logEncoder.start();
-//
-//
-//            ConsoleAppender c = new ConsoleAppender();
-//            c.setContext(loggerContext);
-//            c.setEncoder(logEncoder);
-//            c.setImmediateFlush(false);
-//            //c.setWithJansi(true);
-//            c.start();
-//
-//            LOG.addAppender(c);
 
-////            SyslogAppender syslog = new SyslogAppender();
-////            syslog.setPort(5000);
-////            syslog.setFacility("LOCAL6");
-////            syslog.setContext(loggerContext);
-////            syslog.setCharset(Charset.forName("UTF8"));
-////            syslog.start();
-////            LOG.addAppender(syslog);
-//
-////            SocketAppender sa = new SocketAppender();
-////            sa.setName("socketlog");
-////            sa.setContext(loggerContext);
-////            sa.setQueueSize(1);
-////            sa.setEventDelayLimit(Duration.buildByMilliseconds(100));
-////            sa.setRemoteHost("localhost");
-////            sa.setPort(4560);
-////            sa.setIncludeCallerData(true);
-////            sa.setReconnectionDelay(Duration.buildByMilliseconds(200));
-////            sa.start();
-////            LOG.addAppender(sa);
-//
-////        logRoot.debug("Message 1");
-////        logRoot.info("Message 1");
-////        logRoot.warn("Message 2");
-////        logRoot.error("Message 2");
-//
-//
-////        } catch (Throwable t) {
-////            System.err.println("Logging Disabled: " + t);
-////        }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -152,9 +152,9 @@ public enum $ {
         }
     }
 
-//    public static @NotNull <O> ObjRef<O> ref(String term, O instance) {
-//        return new ObjRef(term, instance);
-//    }
+
+
+
 
     static final Atom emptyQuote = (Atom) Atomic.the("\"\"");
 
@@ -287,11 +287,11 @@ public enum $ {
      */
     public static Variable v(/*@NotNull*/ Op type, String name) {
 
-//        if (name.length()==1) {
-//            char c = name.charAt(0);
-//            if (c >= '1' && c <= '9')
-//                return $.v(type, c-'0'); //explicit use of normalized var
-//        }
+
+
+
+
+
 
         return new UnnormalizedVariable(type, type.ch + name);
     }
@@ -348,10 +348,10 @@ public enum $ {
         return (T) INH.the(subject, SETi.the(predicate));
     }
 
-    //    @NotNull
-//    public static TaskBuilder goal(@NotNull Term term, float freq, float conf) {
-//        return task(term, GOAL, freq, conf);
-//    }
+    
+
+
+
 
     @NotNull
     public static TaskBuilder task(@NotNull String term, byte punct, float freq, float conf) throws Narsese.NarseseException {
@@ -370,16 +370,16 @@ public enum $ {
         return SETe.the(DTERNAL, (Collection) t);
     }
 
-//    /**
-//     * construct set_ext of key,value pairs from a Map
-//     */
-//    public static Term seteMap(@NotNull Map<Term, Term> map) {
-//        return $.sete(
-//                map.entrySet().stream().map(
-//                        e -> $.p(e.getKey(), e.getValue()))
-//                        .collect(Collectors.toSet())
-//        );
-//    }
+
+
+
+
+
+
+
+
+
+
 
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
         Term[] x = new Term[c.length];
@@ -397,13 +397,13 @@ public enum $ {
         return Stream.of(map).map(toTerm).toArray(Term[]::new);
     }
 
-//    public static <X> Term seteMap(@NotNull Map<Term, ? extends X> map, @NotNull Function<X, Term> toTerm) {
-//        return $.sete(
-//                map.entrySet().stream().map(
-//                        e -> $.p(e.getKey(), toTerm.apply(e.getValue())))
-//                        .collect(Collectors.toSet())
-//        );
-//    }
+
+
+
+
+
+
+
 
     private static Term[] array(Collection<? extends Term> t) {
         return t.toArray(Op.EmptyTermArray);
@@ -423,7 +423,7 @@ public enum $ {
     }
 
     public static Term sete(RoaringBitmap b) {
-        return SETe.the(ints(b)); //non-interned
+        return SETe.the(ints(b)); 
     }
 
     public static Term p(RoaringBitmap b) {
@@ -516,28 +516,28 @@ public enum $ {
 
     public static Atomic the(float v) {
         if (Util.equals((float) Math.floor(v), v, Float.MIN_VALUE * 2)) {
-            //close enough to be an int, so it doesnt need to be quoted
+            
             return the((int) v);
         }
-        //return Atom.the(Utf8.toUtf8(name));
+        
 
         return quote(Float.toString(v));
 
-//        int olen = name.length();
-//        switch (olen) {
-//            case 0:
-//                throw new RuntimeException("empty atom name: " + name);
-//
-////            //re-use short term names
-////            case 1:
-////            case 2:
-////                return theCached(name);
-//
-//            default:
-//                if (olen > Short.MAX_VALUE/2)
-//                    throw new RuntimeException("atom name too long");
 
-        //  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     }
 
 
@@ -605,14 +605,14 @@ public enum $ {
             return the((Number)x);
         }
 
-        return Atomic.the(x.toString()); //default, store as a (probably quoted) string
+        return Atomic.the(x.toString()); 
     }
 
     public static Term the(Number n) {
         if (n instanceof Integer) {
-            return Int.the((Integer) n); //(32-bit)
+            return Int.the((Integer) n); 
         } else if (n instanceof Long) {
-            return Atomic.the(Long.toString((Long)n)); //TODO make a Int64 type like Int (32-bit)
+            return Atomic.the(Long.toString((Long)n)); 
         } else if (n instanceof Short) {
             return Int.the((Short) n);
         } else if (n instanceof Byte) {
@@ -621,16 +621,16 @@ public enum $ {
             float d = n.floatValue();
             int id = (int)d;
             if (d == d && Util.equals(d, id, Float.MIN_NORMAL))
-                return Int.the(id); //practically an int
+                return Int.the(id); 
 
-            return Atomic.the(n.toString()); //last option
+            return Atomic.the(n.toString()); 
         } else {
             double d = n.doubleValue();
             int id = (int)d;
             if (d == d && Util.equals(d, id, Double.MIN_NORMAL))
-                return Int.the(id); //practically an int
+                return Int.the(id); 
 
-            return Atomic.the(n.toString()); //last option
+            return Atomic.the(n.toString()); 
         }
     }
 
@@ -638,7 +638,7 @@ public enum $ {
      * conjunction sequence (2-ary)
      */
     public static Term seq(Term x, int dt, Term y) {
-        //must be a vector, not set
+        
         return CONJ.compound(dt, new Term[]{x, y});
     }
 
@@ -650,83 +650,83 @@ public enum $ {
     public static <K, V> Map<K, V> newHashMap(int capacity) {
         return new HashMap<>(capacity);
 
-        //return new UnifiedMap(capacity);
-        //return new UnifriedMap(capacity /*, loadFactor */);
+        
+        
 
-        //return new FasterHashMap(capacity);
-        //return new FastMap<>(); //javolution http://javolution.org/apidocs/javolution/util/FastMap.html
+        
+        
 
-        //return new LinkedHashMap(capacity);
+        
     }
 
     public static <X> List<X> newArrayList() {
         return new FasterList<>(0);
-        //return new ArrayList();
+        
     }
 
     public static <X> List<X> newArrayList(int capacity) {
         return new FasterList(capacity);
-        //return new ArrayList(capacity);
+        
     }
 
     public static <X> Set<X> newHashSet(int capacity) {
-//        if (capacity < 4) {
-//            return new UnifiedSet(0);
-//        } else {
-        //return new UnifiedSet(capacity);
-        //return new SimpleHashSet(capacity);
+
+
+
+        
+        
         return new HashSet(capacity);
-        //return new LinkedHashSet(capacity);
-//        }
+        
+
     }
 
-//    @NotNull
-//    public static <X> Set<X> newHashSet(@NotNull Collection<X> values) {
-//        Set<X> s = newHashSet(values.size());
-//        s.addAll(values);
-//        return s;
-//    }
 
-//    public static @Nullable <C> Reference<C> reference(@Nullable C s) {
-//        return s == null ? null :
-//                //new SoftReference<>(s);
-//                //new WeakReference<>(s);
-//                Param.DEBUG ? new SoftReference<>(s) : new WeakReference<>(s);
-//    }
 
-//    @Nullable
-//    public static <C> Reference<C>[] reference(@Nullable C[] s) {
-//        int l = Util.lastNonNull((Object[]) s);
-//        if (l > -1) {
-//            l++;
-//            Reference<C>[] rr = new Reference[l];
-//            for (int i = 0; i < l; i++) {
-//                rr[i] = reference(s[i]);
-//            }
-//            return rr;
-//        }
-//        return null;
-//    }
 
-//    public static void dereference(@NotNull Reference[] p) {
-//        for (int i = 0; i < p.length; i++) {
-//            Reference x = p[i];
-//            if (x != null)
-//                x.clear();
-//            p[i] = null;
-//        }
-//    }
-//
-//    @Nullable
-//    public static <C> C dereference(@Nullable Reference<C> s) {
-//        return s == null ? null : s.get();
-//    }
-//
-//    @Nullable
-//    public static <C> C dereference(@Nullable Reference<C>[] s, int index) {
-//        if (s == null || index >= s.length) return null;
-//        return dereference(s[index]);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public static Term pRadix(int x, int radix, int maxX) {
@@ -749,7 +749,7 @@ public enum $ {
         for (int i = 0; i < ttl; i++) {
             Term n;
             if (p-- > 0) {
-                n = $.the(0); //pad with zeros
+                n = $.the(0); 
             } else {
                 n = $.the(xs.charAt(j++) - '0');
             }
@@ -767,7 +767,7 @@ public enum $ {
     public static @NotNull Term pRecurse(@NotNull Term... t) {
         int tl = t.length;
         Term inner = t[--tl];
-        Term nextInner = inner.op() != PROD ? $.p(inner) : inner; //wrap innermost item in product too, for fairness
+        Term nextInner = inner.op() != PROD ? $.p(inner) : inner; 
         while (tl > 0) {
             Term next = t[--tl];
             nextInner = next.op() != PROD ? $.p(next, nextInner) : $.p(ArrayUtils.add(next.subterms().arrayShared(), nextInner));
@@ -778,30 +778,30 @@ public enum $ {
     public static @Nullable Compound inhRecurse(@NotNull Term... t) {
         int tl = t.length;
         @NotNull Term bottom = t[--tl];
-        Compound nextInner = $.inh(t[--tl], bottom); //wrap innermost item in product too, for fairness
+        Compound nextInner = $.inh(t[--tl], bottom); 
         while (nextInner != null && tl > 0) {
             nextInner = $.inh(t[--tl], nextInner);
         }
         return nextInner;
     }
 
-//    public static void logLevel(Class logClass, Level l) {
-//        ((ch.qos.logback.classic.Logger) LoggerFactory.getLogger(logClass)).setLevel(l);
-//    }
 
-//    @NotNull
-//    public static TaskBuilder command(@NotNull Compound op) {
-//        //TODO use lightweight CommandTask impl without all the logic metadata
-//        TaskBuilder t = new TaskBuilder(op, COMMAND, null);
-//        t.setPri(1f);
-//        return t;
-//    }
-//
-//    @NotNull
-//    public static TaskBuilder command(@NotNull String functor, Term... args) {
-//        //TODO use lightweight CommandTask impl without all the logic metadata
-//        return command(func(functor, args));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @NotNull
     public static String unquote(Term s) {
@@ -831,12 +831,12 @@ public enum $ {
     public static int intValue(Term intTerm) throws NumberFormatException {
         if (intTerm instanceof Int && intTerm.op()==INT)
             return ((Int) intTerm).id;
-//        if (intTerm instanceof Atom) {
-//            String xs = intTerm.toString();
-//            return Texts.i(xs);
-//        } else {
+
+
+
+
         throw new NumberFormatException();
-        //   }
+        
     }
 
     public static int intValue(Term intTerm, int ifNotInt) {
@@ -879,7 +879,7 @@ public enum $ {
     }
 
     public static Term sFast(RoaringBitmap b) {
-        return sFast(true, ints(b)); //non-interned
+        return sFast(true, ints(b)); 
     }
 
     public static Term pFast(Collection<? extends Term> x) {
@@ -900,12 +900,12 @@ public enum $ {
                     return new TermList(t);
         }
 
-        //return Op.terms.subtermsInstance(t);
+        
     }
 
-//    public static Term[] $$(String[] s) {
-//        return Util.map((String x) -> $.$$(x), Term[]::new, s);
-//    }
+
+
+
 
     public static Term[] $(String[] s) {
         return Util.map((String x) -> {
@@ -918,7 +918,7 @@ public enum $ {
     }
 
 
-    //TODO add this to a '$.printree' command
+    
 
     /*
      * Copyright 2006-2009 Odysseus Software GmbH
@@ -927,7 +927,7 @@ public enum $ {
      * you may not use this file except in compliance with the License.
      * You may obtain a copy of the License at
      *
-     *     http://www.apache.org/licenses/LICENSE-2.0
+     *     http:
      *
      * Unless required by applicable law or agreed to in writing, software
      * distributed under the License is distributed on an "AS IS" BASIS,
@@ -936,53 +936,53 @@ public enum $ {
      * limitations under the License.
      */
 
-//    /**
-//     * Node pretty printer for debugging purposes.
-//     *
-//     * @author Christoph Beck
-//     */
-//    public static class NodePrinter {
-//        private static boolean isLastSibling(Node node, Node parent) {
-//            if (parent != null) {
-//                return node == parent.getChild(parent.getCardinality() - 1);
-//            }
-//            return true;
-//        }
-//
-//        private static void dump(PrintWriter writer, Node node, Stack<Node> predecessors) {
-//            if (!predecessors.isEmpty()) {
-//                Node parent = null;
-//                for (Node predecessor: predecessors) {
-//                    if (isLastSibling(predecessor, parent)) {
-//                        writer.print("   ");
-//                    } else {
-//                        writer.print("|  ");
-//                    }
-//                    parent = predecessor;
-//                }
-//                writer.println("|");
-//            }
-//            Node parent = null;
-//            for (Node predecessor: predecessors) {
-//                if (isLastSibling(predecessor, parent)) {
-//                    writer.print("   ");
-//                } else {
-//                    writer.print("|  ");
-//                }
-//                parent = predecessor;
-//            }
-//            writer.print("+- ");
-//            writer.println(node.toString());
-//
-//            predecessors.push(node);
-//            for (int i = 0; i < node.getCardinality(); i++) {
-//                dump(writer, node.getChild(i), predecessors);
-//            }
-//            predecessors.pop();
-//        }
-//
-//        public static void dump(PrintWriter writer, Node node) {
-//            dump(writer, node, new Stack<Node>());
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

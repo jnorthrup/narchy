@@ -40,30 +40,30 @@ public class Anoncepts extends LeakBack {
         super(taskCapacity, n);
         this.nar = n;
 
-//        filter = Task.newBloomFilter(1024 /* small */, n.random());
+
 
         conceptActivationRate.set(1f/taskCapacity);
         taskLinkActivationRate.set(1f/taskCapacity);
     }
 
-//    private final StableBloomFilter<Task> filter;
 
-//    @Override
-//    protected boolean preFilter(Task next) {
-////        if (filter.addIfMissing(next)) {
-//            return super.preFilter(next);
-////        }
-////        return false;
-//    }
+
+
+
+
+
+
+
+
 
     @Override
     protected float leak(Task task) {
         Term taskTerm = task.term().root();
         Term a = taskTerm.anon();
-        if (a == null)  //?<- why would this, if it does
+        if (a == null)  
             return 0;
 
-        Concept c = nar.concept(a); //HACK
+        Concept c = nar.concept(a); 
         if (c == null) {
             nar.concepts.set(a, c = new AnonConcept(a, nar));
         }
@@ -72,11 +72,11 @@ public class Anoncepts extends LeakBack {
         float cr = conceptActivationRate.floatValue();
         c = nar.activate(c, pri * cr);
         if (c == null)
-            return 0;  //???
+            return 0;  
 
         short cid = in.id;
 
-        //c.tasklinks().putAsync(new CauseLink.CauseLinkUntilDeleted<>(task, pri * taskLinkActivationRate.floatValue(), cid));
+        
         c.termlinks().putAsync(new CauseLink.PriCauseLink<>(taskTerm, pri * cr, cid));
 
         return 1;
@@ -89,7 +89,7 @@ public class Anoncepts extends LeakBack {
 
         @Override protected TermlinkTemplates buildTemplates(Term term) {
             throw new TODO();
-            //return Collections.emptyList();
+            
         }
     }
 

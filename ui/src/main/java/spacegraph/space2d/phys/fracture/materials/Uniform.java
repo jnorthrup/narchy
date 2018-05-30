@@ -23,8 +23,8 @@ public class Uniform extends Material {
         float scale = 2 * m_shattering;
 
         for (int i = 0; i < num; ++i) {
-            float x = r.nextFloat() - 0.5f; //rad: -1/2..+1/2
-            float y = r.nextFloat() - 0.5f; //rad: -1/2..+1/2
+            float x = r.nextFloat() - 0.5f; 
+            float y = r.nextFloat() - 0.5f; 
 
             focee[i] = new v2(point.x + x * scale, point.y + y * scale);
         }

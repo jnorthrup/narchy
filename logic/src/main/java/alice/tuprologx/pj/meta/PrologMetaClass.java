@@ -24,7 +24,7 @@ import java.util.Vector;
 public class PrologMetaClass {
     
     private final Class<?> _theClass;
-    //private PrologClass _annotation;
+    
     private PrologMetaField[] _fields;
     private PrologMetaMethod[] _methods;
     private Theory _theory;
@@ -32,7 +32,7 @@ public class PrologMetaClass {
     /** Creates a new instance of MetaPrologClass */
     public PrologMetaClass(Class<?> cl) {
         _theClass = cl.getSuperclass();
-        //_annotation = (PrologClass)_theClass.getAnnotation(PrologClass.class);
+        
         initTheory();
         initPrologFields();
         initPrologMethods();        
@@ -109,7 +109,7 @@ public class PrologMetaClass {
     
     public void setTheory(Theory t) {
         _theory = t;
-        for (PrologMetaMethod pmm : getPrologMethods()) {//refresh methods that rely upon this theory
+        for (PrologMetaMethod pmm : getPrologMethods()) {
             pmm.initClauses();
         }
     }

@@ -65,7 +65,7 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
         }
 
         if (size <= 0)
-            compact(); // Updates size
+            compact(); 
 
         return size;
     }
@@ -78,7 +78,7 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
 
     @Override
     public V put(K key, V value) {
-        size = 0; // reset
+        size = 0; 
         LinkedEntry<K, V> newEntry = new LinkedEntry<>(key, value, header, header.prev);
         newEntry.prev.next = newEntry;
         newEntry.next.prev = newEntry;
@@ -96,7 +96,7 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
     public V remove(Object key) {
         LinkedEntry<K, V> entry = getEntry(key);
         if (entry != null) {
-            size = 0; // reset
+            size = 0; 
             V value = entry.getValue();
             do {
                 remove(entry);

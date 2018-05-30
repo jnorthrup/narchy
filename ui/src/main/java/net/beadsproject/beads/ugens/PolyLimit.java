@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -66,7 +66,7 @@ public class PolyLimit extends UGen {
                 existingInputs.add(sourceUGen);
                 super.in(sourceUGen);
             } else {
-                //must check for deleted and remove
+                
                 Collection<UGen> copy = new LinkedList<>();
                 copy.addAll(existingInputs);
                 for (UGen ug : copy) {

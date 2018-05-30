@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.rl;
 
@@ -41,7 +41,7 @@ public class FeatureMap {
      *   21 rows and 8 colors (SECAM).
      */
     public FeatureMap(int columns, int rows, int colors) {
-        // Some hardcoded feature set parameters
+        
         numColumns = columns;
         numRows = rows;
         numColors = colors;
@@ -62,7 +62,7 @@ public class FeatureMap {
      * @return
      */
     public double[] getFeatures(final FrameHistory history) {
-        // Obtain the last screen
+        
         final ScreenMatrix screen = history.getLastFrame(0);
 
         final int blockWidth = screen.width / numColumns;
@@ -80,7 +80,7 @@ public class FeatureMap {
         int rr = numRows;
         int cc = numColumns;
 
-        // For each pixel block
+        
         final boolean[] hasColor = this.hasColor;
 
         for (int by = 0; by < rr; by++) {
@@ -92,7 +92,7 @@ public class FeatureMap {
                 int xo = bx * blockWidth;
 
 
-                // Determine which colors are present
+                
                 for (int x = xo; x < xo + blockWidth; x++) {
                     final int sm[] = matrix[x];
                     for (int y = yo; y < yo + blockHeight; y++) {
@@ -101,12 +101,12 @@ public class FeatureMap {
                     }
                 }
 
-                // Add all colors present to our feature set
+                
                 for (int c = 0; c < numColors; c++)
                     if (hasColor[c])
                         features[c + blockIndex] = 1.0;
 
-                // Increment the feature offset in the big feature vector
+                
                 blockIndex += featuresPerBlock;
             }
         }

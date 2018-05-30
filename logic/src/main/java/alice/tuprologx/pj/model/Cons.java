@@ -18,7 +18,7 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
     public Cons(String name, H head) {
         _theHead = head;
         _theName = name;
-        //_theRest = (R)new Nil();
+        
         _theRest = uncheckedCast(new Nil());
     }
 
@@ -29,16 +29,16 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
     
     public static <Z extends Cons<?,?>> Z make(String f, Term<?>... termList) {
         if (termList.length == 1)
-            //return (Z)new Compound1<Term<?>>(f,termList[0]);
+            
         	return uncheckedCast(new Compound1<Term<?>>(f,termList[0]));
         else if (termList.length == 2)
-            //return (Z)new Compound2<Term<?>, Term<?>>(f,termList[0],termList[1]);
+            
         	return uncheckedCast(new Compound2<Term<?>, Term<?>>(f,termList[0],termList[1]));
         else if (termList.length == 3)
-            //return (Z)new Compound3<Term<?>, Term<?>, Term<?>>(f,termList[0],termList[1],termList[2]);
+            
         	return uncheckedCast(new Compound3<Term<?>, Term<?>, Term<?>>(f,termList[0],termList[1],termList[2]));
         else if (termList.length > 3)
-            //return (Z)new Cons<Term<?>, Compound<?>>(f,termList);
+            
         	return uncheckedCast(new Cons<>(f, termList));
         else
             throw new UnsupportedOperationException();
@@ -49,7 +49,7 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
             java.util.Vector<Term<?>> termArr = new java.util.Vector<Term<?>>();
             java.beans.BeanInfo binfo = java.beans.Introspector.getBeanInfo(po.getClass());
             for (java.beans.PropertyDescriptor pdesc : binfo.getPropertyDescriptors()) {
-                //only read-write properties are translated into a compound
+                
                 if (pdesc.getReadMethod()!=null && pdesc.getWriteMethod()!=null) { 
                     Object o = pdesc.getReadMethod().invoke(po);
                     Atom propertyName = new Atom(pdesc.getName());
@@ -97,13 +97,13 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
     
     private void initFromList(java.util.List<Term<?>> termList) {
         if (!termList.isEmpty()) {
-            // _theHead = (H)termList.remove(0);  
+            
             _theHead = uncheckedCast(termList.remove(0));
-            // _theRest = !termList.isEmpty() ? (R)new Cons<Term<?>, Compound<?>>(null,termList) : (R)new Nil();
+            
             _theRest = uncheckedCast(uncheckedCast(!termList.isEmpty() ? new Cons<>(null, termList) : new Nil()));
             return;
         }
-        throw new UnsupportedOperationException(); //cannot create a 0-sized compound
+        throw new UnsupportedOperationException(); 
     }
 
     public Cons(String name, Term<?>... termArr) {
@@ -153,7 +153,7 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
         for (int i = 0; i<s.subs(); i++) {
             termList.add(Term.unmarshal(s.sub(i)));
         }
-        //return (Z)new Cons(s.getName(),termList);
+        
         return Cons.make(s.name(),termList.toArray(new Term<?>[termList.size()]));
     }
 
@@ -172,9 +172,9 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
             }
             Term<?>[] termArr = new Term<?>[_javaList.size()];
             _javaList.toArray(termArr);
-            //return (Z)termArr;
+            
             return uncheckedCast(termArr);
-        //}
+        
     }
 
     @Override
@@ -228,4 +228,3 @@ public class Cons<H extends Term<?>, R extends Compound<?>> extends Compound<Con
 
 
 
-//

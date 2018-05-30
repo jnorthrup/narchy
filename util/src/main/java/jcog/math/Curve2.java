@@ -17,7 +17,7 @@ package jcog.math;
  * @version 0.71, 15-Nov-07
  */
 public class Curve2 {
-// -------- public variables --------
+
 
     public static final int INT_LINEAR = 0x000;
     public static final int INT_SPLINE = 0x001;
@@ -28,21 +28,21 @@ public class Curve2 {
     public static final int TYPE_UNIPOLAR = 0x010;
 
     public int flags;
-    public int size;        // in x, y ; arrays duerfen aber laenger sein; mind. 2!
-    public float[] xs;            // nur im Bereich 0...1 ; Randpunkte nicht loeschen! Keine doppelten x
+    public int size;        
+    public float[] xs;            
     public float[] ys;
     public boolean looped = false;
     public float loopStart = 0.0f;
     public float loopEnd = 1.0f;
     public int loopCount = 1;
 
-// -------- private variables --------
+
 
     private boolean valid = false;
-    //	private int			clcLpStart, clcLpEnd;
-    private float[] yDrv = null;        // zweite Ableitung fuer Spline-Interpolation
+    
+    private float[] yDrv = null;        
 
-// -------- public methods --------
+
 
     public Curve2(int flags) {
         this.flags = flags;
@@ -100,7 +100,7 @@ public class Curve2 {
 
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
 
-        // bisection; see NumericalRecipes 3.4
+        
         int idxHi, idxLo, idxMid;
 
         idxLo = 0;
@@ -128,12 +128,12 @@ public class Curve2 {
 
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
 
-        // hunt; see NumericalRecipes 3.4
+        
         int idxHi, idxMid, inc;
 
         if (idxLo >= 0) {
-            inc = 1;    // Initial hunting increment.
-            if (x >= this.xs[idxLo]) {    // Hunt up
+            inc = 1;    
+            if (x >= this.xs[idxLo]) {    
                 idxHi = idxLo + 1;
                 if (idxHi >= size - 1) return idxLo;
                 while (x >= this.xs[idxHi]) {
@@ -144,8 +144,8 @@ public class Curve2 {
                         idxHi = size - 1;
                         break;
                     }
-                } // Done hunting, value bracketed.
-            } else {                    // Hunt down
+                } 
+            } else {                    
                 idxHi = idxLo;
                 idxLo--;
                 while (x < this.xs[idxLo]) {
@@ -156,15 +156,15 @@ public class Curve2 {
                         idxLo = 0;
                         break;
                     }
-                } // Done hunting, value bracketed.
+                } 
             }
         } else {
             idxLo = 0;
             idxHi = size - 1;
         }
 
-// System.out.println( "lo "+idxLo+"; hi "+idxHi );
-        // bisection phase:
+
+        
         while ((idxHi - idxLo) > 1) {
             idxMid = (idxHi + idxLo) >> 1;
             if (x >= this.xs[idxMid]) idxLo = idxMid;
@@ -190,7 +190,7 @@ public class Curve2 {
         float x;
         int idx = indexOf(startX);
 
-        a[off] = calc(startX, idx);        // first value outside loop
+        a[off] = calc(startX, idx);        
 
         for (int i = 1, j = off; i < len; i++) {
             x = startX + i * stepX;
@@ -198,29 +198,29 @@ public class Curve2 {
             a[++j] = calc(x, idx);
         }
 
-        a[off + len] = calc(stopX, idx);        // last value outside loop
+        a[off + len] = calc(stopX, idx);        
     }
 
-// -------- private methods --------
+
 
     private void validate() {
-//		if( looped ) {
-//			clcLpStart	= (int) Math.ceil( indexOf( loopStart ));
-//			clcLpEnd	= (int) indexOf( loopEnd );
-//		} else {
-//			clcLpStart	= 0;
-//			clcLpEnd	= size - 1;
-//		}
+
+
+
+
+
+
+
         if ((flags & INT_SPLINE) != 0) {
             if ((yDrv == null) || (yDrv.length < size) || ((yDrv.length - 64) > size)) {
                 yDrv = new float[size + 16];
             }
-            // spline preparation: second order derivates; see NumericalRecipes 3.3
+            
             float[] u = new float[size - 1];
             int i, j, k;
             float p, sig;
 
-            yDrv[0] = 0.0f;        // "natural" splines
+            yDrv[0] = 0.0f;        
             u[0] = 0.0f;
             yDrv[size - 1] = 0.0f;
             for (i = 1, j = 0, k = 2; k < size; i++, j++, k++) {
@@ -251,7 +251,7 @@ public class Curve2 {
                 }
             case INT_SPLINE:
                 return spline(x, idxLo);
-            default:    // INT_LINEAR
+            default:    
                 return linear(x, idxLo);
         }
     }
@@ -269,7 +269,7 @@ public class Curve2 {
         return (a * this.ys[idxLo] + b * this.ys[idxHi]);
     }
 
-    // adapted from NumericalRecipes 3.3
+    
     private float spline(float x, int idxLo) {
         int idxHi;
         float h, b, a;
@@ -277,13 +277,13 @@ public class Curve2 {
         idxHi = idxLo + 1;
         h = this.xs[idxHi] - this.xs[idxLo];
         a = (this.xs[idxHi] - x) / h;
-        b = 1.0f - a; // (x - this.x[ idxLo ]) / h;
+        b = 1.0f - a; 
 
         return (a * this.ys[idxLo] + b * this.ys[idxHi] +
                 ((a * a * a - a) * yDrv[idxLo] + (b * b * b - b) * yDrv[idxHi]) * (h * h) / 6.0f);
     }
 
-// -------- StringComm methods --------
+
 /*
 	public String toString()
 	{
@@ -307,9 +307,9 @@ public class Curve2 {
 		Curve2			c;
 		
 		strTok	= new StringTokenizer( s, ";" );
-		c		= new Curve2( ParamSpace.valueOf( strTok.nextToken() ),		// hSpace
-							 ParamSpace.valueOf( strTok.nextToken() ),		// vSpace
-							 Integer.parseInt( strTok.nextToken() ));		// type
+		c		= new Curve2( ParamSpace.valueOf( strTok.nextToken() ),		
+							 ParamSpace.valueOf( strTok.nextToken() ),		
+							 Integer.parseInt( strTok.nextToken() ));		
 		
 		while( strTok.hasMoreElements() ) {
 			c.points.addElement( DoublePoint.valueOf( strTok.nextToken() ));
@@ -318,4 +318,3 @@ public class Curve2 {
 		return c;
 	}*/
 }
-// class Curve2

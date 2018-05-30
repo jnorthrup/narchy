@@ -78,7 +78,7 @@ public class ReactorWorld extends RoverWorld {
 
         box.setAsBox(0.25f, 0.25f);
 
-        // m_x = RandomFloat(-1.0f, 1.0f);
+        
         float m_x = -0.06530577f;
         bd.position.set(m_x, 10.0f);
         bd.bullet = true;

@@ -12,7 +12,7 @@ public class BufferedTensor extends BatchArrayTensor {
 
     @Override public void update() {
         from.get();
-        from.writeTo(data);//trigger any updates but using the iterator HACK, not:
+        from.writeTo(data);
     }
 
 }

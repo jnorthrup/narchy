@@ -27,7 +27,7 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
     @Override
     public final void update(Dynamics3D world) {
 
-        if (bodies.isEmpty() && spatials.isEmpty()) { //HACK TODO use a boolean flag
+        if (bodies.isEmpty() && spatials.isEmpty()) { 
             create(world);
         } else {
             next(world);

@@ -26,7 +26,7 @@ public class QuantileDiscretize1D implements Discretize1D {
 
     protected void ensureUpdated() {
         if (!updated) {
-            //TODO calculate by nearest median (sort by distance)
+            
             boolean difference = false;
             for (int i = 0; i < thresh.length; i++) {
                 float t = q.quantile((i +0.5f) / thresh.length);
@@ -46,7 +46,7 @@ public class QuantileDiscretize1D implements Discretize1D {
         ensureUpdated();
 
         if (!difference)
-            return 0; //default to zero if no difference known
+            return 0; 
 
         int nearest = -1;
         float nearestDist = Float.POSITIVE_INFINITY;

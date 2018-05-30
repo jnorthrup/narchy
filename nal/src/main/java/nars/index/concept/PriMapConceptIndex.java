@@ -32,7 +32,7 @@ import static jcog.pri.PriCache.Hold.STRONG;
 
 public class PriMapConceptIndex extends MaplikeConceptIndex {
 
-    //final IntCountsHistogram conceptScores = new IntCountsHistogram(1000, 2);
+    
 
     private final PriCache<Term, Concept> concepts;
 
@@ -62,7 +62,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
         }
     }
 
-    //final EntryBag active = new EntryBag(PriMerge.replace, activeActive);
+    
     final EntryBag good = new EntryBag(PriMerge.max, activeGood);
     final EntryBag bad = new EntryBag(PriMerge.max, activeBad);
 
@@ -71,20 +71,20 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
         this.concepts = new PriCache<>() {
 
 
-//            public final CountMinSketch hit = new CountMinSketch(1024,10);
-//            private void hit(TLink<Term, Concept> y) {
-//                int c = hit.countAndAdd(y.hash); //TODO use bigger has for therm
-//                System.out.println(y.key + " " + c);
-//            }
 
-//            @Override
-//            protected TLink<Term, Concept> getLink(Object x) {
-//                TLink<Term, Concept> y = super.getLink(x);
-//                if (y!=null) {
-//                    update(y);
-//                }
-//                return y;
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
             @Override
@@ -97,7 +97,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
 
             @Override
             public void evict(float strength) {
-                if (nar!=null) //HACK
+                if (nar!=null) 
                 nar.runLater(() -> {
                     if (!evicting.compareAndSet(false, true))
                         return;
@@ -127,12 +127,12 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
 
                         probeEvict(strength, probeRate);
 
-                        //active.commit();
+                        
 
                         good.commit();
-                        //System.out.println(good.summary("good"));
+                        
                         bad.commit();
-                        //System.out.println(bad.summary("bad"));
+                        
                     } catch (Exception e) {
                         e.printStackTrace();
                     } finally {
@@ -175,7 +175,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
             @Override
             protected void onRemove(Term term, Concept termed) {
                 assert (!(termed instanceof PermanentConcept));
-                //System.err.println("remove: " + term);
+                
                 PriMapConceptIndex.this.onRemove(termed);
             }
 
@@ -193,7 +193,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
                     }
                 };
 
-                //concept.tasklinks().forEach(victimCollector);
+                
                 concept.termlinks().forEach(victimCollector);
 
                 super.remove(concept.term());
@@ -235,12 +235,12 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
     @Override
     public Termed get(Term x, boolean createIfMissing) {
 
-        //assert(!(x instanceof Variable)): "variables should not be stored in index";
+        
         if (x instanceof Variable)
             return x;
 
         if (createIfMissing) {
-            //HACK when switching to Term,Concept use 'conceptBuilder' itself not this adapter
+            
             return concepts.compute(x, (term, u) -> (Concept) nar.conceptBuilder.apply(term, u));
         } else {
             return concepts.get(x);
@@ -262,7 +262,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public synchronized void clear() {
-        //active.clear();
+        
         good.clear();
         bad.clear();
         concepts.clear();
@@ -292,9 +292,9 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
         return true;
     }, c -> IO.termToBytes(c.term()), 1024, 0.01f);
 
-//    static final ToDoubleFunction<Task> taskScore =
-//            //t -> t.evi(now, dur);
-//            Truthed::conf;
+
+
+
 
     protected void update(Concept c) {
         seenRecently.test(c);
@@ -302,37 +302,37 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
 
     private float value(Concept c) {
 
-        //float maxAdmit = -victims.minAdmission();
+        
 
         float score = 0;
 
-//        score += ((float) c.beliefs().stream().mapToDouble(taskScore).average().orElse(0));
-//        score += ((float) c.goals().stream().mapToDouble(taskScore).average().orElse(0));
+
+
 
         long now = nar.time();
 
         if (c.op().beliefable) {
-            Truth bt = c.beliefs().truth(now, nar); //,nar.dur()*8 /* dilated duration perspective */);
+            Truth bt = c.beliefs().truth(now, nar); 
             if (bt != null)
                 score += bt.conf();
         }
 
-        //if (score > maxAdmit) return Float.NaN; //sufficient, early EXIT
+        
 
         if (c.op().goalable) {
             Truth gt = c.goals().truth(now, nar);
             if (gt != null)
                 score += gt.conf();
         } else {
-            score = score * 2; //double any belief score, ie. for ==>
+            score = score * 2; 
         }
 
-        // link value is divided by the complexity,
-        // representing increassed link 'maintenance cost'
-        // involved in terms with higher complexity
-        // that were ultimately necessary to
-        // form and supporting the beliefs and goals counted above,
-        // (they are not divided like this)
+        
+        
+        
+        
+        
+        
         int complexity = c.complexity();
 
         Table<?,nars.link.TaskLink> ta = c.tasklinks();
@@ -345,7 +345,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
     }
 
     protected void forget(PriReference<Termed> x, Concept c, float amount) {
-        //shrink link bag capacity in proportion to the forget amount
+        
         c.tasklinks().setCapacity(Math.round(c.tasklinks().capacity() * (1f - amount)));
         c.termlinks().setCapacity(Math.round(c.termlinks().capacity() * (1f - amount)));
 

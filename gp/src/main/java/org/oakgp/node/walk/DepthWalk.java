@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ public final class DepthWalk {
      * Private constructor as all methods are static.
      */
     private DepthWalk() {
-        // do nothing
+        
     }
 
     /**
@@ -112,7 +112,7 @@ public final class DepthWalk {
                 if (total + c > index) {
                     Arguments newArgs = args.replaceAt(i, replaceAt(child, index - total, replacement, currentDepth + 1));
                     if (newArgs.equals(args))
-                        return functionNode; //no change
+                        return functionNode; 
                     else
                         return new FunctionNode(functionNode.func(), newArgs);
                 } else {

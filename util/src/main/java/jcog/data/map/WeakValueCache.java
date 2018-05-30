@@ -50,7 +50,7 @@ public final class WeakValueCache<K, V> {
      * @return the value or null if none exists
      */
     public V get(final K key) {
-        // Remove cleared entries
+        
         for (;;) {
             final KeyValueReference<?, ?> ref = (KeyValueReference) refQueue.poll();
             if (ref == null) {
@@ -78,7 +78,7 @@ public final class WeakValueCache<K, V> {
         V value = get(key);
 
         if (value == null) {
-            // Define a new value if it does not exist
+            
             value = creator.apply(key);
             map.put(key, new KeyValueReference<>(key, value));
         }

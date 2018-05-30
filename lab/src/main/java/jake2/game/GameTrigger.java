@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 27.12.2003 by RST.
+
 
 package jake2.game;
 
@@ -39,21 +39,21 @@ public class GameTrigger {
         self.svflags = Defines.SVF_NOCLIENT;
     }
 
-    // the trigger was just activated
-    // ent.activator should be set to the activator so it can be held through a
-    // delay so wait for the delay time before firing
+    
+    
+    
     public static void multi_trigger(edict_t ent) {
         if (ent.nextthink != 0)
-            return; // already been triggered
+            return; 
 
         GameUtil.G_UseTargets(ent, ent.activator);
 
         if (ent.wait > 0) {
             ent.think = multi_wait;
             ent.nextthink = GameBase.level.time + ent.wait;
-        } else { // we can't just remove (self) here, because this is a touch
-                 // function
-            // called while looping through area links...
+        } else { 
+                 
+            
             ent.touch = null;
             ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
             ent.think = GameUtil.G_FreeEdictA;
@@ -103,8 +103,8 @@ public class GameTrigger {
      */
 
     public static void SP_trigger_once(edict_t ent) {
-        // make old maps work because I messed up on flag assignments here
-        // triggered was on bit 1 when it should have been on bit 4
+        
+        
         if ((ent.spawnflags & 1) != 0) {
             float[] v = { 0, 0, 0 };
 
@@ -171,7 +171,7 @@ public class GameTrigger {
      * always fire. It is activated by the world.
      */
     public static void SP_trigger_always(edict_t ent) {
-        // we must have some delay to make sure our use targets are present
+        
         if (ent.delay < 0.2f)
             ent.delay = 0.2f;
         GameUtil.G_UseTargets(ent, ent);
@@ -235,7 +235,7 @@ public class GameTrigger {
         self.movedir[2] = GameBase.st.height;
     }
 
-    // the wait time has passed, so set back up for another activation
+    
     public static final EntThinkAdapter multi_wait = new EntThinkAdapter() {
     	@Override
         public String getID(){ return "multi_wait"; }
@@ -466,7 +466,7 @@ public class GameTrigger {
                         other.velocity);
 
                 if (other.client != null) {
-                    // don't take falling damage immediately from this
+                    
                     Math3D.VectorCopy(other.velocity, other.client.oldvelocity);
                     if (other.fly_sound_debounce_time < GameBase.level.time) {
                         other.fly_sound_debounce_time = GameBase.level.time + 1.5f;
@@ -597,7 +597,7 @@ public class GameTrigger {
             if (0 == (other.svflags & Defines.SVF_MONSTER))
                 return;
 
-            // set XY even if not on ground, so the jump will clear lips
+            
             other.velocity[0] = self.movedir[0] * self.speed;
             other.velocity[1] = self.movedir[1] * self.speed;
 

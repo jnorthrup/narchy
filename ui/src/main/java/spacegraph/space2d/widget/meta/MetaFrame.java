@@ -12,28 +12,28 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class MetaFrame extends Bordering {
 
-//    private final Widget widget;
+
 
 
     public MetaFrame(Surface surface) {
         super(surface);
-//        this.widget = widget;
+
 
         Surface m = grid(
-                PushButton.awesome("tag"), //tag
-                PushButton.awesome("sitemap") //inspect
+                PushButton.awesome("tag"), 
+                PushButton.awesome("sitemap") 
         );
 
         Runnable zoomer = () -> {
-            //TODO if already significantly zoomed (ex: > 75% view consumed by the widget) then unzoom
+            
             surface.root().zoom(surface);
         };
 
 
         Surface n =
-                //new BitmapLabel(name(widget));
+                
                 new Label(name(surface));
-                //grid(new PushButton(name(surface), zoomer));
+                
 
         PushButton hideButton = PushButton.awesome("times");
 
@@ -42,8 +42,8 @@ public class MetaFrame extends Bordering {
         set(E, m);
         set(NE, hideButton);
 
-        //PushButton zoomButton = new PushButton("*", zoomer);
-        //set(SW, zoomButton);
+        
+        
 
 
         Surface wm = (surface instanceof Menu) ? ((Menu) surface).menu() : null;
@@ -59,31 +59,31 @@ public class MetaFrame extends Bordering {
     }
 
 
-//    public static void toggle(Widget base) {
-//        SurfaceRoot r = base.root();
-//        if (r == null) //not attached
-//            return;
-//
-//        MetaFrame existing = (MetaFrame) r.the(MetaFrame.class);
-//        if (existing != null && existing.base == base) {
-//            //toggle off: detach
-//            r.the(MetaFrame.class, null, null);
-//
-//            r.unzoom();
-//
-//        } else {
-//            //toggle on: attach
-//
-//            MetaFrame mfer = new MetaFrame(base);
-//            r.the(MetaFrame.class, mfer, mfer::close);
-//            base.add(mfer);
-//
-//            r.zoom(base.cx(), base.cy(), base.w(), base.h());
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void close() {
-        //base.children().remove(this);
+        
     }
 
 

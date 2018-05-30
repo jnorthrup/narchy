@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -33,7 +33,7 @@ import spacegraph.util.math.v3;
 
 import java.util.Collection;
 
-// JAVA NOTE: CompoundShape from 2.71
+
 
 /**
  * CompoundShape allows to store multiple other {@link CollisionShape}s. This allows
@@ -53,30 +53,30 @@ public class CompoundShape extends CollisionShape {
 	protected final v3 localScaling = new v3(1f, 1f, 1f);
 
 	public void addChildShape(Transform localTransform, CollisionShape shape) {
-		//m_childTransforms.push_back(localTransform);
-		//m_childShapes.push_back(shape);
+		
+		
 		CompoundShapeChild child = new CompoundShapeChild(shape);
 		child.transform.set(localTransform);
-		//child.childMargin = shape.getMargin();
+		
 
 		children.add(child);
 
-		// extend the local aabbMin/aabbMax
+		
 		v3 _localAabbMin = new v3(), _localAabbMax = new v3();
 		shape.getAabb(localTransform, _localAabbMin, _localAabbMax);
 
-		// JAVA NOTE: rewritten
-//		for (int i=0;i<3;i++)
-//		{
-//			if (this.localAabbMin[i] > _localAabbMin[i])
-//			{
-//				this.localAabbMin[i] = _localAabbMin[i];
-//			}
-//			if (this.localAabbMax[i] < _localAabbMax[i])
-//			{
-//				this.localAabbMax[i] = _localAabbMax[i];
-//			}
-//		}
+		
+
+
+
+
+
+
+
+
+
+
+
 		VectorUtil.setMin(this.localAabbMin, _localAabbMin);
 		VectorUtil.setMax(this.localAabbMax, _localAabbMax);
 	}
@@ -87,15 +87,15 @@ public class CompoundShape extends CollisionShape {
 	public void removeChildShape(CollisionShape shape) {
 		boolean done_removing;
 
-		// Find the children containing the shape specified, and remove those children.
+		
 		do {
 			done_removing = true;
 
 			for (int i = 0; i < children.size(); i++) {
-				//return array[index];
+				
 				if (children.get(i).childShape == shape) {
 					children.removeFast(i);
-					done_removing = false;  // Do another iteration pass after removing from the vector
+					done_removing = false;  
 					break;
 				}
 			}
@@ -110,12 +110,12 @@ public class CompoundShape extends CollisionShape {
 	}
 
 	public CollisionShape getChildShape(int index) {
-		//return array[index];
+		
 		return children.get(index).childShape;
 	}
 
 	public Transform getChildTransform(int index, Transform out) {
-		//return array[index];
+		
 		Transform t = children.get(index).transform;
 		out.set(t);
 		return out;
@@ -166,18 +166,18 @@ public class CompoundShape extends CollisionShape {
 	 * Use this yourself if you modify the children or their transforms.
 	 */
 	public void recalculateLocalAabb() {
-		// Recalculate the local aabb
-		// Brute force, it iterates over all the shapes left.
+		
+		
 		localAabbMin.set(1e30f, 1e30f, 1e30f);
 		localAabbMax.set(-1e30f, -1e30f, -1e30f);
 
 		v3 tmpLocalAabbMin = new v3();
 		v3 tmpLocalAabbMax = new v3();
 
-		// extend the local aabbMin/aabbMax
+		
 		for (int j = 0; j < children.size(); j++) {
-			//return array[index];
-			//return array[index];
+			
+			
 			children.get(j).childShape.getAabb(children.get(j).transform, tmpLocalAabbMin, tmpLocalAabbMax);
 			
 			for (int i = 0; i < 3; i++) {
@@ -204,7 +204,7 @@ public class CompoundShape extends CollisionShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		// approximation: take the inertia from the aabb for now
+		
 		Transform ident = new Transform();
 		ident.setIdentity();
 		v3 aabbMin = new v3(), aabbMax = new v3();
@@ -244,8 +244,8 @@ public class CompoundShape extends CollisionShape {
 		return "Compound";
 	}
 
-	// this is optional, but should make collision queries faster, by culling non-overlapping nodes
-	// void	createAabbTreeFromChildren();
+	
+	
 	
 	public OptimizedBvh getAabbTree() {
 		return aabbTree;
@@ -268,7 +268,7 @@ public class CompoundShape extends CollisionShape {
 		v3 center = new v3();
 		center.set(0, 0, 0);
 		for (int k = 0; k < n; k++) {
-			//return array[index];
+			
 			center.scaleAdd(masses[k], children.get(k).transform, center);
 			totalMass += masses[k];
 		}
@@ -280,15 +280,15 @@ public class CompoundShape extends CollisionShape {
 
 		for (int k = 0; k < n; k++) {
 			v3 i = new v3();
-			//return array[index];
+			
 			children.get(k).childShape.calculateLocalInertia(masses[k], i);
 
-			//return array[index];
+			
 			Transform t = children.get(k).transform;
 			v3 o = new v3();
 			o.sub(t, center);
 
-			// compute inertia tensor in coordinate system of compound shape
+			
 			Matrix3f j = new Matrix3f();
 			j.transpose(t.basis);
 
@@ -304,10 +304,10 @@ public class CompoundShape extends CollisionShape {
 
 			j.mul(t.basis, j);
 
-			// add inertia tensor
+			
 			tensor.add(j);
 
-			// compute inertia tensor of pointmass at o
+			
 			float o2 = o.lengthSquared();
 			j.setRow(0, o2, 0, 0);
 			j.setRow(1, 0, o2, 0);
@@ -322,7 +322,7 @@ public class CompoundShape extends CollisionShape {
 			j.m21 += o.y * -o.z;
 			j.m22 += o.z * -o.z;
 
-			// add inertia tensor of pointmass
+			
 			tensor.m00 += masses[k] * j.m00;
 			tensor.m01 += masses[k] * j.m01;
 			tensor.m02 += masses[k] * j.m02;

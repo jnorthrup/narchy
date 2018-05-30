@@ -36,7 +36,7 @@ public class Snake {
         FixtureDef segment = new FixtureDef(
                 PolygonShape.box(eleLen / 2, thick / 2), 0.2f, 0f);
         segment.restitution = (0f);
-        segment.filter.maskBits = 0; //no collision
+        segment.filter.maskBits = 0; 
 
         final float y = 0f;
 
@@ -64,21 +64,21 @@ public class Snake {
                 }
 
                 RevoluteJointDef jd = new RevoluteJointDef();
-                //DistanceJointDef jd = new DistanceJointDef();
+                
                 jd.collideConnected = false;
 
                 jd.bodyA = from;
                 if (from != sourceBody) {
-                    jd.localAnchorA.set(eleLen / 2, 0); //right side
+                    jd.localAnchorA.set(eleLen / 2, 0); 
                 } else {
-                    //bind to center of the start or end
+                    
                     jd.localAnchorA.set(0, 0);
                 }
                 jd.bodyB = to;
                 if (to != targetBody) {
-                    jd.localAnchorB.set(-eleLen / 2, 0); //left side
+                    jd.localAnchorB.set(-eleLen / 2, 0); 
                 } else {
-                    //bind to center of the start or end
+                    
                     jd.localAnchorB.set(0, 0);
                 }
                 jd.referenceAngle = 0;
@@ -120,8 +120,8 @@ public class Snake {
         Dynamics2D world = world();
         world.invoke(() -> {
 
-//            joints.forEach(world::removeJoint); //joints should be removed automatically when the attached body/bodies are removed
-//            joints.clear();
+
+
 
             attachments.forEach(Body2D::remove);
             attachments.clear();
@@ -148,7 +148,7 @@ public class Snake {
 
         @Override
         public boolean solvePositionConstraints(SolverData data) {
-            //calc relative position of the surface within the body, allowing distinct positions of multiple ports at different positions in one body
+            
             if (from == sourceBody) {
                 if (source.parent == null) {
                     remove();

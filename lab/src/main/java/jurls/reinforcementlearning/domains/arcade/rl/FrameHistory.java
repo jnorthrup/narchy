@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.rl;
 
@@ -75,7 +75,7 @@ public class FrameHistory implements Cloneable {
             FrameHistory obj = (FrameHistory)super.clone();
 
             obj.frames = new LinkedList<ScreenMatrix>();
-            // Copy over the frames; we do not clone them
+            
             for (ScreenMatrix screen : this.frames) {
                 obj.frames.add(screen);
             }

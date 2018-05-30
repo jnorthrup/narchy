@@ -72,7 +72,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
            );
            updateNode(nn);
         });
-//        this.layout(new Dyn2DLayout())
+
         this.layout(new ForceDirected2D<Concept>() {
             @Override
             public void layout(Graph2D<Concept> g, int dtMS) {
@@ -147,7 +147,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
             @Override
             protected void paintBelow(GL2 gl) {
 
-                //black background
+                
                 gl.glColor4f(0,0,0, 0.9f);
                 Draw.rect(gl, bounds);
 
@@ -205,7 +205,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
         }
     }
 
-    //TODO ConjVis - creates a loop of edges for all subterms of a conjunction concept
+    
 
     private static class StatementVis implements Graph2D.Graph2DLayer<Concept> {
         public final AtomicBoolean statements = new AtomicBoolean(true);

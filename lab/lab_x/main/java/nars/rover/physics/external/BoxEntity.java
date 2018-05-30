@@ -50,8 +50,8 @@ public class BoxEntity extends DynamicEntity {
 		
 		FixtureDef fixture = new FixtureDef();
 		fixture.shape = box;
-		//fixture.filter.categoryBits = CollisionFilters.ENTITY;
-		//fixture.filter.maskBits = CollisionFilters.EVERYTHING;
+		
+		
 		fixture.density = density;
 		return fixture;
 	}
@@ -64,7 +64,7 @@ public class BoxEntity extends DynamicEntity {
 	public void write(Kryo kryo, Output output){
 		super.write(kryo, output);
 		
-		// write out width/height
+		
 		output.writeFloat(width);
 		output.writeFloat(height);
 	}
@@ -73,7 +73,7 @@ public class BoxEntity extends DynamicEntity {
 	public void read(Kryo kryo, Input input){
 		super.read(kryo, input);
 		
-		// read in width/height
+		
 		this.width = input.readFloat();
 		this.height = input.readFloat();
 	}

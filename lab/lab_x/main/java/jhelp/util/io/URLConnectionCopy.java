@@ -238,14 +238,14 @@ public class URLConnectionCopy
       return this.connection.getContentType();
    }
 
-   // /**
-   // * @return
-   // * @see java.net.URLConnection#getContentLengthLong()
-   // */
-   // public long getContentLengthLong()
-   // {
-   // return this.connection.getContentLengthLong();
-   // }
+   
+   
+   
+   
+   
+   
+   
+   
 
    /**
     * Returns the value of the <code>date</code> header field.
@@ -424,16 +424,16 @@ public class URLConnectionCopy
       return this.connection.getHeaderFields();
    }
 
-   // /**
-   // * @param name
-   // * @param Default
-   // * @return
-   // * @see java.net.URLConnection#getHeaderFieldLong(java.lang.String, long)
-   // */
-   // public long getHeaderFieldLong(String name, long Default)
-   // {
-   // return this.connection.getHeaderFieldLong(name, Default);
-   // }
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
 
    /**
     * Returns the value of this object's <code>ifModifiedSince</code> field.

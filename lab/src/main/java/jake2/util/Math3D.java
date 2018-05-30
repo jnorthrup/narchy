@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 09.12.2003 by RST.
-// $Id: Math3D.java,v 1.9 2005-02-20 21:50:36 salomo Exp $
+
+
 
 package jake2.util;
 
@@ -173,7 +173,7 @@ public class Math3D {
 	private static final float[][] tmpmat = new float[3][3];
 	private static final float[][] zrot = new float[3][3];
 	
-	// to reduce garbage
+	
 	private static final float[] vr = {0, 0, 0};
 	private static final float[] vup = {0, 0, 0};
 	private static final float[] vf = {0, 0, 0};
@@ -227,8 +227,8 @@ public class Math3D {
 	}
 
 	public static void MakeNormalVectors(float[] forward, float[] right, float[] up) {
-		// this rotate and negat guarantees a vector
-		// not colinear with the original
+		
+		
 		right[1] = -forward[0];
 		right[2] = forward[1];
 		right[0] = forward[2];
@@ -305,20 +305,20 @@ public class Math3D {
 		int i;
 		float minelem = 1.0F;
 
-		// find the smallest magnitude axially aligned vector 
+		
 		for (pos = 0, i = 0; i < 3; i++) {
 			if (Math.abs(src[i]) < minelem) {
 				pos = i;
 				minelem = Math.abs(src[i]);
 			}
 		}
-		// project the point onto the plane defined by src
+		
 		ProjectPointOnPlane(dst, PLANE_XYZ[pos], src);
 
-		//normalize the result 
+		
 		VectorNormalize(dst);
 	}
-	//=====================================================================	
+	
 	/** 
 	 stellt fest, auf welcher Seite sich die Kiste befindet, wenn die Ebene 
 	 durch Entfernung und Senkrechten-Normale gegeben ist.    
@@ -330,7 +330,7 @@ public class Math3D {
 		float dist1, dist2;
 		int sides;
 
-		//	   fast axial cases
+		
 		byte ptype = p.type;
 		float pDist = p.dist;
 		if (ptype < 3) {
@@ -341,7 +341,7 @@ public class Math3D {
 			return 3;
 		}
 
-		//	   general case
+		
 		float[] normal = p.normal;
 		float n0 = normal[0];
 		float n1 = normal[1];
@@ -402,31 +402,31 @@ public class Math3D {
 		return sides;
 	}
 
-//	//	this is the slow, general version
-//	private static final float[][] corners = new float[2][3];
-//
-//	public static final int BoxOnPlaneSide2(float[] emins, float[] emaxs, cplane_t p) {
-//
-//		for (int i = 0; i < 3; i++) {
-//			if (p.normal[i] < 0) {
-//				corners[0][i] = emins[i];
-//				corners[1][i] = emaxs[i];
-//			}
-//			else {
-//				corners[1][i] = emins[i];
-//				corners[0][i] = emaxs[i];
-//			}
-//		}
-//		float dist1 = DotProduct(p.normal, corners[0]) - p.dist;
-//		float dist2 = DotProduct(p.normal, corners[1]) - p.dist;
-//		int sides = 0;
-//		if (dist1 >= 0)
-//			sides = 1;
-//		if (dist2 < 0)
-//			sides |= 2;
-//
-//		return sides;
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public static void AngleVectors(float[] angles, float[] forward, float[] right, float[] up) {
 

@@ -20,7 +20,7 @@ public class MemoryState
         this.memory = memory;
 
 
-        //TODO just pass the array and dont involve a lambda here
+        
         heading = HeadSetting.getVector(this.memory);
         read = ReadData.getVector(this.memory, heading);
     }

@@ -45,19 +45,19 @@ public class AutoConceptualizer {
             float f;
             if (t == null) {
                 f = 0.5f;
-                //0.5f + (learningRate * 2) * n.random().nextFloat() - learningRate;
-                //n.random()
+                
+                
             } else {
                 f = t.freq();
             }
             x[i] = f;
         }
-        //System.out.println(n4(x));
+        
         float err = ae.put(x, learningRate, noiseLevel, 0, true);
-        //System.out.println("err=" + n4(err/inputs) + ": \t" + n4(ae.y));
+        
 
-        //decompile/unfactor the outputs
-        //if err < thresh
+        
+        
         int outputs = ae.outputs();
         float[] b = new float[outputs];
 
@@ -65,17 +65,17 @@ public class AutoConceptualizer {
 
         int[] order = new int[inputs];
         for (int i = 0; i < outputs; i++) {
-            b[i] = 1; //basis vector for each output
+            b[i] = 1; 
 
             float[] a = ae.decode(b, true);
-            //System.out.println("\tfeature " + i + "=" + n4(a));
+            
             Term feature = conj(order, a /* threshold, etc */, 5 /*a.length/2*/,
                     thresh);
             if (feature != null) {
-                //System.out.println("\t  " + feature);
+                
                 onFeature(feature);
             }
-            b[i] = 0; //clear
+            b[i] = 0; 
         }
     }
 
@@ -85,16 +85,16 @@ public class AutoConceptualizer {
 
     private Term conj(int[] order, float[] a, int maxArity, float threshold) {
 
-        //sort by absolute polarity (divergence from 0.5), collecting the top N components
+        
         int n = a.length;
-//        float mean = 0;
+
         for (int i = 0; i < n; i++) {
             order[i] = i;
-//            mean += a[i];
-        }
-//        mean/=n;
 
-        float finalMean = 0.5f; //mean;
+        }
+
+
+        float finalMean = 0.5f; 
         ArrayUtils.sort(order, (i) -> Math.abs(finalMean - a[i]));
 
         Set<Term> x = new UnifiedSet(maxArity);
@@ -102,7 +102,7 @@ public class AutoConceptualizer {
             int oi = order[i];
             float aa = a[oi];
             if (Math.abs(aa - 0.5f) < threshold)
-                break; //done
+                break; 
 
             x.add(in.get(oi).term().negIf(aa < finalMean));
         }

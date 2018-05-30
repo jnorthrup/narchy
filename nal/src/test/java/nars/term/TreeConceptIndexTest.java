@@ -58,7 +58,7 @@ public class TreeConceptIndexTest {
         assertEquals(6, t.size());
         System.out.println(t.concepts.root);
 
-        //each item is in a different leaf because of the volume byte prefix
+        
         List<MyConcurrentRadixTree.Node> oe = t.concepts.root.getOutgoingEdges();
         assertEquals(6, oe.size());
 

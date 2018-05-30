@@ -44,7 +44,7 @@ public class QLAgent<S extends Term> extends NARAgent {
 
     private float initialPossibleDesireConfidence = 0.25f;
 
-    final float actedConfidence = 0.9f; //similar to Operator.exec
+    final float actedConfidence = 0.9f; 
 
 
 
@@ -72,7 +72,7 @@ public class QLAgent<S extends Term> extends NARAgent {
     protected Operation getAction(final int i) {
         Operation o = operationCache[i];
         if (o == null) {
-            //TODO avoid String here
+            
             o = operationCache[i] =
                     Operation.op( Product.make(Atom.the(i)), operator );
             operationToAction.put(o, i);
@@ -164,7 +164,7 @@ public class QLAgent<S extends Term> extends NARAgent {
 
     /** fast immediate checks to discount terms which are definitely not representative of a state */
     public boolean isRowPrefilter(Term s) {
-        //TODO use a standard subject for all state data that can be tested quickly
+        
         return (s.op()== Op.INHERITANCE);
     }
 
@@ -187,39 +187,39 @@ public class QLAgent<S extends Term> extends NARAgent {
         return nar.concept( getAction(i) );
     }
 
-    //v = new ConceptMatrixEntry<>(c, this);
+    
 
 
-//    /**
-//     * adds a perception belief of a given strength (0..1.0) to the input buffer
-//     */
-//    public void perceive(String term, float freq, float conf) {
-//        perceive((S)nar.term(term), freq, conf);
-//    }
-//
-//    /**
-//     * adds a perception belief of a given strength (0..1.0) to the input buffer
-//     */
-//    public Task perceive(S term, float freq, float conf) {
-//        Task t = nar.memory.newTask((Compound)term)
-//                .judgment()
-//                .present()
-//                .truth(freq, conf)
-//                .get();
-//        incoming.add(t);
-//        return t;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     protected int getMaxDesiredAction() {
         int best = -1;
         double highest = Double.MIN_VALUE;
 
-        //TODO check fairness of the equal value conditions
+        
         for (int i = 0; i < getNumActions(); i++) {
             double  v = combinedDesire.getEntry(i);
             if ((v > highest) ||
-                    //if equal, decide randomly if it should replace it, to be fair
+                    
                     ((v >= highest) && (nar.memory.random.nextBoolean()))
                     ) {
                 highest = v;
@@ -239,12 +239,12 @@ public class QLAgent<S extends Term> extends NARAgent {
         final int actions = getNumActions();
 
         final double epsilon = ql.brain.getEpsilon();
-        //do not apply epsilon random decisions if decisionThreshold=1f
+        
         float decisionThreshold = ql.nar.param.executionThreshold.floatValue();
         if (decisionThreshold < 1.0f && epsilon > 0 && nar.memory.random.nextFloat() < epsilon) {
             int a = nar.memory.random.nextInt(actions);
 
-            //for display purposes:
+            
             combinedDesire.set(0);
             combinedDesire.setEntry(a, 0.5f);
 
@@ -256,11 +256,11 @@ public class QLAgent<S extends Term> extends NARAgent {
         normalizeActionVector(actByQ);
 
 
-        //System.out.println(actByQ + " " + actByExpectation);
+        
 
         for (int i = 0; i < combinedDesire.getDimension(); i++) {
 
-            //50%/50% q and nars
+            
             double d = (
                     (1.0f - qDecisionFactor) * decision.actByExpectation.getEntry(i) +
                     qDecisionFactor * actByQ.getEntry(i) );
@@ -274,19 +274,19 @@ public class QLAgent<S extends Term> extends NARAgent {
 
         int winner = getMaxDesiredAction();
 
-        //System.out.println(actByExpectation + " " + actByQ + " " + winner);
+        
 
 
         if (winner == -1) {
-            return null; //no winner?
+            return null; 
         }
 
-        //double alignment = normalizedDesire.dotProduct(actByExpectation);
+        
 
-        //System.out.print("NARS exec: '" + winner + "' -> " + winner);
-        //System.out.println("  volition_coherency: " + Texts.n4(alignment * 100.0) + "%");
+        
+        
 
-        //reset for next cycle
+        
         decision.clear();
 
         return getAction(winner);
@@ -334,9 +334,9 @@ public class QLAgent<S extends Term> extends NARAgent {
         if (nextAction!=null)
             learn(nextAction, before, QLAgent.this.now, r);
 
-        //System.out.println(nextAction + " " + lastAction);
+        
 
-        //swap buffers
+        
         List<Task> tmp = before;
         before = now;
 
@@ -350,7 +350,7 @@ public class QLAgent<S extends Term> extends NARAgent {
             environmentState.getBudget().mulPriority(ql.sensedStatePriorityChanged);
         }
         else {
-            //float sensedStatePrioritySame = 1.0f - environmentState.getTruth().getConfidence();
+            
             environmentState.getBudget().mulPriority(ql.sensedStatePrioritySame);
         }
         ql.input(environmentState);
@@ -367,9 +367,9 @@ public class QLAgent<S extends Term> extends NARAgent {
     public void learn(final Operation nextAction, final List<Task> lastStateTasks, final List<Task> currentStateTasks, final double reward) {
 
 
-        // System.out.println(confidence + " " + Arrays.toString(state));
+        
 
-        //double alpha = brain.getAlpha();
+        
         double gamma = ql.brain.getGamma();
         double lambda = ql.brain.getLambda();
 
@@ -385,7 +385,7 @@ public class QLAgent<S extends Term> extends NARAgent {
             S lastState = (S) lastTask.getTerm();
 
             double alpha = lastTask.getTruth().getExpectation();
-            //double lastTaskExpectation = lastTask.getTruth().getExpectation();
+            
 
             final double qLast;
             if (lastAction!=null)
@@ -395,54 +395,54 @@ public class QLAgent<S extends Term> extends NARAgent {
 
             for (Task i : currentStateTasks) {
 
-                //float freq = i.sentence.truth.getFrequency();
-                //float confidence = i.sentence.truth.getConfidence();
-                //double currentTaskExpectation = freq * confidence;
+                
+                
+                
 
                 S state = (S) i.getTerm();
 
 
-                //brain.qlearn(lastAction, , reward, nextAction, freq * confidence);
-
-//
-//                double qLast;
-//                if (lastAction != null) {
-//                    //qLast = qSentence(state, lastAction);
-//                    qLast = q(state, lastAction);
-//                } else {
-//                    //qLast = Math.random();
-//                    qLast = 0;
-//                }
-
-//                if (!Double.isFinite(qLast)) {
-//                    // the entry does not exist.
-//                    // input the task as a belief to create it, and maybe it will be available in a subsequent cycle
-//                    //System.out.println("qState missing: " + i);
-//                    //qLast = Math.random();
-//                    qLast = 0;
-//                }
-
-                //double sq = QEntry.getQSentence(i.sentence) * confidence;
+                
 
 
-                //TODO compare: q(state, nextAction) with q(i.sentence)
-                //double DeltaQ = reward + Gamma * Q[StateX][StateY][Action] - Q[lastStateX][lastStateY][lastAction];
-                //double deltaQ = reward + gamma * q(state, nextAction) - q(lastState, lastAction);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+
+                
+                
+                
                 double deltaQ = reward + (gamma * ql.q(state, nextAction))
 
-                        //update eligiblity trace according to the expectation
-                        //et[lastStateX][lastStateY][lastAction] += 1;
+                        
+                        
                         - qLast;
 
                 sumDeltaQ += alpha * deltaQ;
 
-                //brain.qUpdate(state, nextAction, sumDeltaQ, GammaLambda, 0);
+                
             }
         }
 
         if (numTaskTransitions == 0) numTaskTransitions = 1;
 
-        List<S> s = Lists.newArrayList(getStates()); //copy to avoid CME because the update procedure can change the set of states
+        List<S> s = Lists.newArrayList(getStates()); 
         List<Operation> a = Lists.newArrayList(ql.brain.getActions());
         for (S i : s) {
             for (Operation k : a) {
@@ -527,7 +527,7 @@ public class QLAgent<S extends Term> extends NARAgent {
         public void off() {
             super.off();
 
-            //opReg.off();
+            
         }
 
         @Override
@@ -544,7 +544,7 @@ public class QLAgent<S extends Term> extends NARAgent {
                 cols.include(a);
             }
 
-            //spontaneous(initialPossibleDesireConfidence);
+            
 
             setActedBeliefConfidence(actedConfidence);
             setActedGoalConfidence(0);
@@ -555,7 +555,7 @@ public class QLAgent<S extends Term> extends NARAgent {
             if (!isRowPrefilter(s)) return false;
             for (Perception p : perceptions) {
                 if (p.isState(s)) {
-                    //adds the state
+                    
                     return true;
                 }
             }
@@ -564,7 +564,7 @@ public class QLAgent<S extends Term> extends NARAgent {
 
         @Override
         public boolean isCol(Term a) {
-            if ((a.complexity() == 5) && (!a.hasVar())) //"act(X)"
+            if ((a.complexity() == 5) && (!a.hasVar())) 
                 if (a instanceof Operation)
                     return cols.contains((Operation)a);
             return false;
@@ -580,7 +580,7 @@ public class QLAgent<S extends Term> extends NARAgent {
 
         public final ArrayRealVector actByExpectation;
         public final ArrayRealVector actByPriority;
-        final double actionMomentum = 0.0; //smooths the action vectors
+        final double actionMomentum = 0.0; 
 
         boolean filterNegativeGoals = true;
 
@@ -611,21 +611,21 @@ public class QLAgent<S extends Term> extends NARAgent {
             actByPriority.addToEntry(action, priority);
             actByExpectation.addToEntry(action, expectation);
 
-            //ALTERNATIVE: sum expectation * taskPriority
-            //actByExpectation.addToEntry(action, expectation * priority);
+            
+            
         }
 
 
         @Override
         protected void noticeExecuted(Operation operation) {
-            //dont notice
+            
         }
 
         @Override
         public List<Task> apply(Operation operation) {
 
-            if (operation.numArgs() != 2) { // || args.length==3) { //left, self
-                //System.err.println(this + " ?? " + Arrays.toString(args));
+            if (operation.numArgs() != 2) { 
+                
                 return null;
             }
 

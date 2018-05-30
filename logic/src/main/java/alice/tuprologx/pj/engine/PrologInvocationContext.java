@@ -37,7 +37,7 @@ public class PrologInvocationContext {
     public PrologInvocationContext(Method m, Object... args) {
         PrologMethod pann = m.getAnnotation(PrologMethod.class);
         assert (pann != null);         
-        keepSubstitutions = pann.keepSubstitutions();// || pann.signature().equals("");
+        keepSubstitutions = pann.keepSubstitutions();
         initPredicateName(m,pann);
         initVariableNames(m,pann);
         initInputVariables(m,pann);
@@ -123,7 +123,7 @@ public class PrologInvocationContext {
             }
             if (returnType instanceof ParameterizedType) {
                 ParameterizedType pt = (ParameterizedType)returnType;
-                if (Cons.class.equals(pt.getRawType())) {//Cons<Cons<Cons ...
+                if (Cons.class.equals(pt.getRawType())) {
                     Type t = pt;
                     while (Nil.class.isAssignableFrom((Class<?>)pt.getRawType())) {
                         pt = (ParameterizedType)t;
@@ -132,7 +132,7 @@ public class PrologInvocationContext {
                         t = pt.getActualTypeArguments()[1];
                     }
                 }
-                else {//Compound1, Compound2
+                else {
                     for (Type t : pt.getActualTypeArguments()) {
                         outputVariables.add(((TypeVariable<?>)t).getName());
                     }
@@ -217,7 +217,7 @@ public class PrologInvocationContext {
                 }                                
                 return resultList;
             }        
-            else { //single solution
+            else { 
                 PrologSolution<?,? extends Cons<?,?>> si = _engine.solve(theGoal);                            
                 if (!si.isSuccess() && exceptionOnFailure) {
                     throw new NoSolutionException();
@@ -264,7 +264,7 @@ public class PrologInvocationContext {
         try {                    
             if (multipleResult) {
                 final Iterable<? extends PrologSolution<?,Cons<?,?>>> answer = _engine.solveAll(theGoal);                            
-                //Vector<Object> resultList = new Vector<Object>();
+                
                 final Iterator<? extends PrologSolution<?,Cons<?,?>>> _result = answer.iterator();
                 if (!_result.hasNext() && exceptionOnFailure) {
                     throw new NoSolutionException();
@@ -310,7 +310,7 @@ public class PrologInvocationContext {
                 }
                 return (Iterable<Object>) SolutionIterator::new;
             }        
-            else { //single solution
+            else { 
                 PrologSolution<?,? extends Cons<?,?>> si = _engine.solve(theGoal);                            
                 if (!si.isSuccess() && exceptionOnFailure) {
                     throw new NoSolutionException();

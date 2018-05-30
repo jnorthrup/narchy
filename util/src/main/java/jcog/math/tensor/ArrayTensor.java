@@ -11,7 +11,7 @@ import java.util.Arrays;
 import static java.lang.System.arraycopy;
 
 /**
- * float tensor - see: https://github.com/lessthanoptimal/DeepBoof/blob/master/modules/main/src/main/java/deepboof/Tensor.java
+ * float tensor - see: https:
  */
 public class ArrayTensor implements
         Tensor,
@@ -47,7 +47,7 @@ public class ArrayTensor implements
             this.stride = ArrayUtils.EMPTY_INT_ARRAY;
         }
 
-        this.shape = shape; //TODO intern shape for fast compare
+        this.shape = shape; 
         this.data = new float[size];
     }
 
@@ -101,18 +101,18 @@ public class ArrayTensor implements
         return data;
     }
 
-    //    /** inverse of index; sets entries in the coords array according to the current index */
-//    public int[] coord(int index, int[] coord) {
-//        throw new UnsupportedOperationException();
-////        for (int s = shape.length-1; s > 0; s--) {
-////            int ss = stride[s-1];
-////            int x = index % ss;
-////            coord[s] = x;
-////            index/= ss;
-////        }
-////        coord[0] = index;
-////        return coord;
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void forEach(IntFloatProcedure each, int start, int end) {
@@ -152,9 +152,9 @@ public class ArrayTensor implements
         return new ArrayTensor(data.length, data);
     }
 
-//
-//    public void copyTo(float[] target, int targetOffset, int... subset) {
-//        //TODO
-//    }
+
+
+
+
 
 }

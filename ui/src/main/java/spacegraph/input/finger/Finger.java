@@ -115,20 +115,20 @@ public class Finger {
 
     /** call when finger exits the window / screen, the window becomes unfingerable, etc..*/
     public void exit() {
-//        synchronized(this) {
-//            @Nullable Widget t = touching;
-//            this.touching = null;
-//            if (t != null) {
-//                t.onFinger(null); //bye
-//            }
-//        }
+
+
+
+
+
+
+
     }
 
     /** call when finger enters the window */
     public void enter() {
-//        synchronized(this) {
-//            assert (touching == null): "phantom touching: " + touching;
-//        }
+
+
+
     }
 
     /**
@@ -149,12 +149,12 @@ public class Finger {
                 hitOnDown[b] = new v2(pos);
                 hitOnDownGlobal[b] = new v2(posPixel);
             } else if (wasPressed && !pressed) {
-                hitOnDownGlobal[b] = hitOnDown[b] = null; //release
+                hitOnDownGlobal[b] = hitOnDown[b] = null; 
             }
         }
 
 
-        //finally:
+        
         prevButtonDown.copyFrom(buttonDown);
 
     }
@@ -172,13 +172,13 @@ public class Finger {
     public void update(short[] nextButtonDown) {
 
 
-        //System.out.println(Arrays.toString(nextButtonDown));
+        
         for (short b : nextButtonDown) {
 
             boolean pressed = (b > 0);
 
-            if (!pressed) b = (short) -b; //invert to positive
-            b--; //shift to actual button ID
+            if (!pressed) b = (short) -b; 
+            b--; 
 
             buttonDown.set(b, pressed);
 
@@ -194,15 +194,15 @@ public class Finger {
 
         try {
 
-            //START DESCENT:
+            
 
             if (ff == null || ff.escapes()) {
                 touchedNext = root.tryTouch(this);
             } else {
-                touchedNext = touching.get(); //keep existing
+                touchedNext = touching.get(); 
             }
 
-            //System.out.println(pos + " " + posGlobal + " " + ff + " " + touchedNext);
+            
 
             if (ff != null) {
 
@@ -293,7 +293,7 @@ public class Finger {
     public boolean clickedNow(int button) {
         boolean clicked = releasedNow(button);
         boolean notDragging = !dragging(button);
-        //System.out.println("released: " + clicked + " notDragging: " + notDragging);
+        
         return clicked && notDragging;
     }
 
@@ -315,7 +315,7 @@ public class Finger {
         if (f != null && fingering.compareAndSet(null, STARTING)) {
             if (f.start(this)) {
                 fingering.set(f);
-                //root.surface.onTouch(this, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
+                
                 return true;
             } else {
                 fingering.set(null);
@@ -341,8 +341,8 @@ public class Finger {
 
         gl.glLineWidth(4f);
 
-        float ch = 175f; //TODO proportional to ortho height (pixels)
-        float cw = 175f; //TODO proportional to ortho width (pixels)
+        float ch = 175f; 
+        float cw = 175f; 
 
         float smx = posPixel.x;
         float smy = posPixel.y;

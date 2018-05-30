@@ -72,7 +72,7 @@ public class CommandTask implements Task {
 
     @Override
     public boolean delete() {
-        //ignored
+        
         return false;
     }
 
@@ -93,7 +93,7 @@ public class CommandTask implements Task {
 
     @Override
     public void setCyclic(boolean b) {
-        //ignored
+        
     }
 
     @Override

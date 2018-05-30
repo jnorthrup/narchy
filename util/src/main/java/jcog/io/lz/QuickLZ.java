@@ -1,34 +1,34 @@
 package jcog.io.lz;
 
-// QuickLZ data compression library
-// Copyright (C) 2006-2011 Lasse Mikkel Reinhold
-// lar@quicklz.com
-//
-// QuickLZ can be used for free under the GPL 1, 2 or 3 license (where anything
-// released into public must be open source) or under a commercial license if such
-// has been acquired (see http://www.quicklz.com/order.html). The commercial license
-// does not cover derived or ported versions created by third parties under GPL.
-//
-// Only a subset of the C library has been ported, namely level 1 and 3 not in
-// streaming mode.
-//
-// Version: 1.5.0 final
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import org.apache.commons.lang3.ArrayUtils;
 
 public final class QuickLZ {
-    // Streaming mode not supported
-//    public final static int QLZ_STREAMING_BUFFER = 0;
+    
 
-    // Bounds checking not supported. Use try...catch instead
-//    public final static int QLZ_MEMORY_SAFE = 0;
 
-//    public final static int QLZ_VERSION_MAJOR = 1;
-//    public final static int QLZ_VERSION_MINOR = 5;
-//    public final static int QLZ_VERSION_REVISION = 0;
+    
 
-    // Decrease QLZ_POINTERS_3 to increase compression speed of level 3. Do not
-    // edit any other constants!
+
+
+
+
+
+    
+    
     private final static int HASH_VALUES = 4096;
     private final static int MINOFFSET = 2;
     private final static int UNCONDITIONAL_MATCHLEN = 6;
@@ -144,7 +144,7 @@ public final class QuickLZ {
                         hash <<= 4;
                         if (matchlen < 18) {
                             int f = hash | (matchlen - 2);
-                            // Neither Java nor C# wants to inline fast_write
+                            
                             destination[dst + 0] = (byte) (f >>> 0 * 8);
                             destination[dst + 1] = (byte) (f >>> 1 * 8);
                             dst += 2;
@@ -186,7 +186,7 @@ public final class QuickLZ {
                         if ((m > matchlen) || (m == matchlen && o > offset2)) {
                             offset2 = o;
                             matchlen = m;
-                            //best_k = k;
+                            
                         }
                     }
                 }
@@ -344,20 +344,20 @@ public final class QuickLZ {
                     }
                     offset2 = dst - offset;
                 }
-//
-//                destination[dst + 0] = destination[offset2 + 0];
-//                destination[dst + 1] = destination[offset2 + 1];
-//                destination[dst + 2] = destination[offset2 + 2];
 
 
-                //noinspection ManualArrayCopy //for some reason doesnt work
+
+
+
+
+                
                 for (int i = 0; i < matchlen; i++) {
                     destination[dst + i] = destination[offset2 + i];
                 }
                 dst += matchlen;
 
                 if (level == 1) {
-                    fetch = (int) fast_read(destination, last_hashed + 1, 3); // destination[last_hashed + 1] | (destination[last_hashed + 2] << 8) | (destination[last_hashed + 3] << 16);
+                    fetch = (int) fast_read(destination, last_hashed + 1, 3); 
                     while (last_hashed < dst - matchlen) {
                         last_hashed++;
                         hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);

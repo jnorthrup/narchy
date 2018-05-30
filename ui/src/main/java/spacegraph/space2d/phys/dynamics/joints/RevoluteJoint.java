@@ -31,18 +31,18 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-//Point-to-point constraint
-//C = p2 - p1
-//Cdot = v2 - v1
-//   = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-//J = [-I -r1_skew I r2_skew ]
-//Identity used:
-//w k % (rx i + ry j) = w * (-ry i + rx j)
 
-//Motor constraint
-//Cdot = w2 - w1
-//J = [0 0 -1 0 0 1]
-//K = invI1 + invI2
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * A revolute joint constrains two bodies to share a common point while they are free to rotate
@@ -55,7 +55,7 @@ import spacegraph.util.math.v2;
  */
 public class RevoluteJoint extends Joint {
 
-    // Solver shared
+    
     protected final Tuple2f localAnchorA = new v2();
     protected final Tuple2f localAnchorB = new v2();
     private final Vec3 m_impulse = new Vec3();
@@ -70,7 +70,7 @@ public class RevoluteJoint extends Joint {
     private float m_lowerAngle;
     private float m_upperAngle;
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_rA = new v2();
@@ -81,8 +81,8 @@ public class RevoluteJoint extends Joint {
     private float m_invMassB;
     private float m_invIA;
     private float m_invIB;
-    private final Mat33 m_mass = new Mat33(); // effective mass for point-to-point constraint.
-    private float m_motorMass; // effective mass for motor/limit angular constraint.
+    private final Mat33 m_mass = new Mat33(); 
+    private float m_motorMass; 
     private LimitState m_limitState;
 
     /** how important it is to resolve position 'error' (distance from point-point).
@@ -124,12 +124,12 @@ public class RevoluteJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        // Vec2 cA = data.positions[m_indexA].c;
+        
         float aA = data.positions[m_indexA].a;
         Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        // Vec2 cB = data.positions[m_indexB].c;
+        
         float aB = data.positions[m_indexB].a;
         Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
@@ -140,18 +140,18 @@ public class RevoluteJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective masses.
+        
         Rot.mulToOutUnsafe(qA, temp.set(localAnchorA).subbed(m_localCenterA), m_rA);
         Rot.mulToOutUnsafe(qB, temp.set(localAnchorB).subbed(m_localCenterB), m_rB);
 
-        // J = [-I -r1_skew I r2_skew]
-        // [ 0 -1 0 1]
-        // r_skew = [-ry; rx]
+        
+        
+        
 
-        // Matlab
-        // K = [ mA+r1y^2*iA+mB+r2y^2*iB, -r1y*iA*r1x-r2y*iB*r2x, -r1y*iA-r2y*iB]
-        // [ -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB, r1x*iA+r2x*iB]
-        // [ -r1y*iA-r2y*iB, r1x*iA+r2x*iB, iA+iB]
+        
+        
+        
+        
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
@@ -201,7 +201,7 @@ public class RevoluteJoint extends Joint {
 
         if (data.step.warmStarting) {
             final Tuple2f P = new v2();
-            // Scale impulses to support a variable time step.
+            
             m_impulse.x *= data.step.dtRatio;
             m_impulse.y *= data.step.dtRatio;
             m_motorImpulse *= data.step.dtRatio;
@@ -220,9 +220,9 @@ public class RevoluteJoint extends Joint {
             m_impulse.setZero();
             m_motorImpulse = 0.0f;
         }
-        // data.velocities[m_indexA].v.set(vA);
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v.set(vB);
+        
         data.velocities[m_indexB].w = wB;
 
 
@@ -241,7 +241,7 @@ public class RevoluteJoint extends Joint {
 
         boolean fixedRotation = (iA + iB == 0.0f);
 
-        // Solve motor constraint.
+        
         if (m_enableMotor && m_limitState != LimitState.EQUAL && !fixedRotation) {
             float Cdot = wB - wA - m_motorSpeed;
             float impulse = -m_motorMass * Cdot;
@@ -255,13 +255,13 @@ public class RevoluteJoint extends Joint {
         }
         final Tuple2f temp = new v2();
 
-        // Solve limit constraint.
+        
         if (m_enableLimit && m_limitState != LimitState.INACTIVE && !fixedRotation) {
 
             final Tuple2f Cdot1 = new v2();
             final Vec3 Cdot = new Vec3();
 
-            // Solve point-to-point constraint
+            
             Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
             Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot1);
             Cdot1.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
@@ -325,14 +325,14 @@ public class RevoluteJoint extends Joint {
 
         } else {
 
-            // Solve point-to-point constraint
+            
             Tuple2f Cdot = new v2();
             Tuple2f impulse = new v2();
 
             Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
             Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot);
             Cdot.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
-            m_mass.solve22ToOut(Cdot.negated(), impulse); // just leave negated
+            m_mass.solve22ToOut(Cdot.negated(), impulse); 
 
             m_impulse.x += impulse.x;
             m_impulse.y += impulse.y;
@@ -347,9 +347,9 @@ public class RevoluteJoint extends Joint {
 
         }
 
-        // data.velocities[m_indexA].v.set(vA);
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v.set(vB);
+        
         data.velocities[m_indexB].w = wB;
 
 
@@ -372,14 +372,14 @@ public class RevoluteJoint extends Joint {
 
         boolean fixedRotation = (m_invIA + m_invIB == 0.0f);
 
-        // Solve angular limit constraint.
+        
         if (m_enableLimit && m_limitState != LimitState.INACTIVE && !fixedRotation) {
             float angle = aB - aA - m_referenceAngle;
             float limitImpulse = 0.0f;
 
             switch (m_limitState) {
                 case EQUAL: {
-                    // Prevent large angular corrections
+                    
                     float C =
                             MathUtils.clamp(angle - m_lowerAngle, -Settings.maxAngularCorrection,
                                     Settings.maxAngularCorrection);
@@ -391,7 +391,7 @@ public class RevoluteJoint extends Joint {
                     float C = angle - m_lowerAngle;
                     angularError = -C;
 
-                    // Prevent large angular corrections and allow some slop.
+                    
                     C = MathUtils.clamp(C + Settings.angularSlop, -Settings.maxAngularCorrection, 0.0f);
                     limitImpulse = -m_motorMass * C;
                     break;
@@ -400,7 +400,7 @@ public class RevoluteJoint extends Joint {
                     float C = angle - m_upperAngle;
                     angularError = C;
 
-                    // Prevent large angular corrections and allow some slop.
+                    
                     C = MathUtils.clamp(C - Settings.angularSlop, 0.0f, Settings.maxAngularCorrection);
                     limitImpulse = -m_motorMass * C;
                     break;
@@ -410,7 +410,7 @@ public class RevoluteJoint extends Joint {
             aA -= m_invIA * limitImpulse;
             aB += m_invIB * limitImpulse;
         }
-        // Solve point-to-point constraint.
+        
         {
             qA.set(aA);
             qB.set(aB);
@@ -447,9 +447,9 @@ public class RevoluteJoint extends Joint {
 
             pool.pushMat22(1);
         }
-        // data.positions[m_indexA].c.set(cA);
+        
         data.positions[m_indexA].a = aA;
-        // data.positions[m_indexB].c.set(cB);
+        
         data.positions[m_indexB].a = aB;
 
         pool.pushRot(2);

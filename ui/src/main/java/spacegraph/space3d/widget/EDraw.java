@@ -13,7 +13,7 @@ import spacegraph.space3d.SimpleSpatial;
 public class EDraw<Y extends SimpleSpatial> extends PLink<Twin<Y>> {
 
     private final int hash;
-    //TODO use pri as 'width' or 'a'
+    
     public float width, r, g, b, a;
 
     /** additional attraction force multiplier */

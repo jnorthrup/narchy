@@ -31,7 +31,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
         worldPosition = x.transform(v(localPosition));
 
         worldTarget = v(localDirection);
-        worldTarget.scale(rangeMax); //TODO limit by contact point
+        worldTarget.scale(rangeMax); 
         worldTarget.add(localPosition);
         x.transform(worldTarget);
 
@@ -58,7 +58,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
         Object target = rayResult.collidable.data();
         if (target != parent) {
             float dist = v3.dist(worldPosition, rayResult.hitNormal);
-            //System.out.println(rayResult.collidable.data() + " " + dist);
+            
             worldHit.set(rayResult.hitNormal);
             if (target instanceof SimpleSpatial) {
                 SimpleSpatial ss = ((SimpleSpatial) target);
@@ -72,7 +72,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
     }
 
     float distanceToAlpha(float dist) {
-        //could also be exponential, etc
+        
         return Util.unitize(1f - (dist / rangeMax)) * 0.5f + 0.5f;
     }
 }

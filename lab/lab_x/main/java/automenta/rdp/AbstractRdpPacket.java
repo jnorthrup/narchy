@@ -29,7 +29,7 @@
  * (See gpl.txt for details of the GNU General Public License.)
  *          
  */
-// Created on 03-Sep-2003
+
 package automenta.rdp;
 
 import automenta.rdp.rdp.RdpPacket;
@@ -382,7 +382,7 @@ public abstract class AbstractRdpPacket {
 	public void pushLayer(int header, int increment)  {
 		this.setHeader(header);
 		this.positionAdd(increment);
-		// this.setStart(this.getPosition());
+		
 	}
 
 	/**
@@ -466,13 +466,13 @@ public abstract class AbstractRdpPacket {
 		int i = 0, j = 0;
 
 		if (str.length() != 0) {
-			//TODO use use charAt dont call toCharArray which allocates a duplicate array
+			
 			char[] name = str.toCharArray();
 			while (i < len) {
 				this.setLittleEndian16((short) name[j++]);
 				i += 2;
 			}
-			this.setLittleEndian16(0); // Terminating Null Character
+			this.setLittleEndian16(0); 
 		} else {
 			this.setLittleEndian16(0);
 		}

@@ -13,9 +13,9 @@ import java.util.function.Consumer;
  */
 abstract public class AbstractSpace<X>  {
 
-    //final AtomicBoolean busy = new AtomicBoolean(true);
-//    private long now;
-//    private long dt;
+    
+
+
 
     protected final List<SpaceTransform<X>> transforms = new FasterList();
 
@@ -36,26 +36,26 @@ abstract public class AbstractSpace<X>  {
 
 
 
-//    public float dt() {
-//        return dt;
-//    }
 
-//    final AtomicBoolean busy = new AtomicBoolean(false);
 
-//    /**
-//     * for thread-safe usage
-//     */
-//    public void updateIfNotBusy(Runnable proc) {
-//        if (busy.compareAndSet(false, true)) {
-//            try {
-//                long last = this.now;
-//                this.dt = (this.now = System.currentTimeMillis()) - last;
-//                proc.run();
-//            } finally {
-//                busy.set(false);
-//            }
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /** needs to call update(space) for each active item */

@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -101,12 +101,12 @@ class BvhTreeNodeArray {
 	}
 	
 	public boolean isLeafNode(int nodeIndex) {
-		// skipindex is negative (internal node), triangleindex >=0 (leafnode)
+		
 		return (escapeIndexOrDataIndex[nodeIndex] >= 0);
 	}
 
 	public int getEscapeIndex(int nodeIndex) {
-		//btAssert(m_escapeIndexOrDataIndex < 0);
+		
 		return -escapeIndexOrDataIndex[nodeIndex];
 	}
 
@@ -115,7 +115,7 @@ class BvhTreeNodeArray {
 	}
 
 	public int getDataIndex(int nodeIndex) {
-		//btAssert(m_escapeIndexOrDataIndex >= 0);
+		
 		return escapeIndexOrDataIndex[nodeIndex];
 	}
 

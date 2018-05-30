@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ import static org.oakgp.Type.*;
 import static org.oakgp.util.Utils.intArrayType;
 
 public class PrimitiveSetImplTest {
-    // TODO add extra tests for when: a) numVariables=0, b) numVariables=1 and c) constants.length=0
+    
 
     private static final double VARIABLE_RATIO = .6;
     private static final ConstantNode[] CONSTANTS = {integerConstant(7), integerConstant(8), integerConstant(9)};
@@ -60,14 +60,14 @@ public class PrimitiveSetImplTest {
     @Test
     public void testNextFunction() {
         GPRandom mockRandom = mock(GPRandom.class);
-        // mock randomly selecting one of the 4 functions in OPERATORS with an integer return type
+        
         given(mockRandom.nextInt(4)).willReturn(1, 0, 2, 1, 2, 0, 3);
-        // mock randomly selecting one of the 6 functions in OPERATORS with a boolean return type
+        
         given(mockRandom.nextInt(6)).willReturn(1, 0, 5, 4);
 
         PrimitiveSet functionSet = createWithFunctions(mockRandom);
 
-        // TODO test with more than just integerType()
+        
         assertSame(FUNCTIONS[1], functionSet.nextFunction(integerType()));
         assertSame(FUNCTIONS[0], functionSet.nextFunction(integerType()));
         assertSame(FUNCTIONS[2], functionSet.nextFunction(integerType()));
@@ -117,7 +117,7 @@ public class PrimitiveSetImplTest {
 
         PrimitiveSet terminalSet = createWithTerminals(mockRandom);
 
-        // TODO test with more than just integerType()
+        
         assertVariable(1, terminalSet.nextTerminal(integerType()));
         assertConstant(7, terminalSet.nextTerminal(integerType()));
         assertConstant(9, terminalSet.nextTerminal(integerType()));
@@ -129,7 +129,7 @@ public class PrimitiveSetImplTest {
     @Test
     public void testNextAlternativeConstant() {
         GPRandom mockRandom = mock(GPRandom.class);
-        given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO); // this will force constants to be produced
+        given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO); 
 
         PrimitiveSet terminalSet = createWithTerminals(mockRandom);
 
@@ -163,7 +163,7 @@ public class PrimitiveSetImplTest {
     @Test
     public void testNextAlternativeVariable() {
         GPRandom mockRandom = mock(GPRandom.class);
-        given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO - .01); // this will force variables to be produced
+        given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO - .01); 
 
         ConstantSet constantSet = new ConstantSet(CONSTANTS);
         VariableSet variableSet = VariableSet.createVariableSet(VARIABLE_TYPES);

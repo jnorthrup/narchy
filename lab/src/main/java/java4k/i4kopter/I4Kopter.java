@@ -17,7 +17,7 @@ package java4k.i4kopter;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -40,17 +40,17 @@ public class I4Kopter extends Applet {
     private BufferedImage backgroundImage;
     private BufferedImage helicopterImage1, helicopterImage2;
     private final int w = 800;
-    private final int h = 400;                   // height and width of screen
+    private final int h = 400;                   
     private final Random random = new Random();
     private boolean keyPressed, paused;
-    private int heliY, heliX;                       // helicopter position X,Y
+    private int heliY, heliX;                       
     private double speed, gravity = 1.6;
-    private Point[] obstacles;                      // use Point's to store obstacle offset
-    private final int pathHeight = 250;                   // height of 'rockless path'
-    private final int backgroundLength = 17*this.w;       // number of screen lengths
-    private final int widthBar = 20;                      // rock-bar-width
-    private final int oheight  = 59;                      // height of obstacle
-    private long lasted;                       // use time as score
+    private Point[] obstacles;                      
+    private final int pathHeight = 250;                   
+    private final int backgroundLength = 17*this.w;       
+    private final int widthBar = 20;                      
+    private final int oheight  = 59;                      
+    private long lasted;                       
 
     public I4Kopter(){
         super();
@@ -74,29 +74,29 @@ public class I4Kopter extends Applet {
 
         /* ******* start draw helicopters ********* */
 
-        helicopterImage1 = new BufferedImage(50, 25, BufferedImage.TYPE_INT_ARGB); // alpha value
+        helicopterImage1 = new BufferedImage(50, 25, BufferedImage.TYPE_INT_ARGB); 
         Graphics2D helicopterBuffer1 = helicopterImage1.createGraphics();
 
         helicopterBuffer1.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                                            RenderingHints.VALUE_ANTIALIAS_ON);
         
-        helicopterBuffer1.setColor(new Color(0,0,0,0.0f)); // make it transparent
+        helicopterBuffer1.setColor(new Color(0,0,0,0.0f)); 
         helicopterBuffer1.fillRect(0,0, 50, 25);
 
         helicopterBuffer1.setColor(Color.WHITE);
-        helicopterBuffer1.fillOval(16,10, 21, 12);  // helicopter body
-        helicopterBuffer1.fillPolygon(new int[] {2,22,17}, new int[] {10,15,19}, 3); // stabiliser body
+        helicopterBuffer1.fillOval(16,10, 21, 12);  
+        helicopterBuffer1.fillPolygon(new int[] {2,22,17}, new int[] {10,15,19}, 3); 
         helicopterBuffer1.setColor(new Color(0,0,1,0.55f));
-        helicopterBuffer1.fillOval(9,4, 35, 10);    // main rotor  
-        helicopterBuffer1.fillOval(0,7, 7,7);       // stabiliser rotor
+        helicopterBuffer1.fillOval(9,4, 35, 10);    
+        helicopterBuffer1.fillOval(0,7, 7,7);       
         helicopterBuffer1.setColor(Color.GREEN);
-        helicopterBuffer1.drawLine(22,23,33,23);    // substructure - railing
+        helicopterBuffer1.drawLine(22,23,33,23);    
 
         helicopterImage2 = new BufferedImage(52, 28, BufferedImage.TYPE_INT_ARGB);
         Graphics2D helicopterBuffer2 = helicopterImage2.createGraphics();
 
         AffineTransform transform = helicopterBuffer2.getTransform();
-        // we use helicopterImage1 as original and just flip it 12 degrees
+        
         transform.rotate(Math.toRadians(-12), 26, 14);
         helicopterBuffer2.setTransform(transform);
         helicopterBuffer2.drawImage(helicopterImage1, 2, 2, null);
@@ -117,12 +117,12 @@ public class I4Kopter extends Applet {
         int ocounter = 0;
         obstacles = new Point[ backgroundLength / widthBar ];
 
-        // dummy obstacles
+        
         for(int i =0; i < this.w; i += widthBar){
             obstacles[ocounter++] = new Point(-1,-1);
         }
 
-        // welcome screen
+        
         BufferedImage heading = new BufferedImage(100,50, BufferedImage.TYPE_INT_RGB);
         Graphics2D headingG = heading.createGraphics();
         headingG.setColor(Color.BLACK);
@@ -146,7 +146,7 @@ public class I4Kopter extends Applet {
 
             obstacles[ocounter++] = new Point(currentY, -1);
 
-            // add obstacle every 17 bar
+            
             if(ocounter % 17 == 0){
                 int middleOffset = random.nextInt(pathHeight - currentY) + currentY;
                 backgroundBuffer.setColor(Color.YELLOW);
@@ -159,12 +159,12 @@ public class I4Kopter extends Applet {
             }
         }
 
-        // dummy obstacles
+        
         for(int i = (backgroundLength - (2*this.w)); i < backgroundLength; i += widthBar){
             obstacles[ocounter++] = new Point(-1,-1);
         }
 
-        // the end screen..
+        
         heading = new BufferedImage(200, 50, BufferedImage.TYPE_INT_RGB);
         headingG = heading.createGraphics();
         headingG.setColor(Color.BLACK);
@@ -175,7 +175,7 @@ public class I4Kopter extends Applet {
 
         /* ******* end draw background ********* */
 
-        // outer loop
+        
         while(true){
             speed = 0.0;
             gravity = 1.6;
@@ -191,28 +191,28 @@ public class I4Kopter extends Applet {
 
     boolean collides(int bufferOffset, BufferedImage image){
 
-        // calculate which obstacle we can hit
+        
 
         int i = (bufferOffset+heliX) /widthBar + 1;
 
-        // obstacle is dummy
+        
         if(obstacles[i].x == -1 || obstacles[i+1].x == -1){ return false; }
 
-        // obstacle[?].x is offset of top rock, so if we are
-        // below this value, we crash into rock at top of screen
+        
+        
         if(heliY < obstacles[i].x || heliY < obstacles[i+1].x)
         { return true ;}
 
         int imageHeight = image.getHeight();
         int imageWidth  = image.getWidth();
 
-        // we crash into bottom rock if we are beyond this threshold
+        
         if(heliY + imageHeight > obstacles[i].x + pathHeight ||
            heliY + imageHeight > obstacles[i+1].x + pathHeight)
         { return true; }
 
-        // we can also crash with middle rock if our picture intersects with
-        // middle obstacle, and it exists naturally :-)
+        
+        
         if(obstacles[i].y != -1 || obstacles[i+1].y != -1){
             Rectangle copter = new Rectangle(heliX, heliY, imageWidth, imageHeight);
             Rectangle oRectangle;
@@ -258,13 +258,13 @@ public class I4Kopter extends Applet {
                     bufferGraphics.drawImage(backgroundImage,0,0,this.w,this.h,
                                              offset, 0, (offset + this.w),this.h, null);
 
-                    updateHeliY(); // pull from gravitation vs. chopper
+                    updateHeliY(); 
 
-                    bufferGraphics.setClip(heliX, heliY, 57, 57); // enough place for chopper
+                    bufferGraphics.setClip(heliX, heliY, 57, 57); 
 
-                    tmp = (keyPressed)? helicopterImage2 : helicopterImage1; //(keyPressed)?up:down
+                    tmp = (keyPressed)? helicopterImage2 : helicopterImage1; 
 
-                    if(collides(offset, tmp)){ // we have collided draw explosion
+                    if(collides(offset, tmp)){ 
 
                         int oldOffset, newOffset;
 
@@ -279,33 +279,33 @@ public class I4Kopter extends Applet {
                             frameGraphics.dispose();
                         }
 
-                        offset = maxLen*2; // will force game to end..
+                        offset = maxLen*2; 
 
-                        continue;  // jump to end of loop
+                        continue;  
 
                     }else{
 
-                        bufferGraphics.drawImage(tmp, heliX, heliY, null);// draw one of our choppers
+                        bufferGraphics.drawImage(tmp, heliX, heliY, null);
 
                     }
                     
                     frameGraphics = this.getGraphics();
                     frameGraphics.drawImage(bufferImage,0,0,this.w,this.h, this);
 
-                    //flip it
+                    
                     frameGraphics.dispose();
 
                     if(offset == 0){ paused = true;}
 
                     offset += dx;
-                    lasted += 49; // well...
+                    lasted += 49; 
                 }
                 try{
                     Thread.sleep(40);
                 }catch(Exception ex){}
                 
             }
-            // increase level
+            
             dx++;
             gravity += .17;
             levelLength += 2*this.w;
@@ -325,7 +325,7 @@ public class I4Kopter extends Applet {
             keyPressed=false;
         }
 
-        // space will pause the game
+        
         if(k.getKeyChar() == ' '){
             paused = true;
         }

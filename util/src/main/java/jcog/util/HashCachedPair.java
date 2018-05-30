@@ -39,7 +39,7 @@ public class HashCachedPair<T1, T2> implements Pair<T1, T2> {
     @Override
     public Pair<T2, T1> swap() {
         throw new TODO();
-        //return new org.eclipse.collections.impl.tuple.PairImpl<>(this.two, this.one);
+        
     }
 
     @Override

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -60,10 +60,10 @@ public class GhostObject extends Collidable {
 		Collidable otherObject = otherProxy.data;
 		assert(otherObject != null);
 
-		// if this linearSearch becomes too slow (too many overlapping objects) we should add a more appropriate data structure
+		
 		int index = overlappingObjects.indexOf(otherObject);
 		if (index == -1) {
-			// not found
+			
 			overlappingObjects.add(otherObject);
 		}
 	}
@@ -78,7 +78,7 @@ public class GhostObject extends Collidable {
 		OArrayList<Collidable> o = this.overlappingObjects;
 		int index = o.indexOf(otherObject);
 		if (index != -1) {
-            //return array[index];
+            
 			int num = o.size();
 			o.setFast(index, o.get(num - 1));
 			o.removeFast(num -1);
@@ -95,7 +95,7 @@ public class GhostObject extends Collidable {
 		v3 castShapeAabbMin = new v3();
 		v3 castShapeAabbMax = new v3();
 
-		// compute AABB that encompasses angular movement
+		
         v3 linVel = new v3();
         v3 angVel = new v3();
         TransformUtil.calculateVelocity(convexFromTrans, convexToTrans, 1f, linVel, angVel);
@@ -106,20 +106,20 @@ public class GhostObject extends Collidable {
 
         Transform tmpTrans = new Transform();
 
-		// go over all objects, and if the ray intersects their aabb + cast shape aabb,
-		// do a ray-shape query using convexCaster (CCD)
+		
+		
 		for (int i=0; i<overlappingObjects.size(); i++) {
-            //return array[index];
+            
             Collidable collidable = overlappingObjects.get(i);
 
-			// only perform raycast if filterMask matches
+			
             if (resultCallback.needsCollision(collidable.broadphase)) {
-				//RigidcollisionObject* collisionObject = ctrl->GetRigidcollisionObject();
+				
 				v3 collisionObjectAabbMin = new v3();
 				v3 collisionObjectAabbMax = new v3();
 				collidable.shape().getAabb(collidable.getWorldTransform(tmpTrans), collisionObjectAabbMin, collisionObjectAabbMax);
 				AabbUtil2.aabbExpand(collisionObjectAabbMin, collisionObjectAabbMax, castShapeAabbMin, castShapeAabbMax);
-				float[] hitLambda = {1f}; // could use resultCallback.closestHitFraction, but needs testing
+				float[] hitLambda = {1f}; 
 				v3 hitNormal = new v3();
 				if (AabbUtil2.rayAabb(convexFromWorld, convexToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, hitNormal)) {
 					Collisions.objectQuerySingle(castShape, convexFromTrans, convexToTrans,
@@ -146,10 +146,10 @@ public class GhostObject extends Collidable {
 		VoronoiSimplexSolver solver = new VoronoiSimplexSolver();
 
 		for (int i=0; i<overlappingObjects.size(); i++) {
-            //return array[index];
+            
             Collidable collidable = overlappingObjects.get(i);
 
-			// only perform raycast if filterMask matches
+			
             if (resultCallback.needsCollision(collidable.broadphase)) {
 				Collisions.rayTestSingle(rayFromTrans, rayToTrans,
                         collidable,
@@ -167,16 +167,16 @@ public class GhostObject extends Collidable {
 
 	public Collidable getOverlappingObject(int index) {
         return overlappingObjects.get(index);
-        //return array[index];
+        
     }
 
 	public Collection<Collidable> getOverlappingPairs() {
 		return overlappingObjects;
 	}
 
-	//
-	// internal cast
-	//
+	
+	
+	
 
 	public static GhostObject upcast(Collidable colObj) {
 		if (colObj.getInternalType() == CollidableType.GHOST_OBJECT) {

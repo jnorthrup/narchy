@@ -106,17 +106,17 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
     }
 
 
-//    /**
-//     * Constructs and initializes an AxisAngle4f from the specified AxisAngle4d.
-//     *
-//     * @param a1 the AxisAngle4d containing the initialization x y z angle data
-//     */
-//    public AxisAngle4f(AxisAngle4d a1) {
-//        this.x = (float) a1.x;
-//        this.y = (float) a1.y;
-//        this.z = (float) a1.z;
-//        this.angle = (float) a1.angle;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -188,18 +188,18 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
         this.angle = a1.angle;
     }
 
-//
-//    /**
-//     * Sets the value of this axis-angle to the value of axis-angle a1.
-//     *
-//     * @param a1 the axis-angle to be copied
-//     */
-//    public final void set(AxisAngle4d a1) {
-//        this.x = (float) a1.x;
-//        this.y = (float) a1.y;
-//        this.z = (float) a1.z;
-//        this.angle = (float) a1.angle;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -235,32 +235,32 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
     }
 
 
-//    /**
-//     * Sets the value of this axis-angle to the rotational equivalent
-//     * of the passed quaternion.
-//     * If the specified quaternion has no rotational component, the value
-//     * of this AxisAngle4f is set to an angle of 0 about an axis of (0,1,0).
-//     *
-//     * @param q1 the Quat4f
-//     */
-//    public final void set(Quat4f q1) {
-//        double mag = q1.x * q1.x + q1.y * q1.y + q1.z * q1.z;
-//
-//        if (mag > EPS) {
-//            mag = Math.sqrt(mag);
-//            double invMag = 1.0 / mag;
-//
-//            x = (float) (q1.x * invMag);
-//            y = (float) (q1.y * invMag);
-//            z = (float) (q1.z * invMag);
-//            angle = (float) (2.0 * Math.atan2(mag, q1.w));
-//        } else {
-//            x = 0.0f;
-//            y = 1.0f;
-//            z = 0.0f;
-//            angle = 0.0f;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Sets the value of this axis-angle to the rotational equivalent
      * of the passed quaternion.
@@ -291,154 +291,154 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
         }
     }
 
-//    /**
-//     * Sets the value of this axis-angle to the rotational equivalent
-//     * of the passed quaternion.
-//     * If the specified quaternion has no rotational component, the value
-//     * of this AxisAngle4f is set to an angle of 0 about an axis of (0,1,0).
-//     *
-//     * @param q1 the Quat4d
-//     */
-//    public final void set(Quat4d q1) {
-//        double mag = q1.x * q1.x + q1.y * q1.y + q1.z * q1.z;
-//
-//        if (mag > EPS) {
-//            mag = Math.sqrt(mag);
-//            double invMag = 1.0 / mag;
-//
-//            x = (float) (q1.x * invMag);
-//            y = (float) (q1.y * invMag);
-//            z = (float) (q1.z * invMag);
-//            angle = (float) (2.0 * Math.atan2(mag, q1.w));
-//        } else {
-//            x = 0.0f;
-//            y = 1.0f;
-//            z = 0.0f;
-//            angle = 0.0f;
-//        }
-//    }
 
 
-//    /**
-//     * Sets the value of this axis-angle to the rotational component of
-//     * the passed matrix.
-//     * If the specified matrix has no rotational component, the value
-//     * of this AxisAngle4f is set to an angle of 0 about an axis of (0,1,0).
-//     *
-//     * @param m1 the matrix4f
-//     * @param m3f
-//     */
-//    @Deprecated public final void set(Matrix4f m1, Matrix3f m3f) {
-//        m1.get(m3f);
-//        set(m3f);
-//    }
 
 
-//    /**
-//     * Sets the value of this axis-angle to the rotational component of
-//     * the passed matrix.
-//     * If the specified matrix has no rotational component, the value
-//     * of this AxisAngle4f is set to an angle of 0 about an axis of (0,1,0).
-//     *
-//     * @param m1 the matrix4d
-//     */
-//    public final void set(Matrix4d m1) {
-//        Matrix3d m3d = new Matrix3d();
-//
-//        m1.get(m3d);
-//
-//
-//        x = (float) (m3d.m21 - m3d.m12);
-//        y = (float) (m3d.m02 - m3d.m20);
-//        z = (float) (m3d.m10 - m3d.m01);
-//        double mag = x * x + y * y + z * z;
-//
-//        if (mag > EPS) {
-//            mag = Math.sqrt(mag);
-//            double sin = 0.5 * mag;
-//            double cos = 0.5 * (m3d.m00 + m3d.m11 + m3d.m22 - 1.0);
-//            angle = (float) Math.atan2(sin, cos);
-//
-//            double invMag = 1.0 / mag;
-//            x = (float) (x * invMag);
-//            y = (float) (y * invMag);
-//            z = (float) (z * invMag);
-//        } else {
-//            x = 0.0f;
-//            y = 1.0f;
-//            z = 0.0f;
-//            angle = 0.0f;
-//        }
-//
-//    }
-//
 
-//    /**
-//     * Sets the value of this axis-angle to the rotational component of
-//     * the passed matrix.
-//     * If the specified matrix has no rotational component, the value
-//     * of this AxisAngle4f is set to an angle of 0 about an axis of (0,1,0).
-//     *
-//     * @param m1 the matrix3f
-//     */
-//    public final void set(Matrix3f m1) {
-//        x = m1.m21 - m1.m12;
-//        y = m1.m02 - m1.m20;
-//        z = m1.m10 - m1.m01;
-//        float mag = x * x + y * y + z * z;
-//        if (mag > EPS) {
-//            mag = (float) Math.sqrt(mag);
-//            double sin = 0.5 * mag;
-//            double cos = 0.5 * (m1.m00 + m1.m11 + m1.m22 - 1.0);
-//
-//            angle = (float) Math.atan2(sin, cos);
-//
-//            double invMag = 1.0 / mag;
-//            x = (float) (x * invMag);
-//            y = (float) (y * invMag);
-//            z = (float) (z * invMag);
-//        } else {
-//            x = 0.0f;
-//            y = 1.0f;
-//            z = 0.0f;
-//            angle = 0.0f;
-//        }
-//
-//    }
 
-//    /**
-//     * Sets the value of this axis-angle to the rotational component of
-//     * the passed matrix.
-//     * If the specified matrix has no rotational component, the value
-//     * of this AxisAngle4f is set to an angle of 0 about an axis of (0,1,0).
-//     *
-//     * @param m1 the matrix3d
-//     */
-//    public final void set(Matrix3d m1) {
-//
-//        x = (float) (m1.m21 - m1.m12);
-//        y = (float) (m1.m02 - m1.m20);
-//        z = (float) (m1.m10 - m1.m01);
-//        double mag = x * x + y * y + z * z;
-//
-//        if (mag > EPS) {
-//            mag = Math.sqrt(mag);
-//            double sin = 0.5 * mag;
-//            double cos = 0.5 * (m1.m00 + m1.m11 + m1.m22 - 1.0);
-//
-//            angle = (float) Math.atan2(sin, cos);
-//
-//            double invMag = 1.0 / mag;
-//            x = (float) (x * invMag);
-//            y = (float) (y * invMag);
-//            z = (float) (z * invMag);
-//        } else {
-//            x = 0.0f;
-//            y = 1.0f;
-//            z = 0.0f;
-//            angle = 0.0f;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -543,11 +543,11 @@ public class AxisAngle4f implements java.io.Serializable, Cloneable {
      */
     @Override
     public Object clone() {
-        // Since there are no arrays we can just use Object.clone()
+        
         try {
             return super.clone();
         } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
+            
             throw new InternalError();
         }
     }

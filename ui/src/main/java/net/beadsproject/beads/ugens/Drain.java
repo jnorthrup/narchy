@@ -23,7 +23,7 @@ public class Drain extends UGen {
         /**
          * The audio data.
          */
-        float[][] audioData;    //assumes audio data has already been windowed
+        float[][] audioData;    
 
         /**
          * The position.

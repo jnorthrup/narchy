@@ -35,13 +35,13 @@ public class ShowAssignmentCommand {
 		Variable x = new Variable("x");
 		x.unify(new NumberFact(0));
 
-		// *(x, 10.0)
+		
 		ArithmeticOperator op1 = new ArithmeticOperator('*', x, new NumberFact(10));
 
-		// +(*(x, 10.0), 1.0)
+		
 		ArithmeticOperator op2 = new ArithmeticOperator('+', op1, new NumberFact(1));
 
-		// #(x, +(*(x, 10.0), 1.0))
+		
 		AssignmentCommand ac = new AssignmentCommand(new Evaluation(x, op2));
 
 		ForCommand f = new ForCommand(new Variable("i"), 1, 4, ac);

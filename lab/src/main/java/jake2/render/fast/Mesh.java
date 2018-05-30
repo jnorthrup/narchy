@@ -44,7 +44,7 @@ import java.nio.ShortBuffer;
  */
 public abstract class Mesh extends Light {
 
-    // g_mesh.c: triangle model functions
+    
     /*
      * =============================================================
      *
@@ -53,7 +53,7 @@ public abstract class Mesh extends Light {
      * =============================================================
      */
 
-    //static final int NUMVERTEXNORMALS = 162;
+    
 
     final float[][] r_avertexnormals = Anorms.VERTEXNORMALS;
 
@@ -61,7 +61,7 @@ public abstract class Mesh extends Light {
 
     final float[] shadelight = {0, 0, 0};
 
-    // precalculated dot products for quantized angles
+    
     static final int SHADEDOT_QUANT = 16;
 
     final float[][] r_avertexnormal_dots = Anorms.VERTEXNORMAL_DOTS;
@@ -81,10 +81,10 @@ public abstract class Mesh extends Light {
     void GL_LerpVerts(int nverts, int[] ov, int[] v, float[] move,
                       float[] frontv, float[] backv) {
         FloatBuffer lerp = vertexArrayBuf;
-        lerp.limit((nverts << 2) - nverts); // nverts * 3
+        lerp.limit((nverts << 2) - nverts); 
 
         int ovv, vv;
-        // PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
+        
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
@@ -131,15 +131,15 @@ public abstract class Mesh extends Light {
 
     float[] tmpVec = {0, 0, 0};
 
-    final float[][] vectors = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0} // 3 mal vec3_t
+    final float[][] vectors = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0} 
     };
 
-    // stack variable
-    private final float[] move = {0, 0, 0}; // vec3_t
+    
+    private final float[] move = {0, 0, 0}; 
 
-    private final float[] frontv = {0, 0, 0}; // vec3_t
+    private final float[] frontv = {0, 0, 0}; 
 
-    private final float[] backv = {0, 0, 0}; // vec3_t
+    private final float[] backv = {0, 0, 0}; 
 
     /**
      * GL_DrawAliasFrameLerp
@@ -162,7 +162,7 @@ public abstract class Mesh extends Light {
         else
             alpha = 1.0f;
 
-        // PMM - added double shell
+        
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
@@ -170,7 +170,7 @@ public abstract class Mesh extends Light {
 
         float frontlerp = 1.0f - backlerp;
 
-        // move should be the delta back to the previous frame * backlerp
+        
         Math3D.VectorSubtract(currententity.oldorigin, currententity.origin,
                 frontv);
         float[][] vectors = this.vectors;
@@ -178,9 +178,9 @@ public abstract class Mesh extends Light {
                 vectors[2]);
 
         float[] move = this.move;
-        move[0] = Math3D.DotProduct(frontv, vectors[0]); // forward
-        move[1] = -Math3D.DotProduct(frontv, vectors[1]); // left
-        move[2] = Math3D.DotProduct(frontv, vectors[2]); // up
+        move[0] = Math3D.DotProduct(frontv, vectors[0]); 
+        move[1] = -Math3D.DotProduct(frontv, vectors[1]); 
+        move[2] = Math3D.DotProduct(frontv, vectors[2]); 
 
         Math3D.VectorAdd(move, oldframe.translate, move);
 
@@ -195,14 +195,14 @@ public abstract class Mesh extends Light {
             backv[i] = backlerp * oldScale[i];
         }
 
-        // ab hier wird optimiert
+        
 
         GL_LerpVerts(paliashdr.num_xyz, ov, verts, move, frontv, backv);
 
         gl.glEnableClientState(GL_VERTEX_ARRAY);
         gl.glVertexPointer(3, 0, vertexArrayBuf);
 
-        // PMM - added double damage shell
+        
         float[] shadelight = this.shadelight;
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
@@ -212,9 +212,9 @@ public abstract class Mesh extends Light {
             gl.glEnableClientState(GL_COLOR_ARRAY);
             gl.glColorPointer(4, 0, colorArrayBuf);
 
-            //
-            // pre light everything
-            //
+            
+            
+            
             FloatBuffer color = colorArrayBuf;
             float l;
             int size = paliashdr.num_xyz;
@@ -249,10 +249,10 @@ public abstract class Mesh extends Light {
         int size = counts.length;
         for (int j = 0; j < size; j++) {
 
-            // get the vertex count and primitive type
+            
             count = counts[j];
             if (count == 0)
-                break; // done
+                break; 
 
             srcIndexBuf = paliashdr.indexElements[j];
 
@@ -275,7 +275,7 @@ public abstract class Mesh extends Light {
             pos += count;
         }
 
-        // PMM - added double damage shell
+        
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
@@ -297,14 +297,14 @@ public abstract class Mesh extends Light {
         int orderIndex = 0;
         int index = 0;
 
-        // TODO shadow drawing with vertex arrays
+        
 
         int count;
         while (true) {
-            // get the vertex count and primitive type
+            
             count = order[orderIndex++];
             if (count == 0)
-                break; // done
+                break; 
             if (count < 0) {
                 count = -count;
                 gl.glBegin(GL_TRIANGLE_FAN);
@@ -330,8 +330,8 @@ public abstract class Mesh extends Light {
         }
     }
 
-    // TODO sync with jogl renderer. hoz
-    // stack variable
+    
+    
     private final float[] mins = {0, 0, 0};
 
     private final float[] maxs = {0, 0, 0};
@@ -425,7 +425,7 @@ public abstract class Mesh extends Light {
         }
 
         int f, mask;
-        int aggregatemask = ~0; // 0xFFFFFFFF
+        int aggregatemask = ~0; 
 
         for (int p = 0; p < 8; p++) {
             mask = 0;
@@ -445,11 +445,11 @@ public abstract class Mesh extends Light {
 
     }
 
-    // bounding box
+    
     final float[][] bbox = {{0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0},
             {0, 0, 0}, {0, 0, 0}, {0, 0, 0}, {0, 0, 0}};
 
-    // TODO sync with jogl renderer. hoz
+    
 
     /**
      * R_DrawAliasModel
@@ -468,13 +468,13 @@ public abstract class Mesh extends Light {
 
         qfiles.dmdl_t paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
 
-        //
-        // get lighting information
-        //
-        // PMM - rewrote, reordered to handle new shells & mixing
-        // PMM - 3.20 code .. replaced with original way of doing it to keep mod
-        // authors happy
-        //
+        
+        
+        
+        
+        
+        
+        
         int i;
         if ((currententity.flags & (Defines.RF_SHELL_HALF_DAM
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_RED
@@ -501,11 +501,11 @@ public abstract class Mesh extends Light {
         } else {
             R_LightPoint(currententity.origin, shadelight);
 
-            // player lighting hack for communication back to server
-            // big hack!
+            
+            
             if ((currententity.flags & Defines.RF_WEAPONMODEL) != 0) {
-                // pick the greatest component, which should be the same
-                // as the mono value returned by software
+                
+                
                 if (shadelight[0] > shadelight[1]) {
                     if (shadelight[0] > shadelight[2])
                         r_lightlevel.value = 150 * shadelight[0];
@@ -544,9 +544,9 @@ public abstract class Mesh extends Light {
             }
         }
 
-        if ((currententity.flags & Defines.RF_GLOW) != 0) { // bonus items
-            // will pulse
-            // with time
+        if ((currententity.flags & Defines.RF_GLOW) != 0) { 
+            
+            
             float scale;
             float min;
 
@@ -559,16 +559,16 @@ public abstract class Mesh extends Light {
             }
         }
 
-        // =================
-        // PGM ir goggles color override
+        
+        
         if ((r_newrefdef.rdflags & Defines.RDF_IRGOGGLES) != 0
                 && (currententity.flags & Defines.RF_IR_VISIBLE) != 0) {
             shadelight[0] = 1.0f;
             shadelight[1] = 0.0f;
             shadelight[2] = 0.0f;
         }
-        // PGM
-        // =================
+        
+        
 
         shadedots = r_avertexnormal_dots[((int) (currententity.angles[1] * (SHADEDOT_QUANT / 360.0)))
                 & (SHADEDOT_QUANT - 1)];
@@ -579,21 +579,21 @@ public abstract class Mesh extends Light {
         shadevector[2] = 1;
         Math3D.VectorNormalize(shadevector);
 
-        //
-        // locate the proper data
-        //
+        
+        
+        
 
         c_alias_polys += paliashdr.num_tris;
 
-        //
-        // draw all the triangles
-        //
-        if ((currententity.flags & Defines.RF_DEPTHHACK) != 0) // hack the
-            // depth range
-            // to prevent
-            // view model
-            // from poking
-            // into walls
+        
+        
+        
+        if ((currententity.flags & Defines.RF_DEPTHHACK) != 0) 
+            
+            
+            
+            
+            
             gl.glDepthRange(gldepthmin, gldepthmin + 0.3
                     * (gldepthmax - gldepthmin));
 
@@ -611,14 +611,14 @@ public abstract class Mesh extends Light {
         }
 
         gl.glPushMatrix();
-        e.angles[PITCH] = -e.angles[PITCH]; // sigh.
+        e.angles[PITCH] = -e.angles[PITCH]; 
         R_RotateForEntity(e);
-        e.angles[PITCH] = -e.angles[PITCH]; // sigh.
+        e.angles[PITCH] = -e.angles[PITCH]; 
 
         image_t skin;
-        // select skin
+        
         if (currententity.skin != null)
-            skin = currententity.skin; // custom player skin
+            skin = currententity.skin; 
         else {
             if (currententity.skinnum >= qfiles.MAX_MD2SKINS)
                 skin = currentmodel.skins[0];
@@ -629,10 +629,10 @@ public abstract class Mesh extends Light {
             }
         }
         if (skin == null)
-            skin = r_notexture; // fallback...
+            skin = r_notexture; 
         GL_Bind(skin.texnum);
 
-        // draw it
+        
 
         gl.glShadeModel(GL_SMOOTH);
 

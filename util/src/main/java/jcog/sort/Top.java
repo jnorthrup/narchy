@@ -26,7 +26,7 @@ public class Top<T> implements Consumer<T> {
         accept(x, rank.floatValueOf(x));
     }
     public void accept(T x, float override) {
-        if (override==override && override >= score) { //note: >=
+        if (override==override && override >= score) { 
             the = x;
             score = override;
         }

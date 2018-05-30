@@ -1,4 +1,4 @@
-///Wurde ge�ndert!!!
+
 
 package raytracer.basic;
 
@@ -63,11 +63,11 @@ public class Intersection
 		return ray.org;
 	}
 
-	// Textures:
+	
 	/* returns the (u,v) texture coordinates */
-	//Vector2d getTexCoord();
+	
 	/* Returns the tangent on the surface in the u direction */
-	//Vector3d getDu();
+	
 	/* Returns the tangent on the surface in the v direction */
-	//Vector3d getDv();
+	
 }

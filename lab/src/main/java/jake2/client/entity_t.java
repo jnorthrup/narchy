@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: entity_t.java,v 1.2 2005-01-16 13:56:49 cawe Exp $
+
+
 
 package jake2.client;
 
@@ -27,35 +27,35 @@ import jake2.render.image_t;
 import jake2.render.model_t;
 import jake2.util.Math3D;
 
-// ok!
+
 public class entity_t implements Cloneable{
-	//ptr
-	public model_t model; // opaque type outside refresh
+	
+	public model_t model; 
 	public float angles[] = { 0, 0, 0 };
 
 	/*
 	** most recent data
 	*/
-	public float origin[] = { 0, 0, 0 }; // also used as RF_BEAM's "from"
-	public int frame; // also used as RF_BEAM's diameter
+	public float origin[] = { 0, 0, 0 }; 
+	public int frame; 
 
 	/*
 	** previous data for lerping
 	*/
-	public final float[] oldorigin = { 0, 0, 0 }; // also used as RF_BEAM's "to"
+	public final float[] oldorigin = { 0, 0, 0 }; 
 	public int oldframe;
 
 	/*
 	** misc
 	*/
-	public float backlerp; // 0.0 = current, 1.0 = old
-	public int skinnum; // also used as RF_BEAM's palette index
+	public float backlerp; 
+	public int skinnum; 
 
-	public int lightstyle; // for flashing entities
-	public float alpha; // ignore if RF_TRANSLUCENT isn't set
+	public int lightstyle; 
+	public float alpha; 
 
-	// reference
-	public image_t skin; // NULL for inline skin
+	
+	public image_t skin; 
 	public int flags;
 	
 	

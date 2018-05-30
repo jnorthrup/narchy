@@ -40,12 +40,12 @@ public class TheoryFilter {
             PJProlog p = new PJProlog();        
             p.setTheory(_filter);
             p.addTheory(base_filter);
-            //System.out.println(p.getTheory());
-            //p.setTheory(p.getTheory());
-            //System.out.println(goal.marshal());
+            
+            
+            
             PrologSolution<?,?> sol = p.solve(goal);
             List<Term<?>> res = sol.getTerm("X");            
-            //System.out.println("PIPPO="+res);            
+            
             Vector<Clause<?,?>> filtered_clauses = new Vector<>();
             for (Term<?> t : res) {
                 if (t instanceof Compound2 && ((Compound2<Term<?>,Term<?>>)t).getName().equals(":-")) {
@@ -59,12 +59,12 @@ public class TheoryFilter {
         }
         catch (Exception e) {
             e.printStackTrace();
-            //Var<Var<Int>> vvi = null;
-            //Term<Var<Int>> ti3 = null;
-            //Term<? extends Term<Int>> ti = null;
-            //Int i = null;
-            //ti = i;
-            //ti = vvi;
+            
+            
+            
+            
+            
+            
             return _theory;
         }
     }    

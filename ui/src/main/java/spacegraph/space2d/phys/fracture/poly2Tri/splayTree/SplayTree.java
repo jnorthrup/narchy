@@ -33,7 +33,7 @@ public class SplayTree {
         return root;
     }
 
-    //void SplayTree<T, KeyType>::Insert( const T & x )
+    
     public void insert(SplayTreeItem x) {
 
         BTreeNode newNode = new BTreeNode();
@@ -44,7 +44,7 @@ public class SplayTree {
             size++;
         } else {
             Comparable keys = x.keyValue();
-            while (true) { // to avoid recursion
+            while (true) { 
                 root = splay(keys, root);
                 Comparable rootk = root.keyValue();
                 if (keys.compareTo(rootk) < 0) {
@@ -62,8 +62,8 @@ public class SplayTree {
                     size++;
                     return;
                 } else {
-                    //slight incresed the keyvalue to avoid duplicated keys
-                    //try to insert again (do the loop)
+                    
+                    
                     x.increaseKeyValue(1.0e-10);
                     keys = x.keyValue();
                 }
@@ -71,7 +71,7 @@ public class SplayTree {
         }
     }
 
-    //void Delete( KeyType keys, BTreeNode<T, KeyType>* &res);
+    
     public BTreeNode delete(Comparable keys) {
 
         BTreeNode newTree;
@@ -80,15 +80,15 @@ public class SplayTree {
 
         if (!(root.keyValue()).equals(keys)) {
             return null;
-        } // Item not found; do nothing
+        } 
 
         BTreeNode result = root;
 
         if (root._left == null)
             newTree = root._right;
         else {
-            // Find the maximum in the _left subtree
-            // Splay it to the root; and then attach _right child
+            
+            
             newTree = root._left;
             newTree = splay(keys, newTree);
             newTree._right = root._right;
@@ -124,7 +124,7 @@ public class SplayTree {
         return maxResult;
     }
 
-    //const SplayTree & operator=( const SplayTree & rhs );
+    
     public static SplayTree clone(SplayTree rhs) {
         SplayTree st = new SplayTree();
         st.root = SplayTree.clone(rhs.root);
@@ -145,7 +145,7 @@ public class SplayTree {
      * This function specially designed for polygon Triangulation to
      * find the direct left edge at event vertex;
      */
-    //void FindMaxSmallerThan( const KeyType& keys, BTreeNode<T, KeyType>* &res);
+    
     public BTreeNode findMaxSmallerThan(Comparable keys) {
         if (isEmpty()) return null;
 
@@ -163,18 +163,18 @@ public class SplayTree {
     }
 
 
-    //void InOrder( void(*Visit)(BTreeNode<T,KeyType>*u, double y), double y)
+    
     public void inOrder(SplayTreeAction action, double y) {
         inOrder(action, root, y);
     }
 
 
-    //height of root
+    
     public int height() {
         return height(root);
     }
 
-    //	Height of subtree t;
+    
     public static int height(BTreeNode t) {
         if (t == null) return 0;
         int lh = height(t._left);
@@ -195,8 +195,8 @@ public class SplayTree {
     private static BTreeNode clone(BTreeNode t) {
         if (t == null)
             return null;
-        // TODO ... find out what that means
-        if (t == t._left)  // Cannot test against NULLNode!!!
+        
+        if (t == t._left)  
             return null;
 
         return new BTreeNode(t._data, clone(t._left), clone(t._right));
@@ -211,9 +211,9 @@ public class SplayTree {
     }
 
 
-    // Tree manipulations
+    
 
-    //void rotateWithLeftChild( BTreeNode<T, KeyType> * & k2 ) const;
+    
     private static BTreeNode rotateWithLeftChild(BTreeNode k2) {
         BTreeNode k1 = k2._left;
         k2._left = k1._right;
@@ -221,7 +221,7 @@ public class SplayTree {
         return k1;
     }
 
-    //void rotateWithRightChild( BTreeNode<T, KeyType> * & k1 ) const;
+    
     private static BTreeNode rotateWithRightChild(BTreeNode k1) {
         BTreeNode k2 = k1._right;
         k1._right = k2._left;
@@ -240,7 +240,7 @@ public class SplayTree {
      * @param t
      * @return
      */
-    //void splay( KeyType keys, BTreeNode<T, KeyType> * & t ) const;
+    
     private static BTreeNode splay(Comparable keys, BTreeNode t) {
         BTreeNode _leftTreeMax, _rightTreeMin;
 
@@ -254,7 +254,7 @@ public class SplayTree {
                 if (keys.compareTo(t._left.keyValue()) < 0) t = rotateWithLeftChild(t);
                 if (t._left == null) break;
 
-                // Link Right
+                
                 _rightTreeMin._left = t;
                 _rightTreeMin = t;
                 t = t._left;
@@ -263,7 +263,7 @@ public class SplayTree {
                 if (keys.compareTo(t._right.keyValue()) > 0) t = rotateWithRightChild(t);
                 if (t._right == null) break;
 
-                // Link Left
+                
                 _leftTreeMax._right = t;
                 _leftTreeMax = t;
                 t = t._right;

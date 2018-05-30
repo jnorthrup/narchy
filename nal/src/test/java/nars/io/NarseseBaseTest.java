@@ -63,10 +63,10 @@ public class NarseseBaseTest extends NarseseTest {
         testTruth("%1;.9%", 1f, 0.9f);
         testTruth("%0;0.90%", 0f, 0.9f);
     }
-//    @Test public void testTruthFreqOnly() {
-//        testTruth("%0.0%", 0f, 0.9f);
-//        testTruth("%1.0%", 1f, 0.9f);
-//    }
+
+
+
+
 
     @Test
     public void testIncompleteTask() throws Narsese.NarseseException {
@@ -77,10 +77,10 @@ public class NarseseBaseTest extends NarseseTest {
         assertEquals("a", i.sub(0).toString());
         assertEquals("b", i.sub(1).toString());
         assertEquals('.', t.punc());
-        //assertEquals(Global.DEFAULT_JUDGMENT_PRIORITY, t.getPriority(), 0.001);
-        //assertEquals(Global.DEFAULT_JUDGMENT_DURABILITY, t.getDurability(), 0.001);
+        
+        
         assertEquals(1.0f, t.truth().freq(), 0.001);
-        //assertEquals(Global.DEFAULT_JUDGMENT_CONFIDENCE, t.getTruth().getConfidence(), 0.001);
+        
     }
 
     @Test
@@ -114,8 +114,8 @@ public class NarseseBaseTest extends NarseseTest {
         assertEquals(Op.IMPL, t.op());
 
         assertEquals('.', t.punc());
-        //assertEquals(Global.DEFAULT_JUDGMENT_PRIORITY, t.getPriority(), 0.001);
-        //assertEquals(Global.DEFAULT_JUDGMENT_DURABILITY, t.getDurability(), 0.001);
+        
+        
         assertEquals(0.0f, t.freq(), 0.001);
         assertEquals(0.93f, t.conf(), 0.001);
     }
@@ -168,14 +168,14 @@ public class NarseseBaseTest extends NarseseTest {
 
         testProductABC(pt);
 
-        testProductABC(term("(*,a,b,c)")); //with optional prefix
-        testProductABC(term("(a,b,c)")); //without spaces
-        testProductABC(term("(a, b, c)")); //additional spaces
-        testProductABC(term("(a , b, c)")); //additional spaces
-        testProductABC(term("(a , b , c)")); //additional spaces
-        testProductABC(term("(a ,\tb, c)")); //tab
-        //testProductABC(term("(a b c)")); //without commas
-        //testProductABC(term("(a *  b * c)")); //with multiple (redundant) infix
+        testProductABC(term("(*,a,b,c)")); 
+        testProductABC(term("(a,b,c)")); 
+        testProductABC(term("(a, b, c)")); 
+        testProductABC(term("(a , b, c)")); 
+        testProductABC(term("(a , b , c)")); 
+        testProductABC(term("(a ,\tb, c)")); 
+        
+        
     }
 
     @Test public void testDisjunction() throws Narsese.NarseseException {
@@ -210,7 +210,7 @@ public class NarseseBaseTest extends NarseseTest {
         assertEquals(Op.CONJ, c.op());
         assertEquals(2, c.subs());
         assertEquals(5, c.complexity());
-        assertEquals(Op.INH, c.sub(0).op()); //heavier term on the left
+        assertEquals(Op.INH, c.sub(0).op()); 
     }
 
 
@@ -235,11 +235,11 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     private void testOperationStructure(@NotNull Compound t) {
-        //Term[] aa = Operator.argArray(t);
+        
         Term[] aa = ((Compound) t.sub(0)).arrayClone();
         assertEquals(2, aa.length);
         assertEquals("believe", t.sub(1).toString());
-        //assertEquals("^believe", Operator.operator(t).toString());
+        
         assertEquals("a", aa[0].toString());
         assertEquals("b", aa[1].toString());
     }
@@ -249,7 +249,7 @@ public class NarseseBaseTest extends NarseseTest {
         Term t = term("op()");
         assertNotNull(t);
         assertEquals(Op.INH, t.op(), t.toString());
-        //assertEquals(0, Operator.opArgs((Compound)t).size());
+        
 
         taskParses("op()!");
         taskParses("op( )!");
@@ -314,13 +314,13 @@ public class NarseseBaseTest extends NarseseTest {
         assertEquals(x, a);
         assertEquals(x, y);
 
-        assertNotNull(term("((a,b)-->c)")); //intermediate
-        assertNotNull(term("((a,b) --> c)")); //intermediate
-        assertNotNull(term("<(a,b) --> c>")); //intermediate
-        assertNotNull(term("<a --> (c,d)>")); //intermediate
-        assertNotNull(term("<a-->(c,d)>")); //intermediate
-        assertNotNull(term("(a-->(c,d))")); //intermediate
-        assertNotNull(term("(a --> (c,d))")); //intermediate
+        assertNotNull(term("((a,b)-->c)")); 
+        assertNotNull(term("((a,b) --> c)")); 
+        assertNotNull(term("<(a,b) --> c>")); 
+        assertNotNull(term("<a --> (c,d)>")); 
+        assertNotNull(term("<a-->(c,d)>")); 
+        assertNotNull(term("(a-->(c,d))")); 
+        assertNotNull(term("(a --> (c,d))")); 
 
         Term abcd = term("((a,b) --> (c,d))");
         Term ABCD = term("<(*,a,b) --> (*,c,d)>");
@@ -401,14 +401,14 @@ public class NarseseBaseTest extends NarseseTest {
 
     @Test
     public void testQuoteEscapeBackslash() {
-        //TODO
-        //assertEquals("")
+        
+        
     }
 
     @Test
     public void testFuzzyKeywords() {
-        //definately=certainly, uncertain, doubtful, dubious, maybe, likely, unlikely, never, always, yes, no, sometimes, usually, rarely, etc...
-        //ex: %maybe never%, % doubtful always %, %certainly never%
+        
+        
     }
 
     @Test
@@ -442,14 +442,14 @@ public class NarseseBaseTest extends NarseseTest {
 
     @Test
     public void testNonNegativeIntegerAtoms() throws Narsese.NarseseException {
-        //TODO test parsing to numeric atom types
+        
         Term a = term("1");
         assertEquals("1", a.toString());
     }
 
     @Test
     public void testNegativeIntegerAtoms() throws Narsese.NarseseException {
-        //TODO test parsing to numeric atom types
+        
         Term a = term("-1");
         assertNotNull(a);
         assertEquals("-1", a.toString());
@@ -457,7 +457,7 @@ public class NarseseBaseTest extends NarseseTest {
 
     @Test
     public void testFloatAtom() throws Narsese.NarseseException {
-        //TODO test parsing to numeric atom types
+        
         float f = 1.24f;
         String ff = Float.toString(f);
         Atomic a = term(ff);
@@ -505,37 +505,37 @@ public class NarseseBaseTest extends NarseseTest {
         assertEquals(1, l.size());
     }
 
-//    @Test
-//    public void testLineComment() {
-//        String a = "<a --> b>.\n//comment1234\n<b-->c>.";
-//        List<Task> l = tasks(a);
-//        assertEquals(3, l.size());
-//        Compound op = l.get(1).term();
-//        ensureIsEcho(op);
-//        assertEquals("echo(\"comment1234\")", op.toString());
-//    }
 
-//    protected void ensureIsEcho(@NotNull Compound op) {
-//        //return Atom.the(Utf8.toUtf8(name));
-//
-//        //        int olen = name.length();
-////        switch (olen) {
-////            case 0:
-////                throw new RuntimeException("empty atom name: " + name);
-////
-//////            //re-use short term names
-//////            case 1:
-//////            case 2:
-//////                return theCached(name);
-////
-////            default:
-////                if (olen > Short.MAX_VALUE/2)
-////                    throw new RuntimeException("atom name too long");
-//
-//        //  }
-//        assertEquals("^" + $.the(echo.class.getSimpleName()),
-//                Operator.operator(op).toString());
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Test
@@ -554,15 +554,15 @@ public class NarseseBaseTest extends NarseseTest {
         assertEquals(term("()"), term(" (   )"));
     }
 
-//    @Test
-//    public void testLineComment2() {
-//        String a = "<a --> b>.\n'comment1234\n<b-->c>.";
-//        List<Task> l = tasks(a);
-//        assertEquals(3, l.size());
-//        Operation op = ((Task<Operation>)l.get(1)).getTerm();
-//        ensureIsEcho(op);
-//        assertEquals("[\"comment1234\"]", op.argString());
-//    }
+
+
+
+
+
+
+
+
+
 
 
 }

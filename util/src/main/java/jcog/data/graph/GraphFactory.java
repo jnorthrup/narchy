@@ -33,8 +33,8 @@ public class GraphFactory {
     private GraphFactory() {
     }
 
-// ===================== public static methods ======================
-// ==================================================================
+
+
 
     /**
      * Wires a ring lattice.
@@ -68,7 +68,7 @@ public class GraphFactory {
         return g;
     }
 
-// -------------------------------------------------------------------
+
 
     /**
      * Watts-Strogatz model. A bit modified though: by default assumes a directed
@@ -92,7 +92,7 @@ public class GraphFactory {
      * @return returns g for convenience
      */
     public static Graph wireWS(Graph g, int k, double p, Random r) {
-//XXX unintuitive to call it WS due to the slight mods
+
         final int n = g.size();
         for (int i = 0; i < n; ++i)
             for (int j = -k / 2; j <= k / 2; ++j) {
@@ -100,14 +100,14 @@ public class GraphFactory {
                 int newedge = (i + j + n) % n;
                 if (r.nextDouble() < p) {
                     newedge = r.nextInt(n - 1);
-                    if (newedge >= i) newedge++; // random _other_ node
+                    if (newedge >= i) newedge++; 
                 }
                 g.setEdge(i, newedge);
             }
         return g;
     }
 
-// -------------------------------------------------------------------
+
 
     /**
      * Random graph. Generates randomly k directed edges out of each node.
@@ -145,7 +145,7 @@ public class GraphFactory {
         return g;
     }
 
-// -------------------------------------------------------------------
+
 
     /**
      * A sink star.
@@ -161,7 +161,7 @@ public class GraphFactory {
         return g;
     }
 
-// -------------------------------------------------------------------
+
 
     /**
      * A regular rooted tree.
@@ -178,8 +178,8 @@ public class GraphFactory {
 
         if (k == 0) return g;
         final int n = g.size();
-        int i = 0; // node we wire
-        int j = 1; // next free node to link to
+        int i = 0; 
+        int j = 1; 
         while (j < n) {
             for (int l = 0; l < k && j < n; ++l, ++j) g.setEdge(i, j);
             ++i;
@@ -187,7 +187,7 @@ public class GraphFactory {
         return g;
     }
 
-// -------------------------------------------------------------------
+
 
     /**
      * A hypercube.
@@ -203,7 +203,7 @@ public class GraphFactory {
 
         final int n = g.size();
         if (n <= 1) return g;
-        final int highestone = Integer.highestOneBit(n - 1); // not zero
+        final int highestone = Integer.highestOneBit(n - 1); 
         for (int i = 0; i < n; ++i) {
             int mask = highestone;
             while (mask > 0) {
@@ -216,17 +216,17 @@ public class GraphFactory {
         return g;
     }
 
-// -------------------------------------------------------------------
+
 
     /**
      * This contains the implementation of the Barabasi-Albert model
      * of growing scale free networks. The original model is described in
-     * <a href="http://arxiv.org/abs/cond-mat/0106096">
-     * http://arxiv.org/abs/cond-mat/0106096</a>.
+     * <a href="http:
+     * http:
      * It also works if the graph is directed, in which case the model is a
      * variation of the BA model
-     * described in <a href="http://arxiv.org/pdf/cond-mat/0408391">
-     * http://arxiv.org/pdf/cond-mat/0408391</a>. In both cases, the number of the
+     * described in <a href="http:
+     * http:
      * initial set of nodes is the same as the degree parameter, and no links are
      * added. The first added node is connected to all of the initial nodes,
      * and after that the BA model is used normally.
@@ -241,20 +241,20 @@ public class GraphFactory {
         final int nodes = g.size();
         if (nodes <= k) return g;
 
-        // edge i has ends (ends[2*i],ends[2*i+1])
+        
         int[] ends = new int[2 * k * (nodes - k)];
 
-        // Add initial edges from k to 0,1,...,k-1
+        
         for (int i = 0; i < k; i++) {
             g.setEdge(k, i);
             ends[2 * i] = k;
             ends[2 * i + 1] = i;
         }
 
-        int len = 2 * k; // edges drawn so far is len/2
-        for (int i = k + 1; i < nodes; i++) // over the remaining nodes
+        int len = 2 * k; 
+        for (int i = k + 1; i < nodes; i++) 
         {
-            for (int j = 0; j < k; j++) // over the new edges
+            for (int j = 0; j < k; j++) 
             {
                 int target;
                 do {
@@ -262,9 +262,9 @@ public class GraphFactory {
                     int m = 0;
                     while (m < j && ends[len + 2 * m + 1] != target) ++m;
                     if (m == j) break;
-                    // we don't check in the graph because
-                    // this wire method should accept graphs
-                    // that already have edges.
+                    
+                    
+                    
                 }
                 while (true);
                 g.setEdge(i, target);
@@ -277,20 +277,20 @@ public class GraphFactory {
         return g;
     }
 
-// -------------------------------------------------------------------
+
 /*
 public static void main(String[] pars) {
 	
 	int n = Integer.parseInt(pars[0]);
-	//int k = Integer.parseInt(pars[1]);
+	
 	Graph g = new BitMatrixGraph(n);
 	
-	//wireWS(g,20,.1,new Random());
-	//GraphIO.writeChaco(new UndirectedGraph(g),System.out);
 	
-	//wireScaleFreeBA(g,3,new Random());
-	//wireKOut(g,k,new Random());
-	//wireRegRootedTree(g,k);
+	
+	
+	
+	
+	
 	wireHypercube(g);
 	GraphIO.writeNeighborList(g,System.out);
 }

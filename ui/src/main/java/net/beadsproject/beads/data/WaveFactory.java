@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.data;
 
@@ -26,7 +26,7 @@ public abstract class WaveFactory {
      * The Constant DEFAULT_BUFFER_SIZE.
      */
     public static final int DEFAULT_BUFFER_SIZE = 8192;
-    // A collection of default buffers, initialised for your convenience.
+    
     public static final Tensor SINE = new SineWave().getDefault();
     public static final Tensor SAW = new SawWave().getDefault();
     public static final Tensor SQUARE = new SquareWave().getDefault();

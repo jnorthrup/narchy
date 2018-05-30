@@ -37,23 +37,23 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
         float REFERENCE_DISTANCE = 1;
         float ROLLOFF_FACTOR = 2;
         
-//        float dB = (float)(volume + (20 * (Math.log(1.0 / distSqr) / l10)));
+
         float dB = (float)(volume - 20*Math.log(1 + ROLLOFF_FACTOR*(dist-REFERENCE_DISTANCE)/REFERENCE_DISTANCE )/ l10);
         if (dB != dB) dB = 0;
 
         dB = Math.min(dB, +6);
-//      dB = Math.max(dB, MIN_GAIN);
+
         
         score = dB*priority;
 
-//        double angle = WMath.atan2(y, x);
+
 		
         float p = -x;
         if (p<-1) p = -1;
         if (p>1) p = 1;
 
         pan = p;
-        amplitude = volume / (1.0f + dist); //TODO i added /dist divisor
+        amplitude = volume / (1.0f + dist); 
 
         return isLive();
     }

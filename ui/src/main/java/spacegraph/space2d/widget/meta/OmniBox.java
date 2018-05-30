@@ -71,18 +71,18 @@ public class OmniBox extends Widget {
             }
 
         };
-//        {
-//            @Override
-//            public void doLayout(int dtMS) {
-//                if (size() == 0) {
-//                    divider.split(0);
-//                } else {
-//                    divider.split(0.5f);
-//                    //TODO stretch window?
-//                }
-//                super.doLayout(dtMS);
-//            }
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
         edit = new TextEdit() {
 
             @Override
@@ -112,7 +112,7 @@ public class OmniBox extends Widget {
         content.add(edit.surface().scale(2));
         set(content);
 
-        //content(divider.split(edit.surface().scale(2), results, 0));
+        
     }
 
     abstract public static class Model {
@@ -142,8 +142,8 @@ public class OmniBox extends Widget {
 
             jsAnalyze = js.sourceCodeAnalysis();
 
-            //js.eval("import spacegraph.space2d.widget.meta.OmniBox.*;");
-            //js.eval("void popup(Object x) { " + OmniBox.class.getName() + ".popup(x); }");
+            
+            
         }
 
         @Override
@@ -153,18 +153,18 @@ public class OmniBox extends Widget {
             currentPos = cursorPos;
 
             if (text.isEmpty())
-                return; //though it works , temporary to avoid it clearing after ctrl-enter
+                return; 
 
             Exe.invokeLater(() -> {
                 if (cursorPos!=currentPos || !text.equals(currentText))
-                    return; //text or position changed while this was processing; discard these results
+                    return; 
 
                 List<SourceCodeAnalysis.Suggestion> sugg = jsAnalyze.completionSuggestions(text,
                         cursorPos /* TODO take actual cursor pos */,
                         new int[1]);
 
                 if (cursorPos!=currentPos || !text.equals(currentText))
-                    return; //text or position changed while this was processing; discard these results
+                    return; 
 
                 target.clear();
                 sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).sorted().map(x -> new PushButton(x)).forEach(target::add);
@@ -179,37 +179,37 @@ public class OmniBox extends Widget {
 
             target.clear();
 
-            //t = "popup(" + t + ");";
-            //String nextVar = "next";
-            //"Object " + nextVar + " = " + t + ";"
+            
+            
+            
             String cmd = OmniBox.class.getName() +
                     ".popup(" + Texts.quote(text) + "," + text + ");";
 
             js.eval(cmd).forEach(e -> {
                 logger.info("{}:\n\t{}", text, e);
-//                Snippet es = e.snippet();
-//                if (es instanceof VarSnippet) { //!(es instanceof StatementSnippet) && !(es instanceof ErroneousSnippet)) {
-////                    //Snippet:VariableKey($2)#3-2+2
-////                    //HACK extract variable from toString() WTF
-////                    String ses = es.toString();
-////                    if (ses.startsWith("Snippet:VariableKey(")) {
-////                        String var = ses.substring("Snippet:VariableKey(".length(), ses.indexOf(')'));
-////
-////                        js.eval(OmniBox.class.getName() + ".popup(" + var + ")");
-////
-////                    }
-////                    js.eval(OmniBox.class.getName() + ".popup(next)");
-//
-//                }
-//                Snippet es = e.snippet();
-//                if (es instanceof VarSnippet) {
-//                    js.eval(OmniBox.class.getName() + ".popup(x);");
-//                }
-//                Object v = e.value();
-//                String msg = e + " " + e.causeSnippet() + " " + e.exception();
-//                System.out.println(v + "\n\t" + msg);
-//                //target.add(new Label(msg));
-//                SpaceGraph.window(new Label(msg), 400, 400);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             });
         }
 

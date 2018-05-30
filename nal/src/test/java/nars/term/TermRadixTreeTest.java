@@ -31,11 +31,11 @@ public class TermRadixTreeTest {
         tree.putIfAbsent(s3, (Atomic.the(s3.toString())));
         AbstractBytes s2 = TermBytes.termByVolume($("termutator"));
         tree.putIfAbsent(s2, (Atomic.the(s2.toString())));
-        //tree.print(System.out);
+        
 
         assertNotNull(tree.get(TermBytes.termByVolume($("term"))));
         assertNull(tree.get(TermBytes.termByVolume($("xerm"))));
-        assertNull(tree.get(TermBytes.termByVolume($("te")))); //partial
+        assertNull(tree.get(TermBytes.termByVolume($("te")))); 
 
         AbstractBytes s1 = TermBytes.termByVolume($("term"));
         assertNotNull(tree.putIfAbsent(s1, (Atomic.the(s1.toString()))));
@@ -49,8 +49,8 @@ public class TermRadixTreeTest {
         assertEquals(4, tree.size());
 
 
-//        String stringWithUnicode = "unicode\u00easomething";
-//        assertNull( tree.resolveOrAdd(stringWithUnicode)); //unicode not supported yet
+
+
 
     }
 
@@ -86,15 +86,15 @@ public class TermRadixTreeTest {
             assertNotNull(index.get(x,false));
 
 
-        //Set<Termed> stored = StreamSupport.stream(index.concepts.spliterator(), false).collect(Collectors.toSet());
+        
 
-        //assertEquals(Sets.symmetricDifference(input, stored) + " = difference", input, stored);
+        
 
         index.concepts.prettyPrint();
         index.print(System.out);
 
-//        String stringWithUnicode = "unicode\u00easomething";
-//        assertNull( tree.resolveOrAdd(stringWithUnicode)); //unicode not supported yet
+
+
 
     }
 

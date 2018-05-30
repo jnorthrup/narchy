@@ -21,37 +21,37 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NARTest {
 
 
-//    @Test
-//    public void testEmptyMemoryToJSON() throws IOException, InterruptedException, ClassNotFoundException {
-//        Memory m = NARS.shell().memory;
-//        String j = JSON.omDeep.writeValueAsString(m);
-//        assertTrue(j.length() > 16);
-//
-//        String pretty = JSON.omDeep.writerWithDefaultPrettyPrinter().writeValueAsString(m);
-//        System.out.println(pretty);
-//
-//        assertTrue(pretty.length() > j.length() );
-//    }
-//
-//    @Test
-//    public void testEmptyMemorySerialization() throws IOException, InterruptedException, ClassNotFoundException {
-//        /** empty memory, and serialize it */
-//        Memory m = new Default2(1024,1,1,1).memory;
-//        byte[] bm = m.toBytes();
-//        assertTrue(bm.length > 64);
-//
-//        assertEquals(m, new JBossMarshaller().objectFromByteBuffer(bm) );
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test @Disabled
     public void testMemoryTransplant() throws Narsese.NarseseException {
 
-        //this.activeTasks = activeTasks;
+        
         NAR nar = NARS.tmp();
-        //DefaultAlann nar = new DefaultAlann(m, 32);
+        
 
-        //TextOutput.out(nar);
+        
 
         nar.input("<a-->b>.", "<b-->c>.").run(25);
 
@@ -64,14 +64,14 @@ public class NARTest {
         assertTrue((nc = nar.concepts.size()) > 0);
 
 
-        //a new nar with the same memory is allowed to
-        //take control of it after the first stops
-        //this.activeTasks = activeTasks;
+        
+        
+        
         NAR nar2 = NARS.tmp();
 
         assertTrue(nar.time() > 1);
 
-        //it should have existing concepts
+        
         assertEquals(nc, nar2.concepts.size());
 
 
@@ -95,10 +95,10 @@ public class NARTest {
                 .stopIf(() -> false);
                 n.onCycle(nn -> cycCount.incrementAndGet());
                 n.trace(sw);
-                //.tasks().forEach(System.out::println )
+                
         ;
 
-        //System.out.println(sw.getBuffer());
+        
         assertTrue(sw.toString().length() > 16);
         assertEquals(frames, cycCount.get());
 
@@ -117,19 +117,19 @@ public class NARTest {
 
     }
 
-//
-//    @Test public void testFork() throws Exception {
-//        NAR a = new Default();
-//        a.input("b:a.");
-//        a.input("c:b.");
-//        a.frame(8);
-//
-//        NAR b = a.fork();
-//
-//        assertEquals(a, b);
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testConceptInstancing() throws Narsese.NarseseException {

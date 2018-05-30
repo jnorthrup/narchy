@@ -165,24 +165,24 @@ public class Compiler
    {
       Debug.println(DebugLevel.INFORMATION, "Compile in ", directory.getAbsolutePath());
 
-      // Create the compiler
+      
       final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
-      // Create the list of class to compile
+      
       final ArrayList<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>();
       for(final NameCode code : nameCodes)
       {
          compilationUnits.add(new JavaSourceFromString(code.name, code.code));
       }
 
-      // We create the file manager, and says the directory to use for output
+      
       final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
       UtilIO.createDirectory(directory);
 
       fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(directory));
 
-      // Do the compilation itself
+      
       if(compiler.getTask(null, fileManager, null, null, null, compilationUnits).call() == false)
       {
          throw new RuntimeException("Compilation failed !");
@@ -207,24 +207,24 @@ public class Compiler
 
       Debug.println(DebugLevel.INFORMATION, "Compile in ", directory.getAbsolutePath());
 
-      // Create the compiler
+      
       final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
-      // Create the list of class to compile
+      
       final ArrayList<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>();
       for(final NameCode code : nameCodes)
       {
          compilationUnits.add(new JavaSourceFromString(code.name, code.code));
       }
 
-      // We create the file manager, and says the directory to use for output
+      
       final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
       UtilIO.createDirectory(directory);
 
       fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(directory));
 
-      // Do the compilation itself
+      
       if(compiler.getTask(null, fileManager, null, null, null, compilationUnits).call() == false)
       {
          throw new RuntimeException("Compilation failed !");
@@ -253,21 +253,21 @@ public class Compiler
 
       Debug.println(DebugLevel.INFORMATION, "Compile in ", directory.getAbsolutePath());
 
-      // Create the compiler
+      
       final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 
-      // Create the list of class to compile
+      
       final ArrayList<JavaSourceFromString> compilationUnits = new ArrayList<JavaSourceFromString>();
       compilationUnits.add(new JavaSourceFromString(classCompleteName, code));
 
-      // We create the file manager, and says the directory to use for output
+      
       final StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
 
       UtilIO.createDirectory(directory);
 
       fileManager.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(directory));
 
-      // Do the compilation itself
+      
       if(compiler.getTask(null, fileManager, null, null, null, compilationUnits).call() == false)
       {
          throw new RuntimeException(UtilText.concatenate("Compilation of ", classCompleteName, " failed !"));

@@ -85,7 +85,7 @@ public class QLearningControl<A> implements HordeAgent.ControlLearner<A>, HordeA
 
         public Policy duplicate() {
             throw new RuntimeException("not impl");
-            //return new Greedy(predictor, actions, Utils.clone(toStateAction));
+            
         }
     }
 

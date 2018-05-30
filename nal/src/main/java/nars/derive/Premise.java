@@ -39,14 +39,14 @@ public class Premise {
     public final PriReference<Term> termLink;
     private final int hash;
 
-    //TODO make global param
+    
 
 
 
     public Premise(Task task, PriReference<Term> termLink) {
         super();
-//        if (task.isQuestionOrQuest())
-//            System.out.println(task + " "+ termLink);
+
+
         this.task = task;
         this.termLink = termLink;
         this.hash = Util.hashCombine(task, termLink /* should have same hash as: term()*/);
@@ -59,19 +59,19 @@ public class Premise {
     /** variable types unifiable in premise formation */
     final static int var =
             Op.VAR_QUERY.bit;
-            //Op.VAR_QUERY.bit | Op.VAR_DEP.bit;
-            //Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+            
+            
 
     /**
      * resolve the most relevant belief of a given term/concept
      * <p>
      * patham9 project-eternalize
      * patham9 depending on 4 cases
-     * patham9 https://github.com/opennars/opennars2/blob/a143162a559e55c456381a95530d00fee57037c4/src/nal/deriver/projection_eternalization.clj
+     * patham9 https:
      * sseehh__ ok ill add that in a bit
      * patham9 you need  project-eternalize-to
      * sseehh__ btw i disabled immediate eternalization entirely
-     * patham9 so https://github.com/opennars/opennars2/blob/a143162a559e55c456381a95530d00fee57037c4/src/nal/deriver/projection_eternalization.clj#L31
+     * patham9 so https:
      * patham9 especially try to understand the "temporal temporal" case
      * patham9 its using the result of higher confidence
      * <p>
@@ -105,10 +105,10 @@ public class Premise {
 
                             if (!y.equals(_beliefTerm)) {
                                 unifiedBeliefTerm[0] = y;
-                                return false; //stop
+                                return false; 
                             }
                         }
-                        return true; //keep going
+                        return true; 
                     }, matchTTL);
 
                     u.varSymmetric = false;
@@ -124,11 +124,11 @@ public class Premise {
             }
         }
 
-        //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
+        
         Task belief = match(d, beliefTerm, beliefConceptCanAnswerTaskConcept, unifiedBelief);
 
         if (belief != null) {
-            beliefTerm = belief.term(); //use the belief's actual, possibly-temporalized term
+            beliefTerm = belief.term(); 
         } else {
 
             beliefTerm = beliefTerm.unneg();
@@ -141,15 +141,15 @@ public class Premise {
     }
 
     @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptCanAnswerTaskConcept, boolean unifiedBelief) {
-        //        float timeFocus = n.timeFocus.floatValue();
-//        int fRad = Math.round(Math.max(1,dur * timeFocus));
+        
+
 
         NAR n = d.nar;
 
         Task belief = null;
 
         Concept beliefConcept = beliefTerm.op().conceptualizable ?
-                n.conceptualize(beliefTerm) //conceptualize in case of dynamic concepts
+                n.conceptualize(beliefTerm) 
                 :
                 null;
 
@@ -159,13 +159,13 @@ public class Premise {
                 beliefTerm = beliefConcept.term();
             }
 
-//            long[] focus = n.timeFocus(task.nearestPointInternal(n.time()));
-//            long focusStart = focus[0];
-//            long focusEnd = focus[1];
+
+
+
             long taskStart = Tense.dither(task.start(), n);
             long taskEnd = Tense.dither(task.end(), n);
 
-            if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
+            if (!beliefTerm.hasVarQuery()) { 
 
                 final BeliefTable bb = beliefConcept.beliefs();
                 Predicate<Task> beliefFilter = null;
@@ -177,24 +177,24 @@ public class Premise {
                                         beliefConcept.goals() :
                                         bb;
 
-                        beliefFilter = stampFilter(d); //lazy compute
+                        beliefFilter = stampFilter(d); 
 
                         if (!answerTable.isEmpty()) {
-                            //try task start/end time
+                            
                             Task match = answerTable.answer(taskStart, taskEnd, beliefTerm, beliefFilter, n);
                             if (!validMatch(match)) match = null;
                             if (match == null) {
 
-                                //try current moment
+                                
                                 long[] focus = n.timeFocus();
                                 if (focus[0] != taskStart && focus[1] != taskEnd) {
-                                    //CURRENT MOMENT (stamp filtered)
+                                    
                                     match = answerTable.answer(focus[0], focus[1], beliefTerm, beliefFilter, n);
-                                    if (!validMatch(match)) match = null; //force single
+                                    if (!validMatch(match)) match = null; 
                                 }
 
                                 if (match == null) {
-                                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n); //retry without stamp filter
+                                    match = answerTable.answer(taskStart, taskEnd, beliefTerm, null, n); 
                                     if (!validMatch(match)) match = null;
                                 }
                             }
@@ -202,8 +202,8 @@ public class Premise {
                             if (match != null) {
                                 assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-                                //add the answer to the derived tasks for eventual input
-                                //((NALTask)match).causeMerge(task);
+                                
+                                
                                 d.add(match);
 
                                 if (match.isBelief()) {
@@ -222,27 +222,27 @@ public class Premise {
 
                 if ((belief == null) && !bb.isEmpty()) {
 
-                    if (beliefFilter==null) beliefFilter = stampFilter(d); //lazy compute
+                    if (beliefFilter==null) beliefFilter = stampFilter(d); 
 
 
-                    //TASK'S MOMENT (stamp filtered)
+                    
                     belief = bb.match(taskStart, taskEnd, beliefTerm, beliefFilter, n);
-                    if (!validMatch(belief)) belief = null; //force single
+                    if (!validMatch(belief)) belief = null; 
 
                     if (belief == null) {
 
                         long[] focus = n.timeFocus();
                         if (focus[0] != taskStart && focus[1] != taskEnd) {
-                            //CURRENT MOMENT (stamp filtered)
+                            
                             belief = bb.match(focus[0], focus[1], beliefTerm, beliefFilter, n);
-                            if (!validMatch(belief)) belief = null; //force single
+                            if (!validMatch(belief)) belief = null; 
                         }
                     }
 
                     if (belief == null) {
-                        //TASK's MOMENT (unfiltered)
-                        belief = bb.match(taskStart, taskEnd, beliefTerm, null, n); //retry without stamp filter
-                        if (!validMatch(belief)) belief = null; //force single
+                        
+                        belief = bb.match(taskStart, taskEnd, beliefTerm, null, n); 
+                        if (!validMatch(belief)) belief = null; 
                     }
 
                 }
@@ -263,16 +263,16 @@ public class Premise {
 
     private boolean validMatch(@Nullable Task x) {
         return x != null && !x.isDeleted() && !x.equals(task);
-//        else {
-//            if (x != null) {
-//                boolean reallyEqualWTF = task.equals(x);
-//                throw new RuntimeException(reallyEqualWTF + "=equal - shouldnt happen if stamp overlap filtered");
-//            }
-//        }
+
+
+
+
+
+
     }
 
     private Predicate<Task> stampFilter(Derivation d) {
-        ImmutableLongSet taskStamp = //(d._task !=null && d._task.equals(task)) ? d.taskStamp :
+        ImmutableLongSet taskStamp = 
                 Stamp.toSet(task);
         return t -> !Stamp.overlapsAny(taskStamp, t.stamp());
     }
@@ -293,32 +293,32 @@ public class Premise {
      */
     private void linkVariable(Concept taskConcept, Concept lessConstant, Concept moreConstant) {
 
-        //fraction of the source termlink's budget
-        float pri = termLink.priElseZero(); // * 0.5f;
-        //termLink.priMult(0.5f);
+        
+        float pri = termLink.priElseZero(); 
+        
 
-//        /** creates a tasklink/termlink proportional to the tasklink's priority
-//         *  and inversely proportional to the increase in term complexity of the
-//         *  unified variable.  ie. $x -> (y)  would get a stronger link than  $x -> (y,z)
-//         */
-//        PriReference taskLink = this;
+
+
+
+
+
         Term moreConstantTerm = moreConstant.term();
         Term lessConstantTerm = lessConstant.term();
-//        float pri = taskLink.priElseZero()
-//                * (1f/lessConstantTerm.volume());
-//                //* Util.unitize(lessConstantTerm.complexity() / ((float) moreConstantTerm.complexity()));
-//
-        //share the budget in 2 opposite links: specific -> general & general -> specific
+
+
+
+
+        
         moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2f));
 
         lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2f));
-//        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
+
 
         if (taskConcept!=null)
             taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
-//
-//
-//        //Tasklinks.linkTask(this.task.get(), pri, moreConstant);
+
+
+
 
     }
 
@@ -331,30 +331,30 @@ public class Premise {
     }
 
 
-//    public void merge(Premise incoming) {
-//        //WARNING this isnt thread safe but collisions should be rare
-//
-//        Collection<Concept> target = this.links;
-//        Collection<Concept> add = incoming.links;
-//
-//        if (target == add || add == null)
-//            return; //same or no change
-//
-//        if (target == null || target.isEmpty()) {
-//            this.links = add;
-//            return; //just replace it
-//        }
-//
-//        if (!(target instanceof Set)) {
-//            Set<Concept> merge =
-//                    new HashSet(target.size() + add.size());
-//                    //Collections.newSetFromMap(new ConcurrentHashMap<>(target.size() + add.size()));
-//            merge.addAll(target);
-//            merge.addAll(add);
-//            this.links = merge;
-//        } else {
-//            target.addAll(add);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

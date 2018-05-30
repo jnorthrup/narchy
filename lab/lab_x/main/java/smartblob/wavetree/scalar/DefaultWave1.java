@@ -85,7 +85,7 @@ public class DefaultWave1 implements Wave{
 	}
 
 	protected WaveTree1 getWaveTree1(Wave w){
-		//TODO: be compatible with more types of Wave
+		
 		try{
 			return ((DefaultWave1)w).waveTree;
 		}catch(ClassCastException e){

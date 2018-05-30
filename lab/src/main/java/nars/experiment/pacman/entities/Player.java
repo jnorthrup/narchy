@@ -66,13 +66,13 @@ public class Player extends Entity {
 	
 	public boolean die() {
 		
-//		lives --;
-//		if(lives <= 0) {
-//
-//			PacMan.lose();
-//			return true;
-//
-//		}
+
+
+
+
+
+
+
 		
 		this.x = maze.playerStart().x;
 		this.y = maze.playerStart().y;

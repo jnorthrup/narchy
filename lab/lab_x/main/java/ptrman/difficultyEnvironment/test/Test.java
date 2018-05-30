@@ -37,7 +37,7 @@ public class Test {
         javascriptDescriptor.helperScriptingAccessor = new HelperScriptingAccessor();
         javascriptDescriptor.componentManipulationScriptingAccessor = new ComponentManipulationScriptingAccessor();
 
-        // execute the initialisation script
+        
         final String worldInitialisationScript =
                 "function initializeWorld(environment) {" +
                 "   environmentScriptingAccessor.physics2dCreateWorld();" +
@@ -50,7 +50,7 @@ public class Test {
                 "function spawn() {" +
                 "   var resultEntity = environmentScriptingAccessor.createNewEntity(helperScriptingAccessor.create2dArrayRealVector(0.0, 0.0));\n" +
 
-                "   // create physics body of a rover body and set physics parameters\n" +
+                "   
                 "   var verticesPoints = helperScriptingAccessor.createList();\n" +
                 "   verticesPoints.add(helperScriptingAccessor.create2dArrayRealVector(3.0, 0.0));\n" +
                 "   verticesPoints.add(helperScriptingAccessor.create2dArrayRealVector(-1.0, 2.0));\n" +
@@ -58,7 +58,7 @@ public class Test {
 
                 "   var linearDamping = 0.9;\n" +
                 "   var angularDamping = 0.6;\n" +
-                "   var restitution = 0.9; // bounciness\n" +
+                "   var restitution = 0.9; 
                 "   var friction = 0.5;\n" +
                 "   var mass = 5.0;\n" +
                 "   var static = false;\n" +
@@ -66,17 +66,17 @@ public class Test {
                 "   resultEntity.physics2dBody = environmentScriptingAccessor.physics2dCreateBodyWithShape(static, position, verticesPoints, linearDamping, angularDamping, mass, restitution, friction);\n" +
 
                         "   " +
-                //        "var eventList = helperScriptingAccessor.createList();" +
-                //        "eventList.add(componentManipulationScriptingAccessor.createExecuteJavascriptAnimationEventWithScriptString(\"function animationEvent(entityDescriptor) {environmentScriptingAccessor.physics2dApplyForce(helperScriptingAccessor.create2dArrayRealVector(100.0, 0.0));}\"));" +
-                //        "" +
-                //        "resultEntity.components.add(componentManipulationScriptingAccessor.createAnimationComponent(eventList));" +
+                
+                
+                
+                
 
                 "   var physicsComponent = componentManipulationScriptingAccessor.createTopDownViewWheeledPhysicsComponent(8.0, 0.44 * 0.25);" +
                 "   resultEntity.components.addComponent(physicsComponent);\n" +
 
-                //"   var spawnScript = \"\";\n" +
-                //"   var frameInteractionScript = \"function frameInteraction(entityDescriptor) {   var wheeledPhysicsComponent = entityDescriptor.components.getComponentByName(\\\"TopDownViewWheeledPhysicsComponent\\\"); wheeledPhysicsComponent.thrust(0.0, 1.0);      }\";\n" +
-                //"   resultEntity.components.addComponent(componentManipulationScriptingAccessor.createJavascriptComponentWithScriptString(spawnScript, frameInteractionScript));\n" +
+                
+                
+                
 
                 "   var controllerComponent = componentManipulationScriptingAccessor.createTopDownViewWheeledControllerComponent(1.0);" +
                 "   controllerComponent.physicsComponent = physicsComponent;" +
@@ -98,12 +98,12 @@ public class Test {
 
 
 
-        // spawn testboxes manually
+        
         final List<ArrayRealVector> boxPositions = RandomSampler.sample(new ArrayRealVector(new double[]{10.0, 10.0}), 10);
         for( final ArrayRealVector boxPosition : boxPositions ) {
             EntityDescriptor createdEntity = javascriptDescriptor.environmentScriptingAccessor.createNewEntity(javascriptDescriptor.helperScriptingAccessor.create2dArrayRealVector(0.0f, 0.0f));
 
-            // create physics body of a rover body and set physics parameters
+            
             List verticesPoints = javascriptDescriptor.helperScriptingAccessor.createList();
             verticesPoints.add(javascriptDescriptor.helperScriptingAccessor.create2dArrayRealVector(-.5f, 0.5f));
             verticesPoints.add(javascriptDescriptor.helperScriptingAccessor.create2dArrayRealVector(0.5f, 0.5f));
@@ -145,7 +145,7 @@ public class Test {
         config.setAccumBlueBits(8);
 
         config.setNumSamples(1);
-        //config.setBackgroundOpaque(false);
+        
 
         JoglPanel panel = new JoglPanel(environment.physicsWorld2d, debugDraw, null, config);
 
@@ -171,7 +171,7 @@ public class Test {
                 }
             }
 
-            // draw
+            
             SwingUtilities.invokeLater(drawerRunnable);
 
             try {

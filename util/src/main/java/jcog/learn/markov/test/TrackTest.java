@@ -44,7 +44,7 @@ public class TrackTest {
             seq = MidiSystem.getSequence(f);
             fmt = MidiSystem.getMidiFileFormat(f);
         } catch (InvalidMidiDataException | IOException e1) {
-            // TODO Auto-generated catch block
+            
             e1.printStackTrace();
             System.exit(1);
         }
@@ -56,7 +56,7 @@ public class TrackTest {
         for (int i = 30; i <= 35; i++) {
             MarkovMIDI track = new MarkovMIDI(i);
             try {
-//				track.learnSequence(seq,fmt);
+
                 track.learnTrack(tracks[1], fmt);
                 System.out.printf("Writing output-%d.mid...\n", i);
                 track.exportTrack(String.format("output-%d.mid", i), fmt.getDivisionType(), fmt.getResolution(), fmt.getType(), tracks[1].size());
@@ -64,12 +64,12 @@ public class TrackTest {
             } catch (OutOfMemoryError e) {
                 System.err.println("\tFAIL");
                 File error = new File("error-" + i + ".txt");
-//                try {
-//                    track.exportXML(error);
-//                } catch (FileNotFoundException e1) {
-//                    // TODO Auto-generated catch block
-//                    e1.printStackTrace();
-//                }
+
+
+
+
+
+
                 e.printStackTrace();
             }
         }

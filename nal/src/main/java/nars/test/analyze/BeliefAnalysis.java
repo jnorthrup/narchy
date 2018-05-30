@@ -98,7 +98,7 @@ public class BeliefAnalysis implements Termed {
 		System.out.println((beliefOrGoal ? "Beliefs" : "Goals") + "[@" + nar.time() + "] " + table.size()
 				+ '/' + table.capacity());
 		table.print(System.out);
-		//System.out.println();
+		
 	}
 
 	public int size(boolean beliefOrGoal) {

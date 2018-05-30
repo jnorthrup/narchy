@@ -27,7 +27,7 @@ public class QuerySpider extends NARService {
                 AdjGraph<Term, Float> g = spider(nar, t, 3);
                 g.nodes.keysView().takeWhile(r -> {
                     new UnifySubst(null, nar, (z) -> {
-                        //TODO
+                        
                         return true;
                     }, Param.TTL_MIN).unify(tt, r.v, true);
                     return true;

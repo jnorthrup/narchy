@@ -18,8 +18,8 @@ public interface Table<K,V> extends Iterable<V> {
     int size();
 
 
-//    void setOnRemoval(Consumer<V> onRemoval);
-//    Consumer<V> getOnRemoval();
+
+
 
     default void delete() {
 
@@ -39,12 +39,12 @@ public interface Table<K,V> extends Iterable<V> {
     }
 
 
-//    default void top(/*@NotNull*/ Consumer<V> each) {
-//        topWhile(e -> {
-//            each.accept(e);
-//            return true;
-//        });
-//    }
+
+
+
+
+
+
 
 
 

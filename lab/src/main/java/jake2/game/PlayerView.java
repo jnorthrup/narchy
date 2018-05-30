@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 28.12.2003 by RST.
-// $Id: PlayerView.java,v 1.5 2005-12-27 21:02:30 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -82,7 +82,7 @@ public class PlayerView {
 
         client = player.client;
 
-        // flash the backgrounds behind the status numbers
+        
         client.ps.stats[Defines.STAT_FLASHES] = 0;
         if (client.damage_blood != 0)
             client.ps.stats[Defines.STAT_FLASHES] |= 1;
@@ -91,13 +91,13 @@ public class PlayerView {
                 && (client.invincible_framenum <= GameBase.level.framenum))
             client.ps.stats[Defines.STAT_FLASHES] |= 2;
 
-        // total points of damage shot at the player this frame
+        
         count = (client.damage_blood + client.damage_armor + client.damage_parmor);
 
         if (count == 0)
-            return; // didn't take any damage
+            return; 
 
-        // start a pain animation if still in the player model
+        
         if ((client.anim_priority < Defines.ANIM_PAIN)
                 & (player.s.modelindex == 255)) {
             client.anim_priority = Defines.ANIM_PAIN;
@@ -126,9 +126,9 @@ public class PlayerView {
 
         realcount = count;
         if (count < 10)
-            count = 10; // always make a visible effect
+            count = 10; 
 
-        // play an apropriate pain sound
+        
         if ((GameBase.level.time > player.pain_debounce_time)
                 && 0 == (player.flags & Defines.FL_GODMODE)
                 && (client.invincible_framenum <= GameBase.level.framenum)) {
@@ -147,18 +147,18 @@ public class PlayerView {
                     Defines.ATTN_NORM, 0);
         }
 
-        // the total alpha of the blend is always proportional to count
+        
         if (client.damage_alpha < 0)
             client.damage_alpha = 0;
         client.damage_alpha += count * 0.01f;
         if (client.damage_alpha < 0.2f)
             client.damage_alpha = 0.2f;
         if (client.damage_alpha > 0.6f)
-            client.damage_alpha = 0.6f; // don't go too saturated
+            client.damage_alpha = 0.6f; 
 
-        // the color of the blend will vary based on how much was absorbed
-        // by different armors
-        //
+        
+        
+        
         
         Math3D.VectorClear(v);
         if (client.damage_parmor != 0)
@@ -174,12 +174,12 @@ public class PlayerView {
                     v);
         Math3D.VectorCopy(v, client.damage_blend);
 
-        //
-        // calculate view angle kicks
-        //
+        
+        
+        
         kick = Math.abs(client.damage_knockback);
-        if (kick != 0 && player.health > 0) // kick of 0 means no view adjust at
-                                            // all
+        if (kick != 0 && player.health > 0) 
+                                            
         {
             kick = kick * 100 / player.health;
 
@@ -200,9 +200,9 @@ public class PlayerView {
             client.v_dmg_time = GameBase.level.time + Defines.DAMAGE_TIME;
         }
 
-        //
-        // clear totals
-        //
+        
+        
+        
         client.damage_blood = 0;
         client.damage_armor = 0;
         client.damage_parmor = 0;
@@ -225,10 +225,10 @@ public class PlayerView {
         float delta;
         float[] v = { 0, 0, 0 };
 
-        // base angles
+        
         angles = ent.client.ps.kick_angles;
 
-        // if dead, fix the angle and don't add any kick
+        
         if (ent.deadflag != 0) {
             Math3D.VectorClear(angles);
 
@@ -237,10 +237,10 @@ public class PlayerView {
             ent.client.ps.viewangles[Defines.YAW] = ent.client.killer_yaw;
         } else {
         	
-            // add angles based on weapon kick
+            
             Math3D.VectorCopy(ent.client.kick_angles, angles);
 
-            // add angles based on damage kick
+            
             ratio = (ent.client.v_dmg_time - GameBase.level.time)
                     / Defines.DAMAGE_TIME;
             if (ratio < 0) {
@@ -251,60 +251,60 @@ public class PlayerView {
             angles[Defines.PITCH] += ratio * ent.client.v_dmg_pitch;
             angles[Defines.ROLL] += ratio * ent.client.v_dmg_roll;
 
-            // add pitch based on fall kick
+            
             ratio = (ent.client.fall_time - GameBase.level.time)
                     / Defines.FALL_TIME;
             if (ratio < 0)
                 ratio = 0;
             angles[Defines.PITCH] += ratio * ent.client.fall_value;
 
-            // add angles based on velocity
+            
             delta = Math3D.DotProduct(ent.velocity, forward);
             angles[Defines.PITCH] += delta * GameBase.run_pitch.value;
 
             delta = Math3D.DotProduct(ent.velocity, right);
             angles[Defines.ROLL] += delta * GameBase.run_roll.value;
 
-            // add angles based on bob
+            
             delta = bobfracsin * GameBase.bob_pitch.value * xyspeed;
             if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
-                delta *= 6; // crouching
+                delta *= 6; 
             angles[Defines.PITCH] += delta;
             delta = bobfracsin * GameBase.bob_roll.value * xyspeed;
             if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
-                delta *= 6; // crouching
+                delta *= 6; 
             if ((bobcycle & 1) != 0)
                 delta = -delta;
             angles[Defines.ROLL] += delta;
         }
 
-        // base origin
+        
         Math3D.VectorClear(v);
 
-        // add view height
+        
         v[2] += ent.viewheight;
 
-        // add fall height
+        
         ratio = (ent.client.fall_time - GameBase.level.time)
                 / Defines.FALL_TIME;
         if (ratio < 0)
             ratio = 0;
         v[2] -= ratio * ent.client.fall_value * 0.4;
 
-        // add bob height
+        
         bob = bobfracsin * xyspeed * GameBase.bob_up.value;
         if (bob > 6)
             bob = 6;
         
-        //gi.DebugGraph (bob *2, 255);
+        
         v[2] += bob;
 
-        // add kick offset
+        
 
         Math3D.VectorAdd(v, ent.client.kick_origin, v);
 
-        // absolutely bound offsets
-        // so the view can never be outside the player box
+        
+        
 
         if (v[0] < -14)
             v[0] = -14;
@@ -329,7 +329,7 @@ public class PlayerView {
         int i;
         float delta;
 
-        // gun angles from bobbing
+        
         ent.client.ps.gunangles[Defines.ROLL] = xyspeed * bobfracsin * 0.005f;
         ent.client.ps.gunangles[Defines.YAW] = xyspeed * bobfracsin * 0.01f;
         if ((bobcycle & 1) != 0) {
@@ -339,7 +339,7 @@ public class PlayerView {
 
         ent.client.ps.gunangles[Defines.PITCH] = xyspeed * bobfracsin * 0.005f;
 
-        // gun angles from delta movement
+        
         for (i = 0; i < 3; i++) {
             delta = ent.client.oldviewangles[i] - ent.client.ps.viewangles[i];
             if (delta > 180)
@@ -355,11 +355,11 @@ public class PlayerView {
             ent.client.ps.gunangles[i] += 0.2 * delta;
         }
 
-        // gun height
+        
         Math3D.VectorClear(ent.client.ps.gunoffset);
-        //	ent.ps.gunorigin[2] += bob;
+        
 
-        // gun_x / gun_y / gun_z are development tools
+        
         for (i = 0; i < 3; i++) {
             ent.client.ps.gunoffset[i] += forward[i] * (GameBase.gun_y.value);
             ent.client.ps.gunoffset[i] += right[i] * GameBase.gun_x.value;
@@ -376,8 +376,8 @@ public class PlayerView {
 
         if (a <= 0)
             return;
-        a2 = v_blend[3] + (1 - v_blend[3]) * a; // new total alpha
-        a3 = v_blend[3] / a2; // fraction of color from old
+        a2 = v_blend[3] + (1 - v_blend[3]) * a; 
+        a3 = v_blend[3] / a2; 
 
         v_blend[0] = v_blend[0] * a3 + r * (1 - a3);
         v_blend[1] = v_blend[1] * a3 + g * (1 - a3);
@@ -395,7 +395,7 @@ public class PlayerView {
 
         ent.client.ps.blend[0] = ent.client.ps.blend[1] = ent.client.ps.blend[2] = ent.client.ps.blend[3] = 0;
 
-        // add for contents
+        
         Math3D.VectorAdd(ent.s.origin, ent.client.ps.viewoffset, vieworg);
         contents = GameBase.gi.pointcontents.pointcontents(vieworg);
         if ((contents & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME | Defines.CONTENTS_WATER)) != 0)
@@ -410,17 +410,17 @@ public class PlayerView {
         else if ((contents & Defines.CONTENTS_WATER) != 0)
             SV_AddBlend(0.5f, 0.3f, 0.2f, 0.4f, ent.client.ps.blend);
 
-        // add for powerups
+        
         if (ent.client.quad_framenum > GameBase.level.framenum) {
             remaining = (int) (ent.client.quad_framenum - GameBase.level.framenum);
-            if (remaining == 30) // beginning to fade
+            if (remaining == 30) 
                 game_import_t.sound(ent, Defines.CHAN_ITEM,
                 	game_import_t.soundindex("items/damage2.wav"), 1, Defines.ATTN_NORM, 0);
             if (remaining > 30 || (remaining & 4) != 0)
                 SV_AddBlend(0, 0, 1, 0.08f, ent.client.ps.blend);
         } else if (ent.client.invincible_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.invincible_framenum - GameBase.level.framenum;
-            if (remaining == 30) // beginning to fade
+            if (remaining == 30) 
                 game_import_t.sound(ent, Defines.CHAN_ITEM,
                 	game_import_t.soundindex("items/protect2.wav"), 1, Defines.ATTN_NORM, 0);
             if (remaining > 30 || (remaining & 4) != 0)
@@ -428,7 +428,7 @@ public class PlayerView {
         } else if (ent.client.enviro_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.enviro_framenum
                     - GameBase.level.framenum;
-            if (remaining == 30) // beginning to fade
+            if (remaining == 30) 
                 game_import_t.sound(ent, Defines.CHAN_ITEM,
                 		game_import_t.soundindex("items/airout.wav"), 1, Defines.ATTN_NORM, 0);
             if (remaining > 30 || (remaining & 4) != 0)
@@ -436,7 +436,7 @@ public class PlayerView {
         } else if (ent.client.breather_framenum > GameBase.level.framenum) {
             remaining = (int) ent.client.breather_framenum
                     - GameBase.level.framenum;
-            if (remaining == 30) // beginning to fade
+            if (remaining == 30) 
                 game_import_t.sound(ent, Defines.CHAN_ITEM, game_import_t
                         .soundindex("items/airout.wav"), 1, Defines.ATTN_NORM,
                         0);
@@ -444,7 +444,7 @@ public class PlayerView {
                 SV_AddBlend(0.4f, 1, 0.4f, 0.04f, ent.client.ps.blend);
         }
 
-        // add for damage
+        
         if (ent.client.damage_alpha > 0)
             SV_AddBlend(ent.client.damage_blend[0], ent.client.damage_blend[1],
                     ent.client.damage_blend[2], ent.client.damage_alpha,
@@ -454,12 +454,12 @@ public class PlayerView {
             SV_AddBlend(0.85f, 0.7f, 0.3f, ent.client.bonus_alpha,
                     ent.client.ps.blend);
 
-        // drop the damage value
+        
         ent.client.damage_alpha -= 0.06;
         if (ent.client.damage_alpha < 0)
             ent.client.damage_alpha = 0;
 
-        // drop the bonus value
+        
         ent.client.bonus_alpha -= 0.1;
         if (ent.client.bonus_alpha < 0)
             ent.client.bonus_alpha = 0;
@@ -474,7 +474,7 @@ public class PlayerView {
         float[] dir = { 0, 0, 0 };
 
         if (ent.s.modelindex != 255)
-            return; // not in the player model
+            return; 
 
         if (ent.movetype == Defines.MOVETYPE_NOCLIP)
             return;
@@ -490,7 +490,7 @@ public class PlayerView {
         }
         delta = delta * delta * 0.0001f;
 
-        // never take falling damage if completely underwater
+        
         if (ent.waterlevel == 3)
             return;
         if (ent.waterlevel == 2)
@@ -518,8 +518,8 @@ public class PlayerView {
                 else
                     ent.s.event = Defines.EV_FALL;
             }
-            ent.pain_debounce_time = GameBase.level.time; // no normal pain
-                                                          // sound
+            ent.pain_debounce_time = GameBase.level.time; 
+                                                          
             damage = (int) ((delta - 30) / 2);
             if (damage < 1)
                 damage = 1;
@@ -544,8 +544,8 @@ public class PlayerView {
         int waterlevel, old_waterlevel;
 
         if (current_player.movetype == Defines.MOVETYPE_NOCLIP) {
-            current_player.air_finished = GameBase.level.time + 12; // don't
-                                                                    // need air
+            current_player.air_finished = GameBase.level.time + 12; 
+                                                                    
             return;
         }
 
@@ -556,9 +556,9 @@ public class PlayerView {
         breather = current_client.breather_framenum > GameBase.level.framenum;
         envirosuit = current_client.enviro_framenum > GameBase.level.framenum;
 
-        //
-        // if just entered a water volume, play a sound
-        //
+        
+        
+        
         if (old_waterlevel == 0 && waterlevel != 0) {
             PlayerWeapon.PlayerNoise(current_player, current_player.s.origin,
                     Defines.PNOISE_SELF);
@@ -576,13 +576,13 @@ public class PlayerView {
                         Defines.ATTN_NORM, 0);
             current_player.flags |= Defines.FL_INWATER;
 
-            // clear damage_debounce, so the pain sound will play immediately
+            
             current_player.damage_debounce_time = GameBase.level.time - 1;
         }
 
-        //
-        // if just completely exited a water volume, play a sound
-        //
+        
+        
+        
         if (old_waterlevel != 0 && waterlevel == 0) {
             PlayerWeapon.PlayerNoise(current_player, current_player.s.origin,
                     Defines.PNOISE_SELF);
@@ -593,39 +593,39 @@ public class PlayerView {
             current_player.flags &= ~Defines.FL_INWATER;
         }
 
-        //
-        // check for head just going under water
-        //
+        
+        
+        
         if (old_waterlevel != 3 && waterlevel == 3) {
             game_import_t.sound(current_player, Defines.CHAN_BODY, game_import_t
                     .soundindex("player/watr_un.wav"), 1, Defines.ATTN_NORM, 0);
         }
 
-        //
-        // check for head just coming out of water
-        //
+        
+        
+        
         if (old_waterlevel == 3 && waterlevel != 3) {
-            if (current_player.air_finished < GameBase.level.time) { // gasp for
-                                                                     // air
+            if (current_player.air_finished < GameBase.level.time) { 
+                                                                     
                 game_import_t.sound(current_player, Defines.CHAN_VOICE,
                         game_import_t.soundindex("player/gasp1.wav"), 1,
                         Defines.ATTN_NORM, 0);
                 PlayerWeapon.PlayerNoise(current_player, current_player.s.origin,
                         Defines.PNOISE_SELF);
-            } else if (current_player.air_finished < GameBase.level.time + 11) { // just
-                                                                                 // break
-                                                                                 // surface
+            } else if (current_player.air_finished < GameBase.level.time + 11) { 
+                                                                                 
+                                                                                 
                 game_import_t.sound(current_player, Defines.CHAN_VOICE,
                         game_import_t.soundindex("player/gasp2.wav"), 1,
                         Defines.ATTN_NORM, 0);
             }
         }
 
-        //
-        // check for drowning
-        //
+        
+        
+        
         if (waterlevel == 3) {
-            // breather or envirosuit give air
+            
             if (breather || envirosuit) {
                 current_player.air_finished = GameBase.level.time + 10;
 
@@ -641,22 +641,22 @@ public class PlayerView {
                     current_client.breather_sound ^= 1;
                     PlayerWeapon.PlayerNoise(current_player,
                             current_player.s.origin, Defines.PNOISE_SELF);
-                    //FIXME: release a bubble?
+                    
                 }
             }
 
-            // if out of air, start drowning
-            if (current_player.air_finished < GameBase.level.time) { // drown!
+            
+            if (current_player.air_finished < GameBase.level.time) { 
                 if (current_player.client.next_drown_time < GameBase.level.time
                         && current_player.health > 0) {
                     current_player.client.next_drown_time = GameBase.level.time + 1;
 
-                    // take more damage the longer underwater
+                    
                     current_player.dmg += 2;
                     if (current_player.dmg > 15)
                         current_player.dmg = 15;
 
-                    // play a gurp sound instead of a normal pain sound
+                    
                     if (current_player.health <= current_player.dmg)
                         game_import_t.sound(current_player, Defines.CHAN_VOICE,
                                 game_import_t.soundindex("player/drown1.wav"), 1,
@@ -684,9 +684,9 @@ public class PlayerView {
             current_player.dmg = 2;
         }
 
-        //
-        // check for sizzle damage
-        //
+        
+        
+        
         if (waterlevel != 0
                 && 0 != (current_player.watertype & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME))) {
             if ((current_player.watertype & Defines.CONTENTS_LAVA) != 0) {
@@ -704,7 +704,7 @@ public class PlayerView {
                     current_player.pain_debounce_time = GameBase.level.time + 1;
                 }
 
-                if (envirosuit) // take 1/3 damage with envirosuit
+                if (envirosuit) 
                     GameCombat.T_Damage(current_player, GameBase.g_edicts[0],
                             GameBase.g_edicts[0], Globals.vec3_origin,
                             current_player.s.origin, Globals.vec3_origin,
@@ -717,7 +717,7 @@ public class PlayerView {
             }
 
             if ((current_player.watertype & Defines.CONTENTS_SLIME) != 0) {
-                if (!envirosuit) { // no damage from slime with envirosuit
+                if (!envirosuit) { 
                     GameCombat.T_Damage(current_player, GameBase.g_edicts[0],
                             GameBase.g_edicts[0], Globals.vec3_origin,
                             current_player.s.origin, Globals.vec3_origin,
@@ -766,7 +766,7 @@ public class PlayerView {
                 ent.s.effects |= Defines.EF_PENT;
         }
 
-        // show cheaters!!!
+        
         if ((ent.flags & Defines.FL_GODMODE) != 0) {
             ent.s.effects |= Defines.EF_COLOR_SHELL;
             ent.s.renderfx |= (Defines.RF_SHELL_RED | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE);
@@ -801,7 +801,7 @@ public class PlayerView {
             ent.client.pers.helpchanged = 1;
         }
 
-        // help beep (no more than three times)
+        
         if (ent.client.pers.helpchanged != 0
                 && ent.client.pers.helpchanged <= 3
                 && 0 == (GameBase.level.framenum & 63)) {
@@ -838,7 +838,7 @@ public class PlayerView {
         boolean duck, run;
 
         if (ent.s.modelindex != 255)
-            return; // not in the player model
+            return; 
 
         client = ent.client;
 
@@ -846,7 +846,7 @@ public class PlayerView {
         run = xyspeed != 0;
 
         boolean skip = false;
-        // check for stand/duck and stop/go transitions
+        
         if (duck != client.anim_duck
                 && client.anim_priority < Defines.ANIM_DEATH)
             skip = true;
@@ -865,16 +865,16 @@ public class PlayerView {
                     ent.s.frame--;
                     return;
                 }
-            } else if (ent.s.frame < client.anim_end) { // continue an animation
+            } else if (ent.s.frame < client.anim_end) { 
                 ent.s.frame++;
                 return;
             }
 
             if (client.anim_priority == Defines.ANIM_DEATH)
-                return; // stay there
+                return; 
             if (client.anim_priority == Defines.ANIM_JUMP) {
                 if (null == ent.groundentity)
-                    return; // stay there
+                    return; 
                 ent.client.anim_priority = Defines.ANIM_WAVE;
                 ent.s.frame = M_Player.FRAME_jump3;
                 ent.client.anim_end = M_Player.FRAME_jump6;
@@ -882,7 +882,7 @@ public class PlayerView {
             }
         }
 
-        // return to either a running or standing frame
+        
         client.anim_priority = Defines.ANIM_BASIC;
         client.anim_duck = duck;
         client.anim_run = run;
@@ -892,7 +892,7 @@ public class PlayerView {
             if (ent.s.frame != M_Player.FRAME_jump2)
                 ent.s.frame = M_Player.FRAME_jump1;
             client.anim_end = M_Player.FRAME_jump2;
-        } else if (run) { // running
+        } else if (run) { 
             if (duck) {
                 ent.s.frame = M_Player.FRAME_crwalk1;
                 client.anim_end = M_Player.FRAME_crwalk6;
@@ -900,7 +900,7 @@ public class PlayerView {
                 ent.s.frame = M_Player.FRAME_run1;
                 client.anim_end = M_Player.FRAME_run6;
             }
-        } else { // standing
+        } else { 
             if (duck) {
                 ent.s.frame = M_Player.FRAME_crstnd01;
                 client.anim_end = M_Player.FRAME_crstnd19;
@@ -923,25 +923,25 @@ public class PlayerView {
         current_player = ent;
         current_client = ent.client;
 
-        //
-        // If the origin or velocity have changed since ClientThink(),
-        // update the pmove values. This will happen when the client
-        // is pushed by a bmodel or kicked by an explosion.
-        // 
-        // If it wasn't updated here, the view position would lag a frame
-        // behind the body position when pushed -- "sinking into plats"
-        //
+        
+        
+        
+        
+        
+        
+        
+        
         for (i = 0; i < 3; i++) {
             current_client.ps.pmove.origin[i] = (short) (ent.s.origin[i] * 8.0);
             current_client.ps.pmove.velocity[i] = (short) (ent.velocity[i] * 8.0);
         }
 
-        //
-        // If the end of unit layout is displayed, don't give
-        // the player any normal movement attributes
-        //
+        
+        
+        
+        
         if (GameBase.level.intermissiontime != 0) {
-            // FIXME: add view drifting here?
+            
             current_client.ps.blend[3] = 0;
             current_client.ps.fov = 90;
             PlayerHud.G_SetStats(ent);
@@ -950,13 +950,13 @@ public class PlayerView {
 
         Math3D.AngleVectors(ent.client.v_angle, forward, right, up);
 
-        // burn from lava, etc
+        
         P_WorldEffects();
 
-        //
-        // set model angles from view angles so other things in
-        // the world can tell which direction you are looking
-        //
+        
+        
+        
+        
         if (ent.client.v_angle[Defines.PITCH] > 180)
             ent.s.angles[Defines.PITCH] = (-360 + ent.client.v_angle[Defines.PITCH]) / 3;
         else
@@ -965,18 +965,18 @@ public class PlayerView {
         ent.s.angles[Defines.ROLL] = 0;
         ent.s.angles[Defines.ROLL] = SV_CalcRoll(ent.s.angles, ent.velocity) * 4;
 
-        //
-        // calculate speed and cycle to be used for
-        // all cyclic walking effects
-        //
+        
+        
+        
+        
         xyspeed = (float) Math.sqrt(ent.velocity[0] * ent.velocity[0]
                 + ent.velocity[1] * ent.velocity[1]);
 
         if (xyspeed < 5) {
             bobmove = 0;
-            current_client.bobtime = 0; // start at beginning of cycle again
-        } else if (ent.groundentity != null) { // so bobbing only cycles when on
-                                               // ground
+            current_client.bobtime = 0; 
+        } else if (ent.groundentity != null) { 
+                                               
             if (xyspeed > 210)
                 bobmove = 0.25f;
             else if (xyspeed > 100)
@@ -993,26 +993,26 @@ public class PlayerView {
         bobcycle = (int) bobtime;
         bobfracsin = (float) Math.abs(Math.sin(bobtime * Math.PI));
 
-        // detect hitting the floor
+        
         P_FallingDamage(ent);
 
-        // apply all the damage taken this frame
+        
         P_DamageFeedback(ent);
 
-        // determine the view offsets
+        
         SV_CalcViewOffset(ent);
 
-        // determine the gun offsets
+        
         SV_CalcGunOffset(ent);
 
-        // determine the full screen color blend
-        // must be after viewoffset, so eye contents can be
-        // accurately determined
-        // FIXME: with client prediction, the contents
-        // should be determined by the client
+        
+        
+        
+        
+        
         SV_CalcBlend(ent);
 
-        // chase cam stuff
+        
         if (ent.client.resp.spectator)
             PlayerHud.G_SetSpectatorStats(ent);
         else
@@ -1030,11 +1030,11 @@ public class PlayerView {
         Math3D.VectorCopy(ent.velocity, ent.client.oldvelocity);
         Math3D.VectorCopy(ent.client.ps.viewangles, ent.client.oldviewangles);
 
-        // clear weapon kicks
+        
         Math3D.VectorClear(ent.client.kick_origin);
         Math3D.VectorClear(ent.client.kick_angles);
 
-        // if the scoreboard is up, update it
+        
         if (ent.client.showscores && 0 == (GameBase.level.framenum & 31)) {
             PlayerHud.DeathmatchScoreboardMessage(ent, ent.enemy);
             game_import_t.unicast(ent, false);
@@ -1045,9 +1045,9 @@ public class PlayerView {
 
     public static float bobmove;
 
-    public static int bobcycle; // odd cycles are right foot going forward
+    public static int bobcycle; 
 
-    public static float bobfracsin; // sin(bobfrac*M_PI)}
+    public static float bobfracsin; 
 
     private static int xxxi;
 }

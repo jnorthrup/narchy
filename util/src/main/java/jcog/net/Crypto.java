@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.security.*;
 
 /**
- * from https://github.com/apache/incubator-gossip/blob/master/gossip-base/src/main/java/org/apache/gossip/secure/KeyTool.java
+ * from https:
  *
- * https://github.com/apache/incubator-gossip/blob/master/gossip-itest/src/test/java/org/apache/gossip/SignedMessageTest.java
+ * https:
  */
 public class Crypto {
 

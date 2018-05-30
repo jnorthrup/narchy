@@ -1,45 +1,45 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// 1D totalistic rules
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class Rule1DTotal {
 	public static final int MAX_RANGE = 10;
 
-	public boolean isHist; // with history?
-	public boolean isCentr; // use the center (middle) cell?
-	public int iClo; // count of states
-	public int iRng; // range, 1..10
-	public boolean[] rulesS = new boolean[MAX_RANGE * 2 + 2]; // rules for
-																// surviving
-	public boolean[] rulesB = new boolean[MAX_RANGE * 2 + 2]; // rules for birth
+	public boolean isHist; 
+	public boolean isCentr; 
+	public int iClo; 
+	public int iRng; 
+	public boolean[] rulesS = new boolean[MAX_RANGE * 2 + 2]; 
+																
+	public boolean[] rulesB = new boolean[MAX_RANGE * 2 + 2]; 
 
-	// ----------------------------------------------------------------
+	
 	public Rule1DTotal() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
 		int i;
-		isHist = false; // no history
-		iClo = 2; // count of states
-		isCentr = true; // use the center cell
-		iRng = 2; // range, 1..10
+		isHist = false; 
+		iClo = 2; 
+		isCentr = true; 
+		iRng = 2; 
 		for (i = 0; i <= MAX_RANGE * 2 + 1; i++) {
-			rulesS[i] = false; // rules for surviving
-			rulesB[i] = false; // rules for birth
+			rulesS[i] = false; 
+			rulesB[i] = false; 
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
-	// Example: "R6,C25,M1,S1,S4,S7,S8,B0,B3,B5"
+	
+	
+	
 	public void InitFromString(String sStr) {
-		// noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		int iTmp;
@@ -48,30 +48,30 @@ public class Rule1DTotal {
 		st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
-			// System.out.println(sTok);
-			// noinspection IfStatementWithTooManyBranches
+			
+			
 			if (sTok.length() > 0 && sTok.charAt(0) == 'R')
 				iRng = Integer.valueOf(sTok.substring(1));
 			else if (sTok.length() > 0 && sTok.charAt(0) == 'C') {
 				iTmp = Integer.valueOf(sTok.substring(1));
 				if (iTmp >= 3) {
-					isHist = true; // history, get the states count
+					isHist = true; 
 					iClo = iTmp;
 				} else
-					isHist = false; // states count is meaningless
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'M') // center
-																	// cell?
+					isHist = false; 
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'M') 
+																	
 			{
 				isCentr = (Integer.valueOf(sTok.substring(1)) > 0);
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'S') // surviving
-																	// rules
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'S') 
+																	
 			{
 				iTmp = Integer.valueOf(sTok.substring(1));
 				if ((iTmp >= 0) && (iTmp <= MAX_RANGE * 2 + 1)) {
 					rulesS[iTmp] = true;
 				}
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'B') // birth
-																	// rules
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'B') 
+																	
 			{
 				iTmp = Integer.valueOf(sTok.substring(1));
 				if ((iTmp >= 0) && (iTmp <= MAX_RANGE * 2 + 1)) {
@@ -80,49 +80,49 @@ public class Rule1DTotal {
 			}
 			if (!isHist)
 				iClo = 8;
-			Validate(); // now correct parameters
+			Validate(); 
 		}
 	}
 
-	// ----------------------------------------------------------------
-	//
+	
+	
 	public void InitFromPrm(int i_Clo, int i_Rng, boolean is_Hist,
 			boolean is_Centr, boolean[] rules_S, boolean[] rules_B) {
-		isHist = is_Hist; // history
-		iClo = i_Clo; // states
-		isCentr = is_Centr; // use the center (middle) cell
-		iRng = i_Rng; // range, 1..10
-		rulesS = rules_S; // surviving rules
-		rulesB = rules_B; // birth rules
+		isHist = is_Hist; 
+		iClo = i_Clo; 
+		isCentr = is_Centr; 
+		iRng = i_Rng; 
+		rulesS = rules_S; 
+		rulesB = rules_B; 
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the rule string
-	// Example: "R6,C25,M1,S1,S4,S7,S8,B0,B3,B5"
+	
+	
+	
 	public String GetAsString() {
 		String sBff;
 		int i, ih;
 
-		// correct parameters first
+		
 		Validate();
-		// range
+		
 		sBff = 'R' + String.valueOf(iRng);
 
-		// states
+		
 		ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
-		// center cell
+		
 		sBff = sBff + (isCentr ? ",M1" : ",M0");
 
-		// S rules
+		
 		for (i = 0; i <= MAX_RANGE * 2 + 1; i++)
 			if (rulesS[i])
 				sBff = sBff + ",S" + i;
 
-		// B rules
+		
 		for (i = 0; i <= MAX_RANGE * 2 + 1; i++)
 			if (rulesB[i])
 				sBff = sBff + ",B" + i;
@@ -130,9 +130,9 @@ public class Rule1DTotal {
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the Cyclic CA parameters, correct
-	// them if necessary.
+	
+	
+	
 	public void Validate() {
 		int i, iMax;
 
@@ -147,29 +147,29 @@ public class Rule1DTotal {
 			iRng = MAX_RANGE;
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, iCnt;
 		short[] OneRow;
-		int[] xVector = new int[21]; // 0..9, 10, 11..20
-		int ary1DOfs; // margins, used for wrapping
+		int[] xVector = new int[21]; 
+		int ary1DOfs; 
 		int ic;
 
 		ary1DOfs = iRng;
 		OneRow = new short[sizX + 1 + 2 * ary1DOfs];
-		int i1DNextRow; // next row
-		// the next row
+		int i1DNextRow; 
+		
 		i1DNextRow = mjb.i1DLastRow + 1;
 		if (i1DNextRow >= sizY)
 			i1DNextRow = 0;
 
 		for (ic = 0; ic < sizX; ic++)
-			OneRow[ic + ary1DOfs] = crrState[ic][mjb.i1DLastRow]; // original
-																	// line
+			OneRow[ic + ary1DOfs] = crrState[ic][mjb.i1DLastRow]; 
+																	
 		if (isWrap) {
 			for (ic = 1; ic <= ary1DOfs; ic++) {
 				OneRow[ary1DOfs - ic] = OneRow[sizX - 1 - ic + 1];
@@ -177,18 +177,18 @@ public class Rule1DTotal {
 			}
 		}
 
-		for (ic = 0; ic < sizX; ic++) // for the whole row
+		for (ic = 0; ic < sizX; ic++) 
 		{
 			bOldVal = OneRow[ic + ary1DOfs];
-			iCnt = 0; // count of neighbours
-			if (isHist) // with history
+			iCnt = 0; 
+			if (isHist) 
 			{
-				if (bOldVal <= 1) // can survive or be born
+				if (bOldVal <= 1) 
 				{
-					if (isCentr) // the center cell
+					if (isCentr) 
 						if (OneRow[ic + ary1DOfs] == 1)
 							iCnt++;
-					for (i = 1; i <= iRng; i++) // neighbours
+					for (i = 1; i <= iRng; i++) 
 					{
 						if (OneRow[ic - i + ary1DOfs] == 1)
 							iCnt++;
@@ -196,35 +196,35 @@ public class Rule1DTotal {
 							iCnt++;
 					}
 
-					bNewVal = bOldVal; // default - no change
+					bNewVal = bOldVal; 
 
-					// determine the cell status
-					if (bOldVal == 0) // was dead
+					
+					if (bOldVal == 0) 
 					{
-						if (rulesB[iCnt]) // in rules for birth
-							bNewVal = 1; // birth
-					} else // was 1 - alive
+						if (rulesB[iCnt]) 
+							bNewVal = 1; 
+					} else 
 					{
-						if (rulesS[iCnt]) // in rules for surviving
+						if (rulesS[iCnt]) 
 						{
 							bNewVal = 1;
-						} else // isolation or overpopulation
+						} else 
 						{
 							bNewVal = bOldVal < (iClo - 1)
 									? (short) (bOldVal + 1)
 									: 0;
 						}
 					}
-				} else // was older than 1
+				} else 
 				{
 					bNewVal = bOldVal < (iClo - 1) ? (short) (bOldVal + 1) : 0;
 				}
-			} else // no history
+			} else 
 			{
-				if (isCentr) // the center cell
+				if (isCentr) 
 					if (OneRow[ic + ary1DOfs] > 0)
 						iCnt++;
-				for (i = 1; i <= iRng; i++) // neighbours
+				for (i = 1; i <= iRng; i++) 
 				{
 					if (OneRow[ic - i + ary1DOfs] > 0)
 						iCnt++;
@@ -232,33 +232,33 @@ public class Rule1DTotal {
 						iCnt++;
 				}
 
-				bNewVal = bOldVal; // default - no change
+				bNewVal = bOldVal; 
 
-				// determine the cell status
-				if (bOldVal == 0) // was dead
+				
+				if (bOldVal == 0) 
 				{
-					if (rulesB[iCnt]) // rules for birth
+					if (rulesB[iCnt]) 
 						bNewVal = ColoringMethod == 1 ? 1 : (short) (mjb.Cycle
 								% (mjb.StatesCount - 1) + 1);
-				} else // was alive
+				} else 
 				{
-					if (rulesS[iCnt]) // rules for surviving
+					if (rulesS[iCnt]) 
 					{
-						if (ColoringMethod == 1) // standard
+						if (ColoringMethod == 1) 
 						{
 							bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
 						} else {
-							// alternate coloring - cells remain not changed
+							
 						}
 					} else
-						bNewVal = 0; // isolation or overpopulation
+						bNewVal = 0; 
 				}
 			}
 			tmpState[ic][i1DNextRow] = bNewVal;
-		} // for
+		} 
 
-		modCnt = 1; // run forever
-		mjb.i1DLastRow = i1DNextRow; // Done. Advance the last generated row
+		modCnt = 1; 
+		mjb.i1DLastRow = i1DNextRow; 
 
 		return modCnt;
 	}

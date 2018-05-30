@@ -27,7 +27,7 @@ public final class RightBracket extends BranchNode {
 
     @Override
     public Node copy() {
-        return this; // new RightBracket();
+        return this; 
     }
 
     @Override

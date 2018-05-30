@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,9 +56,9 @@ public class DFSearch {
     }
 
     private boolean propagate() {
-        // Propagate the objective only if it is not null.
+        
         boolean feasible = objective == null || objective.propagate();
-        // Propagate the propagators only if the problem is still feasible.
+        
         return feasible && pQueue.propagate();
     }
 
@@ -75,54 +75,54 @@ public class DFSearch {
 
         stats.startTime = System.currentTimeMillis();
 
-        // Return if the root node is unfeasible.
+        
         if (!propagate()) {
             stats.completed = true;
             return stats;
         }
 
-        // Return if the root node is already a solution.
+        
         if (heuristic.booleanValueOf(decisions)) {
             foundSolution(stats);
             stats.completed = true;
             return stats;
         }
 
-        // Save the root state.
+        
         trail.newLevel();
 
-        // Start the search. The search terminates if the stack of decisions
-        // is empty (meaning that the search tree has been entirely explored) or
-        // if the stop condition is met.
+        
+        
+        
         while (!decisions.isEmpty() && !stopCondition.test(stats)) {
             stats.nNodes++;
 
-            // Apply the next decision and propagate. This can result in a failed
-            // node in which case we restore the previous state.
+            
+            
             if (!decisions.removeLast().getAsBoolean() || !propagate()) {
                 stats.nFails++;
                 trail.undoLevel();
                 continue;
             }
 
-            // At this point we know that the new node is not failed and we check
-            // that it is a solution or not.
+            
+            
             if (heuristic.booleanValueOf(decisions)) {
                 foundSolution(stats);
                 trail.undoLevel();
                 continue;
             }
 
-            // The node is neither a failed node or a solution so we continue to
-            // explore the branch.
+            
+            
             trail.newLevel();
         }
 
-        // The search is complete if there's no remaining decisions to be applied.
+        
         stats.completed = decisions.isEmpty();
 
-        // Clear the remaining decisions (if the search is incomplete) and restore
-        // the state of the root node.
+        
+        
         trail.undoAll();
         decisions.clear();
 

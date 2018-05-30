@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -38,17 +38,17 @@ import spacegraph.space3d.phys.Collidable;
  */
 public class Broadphasing {
 
-	// Usually the client CollisionObject or Rigidbody class
+	
 	@Nullable
 	public Collidable data;
 	
-	// TODO: mask
+	
 	public short collisionFilterGroup;
 	public short collisionFilterMask;
 	
 	public Object multiSapParentProxy;
 	
-	public int uid; // uniqueId is introduced for paircache. could get rid of this, by calculating the address offset etc.
+	public int uid; 
 
 
 	protected Broadphasing() {

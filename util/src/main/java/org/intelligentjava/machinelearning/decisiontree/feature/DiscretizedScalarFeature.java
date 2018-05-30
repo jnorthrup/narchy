@@ -37,9 +37,9 @@ public class DiscretizedScalarFeature {
         );
     }
 
-//    public float value() {
-//        return (float) discretizer.centroids[num].getEntry(0);
-//    }
+
+
+
 
     protected int levels() {
         return arity;

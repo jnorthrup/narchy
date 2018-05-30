@@ -46,7 +46,7 @@ public class TabPane extends Splitting {
             ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
                 synchronized(TabPane.this) {
                     {
-                        //Loop.invokeLater(() -> {
+                        
                         if (a) {
                             Surface cx;
                             try {
@@ -60,7 +60,7 @@ public class TabPane extends Splitting {
 
 
                             content.add(created[0] = cx);
-                            split(CONTENT_VISIBLE_SPLIT); //hide empty content area
+                            split(CONTENT_VISIBLE_SPLIT); 
 
                         } else {
 
@@ -69,11 +69,11 @@ public class TabPane extends Splitting {
                                 created[0] = null;
                             }
                             if (content.isEmpty()) {
-                                split(0f); //hide empty content area
+                                split(0f); 
                             }
 
                         }
-                        //});
+                        
                     }
                 }
             };

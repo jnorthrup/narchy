@@ -21,18 +21,18 @@ public class BHUtilsTest {
 		double [] p3 = {7.0,8.0,9.0};
 		_items[2] = new DataPoint(3,2,p3);
 		
-		//System.out.println("Items=" + Arrays.toString(_items));
+		
 		int k = 10;
 		PriorityQueue<HeapItem> heap = new PriorityQueue<>(k, (o1, o2) -> -1 * o1.compareTo(o2));
 		heap.add(new HeapItem(0, 7.2));
 		heap.add(new HeapItem(1, 4.1));
 		heap.add(new HeapItem(2, 5.1));
 
-		//System.out.println("Heap Is:");
-		//System.out.println(heap);
-        //System.out.println();
+		
+		
         
-        // // Gather final results
+        
+        
 		List<DataPoint> results  = new ArrayList<>();
 		List<Double> distances = new ArrayList<>();
 
@@ -102,7 +102,7 @@ public class BHUtilsTest {
 		_items[idx++] = new DataPoint(3,1,p2);
 
 		VpTree.nth_element(_items, 0, 1, 2, new DistanceComparator(_items[1]));
-		//System.out.println("Items:" + Arrays.toString(_items));
+		
 	}
 	
 	@Test
@@ -110,7 +110,7 @@ public class BHUtilsTest {
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		int pivot = 4;
 		VpTree.nth_element(array, 0, pivot, 9);
-		//System.out.println("Items:" + Arrays.toString(array));
+		
 		assertEquals(5,array[pivot]);
 	}
 
@@ -119,7 +119,7 @@ public class BHUtilsTest {
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		int pivot = 1;
 		VpTree.nth_element(array, 0, pivot, 7);
-		//System.out.println("Items:" + Arrays.toString(array));
+		
 		assertEquals(3,array[pivot]);
 	}
 	
@@ -128,7 +128,7 @@ public class BHUtilsTest {
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		int pivot = 1;
 		VpTree.nth_element(array, 0, pivot, 2);
-		//System.out.println("Items:" + Arrays.toString(array));
+		
 		assertEquals(6,array[pivot]);
 	}
 	
@@ -137,7 +137,7 @@ public class BHUtilsTest {
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		int pivot = 4;
 		VpTree.nth_element(array, 0, pivot, 9);
-		//System.out.println("Items:" + Arrays.toString(array));
+		
 		assertEquals(5,array[pivot]);
 	}
 	
@@ -146,7 +146,7 @@ public class BHUtilsTest {
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		int pivot = 2;
 		VpTree.nth_element(array, 0, pivot, 3);
-		//System.out.println("Items:" + Arrays.toString(array));
+		
 		assertEquals(6,array[pivot]);
 	}
 
@@ -155,7 +155,7 @@ public class BHUtilsTest {
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		int pivot = 6;
 		VpTree.nth_element(array, 0, pivot, 8);
-		//System.out.println("Items:" + Arrays.toString(array));
+		
 		assertEquals(7,array[pivot]);
 	}
 	
@@ -164,7 +164,7 @@ public class BHUtilsTest {
 		int [] array = {5, 6, 4, 3, 2, 6, 7, 9, 3};
 		int pivot = 6;
 		VpTree.nth_element(array, 5, pivot, 8);
-		//System.out.println("Items:" + Arrays.toString(array));
+		
 		assertEquals(7,array[pivot]);
 	}
 
@@ -177,12 +177,12 @@ public class BHUtilsTest {
 		for (int i = 0; i < array.length; i++) {
 			heap.add(array[i]);			
 		}
-//		System.out.println(heap);
+
 		int cnt = 0;		
 		int [] result = new int[array.length]; 
 		while(!heap.isEmpty()) {
 			result[cnt++] = heap.remove();
-//			System.out.print(heap.remove() + ", ");
+
 		}
 		int [] expected = {9, 7, 6, 6, 5, 4, 3, 3, 2};
 		assertArrayEquals(expected, result);

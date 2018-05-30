@@ -11,14 +11,14 @@ public interface Intlike extends Atomic {
 
     void forEachInt(IntConsumer c);
 
-//    @Override
-//    default Term eval(TermContext context) {
-//        return this;
-//    }
-//
-//    @Override
-//    default Term evalSafe(TermContext context, int remain) {
-//        return this;
-//    }
+
+
+
+
+
+
+
+
+
 
 }

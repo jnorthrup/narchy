@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 31.10.2003 by RST.
+
 
 package jake2.game;
 
@@ -28,8 +28,8 @@ public class usercmd_t implements Cloneable {
 	public byte buttons;
 	public final short[] angles= new short[3];
 	public short forwardmove, sidemove, upmove;
-	public byte impulse; // remove?
-	public byte lightlevel; // light level the player is standing on
+	public byte impulse; 
+	public byte lightlevel; 
 
 	public void clear() {
 		forwardmove= sidemove= upmove= msec= buttons= impulse= lightlevel= 0;

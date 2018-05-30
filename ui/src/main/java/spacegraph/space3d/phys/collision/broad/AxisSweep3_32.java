@@ -5,7 +5,7 @@
  * Copyright (c) 2006 Simon Hobbs
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -47,7 +47,7 @@ public class AxisSweep3_32 extends AxisSweep3Internal {
 	
 	public AxisSweep3_32(v3 worldAabbMin, v3 worldAabbMax, int maxHandles/* = 1500000*/, OverlappingPairCache pairCache/* = 0*/) {
 		super(worldAabbMin, worldAabbMax, 0xfffffffe, 0x7fffffff, maxHandles, pairCache);
-		// 1 handle is reserved as sentinel
+		
 		assert (maxHandles > 1 && maxHandles < 2147483647);
 	}
 	

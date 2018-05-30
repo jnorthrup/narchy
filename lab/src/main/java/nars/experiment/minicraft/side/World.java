@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -33,7 +33,7 @@ public class World implements java.io.Serializable {
 	private final LightingEngine lightingEngineSun;
 	private final LightingEngine lightingEngineSourceBlocks;
 	
-	// private int[] columnHeights;
+	
 	
 	public World(int width, int height, Random random) {
 		
@@ -41,7 +41,7 @@ public class World implements java.io.Serializable {
 		WorldGenerator.visibility = null;
 		this.spawnLocation = WorldGenerator.playerLocation;
 		tiles = new Tile[width][height];
-		// columnHeights = new int[width];
+		
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < height; j++) {
 				Tile tile = Constants.tileTypes.get(generated[i][j]);
@@ -189,7 +189,7 @@ public class World implements java.io.Serializable {
 		}
 		TileID currentName = tiles[x][y].type.name;
 		
-		TileID[] breakType = null; // hand breakable by all
+		TileID[] breakType = null; 
 		for (TileID element : breakWood) {
 			if (element == currentName) {
 				breakType = breakWood;
@@ -228,8 +228,8 @@ public class World implements java.io.Serializable {
 	}
 	
 	private static double getSpeed(Tool tool) {
-		// if(tool == null)
-		// return 5;
+		
+		
 		if (tool.toolPower == Tool.ToolPower.Wood) {
 			return 3;
 		} else if (tool.toolPower == Tool.ToolPower.Stone) {
@@ -390,8 +390,8 @@ public class World implements java.io.Serializable {
 		
 	}
 	
-	// returns a float in the range [0,1)
-	// 0 is dawn, 0.25 is noon, 0.5 is dusk, 0.75 is midnight
+	
+	
 	public float getTimeOfDay() {
 		return ((float) (ticksAlive % dayLength)) / dayLength;
 	}

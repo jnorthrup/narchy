@@ -4,7 +4,7 @@
  * ShapeHull implemented by John McCutchan.
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -58,8 +58,8 @@ public class ShapeHull {
 
 		MiscUtil.resize(unitSpherePoints, NUM_UNITSPHERE_POINTS+ ConvexShape.MAX_PREFERRED_PENETRATION_DIRECTIONS*2, v3.class);
 		for (int i=0; i<constUnitSpherePoints.size(); i++) {
-            //return array[index];
-            //return array[index];
+            
+            
             unitSpherePoints.get(i).set(constUnitSpherePoints.get(i));
 		}
 	}
@@ -72,7 +72,7 @@ public class ShapeHull {
 		if (numPDA != 0) {
             for (int i=0; i<numPDA; i++) {
                 shape.getPreferredPenetrationDirection(i, norm);
-                //return array[index];
+                
                 unitSpherePoints.get(numSampleDirections).set(norm);
                 numSampleDirections++;
             }
@@ -82,8 +82,8 @@ public class ShapeHull {
 		MiscUtil.resize(supportPoints, NUM_UNITSPHERE_POINTS + ConvexShape.MAX_PREFERRED_PENETRATION_DIRECTIONS * 2, v3.class);
 
 		for (int i=0; i<numSampleDirections; i++) {
-            //return array[index];
-            //return array[index];
+            
+            
             shape.localGetSupportingVertex(unitSpherePoints.get(i), supportPoints.get(i));
 		}
 
@@ -91,13 +91,13 @@ public class ShapeHull {
 		hd.flags = HullFlags.TRIANGLES;
 		hd.vcount = numSampleDirections;
 
-		//#ifdef BT_USE_DOUBLE_PRECISION
-		//hd.mVertices = &supportPoints[0];
-		//hd.mVertexStride = sizeof(btVector3);
-		//#else
+		
+		
+		
+		
 		hd.vertices = supportPoints;
-		//hd.vertexStride = 3 * 4;
-		//#endif
+		
+		
 
 		HullLibrary hl = new HullLibrary();
 		HullResult hr = new HullResult();
@@ -108,8 +108,8 @@ public class ShapeHull {
 		MiscUtil.resize(vertices, hr.numOutputVertices, v3.class);
 
 		for (int i=0; i<hr.numOutputVertices; i++) {
-            //return array[index];
-            //return array[index];
+            
+            
             vertices.get(i).set(hr.outputVertices.get(i));
 		}
 		numIndices = hr.numIndices;
@@ -118,7 +118,7 @@ public class ShapeHull {
 			indices.set(i, hr.indices.get(i));
 		}
 
-		// free temporary hull result that we just copied
+		
 		HullLibrary.releaseResult(hr);
 
 		return true;
@@ -144,7 +144,7 @@ public class ShapeHull {
 		return indices;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	private static final int NUM_UNITSPHERE_POINTS = 42;
 	

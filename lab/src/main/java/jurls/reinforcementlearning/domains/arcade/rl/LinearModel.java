@@ -13,11 +13,11 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.rl;
 
-//import Jama.Matrix;
+
 import java.io.Serializable;
 
 /**
@@ -50,7 +50,7 @@ public class LinearModel implements Serializable, Cloneable {
         this.useBias = useBias;
         this.numFeatures = numFeatures;
 
-        // Initialize weights to 0
+        
         weights = new double[numFeatures];
         bias = 0;
         prediction = 0;
@@ -93,12 +93,12 @@ public class LinearModel implements Serializable, Cloneable {
     public double predict(double[] features) {
         prediction = 0;
 
-        // Dot product
+        
         for (int i = 0; i < features.length; i++) {
             prediction += weights[i] * features[i];
         }
 
-        // Add bias if so desired
+        
         if (useBias)
             prediction += bias;
 
@@ -112,12 +112,12 @@ public class LinearModel implements Serializable, Cloneable {
      * @param delta
      */
     public void updateWeightsDelta(double[] lastFeatures, double delta) {
-        // Update the bias
+        
         if (useBias) {
             bias += alpha * delta;
         }
 
-        // Update other weights
+        
         for (int index = 0; index < lastFeatures.length; index++) {
             double value = lastFeatures[index];
 

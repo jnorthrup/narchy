@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -42,13 +42,13 @@ public abstract class Broadphase {
 
 	public abstract void setAabb(Broadphasing proxy, v3 aabbMin, v3 aabbMax, Intersecter intersecter);
 
-	///calculateOverlappingPairs is optional: incremental algorithms (sweep and prune) might do it during the set aabb
+	
 	public abstract void update(Intersecter intersecter);
 
 	public abstract OverlappingPairCache getOverlappingPairCache();
 	
-	///getAabb returns the axis aligned bounding box in the 'global' coordinate frame
-	///will add some transform later
+	
+	
 	public abstract void getBroadphaseAabb(v3 aabbMin, v3 aabbMax);
 
 	public abstract void printStats();

@@ -15,8 +15,8 @@ public interface Game  {
 	
 	void processAWTEvent(AWTEvent e);
 	
-//	public void updateGame(); 
-//	public void repaintGame(); // TODO override paintComponent() in GamePanel
+
+
 	
 	/*
 	  while(running) {

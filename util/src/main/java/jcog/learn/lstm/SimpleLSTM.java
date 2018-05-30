@@ -27,7 +27,7 @@ public class SimpleLSTM  {
 	private final double [][] weightsG;
 	public final double [][] weightsOut;
 	
-	//partials (Need this for each output? Need to remind myself..)
+	
 	private final double [][] dSdF;
 	private final double [][] dSdG;
 	
@@ -52,7 +52,7 @@ public class SimpleLSTM  {
 		
 		context = new double[cell_blocks];
 		
-		full_input_dimension = input_dimension + cell_blocks + 1; //+1 for bias
+		full_input_dimension = input_dimension + cell_blocks + 1; 
 		
 		F = Neuron.build(neuron_type_F);
 		G = Neuron.build(neuron_type_G);
@@ -84,7 +84,7 @@ public class SimpleLSTM  {
 
 		Arrays.fill(context, 0.0);
 
-		//reset accumulated partials
+		
 		for (int c = 0; c < cell_blocks; c++) {
 			Arrays.fill(this.dSdG[c], 0.0);
 			Arrays.fill(this.dSdF[c], 0.0);
@@ -98,7 +98,7 @@ public class SimpleLSTM  {
 		float scalingFactor = 1f - forgetRate;
 
 		if (scalingFactor >= 1)
-			return; //do nothing
+			return; 
 
 		if (scalingFactor <= 0) {
 			clear();
@@ -125,7 +125,7 @@ public class SimpleLSTM  {
 		final int cell_blocks = this.cell_blocks;
 		final int full_input_dimension = this.full_input_dimension;
 
-		//setup input vector
+		
 
 
 		if ((this.in == null) || (this.in.length != full_input_dimension)) {
@@ -140,10 +140,10 @@ public class SimpleLSTM  {
 		for (int c = 0; c < context.length; ) {
 			full_input[loc++] = context[c++];
 		}
-		full_input[loc++] = 1.0; //bias
+		full_input[loc++] = 1.0; 
 
 
-		//cell block arrays
+		
 		if ((sumF == null) || (sumF.length!=cell_blocks)) {
 			sumF = new double[cell_blocks];
 			actF = new double[cell_blocks];
@@ -154,15 +154,15 @@ public class SimpleLSTM  {
 			out = new double[output_dimension];
 		}
 		else {
-			//Arrays.fill(sumF, (double) 0); //not necessary since it's completely overwritten below
-			//Arrays.fill(actF, (double) 0);   //not necessary since it's completely overwritten below
-			//Arrays.fill(sumG, (double) 0); //not necessary since it's completely overwritten below
-			//Arrays.fill(actG, (double) 0);  //not necessary since it's completely overwritten below
-			//Arrays.fill(actH, (double) 0); //not necessary since it's completely overwritten below
+			
+			
+			
+			
+			
 		}
 		final double[] full_hidden = this.full_hidden;
 
-		//inputs to cell blocks
+		
 		for (int j = 0; j < cell_blocks; j++) {
 			double[] wj = weightsF[j];
 			double[] wg = weightsG[j];
@@ -181,13 +181,13 @@ public class SimpleLSTM  {
 			final double actgj = actG[j] = G.activate(sumG[j]);
 
 
-			//prepare hidden layer plus bias
+			
 			full_hidden[j] = actH[j] = actfj * context[j] + (1.0 - actfj) * actgj;
 		}
 		
-		full_hidden[cell_blocks] = 1.0; //bias in last index
+		full_hidden[cell_blocks] = 1.0; 
 		
-		//calculate output
+		
 		for (int k = 0; k < output_dimension; k++)
 		{
 			double s = 0;
@@ -195,23 +195,23 @@ public class SimpleLSTM  {
 			for (int j = 0; j < cell_blocks + 1; j++)
 				s += wk[j] * full_hidden[j];
 
-			out[k] = s; //output not squashed
+			out[k] = s; 
 		}
 
-		//////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////
-		//BACKPROP
-		//////////////////////////////////////////////////////////////
-		//////////////////////////////////////////////////////////////
 		
-		//scale partials
+		
+		
+		
+		
+		
+		
 		for (int j = 0; j < cell_blocks; j++) {
 			
 			double f = actF[j];
 			double df = F.derivate(sumF[j]);
 			double g = actG[j];
 			double dg = G.derivate(sumG[j]);
-			double h_ = context[j]; //prev value of h
+			double h_ = context[j]; 
 
 			final double[] dsg = dSdG[j];
 			final double[] dsf = dSdF[j];
@@ -229,14 +229,14 @@ public class SimpleLSTM  {
 		
 		if (target_output != null) {
 			
-			//output to hidden
+			
 
 			if ((deltaOut == null) || (deltaOut.length!=output_dimension)) {
 				deltaOut = new double[output_dimension];
 				deltaH = new double[cell_blocks];
 			}
 			else {
-				//Arrays.fill(deltaOutput, (double) 0); //not necessary
+				
 				Arrays.fill(deltaH, (double) 0);
 			}
 
@@ -255,11 +255,11 @@ public class SimpleLSTM  {
 					wk[j] += dok * ah[j] * learningRate;
 				}
 
-				//bias
+				
 				wk[cell_blocks] += dok /* * 1.0 */ * learningRate;
 			}
 			
-			//input to hidden
+			
 			for (int j = 0; j < cell_blocks; j++) {
 				final double dhj = deltaH[j];
 				updateWeights(learningRate * dhj, full_input_dimension, dSdF[j], weightsF[j]);
@@ -267,12 +267,12 @@ public class SimpleLSTM  {
 			}
 		}
 		
-		//////////////////////////////////////////////////////////////
 		
-		//roll-over context to next time step
+		
+		
 		System.arraycopy(actH, 0, context, 0, cell_blocks);
 		
-		//give results
+		
 		return out;
 	}
 

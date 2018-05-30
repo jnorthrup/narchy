@@ -29,7 +29,7 @@ public final class LeftBracket extends BranchNode {
 
     @Override
     public Node copy() {
-        return this; //new LeftBracket();
+        return this; 
     }
 
     @Override

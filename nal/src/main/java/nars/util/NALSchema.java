@@ -74,7 +74,7 @@ public class NALSchema {
             Term attr = attrTerm(ai);
 
             meta.add(
-                //CONJ.the(pattern, $.inh($.varDep(i+1), attr))
+                
                     IMPL.the(pattern.replace($.varDep(i+1), $.varIndep(i+1)),
                             $.inh($.varIndep(i+1), attr))
             );
@@ -124,9 +124,9 @@ public class NALSchema {
         return terms(a, pointGenerator).map(point->{
 
             byte p = punc != 0 ?
-                    punc //override
+                    punc 
                     :
-                    (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF); //auto
+                    (point.hasAny(VAR_QUERY) ? QUESTION : BELIEF); 
 
             return new NALTask(point.normalize(), p, p==QUESTION || p == QUEST ? null :
                 $.t(1f, n.confDefault(p)),
@@ -144,7 +144,7 @@ public class NALSchema {
             for (int i = 0; i < n; i++) {
                 Object x = point.get(i);
                 if (x instanceof String) {
-                    t[i] = attrTerm((String)x); //parse string as term, includes variable detection
+                    t[i] = attrTerm((String)x); 
                 } else if (x instanceof Number) {
                     t[i] = $.the((Number)x);
                 } else {
@@ -168,7 +168,7 @@ public class NALSchema {
                         String col = q.toString().substring(1);
                         return INH.the(q, attrTerm(col));
                     } else {
-                        //HACK assume that the variable's id corresponds to the attribute column + 1
+                        
                         assert (q instanceof NormalizedVariable);
                         int col = ((NormalizedVariable) q).id - 1;
                         return INH.the(q, attrTerm(dataset.attrName(col)));

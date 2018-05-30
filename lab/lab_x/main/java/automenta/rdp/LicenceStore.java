@@ -63,8 +63,8 @@ public abstract class LicenceStore {
 	 */
 	public void save_licence(byte[] databytes) {
 		/* set and create the directory -- if it doesn't exist. */
-		// String home = "/root";
-		String dirpath = Options.licence_path;// home+"/.rdesktop";
+		
+		String dirpath = Options.licence_path;
 		String filepath = dirpath + "/licence." + Options.hostname;
 
 		File file = new File(dirpath);

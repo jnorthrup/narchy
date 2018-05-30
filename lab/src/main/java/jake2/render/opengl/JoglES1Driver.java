@@ -42,7 +42,7 @@ public abstract class JoglES1Driver extends JoglGL2ES1 implements GLDriver {
 
     protected static final GLProfile glp;    
     static {
-        // exception if GLProfile is n/a is desired
+        
         cvar_t v = Cvar.Get("jogl_gl2es1", "0", 0);
         if( v.value != 0f ) {
             glp = GLProfile.getGL2ES1();
@@ -94,14 +94,14 @@ public abstract class JoglES1Driver extends JoglGL2ES1 implements GLDriver {
      */
     @Override
     public boolean init(int xpos, int ypos) {
-        // clear the screen
-        // first buffer
+        
+        
         beginFrame(0.0f);
         glViewport(0, 0, newtWin.window.getWidth(), newtWin.window.getHeight());
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         endFrame();
-        // second buffer
+        
         beginFrame(0.0f);
         glViewport(0, 0, newtWin.window.getWidth(), newtWin.window.getHeight());
         glClearColor(0, 0, 0, 0);
@@ -118,22 +118,22 @@ public abstract class JoglES1Driver extends JoglGL2ES1 implements GLDriver {
     @Override
     public void endFrame() {
         newtWin.endFrame();
-        // deactivate();
+        
     }
 
     @Override
     public void appActivate(boolean activate) {
-        // do nothing
+        
     }
 
     @Override
     public void enableLogging(boolean enable) {
-        // do nothing
+        
     }
 
     @Override
     public void logNewFrame() {
-        // do nothing
+        
     }
 
     /*
@@ -152,5 +152,5 @@ public abstract class JoglES1Driver extends JoglGL2ES1 implements GLDriver {
         newtWin.deactivateGLContext();        
     }
     
-    // --------------------------------------------------------------------------    
+    
 }

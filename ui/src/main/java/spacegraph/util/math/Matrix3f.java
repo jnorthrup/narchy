@@ -38,7 +38,7 @@ package spacegraph.util.math;
  */
 public final class Matrix3f implements java.io.Serializable, Cloneable {
 
-    // Compatible with 1.1
+    
     static final long serialVersionUID = 329697160112089834L;
 
     /**
@@ -86,9 +86,9 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      */
     public float m22;
     /*
-    double[]    tmp       = new double[9];  // scratch matrix
-    double[]    tmp_rot   = new double[9];  // scratch matrix
-    double[]    tmp_scale = new double[3];  // scratch matrix
+    double[]    tmp       = new double[9];  
+    double[]    tmp_rot   = new double[9];  
+    double[]    tmp_scale = new double[3];  
     */
     private static final double EPS = 1.0E-8;
 
@@ -144,26 +144,26 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
 
     }
 
-//    /**
-//     * Constructs a new matrix with the same values as the
-//     * Matrix3d parameter.
-//     *
-//     * @param m1 the source matrix
-//     */
-//    public Matrix3f(Matrix3d m1) {
-//        this.m00 = (float) m1.m00;
-//        this.m01 = (float) m1.m01;
-//        this.m02 = (float) m1.m02;
-//
-//        this.m10 = (float) m1.m10;
-//        this.m11 = (float) m1.m11;
-//        this.m12 = (float) m1.m12;
-//
-//        this.m20 = (float) m1.m20;
-//        this.m21 = (float) m1.m21;
-//        this.m22 = (float) m1.m22;
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -243,32 +243,32 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         this.m22 = 1.0f;
     }
 
-//    /**
-//     * Sets the scale component of the current matrix by factoring
-//     * out the current scale (by doing an SVD) and multiplying by
-//     * the new scale.
-//     *
-//     * @param scale the new scale amount
-//     */
-//    public final void setScale(float scale) {
-//        double[] tmp_rot = new double[9];  // scratch matrix
-//        double[] tmp_scale = new double[3];  // scratch matrix
-//
-//        getScaleRotate(tmp_scale, tmp_rot);
-//
-//        this.m00 = (float) (tmp_rot[0] * scale);
-//        this.m01 = (float) (tmp_rot[1] * scale);
-//        this.m02 = (float) (tmp_rot[2] * scale);
-//
-//        this.m10 = (float) (tmp_rot[3] * scale);
-//        this.m11 = (float) (tmp_rot[4] * scale);
-//        this.m12 = (float) (tmp_rot[5] * scale);
-//
-//        this.m20 = (float) (tmp_rot[6] * scale);
-//        this.m21 = (float) (tmp_rot[7] * scale);
-//        this.m22 = (float) (tmp_rot[8] * scale);
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Sets the specified element of this matrix3f to the value provided.
@@ -694,23 +694,23 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         }
     }
 
-//    /**
-//     * Performs an SVD normalization of this matrix to calculate
-//     * and return the uniform scale factor. If the matrix has non-uniform
-//     * scale factors, the largest of the x, y, and z scale factors will
-//     * be returned. This matrix is not modified.
-//     *
-//     * @return the scale factor of this matrix
-//     */
-//    public final float getScale() {
-//
-//        float[] tmp_rot = new double[9];  // scratch matrix
-//        float[] tmp_scale = new double[3];  // scratch matrix
-//        getScaleRotate(tmp_scale, tmp_rot);
-//
-//        return max3(tmp_scale);
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static float max3(float[] values) {
         return values[values[0] > values[1] ? values[0] > values[2] ? 0 : 2 : values[1] > values[2] ? 1 : 2];
@@ -942,73 +942,73 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
 
     }
 
-//    /**
-//     * Sets the value of this matrix to the matrix conversion of the
-//     * (double precision) axis and angle argument.
-//     *
-//     * @param a1 the axis and angle to be converted
-//     */
-//    public final void set(AxisAngle4d a1) {
-//        double mag = Math.sqrt(a1.x * a1.x + a1.y * a1.y + a1.z * a1.z);
-//        if (mag < EPS) {
-//            m00 = 1.0f;
-//            m01 = 0.0f;
-//            m02 = 0.0f;
-//
-//            m10 = 0.0f;
-//            m11 = 1.0f;
-//            m12 = 0.0f;
-//
-//            m20 = 0.0f;
-//            m21 = 0.0f;
-//            m22 = 1.0f;
-//        } else {
-//            mag = 1.0 / mag;
-//            double ax = a1.x * mag;
-//            double ay = a1.y * mag;
-//            double az = a1.z * mag;
-//
-//            double sinTheta = Math.sin(a1.angle);
-//            double cosTheta = Math.cos(a1.angle);
-//            double t = 1.0 - cosTheta;
-//
-//            m00 = (float) (t * ax * ax + cosTheta);
-//            double xy = ax * ay;
-//            m01 = (float) (t * xy - sinTheta * az);
-//            double xz = ax * az;
-//            m02 = (float) (t * xz + sinTheta * ay);
-//
-//            m10 = (float) (t * xy + sinTheta * az);
-//            m11 = (float) (t * ay * ay + cosTheta);
-//            double yz = ay * az;
-//            m12 = (float) (t * yz - sinTheta * ax);
-//
-//            m20 = (float) (t * xz - sinTheta * ay);
-//            m21 = (float) (t * yz + sinTheta * ax);
-//            m22 = (float) (t * az * az + cosTheta);
-//        }
-//
-//    }
-//
-//    /**
-//     * Sets the value of this matrix to the matrix conversion of the
-//     * (single precision) quaternion argument.
-//     *
-//     * @param q1 the quaternion to be converted
-//     */
-//    public final void set(Quat4d q1) {
-//        this.m00 = (float) (1.0 - 2.0 * q1.y * q1.y - 2.0 * q1.z * q1.z);
-//        this.m10 = (float) (2.0 * (q1.x * q1.y + q1.w * q1.z));
-//        this.m20 = (float) (2.0 * (q1.x * q1.z - q1.w * q1.y));
-//
-//        this.m01 = (float) (2.0 * (q1.x * q1.y - q1.w * q1.z));
-//        this.m11 = (float) (1.0 - 2.0 * q1.x * q1.x - 2.0 * q1.z * q1.z);
-//        this.m21 = (float) (2.0 * (q1.y * q1.z + q1.w * q1.x));
-//
-//        this.m02 = (float) (2.0 * (q1.x * q1.z + q1.w * q1.y));
-//        this.m12 = (float) (2.0 * (q1.y * q1.z - q1.w * q1.x));
-//        this.m22 = (float) (1.0 - 2.0 * q1.x * q1.x - 2.0 * q1.y * q1.y);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Sets the values in this Matrix3f equal to the row-major
@@ -1056,27 +1056,27 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     }
 
 
-//    /**
-//     * Sets the value of this matrix to the float value of the Matrix3d
-//     * argument.
-//     *
-//     * @param m1 the source matrix3d
-//     */
-//    public final void set(Matrix3d m1) {
-//
-//        this.m00 = (float) m1.m00;
-//        this.m01 = (float) m1.m01;
-//        this.m02 = (float) m1.m02;
-//
-//        this.m10 = (float) m1.m10;
-//        this.m11 = (float) m1.m11;
-//        this.m12 = (float) m1.m12;
-//
-//        this.m20 = (float) m1.m20;
-//        this.m21 = (float) m1.m21;
-//        this.m22 = (float) m1.m22;
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -1108,10 +1108,10 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         double temp[] = new double[9];
         int r, c;
 
-        // Use LU decomposition and backsubstitution code specifically
-        // for floating-point 3x3 matrices.
+        
+        
 
-        // Copy source matrix to t1tmp
+        
         temp[0] = (double) m1.m00;
         temp[1] = (double) m1.m01;
         temp[2] = (double) m1.m02;
@@ -1125,14 +1125,14 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         temp[8] = (double) m1.m22;
 
 
-        // Calculate LU decomposition: Is the matrix singular?
+        
         int[] row_perm = new int[3];
         if (!luDecomposition(temp, row_perm)) {
-            // Matrix has no inverse
+            
             throw new SingularMatrixException(VecMathI18N.getString("Matrix3f12"));
         }
 
-        // Perform back substitution on the identity matrix
+        
         double[] result = new double[9];
         for (int i = 0; i < 9; i++) result[i] = 0.0;
         result[0] = 1.0;
@@ -1169,17 +1169,17 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      *
      * @return true if the matrix is nonsingular, or false otherwise.
      */
-    //
-    // Reference: Press, Flannery, Teukolsky, Vetterling, 
-    //	      _Numerical_Recipes_in_C_, Cambridge University Press, 
-    //	      1988, pp 40-45.
-    //
+    
+    
+    
+    
+    
     static boolean luDecomposition(double[] matrix0,
                                    int[] row_perm) {
 
         double row_scale[] = new double[3];
 
-        // Determine implicit scaling information by looping over rows
+        
         {
             int j;
             int rs;
@@ -1188,12 +1188,12 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             int ptr = 0;
             rs = 0;
 
-            // For each row ...
+            
             int i = 3;
             while (i-- != 0) {
                 double big = 0.0;
 
-                // For each column, find the largest element in the row
+                
                 j = 3;
                 while (j-- != 0) {
                     temp = matrix0[ptr++];
@@ -1203,7 +1203,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                     }
                 }
 
-                // Is the matrix singular?
+                
                 if (big == 0.0) {
                     return false;
                 }
@@ -1213,13 +1213,13 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
 
         int mtx = 0;
 
-        // For all columns, execute Crout's method
+        
         for (int j = 0; j < 3; j++) {
             int i, k;
             int target, p1, p2;
             double sum;
 
-            // Determine elements of upper diagonal matrix U
+            
             for (i = 0; i < j; i++) {
                 target = mtx + (3 * i) + j;
                 sum = matrix0[target];
@@ -1234,8 +1234,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                 matrix0[target] = sum;
             }
 
-            // Search for largest pivot element and calculate
-            // intermediate elements of lower diagonal matrix L.
+            
+            
             double big = 0.0;
             int imax = -1;
             double temp;
@@ -1252,7 +1252,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                 }
                 matrix0[target] = sum;
 
-                // Is this the best pivot so far?
+                
                 if ((temp = row_scale[i] * Math.abs(sum)) >= big) {
                     big = temp;
                     imax = i;
@@ -1263,9 +1263,9 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                 throw new RuntimeException(VecMathI18N.getString("Matrix3f13"));
             }
 
-            // Is a row exchange necessary?
+            
             if (j != imax) {
-                // Yes: exchange rows
+                
                 k = 3;
                 p1 = mtx + (3 * imax);
                 p2 = mtx + (3 * j);
@@ -1275,19 +1275,19 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                     matrix0[p2++] = temp;
                 }
 
-                // Record change in scale factor
+                
                 row_scale[imax] = row_scale[j];
             }
 
-            // Record row permutation
+            
             row_perm[j] = imax;
 
-            // Is the matrix singular
+            
             if (matrix0[(mtx + (3 * j) + j)] == 0.0) {
                 return false;
             }
 
-            // Divide elements of lower diagonal matrix L by pivot
+            
             if (j != (3 - 1)) {
                 temp = 1.0 / (matrix0[(mtx + (3 * j) + j)]);
                 target = mtx + (3 * (j + 1)) + j;
@@ -1315,11 +1315,11 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * with the inverse of the matrix from which "matrix1" was originally
      * derived.
      */
-    //
-    // Reference: Press, Flannery, Teukolsky, Vetterling, 
-    //	      _Numerical_Recipes_in_C_, Cambridge University Press, 
-    //	      1988, pp 44-45.
-    //
+    
+    
+    
+    
+    
     static void luBacksubstitution(double[] matrix1,
                                    int[] row_perm,
                                    double[] matrix2) {
@@ -1327,23 +1327,23 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         int ii, ip, j, k;
         int rv;
 
-        //	rp = row_perm;
+        
         int rp = 0;
 
-        // For each column vector of matrix2 ...
+        
         for (k = 0; k < 3; k++) {
-            //	    cv = &(matrix2[0][k]);
+            
             int cv = k;
             ii = -1;
 
-            // Forward substitution
+            
             for (int i = 0; i < 3; i++) {
 
                 ip = row_perm[rp + i];
                 double sum = matrix2[cv + 3 * ip];
                 matrix2[cv + 3 * ip] = matrix2[cv + 3 * i];
                 if (ii >= 0) {
-                    //		    rv = &(matrix1[i][0]);
+                    
                     rv = i * 3;
                     for (j = ii; j <= i - 1; j++) {
                         sum -= matrix1[rv + j] * matrix2[cv + 3 * j];
@@ -1354,8 +1354,8 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
                 matrix2[cv + 3 * i] = sum;
             }
 
-            // Backsubstitution
-            //	    rv = &(matrix1[3][0]);
+            
+            
             rv = 2 * 3;
             matrix2[cv + 3 * 2] /= matrix1[rv + 2];
 
@@ -1606,88 +1606,88 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         }
     }
 
-//    /**
-//     * Multiplies this matrix by matrix m1, does an SVD normalization
-//     * of the result, and places the result back into this matrix.
-//     * this = SVDnorm(this*m1).
-//     *
-//     * @param m1 the matrix on the right hand side of the multiplication
-//     */
-//    public final void mulNormalize(Matrix3f m1) {
-//
-//        double[] tmp = new double[9];  // scratch matrix
-//
-//        tmp[0] = this.m00 * m1.m00 + this.m01 * m1.m10 + this.m02 * m1.m20;
-//        tmp[1] = this.m00 * m1.m01 + this.m01 * m1.m11 + this.m02 * m1.m21;
-//        tmp[2] = this.m00 * m1.m02 + this.m01 * m1.m12 + this.m02 * m1.m22;
-//
-//        tmp[3] = this.m10 * m1.m00 + this.m11 * m1.m10 + this.m12 * m1.m20;
-//        tmp[4] = this.m10 * m1.m01 + this.m11 * m1.m11 + this.m12 * m1.m21;
-//        tmp[5] = this.m10 * m1.m02 + this.m11 * m1.m12 + this.m12 * m1.m22;
-//
-//        tmp[6] = this.m20 * m1.m00 + this.m21 * m1.m10 + this.m22 * m1.m20;
-//        tmp[7] = this.m20 * m1.m01 + this.m21 * m1.m11 + this.m22 * m1.m21;
-//        tmp[8] = this.m20 * m1.m02 + this.m21 * m1.m12 + this.m22 * m1.m22;
-//
-//        double[] tmp_scale = new double[3];  // scratch matrix
-//        double[] tmp_rot = new double[9];  // scratch matrix
-//        Matrix3d.compute_svd(tmp, tmp_scale, tmp_rot);
-//
-//        this.m00 = (float) (tmp_rot[0]);
-//        this.m01 = (float) (tmp_rot[1]);
-//        this.m02 = (float) (tmp_rot[2]);
-//
-//        this.m10 = (float) (tmp_rot[3]);
-//        this.m11 = (float) (tmp_rot[4]);
-//        this.m12 = (float) (tmp_rot[5]);
-//
-//        this.m20 = (float) (tmp_rot[6]);
-//        this.m21 = (float) (tmp_rot[7]);
-//        this.m22 = (float) (tmp_rot[8]);
-//
-//    }
-//
-//    /**
-//     * Multiplies matrix m1 by matrix m2, does an SVD normalization
-//     * of the result, and places the result into this matrix.
-//     * this = SVDnorm(m1*m2).
-//     *
-//     * @param m1 the matrix on the left hand side of the multiplication
-//     * @param m2 the matrix on the right hand side of the multiplication
-//     */
-//    public final void mulNormalize(Matrix3f m1, Matrix3f m2) {
-//
-//        double[] tmp = new double[9];  // scratch matrix
-//
-//
-//        tmp[0] = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20;
-//        tmp[1] = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21;
-//        tmp[2] = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22;
-//
-//        tmp[3] = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20;
-//        tmp[4] = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21;
-//        tmp[5] = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22;
-//
-//        tmp[6] = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20;
-//        tmp[7] = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21;
-//        tmp[8] = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22;
-//
-//        double[] tmp_scale = new double[3];  // scratch matrix
-//        double[] tmp_rot = new double[9];  // scratch matrix
-//        Matrix3d.compute_svd(tmp, tmp_scale, tmp_rot);
-//
-//        this.m00 = (float) (tmp_rot[0]);
-//        this.m01 = (float) (tmp_rot[1]);
-//        this.m02 = (float) (tmp_rot[2]);
-//
-//        this.m10 = (float) (tmp_rot[3]);
-//        this.m11 = (float) (tmp_rot[4]);
-//        this.m12 = (float) (tmp_rot[5]);
-//
-//        this.m20 = (float) (tmp_rot[6]);
-//        this.m21 = (float) (tmp_rot[7]);
-//        this.m22 = (float) (tmp_rot[8]);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Multiplies the transpose of matrix m1 times the transpose of matrix
@@ -1710,7 +1710,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             this.m21 = m1.m02 * m2.m10 + m1.m12 * m2.m11 + m1.m22 * m2.m12;
             this.m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22;
         } else {
-            float m01, m02, m11, m12, m21, m22;  // vars for temp result matrix
+            float m01, m02, m11, m12, m21, m22;  
 
             float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m01 + m1.m20 * m2.m02;
             m01 = m1.m00 * m2.m10 + m1.m10 * m2.m11 + m1.m20 * m2.m12;
@@ -1759,7 +1759,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             this.m21 = m1.m20 * m2.m10 + m1.m21 * m2.m11 + m1.m22 * m2.m12;
             this.m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22;
         } else {
-            float m01, m02, m11, m12, m21, m22;  // vars for temp result matrix
+            float m01, m02, m11, m12, m21, m22;  
 
             float m00 = m1.m00 * m2.m00 + m1.m01 * m2.m01 + m1.m02 * m2.m02;
             m01 = m1.m00 * m2.m10 + m1.m01 * m2.m11 + m1.m02 * m2.m12;
@@ -1806,7 +1806,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             this.m21 = m1.m02 * m2.m01 + m1.m12 * m2.m11 + m1.m22 * m2.m21;
             this.m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22;
         } else {
-            float m01, m02, m11, m12, m21, m22;  // vars for temp result matrix
+            float m01, m02, m11, m12, m21, m22;  
 
             float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m10 + m1.m20 * m2.m20;
             m01 = m1.m00 * m2.m01 + m1.m10 * m2.m11 + m1.m20 * m2.m21;
@@ -1832,67 +1832,67 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         }
     }
 
-//    /**
-//     * Performs singular value decomposition normalization of this matrix.
-//     */
-//    public final void normalize() {
-//
-//        double[] tmp_rot = new double[9];  // scratch matrix
-//        double[] tmp_scale = new double[3];  // scratch matrix
-//        getScaleRotate(tmp_scale, tmp_rot);
-//
-//        this.m00 = (float) tmp_rot[0];
-//        this.m01 = (float) tmp_rot[1];
-//        this.m02 = (float) tmp_rot[2];
-//
-//        this.m10 = (float) tmp_rot[3];
-//        this.m11 = (float) tmp_rot[4];
-//        this.m12 = (float) tmp_rot[5];
-//
-//        this.m20 = (float) tmp_rot[6];
-//        this.m21 = (float) tmp_rot[7];
-//        this.m22 = (float) tmp_rot[8];
-//
-//    }
-//
-//    /**
-//     * Perform singular value decomposition normalization of matrix m1
-//     * and place the normalized values into this.
-//     *
-//     * @param m1 the matrix values to be normalized
-//     */
-//    public final void normalize(Matrix3f m1) {
-//        double[] tmp = new double[9];  // scratch matrix
-//
-//        tmp[0] = m1.m00;
-//        tmp[1] = m1.m01;
-//        tmp[2] = m1.m02;
-//
-//        tmp[3] = m1.m10;
-//        tmp[4] = m1.m11;
-//        tmp[5] = m1.m12;
-//
-//        tmp[6] = m1.m20;
-//        tmp[7] = m1.m21;
-//        tmp[8] = m1.m22;
-//
-//        double[] tmp_scale = new double[3];  // scratch matrix
-//        double[] tmp_rot = new double[9];  // scratch matrix
-//        Matrix3d.compute_svd(tmp, tmp_scale, tmp_rot);
-//
-//        this.m00 = (float) (tmp_rot[0]);
-//        this.m01 = (float) (tmp_rot[1]);
-//        this.m02 = (float) (tmp_rot[2]);
-//
-//        this.m10 = (float) (tmp_rot[3]);
-//        this.m11 = (float) (tmp_rot[4]);
-//        this.m12 = (float) (tmp_rot[5]);
-//
-//        this.m20 = (float) (tmp_rot[6]);
-//        this.m21 = (float) (tmp_rot[7]);
-//        this.m22 = (float) (tmp_rot[8]);
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Perform cross product normalization of this matrix.
@@ -2120,24 +2120,24 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         result.y = y;
     }
 
-//    /**
-//     * perform SVD (if necessary to get rotational component
-//     */
-//    void getScaleRotate(float[] scales, float[] rot) {
-//
-//        float[] tmp = new float[9];  // scratch matrix
-//        tmp[0] = m00;
-//        tmp[1] = m01;
-//        tmp[2] = m02;
-//        tmp[3] = m10;
-//        tmp[4] = m11;
-//        tmp[5] = m12;
-//        tmp[6] = m20;
-//        tmp[7] = m21;
-//        tmp[8] = m22;
-//        Matrix3f.compute_svd(tmp, scales, rot);
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Creates a new object of the same class as this object.
@@ -2153,7 +2153,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         try {
             m1 = (Matrix3f) super.clone();
         } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
+            
             throw new InternalError();
         }
         return m1;
@@ -2340,10 +2340,10 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         this.m22 = m22;
     }
 
-//    public void setTransScale(float x, float y, float scale) {
-//        MatrixUtil.setEulerZYX(this, x, y, 0);
-//
-//        //MatrixUtil.scale(this, scale);
-//        setScale(scale);
-//    }
+
+
+
+
+
+
 }

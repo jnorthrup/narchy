@@ -21,7 +21,7 @@ public abstract class DependsOnColumn<Source,Result> extends FunctionMeter<Resul
     protected final Metrics metrics;
     
 
-    //TODO since making id final, getcolumnID will have no effect. replace with a static builder method or something
+    
 
     public DependsOnColumn(Metrics metrics, String source, int numResults) {
         super("", numResults);
@@ -35,12 +35,12 @@ public abstract class DependsOnColumn<Source,Result> extends FunctionMeter<Resul
         sourceColumn = metrics.indexOf(source);
 
         for (Signal s : getSignals()) {            
-            //s.id = getColumnID(m, i++);
+            
         }
         
     }
 
-//    
+
     /*public Iterator<Object> signalIterator() {
         return metrics.getSignalIterator(sourceColumn, true);        
     }*/
@@ -51,7 +51,7 @@ public abstract class DependsOnColumn<Source,Result> extends FunctionMeter<Resul
             return (Source) r.next()[sourceColumn];
         return null;
     }
-    //public List<Object> newestValues(int n) { 
+    
 
     protected List<Object> newestValues(int column, int i) {
         return metrics.getNewSignalValues(column, i);

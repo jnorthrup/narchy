@@ -31,7 +31,7 @@ public class GridSpaceWorld extends RoverWorld implements LayerDraw {
         cells.forEach(0, 0, w, h, new CellFunction() {
             @Override
             public void update(Cell c) {
-///c.setHeight((int)(Math.random() * 12 + 1));
+
                 float smoothness = 20f;
                 c.material = Cell.Material.GrassFloor;
                 double n = SimplexNoise.noise(c.state.x / smoothness, c.state.y / smoothness);
@@ -96,7 +96,7 @@ public class GridSpaceWorld extends RoverWorld implements LayerDraw {
         w = grid.cells.w;
         h = grid.cells.h;
         
-        //cell size
+        
         cw = 6f;
         ch = cw;
 
@@ -158,7 +158,7 @@ public class GridSpaceWorld extends RoverWorld implements LayerDraw {
     @Override
     public void drawGround(JoglAbstractDraw draw, World w) {
         this.draw = draw;
-        //this.graphics = draw.getGraphics();
+        
         cells(groundDrawer, true);
     }
 

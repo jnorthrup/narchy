@@ -15,7 +15,7 @@ import static nars.Op.VAR_PATTERN;
 public class EllipsisOneOrMore extends Ellipsis {
 
     public EllipsisOneOrMore(@NotNull NormalizedVariable /*Variable*/ name) {
-        super(name, 1); //TODO decide if EllipsisTransform, a subclass, needs its own uniqueness hashmask
+        super(name, 1); 
     }
 
     @Override

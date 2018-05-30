@@ -10,7 +10,7 @@ import smartblob.smartblob.physics.SmartblobSim;
 
 public class BounceOnSimpleWall implements GlobalChangeSpeed {
 	
-	//TODO optimize collisions by checking boundingRectangle
+	
 	
 	public float position;
 	
@@ -43,15 +43,15 @@ public class BounceOnSimpleWall implements GlobalChangeSpeed {
 	
 	public boolean anyPartIsPastThisWall(Rectangle r){
 		if(verticalInsteadOfHorizontal){
-			if(maxInsteadOfMin){ //max vertical
+			if(maxInsteadOfMin){ 
 				return r.y+r.height <= position;
-			}else{ //min vertical
+			}else{ 
 				return position <= r.y+r.height;
 			}
 		}else{
-			if(maxInsteadOfMin){ //max horizontal
+			if(maxInsteadOfMin){ 
 				return r.x+r.width <= position;
-			}else{ //min horizontal
+			}else{ 
 				return position <= r.x+r.width;
 			}
 		}
@@ -62,35 +62,35 @@ public class BounceOnSimpleWall implements GlobalChangeSpeed {
 		for(CornerData layerOfCorners[] : z.corners){
 			for(CornerData cd : layerOfCorners){
 				if(verticalInsteadOfHorizontal){
-					if(maxInsteadOfMin){ //max vertical
+					if(maxInsteadOfMin){ 
 						if(position < cd.y){
 							cd.speedY = -Math.abs(cd.speedY);
-							//cd.y = position;
-							//TODO float past = cd.y-position;
-							//TODO cd.addToY -= 2*position;
+							
+							
+							
 						}
-					}else{ //min vertical
+					}else{ 
 						if(cd.y < position){
 							cd.speedY = Math.abs(cd.speedY);
-							//cd.y = position;
-							//TODO float past = position-cd.y;
-							//TODO cd.addToY += 2*position;
+							
+							
+							
 						}
 					}
 				}else{
-					if(maxInsteadOfMin){ //max horizontal
+					if(maxInsteadOfMin){ 
 						if(position < cd.x){
 							cd.speedX = -Math.abs(cd.speedX);
-							//cd.x = position;
-							//TODO float past = cd.x-position;
-							//TODO cd.addToX -= 2*position;
+							
+							
+							
 						}
-					}else{ //min horizontal
+					}else{ 
 						if(cd.x < position){
 							cd.speedX = Math.abs(cd.speedX);
-							//cd.x = position;
-							//TODO float past = position-cd.x;
-							//TODO cd.addToX += 2*position;
+							
+							
+							
 						}
 					}
 				}

@@ -174,7 +174,7 @@ class PreferencesParser
          throw new SAXException("Invalid type " + type);
       }
 
-      this.preferences.put(preferenceName,//
+      this.preferences.put(preferenceName,
             new Pair<PreferenceType, Object>(preferenceType, Preferences.parse(preferenceValue, preferenceType)));
    }
 

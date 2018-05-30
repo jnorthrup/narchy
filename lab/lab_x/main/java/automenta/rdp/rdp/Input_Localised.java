@@ -71,28 +71,28 @@ public class Input_Localised extends Input {
 		super.clearKeys();
 		if (lastKeyEvent != null && lastKeyEvent.isAltGraphDown())
 			sendScancode(getTime(), RDP_KEYRELEASE,
-					0x38 | KeyCode.SCANCODE_EXTENDED); // r.alt
+					0x38 | KeyCode.SCANCODE_EXTENDED); 
 	}
 
 	public void setKeys() {
 		super.setKeys();
 		if (lastKeyEvent != null && lastKeyEvent.isAltGraphDown())
 			sendScancode(getTime(), RDP_KEYPRESS,
-					0x38 | KeyCode.SCANCODE_EXTENDED); // r.alt
+					0x38 | KeyCode.SCANCODE_EXTENDED); 
 	}
 
 	protected void doLockKeys() {
-		// doesn't work on Java 1.4.1_02 or 1.4.2 on Linux, there is a bug in
-		// java....
-		// does work on the same version on Windows.
+		
+		
+		
 		if (!Rdesktop.readytosend)
 			return;
 		if (!Options.useLockingKeyState)
 			return;
 		if (Constants.OS == Constants.LINUX)
-			return; // broken for linux
+			return; 
 		if (Constants.OS == Constants.MAC)
-			return; // unsupported operation for mac
+			return; 
 		logger.debug("doLockKeys");
 
 		try {
@@ -132,20 +132,20 @@ public class Input_Localised extends Input {
 			return true;
 
 		if (!altDown)
-			return false; // all of the below have ALT on
+			return false; 
 
 		switch (e.getKeyCode()) {
-		case KeyEvent.VK_MINUS: // for laptops that can't do Ctrl+Alt+Minus
+		case KeyEvent.VK_MINUS: 
 			if (ctrlDown) {
 				if (pressed) {
-					sendScancode(time, RDP_KEYRELEASE, 0x1d); // Ctrl
+					sendScancode(time, RDP_KEYRELEASE, 0x1d); 
 					sendScancode(time, RDP_KEYPRESS,
-							0x37 | KeyCode.SCANCODE_EXTENDED); // PrtSc
+							0x37 | KeyCode.SCANCODE_EXTENDED); 
 					logger.debug("shortcut pressed: sent ALT+PRTSC");
 				} else {
 					sendScancode(time, RDP_KEYRELEASE,
-							0x37 | KeyCode.SCANCODE_EXTENDED); // PrtSc
-					sendScancode(time, RDP_KEYPRESS, 0x1d); // Ctrl
+							0x37 | KeyCode.SCANCODE_EXTENDED); 
+					sendScancode(time, RDP_KEYPRESS, 0x1d); 
 				}
 			}
 			break;
@@ -158,12 +158,12 @@ public class Input_Localised extends Input {
 	private class RdesktopMouseWheelAdapter implements MouseWheelListener {
 		public void mouseWheelMoved(MouseWheelEvent e) {
 			int time = getTime();
-			// if(logger.isInfoEnabled()) logger.info("mousePressed at "+time);
+			
 			if (rdp != null) {
-				if (e.getWheelRotation() < 0) { // up
+				if (e.getWheelRotation() < 0) { 
 					rdp.sendInput(time, RDP_INPUT_MOUSE, MOUSE_FLAG_BUTTON4
 							| MOUSE_FLAG_DOWN, e.getX(), e.getY());
-				} else { // down
+				} else { 
 					rdp.sendInput(time, RDP_INPUT_MOUSE, MOUSE_FLAG_BUTTON5
 							| MOUSE_FLAG_DOWN, e.getX(), e.getY());
 				}

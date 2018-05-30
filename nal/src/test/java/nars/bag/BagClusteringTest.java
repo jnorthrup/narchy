@@ -53,9 +53,9 @@ public class BagClusteringTest {
             d[1] = x;
         }
 
-//        @Override
-//        public double distanceSq(double[] x, double[] y) {
-//            return Centroid.distanceCartesianSq(x, y);
-//        }
+
+
+
+
     }
 }

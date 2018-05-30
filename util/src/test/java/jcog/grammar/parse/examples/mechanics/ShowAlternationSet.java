@@ -24,7 +24,7 @@ public class ShowAlternationSet {
 	 */
 	public static void main(String args[]) {
 
-		// assignment = Word '=' assignment | Word;
+		
 
 		Alternation assignment = new Alternation();
 

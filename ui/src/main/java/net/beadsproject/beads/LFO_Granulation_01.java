@@ -8,10 +8,10 @@ import net.beadsproject.beads.ugens.*;
 
 public class LFO_Granulation_01 {
     public static void main(String[] args) {
-        // instantiate the AudioContext
+        
         AudioContext ac = new AudioContext();
 
-        // load the source sample from a file
+        
         Sample sourceSample = null;
         try {
             sourceSample = new Sample("/tmp/Vocal/wav/Laugh1.wav");
@@ -30,13 +30,13 @@ public class LFO_Granulation_01 {
             System.exit(1);
         }
 
-        // instantiate a GranularSamplePlayer
+        
         GranularSamplePlayer gsp = new GranularSamplePlayer(ac, sourceSample);
 
-        // tell gsp to loop the file
+        
         gsp.setLoopType(SamplePlayer.LoopType.LOOP_FORWARDS);
 
-        // set up a custom function to convert a WavePlayer LFO to grain duration values
+        
         WavePlayer wpGrainDurationLFO = new WavePlayer(ac, 0.03f, WaveFactory.SINE);
         FuncGen grainDurationLFO = new FuncGen(wpGrainDurationLFO) {
             @Override
@@ -45,10 +45,10 @@ public class LFO_Granulation_01 {
             }
 
         };
-        // set the grain size to the LFO
+        
         gsp.setGrainSize(grainDurationLFO);
 
-        // set up a custom function to convert a WavePlayer LFO to grain interval values
+        
         WavePlayer wpGrainIntervalLFO = new WavePlayer(ac, 0.02f, WaveFactory.SINE);
         FuncGen grainIntervalLFO = new FuncGen(wpGrainIntervalLFO) {
             @Override
@@ -56,20 +56,20 @@ public class LFO_Granulation_01 {
                 return 1.0f + ((x[0] + 1.0f) * 50.0f);
             }
         };
-        // set the grain size to the LFO
+        
         gsp.setGrainInterval(grainIntervalLFO);
 
-        // tell gsp to behave somewhat randomly
+        
         gsp.setRandomness(new Static(ac, 10.0f));
 
-        // set up a gain
+        
         Gain gain = new Gain(ac, 1, 0.5f);
         gain.in(gsp);
 
-        // connect the Gain to ac
+        
         ac.out.in(gain);
 
-        // begin audio processing
+        
         ac.start();
         Util.sleep((100 * 1000));
     }

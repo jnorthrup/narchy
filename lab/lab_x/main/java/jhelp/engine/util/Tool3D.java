@@ -356,7 +356,7 @@ public class Tool3D
       final float mult = reverseNormals == true
             ? -1
             : 1;
-      // Initialization
+      
       final Mesh mesh = new Mesh();
 
       final ArrayList<Line2D> linesU = pathU.computePath(precisionU);
@@ -390,10 +390,10 @@ public class Tool3D
       int index;
       first = true;
 
-      // For each step in U path
+      
       for(final Line2D lineU : linesU)
       {
-         // U step goes (a0, b0) to (a1, b1), the direction vector is (x, y)
+         
          a0 = lineU.pointStart.getX();
          b0 = lineU.pointStart.getY();
          a1 = lineU.pointEnd.getX();
@@ -401,7 +401,7 @@ public class Tool3D
          x = a1 - a0;
          y = b1 - b0;
 
-         // Normalize(x, y)
+         
          length = (float) Math.sqrt((x * x) + (y * y));
          if(Math3D.nul(length) == false)
          {
@@ -409,11 +409,11 @@ public class Tool3D
             y /= length;
          }
 
-         // Compute U values of each face at this step
+         
          u00 = u01 = lineU.start;
          u10 = u11 = lineU.end;
 
-         // If we try to linearize, base on old values
+         
          if(linearize == true)
          {
             u00 = u01 = oldU0;
@@ -423,11 +423,11 @@ public class Tool3D
          index = 0;
          temp = new ArrayList<Vertex>();
 
-         // For each step in V path
+         
          for(final Line2D lineV : linesV)
          {
-            // V step goes (xp0, yp0) to (xp1, yp1), the direction vector is
-            // (xx, yy)
+            
+            
             xp0 = lineV.pointStart.getX();
             yp0 = lineV.pointStart.getY();
             xp1 = lineV.pointEnd.getX();
@@ -435,7 +435,7 @@ public class Tool3D
             xx = xp1 - xp0;
             yy = yp1 - yp0;
 
-            // Normalize (xx, yy)
+            
             length = (float) Math.sqrt((xx * xx) + (yy * yy));
             if(Math3D.nul(length) == false)
             {
@@ -443,11 +443,11 @@ public class Tool3D
                yy /= length;
             }
 
-            // Compute V for actual face
+            
             v00 = v10 = lineV.start;
             v01 = v11 = lineV.end;
 
-            // Up left position and normal
+            
             x00 = a0 - (y * xp0);
             y00 = b0 + (x * xp0);
             z00 = yp0;
@@ -456,7 +456,7 @@ public class Tool3D
             ny00 = (mult * (y + (b0 + (x * xx)))) / 2f;
             nz00 = (mult * yy) / 2f;
 
-            // Up right position and normal
+            
             x10 = a1 - (y * xp0);
             y10 = b1 + (x * xp0);
             z10 = yp0;
@@ -465,7 +465,7 @@ public class Tool3D
             ny10 = (mult * (y + (b1 + (x * xx)))) / 2f;
             nz10 = (mult * yy) / 2f;
 
-            // Down left position and normal
+            
             x01 = a0 - (y * xp1);
             y01 = b0 + (x * xp1);
             z01 = yp1;
@@ -474,7 +474,7 @@ public class Tool3D
             ny01 = (mult * (y + (b0 + (x * xx)))) / 2f;
             nz01 = (mult * yy) / 2f;
 
-            // Down right position and normal
+            
             x11 = a1 - (y * xp1);
             y11 = b1 + (x * xp1);
             z11 = yp1;
@@ -483,33 +483,33 @@ public class Tool3D
             ny11 = (mult * (y + (b1 + (x * xx)))) / 2f;
             nz11 = (mult * yy) / 2f;
 
-            // If it is not the first face time we goes on V path, join with old
-            // face
+            
+            
             if(first == false)
             {
-               // Get old face information to make the join join
+               
                dir0 = old.get(index++);
                dir1 = old.get(index++);
                p0 = old.get(index++);
                p1 = old.get(index++);
 
-               // Get first old point and direction
+               
                a00 = p0.getPosition().getX();
                b00 = p0.getPosition().getY();
                c00 = p0.getPosition().getZ();
                vx00 = dir0.getPosition().getX();
                vy00 = dir0.getPosition().getY();
                vz00 = dir0.getPosition().getZ();
-               // If direction is not zero vector
+               
                length = (float) Math.sqrt((vx00 * vx00) + (vy00 * vy00) + (vz00 * vz00));
                if(Math3D.nul(length) == false)
                {
-                  // Normalize direction
+                  
                   vx00 /= length;
                   vy00 /= length;
                   vz00 /= length;
 
-                  // Get first new point and direction
+                  
                   a10 = x00;
                   b10 = y00;
                   c10 = z00;
@@ -517,21 +517,21 @@ public class Tool3D
                   vy10 = y10 - y00;
                   vz10 = z10 - z00;
 
-                  // If the direction is not zero vector
+                  
                   length = (float) Math.sqrt((vx10 * vx10) + (vy10 * vy10) + (vz10 * vz10));
 
                   if(Math3D.nul(length) == false)
                   {
-                     // Normalize the vector
+                     
                      vx10 /= length;
                      vy10 /= length;
                      vz10 /= length;
 
-                     // If the two direction are not colinear, then a corner
-                     // join is need
+                     
+                     
                      if(Math3D.equal(Math.abs((vx00 * vx10) + (vy00 * vy10) + (vz00 * vz10)), 1f) == false)
                      {
-                        // Get second old position and direction
+                        
                         a01 = p1.getPosition().getX();
                         b01 = p1.getPosition().getY();
                         c01 = p1.getPosition().getZ();
@@ -539,13 +539,13 @@ public class Tool3D
                         vy01 = dir1.getPosition().getY();
                         vz01 = dir1.getPosition().getZ();
 
-                        // Normalize direction
+                        
                         length = (float) Math.sqrt((vx01 * vx01) + (vy01 * vy01) + (vz01 * vz01));
                         vx01 /= length;
                         vy01 /= length;
                         vz01 /= length;
 
-                        // Get second new point and direction
+                        
                         a11 = x01;
                         b11 = y01;
                         c11 = z01;
@@ -553,7 +553,7 @@ public class Tool3D
                         vy11 = y11 - y01;
                         vz11 = z11 - z01;
 
-                        // Normalize direction
+                        
                         length = (float) Math.sqrt((vx11 * vx11) + (vy11 * vy11) + (vz11 * vz11));
                         vx11 /= length;
                         vy11 /= length;
@@ -561,7 +561,7 @@ public class Tool3D
 
                         l0 = l1 = 0f;
 
-                        // Compute intersection between first old and first new
+                        
                         if(Math3D.nul(vx00) == true)
                         {
                            if(Math3D.nul(vx10) == false)
@@ -608,8 +608,8 @@ public class Tool3D
                         my0 = b10 + (vy10 * l0);
                         mz0 = c10 + (vz10 * l0);
 
-                        // Compute intersection between second old and second
-                        // new
+                        
+                        
                         if(Math3D.nul(vx01) == true)
                         {
                            if(Math3D.nul(vx11) == false)
@@ -656,7 +656,7 @@ public class Tool3D
                         my1 = b11 + (vy11 * l1);
                         mz1 = c11 + (vz11 * l1);
 
-                        // If we decide to linearize, linearize U
+                        
                         if(linearize == true)
                         {
                            u00 = p0.getUv().getX();
@@ -668,15 +668,15 @@ public class Tool3D
                                  + Math3D.square(mz1 - p1.getPosition().getZ()));
                         }
 
-                        // Create first part of the corner
+                        
                         mesh.addVertexToTheActualFace(p0);
                         mesh.addVertexToTheActualFace(p1);
                         mesh.addVertexToTheActualFace(new Vertex(mx1, my1, mz1, u01, v01, nx01, ny01, nz01));
                         mesh.addVertexToTheActualFace(new Vertex(mx0, my0, mz0, u00, v00, nx00, ny00, nz00));
                         mesh.endFace();
 
-                        // We consider the end of the first part like the end of
-                        // the old face
+                        
+                        
                         p0.set(mx0, my0, mz0);
                         p1.set(mx1, my1, mz1);
 
@@ -689,9 +689,9 @@ public class Tool3D
                   }
                }
 
-               // Link old face to new one.
-               // Remember that it could be the end of the corner. In this case
-               // its create the end of the corner
+               
+               
+               
                if(linearize == true)
                {
                   u00 = p0.getUv().getX();
@@ -710,7 +710,7 @@ public class Tool3D
                mesh.endFace();
             }
 
-            // Draw actual face
+            
             if(linearize == true)
             {
                u10 = u00 + (float) Math.sqrt(Math3D.square(x00 - x10) + Math3D.square(y00 - y10) + Math3D.square(z00 - z10));
@@ -723,7 +723,7 @@ public class Tool3D
             mesh.addVertexToTheActualFace(new Vertex(x10, y10, z10, u10, v10, nx10, ny10, nz10));
             mesh.endFace();
 
-            // Memorize informations for the next join
+            
             if(linearize == true)
             {
                u00 = u01 = oldU0;
@@ -746,7 +746,7 @@ public class Tool3D
          old = temp;
       }
 
-      // On linearize mode, try to make valid U
+      
       if(linearize == true)
       {
          mesh.multUV(multU / Math.max(oldU0, oldU1), 1);
@@ -775,7 +775,7 @@ public class Tool3D
     */
    public static Mesh createMesh(final Path pathU, final int precisionU, final Path pathV, final int precisionV)
    {
-      // Initialization
+      
       final Mesh mesh = new Mesh();
 
       final ArrayList<Line2D> linesU = pathU.computePath(precisionU);
@@ -790,17 +790,17 @@ public class Tool3D
 
       float length;
 
-      // For each step in U path
+      
       for(final Line2D lineU : linesU)
       {
-         // U step goes (a0, b0) to (a1, b1), the direction vector is (x, y)
+         
          a0 = lineU.pointStart.getX();
          b0 = lineU.pointStart.getY();
          a1 = lineU.pointEnd.getX();
          b1 = lineU.pointEnd.getY();
          x = a1 - a0;
          y = b1 - b0;
-         // Normalize (x,y)
+         
          length = (float) Math.sqrt((x * x) + (y * y));
          if(Math3D.nul(length) == false)
          {
@@ -808,33 +808,33 @@ public class Tool3D
             y /= length;
          }
 
-         // Compute U values of each face at this step
+         
          u00 = u01 = lineU.start;
          u10 = u11 = lineU.end;
 
-         // For each step on V path
+         
          for(final Line2D lineV : linesV)
          {
-            // V step goes (xp0, yp0) to (xp1, yp1), the direction vector is
-            // (xx, yy)
+            
+            
             xp0 = lineV.pointStart.getX();
             yp0 = lineV.pointStart.getY();
             xp1 = lineV.pointEnd.getX();
             yp1 = lineV.pointEnd.getY();
             xx = xp1 - xp0;
             yy = yp1 - yp0;
-            // Normalize(xx, yy)
+            
             length = (float) Math.sqrt((xx * xx) + (yy * yy));
             if(Math3D.nul(length) == false)
             {
                xx /= length;
                yy /= length;
             }
-            // Compute V for the actual face
+            
             v00 = v10 = lineV.start;
             v01 = v11 = lineV.end;
 
-            // Up left position and normal
+            
             x00 = a0 - (y * xp0);
             y00 = b0 + (x * xp0);
             z00 = yp0;
@@ -843,7 +843,7 @@ public class Tool3D
             ny00 = (y + (b0 + (x * xx))) / 2f;
             nz00 = yy / 2f;
 
-            // Up right position and normal
+            
             x10 = a1 - (y * xp0);
             y10 = b1 + (x * xp0);
             z10 = yp0;
@@ -852,7 +852,7 @@ public class Tool3D
             ny10 = (y + (b1 + (x * xx))) / 2f;
             nz10 = yy / 2f;
 
-            // Down left position and normal
+            
             x01 = a0 - (y * xp1);
             y01 = b0 + (x * xp1);
             z01 = yp1;
@@ -861,7 +861,7 @@ public class Tool3D
             ny01 = (y + (b0 + (x * xx))) / 2f;
             nz01 = yy / 2f;
 
-            // Down right position and normal
+            
             x11 = a1 - (y * xp1);
             y11 = b1 + (x * xp1);
             z11 = yp1;
@@ -870,7 +870,7 @@ public class Tool3D
             ny11 = (y + (b1 + (x * xx))) / 2f;
             nz11 = yy / 2f;
 
-            // Create the face
+            
             mesh.addVertexToTheActualFace(new Vertex(x00, y00, z00, u00, v00, nx00, ny00, nz00));
             mesh.addVertexToTheActualFace(new Vertex(x01, y01, z01, u01, v01, nx01, ny01, nz01));
             mesh.addVertexToTheActualFace(new Vertex(x11, y11, z11, u11, v11, nx11, ny11, nz11));
@@ -930,12 +930,12 @@ public class Tool3D
                node = new Sphere();
             break;
             case EQUATION:
-               // {@todo} TODO Implements createNode in jhelp.engine.util [JHelpEngine]
+               
                Debug.printTodo("Implements createNode in jhelp.engine.util [JHelpEngine] Eqaution case");
                node = new Node();
             break;
             default:
-               // {@todo} TODO Implements createNode in jhelp.engine.util [JHelpEngine]
+               
                Debug.printTodo("Implements createNode in jhelp.engine.util [JHelpEngine] Missing case");
                node = new Node();
             break;

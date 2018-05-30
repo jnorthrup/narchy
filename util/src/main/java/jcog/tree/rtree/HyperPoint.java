@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -62,31 +62,31 @@ package jcog.tree.rtree;
      */
     double distance(HyperPoint p, int d);
 
-//    default boolean isEntirely(float value) {
-//        int d = dim();
-//        for (int i = 0; i < d; i++) {
-//            float c = coord(i);
-//            if (c != value)
-//                return false;
-//        }
-//        return true;
-//    }
-//
-//    default boolean isEntirely(double value) {
-//        int d = dim();
-//        for (int i = 0; i < d; i++) {
-//            double c = coord(i);
-//            if (c != value)
-//                return false;
-//        }
-//        return true;
-//    }
-//
-//    default boolean isInfNeg() {
-//        return isEntirely(Float.NEGATIVE_INFINITY);
-//    }
-//
-//    default boolean isInfPos() {
-//        return isEntirely(Float.POSITIVE_INFINITY);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

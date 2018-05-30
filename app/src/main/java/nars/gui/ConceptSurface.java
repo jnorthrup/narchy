@@ -45,19 +45,19 @@ public class ConceptSurface extends TabPane {
                                     }
                                 }
 
-                                return 0f; // Float.NaN;
+                                return 0f; 
                             });
                     CheckBox boost = new CheckBox("Boost");
                     return DurSurface.get(new Splitting(
-//                            new PushButton("+ Boost").click((b) -> {
-//                                n.activate(id, 1f);
-//                            }),
+
+
+
                             boost, p
-                            //new PushButton("- Drain").click((b)->{})
+                            
                     , 0.8f), n, (nn) -> {
                         p.update();
                         if (boost.get()) {
-                            n.activate(id, 1f); //activate once per duration if the boost
+                            n.activate(id, 1f); 
                         }
                     });
                 },

@@ -45,13 +45,13 @@ public class VerboseSequence extends Seq {
 	 */
 	public Set<Assembly> match(Set<Assembly> inputState) {
 		Set<Assembly> finalState = inputState;
-		System.out.println(finalState); // be verbose
+		System.out.println(finalState); 
 		for (Parser p : subparsers) {
 			finalState = p.matchAndAssemble(finalState);
 			if (finalState.isEmpty()) {
 				return finalState;
 			}
-			System.out.println(finalState); // be verbose
+			System.out.println(finalState); 
 		}
 		return finalState;
 	}

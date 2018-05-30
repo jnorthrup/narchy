@@ -75,8 +75,8 @@ public class TemporalInductionTest {
     static void testInduction(String a, String b, int dt) {
         int cycles = dt * 24;
         TestNAR t = new TestNAR(NARS.tmp())
-                //.log()
-//                .confTolerance(0.99f)
+                
+
                 .input(a + ". :|:")
                 .inputAt(dt, b + ". :|:")
                 .mustBelieve(cycles, "(" + a + " &&+" + dt + " " + b + ")", 1.00f, 0.81f /*intersectionConf*/, 0)
@@ -96,7 +96,7 @@ public class TemporalInductionTest {
         n.time.dur(1);
 
 
-        //TextOutput.out(n);
+        
 
         n.input("a:b. :|: %1.0;0.9%");
         n.run(5);
@@ -105,30 +105,30 @@ public class TemporalInductionTest {
         n.input("a:b. :|: %0.5;0.9%");
         n.run(1);
 
-        //n.forEachConcept(Concept::print);
+        
 
         TaskConcept c = (TaskConcept) n.conceptualize("a:b");
         assertNotNull(c);
-        //assertEquals("(b-->a). 5+0 %.50;.95%", c.getBeliefs().top(n.time()).toStringWithoutBudget());
+        
 
         BeliefTable b = c.beliefs();
         b.print();
         assertTrue(3 <= b.size());
 
-        //when originality is considered:
-        //assertEquals("(b-->a). 5+0 %0.0;.90%", c.beliefs().top(n.time()).toStringWithoutBudget());
+        
+        
 
-        //most current relevant overall:
+        
         assertEquals(
                 "(b-->a). 5 %0.0;.90%"
-                //"(b-->a). 5 %.19;.92%"
+                
                 , n.belief(c.term(), 5).toStringWithoutBudget());
 
 
-        //least relevant
+        
         assertEquals(
-                //"(b-->a). 0 %1.0;.90%"
-                //"(b-->a). 0 %.83;.92%"
+                
+                
                 "(b-->a). 0 %.86;.91%"
                 , n.belief(c.term(), 0).toStringWithoutBudget());
 
@@ -139,16 +139,16 @@ public class TemporalInductionTest {
 
         NAR n = NARS.tmp();
 
-        //TextOutput.out(n);
+        
 
         n.input("(a ==>+0 b). %1.0;0.7%");
         n.input("(a ==>+5 b). %1.0;0.6%");
         n.run(1);
 
-        //n.forEachActiveConcept(Concept::print);
+        
 
-        //Concept c = n.concept("a:b");
-        //assertEquals("(b-->a). 5+0 %.50;.95%", c.getBeliefs().top().toStringWithoutBudget());
+        
+        
     }
 
     @Test
@@ -159,7 +159,7 @@ public class TemporalInductionTest {
 
 
         n.input("a:b. :|:");
-        //n.frame();
+        
         n.input("a:b? :/:");
         n.run(5);
         n.input("a:b? :/:");
@@ -169,15 +169,15 @@ public class TemporalInductionTest {
         n.input("a:b? :/:");
         n.run(1);
 
-        //n.forEachConcept(Concept::print);
+        
 
-        //Concept c = n.concept("a:b");
-        //assertEquals("(b-->a). 5+0 %.50;.95%", c.getBeliefs().top().toStringWithoutBudget());
+        
+        
     }
 
     @Test
     public void testInductionStability() throws Narsese.NarseseException {
-        //two entirely disjoint events, and all inductable beliefs from them, should produce a finite system that doesn't explode
+        
         NAR d = NARS.tmp();
         d.input("a:b. :|:");
         d.run(5);
@@ -185,18 +185,18 @@ public class TemporalInductionTest {
 
         d.run(200);
 
-        //everything should be inducted by now:
+        
         int before = d.concepts.size();
         int numBeliefs = getBeliefCount(d);
 
-        //System.out.println(numConcepts + " " + numBeliefs);
+        
 
         d.run(60);
 
-        //# unique concepts unchanged:
+        
         int after = d.concepts.size();
         assertEquals(before, after);
-        //assertEquals(numBeliefs, getBeliefCount(d));
+        
 
     }
 
@@ -244,7 +244,7 @@ public class TemporalInductionTest {
         NAR n = NARS.tmp();
 
         n.beliefPriDefault.set(0.1f);
-        //n.deep.set(1f);
+        
 
 
         TemporalMetrics m = new TemporalMetrics(1024);
@@ -259,7 +259,7 @@ public class TemporalInductionTest {
         m.add(new PriMeter(n,"((1) ==> (2))"));
 
 
-        //expose to repeat sequence
+        
         int loops = 32, eventsPerLoop = 3, delayBetweenEvents = 2;
         for (int i = 0; i < loops; i++) {
             for (int j = 0; j < eventsPerLoop; j++) {
@@ -268,7 +268,7 @@ public class TemporalInductionTest {
             }
         }
 
-//        m.printCSV4("/tmp/x.csv");
+
         m.printCSV4(System.out);
     }
 

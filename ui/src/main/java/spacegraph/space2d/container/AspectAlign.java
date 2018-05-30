@@ -61,22 +61,22 @@ public class AspectAlign extends UnitContainer {
     public AspectAlign scale(float sx, float sy) {
         this.scaleX = sx;
         this.scaleY = sy;
-        layout(); //TODO only if changed
+        layout(); 
         return this;
     }
 
     @Override
     protected void doLayout(int dtMS) {
 
-        //        v2 scale = this.scale;
-//
-//        float sx, sy;
+        
 
-        //local size
+
+
+        
         final float w = w();
         final float h = h();
 
-        //target's relative size being computed
+        
         float tw = w * scaleX;
         float th = h * scaleY;
         final float otw = tw, oth = th;
@@ -85,68 +85,68 @@ public class AspectAlign extends UnitContainer {
         if (aspect == aspect /* not NaN */) {
 
             if (th > tw/aspect) {
-//                if (aspect >= 1) {
-                    //taller than wide
-                    //tw = w;
+
+                    
+                    
                     th = tw * aspect;
-//                } else {
-//                    //wider than tall
-//                    tw = vw;
-                    //th = h*aspect;
-                //}
+
+
+
+                    
+                
             }
             if (tw * aspect < th) {
-//                if (aspect >= 1) {
-                    //th = h;
+
+                    
                     tw = th / aspect;
-                    //th = tw / aspect;
-//                } else {
-//                    tw = vw*aspect;
-//                    th = vh;
-//                }
+                    
+
+
+
+
             }
             if (tw/aspect > th) {
-                //wider than tall
+                
                 tw = th * aspect;
             }
-            //TODO fix:
-//            if (th / tw < aspect) {
-//                //wider, shrink y
-//                th = tw * aspect;
-//            }
-//            if (th / tw > aspect) {
-//                //taller, shrink x
-//                tw = th / aspect;
-//            }
+            
+
+
+
+
+
+
+
+
             if (tw > otw) {
-                //too wide
+                
                 th = otw/(tw/th);
                 tw = otw;
             }
             if (th > oth) {
-                //too tall
+                
                 tw = oth/(th/tw);
                 th = oth;
             }
 
-//            if (vh / vw > aspect) {
-//                //wider, shrink y
-//                tw = vw;
-//                th = vw * aspect;
-//            } else {
-//                //taller, shrink x
-//                tw = vh * aspect;
-//                th = vh;
-//            }
+
+
+
+
+
+
+
+
+
         }
 
         float tx, ty;
         switch (align) {
 
-            //TODO others
+            
 
             case Center:
-                //HACK TODO figure this out
+                
                 tx = bounds.left() + (w - tw) / 2f;
                 ty = bounds.top() + (h - th) / 2f;
                 break;
@@ -197,9 +197,9 @@ public class AspectAlign extends UnitContainer {
 
 
 
-//    public spacegraph.AspectAlign align(Align align, float width, float height) {
-//        return align(align, height / width);
-//    }
+
+
+
 
     public AspectAlign scale(float s) {
         return scale(s, s);
@@ -225,7 +225,7 @@ public class AspectAlign extends UnitContainer {
          */
         RightTop, LeftTop,
 
-        //TODO etc...
+        
 
         RightTopOut, LeftTopOut
     }

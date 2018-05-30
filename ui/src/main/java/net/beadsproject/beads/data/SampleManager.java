@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.data;
 
@@ -79,7 +79,7 @@ public class SampleManager {
                 samples.put(ref, sample);
                 if (verbose) System.out.println("Loaded " + fn);
             } catch (Exception e) {
-                //swallow exception
+                
             }
         }
         return sample;
@@ -131,7 +131,7 @@ public class SampleManager {
      * @param maxItems   number of items to limit to.
      */
     public static List<Sample> group(String groupName, String folderName, int maxItems) {
-        //first try interpreting the folderName as a system resource
+        
         File theDirectory = null;
         try {
             URL url = ClassLoader.getSystemResource(folderName);
@@ -141,7 +141,7 @@ public class SampleManager {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        //failing that, try it as a plain file path
+        
         if (theDirectory == null || !theDirectory.exists()) {
             theDirectory = new File(folderName);
         }
@@ -193,7 +193,7 @@ public class SampleManager {
                     group.add(sample);
                 }
             } catch (Exception e) {
-                //snuff the exception
+                
             }
         }
         for (SampleGroupListener l : listeners) {

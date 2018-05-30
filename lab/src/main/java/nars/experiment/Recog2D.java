@@ -80,55 +80,55 @@ public class Recog2D extends NAgentX {
         g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        //n.beliefConfidence(0.2f);
-
-//        imgTrainer.out.keySet().forEach(x ->
-//                        predictors.addAll(
-//                                new TaskBuilder($.seq(x.term(), 1, happy.term()), '?', null).time(now, now),
-//                                new TaskBuilder($.impl($.inh($.varQuery("wat"), $.the("cam")), 0, happy.term()), '?', null) {
-//                                    @Override
-//                                    public boolean onAnswered(Task answer) {
-//                                        System.err.println(this + "\n\t" + answer);
-//                                        return false;
-//                                    }
-//                                }.time(now, now)
-//                        )
-//                predictors.add(new TaskBuilder(x, Symbols.QUESTION, null).present(nar.time()))
+        
 
 
-        //retina
-//        Sensor2D spR = senseCameraRetina($.p(id, $.the("full")).toString(),
-//                () -> canvas, w, h, v -> $.t(v, nar.confDefault(BELIEF)));
 
-        //still
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+        
         sp = senseCamera(
                 $.the("x")
-                //$.p(id,
-                //$.the("zoom")
-                //)
+                
+                
+                
                 ,
                 /*new Blink*/(new Scale(() -> canvas, w, h)/*, 0.8f*/));
 
-        //nar.log();
+        
 
         outs = new BeliefVector(ii -> $.inst($.the( ii), $.the("x")), maxImages, this);
         train = new Training(
-                //sensors,
+                
                 Lists.newArrayList(
                         sp.src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) sp.src).actions ) :
                                 sensors.keySet()
                 ),
                 outs, nar);
 
-        //new Thread(() -> {
+        
         SpaceGraph.window(conceptTraining(outs, nar), 800, 600);
-        //}).start();
+        
 
     }
 
     Surface conceptTraining(BeliefVector tv, NAR nar) {
 
-        //LinkedHashMap<TaskConcept, BeliefVector.Neuron> out = tv.out;
+        
 
         Plot2D p;
 
@@ -138,9 +138,9 @@ public class Recog2D extends NAgentX {
 
                 p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
                                 reward
-                        //tv.errorSum()
+                        
                 ),
-                //row(s = new Plot2D(history, Plot2D.BarWave).add("Rward", () -> rewardValue)),
+                
 
                 new AspectAlign(new CameraSensorView(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
 
@@ -161,16 +161,16 @@ public class Recog2D extends NAgentX {
                         } else {
                             conf = nar.confMin.floatValue();
                             float defaultFreq =
-                                    0.5f; //interpret no-belief as maybe
-                            //Float.NaN  //use NaN to force learning of negation as separate from no-belief
+                                    0.5f; 
+                            
                             freq = defaultFreq;
                         }
 
 
                         Draw.colorBipolar(gl,
                                 2f * (freq - 0.5f)
-                                //2f * (freq - 0.5f) * conf  //unipolar (1 color)
-                                //2f * (-0.5f + freq) //bipolar (2 colors)
+                                
+                                
                         );
 
                         float m = 0.5f * conf;
@@ -181,19 +181,19 @@ public class Recog2D extends NAgentX {
                             float error = nn.error;
                             if (error != error) {
 
-                                //training phase
-                                //Draw.rect(gl, m / 2, m / 2, 1 - m, 1 - m);
+                                
+                                
                             } else {
 
-                                //verification
+                                
 
-                                //draw backgroudn/border
-                                //gl.glColor3f(error, 1f - error, 0f);
-//
-//                                float fontSize = 0.08f;
-//                                gl.glColor3f(1f, 1f, 1f);
-//                                Draw.text(gl, c.term().toString(), fontSize, m / 2, 1f - m / 2, 0);
-//                                Draw.text(gl, "err=" + n2(error), fontSize, m / 2, m / 2, 0);
+                                
+                                
+
+
+
+
+
                             }
                         }
 
@@ -210,14 +210,14 @@ public class Recog2D extends NAgentX {
 
             redraw();
 
-            //if (neural.get()) {
-                //if (nar.time() < trainFrames) {
+            
+                
                 outs.expect(image);
-            //}
-            //} else {
-            //  outs.expect(-1);
-            //  outs.verify();
-            //}
+            
+            
+            
+            
+            
 
 
             if (neural.get()) {
@@ -225,7 +225,7 @@ public class Recog2D extends NAgentX {
             }
 
             p.update();
-            //s.update();
+            
         });
 
         return g;
@@ -251,26 +251,26 @@ public class Recog2D extends NAgentX {
 
             this.outs.neurons[i].update();
             error += this.outs.neurons[i].error;
-//
-//            long when = nar.time();
-//            Truth g = nar.beliefTruth(outs.concepts[i], when);
-//
-//            if (g == null) {
-//                error += 0.5;
-//            } else {
-//                error += Math.abs(g.freq() - ((image == i) ? 1f : 0f)); //smooth
-//                //error += ((image == i) ? g.freq() > 0.5f : g.freq() < 0.5f) ? 1f : 0f; //discrete
-//            }
+
+
+
+
+
+
+
+
+
+
         }
 
         return Util.clamp( 2 * -(error/maxImages - 0.5f), -1, +1);
 
-//        float sharp = 1;
-//        return (float) (1f - 2 * Math.pow((error / maxImages), sharp));
 
-//            r = 0.5f - (float) outs.errorSum()
-//                    / outs.states;
-        //return r;
+
+
+
+
+        
 
 
     }
@@ -289,12 +289,12 @@ public class Recog2D extends NAgentX {
         FontMetrics fontMetrics = g.getFontMetrics();
 
         String s = String.valueOf((char) ('0' + image));
-        //LineMetrics lineMetrics = fontMetrics.getLineMetrics(s, g);
+        
         Rectangle2D sb = fontMetrics.getStringBounds(s, g);
 
-        //System.out.println(s + " : " + sb);
+        
 
-        //g.rotate(nar.random.nextFloat() * dTheta, w/2, h/2);
+        
 
         g.drawString(s, Math.round(w / 2f - sb.getCenterX()), Math.round(h / 2f - sb.getCenterY()));
     }
@@ -305,11 +305,11 @@ public class Recog2D extends NAgentX {
 
             Recog2D a = new Recog2D(n);
 
-            //Vis.conceptWindow("(x(#x,#y) ==>+- ({#z}-->x))", n);
-            //Vis.conceptWindow("(({#a}-->x) <-> ({#b}-->x))", n);
+            
+            
 
-            //a.nar.freqResolution.set(0.07f);
-            //a.nar.termVolumeMax.set(16);
+            
+            
 
             return a;
 
@@ -329,7 +329,7 @@ public class Recog2D extends NAgentX {
          * <p>
          * For more detail I refer to
          * <p>
-         * http://page.mi.fu-berlin.de/rojas/neural/chapter/K8.pdf
+         * http:
          */
         private final float momentum = 0.6f;
 
@@ -353,7 +353,7 @@ public class Recog2D extends NAgentX {
                 i = new float[s];
             for (int j = 0, insSize = ins.size(); j < insSize; j++) {
                 float b = nar.beliefTruth(ins.get(j), when).freq();
-                if (b != b) //dont input NaN
+                if (b != b) 
                     b = 0.5f;
                 i[j] = b;
             }
@@ -367,7 +367,7 @@ public class Recog2D extends NAgentX {
             float errSum;
             if (train) {
                 float[] err = trainer.put(i, outs.expected(null), learningRate, momentum);
-                //System.err.println("error=" + Texts.n2(err));
+                
                 errSum = Util.sumAbs(err) / err.length;
                 System.err.println("  error sum=" + errSum);
             } else {
@@ -378,7 +378,7 @@ public class Recog2D extends NAgentX {
                 float[] o = trainer.get(i);
                 for (int j = 0, oLength = o.length; j < oLength; j++) {
                     float y = o[j];
-                    //nar.goal(
+                    
                     float c = nar.confDefault(BELIEF) * (1f - errSum);
                     if (c > 0) {
                         nar.believe(
@@ -387,7 +387,7 @@ public class Recog2D extends NAgentX {
                     }
 
                 }
-                //System.out.println(Arrays.toString(o));
+                
             }
         }
     }
@@ -398,9 +398,9 @@ public class Recog2D extends NAgentX {
      */
     public static class BeliefVector {
 
-//        public double errorSum() {
-//            return out.values().stream().mapToDouble(x -> x.error).map(x -> x == x ? x : 1f).sum();
-//        }
+
+
+
 
         static class Neuron {
 
@@ -482,93 +482,93 @@ public class Recog2D extends NAgentX {
                         Neuron n = neurons[i] = new Neuron();
 
                         return a.action(tt, (bb, x)-> {
-                            //return a.react(tt, (b)->{
+                            
 
                             float predictedFreq = x!=null ? x.expectation() : 0.5f;
 
-                                //n.actual(x.freq(), x.conf());
+                                
 
-//                            float curiosity = 0.02f; //HACK
-//                            if (a.nar.random().nextFloat() < curiosity) {
-////                                a.nar.believe(concepts[i].term(), Tense.Present,
-////                                        a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF) / 4f);
-//                                //return $.t(
-//                                  //      a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF)/4f);
-//                                predictedFreq = a.nar.random().nextBoolean() ? 0 : 1f;
-//                            }
-//                            if (x == null)
-//                                return $.t(0, a.nar.confDefault(BELIEF));
-//                            else
-//                                return x;
 
-                            //float confMin = a.nar.confMin.floatValue() * 4;
+
+
+
+
+
+
+
+
+
+
+
+
+                            
                             n.actual(predictedFreq, x!=null ? x.conf() : 0);
 
-                            //return $.t(n.predictedFreq, n.predictedConf);
+                            
                             return x;
                         });
-//                        @NotNull GoalActionConcept aa = a.action(tt, (b, d) -> {
-//    //                        if (train) {
-//    //                            float ee = expected(i);
-//    //
-//    //                            float thresh = 0.1f;
-//    //                            if (d==null || Math.abs(ee-d.freq())>thresh) {
-//    //                                //correction
-//    //                                a.nar.goal(tt, Tense.Present, ee, a.gamma);
-//    //                                //return null;
-//    //                            }
-//    //
-//                            //return $.t(ee, a.alpha() );
-//    //                            //return null;
-//    //                        }
-//
-//    //                        if (b!=null && d!=null) {
-//    //                            return d.confMult(0.5f + 0.5f * Math.abs(d.freq()-b.freq()));
-//    //                        } else {
-//                            //return d!=null ? d.confWeightMult(0.5f) : null;
-//                            //}
-//
-//                            return $.t(transferFunction.valueOf(d!=null ? d.freq() : 0), nar.confDefault(BELIEF));
-//
-//                            //return d!=null ? new PreciseTruth(d.freq(), d.conf()goalInfluence.d.eviMult(goalInfluence, a.nar.dur()) : null;
-//                        });
-//                        //aa.resolution.setValue(1f);
-//                        return aa;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     }
-    //                        a.sense(namer.apply(i), () -> {
-    //                            if (train) {
-    //                                return out.get(outVector[i]).expected;// ? 1f : 0.5f - (1f / states);
-    //                            } else {
-    //                                return Float.NaN; //no prediction
-    //                            }
-    //                        }, 0.01f, (v) -> $.t(v, a.alpha/2f))
-    //                            .pri(0.9f)
-    //                            //.timing(0, 1) //synchronous feed
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
             ).toArray(TaskConcept[]::new);
 
 
-//            a.onFrame(() -> {
-//                long now = nar.time();
-//                int dur = nar.dur();
-//                out.forEach((cc, nnn) -> {
-//
-//                    Truth t =
-//                            //cc.belief(now, dur);
-//                            nar.goalTruth(cc, now);
-//
-//                    float f, c;
-//                    if (t == null) {
-//                        f = Float.NaN;
-//                        c = Float.NaN;
-//                    } else {
-//                        f = t.freq();
-//                        c = t.conf();
-//                    }
-//                    nnn.actual(f, c);
-//                });
-//
-//            });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         public float expected(int i) {
@@ -579,12 +579,12 @@ public class Recog2D extends NAgentX {
         public float actual(int state) {
             return neurons[state].predictedFreq;
         }
-    //    public float actual(Termed<Compound> state, long when) {
-    //        return nar.concept(state).beliefFreq(when);
-    //    }
+    
+    
+    
 
         void expect(IntToFloatFunction stateValue) {
-            //long now = nar.time();
+            
             for (int i = 0; i < states; i++)
                 neurons[i].expect(stateValue.valueOf(i));
         }
@@ -592,25 +592,25 @@ public class Recog2D extends NAgentX {
         public void expect(int onlyStateToBeOn) {
             float offValue =
                     0f;
-            //0.5f - (1f/states)*0.5f;
-            //1f/states * 0.5f;
-            //0.5f;
+            
+            
+            
 
             expect(ii -> ii == onlyStateToBeOn ? 1f : offValue);
         }
 
-    //    public void train() {
-    //        train = true;
-    //        verify = false;
-    //    }
+    
+    
+    
+    
 
-    //    public void verify() {
-    //        verify = true;
-    //        train = false;
-    //    }
+    
+    
+    
+    
 
-//        public float error(Compound c) {
-//            return out.get(c).error;
-//        }
+
+
+
     }
 }

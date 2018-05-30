@@ -26,7 +26,7 @@ public class SubOfConstraint extends RelationConstraint {
             (canEqual ? "|=" : "") +
             (polarityCompare!=0 ? (polarityCompare==-1 ? "--" : "++") : "+-"));
 
-        //TODO compile these as separate subclasses and assign each a different cost
+        
         this.forward = !reverse;
         this.containment = contains;
         this.canEqual = canEqual;
@@ -56,7 +56,7 @@ public class SubOfConstraint extends RelationConstraint {
             }
         }
 
-        //if posOrNeg, discover if the negative case is valid.  positive (normal) case is tested after
+        
         return !containment.test( container, contentP, polarityCompare==0);
     }
 }

@@ -2,13 +2,13 @@ package jcog.learn.ntm.memory.address.content;
 
 import jcog.learn.ntm.control.Unit;
 
-//This class implements equation from page 8 - _b i exped to ensure that it will be positive
+
 public class BetaSimilarity extends Unit {
     public final Unit _beta;
 
     public final SimilarityMeasure measure;
 
-    //public final Unit betaSimilarity;
+    
 
     /** Key strength beta */
     private final double B;
@@ -17,13 +17,13 @@ public class BetaSimilarity extends Unit {
         super(0);
         _beta = beta;
         measure = m;
-        //Ensuring that beta will be positive
+        
         B = Math.exp(_beta.value);
 
-//        //betaSimilarity = (m != null) ?
-//                new Unit(B * m.similarity.value)
-//                :
-//                new Unit(0.0);
+
+
+
+
         this.value  = (m != null) ? (B * m.similarity.value) : 0.0;
     }
 
@@ -40,7 +40,7 @@ public class BetaSimilarity extends Unit {
 
     public static BetaSimilarity[][] getTensor2(int x, int y) {
         BetaSimilarity[][] tensor = new BetaSimilarity[x][y];
-        //ASK< necessary >
+        
         for (int i = 0;i < x;i++)
         {
             tensor[i] = getVector(y);

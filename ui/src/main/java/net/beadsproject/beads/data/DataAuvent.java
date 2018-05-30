@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.data;
 
@@ -135,20 +135,20 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
             ((DataBeadReceiver) o).sendData(this);
         } else {
             for (Entry<String, Object> stringObjectEntry : properties.entrySet()) {
-                // generate the correct method name
+                
                 String methodName = "set" + (stringObjectEntry.getKey()).substring(0, 1).toUpperCase()
                         + (stringObjectEntry.getKey()).substring(1);
-                // get the arg object
+                
                 Object theArg = stringObjectEntry.getValue();
                 try {
-                    // find the correct method, with appropriate argument type
-                    // (hope this works with primitives)
+                    
+                    
                     Method m = o.getClass().getMethod(methodName,
                             theArg.getClass());
-                    // set it
+                    
                     m.invoke(o, theArg);
                 } catch (Exception e) {
-                    // ignore exceptions
+                    
                 }
             }
         }

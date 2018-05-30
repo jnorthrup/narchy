@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.agents;
 
@@ -73,10 +73,10 @@ public abstract class AbstractAgent {
         this.useGUI = useGUI;
         this.namedPipesBasename = namedPipesBasename;
 
-        // Create the color palette we will use to interpret ALE data
+        
         ColorPalette palette = makePalette("NTSC");
 
-        // Create an object to convert indexed images to Java images
+        
         converter = new ScreenConverter(palette);
 
         init();
@@ -103,14 +103,14 @@ public abstract class AbstractAgent {
      */
     public final void init() {
         if (useGUI) {
-            // Create the GUI
+            
             ui = new AgentGUI();
         }
         else {
             ui = new NullUI();
         }
 
-        // Create the relevant I/O objects
+        
         initIO();
     }
 
@@ -121,13 +121,13 @@ public abstract class AbstractAgent {
         io = null;
 
         try {
-            // Initialize the pipes; use named pipes if requested
+            
             if (namedPipesBasename != null)
                 io = new ALEPipes(namedPipesBasename + "out", namedPipesBasename + "in");
             else
                 io = new ALEPipes();
 
-            // Determine which information to request from ALE
+            
             io.setUpdateScreen(useGUI || wantsScreenData());
             io.setUpdateRam(wantsRamData());
             io.setUpdateRL(wantsRLData());
@@ -146,37 +146,37 @@ public abstract class AbstractAgent {
     public void run() {
         boolean done = false;
 
-        // Loop until we're done
+        
         while (!done) {
-            // Obtain relevant data from ALE
+            
             done = io.observe();
-            // The I/O channel will return true once EOF is received
+            
             if (done) break;
             
-            // Obtain the screen matrix
+            
             ScreenMatrix screen = io.getScreen();
-            // Pass it on to UI
+            
             updateImage(screen);
-            // ... and to the agent
+            
             observe(screen, io.getRAM(), io.getRLData());
 
-            // Request an action from the agent
+            
             int action = selectAction();
-            // Send it back to ALE
+            
             done = io.act(action);
 
-            // Ask the agent whether it wants us to pause
+            
             long pauseLength = getPauseLength();
-            // If so, pause!
+            
             if (pauseLength > 0) {
                 pause(pauseLength);
             }
 
-            // The agent also tells us when to terminate
+            
             done |= shouldTerminate();
         }
 
-        // Clean up the GUI
+        
         ui.die();
     }
 
@@ -185,17 +185,17 @@ public abstract class AbstractAgent {
      * @param currentScreen
      */
     protected void updateImage(ScreenMatrix currentScreen) {
-        // We know that the NullUI does not want image data, so don't spend time
-        //  converting the image
+        
+        
         if (ui instanceof NullUI) {
             ui.updateFrameCount();
             return;
         }
         
-        // Convert the screen matrix to an image
+        
         BufferedImage img = converter.convert(currentScreen);
 
-        // Provide the new image to the UI
+        
         ui.updateFrameCount();
         ui.setImage(img);
         ui.refresh();

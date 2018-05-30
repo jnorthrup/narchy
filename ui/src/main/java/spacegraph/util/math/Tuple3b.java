@@ -40,7 +40,7 @@ package spacegraph.util.math;
  * bytes were unsigned.
  * Values greater than 127 can be assigned to a byte variable using a
  * type cast.  For example:
- * <ul>byteVariable = (byte) intValue; // intValue can be > 127</ul>
+ * <ul>byteVariable = (byte) intValue; 
  * If intValue is greater than 127, then byteVariable will be negative.  The
  * correct value will be extracted when it is used (by masking off the upper
  * bits).
@@ -234,11 +234,11 @@ public abstract class Tuple3b implements java.io.Serializable, Cloneable {
      */
     @Override
     public Object clone() {
-	// Since there are no arrays we can just use Object.clone()
+	
 	try {
 	    return super.clone();
 	} catch (CloneNotSupportedException e) {
-	    // this shouldn't happen, since we are Cloneable
+	    
 	    throw new InternalError();
 	}
     }

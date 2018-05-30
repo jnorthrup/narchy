@@ -41,7 +41,7 @@ public class IntTestCase {
 	}
 	
 	@Test public void testEqualsToLong() {
-		// TODO Test Int numbers for equality with Long numbers
+		
 	}
 	
 	@Test public void testEqualsToDouble() {
@@ -51,7 +51,7 @@ public class IntTestCase {
 	}
 	
 	@Test public void testEqualsToFloat() {
-		// TODO Test Int numbers for equality with Float numbers
+		
 	}
 
 }

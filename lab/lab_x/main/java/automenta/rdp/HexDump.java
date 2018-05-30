@@ -90,7 +90,7 @@ public class HexDump {
 			}
 
 			index += ": ";
-			// out.print(index + ": ");
+			
 			for (int i = 0; i < 16; i++) {
 				if (count >= data.length) {
 					break;
@@ -104,15 +104,15 @@ public class HexDump {
 					break;
 				default:
 					logger.debug(index);
-					// out.println("");
+					
 					return;
 				}
 				index += (number + ' ');
-				// out.print(number + " ");
+				
 				count++;
 			}
 			logger.debug(index);
-			// out.println("");
+			
 		}
 
 	}

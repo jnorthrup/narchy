@@ -29,8 +29,8 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
         Video(NAR nar, Webcam cam) {
             super($.p($.the("video"), $.the(cam.getName())));
             this.cam = cam;
-            surface = new Gridding(); //blank
-            nar.off(this); //default off
+            surface = new Gridding(); 
+            nar.off(this); 
         }
 
         public Surface surface() {
@@ -60,35 +60,35 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
         }
     }
 
-//    public static void main(String[] args) {
-//
-//        //init();
-//
-//        NAR n = NARS.tmp();
-//        n.log();
-//        NARHear a = new NARHear(n);
-//        a.runFPS(1f);
-//        Loop loop = n.startFPS(10);
-//
-//        SpaceGraph.window(
-//                grid(
-//                        row(
-//                                a.devices.get(7).surface()
-//                        )
-////                    new MatrixView(ae.xx, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; }),
-////                    new MatrixView(ae.y, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; })
-//                        //new MatrixView(ae.W.length, ae.W[0].length, MatrixView.arrayRenderer(ae.W)),
-//                        //Vis.conceptLinePlot(nar, freqInputs, 64)
-//                ),
-//                1200, 1200);
-//
-////        this.loop = nar.exe.loop(fps, () -> {
-////            if (enabled.get()) {
-////                this.now = nar.time();
-////                senseAndMotor();
-////                predict();
-////            }
-////        });
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

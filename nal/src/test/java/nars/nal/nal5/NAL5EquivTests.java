@@ -18,18 +18,18 @@ public class NAL5EquivTests extends NALTest {
     public void comparisonEqui() {
 
         TestNAR tester = test;
-        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); //.en("If robin is a type of bird then robin is a type of animal.");
-        tester.believe("<<robin --> bird> ==> <robin --> [flying]>>", 0.8f, 0.9f); //.en("If robin is a type of bird then robin can fly.");
-        tester.mustBelieve(cycles, "<<robin --> animal> <=> <robin --> [flying]>>", 0.80f, 0.45f); //.en("I guess robin is a type of animal if and only if robin can fly.");
+        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
+        tester.believe("<<robin --> bird> ==> <robin --> [flying]>>", 0.8f, 0.9f); 
+        tester.mustBelieve(cycles, "<<robin --> animal> <=> <robin --> [flying]>>", 0.80f, 0.45f); 
     }
 
     @Test
     public void comparison2() {
 
         TestNAR tester = test;
-        tester.believe("<<robin --> bird> ==> <robin --> animal>>", 0.7f, 0.9f); //.en("If robin is a type of bird then usually robin is a type of animal.");
-        tester.believe("<<robin --> [flying]> ==> <robin --> animal>>"); //.en("If robin can fly then robin is a type of animal.");
-        tester.mustBelieve(cycles, "<<robin --> bird> <=> <robin --> [flying]>>", 0.70f, 0.45f); //.en("I guess robin is a type of bird if and only if robin can fly.");
+        tester.believe("<<robin --> bird> ==> <robin --> animal>>", 0.7f, 0.9f); 
+        tester.believe("<<robin --> [flying]> ==> <robin --> animal>>"); 
+        tester.mustBelieve(cycles, "<<robin --> bird> <=> <robin --> [flying]>>", 0.70f, 0.45f); 
     }
 
     @Test
@@ -44,11 +44,11 @@ public class NAL5EquivTests extends NALTest {
     public void comparisonImpl() {
 
         TestNAR tester = test;
-        tester.believe("<x ==> y>", 1f, 0.9f); //.en("If robin is a type of bird then robin is a type of animal.");
-        tester.believe("<x ==> z>", 0.8f, 0.9f); //.en("If robin is a type of bird then robin can fly.");
-        //was <=>
-        tester.mustBelieve(cycles, "<y ==> z>", 0.80f, 0.45f); //.en("I guess robin is a type of animal if and only if robin can fly.");
-        tester.mustBelieve(cycles, "<z ==> y>", 0.80f, 0.45f); //.en("I guess robin is a type of animal if and only if robin can fly.");
+        tester.believe("<x ==> y>", 1f, 0.9f); 
+        tester.believe("<x ==> z>", 0.8f, 0.9f); 
+        
+        tester.mustBelieve(cycles, "<y ==> z>", 0.80f, 0.45f); 
+        tester.mustBelieve(cycles, "<z ==> y>", 0.80f, 0.45f); 
     }
 
     @Test
@@ -57,7 +57,7 @@ public class NAL5EquivTests extends NALTest {
         TestNAR t = test;
         t.believe("<x ==> z>", 0.1f, 0.9f);
         t.believe("<y ==> z>", 1.0f, 0.9f);
-        //was <=>
+        
         t.mustBelieve(cycles, "<x ==> y>", 0.10f, 0.45f);
         t.mustBelieve(cycles, "<y ==> x>", 0.10f, 0.45f);
     }
@@ -68,17 +68,17 @@ public class NAL5EquivTests extends NALTest {
 
         TestNAR tester = test;
 
-        //tester.believe("<<robin --> animal> <=> <robin --> bird>>"); //.en("Robin is a type of animal if and only if robin is a type of bird.");
-        tester.believe("<<robin --> animal> ==> <robin --> bird>>"); //.en("Robin is a type of animal if and only if robin is a type of bird.");
-        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); //.en("Robin is a type of animal if and only if robin is a type of bird.");
+        
+        tester.believe("<<robin --> animal> ==> <robin --> bird>>"); 
+        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
 
-        //tester.believe("<<robin --> bird> <=> <robin --> [flying]>>", 0.9f, 0.9f); //.en("Robin is a type of bird if and only if robin can fly.");
-        tester.believe("<<robin --> bird> ==> <robin --> [flying]>>", 0.9f, 0.9f); //.en("Robin is a type of bird if and only if robin can fly.");
-        tester.believe("<<robin --> [flying]> ==> <robin --> bird>>", 0.9f, 0.9f); //.en("Robin is a type of bird if and only if robin can fly.");
+        
+        tester.believe("<<robin --> bird> ==> <robin --> [flying]>>", 0.9f, 0.9f); 
+        tester.believe("<<robin --> [flying]> ==> <robin --> bird>>", 0.9f, 0.9f); 
 
-        //tester.mustBelieve(cycles, " <<robin --> animal> <=> <robin --> [flying]>>", 0.90f, 0.81f); //.en("Robin is a type of animal if and only if robin can fly.");
-        tester.mustBelieve(cycles, " <<robin --> animal> ==> <robin --> [flying]>>", 0.90f, 0.73f /*0.81f*/); //.en("Robin is a type of animal if and only if robin can fly.");
-        tester.mustBelieve(cycles, " <<robin --> [flying]> ==> <robin --> animal>>", 0.90f, 0.73f /*0.81f*/); //.en("Robin is a type of animal if and only if robin can fly.");
+        
+        tester.mustBelieve(cycles, " <<robin --> animal> ==> <robin --> [flying]>>", 0.90f, 0.73f /*0.81f*/); 
+        tester.mustBelieve(cycles, " <<robin --> [flying]> ==> <robin --> animal>>", 0.90f, 0.73f /*0.81f*/); 
     }
 
 
@@ -108,9 +108,9 @@ public class NAL5EquivTests extends NALTest {
     public void analogy() {
 
         TestNAR tester = test;
-        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); //.en("If robin is a type of bird then robin is a type of animal.");
-        tester.believe("<<robin --> bird> <=> <robin --> [flying]>>", 0.80f, 0.9f); //.en("Usually, robin is a type of bird if and only if robin can fly.");
-        tester.mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> animal>>", 0.80f, 0.65f); //.en("If robin can fly then probably robin is a type of animal.");
+        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
+        tester.believe("<<robin --> bird> <=> <robin --> [flying]>>", 0.80f, 0.9f); 
+        tester.mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> animal>>", 0.80f, 0.65f); 
 
     }
 
@@ -119,10 +119,10 @@ public class NAL5EquivTests extends NALTest {
     public void analogy2() {
 
         TestNAR tester = test;
-        tester.believe("<robin --> bird>"); //.en("Robin is a type of bird.");
-        tester.believe("<<robin --> bird> <=> <robin --> [flying]>>", 0.80f, 0.9f); //.en("Usually, robin is a type of bird if and only if robin can fly.");
+        tester.believe("<robin --> bird>"); 
+        tester.believe("<<robin --> bird> <=> <robin --> [flying]>>", 0.80f, 0.9f); 
         tester.mustBelieve(cycles, "<robin --> [flying]>", 0.80f,
-                0.65f /*0.81f*/); //.en("I guess usually robin can fly.");
+                0.65f /*0.81f*/); 
 
     }
 
@@ -130,9 +130,9 @@ public class NAL5EquivTests extends NALTest {
     public void conversions_between_Implication_and_Equivalence() {
 
         TestNAR tester = test;
-        tester.believe("<<robin --> [flying]> ==> <robin --> bird>>", 0.9f, 0.9f); //.en("If robin can fly then robin is a type of bird.");
-        tester.believe("<<robin --> bird> ==> <robin --> [flying]>>", 0.9f, 0.9f); //.en("If robin is a type of bird then robin can fly.");
-        tester.mustBelieve(cycles, " <<robin --> bird> <=> <robin --> [flying]>>", 0.81f, 0.81f); //.en("Robin can fly if and only if robin is a type of bird.");
+        tester.believe("<<robin --> [flying]> ==> <robin --> bird>>", 0.9f, 0.9f); 
+        tester.believe("<<robin --> bird> ==> <robin --> [flying]>>", 0.9f, 0.9f); 
+        tester.mustBelieve(cycles, " <<robin --> bird> <=> <robin --> [flying]>>", 0.81f, 0.81f); 
 
     }
 }

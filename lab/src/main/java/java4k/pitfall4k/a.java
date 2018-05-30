@@ -17,7 +17,7 @@ package java4k.pitfall4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public class a extends GamePanel {
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 	@Override
@@ -115,7 +115,7 @@ public class a extends GamePanel {
 		final int SPRITE_HARRY_RUNNING_1 = 46;
 		final int SPRITE_HARRY_RUNNING_2 = 47;
 		final int SPRITE_HARRY_RUNNING_3 = 48;
-		final int SPRITE_HARRY_RUNNING_4 = 49; // also jumping sprite
+		final int SPRITE_HARRY_RUNNING_4 = 49; 
 
 		final int SCENE_LADDER = 0;
 		final int SCENE_LADDER_AND_HOLES = 1;
@@ -154,45 +154,45 @@ public class a extends GamePanel {
 		final int OBJECT_TYPE = 5;
 		final int OBJECT_SPRITE_INDEX_2 = 6;
 
-		final int BROWN = 0x69690F; // a
-		final int DARK_BROWN = 0x484800; // b
-		final int YELLOW = 0xFCFC54; // c
-		final int LIGHT_ORANGE = 0xECC860; // d
-		final int ORANGE = 0xFCBC74; // e
-		final int RED = 0xA71A1A; // f
-		final int YELLOW_GREEN = 0x86861D; // g
-		final int PINK = 0xE46F6F; // h
-		final int GREEN = 0x6E9C42; // i
-		final int BLUE = 0x2D6D98; // j
-		final int BLACK = 0x000000; // k
-		final int DARK_GRAY = 0x8E8E8E; // l
-		final int WHITE = 0xECECEC; // m
-		final int GRAY = 0xD6D6D6; // n
-		final int DARK_GREEN = 0x355F18; // o
-		final int DARK_YELLOW = 0xBBBB35; // p
-		final int DARKEST_GRAY = 0x6F6F6F; // q
-		final int DARKEST_GREEN = 0x143C00; // r
-		final int LIGHT_GREEN = 0x5CBA5C; // s
+		final int BROWN = 0x69690F; 
+		final int DARK_BROWN = 0x484800; 
+		final int YELLOW = 0xFCFC54; 
+		final int LIGHT_ORANGE = 0xECC860; 
+		final int ORANGE = 0xFCBC74; 
+		final int RED = 0xA71A1A; 
+		final int YELLOW_GREEN = 0x86861D; 
+		final int PINK = 0xE46F6F; 
+		final int GREEN = 0x6E9C42; 
+		final int BLUE = 0x2D6D98; 
+		final int BLACK = 0x000000; 
+		final int DARK_GRAY = 0x8E8E8E; 
+		final int WHITE = 0xECECEC; 
+		final int GRAY = 0xD6D6D6; 
+		final int DARK_GREEN = 0x355F18; 
+		final int DARK_YELLOW = 0xBBBB35; 
+		final int DARKEST_GRAY = 0x6F6F6F; 
+		final int DARKEST_GREEN = 0x143C00; 
+		final int LIGHT_GREEN = 0x5CBA5C; 
 
-		final int[] COLORS = { BROWN, // 0
-				DARK_BROWN, // 1
-				YELLOW, // 2
-				LIGHT_ORANGE, // 3
-				ORANGE, // 4
-				RED, // 5
-				YELLOW_GREEN, // 6
-				PINK, // 7
-				GREEN, // 8
-				BLUE, // 9
-				BLACK, // 10
-				DARK_GRAY, // 11
-				WHITE, // 12
-				GRAY, // 13
-				DARK_GREEN, // 14
-				DARK_YELLOW, // 15
-				DARKEST_GRAY, // 16
-				DARKEST_GREEN, // 17
-				LIGHT_GREEN, // 18
+		final int[] COLORS = { BROWN, 
+				DARK_BROWN, 
+				YELLOW, 
+				LIGHT_ORANGE, 
+				ORANGE, 
+				RED, 
+				YELLOW_GREEN, 
+				PINK, 
+				GREEN, 
+				BLUE, 
+				BLACK, 
+				DARK_GRAY, 
+				WHITE, 
+				GRAY, 
+				DARK_GREEN, 
+				DARK_YELLOW, 
+				DARKEST_GRAY, 
+				DARKEST_GREEN, 
+				LIGHT_GREEN, 
 		};
 
 		final Color COLOR_DARK_BROWN = new Color(DARK_BROWN);
@@ -319,7 +319,7 @@ public class a extends GamePanel {
 		int vineX = 0;
 		int vineY = 0;
 
-		// decompress sprites
+		
 		for (i = 0; i < 50; i++) {
 			j = (i < 17) ? 8 : (i < 21) ? 4 : (i < 42) ? 16 : 22;
 			sprites[i][0] = new BufferedImage(8, j, BufferedImage.TYPE_INT_ARGB_PRE);
@@ -339,7 +339,7 @@ public class a extends GamePanel {
 			do {
 				nextFrameStartTime += 16666667;
 
-				// -- update starts ----------------------------------------------------
+				
 
 				if (!a[VK_JUMP]) {
 					jumpReleased = true;
@@ -367,7 +367,7 @@ public class a extends GamePanel {
 
 				if (attractMode) {
 
-					// copyright animation
+					
 					copyrightTimer++;
 					if (copyrightTimer >= 120 && copyrightTimer <= 184) {
 						copyrightOffset = (copyrightTimer - 120) >> 3;
@@ -377,14 +377,14 @@ public class a extends GamePanel {
 					}
 
 					if (restartDelay > 0) {
-						// to prevent triggering an immediate reset accidentally
-						// when you lose all lives or run out of time, there is a minimum
-						// game over delay before key input is accepted again
+						
+						
+						
 
 						restartDelay--;
-					} else if (a[VK_JUMP] || a[VK_UP] || a[VK_DOWN] || a[VK_LEFT] || a[VK_RIGHT]) { // press any key to start
+					} else if (a[VK_JUMP] || a[VK_UP] || a[VK_DOWN] || a[VK_LEFT] || a[VK_RIGHT]) { 
 
-						// reset game
+						
 						attractMode = false;
 						harryJumping = false;
 						harryClimbing = false;
@@ -431,7 +431,7 @@ public class a extends GamePanel {
 
 				} else if (restartDelay > 0) {
 
-					// Harry loses a life
+					
 
 					if (--restartDelay == 0) {
 						if (extraLives > 0) {
@@ -446,7 +446,7 @@ public class a extends GamePanel {
 							harryCrushed = 0;
 						} else {
 
-							// game over (out of extra lives)
+							
 							attractMode = true;
 							restartDelay = 255;
 						}
@@ -456,10 +456,10 @@ public class a extends GamePanel {
 
 					harrySprite = SPRITE_HARRY_STANDING;
 
-					// Harry is sinking!
+					
 					harryY++;
 					if (harryY > 115) {
-						// Harry fully sunk
+						
 						harrySinking = false;
 						restartDelay = 60;
 						harryY = 26;
@@ -467,20 +467,20 @@ public class a extends GamePanel {
 
 				} else {
 
-					// update timer
+					
 					timer++;
 
-					// fix the position of the copyright notice to display Activision logo
+					
 					copyrightOffset = 8;
 
-					// update clock
+					
 					if (--clockTicks < 0) {
 						clockTicks = 59;
 						if (--clockSeconds < 0) {
 							clockSeconds = 59;
 							if (--clockMinutes < 0) {
 
-								// game over (time up)
+								
 								clockMinutes = 0;
 								clockSeconds = 0;
 								attractMode = true;
@@ -489,20 +489,20 @@ public class a extends GamePanel {
 						}
 					}
 
-					// update crocodiles
+					
 					if (++crocodileTimer == 210) {
 						crocodileTimer = 0;
 						crocodileSprite = crocodileSprite != SPRITE_CROCODILE_0 ? SPRITE_CROCODILE_0 : SPRITE_CROCODILE_1;
 					}
 
-					// update vine
+					
 					if (vine) {
 						vineAngle = 0.393f * (float) Math.sin(++vineTimer / 46f);
 						vx = (float) Math.sin(vineAngle);
 						vy = (float) Math.cos(vineAngle);
 						if (!harrySwinging && harryJumping && harryLanded) {
 
-							// line intersection test with circle around Harry
+							
 							x = harryX + 4;
 							y = (int) (harryY + 4);
 							float B = 2 * (72 * vx + 24 * vy - vx * x - vy * y);
@@ -518,7 +518,7 @@ public class a extends GamePanel {
 						vineY = (int) (24 + 76 * vy);
 					}
 
-					// update pit
+					
 					if (++pitTimer == 320) {
 						pitTimer = 0;
 					}
@@ -533,7 +533,7 @@ public class a extends GamePanel {
 						}
 					}
 
-					// control harry
+					
 					if (harrySwinging) {
 						harrySprite = SPRITE_HARRY_SWINGING;
 						harryX = (int) (69 + harryVineRadius * vx) - harryDirection;
@@ -653,7 +653,7 @@ public class a extends GamePanel {
 
 						if (!harryJumping && scene <= SCENE_LADDER_AND_HOLES) {
 							if (harryX >= 65 && harryX <= 71 && (harryY == UPPER_FLOOR_Y || a[VK_UP])) {
-								// Harry clings to top of ladder
+								
 								harryClimbing = true;
 								harryX = 68;
 								harrySprite = SPRITE_HARRY_CLIMBING;
@@ -669,7 +669,7 @@ public class a extends GamePanel {
 								if ((harryX >= 37 && harryX <= 47) || (harryX >= 89 && harryX <= 99)) {
 									harryJumping = true;
 									harryY++;
-									score -= 100; // lose 100 points for falling into a pit
+									score -= 100; 
 									if (score < 0) {
 										score = 0;
 									}
@@ -678,7 +678,7 @@ public class a extends GamePanel {
 						}
 					}
 
-					// Harry sinking test
+					
 					harrySinking = harryY == UPPER_FLOOR_Y && pit && pitOffset < 5 && harryX >= 36 && harryX <= 100 && (image.getRGB(harryX, 119) & 0xFFFFFF) != DARK_YELLOW
 							&& (image.getRGB(harryX + 7, 119) & 0xFFFFFF) != DARK_YELLOW;
 					if (crocodiles) {
@@ -689,7 +689,7 @@ public class a extends GamePanel {
 						}
 					}
 
-					// process queue
+					
 					harryOffsetY = 0;
 					if (harryCrushed > 0) {
 						harryCrushed--;
@@ -702,7 +702,7 @@ public class a extends GamePanel {
 
 						if (j == OBJECT_TYPE_LOG) {
 
-							// update logs
+							
 
 							if (object[OBJECT_ROLLING] == 1) {
 								object[OBJECT_Y] = (timer & 15) < 2 ? 112 : 111;
@@ -715,7 +715,7 @@ public class a extends GamePanel {
 							}
 						} else if (j == OBJECT_TYPE_SCORPION) {
 
-							// update scorpion
+							
 
 							if ((timer & 7) == 0) {
 								if (object[OBJECT_SPRITE_DIRECTION] == LEFT) {
@@ -732,7 +732,7 @@ public class a extends GamePanel {
 						}
 
 						if ((timer & 1) == 0 && Math.random() < 0.5f) {
-							// rattle object
+							
 
 							if (j == OBJECT_TYPE_FIRE) {
 								object[OBJECT_SPRITE_DIRECTION] ^= 1;
@@ -742,23 +742,23 @@ public class a extends GamePanel {
 						}
 
 						if (!harrySwinging && harryX >= x - 4 && harryX <= x + 4 && harryY >= y - 16 + (j == OBJECT_TYPE_SCORPION ? 6 : 0) && harryY <= y + 1) {
-							// Harry collides with object
+							
 
 							if (j == OBJECT_TYPE_FIRE || j == OBJECT_TYPE_RATTLESNAKE || j == OBJECT_TYPE_SCORPION) {
-								// Harry collides with deadly object
+								
 								restartDelay = 60;
 							} else if (j >= OBJECT_TYPE_MONEY_BAG && j <= OBJECT_TYPE_DIAMOND_RING) {
-								// Harry collects teasure
+								
 								queue.remove(i);
 								collectedTreasures[screenIndex] = true;
 								score += (j - OBJECT_TYPE_MONEY_BAG + 2) * 1000;
 								if (--treasures == 0) {
-									// game over (collected all treasures)
+									
 									attractMode = true;
 									restartDelay = 255;
 								}
 							} else if (j == OBJECT_TYPE_LOG) {
-								// Harry collides with log
+								
 								if (!harryClimbing) {
 									harrySprite = SPRITE_HARRY_RUNNING_4;
 									harryOffsetY = 5;
@@ -766,7 +766,7 @@ public class a extends GamePanel {
 								if (object[OBJECT_ROLLING] == 1) {
 									harryCrushed = 2;
 								}
-								score--; // lose a point for colliding with log
+								score--; 
 								if (score < 0) {
 									score = 0;
 								}
@@ -776,7 +776,7 @@ public class a extends GamePanel {
 
 					i = screen;
 					if (harryX > 150) {
-						// Harry advances one screen to the right
+						
 						for (i = harryY > UPPER_FLOOR_Y ? 3 : 1; i > 0; i--) {
 							screen = 0xFF & ((screen << 1) | ((1 & (screen >> 3)) ^ (1 & (screen >> 4)) ^ (1 & (screen >> 5)) ^ (1 & (screen >> 7))));
 							if (++screenIndex > 254) {
@@ -785,7 +785,7 @@ public class a extends GamePanel {
 						}
 						harryX = 0;
 					} else if (harryX < -6) {
-						// Harry advances one screen to the left
+						
 						for (i = harryY > UPPER_FLOOR_Y ? 3 : 1; i > 0; i--) {
 							screen = 0xFF & ((screen >> 1) | ((1 & (screen >> 4)) ^ (1 & (screen >> 5)) ^ (1 & (screen >> 6)) ^ (1 & screen)) << 7);
 							if (--screenIndex < 0) {
@@ -796,7 +796,7 @@ public class a extends GamePanel {
 					}
 					if (i != screen || resetScreen == true) {
 
-						// create scene
+						
 
 						resetScreen = false;
 						background = screen >> 6;
@@ -804,13 +804,13 @@ public class a extends GamePanel {
 						wallOnLeft = (screen & 128) == 0;
 						queue.clear();
 
-						// create crocodiles
+						
 						crocodiles = scene == SCENE_CROCODILES;
 
-						// create vine
+						
 						vine = scene == SCENE_TAR_WITH_VINE || scene == SCENE_QUICKSAND_WITH_VINE || scene == SCENE_SHIFTING_TAR_WITH_VINE || (scene == SCENE_CROCODILES && (screen & 2) == 2);
 
-						// create pit
+						
 						pitSprite = scene == SCENE_TAR_WITH_VINE || scene == SCENE_SHIFTING_TAR_WITH_TREASURE || scene == SCENE_SHIFTING_TAR_WITH_VINE ? SPRITE_TAR : SPRITE_WATER;
 						shiftingPit = scene > SCENE_CROCODILES;
 						pitOffset = 0;
@@ -825,7 +825,7 @@ public class a extends GamePanel {
 						}
 						if (pit = (scene > SCENE_LADDER_AND_HOLES)) {
 
-							// create scorpion
+							
 
 							object = new int[OBJECT_ARRAY_SIZE];
 							queue.add(object);
@@ -839,7 +839,7 @@ public class a extends GamePanel {
 						if (scene == SCENE_SHIFTING_TAR_WITH_TREASURE) {
 
 							if (!collectedTreasures[screenIndex]) {
-								// create treasure
+								
 
 								j = screen & 3;
 
@@ -853,7 +853,7 @@ public class a extends GamePanel {
 							}
 						} else if (scene != SCENE_CROCODILES) {
 
-							// create logs, rattle snakes and fire
+							
 
 							j = screen & 7;
 
@@ -871,21 +871,21 @@ public class a extends GamePanel {
 					}
 				}
 
-				// -- update ends ------------------------------------------------------
+				
 
 			} while (nextFrameStartTime < System.nanoTime());
 
-			// -- render starts ------------------------------------------------------
+			
 
-			// clear frame
+			
 			g.setColor(COLOR_BLACK);
 			g.fillRect(0, 0, 152, 210);
 
-			// draw forest
+			
 			g.setColor(COLOR_GREEN);
 			g.fillRect(0, 46, 152, 65);
 
-			// draw tree trunks and branches
+			
 			g.setColor(COLOR_DARK_BROWN);
 			for (i = 0; i < 2; i++) {
 				j = ((background + 1) << 3) + (i << 5);
@@ -898,49 +898,49 @@ public class a extends GamePanel {
 				g.drawImage(sprites[SPRITE_TREE_BRANCHES][0], 138 - j, 51, null);
 			}
 
-			// draw vine
+			
 			if (vine) {
 				g.drawLine(72, 24, vineX, vineY);
 			}
 
-			// draw lower floor
+			
 			g.setColor(COLOR_YELLOW_GREEN);
 			g.fillRect(0, 174, 152, 6);
 			g.fillRect(0, 127, 152, 15);
 
-			// draw upper floor
+			
 			g.setColor(COLOR_DARK_YELLOW);
 			g.fillRect(0, 111, 152, 11);
 
 			if (scene <= SCENE_LADDER_AND_HOLES) {
-				// draw holes
+				
 				g.setColor(COLOR_BLACK);
 				if (scene == SCENE_LADDER_AND_HOLES) {
-					g.fillRect(40, 116, 12, 26); // left hole
-					g.fillRect(92, 116, 12, 26); // right hole
+					g.fillRect(40, 116, 12, 26); 
+					g.fillRect(92, 116, 12, 26); 
 				}
-				g.fillRect(68, 116, 8, 26); // center hole
+				g.fillRect(68, 116, 8, 26); 
 
-				// draw ladder
+				
 				g.setColor(COLOR_YELLOW_GREEN);
 				for (i = 0; i < 11; i++) {
 					g.fillRect(70, 130 + (i << 2), 4, 2);
 				}
 
-				// draw brick wall
+				
 				g.drawImage(sprites[SPRITE_BRICK_WALL][0], wallOnLeft ? 10 : 128, 142, null);
 				g.drawImage(sprites[SPRITE_BRICK_WALL][0], wallOnLeft ? 10 : 128, 158, null);
 			}
 
 			if (pit) {
-				// draw top of pit behind Harry
+				
 				g.setClip(40, 111, 64, 8);
 				g.drawImage(sprites[pitSprite][1], 40, 111 + pitOffset, 32, 8, null);
 				g.drawImage(sprites[pitSprite][0], 72, 111 + pitOffset, 32, 8, null);
 
 				if (crocodiles) {
 
-					// draw crocodile tops
+					
 
 					for (i = 0; i < 3; i++) {
 						g.drawImage(sprites[crocodileSprite][0], 52 + (i << 4), 111, null);
@@ -950,21 +950,21 @@ public class a extends GamePanel {
 				g.setClip(null);
 			}
 
-			// draw Harry
+			
 			g.drawImage(sprites[harrySprite][harryDirection], harryX, harryOffsetY + (int) harryY, null);
 
 			if (scene > SCENE_LADDER_AND_HOLES) {
-				// draw lower floor strip in front of Harry
+				
 				g.setColor(COLOR_YELLOW_GREEN);
 				g.fillRect(0, 127, 152, 15);
 			}
 
-			// draw upper floor strip
+			
 			g.setColor(COLOR_DARK_YELLOW);
 			g.fillRect(0, 122, 152, 5);
 
 			if (pit) {
-				// draw bottom of pit in front of Harry
+				
 				g.fillRect(40, 119, 64, 8);
 
 				g.setClip(40, 119, 64, 8);
@@ -973,7 +973,7 @@ public class a extends GamePanel {
 
 				if (crocodiles) {
 
-					// draw crocodile bottoms
+					
 
 					for (i = 0; i < 3; i++) {
 						g.drawImage(sprites[crocodileSprite][0], 52 + (i << 4), 111, null);
@@ -983,22 +983,22 @@ public class a extends GamePanel {
 				g.setClip(null);
 			}
 
-			// draw tree tops
+			
 			g.setColor(COLOR_DARK_GREEN);
 			g.fillRect(0, 0, 152, 51);
 
-			// draw tree leaves
+			
 			for (i = 0; i < 6; i++) {
 				g.drawImage(sprites[SPRITE_LEAVES_3 - background][1 - (i & 1)], (i << 5) - 24, 51, 32, 8, null);
 			}
 
-			// draw queue objects
+			
 			for (i = queue.size() - 1; i >= 0; i--) {
 				object = queue.get(i);
 				g.drawImage(sprites[object[OBJECT_SPRITE_INDEX]][object[OBJECT_SPRITE_DIRECTION]], object[OBJECT_X], object[OBJECT_Y], null);
 			}
 
-			// draw score
+			
 			j = score;
 			x = 53;
 			do {
@@ -1007,7 +1007,7 @@ public class a extends GamePanel {
 				j /= 10;
 			} while (j > 0);
 
-			// draw seconds
+			
 			j = clockSeconds;
 			x = 53;
 			do {
@@ -1016,7 +1016,7 @@ public class a extends GamePanel {
 				j /= 10;
 			} while (x > 37);
 
-			// draw minutes
+			
 			j = clockMinutes;
 			x = 29;
 			do {
@@ -1025,10 +1025,10 @@ public class a extends GamePanel {
 				j /= 10;
 			} while (j > 0);
 
-			// draw clock colon
+			
 			g.drawImage(sprites[SPRITE_COLON][0], 37, 16, null);
 
-			// draw extra lives
+			
 			g.setColor(COLOR_GRAY);
 			if (extraLives > 0) {
 				g.fillRect(13, 16, 1, 8);
@@ -1037,7 +1037,7 @@ public class a extends GamePanel {
 				g.fillRect(15, 16, 1, 8);
 			}
 
-			// draw copyright
+			
 			g.setClip(13, 183, 48, 8);
 			for (i = 0; i < 6; i++) {
 				g.drawImage(sprites[SPRITE_COPYRIGHT_0 + i][0], 13 + (i << 3), 183 - copyrightOffset, null);
@@ -1046,8 +1046,8 @@ public class a extends GamePanel {
 
 			if (hintsEnabled) {
 
-				// hint map
-				// i and j are not necessary here, but it is easier to read!
+				
+				
 
 				i = (harryY < 124 && (screenIndex == 11 || screenIndex == 37 || screenIndex == 116 || screenIndex == 185 || screenIndex == 224 || screenIndex == 235)) ? SPRITE_ARROW_1
 						: (harryY >= 124 && (screenIndex == 25 || screenIndex == 92 || screenIndex == 179 || screenIndex == 209 || screenIndex == 226 || screenIndex == 245)) ? SPRITE_ARROW_2
@@ -1058,9 +1058,9 @@ public class a extends GamePanel {
 				g.drawImage(sprites[i][j], 136, 11, null);
 			}
 
-			// -- render ends --------------------------------------------------------
+			
 
-			// show the hidden buffer
+			
 			if (g2 == null) {
 				g2 = (Graphics2D) getGraphics();
 				requestFocus();
@@ -1068,7 +1068,7 @@ public class a extends GamePanel {
 				g2.drawImage(image, 0, 0, 608, 384, null);
 			}
 
-			// burn off extra cycles
+			
 			while (nextFrameStartTime - System.nanoTime() > 0) {
 				Thread.yield();
 			}
@@ -1086,8 +1086,8 @@ public class a extends GamePanel {
 		final int VK_S = 0x53;
 		final int VK_A = 0x41;
 		final int VK_D = 0x44;
-		final int VK_PAUSE = 0x50; // press p for pause
-		final int VK_HINTS = 0x38; // press 8 for hint map
+		final int VK_PAUSE = 0x50; 
+		final int VK_HINTS = 0x38; 
 
 		int k = keyEvent.getKeyCode();
 		if (k > 0) {
@@ -1096,7 +1096,7 @@ public class a extends GamePanel {
 		}
 	}
 
-	// to run in window, uncomment below
+	
 	public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Pitfall 4K");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

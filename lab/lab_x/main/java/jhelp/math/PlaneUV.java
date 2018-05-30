@@ -146,18 +146,18 @@ public class PlaneUV {
   public void projectPoint(Vec3f point,
                            Vec3f projPt,
                            Vec2f uvCoords) {
-    // Using projPt as a temporary
+    
     projPt.sub(point, origin);
     float dotp = normal.dot(projPt);
-    // Component perpendicular to plane
+    
     Vec3f tmpDir = new Vec3f();
     tmpDir.set(normal);
     tmpDir.scale(dotp);
     projPt.sub(projPt, tmpDir);
-    // Take dot products with basis vectors
+    
     uvCoords.set(projPt.dot(uAxis),
                  projPt.dot(vAxis));
-    // Add on center to intersection point
+    
     projPt.add(origin);
   }
 
@@ -175,14 +175,14 @@ public class PlaneUV {
     Vec3f tmpDir = new Vec3f();
     tmpDir.sub(origin, rayStart);
     float t = tmpDir.dot(normal) / denom;
-    // Find intersection point
+    
     Vec3f tmpPt = new Vec3f();
     tmpPt.set(rayDirection);
     tmpPt.scale(t);
     tmpPt.add(rayStart);
     intPt.setIntersectionPoint(tmpPt);
     intPt.setT(t);
-    // Find UV coords
+    
     tmpDir.sub(intPt.getIntersectionPoint(), origin);
     uvCoords.set(tmpDir.dot(uAxis), tmpDir.dot(vAxis));
     return true;

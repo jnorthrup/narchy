@@ -34,9 +34,9 @@ public class CornerData extends Adjacent{
 		final int pt = corner.point;
 		final int laySiz = smartblob.layerSize;
 
-		//TODO pointers to TriData
+		
 
-		//TODO pointers to CornerData
+		
 		final CornerData[][] sc = smartblob.corners;
 		final CornerData[] ac = this.adjacentCorners;
 		ac[0] = sc[lay][(pt+1)%laySiz];
@@ -46,26 +46,26 @@ public class CornerData extends Adjacent{
 		final int hpi = (highPInOtherLayer - 1 + laySiz) % laySiz;
 		final int hpl = (highPInOtherLayer) % laySiz;
 
-		if(ac.length == 6){ //6 adjacentCorners, all other 4
+		if(ac.length == 6){ 
 			final CornerData[] scn = sc[lay - 1];
 			final CornerData[] scp = sc[lay + 1];
 			ac[2] = scn[(hpl)];
 			ac[3] = scn[(hpi)];
 			ac[4] = scp[(hpl)];
 			ac[5] = scp[(hpi)];
-		}else if(corner.layer == 0){ //4 adjacentCorners, other 2 are at higher layer
+		}else if(corner.layer == 0){ 
 			final CornerData[] scp = sc[lay + 1];
 			ac[2] = scp[(hpl)];
 			ac[3] = scp[(hpi)];
-		}else{ //4 adjacentCorners, other 2 are at lower layer
+		}else{ 
 			final CornerData[] scn = sc[lay - 1];
 			ac[2] = scn[(hpl)];
 			ac[3] = scn[(hpi)];
 		}
 
-		//TODO pointers to LineData
+		
 		for(int i = 0; i< ac.length; i++){
-			//matches as key when either corner does this
+			
 			Line line = new Line(corner, ac[i].corner);
 			adjacentLines[i] = smartblob.lineData(line);
 		}

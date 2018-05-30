@@ -14,7 +14,7 @@ import spacegraph.space2d.phys.dynamics.World;
 abstract public class Robotic {
 
     public Body torso;
-    //public class ChangedNumericInput //discretizer
+    
     public Sim sim;
     public final String id;
     public JoglAbstractDraw draw;
@@ -67,9 +67,9 @@ abstract public class Robotic {
 
         @Override
         public void before(Body b, JoglAbstractDraw d, float time) {
-//            color.set(color.x,
-//                    color.y,
-//                    color.z);
+
+
+
             d.setFillColor(color);
         }
 
@@ -95,7 +95,7 @@ abstract public class Robotic {
         @Override
         public void before(Body b, JoglAbstractDraw d, float time) {
             float bb = nar.memory.emotion.busy() * 0.5f + 0.5f;
-            //color.set(c.getRed()/256.0f * bb, c.getGreen()/256.0f * bb, c.getBlue()/256.0f * bb);
+            
             float hh = nar.memory.emotion.happy() * 0.5f + 0.5f;
             color.set(Math.min(bb,1f), hh, 0);
             d.setFillColor(color);

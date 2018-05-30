@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -36,7 +36,7 @@ public class ManifoldPoint {
 	public final v3 localPointA = new v3();
 	public final v3 localPointB = new v3();
 	public final v3 positionWorldOnB = new v3();
-	///m_positionWorldOnA is redundant information, see getPositionWorldOnA(), but for clarity
+	
 	public final v3 positionWorldOnA = new v3();
 	public final v3 normalWorldOnB = new v3();
 	
@@ -44,7 +44,7 @@ public class ManifoldPoint {
 	public float combinedFriction;
 	public float combinedRestitution;
 	
-	// BP mod, store contact triangles.
+	
 	public int partId0;
 	public int partId1;
 	public int index0;
@@ -56,7 +56,7 @@ public class ManifoldPoint {
 	public boolean lateralFrictionInitialized;
 	public float appliedImpulseLateral1;
 	public float appliedImpulseLateral2;
-	public int lifeTime; //lifetime of the contactpoint in frames
+	public int lifeTime; 
 
 	public final v3 lateralFrictionDir1 = new v3();
 	public final v3 lateralFrictionDir2 = new v3();
@@ -113,7 +113,7 @@ public class ManifoldPoint {
 	public v3 getPositionWorldOnA(v3 out) {
 		out.set(positionWorldOnA);
 		return out;
-		//return m_positionWorldOnB + m_normalWorldOnB * m_distance1;
+		
 	}
 
 	public v3 getPositionWorldOnB(v3 out) {

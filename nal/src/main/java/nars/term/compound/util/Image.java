@@ -21,8 +21,8 @@ public enum Image { ;
     public static final Functor imageExt = Functor.f2Inline("imageExt", Image::imageExt);
 
     public static Term imageExt(Term t, Term x) {
-        //P-->I
-        //int: (X --> append(I,substitute(P,X,/)))
+        
+        
         if (t.op()==INH) {
             Term p = t.sub(0);
             if (p.op()==PROD) {
@@ -37,8 +37,8 @@ public enum Image { ;
     }
 
     public static Term imageInt(Term t, Term x) {
-        //I-->P
-        //ext: (append(I,substitute(P,X,\)) --> X)
+        
+        
         if (t.op()==INH) {
             Term p = t.sub(1);
             if (p.op()==PROD) {
@@ -76,14 +76,14 @@ public enum Image { ;
             boolean isExt = p.op()==PROD && (pp = p.subterms()).contains(Op.imExt);
 
             if (isInt && !isExt) {
-                //(neutralization --> (acid,base))
-                //((neutralization,\\,base) --> acid)
+                
+                
                 Term u = INH.the(ss.sub(0), PROD.the(Util.replaceDirect(ss.toArraySubRange(1, ss.subs()), Op.imInt, p)));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);
             } else if (isExt && !isInt) {
-                //((acid,base)-->reaction)
-                //(acid --> (reaction,/,base))
+                
+                
                 Term u = INH.the(PROD.the(Util.replaceDirect(pp.toArraySubRange(1, pp.subs()), Op.imExt, s)), pp.sub(0));
                 if (!(u instanceof Bool))
                     return u.negIf(negated);

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -25,7 +25,7 @@
 2007-09-09
 btGeneric6DofConstraint Refactored by Francisco Le�n
 email: projectileman@yahoo.com
-http://gimpact.sf.net
+http:
 */
 
 package spacegraph.space3d.phys.constraint.generic;
@@ -41,24 +41,24 @@ import spacegraph.util.math.v3;
  */
 public class TranslationalLimitMotor {
 	
-	//protected final BulletStack stack = BulletStack.get();
 	
-	public final v3 lowerLimit = new v3(); //!< the constraint lower limits
-	public final v3 upperLimit = new v3(); //!< the constraint upper limits
+	
+	public final v3 lowerLimit = new v3(); 
+	public final v3 upperLimit = new v3(); 
 	public final v3 accumulatedImpulse = new v3();
 	
-	public float limitSoftness;     //!< Softness for linear limit
-	public float damping;           //!< Damping for linear limit
-	public float restitution;       //!< Bounce parameter for linear limit
+	public float limitSoftness;     
+	public float damping;           
+	public float restitution;       
 
-        // added for 6dofSpring
+        
         public final boolean enableMotor[]      = new boolean[3];
-        public final v3 targetVelocity    = new v3();   //!< target motor velocity
-	public final v3 maxMotorForce     = new v3();   //!< max force on motor
-        public final v3 maxLimitForce     = new v3();   //!< max force on limit
-        public final v3 currentLimitError = new v3();   //!  How much is violated this limit
-        public final v3 currentLinearDiff = new v3();   //!  Current relative offset of constraint frames
-        public final int currentLimit[]         = new int[3];       //!< 0=free, 1=at lower limit, 2=at upper limit
+        public final v3 targetVelocity    = new v3();   
+	public final v3 maxMotorForce     = new v3();   
+        public final v3 maxLimitForce     = new v3();   
+        public final v3 currentLimitError = new v3();   
+        public final v3 currentLinearDiff = new v3();   
+        public final int currentLimit[]         = new int[3];       
         
 
 	public TranslationalLimitMotor() {
@@ -115,25 +115,25 @@ public class TranslationalLimitMotor {
             float hiLimit = VectorUtil.coord(upperLimit, limitIndex);
             if(loLimit > hiLimit)
             {
-                currentLimit[limitIndex] = 0;//Free from violation
+                currentLimit[limitIndex] = 0;
                 VectorUtil.setCoord(currentLimitError, limitIndex, 0.f);
                 return 0;
             }
 
             if (test_value < loLimit)
             {
-                currentLimit[limitIndex] = 2;//low limit violation
+                currentLimit[limitIndex] = 2;
                 VectorUtil.setCoord(currentLimitError, limitIndex, test_value - loLimit);
                 return 2;
             }
             if (test_value > hiLimit)
             {
-                currentLimit[limitIndex] = 1;//High limit violation
+                currentLimit[limitIndex] = 1;
                 VectorUtil.setCoord(currentLimitError, limitIndex, test_value - hiLimit);
                 return 1;
             }
 
-            currentLimit[limitIndex] = 0;//Free from violation
+            currentLimit[limitIndex] = 0;
             VectorUtil.setCoord(currentLimitError, limitIndex, 0.f);
             return 0;
         }
@@ -145,13 +145,13 @@ public class TranslationalLimitMotor {
 		v3 tmp = new v3();
 		v3 tmpVec = new v3();
 		
-		// find relative velocity
+		
 		v3 rel_pos1 = new v3();
-		//rel_pos1.sub(pointInA, body1.getCenterOfMassPosition(tmpVec));
+		
 		rel_pos1.sub(anchorPos, body1.getCenterOfMassPosition(tmpVec));
 
 		v3 rel_pos2 = new v3();
-		//rel_pos2.sub(pointInB, body2.getCenterOfMassPosition(tmpVec));
+		
 		rel_pos2.sub(anchorPos, body2.getCenterOfMassPosition(tmpVec));
 
 		v3 vel1 = body1.getVelocityInLocalPoint(rel_pos1, new v3());
@@ -161,7 +161,7 @@ public class TranslationalLimitMotor {
 
 		float rel_vel = axis_normal_on_a.dot(vel);
 
-		// apply displacement correction
+		
                 float target_velocity   = VectorUtil.coord(this.targetVelocity, limit_index);
                 float maxMotorForce     = VectorUtil.coord(this.maxMotorForce, limit_index);
 
@@ -174,19 +174,19 @@ public class TranslationalLimitMotor {
 		maxMotorForce *= timeStep;
 
 
-                // correction velocity
+                
 		float motor_relvel = limitSoftness * (target_velocity - damping * rel_vel);
 		if (motor_relvel < BulletGlobals.FLT_EPSILON && motor_relvel > -BulletGlobals.FLT_EPSILON) {
-			return 0.0f; // no need for applying force
+			return 0.0f; 
 		}
                 
-                // correction impulse
+                
 		float unclippedMotorImpulse = motor_relvel * jacDiagABInv;
 
-		// clip correction impulse
+		
 		float clippedMotorImpulse;
 
-		// todo: should clip against accumulated impulse
+		
 		if (unclippedMotorImpulse > 0.0f) {
 			clippedMotorImpulse = unclippedMotorImpulse > maxMotorForce ? maxMotorForce : unclippedMotorImpulse;
 		}
@@ -196,7 +196,7 @@ public class TranslationalLimitMotor {
 
                 float normalImpulse = clippedMotorImpulse;
 
-                // sort with accumulated impulses
+                
 		float lo = -1e30f;
 		float hi = 1e30f;
 

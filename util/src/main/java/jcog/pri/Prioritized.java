@@ -120,18 +120,18 @@ public interface Prioritized extends Deleteable {
     default float priElseZero() {
         float p = pri();
         return p == p ? p : 0;
-        //return priElseZero();
+        
     }
     default float priElseNeg1() {
         float p = pri();
         return p == p ? p : -1;
-        //return priSafe(-1);
+        
     }
 
     @Override
     default boolean isDeleted() {
         float p = pri();
-        return p!=p; //fast NaN check
+        return p!=p; 
     }
 
 
@@ -141,36 +141,36 @@ public interface Prioritized extends Deleteable {
 
 
 
-//    static void normalizePriSum(@NotNull Iterable<? extends Prioritized> l, float total) {
-//
-//        float priSum = Prioritized.priSum(l);
-//        float mult = total / priSum;
-//        for (Prioritized b : l) {
-//            b.priMult(mult);
-//        }
-//
-//    }
-//
-//    /**
-//     * randomly selects an item from a collection, weighted by priority
-//     */
-//    static <P extends Prioritized> P selectRandomByPriority(@NotNull NAR memory, @NotNull Iterable<P> c) {
-//        float totalPriority = priSum(c);
-//
-//        if (totalPriority == 0) return null;
-//
-//        float r = memory.random.nextFloat() * totalPriority;
-//
-//        P s = null;
-//        for (P i : c) {
-//            s = i;
-//            r -= s.priElseZero();
-//            if (r < 0)
-//                return s;
-//        }
-//
-//        return s;
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

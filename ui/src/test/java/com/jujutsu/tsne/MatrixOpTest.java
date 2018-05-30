@@ -18,9 +18,9 @@ public class MatrixOpTest {
 	
 	@Test
 	public void testPCA() {
-        //double [][] nmatrix = MatrixUtils.simpleRead2DMatrix(new File("src/test/resources/datasets/nist_pca_2.txt"), " ");
-       // System.out.println(ArrayString.printDoubleArray(X));
-        //double [][] nmatrix = TSneDemo.nistReadStringDouble(ASCIIFile.read(new File("src/main/resources/datasets/mnist2500_X.txt")));
+        
+       
+        
         double [][] matrix = MatrixOps.rnorm(200,7);
         System.out.println(MatrixOps.doubleArrayToPrintString(matrix));
         PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
@@ -99,10 +99,10 @@ public class MatrixOpTest {
 			for (int i = 0; i < tr1.length; i++) {
 				assertArrayEquals(trmatrix[i], tr1[i], 0.0000001);
 				assertArrayEquals(trmatrix[i], tr2[i], 0.0000001);
-//				for (int j = 0; j < tr1[0].length; j++) {
-//					assertEquals(trmatrix[i][j],tr1[i][j],0.0000001);
-//					//assertEquals("I: " + i + " J:" + j, trmatrix[i][j],tr2[i][j],0.0000001);
-//				}
+
+
+
+
 			}
 		}
 		System.out.println("    Tr time: " + trtime);
@@ -136,11 +136,11 @@ public class MatrixOpTest {
 
 			for (int i = 0; i < tr1.length; i++) {
 				assertArrayEquals(tr1[i], tr2[i],0.0000001);
-//				int tl = tr1[0].length;
-//				for (int j = 0; j < tl; j++) {
-//					assertEquals(//"I: " + i + " J:" + j,
-//							tr1[i][j],tr2[i][j],0.0000001);
-//				}
+
+
+
+
+
 			}
 		}
 		System.out.println("    Tr time: " + trtime);

@@ -40,7 +40,7 @@ public class PrologMetaMethod {
     }
     
     void initClauses() {
-        //String linkName;                
+        
         if (_annotation.predicate().isEmpty())  {
             _predicateName = _theMethod.getName();
             _arity = _theMethod.getTypeParameters().length;

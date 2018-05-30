@@ -5,7 +5,7 @@
  */
 
 
-//TODO: Integer-Werte f�r Farben
+
 
 
 package raytracer.cameras;
@@ -97,11 +97,11 @@ abstract public class AsyncCamera extends Camera {
     public AsyncCamera(int resX, int resY) {
         super(resX, resY);
 
-        // Exponent, der die aufgerundete Gr��e der gr��ten Seite des
-        // Bildes angibt:
+        
+        
         sizeExponent = RaytracerConstants.getLowResolution(resX, resY);
 
-        // Arrays initialisieren, die die Farbwerte der Pixel beschreiben:
+        
         int count = resX * resY;
         rmap = new float[count];
         gmap = new float[count];
@@ -129,9 +129,9 @@ abstract public class AsyncCamera extends Camera {
         Arrays.fill(bmap, 0);
         Arrays.fill(countmap, 0);
         Arrays.fill(aaUnchangedCount, 0);
-        //Arrays.fill(bitmap, 0);
+        
 
-        // Thread starten:
+        
         thread = new AsyncCameraThread(this);
         thread.start();
     }
@@ -145,7 +145,7 @@ abstract public class AsyncCamera extends Camera {
 
         state.set(STATE_INVALID);
 
-        // Thread anhalten:
+        
         if (thread!=null) {
             thread.die();
             thread = null;
@@ -187,7 +187,7 @@ abstract public class AsyncCamera extends Camera {
         if ((ss != STATE_RENDERING) && (ss != STATE_RENDERED))
             return null;
 
-        // Bild aus dem Pixel-Array erzeugen und zur�ckgeben:
+        
         if (image ==null || image.getWidth()!=resX || image.getHeight()!=resY)
             image = new BufferedImage(resX, resY, BufferedImage.TYPE_INT_RGB);
 
@@ -211,7 +211,7 @@ abstract public class AsyncCamera extends Camera {
         if ((image.getWidth() != resX) || (image.getHeight() != resY))
             throw new IllegalArgumentException();
 
-        // Bilddaten kopieren:
+        
         image.setRGB(0, 0, resX, resY, bitmap, 0, resX);
     }
 
@@ -233,7 +233,7 @@ abstract public class AsyncCamera extends Camera {
      */
     void fireRenderUpdate(double progress) {
         RendererEvent event = new RendererEvent(this, progress);
-        //TODO multiplex these into one thread
+        
         for (RendererListener listener : listeners)
             (new Thread(new RenderUpdateEventRunner(event, listener))).start();
     }
@@ -244,7 +244,7 @@ abstract public class AsyncCamera extends Camera {
      */
     void fireRenderFinished() {
         RendererEvent event = new RendererEvent(this, 1.0);
-        //TODO multiplex these into one thread
+        
         for (RendererListener listener : listeners)
             (new Thread(new RenderFinishedEventRunner(event, listener))).start();
     }

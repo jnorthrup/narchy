@@ -56,13 +56,13 @@ public class TestPanelJ2D extends JPanel implements TestbedPanel {
         updateSize(INIT_WIDTH, INIT_HEIGHT);
 
         AWTPanelHelper.addHelpAndPanelListeners(this, model, controller, SCREEN_DRAG_BUTTON);
-//        addComponentListener(new ComponentAdapter() {
-//            @Override
-//            public void componentResized(ComponentEvent e) {
-//                updateSize(getWidth(), getHeight());
-//                dbImage = null;
-//            }
-//        });
+
+
+
+
+
+
+
 
     }
 
@@ -78,7 +78,7 @@ public class TestPanelJ2D extends JPanel implements TestbedPanel {
 
     public boolean render() {
         if (dbImage == null) {
-            //System.out.println("dbImage is null, creating a new one");
+            
             if (panelWidth <= 0 || panelHeight <= 0) {
                 return false;
             }
@@ -105,7 +105,7 @@ public class TestPanelJ2D extends JPanel implements TestbedPanel {
             Graphics g = this.getGraphics();
             if ((g != null) && dbImage != null) {
                 g.drawImage(dbImage, 0, 0, null);
-                //Toolkit.getDefaultToolkit().sync();
+                
                 g.dispose();
             }
         } catch (AWTError e) {

@@ -65,7 +65,7 @@ public class PolygonShape extends Shape {
      */
     public int vertices;
 
-    // pooling
+    
     private final Tuple2f pool1 = new Vec2();
     private final Vec2 pool2 = new Vec2();
     private final Tuple2f pool3 = new Vec2();
@@ -126,10 +126,10 @@ public class PolygonShape extends Shape {
     public final PolygonShape set(final Tuple2f[] verts, final int num) {
         assert (3 <= num && num <= Settings.maxPolygonVertices);
 
-        // Create the convex hull using the Gift wrapping algorithm
-        // http://en.wikipedia.org/wiki/Gift_wrapping_algorithm
+        
+        
 
-        // Find the right most point on the hull
+        
         int i0 = 0;
         float x0 = verts[0].x;
         for (int i = 1; i < num; ++i) {
@@ -161,7 +161,7 @@ public class PolygonShape extends Shape {
                     ie = j;
                 }
 
-                // Collinearity check
+                
                 if (c == 0.0f && v.lengthSquared() > r.lengthSquared()) {
                     ie = j;
                 }
@@ -177,7 +177,7 @@ public class PolygonShape extends Shape {
 
         this.vertices = m;
 
-        // Copy vertices.
+        
         for (int i = 0; i < vertices; ++i) {
             if (vertex[i] == null) {
                 vertex[i] = new Vec2();
@@ -196,7 +196,7 @@ public class PolygonShape extends Shape {
             normals[i].normalize();
         }
 
-        // Compute the polygon centroid.
+        
         computeCentroidToOut(vertex, vertices, centroid);
 
         return this;
@@ -229,17 +229,17 @@ public class PolygonShape extends Shape {
         return this;
     }
 
-//    public final org.jbox2d.collision.shapes.PolygonShape lerpAsBox(final float hx, final float hy, float rate) {
-//        if (vertices!=4) {
-//            return setAsBox(0.1f, 0.1f); //TODO epsilon
-//        } else {
-//            float currentWidth = vertex[1].x;
-//            float currentHeight = -vertex[1].y;
-//            float nextWidth = Util.lerp(rate, currentWidth, hx);
-//            float nextHeight = Util.lerp(rate, currentHeight, hy);
-//            return setAsBox(nextWidth, nextHeight);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     public final static spacegraph.space2d.phys.collision.shapes.PolygonShape regular(int n, float r) {
         PolygonShape p = new PolygonShape(n);
@@ -277,7 +277,7 @@ public class PolygonShape extends Shape {
         xf.pos.set(center);
         xf.set(angle);
 
-        // Transform vertices and normals.
+        
         for (int i = 0; i < vertices; ++i) {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
             Rot.mulToOut(xf, normals[i], normals[i]);
@@ -302,7 +302,7 @@ public class PolygonShape extends Shape {
         xf.pos.set(center);
         xf.set(0);
 
-        // Transform vertices and normals.
+        
         for (int i = 0; i < vertices; ++i) {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
             Rot.mulToOut(xf, normals[i], normals[i]);
@@ -362,7 +362,7 @@ public class PolygonShape extends Shape {
 
         for (int i = 1; i < vertices; ++i) {
             Tuple2f v2 = vertex[i];
-            // Vec2 v = Mul(xf, m_vertices[i]);
+            
             float vx = (xfqc * v2.x - xfqs * v2.y) + xfpx;
             float vy = (xfqs * v2.x + xfqc * v2.y) + xfpy;
             lower.x = lower.x < vx ? lower.x : vx;
@@ -459,8 +459,8 @@ public class PolygonShape extends Shape {
         final float xfqs = xf.s;
         final Tuple2f xfp = xf.pos;
         float tempx, tempy;
-        // b2Vec2 p1 = b2MulT(xf.q, input.p1 - xf.p);
-        // b2Vec2 p2 = b2MulT(xf.q, input.p2 - xf.p);
+        
+        
         tempx = input.p1.x - xfp.x;
         tempy = input.p1.y - xfp.y;
         final float p1x = xfqc * tempx + xfqs * tempy;
@@ -481,9 +481,9 @@ public class PolygonShape extends Shape {
         for (int i = 0; i < vertices; ++i) {
             Tuple2f normal = normals[i];
             Tuple2f vertex = this.vertex[i];
-            // p = p1 + a * d
-            // dot(normal, p - v) = 0
-            // dot(normal, p1 - v) + a * dot(normal, d) = 0
+            
+            
+            
             float tempxn = vertex.x - p1x;
             float tempyn = vertex.y - p1y;
             final float numerator = normal.x * tempxn + normal.y * tempyn;
@@ -494,19 +494,19 @@ public class PolygonShape extends Shape {
                     return false;
                 }
             } else {
-                // Note: we want this predicate without division:
-                // lower < numerator / denominator, where denominator < 0
-                // Since denominator < 0, we have to flip the inequality:
-                // lower < numerator / denominator <==> denominator * lower >
-                // numerator.
+                
+                
+                
+                
+                
                 if (denominator < 0.0f && numerator < lower * denominator) {
-                    // Increase lower.
-                    // The segment enters this half-space.
+                    
+                    
                     lower = numerator / denominator;
                     index = i;
                 } else if (denominator > 0.0f && numerator < upper * denominator) {
-                    // Decrease upper.
-                    // The segment exits this half-space.
+                    
+                    
                     upper = numerator / denominator;
                 }
             }
@@ -520,7 +520,7 @@ public class PolygonShape extends Shape {
 
         if (index >= 0) {
             output.fraction = lower;
-            // normal = Mul(xf.R, m_normals[index]);
+            
             Tuple2f normal = normals[index];
             Tuple2f out = output.normal;
             out.x = xfqc * normal.x - xfqs * normal.y;
@@ -536,8 +536,8 @@ public class PolygonShape extends Shape {
         out.set(0.0f, 0.0f);
         float area = 0.0f;
 
-        // pRef is the reference point for forming triangles.
-        // It's location doesn't change the result (except for rounding error).
+        
+        
         final Tuple2f pRef = pool1;
         pRef.setZero();
 
@@ -547,7 +547,7 @@ public class PolygonShape extends Shape {
         final float inv3 = 1.0f / 3.0f;
 
         for (int i = 0; i < count; ++i) {
-            // Triangle vertices.
+            
             final Tuple2f p1 = pRef;
             final Tuple2f p2 = vs[i];
             final Tuple2f p3 = i + 1 < count ? vs[i + 1] : vs[0];
@@ -560,40 +560,40 @@ public class PolygonShape extends Shape {
             final float triangleArea = 0.5f * D;
             area += triangleArea;
 
-            // Area weighted centroid
+            
             e1.set(p1).added(p2).added(p3).scaled(triangleArea * inv3);
             out.addLocal(e1);
         }
 
-        // Centroid
+        
         assert (area > Settings.EPSILON);
         out.scaled(1.0f / area);
     }
 
     public void computeMass(final MassData massData, float density) {
-        // Polygon mass, centroid, and inertia.
-        // Let rho be the polygon density in mass per unit area.
-        // Then:
-        // mass = rho * int(dA)
-        // centroid.x = (1/mass) * rho * int(x * dA)
-        // centroid.y = (1/mass) * rho * int(y * dA)
-        // I = rho * int((x*x + y*y) * dA)
-        //
-        // We can compute these integrals by summing all the integrals
-        // for each triangle of the polygon. To evaluate the integral
-        // for a single triangle, we make a change of variables to
-        // the (u,v) coordinates of the triangle:
-        // x = x0 + e1x * u + e2x * v
-        // y = y0 + e1y * u + e2y * v
-        // where 0 <= u && 0 <= v && u + v <= 1.
-        //
-        // We integrate u from [0,1-v] and then v from [0,1].
-        // We also need to use the Jacobian of the transformation:
-        // D = cross(e1, e2)
-        //
-        // Simplification: triangle centroid = (1/3) * (p1 + p2 + p3)
-        //
-        // The rest of the derivation is handled by computer algebra.
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
         assert (vertices >= 3);
 
@@ -602,11 +602,11 @@ public class PolygonShape extends Shape {
         float area = 0.0f;
         float I = 0.0f;
 
-        // pRef is the reference point for forming triangles.
-        // It's location doesn't change the result (except for rounding error).
+        
+        
         final Vec2 s = pool2;
         s.setZero();
-        // This code would put the reference point inside the polygon.
+        
         for (int i = 0; i < vertices; ++i) {
             s.addLocal(vertex[i]);
         }
@@ -618,7 +618,7 @@ public class PolygonShape extends Shape {
         final Tuple2f e2 = pool4;
 
         for (int i = 0; i < vertices; ++i) {
-            // Triangle vertices.
+            
             e1.set(vertex[i]).subbed(s);
             e2.set(s).negated().added(i + 1 < vertices ? vertex[i + 1] : vertex[0]);
 
@@ -627,7 +627,7 @@ public class PolygonShape extends Shape {
             final float triangleArea = 0.5f * D;
             area += triangleArea;
 
-            // Area weighted centroid
+            
             center.x += triangleArea * k_inv3 * (e1.x + e2.x);
             center.y += triangleArea * k_inv3 * (e1.y + e2.y);
 
@@ -640,21 +640,21 @@ public class PolygonShape extends Shape {
             I += (0.25f * k_inv3 * D) * (intx2 + inty2);
         }
 
-        //area = Math.abs(area);
+        
 
 
-        // Total mass
+        
         massData.mass = density * area;
 
-        // Center of mass
+        
         assert (area > Settings.EPSILON);
         center.scaled(1.0f / area);
         massData.center.set(center).added(s);
 
-        // Inertia tensor relative to the local origin (point s)
+        
         massData.I = I * density;
 
-        // Shift to center of mass then to original body origin.
+        
         massData.I += massData.mass * (Tuple2f.dot(massData.center, massData.center));
     }
 

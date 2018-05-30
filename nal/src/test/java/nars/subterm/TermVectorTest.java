@@ -20,40 +20,40 @@ public class TermVectorTest {
     public void testSubtermsEquality() throws Narsese.NarseseException {
 
         Term a = $.$("(a-->b)");
-        //return Atom.the(Utf8.toUtf8(name));
+        
 
-        //        int olen = name.length();
-//        switch (olen) {
-//            case 0:
-//                throw new RuntimeException("empty atom name: " + name);
-//
-////            //re-use short term names
-////            case 1:
-////            case 2:
-////                return theCached(name);
-//
-//            default:
-//                if (olen > Short.MAX_VALUE/2)
-//                    throw new RuntimeException("atom name too long");
+        
 
-        //  }
-        //return Atom.the(Utf8.toUtf8(name));
 
-        //        int olen = name.length();
-//        switch (olen) {
-//            case 0:
-//                throw new RuntimeException("empty atom name: " + name);
-//
-////            //re-use short term names
-////            case 1:
-////            case 2:
-////                return theCached(name);
-//
-//            default:
-//                if (olen > Short.MAX_VALUE/2)
-//                    throw new RuntimeException("atom name too long");
 
-        //  }
+
+
+
+
+
+
+
+
+
+
+        
+        
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         Compound b = $.impl(Atomic.the("a"), Atomic.the("b"));
 
         assertEquals(a.subterms(), b.subterms());

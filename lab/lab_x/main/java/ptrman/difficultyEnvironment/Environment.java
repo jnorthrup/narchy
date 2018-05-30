@@ -29,7 +29,7 @@ public class Environment {
     }
 
     private void physicsTimestep(float timedelta) {
-        // TODO< pull settings from some container >
+        
         boolean allowSleep = true;
         boolean warmStarting = true;
         boolean SubStepping = true;
@@ -38,7 +38,7 @@ public class Environment {
         int velocityIterations = 5;
         int positionIterations = 5;
 
-        // the physics 2d world doesn't have to be initialized
+        
         if( physicsWorld2d == null ) {
             return;
         }

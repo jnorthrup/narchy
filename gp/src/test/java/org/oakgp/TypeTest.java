@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -110,13 +110,13 @@ public class TypeTest {
 
     @Test
     public void testNotEquals() {
-        // different core types
+        
         assertNotEquals(Type.booleanType(), Type.stringType());
-        // array vs. core type
+        
         assertNotEquals(Type.booleanType(), Type.booleanArrayType());
-        // different arrays
+        
         assertNotEquals(Type.booleanArrayType(), Type.integerArrayType());
-        // different functions
+        
         assertNotEquals(Type.functionType(Type.integerType(), Type.stringType()), Type.functionType(Type.stringType(), Type.integerType()));
     }
 
@@ -142,16 +142,16 @@ public class TypeTest {
 
         assertSameTypes(t1, new Type[]{Type.booleanType(), Type.integerType(), Type.booleanType()});
 
-        // same types, but in a different order
+        
         assertNotSameTypes(t1, new Type[]{Type.integerType(), Type.booleanType(), Type.booleanType()});
 
-        // different type for final element
+        
         assertNotSameTypes(t1, new Type[]{Type.booleanType(), Type.integerType(), Type.stringType()});
 
-        // too few types
+        
         assertNotSameTypes(t1, new Type[]{Type.booleanType(), Type.integerType()});
 
-        // too many types
+        
         assertNotSameTypes(t1, new Type[]{Type.booleanType(), Type.integerType(), Type.booleanType(), Type.booleanType()});
     }
 

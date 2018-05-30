@@ -20,14 +20,14 @@ import java.util.Date;
  *   --client: methods to transmit to InfluxDB
  *   --TODO: server: InfluxDB emulation when receiving InfluxDB packets
  *
- * https://docs.influxdata.com/influxdb/v1.2/guides/querying_data/
+ * https:
  *
- * curl -G 'http://localhost:8086/query?pretty=true' --data-urlencode "db=mydb" --data-urlencode "q=SELECT \"value\" FROM \"cpu_load_short\" WHERE \"region\"='us-west'"
+ * curl -G 'http:
  *
  */
 public class InfluxDB {
 
-    final UDP udp = null; //new UDP();
+    final UDP udp = null; 
 
     private final String host;
     private final int port;
@@ -44,23 +44,23 @@ public class InfluxDB {
     }
 
     /*
-    https://docs.influxdata.com/influxdb/v0.9/write_protocols/udp/
+    https:
     To write, just send newline separated line protocol over UDP. For better performance send batches of points rather than multiple single points.
     $ echo "cpu value=1"> /dev/udp/localhost/8089
          */
     public void send() {
         String s = "cpu,host=server01,region=uswest load=" + (Math.random() * 100) +  " " + System.currentTimeMillis();
 
-        //SELECT mean("hapy") FROM "cpu"
-        //SELECT mean("busyVol") FROM "cpu" WHERE $timeFilter GROUP BY time($interval) fill(null)
+        
+        
 
-        //Emotion e = nar.emotion;
-//        String s = "cpu " +
-//                "busyVol=" + e.busyVol.getSum() +
-//                ",busyPri=" + e.busyPri.getSum() +
-//                ",hapy=" + e.happy.getSum() +
-//                ",sad=" + e.sad.getSum();
-//        " " + System.nanoTime();
+        
+
+
+
+
+
+
 
 
         try {

@@ -10,14 +10,14 @@ public final class Combinations {
     private final int n;
     private final int r;
 
-    //TODO avoid BigInteger, maybe long
+    
     private int numLeft;
     private final int total;
 
 
-    //------------
-    // Constructor
-    //------------
+    
+    
+    
     public Combinations(int n, int r) {
         if (n < 1) {
             throw new IllegalArgumentException("Set must have at least one element");
@@ -35,9 +35,9 @@ public final class Combinations {
         reset();
     }
 
-    //------
-    // Reset
-    //------
+    
+    
+    
     public void reset() {
         int[] a = this.a;
 
@@ -48,45 +48,45 @@ public final class Combinations {
         numLeft = total;
     }
 
-    //------------------------------------------------
-    // Return number of combinations not yet generated
-    //------------------------------------------------
+    
+    
+    
     public int remaining() {
         return numLeft;
     }
 
-    //-----------------------------
-    // Are there more combinations?
-    //-----------------------------
+    
+    
+    
     public boolean hasNext() {
         return numLeft > 0;
     }
 
-    //------------------------------------
-    // Return total number of combinations
-    //------------------------------------
+    
+    
+    
     public int getTotal() {
         return total;
     }
 
-//    //------------------
-//    // Compute factorial
-//    //------------------
-//    private BigInteger getFactorial(int n) {
-//        BigInteger fact = BigInteger.ONE;
-//        for (int i = n; i > 1; i--) {
-//            fact = fact.multiply(new BigInteger(Integer.toString(i)));
-//        }
-//        return fact;
-//    }
+
+
+
+
+
+
+
+
+
+
 
     public int[] prev() {
         return a;
     }
 
-    //--------------------------------------------------------
-    // Generate next combination (algorithm from Rosen p. 286)
-    //--------------------------------------------------------
+    
+    
+    
     public int[] next() {
 
         if (numLeft == total) {

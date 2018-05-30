@@ -37,10 +37,10 @@ public class AnimVector2f extends v2 implements Animated {
     public boolean animate(float dt) {
 
         if (x!=x) {
-            //invalidated
+            
             super.set(target);
         } else {
-            //interpLinear(dt);
+            
             interpLERP(dt);
         }
 
@@ -60,7 +60,7 @@ public class AnimVector2f extends v2 implements Animated {
                 Util.lerp(rate, x, target.x),
                 Util.lerp(rate, y, target.y)
         );
-        //System.out.println(target + "->" + dt + "->" + x + "," + y);
+        
     }
 
 
@@ -73,9 +73,9 @@ public class AnimVector2f extends v2 implements Animated {
     public Tuple2f set(float x, float y) {
         float px = this.x;
         if (px != px || x!=x)
-            super.set(x, y); //initialization: if invalidated, use the target value immediately
+            super.set(x, y); 
 
-        target.set(x, y); //interpolation
+        target.set(x, y); 
         return this;
     }
 

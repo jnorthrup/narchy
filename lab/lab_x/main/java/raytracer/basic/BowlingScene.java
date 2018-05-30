@@ -23,8 +23,8 @@ public class BowlingScene extends EfficientScene
 { 
     protected final Shader pinShader = new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(0.9f, 0.9f, 0.9f), new Vector3f(0.4f, 0.4f, 0.4f));
 
-    //protected ColorEx holeLightLeft = new ColorEx(2.0f, 0.8f, 0.8f);
-    //protected ColorEx holeLightRight = new ColorEx(0.8f, 0.8f, 2.0f);
+    
+    
     protected final ColorEx holeLightLeft = new ColorEx(1.0f, 1.0f, 1.0f);
     protected final ColorEx holeLightRight = new ColorEx(1.0f, 1.0f, 1.0f);
     protected final ColorEx sphereLight = new ColorEx(2.5f, 2.5f, 2.0f);
@@ -38,7 +38,7 @@ public class BowlingScene extends EfficientScene
     { 
         try
         {
-            // Ambientes Licht der Szene setzen:
+            
             setAmbientLight(new ColorEx(0.3f, 0.3f, 0.3f));
             
             createEnvironment();
@@ -63,19 +63,19 @@ public class BowlingScene extends EfficientScene
     protected void createEnvironment()
     throws Exception
     {
-        // Umgebungstextur hinzuf�gen:
+        
         add(new Sphere(new Vector3d(0.0, -6.0, 0.0), 1000000.0, new TextureShader("texture/sky.jpg")));
         
-        // Sonne hinzuf�gen:
+        
         add(new SphereLight(new Vector3d(-25000.0, 100000.0, 50000.0), 2000.0, new ColorEx(10000000000.0f, 9200000000.0f, 7000000000.0f)));
     }
     
     protected void createHoleLights() {
-        //Lichter linke Bahn
+        
         add(new AreaLight(new Vector3d(-2.6,-4.3,-3.5),new Vector3d(0.1,0.0,0.0),new Vector3d(0.0,0.0,0.65), holeLightLeft)); 
         add(new AreaLight(new Vector3d(-0.8,-4.3,-3.5),new Vector3d(0.1,0.0,0.0),new Vector3d(0.0,0.0,0.65), holeLightRight)); 
         
-        //Lichter mittlere Bahn
+        
         add(new AreaLight(new Vector3d(1.4,-4.3,-3.5),new Vector3d(0.1,0.0,0.0),new Vector3d(0.0,0.0,0.65), holeLightLeft)); 
         add(new AreaLight(new Vector3d(3.059,-4.3,-3.5),new Vector3d(0.1,0.0,0.0),new Vector3d(0.0,0.0,0.65), holeLightRight)); 
     }
@@ -85,7 +85,7 @@ public class BowlingScene extends EfficientScene
     {
         Transformation t = new Transformation();
 
-        // Lampe mit Gl�hbirne hinzuf�gen:
+        
         add(new SphereLight(new Vector3d(0.0,-1.75,4.65),0.05, sphereLight));
         t.reset();
         PlyObject ply = new PlyObject("ply/lamp2.ply",
@@ -96,7 +96,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // Lampe mit Gl�hbirne hinzuf�gen:
+        
         add(new SphereLight(new Vector3d(4.2,-1.75,4.65),0.05, sphereLight)); 
         t.reset();
         ply = new PlyObject("ply/lamp2.ply", 
@@ -107,7 +107,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         /*
-        // Lampe mit Gl�hbirne hinzuf�gen:
+        
         add(new SphereLight(new Vector3d(0,-1.75,-0.2),0.1, sphereLight));
         t.reset();
         ply = new PlyObject("ply/lamp2.ply", 
@@ -118,7 +118,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // Lampe mit Gl�hbirne hinzuf�gen:
+        
         add(new SphereLight(new Vector3d(4.2,-1.75,-0.2),0.1, sphereLight)); 
         t.reset();
         ply = new PlyObject("ply/lamp2.ply", 
@@ -135,7 +135,7 @@ public class BowlingScene extends EfficientScene
     {
         Transformation t = new Transformation();
 
-        // Fl�chige Lampe hinzuf�gen:
+        
         add(new AreaLight(new Vector3d(-1.5,-0.8,2.5),new Vector3d(0.07,0.0,0.0),new Vector3d(0.0,0.0,0.7), areaLight));  
         t.reset();
         PlyObject ply = new PlyObject("ply/lamp3.ply",
@@ -147,7 +147,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t); 
         add(ply); 
                  
-        // Fl�chige Lampe hinzuf�gen:
+        
         add(new AreaLight(new Vector3d(5.9,-0.8,2.5),new Vector3d(0.07,0.0,0.0),new Vector3d(0.0,0.0,0.7), areaLight));  
         t.reset(); 
         ply = new PlyObject("ply/lamp3.ply",  
@@ -160,7 +160,7 @@ public class BowlingScene extends EfficientScene
         add(ply);        
         
         
-        // Fl�chige Lampe hinzuf�gen:
+        
         add(new AreaLight(new Vector3d(5.9,-0.8,6.8),new Vector3d(0.07,0.0,0.0),new Vector3d(0.0,0.0,0.7), areaLight));  
         t.reset(); 
         ply = new PlyObject("ply/lamp3.ply",  
@@ -172,7 +172,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t); 
         add(ply); 
                   
-        // Fl�chige Lampe hinzuf�gen:
+        
         add(new AreaLight(new Vector3d(-1.5,-0.8,6.8),new Vector3d(0.07,0.0,0.0),new Vector3d(0.0,0.0,0.7), areaLight));  
         t.reset(); 
         ply = new PlyObject("ply/lamp3.ply",  
@@ -190,7 +190,7 @@ public class BowlingScene extends EfficientScene
     {
         Transformation t = new Transformation();
 
-        // Haus erzeugen: 
+        
         t.reset();
         PlyObject ply = new PlyObject("ply/BowlingHouse.ply",
                 new PhongShader(new WallShader(new ColorEx(1.0f, 1.0f, 0.9f)), new Vector3f(0.6f, 0.6f, 0.6f), new Vector3f(1.0f, 0.9f, 0.9f), new Vector3f(0.7f, 0.7f, 0.6f)),
@@ -199,7 +199,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // R�ckwand erzeugen: 
+        
         t.reset(); 
         ply = new PlyObject("ply/BowlingHoleWall.ply", 
                 new PhongShader(new TextureShader("texture/HoleWall.jpg"), new Vector3f(0.4f, 0.4f, 0.4f), new Vector3f(0.7f, 0.7f, 0.8f), new Vector3f(0.5f, 0.5f, 0.6f)));
@@ -210,7 +210,7 @@ public class BowlingScene extends EfficientScene
         ply.transformTexture(t);
         add(ply);
         
-        //T�r erzeugen:
+        
         t.reset();
         ply = new PlyObject("ply/BowlingDoor.ply", 
                 new PhongShader(new TextureShader("texture/Door.jpg"), new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(0.4f, 0.4f, 0.4f), new Vector3f(0.7f, 0.7f, 0.7f)));
@@ -232,7 +232,7 @@ public class BowlingScene extends EfficientScene
             Shader bowlingHolderShader = new ReflectiveShader(0.2f, new PhongShader(new TextureShader("texture/BowlHolder.jpg"), new Vector3f(0.3f, 0.3f, 0.2f), new Vector3f(0.6f, 0.6f, 0.5f), new Vector3f(0.95f, 0.95f, 0.8f)));
             Shader rampShader = new ReflectiveShader(0.1f, new PhongShader(new ColorShader(ColorEx.DARK_GRAY), new Vector3f(0.3f, 0.3f, 0.3f), new Vector3f(0.7f, 0.7f, 0.7f), new Vector3f(0.5f, 0.5f, 0.5f)));
             
-            //linke Bahn
+            
             t.reset();
             PlyObject ply = new PlyObject("ply/BowlingRoad.ply", roadShader);
             t.scale(1.0,1.0,1.0);
@@ -245,7 +245,7 @@ public class BowlingScene extends EfficientScene
             add(ply);
             
             
-            //mittler Bahn
+            
             t.reset();
             ply = new PlyObject("ply/BowlingRoad.ply", roadShader);
             t.scale(1.0,1.0,1.0);
@@ -258,7 +258,7 @@ public class BowlingScene extends EfficientScene
             ply.transformTexture(t);
             add(ply);
             
-            //rechte Bahn
+            
             t.reset();
             ply = new PlyObject("ply/BowlingRoad.ply", roadShader);
             t.scale(1.0,1.0,1.0);
@@ -272,7 +272,7 @@ public class BowlingScene extends EfficientScene
             add(ply);
            
             
-            //Back Road links
+            
             t.reset();
             ply = new PlyObject("ply/BowlingBackRoad.ply", backRoadShader, true, new RoughNormalEffect(0.1f));
             t.scale(0.47,0.47,0.47);
@@ -284,7 +284,7 @@ public class BowlingScene extends EfficientScene
             ply.transformTexture(t);
             add(ply);
             
-            //Back Road Rechts
+            
             t.reset();
             ply = new PlyObject("ply/BowlingBackRoad.ply", backRoadShader, true, new RoughNormalEffect(0.1f));
             t.scale(0.45,0.45,0.45);
@@ -297,7 +297,7 @@ public class BowlingScene extends EfficientScene
             ply.transformTexture(t);
             add(ply);
             
-            //Sideroad links
+            
             t.reset();
             ply = new PlyObject("ply/BowlingSideRoad.ply", sideRoadShader);
             
@@ -307,7 +307,7 @@ public class BowlingScene extends EfficientScene
             ply.transform(t);
             add(ply);
             
-            //Sideroad rechts
+            
             t.reset();
             ply = new PlyObject("ply/BowlingSideRoad.ply", sideRoadShader);
 
@@ -319,7 +319,7 @@ public class BowlingScene extends EfficientScene
 
 
 
-            //Rampe
+            
             t.reset();
             ply = new PlyObject("ply/BowlingRampe.ply", rampShader, new RoughNormalEffect(0.5f));
             ply.normalize();
@@ -329,7 +329,7 @@ public class BowlingScene extends EfficientScene
             ply.transform(t);
             add(ply);
 
-            //Holder links  
+            
             t.reset();
             ply = new PlyObject("ply/BowlingHolder.ply", bowlingHolderShader);
             t.move(0.33, -5.1, 4.65);
@@ -337,7 +337,7 @@ public class BowlingScene extends EfficientScene
             ply.transform(t);
             add(ply);
             
-            //Holder rechts
+            
             t.reset();
             ply = new PlyObject("ply/BowlingHolder.ply", bowlingHolderShader);
             t.move(4.27, -5.1, 4.65);
@@ -354,17 +354,17 @@ public class BowlingScene extends EfficientScene
     protected void createBowls()
     throws Exception
     {
-        // Kugel linke Bahn:
+        
         addBowl(new Vector3d(-1.475,-5.305, -3.0), new ConcatShader(new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.0f, 0.3f), new Vector3f(0.1f, 0.1f, 0.6f), new Vector3f(0.7f, 0.7f, 1.0f)), 0.85f, new RefractionShader(RefractionShader.INDEX_GLASS, new ColorEx(0.4f, 0.4f, 0.9f))),
                 new RoughNormalEffect(0.15f),
                 30.0, -1.0, 2.0, -0.5);
         
-        // Kugel mittlere Bahn
+        
         addBowl(new Vector3d(0.53,-5.24, 2.0), new PhongShader(new ColorShader(new ColorEx(0.9f, 0.9f, 0.9f)), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(0.6f, 0.6f, 0.6f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.0f, 0.0f, 0.0f)),
                 new RoughNormalEffect(0.2f),
                 70.0, 0.0, 1.0, 1.0);
         
-        //Kugeln auf Haltern
+        
         addBowl(new Vector3d(0.67, -4.75, 4.8), new PhongShader(new ColorShader(new ColorEx(1.0f, 1.0f, 0.3f)), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.6f, 0.6f, 0.6f)),
                 new RoughNormalEffect(0.2f),
                 80.0, -1.0, 2.0, 0.0);
@@ -380,7 +380,7 @@ public class BowlingScene extends EfficientScene
             double angle, double x, double y, double z)
     throws Exception
     {
-        //if (mitKugel)
+        
         {
             Transformation t = new Transformation();
             PlyObject ply = new PlyObject("ply/bowl.ply", shader, true, normalEffect);
@@ -406,8 +406,8 @@ public class BowlingScene extends EfficientScene
         Transformation t = new Transformation();
 
         /** !!! Linke Bahn !!!  */
-        // Kegel
-        // Hintere Reihe
+        
+        
         t.reset();
         PlyObject ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -417,7 +417,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        //
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -427,7 +427,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        //
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -437,7 +437,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        //
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -447,7 +447,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // 2te von hinten
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -457,7 +457,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        //
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -467,7 +467,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        //
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -477,7 +477,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // 3te von hinten
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -487,7 +487,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        //
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -497,7 +497,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // vorne
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -517,8 +517,8 @@ public class BowlingScene extends EfficientScene
          * 
          */
         
-        // Kegel
-        // Hintere Reihe
+        
+        
         t.reset();
         PlyObject ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -528,7 +528,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
                   
-        //
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -538,7 +538,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // 2te von hinten
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-90.0, -1.0, 0.0, 0.0);
@@ -549,7 +549,7 @@ public class BowlingScene extends EfficientScene
         add(ply);
         
         
-        // Umgefallen
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(180.0, 1.0, 0.0, 0.0);
@@ -561,7 +561,7 @@ public class BowlingScene extends EfficientScene
         ply.transform(t);
         add(ply);
         
-        // Umgefallen
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(80.0, 1.0, 0.0, 0.0);
@@ -574,7 +574,7 @@ public class BowlingScene extends EfficientScene
         add(ply);        
         
         
-        // Umgefallen
+        
         t.reset();
         ply = new PlyObject("ply/pin.ply", pinShader, true);
         t.rotate(-70.0, 1.0, 0.0, 0.0);

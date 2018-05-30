@@ -63,7 +63,7 @@ public final class V extends Globals {
 
     static int r_numparticles;
 
-    //static particle_t[] r_particles = new particle_t[MAX_PARTICLES];
+    
 
     static final lightstyle_t[] r_lightstyles = new lightstyle_t[MAX_LIGHTSTYLES];
     static {
@@ -155,7 +155,7 @@ public final class V extends Globals {
         ls.rgb[2] = b;
     }
 
-    // stack variable
+    
     private static final float[] origin = { 0, 0, 0 };
     /*
      * ================ V_TestParticles
@@ -192,7 +192,7 @@ public final class V extends Globals {
         entity_t ent;
 
         r_numentities = 32;
-        //memset (r_entities, 0, sizeof(r_entities));
+        
         for (i = 0; i < r_entities.length; i++)
         	r_entities[i].clear();
 
@@ -222,7 +222,7 @@ public final class V extends Globals {
         dlight_t dl;
 
         r_numdlights = 32;
-        //memset (r_dlights, 0, sizeof(r_dlights));
+        
         for (i = 0; i < r_dlights.length; i++)
             r_dlights[i] = new dlight_t();
 
@@ -278,13 +278,13 @@ public final class V extends Globals {
      * ==================
      */
     static void RenderView(float stereo_separation) {
-        //		extern int entitycmpfnc( const entity_t *, const entity_t * );
-        //
+        
+        
         if (cls.state != ca_active)
             return;
 
         if (!cl.refresh_prepped)
-            return; // still loading
+            return; 
 
         if (cl_timedemo.value != 0.0f) {
             if (cl.timedemo_start == 0)
@@ -292,16 +292,16 @@ public final class V extends Globals {
             cl.timedemo_frames++;
         }
 
-        // an invalid frame will just use the exact previous refdef
-        // we can't use the old frame if the video mode has changed, though...
+        
+        
         if (cl.frame.valid && (cl.force_refdef || cl_paused.value == 0.0f)) {
             cl.force_refdef = false;
 
             V.ClearScene();
 
-            // builder a refresh entity list and calc cl.sim*
-            // this also calls CL_CalcViewValues which loads
-            // v_forward, etc.
+            
+            
+            
             CL_ents.AddEntities();
 
             if (cl_testparticles.value != 0.0f)
@@ -317,7 +317,7 @@ public final class V extends Globals {
                 cl.refdef.blend[3] = 0.5f;
             }
 
-            // offset vieworg appropriately if we're doing stereo separation
+            
             if (stereo_separation != 0) {
                 float[] tmp = new float[3];
 
@@ -325,11 +325,11 @@ public final class V extends Globals {
                 Math3D.VectorAdd(cl.refdef.vieworg, tmp, cl.refdef.vieworg);
             }
 
-            // never let it sit exactly on a node line, because a water plane
-            // can
-            // dissapear when viewed with the eye exactly on it.
-            // the server protocol only specifies to 1/8 pixel, so add 1/16 in
-            // each axis
+            
+            
+            
+            
+            
             cl.refdef.vieworg[0] += 1.0 / 16;
             cl.refdef.vieworg[1] += 1.0 / 16;
             cl.refdef.vieworg[2] += 1.0 / 16;
@@ -363,9 +363,9 @@ public final class V extends Globals {
 
             cl.refdef.rdflags = cl.frame.playerstate.rdflags;
 
-            // sort entities for better cache locality
-            // !!! useless in Java !!!
-            //Arrays.sort(cl.refdef.entities, entitycmpfnc);
+            
+            
+            
         }
 
         re.RenderFrame(cl.refdef);

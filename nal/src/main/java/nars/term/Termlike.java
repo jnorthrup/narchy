@@ -142,9 +142,9 @@ public interface Termlike {
     }
 
     default boolean impossibleSubTerm(/*@NotNull*/Termlike target) {
-        //if the OR produces a different result compared to subterms,
-        // it means there is some component of the other term which is not found
-        //return ((possibleSubtermStructure | existingStructure) != existingStructure);
+        
+        
+        
         return !hasAll(target.structure()) || impossibleSubTermVolume(target.volume());
     }
 
@@ -156,13 +156,13 @@ public interface Termlike {
         return otherTermsVolume > volume();
     }
 
-//    default boolean levelValid(int nal) {
-//
-//        if (nal >= 8) return true;
-//
-//        int mask = Op.NALLevelEqualAndAbove[nal];
-//        return (structure() | mask) == mask;
-//    }
+
+
+
+
+
+
+
 
 
     /**
@@ -247,8 +247,8 @@ public interface Termlike {
         int s = subs();
         if (s < 2) return true;
 
-        //TODO save the last in a variable to avoid sub(i) call
-        //Term prev = sub(0);
+        
+        
         for (int i = 1; i < s; i++) {
             if (sub(i - 1).compareTo(sub(i)) >= 0)
                 return false;
@@ -277,20 +277,20 @@ public interface Termlike {
 
     void recurseTerms(/*@NotNull*/Consumer<Term> v);
 
-//    /**
-//     * note: if the function returns null, null will not be added to the result set
-//     */
-//    /*@NotNull*/
-//    default Set<Term> subsUnique(/*@NotNull*/ Function<Term, Term> each) {
-//        Set<Term> r = new HashSet(subs());
-//        int s = subs();
-//        for (int i = 0; i < s; i++) {
-//            Term e = each.apply(sub(i));
-//            if (e != null)
-//                r.add(e);
-//        }
-//        return r;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     default int vars() {
         return hasVars() ? sum(Term::vars) : 0;
@@ -331,26 +331,26 @@ public interface Termlike {
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         int n = subs();
         for (int i = 0; i < n; i++)
-            v = sub(i).intifyRecurse(reduce, v); //recurse
+            v = sub(i).intifyRecurse(reduce, v); 
         return v;
     }
    /** recursive, visits only 1 layer deep, and not the current if compound */
     default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         int n = subs();
         for (int i = 0; i < n; i++)
-            v = reduce.intValueOf(v, sub(i)); //non-recurse
+            v = reduce.intValueOf(v, sub(i)); 
         return v;
     }
-//    default <X> X objectify(BiFunction<X, Term, X> reduce) {
-//        return objectify(reduce, null);
-//    }
-//
-//    default <X> X objectify(BiFunction<X, Term, X> reduce, X v) {
-//        int n = subs();
-//        for (int i = 0; i < n; i++)
-//            v = reduce.apply(v, sub(i, Null));
-//        return v;
-//    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * counts subterms matching the supplied op

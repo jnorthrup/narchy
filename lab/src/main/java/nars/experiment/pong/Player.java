@@ -39,33 +39,33 @@ abstract public class Player {
 		if (position < minPos)
 			position = minPos;
 	}
-	// Tipi di giocatore
-//	public static final int CPU_EASY = 0;
-//	public static final int CPU_HARD = 1;
-//	public static final int MOUSE = 2;
-//	public static final int KEYBOARD = 3;
+	
 
-//	// Compute player position
-//	private void computePosition (Player player) {
-//
-//		// MOUSE
-//		if (player.getType() == Player.MOUSE) {
-//			if (mouse_inside) {
-//				int cursor = getMousePosition().y;
-//				movePlayer (player, cursor);
-//			}
-//		}
-//		// KEYBOARD
-//		else if (player.getType() == Player.MOUSE) {
-//			if (key_up && !key_down) {
-//				movePlayer (player, player.position - SPEED);
-//			}
-//			else if (key_down && !key_up) {
-//				movePlayer (player, player.position + SPEED);
-//			}
-//		}
 
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	public static final class CPU_EASY extends Player {
 

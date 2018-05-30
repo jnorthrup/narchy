@@ -28,26 +28,26 @@ public class Treadmill extends AtomicLongArray implements SpinMutex {
 
             int now = mod.get();
 
-            //check all first
+            
             boolean collision = false;
             for (int i = 0; i < slots; i++) {
                 long v = get(i);
                 if (v == hash) {
                     collision = true;
-                    break; //collision
+                    break; 
                 }
             }
 
             if (!collision) {
-                if (mod.compareAndSet(now, now+1)) { //acquire exclusive access to write to the first free entry
+                if (mod.compareAndSet(now, now+1)) { 
                     for (int i = 0; i < slots; i++) {
                         if (compareAndSet(i, 0, hash))
-                            return i; //ready
+                            return i; 
                     }
-                } //else: another modification occurred since beginning the last check, must try again
+                } 
             }
 
-            //no free slots, continue spinning
+            
             Thread.onSpinWait();
         }
     }
@@ -57,14 +57,14 @@ public class Treadmill extends AtomicLongArray implements SpinMutex {
         set(slot, 0);
     }
 
-//    public void end(int hash) {
-//        if (hash == 0) hash = 1; //reserve 0
-//
-//        for (int i = 0; i < slots; i++) {
-//            if (compareAndSet(i, hash, 0))
-//                return; //done
-//        }
-//        throw new RuntimeException("did not remove ticket");
-//    }
+
+
+
+
+
+
+
+
+
 
 }

@@ -33,31 +33,31 @@ public class RuleInductionTest {
 
         NAR n = NARS.shell();
         n.termVolumeMax.set(
-            //3
+            
             8
         );
 
         MatrixDeriver d = new MatrixDeriver(new PremiseDeriverRuleSet(n,
-            //CONJ induction
+            
         "B, A, notImpl(A),notImpl(B)                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:TaskRelative)"
-            //CONJ decompose
+            
 
-            ////IMPL induction
-            //,"B, A, notImpl(A),notImpl(B) |- (A ==>+- B), (Belief:InductionUnprojected)"
+            
+            
         ), n) {
 
-//            @Override
-//            protected boolean derivable(Derivation d) {
-//                if (super.derivable(d)) {
-//                    //..
-//                    System.out.println(
-//                        "task: " + d._task + " @ " + d.taskAt + "\t" +
-//                        "belief: " + d._belief + " @ " + d.beliefAt);
-//
-//                    return true;
-//                }
-//                return false;
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
         };
         new STMLinkage(n, 1, false);
 
@@ -72,14 +72,14 @@ public class RuleInductionTest {
         Term aImpB = $$("(a ==>+" + dutyPeriod + " b)");
 
         PairedStatsAccumulator aConjB_exp = new PairedStatsAccumulator();
-//        Histogram aConjB_start = new Histogram(4);
+
         Histogram aConjB_dt = new Histogram(4);
 
         n.onTask(t -> {
            if (!t.isInput() && t.term().root().equals(aConjB_root)) {
                long start = t.start();
-               int dt = Math.abs(t.dt()); //histogram wont record negatives
-//               aConjB_start.recordValue(start);
+               int dt = Math.abs(t.dt()); 
+
                aConjB_dt.recordValue(dt);
 
                assertEquals(start, t.end());
@@ -90,33 +90,33 @@ public class RuleInductionTest {
 
         PairedStatsAccumulator aImpB_exp = new PairedStatsAccumulator();
         for (int i = 0; i < loops; i++) {
-//            n.clear(); //distraction clear
+
 
             n.believe("a", Tense.Present, 1, 0.9f);
             if (i > 0) {
-                //TODO test that the newest tasklink inserted into concept 'a' is the, or nearly the strongest
-                //n.concept("a").tasklinks().print();
+                
+                
             }
             n.run(dutyPeriod);
             n.believe("b", Tense.Present, 1, 0.9f);
-            n.run(period-dutyPeriod); //delay
+            n.run(period-dutyPeriod); 
 
             long now = n.time();
 
             System.out.println("\n" + now);
             aConjB_exp.add(now, observe(n, aConjB, now));
-            //aImpB_exp.add(now, observe(n, aImpB, now));
+            
         }
 
-        //print(aImpB_exp);
+        
 
         {
             System.out.println("<" + aConjB + " @ " + n.time() + ">");
             System.out.println("expectation vs. time: \t" + aConjB_exp.yStats());
             System.out.println("\tslope=" + aConjB_exp.leastSquaresFit().slope());
 
-//            System.out.println("start time:");
-//            Texts.histogramPrint(aConjB_start, System.out);
+
+
 
             System.out.println("dt:");
             Texts.histogramPrint(aConjB_dt, System.out);
@@ -126,12 +126,12 @@ public class RuleInductionTest {
 
         double aConjB_pearsonCorrelationCoeff = aConjB_exp.pearsonsCorrelationCoefficient();
         assertTrue(aConjB_pearsonCorrelationCoeff > 0.4f,
-                ()->aConjB + " confidence increases smoothly: correlation quality=" + aConjB_pearsonCorrelationCoeff); //http://mathworld.wolfram.com/CorrelationCoefficient.html
+                ()->aConjB + " confidence increases smoothly: correlation quality=" + aConjB_pearsonCorrelationCoeff); 
         assertTrue(aConjB_exp.leastSquaresFit().slope() > 0, ()->aConjB + " confidence increases");
 
-        //TODO measure the distribution of occurrence times and intervals of all inducted CONJ beliefs
-        //they should be uniformly distributed; any anisotropic bias indicates a problem
-        //somewhere between premise formation or temporalization
+        
+        
+        
 
     }
 
@@ -144,28 +144,28 @@ public class RuleInductionTest {
         n.conceptualize(x).beliefs().print();
         System.out.println();
 
-        //        if (!(exp >= lastAConjB_exp)) {
-//            //for debug
-//            Task tt = n.belief(x, now);
-//
-//        }
+        
+
+
+
+
         return xTruth!=null ? xTruth.expectation() : 0;
     }
 }
-//    @Test
-//    public void testImagePatternMatching()  {
-//
-//        Deriver.derivers(test.nar).forEach(d->d.conceptsPerIteration.set(200));
-//        test
-//                //.log()
-//                .inputAt(0, "x(0,0,0,0). :|:")
-//                .inputAt(2, "x(0,1,0,1). :|:")
-//                .inputAt(4, "x(0,0,0,0). :|:")
-//                .inputAt(6, "x(0,1,0,1). :|:")
-//                .inputAt(8, "$1.0 (?1-->x)? :|:")
-//                .inputAt(10, "$1.0 (?1-->x)? :|:")
-//                .mustBelieve(8, "x(0,0,0,0)", 1f, 0.5f)
-//                .mustBelieve(10, "x(0,1,0,1)", 1f, 0.5f)
-//        ;
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

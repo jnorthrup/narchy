@@ -20,7 +20,7 @@ public class Int extends Term<Int> {
 
 	@Override
     public <Z> Z/*Integer*/ toJava() {
-		//return (Z)_theInt;
+		
 		return uncheckedCast(_theInt);
 	}
 	

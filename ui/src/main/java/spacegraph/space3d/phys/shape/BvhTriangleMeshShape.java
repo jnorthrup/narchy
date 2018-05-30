@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -65,8 +65,8 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		this.useQuantizedAabbCompression = useQuantizedAabbCompression;
 		this.ownsBvh = false;
 
-		// construct bvh from meshInterface
-		//#ifndef DISABLE_BVH
+		
+		
 
 		v3 bvhAabbMin = new v3(), bvhAabbMax = new v3();
 		meshInterface.calculateAabbBruteForce(bvhAabbMin, bvhAabbMax);
@@ -76,11 +76,11 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 			bvh.build(meshInterface, useQuantizedAabbCompression, bvhAabbMin, bvhAabbMax);
 			ownsBvh = true;
 
-			// JAVA NOTE: moved from TriangleMeshShape
+			
 			recalcLocalAabb();
 		}
 
-		//#endif //DISABLE_BVH
+		
 	}
 
 	/**
@@ -100,8 +100,8 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		this.useQuantizedAabbCompression = useQuantizedAabbCompression;
 		this.ownsBvh = false;
 
-		// construct bvh from meshInterface
-		//#ifndef DISABLE_BVH
+		
+		
 
 		if (buildBvh) {
 			bvh = new OptimizedBvh();
@@ -110,9 +110,9 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 			ownsBvh = true;
 		}
 
-		// JAVA NOTE: moved from TriangleMeshShape
+		
 		recalcLocalAabb();
-		//#endif //DISABLE_BVH
+		
 	}
 
 	public boolean getOwnsBvh() {
@@ -142,21 +142,21 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 	 */
 	@Override
 	public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax) {
-		//#ifdef DISABLE_BVH
-		// // brute force traverse all triangles
-		//btTriangleMeshShape::processAllTriangles(callback,aabbMin,aabbMax);
-		//#else
+		
+		
+		
+		
 
-		// first get all the nodes
+		
 		MyNodeOverlapCallback myNodeCallback = new MyNodeOverlapCallback(callback, meshInterface);
 
 		bvh.reportAabbOverlappingNodex(myNodeCallback, aabbMin, aabbMax);
-		//#endif//DISABLE_BVH
+		
 	}
 
 	public void refitTree(v3 aabbMin, v3 aabbMax) {
-		// JAVA NOTE: update it for 2.70b1
-		//bvh.refit(meshInterface, aabbMin, aabbMax);
+		
+		
 		bvh.refit(meshInterface);
 
 		recalcLocalAabb();
@@ -191,9 +191,9 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 			btAlignedFree(m_bvh);
 			}
 			*/
-			///m_localAabbMin/m_localAabbMax is already re-calculated in btTriangleMeshShape. We could just scale aabb, but this needs some more work
+			
 			bvh = new OptimizedBvh();
-			// rebuild the bvh...
+			
 			bvh.build(meshInterface, useQuantizedAabbCompression, localAabbMin, localAabbMax);
 			ownsBvh = true;
 		}
@@ -216,7 +216,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		this.bvh = bvh;
 		ownsBvh = false;
 
-		// update the scaling without rebuilding the bvh
+		
 		v3 tmp = new v3();
 		tmp.sub(getLocalScaling(new v3()), scaling);
 
@@ -229,7 +229,7 @@ public class BvhTriangleMeshShape extends TriangleMeshShape {
 		return useQuantizedAabbCompression;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	protected static class MyNodeOverlapCallback extends NodeOverlapCallback {
 		public final StridingMeshInterface meshInterface;

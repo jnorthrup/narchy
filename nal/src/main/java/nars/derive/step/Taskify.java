@@ -32,7 +32,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
     public Taskify(PremiseDeriverProto.RuleCause channel) {
         super(
-                //$.func("taskify", $.the(channel.id))
+                
                 $.the("taskify" + channel.id)
         );
         this.channel = channel;
@@ -54,7 +54,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
     protected static boolean spam(Derivation p, int cost) {
         p.use(cost);
-        return true; //just does
+        return true; 
     }
 
     /**
@@ -68,9 +68,9 @@ public class Taskify extends AbstractPred<Derivation> {
         Term x0 = d.derivedTerm;
 
         if (x0.hasAny(Op.VAR_INDEP)) {
-            x0 = x0.normalize(); //prenormalize for validTaskCompound check
+            x0 = x0.normalize(); 
             if (!Task.validTaskCompound(x0, true)){
-                //try converting indep to dep
+                
                 x0 = x0.transform(VariableTransform.indepToDepVar).normalize();
             }
         }
@@ -83,8 +83,8 @@ public class Taskify extends AbstractPred<Derivation> {
         assert (punc != 0) : "no punctuation assigned";
 
         if (tru!=null && tru.conf() < d.confMin) {
-            //d.nar.emotion.deriveFailEvidence.increment();
-            //return spam(d, Param.TTL_DERIVE_INSUFFICIENT_EVIDENCE);
+            
+            
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
@@ -98,13 +98,13 @@ public class Taskify extends AbstractPred<Derivation> {
 
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
-            //post-process occurrence time
+            
             int dither = d.ditherTime;
             long start = occ[0], end = occ[1];
             int dur = d.dur;
             if (start != ETERNAL && dur > 1) {
                 assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
-                //stretch to at least one duration
+                
                 if ((end - start < dur)) {
                     double mid = (end + start) / 2.0;
                     start = Tense.dither(mid - dur / 2.0, dither);
@@ -126,10 +126,10 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
-//        if (same(t, d._task, d.freqRes) || (d._belief != null && same(t, d._belief, d.freqRes))) {
-//            d.nar.emotion.deriveFailParentDuplicate.increment();
-//            return spam(d, Param.TTL_DERIVE_TASK_SAME);
-//        }
+
+
+
+
 
         if (d.single)
             t.setCyclic(true);
@@ -163,7 +163,7 @@ public class Taskify extends AbstractPred<Derivation> {
             return false;
 
         if (FILTER_SIMILAR_DERIVATIONS) {
-            //test for same punc, term, start/end, freq, but lower conf
+            
             if (parent.punc() == punc) {
                 if (parent.term().equals(derived.term())) {
                     if (Tense.dither(parent.start(), n) == Tense.dither(occ[0], n) &&
@@ -194,7 +194,7 @@ public class Taskify extends AbstractPred<Derivation> {
         if (derived.equals(parent)) return true;
 
         if (FILTER_SIMILAR_DERIVATIONS) {
-            //test for same punc, term, start/end, freq, but different conf
+            
             if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() &&
                     parent.start() == derived.start() && parent.end() == derived.end()) {
                 /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
@@ -206,12 +206,12 @@ public class Taskify extends AbstractPred<Derivation> {
                         logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
 
 
-//                    if (parent.isCyclic() && !derived.isCyclic())
-//                        parent.setCyclic(false);
-//                    if (parent instanceof DerivedTask) {
-//                        parent.priMax(derived.priElseZero());
-//                        //((NALTask) parent).causeMerge(derived); //merge cause
-//                    }
+
+
+
+
+
+
                     return true;
                 }
             }

@@ -17,11 +17,11 @@ import jurls.core.utils.Utils;
 public class Brain extends LearnerAndActor {
 
     private final StringBuilder debugString = new StringBuilder();
-    private final NeuroMap physicsLearner; //region 1
-    private final NeuroMap rewardLearner; // region 2
-    private final LearnerAndActor soul; // region 3
-    private final NeuroMap behaviourLearner; // region 4
-    //private NeuroMap stateToAgentMiddleLayer; // region 5
+    private final NeuroMap physicsLearner; 
+    private final NeuroMap rewardLearner; 
+    private final LearnerAndActor soul; 
+    private final NeuroMap behaviourLearner; 
+    
 
     private final double[] stateMin;
     private final double[] stateMax;

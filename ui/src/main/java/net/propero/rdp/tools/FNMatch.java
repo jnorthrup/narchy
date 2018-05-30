@@ -4,7 +4,7 @@ import java.io.File;
 
 public class FNMatch {
 
-    // public methods
+    
 
     /**
      * No wildcard can ever match `/'. A constant for bits set in the FLAGS
@@ -12,14 +12,14 @@ public class FNMatch {
      */
     public static final int FNM_PATHNAME = 1 << 0;
 
-    // protected methods
+    
     /**
      * Backslashes don't quote special chars. A constant for bits set in the
      * FLAGS argument to fnmatch().
      */
     public static final int FNM_NOESCAPE = 1 << 1;
 
-    // data and accessor methods
+    
     /**
      * Leading `.' is matched only explicitly. A constant for bits set in the
      * FLAGS argument to fnmatch().
@@ -122,8 +122,8 @@ public class FNMatch {
                     return FNM_NOMATCH;
 
                 case '[':
-                    // Nonzero if the sense of the
-                    // character class is inverted.
+                    
+                    
                     boolean not;
 
                     if (string.length() == n)
@@ -138,8 +138,8 @@ public class FNMatch {
                     not = (pattern.charAt(p) == '!' || pattern.charAt(p) == '^');
                     if (not)
                         ++p;
-                    // may throw an exception ???
-                    // KR:
+                    
+                    
                     c = pattern.charAt(++p);
                     boolean matched = false;
                     for (; ; ) {
@@ -148,16 +148,16 @@ public class FNMatch {
                             cstart = cend = pattern.charAt(p++);
                         cstart = cend = fold(cstart, flags);
                         if (p == pattern.length()) {
-                            // [
-                            // (unterminated)
-                            // loses.
+                            
+                            
+                            
                             return FNM_NOMATCH;
                         }
                         c = fold(pattern.charAt(++p), flags);
 
                         if ((flags & FNM_FILE_NAME) != 0 && c == File.separatorChar) {
-                            // [/] can never
-                            // match.
+                            
+                            
                             return FNM_NOMATCH;
                         }
                         if (c == '-' && pattern.charAt(p) != ']') {
@@ -171,7 +171,7 @@ public class FNMatch {
                             cend = fold(cend, flags);
                             c = pattern.charAt(p++);
                         }
-                        // reuse c1:
+                        
                         c1 = fold(string.charAt(n), flags);
                         if (c1 >= cstart && c1 <= cend) {
                             matched = true;
@@ -185,19 +185,19 @@ public class FNMatch {
                     if (!matched)
                         break;
 
-                    // we only get here if matched
+                    
 
-                    // Skip the rest of the [...] that already matched.
+                    
                     while (c != ']') {
                         if (p == pattern.length()) {
-                            // [...
-                            // (unterminated)
-                            // loses.
+                            
+                            
+                            
                             return FNM_NOMATCH;
                         }
                         c = pattern.charAt(p++);
                         if ((flags & FNM_NOESCAPE) == 0 && c == '\\') {
-                            // XXX 1003.2d11 is unclear if this is right.
+                            
                             ++p;
                         }
                     }
@@ -218,8 +218,8 @@ public class FNMatch {
 
         if ((flags & FNM_LEADING_DIR) != 0
                 && string.charAt(n) == File.separatorChar) {
-            // The FNM_LEADING_DIR flag says that "foo*"
-            // matches "foobar/frobozz".
+            
+            
             return FNM_MATCH;
         }
         return FNM_NOMATCH;

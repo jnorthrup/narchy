@@ -1,12 +1,12 @@
-//
-// Translated by CS2J (http://www.cs2j.com)
-//
+
+
+
 package nars.art;
 
 import java.util.ArrayList;
 
 /**
-     * code from https://web.archive.org/web/20120109162743/http://users.visualserver.org/xhudik/art
+     * code from https:
      * 
      */
 public enum Common
@@ -24,7 +24,7 @@ public enum Common
         {
             for (j = 0;j < prototypesSequence.get(i).size();j++)
             {
-                // every prototype is compound of different number of instances
+                
                 if (prototypesSequence.get(i).get(j) == instanceI)
                 {
                     prototypeNumber = i;

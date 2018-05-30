@@ -1,9 +1,9 @@
 package jcog.grammar.parse.examples.sling;
 
-//import javax.swing.*;
-//import javax.swing.text.*;
-//import javax.swing.event.*;
-//import javax.swing.border.*;
+
+
+
+
 
 import jcog.grammar.parse.examples.utensil.SwingUtensil;
 
@@ -89,7 +89,7 @@ public class SlingIde {
 			goButton.addActionListener(mediator());
 			goButton.setFont(SwingUtensil.ideFont());
 
-			// ctrl-g keystroke:
+			
 			KeyStroke ctrlg = KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK);
 
 			goButton.registerKeyboardAction(mediator(), ctrlg, JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -265,12 +265,12 @@ public class SlingIde {
 	 */
 	protected static JPanel textPanel(String title, JTextArea ta, Dimension pref, Dimension min) {
 
-		// scroll pane around text area
+		
 		JScrollPane s1 = new JScrollPane(ta);
 		s1.setPreferredSize(pref);
 		s1.setMinimumSize(min);
 
-		// titled panel that contains scrolling text area
+		
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.setBorder(SwingUtensil.ideTitledBorder(title));

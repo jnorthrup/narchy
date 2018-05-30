@@ -31,11 +31,11 @@ public class ShowArithmeticParser {
 	 */
 	public static void main(String args[]) throws ArithmeticExpressionException {
 
-		eval("9^2 - 81       ", 0); // exponentiation
-		eval("7 - 3 - 1      ", 3); // minus associativity
-		eval("2 ^ 1 ^ 4      ", 2); // exp associativity
-		eval("100 - 25*3     ", 25); // precedence
-		eval("100 - 5^2*3    ", 25); // precedence
-		eval("(100 - 5^2) * 3", 225); // parentheses
+		eval("9^2 - 81       ", 0); 
+		eval("7 - 3 - 1      ", 3); 
+		eval("2 ^ 1 ^ 4      ", 2); 
+		eval("100 - 25*3     ", 25); 
+		eval("100 - 5^2*3    ", 25); 
+		eval("(100 - 5^2) * 3", 225); 
 	}
 }

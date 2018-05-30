@@ -41,7 +41,7 @@ public class TestVarIsEqual {
 
   @Test
   public void testDifferntVarsCompareEqual() throws MalformedGoalException, InvalidTheoryException {
-    // theory is modified code from PTTP
+    
     String theory = "test :- body_for_head_literal_instrumented(d(X,Y),(not_d(X,U);d(X,Y)),Bod).    "
         + "\n" +    "                                                                 "
         + "\n" +    "body_for_head_literal_instrumented(Head,Wff,Body) :-             "
@@ -76,7 +76,7 @@ public class TestVarIsEqual {
         + "\n" +    "    NotLit =.. [F2|L2],                                          "
         + "\n" +    "    nl,print('***              Lit array:'),print(L1),           "
         + "\n" +    "    nl,print('***           NotLit array:'),print(L2),           "
-        + "\n" +    "    L1 == L2                                                     " // ERROR HAPPENS HERE
+        + "\n" +    "    L1 == L2                                                     " 
         + "\n" +    "    , nl,print('***               SUCCEEDS')                     "
         + "\n" +    "    ).                                                           "
         + "\n" +    "                                                                 "

@@ -57,7 +57,7 @@ public class EllipsisTest {
             assertTrue(!(y instanceof Bool));
             assertNotNull(y);
             assertTrue(y.isNormalized());
-            //no variables in Y
+            
             assertEquals(0, y.vars());
             assertEquals(0, y.varPattern());
 
@@ -66,8 +66,8 @@ public class EllipsisTest {
             Term x = index.pattern( getPattern() ).normalize();
 
 
-            //no unmatched variables
-            ///x.forEach(xx -> { assertFalse(xx.toString() + " is var", xx instanceof Variable ); });
+            
+            
 
             @Nullable Term ellipsisTerm = (Term) firstEllipsis(x);
             assertNotNull(ellipsisTerm);
@@ -75,7 +75,7 @@ public class EllipsisTest {
 
             for (int seed = 0; seed < Math.max(1, repeats) /* enough chances to select all combinations */; seed++) {
 
-                //AtomicBoolean matched = new AtomicBoolean(false);
+                
 
                 System.out.println(seed + ": " + x + " unify " + y + " => " + r);
 
@@ -83,14 +83,14 @@ public class EllipsisTest {
 
                     @Override
                     public void tryMatch() {
-                        //System.out.println(x + "\t" + y + "\t" + this);
+                        
 
 
                         Term a = xy(ellipsisTerm);
                         if (a instanceof EllipsisMatch) {
                             EllipsisMatch varArgs = (EllipsisMatch) a;
 
-                            //matched.set(true);
+                            
 
                             assertEquals(getExpectedUniqueTerms(arity), varArgs.subs());
 
@@ -113,14 +113,14 @@ public class EllipsisTest {
 
                         } else {
                             assertNotNull(a);
-                            //assertEquals("?", a);
+                            
                         }
 
 
-                        //2. test substitution
+                        
                         Term s = Termed.termOrNull(r.transform(this));
                         if (s != null) {
-                            //System.out.println(s);
+                            
                             if (s.varPattern() == 0)
                                 selectedFixed.add(s);
 
@@ -132,8 +132,8 @@ public class EllipsisTest {
 
                 f.unify(x, y, true);
 
-//                assertTrue(f.toString() + " " + matched,
-//                        matched.get());
+
+
 
             }
 
@@ -292,28 +292,28 @@ public class EllipsisTest {
         }
     }
 
-//    @Test
-//    public void testEllipsisEqualityWithPatternVariable() {
-//
-//        @NotNull Ellipsis tt = Ellipsis.EllipsisPrototype.make(1,1);
-//        @NotNull Ellipsis uu = Ellipsis.EllipsisPrototype.make(1,1);
-//
-//        assertEquals(tt, uu);
-//        assertEquals(tt, $.v(VAR_PATTERN, 1));
-//        assertNotEquals(tt, $.v(VAR_PATTERN, 2));
-//        assertNotEquals(tt, $.v(VAR_DEP, 1));
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testEllipsisOneOrMore() throws Narsese.NarseseException {
         String s = "%prefix..+";
         Term t = $(s);
         assertNotNull(t);
-        //assertEquals(s, t.toString());
-        //assertEquals("%prefix", t.target.toString());
+        
+        
         assertEquals(EllipsisOneOrMore.class, t.normalize((byte) 1).getClass());
 
-        //assertEquals(t.target, $("%prefix")); //equality between target and itself
+        
     }
 
     @Test
@@ -322,7 +322,7 @@ public class EllipsisTest {
         Term t = $(s);
         assertNotNull(t);
         assertEquals(s, t.toString());
-        //assertEquals("%prefix", t.target.toString());
+        
         Term tn = t.normalize((byte) 1);
         assertEquals(EllipsisZeroOrMore.class, tn.getClass());
         assertEquals("%1..*", tn.toString());
@@ -330,9 +330,9 @@ public class EllipsisTest {
     }
 
 
-//    @Test public void testEllipsisExpression() {
-//        //TODO
-//    }
+
+
+
 
     public static String[] p(String a, String b) {
         return new String[]{a, b};
@@ -340,15 +340,15 @@ public class EllipsisTest {
 
     @Disabled @Test
     public void testVarArg0() throws Narsese.NarseseException {
-        //String rule = "(%S --> %M), ((|, %S, %A..+ ) --> %M) |- ((|, %A, ..) --> %M), (Belief:DecomposePositiveNegativeNegative)";
+        
         String rule = "(%S ==> %M), ((&&,%S,%A..+) ==> %M) |- ((&&,%A..+) ==> %M), (Belief:DecomposeNegativePositivePositive, Order:ForAllSame, SequenceIntervals:FromBelief)";
 
         Compound _x = $.$('<' + rule + '>');
         assertTrue(_x instanceof PremiseDeriverSource, _x.toString());
         PremiseDeriverSource x = (PremiseDeriverSource) _x;
-        //System.out.println(x);
+        
         x = new PremiseDeriverProto(x, new PremisePatternIndex());
-        //System.out.println(x);
+        
 
         assertEquals(
                 "(((%1==>%2),((%1&&%3..+)==>%2)),(((&&,%3..+)==>%2),((DecomposeNegativePositivePositive-->Belief),(ForAllSame-->Order),(FromBelief-->SequenceIntervals))))",
@@ -435,7 +435,7 @@ public class EllipsisTest {
 
     @Test
     public void testEllipsisCombinatorics1() throws Narsese.NarseseException {
-        //rule: ((&&,M,A..+) ==> C), ((&&,A,..) ==> C) |- M, (Truth:Abduction, Order:ForAllSame)
+        
         testCombinations(
                 $("(&&, %1..+, %2)"),
                 $("(&&, x, y, z)"),
@@ -469,7 +469,7 @@ public class EllipsisTest {
     @Test
     public void testRepeatEllipsisA() throws Narsese.NarseseException {
 
-        //ellipsis should only match the common
+        
         testCombinations(
                 $("((|,%X,%A..+) --> (|,%Y,%A..+))"),
                 $("((|,x,common)-->(|,y,common))"),
@@ -496,7 +496,7 @@ public class EllipsisTest {
     @Test
     public void testRepeatEllipsisB() throws Narsese.NarseseException {
 
-        //should match the same with ellipsis
+        
         testCombinations(
                 $("((|,%X,%A..+) --> (|,%X,%B..+))"),
                 $("((|,bird,swimmer)-->(|,animal,swimmer))"),
@@ -538,5 +538,5 @@ public class EllipsisTest {
         }
     }
 
-    //TODO case which actually needs the ellipsis and not single term:
+    
 }

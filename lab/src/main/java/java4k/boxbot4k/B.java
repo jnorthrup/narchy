@@ -41,7 +41,7 @@ public final class B extends GamePanel {
 	private static final int OUTER_FLOOR = 0;
 	private static final int FLOOR = 1;
 	private static final int GOAL = 2;
-	//private static final int WALL = 3;
+	
 	private static final int PLAYER = 4;
 	private static final int BOX = 5;
 	private static final int BOX_ON_GOAL = 6;
@@ -147,7 +147,7 @@ public final class B extends GamePanel {
 			+ "                                                                        ########      #\"\"!"
 			+ "$\"\"#      #!!%%%!#      ####!####     #!!!!!!!#     #!!!!!%!#     #!!######     ####      " + "                              ";
 
-	// 16 x 16, 3-color images
+	
 	private static final String IMAGE_DATA = "     !!!!!\"          !\"!\"!\"          !!!!!\"          !\"\"\"!\"          !!!!!\"          \"\"\"\"\""
 			+ "\"       !\"!!!!!!!\"!\"    !\"!!!!!!!\"!\"    !\"!\"\"\"\"\"!\"!\"    !\"!\"\"\"\"\"!\"!\"    \"\"!!!!!!!\"\"\"      "
 			+ "\"\"\"\"\"\"\"\"         !\"  !\"          !\"  !\"        !!!\"  !!!\"      \"\"\"\"  \"\"\"\"                 "
@@ -171,15 +171,15 @@ public final class B extends GamePanel {
 	private static final String GAME_CONTROL_START = "PRESS ANY KEY TO START.";
 	private static final String GAME_COPYRIGHT = "(C) 2010 GABOR BATA";
 
-	private static final int LEVEL_NUM = 50; //LEVEL_DATA.length() / (TABLE_WIDTH * TABLE_HEIGHT);
+	private static final int LEVEL_NUM = 50; 
 	private static final Font FONT = new Font(Font.SANS_SERIF, Font.BOLD, 14);
 	private static final Color FONT_COLOR = new Color(0x60ffffff, true);
 
-	// colors for images
-	// 0 bot
-	// 1 box
-	// 2 floor
-	// 3 wall
+	
+	
+	
+	
+	
 	private static final int[][] BLOCK_GFX_CONFIG = { { 0xff21285c, 0xff19204c, 0xff303378, 2 }, { 0xff5c3c20, 0xff4c3018, 0xff785830, 2 }, { 0xff74060c, 0xff640305, 0xff8e1618, 2 },
 			{ 0xffa29b79, 0xffcec491, 0xff7f7543, 3 }, { 0x00000000, 0xffc0c0c0, 0xff808080, 0 }, { 0xffc4a864, 0xffa88448, 0xff6f4e2a, 1 }, { 0xffc47865, 0xffa85449, 0xff6f2c2B, 1 },
 			{ 0x00000000, 0x50000000, 0x50000000, 0 }, { 0x50000000, 0x50000000, 0x50000000, 1 } };
@@ -223,8 +223,8 @@ public final class B extends GamePanel {
 		level = 0;
 		loadLevel();
 
-		//addMouseListener(this);
-		//addKeyListener(this);
+		
+		
 	}
 	
 	@Override
@@ -235,23 +235,23 @@ public final class B extends GamePanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics buffer = screenBuffer.getGraphics();
-		for (int i = 0; i < 3; i++) { // 3 step: draw floor, draw shadows, draw other elements
+		for (int i = 0; i < 3; i++) { 
 			for (int x = 0; x < TABLE_WIDTH; x++) {
 				for (int y = 0; y < TABLE_HEIGHT; y++) {
 					if (!gameStarted) {
 						buffer.drawImage(BLOCK_GFX[OUTER_FLOOR], x * BLOCK_SIZE, y * BLOCK_SIZE, null);
-					} else if (i == 0 && table[TABLE_WIDTH * y + x] <= 2) { // draw floor
+					} else if (i == 0 && table[TABLE_WIDTH * y + x] <= 2) { 
 						buffer.drawImage(BLOCK_GFX[table[TABLE_WIDTH * y + x]], x * BLOCK_SIZE, y * BLOCK_SIZE, null);
-					} else if (i == 1 && table[TABLE_WIDTH * y + x] > 2) { // draw shadow
+					} else if (i == 1 && table[TABLE_WIDTH * y + x] > 2) { 
 						buffer.drawImage(BLOCK_GFX[SHADOW], x * BLOCK_SIZE + SHADOW_SHIFT, y * BLOCK_SIZE + SHADOW_SHIFT, null);
-					} else if (i == 2 && table[TABLE_WIDTH * y + x] > 2) { // draw other
+					} else if (i == 2 && table[TABLE_WIDTH * y + x] > 2) { 
 						buffer.drawImage(BLOCK_GFX[table[TABLE_WIDTH * y + x]], x * BLOCK_SIZE, y * BLOCK_SIZE, null);
 					}
 				}
 			}
-			if (i == 1 && gameStarted) { // draw player shadow
+			if (i == 1 && gameStarted) { 
 				buffer.drawImage(BLOCK_GFX[PLAYER_SHADOW], playerX * BLOCK_SIZE + SHADOW_SHIFT, playerY * BLOCK_SIZE + SHADOW_SHIFT, null);
-			} else if (i == 2 && gameStarted) { // draw player
+			} else if (i == 2 && gameStarted) { 
 				buffer.drawImage(BLOCK_GFX[PLAYER], playerX * BLOCK_SIZE, playerY * BLOCK_SIZE, null);
 			}
 		}
@@ -383,33 +383,33 @@ public final class B extends GamePanel {
 
 	@Override
 	public void keyTyped(KeyEvent event) {
-		// not used
+		
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		// not used
+		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		// only to workaround linux keyboard input focus problem...
+		
 		requestFocus();
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		// not used
+		
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		// not used
+		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-		// not used
+		
 	}
 
 	/**

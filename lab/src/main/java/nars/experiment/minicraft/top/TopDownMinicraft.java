@@ -23,7 +23,7 @@ import java.io.IOException;
 
 public class TopDownMinicraft extends Canvas implements Runnable {
     private static final long serialVersionUID = 1L;
-    //private final Random random = new Random();
+    
     public static final String NAME = "Minicraft";
     public static final int HEIGHT = 120;
     public static final int WIDTH = 160;
@@ -58,7 +58,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     }
 
     public TopDownMinicraft() {
-        player = new Player(this, input ); //temporary so player is never null
+        player = new Player(this, input ); 
 
     }
 
@@ -86,11 +86,11 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         running = true;
 
 
-//		try {
-//			System.out.println(Game.class.getResource(".").toURI());
-//		} catch (URISyntaxException e) {
-//			e.printStackTrace();
-//		}
+
+
+
+
+
         try {
             screen = new Screen(WIDTH, HEIGHT, new SpriteSheet(ImageIO.read(TopDownMinicraft.class.getResource("icons.png"))));
             lightScreen = new Screen(WIDTH, HEIGHT, new SpriteSheet(ImageIO.read(TopDownMinicraft.class.getResource("icons.png"))));
@@ -99,7 +99,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         }
 
         resetGame();
-        //setMenu(new TitleMenu());
+        
     }
 
     public void stop() {
@@ -114,7 +114,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
 
         levels = new Level[5];
         currentLevel =
-                3; //(int)(Math.random()*5);
+                3; 
 
         levels[4] = new Level(128, 128, 1, null);
         levels[3] = new Level(128, 128, 0, levels[4]);
@@ -184,8 +184,8 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         frames++;
         render();
 
-        //System.out.println("score=" + player.score + " health=" + player.health + " stamina=" + player.stamina );
-        return player.score;// + player.stamina;
+        
+        return player.score;
     }
 
     public void tick() {
@@ -228,7 +228,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
     }
 
     public void die() {
-        //setMenu(new DeadMenu());
+        
         setMenu(new TitleMenu());
     }
 
@@ -275,7 +275,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
 
         renderGui();
 
-        //if (!hasFocus()) renderFocusNagger();
+        
 
         for (int y = 0; y < screen.h; y++) {
             for (int x = 0; x < screen.w; x++) {
@@ -382,9 +382,9 @@ public class TopDownMinicraft extends Canvas implements Runnable {
 
         game.start();
 
-//        if (auto) {
-//            new Thread(game).start();
-//        }
+
+
+
 
     }
 

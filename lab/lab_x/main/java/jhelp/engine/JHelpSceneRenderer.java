@@ -176,16 +176,16 @@ public class JHelpSceneRenderer
       @Override
       protected void doSimpleAction(final DetectionInfo detectionInfo)
       {
-         // If a 2D object is detect
+         
          if(detectionInfo.object2DDetect != null)
          {
-            // Update mouse state for 2D objects
+            
             detectionInfo.gui2d.mouseState(detectionInfo.detectX, detectionInfo.detectY, detectionInfo.mouseButtonLeft, detectionInfo.mouseButtonRight,
                   detectionInfo.mouseDrag, detectionInfo.object2DDetect);
          }
          else if(detectionInfo.mouseDrag == false)
          {
-            // If it is not a mouse drag, update mouse state for scene
+            
             detectionInfo.scene.mouseState(detectionInfo.mouseButtonLeft, detectionInfo.mouseButtonRight, detectionInfo.nodeDetect);
 
             if((detectionInfo.nodeDetect == null) && ((detectionInfo.mouseButtonLeft == true) || (detectionInfo.mouseButtonRight == true)))
@@ -356,13 +356,13 @@ public class JHelpSceneRenderer
     */
    private void computeModelView(final GL2 gl)
    {
-      // Create, if need, temporary model view
+      
       if(this.modelView == null)
       {
          this.modelView = new double[16];
       }
 
-      // Get model view
+      
       BufferUtils.TEMPORARY_DOUBLE_BUFFER.rewind();
       ((GL2)gl).glGetDoublev(GL2.GL_MODELVIEW_MATRIX, BufferUtils.TEMPORARY_DOUBLE_BUFFER);
       BufferUtils.fill(this.modelView);
@@ -376,13 +376,13 @@ public class JHelpSceneRenderer
     */
    private void computeProjection(final GL2 gl)
    {
-      // Create, if need, temporary projection
+      
       if(this.projection == null)
       {
          this.projection = new double[16];
       }
 
-      // Get projection
+      
       BufferUtils.TEMPORARY_DOUBLE_BUFFER.rewind();
       ((GL2)gl).glGetDoublev(GL2.GL_PROJECTION_MATRIX, BufferUtils.TEMPORARY_DOUBLE_BUFFER);
       BufferUtils.fill(this.projection);
@@ -396,13 +396,13 @@ public class JHelpSceneRenderer
     */
    private void computeViewPort(final GL2 gl)
    {
-      // Create, if need, temporary view port
+      
       if(this.viewPort == null)
       {
          this.viewPort = new int[16];
       }
 
-      // Get view port
+      
       BufferUtils.TEMPORARY_INT_BUFFER.rewind();
       gl.glGetIntegerv(GL2.GL_VIEWPORT, BufferUtils.TEMPORARY_INT_BUFFER);
       BufferUtils.fill(this.viewPort);
@@ -418,15 +418,15 @@ public class JHelpSceneRenderer
     */
    private void drawOver3D(final GL2 gl, final GLU glu)
    {
-      // Get all 2D objects over 3D
+      
       final Iterator<Object2D> iterator = this.gui2d.getIteratorOver3D();
       Object2D object2D;
       Texture texture;
 
-      // For each object
+      
       while(iterator.hasNext())
       {
-         // Draw the object
+         
          object2D = iterator.next();
          texture = object2D.getTexture();
          if(texture != null)
@@ -446,15 +446,15 @@ public class JHelpSceneRenderer
     */
    private void drawUnder3D(final GL2 gl, final GLU glu)
    {
-      // Get all 2D objects uder 3D
+      
       final Iterator<Object2D> iterator = this.gui2d.getIteratorUnder3D();
       Object2D object2D;
       Texture texture;
 
-      // For each object
+      
       while(iterator.hasNext())
       {
-         // Draw the object
+         
          object2D = iterator.next();
          texture = object2D.getTexture();
          if(texture != null)
@@ -526,15 +526,15 @@ public class JHelpSceneRenderer
     */
    private void makeSnapShot(final GL2 gl, final boolean invert)
    {
-      // A screen shot is initiated ?
+      
       if(this.makeAScreenShot == true)
       {
-         // Get actual colors on screen
+         
          BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
          gl.glReadPixels(0, 0, this.width, this.height, GL2.GL_RGBA, GL2.GL_FLOAT, BufferUtils.TEMPORARY_FLOAT_BUFFER);
          BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
 
-         // Create or recreate the temporary pixels array
+         
          final int nb = this.width * this.height;
          if((this.pixels == null) || (this.pixels.length != nb))
          {
@@ -542,18 +542,18 @@ public class JHelpSceneRenderer
             this.pixels = new int[nb];
          }
 
-         // ********************************
-         // *** Convert colors to pixels ***
-         // ********************************
+         
+         
+         
          int r;
          int g;
          int b;
          int a;
 
-         // For each color
+         
          for(int i = 0; i < nb; i++)
          {
-            // Convert in ARGB value
+            
             r = (int) (BufferUtils.TEMPORARY_FLOAT_BUFFER.get() * 255f) & 0xFF;
             g = (int) (BufferUtils.TEMPORARY_FLOAT_BUFFER.get() * 255f) & 0xFF;
             b = (int) (BufferUtils.TEMPORARY_FLOAT_BUFFER.get() * 255f) & 0xFF;
@@ -561,7 +561,7 @@ public class JHelpSceneRenderer
             this.pixels[i] = (a << 24) | (r << 16) | (g << 8) | b;
          }
 
-         // Update the screen shot
+         
          this.screenShot.startDrawMode();
          this.screenShot.setPixels(0, 0, this.width, this.height, this.pixels);
 
@@ -592,18 +592,18 @@ public class JHelpSceneRenderer
          this.pickColor = new Color4f();
       }
 
-      // Get picking color
+      
       BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
       gl.glReadPixels(x, this.height - y, 1, 1, GL2.GL_RGBA, GL2.GL_FLOAT, BufferUtils.TEMPORARY_FLOAT_BUFFER);
       BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
 
-      // Convert in RGB value
+      
       final float red = BufferUtils.TEMPORARY_FLOAT_BUFFER.get();
       final float green = BufferUtils.TEMPORARY_FLOAT_BUFFER.get();
       final float blue = BufferUtils.TEMPORARY_FLOAT_BUFFER.get();
       BufferUtils.TEMPORARY_FLOAT_BUFFER.rewind();
 
-      // Update picking color
+      
       this.pickColor.set(red, green, blue);
    }
 
@@ -615,19 +615,19 @@ public class JHelpSceneRenderer
     */
    private void playAnimations(final GL2 gl)
    {
-      // Compute absolute frame
+      
       this.absoluteFrame = (float) (((System.currentTimeMillis() - this.animationTime) * this.animationsFps) / 1000d);
 
-      // For each animation
+      
       final int nb = this.animations.size();
       Animation animation;
       for(int i = nb - 1; i >= 0; i--)
       {
-         // Update the animation
+         
          animation = this.animations.get(i);
          if(animation.animate(gl, this.absoluteFrame) == false)
          {
-            // If the animation is done, remove it from alive animations
+            
             this.animations.remove(i);
          }
       }
@@ -677,17 +677,17 @@ public class JHelpSceneRenderer
 
             if(texture != null)
             {
-               // Draw the background and clear Z-Buffer
+               
                gl.glClearColor(miror.backgroundRed, miror.backgroundGreen, miror.backgroundBlue, miror.backgroundAlpha);
                gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
                gl.glEnable(GL2.GL_DEPTH_TEST);
                gl.glPushMatrix();
 
-               // Put in camera view
+               
                camera.render(glu);
 
-               // Render the scene
+               
                this.scene.renderTheScene(gl, glu, this);
 
                gl.glPopMatrix();
@@ -723,25 +723,25 @@ public class JHelpSceneRenderer
     */
    private void show2D(final GL2 gl, final GLU glu, final Texture texture, final int x, final int y, final int width, final int height)
    {
-      // Make the material for 2D
+      
       this.prepareMaterial2D(gl);
 
-      // Compute up-left and down-right corner in 3D
+      
       final Point3D point1 = this.gluUnProject(x, y, -1f, gl, glu);
       final Point3D point2 = this.gluUnProject(x + width, y + height, -1f, gl, glu);
 
-      // get new positions and size
+      
       final float x1 = point1.getX();
       final float y1 = point1.getY();
       final float x2 = point2.getX();
       final float y2 = point2.getY();
       final float w = Math.abs(x1 - x2);
       final float h = Math.abs(y1 - y2);
-      // Compute middle point
+      
       final float xx = Math.min(x1, x2) + (0.5f * w);
       final float yy = Math.min(y1, y2) + (0.5f * h);
 
-      // Draw the object on the 2D plane
+      
       gl.glDisable(GL2.GL_LIGHTING);
       gl.glEnable(GL2.GL_TEXTURE_2D);
       texture.bind(gl);
@@ -764,15 +764,15 @@ public class JHelpSceneRenderer
     */
    private void showFPS(final GL2 gl, final GLU glu)
    {
-      // If the print is enable
+      
       if(this.showFPS == true)
       {
-         // If the texture for print don't exists, create it now
+         
          if(this.textureFPS == null)
          {
             this.textureFPS = new Texture("FPS", 128, 64);
          }
-         // Print the FPS
+         
          this.show2D(gl, glu, this.textureFPS, 0, 0, 128, 64);
       }
    }
@@ -784,21 +784,21 @@ public class JHelpSceneRenderer
    {
       this.fpsCount++;
       final long time = System.currentTimeMillis() - this.fpsStart;
-      // If the evaluate time is reach
+      
       if(time >= JHelpSceneRenderer.evaluteTime)
       {
-         // Compute the FPS
+         
          this.fps = (float) ((this.fpsCount * 1000d) / time);
-         // If the print is enable
+         
          if(this.showFPS == true)
          {
-            // If the texture for print don't exists, create it now
+            
             if(this.textureFPS == null)
             {
                this.textureFPS = new Texture("FPS", 128, 64);
             }
 
-            // Print new FPS in the texture
+            
             this.textureFPS.fillRect(0, 0, 128, 64, JHelpSceneRenderer.TR, false);
             if(this.font == null)
             {
@@ -808,7 +808,7 @@ public class JHelpSceneRenderer
             this.textureFPS.flush();
          }
 
-         // Re-initialize for a new evaluation
+         
          this.fpsCount = 0;
          this.fpsStart = System.currentTimeMillis();
       }
@@ -833,13 +833,13 @@ public class JHelpSceneRenderer
    void drawPickHotspot(final GL2 gl, final GLU glu, final Node node, final float red, final float green, final float blue)
    {
       final Texture textureHotspot = node.getTextureHotspot();
-      // If no hotspot texture, do nothing
+      
       if(textureHotspot == null)
       {
          return;
       }
 
-      // Project center node in the model view
+      
       final Point3D center = node.getCenter();
       this.computeModelView(gl);
       final double cx = center.getX();
@@ -849,16 +849,16 @@ public class JHelpSceneRenderer
       final double py = (cx * this.modelView[1]) + (cy * this.modelView[5]) + (cz * this.modelView[9]) + this.modelView[13];
       final double pz = (cx * this.modelView[2]) + (cy * this.modelView[6]) + (cz * this.modelView[10]) + this.modelView[14];
 
-      // Project the new center in the screen
+      
       final float z = (float) pz;
       final Point2D centerOnScreen = this.gluProject((float) px, (float) py, z, gl, glu);
       float x1 = centerOnScreen.getX() - (textureHotspot.getWidth() / 2f);
       float y1 = centerOnScreen.getY() - (textureHotspot.getHeight() / 2f);
       float x2 = centerOnScreen.getX() + (textureHotspot.getWidth() / 2f);
       float y2 = centerOnScreen.getY() + (textureHotspot.getHeight() / 2f);
-      // Now we know where the hotspot must be on the screen
+      
 
-      // Project this position on 3D
+      
       final Point3D point1 = this.gluUnProject(x1, y1, z, gl, glu);
       final Point3D point2 = this.gluUnProject(x2, y2, z, gl, glu);
       x1 = point1.getX();
@@ -870,7 +870,7 @@ public class JHelpSceneRenderer
       final float xx = Math.min(x1, x2) + (0.5f * w);
       final float yy = Math.min(y1, y2) + (0.5f * h);
 
-      // We have all informations, so we can draw the hotspot
+      
       gl.glPushMatrix();
 
       gl.glLoadIdentity();
@@ -898,22 +898,22 @@ public class JHelpSceneRenderer
       {
          this.renderMirors(gl, glu, camera);
 
-         // Draw the background and clear Z-Buffer
+         
          this.scene.drawBackground(gl);
          gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-         // Draw 2D objects under 3D
+         
          gl.glDisable(GL2.GL_DEPTH_TEST);
          this.drawUnder3D(gl, glu);
          gl.glEnable(GL2.GL_DEPTH_TEST);
          gl.glPushMatrix();
-         // Put in camera view
+         
          camera.render(glu);
 
-         // Render the scene
+         
          this.scene.renderTheScene(gl, glu, this);
          gl.glPopMatrix();
          gl.glDisable(GL2.GL_DEPTH_TEST);
-         // Draw 2D objects over 3D
+         
          this.drawOver3D(gl, glu);
       }
       catch(final Exception exception)
@@ -936,15 +936,15 @@ public class JHelpSceneRenderer
     */
    void renderPicking(final GL2 gl, final GLU glu, final Camera camera)
    {
-      // Prepare for "picking rendering"
+      
       gl.glDisable(GL2.GL_LIGHTING);
       gl.glDisable(GL2.GL_CULL_FACE);
       gl.glClearColor(1f, 1f, 1f, 1f);
       gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
       gl.glPushMatrix();
-      // Put in camera view
+      
       camera.render(glu);
-      // Render the scene in picking mode
+      
       this.scene.renderTheScenePicking(gl, glu, this);
       gl.glPopMatrix();
       gl.glEnable(GL2.GL_LIGHTING);
@@ -957,22 +957,22 @@ public class JHelpSceneRenderer
          }
       }
 
-      // If detection point is on the screen
+      
       if((this.detectX >= 0) && (this.detectX < this.width) && (this.detectY >= 0) && (this.detectY < this.height))
       {
-         // Compute pick color and node pick
+         
          this.pickColor(gl, this.detectX, this.detectY);
 
          this.nodeDetect = this.scene.getPickingNode(this.pickColor);
          if(this.nodeDetect != null)
          {
-            // If node is detect, verify if a 2D object over the 3D can be
-            // detect too
+            
+            
             this.object2DDetect = this.gui2d.detectOver3D(this.detectX, this.detectY);
          }
          else
          {
-            // If no node detect, verify if a 2D object is detect
+            
             this.object2DDetect = this.gui2d.detectOver3DorUnder3D(this.detectX, this.detectY);
          }
       }
@@ -1001,23 +1001,23 @@ public class JHelpSceneRenderer
     */
    void renderPickUV(final GL2 gl, final GLU glu, final Camera camera)
    {
-      // Prepare for "picking rendering"
+      
       gl.glDisable(GL2.GL_LIGHTING);
       gl.glDisable(GL2.GL_CULL_FACE);
       gl.glClearColor(1f, 1f, 1f, 1f);
       gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
       gl.glPushMatrix();
-      // Put in camera view
+      
       camera.render(glu);
-      // Render the scene in picking mode
+      
       this.scene.renderPickingUV(this.pickUVnode, gl, glu);
       gl.glPopMatrix();
       gl.glEnable(GL2.GL_LIGHTING);
 
-      // If detection point is on the screen
+      
       if((this.detectX >= 0) && (this.detectX < this.width) && (this.detectY >= 0) && (this.detectY < this.height))
       {
-         // Compute pick color and node pick
+         
          this.pickColor(gl, this.detectX, this.detectY);
 
          final int red = (int) (this.pickColor.getRed() * 255);
@@ -1047,16 +1047,16 @@ public class JHelpSceneRenderer
    void showHotspot(final GL2 gl, final GLU glu, final Node node)
    {
       final Texture textureHotspot = node.getTextureHotspot();
-      // If no hotspot texture, do nothing
+      
       if(textureHotspot == null)
       {
          return;
       }
 
-      // Use material for 2D
+      
       this.prepareMaterial2D(gl);
 
-      // Project center node in the model view
+      
       final Point3D center = node.getCenter();
       this.computeModelView(gl);
       final double cx = center.getX();
@@ -1066,7 +1066,7 @@ public class JHelpSceneRenderer
       final double py = (cx * this.modelView[1]) + (cy * this.modelView[5]) + (cz * this.modelView[9]) + this.modelView[13];
       final double pz = (cx * this.modelView[2]) + (cy * this.modelView[6]) + (cz * this.modelView[10]) + this.modelView[14];
 
-      // Project the new center in the screen
+      
       final float z = (float) pz;
       final Point2D centerOnScreen = this.gluProject((float) px, (float) py, z, gl, glu);
       float x1 = centerOnScreen.getX() - (textureHotspot.getWidth() / 2f);
@@ -1075,9 +1075,9 @@ public class JHelpSceneRenderer
       float y2 = centerOnScreen.getY() + (textureHotspot.getHeight() / 2f);
       final Point3D point1 = this.gluUnProject(x1, y1, z, gl, glu);
       final Point3D point2 = this.gluUnProject(x2, y2, z, gl, glu);
-      // Now we know where the hotspot must be on the screen
+      
 
-      // Project this position on 3D
+      
       x1 = point1.getX();
       y1 = point1.getY();
       x2 = point2.getX();
@@ -1087,7 +1087,7 @@ public class JHelpSceneRenderer
       final float xx = Math.min(x1, x2) + (0.5f * w);
       final float yy = Math.min(y1, y2) + (0.5f * h);
 
-      // We have all informations, so we can draw the hotspot
+      
       gl.glDisable(GL2.GL_LIGHTING);
       gl.glEnable(GL2.GL_TEXTURE_2D);
       gl.glPushMatrix();
@@ -1227,7 +1227,7 @@ public class JHelpSceneRenderer
       System.out.println("display: " + drawable);
 
       this.ready = false;
-      // Get OpenGL and GLU context
+      
       final GL2 gl = drawable.getGL().getGL2();
       final GLU glu = new GLUgl2();
 
@@ -1236,32 +1236,32 @@ public class JHelpSceneRenderer
          this.texturesToRemove.outQueue().removeFromMemory(gl);
       }
 
-      // If a new scene wait, change the scene
+      
       if(this.newScene != null)
       {
          this.scene = this.newScene;
          this.newScene = null;
       }
 
-      // Update played animations
+      
       this.playAnimations(gl);
 
-      // Initialize for screen shot
+      
       if((this.screenShot == null) || (this.screenShot.getWidth() != this.width) || (this.screenShot.getHeight() != this.height))
       {
          this.screenShot = null;
          this.screenShot = new JHelpImage(this.width, this.height);
       }
 
-      // Refresh window materials
+      
       for(final WindowMaterial windowMaterial : this.windowMaterials)
       {
          windowMaterial.refreshIfNeed();
       }
 
-      // Get actual camera
+      
       final Camera camera = this.scene.getCamera();
-      // Render picking mode
+      
       if(this.detectionActivate == true)
       {
          if(this.pickUVnode != null)
@@ -1274,19 +1274,19 @@ public class JHelpSceneRenderer
          }
       }
 
-      // Render the lights
+      
       this.lights.render(gl);
-      // Render the scene
+      
       this.render(gl, glu, camera);
 
-      // Take the snapshot
+      
       this.makeSnapShot(gl, true);
-      // Print FPS
+      
       this.showFPS(gl, glu);
-      // Update FPS
+      
       this.updateFPS();
 
-      // Make ready for the next loop
+      
       gl.glEnable(GL2.GL_DEPTH_TEST);
       drawable.swapBuffers();
 
@@ -1297,23 +1297,23 @@ public class JHelpSceneRenderer
       }
    }
 
-//   /**
-//    * Call by JOGL we screen resolution change.<br>
-//    * Do nothing now, so it can append strange result if screen resolution change when engine is running
-//    *
-//    * @param drawable
-//    *           Drawable context
-//    * @param modeChanged
-//    *           Indicates if the mode changed
-//    * @param deviceChanged
-//    *           Indicates if the device changed
-//    * @see javax.media.opengl.GLEventListener#displayChanged(javax.media.opengl.GLAutoDrawable, boolean, boolean)
-//    */
-//   @Override
-//   public void displayChanged(final GLAutoDrawable drawable, final boolean modeChanged, final boolean deviceChanged)
-//   {
-//   }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    /**
     * Actual absolute frame
@@ -1435,75 +1435,75 @@ public class JHelpSceneRenderer
    @Override
    public void init(final GLAutoDrawable drawable)
    {
-      // Delegate key and mouse events to this manager
+      
       drawable.addGLEventListener(this);
 
-//      drawable.addKeyListener(this);
-//      drawable.addMouseListener(this);
-//      drawable.addMouseMotionListener(this);
-//      drawable.addMouseWheelListener(this);
 
-      // Get OpenGL and GLU context
+
+
+
+
+      
       final GLU glu = new GLU();
       final GL2 gl = drawable.getGL().getGL2();
 
-      // Get dimensions and ration
+      
       this.width = drawable.getSurfaceWidth();
       this.height = drawable.getSurfaceHeight();
       final float ratio = (float) this.width / (float) this.height;
-      // Get number maximum of lights
+      
       BufferUtils.TEMPORARY_INT_BUFFER.rewind();
       gl.glGetIntegerv(GL2.GL_MAX_LIGHTS, BufferUtils.TEMPORARY_INT_BUFFER);
       BufferUtils.TEMPORARY_INT_BUFFER.rewind();
       this.lights = new Lights(BufferUtils.TEMPORARY_INT_BUFFER.get());
 
-      // *************************
-      // *** Initialize OpenGL ***
-      // *************************
-      // Alpha enable
+      
+      
+      
+      
       gl.glEnable(GL2.GL_ALPHA_TEST);
-      // Set alpha precision
+      
       gl.glAlphaFunc(GL2.GL_GREATER, 0.01f);
-      // Material can be colored
+      
       gl.glEnable(GL2.GL_COLOR_MATERIAL);
-      // For performance disable texture, we enable them only on need
+      
       gl.glDisable(GL2.GL_TEXTURE_2D);
-      // Way to compute alpha
+      
       gl.glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
-      // We accept blinding
+      
       gl.glEnable(GL2.GL_BLEND);
-      // Fix the view port
+      
       gl.glViewport(0, 0, this.width, this.height);
-      // Normalization is enable
+      
       gl.glEnable(GL2.GL_NORMALIZE);
-      // Fix the view port. Yes again, I don't know why, but it work better on
-      // doing that
+      
+      
       gl.glViewport(0, 0, this.width, this.height);
 
-      // Set the "3D feeling".
-      // That is to say how the 3D looks like
-      // Here we want just see the depth, but not have fish eye effect
+      
+      
+      
       gl.glMatrixMode(GL2.GL_PROJECTION);
       gl.glLoadIdentity();
       glu.gluPerspective(45.0f, ratio, 0.1f, 5000f);
       gl.glMatrixMode(GL2.GL_MODELVIEW);
       gl.glLoadIdentity();
 
-      // Initialize background
+      
       gl.glClearColor(1f, 1f, 1f, 1f);
       gl.glEnable(GL2.GL_DEPTH_TEST);
 
-      // Enable see and hide face
+      
       gl.glEnable(GL2.GL_CULL_FACE);
       gl.glCullFace(GL2.GL_FRONT);
 
-      // Light base adjustment for smooth effect
+      
       gl.glLightModeli(GL2.GL_LIGHT_MODEL_LOCAL_VIEWER, GL2.GL_TRUE);
       gl.glShadeModel(GL2.GL_SMOOTH);
       gl.glLightModeli(GL2.GL_LIGHT_MODEL_COLOR_CONTROL, GL2.GL_SEPARATE_SPECULAR_COLOR);
       gl.glLightModeli(GL2.GL_LIGHT_MODEL_TWO_SIDE, 1);
 
-      // Enable lights and default light
+      
       gl.glEnable(GL2.GL_LIGHTING);
 
       ThreadManager.THREAD_MANAGER.doThread(this.fireEventScheduleAction, JHelpSceneRenderer.ACTION_FIRE_SCENE_RENDERER_IS_INITIALIZED);
@@ -1831,7 +1831,7 @@ public class JHelpSceneRenderer
     */
    public void refresh()
    {
-      //this.canvas.repaint();
+      
    }
 
    /**
@@ -1976,11 +1976,11 @@ public class JHelpSceneRenderer
    @Override
    public void reshape(final GLAutoDrawable drawable, final int x, final int y, final int width, final int height)
    {
-      // Get OpenGL and GLU context
+      
       final GLU glu = new GLU();
       final GL2 gl = (GL2) drawable.getGL();
 
-      // Compute new view with new size
+      
       this.width = drawable.getSurfaceWidth();
       this.height = drawable.getSurfaceHeight();
       final float ratio = (float) this.width / ((float) this.height);
@@ -2000,25 +2000,25 @@ public class JHelpSceneRenderer
    @Override
    public void run()
    {
-      // Initial time to wait between 2 refresh
+      
       int waitMax = 40;
       long laps;
       long waitLeft;
 
-      // While the renderer have to update
+      
       while(this.thread != null)
       {
 
 
-         // Test if the drawing is allowed
+         
          if((this.canvas.isVisible() == true) && (this.pause == false))
          {
-            // We can draw, so call the refresh
+            
             final long start = System.currentTimeMillis();
             this.ready = false;
-            //this.canvas.repaint();
+            
 
-            // Wait for the renderer is ready, that is to say the scene is draw
+            
             while(this.ready == false)
             {
                synchronized(this.LOCK)
@@ -2033,8 +2033,8 @@ public class JHelpSceneRenderer
                }
             }
 
-            // Compute if the render takes more or less time than we expect and
-            // try adjust the waiting near the computer capacity
+            
+            
             laps = System.currentTimeMillis() - start;
             waitLeft = waitMax - laps;
             if(waitLeft < 1)
@@ -2068,7 +2068,7 @@ public class JHelpSceneRenderer
          }
          else
          {
-            // If the draw is forbidden, just wait 1 second before retry
+            
             try
             {
                Thread.sleep(512);
@@ -2076,8 +2076,8 @@ public class JHelpSceneRenderer
             catch(final InterruptedException e)
             {
             }
-            // If the canvas is a can't draw state and we are not in pause, try
-            // to repair the draw
+            
+            
             if((this.canvas.isVisible() == false) && (this.pause == false))
             {
                this.canvas.setVisible(true);
@@ -2187,7 +2187,7 @@ public class JHelpSceneRenderer
     */
    public JHelpImage screenShot()
    {
-      // Wait for the render is ready
+      
       while(this.ready == false)
       {
          try
@@ -2198,10 +2198,10 @@ public class JHelpSceneRenderer
          {
          }
       }
-      // Initialize the screen shot
+      
       this.screenShot = new JHelpImage(this.width, this.height);
       this.makeAScreenShot = true;
-      // Wait for the screen shot is done
+      
       do
       {
          try
@@ -2214,7 +2214,7 @@ public class JHelpSceneRenderer
       }
       while(this.makeAScreenShot == true);
 
-      // Return the screen shot
+      
       return this.screenShot;
    }
 
@@ -2324,7 +2324,7 @@ public class JHelpSceneRenderer
     */
    public void setScene(final Scene scene)
    {
-      // The scene will change as soon as possible
+      
       this.newScene = scene;
    }
 

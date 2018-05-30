@@ -18,7 +18,7 @@ public class OsmRelation extends OsmElement {
         this.children = children;
     }
 
-//    public static OsmRelation getOsmRelationById(List<OsmRelation> relations, String id) {
-//        return (OsmRelation) elemById(relations, id);
-//    }
+
+
+
 }

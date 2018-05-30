@@ -17,7 +17,7 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
     public final /*HACK make unpublic */ T ref;
 
     public ProxyTerm(T t) {
-        //assert(!(this instanceof The));
+        
         this.ref = t;
     }
 
@@ -46,10 +46,10 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
         return ref.dt();
     }
 
-//    @Override
-//    public final Term term() {
-//        return this;
-//    }
+
+
+
+
 
     @Override
     public Op op() {
@@ -77,7 +77,7 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
         if (o instanceof ProxyTerm)
             o = ((ProxyTerm)o).ref;
         if (o instanceof Termed)
-            o = ((Termed)o).term(); //dereference, ex: for concept/term equality
+            o = ((Termed)o).term(); 
         return ref.equals(o);
     }
 
@@ -144,20 +144,20 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
         return ref.isNormalized();
     }
 
-//    @Override
-//    public @Nullable byte[] pathTo(Term subterm) {
-//        return ref.pathTo(subterm);
-//    }
-//
-//    @Override
-//    public ByteList structureKey() {
-//        return ref.structureKey();
-//    }
-//
-//    @Override
-//    public ByteList structureKey(ByteArrayList appendTo) {
-//        return ref.structureKey(appendTo);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -182,15 +182,15 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
         return ref.contains(t);
     }
 
-//    @Override
-//    public boolean impossibleSubTerm(Termlike target) {
-//        return ref.impossibleSubTerm(target);
-//    }
-//
-//    @Override
-//    public boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
-//        return ref.impossibleSubTermOrEqualityVolume(otherTermsVolume);
-//    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public Term sub(int i, Term ifOutOfBounds) {
@@ -257,15 +257,15 @@ public class ProxyTerm<T extends Term> implements Term, Compound {
         return ref.varPattern();
     }
 
-//    @Override
-//    public boolean isDynamic() {
-//        return ref.isDynamic();
-//    }
 
 
-//    @Override
-//    public int vars(@Nullable Op type) {
-//        return ref.vars(type);
-//    }
+
+
+
+
+
+
+
+
 
 }

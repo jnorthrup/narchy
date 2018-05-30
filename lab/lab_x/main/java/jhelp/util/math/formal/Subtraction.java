@@ -291,10 +291,10 @@ public class Subtraction
 
          if((additions1.length > 1) || (additions2.length > 1))
          {
-            // (X1+X2+...+Xn)-(Y1+Y2+..+Ym) => (X1-Y1)+...+(Xo-Yo)+R
-            // if n==m => o=n | R=0
-            // if n>m => o=m | R=X(o+1)+...+Xn
-            // if n<m => o=n | R=-(Y(o+1)+...+Ym)
+            
+            
+            
+            
             final int n = additions1.length;
             final int m = additions2.length;
             final int o = Math.min(n, m);
@@ -815,14 +815,14 @@ public class Subtraction
 
                if(f1.equals(f2) == true)
                {
-                  // (C1 * X) - (C2 * X) => C3 * X // Where C3 = C1-C2
-                  // (C1 * X) - (X * C2) => C3 * X // Where C3 = C1-C2
-                  // (X * C1) - (C2 * X) => C3 * X // Where C3 = C1-C2
-                  // (X * C1) - (X * C2) => C3 * X // Where C3 = C1-C2
-                  // (C1 * X) - X => C2 * X // Where C2 = C1-1
-                  // (X * C1) - X => C2 * X // Where C2 = C1-1
-                  // X - (C1 * X) => C2 * X // Where C2 = 1-C1
-                  // X - (X * C1) => C2 * X // Where C2 = 1-C1
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
                   return Function.createMultiplication(new Constant(value), f1.simplify());
                }
             }

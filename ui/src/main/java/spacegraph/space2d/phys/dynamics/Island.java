@@ -188,7 +188,7 @@ public class Island {
 
     void init(int bodyCapacity, int contactCapacity, int jointCapacity,
                      ContactListener listener) {
-        // System.out.println("Initializing Island");
+        
         m_bodyCapacity = bodyCapacity;
         m_contactCapacity = contactCapacity;
         m_jointCapacity = jointCapacity;
@@ -208,7 +208,7 @@ public class Island {
             contacts = new Contact[m_contactCapacity];
         }
 
-        // dynamic array
+        
         if (velocities == null || m_bodyCapacity > velocities.length) {
             final Velocity[] old = velocities == null ? new Velocity[0] : velocities;
             velocities = new Velocity[m_bodyCapacity];
@@ -218,7 +218,7 @@ public class Island {
             }
         }
 
-        // dynamic array
+        
         if (positions == null || m_bodyCapacity > positions.length) {
             final Position[] old = positions == null ? new Position[0] : positions;
             positions = new Position[m_bodyCapacity];
@@ -242,10 +242,10 @@ public class Island {
 
     public void solve(Dynamics2D.Profile profile, TimeStep step, Tuple2f gravity, boolean allowSleep) {
 
-        // System.out.println("Solving Island");
+        
         float h = step.dt;
 
-        // Integrate velocities and apply damping. Initialize the body state.
+        
         for (int i = 0; i < m_bodyCount; ++i) {
             final Body2D b = bodies[i];
             final Sweep bm_sweep = b.sweep;
@@ -254,25 +254,25 @@ public class Island {
             final Tuple2f v = b.vel;
             float w = b.velAngular;
 
-            // Store positions for continuous collision.
+            
             bm_sweep.c0.set(bm_sweep.c);
             bm_sweep.a0 = bm_sweep.a;
 
             if (b.type == BodyType.DYNAMIC) {
-                // Integrate velocities.
-                // v += h * (b.m_gravityScale * gravity + b.m_invMass * b.m_force);
+                
+                
                 v.x += h * (b.m_gravityScale * gravity.x + b.m_invMass * b.force.x);
                 v.y += h * (b.m_gravityScale * gravity.y + b.m_invMass * b.force.y);
                 w += h * b.m_invI * b.torque;
 
-                // Apply damping.
-                // ODE: dv/dt + c * v = 0
-                // Solution: v(t) = v0 * exp(-c * t)
-                // Time step: v(t + dt) = v0 * exp(-c * (t + dt)) = v0 * exp(-c * t) * exp(-c * dt) = v *
-                // exp(-c * dt)
-                // v2 = exp(-c * dt) * v1
-                // Pade approximation:
-                // v2 = v1 * 1 / (1 + c * dt)
+                
+                
+                
+                
+                
+                
+                
+                
                 v.x *= 1.0f / (1.0f + h * b.m_linearDamping);
                 v.y *= 1.0f / (1.0f + h * b.m_linearDamping);
                 w *= 1.0f / (1.0f + h * b.m_angularDamping);
@@ -288,12 +288,12 @@ public class Island {
 
         timer.reset();
 
-        // Solver data
+        
         solverData.step = step;
         solverData.positions = positions;
         solverData.velocities = velocities;
 
-        // Initialize velocity constraints.
+        
         solverDef.step = step;
         solverDef.contacts = contacts;
         solverDef.count = m_contactCount;
@@ -301,11 +301,11 @@ public class Island {
         solverDef.velocities = velocities;
 
         contactSolver.init(solverDef);
-        // System.out.println("island init vel");
+        
         contactSolver.initializeVelocityConstraints();
 
         if (step.warmStarting) {
-            // System.out.println("island warm start");
+            
             contactSolver.warmStart();
         }
 
@@ -315,9 +315,9 @@ public class Island {
 
         profile.solveInit.accum(timer::getMilliseconds);
 
-        // Solve velocity constraints
+        
         timer.reset();
-        // System.out.println("island solving velocities");
+        
         for (int i = 0; i < step.velocityIterations; ++i) {
             for (int j = 0; j < m_jointCount; ++j) {
                 joints[j].solveVelocityConstraints(solverData);
@@ -326,18 +326,18 @@ public class Island {
             contactSolver.solveVelocityConstraints();
         }
 
-        // Store impulses for warm starting
+        
         contactSolver.storeImpulses();
         profile.solveVelocity.accum(timer::getMilliseconds);
 
-        // Integrate positions
+        
         for (int i = 0; i < m_bodyCount; ++i) {
             final Tuple2f c = positions[i];
             float a = positions[i].a;
             final Tuple2f v = velocities[i];
             float w = velocities[i].w;
 
-            // Check for large velocities
+            
             float translationx = v.x * h;
             float translationy = v.y * h;
 
@@ -354,7 +354,7 @@ public class Island {
                 w *= ratio;
             }
 
-            // Integrate
+            
             c.x += h * v.x;
             c.y += h * v.y;
             a += h * w;
@@ -363,7 +363,7 @@ public class Island {
             velocities[i].w = w;
         }
 
-        // Solve position constraints
+        
         timer.reset();
         boolean positionSolved = false;
         for (int i = 0; i < step.positionIterations; ++i) {
@@ -376,13 +376,13 @@ public class Island {
             }
 
             if (contactsOkay && jointsOkay) {
-                // Exit early if the position errors are small.
+                
                 positionSolved = true;
                 break;
             }
         }
 
-        // Copy state buffers back to the bodies
+        
         for (int i = 0; i < m_bodyCount; ++i) {
             Body2D body = bodies[i];
             body.sweep.c.x = positions[i].x;
@@ -437,7 +437,7 @@ public class Island {
         assert (toiIndexA < m_bodyCount);
         assert (toiIndexB < m_bodyCount);
 
-        // Initialize the body state.
+        
         for (int i = 0; i < m_bodyCount; ++i) {
             Body2D b = bodies[i];
             positions[i].x = b.sweep.c.x;
@@ -455,75 +455,75 @@ public class Island {
         toiSolverDef.velocities = velocities;
         toiContactSolver.init(toiSolverDef);
 
-        // Solve position constraints.
+        
         for (int i = 0; i < subStep.positionIterations; ++i) {
             boolean contactsOkay = toiContactSolver.solveTOIPositionConstraints(toiIndexA, toiIndexB);
             if (contactsOkay) {
                 break;
             }
         }
-        // #if 0
-        // // Is the new position really safe?
-        // for (int i = 0; i < m_contactCount; ++i)
-        // {
-        // Contact* c = m_contacts[i];
-        // Fixture* fA = c.GetFixtureA();
-        // Fixture* fB = c.GetFixtureB();
-        //
-        // Body bA = fA.GetBody();
-        // Body bB = fB.GetBody();
-        //
-        // int indexA = c.GetChildIndexA();
-        // int indexB = c.GetChildIndexB();
-        //
-        // DistanceInput input;
-        // input.proxyA.Set(fA.GetShape(), indexA);
-        // input.proxyB.Set(fB.GetShape(), indexB);
-        // input.transformA = bA.GetTransform();
-        // input.transformB = bB.GetTransform();
-        // input.useRadii = false;
-        //
-        // DistanceOutput output;
-        // SimplexCache cache;
-        // cache.count = 0;
-        // Distance(&output, &cache, &input);
-        //
-        // if (output.distance == 0 || cache.count == 3)
-        // {
-        // cache.count += 0;
-        // }
-        // }
-        // #endif
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-        // Leap of faith to new safe state.
+        
         bodies[toiIndexA].sweep.c0.x = positions[toiIndexA].x;
         bodies[toiIndexA].sweep.c0.y = positions[toiIndexA].y;
         bodies[toiIndexA].sweep.a0 = positions[toiIndexA].a;
         bodies[toiIndexB].sweep.c0.set(positions[toiIndexB]);
         bodies[toiIndexB].sweep.a0 = positions[toiIndexB].a;
 
-        // No warm starting is needed for TOI events because warm
-        // starting impulses were applied in the discrete solver.
+        
+        
         toiContactSolver.initializeVelocityConstraints();
 
-        // Solve velocity constraints.
+        
         for (int i = 0; i < subStep.velocityIterations; ++i) {
             toiContactSolver.solveVelocityConstraints();
         }
 
-        // Don't store the TOI contact forces for warm starting
-        // because they can be quite large.
+        
+        
 
         float h = subStep.dt;
 
-        // Integrate positions
+        
         for (int i = 0; i < m_bodyCount; ++i) {
             Tuple2f c = positions[i];
             float a = positions[i].a;
             Tuple2f v = velocities[i];
             float w = velocities[i].w;
 
-            // Check for large velocities
+            
             float translationx = v.x * h;
             float translationy = v.y * h;
             if (translationx * translationx + translationy * translationy > Settings.maxTranslationSquared) {
@@ -539,7 +539,7 @@ public class Island {
                 w *= ratio;
             }
 
-            // Integrate
+            
             c.x += v.x * h;
             c.y += v.y * h;
             a += h * w;
@@ -551,7 +551,7 @@ public class Island {
             velocities[i].y = v.y;
             velocities[i].w = w;
 
-            // Sync bodies
+            
             Body2D body = bodies[i];
             body.sweep.c.x = c.x;
             body.sweep.c.y = c.y;
@@ -593,7 +593,7 @@ public class Island {
                 impulse.tangentImpulses[j] = vc.points[j].tangentImpulse;
             }
 
-            Fracture.init(c, impulse, m_world); //zkontroluje kontakt a ak vytvara frakturu, tak ju prida do m_world cez addFracture(Fixture)
+            Fracture.init(c, impulse, m_world); 
 
             if (m_listener != null) {
                 m_listener.postSolve(c, impulse);

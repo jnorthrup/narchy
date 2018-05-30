@@ -36,8 +36,8 @@ public class MixMultiExec extends AbstractExec {
     final Sharing sharing = new Sharing();
     private final TimeSlicing cpu;
 
-//    private final InstrumentedWork async;
-//    private final MultithreadConcurrentQueue asyncQueue = new MultithreadConcurrentQueue(2048);
+
+
 
 
     Revaluator revaluator;
@@ -58,7 +58,7 @@ public class MixMultiExec extends AbstractExec {
                         if (!Double.isFinite(value))
                             value = 0;
                         value = Math.max(value, 0);
-                        //(Util.tanhFast(((Causable) x).value()) + 1f)/2f;
+                        
                         double meanTimeNS = Math.max(1, s.iterTimeNS.getMean());
                         if (!Double.isFinite(meanTimeNS))
                             meanTimeNS = POSITIVE_INFINITY;
@@ -70,7 +70,7 @@ public class MixMultiExec extends AbstractExec {
 
                 super.commit();
 
-                //System.out.println(this);
+                
 
                 return this;
             }
@@ -78,19 +78,19 @@ public class MixMultiExec extends AbstractExec {
         sharing.can(cpu);
 
 
-//        async = new InstrumentedWork(new AbstractWork(sharing.start("Async_Exec"), "CPU", 0.5f) {
-//
-//            @Override
-//            public boolean next() {
-//                Object next = asyncQueue.poll();
-//                if (next == null)
-//                    return false;
-//
-//                execute(next);
-//
-//                return true;
-//            }
-//        });
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -105,9 +105,9 @@ public class MixMultiExec extends AbstractExec {
     @Override
     public void execute(Runnable async) {
         ForkJoinPool.commonPool().execute(async);
-//        if (!asyncQueue.offer(async)) {
-//            throw new TODO("queue overflow");
-//        }
+
+
+
     }
 
 
@@ -117,10 +117,10 @@ public class MixMultiExec extends AbstractExec {
             super.start(n);
 
             revaluator =
-                    //new Focus.DefaultRevaluator();
+                    
                     new Focus.AERevaluator(new SplitMix64Random(1));
 
-            //TODO move this into a method that accepts a 2 method interface
+            
             n.services.change.on((xa) -> {
                 Service<NAR> x = xa.getOne();
                 if (x instanceof Causable) {
@@ -131,7 +131,7 @@ public class MixMultiExec extends AbstractExec {
                         remove(c);
                 }
             });
-            //add existing
+            
             n.services().filter(x -> x instanceof Causable).forEach(x -> {
                 add((Causable) x);
             });

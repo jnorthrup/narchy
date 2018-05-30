@@ -16,19 +16,19 @@ public class Derivers {
         for (int level = minLevel; level <= maxLevel; level++) {
             switch (level) {
                 case 8:
-                    //files.add("motivation.nal");
-                    //files.add("list.nal");  //experimental
+                    
+                    
                 case 7:
-                    //TODO move temporal induction to a separate file
-                    //fallthru
+                    
+                    
                 case 6:
                     files.add("nal6.nal");
                     files.add("nal6.guess.nal");
                     files.add("nal6.layer2.nal");
 
-                    files.add("induction.nal");  //TODO nal6 only needs general induction, not the temporal parts
+                    files.add("induction.nal");  
 
-                    files.add("misc.nal"); //TODO split this up
+                    files.add("misc.nal"); 
                     break;
                 case 5:
                 case 4:
@@ -54,22 +54,22 @@ public class Derivers {
         return files;
     }
 
-//    /**
-//     * loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
-//     * of multiple deriver layers each targetting a specific range of the NAL spectrum
-//     */
-//    public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
-//        assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
-//
-//        return (nar)->new Deriver(files(minLevel, maxLevel, nar, extraFiles), nar);
-//    }
 
-//    public static Function<NAR, Deriver> deriver(String... extraFiles) {
-//        return nar -> new Deriver(DeriveRuleSet.load(nar,
-//                List.of(extraFiles)
-//        ), nar)
-//        ;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /** standard ruleset */
     public static PremiseDeriverRuleSet nal(int minLevel, int maxLevel, NAR nar, String... extraFiles) {

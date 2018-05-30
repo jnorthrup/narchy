@@ -9,7 +9,7 @@ public class Tools {
 
 
     public static final ToolDefinition[] tools = {
-            //type, power, item_id, name, sprite,recipe,yield
+            
         new ToolDefinition("Pick",  "Wood",   89, "wPick","sprites/tools/wPic.png",   new int[][]{{112,112,112},{0,107,0},{0,107,0}},1),
         new ToolDefinition("Pick",  "Stone",  63, "sPick","sprites/tools/sPic.png",   new int[][]{{98,98,98},{0,107,0},{0,107,0}}   ,1),
         new ToolDefinition("Pick",  "Metal",  239,"mPick","sprites/tools/mPic.png",   new int[][]{{105,105,105},{0,107,0},{0,107,0}},1),

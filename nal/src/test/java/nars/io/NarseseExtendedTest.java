@@ -49,10 +49,10 @@ public class NarseseExtendedTest extends NarseseTest {
     }
 
     @Test public void testOriginalTruth() throws Narsese.NarseseException {
-        //singular form, normal, to test that it still works
+        
         eternal(task("(a & b). %1.0;0.9%"));
 
-        //normal, to test that it still works
+        
         tensed(task("(a & b). :|: %1.0;0.9%"), Present);
     }
 
@@ -61,11 +61,11 @@ public class NarseseExtendedTest extends NarseseTest {
     /** compact representation combining truth and tense */
     @Test public void testTruthTense() throws Narsese.NarseseException {
 
-//
-//        tensed(task("(a & b). %1.0|0.7%"), Present);
-//
-//        tensed(task("(a & b). %1.0/0.7%"), Future);
-//        tensed(task("(a & b). %1.0\\0.7%"), Past);
+
+
+
+
+
         eternal(task("(a & b). %1.0;0.7%"));
 
         /*tensed(task("(a & b). %1.0|"), Present);
@@ -77,7 +77,7 @@ public class NarseseExtendedTest extends NarseseTest {
     }
 
     @Test public void testQuestionTenseOneCharacter() {
-        //TODO one character tense for questions/quests since they dont have truth values
+        
     }
 
     @Test
@@ -97,13 +97,13 @@ public class NarseseExtendedTest extends NarseseTest {
         assertEquals(ut.term(), u);
 
     }
-//    @Test
-//    public void testBacktickReverseInstance() {
-//        Inheritance t = term("namespace`named");
-//        assertEquals(t.op(), Op.INHERITANCE);
-//        assertEquals("namespace", t.getPredicate().toString());
-//        assertEquals("{named}", t.getSubject().toString());
-//    }
+
+
+
+
+
+
+
 
 
     static void eqTerm(@NotNull String shorter, String expected) {
@@ -169,7 +169,7 @@ public class NarseseExtendedTest extends NarseseTest {
         for (String s : new String[]{"--(negated-->a)!", "-- (negated-->a)!"}) {
             Task t = task(s);
 
-            //System.out.println(t);
+            
             /*
             (--,(negated))! %1.00;0.90% {?: 1}
             (--,(negated))! %1.00;0.90% {?: 2}
@@ -225,22 +225,22 @@ public class NarseseExtendedTest extends NarseseTest {
 
         assertSame(nab.sub(0).op(), Op.SECTe);
 
-//        try {
-//            task("(-- negated illegal_extra_term)!");
-//            assertTrue(false);
-//        } catch (Exception e) {
-//        }
+
+
+
+
+
     }
 
     /** tests correct order of operations */
     @Test public void testNegationOfShorthandInh() throws Narsese.NarseseException {
         assertEquals(
-                //"(b-->(--,a))",
+                
                 "(--,(b-->a))",
                 term("--a:b").toString() );
         assertEquals( "((--,b)-->a)", term("a:--b").toString() );
         assertEquals(
-                //"((--,b)-->(--,a))",
+                
                 "(--,((--,b)-->a))",
                 term("--a:--b").toString() );
     }
@@ -268,7 +268,7 @@ public class NarseseExtendedTest extends NarseseTest {
 
     @Test public void testParallelTemporals() throws Narsese.NarseseException {
 
-        //assertEquals("(a<|>b)", term("(a <|> b)").toString());
+        
         assertEquals("(a=|>b)", term("(a =|> b)").toString());
     }
 
@@ -292,14 +292,14 @@ public class NarseseExtendedTest extends NarseseTest {
     }
 
     @Test public void testImdex() throws Narsese.NarseseException {
-//        Compound x = term("<acid --> (/,reaction,_,base)>");
-//        //Terms.printRecursive(System.out, x);
-//        assertEquals("(acid-->(/,reaction,_,base))",
-//                x.toString());
-//        assertTrue(x.vars()==0);
-//        assertFalse(x.containsRecursively(Op.Imdex));
 
-        //test that the imdex is allowed in term identifiers
+
+
+
+
+
+
+        
         assertEquals(
                 "(a_b)",
                 term("(a_b)").toString()
@@ -310,15 +310,15 @@ public class NarseseExtendedTest extends NarseseTest {
 
     @Test public void testAnonymousVariable() throws Narsese.NarseseException {
 
-        // (_,_) must be converted to (#1,#2)
+        
         String input = "((_,_) <-> x)";
 
         Compound x = term(input);
-        //Terms.printRecursive(System.out, x);
+        
         assertEquals("((_,_)<->x)", x.toString());
 
         Term y = x.normalize();
-        //Terms.printRecursive(System.out, y);
+        
         assertEquals("((#1,#2)<->x)", y.toString());
 
         Task question = task(x + "?");

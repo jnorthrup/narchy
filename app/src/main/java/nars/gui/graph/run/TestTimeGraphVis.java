@@ -36,7 +36,7 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
     }
     public static void main(String[] args) {
 
-        //NAR n = NARS.threadSafe();
+        
 
 
         TestTimeGraphVis cs = new TestTimeGraphVis();
@@ -46,19 +46,19 @@ public class TestTimeGraphVis extends SimpleGraph3D<TimeGraph.Event> {
 
 
         sg.add(new SubOrtho(grid(
-                //new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
+                
                 new AutoSurface<>(cs.vis)
         )).posWindow(0, 0, 1f, 0.2f));
 
         cs.commit(dt(/*..*/));
 
-//        {
-//            MapNodeGraph<Object, Object> h = new MapNodeGraph<>();
-//            h.addEdge(h.addNode("y"), "yx", h.addNode("x"));
-//
-//            ObjectGraph o = new ObjectGraph(h);
-//            cs.commit(o);
-//        }
+
+
+
+
+
+
+
     }
 
 }

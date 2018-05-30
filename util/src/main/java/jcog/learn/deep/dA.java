@@ -60,7 +60,7 @@ public class dA {
         }
     }
 
-    // Encode
+    
     public double[] encode(double[] x, double[] y) {
         for (int i = 0; i < n_hidden; i++) {
             y[i] = 0;
@@ -73,7 +73,7 @@ public class dA {
         return y;
     }
 
-    // Decode
+    
     public void decode(double[] y, double[] z) {
         for (int i = 0; i < n_visible; i++) {
             z[i] = 0;
@@ -99,13 +99,13 @@ public class dA {
         encode(tilde_x, y);
         decode(y, z);
 
-        // vbias
+        
         for (int i = 0; i < n_visible; i++) {
             L_vbias[i] = x[i] - z[i];
             vbias[i] += lr * L_vbias[i];
         }
 
-        // hbias
+        
         for (int i = 0; i < n_hidden; i++) {
             L_hbias[i] = 0;
             for (int j = 0; j < n_visible; j++) {
@@ -115,7 +115,7 @@ public class dA {
             hbias[i] += lr * L_hbias[i];
         }
 
-        // W
+        
         for (int i = 0; i < n_hidden; i++) {
             for (int j = 0; j < n_visible; j++) {
                 W[i][j] += lr * (L_hbias[i] * tilde_x[j] + L_vbias[j] * y[i]);
@@ -158,14 +158,14 @@ public class dA {
 
         dA da = new dA(n_visible, n_hidden, null, null, null, rng);
 
-        // train
+        
         for (int epoch = 0; epoch < training_epochs; epoch++) {
             for (int i = 0; i < train_N; i++) {
                 da.train(train_X[i], learning_rate, corruption_level);
             }
         }
 
-        // test data
+        
         double[][] test_X = {
                 {1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0}
@@ -173,7 +173,7 @@ public class dA {
 
         double[][] reconstructed_X = new double[test_N][n_visible];
 
-        // test
+        
         for (int i = 0; i < test_N; i++) {
             da.reconstruct(test_X[i], reconstructed_X[i]);
             for (int j = 0; j < n_visible; j++) {

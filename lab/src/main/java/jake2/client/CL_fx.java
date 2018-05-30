@@ -41,7 +41,7 @@ import jake2.util.Math3D;
 public class CL_fx {
 
 	static class cdlight_t {
-		int key; // so entities can reuse same entry
+		int key; 
 
 		final float[] color = { 0, 0, 0 };
 
@@ -49,9 +49,9 @@ public class CL_fx {
 
 		float radius;
 
-		float die; // stop lighting after this time
+		float die; 
 
-		float minlight; // don't add when contributing less
+		float minlight; 
 
 		void clear() {
 			radius = minlight = color[0] = color[1] = color[2] = 0;
@@ -120,7 +120,7 @@ public class CL_fx {
 	 * ================ CL_ClearDlights ================
 	 */
 	static void ClearDlights() {
-		//		memset (cl_dlights, 0, sizeof(cl_dlights));
+		
 		for (cdlight_t cl_dlight : cl_dlights) {
 			cl_dlight.clear();
 		}
@@ -130,7 +130,7 @@ public class CL_fx {
 	 * ================ CL_ClearLightStyles ================
 	 */
 	static void ClearLightStyles() {
-		//memset (cl_lightstyle, 0, sizeof(cl_lightstyle));
+		
 		for (clightstyle_t aCl_lightstyle : cl_lightstyle) aCl_lightstyle.clear();
 		lastofs = -1;
 	}
@@ -196,12 +196,12 @@ public class CL_fx {
 		int i;
 		cdlight_t dl;
 
-		//	   first look for an exact key match
+		
 		if (key != 0) {
 			for (i = 0; i < Defines.MAX_DLIGHTS; i++) {
 				dl = cl_dlights[i];
 				if (dl.key == key) {
-					//memset (dl, 0, sizeof(*dl));
+					
 					dl.clear();
 					dl.key = key;
 					return dl;
@@ -209,19 +209,19 @@ public class CL_fx {
 			}
 		}
 
-		//	   then look for anything else
+		
 		for (i = 0; i < Defines.MAX_DLIGHTS; i++) {
 			dl = cl_dlights[i];
 			if (dl.die < Globals.cl.time) {
-				//memset (dl, 0, sizeof(*dl));
+				
 				dl.clear();
 				dl.key = key;
 				return dl;
 			}
 		}
 
-		//dl = &cl_dlights[0];
-		//memset (dl, 0, sizeof(*dl));
+		
+		
 		dl = cl_dlights[0];
 		dl.clear();
 		dl.key = key;
@@ -249,7 +249,7 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
+	
 	private static final float[] fv = {0, 0, 0};
 	private static final float[] rv = {0, 0, 0};
 	/*
@@ -281,7 +281,7 @@ public class CL_fx {
 		else
 			dl.radius = 200 + (Globals.rnd.nextInt() & 31);
 		dl.minlight = 32;
-		dl.die = Globals.cl.time; // + 0.1;
+		dl.die = Globals.cl.time; 
 
 		if (silenced != 0)
 			volume = 0.2f;
@@ -311,8 +311,8 @@ public class CL_fx {
 			dl.color[0] = 1;
 			dl.color[1] = 1;
 			dl.color[2] = 0;
-			//Com_sprintf(soundname, sizeof(soundname),
-			// "weapons/machgf%ib.wav", (rand() % 5) + 1);
+			
+			
 			soundname = "weapons/machgf" + ((Globals.rnd.nextInt(5)) + 1) + "b.wav";
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound(soundname), volume, Defines.ATTN_NORM, 0);
 			break;
@@ -334,8 +334,8 @@ public class CL_fx {
 			dl.color[0] = 1;
 			dl.color[1] = 0.25f;
 			dl.color[2] = 0;
-			//Com_sprintf(soundname, sizeof(soundname),
-			// "weapons/machgf%ib.wav", (rand() % 5) + 1);
+			
+			
 			soundname = "weapons/machgf" + ((Globals.rnd.nextInt(5)) + 1) + "b.wav";
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound(soundname), volume, Defines.ATTN_NORM, 0);
 			break;
@@ -344,13 +344,13 @@ public class CL_fx {
 			dl.color[0] = 1;
 			dl.color[1] = 0.5f;
 			dl.color[2] = 0;
-			dl.die = Globals.cl.time + 0.1f; // long delay
-			//Com_sprintf(soundname, sizeof(soundname),
-			// "weapons/machgf%ib.wav", (rand() % 5) + 1);
+			dl.die = Globals.cl.time + 0.1f; 
+			
+			
 			soundname = "weapons/machgf" + ((Globals.rnd.nextInt(5)) + 1) + "b.wav";
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound(soundname), volume, Defines.ATTN_NORM, 0);
-			//Com_sprintf(soundname, sizeof(soundname),
-			// "weapons/machgf%ib.wav", (rand() % 5) + 1);
+			
+			
 			soundname = "weapons/machgf" + ((Globals.rnd.nextInt(5)) + 1) + "b.wav";
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound(soundname), volume, Defines.ATTN_NORM, 0.05f);
 			break;
@@ -359,17 +359,17 @@ public class CL_fx {
 			dl.color[0] = 1;
 			dl.color[1] = 1;
 			dl.color[2] = 0;
-			dl.die = Globals.cl.time + 0.1f; // long delay
-			//Com_sprintf(soundname, sizeof(soundname),
-			// "weapons/machgf%ib.wav", (rand() % 5) + 1);
+			dl.die = Globals.cl.time + 0.1f; 
+			
+			
 			soundname = "weapons/machgf" + ((Globals.rnd.nextInt(5)) + 1) + "b.wav";
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound(soundname), volume, Defines.ATTN_NORM, 0);
-			//Com_sprintf(soundname, sizeof(soundname),
-			// "weapons/machgf%ib.wav", (rand() % 5) + 1);
+			
+			
 			soundname = "weapons/machgf" + ((Globals.rnd.nextInt(5)) + 1) + "b.wav";
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound(soundname), volume, Defines.ATTN_NORM, 0.033f);
-			//Com_sprintf(soundname, sizeof(soundname),
-			// "weapons/machgf%ib.wav", (rand() % 5) + 1);
+			
+			
 			soundname = "weapons/machgf" + ((Globals.rnd.nextInt(5)) + 1) + "b.wav";
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound(soundname), volume, Defines.ATTN_NORM, 0.066f);
 			break;
@@ -424,14 +424,14 @@ public class CL_fx {
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound("weapons/grenlf1a.wav"), 1, Defines.ATTN_NORM, 0);
 			LogoutEffect(pl.current.origin, weapon);
 			break;
-		// RAFAEL
+		
 		case Defines.MZ_PHALANX:
 			dl.color[0] = 1;
 			dl.color[1] = 0.5f;
 			dl.color[2] = 0.5f;
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound("weapons/plasshot.wav"), volume, Defines.ATTN_NORM, 0);
 			break;
-		// RAFAEL
+		
 		case Defines.MZ_IONRIPPER:
 			dl.color[0] = 1;
 			dl.color[1] = 0.5f;
@@ -439,8 +439,8 @@ public class CL_fx {
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound("weapons/rippfire.wav"), volume, Defines.ATTN_NORM, 0);
 			break;
 
-		//	   ======================
-		//	   PGM
+		
+		
 		case Defines.MZ_ETF_RIFLE:
 			dl.color[0] = 0.9f;
 			dl.color[1] = 0.7f;
@@ -458,18 +458,18 @@ public class CL_fx {
 			dl.color[1] = 1;
 			dl.color[2] = 0;
 			dl.die = Globals.cl.time + 100;
-			//			S.StartSound (null, i, CHAN_WEAPON,
-			// S.RegisterSound("weapons/bfg__l1a.wav"), volume, ATTN_NORM, 0);
+			
+			
 			break;
 		case Defines.MZ_BLASTER2:
 			dl.color[0] = 0;
 			dl.color[1] = 1;
 			dl.color[2] = 0;
-			// FIXME - different sound for blaster2 ??
+			
 			S.StartSound(null, i, Defines.CHAN_WEAPON, S.RegisterSound("weapons/blastf1a.wav"), volume, Defines.ATTN_NORM, 0);
 			break;
 		case Defines.MZ_TRACKER:
-			// negative flashes handled the same in gl/soft until CL_AddDLights
+			
 			dl.color[0] = -1;
 			dl.color[1] = -1;
 			dl.color[2] = -1;
@@ -499,12 +499,12 @@ public class CL_fx {
 			dl.color[2] = 1;
 			dl.die = Globals.cl.time + 100;
 			break;
-		//	   PGM
-		//	   ======================
+		
+		
 		}
 	}
 
-	// stack variable
+	
 	private static final float[] origin = {0, 0, 0};
 	private static final float[] forward = {0, 0, 0};
 	private static final float[] right = {0, 0, 0};
@@ -520,7 +520,7 @@ public class CL_fx {
 
 		int flash_number = MSG.ReadByte(Globals.net_message);
 
-		// locate the origin
+		
 		Math3D.AngleVectors(Globals.cl_entities[ent].current.angles, forward, right, null);
 		origin[0] = Globals.cl_entities[ent].current.origin[0] + forward[0] * M_Flash.monster_flash_offset[flash_number][0] + right[0]
 				* M_Flash.monster_flash_offset[flash_number][1];
@@ -533,7 +533,7 @@ public class CL_fx {
 		Math3D.VectorCopy(origin, dl.origin);
 		dl.radius = 200 + (Globals.rnd.nextInt() & 31);
 		dl.minlight = 32;
-		dl.die = Globals.cl.time; // + 0.1;
+		dl.die = Globals.cl.time; 
 
 		switch (flash_number) {
 		case Defines.MZ2_INFANTRY_MACHINEGUN_1:
@@ -596,7 +596,7 @@ public class CL_fx {
 		case Defines.MZ2_SUPERTANK_MACHINEGUN_4:
 		case Defines.MZ2_SUPERTANK_MACHINEGUN_5:
 		case Defines.MZ2_SUPERTANK_MACHINEGUN_6:
-		case Defines.MZ2_TURRET_MACHINEGUN: // PGM
+		case Defines.MZ2_TURRET_MACHINEGUN: 
 			dl.color[0] = 1;
 			dl.color[1] = 1;
 			dl.color[2] = 0;
@@ -611,8 +611,8 @@ public class CL_fx {
 		case Defines.MZ2_BOSS2_MACHINEGUN_L3:
 		case Defines.MZ2_BOSS2_MACHINEGUN_L4:
 		case Defines.MZ2_BOSS2_MACHINEGUN_L5:
-		case Defines.MZ2_CARRIER_MACHINEGUN_L1: // PMM
-		case Defines.MZ2_CARRIER_MACHINEGUN_L2: // PMM
+		case Defines.MZ2_CARRIER_MACHINEGUN_L1: 
+		case Defines.MZ2_CARRIER_MACHINEGUN_L2: 
 			dl.color[0] = 1;
 			dl.color[1] = 1;
 			dl.color[2] = 0;
@@ -630,7 +630,7 @@ public class CL_fx {
 		case Defines.MZ2_SOLDIER_BLASTER_6:
 		case Defines.MZ2_SOLDIER_BLASTER_7:
 		case Defines.MZ2_SOLDIER_BLASTER_8:
-		case Defines.MZ2_TURRET_BLASTER: // PGM
+		case Defines.MZ2_TURRET_BLASTER: 
 			dl.color[0] = 1;
 			dl.color[1] = 1;
 			dl.color[2] = 0;
@@ -714,14 +714,14 @@ public class CL_fx {
 			dl.color[2] = 0;
 			ParticleEffect(origin, Globals.vec3_origin, 0, 40);
 			CL_tent.SmokeAndFlash(origin);
-			//Com_sprintf(soundname, sizeof(soundname), "tank/tnkatk2%c.wav",
-			// 'a' + rand() % 5);
+			
+			
 			soundname = "tank/tnkatk2" + (char) ('a' + Globals.rnd.nextInt(5)) + ".wav";
 			S.StartSound(null, ent, Defines.CHAN_WEAPON, S.RegisterSound(soundname), 1, Defines.ATTN_NORM, 0);
 			break;
 
 		case Defines.MZ2_CHICK_ROCKET_1:
-		case Defines.MZ2_TURRET_ROCKET: // PGM
+		case Defines.MZ2_TURRET_ROCKET: 
 			dl.color[0] = 1;
 			dl.color[1] = 0.5f;
 			dl.color[2] = 0.2f;
@@ -745,9 +745,9 @@ public class CL_fx {
 		case Defines.MZ2_BOSS2_ROCKET_3:
 		case Defines.MZ2_BOSS2_ROCKET_4:
 		case Defines.MZ2_CARRIER_ROCKET_1:
-			//		case MZ2_CARRIER_ROCKET_2:
-			//		case MZ2_CARRIER_ROCKET_3:
-			//		case MZ2_CARRIER_ROCKET_4:
+			
+			
+			
 			dl.color[0] = 1;
 			dl.color[1] = 0.5f;
 			dl.color[2] = 0.2f;
@@ -765,22 +765,22 @@ public class CL_fx {
 			break;
 
 		case Defines.MZ2_GLADIATOR_RAILGUN_1:
-		// PMM
+		
 		case Defines.MZ2_CARRIER_RAILGUN:
 		case Defines.MZ2_WIDOW_RAIL:
-			// pmm
+			
 			dl.color[0] = 0.5f;
 			dl.color[1] = 0.5f;
 			dl.color[2] = 1.0f;
 			break;
 
-		//	   --- Xian's shit starts ---
+		
 		case Defines.MZ2_MAKRON_BFG:
 			dl.color[0] = 0.5f;
 			dl.color[1] = 1;
 			dl.color[2] = 0.5f;
-			//S.StartSound (null, ent, CHAN_WEAPON,
-			// S.RegisterSound("makron/bfg_fire.wav"), 1, ATTN_NORM, 0);
+			
+			
 			break;
 
 		case Defines.MZ2_MAKRON_BLASTER_1:
@@ -844,8 +844,8 @@ public class CL_fx {
 		case Defines.MZ2_BOSS2_MACHINEGUN_R3:
 		case Defines.MZ2_BOSS2_MACHINEGUN_R4:
 		case Defines.MZ2_BOSS2_MACHINEGUN_R5:
-		case Defines.MZ2_CARRIER_MACHINEGUN_R1: // PMM
-		case Defines.MZ2_CARRIER_MACHINEGUN_R2: // PMM
+		case Defines.MZ2_CARRIER_MACHINEGUN_R1: 
+		case Defines.MZ2_CARRIER_MACHINEGUN_R2: 
 
 			dl.color[0] = 1;
 			dl.color[1] = 1;
@@ -855,8 +855,8 @@ public class CL_fx {
 			CL_tent.SmokeAndFlash(origin);
 			break;
 
-		//	   ======
-		//	   ROGUE
+		
+		
 		case Defines.MZ2_STALKER_BLASTER:
 		case Defines.MZ2_DAEDALUS_BLASTER:
 		case Defines.MZ2_MEDIC_BLASTER_2:
@@ -932,10 +932,10 @@ public class CL_fx {
 			dl.color[2] = 0;
 			dl.die = Globals.cl.time + 200;
 			break;
-		//	   ROGUE
-		//	   ======
+		
+		
 
-		//	   --- Xian's shit ends ---
+		
 
 		}
 	}
@@ -948,8 +948,8 @@ public class CL_fx {
 	static void AddDLights() {
 		cdlight_t dl;
 
-		//	  =====
-		//	  PGM
+		
+		
 		if (Globals.vidref_val == Defines.VIDREF_GL) {
 			for (int i = 0; i < Defines.MAX_DLIGHTS; i++) {
 				dl = cl_dlights[i];
@@ -963,7 +963,7 @@ public class CL_fx {
 				if (dl.radius == 0.0f)
 					continue;
 
-				// negative light in software. only black allowed
+				
 				if ((dl.color[0] < 0) || (dl.color[1] < 0) || (dl.color[2] < 0)) {
 					dl.radius = -(dl.radius);
 					dl.color[0] = 1;
@@ -973,8 +973,8 @@ public class CL_fx {
 				V.AddLight(dl.origin, dl.radius, dl.color[0], dl.color[1], dl.color[2]);
 			}
 		}
-		//	  PGM
-		//	  =====
+		
+		
 	}
 
 	/*
@@ -1057,7 +1057,7 @@ public class CL_fx {
 		}
 	}
 
-	//	   RAFAEL
+	
 	/*
 	 * =============== CL_ParticleEffect3 ===============
 	 */
@@ -1145,11 +1145,11 @@ public class CL_fx {
 			p.time = Globals.cl.time;
 
 			if (type == Defines.MZ_LOGIN)
-				p.color = 0xd0 + (Lib.rand() & 7); // green
+				p.color = 0xd0 + (Lib.rand() & 7); 
 			else if (type == Defines.MZ_LOGOUT)
-				p.color = 0x40 + (Lib.rand() & 7); // red
+				p.color = 0x40 + (Lib.rand() & 7); 
 			else
-				p.color = 0xe0 + (Lib.rand() & 7); // yellow
+				p.color = 0xe0 + (Lib.rand() & 7); 
 
 			p.org[0] = org[0] - 16 + Globals.rnd.nextFloat() * 32;
 			p.org[1] = org[1] - 16 + Globals.rnd.nextFloat() * 32;
@@ -1185,7 +1185,7 @@ public class CL_fx {
 
 			p.time = Globals.cl.time;
 
-			p.color = 0xd4 + (Lib.rand() & 3); // green
+			p.color = 0xd4 + (Lib.rand() & 3); 
 
 			p.org[0] = org[0] + Lib.crand() * 8;
 			p.org[1] = org[1] + Lib.crand() * 8;
@@ -1304,7 +1304,7 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
+	
 	private static final float[] move = {0, 0, 0};
 	private static final float[] vec = {0, 0, 0};
 	/*
@@ -1325,7 +1325,7 @@ public class CL_fx {
 		dec = 5;
 		Math3D.VectorScale(vec, 5, vec);
 
-		// FIXME: this is a really silly way to have a loop
+		
 		while (len > 0) {
 			len -= dec;
 
@@ -1352,8 +1352,8 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
-	// move, vec
+	
+	
 	/*
 	 * ===============
 	 *  CL_FlagTrail
@@ -1398,8 +1398,8 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
-	// move, vec
+	
+	
 	/*
 	 * =============== CL_DiminishingTrail
 	 * 
@@ -1434,7 +1434,7 @@ public class CL_fx {
 			if (free_particles == null)
 				return;
 
-			// drop less particles as it flies
+			
 			if ((Lib.rand() & 1023) < old.trailcount) {
 				p = free_particles;
 				free_particles = p.next;
@@ -1483,8 +1483,8 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
-	// move, vec
+	
+	
 	/*
 	 * =============== CL_RocketTrail
 	 * 
@@ -1496,10 +1496,10 @@ public class CL_fx {
 		cparticle_t p;
 		float dec;
 
-		// smoke
+		
 		DiminishingTrail(start, end, old, Defines.EF_ROCKET);
 
-		// fire
+		
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
 		len = Math3D.VectorNormalize(vec);
@@ -1535,8 +1535,8 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
-	// move, vec
+	
+	
 	/*
 	 * =============== CL_RailTrail
 	 * 
@@ -1621,8 +1621,8 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
-	// move, vec
+	
+	
 	/*
 	 * =============== CL_IonripperTrail ===============
 	 */
@@ -1675,8 +1675,8 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
-	// move, vec
+	
+	
 	/*
 	 * =============== CL_BubbleTrail
 	 * 
@@ -1720,8 +1720,8 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
-	// forward
+	
+	
 	/*
 	 * =============== CL_FlyParticles ===============
 	 */
@@ -1776,7 +1776,7 @@ public class CL_fx {
 			Math3D.VectorClear(p.accel);
 
 			p.color = 0;
-			//p.colorvel = 0;
+			
 
 			p.alpha = 1;
 			p.alphavel = -100;
@@ -1809,13 +1809,13 @@ public class CL_fx {
 		FlyParticles(origin, count);
 	}
 
-	// stack variable
+	
 	private static final float[] v = {0, 0, 0};
-	// forward
+	
 	/*
 	 * =============== CL_BfgParticles ===============
 	 */
-	//#define BEAMLENGTH 16
+	
 	static void BfgParticles(entity_t ent) {
 		int i;
 		cparticle_t p;
@@ -1866,21 +1866,21 @@ public class CL_fx {
 			Math3D.VectorSubtract(p.org, ent.origin, v);
 			dist = Math3D.VectorLength(v) / 90.0f;
 			p.color = (float) Math.floor(0xd0 + dist * 7);
-			//p.colorvel = 0;
+			
 
 			p.alpha = 1.0f - dist;
 			p.alphavel = -100;
 		}
 	}
 
-	// stack variable
-	// move, vec
+	
+	
 	private static final float[] start = {0, 0, 0};
 	private static final float[] end = {0, 0, 0};
 	/*
 	 * =============== CL_TrapParticles ===============
 	 */
-	//	   RAFAEL
+	
 	static void TrapParticles(entity_t ent) {
 		float len;
 		int j;
@@ -1899,7 +1899,7 @@ public class CL_fx {
 		dec = 5;
 		Math3D.VectorScale(vec, 5, vec);
 
-		// FIXME: this is a really silly way to have a loop
+		
 		while (len > 0) {
 			len -= dec;
 
@@ -1927,7 +1927,7 @@ public class CL_fx {
 		}
 
 		int i, k;
-		//cparticle_t p;
+		
 		float vel;
 		float[] dir = new float[3];
 		float[] org = new float[3];
@@ -1972,7 +1972,7 @@ public class CL_fx {
 	/*
 	 * =============== CL_BFGExplosionParticles ===============
 	 */
-	//	  FIXME combined with CL_ExplosionParticles
+	
 	static void BFGExplosionParticles(float[] org) {
 		int j;
 		cparticle_t p;
@@ -2001,7 +2001,7 @@ public class CL_fx {
 		}
 	}
 
-	// stack variable
+	
 	private static final float[] dir = {0, 0, 0};
 	/*
 	 * =============== CL_TeleportParticles
@@ -2048,7 +2048,7 @@ public class CL_fx {
 				}
 	}
 
-	// stack variable
+	
 	private static final float[] org = {0, 0, 0};
 	/*
 	 * =============== CL_AddParticles ===============
@@ -2067,11 +2067,11 @@ public class CL_fx {
 		for (p = active_particles; p != null; p = next) {
 			next = p.next;
 
-			// PMM - added INSTANT_PARTICLE handling for heat beam
+			
 			if (p.alphavel != INSTANT_PARTICLE) {
 				time = (Globals.cl.time - p.time) * 0.001f;
 				alpha = p.alpha + time * p.alphavel;
-				if (alpha <= 0) { // faded out
+				if (alpha <= 0) { 
 					p.next = free_particles;
 					free_particles = p;
 					continue;
@@ -2103,7 +2103,7 @@ public class CL_fx {
 			org[2] = porg[2] + pvel[2] * time + paccel[2] * time2;
 
 			V.AddParticle(org, color, alpha);
-			// PMM
+			
 			if (p.alphavel == INSTANT_PARTICLE) {
 				p.alphavel = 0.0f;
 				p.alpha = 0.0f;

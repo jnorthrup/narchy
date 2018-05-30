@@ -50,7 +50,7 @@ public class ShowProof {
 
 		Structure s2 = new Structure("customer", new Term[] { name, city });
 
-		// charge(City, Fee), customer(Name, City)
+		
 		Query q = new Query(p, new Structure[] { s1, s2 });
 
 		System.out.println("\nQuery:");

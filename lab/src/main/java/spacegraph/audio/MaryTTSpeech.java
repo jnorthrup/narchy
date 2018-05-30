@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.ForkJoinPool;
 
 /**
- * https://github.com/marytts/marytts/wiki/MaryInterface
+ * https:
  */
 public class MaryTTSpeech {
 
@@ -28,18 +28,18 @@ public class MaryTTSpeech {
     static {
 
         String javaVersion = System.getProperty("java.version");
-        System.setProperty("java.version", "1.9.0"); //HACK
+        System.setProperty("java.version", "1.9.0"); 
 
         LocalMaryInterface m;
         try {
-//            try {
-//                MaryRuntimeUtils.ensureMaryStarted();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
 
-            m = new LocalMaryInterface(); //this thing has a bad version check BAD BAD BAD
-            //logger.info("Speech System READY");
+
+
+
+
+
+            m = new LocalMaryInterface(); 
+            
         } catch (Exception e) {
             e.printStackTrace();
             m = null;
@@ -50,21 +50,21 @@ public class MaryTTSpeech {
 
     }
 
-//    public static void main(String[] args) throws Exception {
-//
-//                + marytts.getAvailableLocales() + " languages available.");
-//        System.out.println("Out of these, " + marytts.getAvailableVoices(Locale.US) + " are for US English.");
-//
-//
-////        AudioInputStream audio = marytts.generateAudio("This is my text.");
-////        MaryAudioUtils.writeWavFile(MaryAudioUtils.getSamplesAsDoubleArray(audio), "/tmp/thisIsMyText.wav", audio.getFormat());
-////        MaryAudioUtils.playWavFile("/tmp/thisIsMyText.wav", 3);
-//
-//
-//        speak("hello 1234 abc this is a sentence!!! now what?");
-//
-//        Thread.sleep(16 * 1000);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -89,20 +89,20 @@ public class MaryTTSpeech {
             sound.onFinish = whenFinished;
 
             Audio.the().play(sound, SoundSource.center, 1f, 1f);
-//                new SoundSource() {
-//
-//                    float now = 0;
-//                    @Override
-//                    public float getX(float alpha) {
-//                        now += alpha;
-//                        return (float) Math.sin(now);//(float) Math.random();
-//                    }
-//
-//                    @Override
-//                    public float getY(float alpha) {
-//                        return (float) Math.cos(now); //(float) Math.random();
-//                    }
-//                },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         } catch (SynthesisException e) {
@@ -128,7 +128,7 @@ public class MaryTTSpeech {
         return sound;
 
 
-//        DDSAudioInputStream audioInputStream = new DDSAudioInputStream(new BufferedDoubleDataSource(x), audio.getFormat());
+
 
 
     }
@@ -146,36 +146,36 @@ public class MaryTTSpeech {
         @Nullable
         public Runnable onFinish;
 
-    //    int frameRate;
-    //    int calculateBufferSize(double suggestedOutputLatency) {
-    //        int numFrames = (int) (suggestedOutputLatency * frameRate);
-    //        int numBytes = numFrames * samplesPerFrame * 2 /*BYTES_PER_SAMPLE*/;
-    //        return numBytes;
-    //    }
+    
+    
+    
+    
+    
+    
 
         public DDSoundProducer(DDSAudioInputStream i) {
             format = i.getFormat();
             DataLine.Info info = new DataLine.Info(Clip.class, format);
 
             this.in = i;
-    //            try {
-    //                this.line = AudioSystem.getLine(info);
-    //            } catch (LineUnavailableException e) {
-    //                e.printStackTrace();
-    //            }
+    
+    
+    
+    
+    
 
-    //            try {
-    //                Clip clip = (Clip) AudioSystem.getLine(info);
-    //
-    //                clip.open(i);
-    //                clip.
-    //                        clip.loop(0); //plays once
-    //                if (waitUntilCompleted) {
-    //                    clip.drain();
-    //                }
-    //            } catch (LineUnavailableException | IOException var8) {
-    //                var8.printStackTrace();
-    //            }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 
         }
@@ -187,11 +187,11 @@ public class MaryTTSpeech {
 
 
         public int read(float[] buffer, int start, int count) {
-            // Allocate byte buffer if needed.
+            
             if ((bytes == null) || ((bytes.length * 2) < count)) {
                 bytes = new byte[count * 2];
             }
-            int bytesRead = 0;//line.read(bytes, 0, bytes.length);
+            int bytesRead = 0;
 
             try {
 
@@ -210,12 +210,12 @@ public class MaryTTSpeech {
                 return 0;
             }
 
-            // Convert BigEndian bytes to float samples
+            
             int bi = 0;
             byte[] b = this.bytes;
             for (int i = 0; i < bytesRead / 2; i++) {
-                int sample = b[bi++] & 0x00FF; // little end
-                sample = sample + (this.bytes[bi++] << 8); // big end
+                int sample = b[bi++] & 0x00FF; 
+                sample = sample + (this.bytes[bi++] << 8); 
                 buffer[i] = sample / 32767.0f;
             }
             return bytesRead / 4;
@@ -233,9 +233,9 @@ public class MaryTTSpeech {
             float step = format.getSampleRate() / readRate;
             pos += step * samplesToSkip;
 
-    //            if (alive && pos >= sample.buf.length) {
-    //                alive = false;
-    //            }
+    
+    
+    
         }
 
         @Override

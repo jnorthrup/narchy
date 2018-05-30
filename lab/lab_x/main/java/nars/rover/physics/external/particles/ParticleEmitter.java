@@ -54,9 +54,9 @@ public class ParticleEmitter extends Entity {
 		FixtureDef def = new FixtureDef();
 		
 		def.density = settings.particleDensity;
-		//def.filter.categoryBits = CollisionFilters.PARTICLE;
-		//def.filter.groupIndex = (short) -CollisionFilters.BULLET;
-		//def.filter.maskBits = (short) (CollisionFilters.GROUND | CollisionFilters.ENTITY);
+		
+		
+		
 		def.friction = settings.particleFriction;
 		def.restitution = settings.particleRestitution;
 		PolygonShape particleBox = new PolygonShape();
@@ -70,16 +70,16 @@ public class ParticleEmitter extends Entity {
 	public void update(float timeStep){
 		super.update(timeStep);
 		
-		// follow the entity that the emitter is attached to
+		
 		this.setLocation(new Vec2(settings.offset.x + settings.attached.getLocation().x, settings.offset.y + settings.attached.getLocation().y));
 		
 		if(this.active){
 			timeSinceLastEmission += timeStep;
 			
-			// only emit particles if we're past the emission rate
+			
 			if(timeSinceLastEmission >= settings.particleEmissionRate && numParticlesOut < settings.maxParticles){
 				settings.onCreateParticle();
-				// release number of specified particles
+				
 				for(int i = 0; i < settings.particlesPerEmission; i++){
 					this.create(new Particle(
 							(float)Math.random() * settings.particleLifetime,
@@ -96,14 +96,14 @@ public class ParticleEmitter extends Entity {
 						break;
 				}
 				
-				// reset counter
+				
 				timeSinceLastEmission = 0.0f;
 			}
 		}
 	}
 
 	protected void create(Particle particle, boolean b) {
-		//TODO add entity to world
+		
 	}
 
 

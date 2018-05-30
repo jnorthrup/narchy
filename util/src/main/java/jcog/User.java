@@ -62,7 +62,7 @@ public class User {
     private final Directory d;
 
     private IndexWriter iw;
-    //final StandardAnalyzer analyzer = new StandardAnalyzer();
+    
 
     public synchronized static User the() {
         if (user == null)
@@ -83,7 +83,7 @@ public class User {
     }
 
     protected User(Path dir) {
-        //System.getProperties().forEach((x, y) -> System.out.println(x + " " + y));
+        
 
         try {
             if (!dir.toFile().exists()) {
@@ -112,13 +112,13 @@ public class User {
     }
 
     /**
-     * http://lucene.apache.org/core/7_2_1/core/org/apache/lucene/store/NRTCachingDirectory.html
+     * http:
      * @param base
      * @return
      */
     private static NRTCachingDirectory nrt(Directory base) {
-        //This will cache all newly flushed segments, all merges whose expected segment size is <= 5 MB, unless the net cached bytes exceeds 60 MB
-        // at which point all writes will not be cached (until the net bytes falls below 60 MB).
+        
+        
         return new NRTCachingDirectory(base, 5.0, 60.0);
     }
 
@@ -130,33 +130,33 @@ public class User {
         IndexWriterConfig iwc = new IndexWriterConfig();
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
         iwc.setCommitOnClose(true);
-        //iwc.setReaderPooling(true);
+        
 
         try {
             iw = new IndexWriter(d, iwc);
-            //ir = DirectoryReader.open(iw);
+            
         } catch (IOException e) {
             throw new Error(e);
         }
 
 
-//        read((ir) -> {
-//            int m = ir.maxDoc();
-//            for (int i = 0; i < m; i++) {
-//                try {
-//                    List<IndexableField> ff = ir.document(i).getFields();
-//                    ff.forEach(g -> {
-//                        if (g.name().equals("i")) {
-//                            System.out.println(g);
-//                        } else {
-//                            System.out.println(g.name() + " " + g.fieldType());
-//                        }
-//                    });
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public void notice(Object x) {
@@ -189,8 +189,8 @@ public class User {
             logger.debug("put {} {}", id, x);
             write((iw) -> {
                 try {
-                    //iw.deleteDocuments(id(id));
-                    //iw.addDocument(d);
+                    
+                    
                     iw.updateDocument(id(id), d);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -211,13 +211,13 @@ public class User {
                 TopDocs y = iis.search(
                         new TermQuery(id(id)), 1);
                 if (y.totalHits > 0)
-                    D[0] = iis.doc(y.scoreDocs[0].doc); //only the first, they should be uniquely id'd
+                    D[0] = iis.doc(y.scoreDocs[0].doc); 
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
-        if (D[0] != null) { //outside of any critical section
+        if (D[0] != null) { 
             yy.accept(undocument(D[0]));
         }
     }
@@ -230,7 +230,7 @@ public class User {
      * it will be changesd on each iterated result so don't keep it.
      * caches the generated document to a field while it's still visiting it.
      *
-     * maybe use: https://lucene.apache.org/core/7_2_1/misc/org/apache/lucene/document/LazyDocument.html
+     * maybe use: https:
      * */
     public final class DocObj {
 
@@ -284,8 +284,8 @@ public class User {
 
 
     public void get(String query, int n, Predicate<DocObj> yy) {
-        //Query q = new QueryBuilder(analyzer).createPhraseQuery("i", query);
-        //new WildcardQuery()
+        
+        
         get(new FuzzyQuery(new Term("i", query)), n, yy);
     }
 
@@ -325,7 +325,7 @@ public class User {
                 e.printStackTrace();
             }
         });
-        if (D[0] != null) { //outside of any critical section
+        if (D[0] != null) { 
             with.accept(undocument(D[0]));
         } else {
             X a = ifAbsent.get();
@@ -342,23 +342,23 @@ public class User {
 
 
     private void write(Consumer<IndexWriter> with) {
-//        try {
+
 
 
         try {
             with.accept(iw);
             iw.commit();
 
-            //iw.forceMergeDeletes(true);
+            
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //iw.close(); //commits and closes
-//        } catch (IOException e) {
-//            logger.error("write", e);
-//        }
+        
+
+
+
     }
 
     private void read(Consumer<IndexReader> with) {
@@ -482,7 +482,7 @@ public class User {
                                 d.add(new DoubleRange(BOUNDS, min, max));
                             }
                         } else if (o instanceof Longerval) {
-                            //time only (assumes unixtime ms)
+                            
                             Longerval l = (Longerval)o;
                             double[] min = { l.a, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY };
                             double[] max = { l.b, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY };

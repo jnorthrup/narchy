@@ -54,7 +54,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
 	protected static final Logger logger = Logger.getLogger(Input.class);
 
-	// Message types
+	
 	public static final int CLIPRDR_CONNECT = 1;
 
 	public static final int CLIPRDR_FORMAT_ANNOUNCE = 2;
@@ -65,7 +65,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
 	public static final int CLIPRDR_DATA_RESPONSE = 5;
 
-	// Message status codes
+	
 	public static final int CLIPRDR_REQUEST = 0;
 
 	public static final int CLIPRDR_RESPONSE = 1;
@@ -74,10 +74,10 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
 	Clipboard clipboard;
 
-	// TypeHandler for data currently being awaited
+	
 	TypeHandler currentHandler = null;
 
-	// All type handlers available
+	
 	TypeHandlerList allHandlers = null;
 
 	byte[] localClipData = null;
@@ -85,12 +85,12 @@ public class ClipChannel extends VChannel implements ClipInterface,
 	public ClipChannel() {
 		this.clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 
-		// initialise all clipboard format handlers
+		
 		allHandlers = new TypeHandlerList();
 		allHandlers.add(new UnicodeHandler());
 		allHandlers.add(new TextHandler());
 		allHandlers.add(new DIBHandler());
-		// allHandlers.add(new MetafilepictHandler());
+		
 	}
 
 	/*
@@ -147,7 +147,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
 		case 7:
 			break;
 		default:
-			// System.out.println("Unimplemented packet type! " + type);
+			
 		}
 
 	}
@@ -155,13 +155,13 @@ public class ClipChannel extends VChannel implements ClipInterface,
 	public void send_null(int type, int status) {
 		RdpPacket s;
 
-		//TODO cache these by (type,status) tuples
+		
 
 		s = new RdpPacket(12);
 		s.setLittleEndian16(type);
 		s.setLittleEndian16(status);
 		s.setLittleEndian32(0);
-		s.setLittleEndian32(0); // pad
+		s.setLittleEndian32(0); 
 		s.markEnd();
 
 		try {
@@ -180,45 +180,45 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
 	void send_format_announce() throws RdesktopException, IOException,
 			CryptoException {
-//		Transferable clipData = clipboard.getContents(clipboard);
-//		DataFlavor[] dataTypes = clipboard.getAvailableDataFlavors();//clipData.getTransferDataFlavors();
-//
-//		TypeHandlerList availableFormats = allHandlers
-//				.getHandlersForClipboard(dataTypes);
-//
-//		RdpPacket_Localised s;
-//		int number_of_formats = availableFormats.count();
-//
-//		s = new RdpPacket_Localised(number_of_formats * 36 + 12);
-//		s.setLittleEndian16(CLIPRDR_FORMAT_ANNOUNCE);
-//		s.setLittleEndian16(CLIPRDR_REQUEST);
-//		s.setLittleEndian32(number_of_formats * 36);
-//
-//		TypeHandler handler = null;
-//		for (Iterator i = availableFormats.iterator(); i.hasNext();) {
-//			handler = (TypeHandler) i.next();
-//			s.setLittleEndian32(handler.preferredFormat());
-//			s.incrementPosition(32);
-//		}
-//
-//		s.setLittleEndian32(0); // pad
-//		s.markEnd();
-//		send_packet(s);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
 
 	private void handle_clip_format_announce(AbstractRdpPacket data, int length)
 			throws RdesktopException, IOException, CryptoException {
 		TypeHandlerList serverTypeList = new TypeHandlerList();
 
-		// System.out.print("Available types: ");
+		
 		for (int c = length; c >= 36; c -= 36) {
 			int typeCode = data.getLittleEndian32();
-			// if(typeCode < types.length) System.out.print(types[typeCode] + "
-			// ");
+			
+			
 			data.positionAdd(32);
 			serverTypeList.add(allHandlers.getHandlerForFormat(typeCode));
 		}
-		// System.out.println();
+		
 
 		send_null(CLIPRDR_FORMAT_ACK, CLIPRDR_RESPONSE);
 		currentHandler = serverTypeList.getFirst();
@@ -234,22 +234,22 @@ public class ClipChannel extends VChannel implements ClipInterface,
 		TypeHandler outputHandler = allHandlers.getHandlerForFormat(format);
 		if (outputHandler != null) {
 			outputHandler.send_data(clipData, this);
-			// outData = outputHandler.fromTransferable(clipData);
-			// if(outData != null){
-			// send_data(outData,outData.length);
-			// return;
-			// }
-			// else System.out.println("Clipboard data to send == null!");
+			
+			
+			
+			
+			
+			
 		}
 
-		// this.send_null(CLIPRDR_DATA_RESPONSE,CLIPRDR_ERROR);
+		
 	}
 
 	void handle_data_response(AbstractRdpPacket data, int length) {
-		// if(currentHandler !=
-		// null)clipboard.setContents(currentHandler.handleData(data,
-		// length),this);
-		// currentHandler = null;
+		
+		
+		
+		
 		if (currentHandler != null)
 			currentHandler.handleData(data, length, this);
 		currentHandler = null;
@@ -260,7 +260,7 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
 		RdpPacket s = Common.secure.init(
 				Constants.encryption ? Secure.SEC_ENCRYPT : 0, 24);
-		s.setLittleEndian32(16); // length
+		s.setLittleEndian32(16); 
 
 		int flags = VChannels.CHANNEL_FLAG_FIRST | VChannels.CHANNEL_FLAG_LAST;
 		if ((this.flags() & VChannels.CHANNEL_OPTION_SHOW_PROTOCOL) != 0)
@@ -269,9 +269,9 @@ public class ClipChannel extends VChannel implements ClipInterface,
 		s.setLittleEndian32(flags);
 		s.setLittleEndian16(CLIPRDR_DATA_REQUEST);
 		s.setLittleEndian16(CLIPRDR_REQUEST);
-		s.setLittleEndian32(4); // Remaining length
+		s.setLittleEndian32(4); 
 		s.setLittleEndian32(formatcode);
-		s.setLittleEndian32(0); // Unknown. Garbage pad?
+		s.setLittleEndian32(0); 
 		s.markEnd();
 
 		Common.secure.send_to_channel(s,
@@ -285,10 +285,10 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
 			all.setLittleEndian16(CLIPRDR_DATA_RESPONSE);
 			all.setLittleEndian16(CLIPRDR_RESPONSE);
-			all.setLittleEndian32(length + 4); // don't know why, but we need to
-			// add between 1 and 4 to the
-			// length,
-			// otherwise the server cliprdr thread hangs
+			all.setLittleEndian32(length + 4); 
+			
+			
+			
 			all.copyFromByteArray(data, 0, all.position(), length);
 			all.positionAdd(length);
 			all.setLittleEndian32(0);
@@ -319,8 +319,8 @@ public class ClipChannel extends VChannel implements ClipInterface,
 	 * FocusListener methods
 	 */
 	public void focusGained(FocusEvent arg0) {
-		// synchronise the clipboard types here, so the server knows what's
-		// available
+		
+		
 		if (Options.use_rdp5) {
 			try {
 				send_format_announce();

@@ -28,7 +28,7 @@ public class SimplePolydim implements Polydim{
 	*/
 	public SimplePolydim(Bits headerThenData){
 		this(
-			//after int howManyDims and that many ints for size of each dim
+			
 			headerThenData.suf(64*(1+headerThenData.longAt(0))),
 			dimSizes(headerThenData)
 		);
@@ -66,7 +66,7 @@ public class SimplePolydim implements Polydim{
 	public SimplePolydim(Bits startsWithData, long... dimSizes){
 		this.dimSizes = dimSizes.clone();
 		long mult = 1;
-		for(long dimSize : dimSizes) mult *= dimSize; //TODO what if it wraps around?
+		for(long dimSize : dimSizes) mult *= dimSize; 
 		if(mult != startsWithData.siz()) throw new IllegalArgumentException(
 			"Multiply of all dimSizes is "+mult+" but bits size is "+startsWithData.siz());
 		dimSizesCumulative = new long[dimSizes.length];
@@ -80,7 +80,7 @@ public class SimplePolydim implements Polydim{
 	/*public SimpleMultiDim(Bits startsWithData, int... dimSizes){
 		this.dimSizes = dimSizes.clone();
 		long mult = 1;
-		for(int dimSize : dimSizes) mult *= dimSize; //TODO what if it wraps around?
+		for(int dimSize : dimSizes) mult *= dimSize; 
 		if(mult != startsWithData.siz()) throw new IllegalArgumentException(
 			"Multiply of all dimSizes is "+mult+" but bits size is "+startsWithData.siz());
 		dimSizesCumulative = new long[dimSizes.length];
@@ -93,13 +93,13 @@ public class SimplePolydim implements Polydim{
 	}*/
 	
 	public Bits header(){
-		//could check headerThenData==null but if header!=null then its faster to only refer to 1 var
+		
 		if(header == null) createHeaderAndHeaderThenDataBits();
 		return header;
 	}
 	
 	public Bits headerThenData(){
-		//could check header==null but if headerThenData!=null then its faster to only refer to 1 var
+		
 		if(headerThenData == null) createHeaderAndHeaderThenDataBits();
 		return headerThenData;
 	}
@@ -162,7 +162,7 @@ public class SimplePolydim implements Polydim{
 	
 	/** Same indexs as bit(int...) except only the first n dims */
 	public Polydim bits(int... indexsButLessDims){
-		//TODO optimize by rewriting the commented code at end of this func for ints?
+		
 		long g[] = new long[indexsButLessDims.length];
 		for(int i=0; i<g.length; i++) g[i] = indexsButLessDims[i];
 		return bits(g);

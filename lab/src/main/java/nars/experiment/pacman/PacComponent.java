@@ -23,7 +23,7 @@ public class PacComponent extends JComponent {
 		
 		this.game = g;
 
-		//setIgnoreRepaint(true);
+		
 		
 		this.setPreferredSize(new Dimension(400, 400));
 		size = Math.min(Math.round((getWidth()) / (game.maze.width + 3)), Math.round((getHeight()) / (game.maze.height + 5)));
@@ -39,7 +39,7 @@ public class PacComponent extends JComponent {
                 Math.round((getHeight()) / (mHeight + 0f)));
 		Point offset =
 				new Point(0,0);
-				//new Point((int)Math.round(getWidth() - (size * mWidth)) / 2, (int)Math.round(getHeight() - (size * mHeight))/2);
+				
 		
 		Graphics2D g2d = (Graphics2D)g;
 		g2d.setColor(Color.black);
@@ -183,20 +183,20 @@ public class PacComponent extends JComponent {
 		
 		g2d.setClip(clip);
 		
-//		for(int x = 0; x < game.player.lives - 1; x++) {
-//
-//			Rectangle r = getTileBounds(x, game.maze.height, offset);
-//			g2d.setColor(Color.yellow);
-//			g2d.fillArc(r.x, r.y, r.width, r.height, 30, 300);
-//			g2d.setColor(Color.black);
-//			g2d.fillOval(r.x + r.width * 3/9, r.y + r.height * 4/9, r.width * 2/9, r.height * 2/9);
-//
-//		}
+
+
+
+
+
+
+
+
+
 		
 		g2d.setColor(Color.white);
 		g2d.setFont(new Font("Arial", Font.BOLD, (int)(size * 0.7)));
 		Rectangle r = getTileBounds(0, game.maze.height + 1, offset);
-		//g2d.drawString("Score: " + game.score, r.x, r.y + g2d.getFontMetrics().getHeight());
+		
 		
 		for(SplashModel s : game.splashes) {
 			

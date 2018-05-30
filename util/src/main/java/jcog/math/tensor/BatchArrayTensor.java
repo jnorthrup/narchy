@@ -30,13 +30,13 @@ abstract public class BatchArrayTensor extends ArrayTensor {
         throw new UnsupportedOperationException("only batch operations available");
     }
 
-//    @Override
-//    public float get(int cell) {
-//        throw new UnsupportedOperationException("only batch operations available");
-//    }
+
+
+
+
 
     @Override public float[] get() {
-        //TODO maybe synchronize to be sure
+        
         if (busy.compareAndSet(false, true)) {
             try {
                 update();

@@ -8,7 +8,7 @@
  * 
  */
 
-//TODO: Auch negative Alpha-Werte (im g�ltigen Bereich) zulassen!
+
 
 package raytracer.cameras;
 
@@ -75,7 +75,7 @@ public class PerspectiveCamera extends AsyncCamera
     {
         super(resX, resY);
         
-        // Sicher stellen, dass 's' und 'angle' im g�ltigen Wertebereich liegen:
+        
         if ((s < 0.0) || (angle < 0.0) || (angle >= 180.0))
             throw new IllegalArgumentException();
         
@@ -85,7 +85,7 @@ public class PerspectiveCamera extends AsyncCamera
         s2 = s+Math.tan(this.angle/2.0)*2.0;
         factor = (resX < resY) ? 1.0/ (double) resX : 1.0/ (double) resY;
         
-        // Position und Ausrichtung festlegen:
+        
         setPosition(pos);
         setDirection(dir, up);
     }
@@ -93,38 +93,38 @@ public class PerspectiveCamera extends AsyncCamera
     
     public void setPosition(Vector3d pos)
     {
-        // Neue Position �bernehmen:
+        
         this.pos.set(pos);
         
-        // Zweidimensionales Koordinatensysteme berechnen, die die
-        // Ursprungsorte und Richtungsvektoren der Strahlen angeben:
+        
+        
         computeO();
     }
     
     public void setDirection(Vector3d dir, Vector3d up)
     {
-        // X-Vektor des Kamerabildes berechnen:
+        
         Vector3d x = new Vector3d();
         x.cross(dir, up);
         
-        // Sicher stellen, dass ein eindeutiger X-Vektor existiert:
+        
         if ((x.x == 0.0) && (x.y == 0.0) && (x.z == 0.0))
             throw new IllegalArgumentException();
         
-        // Y-Vektor des Kamerabildes berechnen:
+        
         this.y.cross(x, dir);
         this.x.set(x);
         
-        // Z-Vektor des Kamerabildes berechnen:
+        
         this.z.set(dir);
         
-        // X, Y und Z-Vektoren normalisieren:
+        
         this.x.normalize();
         this.y.normalize();
         this.z.normalize();
         
-        // Zweidimensionales Koordinatensysteme berechnen, die die
-        // Ursprungsorte und Richtungsvektoren der Strahlen angeben:
+        
+        
         computeO();
     }
     
@@ -169,17 +169,17 @@ public class PerspectiveCamera extends AsyncCamera
         Vector3d v = new Vector3d();
         Ray ray = new Ray();
         
-        // Ursprung des Stahles berechnen:
+        
         v.scaleAdd(factor*s*x, this.x, o);
         ray.org.scaleAdd(factor*s*((double) resY -y), this.y, v);
         
-        // Richtung des Strahles berechnen:
+        
         v.scaleAdd(factor*s2*x, this.x, o2);
         ray.dir.scaleAdd(factor*s2*((double) resY -y), this.y, v);
         ray.dir.sub(ray.org);
 
-        // Farbwert zur�ckgeben. Darauf achten, dass er den G�ltigkeitsbereich
-        // nicht �berschreitet:
+        
+        
         ColorEx color = scene.trace(ray);
         return color;
     }

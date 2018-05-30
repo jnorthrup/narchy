@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 31.10.2003 by RST.
+
 
 package jake2.game;
 
@@ -30,35 +30,35 @@ import java.io.IOException;
 import java.util.Date;
 
 public class game_locals_t {
-    //
-    //	this structure is left intact through an entire game
-    //	it should be initialized at dll load time, and read/written to
-    //	the server.ssv file for savegames
-    //
+    
+    
+    
+    
+    
 
     public String helpmessage1 = "";
 
     public String helpmessage2 = "";
 
-    public int helpchanged; // flash F1 icon if non 0, play sound
+    public int helpchanged; 
 
-    // and increment only if 1, 2, or 3
+    
 
     public gclient_t clients[] = new gclient_t[Defines.MAX_CLIENTS];
 
-    // can't store spawnpoint in level, because
-    // it would get overwritten by the savegame restore
-    public String spawnpoint = ""; // needed for coop respawns
+    
+    
+    public String spawnpoint = ""; 
 
-    // store latched cvars here that we want to get at often
+    
     public int maxclients;
 
     public int maxentities;
 
-    // cross level triggers
+    
     public int serverflags;
 
-    // items
+    
     public int num_items;
 
     public boolean autosaved;
@@ -71,7 +71,7 @@ public class game_locals_t {
         helpmessage2 = f.readString();
 
         helpchanged = f.readInt();
-        // gclient_t*
+        
 
         spawnpoint = f.readString();
         maxclients = f.readInt();
@@ -80,7 +80,7 @@ public class game_locals_t {
         num_items = f.readInt();
         autosaved = f.readInt() != 0;
 
-        // rst's checker :-)
+        
         if (f.readInt() != 1928)
             Com.DPrintf("error in loading game_locals, 1928\n");
 
@@ -94,7 +94,7 @@ public class game_locals_t {
         f.writeString(helpmessage2);
 
         f.writeInt(helpchanged);
-        // gclient_t*
+        
 
         f.writeString(spawnpoint);
         f.writeInt(maxclients);
@@ -102,7 +102,7 @@ public class game_locals_t {
         f.writeInt(serverflags);
         f.writeInt(num_items);
         f.writeInt(autosaved ? 1 : 0);
-        // rst's checker :-)
+        
         f.writeInt(1928);
     }
 }

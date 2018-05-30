@@ -44,25 +44,25 @@ public class reflect {
 
     @Nullable
     public static Term sopNamed(String operatorName, @NotNull Compound s) {
-        //return Atom.the(Utf8.toUtf8(name));
+        
 
-        //return $.the('"' + t + '"');
+        
 
-//        int olen = name.length();
-//        switch (olen) {
-//            case 0:
-//                throw new RuntimeException("empty atom name: " + name);
-//
-////            //re-use short term names
-////            case 1:
-////            case 2:
-////                return theCached(name);
-//
-//            default:
-//                if (olen > Short.MAX_VALUE/2)
-//                    throw new RuntimeException("atom name too long");
 
-        //  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         return $.inh($.p(reflect(s.sub(0)), reflect(s.sub(1))), $.quote(operatorName));
     }
 
@@ -79,25 +79,25 @@ public class reflect {
                 return null;
         }
 
-        //return Atom.the(Utf8.toUtf8(name));
+        
 
-        //return $.the('"' + t + '"');
+        
 
-//        int olen = name.length();
-//        switch (olen) {
-//            case 0:
-//                throw new RuntimeException("empty atom name: " + name);
-//
-////            //re-use short term names
-////            case 1:
-////            case 2:
-////                return theCached(name);
-//
-//            default:
-//                if (olen > Short.MAX_VALUE/2)
-//                    throw new RuntimeException("atom name too long");
 
-        //  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         return $.inh($.p(m), $.quote(operatorName));
     }
 
@@ -107,11 +107,11 @@ public class reflect {
             return t;
         }
         switch (t.op()) {
-            //case NEG: return t; //wont work
+            
             case PROD:
                 return t;
-            //case INH: return sop(t, "inheritance");
-            //case SIM:  return sop(t, "similarity");
+            
+            
             default:
                 return sop(t.op().toString(), t.subterms());
         }
@@ -146,7 +146,7 @@ public class reflect {
         protected float leak(Task next) {
             Term x = next.term().concept();
             Term r = $.func(REFLECT_OP, x).eval(n).normalize();
-            if (x.equals(r)) //can happen
+            if (x.equals(r)) 
                 return 0f;
             if ((r != null && r.subs() > 0)) {
                 int yvol = r.volume();
@@ -168,7 +168,7 @@ public class reflect {
 
         final static Logger logger = LoggerFactory.getLogger(ReflectSimilarToTaskTerm.class);
 
-        final static float VOL_RATIO_MAX = 0.5f; //estimate
+        final static float VOL_RATIO_MAX = 0.5f; 
         private final NAR n;
         private final StableBloomFilter<Term> filter;
 
@@ -207,7 +207,7 @@ public class reflect {
 
                     float c = !x.hasVars() ?
                             n.confDefault(BELIEF) :
-                            n.confMin.floatValue(); //if there is a variable, avoid becoming overconfident about linking across it. maybe this is too extreme of a conf discount
+                            n.confMin.floatValue(); 
 
                     Task t = new NALTask(reflectionSim, BELIEF, $.t(1f, c), n.time(), ETERNAL, ETERNAL, n.evidence());
                     t.pri(next.priElseZero() * Util.unitize(x.term().volume() / ((float)rvol)));

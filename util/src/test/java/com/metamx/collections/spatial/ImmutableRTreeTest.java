@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -347,7 +347,7 @@ public class ImmutableRTreeTest {
     @Test
     public void testSearchWithSplit4() {
         BitmapFactory bf = new RoaringBitmapFactory();
-        //RTree tree = new RTree(2, new QuadraticGutmanSplitStrategy(0, 100, bf), bf);
+        
         RTree tree = new RTree(2, new LinearGutmanSplitStrategy(0, 50, bf), bf);
         Random rand = new Random();
 
@@ -525,7 +525,7 @@ public class ImmutableRTreeTest {
         }
     }
 
-    //@Test
+    
     public void showBenchmarks() {
         final int start = 1;
         final int factor = 10;
@@ -572,13 +572,13 @@ public class ImmutableRTreeTest {
         }
     }
 
-    //@Test
+    
     public void showBenchmarksBoundWithLimits() {
-        //final int start = 1;
+        
         final int start = 10000000;
         final int factor = 10;
         final int end = 10000000;
-        //final int end = 10;
+        
 
         for (int numPoints = start; numPoints <= end; numPoints *= factor) {
             try {

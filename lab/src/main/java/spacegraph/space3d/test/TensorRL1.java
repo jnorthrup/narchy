@@ -39,16 +39,16 @@ public class TensorRL1 {
 
 
         Dyn2DSurface p = SpaceGraph.wall(1200, 1000);
-        //((ZoomOrtho) p.root()).scaleMin = 100f;
-        //((ZoomOrtho) p.root()).scaleMax = 1500;
+        
+        
 
         {
             p.put(new EnvChip(
                    PoleCart::new
-                    //Recog2D::new
-                    //TrackXY::new
-                    //NARio::new
-                    //(n) -> new Arkancide(n, false, true)
+                    
+                    
+                    
+                    
             ), 1.75f, 1);
         }
 
@@ -56,11 +56,11 @@ public class TensorRL1 {
         p.put(new AutoencoderChip(), 0.25f, 1);
         p.put(new AutoencoderChip(), 0.25f, 1);
 
-        //p.addWindow(new TogglePort(), 0.25f, 0.25f);
+        
 
         p.put(new AgentChip(
                 HaiQ::new
-                //DQN::new
+                
         ), 1, 1);
 
     }
@@ -97,7 +97,7 @@ public class TensorRL1 {
                     a.sensorCam.forEach(c -> {
                         c.update();
                         c.input();
-                    }); //HACK
+                    }); 
                     super.accept(ignored);
                 }
             };
@@ -172,9 +172,9 @@ public class TensorRL1 {
             final TensorLERP lerpVector = new TensorLERP(randomVector, lerpRate);
 
             p.put(new Gridding(0.25f,
-//                        new TensorGlow.AutoUpdateMatrixView(
-//                                randomVector.data
-//                        ),
+
+
+
                             new LabeledPane("rng", new AutoUpdateMatrixView(
                                     lerpVector.data
                             )),
@@ -228,7 +228,7 @@ public class TensorRL1 {
                             ));
 
                     if (agent instanceof HaiQ) {
-                        //HACK
+                        
                         view.addAll(
                                 new AutoUpdateMatrixView((((HaiQ) agent).q)),
                                 new AutoUpdateMatrixView((((HaiQ) agent).et))
@@ -308,7 +308,7 @@ public class TensorRL1 {
             public final IntRange outputs = new IntRange(2, 2, 64);
             public final AtomicBoolean sigmoidIn = new AtomicBoolean(false);
             public final AtomicBoolean sigmoidOut = new AtomicBoolean(true);
-            //etc..
+            
         }
 
         final Config config = new Config();
@@ -328,7 +328,7 @@ public class TensorRL1 {
                     new AutoUpdateMatrixView(ae.z)
             );
 
-            //root().info(AutoencoderChip.this, 1, "reset");
+            
         }
 
         public AutoencoderChip() {

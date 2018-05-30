@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -35,8 +35,8 @@ public class BulletStats {
 	
 	public static int gTotalContactPoints;
 	
-	// GjkPairDetector
-	// temp globals, to improve GJK/EPA/penetration calculations
+	
+	
 	public static int gNumDeepPenetrationChecks;
 	public static int gNumGjkChecks;
 	public static int gNumSplitImpulseRecoveries;
@@ -56,24 +56,24 @@ public class BulletStats {
 	
 	public static final Clock gProfileClock = new Clock();
 
-	// DiscreteDynamicsWorld:
+	
 	public static int gNumClampedCcdMotions;
 
-	// JAVA NOTE: added for statistics in applet demo
-	//public static long stepSimulationTime;
+	
+	
 	public static long updateTime;
 	
 	private static final boolean enableProfile = false;
 	
-	////////////////////////////////////////////////////////////////////////////
 	
-//	public static boolean isProfileEnabled() {
-//		return enableProfile;
-//	}
-//
-//	public static void setProfileEnabled(boolean b) {
-//		enableProfile = b;
-//	}
+	
+
+
+
+
+
+
+
 	
 	public static long profileGetTicks() {
 		long ticks = gProfileClock.getTimeMicroseconds();
@@ -81,7 +81,7 @@ public class BulletStats {
 	}
 
 	public static float profileGetTickRate() {
-		//return 1000000f;
+		
 		return 1000f;
 	}
 

@@ -23,16 +23,16 @@ public class Spiral<X> implements SpaceTransform<X> {
 
 
     protected void update(Spatial v) {
-        //TODO abstract
-        //int hash = v.hash;
-        //int vol = v.key.volume();
+        
+        
+        
 
-        //float ni = n / (float) Math.E;
-        //final float bn = 1f;
+        
+        
 
-        //float p = v.pri;
+        
 
-        //float nodeSpeed = (this.nodeSpeed / (1f + v.pri));
+        
 
         int o = order++;
 
@@ -50,10 +50,10 @@ public class Spiral<X> implements SpaceTransform<X> {
         );
 
 
-        //1f/(1f+v.lag) * (baseRad/2f);
-                //v.budget.qua() * (baseRad + rad)
-                //v.tp[2] = act*10f;
-                //nodeSpeed);
+        
+                
+                
+                
 
     }
 

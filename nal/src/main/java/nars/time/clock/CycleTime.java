@@ -79,18 +79,18 @@ public class CycleTime extends Time {
 
     /** used to ensure that the next system stamp serial is beyond the range of any input */
     protected final void validate(long s) {
-        if (s == Long.MAX_VALUE) //ignore cyclic indicator
+        if (s == Long.MAX_VALUE) 
             return;
         long nextStamp = this.nextStamp.longValue();
-        if (s == Long.MAX_VALUE) //ignore cyclic indicator
-            s = 0; //wraparound skipping MAX_VALUE which is reserved for cyclic, but ignore the negative spectrum
+        if (s == Long.MAX_VALUE) 
+            s = 0; 
 
         if (nextStamp < s)
             this.nextStamp.set(s+1);
     }
 
     public final void validate(@NotNull long[] s) {
-        //assume that the evidence is sorted, and that the max value is in the last position in addition to 1 or more preceding values
+        
         if (s.length > 1)
             validate(s[s.length-1]);
     }

@@ -8,7 +8,7 @@ import jake2.client.Key;
 final public class NEWTKBD extends KBD
 {
 	public static final InputListener listener = new InputListener();
-	// static Cursor emptyCursor = null;
+	
 	static Window c;
 	
 	static int win_w2;
@@ -18,7 +18,7 @@ final public class NEWTKBD extends KBD
     public void Init() {
 	}
 
-        // Used only for the applet case
+        
         public static void Init(Window window) {
             c = window;
             handleCreateAndConfigureNotify(window);
@@ -26,7 +26,7 @@ final public class NEWTKBD extends KBD
 
 	@Override
     public void Update() {
-		// get events
+		
 		HandleEvents();
 	}
 
@@ -52,10 +52,10 @@ final public class NEWTKBD extends KBD
 					break;
 				    
 				case Jake2InputEvent.MotionNotify:
-//					if (IN.ignorefirst) {
-//						IN.ignorefirst = false;
-//						break;
-//					}
+
+
+
+
 					if (IN.mouse_active) {
 						mx = (((MouseEvent)event.ev).getX() - win_w2) * 2;
 						my = (((MouseEvent)event.ev).getY() - win_h2) * 2;
@@ -94,7 +94,7 @@ final public class NEWTKBD extends KBD
 		}
             
 		if (mx != 0 || my != 0) {
-			// move the mouse to the window center again
+			
 			c.warpPointer(c.getWidth()/2, c.getHeight()/2);
 		}		
 	}
@@ -106,9 +106,9 @@ final public class NEWTKBD extends KBD
             }
         }
 
-	// Different NEWT button numbering:
-	// BUTTON1(left) BUTTON2(center) BUTTON3(right)
-	// K_MOUSE1      K_MOUSE3        K_MOUSE2
+	
+	
+	
 	private static int mouseEventToKey(MouseEvent ev) {
 	    switch (ev.getButton()) {
 	    case MouseEvent.BUTTON3:
@@ -124,16 +124,16 @@ final public class NEWTKBD extends KBD
 		int code = ev.getKeyCode();
                 int key = 0;
 		switch(code) {
-//	00626                 case XK_KP_Page_Up:      key = K_KP_PGUP; break;
+
 			case KeyEvent.VK_PAGE_UP: key = Key.K_PGUP; break;
  
-//	00629                 case XK_KP_Page_Down: key = K_KP_PGDN; break;
+
 			case KeyEvent.VK_PAGE_DOWN: key = Key.K_PGDN; break;
 
-//	00632                 case XK_KP_Home: key = K_KP_HOME; break;
+
 			case KeyEvent.VK_HOME: key = Key.K_HOME; break;
 
-//	00635                 case XK_KP_End:  key = K_KP_END; break;
+
 			case KeyEvent.VK_END: key = Key.K_END; break;
  
 			case KeyEvent.VK_LEFT: key = Key.K_LEFTARROW; break;
@@ -148,7 +148,7 @@ final public class NEWTKBD extends KBD
 
 			
 			case KeyEvent.VK_ENTER: key = Key.K_ENTER; break; 
-//	00652                 case XK_KP_Enter: key = K_KP_ENTER;     break;
+
 
 			case KeyEvent.VK_TAB: key = Key.K_TAB; break; 
 
@@ -168,7 +168,7 @@ final public class NEWTKBD extends KBD
 			case KeyEvent.VK_BACK_SPACE: key = Key.K_BACKSPACE; break; 
 
 			case KeyEvent.VK_DELETE: key = Key.K_DEL; break; 
-//	00683                 case XK_KP_Delete: key = K_KP_DEL; break;
+
 
 			case KeyEvent.VK_PAUSE: key = Key.K_PAUSE; break; 
 	
@@ -178,10 +178,10 @@ final public class NEWTKBD extends KBD
 			case KeyEvent.VK_ALT:
 			case KeyEvent.VK_ALT_GRAPH: key = Key.K_ALT; break;
  
-//	00700                 case XK_KP_Begin: key = K_KP_5; break;
-//	00701
+
+
 			case KeyEvent.VK_INSERT: key = Key.K_INS; break;
-			// toggle console for DE and US keyboards
+			
 			case KeyEvent.VK_QUOTE:
 			case KeyEvent.VK_CIRCUMFLEX:
 			case KeyEvent.VK_BACK_QUOTE: key='`'; break;

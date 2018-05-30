@@ -10,8 +10,8 @@ class OmniBoxTest {
         }
     }
     static class OmniBox_Lucene {
-//        public static void main(String[] args) {
-//            SpaceGraph.window(new OmniBox(new L()), 800, 250);
-//        }
+
+
+
     }
 }

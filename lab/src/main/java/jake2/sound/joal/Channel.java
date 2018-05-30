@@ -57,17 +57,17 @@ public class Channel {
 	private static AL al;
 	private static final Channel[] channels = new Channel[MAX_CHANNELS];
 	private static final int[] sources = new int[MAX_CHANNELS];
-	// a reference of JOALSoundImpl.buffers 
+	
 	private static int[] buffers;
 	private static final Map <Integer, Channel> looptable = new Hashtable<>(MAX_CHANNELS);
 
 	private static int numChannels; 
 
-    // stream handling
+    
     private static boolean streamingEnabled;
     private static int streamQueue;
     
-	// sound attributes
+	
 	private int type;
 	private int entnum;
 	private int entchannel;
@@ -77,7 +77,7 @@ public class Channel {
 	private float rolloff;
 	private final float[] origin = {0, 0, 0};
 
-	// update flags
+	
 	private boolean autosound;
 	private boolean active;
 	private boolean modified;
@@ -108,17 +108,17 @@ public class Channel {
         
 	    Channel.al = al;
 		Channel.buffers = buffers;
-	    // create channels
+	    
 		int sourceId;
 		numChannels = 0;
 		for (int i = 0; i < MAX_CHANNELS; i++) {
 			
 		    try {
-                        al.alGetError(); //Clear al error
+                        al.alGetError(); 
 			al.alGenSources(1, tmp, 0);
 			sourceId = tmp[0];
                         int errorCode = al.alGetError();
-			// can't generate more sources 
+			
 			if (errorCode != AL.AL_NO_ERROR) {
 	                    Com.Println("can't generate more sources: channel="+
                                          i +" sourceId=" + sourceId +
@@ -126,7 +126,7 @@ public class Channel {
 			    break; 
 			}
 		    } catch (ALException e) {
-			// can't generate more sources 
+			
 		        Com.Println("can't generate more sources: "+e);
 			break;
 		    }
@@ -136,7 +136,7 @@ public class Channel {
 			channels[i] = new Channel(sourceId);
 			numChannels++;
 			
-			// set default values for AL sources
+			
 			al.alSourcef (sourceId, AL.AL_GAIN, 1.0f);
 			al.alSourcef (sourceId, AL.AL_PITCH, 1.0f);
 			al.alSourcei (sourceId, AL.AL_SOURCE_RELATIVE,  AL.AL_FALSE);
@@ -165,7 +165,7 @@ public class Channel {
     static void enableStreaming() {
         if (streamingEnabled) return;
         
-        // use the last source
+        
         numChannels--;
         streamingEnabled = true;
         streamQueue = 0;
@@ -183,7 +183,7 @@ public class Channel {
         unqueueStreams();
 		al.alSourcei (channels[numChannels].sourceId, AL.AL_SOURCE_RELATIVE,  AL.AL_FALSE);
 
-        // free the last source
+        
         numChannels++;
         streamingEnabled = false;
         Com.DPrintf("streaming disabled\n");
@@ -195,7 +195,7 @@ public class Channel {
         if (!streamingEnabled) return;
         int source = channels[numChannels].sourceId;
 
-        // stop streaming
+        
         al.alSourceStop(source);
         int[] tmpCount = {0};
         al.alGetSourcei(source, AL.AL_BUFFERS_QUEUED, tmpCount, 0);
@@ -227,12 +227,12 @@ public class Channel {
             buffer[0] = buffers[Sound.MAX_SFX + streamQueue++];
             Com.DPrintf("queue " + (streamQueue - 1) + '\n');
         } else if (processed < 2) {
-            // check queue overrun
+            
             if (streamQueue >= Sound.STREAM_QUEUE) return;
             buffer[0] = buffers[Sound.MAX_SFX + streamQueue++];
             Com.DPrintf("queue " + (streamQueue - 1) + '\n');
         } else {
-            // reuse the buffer
+            
             al.alSourceUnqueueBuffers(source, 1, buffer, 0);
         }
 
@@ -259,18 +259,18 @@ public class Channel {
 			ch = channels[i];
 
 			if (ps.entchannel != 0 && ch.entnum == ps.entnum && ch.entchannel == ps.entchannel) {
-				// always override sound from same entity
+				
 				if (ch.bufferId != ps.bufferId) {
 				    al.alSourceStop(ch.sourceId);
 				}
 				break;
 			}
 
-			// don't let monster sounds override player sounds
+			
 			if ((ch.entnum == Globals.cl.playernum+1) && (ps.entnum != Globals.cl.playernum+1) && ch.bufferId != -1)
 				continue;
 
-			// looking for a free AL source
+			
 			if (!ch.active) {
 				break;
 			}
@@ -298,7 +298,7 @@ public class Channel {
         Channel ch;
         for (int i = 0; i < numChannels; i++) {
             ch = channels[i];
-            // looking for a free AL source
+            
             if (!ch.active) {
                 ch.entnum = 0;
                 ch.entchannel = 0;
@@ -315,7 +315,7 @@ public class Channel {
         return null;
     }
 
-	// stack variables
+	
 	private static final float[] entityOrigin = {0, 0, 0};
 	private static final float[] sourceOrigin = {0, 0, 0};
 
@@ -347,7 +347,7 @@ public class Channel {
 					    try {
 						al.alSourcei(sourceId, AL.AL_BUFFER, ch.bufferId);
 					    } catch (ALException e) {
-						// fallback for buffer changing
+						
 						al.alSourceStop(sourceId);
 						al.alSourcei(sourceId, AL.AL_BUFFER, ch.bufferId);
 					    }
@@ -405,7 +405,7 @@ public class Channel {
 			ch = looptable.get(key);
 
 			if (ch != null) {
-				// keep on looping
+				
 				ch.autosound = true;
 				Math3D.VectorCopy(ent.origin, ch.origin);
 				continue;
@@ -413,13 +413,13 @@ public class Channel {
 
 			sfx = Globals.cl.sound_precache[sound];
 			if (sfx == null)
-				continue;		// bad sound effect
+				continue;		
 
 			sc = sfx.cache;
 			if (sc == null)
 				continue;
 
-			// allocate a channel
+			
 			ch = Channel.pickForLoop(buffers[sfx.bufferId], 6);
 			if (ch == null)
 				break;
@@ -438,7 +438,7 @@ public class Channel {
 	
 	private static void removeUnusedLoopSounds() {
 		Channel ch;
-		// stop unused loopsounds
+		
 		for (Iterator <Channel> iter = looptable.values().iterator(); iter.hasNext();) {
 			ch = iter.next();
 			if (!ch.autosound) {

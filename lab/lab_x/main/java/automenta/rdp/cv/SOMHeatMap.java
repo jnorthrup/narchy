@@ -46,18 +46,18 @@ public class SOMHeatMap implements RDPVis {
 		}
 
 
-		//g.setColor(new Color(1f, 0, 0, 0.25f));
-		//g.fillRect(x, y, wx, wy);
+		
+		
 
 
 		redrawn.addLast(g -> {
-			//synchronized(n) {
+			
 			n.learn(x + wx / 2, y + wy / 2);
 			n.learn(x, y);
 			n.learn(x + wx, y);
 			n.learn(x + wx, y + wy);
 			n.learn(x, y + wy);
-			//}
+			
 
 			g.setFill(javafx.scene.paint.Color.rgb(255, 0, 0, 0.35));
 			g.fillRect(x, y, wx, wy);
@@ -71,7 +71,7 @@ public class SOMHeatMap implements RDPVis {
 		if (w == null) return;
 
 
-		//if (!updated) return;
+		
 
 		updated = false;
 
@@ -98,13 +98,13 @@ public class SOMHeatMap implements RDPVis {
 		}
 
 
-//					float alpha = 0.1f;
-//					AlphaComposite alcom = AlphaComposite.getInstance(
-//							AlphaComposite.SRC_OVER, alpha);
-//					g.setComposite(alcom);
-//
 
-//				}
+
+
+
+
+
+
 
 
 	}

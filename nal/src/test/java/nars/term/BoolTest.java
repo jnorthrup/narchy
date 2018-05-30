@@ -34,38 +34,38 @@ public class BoolTest {
             assertEquals(Null, o.the(Null, Null));
         }
 
-        assertEquals("(x-->†)", INH.the(x, True).toString()); //??
+        assertEquals("(x-->†)", INH.the(x, True).toString()); 
         assertEquals(Null, INH.the(True, x));
         assertEquals("((--,x)-->†)", INH.the(x.neg(), True).toString());
     }
 
 
-//    @Test public void testInheritanceTaskReduction() throws Narsese.NarseseException {
-//        {
-//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-//            //HACK using "true:true" to produce True, since i forget if True/False has a parse
-//            Task aIsTrue = n.inputTask("(a-->true:true).");
-//            assertEquals("$.50 a. %1.0;.90%", aIsTrue.toString());
-//        }
-//
-//        {
-//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-//            Task aIsFalse = n.inputTask("(a --> --(true-->true)).");
-//            assertEquals("$.50 a. %0.0;.90%", aIsFalse.toString());
-//        }
-//
-//        {
-//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-//            Task notAIsFalse = n.inputTask("(--a --> --(true-->true)).");
-//            assertEquals("$.50 a. %1.0;.90%", notAIsFalse.toString());
-//        }
-//
-//        {
-//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-//            Task notAIsntFalse = n.inputTask("--(--a --> --(true-->true)).");
-//            assertEquals("$.50 a. %0.0;.90%", notAIsntFalse.toString());
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testImplicationTautologies() {
@@ -74,8 +74,8 @@ public class BoolTest {
         assertEquals(Null, IMPL.the(Null, x));
         assertEquals(Null, IMPL.the(x, True));
         assertEquals(Null, IMPL.the(x, False));
-//        assertEquals(Null, IMPL.the(x, True));
-//        assertEquals(Null, IMPL.the(x, False));
+
+
         assertEquals(Null, IMPL.the(x, Null));
     }
 
@@ -103,35 +103,35 @@ public class BoolTest {
         @Nullable Truth posDiff = BeliefFunction.Difference.apply($.t(1, 0.9f), $.t(0f, 0.9f), null, 0);
         assertEquals($.t(1, 0.81f), posDiff);
 
-        //@Nullable Truth semiDiff = TruthFunctions.difference($.t(0.75f, 0.9f), $.t(0.25f, 0.9f), 0);
+        
 
 
         for (Op o : new Op[] { DIFFe, DIFFi } ) {
 
             String diff = o.str;
 
-            //raw
+            
             assertReduction(False, "(x" + diff + "x)");
             assertReduction(
-                    //"(x" + diff + "(--,x))",
+                    
                     True,
-                    "(x" + diff + "(--,x))");  //unchanged
+                    "(x" + diff + "(--,x))");  
             assertReduction(
-                    //"(x" + diff + "(--,x))",
+                    
                     False,
-                    "((--,x)" + diff + "x)");  //unchanged
+                    "((--,x)" + diff + "x)");  
 
-            //subj
+            
             assertReduction(Null, "((x" + diff + "x)-->y)");
             assertReduction(Null, "(--(x" + diff + "x)-->y)");
-//            assertReduction("((x" + diff + "(--,x))-->y)", "((x" + diff + "(--,x))-->y)"); //unchanged
-//            assertReduction("(((--,x)" + diff + "x)-->y)", "(((--,x)" + diff + "x)-->y)"); //unchanged
 
-            //pred
+
+
+            
             assertReduction("(y-->Ⅎ)",  "(y --> (x" + diff + "x))");
             assertReduction("(y-->†)",  "(y --> --(x" + diff + "x))");
-//            assertReduction("(y-->(x" + diff + "(--,x)))", "(y-->(x" + diff + "(--,x)))"); //unchanged
-//            assertReduction("(y-->((--,x)" + diff + "x))", "(y-->((--,x)" + diff + "x))"); //unchanged
+
+
 
 
 
@@ -156,17 +156,17 @@ public class BoolTest {
 
     @Test
     public void testDiffOfIntersectionsWithCommonSubterms() {
-        //diff of intersection, approx:
-        // a*x - b*x
-        //    = x * (a-b)
-        // ex: (c --> (a & b)), (Belief:Intersection)
-        //     (c --> ((a & x)-(b & x)))
-        //        = (c --> ((a-b)&x))
+        
+        
+        
+        
+        
+        
 
         assertReduction("(c-->((a-b)&x))", $$("(c --> ((a & x)-(b & x)))"));
         assertReduction("(((a~b)|x)-->c)", $$("(((a | x)~(b | x)) --> c)"));
 
-        //completely contained by the other
+        
         assertEquals(Null, $$("((&,x,a)-(&,x,a,b))"));
         assertEquals(Null, $$("((&,x,a,b)-(&,x,a))"));
         assertEquals(Null, $$("((&,x,a)-(&,x,a,b))"));
@@ -175,9 +175,9 @@ public class BoolTest {
     @Test
     public void testDiffOfUnionsWithCommonSubterms() {
 
-        //diff of union, approx:
-            // (1-(1-a)*(1-x)) - (1-(1-b)*(1-x))
-            //    = (1 - x) * (a - b)
+        
+            
+            
 
         assertReduction("(c-->((a-b)|(--,x)))", $$("(c --> ((a | x)-(b | x)))"));
         assertReduction("(((a~b)&(--,x))-->c)", $$("(((a & x)~(b & x)) --> c)"));
@@ -188,17 +188,17 @@ public class BoolTest {
     @Test
     public void testIntersectionOfDiffsWithCommonSubterms() {
 
-        //these dont seem to reduce any better
+        
 
-        //intersection
-        // (a-x)*(c-x) =
-        // (x-a)*(x-c) =
-        // (a-x)*(x-c) =
-        // (x-a)*(c-x) =
+        
+        
+        
+        
+        
 
-        //union
-        // 1-(1-(a-x))*(1-(c-x)) =
-        //...
+        
+        
+        
     }
 
     @Test
@@ -207,9 +207,9 @@ public class BoolTest {
 
             String sect = o.str;
 
-            //raw
+            
             assertEquals(x, o.the(x, x));
-            assertReduction("((--,x)" + sect + "x)", o.the(x, x.neg())); //unchanged
+            assertReduction("((--,x)" + sect + "x)", o.the(x, x.neg())); 
 
             assertEquals(x, o.the(x, True));
             assertEquals(Null /* False ?  */, o.the(x, False));
@@ -219,7 +219,7 @@ public class BoolTest {
 
     @Test
     public void testSetTautologies() {
-        //TODO
+        
     }
 
     static final Term x = $$("x");

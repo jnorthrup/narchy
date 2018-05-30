@@ -48,102 +48,102 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
 
 
-    //    /**
-//     * TODO see if this can be made faster
-//     */
-//    default long distanceTo(long start, long end) {
-//        assert (start != ETERNAL);
-//
-//        if (start == end) {
-//            return distanceTo(start);
-//        } else {
-//            long s = this.start();
-//            if (s == ETERNAL) return 0;
-//
-//
-//            long e = this.end();
-//
-//            if (Interval.intersectLength(s, e, start, end) >= 0)
-//                return 0; //intersects
-//            else {
-//                return Interval.unionLength(s, e, start, end) - (end - start) - (e - s);
-//            }
-//        }
-//    }
+    
 
-//    static long[] range(List<? extends LongInterval> ie) {
-//        long start = Long.MAX_VALUE, end = Long.MIN_VALUE;
-//        int n = ie.size();
-//        for (int i = 0; i < n; i++) {
-//            LongInterval x = ie.get(i);
-//            long s = x.start();
-//            if (s != ETERNAL) {
-//                if (s < start) start = s;
-//                long e = x.end();
-//                if (e > end) end = e;
-//            }
-//        }
-//        if (start == Long.MAX_VALUE) //nothing or all eternal
-//            return Tense.ETERNAL_ETERNAL;
-//        else
-//            return new long[]{start, end};
-//    }
 
-//    /** untested */
-//    default long medianTimeTo(long a,long b) {
-//        long n = nearestTimeTo(a);
-//        if (n == ETERNAL)
-//            return n;
-//        if (a!=b)
-//            n = Math.min(n, nearestTimeTo(b));
-//
-//        long f = furthestTimeTo(a);
-//        assert(f!=ETERNAL);
-//        if (a!=b)
-//            f = Math.max(f, furthestTimeTo(b));
-//
-//        return (n+f)/2;
-//    }
-//    /** untested */
-//   default long furthestTimeOf(long a, long b) {
-//
-//        if (a == b) return a;
-//
-//        assert(a < b);
-//
-//        long m = mid();
-//        if (a == ETERNAL)
-//            return m;
-//        else {
-//            if (Math.abs(a-m) >= Math.abs(b-m))
-//                return a;
-//            else
-//                return b;
-//        }
-//    }
-//
-//    /** untested */
-//    default long furthestTimeTo(long when) {
-//
-//
-//        long s = start();
-//        if (s == ETERNAL) {
-//            return when;
-//        } else {
-//            long e = end();
-//            if (s == e)
-//                return s;
-//
-//            if (when == ETERNAL)
-//                return mid();
-//
-//            long ds = Math.abs(s - when);
-//
-//            long de = Math.abs(e - when);
-//            if (ds >= de) return s;
-//            else return e;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     default double cost() {
@@ -162,8 +162,8 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
         return ((float) range(0)) * TIME_COST;
 
-//        float r = (float) range(0);
-//        return r == 0 ? 0 : (float) (Math.log(1 + r) * TIME_COST);
+
+
     }
 
     default float freqCost() {
@@ -191,7 +191,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         else {
 
             if (r instanceof Task) {
-                //accelerated mbr
+                
                 Task er = (Task) r;
                 float ef = er.freq();
                 float ec = er.conf();
@@ -222,16 +222,16 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
                     }
                     long ts = start();
                     long te = end();
-                    //                    if (ts == es && te == ee) {
-                    //may not be safe:
-//                        if (tf == ef && tc == ec)
-//                            return this; //identical taskregion, so use this
-//                        else {
-//                            ns = ts;
-//                            ne = te;
-//                        }
-//                    } else {
-                    //                    }
+                    
+                    
+
+
+
+
+
+
+
+                    
                     return new TasksRegion(Math.min(ts, es), Math.max(te, ee),
                             f0, f1, c0, c1
                     );

@@ -69,7 +69,7 @@ public class CloudTile extends Tile {
 			ToolItem tool = (ToolItem) item;
 			if (tool.type == ToolType.shovel) {
 				if (player.payStamina(5)) {
-					// level.setTile(xt, yt, Tile.infiniteFall, 0);
+					
 					int count = random.nextInt(2) + 1;
 					for (int i = 0; i < count; i++) {
 						level.add(new ItemEntity(new ResourceItem(Resource.cloud), xt * 16 + random.nextInt(10) + 3, yt * 16 + random.nextInt(10) + 3));

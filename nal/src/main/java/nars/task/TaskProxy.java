@@ -27,7 +27,7 @@ public class TaskProxy implements Task {
 
     @Override
     public void setCyclic(boolean b) {
-        //ignore
+        
     }
 
     /** produce a concrete, non-proxy clone */
@@ -63,15 +63,15 @@ public class TaskProxy implements Task {
 
     @Override
     public float priSet(float p) {
-        //ignore
-        //throw new UnsupportedOperationException();
+        
+        
         return p;
     }
 
     @Override
     public boolean delete() {
-        //ignore
-        //throw new UnsupportedOperationException();
+        
+        
         return false;
     }
 

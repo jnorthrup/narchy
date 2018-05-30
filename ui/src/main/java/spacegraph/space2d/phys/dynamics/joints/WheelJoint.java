@@ -32,21 +32,21 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-//Linear constraint (point-to-line)
-//d = pB - pA = xB + rB - xA - rA
-//C = dot(ay, d)
-//Cdot = dot(d, cross(wA, ay)) + dot(ay, vB + cross(wB, rB) - vA - cross(wA, rA))
-//   = -dot(ay, vA) - dot(cross(d + rA, ay), wA) + dot(ay, vB) + dot(cross(rB, ay), vB)
-//J = [-ay, -cross(d + rA, ay), ay, cross(rB, ay)]
 
-//Spring linear constraint
-//C = dot(ax, d)
-//Cdot = = -dot(ax, vA) - dot(cross(d + rA, ax), wA) + dot(ax, vB) + dot(cross(rB, ax), vB)
-//J = [-ax -cross(d+rA, ax) ax cross(rB, ax)]
 
-//Motor rotational constraint
-//Cdot = wB - wA
-//J = [0 0 -1 0 0 1]
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * A wheel joint. This joint provides two degrees of freedom: translation along an axis fixed in
@@ -61,7 +61,7 @@ public class WheelJoint extends Joint {
     private float m_frequencyHz;
     private float m_dampingRatio;
 
-    // Solver shared
+    
     private final Tuple2f m_localAnchorA = new v2();
     private final Tuple2f m_localAnchorB = new v2();
     private final Tuple2f m_localXAxisA = new v2();
@@ -75,7 +75,7 @@ public class WheelJoint extends Joint {
     private float m_motorSpeed;
     private boolean m_enableMotor;
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_localCenterA = new v2();
@@ -225,7 +225,7 @@ public class WheelJoint extends Joint {
         return m_dampingRatio;
     }
 
-    // pooling
+    
     private final Tuple2f rA = new v2();
     private final Tuple2f rB = new v2();
     private final Tuple2f d = new v2();
@@ -261,12 +261,12 @@ public class WheelJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective masses.
+        
         Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), rA);
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), rB);
         d.set(cB).added(rB).subbed(cA).subbed(rA);
 
-        // Point to line constraint
+        
         {
             Rot.mulToOut(qA, m_localYAxisA, m_ay);
             m_sAy = Tuple2f.cross(temp.set(d).added(rA), m_ay);
@@ -279,7 +279,7 @@ public class WheelJoint extends Joint {
             }
         }
 
-        // Spring constraint
+        
         m_springMass = 0.0f;
         m_bias = 0.0f;
         m_gamma = 0.0f;
@@ -295,16 +295,16 @@ public class WheelJoint extends Joint {
 
                 float C = Tuple2f.dot(d, m_ax);
 
-                // Frequency
+                
                 float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
-                // Damping coefficient
+                
                 float d = 2.0f * m_springMass * m_dampingRatio * omega;
 
-                // Spring stiffness
+                
                 float k = m_springMass * omega * omega;
 
-                // magic formulas
+                
                 float h = data.step.dt;
                 m_gamma = h * (d + h * k);
                 if (m_gamma > 0.0f) {
@@ -322,7 +322,7 @@ public class WheelJoint extends Joint {
             m_springImpulse = 0.0f;
         }
 
-        // Rotational motor
+        
         if (m_enableMotor) {
             m_motorMass = iA + iB;
             if (m_motorMass > 0.0f) {
@@ -335,7 +335,7 @@ public class WheelJoint extends Joint {
 
         if (data.step.warmStarting) {
             final Tuple2f P = pool.popVec2();
-            // Account for variable time step.
+            
             m_impulse *= data.step.dtRatio;
             m_springImpulse *= data.step.dtRatio;
             m_motorImpulse *= data.step.dtRatio;
@@ -361,9 +361,9 @@ public class WheelJoint extends Joint {
         pool.pushRot(2);
         pool.pushVec2(1);
 
-        // data.velocities[m_indexA].v = vA;
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v = vB;
+        
         data.velocities[m_indexB].w = wB;
     }
 
@@ -380,7 +380,7 @@ public class WheelJoint extends Joint {
         final Tuple2f temp = pool.popVec2();
         final Tuple2f P = pool.popVec2();
 
-        // Solve spring constraint
+        
         {
             float Cdot = Tuple2f.dot(m_ax, temp.set(vB).subbed(vA)) + m_sBx * wB - m_sAx * wA;
             float impulse = -m_springMass * (Cdot + m_bias + m_gamma * m_springImpulse);
@@ -400,7 +400,7 @@ public class WheelJoint extends Joint {
             wB += iB * LB;
         }
 
-        // Solve rotational motor constraint
+        
         {
             float Cdot = wB - wA - m_motorSpeed;
             float impulse = -m_motorMass * Cdot;
@@ -414,7 +414,7 @@ public class WheelJoint extends Joint {
             wB += iB * impulse;
         }
 
-        // Solve point to line constraint
+        
         {
             float Cdot = Tuple2f.dot(m_ay, temp.set(vB).subbed(vA)) + m_sBy * wB - m_sAy * wA;
             float impulse = -m_mass * Cdot;
@@ -435,9 +435,9 @@ public class WheelJoint extends Joint {
         }
         pool.pushVec2(2);
 
-        // data.velocities[m_indexA].v = vA;
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v = vB;
+        
         data.velocities[m_indexB].w = wB;
     }
 
@@ -491,9 +491,9 @@ public class WheelJoint extends Joint {
 
         pool.pushVec2(3);
         pool.pushRot(2);
-        // data.positions[m_indexA].c = cA;
+        
         data.positions[m_indexA].a = aA;
-        // data.positions[m_indexB].c = cB;
+        
         data.positions[m_indexB].a = aB;
 
         return Math.abs(C) <= Settings.linearSlop;

@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 31.10.2003 by RST.
-// $Id: pmove_t.java,v 1.4 2005-01-21 01:08:48 cawe Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -30,7 +30,7 @@ import java.util.Arrays;
 public class pmove_t {
 
     public static class TraceAdapter {
-        // callbacks to test the world
+        
         public trace_t trace(float[] start, float[] mins, float[] maxs,
                 float[] end) {
             return null;
@@ -38,31 +38,31 @@ public class pmove_t {
     }
 
     public static class PointContentsAdapter {
-        // callbacks to test the world
+        
         public int pointcontents(float[] point) {
             return 0;
         }
     }
 
-    // state (in / out)
+    
     public final pmove_state_t s = new pmove_state_t();
 
-    // command (in)
+    
     public final usercmd_t cmd = new usercmd_t();
 
-    public boolean snapinitial; // if s has been changed outside pmove
+    public boolean snapinitial; 
 
-    // results (out)
+    
     public int numtouch;
 
     public final edict_t[] touchents = new edict_t[Defines.MAXTOUCH];
 
-    public final float[] viewangles = { 0, 0, 0 }; // clamped
+    public final float[] viewangles = { 0, 0, 0 }; 
 
     public float viewheight;
 
     public final float[] mins = { 0, 0, 0 };
-    public final float[] maxs = { 0, 0, 0 }; // bounding box size
+    public final float[] maxs = { 0, 0, 0 }; 
 
     public edict_t groundentity;
 
@@ -74,23 +74,23 @@ public class pmove_t {
 
     public PointContentsAdapter pointcontents;
 
-    // pmove->pm_flags
+    
     public final static int PMF_DUCKED = 1;
 
     public final static int PMF_JUMP_HELD = 2;
 
     public final static int PMF_ON_GROUND = 4;
 
-    public final static int PMF_TIME_WATERJUMP = 8; // pm_time is waterjump
+    public final static int PMF_TIME_WATERJUMP = 8; 
 
-    public final static int PMF_TIME_LAND = 16; // pm_time is time before rejump
+    public final static int PMF_TIME_LAND = 16; 
 
-    public final static int PMF_TIME_TELEPORT = 32; // pm_time is non-moving
-                                                    // time
+    public final static int PMF_TIME_TELEPORT = 32; 
+                                                    
 
-    public final static int PMF_NO_PREDICTION = 64; // temporarily disables
-                                                    // prediction (used for
-                                                    // grappling hook)
+    public final static int PMF_NO_PREDICTION = 64; 
+                                                    
+                                                    
 
     public void clear() {
         groundentity = null;

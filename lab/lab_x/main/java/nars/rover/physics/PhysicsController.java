@@ -85,7 +85,7 @@ public class PhysicsController {
         model = argModel;
         inputQueue = new ConcurrentLinkedDeque();
         setFrameRate(DEFAULT_FPS);
-        //animator = new Thread(this, "Testbed");
+        
         updateBehavior = behavior;
         this.errorHandler = errorHandler;
         this.mouseBehavior = mouseBehavior;
@@ -93,7 +93,7 @@ public class PhysicsController {
     }
 
     private void addListeners() {
-        // time for our controlling
+        
         model.addTestChangeListener(new TestbedState.TestChangedListener() {
             @Override
             public void testChanged(PhysicsModel test, int index) {
@@ -198,7 +198,7 @@ public class PhysicsController {
             
         }
         IViewportTransform transform = currTest.getCamera().getTransform();
-        // process our input
+        
         while (!inputQueue.isEmpty()) {
             QueueItem i = null;
 
@@ -336,17 +336,17 @@ public class PhysicsController {
         playTest(0);
     }
 
-//    public synchronized void start() {
-//        if (animating != true) {
-//            animator.start();
-//        } else {
-//            log.severe("Animation is already animating.");
-//        }
-//    }
-//
-//    public synchronized void stop() {
-//        animating = false;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     float timeInSecs;
     long beforeTime, afterTime, updateTime, timeDiff, sleepTime, timeSpent;
@@ -380,31 +380,31 @@ public class PhysicsController {
 
     }
 
-//  public void run() {
-//   
-//    beforeTime = startTime = updateTime = System.nanoTime();
-//    sleepTime = 0;
-//
-//    animating = true;
-//    loopInit();
-//    while (animating) {
-//
-//
-//        cycle();
-//        
-//      afterTime = System.nanoTime();
-//
-//      timeDiff = afterTime - beforeTime;
-//      sleepTime = (long) ((1000000000f / targetFrameRate - timeDiff) / 1000000f);
-//      if (sleepTime > 0) {
-//        try {
-//          Thread.sleep(sleepTime);
-//        } catch (InterruptedException ex) {}
-//      }
-//
-//      beforeTime = System.nanoTime();
-//    } // end of run loop
-//  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 enum QueueItemType {

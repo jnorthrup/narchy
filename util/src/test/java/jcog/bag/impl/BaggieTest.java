@@ -35,19 +35,19 @@ public class BaggieTest {
         assertEquals(4, s.size());
         assertEquals(1, s.evictions);
 
-        boolean addedF = s.put("f", 0.01f); //no change, rejected
+        boolean addedF = s.put("f", 0.01f); 
         assertFalse(addedF);
         assertEquals(4, s.size());
         assertEquals("e", s.highest());
         assertEquals("a", s.lowest());
 
-        //int sortsBeforeaddedAzero = s.sorts;
-        boolean addedAzero = s.put("a", 0f); //no change
+        
+        boolean addedAzero = s.put("a", 0f); 
         assertTrue(addedAzero);
         assertEquals(4, s.size());
         assertEquals("e", s.highest());
         assertEquals("a", s.lowest());
-        //assertEquals(sortsBeforeaddedAzero, s.sorts);
+        
 
         s.clear();
         assertEquals(0, s.size());
@@ -59,7 +59,7 @@ public class BaggieTest {
         public int evictions = 0;
         public int insertions = 0;
         public int rejections = 0;
-        //public int sorts = 0;
+        
 
         public InstrumentedBaggie() {
             super(4);
@@ -111,10 +111,10 @@ public class BaggieTest {
 
 
         {
-            //change all to a new value (0.5)
+            
             final int[] resetNum = {cap * 100};
 
-            //TODO use s.commit()
+            
             s.sample(rng, (x) -> {
                 x.set(0.5f);
                 return resetNum[0]-- > 0;
@@ -123,21 +123,21 @@ public class BaggieTest {
                 assertEquals(0.5f, p, 0.001f);
                 return true;
             });
-            assertEquals(cap, s.size()); //effectively cleared
+            assertEquals(cap, s.size()); 
             assertEquals(0.5f, s.priMax(), 0.001f);
             assertEquals(0.5f, s.priMin(), 0.001f);
         }
 
         {
-            //remove everything
+            
             final int[] remNum = {0};
             s.sample(rng, (x) -> {
-                x.set(Float.NaN); //delete it
+                x.set(Float.NaN); 
                 remNum[0]++;
                 return true;
             });
-            assertEquals(cap, remNum[0]); //all removed during sampling
-            assertEquals(0, s.size()); //effectively cleared
+            assertEquals(cap, remNum[0]); 
+            assertEquals(0, s.size()); 
             assertEquals(Float.NaN, s.priMax(), 0.001f);
             assertEquals(Float.NaN, s.priMin(), 0.001f);
         }

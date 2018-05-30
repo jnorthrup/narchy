@@ -24,7 +24,7 @@ public class DutyCycleMeter {
         long onTime = stopTime - startTime;
         long totalTime = stopTime - previousStopTime;
         if (totalTime > 0) {
-            // Recursive averaging filter.
+            
             double rate = 0.01;
             averageOnTime = (averageOnTime * (1.0 - rate)) + (onTime * rate);
             averageTotalTime = (averageTotalTime * (1.0 - rate)) + (totalTime * rate);

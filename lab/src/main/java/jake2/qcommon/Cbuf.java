@@ -50,17 +50,17 @@ public final class Cbuf {
 
         int templen = 0;
 
-        // copy off any commands still remaining in the exec buffer
+        
         templen = Globals.cmd_text.cursize;
         if (templen != 0) {
             System.arraycopy(Globals.cmd_text.data, 0, tmp, 0, templen);
             SZ.Clear(Globals.cmd_text);
         }
 
-        // add the entire text of the file
+        
         Cbuf.AddText(text);
 
-        // add the copied off data
+        
         if (templen != 0) {
             SZ.Write(Globals.cmd_text, tmp, templen);
         }
@@ -94,7 +94,7 @@ public final class Cbuf {
         int j;
         boolean ret = false;
 
-        // builder the combined string to parse from
+        
         int s = 0;
         int argc = Com.Argc();
         for (i = 1; i < argc; i++) {
@@ -110,7 +110,7 @@ public final class Cbuf {
                 text += " ";
         }
 
-        // pull out the commands
+        
         String build = "";
         for (i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '+') {
@@ -129,8 +129,8 @@ public final class Cbuf {
         if (ret)
             Cbuf.AddText(build);
 
-//        text = null;
-//        builder = null;
+
+
 
         return ret;
     }
@@ -155,10 +155,10 @@ public final class Cbuf {
 
         byte[] text = null;
 
-        Globals.alias_count = 0; // don't allow infinite alias loops
+        Globals.alias_count = 0; 
 
         while (Globals.cmd_text.cursize != 0) {
-            // find a \n or ; line break
+            
             text = Globals.cmd_text.data;
 
             int quotes = 0;
@@ -168,7 +168,7 @@ public final class Cbuf {
                 if (text[i] == '"')
                     quotes++;
                 if (quotes % 2 == 0 && text[i] == ';')
-                    break; // don't break if inside a quoted string
+                    break; 
                 if (text[i] == '\n')
                     break;
             }
@@ -176,18 +176,18 @@ public final class Cbuf {
             System.arraycopy(text, 0, line, 0, i);
             line[i] = 0;
 
-            // delete the text from the command buffer and move remaining
-            // commands down
-            // this is necessary because commands (exec, alias) can insert data
-            // at the
-            // beginning of the text buffer
+            
+            
+            
+            
+            
 
             if (i == Globals.cmd_text.cursize)
                 Globals.cmd_text.cursize = 0;
             else {
                 i++;
                 Globals.cmd_text.cursize -= i;
-                //byte[] tmp = new byte[Globals.cmd_text.cursize];
+                
 
                 System.arraycopy(text, i, tmp, 0, Globals.cmd_text.cursize);
                 System.arraycopy(tmp, 0, text, 0, Globals.cmd_text.cursize);
@@ -195,15 +195,15 @@ public final class Cbuf {
 
             }
 
-            // execute the command line
+            
             int len = Lib.strlen(line);
 
             String cmd = new String(line, 0, len);
             Cmd.ExecuteString(cmd);
 
             if (Globals.cmd_wait) {
-                // skip out while text still remains in buffer, leaving it
-                // for next frame
+                
+                
                 Globals.cmd_wait = false;
                 break;
             }

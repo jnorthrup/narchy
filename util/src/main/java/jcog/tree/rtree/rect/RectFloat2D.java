@@ -191,10 +191,10 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
                 Util.equals(h, hh, epsilon);
     }
 
-//    @Override
-//    public int hashCode() {
-//        throw new TODO();
-//    }
+
+
+
+
 
     public String toString() {
         final StringBuilder sb = new StringBuilder();
@@ -216,10 +216,10 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     @Override
     public int compareTo(RectFloat2D o) {
         throw new TODO();
-//        int a = min.compareTo(o.min);
-//        if (a != 0) return a;
-//        int b = max.compareTo(o.max);
-//        return b;
+
+
+
+
     }
 
     public float mag() {

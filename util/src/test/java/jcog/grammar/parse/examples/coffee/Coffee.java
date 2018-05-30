@@ -33,7 +33,7 @@ public class Coffee implements PubliclyCloneable<Coffee> {
 		try {
 			return (Coffee) super.clone();
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

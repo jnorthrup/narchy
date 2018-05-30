@@ -2,19 +2,19 @@ package spacegraph.space2d.widget.meter.audio;
 
 /**
  **   __ __|_  ___________________________________________________________________________  ___|__ __
- **  //    /\                                           _                                  /\    \\  
- ** //____/  \__     __ _____ _____ _____ _____ _____  | |     __ _____ _____ __        __/  \____\\ 
+ **  
+ ** 
  **  \    \  / /  __|  |     |   __|  _  |     |  _  | | |  __|  |     |   __|  |      /\ \  /    /  
  **   \____\/_/  |  |  |  |  |  |  |     | | | |   __| | | |  |  |  |  |  |  |  |__   "  \_\/____/   
  **  /\    \     |_____|_____|_____|__|__|_|_|_|__|    | | |_____|_____|_____|_____|  _  /    /\     
- ** /  \____\                       http://jogamp.org  |_|                              /____/  \    
+ ** /  \____\                       http:
  ** \  /   "' _________________________________________________________________________ `"   \  /    
  **  \/____.                                                                             .____\/     
  **
  ** Main class for the music subsystem of the framework. Provides an easy to use interface for
  ** asynchronous music playback. Given the 3rd party service provider libraries are supplied it
  ** is capable to playback "ogg vorbis" and "mpeg layer 3" music files. Other than simple 
- ** playback it internally uses the "KJ-DSS Project" by Kristofer Fudalewski (http://sirk.sytes.net)
+ ** playback it internally uses the "KJ-DSS Project" by Kristofer Fudalewski (http:
  ** to provide a joined FFT spectrum via getFFTSpectrum() and a graphical scope and spectrum 
  ** analyzer via getScopeAndSpectrumAnalyzerVisualization(). The FFT spectrum can be utilized to
  ** get some easy synchronization of music an visuals.
@@ -51,19 +51,19 @@ public class WaveAnalyzer {
             src.frame.on(f->{
                 AudioSource in = (AudioSource) src.source;
                 synchronizer.writeAudioData(in.audioBytes, 0, in.audioBytesRead );
-                //mPosition = tLine.getMicrosecondPosition();
+                
                 synch();
             });
 
     }
 
-//    private SourceDataLine getLine(AudioFormat inAudioFormat) throws LineUnavailableException {
-//        SourceDataLine tSourceDataLine = null;
-//        DataLine.Info tDataLineInfo = new DataLine.Info(SourceDataLine.class,inAudioFormat,4096);
-//        tSourceDataLine = (SourceDataLine)AudioSystem.getLine(tDataLineInfo);
-//        tSourceDataLine.open(inAudioFormat);
-//        return tSourceDataLine;
-//    }
+
+
+
+
+
+
+
 
     void synch() {
         
@@ -75,13 +75,13 @@ public class WaveAnalyzer {
     }
 
 
-//    public int getPositionInMicroseconds() {
-//        return (int)mPosition;
-//    }
-//
-//    public int getPositionInMilliseconds() {
-//        return getPositionInMicroseconds()/1000;
-//    }
+
+
+
+
+
+
+
 
     public float[] getFFTSpectrum() {
         float[] tFFTSpectrum = analyzer.getFFTSpectrum();

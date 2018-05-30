@@ -20,14 +20,14 @@ public class ThreadLibrary extends Library {
 		engineManager = en.engine;
 	}
 	
-	//Tenta di unificare a t l'identificativo del thread corrente
+	
 	public boolean thread_id_1 (Term t) {
         int id = engineManager.runnerId();
         unify(t,new NumberTerm.Int(id));
 		return true;
 	}
 	
-	//Crea un nuovo thread di identificatore id che comincia ad eseguire il goal dato
+	
 	public boolean thread_create_2 (Term id, Term goal){
 		return engineManager.threadCreate(id, goal);
 	}
@@ -45,7 +45,7 @@ public class ThreadLibrary extends Library {
 		try {
 			status = res.getSolution();
 		} catch (NoSolutionException e) {
-			//status = new Struct("FALSE");		
+			
 			return false;
 		}
 		try{
@@ -67,7 +67,7 @@ public class ThreadLibrary extends Library {
 		try {
 			status = res.getSolution();
 		} catch (NoSolutionException e) {
-			//status = new Struct("FALSE");
+			
 			return false;
 		}
 		try{

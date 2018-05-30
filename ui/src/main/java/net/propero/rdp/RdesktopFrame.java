@@ -36,7 +36,7 @@ import net.propero.rdp.rdp5.cliprdr.ClipChannel;
 import java.awt.*;
 import java.awt.event.*;
 
-// import javax.swing.Box;
+
 
 public abstract class RdesktopFrame extends Frame {
 
@@ -53,7 +53,7 @@ public abstract class RdesktopFrame extends Frame {
      * Options.height Creates RdesktopCanvas occupying entire frame
      */
     public RdesktopFrame() {
-        //check java version to support JRE1.6
+        
         String java_version = System.getProperty("java.specification.version");
         if (java_version.compareTo("1.6") == 0) {
             this.setSize(Options.width + 6, Options.height + 30);
@@ -67,26 +67,26 @@ public abstract class RdesktopFrame extends Frame {
 
         if (Constants.OS == Constants.WINDOWS)
             setResizable(false);
-        // Windows has to setResizable(false) before pack,
-        // else draws on the frame
+        
+        
 
         if (Options.fullscreen) {
             goFullScreen();
             pack();
             setLocation(0, 0);
-        } else {// centre
+        } else {
             pack();
             centreWindow();
         }
 
         if (Constants.OS != Constants.WINDOWS)
             setResizable(false);
-        // Linux Java 1.3 needs pack() before setResizeable
+        
 
         addWindowListener(new RdesktopWindowAdapter());
         canvas.addFocusListener(new RdesktopFocusListener());
         if (Constants.OS == Constants.WINDOWS) {
-            // redraws screen on window move
+            
             addComponentListener(new RdesktopComponentAdapter());
         }
 
@@ -103,10 +103,10 @@ public abstract class RdesktopFrame extends Frame {
         Dimension window_size = f.getSize();
         int x = (screen_size.width - window_size.width) / 2;
         if (x < 0)
-            x = 0; // window can be bigger than screen
+            x = 0; 
         int y = (screen_size.height - window_size.height) / 2;
         if (y < 0)
-            y = 0; // window can be bigger than screen
+            y = 0; 
         f.setLocation(x, y);
     }
 
@@ -154,13 +154,13 @@ public abstract class RdesktopFrame extends Frame {
      * Display the menu bar
      */
     public void showMenu() {
-//		if (menu == null)
-//			menu = new RdpMenu(this);
-//
-//		if (!menuVisible && Options.enable_menu)
-//			this.setMenuBar(menu);
-//		canvas.repaint();
-//		menuVisible = true;
+
+
+
+
+
+
+
     }
 
     /**
@@ -169,7 +169,7 @@ public abstract class RdesktopFrame extends Frame {
     public void hideMenu() {
         if (menuVisible && Options.enable_menu)
             this.setMenuBar(null);
-        // canvas.setSize(this.WIDTH, this.HEIGHT);
+        
         canvas.repaint();
         menuVisible = false;
     }
@@ -256,16 +256,16 @@ public abstract class RdesktopFrame extends Frame {
         @Override
         public void focusGained(FocusEvent arg0) {
             if (Constants.OS == Constants.WINDOWS) {
-                // canvas.repaint();
+                
                 canvas.repaint(0, 0, Options.width, Options.height);
             }
-            // gained focus..need to check state of locking keys
+            
             canvas.gainedFocus();
         }
 
         @Override
         public void focusLost(FocusEvent arg0) {
-            // lost focus - need clear keys that are down
+            
             canvas.lostFocus();
         }
     }
@@ -280,15 +280,15 @@ public abstract class RdesktopFrame extends Frame {
 
         @Override
         public void windowLostFocus(WindowEvent e) {
-//            logger.info("windowLostFocus");
-            // lost focus - need clear keys that are down
+
+            
             canvas.lostFocus();
         }
 
         @Override
         public void windowDeiconified(WindowEvent e) {
             if (Constants.OS == Constants.WINDOWS) {
-                // canvas.repaint();
+                
                 canvas.repaint(0, 0, Options.width, Options.height);
             }
             canvas.gainedFocus();
@@ -297,20 +297,20 @@ public abstract class RdesktopFrame extends Frame {
         @Override
         public void windowActivated(WindowEvent e) {
             if (Constants.OS == Constants.WINDOWS) {
-                // canvas.repaint();
+                
                 canvas.repaint(0, 0, Options.width, Options.height);
             }
-            // gained focus..need to check state of locking keys
+            
             canvas.gainedFocus();
         }
 
         @Override
         public void windowGainedFocus(WindowEvent e) {
             if (Constants.OS == Constants.WINDOWS) {
-                // canvas.repaint();
+                
                 canvas.repaint(0, 0, Options.width, Options.height);
             }
-            // gained focus..need to check state of locking keys
+            
             canvas.gainedFocus();
         }
     }
@@ -333,10 +333,10 @@ public abstract class RdesktopFrame extends Frame {
 
         public YesNoDialog(Frame parent, String title, String[] message) {
             super(parent, title, true);
-            // Box msg = Box.createVerticalBox();
-            // for(int i=0; i<message.length; i++) msg.add(new
-            // Label(message[i],Label.CENTER));
-            // this.add("Center",msg);
+            
+            
+            
+            
             Panel msg = new Panel();
             msg.setLayout(new GridLayout(message.length, 1));
             for (int i = 0; i < message.length; i++)
@@ -373,10 +373,10 @@ public abstract class RdesktopFrame extends Frame {
         public OKDialog(Frame parent, String title, String[] message) {
 
             super(parent, title, true);
-            // Box msg = Box.createVerticalBox();
-            // for(int i=0; i<message.length; i++) msg.add(new
-            // Label(message[i],Label.CENTER));
-            // this.add("Center",msg);
+            
+            
+            
+            
 
             Panel msg = new Panel();
             msg.setLayout(new GridLayout(message.length, 1));

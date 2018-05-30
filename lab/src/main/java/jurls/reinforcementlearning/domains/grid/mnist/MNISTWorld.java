@@ -45,7 +45,7 @@ public class MNISTWorld extends MNIST implements World {
         return true;
     }
 
-    //int bits[] = new int[4];    
+    
     
     MNISTImage i;
     MNISTImage blank = new MNISTImage(28,28);
@@ -93,7 +93,7 @@ public class MNISTWorld extends MNIST implements World {
                 a = x;
             }            
         }
-        //a = a-1;
+        
 
         
         double r;
@@ -106,21 +106,21 @@ public class MNISTWorld extends MNIST implements World {
             if ((a < 0) || (a > 9)) r = -1.0; 
             else {
 
-                //if (a == i.label) r = 1.0;
-                //else r = 0;                
+                
+                
 
                 
                 r = 1.0 /(1+ Math.abs(a - i.label));
-                //r *= r;
                 
-                //System.out.println(a + " " + i.label + " " + r);
+                
+                
                 
             }
         }
       
         
         System.out.print(cycle + " " + currentFrame + " " + currentImage + " label=" + i.label + ": " + a + " " + r + " [");
-        //printArray(action);
+        
         
         
         cycle++;
@@ -128,62 +128,62 @@ public class MNISTWorld extends MNIST implements World {
         return r;
     }
     
-    //int scrollCycles = 2;
+    
     int maxTrainingCyclesPerImage = 256, trainingCyclesPerImage = 1;
     final static double noise = 0.01;
     
     public static void main(String[] args) throws Exception {
         
         MNISTWorld m = new MNISTWorld("/home/me/Downloads", 800, maxDigit);
-//        
-//        
-//        
-//        DABeccaAgent a = new DABeccaAgent() {            
-//            @Override
-//            public int getReducedSensors(int worldSensors) {
-//                //return (int)Math.sqrt(worldSensors);
-//                return maxDigit*6;
-//            }            
-//
-//            @Override
-//            public void init(World world) {
-//                super.init(world); //To change body of generated methods, choose Tools | Templates.
-//                pretrain(m.getImageVectors(), 50, 2, 0.1, noise);
-//            }
-//
-//
-//            @Override
-//            public void update(double lastReward, int time) {
-//                super.update(lastReward, time);
-//                
-//                double e = 0.15 + 1/(1.0 + time/1000.0)*0.25;
-//                if (time%1000 == 0)
-//                    System.out.println(time + " exploration=" + e);
-//                getHub().setEXPLORATION(e);
-//                
-//            }
-//        };
-//        
-//        
-//        BeccaAgent b = new BeccaAgent() {            
-//
-//
-//            @Override
-//            public void update(double lastReward, int time) {
-//                super.update(lastReward, time);
-//                
-//                double e = 0.15 + 1/(1.0 + time/1000.0)*0.7;
-//                if (time%1000 == 0)
-//                    System.out.println(time + " exploration=" + e);
-//                getHub().setEXPLORATION(e);
-//                
-//            }
-//        };
-//        
-//                
-//        
-//        
-//        new Simulation(a, m, 0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
     }
 

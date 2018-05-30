@@ -44,11 +44,11 @@ public class PremiseDeriverSource extends ProxyTerm {
         @Override
         public Termed transformAtomic(Term atomic) {
             if (atomic instanceof Atom) {
-                if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
+                if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { 
                     String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
                         return this.computeIfAbsent(name, (n)->$.varPattern(1 + this.size()));
-                        //return $.v(VAR_PATTERN, name);
+                        
                     }
                 }
             }
@@ -66,24 +66,24 @@ public class PremiseDeriverSource extends ProxyTerm {
     }
 
     public static Stream<PremiseDeriverSource> parse(Stream<String> rawRules) {
-        return rawRules.map(src -> { //src -> lines.computeIfAbsent(src, s -> {
+        return rawRules.map(src -> { 
             try {
                 return parse(src);
             } catch (Narsese.NarseseException e) {
                 throw new RuntimeException("rule parse: " + e + "\n\t" + src);
             }
         });
-        //.filter(Objects::nonNull);
+        
     }
 
-//    /** line parse cache */
-//    private final static Map<String, PremiseDeriverSource> lines = new ConcurrentHashMap<>(1024);
+
+
 
     static final Pattern ruleImpl = Pattern.compile("\\|\\-");
 
     static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
 
-        //(Compound) index.parseRaw(src)
+        
         String[] ab = ruleImpl.split(src);
         if (ab.length != 2)
             throw new Narsese.NarseseException("Rule component must have arity=2, separated by \"|-\": " + src);
@@ -98,7 +98,7 @@ public class PremiseDeriverSource extends ProxyTerm {
         if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
-        return Op.terms.subtermsInstance(a, b); //direct
+        return Op.terms.subtermsInstance(a, b); 
     }
 }
 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,7 +75,7 @@ class TowersOfHanoi {
 
     private TowersOfHanoi move(Pole from, Pole to) {
         if (from == to) {
-            // pointless move
+            
             return null;
         }
 
@@ -83,19 +83,19 @@ class TowersOfHanoi {
         int toUpperDisc = upperDisc(to);
 
         if (fromUpperDisc == 0) {
-            // invalid move - cannot move a disc from an empty pole
+            
             return null;
         }
         if (toUpperDisc != 0 && fromUpperDisc > toUpperDisc) {
-            // invalid move - no disc may be placed on top of a smaller one
+            
             return null;
         }
 
-        // copy current state
+        
         int[] updatedPoles = Arrays.copyOf(poles, NUM_POLES);
-        // remove disc from pole
+        
         updatedPoles[from.ordinal()] -= fromUpperDisc;
-        // add disc to pole
+        
         updatedPoles[to.ordinal()] += fromUpperDisc;
         return new TowersOfHanoi(updatedPoles);
     }

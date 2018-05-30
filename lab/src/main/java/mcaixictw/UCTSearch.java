@@ -24,14 +24,14 @@ public class UCTSearch {
 
 		int horizon = settings.getHorizon();
 		for (int i = 0; i < settings.getMcSimulations(); i++) {
-			// Sample a path trough the possible future
+			
 			uctRoot.sample(agent, horizon);
 		}
-		// The currently best action according to the agent's model of the
-		// future
+		
+		
 		int bestAction = uctRoot.bestAction();
 
-		// If we do not want to recycle the tree just throw it away
+		
 		if (!settings.isRecycleUCT()) {
 			uctRoot = null;
 		}

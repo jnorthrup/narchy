@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ import static org.oakgp.util.NodeSimplifier.simplify;
 /**
  * Provides a convenient way to configure and start a genetic programming run.
  *
- * @see <a href="http://oakgp.org/getting-started-with-oakgp">Getting Started with OakGP</a>
+ * @see <a href="http:
  */
 public final class Evolution {
     private static final GPRandom RANDOM = new StdRandom();
@@ -302,7 +302,7 @@ public final class Evolution {
 
         @Override
         public GenerationRankerSetter functions(final Function... functions) {
-            //logFunctionSet(functions);
+            
 
             FunctionSet functionSet = new FunctionSet(functions);
             _primitiveSet = new PrimitiveSetImpl(functionSet, constantSet, variableSet, _random, ratioVariables);
@@ -314,23 +314,23 @@ public final class Evolution {
             return functions(functions.toArray(new Function[functions.size()]));
         }
 
-//        private void logFunctionSet(final Function[] functions) {
-//            boolean first = true;
-//            Arrays.sort(functions, Comparator.comparing(o -> o.getClass().getName()));
-//            for (Function function : functions) {
-//                if (first) {
-//                    first = false;
-//                } else {
-//                    System.out.println("<br>");
-//                }
-//                System.out.println("|Class:|" + function.getClass().getName());
-//                System.out.println("|Symbol:|" + function.name().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"));
-//                System.out.println("|Return Type:|" + function.sig().returnType());
-//                String argumentTypes = function.sig().argTypes().toString();
-//                argumentTypes = argumentTypes.substring(1, argumentTypes.length() - 1);
-//                System.out.println("|Arguments:|" + argumentTypes);
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -434,8 +434,8 @@ public final class Evolution {
         public GenerationEvolverSetter depth(final int treeDepth) {
             requiresPositive(treeDepth);
 
-            // NOTE could use a NodeSet rather than an ArrayList - but then the resulting population may be < generationSize (due to duplicates)
-            // NOTE could generate using a 50:50 split of TreeGeneratorImpl.grow and TreeGeneratorImpl.full
+            
+            
             NodeSet initialPopulation = new NodeSet();
             TreeGenerator treeGenerator = TreeGeneratorImpl.grow(_primitiveSet, _random);
             while (initialPopulation.size() < generationSize) {

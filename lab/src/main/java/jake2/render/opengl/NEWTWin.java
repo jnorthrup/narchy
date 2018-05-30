@@ -98,9 +98,9 @@ public class NEWTWin {
 
         if(null == screen) {
             screen = NewtFactory.createScreen(NewtFactory.createDisplay(null), 0);
-            screen.addReference(); // trigger native creation
+            screen.addReference(); 
         } else if( !screen.isNativeValid() ) {
-            screen.addReference(); // trigger native creation
+            screen.addReference(); 
         }
         
         if (!VID.GetModeInfo(newDim, mode)) {
@@ -110,30 +110,30 @@ public class NEWTWin {
 
         VID.Printf(Defines.PRINT_ALL, "...setting mode " + mode + ", " + newDim.getWidth() + " x " + newDim.getHeight() + ", fs " + fullscreen + ", driver " + driverName + '\n');
 
-        // destroy the existing window, not screen
+        
         shutdownImpl(false);
         
         if(null != window) {
             throw new InternalError("XXX");            
         }
         final GLCapabilities caps = new GLCapabilities(glp);
-        CapabilitiesChooser chooser = null; // default
+        CapabilitiesChooser chooser = null; 
         final cvar_t v = Cvar.Get("jogl_rgb565", "0", 0);
         if( v.value != 0f ) {
             caps.setRedBits(5);
             caps.setGreenBits(6);
             caps.setBlueBits(5);
-            chooser = new GenericGLCapabilitiesChooser(); // don't trust native GL-TK chooser
+            chooser = new GenericGLCapabilitiesChooser(); 
         }
 
         window = GLWindow.create(screen, caps);
         window.setAutoSwapBufferMode(false);
-        window.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DO_NOTHING_ON_CLOSE); // we do handle QUIT on our own, no GLWindow.display() called.
+        window.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DO_NOTHING_ON_CLOSE); 
         window.setCapabilitiesChooser(chooser);
         window.addWindowListener(new WindowAdapter() {
             @Override
             public void windowDestroyNotify(WindowEvent e) {
-                shouldQuit = null != window; // not applet and not already in shutdown ?
+                shouldQuit = null != window; 
             }
 
             @Override
@@ -152,7 +152,7 @@ public class NEWTWin {
             oldDisplayMode = mainMonitor.getCurrentMode();
         }
 
-        // We need to feed the NEWT Window to the NEWTKBD
+        
         NEWTKBD.Init(window);
         
         window.addWindowListener(NEWTKBD.listener);
@@ -160,55 +160,55 @@ public class NEWTWin {
         window.addMouseListener(NEWTKBD.listener);
         window.setSize(newDim.getWidth(), newDim.getHeight());
         
-        isAnimating = true; // no display() invocation on other thread!
+        isAnimating = true; 
 
-        //        if( !fullscreen && Globals.appletMode ) {
-//            forceReleaseCtx = FORCE_RELEASE_CTX_VAL;
-//
-//            // Notify the size listener about the change
-//            final SizeChangeListener listener = Globals.sizeChangeListener;
-//            if (listener != null) {
-//                listener.sizeChanged(newDim.getWidth(), newDim.getHeight());
-//            }
-//            window.addKeyListener( new ReparentKeyListener() );
-//
-//            final NativeSurface NativeSurface = NewtFactory.createWindow(window);
-//            final java.applet.Applet applet = (java.applet.Applet) Globals.applet;
-//            final Runnable appletAddAction = () -> {
-//                applet.add(NativeSurface, java.awt.BorderLayout.CENTER);
-//                applet.validate();
-//                NativeSurface.setFocusable(true);
-//                NativeSurface.requestFocus();
-//                if( Platform.OSType.MACOS == Platform.getOSType() && NativeSurface.isOffscreenLayerSurfaceEnabled() ) {
-//                    System.err.println("XXX Relayout");
-//                    // force relayout
-//                    final int cW = NativeSurface.getWidth();
-//                    final int cH = NativeSurface.getHeight();
-//                    NativeSurface.setSize(cW+1, cH+1);
-//                    NativeSurface.setSize(cW, cH);
-//                }
-//            };
-//                if( java.awt.EventQueue.isDispatchThread() ) {
-//                    System.err.println("XXX Adding on AWT EDT - same thread");
-//                    appletAddAction.run();
-//                } else {
-//                    System.err.println("XXX Adding on AWT EDT - off thread");
-//                    try {
-//                        java.awt.EventQueue.invokeAndWait(appletAddAction);
-//                    } catch (Exception e) {
-//                        throw new RuntimeException("NEWT Exception during NativeSurface on AWT-EDT", e);
-//                    }
-//                }
-//            canvasObj = NativeSurface;
-//            int w=0;
-//            while ( w<10 && !window.isNativeValid()|| !window.isRealized() ) {
-//                w++;
-//                try {
-//                    Thread.sleep(100);
-//                } catch (InterruptedException e) {}
-//            }
-//            System.err.println("XXX waited = "+w+" * 100 ms");
-//        } else {
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         forceReleaseCtx = false;
         canvasObj = null;
 
@@ -227,7 +227,7 @@ public class NEWTWin {
         if( !window.isNativeValid()|| !window.isRealized() ) {
             throw new RuntimeException("NEWT window didn't not realize: "+window);
         }
-        window.display(); // force GL creation
+        window.display(); 
         final GLContext ctx = window.getContext();
         if( !ctx.isCreated() ) {
             System.err.println("Warning: GL context not created: "+ctx);
@@ -240,7 +240,7 @@ public class NEWTWin {
         VID.Printf(Defines.PRINT_ALL, "...chosen GLCaps "+window.getChosenGLCapabilities()+'\n');
         VID.Printf(Defines.PRINT_ALL, "...size "+window.getWidth()+" x "+window.getHeight()+'\n');
 
-        // propagateNewSize("init");
+        
         activateGLContext(true);
         
         return Base.rserr_ok;
@@ -260,7 +260,7 @@ public class NEWTWin {
             VID.Printf(Defines.PRINT_ALL, "Resize: " + width + " x " + height + ", masked " + _width + 'x' + height + '\n');
     
             Base.setVid(_width, height);
-            // let the sound and input subsystems know about the new window
+            
             VID.NewWindow(_width, height);
         }
     }
@@ -306,11 +306,11 @@ public class NEWTWin {
             shouldReparent  = false;
             deactivateGLContext();
             if( null != canvasObj && null != window ) {
-                isAnimating = false; // don't let GLDrawableHelper.invoke(..) defer the GLRunnable (preserving GLState that is on OSX/CALayer) 
+                isAnimating = false; 
 
                 final NativeWindow NativeSurface = (NativeWindow) canvasObj;
                 if(null == window.getParent()) {
-                    forceReleaseCtx = FORCE_RELEASE_CTX_VAL; // Applet
+                    forceReleaseCtx = FORCE_RELEASE_CTX_VAL; 
                     window.reparentWindow( NativeSurface, 0, 0, 0 );
                 } else {
                     window.reparentWindow(null, 0, 0, 0);
@@ -340,26 +340,26 @@ public class NEWTWin {
             final GLWindow _window = window;
             window = null;
             _window.destroy();
-//            if( null != Globals.applet && null != canvasObj) {
-//                final java.applet.Applet applet = (java.applet.Applet) Globals.applet;
-//                final NativeSurface NativeSurface = (NativeSurface) canvasObj;
-//                final Runnable appletRemoveAction = () -> {
-//                    applet.remove(NativeSurface);
-//                    applet.validate();
-//                };
-//                    if( java.awt.EventQueue.isDispatchThread() ) {
-//                        appletRemoveAction.run();
-//                    } else {
-//                        try {
-//                            java.awt.EventQueue.invokeAndWait(appletRemoveAction);
-//                        } catch (Throwable e) {
-//                            System.err.println("Catched "+e.getClass().getName()+": "+e.getMessage());
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                NativeSurface.setNEWTChild(null);
-//                canvasObj = null;
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
         if( withScreen && null != screen ) {
             try {
@@ -419,7 +419,7 @@ public class NEWTWin {
 
         @Override
         public final boolean isAnimating() {
-            return isAnimating; // null != window && !shouldPause;
+            return isAnimating; 
         }
 
         @Override

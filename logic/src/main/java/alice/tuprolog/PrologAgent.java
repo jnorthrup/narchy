@@ -52,9 +52,9 @@ public class PrologAgent extends Prolog {
         addOutputListener(defaultOutputListener);
     }
 
-//    public PrologAgent(String theory){
-//        this(theory, (String)null);
-//    }
+
+
+
 
     /**
      * Builds a prolog agent providing it a theory and a goal
@@ -67,26 +67,26 @@ public class PrologAgent extends Prolog {
         addOutputListener(defaultOutputListener);
     }
     
-//    /**
-//     * Constructs the Agent with a theory provided
-//     * by an input stream
-//     */
-//    public PrologAgent(InputStream is, ClauseIndex dynamics){
-//        super(dynamics);
-//        theoryInputStream=is;
-//        addOutputListener(defaultOutputListener);
-//    }
-//
-//    /**
-//     * Constructs the Agent with a theory provided
-//     * by an input stream and a goal
-//     */
-//    public PrologAgent(InputStream is, String goal){
-//        theoryInputStream=is;
-//        goalText=goal;
-//        addOutputListener(defaultOutputListener);
-//    }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Starts agent execution in another thread
      */
@@ -140,31 +140,31 @@ public class PrologAgent extends Prolog {
     }
 
 
-//    /**
-//     * Adds a listener to ouput events
-//     *
-//     * @param l the listener
-//     */
-//    public synchronized void addOutputListener(OutputListener l) {
-//        addOutputListener(l);
-//    }
-//
-//    /**
-//     * Removes a listener to ouput events
-//     *
-//     * @param l the listener
-//     */
-//    public synchronized void removeOutputListener(OutputListener l) {
-//        removeOutputListener(l);
-//    }
-//
-//    /**
-//     * Removes all output event listeners
-//     */
-//    public void removeAllOutputListener(){
-//        removeAllOutputListeners();
-//    }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * if called directly, Starts agent execution in current thread
@@ -189,25 +189,25 @@ public class PrologAgent extends Prolog {
     }
 
 
-//    public static void main(String args[]){
-//        if (args.length==1 || args.length==2){
-//
-//            //FileReader fr;
-//            try {
-//                String text = Tools.loadText(args[0]);
-//                if (args.length==1){
-//                    new Agent(text).spawn();
-//                } else {
-//                    new Agent(text,args[1]).spawn();
-//                }
-//            } catch (Exception ex){
-//                System.err.println("invalid theory.");
-//            }
-//        } else {
-//            System.err.println("args: <theory file> { goal }");
-//            System.exit(-1);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     
 }

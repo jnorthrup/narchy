@@ -46,8 +46,8 @@ import static com.googlecode.lanterna.gui2.BorderLayout.Location.*;
 import static com.googlecode.lanterna.gui2.Window.Hint.NO_POST_RENDERING;
 
 /**
- * https://github.com/mabe02/lanterna/blob/master/src/test/java/com/googlecode/lanterna/terminal/TelnetTerminalTest.java
- * https://github.com/mabe02/lanterna/blob/master/src/test/java/com/googlecode/lanterna/gui2/GUIOverTelnet.java
+ * https:
+ * https:
  */
 public class TextUI {
 
@@ -85,7 +85,7 @@ public class TextUI {
             if (conn != null) {
                 logger.info("connect from {}", conn.getRemoteSocketAddress());
                 TextGUI session = new TextGUI(n, conn, 10f);
-                //session.setUncaughtExceptionHandler((t, e) -> session.end());
+                
                 sessions.add(session);
             }
         }
@@ -159,7 +159,7 @@ public class TextUI {
 
 
             tui = new MultiWindowTextGUI(screen);
-            //tui.setBlockingIO(true);
+            
             tui.setEOFWhenNoWindows(true);
 
 
@@ -193,34 +193,34 @@ public class TextUI {
             window.setEnableDirectionBasedMovements(true);
 
 
-            //p.setSize(new TerminalSize(screen.getTerminalSize().getColumns(), screen.getTerminalSize().getRows())); //TODO update with resize
+            
 
-            //final Table<String> table2 = new Table<String>("Pri", "Term", "Truth");
-            //table.setCellSelection(true);
+            
+            
 
-            //final TableModel<String> model = table.getTableModel();
-//                model.addRow("Row1", "Row1", "Row1");
-//                model.addRow("Row2", "Row2", "Row2");
-//                model.addRow("Row3", "Row3", "Row3");
+            
 
 
-//                p.setLayoutManager(new LinearLayout(Direction.VERTICAL));
-//                p.addComponent(new Button("Button", () -> {
-//                    final BasicWindow messageBox = new BasicWindow("Response");
-//                    messageBox.setComponent(Panels.vertical(
-//                            new Label("Hello!"),
-//                            new Button("Close", messageBox::close)));
-//                    textGUI.addWindow(messageBox);
-//                }).withBorder(Borders.singleLine("This is a button")));
+
+
+
+
+
+
+
+
+
+
+
 
 
             Panel center = new Panel(new BorderLayout());
 
 
-//            Component options = Panels.horizontal(
-//                    new CheckBox("Pause"),
-//                    new ComboBox<>("Log", "Concepts")
-//            );
+
+
+
+
 
             Supplier<Component> defaultMenu;
 
@@ -282,14 +282,14 @@ public class TextUI {
             updaters.clear();
 
             Collection<Window> w = tui.getWindows();
-//            w.forEach(c -> {
-//                Component cc = c.getComponent();
-//
-//                cc.onRemoved(null);
-//                if (cc instanceof Panel) {
-//                    ((Panel) cc).removeAllComponents(); //note this may only affect the first layer only
-//                }
-//            });
+
+
+
+
+
+
+
+
 
             w.forEach(Window::close);
             w.forEach(tui::removeWindow);
@@ -300,7 +300,7 @@ public class TextUI {
                 try {
                     screen.stopScreen();
                 } catch (IOException e) {
-                    //e.printStackTrace();
+                    
                 }
             }
 
@@ -341,18 +341,18 @@ public class TextUI {
                 }
                 return r;
             }
-            //                    @Override
-//                    public Result handleKeyStroke(KeyStroke keyStroke) {
-//                        try {
-//                            return super.handleKeyStroke(keyStroke);
-//                        } finally {
-//                            for (TextBox box : ALL_TEXTBOXES) {
-//                                if (this != box) {
-//                                    box.setText(getText());
-//                                }
-//                            }
-//                        }
-//                    }
+            
+
+
+
+
+
+
+
+
+
+
+
         }
 
 
@@ -360,10 +360,10 @@ public class TextUI {
             DurService u = DurService.on(nar, r);
             updaters.add(u);
             return u;
-//            return nar.eventCycle.on(
-//                    System::currentTimeMillis,
-//                    () -> Math.round(1000f / guiUpdateFPS.asFloat()),
-//                    (n) -> r.run());
+
+
+
+
         }
 
         private class TaskListRenderer extends AbstractListBox.ListItemRenderer {
@@ -377,13 +377,13 @@ public class TextUI {
             @Override
             public void drawItem(TextGUIGraphics graphics, AbstractListBox table, int index, Object item, boolean selected, boolean focused) {
 
-                Task t = (Task) item; //HACK use generic variables
+                Task t = (Task) item; 
 
 
                 if (selected && focused) {
                     graphics.applyThemeStyle(themeDefinition.getSelected());
                 } else {
-                    //graphics.applyThemeStyle(themeDefinition.getNormal());
+                    
                     int c = (int) (t.priElseZero() * 175 + 75);
                     int r, g, b;
                     if (t.isBelief()) {
@@ -395,7 +395,7 @@ public class TextUI {
                         b = c;
                         r = g = 5;
                     } else {
-                        r = g = b = 255; //command
+                        r = g = b = 255; 
                     }
 
                     graphics.setForegroundColor(
@@ -404,7 +404,7 @@ public class TextUI {
                 }
 
                 String label = t.toString();
-                //getLabel(listBox, index, item);
+                
                 int cols = graphics.getSize().getColumns() - 1;
                 label = TerminalTextUtils.fitString(label, cols);
                 int w = TerminalTextUtils.getColumnWidth(label);
@@ -485,14 +485,14 @@ public class TextUI {
                 visible.set(capacity);
 
                 bag = new PLinkArrayBag<>(PriMerge.replace, capacity * 2);
-                //bag = new ConcurrentArrayBag<>(PriMerge.replace, capacity * 2) {
+                
 
-//                    {@Nullable
-//                    @Override
-//                    public X key(PriReference<X> x) {
-//                        return x.get();
-//                    }}
-                //};
+
+
+
+
+
+                
                 update = newGUIUpdate(this::update);
 
             }
@@ -503,7 +503,7 @@ public class TextUI {
 
             public void add(PLink<X> p) {
                 if (bag.put(p) != null) {
-                    changed.set(true); //update anyway since merges and forgetting may have shifted ordering
+                    changed.set(true); 
                 }
             }
 
@@ -541,11 +541,11 @@ public class TextUI {
                 next.forEach(this::addItem);
 
 
-                //                        model.addRow(
-                //                                Texts.n4(t.pri()),
-                //                                t.term().toString() + Character.valueOf((char) t.punc()),
-                //                                t.truth()!=null ? t.truth().toString() : "");
-                //setViewTopRow(Math.max(0,model.getRowCount()-getVisibleRows()));
+                
+                
+                
+                
+                
 
 
             }
@@ -599,90 +599,89 @@ public class TextUI {
     }
 }
 
-//                p.addComponent(new AbstractInteractableComponent() {
-//                    String text = "Press any key";
-//
-//                    @Override
-//                    protected InteractableRenderer createDefaultRenderer() {
-//                        return new InteractableRenderer() {
-//                            @Override
-//                            public TerminalSize getPreferredSize(Component component) {
-//                                return new TerminalSize(30, 1);
-//                            }
-//
-//                            @Override
-//                            public void drawComponent(TextGUIGraphics graphics, Component component) {
-//                                graphics.putString(0, 0, text);
-//                            }
-//
-//                            @Override
-//                            public TerminalPosition getCursorLocation(Component component) {
-//                                return TerminalPosition.TOP_LEFT_CORNER;
-//                            }
-//                        };
-//                    }
-//
-//                    @Override
-//                    public Result handleKeyStroke(KeyStroke keyStroke) {
-//                        if (keyStroke.getKeyType() == KeyType.Tab ||
-//                                keyStroke.getKeyType() == KeyType.ReverseTab) {
-//                            return super.handleKeyStroke(keyStroke);
-//                        }
-//                        if (keyStroke.getKeyType() == KeyType.Character) {
-//                            text = "Character: " + keyStroke.getCharacter() + (keyStroke.isCtrlDown() ? " (ctrl)" : "") +
-//                                    (keyStroke.isAltDown() ? " (alt)" : "");
-//                        } else {
-//                            text = "Key: " + keyStroke.getKeyType() + (keyStroke.isCtrlDown() ? " (ctrl)" : "") +
-//                                    (keyStroke.isAltDown() ? " (alt)" : "");
-//                        }
-//                        return Result.HANDLED;
-//                    }
-//                }.withBorder(Borders.singleLine("Custom component")));
 
-//        //@Override
-//        public void run1() {
-//            try {
-//                final String string = this.toString();
-//                Random random = new Random();
-//                terminal.enterPrivateMode();
-//                terminal.clearScreen();
-//                terminal.addResizeListener((terminal1, newSize) -> {
-//                    System.err.println("Resized to " + newSize);
-//                    size = newSize;
-//                });
-//                size = terminal.getTerminalSize();
-//
-//                while (true) {
-//                    KeyStroke key = terminal.pollInput();
-//                    if (key != null) {
-//                        System.out.println(key);
-//                        if (key.getKeyType() == KeyType.Escape) {
-//                            terminal.exitPrivateMode();
-//                            //logger.info("{} stop: Escape key", this, e.getMessage());
-//                            return;
-//                        }
-//                    }
-//
-//                    TextColor.Indexed foregroundIndex = TextColor.Indexed.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-//                    TextColor.Indexed backgroundIndex = TextColor.Indexed.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-//
-//                    terminal.setForegroundColor(foregroundIndex);
-//                    terminal.setBackgroundColor(backgroundIndex);
-//                    terminal.setCursorPosition(random.nextInt(size.getColumns() - string.length()), random.nextInt(size.getRows()));
-//                    printString(terminal, string);
-//
-//                    try {
-//                        Thread.sleep(200);
-//                    } catch (InterruptedException e) {
-//                    }
-//                }
-//            } catch (IOException e) {
-//                logger.info("{} stop: {}", this, e.getMessage());
-//            } finally {
-//                try {
-//                    terminal.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

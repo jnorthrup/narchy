@@ -9,11 +9,11 @@ import java.io.ObjectOutputStream;
 public class PrologImpl implements java.io.Serializable {
 
     final alice.tuprolog.Prolog core;
-    //Vector solutionListeners;
+    
 
     public PrologImpl(alice.tuprolog.Prolog core_){
         core=core_;
-        //utionListeners=new Vector();
+        
     }
 
     public void clearTheory(ObjectInputStream in,ObjectOutputStream out){

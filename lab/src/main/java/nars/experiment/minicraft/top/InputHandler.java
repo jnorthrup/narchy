@@ -20,14 +20,14 @@ public class InputHandler implements KeyListener {
 		}
 
 		public void pressed(boolean pressed) {
-			//if (pressed != down) {
+			
 				down = pressed;
-			//}
+			
 			if (pressed) {
 				presses++;
 			}
-//			down = clicked = pressed;
-//			presses = pressed ? 1 : 0;
+
+
 		}
 
 		public void tick() {

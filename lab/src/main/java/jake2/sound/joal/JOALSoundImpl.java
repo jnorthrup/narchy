@@ -70,7 +70,7 @@ public final class JOALSoundImpl implements Sound {
 		    Com.Printf(e.toString() + '\n');
 		    return false;
 		}
-		// set the master volume
+		
 		s_volume = Cvar.Get("s_volume", "0.7", Defines.CVAR_ARCHIVE);
 
 		al.alGenBuffers(buffers.length, buffers, 0);
@@ -128,8 +128,8 @@ public final class JOALSoundImpl implements Sound {
 	}
 	
 	
-    // TODO check the sfx direct buffer size
-    // 2MB sfx buffer
+    
+    
     private final ByteBuffer sfxDataBuffer = Lib.newByteBuffer(2 * 1024 * 1024);
     
     /* (non-Javadoc)
@@ -175,7 +175,7 @@ public final class JOALSoundImpl implements Sound {
 		Cmd.RemoveCommand("soundlist");
 		Cmd.RemoveCommand("soundinfo");
 
-		// free all sounds
+		
 		for (int i = 0; i < num_sfx; i++) {
 			if (known_sfx[i].name == null)
 				continue;
@@ -199,7 +199,7 @@ public final class JOALSoundImpl implements Sound {
 			sfx = RegisterSexedSound(Globals.cl_entities[entnum].current, sfx.name);
 		
 		if (LoadSound(sfx) == null)
-			return; // can't load sound
+			return; 
 
 		if (attenuation != Defines.ATTN_STATIC)
 			attenuation *= 0.5f;
@@ -223,11 +223,11 @@ public final class JOALSoundImpl implements Sound {
 		Channel.convertOrientation(forward, up, listenerOrientation);		
 		al.alListenerfv(AL.AL_ORIENTATION, listenerOrientation, 0);
 		
-		// set the listener (master) volume
+		
 		al.alListenerf(AL.AL_GAIN, s_volume.value);
 		
 		if (eax != null) {
-			// workaround for environment initialisation
+			
 			boolean changeEnv = true;
 			if (currentEnv == -1) {
 				eaxEnv.put(0, EAX.EAX_ENVIRONMENT_UNDERWATER);
@@ -258,7 +258,7 @@ public final class JOALSoundImpl implements Sound {
 	 */
 	@Override
     public void StopAllSounds() {
-		// mute the listener (master)
+		
 		if (al!=null)
 			al.alListenerf(AL.AL_GAIN, 0);
 	    PlaySound.reset();
@@ -307,18 +307,18 @@ public final class JOALSoundImpl implements Sound {
 		int i;
 		sfx_t sfx;
 
-		// free any sounds not from this registration sequence
+		
 		for (i = 0; i < num_sfx; i++) {
 			sfx = known_sfx[i];
 			if (sfx.name == null)
 				continue;
 			if (sfx.registration_sequence != s_registration_sequence) {
-				// don't need this sound
+				
 				sfx.clear();
 			}
 		}
 
-		// load everything in
+		
 		for (i = 0; i < num_sfx; i++) {
 			sfx = known_sfx[i];
 			if (sfx.name == null)
@@ -333,7 +333,7 @@ public final class JOALSoundImpl implements Sound {
 
 		sfx_t sfx = null;
 
-		// determine what model the client is using
+		
 		String model = null;
 		int n = Globals.CS_PLAYERSKINS + ent.number - 1;
 		if (Globals.cl.configstrings[n] != null) {
@@ -341,38 +341,38 @@ public final class JOALSoundImpl implements Sound {
 			if (p >= 0) {
 				p++;
 				model = Globals.cl.configstrings[n].substring(p);
-				//strcpy(model, p);
+				
 				p = model.indexOf('/');
 				if (p > 0)
 					model = model.substring(0, p);
 			}
 		}
-		// if we can't figure it out, they're male
+		
 		if (model == null || model.length() == 0)
 			model = "male";
 
-		// see if we already know of the model specific sound
+		
 		String sexedFilename = "#players/" + model + '/' + base.substring(1);
-		//Com_sprintf (sexedFilename, sizeof(sexedFilename), "#players/%s/%s", model, base+1);
+		
 		sfx = FindName(sexedFilename, false);
 
 		if (sfx != null) return sfx;
 		
-		//
-		// fall back strategies
-		//
-		// not found , so see if it exists
+		
+		
+		
+		
 		if (FS.FileLength(sexedFilename.substring(1)) > 0) {
-			// yes, register it
+			
 			return RegisterSound(sexedFilename);
 		}
-	    // try it with the female sound in the pak0.pak
+	    
 		if (model.equalsIgnoreCase("female")) {
 			String femaleFilename = "player/female/" + base.substring(1);
 			if (FS.FileLength("sound/" + femaleFilename) > 0)
 			    return AliasName(sexedFilename, femaleFilename);
 		}
-		// no chance, revert to the male sound in the pak0.pak
+		
 		String maleFilename = "player/male/" + base.substring(1);
 		return AliasName(sexedFilename, maleFilename);
 	}
@@ -396,7 +396,7 @@ public final class JOALSoundImpl implements Sound {
 		if (name.length() >= Defines.MAX_QPATH)
 			Com.Error(Defines.ERR_FATAL, "Sound name too long: " + name);
 
-		// see if already loaded
+		
 		for (i = 0; i < num_sfx; i++)
 			if (name.equals(known_sfx[i].name)) {
 				return known_sfx[i];
@@ -405,10 +405,10 @@ public final class JOALSoundImpl implements Sound {
 		if (!create)
 			return null;
 
-		// find a free sfx
+		
 		for (i = 0; i < num_sfx; i++)
 			if (known_sfx[i].name == null)
-				// registration_sequence < s_registration_sequence)
+				
 				break;
 
 		if (i == num_sfx) {
@@ -440,7 +440,7 @@ public final class JOALSoundImpl implements Sound {
 
 		s = truename;
 
-		// find a free sfx
+		
 		for (i=0 ; i < num_sfx ; i++)
 			if (known_sfx[i].name == null)
 				break;
@@ -457,7 +457,7 @@ public final class JOALSoundImpl implements Sound {
 		sfx.name = aliasname;
 		sfx.registration_sequence = s_registration_sequence;
 		sfx.truename = s;
-		// set the AL bufferId
+		
 		sfx.bufferId = i;
 
 		return sfx;
@@ -474,7 +474,7 @@ public final class JOALSoundImpl implements Sound {
 		if (sc != null) {
 			initBuffer(sc.data, s.bufferId, sc.speed);
 		    s.isCached = true;
-		    // free samples for GC
+		    
 		    s.cache.data = null;
 		}
 		return sc;
@@ -509,7 +509,7 @@ public final class JOALSoundImpl implements Sound {
                     : AL.AL_FORMAT_MONO8;
         }
         
-        // convert to signed 16 bit samples
+        
         if (format == AL.AL_FORMAT_MONO8) {
             ShortBuffer sampleData = streamBuffer;
             int value;

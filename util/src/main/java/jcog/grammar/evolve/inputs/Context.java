@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.inputs;
 
@@ -33,8 +33,8 @@ public class Context {
         TRAINING, VALIDATION, LEARNING
     }
 
-    //This property is not useful in production, commented out
-    //private DataSet dataSet;
+    
+    
 
     private EvaluationPhases phase;
     private boolean stripedPhase = false;
@@ -102,7 +102,7 @@ public class Context {
      */
     public DataSet getCurrentDataSet(){
         switch(this.phase){
-            //NOTE: only training dataset admits a striped dataset version
+            
             case TRAINING: 
                     DataSet trainingDataset;
                     if(!this.isStripedPhase()){
@@ -111,7 +111,7 @@ public class Context {
                        trainingDataset = this.getDataSetContainer().getTrainingDataset().getStripedDataset();
                     }
                     if(separateAndConquerEnabled){
-                        //getSeed returns a number that in current implementation IS the JOBID
+                        
                         return trainingDataset.getLastSeparateAndConquerDataSet((int) this.getSeed());
                     } else {
                         return trainingDataset;

@@ -100,7 +100,7 @@ public class Tokenizer implements ITokenizer {
 	 */
 	public Tokenizer() {
 
-		setCharacterState(0, 255, symbolState()); // the default
+		setCharacterState(0, 255, symbolState()); 
 
 		setCharacterState(0, ' ', whitespaceState());
 		setCharacterState('a', 'z', wordState());

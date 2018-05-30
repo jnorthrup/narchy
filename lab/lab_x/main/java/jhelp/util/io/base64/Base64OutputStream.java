@@ -64,7 +64,7 @@ public class Base64OutputStream
          {
             case STEP_2:
                this.outputStream.write(Base64Common.COMPLEMENT);
-               // No break
+               
             case STEP_3:
                this.outputStream.write(Base64Common.COMPLEMENT);
                this.outputStream.write(Base64Common.COMPLEMENT);

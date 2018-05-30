@@ -7,7 +7,7 @@ package net.propero.rdp.crypto;
  * <p>
  * <b>References:</b>
  * <ol>
- * <li> Ronald L. Rivest, "<a href="http://www.roxen.com/rfc/rfc1321.html"> The
+ * <li> Ronald L. Rivest, "<a href="http:
  * MD5 Message-Digest Algorithm</a>", IETF RFC-1321 (informational).
  * <li> Bruce Schneier, "Section 18.5 MD5," <cite>Applied Cryptography, 2nd
  * edition</cite>, John Wiley &amp; Sons, 1996
@@ -15,8 +15,8 @@ package net.propero.rdp.crypto;
  * </ol>
  * <p>
  * <b>Copyright</b> &copy; 1995-1997 <a
- * href="http://www.systemics.com/">Systemics Ltd</a> on behalf of the <a
- * href="http://www.systemics.com/docs/cryptix/">Cryptix Development Team</a>.
+ * href="http:
+ * href="http:
  * <br>
  * All rights reserved.
  * <p>
@@ -28,8 +28,8 @@ package net.propero.rdp.crypto;
  */
 public final class MD5 extends BlockMessageDigest implements Cloneable {
 
-    // MD5 constants and variables
-    // ...........................................................................
+    
+    
 
     /**
      * Length of the final hash (in bytes).
@@ -113,12 +113,12 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
         return a + b;
     }
 
-    // why was this public?
-    // Note: parameter order changed to be consistent with System.arraycopy.
+    
+    
     private static void byte2int(byte[] src, int srcOffset, int[] dst,
                                  int dstOffset, int length) {
         while (length-- > 0) {
-            // Little endian
+            
             dst[dstOffset++] = (src[srcOffset++] & 0xFF)
                     | ((src[srcOffset++] & 0xFF) << 8)
                     | ((src[srcOffset++] & 0xFF) << 16)
@@ -126,8 +126,8 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
         }
     }
 
-    // MD5 transform routines
-    // ...........................................................................
+    
+    
 
     /**
      * Returns the length of the data (in bytes) hashed in every transform.
@@ -201,7 +201,7 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
         if (pos != 0)
             System.arraycopy(in, 0, tmp, 0, pos);
 
-        tmp[pos++] = -128; // (byte)0x80;
+        tmp[pos++] = -128; 
 
         if (pos > DATA_LENGTH - 8) {
             while (pos < DATA_LENGTH)
@@ -225,7 +225,7 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
 
         byte buf[] = new byte[HASH_LENGTH];
 
-        // Little endian
+        
         int off = 0;
         for (int i = 0; i < HASH_LENGTH / 4; ++i) {
             int d = digest[i];

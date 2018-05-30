@@ -170,7 +170,7 @@ public class Orders {
                               int n_orders) throws OrderException, RdesktopException {
 
         int present = 0;
-        // int n_orders = 0;
+        
         int order_flags = 0, order_type = 0;
         int size = 0, processed = 0;
         boolean delta;
@@ -223,70 +223,70 @@ public class Orders {
 
                 switch (os.getOrderType()) {
                     case RDP_ORDER_DESTBLT:
-                        //logger.debug("DestBlt Order");
+                        
                         this.processDestBlt(data, os.getDestBlt(), present, delta);
                         break;
 
                     case RDP_ORDER_PATBLT:
-                        //logger.debug("PatBlt Order");
+                        
                         this.processPatBlt(data, os.getPatBlt(), present, delta);
                         break;
 
                     case RDP_ORDER_SCREENBLT:
-                        //logger.debug("ScreenBlt Order");
+                        
                         this.processScreenBlt(data, os.getScreenBlt(), present,
                                 delta);
                         break;
 
                     case RDP_ORDER_LINE:
-                        //logger.debug("Line Order");
+                        
                         this.processLine(data, os.getLine(), present, delta);
                         break;
 
                     case RDP_ORDER_RECT:
-                        //logger.debug("Rectangle Order");
+                        
                         this.processRectangle(data, os.getRectangle(), present,
                                 delta);
                         break;
 
                     case RDP_ORDER_DESKSAVE:
-                        //logger.debug("Desksave!");
+                        
                         this
                                 .processDeskSave(data, os.getDeskSave(), present,
                                         delta);
                         break;
 
                     case RDP_ORDER_MEMBLT:
-                        //logger.debug("MemBlt Order");
+                        
                         this.processMemBlt(data, os.getMemBlt(), present, delta);
                         break;
 
                     case RDP_ORDER_TRIBLT:
-                        //logger.debug("TriBlt Order");
+                        
                         this.processTriBlt(data, os.getTriBlt(), present, delta);
                         break;
 
                     case RDP_ORDER_POLYLINE:
-                        //logger.debug("Polyline Order");
+                        
                         this
                                 .processPolyLine(data, os.getPolyLine(), present,
                                         delta);
                         break;
 
                     case RDP_ORDER_TEXT2:
-                        //logger.debug("Text2 Order");
+                        
                         this.processText2(data, os.getText2(), present, delta);
                         break;
 
                     default:
-                        //logger.warn("Unimplemented Order type " + order_type);
+                        
                         return;
                 }
 
                 if ((order_flags & RDP_ORDER_BOUNDS) != 0) {
                     surface.resetClip();
 
-                    //logger.debug("Reset clip");
+                    
                 }
             }
 
@@ -339,22 +339,22 @@ public class Orders {
         switch (type) {
 
             case RDP_ORDER_RAW_BMPCACHE:
-                //logger.debug("Raw BitmapCache Order");
+                
                 Orders.processRawBitmapCache(data);
                 break;
 
             case RDP_ORDER_COLCACHE:
-                //logger.debug("Colorcache Order");
+                
                 Orders.processColorCache(data);
                 break;
 
             case RDP_ORDER_BMPCACHE:
-                //logger.debug("Bitmapcache Order");
+                
                 Orders.processBitmapCache(data);
                 break;
 
             case RDP_ORDER_FONTCACHE:
-                //logger.debug("Fontcache Order");
+                
                 Orders.processFontCache(data);
                 break;
 
@@ -375,7 +375,7 @@ public class Orders {
                 break;
 
             default:
-                //logger.warn("Unimplemented 2ry Order type " + type);
+                
         }
 
         data.position(next_order);
@@ -390,7 +390,7 @@ public class Orders {
     private static void processRawBitmapCache(RdpPacket data)
             throws RdesktopException {
         int cache_id = data.get8();
-        data.positionAdd(1); // pad
+        data.positionAdd(1); 
         int width = data.get8();
         int height = data.get8();
         int bpp = data.get8();
@@ -404,8 +404,8 @@ public class Orders {
         int pinverted = (height - 1) * (width * Bpp);
         for (int y = 0; y < height; y++) {
             data.copyToByteArray(inverted, pinverted, pdata, width * Bpp);
-            // data.copyToByteArray(inverted, (height - y - 1) * (width * Bpp),
-            // y * (width * Bpp), width*Bpp);
+            
+            
             pinverted -= width * Bpp;
             pdata += width * Bpp;
         }
@@ -430,8 +430,8 @@ public class Orders {
         int j = 0;
 
         int cache_id = data.get8();
-        int n_colors = data.getLittleEndian16(); // Number of Colors in
-        // Palette
+        int n_colors = data.getLittleEndian16(); 
+        
 
         palette = new byte[n_colors * 4];
         red = new byte[n_colors];
@@ -443,12 +443,12 @@ public class Orders {
             blue[i] = palette[j];
             green[i] = palette[j + 1];
             red[i] = palette[j + 2];
-            // palette[j+3] is pad
+            
             j += 4;
         }
         IndexColorModel cm = new IndexColorModel(8, n_colors, red, green, blue);
         cache.put_colourmap(cache_id, cm);
-        // surface.registerPalette(cm);
+        
     }
 
     /**
@@ -465,46 +465,46 @@ public class Orders {
         bufsize = pad2 = row_size = final_size = size = 0;
 
         int cache_id = data.get8();
-        pad1 = data.get8(); // pad
+        pad1 = data.get8(); 
         int width = data.get8();
         int height = data.get8();
         int bpp = data.get8();
         int Bpp = (bpp + 7) / 8;
-        bufsize = data.getLittleEndian16(); // bufsize
+        bufsize = data.getLittleEndian16(); 
         int cache_idx = data.getLittleEndian16();
 
 		/*
-         * data.incrementPosition(2); // pad int size =
-		 * data.getLittleEndian16(); data.incrementPosition(4); // row_size,
+         * data.incrementPosition(2); 
+		 * data.getLittleEndian16(); data.incrementPosition(4); 
 		 * final_size
 		 */
 
         if (Options.use_rdp5) {
 
 			/* Begin compressedBitmapData */
-            pad2 = data.getLittleEndian16(); // in_uint16_le(s, pad2); /* pad
-            // */
-            size = data.getLittleEndian16(); // in_uint16_le(s, size);
-            row_size = data.getLittleEndian16(); // in_uint16_le(s,
-            // row_size);
-            final_size = data.getLittleEndian16(); // in_uint16_le(s,
-            // final_size);
+            pad2 = data.getLittleEndian16(); 
+            
+            size = data.getLittleEndian16(); 
+            row_size = data.getLittleEndian16(); 
+            
+            final_size = data.getLittleEndian16(); 
+            
 
         } else {
-            data.positionAdd(2); // pad
+            data.positionAdd(2); 
             size = data.getLittleEndian16();
-            row_size = data.getLittleEndian16(); // in_uint16_le(s,
-            // row_size);
-            final_size = data.getLittleEndian16(); // in_uint16_le(s,
-            // final_size);
-            // this is what's in rdesktop, but doesn't seem to work
-            // size = bufsize;
+            row_size = data.getLittleEndian16(); 
+            
+            final_size = data.getLittleEndian16(); 
+            
+            
+            
         }
 
-        // logger.info("BMPCACHE(cx=" + width + ",cy=" + height + ",id=" +
-        // cache_id + ",idx=" + cache_idx + ",bpp=" + bpp + ",size=" + size +
-        // ",pad1=" + pad1 + ",bufsize=" + bufsize + ",pad2=" + pad2 + ",rs=" +
-        // row_size + ",fs=" + final_size + ")");
+        
+        
+        
+        
 
         if (Bpp == 1) {
             byte[] pixel = Bitmap.decompress(width, height, size, data, Bpp);
@@ -553,22 +553,22 @@ public class Orders {
         }
 
         if ((flags & SQUARE) != 0) {
-            width = height = data.get8(); // in_uint8(s, width);
+            width = height = data.get8(); 
         } else {
-            width = data.get8(); // in_uint8(s, width);
-            height = data.get8(); // in_uint8(s, height);
+            width = data.get8(); 
+            height = data.get8(); 
         }
 
-        bufsize = data.getBigEndian16(); // in_uint16_be(s, bufsize);
+        bufsize = data.getBigEndian16(); 
         bufsize &= BUFSIZE_MASK;
-        cache_idx = data.get8(); // in_uint8(s, cache_idx);
+        cache_idx = data.get8(); 
 
         if ((cache_idx & LONG_FORMAT) != 0) {
-            cache_idx_low = data.get8(); // in_uint8(s, cache_idx_low);
+            cache_idx_low = data.get8(); 
             cache_idx = ((cache_idx ^ LONG_FORMAT) << 8) + cache_idx_low;
         }
 
-        // in_uint8p(s, data, bufsize);
+        
 
 		/*
 		logger.info("BMPCACHE2(compr=" + compressed + ",flags=" + flags
@@ -576,7 +576,7 @@ public class Orders {
 				+ ",idx=" + cache_idx + ",Bpp=" + Bpp + ",bs=" + bufsize + ")");*/
 
         bmpdata = new byte[width * height * Bpp];
-        int[] bmpdataInt; // = new int[width * height];
+        int[] bmpdataInt; 
 
         if (compressed) {
             if (Bpp == 1)
@@ -587,46 +587,46 @@ public class Orders {
                         Bpp);
 
             if (bmpdataInt == null) {
-                //logger.debug("Failed to decompress bitmap data");
-                // xfree(bmpdata);
+                
+                
                 return;
             }
             bitmap = new Bitmap(bmpdataInt, width, height, 0, 0);
         } else {
             for (y = 0; y < height; y++)
                 data.copyToByteArray(bmpdata, y * (width * Bpp),
-                        (height - y - 1) * (width * Bpp), width * Bpp); // memcpy(&bmpdata[(height
-            // - y -
-            // 1) *
-            // (width
-            // *
-            // Bpp)],
-            // &data[y
-            // *
-            // (width
-            // *
-            // Bpp)],
-            // width
-            // *
-            // Bpp);
+                        (height - y - 1) * (width * Bpp), width * Bpp); 
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
             bitmap = new Bitmap(Bitmap.convertImage(bmpdata, Bpp), width,
                     height, 0, 0);
         }
 
-        // bitmap = ui_create_bitmap(width, height, bmpdata);
+        
 
         if (bitmap != null) {
             cache.putBitmap(cache_id, cache_idx, bitmap, 0);
-            // cache_put_bitmap(cache_id, cache_idx, bitmap, 0);
+            
             if ((flags & PERSIST) != 0)
                 PstCache.pstcache_put_bitmap(cache_id, cache_idx, bitmap_id,
                         width, height, width * height * Bpp, bmpdata);
         } else {
-            //logger.debug("process_bmpcache2: ui_create_bitmap failed");
+            
         }
 
-        // xfree(bmpdata);
+        
     }
 
     /**
@@ -686,8 +686,8 @@ public class Orders {
             destblt.setCY(setCoordinate(data, destblt.getCY(), delta));
         if ((present & 0x10) != 0)
             destblt.setOpcode(ROP2_S(data.get8()));
-        // if(logger.isInfoEnabled())
-        // logger.info("opcode="+destblt.getOpcode());
+        
+        
         surface.drawDestBltOrder(destblt);
     }
 
@@ -740,7 +740,7 @@ public class Orders {
         if ((present & 0x40) != 0)
             patblt.setForegroundColor(setColor(data));
         parseBrush(data, patblt.getBrush(), present >> 7);
-        // if(logger.isInfoEnabled()) logger.info("opcode="+patblt.getOpcode());
+        
         surface.drawPatBltOrder(patblt);
     }
 
@@ -769,8 +769,8 @@ public class Orders {
             screenblt.setSrcX(setCoordinate(data, screenblt.getSrcX(), delta));
         if ((present & 0x40) != 0)
             screenblt.setSrcY(setCoordinate(data, screenblt.getSrcY(), delta));
-        // if(logger.isInfoEnabled())
-        // logger.info("opcode="+screenblt.getOpcode());
+        
+        
         surface.drawScreenBltOrder(screenblt);
     }
 
@@ -802,16 +802,16 @@ public class Orders {
 
         parsePen(data, line.getPen(), present >> 7);
 
-        // if(logger.isInfoEnabled()) logger.info("Line from
-        // ("+line.getStartX()+","+line.getStartY()+") to
-        // ("+line.getEndX()+","+line.getEndY()+")");
+        
+        
+        
 
         if (line.getOpcode() < 0x01 || line.getOpcode() > 0x10) {
             logger.warn("bad ROP2 0x" + line.getOpcode());
             return;
         }
 
-        // now draw the line
+        
         surface.drawLineOrder(line);
     }
 
@@ -836,10 +836,10 @@ public class Orders {
         if ((present & 0x08) != 0)
             rect.setCY(setCoordinate(data, rect.getCY(), delta));
         if ((present & 0x10) != 0)
-            this.rect_colour = (this.rect_colour & 0xffffff00) | data.get8(); // rect.setColor(setColor(data));
+            this.rect_colour = (this.rect_colour & 0xffffff00) | data.get8(); 
         if ((present & 0x20) != 0)
             this.rect_colour = (this.rect_colour & 0xffff00ff)
-                    | (data.get8() << 8); // rect.setColor(setColor(data));
+                    | (data.get8() << 8); 
         if ((present & 0x40) != 0)
             this.rect_colour = (this.rect_colour & 0xff00ffff)
                     | (data.get8() << 16);
@@ -937,8 +937,8 @@ public class Orders {
         if ((present & 0x0100) != 0)
             memblt.setCacheIDX(data.getLittleEndian16());
 
-        // if(logger.isInfoEnabled()) logger.info("Memblt
-        // opcode="+memblt.getOpcode());
+        
+        
         surface.drawMemBltOrder(memblt);
     }
 
@@ -1016,11 +1016,11 @@ public class Orders {
                 databytes[i] = (byte) data.get8();
             polyline.setData(databytes);
         }
-        // logger.info("polyline delta="+delta);
-        // if(logger.isInfoEnabled()) logger.info("Line from
-        // ("+line.getStartX()+","+line.getStartY()+") to
-        // ("+line.getEndX()+","+line.getEndY()+")");
-        // now draw the line
+        
+        
+        
+        
+        
         surface.drawPolyLineOrder(polyline);
     }
 
@@ -1044,7 +1044,7 @@ public class Orders {
         }
 
         if ((present & 0x000004) != 0) {
-            text2.setOpcode(data.get8()); // setUnknown(data.get8());
+            text2.setOpcode(data.get8()); 
         }
 
         if ((present & 0x000008) != 0) {
@@ -1228,15 +1228,15 @@ public class Orders {
         int color = 0;
         int i = 0;
 
-        i = data.get8(); // in_uint8(s, i);
-        color = i; // *colour = i;
-        i = data.get8(); // in_uint8(s, i);
-        color |= i << 8; // *colour |= i << 8;
-        i = data.get8(); // in_uint8(s, i);
-        color |= i << 16; // *colour |= i << 16;
+        i = data.get8(); 
+        color = i; 
+        i = data.get8(); 
+        color |= i << 8; 
+        i = data.get8(); 
+        color |= i << 16; 
 
-        // color = data.get8();
-        // data.incrementPosition(2);
+        
+        
         return color;
     }
 
@@ -1266,7 +1266,7 @@ public class Orders {
         if ((present & 0x04) != 0)
             pen.setColor(setColor(data));
 
-        return true; // return s_check(s);
+        return true; 
     }
 
     /**
@@ -1301,25 +1301,25 @@ public class Orders {
         int x = text2.getX();
         int y = text2.getY();
 
-//		if (boxcx > 1) {
-//			surface.fillRectangle(text2.getBoxLeft(), text2.getBoxTop(), boxcx,
-//					boxcy, text2.getBackgroundColor());
-//		} else if (text2.getMixmode() == MIX_OPAQUE) {
-//			surface.fillRectangle(text2.getClipLeft(), text2.getClipTop(),
-//					clipcx, clipcy, text2.getBackgroundColor());
-//		}
 
 
-//		System.out.println("X: " + text2.getX() + " Y: " + text2.getY() + " Left Clip: " + 
-//		text2.getClipLeft() + " Top Clip: " + text2.getClipTop() + "Right Clip: " + 
-//        text2.getClipRight() + " Bottom Clip: " +
-//		text2.getClipBottom() + " Left Box: " + text2.getBoxLeft() + " TopBox: " + 
-//        text2.getBoxTop() + " Right Box: " + text2.getBoxRight() + "Bottom Box: " + 
-//		text2.getBoxBottom() + " Foreground Color: " +
-//		text2.getForegroundColor() + " Background Color: " +
-//		text2.getBackgroundColor() + " Font: " + text2.getFont() + " Flags: " +
-//		text2.getFlags() + " Mixmode: " + text2.getMixmode() + " Unknown: " +
-//		text2.getUnknown() + " Length: " + text2.getLength());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         for (int i = 0; i < length; ) {
             switch (text[ptext + i] & 0x000000ff) {
@@ -1359,7 +1359,7 @@ public class Orders {
                     length -= i;
                     ptext = i;
                     i = 0;
-                    // break;
+                    
 
                     byte[] data = entry.getData();
                     for (int j = 0; j < entry.getSize(); j++) {
@@ -1391,11 +1391,11 @@ public class Orders {
                         }
                         if (glyph != null) {
                             int xx = x + (short) glyph.getOffset(), yy = y + (short) glyph.getBaseLine();
-//					    System.out.print(String.format("font=%d, character=%d, x=%d,y=%d,x1=%d,y1=%d \n", text2.getFont(), character, x, y, xx, yy));
-                            // if((text2.getFlags() & TEXT2_VERTICAL) != 0)
-                            // logger.info("Drawing glyph: (" + (x +
-                            // (short)glyph.getOffset()) + ", " + (y +
-                            // (short)glyph.getBaseLine()) + ")" );
+
+                            
+                            
+                            
+                            
                             surface.drawGlyph(text2.getMixmode(), xx, yy,
                                     glyph.getWidth(), glyph.getHeight(), glyph
                                             .getFontData(), text2
@@ -1416,9 +1416,9 @@ public class Orders {
                         offset = text[ptext + (++i)] & 0x000000ff;
                         if ((offset & 0x80) != 0) {
                             if ((text2.getFlags() & TEXT2_VERTICAL) != 0) {
-                                // logger.info("y +=" + (text[ptext +
-                                // (i+1)]&0x000000ff) + " | " + ((text[ptext +
-                                // (i+2)]&0x000000ff) << 8));
+                                
+                                
+                                
                                 int var = Orders
                                         .twosComplement16((text[ptext + i + 1] & 0x000000ff)
                                                 | ((text[ptext + i + 2] & 0x000000ff) << 8));

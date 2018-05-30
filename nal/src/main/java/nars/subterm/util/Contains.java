@@ -49,7 +49,7 @@ public enum Contains implements BiPredicate<Term, Term> {
                 if (subContainer.contains(x) || subContainer.containsNeg(x))
                     return true;
 
-                //if eventsWhile() returned false means it found it
+                
                 return subContainer.hasAny(CONJ) && !container.eventsWhile((when, what) ->
                             !(x.equals(what) || x.equalsNeg(what)),
                     0, true, true, true, 0);
@@ -59,11 +59,11 @@ public enum Contains implements BiPredicate<Term, Term> {
         @Override
         public boolean test(Term container, Term x) {
 
-            //simple subterm test, which catches compound sub-sequences that the event iteration is too granular for
+            
             if (container.contains(x))
                 return true;
 
-            //if eventsWhile() returned false means it found it
+            
             return container.subterms().hasAny(CONJ) && !container.eventsWhile((when, what) ->
                     !x.equals(what),
         0, true, true, true, 0);
@@ -83,7 +83,7 @@ public enum Contains implements BiPredicate<Term, Term> {
             if (container.op() != CONJ || container.volume() <= xx.volume())
                 return false;
 
-            //simple subterm test, which catches compound sub-sequences that the event iteration is too granular for
+            
             final boolean[] result = {true};
             xx.eventsWhile((when, x) -> {
 
@@ -93,16 +93,16 @@ public enum Contains implements BiPredicate<Term, Term> {
                 }
 
                 if (container.contains(x))
-                    return true; //continue
+                    return true; 
 
-                //if eventsWhile() returned false means it found it
+                
                 if (!(container.subterms().hasAny(CONJ) && !container.eventsWhile((when2, what) ->
                                 !x.equals(what),
                         0, true, true, true, 0))) {
                     result[0] = false;
                     return false;
                 } else {
-                    return true; //continue
+                    return true; 
                 }
 
             }, 0, true, true, true, 0);

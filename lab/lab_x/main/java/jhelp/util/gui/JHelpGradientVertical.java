@@ -225,9 +225,9 @@ public class JHelpGradientVertical
       final int pos = yy - start;
       final int sop = length - pos;
 
-      return ((((((col1 >> 24) & 0xFF) * sop) + (((col2 >> 24) & 0xFF) * pos)) / length) << 24) | //
-            ((((((col1 >> 16) & 0xFF) * sop) + (((col2 >> 16) & 0xFF) * pos)) / length) << 16) | //
-            ((((((col1 >> 8) & 0xFF) * sop) + (((col2 >> 8) & 0xFF) * pos)) / length) << 8) | //
+      return ((((((col1 >> 24) & 0xFF) * sop) + (((col2 >> 24) & 0xFF) * pos)) / length) << 24) | 
+            ((((((col1 >> 16) & 0xFF) * sop) + (((col2 >> 16) & 0xFF) * pos)) / length) << 16) | 
+            ((((((col1 >> 8) & 0xFF) * sop) + (((col2 >> 8) & 0xFF) * pos)) / length) << 8) | 
             ((((col1 & 0xFF) * sop) + ((col2 & 0xFF) * pos)) / length);
    }
 

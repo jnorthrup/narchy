@@ -3,14 +3,14 @@
  * 
  * This source file is subject to the Open Software License (OSL 3.0) that is 
  * bundled with this package in the file LICENSE.txt. It is also available 
- * through the world-wide-web at http://opensource.org/licenses/osl-3.0.php
+ * through the world-wide-web at http:
  * If you did not receive a copy of the license and are unable to obtain it 
  * through the world-wide-web, please send an email to magnos.software@gmail.com 
  * so we can send you a copy immediately. If you use any of this software please
  * notify me via our website or email, your feedback is much appreciated. 
  * 
- * @copyright   Copyright (c) 2011 Magnos Software (http://www.magnos.org)
- * @license     http://opensource.org/licenses/osl-3.0.php
+ * @copyright   Copyright (c) 2011 Magnos Software (http:
+ * @license     http:
  *              Open Software License (OSL 3.0)
  */
 
@@ -108,7 +108,7 @@ public final class TrieSet<E> implements Set<E> {
    @Override
    public boolean retainAll(Collection<?> collection) {
       throw new RuntimeException("use retainsAll");
-      //return false;
+      
    }
 
    @Override
@@ -174,31 +174,31 @@ public final class TrieSet<E> implements Set<E> {
 
       collection.stream().filter(trie::containsKey).forEach(element -> newTrie.put((E) element, FLAG));
       if (previousSize!=newTrie.size())
-         return new TrieSet(newTrie); //trie = newTrie;
+         return new TrieSet(newTrie); 
 
       return this;
-      //return previousSize != trie.size();
+      
    }
 
-//   @SuppressWarnings ("unchecked" )
-//   @Override
-//   public boolean retainAll( Collection<?> collection )
-//   {
-//      final int previousSize = trie.size();
-//      final Trie<E, Object> newTrie = trie.newEmptyClone();
-//
-//      for (Object element : collection)
-//      {
-//         if (trie.containsKey( element ))
-//         {
-//            newTrie.put( (E)element, FLAG );
-//         }
-//      }
-//
-//      trie = newTrie;
-//
-//      return previousSize != trie.size();
-//   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    @Override
    public int size()

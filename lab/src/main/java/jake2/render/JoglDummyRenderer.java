@@ -43,7 +43,7 @@ final class JoglDummyRenderer extends JoglDummyDriver implements refexport_t, Re
 
     private final KBD kbd = new NEWTKBD();
 
-    // is set from Renderer factory
+    
     private RenderAPI impl;
 
     static {
@@ -51,31 +51,31 @@ final class JoglDummyRenderer extends JoglDummyDriver implements refexport_t, Re
     }
 
     private JoglDummyRenderer() {
-        // singleton
+        
     }
 
-    // ============================================================================
-    // public interface for Renderer implementations
-    //
-    // refexport_t (ref.h)
-    // ============================================================================
+    
+    
+    
+    
+    
 
     /** 
      * @see jake2.client.refexport_t#Init()
      */
     @Override
     public boolean Init(int vid_xpos, int vid_ypos) {
-        // init the OpenGL drivers
+        
         impl.setGLDriver(this);
         
-        // Cvar.Set("gl_clear", "1"); // FIXME
         
-        // pre init, reads Cvar's
+        
+        
         if (!impl.R_Init(vid_xpos, vid_ypos)) return false;
-        // activates the OpenGL context        
+        
         activateGLContext(true);
         
-        // post init        
+        
         return impl.R_Init2();
     }
 
@@ -260,9 +260,9 @@ final class JoglDummyRenderer extends JoglDummyDriver implements refexport_t, Re
     public KBD getKeyboardHandler() {
         return kbd;
     }
-    // ============================================================================
-    // Ref interface
-    // ============================================================================
+    
+    
+    
 
     @Override
     public final String getName() {

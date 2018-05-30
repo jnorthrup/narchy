@@ -34,7 +34,7 @@ import org.chocosolver.solver.search.loop.monitors.IMonitorUpBranch;
 import java.util.Arrays;
 
 /**
- * http://cs.lmu.edu/~ray/notes/binarytrees/
+ * http:
  * <br/>
  *
  * @author Charles Prud'homme
@@ -60,8 +60,8 @@ public class BinaryTreePanel extends APanel implements IMonitorDownBranch, IMoni
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        // draw the binary tree, based on the explored tree
-        int diameter = 20;//600 / (cnode + 1);
+        
+        int diameter = 20;
         for (int i = cnode-1; i>0; i--) {
             Graphics2D g2d = (Graphics2D) g;
             int value = nodes[i];

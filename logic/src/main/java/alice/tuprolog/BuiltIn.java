@@ -163,7 +163,7 @@ public final class BuiltIn extends Library {
 		 Struct sarg0 = (Struct) arg0;
 		 boolean sClause = sarg0.isClause();
 
-		 // if clause to retract found -> retract + true
+		 
 		 if (theoryManager.retract(sarg0, c -> unify(!sClause ? new Struct(":-", arg0, new Struct("true")) : sarg0, c.clause)
 		 ) > 0) {
 		 	return true;
@@ -374,10 +374,10 @@ public final class BuiltIn extends Library {
 	 }
 
 	 private void handleError(Throwable t) throws PrologError {
-		 // errore durante la valutazione
+		 
 		 if (t instanceof ArithmeticException) {
 			 ArithmeticException cause = (ArithmeticException) t;
-			 //            System.out.println(cause.getMessage());
+			 
 			 if (cause.getMessage().equals("/ by zero"))
 				 throw PrologError.evaluation_error(engineManager, 2, "zero_divisor");
 		 }
@@ -402,14 +402,14 @@ public final class BuiltIn extends Library {
 		 return unify(arg0, arg1);
 	 }
 
-	 // \=
+	 
 	 public boolean deunify_2(Term arg0, Term arg1) {
 		 return !unify(arg0, arg1);
 	 }
 
-	 // $tolist
+	 
 	 public boolean $tolist_2(Term arg0, Term arg1) throws PrologError {
-		 // transform arg0 to a list, unify it with arg1
+		 
 		 arg0 = arg0.term();
 		 arg1 = arg1.term();
 		 if (arg0 instanceof Var)
@@ -421,10 +421,10 @@ public final class BuiltIn extends Library {
 		 throw PrologError.type_error(engineManager, 1, "struct", arg0);
 	 }
 
-	 // $fromlist
+	 
 	 public boolean $fromlist_2(Term arg0, Term arg1) throws PrologError {
-		 // get the compound representation of the list
-		 // provided as arg1, and unify it with arg0
+		 
+		 
 		 arg0 = arg0.term();
 		 arg1 = arg1.term();
 		 if (arg1 instanceof Var)
@@ -434,22 +434,22 @@ public final class BuiltIn extends Library {
 		 }
 		 Term val1 = ((Struct) arg1).fromList();
 		 if (val1 == null)
-			 //throw PrologError.type_error(engineManager, 2, "list", arg1);
+			 
 			 return false;
 		 return (unify(arg0, val1));
 	 }
 
 	 public boolean copy_term_2(Term arg0, Term arg1) {
-		 // unify arg1 with a renamed copy of arg0
+		 
 		 arg0 = arg0.term();
 		 arg1 = arg1.term();
 		 int id = engineManager.getEnv().nDemoSteps;
 		 return unify(arg1, arg0.copy(new IdentityHashMap<>(), id));
 	 }
 
-	 // $append
+	 
 	 public boolean $append_2(Term arg0, Term arg1) throws PrologError {
-		 // append arg0 to arg1
+		 
 		 arg0 = arg0.term();
 		 arg1 = arg1.term();
 		 if (arg1 instanceof Var)
@@ -461,10 +461,10 @@ public final class BuiltIn extends Library {
 		 return true;
 	 }
 
-	 // $find
+	 
 	 public boolean $find_2(Term arg0, Term arg1) throws PrologError {
-		 // look for clauses whose head unifies whith arg0 and enqueue them to
-		 // list arg1
+		 
+		 
 		 arg0 = arg0.term();
 		 arg1 = arg1.term();
 		 if (arg0 instanceof Var)
@@ -482,7 +482,7 @@ public final class BuiltIn extends Library {
 		 return true;
 	 }
 
-	 // set_prolog_flag(+Name,@Value)
+	 
 	 public boolean set_prolog_flag_2(Term arg0, Term arg1) throws PrologError {
 		 arg0 = arg0.term();
 		 if (arg0 instanceof Var)
@@ -510,7 +510,7 @@ public final class BuiltIn extends Library {
 		 return f.setValue(arg1);
 	 }
 
-	 // get_prolog_flag(@Name,?Value)
+	 
 	 public boolean get_prolog_flag_2(Term arg0, Term arg1) throws PrologError {
 		 arg0 = arg0.term();
 		 arg1 = arg1.term();
@@ -549,7 +549,7 @@ public final class BuiltIn extends Library {
 			 throw PrologError.domain_error(engineManager, 1, "operator_priority", arg0);
 		 String specifier = ((Struct) arg1).name();
 
-		 //TODO replace with switch
+		 
 		 if (!specifier.equals("fx") && !specifier.equals("fy")
 				 && !specifier.equals("xf") && !specifier.equals("yf")
 				 && !specifier.equals("xfx") && !specifier.equals("yfx")
@@ -584,9 +584,9 @@ public final class BuiltIn extends Library {
 		 boolean isTrue;
 		 if (flagSet.isList()
 				 && (isTrue = flagModifiable.equals(Term.TRUE) || flagModifiable.equals(Term.FALSE))) {
-			 // TODO libName che futuro deve avere?? --------------------
+			 
 			 String libName = "";
-			 // ------------
+			 
 			 flags.add(flagName.toString(), (Struct) flagSet,
 					 flagDefault, isTrue, libName);
 		 }

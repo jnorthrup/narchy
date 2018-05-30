@@ -30,7 +30,7 @@ import java.util.Date;
 /** stand-alone local/remote log consumer and visualization
  *
  * see:
- *  https://www.elastic.co/guide/en/logstash/current/input-plugins.html
+ *  https:
  * */
 public class SpaceLog {
 
@@ -60,13 +60,13 @@ public class SpaceLog {
     }
 
     protected void input(UDPeer.MsgReceived m) {
-        //1. try default json/msgpack decode:
+        
         byte[] data = m.data();
         input(m.from, data);
     }
 
     public void input(Object origin, byte[] data) {
-        //try to parse as json
+        
         try {
             JsonNode x = Util.fromBytes(data, JsonNode.class);
             if (input(origin, x))
@@ -74,12 +74,12 @@ public class SpaceLog {
         } catch (IOException j) {
         }
 
-        //try to parse as object
+        
             try {
                 Object x = Util.fromBytes(data, Object.class);
                 input(origin, x);
             } catch (IOException e) {
-                //try to interpret it via UTF-8 String
+                
                 String s = new String(data);
                 Grok.Match ms = grok.capture(s);
                 if (!ms.isNull()) {
@@ -100,7 +100,7 @@ public class SpaceLog {
     }
     public boolean input(Object origin, JsonNode x) {
 
-        //interpret a raw array as a container of messages
+        
         if (x instanceof ArrayNode) {
             x.forEach(e -> {
                input(origin, e);
@@ -122,11 +122,11 @@ public class SpaceLog {
     }
 
     protected void gui() {
-//
-//        dummyModel.add(new Timeline2D.SimpleEvent("x", 0, 1));
-//        dummyModel.add(new Timeline2D.SimpleEvent("y", 1, 3));
-//        dummyModel.add(new Timeline2D.SimpleEvent("z", 2, 5));
-//        dummyModel.add(new Timeline2D.SimpleEvent("w", 3, 3)); //point
+
+
+
+
+
 
         IRL i = new IRL(User.the());
         i.load(-80.65, 28.58, -80.60, 28.63);
@@ -171,7 +171,7 @@ public class SpaceLog {
                     double end = Math.min(lastEvent.end + lastEvent.range() / 2, when);
                     double start = end - range;
                     view(start, end);
-                    //view(System.nanoTime());
+                    
                 }
                 return super.prePaint(r);
             }
@@ -206,7 +206,7 @@ public class SpaceLog {
 
         @Override
         public void run() {
-            //echo -n "hello" >/dev/udp/localhost/44416
+            
 
             try {
                 out.tellSome("my time is " + new Date(), 3, false);

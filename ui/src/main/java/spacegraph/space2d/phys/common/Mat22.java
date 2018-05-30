@@ -104,7 +104,7 @@ public class Mat22 implements Serializable {
     /**
      * Return a clone of this matrix. djm fixed double allocation
      */
-    // @Override // annotation omitted for GWT-compatibility
+    
     public final Mat22 clone() {
         return new Mat22(ex, ey);
     }
@@ -198,7 +198,7 @@ public class Mat22 implements Serializable {
     public final void invertToOut(final Mat22 out) {
         final float a = ex.x, b = ey.x, c = ex.y, d = ey.y;
         float det = a * d - b * c;
-        // b2Assert(det != 0.0f);
+        
         det = 1.0f / det;
         out.ex.x = det * d;
         out.ey.x = -det * b;
@@ -278,7 +278,7 @@ public class Mat22 implements Serializable {
         C.ex.y = ex.y * R.ex.x + ey.y * R.ex.y;
         C.ey.x = ex.x * R.ey.x + ey.x * R.ey.y;
         C.ey.y = ex.y * R.ey.x + ey.y * R.ey.y;
-        // C.set(ex,col2);
+        
         return C;
     }
 
@@ -366,7 +366,7 @@ public class Mat22 implements Serializable {
      * @return
      */
     public final Tuple2f mulTrans(final Tuple2f v) {
-        // return new Vec2(Vec2.dot(v, ex), Vec2.dot(v, col2));
+        
         return new v2((v.x * ex.x + v.y * ex.y), (v.x * ey.x + v.y * ey.y));
     }
 
@@ -387,7 +387,7 @@ public class Mat22 implements Serializable {
      * @return
      */
     public final Mat22 add(final Mat22 B) {
-        // return new Mat22(ex.add(B.ex), col2.add(B.ey));
+        
         Mat22 m = new Mat22();
         m.ex.x = ex.x + B.ex.x;
         m.ex.y = ex.y + B.ex.y;
@@ -403,8 +403,8 @@ public class Mat22 implements Serializable {
      * @return
      */
     public final Mat22 addLocal(final Mat22 B) {
-        // ex.addLocal(B.ex);
-        // col2.addLocal(B.ey);
+        
+        
         ex.x += B.ex.x;
         ex.y += B.ex.y;
         ey.x += B.ey.x;
@@ -439,7 +439,7 @@ public class Mat22 implements Serializable {
     }
 
     public final static Tuple2f mul(final Mat22 R, final Tuple2f v) {
-        // return R.mul(v);
+        
         return new v2(R.ex.x * v.x + R.ey.x * v.y, R.ex.y * v.x + R.ey.y * v.y);
     }
 
@@ -456,7 +456,7 @@ public class Mat22 implements Serializable {
     }
 
     public final static Mat22 mul(final Mat22 A, final Mat22 B) {
-        // return A.mul(B);
+        
         final Mat22 C = new Mat22();
         C.ex.x = A.ex.x * B.ex.x + A.ey.x * B.ex.y;
         C.ex.y = A.ex.y * B.ex.x + A.ey.y * B.ex.y;

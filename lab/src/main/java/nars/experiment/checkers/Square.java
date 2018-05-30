@@ -16,7 +16,7 @@ public class Square extends JComponent
 	private boolean selected;
 	private boolean targeted;
 
-    // the matching coordinates on the board
+    
     private final int x;
 	private final int y;
 
@@ -75,11 +75,11 @@ public class Square extends JComponent
         super.paintComponent(g);		
 		
 		if(selected)
-			g.setColor(new Color(115, 255, 31));	// color in case selected
+			g.setColor(new Color(115, 255, 31));	
 		else if(targeted)
-			g.setColor(new Color(86, 114, 255));	// color in case targeted
+			g.setColor(new Color(86, 114, 255));	
 		else
-			g.setColor(color);						// regular color
+			g.setColor(color);						
 		
 		g.fillRect(0, 0, getPreferredSize().width, getPreferredSize().height);
 		

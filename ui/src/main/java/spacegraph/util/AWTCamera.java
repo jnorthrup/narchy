@@ -67,7 +67,7 @@ public class AWTCamera {
     public static BufferedImage get(Component component, @Nullable BufferedImage image, @Nullable Rectangle region) {
         Pair<AtomicBoolean, Graphics2D> pair = graphicsDrawers.get(component);
         if (!((pair == null || pair.getOne().compareAndSet(false, true))))
-            return image; //busy
+            return image; 
         try {
             Dimension d = component.getSize();
 
@@ -79,8 +79,8 @@ public class AWTCamera {
             if ((region == null) || (region.width != d.width) || (region.height != d.height))
                 region = new Rectangle(0, 0, d.width, d.height);
 
-            //  Make sure the component has a size and has been layed out.
-            //  (necessary check for components not added to a realized frame)
+            
+            
 
             if (!component.isDisplayable()) {
                 Dimension d1 = component.getSize();
@@ -111,11 +111,11 @@ public class AWTCamera {
                 graphicsDrawers.put(component, pair = pair(new AtomicBoolean(), g2d));
             }
 
-            //Graphics2D g2d = image.createGraphics();
+            
 
 
-            //  Paint a background for non-opaque components,
-            //  otherwise the background will be black
+            
+            
 
             if (!component.isOpaque()) {
                 g2d.setColor(component.getBackground());
@@ -176,39 +176,39 @@ public class AWTCamera {
         return new Robot().createScreenCapture(region);
     }
 
-    //	/**
-//	 *  Write a BufferedImage to a File.
-//	 *
-//	 *  @param	 image image to be written
-//	 *  @param	 fileName name of file to be created
-//	 *  @exception IOException if an error occurs during writing
-//	*/
-//	public static void writeImage(BufferedImage image, String fileName)
-//		throws IOException
-//	{
-//		if (fileName == null) return;
-//
-//		int offset = fileName.lastIndexOf( "." );
-//
-//		if (offset == -1)
-//		{
-//			String message = "file suffix was not specified";
-//			throw new IOException( message );
-//		}
-//
-//		String type = fileName.substring(offset + 1);
-//
-//		if (types.contains(type))
-//		{
-//			ImageIO.write(image, type, new File( fileName ));
-//		}
-//		else
-//		{
-//			String message = "unknown writer file suffix (" + type + ")";
-//			throw new IOException( message );
-//		}
-//	}
-//
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static void layoutComponent(Component component) {
         component.doLayout();
 

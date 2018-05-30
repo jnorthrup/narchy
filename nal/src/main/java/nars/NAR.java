@@ -113,7 +113,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public final FasterList<Cause> causes = new FasterList<>(256) {
         @Override protected Cause[] newArray(int newCapacity) {
-            return new Cause[newCapacity]; //ensure correct typing for direct array access
+            return new Cause[newCapacity]; 
         }
     };
 
@@ -140,32 +140,32 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
 
-        //newChannel("input"); //generic non-self source of input
+        
 
-        //if (concepts.nar == null) { //HACK dont reinitialize if already initialized, for sharing
+        
             concepts.init(this);
             Builtin.init(this);
-        //}
+        
 
 
         exe.start(this);
     }
 
     static void outputEvent(Appendable out, String previou, String chan, Object v) throws IOException {
-//        //indent each cycle
-//        if (!"eventCycle".equals(chan)) {
-//            out.append("  ");
-//        }
+
+
+
+
 
         if (!chan.equals(previou)) {
             out
-                    //.append(ANSI.COLOR_CONFIG)
+                    
                     .append(chan)
-                    //.append(ANSI.COLOR_RESET )
+                    
                     .append(": ");
-            //previou = chan;
+            
         } else {
-            //indent
+            
             for (int i = 0; i < chan.length() + 2; i++)
                 out.append(' ');
         }
@@ -176,7 +176,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             Task tv = ((Task) v);
             float tvp = tv.priElseZero();
             v = ansi()
-                    //.a(tv.originality() >= 0.33f ?
+                    
                     .a(tvp >= 0.25f ?
                             Ansi.Attribute.INTENSITY_BOLD :
                             Ansi.Attribute.INTENSITY_FAINT)
@@ -204,28 +204,28 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         LongSummaryStatistics quests = new LongSummaryStatistics();
         Histogram termlinkCount = new Histogram(1, 1024, 3);
         Histogram tasklinkCount = new Histogram(1, 1024, 3);
-        //Frequency complexity = new Frequency();
+        
         HashBag clazz = new HashBag();
         HashBag policy = new HashBag();
         HashBag rootOp = new HashBag();
 
         Histogram  volume = new Histogram(1, Param.COMPOUND_VOLUME_MAX, 3);
 
-        //AtomicInteger i = new AtomicInteger(0);
+        
 
 
-        //        LongSummaryStatistics termlinksCap = new LongSummaryStatistics();
-        //        LongSummaryStatistics tasklinksCap = new LongSummaryStatistics();
+        
+        
 
         SortedMap<String, Object> x = new TreeMap();
 
-        //synchronized (exe)
+        
         {
 
             concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
 
 
-                //complexity.addValue(c.complexity());
+                
                 volume.recordValue(c.volume());
                 rootOp.add(c.op());
                 clazz.add(c.getClass().toString());
@@ -233,10 +233,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 ConceptState p = c.state();
                 policy.add(p != null ? p.toString() : "null");
 
-                //termlinksCap.accept(c.termlinks().capacity());
+                
                 termlinkCount.recordValue(c.termlinks().size());
 
-                //tasklinksCap.accept(c.tasklinks().capacity());
+                
                 tasklinkCount.recordValue(c.tasklinks().size());
 
                 beliefs.accept(c.beliefs().size());
@@ -246,7 +246,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             });
 
 
-            //x.put("time real", new Date());
+            
             if (loop.isRunning()) {
                 loop.stats("loop", x);
             }
@@ -254,7 +254,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             x.put("time", time());
 
 
-            //x.put("term index", terms.summary());
+            
 
             x.put("concept count", concepts.size());
         }
@@ -263,30 +263,30 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         x.put("goal count", ((double) goals.getSum()));
 
         Texts.histogramDecode(tasklinkCount, "tasklink count", 4, x::put);
-        //x.put("tasklink usage", ((double) tasklinkCount.getTotalCount()) / tasklinksCap.getSum());
+        
         x.put("tasklink total", ((double) tasklinkCount.getTotalCount()));
         Texts.histogramDecode(termlinkCount, "termlink count", 4, x::put);
-        //x.put("termlink usage", ((double) termlinkCount.getTotalCount()) / termlinksCap.getSum());
+        
         x.put("termlink total", ((double) termlinkCount.getTotalCount()));
 
-        //        DoubleSummaryStatistics pos = new DoubleSummaryStatistics();
-        //        DoubleSummaryStatistics neg = new DoubleSummaryStatistics();
-        //        causes.forEach(c -> pos.accept(c.pos()));
-        //        causes.forEach(c -> neg.accept(c.neg()));
-        //        x.put("value count", pos.getCount());
-        //        x.put("value pos mean", pos.getAverage());
-        //        x.put("value pos min", pos.getMin());
-        //        x.put("value pos max", pos.getMax());
-        //        x.put("value neg mean", neg.getAverage());
-        //        x.put("value neg min", neg.getMin());
-        //        x.put("value neg max", neg.getMax());
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
 
-        //x.put("volume mean", volume.);
-        //
-        //        x.put("termLinksCapacity", termlinksCap);
-        //        x.put("taskLinksUsed", tasklinksUsed);
-        //        x.put("taskLinksCapacity", tasklinksCap);
+        
+        
+        
+        
+        
 
         Util.toMap(policy, "concept state", x::put);
 
@@ -296,11 +296,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         Util.toMap( clazz, "concept class", x::put);
         
-//        x.put("term cache eternal", Op.termCache.summary());
-//        x.put("term cache temporal", Op.termTemporalCache.summary());
-//        x.put("subterm cache", Op.subtermCache.summary());
 
-        emotion.getter(()->x).run(); //HACK this is slow TODO cache the monitor list in a Stats instance
+
+
+
+        emotion.getter(()->x).run(); 
 
         return x;
 
@@ -326,7 +326,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             logger.info("reset");
 
-            //if (running)...
+            
 
 
         }
@@ -390,7 +390,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      * ask question
      */
     public Task question( String termString) throws NarseseException {
-        //TODO remove '?' if it is attached at end
+        
         return question($(termString));
     }
 
@@ -582,8 +582,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public Task que(@NotNull Term term, byte punc, long when) {
 
 
-        //TODO use input method like believe uses which avoids creation of redundant Budget instance
-        assert ((punc == QUESTION) || (punc == QUEST)); //throw new RuntimeException("invalid punctuation");
+        
+        assert ((punc == QUESTION) || (punc == QUEST)); 
 
         return inputTask(
                 new NALTask(term.unneg(), punc, null,
@@ -698,12 +698,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         });
     }
 
-//    /**
-//     * simplified wrapper which converts the term result of the supplied lambda to a log event
-//     */
-//    public final void onOpLogged(@NotNull String a, @NotNull BiFunction<Task, NAR, Term> exe) {
-//        onOp(a, (BiFunction<Task, NAR, Task>) (t, n) -> Operator.log(exe.apply(t, n)));
-//    }
+
+
+
+
+
+
 
     /**
      * registers an operator
@@ -763,7 +763,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public Truth truth(Termed concept, byte punc, long start, long end) {
 
-        //assert (concept.op().conceptualizable) : "asking for truth of unconceptualizable: " + concept; //filter NEG etc
+        
 
         @Nullable Concept c = conceptualize(concept);
         return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, concept.term(), this) : null;
@@ -826,7 +826,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Override
     public final void run() {
         if (!busy.compareAndSet(false, true))
-            return; //already in cycle
+            return; 
 
         try {
 
@@ -988,7 +988,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public void inputAt(long when, @NotNull ITask... x) {
         long now = time();
         if (when <= now) {
-            //past or current cycle
+            
             input(x);
         } else {
             runAt(when, () -> input(x));
@@ -1109,13 +1109,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public final void input(Stream<? extends ITask> tasks) {
-        //if (tasks == null) return;
+        
         exe.execute(tasks.filter(Objects::nonNull));
     }
 
     @Override
     public final boolean equals(Object obj) {
-        //TODO compare any other stateful values from NAR class in addition to Memory
+        
         return this == obj;
     }
 
@@ -1198,7 +1198,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
 
-        //runLater(() -> {
+        
             DataOutputStream oo = new DataOutputStream(o);
 
             MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
@@ -1208,13 +1208,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 total.increment();
 
                 byte[] b = IO.taskToBytes(x);
-//                if (Param.DEBUG) {
-//                    //HACK temporary until this is debugged
-//                    Task xx = IO.taskFromBytes(b);
-//                    if (xx == null || !xx.equals(x)) {
-//                        throw new RuntimeException("task serialization problem: " + x + " != " + xx);
-//                    }
-//                }
+
+
+
+
+
+
+
 
                 try {
                     oo.write(b);
@@ -1226,7 +1226,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             });
 
             logger.debug("{} output {}/{} tasks ({} bytes)", o, wrote, total, oo.size());
-        //});
+        
 
         try {
             oo.flush();
@@ -1239,8 +1239,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     public NAR outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
 
-        //runLater(() -> {
-            //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
+        
+            
 
             PrintStream ps = new PrintStream(o);
 
@@ -1252,12 +1252,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 total.increment();
 
                 if (x.truth() != null && x.conf() < confMin.floatValue())
-                    return; //ignore task if it is below confMin
+                    return; 
 
                 sb.setLength(0);
                 ps.println(x.appendTo(sb, true));
             });
-        //});
+        
 
         return this;
     }
@@ -1351,8 +1351,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     public Task match(Termed c, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
         Concept concept =
-                conceptualize(c); //necessary for novel dynamic concepts
-                 //concept(c);
+                conceptualize(c); 
+                 
 
         if (!(concept instanceof TaskConcept))
             return null;
@@ -1435,110 +1435,110 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
 
-//    /**
-//     * bins a range of values into N equal levels
-//     */
-//    public static class ChannelRange<X extends Priority> {
-//        public final float min, max;
-//        public final Cause[] levels;
-//        transient private final float range; //cache
-//
-//        public ChannelRange(String id, int levels, Function<Object, CauseChannel<X>> src, float min, float max) {
-//            this.min = min;
-//            this.max = max;
-//            assert (max > min);
-//            this.range = max - min;
-//            assert (range > Prioritized.EPSILON);
-//            this.levels = Util.map(0, levels, (l) -> src.apply(id + l), Cause[]::new);
-//        }
-//
-//        public Cause get(float value) {
-//            return levels[Util.bin(Util.unitize((value - min) / range), levels.length)];
-//        }
-//    }
-//
-////    public final ImplicitTaskCauses taskCauses = new ImplicitTaskCauses(this);
-////
-////    static class ImplicitTaskCauses {
-////
-////        public final Cause causeBelief, causeGoal, causeQuestion, causeQuest;
-////        public final Cause causePast, causePresent, causeFuture, causeEternal;
-////        //public final ChannelRange causeConf, causeFreq;
-////        public final NAR nar;
-////
-////        ImplicitTaskCauses(NAR nar) {
-////            this.nar = nar;
-////            causeBelief = nar.newChannel(String.valueOf((char) BELIEF));
-////            causeGoal = nar.newChannel(String.valueOf((char) GOAL));
-////            causeQuestion = nar.newChannel(String.valueOf((char) QUESTION));
-////            causeQuest = nar.newChannel(String.valueOf((char) QUEST));
-////            causeEternal = nar.newChannel("Eternal");
-////            causePast = nar.newChannel("Past");
-////            causePresent = nar.newChannel("Present");
-////            causeFuture = nar.newChannel("Future");
-//////            causeConf = new ChannelRange("Conf", 7 /* odd */, nar::newChannel, 0f, 1f);
-//////            causeFreq = new ChannelRange("Freq", 7 /* odd */, nar::newChannel, 0f, 1f);
-////        }
-////
-////        /**
-////         * classifies the implicit / self-evident causes a task
-////         */
-////        public short[] get(Task x) {
-////            //short[] ii = ArrayPool.shorts().getExact(8);
-////
-////            short time;
-////            if (x.isEternal())
-////                time = causeEternal.id;
-////            else {
-////                long now = nar.time();
-////                long then = x.nearestTimeTo(now);
-////                if (Math.abs(now - then) <= nar.dur())
-////                    time = causePresent.id;
-////                else if (then > now)
-////                    time = causeFuture.id;
-////                else
-////                    time = causePast.id;
-////            }
-////
-////            short punc;
-////            switch (x.punc()) {
-////                case BELIEF:
-////                    punc = causeBelief.id;
-////                    break;
-////                case GOAL:
-////                    punc = causeGoal.id;
-////                    break;
-////                case QUESTION:
-////                    punc = causeQuestion.id;
-////                    break;
-////                case QUEST:
-////                    punc = causeQuest.id;
-////                    break;
-////                default:
-////                    throw new UnsupportedOperationException();
-////            }
-//////            if (x.isBeliefOrGoal()) {
-//////                short freq = causeFreq.get(x.freq()).id;
-//////                short conf = causeConf.get(x.conf()).id;
-//////                return new short[]{time, punc, freq, conf};
-//////            } else {
-////            return new short[]{time, punc};
-//////            }
-////        }
-////
-////    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private class TaskChannel extends CauseChannel<ITask> {
 
         private final short ci;
 
-//        /** dont change this array's element */
-//        private final short[] sharedOneElement;
+
+
 
         TaskChannel(Cause cause) {
             super(cause);
             this.ci = cause.id;
-//            this.sharedOneElement = new short[ ci ];
+
         }
 
         @Override
@@ -1563,7 +1563,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         @Override
         public void input(Iterator<? extends ITask> xx) {
-            //noinspection RedundantCast
+            
             NAR.this.input((Iterable)(()->Iterators.filter(xx, this::process)));
         }
 
@@ -1572,14 +1572,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                 NALTask t = (NALTask) x;
                 int tcl = t.cause.length;
                 if (tcl == 0) {
-                    //assert (sharedOneElement[0] == ci);
-                    //t.cause(sharedOneElement);
+                    
+                    
                     t.cause(new short[] { ci });
                 } else {
                     if (tcl == 1 && t.cause[0] == ci) {
-                        //already equivalent
+                        
                     } else {
-                        //concat
+                        
                         short[] tc = Arrays.copyOf(t.cause, tcl + 1);
                         tc[tcl] = ci;
                         t.cause(tc);
@@ -1608,11 +1608,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return new TaskChannel(c);
     }
 
-//    public CauseChannel<Task> newChannel(Object x, Consumer<ITask> target) {
-//        return newCause((next)-> {
-//            return new CauseChannel(next, x, target);
-//        });
-//    }
+
+
+
+
+
 
     public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
         synchronized (causes) {
@@ -1637,16 +1637,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
 
     public void conceptualize(Term term, Consumer<Concept> with) {
-//        if (exe.concurrent()) {
-//            terms.conceptAsync(term, true, with);
-//        } else {
+
+
+
             Concept x = conceptualize(term);
             if (x != null) {
                 with.accept(x);
             } else {
-                //TODO
+                
             }
-//        }
+
     }
 
     public final void out(Object x) {

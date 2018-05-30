@@ -31,18 +31,18 @@ public class TensorChain extends BatchArrayTensor {
         this.sub = sub;
     }
 
-//    @Override
-//    public float get(int... cell) {
-//        //TODO test
-//        Tensor target = sub[0];
-//        int x = cell[0];
-//        int i = 0;
-//        int next;
-//        while (x > (next = target.shape()[i++]))
-//            x -= next;
-//        cell[0] = x;
-//        return sub[i-1].get(cell);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public float get(int linearCell) {

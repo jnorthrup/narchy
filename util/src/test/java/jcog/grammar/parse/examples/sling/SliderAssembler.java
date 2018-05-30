@@ -1,6 +1,6 @@
 package jcog.grammar.parse.examples.sling;
 
-//import javax.swing.*;
+
 
 import jcog.grammar.parse.Assembly;
 import jcog.grammar.parse.IAssembler;
@@ -26,7 +26,7 @@ import javax.swing.*;
  * @version 1.0
  */
 public class SliderAssembler implements IAssembler {
-	protected int slider; // which one?
+	protected int slider; 
 
 	/**
 	 * Creates an assembler that will extract the indicated 

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,9 +35,9 @@ public class WrappedImmutableBitSetBitmap implements ImmutableBitmap {
         this(new BitSet());
     }
 
-    // WARNING: the current implementation of BitSet (1.7) copies the contents of ByteBuffer to
-    // on heap!
-    // TODO: make a new BitSet implementation which can use ByteBuffers properly.
+    
+    
+    
     public WrappedImmutableBitSetBitmap(ByteBuffer byteBuffer) {
         this(BitSet.valueOf(byteBuffer));
     }
@@ -64,7 +64,7 @@ public class WrappedImmutableBitSetBitmap implements ImmutableBitmap {
 
     @Override
     public int compareTo(ImmutableBitmap other) {
-        // TODO: find out what this is supposed to even do
+        
         BitSet otherSet = ((WrappedImmutableBitSetBitmap) other).bitmap;
         int lengthCompare = Integer.compare(otherSet.length(), bitmap.length());
         if (lengthCompare != 0) {

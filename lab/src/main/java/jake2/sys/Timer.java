@@ -21,7 +21,7 @@ public abstract class Timer {
 				t = new HighPrecisionTimer();
 			} catch (Throwable e1) {*/
 				t = new StandardTimer();
-			//}
+			
 		}
 		Com.Println("using " + t.getClass().getName());
 	}

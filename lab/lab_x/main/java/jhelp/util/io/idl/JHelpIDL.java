@@ -114,7 +114,7 @@ public class JHelpIDL
       StringBuilder code;
       String name;
 
-      // Collect all need classes to import
+      
       final SortedArray<String> needToImport = new SortedArray<String>(String.class, true);
       final Method[] methods = interfaceIDL.getMethods();
       Class<?> claz;
@@ -163,7 +163,7 @@ public class JHelpIDL
          }
       }
 
-      // Create common interface
+      
       code = new StringBuilder();
       name = complelteName + JHelpIDL.COMMON;
 
@@ -217,7 +217,7 @@ public class JHelpIDL
       Debug.println(DebugLevel.VERBOSE, code);
       codes.add(new NameCode(name, code.toString()));
 
-      // Create request message
+      
       code = new StringBuilder();
       name = complelteName + JHelpIDL.REQUEST;
 
@@ -312,7 +312,7 @@ public class JHelpIDL
       Debug.println(DebugLevel.VERBOSE, code);
       codes.add(new NameCode(name, code.toString()));
 
-      // Create answer message
+      
       code = new StringBuilder();
       name = complelteName + JHelpIDL.ANSWER;
 
@@ -385,7 +385,7 @@ public class JHelpIDL
       Debug.println(DebugLevel.VERBOSE, code);
       codes.add(new NameCode(name, code.toString()));
 
-      // Create source
+      
       code = new StringBuilder();
       name = complelteName + JHelpIDL.SOURCE;
 
@@ -537,7 +537,7 @@ public class JHelpIDL
       Debug.println(DebugLevel.VERBOSE, code);
       codes.add(new NameCode(name, code.toString()));
 
-      // Create target
+      
       code = new StringBuilder();
       name = complelteName + JHelpIDL.TARGET;
 
@@ -689,7 +689,7 @@ public class JHelpIDL
       Debug.println(DebugLevel.VERBOSE, code);
       codes.add(new NameCode(name, code.toString()));
 
-      // End
+      
       return codes;
    }
 

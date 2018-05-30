@@ -33,20 +33,20 @@ public class RoughNormalEffect implements NormalEffect
         Vector3d axis1 = new Vector3d(), axis2 = new Vector3d();
         normal.normalize();
         
-        // 1. Vektor bestimmen:
+        
         axis1.x = 1.0; axis1.y = 0.0; axis1.z = 0.0;
         axis1.cross(axis1, normal);
         if ((axis1.x == 0.0) && (axis1.y == 0.0) && (axis1.z == 0.0))
         {
-            // Beide Vektoren sind linear abh�ngig. Versuche es erneut:
+            
             axis1.z = 1.0;
             axis1.cross(axis1, normal);
         }
         
-        // 2. Vektor bestimmen:
+        
         axis2.cross(axis1, normal);
         
-        // Normalenvektor variieren:
+        
         normal.scaleAdd((f1*2.0-1.0)* (double) factor /axis1.length(), axis1, normal);
         normal.scaleAdd((f2*2.0-1.0)* (double) factor /axis2.length(), axis2, normal);
     }

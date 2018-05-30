@@ -44,15 +44,15 @@ public class Launcher {
 					textArea.setText(gameInfo.description);
 					textArea.setCaretPosition(0);
 				} else if (evt.getClickCount() == 2) {
-					// Double-click detected
+					
 					int index = list.locationToIndex(evt.getPoint());
 					GameInfo gameInfo = gameListModel.elementAt(index);
 
 					try {
-						//						Method startMethod = gameInfo.gameClass.getMethod("main", String[].class); //stringArray.getClass()
-						//						Object instance = gameInfo.gameClass.newInstance();
-						//						String[] params = null;
-						//						startMethod.invoke(instance, (Object) params);
+						
+						
+						
+						
 
 						Game game = (Game) gameInfo.gameClass.newInstance();
 						startGame(game, gameInfo);
@@ -120,40 +120,40 @@ public class Launcher {
 
 		for (int i = 0; i < GAME_CLASSES.length; i++) {
 			Class gameClass = GAME_CLASSES[i];
-			//BufferedReader in = new BufferedReader(new InputStreamReader(gameClass.getResourceAsStream("readme.txt")));
+			
 			GameInfo gameInfo = new GameInfo();
 			gameInfo.gameClass = gameClass;
-			gameInfo.name = GAME_CLASSES[i].toString(); //gameClass.getSimpleName(); //in.readLine().trim();
-			//in.readLine(); // Skip next line
+			gameInfo.name = GAME_CLASSES[i].toString(); 
+			
 
 			StringBuffer textBuffer = new StringBuffer();
-//			String s;
-//			while ((s = in.readLine()) != null) {
-//				textBuffer.append(s);
-//				textBuffer.append("\n");
-//			}
+
+
+
+
+
 			gameInfo.description = textBuffer.toString();
 
-			//			StringBuffer descriptionBuffer = new StringBuffer();
-			//			StringBuffer instructionsBuffer = new StringBuffer();
-			//			String s;
-			//			while(!(s = in.readLine()).contains("Description")) {
-			//				in.readLine();
-			//			}
-			//			while((s = in.readLine()).contains("Description")) {
-			//				in.readLine();
-			//			}
-			//			while(!(s = in.readLine()).contains("Instructions")) {
-			//				descriptionBuffer.append(in.readLine());
-			//			}
-			//			while((s = in.readLine()).contains("Instructions")) {
-			//				in.readLine();
-			//			}
-			//			while((s = in.readLine()) != null) {
-			//				instructionsBuffer.append(in.readLine());
-			//			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 
-			// Load screenshots
+			
 			BufferedImage image;
 			String className = gameClass.getSimpleName();
 			InputStream is = gameClass.getResourceAsStream(className + ".png");
@@ -180,7 +180,7 @@ public class Launcher {
 		BufferedImage image;
 		String name;
 		String description;
-		//String instructions;
+		
 	}
 
 	private class GameListRenderer extends DefaultListCellRenderer {

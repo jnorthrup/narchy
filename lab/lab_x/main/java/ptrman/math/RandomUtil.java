@@ -1,7 +1,7 @@
 package ptrman.math;
 
 public class RandomUtil {
-    // this is the generator for the Halton sequence numbers
+    
 
     static public float radicalInverse(int n, int baseValue) {
         float Val = 0.0f;

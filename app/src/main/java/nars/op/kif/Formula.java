@@ -1,7 +1,7 @@
 /* This code is copyright Articulate Software (c) 2003.  Some
 portions copyright Teknowledge (c) 2003 and reused under the terms of
 the GNU license.  This software is released under the GNU Public
-License <http://www.gnu.org/copyleft/gpl.html>.  Users of this code
+License <http:
 also consent, by use of this code, to credit Articulate Software and
 Teknowledge in any writings, briefings, publications, presentations,
 or other representations of any software which incorporates, builds
@@ -10,7 +10,7 @@ publication with references:
 
 Pease, A., (2003). The Sigma Ontology Development Environment, in
 Working Notes of the IJCAI-2003 Workshop on Ontology and Distributed
-Systems, August 9, Acapulco, Mexico. See also http://github.com/ontologyportal
+Systems, August 9, Acapulco, Mexico. See also http:
 
 Authors:
 Adam Pease
@@ -93,8 +93,8 @@ public class Formula implements Comparable, Serializable {
 
     public static final List<String> DOC_PREDICATES = Arrays.asList("documentation",
             "comment",
-            "format" //,
-            // "termFormat"
+            "format" 
+            
     );
     /** The source file in which the formula appears. */
     public String sourceFile;
@@ -112,8 +112,8 @@ public class Formula implements Comparable, Serializable {
      */
     public long endFilePosition = -1L;
 
-    // An ArrayList of String messages with a message that has a reserved character of ':'
-    // dividing the message from a formula or term that will be hyperlinked and formmated
+    
+    
     public TreeSet<String> errors = new TreeSet<String>();
 
     /** Warnings found during execution. */
@@ -123,7 +123,7 @@ public class Formula implements Comparable, Serializable {
     public String theFormula;
 
     public static final String termMentionSuffix  = "__m";
-    public static final String classSymbolSuffix  = "__t";  // for the case when a class is used as an instance
+    public static final String classSymbolSuffix  = "__t";  
     public static final String termSymbolPrefix   = "s__";
     public static final String termVariablePrefix = "V__";
 
@@ -397,8 +397,8 @@ public class Formula implements Comparable, Serializable {
         String ans = null;
         if (this.listP()) {
             if (this.empty())
-                // NS: Clean this up someday.
-                ans = "";  // this.theFormula;
+                
+                ans = "";  
             else {
                 String input = this.theFormula.trim();
                 StringBuilder sb = new StringBuilder();
@@ -557,9 +557,9 @@ public class Formula implements Comparable, Serializable {
                     theNewFormula = ("(" + obj + " " + fStr.substring(1, (fStr.length() - 1)) + ")");
             }
             else
-                // This should never happen during clausification, but
-                // we include it to make this procedure behave
-                // (almost) like its LISP namesake.
+                
+                
+                
                 theNewFormula = ("(" + obj + " . " + fStr + ")");
             if (theNewFormula != null) {
                 ans = new Formula();
@@ -605,12 +605,12 @@ public class Formula implements Comparable, Serializable {
     public Formula carAsFormula() {
 
         String thisCar = this.car();
-        //if (listP(thisCar)) {
+        
         Formula f = new Formula();
         f.read(thisCar);
         return f;
-        // }
-        //return null;
+        
+        
     }
 
     /** ***************************************************************
@@ -821,8 +821,8 @@ public class Formula implements Comparable, Serializable {
             }
         }
         else if (!(isVariable(pred)) && (argCount > (MAX_PREDICATE_ARITY + 1))) {
-            //System.out.println("info in KIF.parse(): pred: " + pred);
-            //System.out.println("info in KIF.parse(): " + this);
+            
+            
             String errString = "Maybe too many arguments at " + location + ": " + f;
             errors.add(errString);
             return errString;
@@ -1083,7 +1083,7 @@ public class Formula implements Comparable, Serializable {
         Formula f1 = Clausifier.clausify(this);
         Formula f2 = Clausifier.clausify(f);
 
-        //the normalizeParameterOrder method should be moved to Clausifier
+        
         KB kb = KBmanager.getMgr().getKB(KBmanager.getMgr().getPref("sumokbname"));
 
         HashMap<FormulaUtil.FormulaMatchMemoMapKey, List<Set<VariableMapping>>> memoMap =
@@ -1154,7 +1154,7 @@ public class Formula implements Comparable, Serializable {
                 }
             }
             if (intersection.isEmpty()) {
-                //keeping the convention of null meaning imposibility
+                
                 intersection = null;
             }
             return intersection;
@@ -1190,7 +1190,7 @@ public class Formula implements Comparable, Serializable {
                 result.add(element);
             }
             for(VariableMapping element:set2) {
-                //testing the element does not collide with an existing element
+                
                 for(VariableMapping e:result){
                     boolean leftVarsEqual = e.var1.equals(element.var1);
                     boolean rightVarsEqual = e.var2.equals(element.var2);
@@ -1250,14 +1250,14 @@ public class Formula implements Comparable, Serializable {
     public static List<Set<VariableMapping>> mapFormulaVariables(Formula f1, Formula f2, KB kb,
                                                                  HashMap<FormulaUtil.FormulaMatchMemoMapKey, List<Set<VariableMapping>>> memoMap) {
 
-        //reading the memo map first
+        
         FormulaUtil.FormulaMatchMemoMapKey key = FormulaUtil.createFormulaMatchMemoMapKey(f1.theFormula, f2.theFormula);
         if (memoMap.containsKey(key)) {
             return memoMap.get(key);
         }
 
-        //not memo hit, carrying on the actual computations
-        //null tests first
+        
+        
         if(f1 == null && f2 == null) {
             ArrayList<Set<VariableMapping>> result = new ArrayList<Set<VariableMapping>>();
             result.add(new HashSet<VariableMapping>());
@@ -1267,7 +1267,7 @@ public class Formula implements Comparable, Serializable {
             return null;
         }
 
-        //checking formulas are simple tokens
+        
         if (f1.atom() && f2.atom()) {
             if ((f1.isVariable() && f2.isVariable()) || (Formula.isSkolemTerm(f1.theFormula) && Formula.isSkolemTerm(f2.theFormula))) {
                 ArrayList<Set<VariableMapping>> result = new ArrayList<Set<VariableMapping>>();
@@ -1290,8 +1290,8 @@ public class Formula implements Comparable, Serializable {
             return null;
         }
 
-        //if we got here, formulas are lists
-        //comparing heads
+        
+        
         Formula head1 = new Formula();
         head1.read(f1.car());
         Formula head2 = new Formula();
@@ -1299,11 +1299,11 @@ public class Formula implements Comparable, Serializable {
         List<Set<VariableMapping>> headMaps = mapFormulaVariables(head1, head2, kb, memoMap);
         memoMap.put(FormulaUtil.createFormulaMatchMemoMapKey(head1.theFormula, head2.theFormula), headMaps);
         if (headMaps == null) {
-            //heads don't match; no point of going further
+            
             return null;
         }
 
-        //comparing arguments
+        
         ArrayList<String> args1 = f1.complexArgumentsToArrayList(1);
         ArrayList<String> args2 = f2.complexArgumentsToArrayList(1);
         if (args1.size() != args2.size()) {
@@ -1311,7 +1311,7 @@ public class Formula implements Comparable, Serializable {
         }
 
         if (!Formula.isCommutative(head1.theFormula) && !(kb != null && kb.isInstanceOf(head1.theFormula, "SymmetricRelation"))) {
-            //non commutative relation; comparing parameters in order
+            
             List<Set<VariableMapping>> runningMaps = headMaps;
             for (int i = 0; i < args1.size(); i++) {
                 Formula parameter1 = new Formula();
@@ -1328,7 +1328,7 @@ public class Formula implements Comparable, Serializable {
             return runningMaps;
         }
         else {
-            //commutative relation; going through all possible parameter permutations and comparing
+            
             List<Set<VariableMapping>> unionMaps = new ArrayList<Set<VariableMapping>>();
             List<int[]> permutations = FormulaUtil.getPermutations(args1.size(),
                     (a,b)-> mapFormulaVariables(new Formula(args1.get(a)), new Formula(args2.get(b)), kb, memoMap) != null);
@@ -1353,7 +1353,7 @@ public class Formula implements Comparable, Serializable {
                 }
             }
             if (unionMaps.isEmpty()) {
-                //keeping the convention of null list when matching is impossible
+                
                 unionMaps = null;
             }
             return unionMaps;
@@ -1365,11 +1365,11 @@ public class Formula implements Comparable, Serializable {
      */
     public boolean deepEquals(Formula f) {
 
-        //null and simple string equality tests
+        
         if (f == null) {
             return false;
         }
-        // if the strings are equal or any of the formula strings are null, there is no point on comparing deep
+        
         boolean stringsEqual = Objects.equals(this.theFormula, f.theFormula);
         if (stringsEqual || (this.theFormula == null || f.theFormula == null)) {
             return stringsEqual;
@@ -1378,7 +1378,7 @@ public class Formula implements Comparable, Serializable {
         Formula f1 = Clausifier.clausify(this);
         Formula f2 = Clausifier.clausify(f);
 
-        //the normalizeParameterOrder method should be moved to Clausifier
+        
         KB kb = KBmanager.getMgr().getKB(KBmanager.getMgr().getPref("sumokbname"));
 
         String normalized1 = Formula.normalizeParameterOrder(f1.theFormula, kb, true);
@@ -1395,12 +1395,12 @@ public class Formula implements Comparable, Serializable {
      */
     private static String normalizeParameterOrder(String formula,KB kb, boolean varPlaceholders) {
 
-        //null test first
+        
         if (formula == null) {
             return null;
         }
 
-        //checking formula is a simple tokens
+        
         if (!Formula.listP(formula)) {
             if (varPlaceholders && isVariable(formula)) {
                 return "?XYZ";
@@ -1410,11 +1410,11 @@ public class Formula implements Comparable, Serializable {
             }
         }
 
-        //if we got here, the formulas is a list
+        
         Formula f = new Formula();
         f.read(formula);
 
-        //normalizing parameters
+        
         ArrayList<String> args = f.complexArgumentsToArrayList(1);
         if (args == null || args.size() == 0) {
             return formula;
@@ -1424,13 +1424,13 @@ public class Formula implements Comparable, Serializable {
             orderedArgs.add(Formula.normalizeParameterOrder(arg, kb, varPlaceholders));
         }
 
-        //sorting arguments if the predicate permits
+        
         String head = f.car();
         if (Formula.isCommutative(head) || (kb != null && kb.isInstanceOf(head, "SymmetricRelation"))) {
             Collections.sort(orderedArgs);
         }
 
-        //building result
+        
         StringBuilder result = new StringBuilder(LP);
         if (varPlaceholders && isSkolemTerm(head)) {
             head = "?SknFn";
@@ -1669,7 +1669,7 @@ public class Formula implements Comparable, Serializable {
      */
     public Set<String> collectAllVariables() {
 
-        //ArrayList<String> result = new ArrayList<String>();
+        
         HashSet<String> resultSet = new HashSet<String>();
         if (listLength() < 1)
             return resultSet;
@@ -1689,7 +1689,7 @@ public class Formula implements Comparable, Serializable {
             if (fcdr.listP())
                 resultSet.addAll(fcdr.collectAllVariables());
         }
-        //result.addAll(resultSet);
+        
         return resultSet;
     }
 
@@ -1800,7 +1800,7 @@ public class Formula implements Comparable, Serializable {
                 f.read(f.cdr());
             }
         }
-        //ArrayList<String> result = new ArrayList(resultSet);
+        
         return resultSet;
     }
 
@@ -1849,7 +1849,7 @@ public class Formula implements Comparable, Serializable {
         ArrayList<String> quantVariables = vpair.get(0);
         ArrayList<String> unquantVariables = vpair.get(1);
 
-        if (!unquantVariables.isEmpty()) {   // Quantify all the unquantified variables
+        if (!unquantVariables.isEmpty()) {   
             StringBuilder sb = new StringBuilder();
             sb.append((query ? "(exists (" : "(forall ("));
             boolean afterTheFirst = false;
@@ -2390,11 +2390,11 @@ public class Formula implements Comparable, Serializable {
      */
     public Formula replaceVar(String v, String term) {
 
-        //Pattern p = Pattern.compile("\\" + var + "([^a-zA-Z0-9])");
-        //Matcher m = p.matcher(input.theFormula);
-        //String fstr = m.replaceAll(rel + "$1");
+        
+        
+        
 
-        //System.out.println("INFO in Formula.replaceVar(): formula: " + theFormula);
+        
         if (StringUtil.emptyString(this.theFormula) || this.empty())
             return this;
         Formula newFormula = new Formula();
@@ -2409,14 +2409,14 @@ public class Formula implements Comparable, Serializable {
         if (!this.empty()) {
             Formula f1 = new Formula();
             f1.read(this.car());
-            //System.out.println("INFO in Formula.replaceVar(): car: " + f1.theFormula);
+            
             if (f1.listP())
                 newFormula = newFormula.cons(f1.replaceVar(v,term));
             else
                 newFormula = newFormula.append(f1.replaceVar(v,term));
             Formula f2 = new Formula();
             f2.read(this.cdr());
-            //System.out.println("INFO in Formula.replaceVar(): cdr: " + f2);
+            
             newFormula = newFormula.append(f2.replaceVar(v,term));
         }
         return newFormula;
@@ -2522,14 +2522,14 @@ public class Formula implements Comparable, Serializable {
         boolean inComment = false;
 
         int flen = this.theFormula.length();
-        char pch = '0';  // char at (i-1)
-        char ch = '0';   // char at i
+        char pch = '0';  
+        char ch = '0';   
         for (int i = 0; i < flen; i++) {
-            // logger.finest("formatted string = " + formatted.toString());
+            
             ch = this.theFormula.charAt(i);
-            if (inComment) {     // In a comment
+            if (inComment) {     
                 formatted.append(ch);
-                if ((i > 70) && (ch == '/')) // add spaces to long URL strings
+                if ((i > 70) && (ch == '/')) 
                     formatted.append(" ");
                 if (ch == '"')
                     inComment = false;
@@ -2607,7 +2607,7 @@ public class Formula implements Comparable, Serializable {
             }
             pch = ch;
         }
-        if (inToken) {    // A term which is outside of parenthesis, typically, a binding.
+        if (inToken) {    
             if (StringUtil.isNonEmptyString(hyperlink)) {
                 formatted.append("<a href=\"");
                 formatted.append(hyperlink);
@@ -2746,70 +2746,70 @@ public class Formula implements Comparable, Serializable {
         return newFormula;
     }
 
-//    /** ***************************************************************
-//     * A test method.  It expects two command line arguments for the
-//     * input file and output file.
-//     */
-//    public static void testClausifier(String[] args) {
-//
-//        BufferedWriter bw = null;
-//        try {
-//            long t1 = System.currentTimeMillis();
-//            String inpath = args[0];
-//            String outpath = args[1];
-//            if (!StringUtil.emptyString(inpath) && !StringUtil.emptyString(outpath)) {
-//                File infile = new File(inpath);
-//                if (infile.exists()) {
-//                    KIF kif = new KIF();
-//                    kif.setParseMode(KIF.RELAXED_PARSE_MODE);
-//                    kif.read(infile.getCanonicalPath());
-//                    if (! kif.formulas.isEmpty()) {
-//                        File outfile = new File(outpath);
-//                        if (outfile.exists()) { outfile.delete(); }
-//                        bw = new BufferedWriter(new FileWriter(outfile, true));
-//                        Iterator it = kif.formulas.values().iterator();
-//                        Iterator it2 = null;
-//                        Formula f = null;
-//                        Formula clausalForm = null;
-//                        while (it.hasNext()) {
-//                            it2 = ((List) it.next()).iterator();
-//                            while (it2.hasNext()) {
-//                                f = (Formula) it2.next();
-//                                clausalForm = Clausifier.clausify(f);
-//                                if (clausalForm != null) {
-//                                    bw.write(clausalForm.theFormula);
-//                                    bw.newLine();
-//                                }
-//                            }
-//                        }
-//                        try {
-//                            bw.flush();
-//                            bw.close();
-//                            bw = null;
-//                        }
-//                        catch (Exception bwe) {
-//                            bwe.printStackTrace();
-//                        }
-//                    }
-//                }
-//            }
-//            long dur = (System.currentTimeMillis() - t1);
-//        }
-//        catch (Exception ex) {
-//            System.out.println(ex.getMessage());
-//            ex.printStackTrace();
-//        }
-//        finally {
-//            if (bw != null) {
-//                try {
-//                    bw.close();
-//                }
-//                catch (Exception e2) {
-//                }
-//            }
-//        }
-//        return;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /** ***************************************************************
      * A test method.
@@ -2933,9 +2933,9 @@ public class Formula implements Comparable, Serializable {
      */
     public static void main(String[] args) {
 
-        // testIsSimpleClause();
-        //testReplaceVar();
-        //testBigArgs();
+        
+        
+        
         testArg2ArrayList();
     }
 }

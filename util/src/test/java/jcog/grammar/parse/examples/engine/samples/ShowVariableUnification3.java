@@ -18,7 +18,7 @@ public class ShowVariableUnification3 {
 	 */
 	public static void main(String args[]) {
 
-		// city(denver, 5280)
+		
 
 		Structure denver = new Structure("denver");
 		Structure altitude = new Structure(new Integer(5280));
@@ -27,22 +27,22 @@ public class ShowVariableUnification3 {
 		Variable a = new Variable("A");
 		Variable b = new Variable("B");
 
-		a.unify(b); // two uninstaniated variable unify
-		//...
-		a.unify(city); // one later unifies
+		a.unify(b); 
+		
+		a.unify(city); 
 		System.out.println("a = " + a);
 		System.out.println("b = " + b);
 
 		Variable p = new Variable("P");
 		p.unify(city);
 		Variable q = new Variable("Q");
-		q.unify(p); // an uninstantiated variable unifies with
-		// an instantiated variable
+		q.unify(p); 
+		
 
 		System.out.println("p = " + p);
 		System.out.println("q = " + q);
 
-		// two instantiated variables unify
+		
 
 		Variable x = new Variable("X");
 		Variable y = new Variable("Y");

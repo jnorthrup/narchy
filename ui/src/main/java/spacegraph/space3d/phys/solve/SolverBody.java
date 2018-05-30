@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -36,7 +36,7 @@ import spacegraph.util.math.v3;
  */
 public class SolverBody {
 	
-	//protected final BulletStack stack = BulletStack.get();
+	
 
 	public final v3 angularVelocity = new v3();
 	public float angularFactor;
@@ -77,7 +77,7 @@ public class SolverBody {
 		if (invMass != 0f) {
 			body.setLinearVelocity(linearVelocity);
 			body.setAngularVelocity(angularVelocity);
-			//m_originalBody->setCompanionId(-1);
+			
 		}
 	}
 
@@ -86,13 +86,13 @@ public class SolverBody {
 			body.setLinearVelocity(linearVelocity);
 			body.setAngularVelocity(angularVelocity);
 
-			// correct the position/orientation based on push/turn recovery
+			
 			newTransform.setIdentity();
-			Transform curTrans = body.transform; //getWorldTransform(new Transform());
+			Transform curTrans = body.transform; 
 			TransformUtil.integrateTransform(curTrans, pushVelocity, turnVelocity, timeStep, newTransform);
 			body.transform(newTransform);
 
-			//m_originalBody->setCompanionId(-1);
+			
 		}
 	}
 	

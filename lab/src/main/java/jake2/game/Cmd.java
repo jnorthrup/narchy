@@ -105,7 +105,7 @@ public final class Cmd {
                 return;
             }
 
-            // if the alias already exists, reuse it
+            
             for (a = Globals.cmd_alias; a != null; a = a.next) {
                 if (s.equalsIgnoreCase(a.name)) {
                     a.value = null;
@@ -120,7 +120,7 @@ public final class Cmd {
             }
             a.name = s;
 
-            // copy the rest of the command line
+            
             String cmd = "";
             int c = Cmd.Argc();
             for (int i = 2; i < c; i++) {
@@ -208,12 +208,12 @@ public final class Cmd {
                 inquote = !inquote;
 
             if (inquote)
-                continue; // don't expand inside quotes
+                continue; 
 
             if (scan[i] != '$')
                 continue;
 
-            // scan out the complete macro, without $
+            
             Com.ParseHelp ph = new Com.ParseHelp(text, i + 1);
             token = Com.Parse(ph);
 
@@ -267,7 +267,7 @@ public final class Cmd {
 
         int len = Lib.strlen(text);
 
-        // macro expand the text
+        
         if (macroExpand)
             text = MacroExpandString(text, len);
 
@@ -280,10 +280,10 @@ public final class Cmd {
 
         while (true) {
 
-            // skip whitespace up to a /n
+            
             char c = ph.skipwhitestoeol();
 
-            if (c == '\n') { // a newline seperates commands in the buffer
+            if (c == '\n') { 
                 c = ph.nextchar();
                 break;
             }
@@ -291,7 +291,7 @@ public final class Cmd {
             if (c == 0)
                 return;
 
-            // set cmd_args to everything after the first arg
+            
             if (cmd_argc == 1) {
                 cmd_args = new String(text, ph.index, len - ph.index);
                 cmd_args.trim();
@@ -311,15 +311,15 @@ public final class Cmd {
 
     public static void AddCommand(String cmd_name, xcommand_t function) {
         cmd_function_t cmd;
-        //Com.DPrintf("Cmd_AddCommand: " + cmd_name + "\n");
-        // fail if the command is a variable name
+        
+        
         if ((Cvar.VariableString(cmd_name)).length() > 0) {
             Com.Printf("Cmd_AddCommand: " + cmd_name
                     + " already defined as a var\n");
             return;
         }
 
-        // fail if the command already exists
+        
         for (cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd_name.equals(cmd.name)) {
                 Com
@@ -404,14 +404,14 @@ public final class Cmd {
 
         TokenizeString(text.toCharArray(), true);
 
-        // execute the command line
+        
         if (Argc() == 0)
-            return; // no tokens
+            return; 
 
-        // check functions
+        
         for (cmd = cmd_functions; cmd != null; cmd = cmd.next) {
             if (cmd_argv[0].equalsIgnoreCase(cmd.name)) {
-                if (null == cmd.function) { // forward to server command
+                if (null == cmd.function) { 
                     Cmd.ExecuteString("cmd " + text);
                 } else {
                     cmd.function.execute();
@@ -420,7 +420,7 @@ public final class Cmd {
             }
         }
 
-        // check alias
+        
         for (a = Globals.cmd_alias; a != null; a = a.next) {
 
             if (cmd_argv[0].equalsIgnoreCase(a.name)) {
@@ -434,11 +434,11 @@ public final class Cmd {
             }
         }
 
-        // check cvars
+        
         if (Cvar.Command())
             return;
 
-        // send it as a server command if we are connected
+        
         Cmd.ForwardToServer();
     }
 
@@ -773,7 +773,7 @@ public final class Cmd {
 
         selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
-        // scan for the next valid one
+        
         for (i = 1; i <= Defines.MAX_ITEMS; i++) {
             index = (selected_weapon + i) % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
@@ -787,7 +787,7 @@ public final class Cmd {
                 continue;
             it.use.use(ent, it);
             if (cl.pers.weapon == it)
-                return; // successful
+                return; 
         }
     }
 
@@ -807,11 +807,11 @@ public final class Cmd {
 
         selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
-        // scan for the next valid one
+        
         for (i = 1; i <= Defines.MAX_ITEMS; i++) {
             index = (selected_weapon + Defines.MAX_ITEMS - i)
                     % Defines.MAX_ITEMS;
-            //bugfix rst
+            
             if (index == 0)
                 index++;
             if (0 == cl.pers.inventory[index])
@@ -823,7 +823,7 @@ public final class Cmd {
                 continue;
             it.use.use(ent, it);
             if (cl.pers.weapon == it)
-                return; // successful
+                return; 
         }
     }
 
@@ -901,7 +901,7 @@ public final class Cmd {
      *
      */
     public static void Help_f(edict_t ent) {
-        // this is for backwards compatability
+        
         if (GameBase.deathmatch.value != 0) {
             Score_f(ent);
             return;
@@ -961,10 +961,10 @@ public final class Cmd {
             }
         }
 
-        // sort by frags
+        
         Arrays.sort(index, 0, count - 1, Cmd.PlayerSort);
 
-        // print information
+        
         large = "";
 
         for (i = 0; i < count; i++) {
@@ -974,7 +974,7 @@ public final class Cmd {
                     + '\n';
 
             if (small.length() + large.length() > 1024 - 100) {
-                // can't print all of them in one packet
+                
                 large += "...\n";
                 break;
             }
@@ -992,7 +992,7 @@ public final class Cmd {
 
         i = Lib.atoi(Cmd.Argv(1));
 
-        // can't wave when ducked
+        
         if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
             return;
 
@@ -1070,9 +1070,9 @@ public final class Cmd {
                 text += Cmd.Args();
         }
 
-        // don't let text be too long for malicious reasons
+        
         if (text.length() > 150)
-            //text[150] = 0;
+            
             text = text.substring(0, 150);
 
         text += "\n";
@@ -1130,7 +1130,7 @@ public final class Cmd {
         String text;
         edict_t e2;
 
-        // connect time, ping, score, name
+        
         text = "";
 
         for (i = 0; i < GameBase.maxclients.value; i++) {
@@ -1186,7 +1186,7 @@ public final class Cmd {
     public static Vector CompleteCommand(String partial) {
         Vector cmds = new Vector();
 
-        // check for match
+        
         for (cmd_function_t cmd = cmd_functions; cmd != null; cmd = cmd.next)
             if (cmd.name.startsWith(partial))
                 cmds.add(cmd.name);
@@ -1204,7 +1204,7 @@ public final class Cmd {
         String cmd;
     
         if (ent.client == null)
-            return; // not fully in game yet
+            return; 
     
         cmd = game_import_t.argv(0).toLowerCase();
     
@@ -1303,7 +1303,7 @@ public final class Cmd {
                 ShowPosition_f(ent);
                 break;
             default:
-                // anything that doesn't match a command will be a chat
+                
                 Say_f(ent, false, true);
                 break;
         }
@@ -1313,7 +1313,7 @@ public final class Cmd {
         gclient_t cl = ent.client;
     
         if (cl.pers.inventory[cl.pers.selected_item] != 0)
-            return; // valid
+            return; 
     
         GameItems.SelectNextItem(ent, -1);
     }

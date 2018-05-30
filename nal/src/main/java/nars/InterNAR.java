@@ -124,24 +124,24 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         peer.stop();
     }
 
-//    InterNAR pri(float priFactor) {
-//        recv.preAmp = priFactor;
-//        return InterNAR.this;
-//    }
+
+
+
+
 
     public void ping(InetSocketAddress x) {
         peer.ping(x);
     }
 
-    //        @Override
-//        public int send(Msg o, float pri, boolean onlyIfNotSeen) {
-//
-//            int sent = super.send(o, pri, onlyIfNotSeen);
-//            if (sent > 0)
-//                System.out.println(me + " SEND " + o + " to " + sent);
-//
-//            return sent;
-//        }
+    
+
+
+
+
+
+
+
+
 
     @Override
     public void accept(NAR NAR, ActiveQuestionTask question, Task answer) {
@@ -169,14 +169,14 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
 
     void receive(UDPeer.UDProfile from, UDPeer.Msg m, Task x) {
         if (x.isQuestionOrQuest()) {
-            //reconstruct a question task with an onAnswered handler to reply with answers to the sender
+            
             x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
             ((NALTask.NALTaskX)x).meta("UDPeer", m);
         }
         x.budget(nar);
 
         x.priMult(incomingPriMult.floatValue());
-        //System.out.println(me + " RECV " + x + " " + Arrays.toString(x.stamp()) + " from " + m.origin());
+        
         logger.debug("recv {} from {}", x, from);
         recv.input(x);
     }

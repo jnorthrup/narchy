@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,12 +49,12 @@ public final class ShrinkMutation implements GeneticOperator {
         Node root = selector.next();
         int nodeCount = StrategyWalk.getNodeCount(root, NodeType::isFunction);
         if (nodeCount == 0) {
-            // if nodeCount == 0 then that indicates that 'root' is a terminal node
-            // (so can't be shrunk any further)
+            
+            
             return root;
         } else if (nodeCount == 1) {
-            // if node count == 1 then that indicates that 'root' is a function node
-            // that only has terminal nodes as arguments
+            
+            
             return primitiveSet.nextAlternativeTerminal(root);
         } else {
             int index = Utils.selectSubNodeIndex(random, nodeCount);

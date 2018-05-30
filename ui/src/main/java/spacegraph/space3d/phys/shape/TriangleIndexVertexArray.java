@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -67,7 +67,7 @@ public class TriangleIndexVertexArray extends StridingMeshInterface {
 
 	public void addIndexedMesh(IndexedMesh mesh, ScalarType indexType) {
 		indexedMeshes.add(mesh);
-        //return array[index];
+        
         indexedMeshes.get(indexedMeshes.size() - 1).indexType = indexType;
 	}
 
@@ -75,16 +75,16 @@ public class TriangleIndexVertexArray extends StridingMeshInterface {
 	public VertexData getLockedVertexIndexBase(int subpart) {
 		assert (subpart < getNumSubParts());
 
-        //return array[index];
+        
         IndexedMesh mesh = indexedMeshes.get(subpart);
 
 		data.vertexCount = mesh.numVertices;
 		data.vertexData = mesh.vertexBase;
-		//#ifdef BT_USE_DOUBLE_PRECISION
-		//type = PHY_DOUBLE;
-		//#else
+		
+		
+		
 		data.vertexType = ScalarType.FLOAT;
-		//#endif
+		
 		data.vertexStride = mesh.vertexStride;
 
 		data.indexCount = mesh.numTriangles*3;

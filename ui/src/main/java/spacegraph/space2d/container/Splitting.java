@@ -9,7 +9,7 @@ import spacegraph.space2d.Surface;
  */
 public class Splitting<X extends Surface, Y extends Surface> extends MutableContainer {
 
-    public float split; //0.5f = middle, 0.0 = all top, 1.0 = all bottom
+    public float split; 
     boolean vertical;
 
     public Splitting() {
@@ -64,9 +64,9 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableCont
     @Override
     public void doLayout(int dtMS) {
 
-//        float margin = 0.0f;
-        //float content = 1f - margin;
-//        float x = margin / 2f;
+
+        
+
 
         if (!vertical)
             throw new TODO();

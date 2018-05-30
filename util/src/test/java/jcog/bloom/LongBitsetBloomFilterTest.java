@@ -111,9 +111,9 @@ public class LongBitsetBloomFilterTest {
             rand.nextBytes(randVal);
             bf.add(randVal);
         }
-        // last value should be present
+        
         assertEquals(true, bf.test(randVal));
-        // most likely this value should not exist
+        
         randVal[0] = 0;
         randVal[1] = 0;
         randVal[2] = 0;
@@ -162,9 +162,9 @@ public class LongBitsetBloomFilterTest {
             randVal = (byte) rand.nextInt(Byte.MAX_VALUE);
             bf.addByte(randVal);
         }
-        // last value should be present
+        
         assertEquals(true, bf.testByte(randVal));
-        // most likely this value should not exist
+        
         assertEquals(false, bf.testByte((byte) -120));
 
         assertEquals(7800, bf.sizeInBytes());
@@ -208,9 +208,9 @@ public class LongBitsetBloomFilterTest {
             randVal = rand.nextInt();
             bf.addInt(randVal);
         }
-        // last value should be present
+        
         assertEquals(true, bf.testInt(randVal));
-        // most likely this value should not exist
+        
         assertEquals(false, bf.testInt(-120));
 
         assertEquals(7800, bf.sizeInBytes());
@@ -254,9 +254,9 @@ public class LongBitsetBloomFilterTest {
             randVal = rand.nextLong();
             bf.addLong(randVal);
         }
-        // last value should be present
+        
         assertEquals(true, bf.testLong(randVal));
-        // most likely this value should not exist
+        
         assertEquals(false, bf.testLong(-120));
 
         assertEquals(7800, bf.sizeInBytes());
@@ -300,9 +300,9 @@ public class LongBitsetBloomFilterTest {
             randVal = rand.nextFloat();
             bf.addFloat(randVal);
         }
-        // last value should be present
+        
         assertEquals(true, bf.testFloat(randVal));
-        // most likely this value should not exist
+        
         assertEquals(false, bf.testFloat(-120.2f));
 
         assertEquals(7800, bf.sizeInBytes());
@@ -346,9 +346,9 @@ public class LongBitsetBloomFilterTest {
             randVal = rand.nextDouble();
             bf.addDouble(randVal);
         }
-        // last value should be present
+        
         assertEquals(true, bf.testDouble(randVal));
-        // most likely this value should not exist
+        
         assertEquals(false, bf.testDouble(-120.2d));
 
         assertEquals(7800, bf.sizeInBytes());
@@ -392,9 +392,9 @@ public class LongBitsetBloomFilterTest {
             randVal = rand.nextLong();
             bf.addString(Long.toString(randVal));
         }
-        // last value should be present
+        
         assertEquals(true, bf.testString(Long.toString(randVal)));
-        // most likely this value should not exist
+        
         assertEquals(false, bf.testString(Long.toString(-120)));
 
         assertEquals(7800, bf.sizeInBytes());

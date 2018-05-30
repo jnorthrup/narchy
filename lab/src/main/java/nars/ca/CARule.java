@@ -1,13 +1,13 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// The single rule class
+package nars.ca;
+
+
+
 
 public class CARule {
 	String name;
 	String def;
 
-	// more members to come
+	
 
 	public CARule() {
 	}

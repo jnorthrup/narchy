@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package nars.timeline;
 
@@ -69,7 +69,7 @@ public class ConceptIntegratorExample extends TimelineExample {
                     
                     for (long i = n - cycleWindow + 1; i <= n; i++) {
                         if (i < 0) continue;
-                        //TODO linear interpolate
+                        
                         meanPriority.add((int)i, ap);
                     }
                     

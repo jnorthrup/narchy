@@ -6,7 +6,7 @@
  *  *    you may not use this file except in compliance with the License.
  *  *    You may obtain a copy of the License at
  *  *
- *  *        http://www.apache.org/licenses/LICENSE-2.0
+ *  *        http:
  *  *
  *  *    Unless required by applicable law or agreed to in writing, software
  *  *    distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ public final class SloppyMath {
 		  }
 
 			public static double lambert(double v, double u){
-				double x = -(Math.log(-v)+u);//-Math.log(-z);
+				double x = -(Math.log(-v)+u);
 				double w = -x;
 				double diff=1;
 				while (Math.abs(diff)<1.0e-5){
@@ -52,20 +52,20 @@ public final class SloppyMath {
 				return w;
 
 				/*
-				//Use asymptotic expansion w = log(z) - log(log(z)) for most z
+				
 				double summand = (z==0) ? 1 : 0;
-				double tmp = Math.log(z+summand);// + i*b*6.28318530717958648;
+				double tmp = Math.log(z+summand);
 				double w = tmp - Math.log(tmp + summand);
 
-				//For b = 0, use a series expansion when close to the branch point
-				//k = find(b == 0 & abs(z + 0.3678794411714423216) <= 1.5);
-				tmp = Math.sqrt(5.43656365691809047*z + 2) - 1;// + i*b*6.28318530717958648;
-				//w(k) = tmp(k);
+				
+				
+				tmp = Math.sqrt(5.43656365691809047*z + 2) - 1;
+				
 		    w = tmp;
 		    
 				for (int k=1; k<36; k++){
-					// Converge with Halley's iterations, about 5 iterations satisfies
-					//the tolerance for most z
+					
+					
 					double c1 = Math.exp(w);
 					double c2 = w*c1 - z;
 					summand = (w != -1) ? 1 : 0;
@@ -303,7 +303,7 @@ public final class SloppyMath {
       }
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
-    // compute the negative difference
+    
     double threshold = max - LOGTOLERANCE;
     double sumNegativeDifferences = 0.0;
     for (int i = 0; i < logV.length; i++) {
@@ -339,7 +339,7 @@ public final class SloppyMath {
       }
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
-    // compute the negative difference
+    
     double threshold = max - LOGTOLERANCE;
     double sumNegativeDifferences = 0.0;
     for (int i = 0; i < logV.length; i++) {
@@ -364,7 +364,7 @@ public final class SloppyMath {
 	      }
 	    }
 	    if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
-	    // compute the negative difference
+	    
 	    double threshold = max - LOGTOLERANCE;
 	    double sumNegativeDifferences = 0.0;
 	    for (int i = 0; i < logV.size(); i++) {
@@ -390,7 +390,7 @@ public final class SloppyMath {
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
-    // compute the negative difference
+    
     float threshold = max - LOGTOLERANCE_F;
     float sumNegativeDifferences = 0.0f;
     for (int i = 0; i < logV.length; i++) {
@@ -419,7 +419,7 @@ public final class SloppyMath {
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
-    // compute the negative difference
+    
     float threshold = max - LOGTOLERANCE_F;
     double sumNegativeDifferences = 0.0;
     for (int i = 0; i < lastIndex; i++) {
@@ -448,7 +448,7 @@ public final class SloppyMath {
       }
     }
     if (max == Double.NEGATIVE_INFINITY) return Double.NEGATIVE_INFINITY;
-    // compute the negative difference
+    
     double threshold = max - LOGTOLERANCE;
     double sumNegativeDifferences = 0.0;
     for (int i = 0; i < lastIndex; i++) {
@@ -478,7 +478,7 @@ public final class SloppyMath {
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
-    // compute the negative difference
+    
     float threshold = max - LOGTOLERANCE_F;
     float sumNegativeDifferences = 0.0f;
     for (int i = 0; i < logV.length; i++) {
@@ -503,7 +503,7 @@ public final class SloppyMath {
       }
     }
     if (max == Float.NEGATIVE_INFINITY) return Float.NEGATIVE_INFINITY;
-    // compute the negative difference
+    
     float threshold = max - LOGTOLERANCE_F;
     float sumNegativeDifferences = 0.0f;
     for (int i = 0; i < lastIndex; i++) {
@@ -628,7 +628,7 @@ public final class SloppyMath {
       throw new IllegalArgumentException("Invalid hypergeometric");
     }
 
-    // exploit symmetry of problem
+    
     if (m > n / 2) {
       m = n - m;
       k = r - k;
@@ -642,16 +642,16 @@ public final class SloppyMath {
       m = r;
       r = temp;
     }
-    // now we have that k <= m <= r <= n/2
+    
 
     if (k < (m + r) - n || k > m) {
       return 0.0;
     }
 
-    // Do limit cases explicitly
-    // It's unclear whether this is a good idea. I put it in fearing
-    // numerical errors when the numbers seemed off, but actually there
-    // was a bug in the Fisher's exact routine.
+    
+    
+    
+    
     if (r == n) {
       if (k == m) {
         return 1.0;
@@ -690,25 +690,25 @@ public final class SloppyMath {
     }
 
     double ans = 1.0;
-    // do (n-r)x...x((n-r)-((m-k)-1))/n x...x (n-((m-k-1)))
-    // leaving rest of denominator to getFromOrigin to multimply by (n-(m-1))
-    // that's k things which goes into next loop
+    
+    
+    
     for (int nr = n - r, n0 = n; nr > (n - r) - (m - k); nr--, n0--) {
-      // System.out.println("Multiplying by " + nr);
+      
       ans *= nr;
-      // System.out.println("Dividing by " + n0);
+      
       ans /= n0;
     }
-    // System.out.println("Done phase 1");
+    
     for (int k0 = 0; k0 < k; k0++) {
       ans *= (m - k0);
-      // System.out.println("Multiplying by " + (m-k0));
+      
       ans /= ((n - (m - k0)) + 1);
-      // System.out.println("Dividing by " + ((n-(m+k0)+1)));
+      
       ans *= (r - k0);
-      // System.out.println("Multiplying by " + (r-k0));
+      
       ans /= (k0 + 1);
-      // System.out.println("Dividing by " + (k0+1));
+      
     }
     return ans;
   }
@@ -733,9 +733,9 @@ public final class SloppyMath {
         nChooseM *= (n - r) + 1;
         nChooseM /= r;
       }
-      // System.out.println(n + " choose " + m + " is " + nChooseM);
-      // System.out.println("prob contribution is " +
-      // (nChooseM * Math.pow(p, m) * Math.pow(1.0-p, n - m)));
+      
+      
+      
       total += nChooseM * Math.pow(p, m) * Math.pow(1.0 - p, n - m);
     }
     return total;
@@ -764,7 +764,7 @@ public final class SloppyMath {
     if (k < 0 || k < (m + r) - n || k > r || k > m || r > n || m > n) {
       throw new IllegalArgumentException("Invalid Fisher's exact: " + "k=" + k + " n=" + n + " r=" + r + " m=" + m + " k<0=" + (k < 0) + " k<(m+r)-n=" + (k < (m + r) - n) + " k>r=" + (k > r) + " k>m=" + (k > m) + " r>n=" + (r > n) + "m>n=" + (m > n));
     }
-    // exploit symmetry of problem
+    
     if (m > n / 2) {
       m = n - m;
       k = r - k;
@@ -778,22 +778,22 @@ public final class SloppyMath {
       m = r;
       r = temp;
     }
-    // now we have that k <= m <= r <= n/2
+    
 
     double total = 0.0;
     if (k > m / 2) {
-      // sum from k to m
+      
       for (int k0 = k; k0 <= m; k0++) {
-        // System.out.println("Calling hypg(" + k0 + "; " + n +
-        // ", " + r + ", " + m + ")");
+        
+        
         total += SloppyMath.hypergeometric(k0, n, r, m);
       }
     } else {
-      // sum from max(0, (m+r)-n) to k-1, and then subtract from 1
+      
       int min = Math.max(0, (m + r) - n);
       for (int k0 = min; k0 < k; k0++) {
-        // System.out.println("Calling hypg(" + k0 + "; " + n +
-        // ", " + r + ", " + m + ")");
+        
+        
         total += SloppyMath.hypergeometric(k0, n, r, m);
       }
       total = 1.0 - total;
@@ -831,7 +831,7 @@ public final class SloppyMath {
   }
 
   public static double exp(double logX) {
-    // if x is very near one, use the linear approximation
+    
     if (Math.abs(logX) < 0.001)
       return 1 + logX;
     return Math.exp(logX);
@@ -848,98 +848,98 @@ public final class SloppyMath {
   public static void main(String[] args) {
     
     System.out.println(approxLog(0.0));
-//    if (args.length == 0) {
-//      System.err.println("Usage: java edu.stanford.nlp.math.SloppyMath " + "[-logAdd|-fishers k n r m|-bionomial r n p");
-//    } else if (args[0].equals("-logAdd")) {
-//      System.out.println("Log adds of neg infinity numbers, etc.");
-//      System.out.println("(logs) -Inf + -Inf = " + logAdd(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY));
-//      System.out.println("(logs) -Inf + -7 = " + logAdd(Double.NEGATIVE_INFINITY, -7.0));
-//      System.out.println("(logs) -7 + -Inf = " + logAdd(-7.0, Double.NEGATIVE_INFINITY));
-//      System.out.println("(logs) -50 + -7 = " + logAdd(-50.0, -7.0));
-//      System.out.println("(logs) -11 + -7 = " + logAdd(-11.0, -7.0));
-//      System.out.println("(logs) -7 + -11 = " + logAdd(-7.0, -11.0));
-//      System.out.println("real 1/2 + 1/2 = " + logAdd(Math.log(0.5), Math.log(0.5)));
-//    } else if (args[0].equals("-fishers")) {
-//      int k = Integer.parseInt(args[1]);
-//      int n = Integer.parseInt(args[2]);
-//      int r = Integer.parseInt(args[3]);
-//      int m = Integer.parseInt(args[4]);
-//      double ans = SloppyMath.hypergeometric(k, n, r, m);
-//      System.out.println("hypg(" + k + "; " + n + ", " + r + ", " + m + ") = " + ans);
-//      ans = SloppyMath.oneTailedFishersExact(k, n, r, m);
-//      System.out.println("1-tailed Fisher's exact(" + k + "; " + n + ", " + r + ", " + m + ") = " + ans);
-//      double ansChi = SloppyMath.chiSquare2by2(k, n, r, m);
-//      System.out.println("chiSquare(" + k + "; " + n + ", " + r + ", " + m + ") = " + ansChi);
-//
-//      System.out.println("Swapping arguments should give same hypg:");
-//      ans = SloppyMath.hypergeometric(k, n, r, m);
-//      System.out.println("hypg(" + k + "; " + n + ", " + m + ", " + r + ") = " + ans);
-//      int othrow = n - m;
-//      int othcol = n - r;
-//      int cell12 = m - k;
-//      int cell21 = r - k;
-//      int cell22 = othrow - (r - k);
-//      ans = SloppyMath.hypergeometric(cell12, n, othcol, m);
-//      System.out.println("hypg(" + cell12 + "; " + n + ", " + othcol + ", " + m + ") = " + ans);
-//      ans = SloppyMath.hypergeometric(cell21, n, r, othrow);
-//      System.out.println("hypg(" + cell21 + "; " + n + ", " + r + ", " + othrow + ") = " + ans);
-//      ans = SloppyMath.hypergeometric(cell22, n, othcol, othrow);
-//      System.out.println("hypg(" + cell22 + "; " + n + ", " + othcol + ", " + othrow + ") = " + ans);
-//    } else if (args[0].equals("-binomial")) {
-//      int k = Integer.parseInt(args[1]);
-//      int n = Integer.parseInt(args[2]);
-//      double p = Double.parseDouble(args[3]);
-//      double ans = SloppyMath.exactBinomial(k, n, p);
-//      System.out.println("Binomial p(X >= " + k + "; " + n + ", " + p + ") = " + ans);
-//    }
-//		else if (args[0].equals("-approxExp"))
-//    {
-//    	int numTrials = 0;
-//    	double sumError = 0;
-//    	double maxError = 0;
-//    	for (double x = -700; x < 700; x += 0.1)
-//    	{
-//    		final double approxExp = approxExp(x);
-//			final double exp = Math.exp(x);
-//			double error = Math.abs((exp - approxExp) / exp);
-//    		if (isVeryDangerous(error)) continue;
-//    		maxError = Math.max(error,maxError);
-//    		sumError += error;
-//    		numTrials++;
-//    	}
-//    	double avgError = sumError / numTrials;
-//    	System.out.println("Avg error was: " + avgError);
-//    	System.out.println("Max error was: " + maxError);
-//    }
-//    	else if (args[0].equals("-approxLog"))
-//        {
-//        	int numTrials = 0;
-//        	double sumError = 0;
-//        	double maxError = 0;
-//        	double x = Double.MIN_VALUE; 
-//        	while (x < Double.MAX_VALUE)
-//        	{
-//				//        		if (Math.abs(x - 1) < 0.3) continue;
-//        		final double approxExp = approxLog(x);
-//				final double exp = Math.log(x);
-//    			double error = Math.abs((exp - approxExp) / exp);
-//        		if (isVeryDangerous(error)) continue;
-//        		maxError = Math.max(error,maxError);
-//        		sumError += error;
-//        		numTrials++;
-//        		
-//        		if (x < Double.MIN_VALUE * 1000000)
-//					x *= 4;
-//        		else x *= 1.0001;
-//        	}
-//        	double avgError = sumError / numTrials;
-//        	System.out.println("Avg error was: " + avgError);
-//        	System.out.println("Max error was: " + maxError);
-//        	
-//      
-//    } else {
-//      System.err.println("Unknown option: " + args[0]);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   }
   
   public static double noNaNDivide(double num, double denom)
@@ -955,7 +955,7 @@ public final class SloppyMath {
 		double r = val - 1;
 		if (Math.abs(r) < 0.3)
 		{
-			// use first few terms of taylor series
+			
 			
 			final double rSquared = r * r;
 			return r - rSquared / 2 + rSquared * r / 3;
@@ -986,8 +986,8 @@ public final class SloppyMath {
 	{
 		if (a > b)
 		{
-      // logA logB
-      // (logA - logB) = (log
+      
+      
 			return a + Math.log(1.0 - Math.exp(b - a));
 
 		}
@@ -998,7 +998,7 @@ public final class SloppyMath {
 	}
 
   public static double unsafeSubtract(double a, double b) {
-    if (a == b) { // inf - inf (or -inf - -inf)
+    if (a == b) { 
       return 0.0;
     }
     if (a == Double.NEGATIVE_INFINITY) {
@@ -1008,7 +1008,7 @@ public final class SloppyMath {
   }
 
   public static double unsafeAdd(double a, double b) {
-    if (a == b) { // inf - inf (or -inf - -inf)
+    if (a == b) { 
       return 0.0;
     }
     if (a == Double.POSITIVE_INFINITY) {
@@ -1017,27 +1017,27 @@ public final class SloppyMath {
     return a+b;
   }
 
-//  public static <T> double logAdd(Counter<T> counts) {
-//    double[] arr = new double[counts.size()];
-//    int index = 0;
-//    for (Map.Entry<T,Double> entry : counts.entrySet()) {
-//      arr[index++] = entry.getValue();
-//    }
-//    return SloppyMath.logAdd(arr);
-//  }
 
-//	public static double approxLogAdd(double a, double b)
-//	{
-//		
-//		    final long tmp1 = (long) (1512775 * a + (1072693248 - 60801));
-//		    double ea = Double.longBitsToDouble(tmp1 << 32);
-//		    final long tmp2 = (long) (1512775 * b + (1072693248 - 60801));
-//		    double eb = Double.longBitsToDouble(tmp2 << 32);
-//		    
-//		    final double x = (Double.doubleToLongBits(ea + eb) >> 32);
-//		    return (x - 1072632447) / 1512775;
-//		
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 
 }

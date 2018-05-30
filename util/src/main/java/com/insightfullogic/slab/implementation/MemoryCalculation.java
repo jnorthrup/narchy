@@ -37,16 +37,16 @@ public class MemoryCalculation {
 
     public static long calculateAddress(long allocatedAddress, SlabOptions options) {
         return realignSizeOrAddress(options, allocatedAddress);
-//        if (!options.hasSlabAlignment())
-//            return allocatedAddress;
-//        
-//        int slabAlignment = options.getSlabAlignment();
-//        long misalignment = allocatedAddress % slabAlignment;
-//        if (misalignment == 0)
-//            return allocatedAddress;
-//        
-//        long overrun = slabAlignment - misalignment;
-//        return allocatedAddress + overrun;
+
+
+
+
+
+
+
+
+
+
     }
 
 }

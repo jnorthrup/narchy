@@ -10,7 +10,7 @@ public class Sigmoid
     public static double getValue(final double x, final double alpha) {
         return 1.0 / (1.0 + Math.exp(-x * alpha));
 
-        //return 1.0 / (1.0 + expFast(-x * alpha));
+        
     }
 
     public static double expFast(final double val) {

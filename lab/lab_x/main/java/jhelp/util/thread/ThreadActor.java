@@ -131,15 +131,15 @@ final class ThreadActor
       {
          ThreadElement<?, ?, ?> threadElement = null;
 
-         // While there are no task to do
+         
          while(threadElement == null)
          {
             synchronized(this.LOCK)
             {
-               // Get current task do to
+               
                threadElement = this.actualThreadElement;
 
-               // If nothing to do, wait for task
+               
                if(threadElement == null)
                {
                   try
@@ -158,7 +158,7 @@ final class ThreadActor
             }
          }
 
-         // Do the task
+         
          if(threadElement.isAlive() == true)
          {
             threadElement.run();
@@ -166,14 +166,14 @@ final class ThreadActor
 
          synchronized(this.LOCK)
          {
-            // Task is done
+            
             this.actualThreadElement = null;
          }
 
-         // Signal the thread manager that the thread is free
+         
          ThreadManager.THREAD_MANAGER.anActorIsFree();
 
-         // If the task have to be repeat, post it again
+         
          if(threadElement.doRepeat() == true)
          {
             ThreadManager.THREAD_MANAGER.internalAdd(threadElement);

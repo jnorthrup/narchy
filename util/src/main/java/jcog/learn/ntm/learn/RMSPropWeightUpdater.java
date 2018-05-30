@@ -1,13 +1,13 @@
-//
-// Translated by CS2J (http://www.cs2j.com): 04.07.2015 01:02:36
-//
+
+
+
 
 package jcog.learn.ntm.learn;
 
 import jcog.learn.ntm.control.UVector;
 import jcog.learn.ntm.control.Unit;
 
-//SEE http://arxiv.org/pdf/1308.0850v5.pdf page 23
+
 public class RMSPropWeightUpdater implements WeightUpdaterBase {
     private final double __GradientMomentum;
 
@@ -66,9 +66,9 @@ public class RMSPropWeightUpdater implements WeightUpdaterBase {
         final double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
         final double gt = g[t] = (gm * g[t]) + ugradGM;
 
-        // +=
+        
         unit.value +=
-                //assignment:
+                
                 ( delta[t] = (getDeltaMomentum() * delta[t]) - (getChangeMultiplier() * (ugrad / Math.sqrt(nt - (gt*gt) + getChangeAddConstant()))) );
 
         t++;
@@ -94,9 +94,9 @@ public class RMSPropWeightUpdater implements WeightUpdaterBase {
             final double nt = n[t] = (gm * n[t]) + (ugradGM * ugrad);
             final double gt = g[t] = (gm * g[t]) + ugradGM;
 
-            // +=
+            
             uvalue[i] +=
-                    //assignment:
+                    
                     (delta[t] = (deltaMomentum * delta[t]) - (changeMult * (ugrad / Math.sqrt(nt - (gt * gt) + changeConst))));
 
             t++;

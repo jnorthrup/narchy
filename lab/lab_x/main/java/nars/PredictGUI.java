@@ -33,20 +33,20 @@ import static java.awt.BorderLayout.WEST;
 
 /**
  *
- * https://github.com/encog/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/predict/sunspot/PredictSunspotElman.java
- * https://github.com/encog/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/recurrent/elman/ElmanXOR.java
+ * https:
+ * https:
  *
  * @author me
  */
 public class PredictGUI extends JPanel {
     
-    final int maxDiscretization = 9; //because of the digit assumption
+    final int maxDiscretization = 9; 
 
-    final int minFutureTime = 16; //set to zero to consider beliefs about present time as a prediction; > 0 means all predictions must be some time ahead in the future
+    final int minFutureTime = 16; 
     
     float signal = 0;
     
-    float predictionMagnitudeThreshold = 0.05f; //min magnitude of a prediction to be considered
+    float predictionMagnitudeThreshold = 0.05f; 
     float greedyPredictionThreshold = 0.2f;
 
     boolean projectFutureBeliefs = false;
@@ -131,13 +131,13 @@ public class PredictGUI extends JPanel {
                 /** square wave */
                 return (Math.sin(f * t) > 0 ? 1f : -1f) * 0.5f + 0.5f;
             case 2:
-                //tan(x)
+                
                 return Math.max(0, Math.min(1.0, Math.tan(f * t) * 0.5f + 0.5f));
             case 3:
-                //constant value
+                
                 return 0; 
             case 4:
-                //random
+                
                 return Math.random();
             default:
                 throw new RuntimeException("Unknown signal type");
@@ -146,7 +146,7 @@ public class PredictGUI extends JPanel {
 
             
             protected void updatePrediction(int t) {
-                //weigh positive and negative predictions at time t to determine final aggregate prediction belief
+                
                 int strongest = -1;
                 double strongestAmount = Double.NEGATIVE_INFINITY;
                 
@@ -187,7 +187,7 @@ public class PredictGUI extends JPanel {
                 }
                 
                 /*
-                //winner take all mode:
+                
                 if (strongest!=-1) {
                     
                     prediction.setData(t, d.continuous(strongest));                    
@@ -214,9 +214,9 @@ public class PredictGUI extends JPanel {
                 float conf = t.sentence.truth.getConfidence();
                 boolean positive = freq >= 0.5;
                 float magnitude = 2f * Math.abs( freq - 0.5f ) * conf;
-                long now = t.sentence.getCreationTime(); //n.memory.time();
+                long now = t.sentence.getCreationTime(); 
                 
-                //float exp = t.sentence.truth.getExpectation();
+                
                 Term term = t.getTerm();
                 String ts = term.toString();
                 long then = t.sentence.getOccurenceTime();
@@ -279,7 +279,7 @@ public class PredictGUI extends JPanel {
         new NARSwing(n);
         
         n.param.duration.set(getDuration());
-        //n.param.duration.setLinear(0.5);
+        
         n.param.conceptBeliefsMax.set(getMaxConceptBeliefs());
         n.param.noiseLevel.set(0);
         n.param.conceptForgetDurations.set(5);
@@ -320,7 +320,7 @@ public class PredictGUI extends JPanel {
             
             @Override
             public void onProcessed(Task t, NAL n) {
-                //onPrediction(t);
+                
             }
         });
         
@@ -336,7 +336,7 @@ public class PredictGUI extends JPanel {
                 new LineChart(predictionGreedy).thickness(16f).height(256),
                 new StackedPercentageChart(predictionsNeg).setBarWidth(26f).height(64)
                 
-                //new BarChart(reflections).thickness(16f).height(128)
+                
                 /*new LineChart(predictions[1]).thickness(16f).height(128),
                 new LineChart(predictions[2]).thickness(16f).height(128),*/
         );
@@ -351,7 +351,7 @@ public class PredictGUI extends JPanel {
         
         new NWindow("_", sp).show(800, 800, true);
 
-        //n.run((int)getDiscretization()*4); //initial thinking pause
+        
         
 
         
@@ -370,7 +370,7 @@ public class PredictGUI extends JPanel {
             
             n.step(getThinkInterval());
             n.memory.addSimulationTime(getDT());
-            //System.out.println(n.time() + " " + n.memory.getTimeDelta());
+            
             
             try {
                 Thread.sleep(updatePeriodMS);
@@ -393,7 +393,7 @@ public class PredictGUI extends JPanel {
                     String nowBelief = "<{x} --> y"+val+">";
                     
                     
-                    //int interval = 1;
+                    
                     
                     if (lastVal!=-1) {
                         
@@ -421,11 +421,11 @@ public class PredictGUI extends JPanel {
                                                   
                     n.believe(0.95f, 0.8f, nowBelief, Tense.Present, 1.0f, 0.95f);
                     
-                    //n.ask("<{x} --> ?>");
+                    
                     
                 }
                 
-                //chg.set("<{x} --> y"+val+">. :|:");
+                
                 
             }
 

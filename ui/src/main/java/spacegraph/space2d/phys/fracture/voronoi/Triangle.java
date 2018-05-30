@@ -16,15 +16,15 @@ public class Triangle {
     /**
      * Ak je nastavena referencia, ukazuje na trojuholnik, ktory ma rovnaky focus (v Vec2 formate). focusCorelation.focusCorelation je vzdy null.
      */
-    public Triangle focusCorelation; //trojuholnik s fuplicitnym stredom opisanej kruznice (vzdy vedie ku korenovemu trojuholniku)
+    public Triangle focusCorelation; 
 
     /**
      * Suradnice stredu opisanej kruznice.
      */
     public double dX, dY;
 
-    int index; //index trojuholnika
-    double r; //polomer^2 - ak je positive.infinity alebo NaN() -> vyuzije funkcia Aritmetic.Site() na zistenie, ci bod lezi v kruznici, alebo nie
+    int index; 
+    double r; 
 
     Triangle(int index) {
         this.index = index;
@@ -44,7 +44,7 @@ public class Triangle {
         this.j = j;
         this.k = k;
 
-        //nastavi stred opisanej kruznice
+        
         Tuple2f a = p[i];
         Tuple2f b = p[j];
         Tuple2f c = p[k];
@@ -53,7 +53,7 @@ public class Triangle {
         double By = (double) b.y - a.y;
         double Cx = (double) c.x - a.x;
         double Cy = (double) c.y - a.y;
-        double D = 1.0 / (2 * (Bx * Cy - By * Cx)); //overene - padne to len ak su body uuuuplne identicke, ak niesu, Bx | By a Cx | Cy != 0 a D musi byt rozumne cislo
+        double D = 1.0 / (2 * (Bx * Cy - By * Cx)); 
         double Bs = Bx * Bx + By * By;
         double Cs = Cx * Cx + Cy * Cy;
         double x = (Cy * Bs - By * Cs) * D;
@@ -61,13 +61,13 @@ public class Triangle {
         dX = x + a.x;
         dY = y + a.y;
 
-        //nastavi polomer^2 opisanej kruznice
-        //polomer treba trochu znizit kvoli probleme zaokruhlovania (aritmetika ho defaultne robi o epsilon vacsi, ako je treba, co sposobuje pri extremnych vstupoch exception)
+        
+        
         r = (x * x + y * y) * (1.0 - 1E-15);
 
-        //nastavi ohisko, pokial sa zhoduje suradnicami s ohniskom protilahleho trojuholnika, tak pouzije jeho index
+        
         if (t != null && (float) dX == (float) t.dX && (float) dY == (float) t.dY) {
-            focusCorelation = t.focusCorelation != null ? t.focusCorelation : t; //podmienka zarucuje, ze focusCorelation vzdy vedie ku korenovemu trianglu
+            focusCorelation = t.focusCorelation != null ? t.focusCorelation : t; 
         } else {
             focusCorelation = null;
         }

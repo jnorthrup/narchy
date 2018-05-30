@@ -61,12 +61,12 @@ public interface TaskTable {
         if (isEmpty())
             return;
 
-        //TODO expand here
+        
         int limit = m.limit();
         Random rng = m.random();
         if (rng == null) {
-            //strongest
-            //prefer temporally relevant, and original
+            
+            
             assert (limit > 0);
             if (limit == 1) {
                 Top<Task> q = new Top<>(m.value());
@@ -90,7 +90,7 @@ public interface TaskTable {
                 forEachTask(t::add);
 
                 if (t.size() <= limit) {
-                    t.forEach(target); //provide all
+                    t.forEach(target); 
                 } else {
                     t.sample(target, m.value(), rng);
                 }
@@ -103,7 +103,7 @@ public interface TaskTable {
     default int match(TaskMatch m, NAR nar, Task[] target) {
         final int[] i = {0};
         match(m, nar, x->{
-            if (x!=null) //HACK
+            if (x!=null) 
                 target[i[0]++] = x;
         });
         return i[0];
@@ -143,7 +143,7 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
-        //TODO include template in value function
+        
         return matchThe(TaskMatch.sampled(start, end, nar.random()), nar);
     }
 }

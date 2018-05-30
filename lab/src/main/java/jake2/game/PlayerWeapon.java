@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 16.11.2003 by RST.
+
 
 package jake2.game;
 
@@ -95,7 +95,7 @@ public class PlayerWeapon {
                                 .soundindex("weapons/hgrenc1b.wav");
                     }
 
-                    // they waited too long, detonate it in their hand
+                    
                     if (!ent.client.grenade_blew_up
                             && GameBase.level.time >= ent.client.grenade_time) {
                         ent.client.weapon_sound = 0;
@@ -242,7 +242,7 @@ public class PlayerWeapon {
             GameWeapon.fire_rocket(ent, start, forward, damage, 650, damage_radius,
                     radius_damage);
 
-            // send muzzle flash
+            
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
@@ -479,7 +479,7 @@ public class PlayerWeapon {
                 GameWeapon.fire_shotgun(ent, start, forward, damage, kick, 500, 500,
                         Defines.DEFAULT_SHOTGUN_COUNT, Defines.MOD_SHOTGUN);
 
-            // send muzzle flash
+            
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
@@ -553,7 +553,7 @@ public class PlayerWeapon {
                     Defines.DEFAULT_SHOTGUN_VSPREAD,
                     Defines.DEFAULT_SSHOTGUN_COUNT / 2, Defines.MOD_SSHOTGUN);
 
-            // send muzzle flash
+            
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
@@ -605,8 +605,8 @@ public class PlayerWeapon {
             int damage;
             int kick;
 
-            if (GameBase.deathmatch.value != 0) { // normal damage is too
-                // extreme in dm
+            if (GameBase.deathmatch.value != 0) { 
+                
                 damage = 100;
                 kick = 200;
             } else {
@@ -629,7 +629,7 @@ public class PlayerWeapon {
                     start);
             GameWeapon.fire_rail(ent, start, forward, damage, kick);
 
-            // send muzzle flash
+            
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
@@ -687,7 +687,7 @@ public class PlayerWeapon {
                 damage = 500;
 
             if (ent.client.ps.gunframe == 9) {
-                // send muzzle flash
+                
                 game_import_t.WriteByte(Defines.svc_muzzleflash);
 
                 game_import_t.WriteShort(ent.index);
@@ -700,8 +700,8 @@ public class PlayerWeapon {
                 return true;
             }
 
-            // cells can go down during windup (from power armor hits), so
-            // check again and abort firing if we don't have enough now
+            
+            
             if (ent.client.pers.inventory[ent.client.ammo_index] < 50) {
                 ent.client.ps.gunframe++;
                 return true;
@@ -714,7 +714,7 @@ public class PlayerWeapon {
 
             Math3D.VectorScale(forward, -2, ent.client.kick_origin);
 
-            // make a big pitch kick with an inverse fall
+            
             ent.client.v_dmg_pitch = -40;
             ent.client.v_dmg_roll = Lib.crandom() * 8;
             ent.client.v_dmg_time = GameBase.level.time + Defines.DAMAGE_TIME;
@@ -768,7 +768,7 @@ public class PlayerWeapon {
             int ammo_index;
             gitem_t ammo_item;
 
-            // see if we're already using it
+            
             if (item == ent.client.pers.weapon)
                 return;
 
@@ -793,7 +793,7 @@ public class PlayerWeapon {
                 }
             }
 
-            // change to this weapon when down
+            
             ent.client.newweapon = item;
         }
     };
@@ -815,7 +815,7 @@ public class PlayerWeapon {
                 return;
 
             index = GameItems.ITEM_INDEX(item);
-            // see if we're already using it
+            
             if (((item == ent.client.pers.weapon) || (item == ent.client.newweapon))
                     && (ent.client.pers.inventory[index] == 1)) {
                 game_import_t.cprintf(ent, Defines.PRINT_HIGH,
@@ -886,14 +886,14 @@ public class PlayerWeapon {
             ent.client.kick_origin[0] = Lib.crandom() * 0.35f;
             ent.client.kick_angles[0] = ent.client.machinegun_shots * -1.5f;
 
-            // raise the gun as it is firing
+            
             if (0 == GameBase.deathmatch.value) {
                 ent.client.machinegun_shots++;
                 if (ent.client.machinegun_shots > 9)
                     ent.client.machinegun_shots = 9;
             }
 
-            // get start / end positions
+            
             Math3D
                     .VectorAdd(ent.client.v_angle, ent.client.kick_angles,
                             angles);
@@ -1025,7 +1025,7 @@ public class PlayerWeapon {
             }
 
             for (i = 0; i < shots; i++) {
-                // get start / end positions
+                
                 Math3D.AngleVectors(ent.client.v_angle, forward, right, up);
                 r = 7 + Lib.crandom() * 4;
                 u = Lib.crandom() * 4;
@@ -1038,7 +1038,7 @@ public class PlayerWeapon {
                         Defines.DEFAULT_BULLET_VSPREAD, Defines.MOD_CHAINGUN);
             }
 
-            // send muzzle flash
+            
             game_import_t.WriteByte(Defines.svc_muzzleflash);
 
             game_import_t.WriteShort(ent.index);
@@ -1072,13 +1072,13 @@ public class PlayerWeapon {
             if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
                     && 0 != other.client.pers.inventory[index]) {
                 if (0 == (ent.spawnflags & (Defines.DROPPED_ITEM | Defines.DROPPED_PLAYER_ITEM)))
-                    return false; // leave the weapon for others to pickup
+                    return false; 
             }
     
             other.client.pers.inventory[index]++;
     
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM)) {
-                // give them some ammo with it
+                
                 ammo = GameItems.FindItem(ent.item.ammo);
                 if (((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
                     GameItems.Add_Ammo(other, ammo, 1000);
@@ -1141,7 +1141,7 @@ public class PlayerWeapon {
         ent.client.newweapon = null;
         ent.client.machinegun_shots = 0;
 
-        // set visible model
+        
         if (ent.s.modelindex == 255) {
             if (ent.client.pers.weapon != null)
                 i = ((ent.client.pers.weapon.weapmodel & 0xff) << 8);
@@ -1158,7 +1158,7 @@ public class PlayerWeapon {
         else
             ent.client.ammo_index = 0;
 
-        if (ent.client.pers.weapon == null) { // dead
+        if (ent.client.pers.weapon == null) { 
             ent.client.ps.gunindex = 0;
             return;
         }
@@ -1238,13 +1238,13 @@ public class PlayerWeapon {
      * =================
      */
     public static void Think_Weapon(edict_t ent) {
-        // if just died, put the weapon away
+        
         if (ent.health < 1) {
             ent.client.newweapon = null;
             ChangeWeapon(ent);
         }
 
-        // call active weapon think routine
+        
         if (null != ent.client.pers.weapon
                 && null != ent.client.pers.weapon.weaponthink) {
             is_quad = (ent.client.quad_framenum > GameBase.level.framenum);
@@ -1274,8 +1274,8 @@ public class PlayerWeapon {
 
         int n;
 
-        if (ent.deadflag != 0 || ent.s.modelindex != 255) // VWep animations
-        // screw up corpses
+        if (ent.deadflag != 0 || ent.s.modelindex != 255) 
+        
         {
             return;
         }
@@ -1337,7 +1337,7 @@ public class PlayerWeapon {
                     ent.client.ps.gunframe = FRAME_FIRE_FIRST;
                     ent.client.weaponstate = Defines.WEAPON_FIRING;
 
-                    // start the animation
+                    
                     ent.client.anim_priority = Defines.ANIM_ATTACK;
                     if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0) {
                         ent.s.frame = M_Player.FRAME_crattak1 - 1;
@@ -1432,8 +1432,8 @@ public class PlayerWeapon {
 
         ent.client.grenade_time = GameBase.level.time + 1.0f;
 
-        if (ent.deadflag != 0 || ent.s.modelindex != 255) // VWep animations
-        // screw up corpses
+        if (ent.deadflag != 0 || ent.s.modelindex != 255) 
+        
         {
             return;
         }
@@ -1478,7 +1478,7 @@ public class PlayerWeapon {
 
         GameWeapon.fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
 
-        // send muzzle flash
+        
         game_import_t.WriteByte(Defines.svc_muzzleflash);
         game_import_t.WriteShort(ent.index);
         if (hyper)
@@ -1541,7 +1541,7 @@ public class PlayerWeapon {
             GameBase.level.sound_entity = noise;
             GameBase.level.sound_entity_framenum = GameBase.level.framenum;
         } 
-        else // type == PNOISE_IMPACT
+        else 
         {
             noise = who.mynoise2;
             GameBase.level.sound2_entity = noise;

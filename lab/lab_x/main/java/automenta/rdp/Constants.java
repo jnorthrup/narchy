@@ -33,7 +33,7 @@ public class Constants {
 
 	public static final boolean desktop_save = true;
 
-	// public static final int keylayout = 0x809; // UK... was US, 0x409
+	
 
 	public static final boolean SystemExit = true;
 

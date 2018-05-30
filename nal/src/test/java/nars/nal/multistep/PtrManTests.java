@@ -32,7 +32,7 @@ public class PtrManTests {
                 "$1.0 ((OPxchg, {0}, {5}, OPsub, {0}, {5}) <-> (OPmov, {0}, {5}, OPadd, {0}, {5}))?",
                 "$1.0 opProximity2(OPadd, {0}, {5}, OPsub, {1}, {7})?");
 
-        //n.logBudgetMin(System.out, 0.25f);
+        
         n.run(1000);
     } 
         

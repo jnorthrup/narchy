@@ -21,10 +21,10 @@ public class GiniIndexImpurityCalculation implements ImpurityCalculator {
         List<V> labels = splitData.stream().map((x)->x.apply(value)).distinct().collect(Collectors.toList());
         int s = labels.size();
         if (s > 1) {
-            double p = ImpurityCalculator.getEmpiricalProbability(value, splitData, labels.get(0), labels.get(1)); // TODO fix to multiple labels
+            double p = ImpurityCalculator.getEmpiricalProbability(value, splitData, labels.get(0), labels.get(1)); 
             return 2.0 * p * (1 - p);
         } else if (s == 1) {
-            return 0.0; // if only one label data is pure
+            return 0.0; 
         } else {
             throw new IllegalStateException("This should never happen. Probably a bug.");
         }

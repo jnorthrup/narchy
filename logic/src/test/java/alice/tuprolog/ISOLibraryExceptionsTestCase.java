@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class ISOLibraryExceptionsTestCase {
 
-	// verifico che atom_length(X, Y) lancia un errore di instanziazione
+	
 	@Test
 	public void test_atom_length_2_1() throws Exception {
 		Prolog engine = new Prolog();
@@ -26,7 +26,7 @@ public class ISOLibraryExceptionsTestCase {
         assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che atom_length(1, Y) lancia un errore di tipo
+	
 	@Test public void test_atom_length_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(atom_length(1, Y), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -42,7 +42,7 @@ public class ISOLibraryExceptionsTestCase {
         assertEquals(1, culprit.intValue());
 	}
 	
-	// verifico che atom_chars(1, X) lancia un errore di tipo
+	
 	@Test public void test_atom_chars_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(atom_chars(1, X), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -58,7 +58,7 @@ public class ISOLibraryExceptionsTestCase {
         assertEquals(1, culprit.intValue());
 	}
 	
-	// verifico che atom_chars(X, a) lancia un errore di tipo
+	
 	@Test public void test_atom_chars_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(atom_chars(X, a), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -74,7 +74,7 @@ public class ISOLibraryExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 	
-	// verifico che char_code(ab, X) lancia un errore di tipo
+	
 	@Test public void test_char_code_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(char_code(ab, X), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -90,7 +90,7 @@ public class ISOLibraryExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("ab")));
 	}
 	
-	// verifico che char_code(X, a) lancia un errore di tipo
+	
 	@Test public void test_char_code_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(char_code(X, a), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -106,7 +106,7 @@ public class ISOLibraryExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 	
-	// verifico che sub_atom(1, B, C, D, E) lancia un errore di tipo
+	
 	@Test public void test_sub_atom_5_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(sub_atom(1, B, C, D, E), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";

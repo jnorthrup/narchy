@@ -15,7 +15,7 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
     final T[] emptyArray;
 
     final Map<X, T> map =
-            //new ConcurrentHashMap<>();
+            
             new ConcurrentOpenHashMap<>();
 
     volatile T[] list = null;
@@ -149,7 +149,7 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     @Override
     public Collection<T> values() {
-        //return map.values();
+        
         return new FasterList(list);
     }
 
@@ -179,9 +179,9 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
     }
 
     public T[] updateValues() {
-        //return map.values().toArray(emptyArray);
+        
 
-        //for CncurrentOpenHashMap:
+        
         return ((FasterList<T>)(((ConcurrentOpenHashMap<?, T>)map)
                 .values(this.emptyArray)))
                 .toArrayRecycled(i -> Arrays.copyOf(emptyArray, i));

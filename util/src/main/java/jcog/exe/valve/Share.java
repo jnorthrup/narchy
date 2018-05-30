@@ -12,7 +12,7 @@ public class Share<Who,What> extends UnitPri {
 
     /** ownership amount supplied to the client, in absolute fraction of 100%.
      *  determined by the Focus not client. this is stored in the super class's 'pri' field. */
-    //float supply = 0;
+    
 
     /** mutable demand, adjustable by client in [0..1.0].  its meaning is subjective and may be
      * relative to its previous values. */

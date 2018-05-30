@@ -66,7 +66,7 @@ public class Object3D
     */
    protected void drawObject(final GL2 gl, final GLU glu)
    {
-      // If no list is create or actual list needs to be update
+      
       if((this.idList < 0) || (this.needReconstructTheList == true))
       {
          this.needReconstructTheList = false;
@@ -83,12 +83,12 @@ public class Object3D
             }
          }
 
-         // Delete old list
+         
          if(this.idList >= 0)
          {
             gl.glDeleteLists(this.idList, 1);
          }
-         // Create list
+         
          this.idList = gl.glGenLists(1);
          gl.glNewList(this.idList, GL2.GL_COMPILE);
          try
@@ -105,7 +105,7 @@ public class Object3D
          }
          gl.glEndList();
       }
-      // Draw the list
+      
       gl.glCallList(this.idList);
    }
 

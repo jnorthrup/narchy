@@ -7,15 +7,15 @@ import java.io.IOException;
 
 public class Level
 {
-    public static final String[] BIT_DESCRIPTIONS = {//
-    "BLOCK UPPER", //
-            "BLOCK ALL", //
-            "BLOCK LOWER", //
-            "SPECIAL", //
-            "BUMPABLE", //
-            "BREAKABLE", //
-            "PICKUPABLE", //
-            "ANIMATED",//
+    public static final String[] BIT_DESCRIPTIONS = {
+    "BLOCK UPPER", 
+            "BLOCK ALL", 
+            "BLOCK LOWER", 
+            "SPECIAL", 
+            "BUMPABLE", 
+            "BREAKABLE", 
+            "PICKUPABLE", 
+            "ANIMATED",
     };
 
     public static byte[] TILE_BEHAVIORS = new byte[256];

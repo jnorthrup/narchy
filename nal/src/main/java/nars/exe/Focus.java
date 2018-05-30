@@ -24,14 +24,14 @@ import static nars.time.Tense.ETERNAL;
 /**
  * decides mental activity
  * this first implementation is similiar to this
- * https://en.wikipedia.org/wiki/Lottery_scheduling
- * https://www.usenix.org/legacy/publications/library/proceedings/osdi/full_papers/waldspurger.pdf
+ * https:
+ * https:
  * <p>
- * https://lwn.net/Articles/720227/
- * http://mesos.apache.org/api/latest/java/
- *   https://www.usenix.org/legacy/events/nsdi11/tech/slides/hindman.pdf
+ * https:
+ * http:
+ *   https:
  *
- * https://github.com/zdghit/SRProgen
+ * https:
  *
  *
  *
@@ -45,7 +45,7 @@ public class Focus extends AtomicRoulette<Causable> {
     /**
      * how quickly the iteration demand can grow from previous (max) values
      */
-    //static final double IterGrowthIncrement = 1;
+    
     static final double IterGrowthRate = 1.25f;
 
 
@@ -74,7 +74,7 @@ public class Focus extends AtomicRoulette<Causable> {
                     remove(c);
             }
         });
-        //add existing
+        
         n.services().filter(x -> x instanceof Causable).forEach(x -> {
            add((Causable) x);
         });
@@ -87,14 +87,14 @@ public class Focus extends AtomicRoulette<Causable> {
 
         commit(() -> update(nar));
 
-        //sched.
-//              try {
-//                sched.solve(can, dutyCycleTime);
-//
-//                //sched.estimatedTimeTotal(can);
-//            } catch (InternalSolverError e) {
-//                logger.error("{} {}", can, e);
-//            }
+        
+
+
+
+
+
+
+
     }
 
     @Override
@@ -154,13 +154,13 @@ public class Focus extends AtomicRoulette<Causable> {
             double jiffy = nar.loop.jiffy.floatValue();
             double throttle = nar.loop.throttle.floatValue();
 
-            //in nS
-            double timePerSlice = this.timesliceNS = nar.loop.periodNS() * jiffy * throttle;// / (n / concurrency);
+            
+            double timePerSlice = this.timesliceNS = nar.loop.periodNS() * jiffy * throttle;
 
             for (int i = 0; i < n; i++) {
                 Causable c = choice.get(i);
                 if (c == null)
-                    continue; //?
+                    continue; 
 
                 c.can.commit(commiter);
 
@@ -179,15 +179,15 @@ public class Focus extends AtomicRoulette<Causable> {
                     this.doneMean[i] = done.getMean();
                     this.doneMax[i] = Math.round(done.getMax());
 
-                    //value per time
-                    //value[i] = (float) (c.value() / (Math.max(1E3 /* 1uS in nanos */, timeMeanNS)/1E9));
+                    
+                    
 
-                    //value
+                    
                     value[i] = c.value();
 
                 } else {
-                    //value[i] = unchanged
-                    value[i] *= 0.99f; //slowly forget
+                    
+                    value[i] *= 0.99f; 
                 }
 
             }
@@ -197,7 +197,7 @@ public class Focus extends AtomicRoulette<Causable> {
             float vMin = vRange[0];
             float vMax = vRange[1];
             float vSum = vRange[2];
-            if (vSum < Float.MIN_NORMAL) vSum = 1; //dont divide by zero
+            if (vSum < Float.MIN_NORMAL) vSum = 1; 
 
             for (int i = 0; i < n; i++) {
                 double vNorm = normalize(value[i], vMin, vMax)/vSum;
@@ -206,12 +206,12 @@ public class Focus extends AtomicRoulette<Causable> {
 
 
 
-                //the iters per timeslice is determined by past measurements
+                
                 long doneMost = doneMax[i];
                 double timePerIter = timeMean[i]/Math.max(0.5f, doneMean[i]);
                 int iterLimit;
                 if (doneMost < 1 || !Double.isFinite(timePerIter)) {
-                    //assume worst case that one iteration will consume an entire timeslice
+                    
                     iterLimit = 1;
                 } else {
                     iterLimit = Math.max(1,
@@ -222,14 +222,14 @@ public class Focus extends AtomicRoulette<Causable> {
                 priGetAndSet(i, pri);
                 sliceIters[i] = iterLimit;
             }
-            //System.out.println();
+            
         } finally {
             updating.set(false);
         }
     }
 
     private void realloc(int n) {
-        //weight = new float[n];
+        
 
         time = new DescriptiveStatistics[n];
         timeMean = new double[n];
@@ -241,13 +241,13 @@ public class Focus extends AtomicRoulette<Causable> {
             done[i] = new DescriptiveStatistics(WINDOW);
         }
 
-        //            assert (n < 32) : "TODO make atomic n>32 bitset";
+        
         value = new float[n];
 
 
         doneMean = new double[n];
         doneMax = new long[n];
-        sliceIters = new int[n]; //last
+        sliceIters = new int[n]; 
     }
 
 
@@ -259,8 +259,8 @@ public class Focus extends AtomicRoulette<Causable> {
         if (cx == null)
             return false;
 
-//        if (sliceIters.length <= x)
-//            return false;
+
+
 
         /** temporarily withold priority */
 
@@ -268,38 +268,38 @@ public class Focus extends AtomicRoulette<Causable> {
         int pri;
         if (singleton) {
             if (!singletonBusy.compareAndSet(x, false, true))
-                return false; //someone else got this singleton
+                return false; 
 
             pri = priGetAndSet(x, 0);
         } else {
             pri = pri(x);
         }
 
-        //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
-        //this will require doneMax to be an atomic accmulator for accurac
+        
+        
 
 
 
-        //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
+        
 
         int completed = -1;
         try {
-//            System.out.println(cx + " " + this.sliceIters[x]);
+
             completed = cx.run(nar, this.sliceIters[x]);
         } finally {
             if (singleton) {
 
                 if (completed >= 0) {
-                    priGetAndSetIfEquals(x, 0, pri); //release for another usage unless it's already re-activated in a new cycle
+                    priGetAndSetIfEquals(x, 0, pri); 
                 } else {
-                    //leave suspended until next commit in the next cycle
+                    
                 }
 
                 singletonBusy.clear(x);
 
             } else {
                 if (completed < 0) {
-                    priGetAndSet(x, 0); //suspend
+                    priGetAndSet(x, 0); 
                 }
             }
         }
@@ -361,13 +361,13 @@ public class Focus extends AtomicRoulette<Causable> {
             rbm.reconstruct(cur, next);
             rbm.contrastive_divergence(cur, learning_rate, learning_iters);
 
-            //float momentum = 0.5f;
-            //float noise = 0.1f;
+            
+            
             for (int i = 0; i < numCauses; i++) {
-                //float j = Util.tanhFast((float) (cur[i] + next[i]));
+                
                 float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
-                        //((float) (next[i]));
-                        //(float)( Math.abs(next[i]) > Math.abs(cur[i]) ? next[i] : cur[i]);
+                        
+                        
                         (float) ((1f - rbmStrength) * cur[i] + rbmStrength * next[i]);
                 causes.get(i).setValue(j);
             }
@@ -417,16 +417,16 @@ public class Focus extends AtomicRoulette<Causable> {
 
             float err = ae.put(val, learning_rate, NOISE, 0f, true, false);
 
-//            //float momentum = 0.5f;
-//            //float noise = 0.1f;
-//            for (int i = 0; i < numCauses; i++) {
-//                //float j = Util.tanhFast((float) (cur[i] + next[i]));
-//                float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
-//                        //((float) (next[i]));
-//                        //(float)( Math.abs(next[i]) > Math.abs(cur[i]) ? next[i] : cur[i]);
-//                        (float) ((1f - feedback) * cur[i] + feedback * next[i]);
-//                causes.get(i).setValue(j);
-//            }
+
+
+
+
+
+
+
+
+
+
         }
     }
 
@@ -434,13 +434,13 @@ public class Focus extends AtomicRoulette<Causable> {
 
         final static double minUpdateDurs = 8f;
 
-//        final RecycledSummaryStatistics[] causeSummary = new RecycledSummaryStatistics[MetaGoal.values().length];
+
         float momentum =
-                //0f;
+                
                 0.5f;
-                //0.75f;
-                //0.9f;
-                //0.95f;
+                
+                
+                
 
         long lastUpdate = ETERNAL;
         /**
@@ -448,14 +448,14 @@ public class Focus extends AtomicRoulette<Causable> {
          */
         float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
-//        {
-//            for (int i = 0; i < causeSummary.length; i++)
-//                causeSummary[i] = new RecycledSummaryStatistics();
-//        }
+
+
+
+
 
         @Override
         public void update(NAR nar) {
-            //    update(nar.time(), nar.dur(), nar.causes, nar.emotion.want);
+            
             long time = nar.time();
             if (lastUpdate == ETERNAL)
                 lastUpdate = time;
@@ -469,9 +469,9 @@ public class Focus extends AtomicRoulette<Causable> {
 
             lastUpdate = time;
 
-//            for (RecycledSummaryStatistics r : causeSummary) {
-//                r.clear();
-//            }
+
+
+
 
             int cc = causes.size();
 
@@ -481,19 +481,19 @@ public class Focus extends AtomicRoulette<Causable> {
 
             for (int i = 0; i < cc; i++) {
                 causes.get(i)
-                        //.commit();
+                        
                         .commitFast();
             }
 
 
             int goals = goal.length;
-//        float[] goalFactor = new float[goals];
-//        for (int j = 0; j < goals; j++) {
-//            float m = 1;
-//                        // causeSummary[j].magnitude();
-//            //strength / normalization_magnitude
-//            goalFactor[j] = goal[j] / ( Util.equals(m, 0, epsilon) ? 1 : m );
-//        }
+
+
+
+
+
+
+
 
             final float momentum = (float) Math.pow(this.momentum, dt);
             for (int i = 0; i < cc; i++) {
@@ -501,25 +501,25 @@ public class Focus extends AtomicRoulette<Causable> {
 
                 Traffic[] cg = c.goal;
 
-                //mix the weighted current values of each purpose, each independently normalized against the values (the reason for calculating summary statistics in previous step)
+                
                 float v = 0;
                 for (int j = 0; j < goals; j++) {
                     v += goal[j] * cg[j].last;
                 }
 
-                //float prev = c.value();
+                
 
-//                    0.99f * (1f - Util.unitize(
-//                            Math.abs(next) / (1 + Math.max(Math.abs(next), Math.abs(prev)))));
 
-                //c.setValue(Util.lerp(momentum, next, prev));
 
-//                //memory update factor: increase momentum in proportion to their relative strength
-//                float ap = Math.abs(prev);
-//                float an = Math.abs(next);
-//                float den = an + ap;
-//                float m = den > Float.MIN_NORMAL ? (ap / den) : 0f;
-//                m = Util.lerp(m, momentum, 0.99f);
+
+                
+
+
+
+
+
+
+
 
                 float prev = val[i];
                 float next = momentum * prev + (1f - momentum) * v;
@@ -543,35 +543,34 @@ public class Focus extends AtomicRoulette<Causable> {
 
 }
 
-//    /**
-//     * allocates what can be done
-//     */
-//    public void cycle(List<Can> can) {
-//
-//
-//        NARLoop loop = nar.loop;
-//
-//        double nextCycleTime = Math.max(1, concurrency() - 1) * (
-//                loop.isRunning() ? loop.periodMS.intValue() * 0.001 : Param.SynchronousExecution_Max_CycleTime
-//        );
-//
-//        float throttle = loop.throttle.floatValue();
-//        double dutyCycleTime = nextCycleTime * throttle * (1f - nar.exe.load());
-//
-//        if (dutyCycleTime > 0) {
-//            nar.focus.update(nar);
-//
-//
-//        }
-//
-//        final double MIN_SLEEP_TIME = 0.001f; //1 ms
-//        final int sleepGranularity = 2;
-//        int divisor = sleepGranularity * concurrency();
-//        double sleepTime = nextCycleTime * (1f - throttle);
-//        double sleepEach = sleepTime / divisor;
-//        if (sleepEach >= MIN_SLEEP_TIME) {
-//            int msToSleep = (int) Math.ceil(sleepTime * 1000);
-//            nar.exe.add(new NativeTask.SleepTask(msToSleep, divisor));
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

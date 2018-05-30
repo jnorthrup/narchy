@@ -15,26 +15,26 @@ import java.util.Map;
 
 public enum GoalFunction implements TruthOperator {
 
-    //@AllowOverlap
+    
     Strong() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desireNew(T, B, minConf, true);
-            //return desireStrongOriginal(T, B, minConf);
+            
         }
     },
 
-    //@AllowOverlap
+    
     Weak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desireNew(T, B, minConf, false);
-            //return desireWeakOriginal(T, B, minConf);
+            
         }
     },
 
 
-    //@AllowOverlap
+    
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
@@ -42,15 +42,15 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-//    //@AllowOverlap
-//    DeductionPB() {
-//        @Override
-//        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-//            return BeliefFunction.DeductionPB.apply(T, B, m, minConf);
-//        }
-//    },
 
-    //@AllowOverlap
+
+
+
+
+
+
+
+    
     Induction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -58,19 +58,19 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-//    /** deduction used for bipolar implication results depending on belief either positive or negative */
-//    DeciInduction() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            if (B.isNegative()) {
-//                Truth x = Induction.apply(T, B.neg(), m, minConf);
-//                if (x!=null) return x.neg();
-//                else return null;
-//            } else {
-//                return Induction.apply(T, B, m, minConf);
-//            }
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     DecomposePositiveNegativeNegative() {
         @Override
@@ -134,12 +134,12 @@ public enum GoalFunction implements TruthOperator {
             return BeliefFunction.StructuralDeduction.apply(T, B, m, minConf);
         }
     },
-//    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-//            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
-//        }
-//    },
+
+
+
+
+
+
 
     @AllowOverlap
     BeliefStructuralDeduction() {
@@ -157,7 +157,7 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
+    
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -165,7 +165,7 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
+    
     Intersection() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -173,7 +173,7 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
+    
     Difference() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -196,12 +196,12 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-//    StructuralIntersection() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return B != null ? TruthFunctions.intersection(B, defaultTruth(m), minConf) : null;
-//        }
-//    },
+
+
+
+
+
+
     ;
 
 

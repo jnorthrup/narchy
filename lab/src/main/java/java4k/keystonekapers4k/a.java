@@ -17,7 +17,7 @@ package java4k.keystonekapers4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -30,7 +30,7 @@ import java.util.Random;
 
 public class a extends Applet implements Runnable {
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 	@Override
@@ -90,7 +90,7 @@ public class a extends Applet implements Runnable {
 		final int SPRITE_COP_STANDING = 9;
 		final int SPRITE_COP_RUNNING_1 = 10;
 		final int SPRITE_COP_RUNNING_2 = 11;
-		final int SPRITE_COP_JUMPING = 11; // same sprite as cop running 2
+		final int SPRITE_COP_JUMPING = 11; 
 		final int SPRITE_COP_RUNNING_3 = 12;
 		final int SPRITE_COP_RUNNING_4 = 13;
 		final int SPRITE_COP_RUNNING_5 = 14;
@@ -191,7 +191,7 @@ public class a extends Applet implements Runnable {
 		final ArrayList<int[]> queue = new ArrayList<int[]>();
 		final Random random = new Random();
 
-		// decompress colors
+		
 		final Color[] colors = new Color[26];
 		final int[] colorValues = new int[26];
 		for (i = 0; i < 13; i++) {
@@ -202,7 +202,7 @@ public class a extends Applet implements Runnable {
 			colors[(i << 1) + 1] = new Color(colorValues[(i << 1) + 1]);
 		}
 
-		// decompress palettes
+		
 		final int[][] palettes = new int[10][];
 		for (i = 0, k = 39; i < 10; i++) {
 			palettes[i] = new int[S.charAt(k++)];
@@ -213,7 +213,7 @@ public class a extends Applet implements Runnable {
 			}
 		}
 
-		// decompress digits
+		
 		final BufferedImage[][] digitSprites = new BufferedImage[4096][10];
 		for (i = 0; i < 4096; i++) {
 			for (j = 0; j < 10; j++) {
@@ -232,7 +232,7 @@ public class a extends Applet implements Runnable {
 			}
 		}
 
-		// decompress sprites
+		
 		final BufferedImage[][] sprites = new BufferedImage[2][22];
 		j = 157;
 		for (i = 0; i < 22; i++) {
@@ -258,7 +258,7 @@ public class a extends Applet implements Runnable {
 			j += palettes[z].length >> 1;
 		}
 
-		// initialize sky colors
+		
 		for (i = 0; i <= 35; i++) {
 			float scale = (i / 35f);
 			scale = scale * scale * scale;
@@ -272,7 +272,7 @@ public class a extends Applet implements Runnable {
 			do {
 				nextFrameStartTime += 16666667;
 
-				// -- update starts ----------------------------------------------------
+				
 
 				colorCounter++;
 				if (!a[VK_JUMP]) {
@@ -289,7 +289,7 @@ public class a extends Applet implements Runnable {
 				}
 
 				if (resetRequest) {
-					// reset the game
+					
 					if (newGameRequest) {
 						level = 0;
 						score = 0;
@@ -329,7 +329,7 @@ public class a extends Applet implements Runnable {
 					elevatorFloor = random.nextInt(3);
 					elevatorDirection = 1 - (random.nextInt(2) << 1);
 
-					// create map randomly
+					
 					for (i = 0; i < 4; i++) {
 						for (j = 0; j < 8; j++) {
 							map[i][j] = (j == 0 || j == 7) ? MAP_EMPTY : (j == 3) ? MAP_SHOPPING_CART + random.nextInt(2) : random.nextInt(6);
@@ -342,7 +342,7 @@ public class a extends Applet implements Runnable {
 					queue.clear();
 				}
 
-				// update clock
+				
 				if (++timeCounter == 128) {
 					timeCounter = 0;
 					if (penaltyCount == 0 && !advancing) {
@@ -351,7 +351,7 @@ public class a extends Applet implements Runnable {
 				}
 
 				if (advancing) {
-					// player gains points before advancing to next level
+					
 					if ((timeCounter & 3) == 3) {
 						if (timeRemaining > 0) {
 							x = score;
@@ -372,7 +372,7 @@ public class a extends Applet implements Runnable {
 
 				if (penaltyCount > 0) {
 					if ((timeCounter & 3) == 3) {
-						// subject time due to player collision with enemy
+						
 						timeRemaining--;
 						if (--penaltyCount == 0) {
 							for (i = queue.size() - 1; i >= 0; i--) {
@@ -388,9 +388,9 @@ public class a extends Applet implements Runnable {
 				}
 
 				if (hitPlaneDelay > 0) {
-					// pause after player collides with plane
+					
 					if (--hitPlaneDelay == 0) {
-						// trigger player to lose life
+						
 						timeRemaining = -1;
 					} else {
 						continue;
@@ -400,23 +400,23 @@ public class a extends Applet implements Runnable {
 				if (timeRemaining < 0) {
 					timeRemaining = 0;
 					if (extraLives > 0) {
-						// player lost a life
+						
 						extraLives--;
 						resetRequest = true;
 					} else {
-						// game over            
+						
 						playing = false;
 					}
 					continue;
 				}
 
-				// update radio and airplane sprites
+				
 				if ((timeCounter & 1) == 1) {
 					radioSprite = SPRITE_RADIO_1 + random.nextInt(2);
 					airplaneSprite = airplaneSprite != SPRITE_AIRPLANE_1 ? SPRITE_AIRPLANE_1 : SPRITE_AIRPLANE_2;
 				}
 
-				// update ball bounce
+				
 				ballBounceVy += BALL_GRAVITY;
 				ballBounceY += ballBounceVy;
 				if (ballBounceVy > 0 && ballBounceY >= 0) {
@@ -424,7 +424,7 @@ public class a extends Applet implements Runnable {
 					ballBounceVy = level < 4 ? LOW_BALL_SPEED : HIGH_BALL_SPEED;
 				}
 
-				// update elevator
+				
 				if (++elevatorCounter == ELEVATOR_CLOSED) {
 					elevatorCounter = 0;
 					if (elevatorFloor == 0) {
@@ -435,7 +435,7 @@ public class a extends Applet implements Runnable {
 					elevatorFloor += elevatorDirection;
 				}
 
-				// animate stairs
+				
 				if (--stairsCounter < 0) {
 					stairsCounter = 3;
 					if (--stairsOffset < 0) {
@@ -451,7 +451,7 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// update player
+				
 				if (insideElevator) {
 					copY = groundY = 69 + (elevatorFloor << 5);
 					if (a[VK_DOWN] && elevatorCounter >= ELEVATOR_OPENING && elevatorCounter < ELEVATOR_OPENED) {
@@ -459,7 +459,7 @@ public class a extends Applet implements Runnable {
 					}
 				} else if (!stepping) {
 					if (jumping) {
-						// player jumps
+						
 						copVy += GRAVITY;
 						copY += copVy;
 						copSprite = SPRITE_COP_JUMPING;
@@ -497,7 +497,7 @@ public class a extends Applet implements Runnable {
 								copVy = JUMP_SPEED;
 							}
 						} else if (copVx != 0) {
-							// player runs
+							
 							if ((copX & 1) == 1 && ++copSprite > SPRITE_COP_RUNNING_5) {
 								copSprite = SPRITE_COP_RUNNING_1;
 							}
@@ -518,7 +518,7 @@ public class a extends Applet implements Runnable {
 						}
 					}
 
-					// test if player entered escalator
+					
 					if ((groundY == 133 || groundY == 69) && copY - copX >= groundY - 91) {
 						stepping = true;
 						jumping = false;
@@ -542,14 +542,14 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// determine which room the player occupies
+				
 				room = (copX + 4) / 152;
 				if (room != oldRoom) {
 					enemyDirection = oldRoom - room;
 					ballBounceY = 0;
 					ballBounceVy = level < 4 ? LOW_BALL_SPEED : HIGH_BALL_SPEED;
 
-					// create enemies and items for the newly entered room
+					
 					queue.clear();
 					for (i = 0; i < 4; i++) {
 						j = map[i][room];
@@ -562,19 +562,19 @@ public class a extends Applet implements Runnable {
 							y = x + ((enemyDirection > 0) ? 0 : 152);
 							object[OBJ_ORIENTATION] = (enemyDirection > 0) ? ORIENTATION_REVERSED : ORIENTATION_ORIGINAL;
 							if (j == MAP_MONEY_BAG) {
-								// create money bag
+								
 								object[OBJ_X] = x + 72;
 								object[OBJ_Y] = 45 + (i << 5);
 								object[OBJ_SPRITE] = SPRITE_MONEY_BAG;
 								object[OBJ_Y2] = 10;
 							} else if (j == MAP_SUITCASE) {
-								// create suitcase
+								
 								object[OBJ_X] = x + 72;
 								object[OBJ_Y] = 47 + (i << 5);
 								object[OBJ_SPRITE] = SPRITE_SUITCASE;
 								object[OBJ_Y2] = 9;
 							} else if (j == MAP_BALL) {
-								// create balls
+								
 								object[OBJ_X] = y;
 								object[OBJ_Y3] = 51 + (i << 5);
 								object[OBJ_SPRITE] = SPRITE_BALL;
@@ -592,7 +592,7 @@ public class a extends Applet implements Runnable {
 								}
 
 							} else if (j == MAP_RADIO) {
-								// create radios
+								
 								object[OBJ_X] = x + (level > 4 ? 40 : 72);
 								object[OBJ_Y] = 43 + (i << 5);
 								object[OBJ_SPRITE] = SPRITE_RADIO_1;
@@ -623,7 +623,7 @@ public class a extends Applet implements Runnable {
 								}
 
 							} else if (j == MAP_SHOPPING_CART) {
-								// create shopping carts
+								
 								object[OBJ_X] = y;
 								object[OBJ_Y] = 47 + (i << 5);
 								object[OBJ_SPRITE] = SPRITE_SHOPPING_CART;
@@ -644,7 +644,7 @@ public class a extends Applet implements Runnable {
 								}
 
 							} else if (j == MAP_AIRPLANE) {
-								// create airplane
+								
 								object[OBJ_X] = y;
 								object[OBJ_Y] = 30 + (i << 5);
 								object[OBJ_SPRITE] = SPRITE_AIRPLANE_1;
@@ -655,7 +655,7 @@ public class a extends Applet implements Runnable {
 				}
 				oldRoom = room;
 
-				// update robber
+				
 				robberX += robberVx;
 				if (++robberCounter == 4) {
 					robberCounter = 0;
@@ -664,7 +664,7 @@ public class a extends Applet implements Runnable {
 					}
 				}
 				if (robberY == groundY) {
-					// robber attempts to evade the cop by switching direction
+					
 					if (robberX > copX) {
 						robberVx = ROBBER_SPEED;
 						robberOrientation = ORIENTATION_ORIGINAL;
@@ -686,33 +686,33 @@ public class a extends Applet implements Runnable {
 					} else if (robberY == 133) {
 						robberVy = -32;
 					} else if (robberY + robberVy == groundY) {
-						// robber attempts to evade the cop by switching direction
+						
 						robberVy = -robberVy;
 					}
 					robberY += robberVy;
 					if (robberY == groundY) {
-						// robber attempts to evade the cop staying on the same floor
+						
 						robberY -= robberVy;
 					}
 				}
 
-				// update enemies/items
+				
 				for (i = queue.size() - 1; i >= 0; i--) {
 					object = queue.get(i);
 					j = object[OBJ_TYPE];
 
 					if (j == MAP_RADIO) {
-						// update radio sprite
+						
 						object[OBJ_SPRITE] = radioSprite;
 					} else if (j == MAP_AIRPLANE) {
-						// update airplane sprite
+						
 						object[OBJ_SPRITE] = airplaneSprite;
 					} else if (j == MAP_BALL) {
-						// update ball bounce y-coordinate
+						
 						object[OBJ_Y] = object[OBJ_Y3] + (int) ballBounceY;
 					}
 
-					// move enemy
+					
 					if (j == MAP_BALL || j == MAP_AIRPLANE || j == MAP_SHOPPING_CART) {
 						if (j != MAP_BALL || (timeCounter & 1) == 1) {
 							object[OBJ_X] += enemyDirection;
@@ -745,10 +745,10 @@ public class a extends Applet implements Runnable {
 					}
 
 					if (!insideElevator) {
-						// test for player-enemy/item collisions
+						
 						y = (int) copY + (jumping ? 12 : 19);
 						if (copY <= object[OBJ_Y] + object[OBJ_Y2] && y >= object[OBJ_Y] && copX <= object[OBJ_X] + 5 && copX + 5 >= object[OBJ_X]) {
-							// player collided with enemy/item
+							
 							if (j <= MAP_SUITCASE) {
 								map[(groundY - 37) >> 5][room] = MAP_EMPTY;
 								x = score;
@@ -767,39 +767,39 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// test for cop-robber collision
+				
 				if (!insideElevator && copY <= robberY + 19 && copY + 19 >= robberY && copX + 1 <= robberX + 7 && copX + 6 >= robberX) {
 					advancing = true;
 				}
 
-				// -- update ends ------------------------------------------------------
+				
 
 			} while (nextFrameStartTime < System.nanoTime());
 
-			// -- render starts ------------------------------------------------------
+			
 
-			// draw wall
+			
 			g.setColor(colors[COLOR_WALL]);
 			g.fillRect(0, 62, 152, 90);
 
-			// draw sky
+			
 			for (i = 0; i < 36; i++) {
 				g.setColor(SKY_COLORS[i]);
 				g.drawLine(0, i, 152, i);
 			}
 
-			// draw cityscape
+			
 			g.setColor(colors[COLOR_CITYSCAPE]);
 			g.fillRect(0, 36, 152, 20);
 			for (i = -1; i < 5; i++) {
 				g.drawImage(sprites[ORIENTATION_ORIGINAL + (i & 1)][SPRITE_CITYSCAPE], 8 + (i << 5), 30, 40 + (i << 5), 36, 0, 0, 8, 6, null);
 			}
 
-			// draw basement
+			
 			g.setColor(colors[COLOR_BASEMENT]);
 			g.fillRect(0, 158, 152, 19);
 
-			// draw map
+			
 			g.setColor(colors[COLOR_WALL]);
 			g.fillRect(32, 163, 80, 10);
 			for (i = 0; i < 4; i++) {
@@ -825,13 +825,13 @@ public class a extends Applet implements Runnable {
 			g.setColor(colors[COLOR_WHITE]);
 			g.fillRect(i, j, 1, 3);
 
-			// draw floors
+			
 			for (i = 0; i < 4; i++) {
 				g.setColor(colors[COLOR_FLOOR_1]);
 				g.fillRect(0, 56 + (i << 5), 152, 3);
 			}
 
-			// draw score
+			
 			j = score;
 			x = 54;
 			do {
@@ -840,7 +840,7 @@ public class a extends Applet implements Runnable {
 				j /= 10;
 			} while (j > 0);
 
-			// draw time remaining
+			
 			j = timeRemaining;
 			x = 54;
 			for (i = 0; i < 2; i++) {
@@ -849,12 +849,12 @@ public class a extends Applet implements Runnable {
 				j /= 10;
 			}
 
-			// draw extra lives
+			
 			for (i = 0; i < extraLives; i++) {
 				g.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_HAT], 14 + (i << 3), 15, null);
 			}
 
-			// draw pillars
+			
 			if (room == 2 || room == 4 || room == 6) {
 				g.setColor(colors[COLOR_PILLAR]);
 				for (i = 0; i < 3; i++) {
@@ -869,9 +869,9 @@ public class a extends Applet implements Runnable {
 				}
 			}
 
-			// draw tables
+			
 			if (room == 1 || room == 5) {
-				// 2 tables, 4 tables, 2 tables
+				
 				for (i = 0; i < 3; i++) {
 					for (j = 20; j <= 112; j += 28) {
 						if (j == 76) {
@@ -887,7 +887,7 @@ public class a extends Applet implements Runnable {
 				}
 
 			} else if (room == 2 || room == 6) {
-				// 4 pillars, 2 tables, 4 pillars
+				
 				g.setColor(colors[COLOR_TABLE_BOTTOM]);
 				g.fillRect(32, 112, 24, 9);
 				g.fillRect(88, 112, 24, 9);
@@ -896,7 +896,7 @@ public class a extends Applet implements Runnable {
 				g.fillRect(32, 110, 24, 2);
 				g.fillRect(88, 110, 24, 2);
 			} else if (room == 4) {
-				// 2 tables, 4 pillars, 2 tables
+				
 				g.setColor(colors[COLOR_TABLE_BOTTOM]);
 				g.fillRect(88, 80, 24, 9);
 				g.fillRect(88, 144, 24, 9);
@@ -909,7 +909,7 @@ public class a extends Applet implements Runnable {
 				g.fillRect(32, 78, 24, 2);
 				g.fillRect(32, 142, 24, 2);
 			} else if (room == 7) {
-				// empty, escalator, 2 tables
+				
 				g.setColor(colors[COLOR_TABLE_BOTTOM]);
 				g.fillRect(32, 144, 24, 9);
 				g.fillRect(88, 144, 24, 9);
@@ -918,9 +918,9 @@ public class a extends Applet implements Runnable {
 				g.fillRect(32, 142, 24, 2);
 				g.fillRect(88, 142, 24, 2);
 			} else if (room == 3) {
-				// draw elevator        
+				
 				for (i = 0; i < 3; i++) {
-					// draw elevator interiors
+					
 					g.setColor(colors[COLOR_ELEVATOR_TOP]);
 					g.fillRect(68, 62 + (i << 5), 8, 2);
 					g.setColor(colors[COLOR_ELEVATOR_BOTTOM]);
@@ -929,33 +929,33 @@ public class a extends Applet implements Runnable {
 					g.fillRect(68, 86 + (i << 5), 8, 2);
 
 					if (insideElevator) {
-						// draw player inside elevator
+						
 						g.drawImage(sprites[copOrientation][SPRITE_COP_STANDING], copX - cameraX, 66 + (i << 5), null);
 					}
 
-					// draw door
+					
 					g.setColor(colors[COLOR_ELEVATOR_DOOR]);
 					g.fillRect(68, 62 + (i << 5), elevatorFloor == i ? elevatorCounter < ELEVATOR_OPENED ? ELEVATOR_OPENING - elevatorCounter : elevatorCounter < ELEVATOR_CLOSING ? elevatorCounter
 							- ELEVATOR_OPENED : 8 : 8, 25);
 				}
 			}
 
-			// draw enemy and item sprites
+			
 			cameraX = room * 152;
 			for (i = queue.size() - 1; i >= 0; i--) {
 				object = queue.get(i);
 				g.drawImage(sprites[object[OBJ_ORIENTATION]][object[OBJ_SPRITE]], object[OBJ_X] - cameraX, object[OBJ_Y], null);
 			}
 
-			// draw robber
+			
 			g.drawImage(sprites[robberOrientation][robberSprite], (int) robberX - cameraX, robberY, null);
 
-			// draw cop
+			
 			if (!insideElevator) {
 				g.drawImage(sprites[copOrientation][copSprite], copX - cameraX, (int) copY, null);
 			}
 
-			// draw escalators
+			
 			if (room == 0 || room == 7) {
 				if (room == 7) {
 					g.scale(-1, 1);
@@ -998,15 +998,15 @@ public class a extends Applet implements Runnable {
 				}
 			}
 
-			// draw ceilings
+			
 			for (i = 0; i < 4; i++) {
 				g.setColor(colors[COLOR_FLOOR_2]);
 				g.fillRect(0, 59 + (i << 5), 152, 3);
 			}
 
-			// -- render ends --------------------------------------------------------
+			
 
-			// show the hidden buffer
+			
 			if (g2 == null) {
 				g2 = (Graphics2D) getGraphics();
 				requestFocus();
@@ -1014,7 +1014,7 @@ public class a extends Applet implements Runnable {
 				g2.drawImage(image, 0, 0, 608, 354, null);
 			}
 
-			// burn off extra cycles
+			
 			while (nextFrameStartTime - System.nanoTime() > 0) {
 				Thread.yield();
 			}
@@ -1044,18 +1044,18 @@ public class a extends Applet implements Runnable {
 		}
 	}
 
-	// to run in window, uncomment below
-	//  public static void main(String[] args) throws Throwable {
-	//    javax.swing.JFrame frame = new javax.swing.JFrame("Keystone Kapers 4K");
-	//    frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
-	//    a applet = new a();
-	//    applet.setPreferredSize(new java.awt.Dimension(608, 354));
-	//    frame.add(applet, java.awt.BorderLayout.CENTER);
-	//    frame.setResizable(false);
-	//    frame.pack();
-	//    frame.setLocationRelativeTo(null);
-	//    frame.setVisible(true);
-	//    Thread.sleep(250);
-	//    applet.start();
-	//  }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

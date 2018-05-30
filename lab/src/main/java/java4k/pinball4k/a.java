@@ -209,25 +209,25 @@ import java.io.DataInputStream;
  */
 public class a extends JFrame {
 	
-	static final boolean USE_ANIMATED_SCORE		= true; 	// 27 bytes 
-	static final boolean USE_THICK_LINES 		= true; 	// 20 bytes
-	static final boolean SHOW_BONUS_TEXT 		= true;  	// 71 bytes
-	static final boolean USE_BLINK 				= true;  	// 34 bytes
-	static final boolean DISABLE_RESIZE 		= false;  	// 22 bytes
-	static final boolean USE_GET_HEIGHT 		= true; 	// 16 bytes
-	static final boolean USE_GETES 				= true;  	// 39 bytes
-	static final boolean USE_EXTRABALL 			= true;  	// 44 bytes
-	static final boolean BACKGROUND_GRADIENT 	= true;  	// 15 bytes
-	static final boolean USE_FLASH 				= true;  	// 37 bytes
-	static final boolean USE_SHADED_BALL 	 	= true; 	// 54 bytes
-	static final boolean OUTLINE_SIRCLES 	 	= true; 	// 22 bytes
-	static final boolean FLASH_SIRCLE_SIZE	 	= true; 	// 6 bytes
-	static final boolean USE_GROUP_BONUS        = true; 	// 126 bytes
-	static final boolean DRAW_BALL_SHADOW       = true; 	// 15 bytes
-	static final boolean DRAW_BUMPER_SHADOWS    = true; 	// 18 bytes
-	static final boolean USE_EXTRABALL_TEXT     = false; 	// 30 bytes
-	static final boolean USE_BULLSEYE_TEXT     	= true; 	// 30 bytes
-	static final boolean USE_MULTIPLIER_TEXT   	= true;		// 35 bytes
+	static final boolean USE_ANIMATED_SCORE		= true; 	
+	static final boolean USE_THICK_LINES 		= true; 	
+	static final boolean SHOW_BONUS_TEXT 		= true;  	
+	static final boolean USE_BLINK 				= true;  	
+	static final boolean DISABLE_RESIZE 		= false;  	
+	static final boolean USE_GET_HEIGHT 		= true; 	
+	static final boolean USE_GETES 				= true;  	
+	static final boolean USE_EXTRABALL 			= true;  	
+	static final boolean BACKGROUND_GRADIENT 	= true;  	
+	static final boolean USE_FLASH 				= true;  	
+	static final boolean USE_SHADED_BALL 	 	= true; 	
+	static final boolean OUTLINE_SIRCLES 	 	= true; 	
+	static final boolean FLASH_SIRCLE_SIZE	 	= true; 	
+	static final boolean USE_GROUP_BONUS        = true; 	
+	static final boolean DRAW_BALL_SHADOW       = true; 	
+	static final boolean DRAW_BUMPER_SHADOWS    = true; 	
+	static final boolean USE_EXTRABALL_TEXT     = false; 	
+	static final boolean USE_BULLSEYE_TEXT     	= true; 	
+	static final boolean USE_MULTIPLIER_TEXT   	= true;		
 		
 	static final float ANGLE_SCALE = (2 * (float) Math.PI) / 127;
 	
@@ -236,7 +236,7 @@ public class a extends JFrame {
 	static final int BACKGROUND_COLOR = 0xff2f174f;
 	static final int MULTIPLIER_COLOR = 0x1f6faf;
 	
-	// color components must be less than 16 since its scaled up
+	
 	static final int BUMPER_COLOR = 0x0a0d09; 
 	
 	static final int FLASH_FRAME_IDX = ((512*3+100)/24);
@@ -252,8 +252,8 @@ public class a extends JFrame {
 	static final int BEHAVIOUR_GROUP3_ARROW = 3;
 	static final int BEHAVIOUR_LEFT_OUTER_LANE = 4;
 	static final int BEHAVIOUR_RIGHT_OUTER_LANE = 5;
-//	static final int BEHAVIOUR_INLANE_ARROW = 6;
-//	static final int BEHAVIOUR_BUMPER_ARROW = 7;
+
+
 	static final int BEHAVIOUR_UPPER_LEFT = 8;
 	static final int BEHAVIOUR_UPPER_RIGHT = 9;
 	static final int BEHAVIOUR_START = 10;
@@ -280,32 +280,32 @@ public class a extends JFrame {
 	static final int GATE_MASK 			= (1 << 4);
 	static final int BUMPER_MASK		= (1 << 5);
 	
-    // the size of the window
+    
 	static final int FRAME_WIDTH = 1024;
 	static final int FRAME_HALF_WIDTH = FRAME_WIDTH / 2;
 	static final int FRAME_HEIGHT = 768;
 	static final int LEVEL_HEIGHT = 256*6+48;
 	
-	// the game state
+	
 	static final int LOADING = 0;
 	static final int PLAYING = 1;
 	static final int GAME_OVER = 2;
 
-	// Fewer bytes than Math.PI
+	
 	static final float PI = 3.141592653589793f;
 	static final float BOUNCE_NORMAL = 1.5f;
 	static final float BOUNCE_BUMPER = 2.2f;
 	
-	// The ball radius
+	
 	static final int BALL_RADIUS = 24;
 	
-	// hardcode length of flippers
+	
 	static final int flipperLength = 134;
 	
-	// 16 physics iterations per frame
+	
 	static final int MAX_SPEED = 3;
-	static final float GRAVITY = 0.00077f;//0.0008f;
-	static final float FRICTION = 0.999985f;//0.999985f;
+	static final float GRAVITY = 0.00077f;
+	static final float FRICTION = 0.999985f;
 	static final float FLIPPER_SPEED = (PI * 2 / 400f);
 	static final int LAUNCH_SPEED = -2;
 	static final int LAUNCH_DIV = 512;
@@ -315,17 +315,17 @@ public class a extends JFrame {
 	static final int ITERATIONS = 14;
 	static final int KICKER_VEL = -2;
 
-	// distance moved by edge of flipper during one step
-//	2 50 16.82785923385599
-//	4 100 8.418083432938381
-//	8 200 4.209561039567941
-//	16 400 2.104845438174637
-//	32 800 1.0524308339800081	
 	
-	// the maximum number of objects
+
+
+
+
+
+	
+	
 	static final int MAX_OBJ_COUNT = 0x10000;
 	
-//	static final int ID_FLAGS = 0;
+
 	static final int ID_SCORE = 1;
 	static final int ID_TYPE = 2;
 	static final int ID_BEHAVIOUR = 3;
@@ -337,7 +337,7 @@ public class a extends JFrame {
 	static final int ID_IS_BALL_OVER = 9;
 	static final int ID_COLOR = 10;
 	static final int ID_SPECIAL = 11;
-	// not part of array
+	
 	static final int ID_DISPLAY_SCORE = 12;
 	static final int ID_BONUS_TIME = 13;
 	static final int ID_BONUS_X = 14;
@@ -348,7 +348,7 @@ public class a extends JFrame {
 	static final int ID_MULTIPLIER_TIME = 19;
 	static final int ID_INFO = 17;
 	
-//	static final int FD_FLIPPER_ANGLE_VEL = 0;
+
 	static final int FD_FLIPPER_ANGLE = 1;
 	static final int FD_FLIPPER_LENGTH = 2;
 	static final int FD_FLIPPER_MIN_ANGLE = 3;
@@ -361,13 +361,13 @@ public class a extends JFrame {
 	static final int GRP_ACTIVATE_FRAME_IDX = 23;
 	static final int GRP_BONUS_TIME = 24;
 	
-	// object types
+	
 	static final int LINE = 0;
 	static final int FLIPPER = 1;
 	static final int SIRCLE = 2;
 	static final int ARROW = 3;
 	
-	static final int STRIDE = 0x20;//16;
+	static final int STRIDE = 0x20;
 	
 	static final int BONUS_ROLLOVER = 5;
 	static final int BONUS_DROPDOWN = 5;
@@ -382,7 +382,7 @@ public class a extends JFrame {
 	static final int INLINE_ARROW_IDX = 36;
 	static final int START_IDX = 5;
 	
-	// what keys are down indexed by keyCode
+	
 	static boolean[] k = new boolean[0x10000];     
 	
 	/** 
@@ -391,116 +391,116 @@ public class a extends JFrame {
 	public a() throws Exception {
  		super("Pinball 4K");
 		
-//		enableEvents(AWTEvent.MOUSE_EVENT_MASK);
 
- 		// frame timing variable
+
+ 		
  		long lastFrame = 0;
 	    
-		// The position of the ball
+		
 		float bally = 0;
 		float ballx = 0;
 		
-		// The current velocity of the ball in pixels per tick
+		
 		float ballVely = 0;
 		float ballVelx = 0;
 
-		// The current rotation of the flipper
+		
 		float flipperAngle = 0;
 		
-		// Flipper moves 1 / 100 of a sircle counter clockwise every tick
+		
 		int flipperUpDelta = 0;
 		
-		// The angle velocity is the angle moves last tick
+		
 		float flipperAngleVel = 0;
 		
-		// float object data goes 
+		
 		float[] floatData = new float[MAX_OBJ_COUNT];
 		
-		// groups stored as (index of first object, number of objects in group)
+		
 		int[] groupData = null;
 		
-		// number of groups
+		
 		int numGroups = 0;
 		
-		// object int data and other stuff goes here
+		
 		int[] intData = new int[MAX_OBJ_COUNT];
 		
-		// maps from behaviour id to an object containing the id
+		
 		int[] behaviourObjMap = new int[MAX_OBJ_COUNT];
 		
-		// blink data in own array is smaller
+		
 		int[] blinkData = null;
 
-	    // Common object variables
+	    
 		int objx = 0;
 		int objy = 0;
 		        
 		int objCount = 0;
 
-		// current frameIdx used a lot to determine if it blinks. Game runs at 60 frames per second.
+		
 		int frameIdx = 0;
 		
-		// the current score
+		
 		int score = 0;
 		
-		// the current multiplier. All bonus scores are multiplied by the multiplier before being added to score.
+		
 		int multiplier = 0;
 		
-		// vertical scroll position
+		
 		int levely = 0;
 		
-		// start off in loading state
+		
 		int state = LOADING;
 
-		// true when space is pressed and playfield is in a moved state
+		
 		boolean tilt = false;
 		boolean pushed = false;
 		boolean pushedBall = false;
 		boolean wasTiltKeyPressed = false;
 		int pushTime = 0;
 		
-		// the score when the next extra ball is awarded
+		
 		int extraBallTarget = 0;
 
-		// Use a large italic bold font. Selecting the default font saves some space.
+		
 		Font font = new Font("", FONT_ITALIC_BOLD, 32);
 		
-		// when the next vertical flash starts
+		
 		int flashFrameIdx = 0;
 		
-		// set window size
+		
 		setSize(FRAME_WIDTH, FRAME_HEIGHT);
 		
-		// disable frame resizing
+		
 		if (DISABLE_RESIZE) {
 			setResizable(false);
 		}
 		
-		// depricated but less bytes than setVisible(true);
+		
 		show(); 
 		
-		// use double buffering
+		
 		createBufferStrategy(2);
 		BufferStrategy b = getBufferStrategy();
 		
 		do {
-			// the bonus score awarded this frame
+			
 			int bonus = 0;
 
-			// update state more than once per frame to speed up animation
+			
 			for (int updateIdx = 0; updateIdx < ITERATIONS; updateIdx++) {
 
-				// update state	
+				
 				if (state == LOADING) {
-					// load level
+					
 					blinkData = new int[MAX_OBJ_COUNT];
 					groupData = new int[MAX_OBJ_COUNT];
 
-					// use file file named "a" when develeoping since we cant insert level everytime eclipse compiles. 
-//					DataInputStream dataIn = new DataInputStream(getClass().getResourceAsStream("/a.class"));
+					
+
 					DataInputStream dataIn = new DataInputStream(getClass().getResourceAsStream("a"));
 					
-					// find magic numbers in level
+					
 		            while (!(dataIn.readUnsignedByte() == 124 && dataIn.readUnsignedByte() == 124)) {
 					}
 					int flippers = dataIn.readUnsignedByte();
@@ -509,17 +509,17 @@ public class a extends JFrame {
 					int lines = dataIn.readUnsignedByte();
 					objCount = dataIn.readUnsignedByte();
 					
-					// flags, score and behavior id is common data read in for all objects
+					
 					for (int i = 0; i < objCount; i++) {
-						intData[i * STRIDE] = dataIn.readUnsignedByte(); // ID_FLAGS is 0
+						intData[i * STRIDE] = dataIn.readUnsignedByte(); 
 						intData[i * STRIDE + ID_SCORE] = dataIn.readUnsignedByte();
 						intData[i * STRIDE + ID_BEHAVIOUR] = dataIn.readUnsignedByte();
 						intData[i * STRIDE + ID_COLOR] = LINE_COLOR;
 					}
-					// position is also common for all objects. 
-					// Read seperately to improve compression since position is more 
+					
+					
 					for (int i = 0; i < objCount; i++) {						
-						// fill inn behaviour to object map
+						
 						behaviourObjMap[intData[i * STRIDE + ID_BEHAVIOUR]] = i;
 						intData[i * STRIDE + ID_X] = dataIn.readUnsignedByte() * 4;
 						intData[i * STRIDE + ID_Y] = dataIn.readUnsignedByte() * 6;
@@ -527,21 +527,21 @@ public class a extends JFrame {
 					
 					int objCountOff = 0;
 					
-					// read the radius of all the sircles
+					
 					while (sircles-- > 0) {
 						intData[objCountOff + ID_TYPE] = SIRCLE;
 						intData[objCountOff + ID_X2] = dataIn.readUnsignedByte();
 						objCountOff += STRIDE;
 					} 
 
-					// read the direction of all the arrows
+					
 					while (arrows-- > 0) {
 						intData[objCountOff + ID_TYPE] = ARROW;
 						intData[objCountOff + ID_X2] = dataIn.readUnsignedByte();
 						objCountOff += STRIDE;
 					}
 
-					// read the flipper min, max angle and direction
+					
 					while (flippers-- > 0) {
 						intData[objCountOff + ID_TYPE] = FLIPPER;
 						floatData[objCountOff + FD_FLIPPER_MIN_ANGLE] = dataIn.readUnsignedByte() * ANGLE_SCALE;
@@ -550,50 +550,50 @@ public class a extends JFrame {
 						objCountOff += STRIDE;
 					}
 					
-					// read end position of all the lines
+					
 					while (lines-- > 0) {
 						intData[objCountOff + ID_X2] = dataIn.readUnsignedByte() * 4;
 						intData[objCountOff + ID_Y2] = dataIn.readUnsignedByte() * 6;
 						objCountOff += STRIDE;
 					}
 										
-					// unpack line strips
+					
 					int strips = dataIn.readUnsignedByte();
 					while (strips-- > 0) {
-						// number of lines in the strip
+						
 						int stripLines = dataIn.readUnsignedByte();
 						
-						// the index of the line that started the strip
+						
 						int prevIdx = dataIn.readUnsignedByte();
 						
 						while (stripLines-- > 0) {
-							// copy previous line
+							
 							for (int i=0; i<STRIDE; i++) {
 								intData[objCountOff + i] = intData[prevIdx * STRIDE + i];
 								floatData[objCountOff + i] = floatData[prevIdx * STRIDE + i];
 							}
 							
-							// start position is end position of the previous line
+							
 							intData[objCountOff + ID_X] = intData[objCountOff + ID_X2];
 							intData[objCountOff + ID_Y] = intData[objCountOff + ID_Y2];
 							
-							// read in end position
+							
 							intData[objCountOff + ID_X2] = dataIn.readUnsignedByte() * 4;
 							intData[objCountOff + ID_Y2] = dataIn.readUnsignedByte() * 6;							
 							
-							// the use this line as the base for the next line in the strip
+							
 							prevIdx = objCount++;
 							objCountOff += STRIDE;
 						}
 					}
 
-					// read groups as (count, first index) pairs 
+					
 					numGroups = dataIn.readUnsignedByte();
 					for (int i=0; i<numGroups*2; i++) {
 						groupData[i] = dataIn.readUnsignedByte();
 					}
 					
-					// initialize new game
+					
 					multiplier = 1;
 					score = 0;
 					state = PLAYING;
@@ -602,7 +602,7 @@ public class a extends JFrame {
 					ballx = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_X];
 					bally = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_Y];
 				} else if (state == PLAYING) {
-					// check for tilt
+					
 					pushed = !tilt && k[VK_TILT];
 					if (!wasTiltKeyPressed && pushed) {
 						if (frameIdx < pushTime) {
@@ -613,10 +613,10 @@ public class a extends JFrame {
 					}
 					wasTiltKeyPressed = pushed;
 
-					// update ball
 					
-					// make sure ball don't go so fast it goes threw the lines
-					// also add gravity to y and friction to x
+					
+					
+					
 					ballVelx = Math.min( MAX_SPEED, ballVelx * FRICTION);
 					ballVely = Math.min( MAX_SPEED, ballVely * FRICTION + GRAVITY);
 					ballVelx = Math.max(-MAX_SPEED, ballVelx);
@@ -625,22 +625,22 @@ public class a extends JFrame {
 					ballx += ballVelx;
 					bally += ballVely;
 
-					// Collision result variables 
 					
-					// the projected position of the ball on the line
+					
+					
 					float closestx = 0;
 					float closesty = 0;
 					
-					// true if an intersectino accured
+					
 					boolean foundCollision = false;
 					
-					// the index of the closest line
+					
 					int collisionObjIdx = 0;
 					
-					// the distance to the closest line
+					
 					float closestDistance = 0;
 
-					// detect collision between objects and ball
+					
 					for (int objIdx = 0; objIdx < objCount; objIdx++) {
 						int objFlags 	 = intData[objIdx * STRIDE];
 						int objBehaviour = intData[objIdx * STRIDE + ID_BEHAVIOUR];
@@ -649,7 +649,7 @@ public class a extends JFrame {
 						int linex2 		 = intData[objIdx * STRIDE + ID_X2];
 						int liney2 		 = intData[objIdx * STRIDE + ID_Y2];
 						
-						// the closest point on line if inside ball radius
+						
 						float tempProjectedx = 0;
 						float tempProjectedy = 0;
 						float dist = 0;
@@ -657,7 +657,7 @@ public class a extends JFrame {
 					
 						switch (intData[objIdx * STRIDE + ID_TYPE]) {
 						case FLIPPER:
-							// update the flipper
+							
 							flipperUpDelta 	= intData[objIdx * STRIDE + ID_FLIPPER_ANGLE_DIR];
 							flipperAngle 	= floatData[objIdx * STRIDE + FD_FLIPPER_ANGLE];
 							flipperAngleVel = floatData[objIdx * STRIDE];
@@ -675,10 +675,10 @@ public class a extends JFrame {
 							intData[objIdx * STRIDE + ID_Y2] = liney2;
 							floatData[objIdx * STRIDE + FD_FLIPPER_ANGLE] = newAngle;
 							
-							// pass threw to line that does the collision detection
+							
 							
 						case LINE:
-							// dot line with (ball - line endpoint)
+							
 							float rrr = (ballx-objx) * (linex2-objx) + (bally-objy) * (liney2-objy);
 							float len = length(linex2-objx, liney2-objy);
 							float t = rrr / len / len;
@@ -689,7 +689,7 @@ public class a extends JFrame {
 								dist = length(ballx-tempProjectedx, bally-tempProjectedy);
 								intersected = (dist <= BALL_RADIUS);
 							} else {
-								// center of ball is outside line segment. Check end points.
+								
 								dist = length(ballx-objx, bally-objy);
 								float distance2 = length(ballx-linex2, bally-liney2);
 								if (dist < BALL_RADIUS) {
@@ -707,7 +707,7 @@ public class a extends JFrame {
 							break;
 
 						case SIRCLE:
-							// linex2 is sircle radius;
+							
 							float dx = ballx - objx;
 							float dy = bally - objy;
 							dist = length(dx, dy) - linex2;
@@ -722,20 +722,20 @@ public class a extends JFrame {
 						if (intersected) {
 							float nDotBall = 0;
 							
-							// Do one way gate logic by turning off collision detection if it is entered from behind
+							
 							if (USE_GETES) {
 								if ((objFlags & GATE_MASK) != 0) {
-									// dot ball center, line endpoint vector on to line normal
-									// if it is positive the ball do not collide with ball
+									
+									
 									nDotBall = (ballx-objx) * -(liney2-objy) + (bally-objy) * (linex2-objx);
 									if (nDotBall > 0) {
-										// turn off collision detection
+										
 										intData[objIdx * STRIDE] &= (0xff ^ COLLIDABLE_MASK);
 									}
 								}
 							}
 						
-							// store closest hit
+							
 							if ((nDotBall <= 0) 
 									&& (objFlags & COLLIDABLE_MASK) != 0 
 									&& (!foundCollision || dist < closestDistance)) {
@@ -746,24 +746,24 @@ public class a extends JFrame {
 								closesty = tempProjectedy;
 							}
 							
-							// do trigger logic
+							
 							if (intData[objIdx * STRIDE + ID_IS_BALL_OVER] == 0) {
 								intData[objIdx * STRIDE + ID_IS_BALL_OVER] = 1;
 
-								// skip score on hidden dropdowns
+								
 								if (!tilt &&
 										((intData[objIdx * STRIDE] & DROP_DOWN_MASK) == 0 
 										|| (intData[objIdx * STRIDE] & VISIBLE_MASK) != 0)) {
 									score += intData[objIdx * STRIDE + ID_SCORE];
 								}
-								// store collision time, is used to animate bumpers
+								
 								intData[objIdx * STRIDE + ID_COLLISION_TIME] = frameIdx;
 								if (objBehaviour == BEHAVIOUR_GAME_OVER) {
 									if (USE_EXTRABALL) {
-//										if (blinkData[behaviourObjMap[BEHAVIOUR_START]] != 0) {
-//										blinkData[behaviourObjMap[BEHAVIOUR_START]] = 0;
-//										ballx = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_X];
-//										bally = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_Y];
+
+
+
+
 										if (blinkData[START_IDX] != 0) {
 											blinkData[START_IDX] = 0;
 											ballx = intData[behaviourObjMap[BEHAVIOUR_START] * STRIDE + ID_X];
@@ -779,10 +779,10 @@ public class a extends JFrame {
 									
 								}
 								if (objBehaviour == BEHAVIOUR_START) {
-									// pseudo random launch speed
+									
 									ballVely = LAUNCH_SPEED - ((frameIdx & 0xff) / (float) LAUNCH_DIV);
 									
-									// flash at start
+									
 									flashFrameIdx = frameIdx+FLASH_FRAME_IDX;
 								}
 								if (USE_GROUP_BONUS) {
@@ -798,7 +798,7 @@ public class a extends JFrame {
 											bonus += DROPDOWN_TIME_BONUS;
 										}
 									}
-									// turn off visible and collidable
+									
 									intData[objIdx * STRIDE] = DROP_DOWN_MASK;
 								}
 								if ((objFlags & ROLL_OVER_MASK) != 0) {
@@ -810,15 +810,15 @@ public class a extends JFrame {
 									}
 								}
 								if (objBehaviour == BEHAVIOUR_UPPER_LEFT 
-//										&& frameIdx < blinkData[behaviourObjMap[BEHAVIOUR_INLANE_ARROW]]) {
-//										blinkData[behaviourObjMap[BEHAVIOUR_INLANE_ARROW]] = 0;
+
+
 										&& frameIdx < blinkData[INLINE_ARROW_IDX]) {
 									blinkData[INLINE_ARROW_IDX] = 0;
 									bonus += BONUS_UPPER_LEFT;
 								}
 								if (objBehaviour == BEHAVIOUR_UPPER_RIGHT 
-//										&& frameIdx < blinkData[behaviourObjMap[BEHAVIOUR_BUMPER_ARROW]]) {
-//										blinkData[behaviourObjMap[BEHAVIOUR_BUMPER_ARROW]] = 0;
+
+
 										&& frameIdx < blinkData[BUMPER_ARROW_IDX]) {
 										blinkData[BUMPER_ARROW_IDX] = 0;
 									bonus += BONUS_UPPER_RIGHT;
@@ -826,8 +826,8 @@ public class a extends JFrame {
 								if (objBehaviour == BEHAVIOUR_BULLSEYE) {
 									int bonusShift = 0;
 									for (int i=0; i<3; i++) {
-//										if (frameIdx < blinkData[behaviourObjMap[BEHAVIOUR_GROUP1_ARROW+i]]) {
-//											blinkData[behaviourObjMap[BEHAVIOUR_GROUP1_ARROW+i]] = 0;
+
+
 										if (frameIdx < blinkData[33+i]) {
 											blinkData[33+i] = 0;
 											bonusShift++;
@@ -848,44 +848,44 @@ public class a extends JFrame {
 								}
 							}
 						} else if (intData[objIdx * STRIDE + ID_IS_BALL_OVER] == 1) {
-							// ball do no longer intersect current trigger
+							
 							intData[objIdx * STRIDE + ID_IS_BALL_OVER] = 0;
 						
 							if (USE_GETES) {
 								if ((objFlags & GATE_MASK) != 0) {
-									// turn on collision detection again on one way gate
+									
 									intData[objIdx * STRIDE] = COLLIDABLE_MASK | GATE_MASK | VISIBLE_MASK;
 								}
 							}
 						}
-					} // end iterate objects
+					} 
 					
-					// collision response
+					
 					if (foundCollision) {
 						float objVelx = 0;
 						float objVely = 0;
 
-						// calculate velocity of flipper at intersection point
+						
 						if (intData[collisionObjIdx * STRIDE + ID_TYPE] == FLIPPER) {
 							float dx = closestx - intData[collisionObjIdx * STRIDE + ID_X];
 							float dy = closesty - intData[collisionObjIdx * STRIDE + ID_Y];
 							float absVel = floatData[collisionObjIdx * STRIDE] * length(dx, dy);
-							// flipper velocity = normal * speed
+							
 							if (length(dx, dy) != 0) {
 								objVely = absVel *  dx / length(dx, dy);
 								objVelx = absVel * -dy / length(dx, dy); 
 							}
 						}
 						
-						// find collision normal
+						
 						float normalx = (ballx - closestx) / length(ballx - closestx, bally - closesty);
 						float normaly = (bally - closesty) / length(ballx - closestx, bally - closesty);
 						
-						// push ball out of geometry
+						
 						ballx = closestx + normalx * BALL_RADIUS;
 						bally = closesty + normaly * BALL_RADIUS;						
 						
-						// reflect the ball
+						
 						float impactSpeed = ((intData[collisionObjIdx * STRIDE] & BUMPER_MASK) == 0 || tilt)
 								? ((objVelx - ballVelx) * normalx + (objVely - ballVely) * normaly) * BOUNCE_NORMAL
 								: ((objVelx - ballVelx) * normalx + (objVely - ballVely) * normaly) * BOUNCE_BUMPER + BUMPER_ADD;
@@ -893,20 +893,20 @@ public class a extends JFrame {
 						ballVelx += normalx * impactSpeed;
 						ballVely += normaly * impactSpeed;
 
-						// add velocity in normal direction if table is pushed
+						
 						if (!pushedBall && pushed && frameIdx < pushTime) {
 							pushedBall = true;
 							ballVelx += normalx/PUSH_DIV_X;
 							ballVely += normaly/PUSH_DIV_Y;
 						}
-					} // end collision response
+					} 
 					
-					// generate colors
+					
 					int c = MULTIPLIER_COLOR;
 
-					// check groups
+					
 					for (int groupIdx = 0; groupIdx < numGroups; groupIdx++) {
-						// get the anded and ored flags of the elements in the group
+						
 						int groupOr = 0;
 						int groupAnd = 0x7f;
 						int or = 0;
@@ -921,38 +921,38 @@ public class a extends JFrame {
 							}
 						}
 						
-						// check if all dropdown targets is down
+						
 						if ((groupOr & VISIBLE_MASK) == 0 && (groupOr & DROP_DOWN_MASK) != 0) {
-							// award bonus
+							
 							bonus += BONUS_DROPDOWN;
 							
-							// light target arrow, group idx same as arrow behavior id
+							
 							if (intData[behaviourObjMap[groupIdx] * STRIDE + ID_TYPE] == ARROW) {
 								blinkData[behaviourObjMap[groupIdx]] = 0xffffff;
 							} else {
 								intData[behaviourObjMap[groupIdx] * STRIDE] |= VISIBLE_MASK;
 							}
 
-							// reset dropdowns to visible and collidable
+							
 							or = VISIBLE_MASK | COLLIDABLE_MASK;
 						}
 						
-						// check if all rollovers in group are lit
+						
 						if ((groupAnd & VISIBLE_MASK) != 0 && (groupAnd & ROLL_OVER_MASK) != 0) {
-							// award bonus
+							
 							bonus += BONUS_ROLLOVER;
 							
-							// reset rollovers to hidden and not collidable
+							
 							and = 0xff ^ (VISIBLE_MASK | COLLIDABLE_MASK);
 
 							if (USE_GROUP_BONUS) {
-								// store activation count and time
+								
 								groupData[groupIdx*STRIDE+GRP_ACTIVATE_CNT]++;
 								groupData[groupIdx*STRIDE+GRP_ACTIVATE_FRAME_IDX] = frameIdx;
 							}
 							
 							if (groupIdx == GROUP_MULTIPLIER) {
-								// increase multiplier if it's the multiplier group
+								
 								multiplier = Math.min(8, multiplier+1);
 								if (USE_MULTIPLIER_TEXT) {
 									intData[ID_MULTIPLIER_TIME] = frameIdx + 60*3;
@@ -964,42 +964,42 @@ public class a extends JFrame {
 										groupData[groupIdx*STRIDE+GRP_BONUS_TIME] = frameIdx + 60 * 30;
 									}
 								}
-								// blink target arrow 30 secs, group idx same as arrow behavior id
+								
 								blinkData[behaviourObjMap[groupIdx]] = frameIdx + 60 * 30;
 							}
 							
-							// blink the rolloevers in 1,5 seconds
+							
 							blinkTime = frameIdx + 90;
 						}
 
-						// store back new element flags
+						
 						for (int i=0; i<groupData[groupIdx*2]; i++) {
 							int objIdx = groupData[groupIdx*2+GRP_FIRST_INDEX]+i;
 							intData[objIdx * STRIDE] |= or;
 							intData[objIdx * STRIDE] &= and;
 							
-							// generate group colors
+							
 							intData[objIdx * STRIDE + ID_COLOR] = c;
 							if (USE_BLINK) {
 								blinkData[objIdx] = blinkTime;
 							}
 						}
 					
-						// make the arrow color the same as the group
+						
 						if (groupIdx > 0) {
 							intData[behaviourObjMap[groupIdx] * STRIDE + ID_COLOR] = c;
 						}
 						
-						// generate pseudo random group colors
+						
 						c += c * c;
-					} // end iterate groups
+					} 
 				} else if (state == GAME_OVER && k[VK_NEW_GAME]) {
-					// start loading level if game is over and enter is pressed
+					
 					state = LOADING;
 				}
-			} // end update iterations
+			} 
 			
-			// keep the level from scrolling past the top and bottom of the screen 
+			
 			if (bally + levely < 200) {
 				levely = Math.min(0, 200-(int)bally);
 			}
@@ -1007,30 +1007,30 @@ public class a extends JFrame {
 				levely = -(int) bally + 400;
 			}
 			
-			// calculate the level y coordinate at screen coordinate y 0
+			
 			if (USE_GET_HEIGHT) {
 				levely = Math.max(getHeight()-LEVEL_HEIGHT, levely);
 			} else {
 				levely = Math.max(FRAME_HEIGHT-LEVEL_HEIGHT, levely);
 			}
 
-			// -------------------- draw level -------------------------
+			
 			Graphics2D g = (Graphics2D) b.getDrawGraphics();
 			
 			if (!BACKGROUND_GRADIENT) {
-				// fill solid background
+				
 				g.setColor(new Color(BACKGROUND_COLOR));
 				g.fillRect(0, 0, 1024*2, 1024*2);
 			}
 			
-			// draw level 4 pixels higher on the screen if it is pushed 
+			
 			int levely2 = levely + (pushed ? -4 : 0);
 			
-			// transform coordinate system to level space
+			
 			g.translate(0, levely2);
 			
 			if (BACKGROUND_GRADIENT) {
-				// fill gradient background
+				
 				int backColor = BACKGROUND_COLOR;
 				for (int i=0; i<16; i++) {
 					g.setColor(new Color(backColor));
@@ -1045,11 +1045,11 @@ public class a extends JFrame {
 			
 			final int SHADOW_COLOR = 0x2f2f2f;
 
-			// draw objects
+			
 			for (int objIdx=0; objIdx<objCount; objIdx++) {
-				// ball shadow
+				
 				if (DRAW_BALL_SHADOW) {
-					// draw ball shadow after sircles and arrows
+					
 					if (objIdx == 37) {
 						g.setColor(new Color(SHADOW_COLOR));
 						g.fillArc((int) ballx - BALL_RADIUS + 8, (int) bally - BALL_RADIUS + 8, BALL_RADIUS * 2, BALL_RADIUS * 2, 0, 360);
@@ -1062,7 +1062,7 @@ public class a extends JFrame {
 				int linex2 = intData[objIdx * STRIDE + ID_X2];
 				int liney2 = intData[objIdx * STRIDE + ID_Y2];
 				
-				// animate bumper by warping the color when its hit
+				
 				if ((intData[objIdx * STRIDE] & BUMPER_MASK) != 0) {
 					int color = Math.min(0xf, (frameIdx - intData[objIdx * STRIDE + ID_COLLISION_TIME]));
 					c = color*BUMPER_COLOR;
@@ -1070,25 +1070,25 @@ public class a extends JFrame {
 
 				if (USE_BLINK) {
 					if (frameIdx < blinkData[objIdx]) {
-						// object is blinking
+						
 						if ((frameIdx & 31) < 15) {
-							// make object darker 2 times a second 
+							
 							c = (c >> 1) & 0x7f7f7f;
 						} 
-						// else object is visible and we don't touch it
+						
 					} else if ((intData[objIdx * STRIDE] & VISIBLE_MASK) == 0) {
-						// make object darker if it is not visible
+						
 						c = (c >> 1) & 0x7f7f7f;
 					}
 				} else {
-					// make object darker if it is not visible
+					
 					if ((intData[objIdx * STRIDE] & VISIBLE_MASK) == 0) {
 						c = (c >> 1) & 0x7f7f7f;
 					}
 				}
 
 				if (USE_GROUP_BONUS) {
-					// blink bumpers if their bonus is on
+					
 					if ((intData[objIdx * STRIDE] & BUMPER_MASK) != 0 
 							&& groupData[GROUP_BUMPER*STRIDE+GRP_BONUS_TIME] > frameIdx 
 							&& (frameIdx & 31) < 15) {
@@ -1106,7 +1106,7 @@ public class a extends JFrame {
 				
 				g.setColor(new Color(c));
 
-				// bottom to top flashing animation
+				
 				int flashy = (flashFrameIdx - frameIdx) * 24;
 				boolean pan = objy > flashy && objy < flashy+200;
 				if (pan) {
@@ -1115,9 +1115,9 @@ public class a extends JFrame {
 				
 				switch (intData[objIdx * STRIDE + ID_TYPE]) {
 				case FLIPPER:
-					// flippers are always white
+					
 					g.setColor(new Color(0xffffff));
-					// pass threw so it will be rendered as line
+					
 				case LINE:
 					if (USE_GROUP_BONUS) {
 						if ((frameIdx & 31) < 15 
@@ -1130,18 +1130,18 @@ public class a extends JFrame {
 					
 					g.drawLine(objx, objy, linex2, liney2);
 					
-					// makes the line 3 pixels thick
+					
 					if (USE_THICK_LINES) {
 						g.drawLine(objx-1, objy, linex2-1, liney2);
 						g.drawLine(objx+1, objy, linex2+1, liney2);
-						// Speed up Java2D by only drawing lines 2 pixels wide. Does not save space!
-//						g.drawLine(objx, objy-1, linex2, liney2-1);
+						
+
 						g.drawLine(objx, objy+1, linex2, liney2+1);
 					}
 					
 					break;
 				case SIRCLE:
-					// this code is optimized
+					
 					int r = linex2;
 
 					if (FLASH_SIRCLE_SIZE) {
@@ -1165,11 +1165,11 @@ public class a extends JFrame {
 					break;
 				case ARROW:
 					g.fillArc(objx, objy, 80, 80, linex2 * 2, 45);			
-					//break; no need for a break
+					
 				}
-			} // end draw loop
+			} 
 			
-			// light the 8 multiplier sircles in its group according to the current multiplier
+			
 			g.setColor(new Color(0xffffff));
 			for (int i=0; i<8; i++) {
 				text = String.valueOf((i+1));
@@ -1177,7 +1177,7 @@ public class a extends JFrame {
 				intData[(groupData[21]+i)*STRIDE] = (i < multiplier ? VISIBLE_MASK : 0); 
 			}
 
-			// draw ball 
+			
 			if (USE_SHADED_BALL) {
 				int c = 0x5f5f5f;
 				int add = 0;
@@ -1193,7 +1193,7 @@ public class a extends JFrame {
 				g.fillArc((int) ballx - BALL_RADIUS, (int) bally - BALL_RADIUS, BALL_RADIUS * 2, BALL_RADIUS * 2, 0, 360);
 			}
 
-			// update score
+			
 			g.setColor(new Color(0xffffff));
 			if (tilt) {
 				bonus = 0;
@@ -1214,23 +1214,23 @@ public class a extends JFrame {
 				}
 			}
 			
-			// translate back to screen space before drawing hud
+			
 			g.translate(0, -levely2);
 			if (USE_FLASH) {
 				if (bonus > 0) {
-					// start flash animation when bonus is awarded
+					
 					flashFrameIdx = frameIdx+FLASH_FRAME_IDX;
 				}
 			}
 
 			if (USE_EXTRABALL) {
-				// award extraball if extra ball score target is reached
+				
 				if (score > extraBallTarget) {
-					// state is stored in the start sircle blink field
-//					blinkData[behaviourObjMap[BEHAVIOUR_START]] = 0xffffff;
+					
+
 					blinkData[START_IDX] = 0xffffff;
 					
-					// target doubles each time it is reached
+					
 					extraBallTarget *= 2;
 					
 					if (USE_EXTRABALL_TEXT) {
@@ -1239,7 +1239,7 @@ public class a extends JFrame {
 				}
 			}
 			
-			// draw tilt text if board is tilted
+			
 			if (tilt) {
 				text = "TILT";
 				g.drawString(text, 479, 120);
@@ -1247,13 +1247,13 @@ public class a extends JFrame {
 			if (USE_EXTRABALL_TEXT) {
 				if (frameIdx < intData[ID_EXTRABALL_TIME]) {
 					text = "Extraball!";
-					g.drawString(text, 441, 160); // 439, 444
+					g.drawString(text, 441, 160); 
 				}
 			}
 			if (USE_BULLSEYE_TEXT) {
 				if (frameIdx < intData[ID_BULLSEYE_TIME]) {
 					text = "Bullseye!";
-					g.drawString(text, 441, 200); // no !,446
+					g.drawString(text, 441, 200); 
 				}
 			}
 			if (USE_MULTIPLIER_TEXT) {
@@ -1263,61 +1263,61 @@ public class a extends JFrame {
 				}
 			}
 			
-			// draw game over text if game is over
+			
 			if (state == GAME_OVER) {
 				text = "Game Over - Press Enter";
 				g.drawString(text, FRAME_HALF_WIDTH-188, 320);
 			}
 			
 			if (USE_ANIMATED_SCORE) {
-				// animate the score counting up
+				
 				intData[ID_DISPLAY_SCORE] += (score * 1000 - intData[ID_DISPLAY_SCORE]) < 8 ? (score*1000 - intData[ID_DISPLAY_SCORE]) : (score * 1000 - intData[ID_DISPLAY_SCORE]) / 8;
 				text = String.valueOf(intData[ID_DISPLAY_SCORE]);
 			} else {
 				text = String.valueOf(score * 1000);
 			}
 			
-//			bounds = font.getStringBounds(text, g.getFontRenderContext());
-//			g.drawString(text, FRAME_HALF_WIDTH - (int) bounds.getWidth() / 2, 80);
+
+
 			g.drawString(text, FRAME_HALF_WIDTH - text.length()*8, 80);
 
-			// flip buffer
+			
 		    b.show();
 		    
 		    frameIdx++;
 
-		    // wait 16 milliseconds to cap frame rate to 60 fps
+		    
 	    	while (System.nanoTime() < lastFrame + 16000000) {
 	    		Thread.yield();
 	    	}
 	    	lastFrame = System.nanoTime();
 
-	    	// mouse input used when debuging
-//			if (releasedPoint != null) {
-//				ballx = pressedPoint.x;
-//				bally = pressedPoint.y - levely;
-//				ballVelx = (releasedPoint.x - pressedPoint.x) / (ITERATIONS * 2);
-//				ballVely = (releasedPoint.y - pressedPoint.y) /  (ITERATIONS * 2);
-//				releasedPoint = null;
-//			}
+	    	
+
+
+
+
+
+
+
 		} while(!k[VK_ESCAPE] && isVisible());
 		
 		System.exit(0);
 	}
-//	Point pressedPoint;
-//	Point releasedPoint;
-//	Point clickedPoint;
-//	
-//	/**
-//	 * Handles mouse events.
-//	 */
-//	protected void processMouseEvent(MouseEvent e) {
-//		if (e.getID() == MouseEvent.MOUSE_PRESSED) {
-//			pressedPoint = e.getPoint();
-//		} else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
-//			releasedPoint = e.getPoint();
-//		}
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * Calculates the length of the (x, y) vector.

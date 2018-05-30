@@ -37,7 +37,7 @@ public class LiveSTMTest {
 
 
                 i.forget =
-                        //(tt == 0) ? 0.9f : 0.5f;
+                        
                         0.1f;
 
                 Arrays.fill(i.actual, 0);
@@ -45,21 +45,21 @@ public class LiveSTMTest {
                 Arrays.fill(expect, 0);
                 expect[(int)Math.round(  ((Math.sin(tt)+1f)/2f)*7f ) ] = 1f;
 
-                //for (int x = 0; x < inputs; x++) {
-                    //i.actual[x] = ((t + x * 37) ^ 5)%2 * 0.9f + random.nextDouble()*0.1f; //trippy tri-tone xor line chart
-                //}
+                
+                    
+                
 
-                //for (int x = 0; x < outputs; x++) {
-                //    expect[x] = ((t * 3 + x) ^ 13) % 2;
-                //}
+                
+                
+                
 
                 if ((t/20)%2 == 0) {
-                    //train
+                    
                     validation_mode = false;
                 } /*else {
                     validation_mode = true;
-                    //predict
-                    //i.expected = null;
+                    
+                    
                 }*/
 
                 t++;

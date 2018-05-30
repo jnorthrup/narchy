@@ -149,7 +149,7 @@ public class LimitedSizeHashMapTime<KEY, VALUE>
          }
 
          this.hashMap.remove(k);
-         // Debug.println(DebugLevel.VERBOSE, "Removed key = ", k);
+         
       }
 
       this.hashMap.put(key, new Element(value));

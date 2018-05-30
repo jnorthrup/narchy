@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -59,7 +59,7 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 	public final void addAll(T... v) {
 		if (size + v.length >= array.length) {
 			expand();
-			//HACK this might not have expanded enough, caution
+			
 		}
 
 		T[] array = this.array;
@@ -112,7 +112,7 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 
 	@Override
 	public T remove(int index) {
-		//if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
+		
 		T[] a = this.array;
 		T prev = a[index];
 		System.arraycopy(a, index+1, a, index, size-index-1);
@@ -169,13 +169,13 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 
 	@Override
     public final T get(int index) {
-		//if (index >= size) throw new IndexOutOfBoundsException();
+		
 		return array[index];
 	}
 
 	@Override
 	public T set(int index, T value) {
-		//if (index >= size) throw new IndexOutOfBoundsException();
+		
 		T[] a = this.array;
 		T old = a[index];
 		a[index] = value;
@@ -208,9 +208,9 @@ public final class OArrayList<T> extends AbstractList<T> implements RandomAccess
 			T x = _array[i];
 			if (o.equals(x))
 				return i;
-			//if (o == null? _array[i] == null : o.equals(_array[i])) {
-				//return i;
-			//}
+			
+				
+			
 		}
 		return -1;
 	}

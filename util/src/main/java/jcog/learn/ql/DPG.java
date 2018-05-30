@@ -13,7 +13,7 @@ public class DPG extends ReinforceJSAgent {
 
     @Override
     String getAgentInitCode(int inputs, int actions) {
-        int hiddens = 3 * inputs * actions; //heuristic
+        int hiddens = 3 * inputs * actions; 
         return "var spec =  { alpha: + " + alpha + ", num_hidden_units: " + hiddens + " }; " +
                 "var agent = new RL.DPGAgent(env, spec); ";
     }

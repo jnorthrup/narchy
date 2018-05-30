@@ -82,17 +82,17 @@ abstract public class ListModel<X> implements GridModel<X> {
         return get(vertical ? y : x);
     }
 
-    //    public static class ListTableModel<X,Y> extends ListModel<Y> {
-//
-//        public ListTableModel(List<X> items, extractor...)
-//        @Override
-//        public X get(int index) {
-//            return null;
-//        }
-//
-//        @Override
-//        public int size() {
-//            return 0;
-//        }
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
 }

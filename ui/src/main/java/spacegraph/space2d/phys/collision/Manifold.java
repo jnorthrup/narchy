@@ -101,7 +101,7 @@ public class Manifold {
         localPoint = new v2(other.localPoint);
         pointCount = other.pointCount;
         type = other.type;
-        // djm: this is correct now
+        
         for (int i = 0; i < Settings.maxManifoldPoints; i++) {
             points[i] = new ManifoldPoint(other.points[i]);
         }

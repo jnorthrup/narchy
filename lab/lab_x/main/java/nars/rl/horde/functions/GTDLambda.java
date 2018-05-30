@@ -45,17 +45,17 @@ public class GTDLambda implements OnPolicyTD, GVF {
         VectorPool pool = VectorPools.pool(e.vect());
         v_t = v.dotProduct(x_t);
         delta_t = r_tp1 + (1 - gamma_tp1) * z_tp1 + gamma_tp1 * v.dotProduct(x_tp1) - v_t;
-        // Update traces
+        
         e.update(gamma_t * lambda, x_t);
         double rho_t = pi_t / b_t;
         e.vect().mapMultiplyToSelf(rho_t);
-        // Compute correction
+        
         ArrayRealVector correctionVector = pool.newVector();
         if (x_tp1 != null) {
             correction = e.vect().dotProduct(w);
             correctionVector.combineToSelf(1, correction * gamma_tp1 * (1 - lambda), x_tp1);
         }
-        // Update parameters
+        
         RealVector deltaE = pool.newVector(e.vect()).mapMultiplyToSelf(delta_t);
         v.combineToSelf(1, alpha_v, pool.newVector(deltaE).combineToSelf(1, -1, correctionVector));
         w.combineToSelf(1, alpha_w, deltaE.combineToSelf(1, -w.dotProduct(x_t), x_t));

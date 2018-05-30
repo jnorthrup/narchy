@@ -17,7 +17,7 @@ abstract public class AgentTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 
-		// 5, 5, false, 3, 8, 3
+		
 
 		int actions = 5;
 		modelSettings = new WorldModelSettings();
@@ -39,7 +39,7 @@ abstract public class AgentTest {
 	public void tearDown() throws Exception {
 	}
 
-	// Encodes a percept (observation, reward) as a list of symbols
+	
 	@Test
 	public final void testEncodePercept() {
 
@@ -49,7 +49,7 @@ abstract public class AgentTest {
 		BooleanArrayList result = Util.encode(observation, obsBits);
 		result.addAll(Util.encode(reward, rewBits));
 
-		// 10100101101
+		
 		Assertions.assertTrue(result.get(0) == true);
 		Assertions.assertTrue(result.get(1) == false);
 		Assertions.assertTrue(result.get(2) == true);
@@ -63,7 +63,7 @@ abstract public class AgentTest {
 		Assertions.assertTrue(result.get(10) == false);
 
 		result = agent.encodePercept(observation, reward);
-		// 10100101101
+		
 		Assertions.assertTrue(result.get(0));
 		Assertions.assertFalse(result.get(1));
 		Assertions.assertTrue(result.get(2) == true);
@@ -126,7 +126,7 @@ abstract public class AgentTest {
 		agent.modelRevert(mu);
 		double p2 = agent.perceptProbability(obs, rew);
 
-		// System.out.println("p: " + p + " p2: " + p2 + " p2-p: " + (p2 - p));
+		
 
 		Assertions.assertTrue(Math.abs(p2 - p) < eps);
 	}

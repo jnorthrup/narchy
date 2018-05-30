@@ -37,7 +37,7 @@ abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements
 
     @Override
     public void clear() {
-        super.clear(); //clears map
+        super.clear(); 
         listClear();
     }
 
@@ -63,40 +63,40 @@ abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements
     protected abstract boolean listRemove(V removed);
 
 
-//    @Nullable
-//    @Override
-//    protected V addItem(@NotNull V i) {
-//        if (isFull())
-//            throw new RuntimeException("table full");
-//
-//        listAdd(i);
-//        return null;
-//    }
 
 
 
 
-//    /**
-//     * Take out the first or last E in a level from the itemTable
-//     * @return The first Item
-//     */
-//    public final V removeItem(int index) {
-//
-//        V ii = get(index);
-//        if (ii == null)
-//            return null;
-//
-//        /*if (ii == null)
-//            throw new RuntimeException("invalid index: " + index + ", size=" + size());*/
-//
-//        //        if (ii!=jj) {
-////            throw new RuntimeException("removal fault");
-////        }
-//
-//        removeItem(ii);
-//        removeKeyForValue(ii);
-//        return ii;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -110,53 +110,53 @@ abstract public class ArrayListTable<K, V> extends CollectorMap<K, V> implements
     @Override
     public void setCapacity(int newCapacity) {
         this.capacity = newCapacity;
-        //return true;
+        
     }
 
 
 
-//    /** a commit should invoke update(null) when its finished
-//     * @return this instance, HACK due to inheritance fuckup
-//     * */
-//    @NotNull
-//    protected abstract Object commit();
 
 
-//    @Override
-//    public final void forEach(@NotNull Consumer<? super L> action) {
-//
-//        list().forEach(action);
-//
-////        //items.forEach(b -> action.accept(b.get()));
-////
-////        final List<? extends L> l = items.getList();
-////
-////        int n = l.size();
-////        for (int i = 0; i < n; i++) {
-////        //for (int i = l.size()-1; i >= 0; i--){
-////            action.accept(l.get(i));
-////        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * default implementation; more optimal implementations will avoid instancing an iterator
      */
     public void forEach(int max, @NotNull Consumer<? super V> action) {
         int n = Math.min(size(), max);
-        //TODO let the list implementation decide this because it can use the array directly in ArraySortedIndex
+        
         for (int i = 0; i < n; i++) {
             action.accept(get(i));
         }
     }
 
-//    @Nullable
-//    @Override
-//    public Object remove(Object key) {
-//        if (list.remove(key)) {
-//            return key;
-//        }
-//        return null;
-//    }
+
+
+
+
+
+
+
+
 
 }

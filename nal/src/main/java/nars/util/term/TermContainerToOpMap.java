@@ -15,7 +15,7 @@ public class TermContainerToOpMap<X>
 
     public final Subterms id;
 
-    public final static int CAPACITY = Op.VAR_DEP.id; //everything below VAR_DEP
+    public final static int CAPACITY = Op.VAR_DEP.id; 
 
     public TermContainerToOpMap(Subterms id) {
         super(CAPACITY);

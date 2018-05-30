@@ -107,30 +107,30 @@ public class v2 extends Tuple2f {
     }
 
 
-//    /**
-//     * Sets the value of this vector to the normalization of vector v1.
-//     * @param v1 the un-normalized vector
-//     */
-//    public final void normalize(v2 v1)
-//    {
-//
-//        float norm = (float) (1.0 / Math.sqrt(v1.x * v1.x + v1.y * v1.y));
-//        this.x = v1.x*norm;
-//        this.y = v1.y*norm;
-//    }
 
-//    /**
-//     * Normalizes this vector in place.
-//     */
-//    public final v2 normalize()
-//    {
-//
-//        float norm = (float)
-//                (1.0 / Math.sqrt(this.x * this.x + this.y * this.y));
-//        this.x *= norm;
-//        this.y *= norm;
-//        return this;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -165,18 +165,18 @@ public class v2 extends Tuple2f {
     }
 
 
-//    /**
-//     * read-only v2
-//     */
-//    public static class v2RO extends v2 {
-//        public v2RO(float x, float y) {
-//            super(x, y);
-//        }
-//
-//        @Override
-//        public Tuple2f set(float x, float y) {
-//            throw new RuntimeException("cant modify");
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

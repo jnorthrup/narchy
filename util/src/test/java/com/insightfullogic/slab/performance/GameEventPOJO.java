@@ -61,7 +61,7 @@ public class GameEventPOJO implements GameEvent {
 
     @Override
     public int size() {
-        // TODO Auto-generated method stub
+        
         return 0;
     }
 

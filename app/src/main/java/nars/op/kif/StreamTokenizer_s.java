@@ -2,7 +2,7 @@
  * This code is copyright Articulate Software (c) 2003. Some portions copyright
  * Teknowledge (c) 2003 and reused under the terms of the GNU license. This
  * software is released under the GNU Public License
- * <http://www.gnu.org/copyleft/gpl.html>. Users of this code also consent, by
+ * <http:
  * use of this code, to credit Articulate Software and Teknowledge in any
  * writings, briefings, publications, presentations, or other representations of
  * any software which incorporates, builds on, or uses this code. Please cite
@@ -188,7 +188,7 @@ public class StreamTokenizer_s {
         commentChar('/');
         quoteChar('"');
         quoteChar('\'');
-        // parseNumbers();
+        
     }
 
     /**
@@ -642,7 +642,7 @@ public class StreamTokenizer_s {
              *   (ii) d contains the lookahead
              */
                 int d = read();
-                // while (d >= 0 && d != ttype && d != '\n' && d != '\r') {
+                
                 while (d >= 0 && d != ttype) {
                     if (d == '\\') {
                         c = read();

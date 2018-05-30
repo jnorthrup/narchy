@@ -32,8 +32,8 @@ public class ImageTracer {
                         "\r\n\r\nor\r\n\r\njava -jar ImageTracer.jar help");
 
 
-                //System.out.println("Starting anyway with default value for testing purposes.");
-                //saveString("output.svg",imageToSVG("input.jpg",new HashMap<String,Float>()));
+                
+                
 
 
             } else if (arraycontains(args, "help") > -1) {
@@ -45,7 +45,7 @@ public class ImageTracer {
                         "\r\nSee https://github.com/jankovicsandras/imagetracerjava for details. \r\nThis is version " + versionnumber);
             } else {
 
-                // Parameter parsing
+                
                 String outfilename = args[0] + ".svg";
                 HashMap<String, Float> options = new HashMap<>();
                 String[] parameternames = {
@@ -66,11 +66,11 @@ public class ImageTracer {
                             }
                         }
                     }
-                }// End of parameternames loop
+                }
 
-                // Loading image, tracing, rendering SVG, saving SVG file
+                
                 File file = new File(outfilename);
-                // if file doesnt exists, then create it
+                
                 if (!file.exists()) {
                     file.createNewFile();
                 }
@@ -79,12 +79,12 @@ public class ImageTracer {
                 bw.write(imageToSVG(args[0], options));
                 bw.close();
 
-            }// End of parameter parsing and processing
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }// End of main()
+    }
 
 
     private static int arraycontains(String[] arr, String str) {
@@ -108,50 +108,50 @@ public class ImageTracer {
     }
 
 
-    // Container for the color-indexed image before and tracedata after vectorizing
+    
     public static class IndexedImage {
         public final int width;
         public final int height;
-        public final int[][] array; // array[x][y] of palette colors
-        public final byte[][] palette;// array[palettelength][4] RGBA color palette
-        public ArrayList<ArrayList<ArrayList<Double[]>>> layers;// tracedata
+        public final int[][] array; 
+        public final byte[][] palette;
+        public ArrayList<ArrayList<ArrayList<Double[]>>> layers;
 
         public IndexedImage(int[][] marray, byte[][] mpalette) {
             array = marray;
             palette = mpalette;
             width = marray[0].length - 2;
-            height = marray.length - 2;// Color quantization adds +2 to the original width and height
+            height = marray.length - 2;
         }
 
         protected void render(HashMap<String, Float> options, float w, float h, BiConsumer<ArrayList<Double[]>, byte[]> path) {
-            // creating Z-index
+            
             TreeMap<Double, int[]> zindex = new TreeMap<>();
             double label;
 
-            // Layer loop
+            
             for (int k = 0; k < this.layers.size(); k++) {
 
-                // Path loop
+                
                 ArrayList<ArrayList<Double[]>> lk = this.layers.get(k);
 
                 for (int pcnt = 0; pcnt < lk.size(); pcnt++) {
 
-                    // Label (Z-index key) is the startpoint of the path, linearized
+                    
                     Double[] lkp0 = lk.get(pcnt).get(0);
 
                     label = (lkp0[2] * w) + lkp0[1];
                     int finalPcnt = pcnt;
                     int finalK = k;
-                    // Adding layer and path number to list
+                    
                     zindex.computeIfAbsent(label, (l)-> new int[] {finalK, finalPcnt} );
                 }
 
             }
 
-            // Sorting Z-index is not required, TreeMap is sorted automatically
+            
 
-            // Drawing
-            // Z-index loop
+            
+            
             for (Map.Entry<Double, int[]> entry : zindex.entrySet()) {
                 int[] v = entry.getValue();
                 path.accept(this.layers.get(v[0]).get(v[1]), this.palette[v[0]]);
@@ -159,10 +159,10 @@ public class ImageTracer {
 
         }
 
-        // Converting tracedata to an SVG string, paths are drawn according to a Z-index
-        // the optional lcpr and qcpr are linear and quadratic control point radiuses
+        
+        
         public String toSVG(HashMap<String, Float> options) {
-            // SVG start
+            
             float w = (int) (this.width * options.get("scale")), h = (int) (this.height * options.get("scale"));
 
             String viewboxorviewport = options.get("viewbox") != 0 ? "viewBox=\"0 0 " + w + " " + h + "\" " : "width=\"" + w + "\" height=\"" + h + "\" ";
@@ -174,11 +174,11 @@ public class ImageTracer {
 
             render(options, w, h, (path, color)->{
 
-//                if (options.get("desc") != 0) {
-//                    thisdesc = "desc=\"l " + v[0] + " p " + v[1] + "\" ";
-//                } else {
-//                    thisdesc = "";
-//                }
+
+
+
+
+
                 svgpathstring(svgstr,
                         "",
                         path,
@@ -188,7 +188,7 @@ public class ImageTracer {
 
 
 
-            // SVG End
+            
             svgstr.append("</svg>");
 
             return svgstr.toString();
@@ -197,9 +197,9 @@ public class ImageTracer {
     }
 
 
-    // The bitshift method in loadImageData creates signed bytes where -1 -> 255 unsigned ; -128 -> 128 unsigned ;
-    // 127 -> 127 unsigned ; 0 -> 0 unsigned ; These will be converted to -128 (representing 0 unsigned) ...
-    // 127 (representing 255 unsigned) and tosvgcolorstr will add +128 to create RGB values 0..255
+    
+    
+    
     private static byte bytetrans(byte b) {
         if (b < 0) {
             return (byte) (b + 128);
@@ -229,47 +229,47 @@ public class ImageTracer {
         return bytepalette;
     }
 
-    ////////////////////////////////////////////////////////////
-    //
-    //  User friendly functions
-    //
-    ////////////////////////////////////////////////////////////
+    
+    
+    
+    
+    
 
-    // Loading an image from a file, tracing when loaded, then returning the SVG String
+    
     private static String imageToSVG(String filename, HashMap<String, Float> options) throws Exception {
 
 
-        //System.out.println(options.toString());
+        
 
         HashMap<String, Float> o = checkoptions(options);
 
         return new ImageData(ImageIO.read(new File(filename)))
                 .trace(o)
                 .toSVG(o);
-    }// End of imageToSVG()
-
-
-//	// Loading an image from a file, tracing when loaded, then returning IndexedImage with tracedata in layers
-//	public IndexedImage imageToTracedata (String filename, HashMap<String,Float> options, byte [][] palette) throws Exception{
-//		options = checkoptions(options);
-//		ImageData imgd = loadImageData(filename, options);
-//		return imagedataToTracedata(imgd,options,palette);
-//	}// End of imageToTracedata()
-//	public IndexedImage imageToTracedata (BufferedImage image, HashMap<String,Float> options, byte [][] palette) throws Exception{
-//		options = checkoptions(options);
-//		ImageData imgd = loadImageData(image);
-//		return imagedataToTracedata(imgd,options,palette);
-//	}// End of imageToTracedata()
+    }
 
 
 
 
-    // creating options object, setting defaults for missing values
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
     private static HashMap<String, Float> checkoptions(HashMap<String, Float> options) {
         if (options == null) {
             options = new HashMap<>();
         }
-        // Tracing
+        
         if (!options.containsKey("ltres")) {
             options.put("ltres", 10.0f);
         }
@@ -279,14 +279,14 @@ public class ImageTracer {
         if (!options.containsKey("pathomit")) {
             options.put("pathomit", 1.0f);
         }
-        // Color quantization
+        
         if (!options.containsKey("numberofcolors")) {
             options.put("numberofcolors", 128.0f);
         }
         if (!options.containsKey("colorquantcycles")) {
             options.put("colorquantcycles", 15.0f);
         }
-        // SVG rendering
+        
         if (!options.containsKey("scale")) {
             options.put("scale", 1.0f);
         }
@@ -305,7 +305,7 @@ public class ImageTracer {
         if (!options.containsKey("viewbox")) {
             options.put("viewbox", 0.0f);
         }
-        // Blur
+        
         if (!options.containsKey("blurradius")) {
             options.put("blurradius", 5.0f);
         }
@@ -314,14 +314,14 @@ public class ImageTracer {
         }
 
         return options;
-    }// End of checkoptions()
+    }
 
 
-    // https://developer.mozilla.org/en-US/docs/Web/API/ImageData
+    
     public static class ImageData {
         public final int width;
         public final int height;
-        public final byte[] data; // raw byte data: R G B A R G B A ...
+        public final byte[] data; 
         @Deprecated private final BufferedImage image;
 
         public ImageData(int mwidth, int mheight, byte[] mdata) {
@@ -352,18 +352,18 @@ public class ImageTracer {
 
             byte[][] palette = getPalette(image, options);
 
-            // 1. Color quantization
+            
             IndexedImage ii = VectorizingUtils.colorquantization(this, palette, options);
-            // 2. Layer separation and edge detection
+            
             int[][][] rawlayers = VectorizingUtils.layering(ii);
-            // 3. Batch pathscan
+            
             ArrayList<ArrayList<ArrayList<Integer[]>>> bps = VectorizingUtils.batchpathscan(rawlayers, (int) (Math.floor(options.get("pathomit"))));
-            // 4. Batch interpollation
+            
             ArrayList<ArrayList<ArrayList<Double[]>>> bis = VectorizingUtils.batchinternodes(bps);
-            // 5. Batch tracing
+            
             ii.layers = VectorizingUtils.batchtracelayers(bis, options.get("ltres"), options.get("qtres"));
             return ii;
 
         }
     }
-}// End of ImageTracer class
+}

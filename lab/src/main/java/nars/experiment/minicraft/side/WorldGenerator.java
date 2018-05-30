@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -44,7 +44,7 @@ public class WorldGenerator {
 		int minSurface = (int) (.25 * height);
 		int maxSurface = (int) (.75 * height);
 		
-		int surface = median;// maxSurface-5;
+		int surface = median;
 		int dirtDepth = 3;
 		
 		List<Int2> trees = new ArrayList<>();
@@ -53,7 +53,7 @@ public class WorldGenerator {
 		
 		boolean playerLocFound = false;
 		double chance;
-		// loop left to right dirt and stone
+		
 		for (int i = 0; i < width; i++) {
 			if (surface > median) {
 				surfaceSum++;
@@ -111,18 +111,18 @@ public class WorldGenerator {
 			}
 		}
 		
-		// water
+		
 		for (int i = 0; i < width; i++) {
 			if (world[i][median] != TileID.NONE) {
 				continue;
 			}
 			
-			// flood fill down
+			
 			for (int j = median; j < height; j++) {
-				// setVisible(i+1,j);
-				// setVisible(i,j+1);
-				// setVisible(i-1,j);
-				// setVisible(i,j-1);
+				
+				
+				
+				
 				
 				if (world[i][j] != TileID.NONE) {
 					carve(world, i, j - 1, 1 + random.nextDouble() * 2, TileID.SAND, new TileID[] {
@@ -145,7 +145,7 @@ public class WorldGenerator {
 		
 		TileID[] caveIgnore = { TileID.DIRT, TileID.COAL_ORE, TileID.WATER,
 				TileID.GRASS, TileID.SAND, TileID.NONE };
-		// caves
+		
 		int caveCount = (int) (width / 16 + random.nextDouble() * 3);
 		for (int i = 0; i < caveCount; i++) {
 			int posX = random.nextInt(width);
@@ -155,7 +155,7 @@ public class WorldGenerator {
 			int directionY = -1 + random.nextInt(3);
 			for (int j = 0; j < caveLength; j++) {
 				chance = random.nextDouble();
-				// change direction
+				
 				if (chance > .9) {
 					directionX = -1 + random.nextInt(3);
 					directionY = -1 + random.nextInt(3);
@@ -179,7 +179,7 @@ public class WorldGenerator {
 		return world;
 	}
 	
-	// Density [0,1]
+	
 	private static void uniformlyAddMinerals(TileID[][] world, TileID mineral, float density,
 			int minDepth, int maxDepth, TileID[] ignoreTypes, Random random) {
 		int missesAllowed = 100;

@@ -10,7 +10,7 @@ package jcog.signal.vectorize;
 /**
  * An efficient color quantization algorithm, adapted from the C++
  * implementation quantize.c in <a
- * href="http://www.imagemagick.org/">ImageMagick</a>. The pixels for
+ * href="http:
  * an image are placed into an oct tree. The oct tree is reduced in
  * size, and the pixels from the original image are reassigned to the
  * nodes in the reduced tree.<p>
@@ -45,7 +45,7 @@ package jcog.signal.vectorize;
  * %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
  * </pre>
  *
- * @author <a href="http://www.gurge.com/amd/">Adam Doppelt</a>
+ * @author <a href="http:
  * @version 0.90 19 Sep 2000
  */
 public class Quantize {
@@ -247,7 +247,7 @@ public class Quantize {
     final static int MAX_NODES = 266817;
     final static int MAX_TREE_DEPTH = 8;
 
-    // these are precomputed in advance
+    
     static final int[] SQUARES;
     static final int[] SHIFT;
 
@@ -286,11 +286,11 @@ public class Quantize {
         final Node root;
         int depth;
 
-        // counter for the number of colors in the cube. this gets
-// recalculated often.
+        
+
         int colors;
 
-        // counter for the number of nodes in the tree
+        
         int nodes;
 
         Cube(int pixels[][], int max_colors) {
@@ -298,8 +298,8 @@ public class Quantize {
             this.max_colors = max_colors;
 
             int i = max_colors;
-            // tree_depth = log max_colors
-            //                 4
+            
+            
             for (depth = 1; i != 0; depth++) {
                 i /= 4;
             }
@@ -359,7 +359,7 @@ public class Quantize {
             int width = pixels.length;
             int height = pixels[0].length;
 
-            // convert to indexed color
+            
             for (int x = width; x-- > 0; ) {
                 for (int y = height; y-- > 0; ) {
                     int pixel = pixels[x][y];
@@ -367,15 +367,15 @@ public class Quantize {
                     int green = (pixel >> 8) & 0xFF;
                     int blue = (pixel >> 0) & 0xFF;
 
-                    // a hard limit on the number of nodes in the tree
+                    
                     if (nodes > MAX_NODES) {
-                        //System.out.println("pruning");
+                        
                         root.pruneLevel();
                         --depth;
                     }
 
-                    // walk the tree to depth, increasing the
-                    // number_pixels count for each node
+                    
+                    
                     Node node = root;
                     for (int level = 1; level <= depth; ++level) {
                         int id = (((red > node.mid_red ? 1 : 0) << 0) |
@@ -457,7 +457,7 @@ public class Quantize {
 
             Search search = new Search();
 
-            // convert to indexed color
+            
             for (int x = width; x-- > 0; ) {
                 for (int y = height; y-- > 0; ) {
                     int pixel = pixels[x][y];
@@ -465,7 +465,7 @@ public class Quantize {
                     int green = (pixel >> 8) & 0xFF;
                     int blue = (pixel >> 0) & 0xFF;
 
-                    // walk the tree to find the cube containing that color
+                    
                     Node node = root;
                     for (; ; ) {
                         int id = (((red > node.mid_red ? 1 : 0) << 0) |
@@ -478,12 +478,12 @@ public class Quantize {
                     }
 
                     if (QUICK) {
-                        // if QUICK is set, just use that
-                        // node. Strictly speaking, this isn't
-                        // necessarily best match.
+                        
+                        
+                        
                         pixels[x][y] = node.color_number;
                     } else {
-                        // Find the closest color.
+                        
                         search.distance = Integer.MAX_VALUE;
                         node.parent.closestColor(red, green, blue, search);
                         pixels[x][y] = search.color_number;
@@ -498,33 +498,33 @@ public class Quantize {
         static class Node {
             Cube cube;
 
-            // parent node
+            
             Node parent;
 
-            // child nodes
+            
             final Node[] child;
             int nchild;
 
-            // our index within our parent
+            
             final int id;
-            // our level within the tree
+            
             final int level;
-            // our color midpoint
+            
             final int mid_red;
             final int mid_green;
             final int mid_blue;
 
-            // the pixel count for this node and all children
+            
             int number_pixels;
 
-            // the pixel count for this node
+            
             int unique;
-            // the sum of all pixels contained in this node
+            
             int total_red;
             int total_green;
             int total_blue;
 
-            // used to build the colormap
+            
             int color_number;
 
             Node(Cube cube) {
@@ -548,17 +548,17 @@ public class Quantize {
                 this.id = id;
                 this.level = level;
 
-                // add to the cube
+                
                 ++cube.nodes;
                 if (level == cube.depth) {
                     ++cube.colors;
                 }
 
-                // add to the parent
+                
                 ++parent.nchild;
                 parent.child[id] = this;
 
-                // figure out our midpoint
+                
                 int bi = (1 << (MAX_TREE_DEPTH - level)) >> 1;
                 mid_red = parent.mid_red + ((id & 1) > 0 ? bi : -bi);
                 mid_green = parent.mid_green + ((id & 2) > 0 ? bi : -bi);

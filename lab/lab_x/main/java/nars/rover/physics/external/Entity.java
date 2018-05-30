@@ -36,7 +36,7 @@ public class Entity {
 	public Entity(){
 		renderer = null;
 		location = new Vec2();
-		layer = 0; //Entities.NUM_LAYERS / 2;
+		layer = 0; 
 		angle = 0.0f;
 	}
 	
@@ -87,7 +87,7 @@ public class Entity {
 	
 	@Override
 	public int hashCode(){
-		// use default hash if none has been given
+		
 		if(hash == null)
 			hash = super.hashCode();
 		return hash;
@@ -95,15 +95,15 @@ public class Entity {
 	
 	/*
 	public void read(Kryo kryo, Input input){
-		//this.renderer = Renderers.values()[input.readInt()].renderer;
+		
 		this.layer = input.readInt();
 		this.location.set(kryo.readObject(input, Vec2.class));
 		this.angle = input.readFloat();
 	}
 	
 	public void write(Kryo kryo, Output output){
-		//Renderers renderers = Renderers.valueOf(this.renderer);
-		//output.writeInt(renderers.ordinal());
+		
+		
 		output.writeInt(this.layer);
 		kryo.writeObject(output, this.location);
 		output.writeFloat(this.angle);

@@ -20,7 +20,7 @@ public class Textbook implements PubliclyCloneable<Textbook> {
 		try {
 			return (Textbook) super.clone();
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

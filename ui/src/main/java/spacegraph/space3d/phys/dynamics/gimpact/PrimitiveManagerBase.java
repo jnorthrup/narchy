@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com

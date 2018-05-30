@@ -14,7 +14,7 @@ import java.util.function.Supplier;
 
 /**
  * 2D wavelet transform of input image
- * https://github.com/lessthanoptimal/BoofCV/blob/v0.23/demonstrations/src/boofcv/demonstrations/transform/wavelet/WaveletVisualizeApp.java
+ * https:
  */
 public class WaveletBag implements Bitmap2D {
 
@@ -30,7 +30,7 @@ public class WaveletBag implements Bitmap2D {
 
     WaveletTransform<GrayF32,GrayF32,WlCoef_F32> waveletTran =
             FactoryWaveletTransform.create(GrayF32.class, GFactoryWavelet.haar(GrayF32.class), NUM_LEVELS,0,255);
-    //private BufferedImage output;
+    
     private GrayF32 imageWavelet;
 
 
@@ -48,7 +48,7 @@ public class WaveletBag implements Bitmap2D {
 
     @Override
     public void update() {
-        //image = ConvertBufferedImage.convertFrom(source.get(), image);
+        
         BufferedImage src = source.get();
         if (image == null || image.getWidth()!=src.getWidth() || image.getHeight()!=src.getHeight())
             image = new GrayF32(src.getWidth(), src.getHeight());
@@ -57,9 +57,9 @@ public class WaveletBag implements Bitmap2D {
         imageWavelet = waveletTran.transform(image, imageWavelet);
         UtilWavelet.adjustForDisplay(imageWavelet, waveletTran.getLevels(), 1f);
 
-        //output = VisualizeImageData.grayMagnitude(imageWavelet, output,255);
-//        px = imageWavelet.getWidth();
-//        py = imageWavelet.getHeight();
+        
+
+
     }
 
     public static void bufferedToGray(BufferedImage src, float[] data, int dstStartIndex, int dstStride) {

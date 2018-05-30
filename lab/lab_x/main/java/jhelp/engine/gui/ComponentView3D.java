@@ -45,13 +45,13 @@ public class ComponentView3D
     */
    public ComponentView3D(final int width, final int height)
    {
-      // Create the renderer
+      
       this.sceneRenderer = new JHelpSceneRenderer();
-      // Create OpenGL context
+      
       this.canvas = CanvasOpenGLMaker.CANVAS_OPENGL_MAKER.newGLCanvas();
       this.canvas.setAutoSwapBufferMode(false);
       this.canvas.addGLEventListener(this.sceneRenderer);
-      // Set the dimension
+      
       final Dimension dimension = new Dimension(width, height);
       this.canvas.setSize(dimension);
       this.canvas.setPreferredSize(dimension);
@@ -61,7 +61,7 @@ public class ComponentView3D
       this.setPreferredSize(dimension);
       this.setMaximumSize(dimension);
       this.setMinimumSize(dimension);
-      // Link the component and the OpenGL
+      
       this.setLayout(new BorderLayout());
       this.add(this.canvas, BorderLayout.CENTER);
       this.sceneRenderer.start(this.canvas);
@@ -86,10 +86,10 @@ public class ComponentView3D
     */
    public ComponentView3D(final int width, final int height, final boolean doubleBuffered, final boolean hardwareAccelerated, final int nuberOfSample, final int depthBits)
    {
-      // Create the renderer
+      
       this.sceneRenderer = new JHelpSceneRenderer();
-      // OpenGL capabilities
-      //final GLCapabilities capabilities = new GLCapabilities(GLProfile.getMaximum(true));
+      
+      
 
       GLCapabilities capabilities = new GLCapabilities(GLProfile.getDefault());
       capabilities.setHardwareAccelerated(true);
@@ -97,20 +97,20 @@ public class ComponentView3D
 
 
       capabilities.setNumSamples(1);
-      //capabilities.setBackgroundOpaque(false);
+      
 
-      //capabilities.setDoubleBuffered(doubleBuffered);
-      //capabilities.setHardwareAccelerated(hardwareAccelerated);
+      
+      
       if(nuberOfSample > 0)
       {
          capabilities.setNumSamples(nuberOfSample);
       }
       capabilities.setDepthBits(depthBits);
-      // Create OpenGL context
+      
       this.canvas = CanvasOpenGLMaker.CANVAS_OPENGL_MAKER.newGLCanvas(capabilities);
       this.canvas.setAutoSwapBufferMode(false);
       this.canvas.addGLEventListener(this.sceneRenderer);
-      // Set the dimension
+      
       final Dimension dimension = new Dimension(width, height);
       this.canvas.setSize(dimension);
       this.canvas.setPreferredSize(dimension);
@@ -120,7 +120,7 @@ public class ComponentView3D
       this.setPreferredSize(dimension);
       this.setMaximumSize(dimension);
       this.setMinimumSize(dimension);
-      // Link the component and the OpenGL
+      
       this.setLayout(new BorderLayout());
       this.add(this.canvas, BorderLayout.CENTER);
       this.sceneRenderer.start(this.canvas);

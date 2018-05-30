@@ -17,7 +17,7 @@ public class TimeStretchGui extends JPanel {
 		this.player = player;
 		setLayout(null);
 		setSize(200, 340);
-//		setLayout(new FlowLayout(FlowLayout.LEFT));
+
 		
 		Button playButton = new Button("Play");
 		playButton.addActionListener(e -> play());
@@ -26,27 +26,27 @@ public class TimeStretchGui extends JPanel {
 		stopButton.addActionListener(e -> stop());
 		
 
-//		Button openFileButton = new Button("Open...");
-//		openFileButton.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				showFileDialog();
-//			}
-//		});
 
-		// Create the label.
+
+
+
+
+
+
+		
 		JLabel sliderLabel = new JLabel("Tempo", JLabel.CENTER);
 		sliderLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-		// Create the slider.
+		
 		tempoSlider = new JSlider(JSlider.VERTICAL, 0, 100, 50);
 		tempoSlider.setMajorTickSpacing(10);
 		tempoSlider.setMinorTickSpacing(1);
 		tempoSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 		tempoSlider.addChangeListener(e -> updateStretchFactor(1.0F - (tempoSlider.getValue() - 50) / 100.0));
 
-		// Put everything together.
-//		add(openFileButton);
-//		openFileButton.setBounds(0, 0, 200, 40);
+		
+
+
 		add(sliderLabel);
 		sliderLabel.setBounds(0, 40, 200, 20);
 		add(tempoSlider);
@@ -59,7 +59,7 @@ public class TimeStretchGui extends JPanel {
 	}
 
 	private void updateStretchFactor(double value) {
-		//player.setStretchFactor(value);
+		
 	}
 
 	@SuppressWarnings("unused")
@@ -80,11 +80,11 @@ public class TimeStretchGui extends JPanel {
 	}
 
 	private void play() {
-		//*player.play();
+		
 	}
 	
 	private void stop() {
 
-        //player.stop();
+        
 	}
 }

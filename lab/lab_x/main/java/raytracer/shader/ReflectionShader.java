@@ -64,25 +64,25 @@ public class ReflectionShader implements Shader
     @Override
     public ColorEx shade(Intersection intersection)
     {
-        // Fortf�hrenden Strahl erzeugen:
+        
         Ray ray = Ray.continueRay(intersection.ray);
         if (ray == null)
             return intersection.scene.getBackgroundColor();
 
-        Vector3d normal = intersection.getNormal();     // Bereits normalisiert
+        Vector3d normal = intersection.getNormal();     
         Vector3d x = new Vector3d(ray.dir);
         
-        // Richtung der Normale ermitteln. Dadurch wird festgelegt, ob der
-        // Strahl in dieses Objekt eindringt oder ob er es verl�sst:
-        // (Positiv bei Eindringen, negativ bei Verlassen.)
+        
+        
+        
         byte sign = (byte)Math.signum(-normal.dot(x));
         
-        // Aktuellen Lichtbrechnungsindex berechnen:
+        
         float n1 = refractiveIndex;
         float n2 = (ray.refractionStack.empty()) ?
                 RefractionShader.INDEX_VACUUM : ray.refractionStack.peek();
 
-        // Falls eine Brechung statt findet:
+        
         float mirrorRatio;
         if (FloatingPoint.compareTolerated(n1, n2) == 0)
             mirrorRatio = 0.0f;
@@ -95,16 +95,16 @@ public class ReflectionShader implements Shader
             Vector3d k = new Vector3d();
             k.scaleAdd(nDotX/nDotN, normal, x);
             
-            // H�he des neuen Richtungsvektors bez�glich der Objekt-Ebene
-            // bestimmen. Falls diese '< 0', findet eine Totalreflexion statt:
+            
+            
             double height2 = 1.0-k.dot(k);
             if (height2 < 0.0)
                 height2 = 0.0;
             
-            // Gebrochenen Strahl bestimmen:
+            
             ray.dir.scaleAdd((double) -(int) sign *Math.sqrt(height2/nDotN), normal, k);
             
-            // Reflektiven Anteil nach der Fresnel'schen Formel berechnen:
+            
             float cosalpha = (float)Math.abs(normal.dot(intersection.ray.dir)/intersection.ray.dir.length());
             float cosbeta = (float)Math.abs(normal.dot(ray.dir)/ray.dir.length());
             float Rs = (n1*cosalpha-n2*cosbeta)/(n1*cosalpha+n2*cosbeta);
@@ -112,20 +112,20 @@ public class ReflectionShader implements Shader
             mirrorRatio = (Rs*Rs+Rp*Rp)/2.0f;
         }
             
-        // Farbwerte des reflektiven und des gebrochenen Strahls bestimmen und
-        // anteilig verrechnen:
+        
+        
         float savedWeight = intersection.ray.weight;
         ColorEx color = new ColorEx();
-        //System.out.println(mirrorRatio);
+        
         if ((double) mirrorRatio < 1.0)
         {
-            // "Normal" geshaderte Farbe berechnen:
+            
             intersection.ray.weight = savedWeight*(1.0f-mirrorRatio);
             color.scale(1.0f-mirrorRatio, subShader.shade(intersection));
         }
         if ((double) mirrorRatio > 0.0)
         {
-            // Gespiegelte Farbe berechnen:
+            
             intersection.ray.weight = savedWeight*mirrorRatio;
             color.scaleAdd(mirrorRatio, mirrorShader.shade(intersection), color);
         }
@@ -135,24 +135,24 @@ public class ReflectionShader implements Shader
 
         /*float savedWeight = intersection.ray.weight;
         
-        // Anteile des gespiegelten Strahls und des "normal" geshaderten Strahls
-        // am Farbwert des Objekts berechnen:
+        
+        
         Vector3d n = intersection.getNormal();
         Vector3d v = new Vector3d();
         v.cross(n, intersection.ray.dir);
         float mirrorRatio = (float)Math.pow(v.length()/(n.length()*intersection.ray.dir.length()), reflectionExponent);
         
-        // Gespiegelte Farbe berechnen:
+        
         intersection.ray.weight = savedWeight*mirrorRatio;
         ColorEx mirrorColor = mirrorShader.shade(intersection);
         
-        // "Normal" geshaderte Farbe berechnen:
+        
         intersection.ray.weight = savedWeight*(1.0f-mirrorRatio);
         ColorEx materialColor = subShader.shade(intersection);
         
         intersection.ray.weight = savedWeight;
         
-        // Farbe berechnen und zur�ckgeben:
+        
         materialColor.scale(1.0f-mirrorRatio);
         mirrorColor.scaleAdd(mirrorRatio, materialColor);
         return mirrorColor;*/

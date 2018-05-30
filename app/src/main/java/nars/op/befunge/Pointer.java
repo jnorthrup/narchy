@@ -15,7 +15,7 @@ public class Pointer {
     private final char HEIGHT = 25;
     private final Board board;
 
-    //TODO use EnumMap
+    
     @NotNull
     private final Map<Character, Runnable> map;
     @NotNull

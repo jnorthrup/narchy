@@ -165,7 +165,7 @@ public class LibraryManager
 								paths[i].lastIndexOf(File.separator) + 1));
 					urls[i] = (file.toURI().toURL());
 				}
-				// JVM
+				
 				if (!System.getProperty("java.vm.name").equals("IKVM.NET"))
 				{
 					loader = URLClassLoader.newInstance(urls, getClass()
@@ -173,35 +173,35 @@ public class LibraryManager
 					lib = (Library) Class.forName(className, true, loader)
 							.newInstance();
 				}
-//				else
-//				// .NET
-//				{
-//					Assembly asm = null;
-//					boolean classFound = false;
-//					className = "cli."
-//							+ className.substring(0, className.indexOf(","))
-//									.trim();
-//					for (int i = 0; i < paths.length; i++)
-//					{
-//						try
-//						{
-//							asm = Assembly.LoadFrom(paths[i]);
-//							loader = new AssemblyCustomClassLoader(asm, urls);
-//							lib = (Library) Class.forName(className, true, loader).newInstance();
-//							if (lib != null)
-//							{
-//								classFound = true;
-//								break;
-//							}
-//						} catch (Exception e)
-//						{
-//							e.printStackTrace();
-//							continue;
-//						}
-//					}
-//					if (!classFound)
-//						throw new InvalidLibraryException(className, -1, -1);
-//				}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			}
 
 			String name = lib.getName();
@@ -332,24 +332,24 @@ public class LibraryManager
 			String name = lib.getName();
 			lib.setEngine(prolog);
 			currentLibraries.add(lib);
-			// set primitives
+			
 			primitiveManager.start(lib);
-			// set theory
+			
 			String th = lib.getTheory();
 			if (th != null)
 			{
 				theoryManager.consult(new Theory(th), false, name);
 				theoryManager.solveTheoryGoal();
 			}
-			// in current theory there could be predicates and functors
-			// which become builtins after lib loading
+			
+			
 			theoryManager.rebindPrimitives();
-			//
+			
 			return lib;
 		} catch (InvalidTheoryException ex)
 		{
-			// System.out.println(ex.getMessage());
-			// System.out.println("line "+ex.line+"  "+ex.pos);
+			
+			
 			throw new InvalidLibraryException(lib.getName(), ex.line, ex.pos);
 		} catch (Exception ex)
 		{

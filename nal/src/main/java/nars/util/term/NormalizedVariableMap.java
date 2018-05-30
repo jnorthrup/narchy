@@ -84,32 +84,32 @@ public class NormalizedVariableMap<X> extends AbstractMap<Variable, X> {
     }
 
 
-//    @Override
-//    public X computeIfAbsent(Term key, Function<? super Term, ? extends X> mappingFunction) {
-//        return null;
-//    }
 
-//    /**
-//     * Extended indexing and aggregate functionality
-//     * TODO - computes Subterms-like aggregates on the keySet
-//     */
-//    static class TermHashMapX<X> extends TermHashMap<X> {
-//        /**
-//         * an accumulated structure of the keys, lazily updated
-//         */
-//        public int structure() {
-//            throw new TODO();
-//        }
-//
-//        /**
-//         * an accumulated structure of the keys, lazily updated
-//         */
-//        public int volume() {
-//            throw new TODO();
-//        }
-//
-//        //other Subterms methods
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static class AnonMapEntrySet<X> extends AbstractSet<Entry<Variable, X>> {
         private final ShortObjectHashMap<X> id;

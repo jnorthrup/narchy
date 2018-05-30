@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,7 +36,7 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
      * Private constructor to force use of {@link #notify()}.
      */
     private NodeComparator() {
-        // do nothing
+        
     }
 
     @Override
@@ -63,11 +63,11 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
             } else if (t1 == NodeType.FUNCTION) {
                 FunctionNode f1 = (FunctionNode)o1;
                 FunctionNode f2 = (FunctionNode)o2;
-                ///...
+                
             }
 
-            //last option
-            return o1.toString().compareTo(o2.toString());  //HACK
+            
+            return o1.toString().compareTo(o2.toString());  
 
         } else if (t1 == NodeType.CONSTANT) {
             return -1;

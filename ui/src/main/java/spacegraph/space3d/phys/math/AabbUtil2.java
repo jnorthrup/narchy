@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -100,7 +100,7 @@ public class AabbUtil2 {
 					}
 					else if ((targetOutcode & bit) != 0) {
 						float lambda = (-VectorUtil.coord(source, i) - VectorUtil.coord(aabbHalfExtent, i) * normSign) / VectorUtil.coord(r, i);
-						//btSetMin(lambda_exit, lambda);
+						
 						lambda_exit = Math.min(lambda_exit, lambda);
 					}
 					bit <<= 1;

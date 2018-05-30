@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: glconfig_t.java,v 1.3 2006-11-21 00:51:22 cawe Exp $
+
+
 
 package jake2.render;
 

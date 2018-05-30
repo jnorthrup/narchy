@@ -11,9 +11,9 @@ public final class OpIs extends MatchConstraint {
     private final Op op;
 
     public static OpIs the(Term target, /*@NotNull*/ Op o) {
-//        if (o.atomic)
-//            return new OpIsAtomic(target, o);
-//        else
+
+
+
             return new OpIs(target, o);
     }
 
@@ -34,19 +34,19 @@ public final class OpIs extends MatchConstraint {
 
 
 
-//    static class OpIsAtomic extends OpIs {
-//        public OpIsAtomic(Term target, Op o) {
-//            super(target, o);
-//        }
-//
-//        @Override
-//        public boolean invalid(Term y, Unify f) {
-//            if (y instanceof Anom)
-//                y = (((Derivation)f).anon.get(y)); //resolve original term
-//
-//            return super.invalid(y, f);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

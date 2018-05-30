@@ -19,11 +19,11 @@ public class DDList<E> implements Iterable<E> {
 
     private final DDNodePool<E> pool;
 
-    int size;        // number of elements on list
+    int size;        
 
     int id;
     public final HeadSentinel<E> pre;
-    public final TailSentinel<E> post;    // sentinels before first and after last item
+    public final TailSentinel<E> post;    
 
 
     public DDList(int id, DDNodePool<E> nodepool) {
@@ -43,7 +43,7 @@ public class DDList<E> implements Iterable<E> {
     protected void _clear() {
 
         if ((size > 0) && (pool.isEnabled())) {
-            //TODO items may not need to be detached in this iterative loop if the endpoints can be attached to their conclusions
+            
             DD current = getFirstNode();
             do {
                 DD next = current.next;
@@ -59,8 +59,8 @@ public class DDList<E> implements Iterable<E> {
 
     public void delete() {
         clear();
-//        pre.next = null;
-//        post.prev = null;
+
+
     }
 
 
@@ -71,7 +71,7 @@ public class DDList<E> implements Iterable<E> {
 
     public boolean isEmpty() {
         /*
-        //THIS CAN OCCURR IN THE MIDDLE OF AN 'UPDATE' TRANSACTION, SO EITHER
+        
         DISABLE THIS TEST DURING TRANSACTION OR REMOVE IT
         if (Parameters.DEBUG) {
             if ((size ==0) && (pre.next!=post) && (post.prev!=pre))
@@ -94,7 +94,7 @@ public class DDList<E> implements Iterable<E> {
 
 
     public DD<E> getFirstNode() {
-        //if (isEmpty()) return null;
+        
         DD<E> x = pre.next;
         if (x instanceof Sentinel) {
             return x.next;
@@ -102,7 +102,7 @@ public class DDList<E> implements Iterable<E> {
         return x;
     }
     public DD<E> getLastNode() {
-        //if (isEmpty()) return null;
+        
         DD<E> x = post.prev;
         if (x instanceof Sentinel) return x.prev;
         return x;
@@ -115,11 +115,11 @@ public class DDList<E> implements Iterable<E> {
     }
 
     public E getFirst() {
-        //if (isEmpty()) return null;
+        
         return pre.next.item;
     }
     public E getLast() {
-        //if (isEmpty()) return null;
+        
         return post.prev.item;
     }
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -193,7 +193,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 bo[0] = bi[0] * b0 - a1 * y1 - a2 * y2;
                 bo[1] = bi[1] * b0 - a1 * bo[0] - a2 * y1;
 
-                // main loop
+                
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                     bo[currsamp] = bi[currsamp] * b0 - a1 * bo[currsamp - 1]
                             - a2 * bo[currsamp - 2];
@@ -224,7 +224,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 calcVals();
                 bo[1] = bi[1] * b0 - a1 * bo[0] - a2 * y1;
 
-                // main loop
+                
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
 
                     cosw = (float) (Math.cos(_2pi_over_sr
@@ -249,7 +249,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
 
         } else {
 
-            // multi-channel case
+            
 
             if (isFreqStatic && isResStatic) {
                 for (int i = 0; i < channels; i++) {
@@ -259,7 +259,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                     bo[0] = bi[0] * b0 - a1 * y1m[i] - a2 * y2m[i];
                     bo[1] = bi[1] * b0 - a1 * bo[0] - a2 * y1m[i];
 
-                    // main loop
+                    
                     for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                         bo[currsamp] = bi[currsamp] * b0 - a1
                                 * bo[currsamp - 1] - a2 * bo[currsamp - 2];
@@ -276,7 +276,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                 freqUGen.update();
                 resUGen.update();
 
-                // first sample
+                
                 cosw = (float) (Math.cos(_2pi_over_sr
                         * (freq = freqUGen.getValue(0, 0))));
                 if ((res = resUGen.getValue(0, 0)) > .999999f) {
@@ -289,7 +289,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                     bufOut[i][0] = bufIn[i][0] * b0 - a1 * y1m[i] - a2 * y2m[i];
                 }
 
-                // second sample
+                
                 cosw = (float) (Math.cos(_2pi_over_sr
                         * (freq = freqUGen.getValue(0, 1))));
                 if ((res = resUGen.getValue(0, 1)) > .999999f) {
@@ -303,7 +303,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
                             * y1m[i];
                 }
 
-                // main loop
+                
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
 
                     cosw = (float) (Math.cos(_2pi_over_sr

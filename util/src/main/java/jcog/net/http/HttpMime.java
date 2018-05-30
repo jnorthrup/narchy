@@ -12,12 +12,12 @@ class HttpMime {
     private static final HashMap<String, String> mime = new HashMap<>();
 
     static {
-        // Archives
+        
         mime.put("7z", "application/x-7z-compressed");
         mime.put("jar", "application/java-archive");
         mime.put("zip", "application/zip");
 
-        // Images
+        
         mime.put("bmp", "image/x-ms-bmp");
         mime.put("gif", "image/gif");
         mime.put("jpe", "image/jpeg");
@@ -29,7 +29,7 @@ class HttpMime {
         mime.put("tif", "image/tiff");
         mime.put("tiff", "image/tiff");
 
-        // Source code
+        
         mime.put("css", "text/css; charset=UTF-8");
         mime.put("htc", "text/x-component; charset=UTF-8");
         mime.put("htm", "text/html; charset=UTF-8");
@@ -48,7 +48,7 @@ class HttpMime {
         mime.put("xspf", "application/xspf+xml; charset=UTF-8");
         mime.put("xul", "application/vnd.mozilla.xul+xml; charset=UTF-8");
 
-        // Plain text & Config
+        
         mime.put("cfg", "text/plain; charset=UTF-8");
         mime.put("conf", "text/plain; charset=UTF-8");
         mime.put("csv", "text/csv; charset=UTF-8");
@@ -58,16 +58,16 @@ class HttpMime {
         mime.put("txt", "text/plain; charset=UTF-8");
         mime.put("yaml", "text/x-yaml; charset=UTF-8");
 
-        // Java
+        
         mime.put("class", "application/java-vm");
         mime.put("ser", "application/java-serialized-object");
 
-        // Fonts
+        
         mime.put("woff", "application/x-font-woff");
         mime.put("ttf", "application/x-font-ttf");
 
 
-        // Audio
+        
         mime.put("flac", "audio/flac");
         mime.put("kar", "audio/midi");
         mime.put("mid", "audio/midi");
@@ -77,14 +77,14 @@ class HttpMime {
         mime.put("spx", "audio/ogg");
         mime.put("wav", "audio/x-wav");
 
-        // Video
+        
         mime.put("ogv", "video/ogg");
         mime.put("mng", "video/x-mng");
 
-        // Torrent
+        
         mime.put("torrent", "application/x-bittorrent");
 
-        // LibreOffice
+        
         mime.put("odb", "application/vnd.oasis.opendocument.database");
         mime.put("odf", "application/vnd.oasis.opendocument.formula");
         mime.put("odg", "application/vnd.oasis.opendocument.graphics");
@@ -100,7 +100,7 @@ class HttpMime {
         mime.put("ott", "application/vnd.oasis.opendocument.text-template");
         mime.put("odc", "application/vnd.oasis.opendocument.chart");
 
-        // Adobe crap
+        
         mime.put("pdf", "application/pdf");
     }
 
@@ -111,7 +111,7 @@ class HttpMime {
      * @return A mime type string, for example "text/html; charset=UTF-8"
      */
     @HttpUtil.ThreadSafe
-    // The HashMap can not be modified after static initialization and is thus thread safe (http://docs.oracle.com/javase/6/docs/api/java/util/HashMap.html)
+    
     private static String getMime(String extension) {
         return mime.getOrDefault(extension, "application/octet-stream");
     }

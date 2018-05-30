@@ -37,10 +37,10 @@ public class NotEqual extends Comparison {
         
         boolean expr1Parens = false;
         if (thisClassOrder > expr1.printLevelRight()) expr1Parens = true;
-        // if (debug) System.err.println("Division toString(): for expr=" + expr1 + ", printLevelRight=" + expr1.printLevelRight());
+        
         boolean expr2Parens = false;
         if (thisClassOrder > expr2.printLevelLeft()) expr2Parens = true;
-        // if (debug) System.err.println("Division toString(): for expr=" + expr2 + ", printLevelLeft=" + expr2.printLevelLeft());
+        
 
         String string = "";
         string = string + (expr1Parens ? "(" : "") + expr1.pretty() + (expr1Parens ? ")" : "");

@@ -24,7 +24,7 @@
 
  */
 
-// Created on 31.01.2004 by RST.
+
 package jake2.client;
 
 import jake2.Defines;
@@ -75,7 +75,7 @@ public class CL_newfx {
         dl.color[2] = b;
     }
 
-  	// stack variable
+  	
   	private static final float[] move = {0, 0, 0};
   	private static final float[] vec = {0, 0, 0};
   	private static final float[] right = {0, 0, 0};
@@ -85,12 +85,12 @@ public class CL_newfx {
      */
     static void DebugTrail(float[] start, float[] end) {
         float len;
-        //		int j;
+        
         cparticle_t p;
         float dec;
-        //		int i;
-        //		float d, c, s;
-        //		float[] dir;
+        
+        
+        
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
@@ -98,10 +98,10 @@ public class CL_newfx {
 
         Math3D.MakeNormalVectors(vec, right, up);
 
-        //		VectorScale(vec, RT2_SKIP, vec);
+        
 
-        //		dec = 1.0;
-        //		dec = 0.75;
+        
+        
         dec = 3;
         Math3D.VectorScale(vec, dec, vec);
         Math3D.VectorCopy(start, move);
@@ -121,7 +121,7 @@ public class CL_newfx {
             Math3D.VectorClear(p.vel);
             p.alpha = 1.0f;
             p.alphavel = -0.1f;
-            //			p.alphavel = 0;
+            
             p.color = 0x74 + (Lib.rand() & 7);
             Math3D.VectorCopy(move, p.org);
             /*
@@ -133,8 +133,8 @@ public class CL_newfx {
 
     }
 
-  	// stack variable
-    // move, vec
+  	
+    
     static void ForceWall(float[] start, float[] end, int color) {
         float len;
         int j;
@@ -146,7 +146,7 @@ public class CL_newfx {
 
         Math3D.VectorScale(vec, 4, vec);
 
-        // FIXME: this is a really silly way to have a loop
+        
         while (len > 0) {
             len -= 4;
 
@@ -178,8 +178,8 @@ public class CL_newfx {
         }
     }
 
-  	// stack variable
-    // move, vec
+  	
+    
     /*
      * =============== CL_BubbleTrail2 (lets you control the # of bubbles by
      * setting the distance between the spawns)
@@ -219,15 +219,15 @@ public class CL_newfx {
                 p.vel[j] = Lib.crand() * 10;
             }
             p.org[2] -= 4;
-            //			p.vel[2] += 6;
+            
             p.vel[2] += 20;
 
             Math3D.VectorAdd(move, vec, move);
         }
     }
 
-  	// stack variable
-    // move, vec, right, up
+  	
+    
     private static final float[] dir = {0, 0, 0};
     private static final float[] end = {0, 0, 0};
     
@@ -249,15 +249,15 @@ public class CL_newfx {
         Math3D.VectorSubtract(end, start, vec);
         len = Math3D.VectorNormalize(vec);
 
-        // FIXME - pmm - these might end up using old values?
-        //		MakeNormalVectors (vec, right, up);
+        
+        
         Math3D.VectorCopy(Globals.cl.v_right, right);
         Math3D.VectorCopy(Globals.cl.v_up, up);
-        if (Globals.vidref_val == Defines.VIDREF_GL) { // GL mode
+        if (Globals.vidref_val == Defines.VIDREF_GL) { 
             Math3D.VectorMA(move, -0.5f, right, move);
             Math3D.VectorMA(move, -0.5f, up, move);
         }
-        // otherwise assume SOFT
+        
 
         ltime = (float) Globals.cl.time / 1000.0f;
         start_pt = ltime * 96.0f % step;
@@ -265,11 +265,11 @@ public class CL_newfx {
 
         Math3D.VectorScale(vec, step, vec);
 
-        //		Com_Printf ("%f\n", ltime);
+        
         rstep = (float) (Math.PI / 10.0);
         float M_PI2 = (float) (Math.PI * 2.0);
         for (i = (int) start_pt; i < len; i += step) {
-            if (i > step * 5) // don't bother after the 5th ring
+            if (i > step * 5) 
                 break;
 
             for (rot = 0; rot < M_PI2; rot += rstep) {
@@ -284,15 +284,15 @@ public class CL_newfx {
 
                 p.time = Globals.cl.time;
                 Math3D.VectorClear(p.accel);
-                //				rot+= fmod(ltime, 12.0)*M_PI;
-                //				c = cos(rot)/2.0;
-                //				s = sin(rot)/2.0;
-                //				variance = 0.4 + ((float)rand()/(float)RAND_MAX) *0.2;
+                
+                
+                
+                
                 variance = 0.5f;
                 c = (float) (Math.cos(rot) * variance);
                 s = (float) (Math.sin(rot) * variance);
 
-                // trim it so it looks like it's starting at the origin
+                
                 if (i < 10) {
                     Math3D.VectorScale(right, c * (i / 10.0f), dir);
                     Math3D.VectorMA(dir, s * (i / 10.0f), up, dir);
@@ -302,13 +302,13 @@ public class CL_newfx {
                 }
 
                 p.alpha = 0.5f;
-                //		p.alphavel = -1.0 / (1+frand()*0.2);
+                
                 p.alphavel = -1000.0f;
-                //		p.color = 0x74 + (rand()&7);
+                
                 p.color = 223 - (Lib.rand() & 7);
                 for (j = 0; j < 3; j++) {
                     p.org[j] = move[j] + dir[j] * 3;
-                    //			p.vel[j] = dir[j]*6;
+                    
                     p.vel[j] = 0;
                 }
             }
@@ -316,7 +316,7 @@ public class CL_newfx {
         }
     }
 
-  	// stack variable
+  	
     private static final float[] r = {0, 0, 0};
     private static final float[] u = {0, 0, 0};
     /*
@@ -331,8 +331,8 @@ public class CL_newfx {
         cparticle_t p;
         float d;
 
-        //		vectoangles2 (dir, angle_dir);
-        //		AngleVectors (angle_dir, f, r, u);
+        
+        
 
         Math3D.MakeNormalVectors(dir, r, u);
 
@@ -349,7 +349,7 @@ public class CL_newfx {
 
             for (j = 0; j < 3; j++) {
                 p.org[j] = org[j] + magnitude * 0.1f * Lib.crand();
-                //				p.vel[j] = dir[j]*magnitude;
+                
             }
             Math3D.VectorScale(dir, magnitude, p.vel);
             d = Lib.crand() * magnitude / 3;
@@ -365,17 +365,17 @@ public class CL_newfx {
         }
     }
 
-  	// stack variable
-    // r, u, dir
+  	
+    
     static void ParticleSteamEffect2(cl_sustain_t self)
-    //	  float[] org, float[] dir, int color, int count, int magnitude)
+    
     {
         int i, j;
         cparticle_t p;
         float d;
 
-        //		vectoangles2 (dir, angle_dir);
-        //		AngleVectors (angle_dir, f, r, u);
+        
+        
 
         Math3D.VectorCopy(self.dir, dir);
         Math3D.MakeNormalVectors(dir, r, u);
@@ -393,7 +393,7 @@ public class CL_newfx {
 
             for (j = 0; j < 3; j++) {
                 p.org[j] = self.org[j] + self.magnitude * 0.1f * Lib.crand();
-                //				p.vel[j] = dir[j]*magnitude;
+                
             }
             Math3D.VectorScale(dir, self.magnitude, p.vel);
             d = Lib.crand() * self.magnitude / 3;
@@ -410,8 +410,8 @@ public class CL_newfx {
         self.nextthink += self.thinkinterval;
     }
 
-  	// stack variable
-    // move, vec, right, up 
+  	
+    
     private static final float[] forward = {0, 0, 0};
     private static final float[] angle_dir = {0, 0, 0};
     /*
@@ -434,7 +434,7 @@ public class CL_newfx {
         dec = 3;
         Math3D.VectorScale(vec, 3, vec);
 
-        // FIXME: this is a really silly way to have a loop
+        
         while (len > 0) {
             len -= dec;
 
@@ -463,8 +463,8 @@ public class CL_newfx {
         }
     }
 
-    // stack variable
-    // dir
+    
+    
     static void Tracker_Shell(float[] origin) {
         cparticle_t p;
 
@@ -492,8 +492,8 @@ public class CL_newfx {
         }
     }
 
-    // stack variable
-    // dir
+    
+    
     static void MonsterPlasma_Shell(float[] origin) {
         cparticle_t p;
 
@@ -518,15 +518,15 @@ public class CL_newfx {
             Math3D.VectorNormalize(dir);
 
             Math3D.VectorMA(origin, 10, dir, p.org);
-            //			VectorMA(origin, 10*(((rand () & 0x7fff) / ((float)0x7fff))),
-            // dir, p.org);
+            
+            
         }
     }
 
     private static final int[] wb_colortable = { 2 * 8, 13 * 8, 21 * 8, 18 * 8 };
 
-    // stack variable
-    // dir
+    
+    
     static void Widowbeamout(cl_sustain_t self) {
         int i;
         cparticle_t p;
@@ -556,15 +556,15 @@ public class CL_newfx {
             Math3D.VectorNormalize(dir);
 
             Math3D.VectorMA(self.org, (45.0f * ratio), dir, p.org);
-            //			VectorMA(origin, 10*(((rand () & 0x7fff) / ((float)0x7fff))),
-            // dir, p.org);
+            
+            
         }
     }
 
     private static final int[] nb_colortable = { 110, 112, 114, 116 };
 
-    // stack variable
-    // dir
+    
+    
     static void Nukeblast(cl_sustain_t self) {
         int i;
         cparticle_t p;
@@ -594,15 +594,15 @@ public class CL_newfx {
             Math3D.VectorNormalize(dir);
 
             Math3D.VectorMA(self.org, (200.0f * ratio), dir, p.org);
-            //			VectorMA(origin, 10*(((rand () & 0x7fff) / ((float)0x7fff))),
-            // dir, p.org);
+            
+            
         }
     }
 
     private static final int[] ws_colortable = { 2 * 8, 13 * 8, 21 * 8, 18 * 8 };
 
-    // stack variable
-    // dir
+    
+    
     static void WidowSplash(float[] org) {
         int i;
         cparticle_t p;
@@ -633,8 +633,8 @@ public class CL_newfx {
 
     }
 
-    // stack variable
-    // move, vec
+    
+    
     /*
      * ===============
      *  CL_TagTrail
@@ -710,8 +710,8 @@ public class CL_newfx {
         }
     }
 
-    // stack variable
-    // r, u
+    
+    
     /*
      * =============== CL_ParticleSmokeEffect - like the steam effect, but
      * unaffected by gravity ===============
@@ -737,7 +737,7 @@ public class CL_newfx {
 
             for (j = 0; j < 3; j++) {
                 p.org[j] = org[j] + magnitude * 0.1f * Lib.crand();
-                //				p.vel[j] = dir[j]*magnitude;
+                
             }
             Math3D.VectorScale(dir, magnitude, p.vel);
             d = Lib.crand() * magnitude / 3;
@@ -789,8 +789,8 @@ public class CL_newfx {
         }
     }
 
-    // stack variable
-    // move, vec
+    
+    
     /*
      * =============== CL_BlasterTrail2
      * 
@@ -809,7 +809,7 @@ public class CL_newfx {
         dec = 5;
         Math3D.VectorScale(vec, 5, vec);
 
-        // FIXME: this is a really silly way to have a loop
+        
         while (len > 0) {
             len -= dec;
 

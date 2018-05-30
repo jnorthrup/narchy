@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Open-NARS.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Open-NARS.  If not, see <http:
  */
 package nars.truth;
 
@@ -60,10 +60,10 @@ public final class TruthFunctions {
         float c = w2cSafe((1 - t.freq()) * t.conf());
         return c >= minConf ? t(0, c) : null;
     }
-    //    public static float temporalIntersection(long now, long at, long bt) {
-//        //return BeliefTable.relevance(Math.abs(now-at) + Math.abs(now-bt), Math.abs(at-bt));
-//        return temporalIntersection(now, at, bt, 1f);
-//    }
+    
+
+
+
 
 
     /**
@@ -110,20 +110,20 @@ public final class TruthFunctions {
         return TruthFunctions2.analogyNew(a, b.freq(), b.conf(), minConf);
     }
 
-//    /**
-//     * {<S <=> M>, <M <=> P>} |- <S <=> P>
-//     *
-//     * @param a Truth value of the first premise
-//     * @param b Truth value of the second premise
-//     * @return Truth value of the conclusion
-//     */
-//    @Nullable
-//    public static Truth resemblance(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-//        float f1 = a.freq();
-//        float f2 = b.freq();
-//        float c = and(a.conf(), b.conf(), or(f1, f2));
-//        return (c < minConf) ? null : t(and(f1, f2), c);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * {<S ==> M>, <P ==> M>} |- <S ==> P>
@@ -133,21 +133,21 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
     public static Truth induction(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float c = w2cSafe(a.conf() * b.freqTimesConf()); //and(a.conf(),b.freq(),b.conf())
+        float c = w2cSafe(a.conf() * b.freqTimesConf()); 
         return c >= minConf ? $.t(a.freq(), c) : null;
     }
 
 
-//    /**
-//     * {<M ==> S>, <M ==> P>} |- <S ==> P>
-//     *
-//     * @param v1 Truth value of the first premise
-//     * @param v2 Truth value of the second premise
-//     * @return Truth value of the conclusion
-//     */
-//    public static Truth abduction(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
-//        return induction(v2, v1, minConf);
-//    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * {<M ==> S>, <P ==> M>} |- <S ==> P>
@@ -192,50 +192,50 @@ public final class TruthFunctions {
         return null;
     }
 
-//    /**
-//     * measures the similarity or coherence of two freqency values
-//     */
-//    public static float freqSimilarity(float aFreq, float bFreq) {
-//        if (aFreq == bFreq) return 1f;
-//
-//        //linear
-//        return 1f - Math.abs(aFreq - bFreq);
-//
-//        //TODO check this:
-//        //return Math.max((aFreq * bFreq), (1f - aFreq) * (1f - bFreq));
-//    }
 
-//    /**
-//     * if unipolar (ex: NAL 1), the condition frequency acts as a gate
-//     * if bipolar, the condition frequency does not affect confidence
-//     * but the polarity of the derivation only
-//     */
-//    @Nullable
-//    public static Truth desire(Truth goal, Truth cond, float minConf, boolean weak) {
-//
-//        float c = and(cond.conf(), goal.conf());
-//
-//        c *= cond.freq();
-//
-//        if (weak)
-//            c *= w2c(1.0f);
-//
-//        if (c < minConf) {
-//            return null;
-//        } else {
-//            float gf = goal.freq();
-//            float f;
-//            if (gf >= 0.5f) {
-//                f = 0.5f + ((gf - 0.5f) * cond.freq());
-//            } else {
-//                f = 0.5f - ((0.5f - gf) * cond.freq());
-//            }
-//            return t(f, c);
-//        }
-//
-////        float c = and(a.conf(), b.conf(), freqSimilarity(aFreq, bFreq));
-////        return c < minConf ? null : desire(aFreq, bFreq, c);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * A function specially designed for desire value [To be refined]
@@ -244,7 +244,7 @@ public final class TruthFunctions {
     public static Truth desireStrongOriginal(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float bFreq = b.freq();
         float c = and(a.conf(), b.conf(), bFreq);
-        //float c = w2cSafe(and(a.evi(), b.evi(), bFreq));
+        
         return c < minConf ? null : desire(a.freq(), bFreq, c);
     }
 
@@ -264,45 +264,45 @@ public final class TruthFunctions {
         return t(and(f1, f2), c);
     }
 
-//    /**
-//     * A function specially designed for desire value [To be refined]
-//     *
-//     * @param v1 Truth value of the first premise
-//     * @param v2 Truth value of the second premise
-//     * @return Truth value of the conclusion
-//     */
-//    public static Truth desireDed(final Truth v1, final Truth v2, float confMin) {
-//        final float f1 = v1.freq();
-//        final float f2 = v2.freq();
-//        final float c1 = v1.conf();
-//        final float c2 = v2.conf();
-//        final float f = and(f1, f2);
-//        final float c = and(c1, c2);
-//        if (c > confMin)
-//            return new PreciseTruth(f, c);
-//        else
-//            return null;
-//    }
 
-//    /**
-//     * A function specially designed for desire value [To be refined]
-//     *
-//     * @param v1 Truth value of the first premise
-//     * @param v2 Truth value of the second premise
-//     * @return Truth value of the conclusion
-//     */
-//    public static Truth desireInd(final Truth v1, final Truth v2, float confMin) {
-//        final float f1 = v1.freq();
-//        final float f2 = v2.freq();
-//        final float c1 = v1.conf();
-//        final float c2 = v2.conf();
-//        final float w = and(f2, c1, c2);
-//        final float c = w2c(w);
-//        if (c > confMin)
-//            return new PreciseTruth(f1, c);
-//        else
-//            return null;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /*In the confidence functions, each case for the conclusion to reach its
@@ -332,19 +332,19 @@ public final class TruthFunctions {
         }
     }
 
-//    /**
-//     * {<M --> S>, <M <-> P>} |- <M --> (S|P)>
-//     *
-//     * @param a Truth value of the first premise
-//     * @param b Truth value of the second premise
-//     * @return Truth value of the conclusion
-//     */
-//    @Nullable
-//    public static Truth union(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
-//        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
-//        float c = compConf(f1, c1, true, f2, c2, true);
-//        return (c < minConf) ? null : $.t(or(f1, f2), c);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * {<M --> S>, <M <-> P>} |- <M --> (S&P)>
@@ -360,21 +360,21 @@ public final class TruthFunctions {
         return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
 
-    //    /**
-//     * {(||, A, B), (--, B)} |- A
-//     * @param a Truth value of the first premise
-//     * @param b Truth value of the second premise
-//     * @return Truth value of the conclusion
-//     */
-//    @Nullable
-//    public static Truth reduceDisjunction(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-//        Truth nn = negation(b, minConf);
-//        if (nn == null) return null;
-//
-//        Truth ii = intersection(a, nn, minConf);
-//        if (ii == null) return null;
-//        return deductionR(ii, 1.0f, minConf);
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * {(--, (&&, A, B)), B} |- (--, A)
@@ -390,29 +390,29 @@ public final class TruthFunctions {
         Truth v11 = deductionR(i12, 1.0f, minConf);
         if (v11 == null) return null;
 
-        return v11.neg(); //negation(v11, minConf);
+        return v11.neg(); 
 
 
-//        AnalyticTruth x = deduction(
-//                intersection(negation(a), b),
-//                1f
-//        );
-//        if (x!=null)
-//            return x.negate();
-//        else
-//            return null;
+
+
+
+
+
+
+
+
     }
 
-//    /**
-//     * {(--, (&&, A, (--, B))), (--, B)} |- (--, A)
-//     * @param a Truth value of the first premise
-//     * @param b Truth value of the second premise
-//     * @return Truth value of the conclusion
-//     */
-//    @Nullable
-//    public static Truth reduceConjunctionNeg(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b,float minConf) {
-//        return reduceConjunction(a, negation(b, minConf), minConf);
-//    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * {(&&, <#x() ==> M>, <#x() ==> P>), S ==> M} |- <S ==> P>
@@ -423,7 +423,7 @@ public final class TruthFunctions {
      */
     public static Truth anonymousAnalogy(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float v0c = w2c(a.conf());
-        //since in analogy it will be and() with it, if it's already below then stop
+        
         return v0c < minConf ? null : TruthFunctions2.analogyNew(b, a.freq(), v0c, minConf);
     }
 
@@ -438,16 +438,16 @@ public final class TruthFunctions {
         if (c12 < minConf) return null;
         float f1 = a.freq(), f2 = b.freq();
         float f = and(x ? f1 : 1 - f1, y ? f2 : 1 - f2);
-        //float c = and(f, c12);
+        
         float c = (c12);
         return c < minConf ? null : t(z ? f : 1 - f, c);
     }
 
 
 
-//    public static float eternalize(float conf) {
-//        return w2c(conf);
-//    }
+
+
+
 
 
     public static float c2w(float c) {
@@ -509,29 +509,29 @@ public final class TruthFunctions {
     }
 
     public static float eternalize(float evi) {
-        return w2cSafe(evi); //evi as if conf
+        return w2cSafe(evi); 
     }
 }
 
-//    public static float projection(long sourceTime, long targetTime, long currentTime) {
-//        if (sourceTime == targetTime) {
-//            return 1f;
-//        } else {
-//            long denom = (abs(sourceTime - currentTime) + abs(targetTime - currentTime));
-//            return denom == 0 ? 1f : (abs(sourceTime - targetTime)) / (float) denom;
-//        }
-//    }
 
-//    /*@NotNull*/
-//    public static ProjectedTruth eternalize(/*@NotNull*/ Truth t) {
-//        return new ProjectedTruth(
-//                t.freq(),
-//                eternalize(t.conf()),
-//                Tense.ETERNAL
-//        );
-//    }
-//    public static float temporalProjection(long sourceTime, long targetTime, long currentTime) {
-//        long den = (abs(sourceTime - currentTime) + abs(targetTime - currentTime));
-//        if (den == 0) return 1f;
-//        return abs(sourceTime - targetTime) / (float)den;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

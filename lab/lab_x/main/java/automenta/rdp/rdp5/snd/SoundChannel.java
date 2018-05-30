@@ -23,7 +23,7 @@ public class SoundChannel extends VChannel {
     @Override
     public void process(AbstractRdpPacket data) throws RdesktopException, IOException,
             CryptoException {
-        // do nothing
+        
 
     }
 

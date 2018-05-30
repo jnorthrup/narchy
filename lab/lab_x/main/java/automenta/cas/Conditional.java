@@ -47,10 +47,10 @@ public class Conditional extends Operation {
         
         boolean thenParens = false;
         if (thisClassOrder > then.printLevelRight()) thenParens = true;
-        // if (debug) System.err.println("Division toString(): for expr=" + then + ", printLevelRight=" + then.printLevelRight());
+        
         boolean ifIsParens = false;
         if (thisClassOrder > ifIs.printLevelLeft()) ifIsParens = true;
-        // if (debug) System.err.println("Division toString(): for expr=" + ifIs + ", printLevelLeft=" + ifIs.printLevelLeft());
+        
 
         String string = "";
         string = string + (thenParens ? "(" : "") + then.pretty() + (thenParens ? ")" : "");

@@ -33,53 +33,53 @@ public class FasterList<X> extends FastList<X> {
          this.items = initialCapacity == 0 ? (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY : (X[])newArray(initialCapacity);
     }
 
-//    public FasterList(Object instance, String methodName, Object... mappedThru) {
-//        super(mappedThru.length);
-//        for (Object o : mappedThru) {
-//            if (o != null)
-//                add((X) Invoker.invoke(instance, methodName, o));
-//        }
-//    }
-//
-//    public FasterList(Object instance, String methodName, Iterable<Object> mappedThru) {
-//        super();
-//        for (Object o : mappedThru) {
-//            if (o != null)
-//                add((X) Invoker.invoke(instance, methodName, o));
-//        }
-//    }
-//
-//    public FasterList(Object instance, String methodName, Collection<Object> mappedThru) {
-//        super(mappedThru.size());
-//        for (Object o : mappedThru) {
-//            if (o != null)
-//                add((X) Invoker.invoke(instance, methodName, o));
-//        }
-//    }
-//
-//    public FasterList(Class<?> cls, String staticMethodName, Object... mappedThru) {
-//        super(mappedThru.length);
-//        for (Object o : mappedThru) {
-//            if (o != null)
-//                add((X) Invoker.invoke(cls, staticMethodName, o));
-//        }
-//    }
-//
-//    public FasterList(Class<?> cls, String staticMethodName, Iterable<Object> mappedThru) {
-//        super();
-//        for (Object o : mappedThru) {
-//            if (o != null)
-//                add((X) Invoker.invoke(cls, staticMethodName, o));
-//        }
-//    }
-//
-//    public FasterList(Class<?> cls, String staticMethodName, Collection<Object> mappedThru) {
-//        super(mappedThru.size());
-//        for (Object o : mappedThru) {
-//            if (o != null)
-//                add((X) Invoker.invoke(cls, staticMethodName, o));
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public FasterList(Iterable<X> copy) {
         this(copy, 0);
@@ -115,12 +115,12 @@ public class FasterList<X> extends FastList<X> {
         this.size = size;
     }
 
-//    public FasterList(Collection<X> copy, X... extra) {
-//        this.items = (X[])new Object[copy.size() + extra.length];
-//        addAll(copy);
-//        for (X x : extra)
-//            add(x);
-//    }
+
+
+
+
+
+
 
     /**
      * uses array directly
@@ -137,7 +137,7 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public int size() {
-        //assert (size >= 0);
+        
         return size;
     }
 
@@ -147,26 +147,26 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public X removeLast() {
-        //assert(size > 0);
+        
         if (size == 0)
             throw new ArrayIndexOutOfBoundsException();
         X[] ii = this.items;
         X x = ii[--size];
-        ii[size] = null; //GC help
+        ii[size] = null; 
         return x;
     }
 
-//    @Nullable
-//    public X removeLastElseNull() {
-//        int s = size;
-//        return s == 0 ? null : removeLast();
-//    }
+
+
+
+
+
 
     @Override
     public X get(int index) {
-        //if (index < this.size) {
+        
         return items[index];
-        //}
+        
     }
 
     @Nullable public X get(Random random) {
@@ -195,19 +195,19 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-//    public final boolean addIfCapacity(X newItem) {
-//        X[] ii = this.items;
-//        int s;
-//        if (ii.length <= (s = this.size++)) {
-//            return false;
-//        }
-//        ii[s] = newItem;
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public int indexOf(/*@NotNull*/ Object object) {
-        //return InternalArrayIterate.indexOf(this.items, this.size, object);
+        
 
         int s = size;
         if (s > 0) {
@@ -325,37 +325,37 @@ public class FasterList<X> extends FastList<X> {
         return min;
 
     }
-//    public X minBy(float mustExceed, FloatFunction<? super X> function) {
-//
-//        if (ArrayIterate.isEmpty(items)) {
-//            throw new NoSuchElementException();
-//        }
-//
-//        X min = null;
-//        float minValue = mustExceed;
-//        for (int i = 0; i < size; i++) {
-//            X next = items[i];
-//            float nextValue = function.floatValueOf(next);
-//            if (nextValue < minValue) {
-//                min = next;
-//                minValue = nextValue;
-//            }
-//        }
-//        return min;
-//
-//    }
 
-    //    /** use this to get the fast null-terminated version;
-//     *  slightly faster; use with caution
-//     * */
-//    public <E> E[] toNullTerminatedArray(E[] array) {
-//        array = toArrayUnpadded(array);
-//        final int size = this.size;
-//        if (array.length > size) {
-//            array[size] = null;
-//        }
-//        return array;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public final boolean removeIf(Predicate<? super X> filter) {
@@ -409,14 +409,14 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-//    /** does not pad the remaining values in the array with nulls */
-//    X[] toArrayUnpadded(X[] array) {
-//        if (array.length < this.size)        {
-//            //resize larger
-//            array = (X[]) Array.newInstance(array.getClass().getComponentType(), this.size);
-//        }
-//        return fillArray(array);
-//    }
+
+
+
+
+
+
+
+
 
     public final X[] fillArrayNullPadded(X[] array) {
         int s = size;
@@ -426,7 +426,7 @@ public class FasterList<X> extends FastList<X> {
         }
         System.arraycopy(items, 0, array, 0, s);
         if (s < l)
-            Arrays.fill(array, s, l, null); //pad remainder
+            Arrays.fill(array, s, l, null); 
         return array;
     }
 
@@ -435,20 +435,20 @@ public class FasterList<X> extends FastList<X> {
         int l = array.length;
         System.arraycopy(items, 0, array, 0, s);
         if (s < l)
-            Arrays.fill(array, s, l, null); //pad remainder
+            Arrays.fill(array, s, l, null); 
         return array;
     }
 
 
-//    public final X[] toNullTerminatedUnpaddedArray(X[] array) {
-//        final int s = this.size; //actual size
-//        if (array.length < (s+1)) {
-//            array = (X[]) Array.newInstance(array.getClass().getComponentType(), s+1);
-//        }
-//        System.arraycopy(this.items, 0, array, 0, s);
-//        array[s] = null;
-//        return array;
-//    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public void forEach(Consumer c) {
@@ -467,10 +467,10 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-//    public final void clear0() {
-//        this.items = (X[]) ZERO_SIZED_ARRAY;
-//        this.size = 0;
-//    }
+
+
+
+
 
     /**
      * remove, but with Map.remove semantics
@@ -553,7 +553,7 @@ public class FasterList<X> extends FastList<X> {
         int n = offset;
         for (Object j : items) {
             if (j == null)
-                break; //end of list
+                break; 
             each.accept(n++, j);
         }
         return size();
@@ -576,12 +576,12 @@ public class FasterList<X> extends FastList<X> {
             System.arraycopy(ii, index + 1, ii, index, totalOffset);
         ii[--size] = null;
     }
-//
-//    @Override
-//    public X remove(int index) {
-//        //when you dont need the returned item, use removeFast
-//        return super.remove(index);
-//    }
+
+
+
+
+
+
 
     @Override
     public boolean remove(Object object) {
@@ -598,7 +598,7 @@ public class FasterList<X> extends FastList<X> {
         switch (size) {
             case 0:
                 return Collections.emptyIterator();
-            //case 1: return Iterators.singletonIterator(items[0]); //dont use this because it wont support Iterator.remove
+            
             default:
                 return new FasterListIterator<>(this);
         }
@@ -624,13 +624,13 @@ public class FasterList<X> extends FastList<X> {
 
         @Override
         public T next() {
-            //try {
+            
             T next = this.list.get(this.currentIndex);
             this.lastIndex = this.currentIndex++;
             return next;
-//            } catch (IndexOutOfBoundsException ignored) {
-//                throw new NoSuchElementException();
-//            }
+
+
+
         }
 
         @Override
@@ -649,7 +649,7 @@ public class FasterList<X> extends FastList<X> {
 
     public void removeBelow(int index) {
         if (size <= index)
-            return; // no change
+            return; 
         this.items = Arrays.copyOfRange(items, 0, this.size = index);
     }
 
@@ -666,10 +666,10 @@ public class FasterList<X> extends FastList<X> {
         return items.length;
     }
 
-//    public <E> E[] arrayClone(Class<? extends E> type) {
-//        E[] array = (E[]) Array.newInstance(type, size);
-//        return toArray(array);
-//    }
+
+
+
+
 
     @Override
     public FasterList<X> clone() {
@@ -683,11 +683,11 @@ public class FasterList<X> extends FastList<X> {
         this.items[this.size++] = x;
     }
 
-//    @Override
-//    @Deprecated /* try to use toArrayRecycled where possible */
-//    public <E> E[] toArray(E[] array) {
-//        return super.toArray(array);
-//    }
+
+
+
+
+
 
     public X[] toArrayRecycled(IntFunction<X[]> ii) {
         X[] a = items;
@@ -749,7 +749,7 @@ public class FasterList<X> extends FastList<X> {
                 }
                 break;
 
-            //TODO fast case 2?
+            
 
             default:
                 removeIf(Objects::isNull);
@@ -766,7 +766,7 @@ public class FasterList<X> extends FastList<X> {
         for (int i = 0; i < s0; i++) {
             X x = xx[i];
             if (!predicate.accept(x)) {
-                // keep it
+                
                 if (nowFilled != i) {
                     xx[nowFilled] = x;
                 }

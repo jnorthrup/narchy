@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -85,7 +85,7 @@ public class TicTacToeSystemTest {
 
     private class TicTacToeFitnessFunction implements FitnessFunction {
         private TicTacToe ticTacToe = new TicTacToe();
-        private Node[] ais = new Node[]{//
+        private Node[] ais = new Node[]{
                 new DummyNode() {
                     @Override
                     public Move eval(Assignments assignments) {

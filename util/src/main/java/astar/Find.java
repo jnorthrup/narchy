@@ -14,12 +14,12 @@ public abstract class Find<X> implements Solution {
         this.id = id;
     }
 
-    // get parent of node in a path
+    
     public Solution parent() {
         return this.parent;
     }
 
-    //set parent
+    
     public void setParent(Solution parent) {
         this.parent = parent;
     }
@@ -46,13 +46,13 @@ public abstract class Find<X> implements Solution {
         return equals(other);
     }
 
-    //"tentative" g, cost from the start node
+    
     @Override
     public double g() {
         return this.g;
     }
 
-    //set "tentative" g
+    
     @Override
     public void setG(double g) {
         this.g = g;

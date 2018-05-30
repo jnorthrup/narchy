@@ -44,7 +44,7 @@ public class HTMLSurface extends AWTSurface {
             btnBrowse.addActionListener(e ->
                 go(txtURL.getText().trim())
             );
-            //sp = new JScrollPane();
+            
 
             this.setLayout(new BorderLayout());
 
@@ -73,7 +73,7 @@ public class HTMLSurface extends AWTSurface {
                     }
                 }
             });
-            //ed.setAutoscrolls(true);
+            
             getContentPane().add(new JScrollPane(ed), BorderLayout.CENTER);
 
 

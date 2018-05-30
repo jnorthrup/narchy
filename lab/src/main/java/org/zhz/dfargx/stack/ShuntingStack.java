@@ -15,7 +15,7 @@ import java.util.List;
 /**
  * Created on 2015/5/9.
  */
-public class ShuntingStack { // powered by Shunting Yard Algorithm.
+public class ShuntingStack { 
     private final ArrayDeque<Node> finalStack;
     private final ArrayDeque<BranchNode> branchStack;
 
@@ -64,7 +64,7 @@ public class ShuntingStack { // powered by Shunting Yard Algorithm.
         bs.clear();
 
         result.addAll(fs);
-        //Lists.reverse(result);
+        
         fs.clear();
     }
 

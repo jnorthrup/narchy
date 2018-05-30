@@ -11,7 +11,7 @@ public class JavaTests {
         Prolog p = new Prolog().input(
             Theory.resource("../../../resources/hash_table.pl")
         );
-//        p.addSpyListener((x)-> System.out.println(x));
+
 
         p.addOutputListener(System.err::println);
         p.solve("test(4).", (x)->{
@@ -27,9 +27,9 @@ public class JavaTests {
         Prolog p = new Prolog().input(
             Theory.resource("../../../resources/points_test2.pl")
         );
-//        p.addSpyListener((x)->{
-//            System.out.println(x);
-//        });
+
+
+
         p.solve("test(2).", (x)-> System.out.println(x));
         p.solve("test(3).", (x)-> System.out.println(x));
     }

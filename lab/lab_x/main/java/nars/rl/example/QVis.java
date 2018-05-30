@@ -44,7 +44,7 @@ public class QVis extends JPanel implements Runnable {
 
 
                 float beliefValue = (float) v.getQSentence(Symbols.GOAL);
-                float qValue = (float) v.getQ();// / agent.getNumActions();
+                float qValue = (float) v.getQ();
 
                 float hue = (float)(FastMath.sin(qValue) + 1.0)/2f;
 
@@ -54,7 +54,7 @@ public class QVis extends JPanel implements Runnable {
                 float sat = 0.5f + 0.5f * beliefValue;
 
                 color = Video.colorHSB(hue, sat, bri);
-                //System.out.println(hue + " " + sat + " " + bri);
+                
 
             }
             else {
@@ -64,7 +64,7 @@ public class QVis extends JPanel implements Runnable {
 
             image.setRGB(j, i, color);
 
-            //val2col(value, -1, 1, 0.5f + 0.5f * pri));
+            
 
         }
 
@@ -78,7 +78,7 @@ public class QVis extends JPanel implements Runnable {
         @Override
         public double getValue(final int y, final int x) {
             return 0;
-            //return agent.qNAL(xstates.get(x), xactions.get(y));
+            
         }
 
     };
@@ -128,12 +128,12 @@ public class QVis extends JPanel implements Runnable {
 
         nmi.setTitle(xstates.size() + " states, " + xactions.size() + " actions");
 
-//                    mi.draw(new Data2D() {
-//                        @Override
-//                        public double getValue(int x, int y) {
-//                            return q(y, x);
-//                        }
-//                    }, nstates, nactions, -1, 1);
+
+
+
+
+
+
     }
 
     public int val2col(final double n, final double min, final double max, final float bright) {
@@ -194,46 +194,46 @@ public class QVis extends JPanel implements Runnable {
 
     public void frame() {
 
-        //if (xstates.size() != states.size()) {
+        
         xstates.clear();
         Iterables.addAll(xstates, agent.ql.rows);
-        //}
-        //if (xactions.size() != actions.size()) {
+        
+        
         xactions.clear();
         Iterables.addAll(xactions, agent.ql.cols);
-        //}
+        
 
 
         SwingUtilities.invokeLater(this::run);
     }
 
-//    @Override
-//    public void draw(Data2D d, int cw, int ch, double minValue, double maxValue) {
-//        super.draw(d, cw, ch, minValue, maxValue);
-////
-////        for (int i = 0; i < ch; i++) {
-////            for (int j = 0; j < cw; j++) {
-////                final double value = d.getValue(i, j);
-////
-////                float pri = 0;
-////
-////                QEntry v = agent.table.get(xstates.get(j), xactions.get(i));
-////                if (v != null) {
-////                    Concept c = v.getConcept();
-////                    if (c != null) {
-////                        pri = c.getPriority();
-////                    }
-////                }
-////
-////                int ipri = (int) (127 * pri) + 127;
-////                int p = image.getRGB(j, i);
-////
-////                //dim
-////                p &= (ipri << 24) | 0xffffff; // | (ipri << 16) | (ipri << 8) | (ipri);
-////
-////                image.setRGB(j, i, p);
-////            }
-////        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

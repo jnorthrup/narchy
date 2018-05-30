@@ -58,7 +58,7 @@ public class MutableRoulette {
                 throw new RuntimeException("invalid weight: " + wi);
 
             if (wi < EPSILON) {
-                w[i] = 0; //hard set to zero
+                w[i] = 0; 
                 remaining--;
             } else {
                 s += wi;
@@ -66,13 +66,13 @@ public class MutableRoulette {
         }
 
         if (remaining == 0 || s < (n * n) * EPSILON) {
-            //flat
+            
             Arrays.fill(w, 1);
             s = remaining = n;
         }
 
         this.weightSum = s;
-        this.i = (this.rng = rng).nextInt(n); //random start position
+        this.i = (this.rng = rng).nextInt(n); 
     }
 
     /**
@@ -88,7 +88,7 @@ public class MutableRoulette {
                 }
                 break;
             }
-            //TODO simple 2 case, with % probability of the ordering then try the order in sequence
+            
             default: {
                 MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
                 while (r.next(choose)) {
@@ -112,12 +112,12 @@ public class MutableRoulette {
         int count = w.length;
 
         if (remaining == 1) {
-            //special case:
-            //there is only one with non-zero weight remaining
+            
+            
 
             for (int x = 0; x < count; x++)
                 if (w[x] > 0) {
-                    //found it
+                    
                     w[x] = 0;
                     remaining = 0;
                     return x;
@@ -127,20 +127,20 @@ public class MutableRoulette {
         } else {
 
             float distance = rng.nextFloat() * weightSum;
-            //boolean dir = rng.nextBoolean(); //randomize the direction
+            
 
             int i = this.i;
             int idle = 0;
             float wi;
             while ((distance = distance - (wi = w[i])) > EPSILON) {
-                //if (dir) {
+                
                 if (++i == count) i = 0;
-                //} else {
-                //  if (--i == -1) i = count - 1;
-                //}
+                
+                
+                
 
                 if (idle++ == count+1)
-                    return -1; //emergency
+                    return -1; 
 
             }
 

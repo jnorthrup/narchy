@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -68,8 +68,8 @@ public class CylinderShape extends BoxShape {
 	}
 	
 	private static v3 cylinderLocalSupport(v3 halfExtents, v3 v, int cylinderUpAxis, int XX, int YY, int ZZ, v3 out) {
-		//mapping depends on how cylinder local orientation is
-		// extents of the cylinder is: X,Y is for radius, and Z for height
+		
+		
 
 		float radius = VectorUtil.coord(halfExtents, XX);
 		float halfHeight = VectorUtil.coord(halfExtents, cylinderUpAxis);

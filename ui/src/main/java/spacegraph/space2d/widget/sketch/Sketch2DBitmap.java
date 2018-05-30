@@ -32,7 +32,7 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
     public float brushWidth = 0.2f, brushAlpha = 0.5f;
 
     final MersenneTwister rng = new MersenneTwister();
-//    private GL2 gl;
+
 
     public Sketch2DBitmap(int w, int h) {
         this.pw = w;
@@ -51,7 +51,7 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
 
 
 
-//    FastBlur fb;
+
 
     @Override
     public Surface tryTouch(Finger finger) {
@@ -61,17 +61,17 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
             v2 hitPoint = finger.relativePos(this);
             if (hitPoint.inUnit() && finger.pressing(0)) {
 
-//            if (fb == null)
-//                fb = new FastBlur(pw, ph);
+
+
 
                 int ax = Math.round(hitPoint.x * pw);
 
                 int ay = Math.round((1f - hitPoint.y) * ph);
 
-//            int R = Math.round(paintR * 255f);
-//            int G = Math.round(paintG * 255f);
-//            int B = Math.round(paintB * 255f);
-//            int RGB = R << 16 | G << 8 | B;
+
+
+
+
                 float w = this.brushWidth * this.brushWidth;
                 float a = brushAlpha * brushAlpha * 10;
                 for (int i = 0; i < a; i++) {
@@ -79,17 +79,17 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
                     if (px >= 0 && px < pw) {
                         int py = (int) (ay + rng.nextGaussian() * w);
                         if (py >= 0 && py < ph) {
-                            //pix[py * pw + px] = RGB;
+                            
                             mix(pix, py * pw + px);
                         }
                     }
                 }
 
-//gfx.setColor(Color.ORANGE);
-//            //gfx.fillOval(ax, ay, 5, 5);
 
-//            if (rng.nextInt(16)==0)
-//                fb.blur(pix, pw, ph, 1);
+
+
+
+
 
                 update();
                 return this;
@@ -106,16 +106,16 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
         float b = Bitmap2D.decodeBlue(e) * 0.5f + paintB * 0.5f;
         int f = Bitmap2D.encodeRGB(r, g, b);
         pix[i] = f;
-//            int R = Math.round(paintR * 255f);
-//            int G = Math.round(paintG * 255f);
-//            int B = Math.round(paintB * 255f);
-//            int RGB = R << 16 | G << 8 | B;
+
+
+
+
     }
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
         if (gl == null) {
-//            this.gl = gl;
+
             bmp.profile = gl.getGLProfile();
             update();
         }
@@ -138,15 +138,15 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
     @Override
     public Surface menu() {
         ButtonSet<ColorToggle> colorMenu = new ButtonSet<>(ButtonSet.Mode.One,
-                new ColorToggle(0f, 0, 0), //black
-                new ColorToggle(1f, 0, 0), //red
-                new ColorToggle(1f, 0.5f, 0),//orange
-                new ColorToggle(0.75f, 0.75f, 0),//yellow
-                new ColorToggle(0f, 1, 0), //green
-                new ColorToggle(0f, 0, 1), //blue
-                new ColorToggle(1f, 0, 1), //purple
-                new ColorToggle(0.5f, 0.5f, 0.5f), //gray
-                new ColorToggle(1f, 1, 1) //white
+                new ColorToggle(0f, 0, 0), 
+                new ColorToggle(1f, 0, 0), 
+                new ColorToggle(1f, 0.5f, 0),
+                new ColorToggle(0.75f, 0.75f, 0),
+                new ColorToggle(0f, 1, 0), 
+                new ColorToggle(0f, 0, 1), 
+                new ColorToggle(1f, 0, 1), 
+                new ColorToggle(0.5f, 0.5f, 0.5f), 
+                new ColorToggle(1f, 1, 1) 
         );
         colorMenu.on((cc,e)->{
             if (e) {
@@ -164,211 +164,211 @@ public class Sketch2DBitmap extends Surface implements MetaFrame.Menu {
         return grid(colorMenu, toolMenu);
     }
 
-    //final RectFloat2D view = new RectFloat2D(0,0,1,1);
+    
 
     public static void main(String[] args) {
 
 
         SpaceGraph.window(new Sketch2DBitmap(256, 256)
-                //.state(Widget.META)
+                
                 , 800, 800);
     }
 }
 
-//static class FastBlur {
-//
-//    private int[][] stack;
-//    private int[] dv;
-//    int wm, hm, wh, div, r[], g[], b[], vmin[];
-//
-//    public FastBlur(int w, int h) {
-//        wm = w - 1;
-//        hm = h - 1;
-//        wh = w * h;
-//
-//        r = new int[wh];
-//        g = new int[wh];
-//        b = new int[wh];
-//        vmin = new int[Math.max(w, h)];
-//
-//
-//    }
-//
-//    /**
-//     * http://incubator.quasimondo.com/processing/fast_blur_deluxe.php
-//     */
-//    void blur(int[] pix, int w, int h, int radius) {
-//        if (radius < 1) {
-//            return;
-//        }
-//
-//        int rsum, gsum, bsum, x, y, i, p, yp, yi, yw;
-//        yw = yi = 0;
-//
-//        int stackpointer;
-//        int stackstart;
-//        int[] sir;
-//        int rbs;
-//        int r1 = radius + 1;
-//        int routsum, goutsum, boutsum;
-//        int rinsum, ginsum, binsum;
-//        div = radius + radius + 1;
-//        if (stack == null || stack.length != div) {
-//            stack = new int[div][3];
-//
-//            int divsum = (div + 1) >> 1;
-//            divsum *= divsum;
-//            dv = new int[256 * divsum];
-//            for (int m = 0; m < 256 * divsum; m++) {
-//                dv[m] = (m / divsum);
-//            }
-//        }
-//
-//        for (y = 0; y < h; y++) {
-//            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
-//            for (i = -radius; i <= radius; i++) {
-//                p = pix[yi + min(wm, Math.max(i, 0))];
-//                sir = stack[i + radius];
-//                sir[0] = (p & 0xff0000) >> 16;
-//                sir[1] = (p & 0x00ff00) >> 8;
-//                sir[2] = (p & 0x0000ff);
-//                rbs = r1 - abs(i);
-//                rsum += sir[0] * rbs;
-//                gsum += sir[1] * rbs;
-//                bsum += sir[2] * rbs;
-//                int ds = sir[0] + sir[1] + sir[2];
-//                if (i > 0) rinsum += ds;
-//                else routsum += ds;
-//            }
-//            stackpointer = radius;
-//
-//            for (x = 0; x < w; x++) {
-//
-//                r[yi] = dv[rsum];
-//                g[yi] = dv[gsum];
-//                b[yi] = dv[bsum];
-//
-//                rsum -= routsum;
-//                gsum -= goutsum;
-//                bsum -= boutsum;
-//
-//                stackstart = stackpointer - radius + div;
-//                sir = stack[stackstart % div];
-//
-//                routsum -= sir[0];
-//                goutsum -= sir[1];
-//                boutsum -= sir[2];
-//
-//                if (y == 0) {
-//                    vmin[x] = min(x + radius + 1, wm);
-//                }
-//                p = pix[yw + vmin[x]];
-//
-//                sir[0] = (p & 0xff0000) >> 16;
-//                sir[1] = (p & 0x00ff00) >> 8;
-//                sir[2] = (p & 0x0000ff);
-//
-//                rinsum += sir[0];
-//                ginsum += sir[1];
-//                binsum += sir[2];
-//
-//                rsum += rinsum;
-//                gsum += ginsum;
-//                bsum += binsum;
-//
-//                stackpointer = (stackpointer + 1) % div;
-//                sir = stack[(stackpointer) % div];
-//
-//                routsum += sir[0];
-//                goutsum += sir[1];
-//                boutsum += sir[2];
-//
-//                rinsum -= sir[0];
-//                ginsum -= sir[1];
-//                binsum -= sir[2];
-//
-//                yi++;
-//            }
-//            yw += w;
-//        }
-//        for (x = 0; x < w; x++) {
-//            rinsum = ginsum = binsum = routsum = goutsum = boutsum = rsum = gsum = bsum = 0;
-//            yp = -radius * w;
-//            for (i = -radius; i <= radius; i++) {
-//                yi = Math.max(0, yp) + x;
-//
-//                sir = stack[i + radius];
-//
-//                sir[0] = r[yi];
-//                sir[1] = g[yi];
-//                sir[2] = b[yi];
-//
-//                rbs = r1 - abs(i);
-//
-//                rsum += r[yi] * rbs;
-//                gsum += g[yi] * rbs;
-//                bsum += b[yi] * rbs;
-//
-//                if (i > 0) {
-//                    rinsum += sir[0];
-//                    ginsum += sir[1];
-//                    binsum += sir[2];
-//                } else {
-//                    routsum += sir[0];
-//                    goutsum += sir[1];
-//                    boutsum += sir[2];
-//                }
-//
-//                if (i < hm) {
-//                    yp += w;
-//                }
-//            }
-//            yi = x;
-//            stackpointer = radius;
-//            for (y = 0; y < h; y++) {
-//                pix[yi] = 0xff000000 | (dv[rsum] << 16) | (dv[gsum] << 8) | dv[bsum];
-//
-//                rsum -= routsum;
-//                gsum -= goutsum;
-//                bsum -= boutsum;
-//
-//                stackstart = stackpointer - radius + div;
-//                sir = stack[stackstart % div];
-//
-//                routsum -= sir[0];
-//                goutsum -= sir[1];
-//                boutsum -= sir[2];
-//
-//                if (x == 0) {
-//                    vmin[y] = min(y + r1, hm) * w;
-//                }
-//                p = x + vmin[y];
-//
-//                sir[0] = r[p];
-//                sir[1] = g[p];
-//                sir[2] = b[p];
-//
-//                rinsum += sir[0];
-//                ginsum += sir[1];
-//                binsum += sir[2];
-//
-//                rsum += rinsum;
-//                gsum += ginsum;
-//                bsum += binsum;
-//
-//                stackpointer = (stackpointer + 1) % div;
-//                sir = stack[stackpointer];
-//
-//                routsum += sir[0];
-//                goutsum += sir[1];
-//                boutsum += sir[2];
-//
-//                rinsum -= sir[0];
-//                ginsum -= sir[1];
-//                binsum -= sir[2];
-//
-//                yi += w;
-//            }
-//        }
-//    }
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

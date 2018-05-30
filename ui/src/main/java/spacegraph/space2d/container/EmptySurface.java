@@ -30,7 +30,7 @@ public class EmptySurface extends Surface {
 
     @Override
     public Surface visible(boolean b) {
-        return this; //ignore
+        return this; 
     }
 
     @Override

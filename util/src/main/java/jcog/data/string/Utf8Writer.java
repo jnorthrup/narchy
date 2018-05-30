@@ -47,7 +47,7 @@ public final class Utf8Writer  {
     }
 
     public void write(int c) throws IOException {
-        // Check in we are encoding at high and low surrogates
+        
         if (lastUTF16CodePoint != 0) {
             final int uc =
                 (((lastUTF16CodePoint & 0x3ff) << 10) | (c & 0x3ff)) + 0x10000;
@@ -65,22 +65,22 @@ public final class Utf8Writer  {
             return;
         }
 
-        // Otherwise, encode char as defined in UTF-8
+        
         if (c < 0x80) {
-            // 1 byte, 7 bits
+            
             out.write(c);
         }
         else if (c < 0x800) {
-            // 2 bytes, 11 bits
-            out.write(0xC0 | (c >> 6));    // first 5
-            out.write(0x80 | (c & 0x3F));  // second 6
+            
+            out.write(0xC0 | (c >> 6));    
+            out.write(0x80 | (c & 0x3F));  
         }
         else if (c <= '\uFFFF') {
             if (!isHighSurrogate(c) && !isLowSurrogate(c)) {
-                // 3 bytes, 16 bits
-                out.write(0xE0 | (c >> 12));   // first 4
-                out.write(0x80 | ((c >> 6) & 0x3F));  // second 6
-                out.write(0x80 | (c & 0x3F));  // third 6
+                
+                out.write(0xE0 | (c >> 12));   
+                out.write(0x80 | ((c >> 6) & 0x3F));  
+                out.write(0x80 | (c & 0x3F));  
             }
             else {
                 lastUTF16CodePoint = c;

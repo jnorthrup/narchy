@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 14.01.2004 by RST.
-// $Id: server_t.java,v 1.2 2004-09-22 19:22:12 salomo Exp $
+
+
 package jake2.server;
 
 import jake2.Defines;
@@ -40,18 +40,18 @@ public class server_t {
             baselines[n] = new entity_state_t(null);
     }
 
-    int state; // precache commands are only valid during load
+    int state; 
 
-    boolean attractloop; // running cinematics and demos for the local system
-                         // only
+    boolean attractloop; 
+                         
 
-    boolean loadgame; // client begins should reuse existing entity
+    boolean loadgame; 
 
-    int time; // always sv.framenum * 100 msec
+    int time; 
 
     int framenum;
 
-    String name = ""; // map name, or cinematic name
+    String name = ""; 
 
     final cmodel_t[] models;
 
@@ -59,14 +59,14 @@ public class server_t {
 
     final entity_state_t[] baselines = new entity_state_t[Defines.MAX_EDICTS];
 
-    // the multicast buffer is used to send a message to a set of clients
-    // it is only used to marshall data until SV_Multicast is called
+    
+    
     final sizebuf_t multicast = new sizebuf_t();
 
     final byte[] multicast_buf = new byte[Defines.MAX_MSGLEN];
 
-    // demo server information
+    
     RandomAccessFile demofile;
 
-    boolean timedemo; // don't time sync
+    boolean timedemo; 
 }

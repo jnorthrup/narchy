@@ -184,7 +184,7 @@ public class Mario extends Sprite
 
         wasOnGround = onGround;
         float sideWaysSpeed = keys[KEY_SPEED] ? 1.2f : 0.6f;
-        //        float sideWaysSpeed = onGround ? 2.5f : 1.2f;
+        
 
         if (onGround)
         {
@@ -210,7 +210,7 @@ public class Mario extends Sprite
             }
             else if (onGround && mayJump)
             {
-                //world.sound.play(Art.samples[Art.SAMPLE_MARIO_JUMP], this, 1, 1, 1);
+                
                 xJumpSpeed = 0;
                 yJumpSpeed = -1.9f;
                 jumpTime = 7;
@@ -220,7 +220,7 @@ public class Mario extends Sprite
             }
             else if (sliding && mayJump)
             {
-                //world.sound.play(Art.samples[Art.SAMPLE_MARIO_JUMP], this, 1, 1, 1);
+                
                 xJumpSpeed = -facing * 6.0f;
                 yJumpSpeed = -2.0f;
                 jumpTime = -6;
@@ -263,7 +263,7 @@ public class Mario extends Sprite
         
         if (keys[KEY_SPEED] && canShoot && Mario.fire && world.fireballsOnScreen<2)
         {
-            //world.sound.play(Art.samples[Art.SAMPLE_MARIO_FIREBALL], this, 1, 1, 1);
+            
             world.addSprite(new Fireball(world, x+facing*6, y-20, facing));
         }
         
@@ -504,7 +504,7 @@ public class Mario extends Sprite
         if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) > 0)
         {
             Mario.getCoin();
-            //world.sound.play(Art.samples[Art.SAMPLE_GET_COIN], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+            
             world.level.setBlock(x, y, (byte) 0);
             for (int xx = 0; xx < 2; xx++)
                 for (int yy = 0; yy < 2; yy++)
@@ -528,7 +528,7 @@ public class Mario extends Sprite
         float targetY = enemy.y - enemy.height / 2;
         move(0, targetY - y);
 
-        //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+        
         xJumpSpeed = 0;
         yJumpSpeed = -1.9f;
         jumpTime = 8;
@@ -552,7 +552,7 @@ public class Mario extends Sprite
             float targetY = shell.y - shell.height / 2;
             move(0, targetY - y);
 
-            //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+            
             xJumpSpeed = 0;
             yJumpSpeed = -1.9f;
             jumpTime = 8;
@@ -566,7 +566,7 @@ public class Mario extends Sprite
     public void getHurt()     {
 
         coins -= medical_bill;
-        //if (coins < 0) coins = 0;
+        
 
 
         if (deathTime > 0 || world.paused) return;
@@ -576,7 +576,7 @@ public class Mario extends Sprite
         {
             world.paused = true;
             powerUpTime = -3 * 6;
-            //world.sound.play(Art.samples[Art.SAMPLE_MARIO_POWER_DOWN], this, 1, 1, 1);
+            
             if (fire)
             {
                 world.mario.setLarge(true, false);
@@ -601,7 +601,7 @@ public class Mario extends Sprite
         world.paused = true;
         winTime = 1;
         Art.stopMusic();
-        //world.sound.play(Art.samples[Art.SAMPLE_LEVEL_EXIT], this, 1, 1, 1);
+        
     }
 
     public void die()     {
@@ -612,7 +612,7 @@ public class Mario extends Sprite
         world.paused = true;
         deathTime = 20;
         Art.stopMusic();
-        //world.sound.play(Art.samples[Art.SAMPLE_MARIO_DEATH], this, 1, 1, 1);
+        
     }
 
 
@@ -623,13 +623,13 @@ public class Mario extends Sprite
         {
             world.paused = true;
             powerUpTime = 3 * 6;
-            //world.sound.play(Art.samples[Art.SAMPLE_MARIO_POWER_UP], this, 1, 1, 1);
+            
             world.mario.setLarge(true, true);
         }
         else
         {
             Mario.getCoin();
-            //world.sound.play(Art.samples[Art.SAMPLE_GET_COIN], this, 1, 1, 1);
+            
         }
     }
 
@@ -641,13 +641,13 @@ public class Mario extends Sprite
         {
             world.paused = true;
             powerUpTime = 3 * 6;
-            //world.sound.play(Art.samples[Art.SAMPLE_MARIO_POWER_UP], this, 1, 1, 1);
+            
             world.mario.setLarge(true, false);
         }
         else
         {
             Mario.getCoin();
-            //world.sound.play(Art.samples[Art.SAMPLE_GET_COIN], this, 1, 1, 1);
+            
         }
     }
 
@@ -662,7 +662,7 @@ public class Mario extends Sprite
         }
         else
         {
-            //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+            
             invulnerableTime = 1;
         }
     }
@@ -676,7 +676,7 @@ public class Mario extends Sprite
         float targetY = bill.y - bill.height / 2;
         move(0, targetY - y);
 
-        //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+        
         xJumpSpeed = 0;
         yJumpSpeed = -1.9f;
         jumpTime = 8;
@@ -708,7 +708,7 @@ public class Mario extends Sprite
     {
         coins += medical_bill;
 
-        //world.sound.play(Art.samples[Art.SAMPLE_MARIO_1UP], instance, 1, 1, 1);
+        
         lives++;
         if (lives==99)
         {
@@ -719,10 +719,10 @@ public class Mario extends Sprite
     public static void getCoin()
     {
         coins++;
-//        if (coins==100)
-//        {
-//            coins = 0;
-//            get1Up();
-//        }
+
+
+
+
+
     }
 }

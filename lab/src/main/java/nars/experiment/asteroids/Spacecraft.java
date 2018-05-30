@@ -90,8 +90,8 @@ public class Spacecraft extends VectorSprite
     
     public void changeWeapon()
     {
-        if (weaponSwitched == false) // The weaponSwitched boolean allows me to switch weapons only once per Shift key press
-        {                            // instead of switching continuously whenever the Shift key is held down
+        if (weaponSwitched == false) 
+        {                            
             weaponType++;
             weaponSwitched = true;
         }
@@ -105,21 +105,21 @@ public class Spacecraft extends VectorSprite
     
     public void checkWeapon()
     {
-        // Changes the attributes of the ship's gun based on which weapon is selected
         
-        if (weaponType == 1) //Spread-shot gun
+        
+        if (weaponType == 1) 
         {
             fireDelay = Math.max(0, 4 - 4*upgrades[0][1]);
             damage = 3 + 3*upgrades[0][2];
         }
         
-        if (weaponType == 2) //Gatling gun
+        if (weaponType == 2) 
         {
             fireDelay = 6 - upgrades[1][1];
             damage = 2 + 2*upgrades[1][2];
         }
         
-        if (weaponType == 3) //Phase cannon
+        if (weaponType == 3) 
         {
             fireDelay = 31 - 5*upgrades[2][1];
             damage = 10 + 8*upgrades[2][2];

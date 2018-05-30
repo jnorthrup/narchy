@@ -16,7 +16,7 @@ public interface TruthOperator {
         for (TruthOperator tm : values) {
             table.put(Atomic.the(tm.toString()), tm);
             table.put(Atomic.the(tm.toString() + 'X'), new SwappedTruth(tm));
-            table.put(Atomic.the(tm.toString() + 'N'), new NegatedTaskTruth(tm)); //ie. NP
+            table.put(Atomic.the(tm.toString() + 'N'), new NegatedTaskTruth(tm)); 
             table.put(Atomic.the(tm + "PN"), new NegatedBeliefTruth(tm));
             table.put(Atomic.the(tm + "NN"), new NegatedTruths(tm));
             table.put(Atomic.the(tm + "NX"), new NegatedTaskTruth(new SwappedTruth(tm)));
@@ -117,11 +117,11 @@ public interface TruthOperator {
 
 
     /** for when a conclusion's subterms have already been negated accordingly, so that conclusion confidence is positive and maximum
-            //TASK      BELIEF      TRUTH
-            //positive  positive    ___PP
-            //positive  negative    ___PN
-            //negative  positive    ___NP
-            //negative  negative    ___NN
+            
+            
+            
+            
+            
      */
     final class DepolarizedTruth extends ProxyTruthOperator {
 
@@ -136,7 +136,7 @@ public interface TruthOperator {
                 boolean bn = B.isNegative();
                 Truth t = o.apply(T.negIf(tn), B.negIf(bn), m, minConf);
                 if (t!=null && (o == BeliefFunction.Comparison /* || o == GoalFunction.Comparison */)) {
-                    //special case(s): commutive xor
+                    
                     if (tn ^ bn)
                         t = t.neg();
                 }

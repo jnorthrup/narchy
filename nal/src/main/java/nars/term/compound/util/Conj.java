@@ -34,35 +34,35 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public class Conj {
 
-    //capacity of the initial array before upgrading to RoaringBitmap
+    
     private static final int ROARING_UPGRADE_THRESH = 4;
 
-    //    private static final byte EMPTY = 0;
-//    private static final byte POSITIVE = 1;
-//    private static final byte NEGATIVE = 2;
+    
+
+
     public final LongObjectHashMap event = new LongObjectHashMap<>(2);
     /**
      * unnegated events
      */
     final ObjectByteHashMap<Term> terms = new ObjectByteHashMap<>(4);
 
-    //    /**
-//     * keys are encoded 8-bits + 8-bits vector of the time,term index
-//     *
-//     * values are:
-//     *      0 00 - not present
-//     *      1 01 - positive     (x)
-//     *      2 10 - negated  (--, x)
-//     *      3 11 - unused
-//     *
-//     * TODO use a 'ShortCrumbHashMap'
-//     *     for compact 4-bit values http://mathworld.wolfram.com/Crumb.html
-//     *
-//     */
-//    public final ShortByteHashMap event = new ShortByteHashMap(2);
-//
-//    /** occurrences */
-//    public final LongArrayList times = new LongArrayList(1);
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     final List<Term> termsIndex = new FasterList(4);
     /**
      * state which will be set in a terminal condition, or upon term construction in non-terminal condition
@@ -87,11 +87,11 @@ public class Conj {
     public static StringBuilder sequenceString(Term a, Conj x) {
         StringBuilder sb = new StringBuilder(4);
         int range = a.dtRange();
-        final float stepResolution = 16f; //how finely to fractionalize time range
+        final float stepResolution = 16f; 
         float factor = stepResolution / range;
         a.eventsWhile((when, what) -> {
             int step = Math.round(when * factor);
-            sb.append((char) step); //character representing the relative offset of the event
+            sb.append((char) step); 
             sb.append(((char) x.add(what)));
             return true;
         }, 0, true, true, false, 0);
@@ -108,7 +108,7 @@ public class Conj {
             return Null;
 
         int cdt = conj.dt();
-        //quick test for first layer subterm of a commutive conjunction
+        
         if (cdt == DTERNAL || cdt == 0) {
             Term[] csDropped = conj.subterms().termsExcept(event);
             if (csDropped != null) {
@@ -122,7 +122,7 @@ public class Conj {
         Conj c = Conj.from(conj);
         long targetTime;
         if (c.event.size() == 1) {
-            //TODO maybe prefer the subevent with the shortest range()
+            
             targetTime = c.event.keysView().longIterator().next();
         } else if (earlyOrLate) {
             Object eternalTemporarilyRemoved = c.event.remove(ETERNAL);
@@ -135,22 +135,22 @@ public class Conj {
         assert (targetTime != XTERNAL);
         boolean removed = c.remove(event, targetTime);
         if (!removed) {
-            return Null; //the event was not at the target time
+            return Null; 
         }
 
         return c.term();
 
-//        FasterList<LongObjectPair<Term>> events = Conj.decompose(conj);
-//        Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
-//        int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
-//
-//        LongObjectPair<Term> ev = events.get(eMax);
-//        if (ev.getTwo().equals(event)) {
-//            events.removeFast(eMax);
-//            return Op.conj(events);
-//        } else {
-//            return Null;
-//        }
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public static FasterList<LongObjectPair<Term>> eventList(Term t) {
@@ -218,9 +218,9 @@ public class Conj {
 
         Conj xx = Conj.from(include);
         if (xx.removeEventsByTerm(exclude, true, includeNeg)) {
-            return xx.term(); //the changed conj
+            return xx.term(); 
         } else {
-            return include; //same
+            return include; 
         }
     }
 
@@ -253,7 +253,7 @@ public class Conj {
         if (c.add(a, aStart)) {
             c.add(b, bStart);
         }
-        return c.term(); //Null, True, or False
+        return c.term(); 
     }
 
     static int indexOfZeroTerminated(byte[] b, byte val) {
@@ -262,7 +262,7 @@ public class Conj {
             if (val == bi) {
                 return i;
             } else if (bi == 0) {
-                return -1; //terminate early
+                return -1; 
             }
         }
         return -1;
@@ -297,11 +297,11 @@ public class Conj {
 
         Term left = conjSeq(events, start, center + 1);
         if (left == Null) return Null;
-        if (left == False) return False; //early fail shortcut
+        if (left == False) return False; 
 
         Term right = conjSeq(events, center + 1, end);
         if (right == Null) return Null;
-        if (right == False) return False; //early fail shortcut
+        if (right == False) return False; 
 
         int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.dtRange());
 
@@ -324,14 +324,14 @@ public class Conj {
             if (left.equalsNeg(right)) return False;
 
 
-            //return CONJ.the(dt, left, right); //send through again
+            
         }
 
 
-        //System.out.println(left + " " + right + " " + left.compareTo(right));
-        //return CONJ.the(dt, left, right);
+        
+        
         if (left.compareTo(right) > 0) {
-            //larger on left
+            
             dt = -dt;
             Term t = right;
             right = left;
@@ -343,7 +343,7 @@ public class Conj {
             if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
                 int ls = left.subs(), rs = right.subs();
                 if ((ls > 1 + rs) || (rs > ls)) {
-                    //seq imbalance; send through again
+                    
                     return CONJ.compound(dt, new Term[]{left, right});
                 }
             }
@@ -376,7 +376,7 @@ public class Conj {
             throw new RuntimeException("already terminated");
 
         if (t == True)
-            return true; //ignore
+            return true; 
         else if (t == False) {
             this.term = False;
             return false;
@@ -401,23 +401,23 @@ public class Conj {
             boolean atEternal = at == ETERNAL;
 
             if ((dt != XTERNAL)
-                ////&& (dt == DTERNAL || atEternal)
-                ////&& (dt != 0 || !atEternal)
+                
+                
                 && (!atEternal || (dt == DTERNAL))
 
             ) {
 
 
-//            try {
+
                 return t.eventsWhile((w, e) -> add(e, w),
                         at,
                         true,
                         true,
                         false, 0);
-//            } catch (StackOverflowError e) {
-//                System.err.println(t + " " + at + " " + dt);
-//                throw new RuntimeException(t + " should not have recursed");
-//            }
+
+
+
+
             }
         }
 
@@ -428,7 +428,7 @@ public class Conj {
             id = -id;
 
         if (!addIfValid(at, id)) {
-            //contradiction
+            
             term = False;
             return false;
         }
@@ -441,10 +441,10 @@ public class Conj {
             return add(t, start);
         } else {
             if (maxSamples == 1) {
-                //add at the midpoint
+                
                 return add(t, (start + end) / 2L);
             } else {
-                //compute segment length
+                
                 long dt = Math.max(minSegmentLength, (end - start) / maxSamples);
                 long x = start;
                 while (x < end) {
@@ -458,28 +458,28 @@ public class Conj {
     }
 
     protected boolean addIfValid(long at, int id) {
-//        if (at == ETERNAL) {
-//            //TODO check for conflicts in non-eternal slots
-//            Iterator<LongObjectPair> ii = event.keyValuesView().iterator();
-//            while (ii.hasNext()) {
-//                LongObjectPair ee = ii.next();
-//                //if (ee.getOne()==ETERNAL) continue; //checked below, TODO combine with that because it's here
-//                int cmp = conflictOrSame(ee.getTwo(), id);
-//                if (cmp == -1)
-//                    return false; //conflict
-//                if (cmp == +1) {
-//                    return true; //already exists
-//                }
-//            }
-//        } else {
-//            //check temporal conflicts with eternal
-//            Object eteEvents = event.get(ETERNAL);
-//            int cmp = conflictOrSame(eteEvents, id);
-//            if (cmp == -1)
-//                return false; //conflict
-//            if (cmp == +1)
-//                return true; //already added
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         Object what = event.get(at);
         if (what == null) {
             byte[] bwhat = new byte[ROARING_UPGRADE_THRESH];
@@ -496,7 +496,7 @@ public class Conj {
         } else {
             byte[] ii = (byte[]) what;
             if (indexOfZeroTerminated(ii, ((byte)id)) != -1) {
-                //already added
+                
                 return true;
             }
             if (indexOfZeroTerminated(ii, ((byte) -id)) == -1) {
@@ -504,7 +504,7 @@ public class Conj {
                 if (nextSlot != -1) {
                     ii[nextSlot] = (byte) id;
                 } else {
-                    //upgrade to roaring and add
+                    
                     RoaringBitmap rb = new RoaringBitmap();
                     for (byte b : ii)
                         rb.add(b);
@@ -519,20 +519,20 @@ public class Conj {
 
     static int conflictOrSame(Object e, int id) {
         if (e == null) {
-            //nothing to test
+            
         } else if (e instanceof RoaringBitmap) {
             RoaringBitmap r = (RoaringBitmap) e;
             if (r.contains(-id))
-                return -1; //conflcit
+                return -1; 
             else if (r.contains(id)) {
-                return +1; //subsume this time-specific event into the outer eternal
+                return +1; 
             }
         } else if (e instanceof byte[]) {
             byte[] r = (byte[])e;
             if (indexOfZeroTerminated(r, (byte)-id)!=-1)
-                return -1; //conflcit
+                return -1; 
             else if (indexOfZeroTerminated(r, (byte)id)!=-1)
-                return +1; //subsume this time-specific event into the outer eternal
+                return +1; 
         }
         return 0;
     }
@@ -571,42 +571,42 @@ public class Conj {
 
         Object o = event.get(at);
         if (o == null)
-            return false; //nothing at that time
+            return false; 
 
 
-        int i = get(t); //should be get(), add doesnt apply
+        int i = get(t); 
         if (removeFromEvent(at, o, true, i)!=0) {
-            term = null; //reset result
+            term = null; 
             return true;
         }
         return false;
     }
 
-//    private byte id(long w) {
-//
-//        int i = times.indexOf(w);
-//        if (i!=-1) {
-//            return (byte) i;
-//        } else {
-//            int s = times.size();
-//            assert(s < Byte.MAX_VALUE);
-//            times.add(w);
-//            return (byte)s;
-//        }
-//    }
-//
-//    short id(Term t, long w) {
-//        byte tb = id(t);
-//        byte wb = id(w);
-//        return (short) ((tb << 8) | wb);
-//    }
-//
-//    byte termIndex(short s) {
-//        return (byte) ((s >> 8) & 0xff);
-//    }
-//    byte timeIndex(short s) {
-//        return (byte) (s & 0xff);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /** returns:
      *    +2 removed, and now this event time is empty
@@ -651,10 +651,10 @@ public class Conj {
                     event.remove(at);
                 return 2;
             } else {
-                //reconstruct new byte array
+                
 
                 MetalBitSet toRemove = MetalBitSet.bits(b.length);
-                //HACK set to remove all empty indices
+                
                 for (int zeroIndex = 0; zeroIndex < b.length; zeroIndex++) {
                     if (b[zeroIndex]==0)
                         toRemove.set(zeroIndex);
@@ -677,7 +677,7 @@ public class Conj {
             negateInput = false;
         }
 
-        int i = get(t); //should be get(), add doesnt apply
+        int i = get(t); 
         int[] ii;
         if (pos && neg) {
             ii = new int[]{i, -i};
@@ -718,7 +718,7 @@ public class Conj {
 
         int numTimes = event.size();
         if (numTimes == 0)
-            return True; //returns True in the empty case
+            return True; 
 
 
 
@@ -728,13 +728,13 @@ public class Conj {
         if (eternal != null) {
 
             if (eternal instanceof Bool)
-                return this.term = eternal; //override and terminates
+                return this.term = eternal; 
 
             if (numTimes > 1) {
-                //temporal components follow, so build the verifier:
+                
 
                 if (eternal.op() == CONJ) {
-                    //Subterms eteSub = eternal.subterms();
+                    
                     if (eternalWhat instanceof byte[]) {
                         byte[] b = (byte[]) eternalWhat;
                         validator = (i) -> indexOfZeroTerminated(b, (byte) -i) == -1;
@@ -759,16 +759,16 @@ public class Conj {
                 LongObjectPair<Term> next = ii.next();
                 long when = next.getOne();
                 if (when == ETERNAL)
-                    continue; //already handled above
+                    continue; 
 
                 Term wt = term(when, next.getTwo(), validator);
 
                 if (wt == True) {
-                    continue; //canceled out
+                    continue; 
                 } else if (wt == False) {
-                    return this.term = False; //short-circuit false
+                    return this.term = False; 
                 } else if (wt == Null) {
-                    return this.term = Null; //short-circuit null
+                    return this.term = Null; 
                 }
 
                 temporals.add(pair(when, wt));
@@ -799,10 +799,10 @@ public class Conj {
         }
 
 
-        //End Stage Reduction(s)
+        
 
-        //(NOT (x AND y)) AND (NOT x) == NOT X
-        //http://www.wolframalpha.com/input/?i=(NOT+(x+AND+y))+AND+(NOT+x)
+        
+        
         if (ci.op() == CONJ && ci.hasAny(NEG)) {
             Subterms cci;
             if ((cci = ci.subterms()).hasAny(CONJ)) {
@@ -882,7 +882,7 @@ public class Conj {
             rb = null;
             n = indexOfZeroTerminated(b, (byte) 0);
             if (n == 1) {
-                //simplest case
+                
                 return sub(b[0], null, validator);
             }
         } else {
@@ -897,7 +897,7 @@ public class Conj {
         if (b != null) {
             for (byte x : b) {
                 if (x == 0)
-                    break; //done
+                    break; 
                 t.add(sub(x, negatives, validator));
             }
         } else {
@@ -907,10 +907,10 @@ public class Conj {
         }
 
         if (negatives[0] && n > 1) {
-            //annihilate common terms inside and outside of disjunction
-            //      ex:
-            //          -X &&  ( X ||  Y)
-            //          -X && -(-X && -Y)  |-   -X && Y
+            
+            
+            
+            
             Iterator<Term> oo = t.iterator();
             List<Term> csa = null;
             while (oo.hasNext()) {
@@ -918,12 +918,12 @@ public class Conj {
                 if (x.hasAll(NEG.bit | CONJ.bit)) {
                     if (x.op() == NEG) {
                         Term x0 = x.sub(0);
-                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
+                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { 
                             Term disj = x.unneg();
                             SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
-                            //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
+                            
                             if (!disjSubs.isEmpty()) {
-                                //reconstruct disj if changed
+                                
                                 oo.remove();
 
                                 if (!disjSubs.isEmpty()) {
@@ -945,7 +945,7 @@ public class Conj {
         int ts = t.size();
         switch (ts) {
             case 0:
-                //throw new RuntimeException("fault");
+                
                 return True;
             case 1:
                 return t.first();
@@ -954,17 +954,17 @@ public class Conj {
                 if (when == ETERNAL) {
                     dt = DTERNAL;
                 } else {
-//                    if (when == XTERNAL)
-//                        dt = XTERNAL;
-//                    else
-                    dt = 0; //same time
+
+
+
+                    dt = 0; 
                 }
                 return
-                        //CONJ.the(
+                        
                         Op.compound(CONJ,
                                 dt,
                                 sorted(t));
-                //t);
+                
             }
         }
     }
@@ -1006,7 +1006,7 @@ public class Conj {
         private final boolean mergeOrChoose;
 
         public Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
-            //        int maxVol = Math.max(a.volume(), b.volume());
+            
             this.b = b;
             this.nar = nar;
             this.mergeOrChoose = nar.dtMergeOrChoose();
@@ -1028,11 +1028,11 @@ public class Conj {
                 boolean neg = t.op() == NEG;
 
 
-                //component merge
-                //find closest event in aa
+                
+                
                 byte tInA = (byte) ((aa.terms.get(neg ? t.unneg() : t) + 1) * (neg ? -1 : +1));
 
-                //potential event times to compare and choose from
+                
                 LongArrayList whens = new LongArrayList(2);
 
                 aa.event.forEachKeyValue((long when, Object wat) -> {
@@ -1051,17 +1051,17 @@ public class Conj {
 
                 int ws = whens.size();
                 if (ws == 0) {
-                    return super.add(t, bt); //unknown why it didnt match, so just add it
+                    return super.add(t, bt); 
                 }
 
                 long theWhen;
                 if (ws > 1) {
                     LongToLongFunction TemporalDistance;
                     if (bt == ETERNAL) {
-                        TemporalDistance = (at) -> at == ETERNAL ? 0 : 1; //prefer eternal, but no further preference
+                        TemporalDistance = (at) -> at == ETERNAL ? 0 : 1; 
                     } else {
                         long finalBt = bt;
-                        TemporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE; //prefer same/similar time, and avoid eternal if possible
+                        TemporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE; 
                     }
                     long[] whensArray = whens.toArray();
                     ArrayUtils.sort(whensArray, TemporalDistance);
@@ -1082,32 +1082,32 @@ public class Conj {
                 return ETERNAL;
 
 
-            //TODO weighted random selection (ie. by evidence)
+            
             if (mergeOrChoose) {
                 if (Math.abs(x - y) > 1) {
-                    //merge (mean)
+                    
                     return (x + y) / 2L;
                 }
             }
 
-            //choose
-            return rng.nextBoolean() ? x : y; //choose one or the other
+            
+            return rng.nextBoolean() ? x : y; 
         }
 
     }
 
-//    public void forEachTerm(Object what, Consumer<Term> each) {
-//        if (what instanceof byte[]) {
-//            byte[] b = (byte[])what;
-//            for (byte termIndex : b) {
-//                if (termIndex == 0)
-//                    break; //done
-//                each.accept(sub(termIndex));
-//            }
-//        } else {
-//            ((RoaringBitmap)what).forEach((int termIndex) -> {
-//                each.accept(sub(termIndex));
-//            });
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

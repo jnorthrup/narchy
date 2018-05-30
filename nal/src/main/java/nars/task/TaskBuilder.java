@@ -53,22 +53,22 @@ import static nars.time.Tense.ETERNAL;
     private long creation = ETERNAL;
     private long start = ETERNAL, end = ETERNAL;
 
-//    /** Array of tasks from which the Task is derived, or null if input
-//     *
-//     * These are not guaranteed to remain because it is
-//     * stored as a Soft or Weak reference so that
-//     * task ancestry does not grow uncontrollably;
-//     *
-//     * instead, we rely on the JVM garbage collector
-//     * to serve as an enforcer of AIKR
-//     *
-//     * @return The task from which the task is derived, or
-//     * null if it has been forgotten
-//     */
-//    @Nullable protected transient Reference<Task>[] parents;
 
-//    /** Belief from which the Task is derived, or null if derived from a theorem     */
-//    @Nullable protected transient Reference<Task> parentBelief;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -76,9 +76,9 @@ import static nars.time.Tense.ETERNAL;
         this(t, punct, t(freq, nar.confDefault(punct)));
     }
 
-    //    public MutableTask(@NotNull String compoundTermString, byte punct, float freq, float conf) throws Narsese.NarseseException {
-//        this($.$(compoundTermString), punct, t(freq, conf));
-//    }
+    
+
+
     public TaskBuilder(Term t, byte punct, float freq, float conf) {
         this(t, punct, t(freq, conf));
     }
@@ -95,11 +95,11 @@ import static nars.time.Tense.ETERNAL;
 
     public TaskBuilder(Term term, byte punctuation /* TODO byte */, @Nullable Truth truth, float p, float q) throws InvalidTaskException {
         super(0);
-        pri = p; //direct set
+        pri = p; 
 
         this.punc = punctuation;
 
-        //unwrap top-level negation
+        
         Term tt = term.term();
         if (tt.op() == Op.NEG) {
             Term nt = tt.sub(0);
@@ -146,18 +146,18 @@ import static nars.time.Tense.ETERNAL;
             this.term = cntt;
         }
 
-        //noinspection IfStatementWithTooManyBranches
+        
         switch (punc()) {
             case BELIEF:
             case GOAL:
                 if (truth == null) {
-                    //apply the default truth value for specified punctuation
+                    
                     setTruth(t(1, n.confDefault(punc)));
                 } else {
 
                     float confLimit = 1f - Param.TRUTH_EPSILON;
                     if (!isInput() && conf() > confLimit) {
-                        //clip maximum confidence in case a derivation of an axiomatic belief reaches conf=~1.0 also
+                        
                         setTruth(t(freq(), confLimit));
                     }
                 }
@@ -177,14 +177,14 @@ import static nars.time.Tense.ETERNAL;
         }
 
 
-        // assign a unique stamp if none specified (input)
+        
         if (evidence.length == 0)
             setEvidence(n.time.nextStamp());
 
 
-        // if a task has an unperceived creationTime,
-        // set it to the memory's current time here,
-        // and adjust occurenceTime if it's not eternal
+        
+        
+        
 
         if (creation() == ETERNAL) {
             long now = n.time();
@@ -198,28 +198,28 @@ import static nars.time.Tense.ETERNAL;
         }
 
 
-        //if quality is not specified (NaN), then this means to assign the default budgeting according to the task's punctuation
+        
         float pp = priElseNeg1();
         if (pp < 0) {
             priSet(n.priDefault(punc));
         }
 
 
-//        if (dur!=dur) {
-//            //assign default duration from NAR
-//            dur = n.dur();
-//        }
 
-        //shift the occurrence time if input and dt < 0 and non-eternal HACK dont use log it may be removed without warning
-//        if (isInput()) {
-//            long exOcc = occurrence();
-//            if (exOcc != ETERNAL) {
-//                int termDur = ntt.dt();
-//                if (termDur != DTERNAL && termDur < 0) {
-//                    setOccurrence(exOcctermDur);
-//                }
-//            }
-//        }
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
 
 
         Truth tFinal;
@@ -231,28 +231,28 @@ import static nars.time.Tense.ETERNAL;
 
         Task i = new NALTask(term, punc, tFinal, creation, start, end, evidence);
         i.priSet(this);
-        //        if (srcCopy == null) {
-//            delete();
-//        } else {
-//            float p = srcCopy.priSafe(-1);
-//            if (p < 0) {
-//                delete();
-//            } else {
-//                setPriority(p);
-//            }
-//        }
-//
-//        return this;
+        
+
+
+
+
+
+
+
+
+
+
+
         return i;
     }
 
 
-    //    /** if validated and entered into the system. can be overridden in subclasses to handle this event
-//     *  isnt called for Command tasks currently; they will be executed right away anyway
-//     * */
-//    protected void onInput(@NotNull Memory m) {
-//
-//    }
+    
+
+
+
+
+
 
 
 
@@ -287,11 +287,11 @@ import static nars.time.Tense.ETERNAL;
     }
 
 
-//    @Override
-//    public final boolean isAnticipated() {
-//        return isBelief() && !isEternal() &&
-//                (/*state() == TaskState.Anticipated ||*/ isInput());
-//    }
+
+
+
+
+
 
     /**
      * the evidence should be sorted and de-duplicaed prior to calling this
@@ -323,55 +323,55 @@ import static nars.time.Tense.ETERNAL;
     }
 
 
-//    @Override
-//    public int compareTo(@NotNull Task obj) {
-//
-//        if (this == obj)
-//            return 0;
-//
-//        Task o = (Task)obj;
-//
-//        int c = Util.compare(evidence, o.evidence());
-//        if (c != 0)
-//            return c;
-//
-//        if (evidence.length > 1) {
-//            Truth tr = this.truth;
-//
-//            if (tr != null) {
-//                @Nullable Truth otruth = o.truth();
-//                if (otruth == null)
-//                    return 1;
-//                int tu = Truth.compare(tr, otruth);
-//                if (tu != 0) return tu;
-//            }
-//
-//
-//            int to = Long.compare(start, o.start());
-//            if (to != 0) return to;
-//        }
-//
-//
-//        int tc = term.compareTo(o.term());
-//        if (tc != 0) return tc;
-//
-//        return Character.compare(punc(), o.punc())
-//                ;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @NotNull
     private TaskBuilder setCreationTime(long creationTime) {
-//        if ((this.creation == ETERNAL) && (start > Tense.TIMELESS)) {
-//            //use the occurrence time as the delta, now that this has a "finite" creationTime
-//            long when = start + creationTime;
-//            setStart(when);
-//            setEnd(when);
-//        }
 
-        //if (this.creationTime != creationTime) {
+
+
+
+
+
+
+        
         this.creation = creationTime;
-        //does not need invalidated since creation time is not part of hash
-        //}
+        
+        
         return this;
     }
 
@@ -379,9 +379,9 @@ import static nars.time.Tense.ETERNAL;
      * TODO for external use in TaskBuilder instances only
      */
     private void setStart(long o) {
-//        if ((o == Integer.MIN_VALUE || o == Integer.MAX_VALUE) && Param.DEBUG) {
-//            System.err.println("Likely an invalid occurrence time being set");
-//        }
+
+
+
         if (o != start) {
 
             this.start = o;
@@ -392,9 +392,9 @@ import static nars.time.Tense.ETERNAL;
      * TODO for external use in TaskBuilder instances only
      */
     private void setEnd(long o) {
-//        if ((o == Integer.MIN_VALUE || o == Integer.MAX_VALUE) && Param.DEBUG) {
-//            System.err.println("Likely an invalid occurrence time being set");
-//        }
+
+
+
         if (o != end) {
             if (start == ETERNAL && o != ETERNAL)
                 throw new RuntimeException("can not set end time for eternal task");
@@ -409,11 +409,11 @@ import static nars.time.Tense.ETERNAL;
     @Override
     public final int hashCode() {
         throw new UnsupportedOperationException();
-//        int h = this.hash;
-//        if (h == 0) {
-//            return this.hash = rehash();
-//        }
-//        return h;
+
+
+
+
+
     }
 
     /**
@@ -437,12 +437,12 @@ import static nars.time.Tense.ETERNAL;
     @Override
     public void delete() {
         super.delete();
-//        this.parentBelief = this.parentTask = this.bestSolution = null;
-//        this.cause = null;
-//        log.clear();
-//        this.term = null;
-//        this.truth = null;
-//        this.hash = 0;
+
+
+
+
+
+
     }*/
 
 
@@ -453,18 +453,18 @@ import static nars.time.Tense.ETERNAL;
 
         return end;
 
-//        //return occurrence();
-//        long p = start();
-//        if (p == ETERNAL)
-//            return ETERNAL;
-//
-//        long dt = 0;
-//        if (op().temporal) {
-//            dt=dt();
-//            if (dt==DTERNAL)
-//                dt = 0;
-//        }
-//        return p + dt;
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
@@ -498,19 +498,19 @@ import static nars.time.Tense.ETERNAL;
 
         long endTime = occurrenceTime;
 
-//        if (occurrenceTime!=ETERNAL && op()==CONJ) {
-//             int dt = term().dtRange();
-//             switch (dt) {
-//                 case DTERNAL:
-//                 case 0:
-//                 case XTERNAL:
-//                     break;
-//
-//                 default:
-//                     endTime = occurrenceTime + Math.abs(dt);
-//                     break;
-//             }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
         setEnd(endTime);
         return this;
     }

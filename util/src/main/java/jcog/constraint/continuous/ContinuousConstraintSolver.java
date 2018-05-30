@@ -107,9 +107,9 @@ public class ContinuousConstraintSolver {
                 throw new InternalSolverError("internal solver error");
             }
 
-            //This looks wrong! changes made below
-            //Symbol leaving = tag.marker;
-            //rows.remove(tag.marker);
+            
+            
+            
 
             Symbol leaving = null;
             for (Map.Entry<Symbol, Row> s : rows.entrySet()) {
@@ -266,8 +266,8 @@ public class ContinuousConstraintSolver {
                     Symbol errminus = new Symbol(Symbol.Type.ERROR);
                     tag.marker = errplus;
                     tag.other = errminus;
-                    row.insert(errplus, -1.0); // v = eplus - eminus
-                    row.insert(errminus, 1.0); // v - eplus + eminus = 0
+                    row.insert(errplus, -1.0); 
+                    row.insert(errminus, 1.0); 
                     this.objective.insert(errplus, str);
                     this.objective.insert(errminus, str);
                 } else {
@@ -278,7 +278,7 @@ public class ContinuousConstraintSolver {
                 break;
         }
 
-        // Ensure the row as a positive constant.
+        
         if (row.getConstant() < 0.0) {
             row.reverseSign();
         }
@@ -321,30 +321,30 @@ public class ContinuousConstraintSolver {
      * This will return false if the constraint cannot be satisfied.
      */
     private boolean addWithArtificialVariable(Row row) {
-        //TODO check this
+        
 
-        // Create and add the artificial variable to the tableau
+        
 
         Symbol art = new Symbol(Symbol.Type.SLACK);
         rows.put(art, new Row(row));
 
         this.artificial = new Row(row);
 
-        // Optimize the artificial objective. This is successful
-        // only if the artificial objective is optimized to zero.
+        
+        
         optimize(this.artificial);
         boolean success = nearZero(artificial.getConstant());
         artificial = null;
 
-        // If the artificial variable is basic, pivot the row so that
-        // it becomes basic. If the row is constant, exit early.
+        
+        
 
         Row rowptr = this.rows.get(art);
 
         if (rowptr != null) {
 
             /**this looks wrong!!!*/
-            //rows.remove(rowptr);
+            
 
             LinkedList<Symbol> deleteQueue = new LinkedList<>();
             for (Map.Entry<Symbol, Row> symbolRowEntry : rows.entrySet()) {
@@ -364,14 +364,14 @@ public class ContinuousConstraintSolver {
 
             Symbol entering = anyPivotableSymbol(rowptr);
             if (entering.type == Symbol.Type.INVALID) {
-                return false; // unsatisfiable (will this ever happen?)
+                return false; 
             }
             rowptr.solveFor(art, entering);
             substitute(entering, rowptr);
             this.rows.put(entering, rowptr);
         }
 
-        // Remove the artificial variable from the tableau.
+        
         rows.values().forEach(r -> r.remove(art));
 
         objective.remove(art);
@@ -470,15 +470,15 @@ public class ContinuousConstraintSolver {
                         .filter(k -> k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR)
                         .findFirst().orElseGet(Symbol::new);
 
-//        for (Map.Entry<Symbol, Double> entry : row.cells.entrySet()) {
-//            Symbol k = entry.getKey();
-//            if (k.type == Symbol.Type.SLACK || k.type == Symbol.Type.ERROR) {
-//                symbol = k;
-//            }
-//        }
-//        if (symbol == null) {
-//            symbol = new Symbol();
-//        }
+
+
+
+
+
+
+
+
+
         return symbol;
     }
 

@@ -10,7 +10,7 @@ TODO instead of SequenceEvent, should TimedEvent and CountEvent extend Number?
 */
 public class TimedEvent implements SequenceEvent{
 	
-	//TODO when using Eventable inside a Task wrapper, receiving TimedEvents, how will PrilistsPanel.setObjectView turn off the Task that it starts, after next call to start some other?
+	
 	
 	/** Seconds since year 1970. See DatastructUtil.time() which has microsecond precision. */
 	public final double time;

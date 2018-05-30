@@ -52,7 +52,7 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
                 try {
                     conf.font_size = Integer.parseInt((String) prop.get(key));
                 } catch (Exception ee) {
-                    // ignore it because of loading incompatible data.
+                    
                 }
             }
 
@@ -61,7 +61,7 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
                 if (prop.get(key) != null)
                     conf.fg_bg = ((String) prop.get(key)).split(",");
             } catch (Exception ee) {
-                // ignore it because of loading incompatible data.
+                
             }
 
             try {
@@ -69,12 +69,12 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
                 if (prop.get(key) != null)
                     conf.destinations = ((String) prop.get(key)).split(",");
             } catch (Exception ee) {
-                // ignore it because of loading incompatible data.
+                
             }
 
             in.close();
         } catch (Exception e) {
-            // the file does not exist.
+            
         }
 
         return conf;
@@ -88,7 +88,7 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
             prop.load(in);
             in.close();
         } catch (IOException e) {
-            // the file does not exist.
+            
         }
 
         String name = conf.name;
@@ -105,7 +105,7 @@ public class ConfigurationRepositoryFS implements ConfigurationRepository {
             prop.store(out, "");
             out.close();
         } catch (IOException e) {
-            // failed to save file.
+            
         }
     }
 

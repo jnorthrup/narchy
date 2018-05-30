@@ -70,24 +70,24 @@ public class LivePredictorTest {
 
             double[] prediction = l.next(m.intValue());
 
-            //test time shift preseves previous value;
+            
             {
-//                float[] i0 = ih.data.get(0).data;
-//                assertEquals(i0[0], in[0].asFloat(), 0.001f);
-//                if (t > 1)
-//                    assertEquals(i0[1], ii.valueOf(m.intValue() - 1), 0.001f);
+
+
+
+
             }
 
             double predicted = prediction[0];
             double actual = oo.valueOf(m.intValue()+1);
 
-            double e = Math.abs(actual - predicted); //absolute error
+            double e = Math.abs(actual - predicted); 
             error.addValue(e);
 
             if (t%errorWindow == errorWindow-1) {
                 errortime.add(t, error.getMean());
             }
-           //System.out.println( n4(predicted) + "\t" + n4(actual));
+           
         }
 
         double eMean = error.getMean();
@@ -101,30 +101,30 @@ public class LivePredictorTest {
         assertTrue(eMean < maxMeanError, ()->"mean error: " + eMean);
     }
 
-//    @Test public void testN() {
-//        MutableFloat m = new MutableFloat();
-//
-//        FloatSupplier[] in = {
-//                () -> 1f * (m.floatValue() % 2) > 0 ? 1 : -1,
-//                () -> 1f * ((m.floatValue() % 3) > 0 ? 1 : -1)
-//        };
-//        FloatSupplier[] out = {
-//                () -> 1f * (((m.floatValue() % 2) + (m.floatValue() % 3)) > 2 ? 1 : -1)
-//        };
-//        LivePredictor l = new LivePredictor(new LivePredictor.LSTMPredictor(),
-//                in,
-//                5, out
-//        );
-//
-//        for (int i = 0; i < 1500; i++) {
-//            double[] prediction = l.next();
-//
-//            //System.out.print( n4(prediction) + "\t=?=\t");
-//            m.increment();
-//            //System.out.println(n4(d(in)) + "\t" + n4(d(out)) );
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static double[] d(FloatSupplier[] f) {
         double[] d = new double[f.length];

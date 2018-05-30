@@ -1,6 +1,6 @@
-//
-// Translated by CS2J (http://www.cs2j.com): 04.07.2015 01:02:36
-//
+
+
+
 
 package jcog.learn.ntm.memory.address;
 
@@ -19,7 +19,7 @@ public class ShiftedAddressing
     public final GatedAddressing gatedAddressing;
     public final Unit[] shifted;
 
-    //IMPLEMENTATION OF SHIFT - page 9
+    
     public ShiftedAddressing(Unit shift, GatedAddressing gatedAddressing) {
         _shift = shift;
         this.gatedAddressing = gatedAddressing;
@@ -27,7 +27,7 @@ public class ShiftedAddressing
         cells = gated.length;
         shifted = UnitFactory.getVector(cells);
         double cellCountDbl = cells;
-        //Max shift is from range -1 to 1
+        
         shiftWeight = Sigmoid.getValue(_shift.value);
         double maxShift = ((2.0 * shiftWeight) - 1.0);
         double convolutionDbl = (maxShift + cellCountDbl) % cellCountDbl;
@@ -69,11 +69,11 @@ public class ShiftedAddressing
     }
 
     public static int convToInt(double c) {
-        //OPTION 1: hard floor
+        
         return (int)c;
 
-        //OPTION 2: (soft) round
-        //return (int)Math.round(c);
+        
+        
     }
 
     public void backwardErrorPropagation() {

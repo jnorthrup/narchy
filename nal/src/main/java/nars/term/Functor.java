@@ -46,10 +46,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
     }
 
 
-//    @Override
-//    public boolean equals(Object obj) {
-//        return this == obj || obj instanceof Term && term.equals(obj);
-//    }
+
+
+
+
 
     @Override
     public final Term term() {
@@ -341,7 +341,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         public final Term apply(Subterms x) {
             if (x.subs() != 1)
                 return null;
-            //throw new UnsupportedOperationException("# args must equal 1");
+            
 
             return apply(x.sub(0));
         }
@@ -355,7 +355,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
         @Override
         public Term applyTermIfPossible(Term x, @Nullable Op superTermOp, int subterm) {
-            //only need to resolve for the predicate subterm of an INH
+            
             if ((superTermOp == null || (subterm==1 && superTermOp==INH)) && x.op()==ATOM) {
                 Termed y = apply(x);
                 if (y != null) {
@@ -388,15 +388,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 case 2:
                     return apply2(terms.sub(0), terms.sub(1));
                 default:
-                    return Null; //invalid
+                    return Null; 
             }
         }
 
         protected Term apply1(Term x) {
             if (x.op().var)
-                return null; //do nothing
+                return null; 
             else {
-                return compute(x); //replace with result
+                return compute(x); 
             }
         }
 
@@ -410,9 +410,9 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         protected Term apply2(Term x, Term y) {
             boolean xVar = x.op().var;
             if (y.op().var) {
-                //forwards
+                
                 if (xVar) {
-                    return null; //uncomputable; no change
+                    return null; 
                 } else {
                     Term XY = compute(x);
                     if (XY!=null) {
@@ -420,7 +420,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                                 s.replace(y, XY)
                         );
                     } else {
-                        return null; //unchanged
+                        return null; 
                     }
                 }
             } else {
@@ -431,19 +431,19 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                                 s.replace(x, X)
                         );
                     } else {
-                        return null; //unchanged
+                        return null; 
                     }
                 } else {
-                    //verify
+                    
                     Term XY = compute(x);
                     if (XY == null)
-                        return null;  //unchanged yet
+                        return null;  
                     else if (XY.equals(y)) {
-                        //equal
-                        //return null;
+                        
+                        
                         return True;
                     } else {
-                        //inequal
+                        
                         return False;
                     }
                 }
@@ -470,15 +470,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 case 3:
                     return apply2(terms.sub(0), terms.sub(1), terms.sub(2));
                 default:
-                    return Null; //invalid
+                    return Null; 
             }
         }
 
         protected Term apply1(Term x, Term parameter) {
             if (x.op().var)
-                return null; //do nothing
+                return null; 
             else {
-                return compute(x, parameter); //replace with result
+                return compute(x, parameter); 
             }
         }
 
@@ -492,9 +492,9 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         protected Term apply2(Term x, Term param, Term y) {
             boolean xVar = x.op().var;
             if (y.op().var) {
-                //forwards
+                
                 if (xVar) {
-                    return null; //uncomputable; no change
+                    return null; 
                 } else {
                     Term XY = compute(x, param);
                     if (XY!=null) {
@@ -502,7 +502,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                                 s.replace(y, XY)
                         );
                     } else {
-                        return null; //unchanged
+                        return null; 
                     }
                 }
             } else {
@@ -513,13 +513,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                                 s.replace(x, X)
                         );
                     } else {
-                        return null; //unchanged
+                        return null; 
                     }
                 } else {
-                    //verify
+                    
                     Term XY = compute(x, param);
                     if (XY==null) {
-                        return null; //unchanged
+                        return null; 
                     } else {
                         return XY.equals(y) ? True  : False;
                     }
@@ -549,15 +549,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 case 3:
                     return apply3(terms.sub(0), terms.sub(1), terms.sub(2));
                 default:
-                    return Null; //invalid
+                    return Null; 
             }
         }
 
         protected Term apply2(Term x, Term y) {
             if (x.op().var || y.op().var)
-                return null; //do nothing
+                return null; 
             else {
-                return compute(x,y); //replace with result
+                return compute(x,y); 
             }
         }
 
@@ -567,9 +567,9 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
             boolean xVar = x.op().var;
             boolean yVar = y.op().var;
             if (xy.op().var) {
-                //forwards
+                
                 if (xVar || yVar) {
-                    return null; //uncomputable; no change
+                    return null; 
                 } else {
                     Term XY = compute(x, y);
                     if (XY!=null) {
@@ -577,7 +577,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                                 s.replace(xy, XY)
                         );
                     } else {
-                        return null; //unchanged
+                        return null; 
                     }
                 }
             } else {
@@ -586,17 +586,17 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else if (yVar && !xVar) {
                     return computeYfromXandXY(x, y, xy);
                 } else if (!yVar && !xVar) {
-                    //VERIFY
+                    
                     Term XY = compute(x, y);
                     if (XY==null || XY.equals(xy)) {
-                        //equal
+                        
                         return True;
                     } else {
-                        //inequal
+                        
                         return False;
                     }
                 } else {
-                    return computeFromXY(x, y, xy); //all variables
+                    return computeFromXY(x, y, xy); 
                 }
             }
         }
@@ -621,7 +621,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
         @Override
         protected Term apply2(Term x, Term y) {
-            //TODO commutive rearrange
+            
             if ((x.op().var || y.op().var) && x.compareTo(y) > 0) {
                 return $.func((Atomic)term(), y, x);
             }

@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 /**
  * "Sokoban 1.0, Written by Yossie Silverman."
  *
- * @author Yossie Silverman  http://www.blacksteel.com/Sokoban/Sokoban.java
+ * @author Yossie Silverman  http:
  */
 public class Sokoban extends Applet {
 
@@ -322,7 +322,7 @@ public class Sokoban extends Applet {
     static final char goal = '.';
     Image[] tiles = new Image[128];
 
-    //AudioClip buzz, wow;
+    
 
     char[] level;
     int currlevel, w, h, push, move;
@@ -339,14 +339,14 @@ public class Sokoban extends Applet {
 
     @SuppressWarnings("HardcodedFileSeparator")
     public Sokoban() throws HeadlessException {
-        //buzz = getAudioClip(getDocumentBase(), "buzz.au");
-        //wow = getAudioClip(getDocumentBase(), "wow.au");
-        //MediaTracker tracker = new MediaTracker(this);
-        //Image j = ImageIO.read(
-        //new FileInputStream(new File("/home/me/opennars/lab/src/main/java/nars/sokoban/Sokoban.bmp")));
+        
+        
+        
+        
+        
 
-        //tracker.addImage(j,0);
-        //try { tracker.waitForAll(); } catch (InterruptedException e) {}
+        
+        
         String tile = "# @$.&*";
         for (int i = 0; i < tile.length(); i++) {
             BufferedImage t = (BufferedImage) (tiles[tile.charAt(i)] = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB));
@@ -357,9 +357,9 @@ public class Sokoban extends Applet {
             g.setColor(Color.getHSBColor(h, 0.8f, 0.8f));
             g.fillRect(0, 0, t.getWidth(), t.getHeight());
 
-            //g.drawImage(j, -i*16, 0, this);
+            
         }
-        //j.flush();
+        
         newLevel(0);
         requestFocus();
     }
@@ -373,29 +373,29 @@ public class Sokoban extends Applet {
     @Override
     public synchronized void update(Graphics g) {
         Dimension d = size();
-        if (d.width * d.height == 0) return; // supposedly this can happen!
+        if (d.width * d.height == 0) return; 
         Rectangle r = g.getClipRect();
 
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, d.width, d.height);
 
-        //if (r.x < 72) { // only do this if necessary!
-            //g.setFont(fontb);
-            //g.setColor(Color.blue);
-            //g.drawString("Sokoban", 0, 16);
-//            g.setFont(font);
-//            g.setColor(Color.GRAY);
-//            String[] help = {"h=Left", "j=Down", "k=Up", "l=Right", " (or Arrows)",
-//                    "H,J,K,L=", " FastMove", "u=Undo", "A=Restart", "S=Save", "R=Restore",
-//                    "+=UpLevel", "-=DownLevel"};
-//            for (int i = 0; i < help.length; i++)
-//                g.drawString(help[i], 0, 80 + 16 * i);
-//            g.setFont(fontb);
-//            g.drawString("Level:", 0, 32);
-//            g.drawString("Move:", 0, 48);
-//            g.drawString("Push:", 0, 64);
-//            drawStatus(g);
-        //}
+        
+            
+            
+            
+
+
+
+
+
+
+
+
+
+
+
+
+        
 
         int y = -16 + h, x = -16 + w;
         for (char aLevel : level)
@@ -405,27 +405,27 @@ public class Sokoban extends Applet {
             } else {
                 x += 16;
                 if (aLevel == blank) continue;
-                //if (r.inside(x, y)) // only draw the images necessary for move!
+                
                     g.drawImage(tiles[aLevel], x+225, y+225, this);
             }
 
-        //repaint();
+        
     }
 
     public void drawStatus(Graphics g) {
-//        g.setColor(Color.lightGray);
-//        g.fillRect(40, 16, 32, 48);
-//        g.setColor(Color.black);
-//        g.setFont(font);
-//        g.drawString("" + (currlevel + 1), 40, 32);
-//        g.drawString("" + move, 40, 48);
-//        g.drawString("" + push, 40, 64);
+
+
+
+
+
+
+
     }
 
     public void drawMove() {
         Graphics g = getGraphics();
-        drawStatus(g); // order is important, since update munges the clipRect
-        //repaint(lastrect.x, lastrect.y, lastrect.width, lastrect.height);
+        drawStatus(g); 
+        
         repaint();
     }
 
@@ -569,7 +569,7 @@ public class Sokoban extends Applet {
                 boolean b = true;
                 for (char aLevel : level) if (aLevel == dollar) b = false;
                 if (b) {
-                    //wow.play();
+                    
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
@@ -581,7 +581,7 @@ public class Sokoban extends Applet {
                 pos1 = savepos1;
                 pos2 = savepos2;
                 pos3 = savepos3;
-                //buzz.play();
+                
             }
         } while (uc);
     }

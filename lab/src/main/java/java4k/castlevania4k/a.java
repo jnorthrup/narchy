@@ -17,7 +17,7 @@ package java4k.castlevania4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -198,7 +198,7 @@ public class a extends GamePanel {
 	Random random = new Random();
 	float[] head = new float[32];
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 	long nextFrameStartTime;
@@ -213,7 +213,7 @@ public class a extends GamePanel {
 		offscreenImage = new BufferedImage(256, 208, 1);
 		offscreenGraphics = (Graphics2D) offscreenImage.getGraphics();
 
-		// decompress sprites
+		
 		for (z = 0; z < 256; z++) {
 			for (i = k = 0; i < SPRITES; i++) {
 				j = S.charAt(k++);
@@ -242,7 +242,7 @@ public class a extends GamePanel {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		// burn off extra cycles
+		
 		if (nextFrameStartTime - System.nanoTime() > 0) {
 			return;
 		}
@@ -250,7 +250,7 @@ public class a extends GamePanel {
 		do {
 			nextFrameStartTime += 16666667;
 
-			// -- update starts ----------------------------------------------------
+			
 
 			counter++;
 			if (!a[VK_JUMP]) {
@@ -264,13 +264,13 @@ public class a extends GamePanel {
 			}
 
 			if (gameState == GAME_STATE_RISING) {
-				// make head rise
+				
 				if ((counter & 1) == 1 && --headY == -10) {
 					gameState = GAME_STATE_FIGHTING;
 				}
 			} else if (gameState == GAME_STATE_FIGHTING) {
 
-				// update dracula
+				
 				if (draculaState == DRACULA_STATE_FADE_IN) {
 					draculaCounter -= 8;
 					if (draculaCounter < 8) {
@@ -282,7 +282,7 @@ public class a extends GamePanel {
 							draculaCounter = 24;
 							firstFadeIn = false;
 
-							// head is an invisible region used for collision detection only
+							
 							queue.add(head);
 							head[OBJ_X] = draculaX;
 							head[OBJ_Y] = 128;
@@ -300,7 +300,7 @@ public class a extends GamePanel {
 						draculaOpened = true;
 						draculaCounter = 64;
 
-						// dracula creates fireball
+						
 						if (draculaPower >= 22 || (draculaPower > 10 && draculaPower < 16) || (draculaPower < 6)) {
 							float[] fireball = new float[32];
 							queue.add(fireball);
@@ -322,7 +322,7 @@ public class a extends GamePanel {
 						}
 
 						if (draculaPower > 10 && draculaPower < 22) {
-							// dracula creates igors
+							
 							j = 8 + (random.nextInt(8) << 4);
 							for (i = 0; i < 2; i++) {
 								float[] igor = new float[32];
@@ -338,7 +338,7 @@ public class a extends GamePanel {
 								igor[OBJ_TYPE] = TYPE_IGOR;
 							}
 						} else if (draculaPower <= 10) {
-							// dracula drops bricks
+							
 							j = random.nextInt(4);
 							for (i = 0; i < 4; i++) {
 								float[] brick = new float[32];
@@ -382,7 +382,7 @@ public class a extends GamePanel {
 					if (draculaCounter < 511) {
 						draculaCounter++;
 
-						// dracula fades out and flames as he perishes
+						
 						if ((draculaCounter & 7) == 7) {
 							float[] flame = new float[32];
 							queue.add(flame);
@@ -392,18 +392,18 @@ public class a extends GamePanel {
 							flame[OBJ_TYPE] = TYPE_FLAME;
 						}
 					} else if (queue.size() - crosses.size() == 0) {
-						// game freezes after defeating dracula
+						
 						continue;
 					}
 				}
 			} else {
 				if (playerX < 80) {
-					// when the player walks to the left of the screen, the fight begins
+					
 					gameState = GAME_STATE_RISING;
 				}
 			}
 
-			// update player
+			
 			if (playerJumping) {
 				playerVy += GRAVITY;
 				playerFy += playerVy;
@@ -423,7 +423,7 @@ public class a extends GamePanel {
 
 			if (playerDead > 0) {
 				if (++playerDead > 96) {
-					// reset game
+					
 					gameState = GAME_STATE_ENTRY;
 					playerX = 208;
 					playerFx = playerX;
@@ -486,7 +486,7 @@ public class a extends GamePanel {
 
 				if (playerWhipping > 0) {
 					if (--playerWhipping < WHIP_THROW && playerThrowing) {
-						// player throws cross
+						
 						playerWhipping = 0;
 						float[] cross = new float[32];
 						queue.add(cross);
@@ -546,21 +546,21 @@ public class a extends GamePanel {
 				}
 
 				if (crosses.size() < 3 && subweaponReleased && a[VK_SUBWEAPON] && playerWhipping == 0) {
-					// player starts to throw cross
+					
 					subweaponReleased = false;
 					whipReleased = false;
 					playerThrowing = true;
 					playerWhipping = WHIP_HANGING;
 				}
 
-				// compute player hit boundaries
+				
 				playerX1 = playerX + 2;
 				playerY1 = playerY + (playerKneeling || playerVy < 0 ? 8 : 0);
 				playerX2 = playerX + 13;
 				playerY2 = playerY + 30;
 
 				if (playerWhipping > 0 && playerWhipping <= WHIP_EXTENDED && !playerThrowing) {
-					// compute whip hit boundaries
+					
 					whipX1 = playerX + (playerReversed ? -45 : 16);
 					whipY1 = playerY1 + 10;
 					whipX2 = whipX1 + 44;
@@ -568,7 +568,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// test for player-dracula collision
+			
 			if (playerStunned == 0 && draculaPower > 0 && !playerHurt && draculaState != DRACULA_STATE_FADE_IN && draculaState != DRACULA_STATE_HIDDEN) {
 				i = draculaX + (draculaReversed ? -8 : (draculaOpened ? -24 : -16));
 				if (playerX2 >= i && playerX1 <= i + (draculaOpened ? 32 : 24) && playerY2 >= 128 && playerY1 <= 176) {
@@ -579,11 +579,11 @@ public class a extends GamePanel {
 				}
 			}
 
-			// update objects
+			
 			o: for (i = queue.size() - 1; i >= 0; i--) {
 				float[] object = queue.get(i);
 				if (object[OBJ_TYPE] == TYPE_CROSS) {
-					// move cross
+					
 					object[OBJ_ANGLE] += object[OBJ_VX] * CROSS_RATIO;
 					object[OBJ_X] += object[OBJ_VX];
 					if (object[OBJ_STATE] == CROSS_STATE_FORWARD) {
@@ -628,7 +628,7 @@ public class a extends GamePanel {
 					object[OBJ_VY] += GRAVITY;
 					object[OBJ_Y] += object[OBJ_VY];
 					if (object[OBJ_Y] >= 160) {
-						// brick hits ground
+						
 						queue.remove(i);
 						float[] flame = new float[32];
 						queue.add(flame);
@@ -661,7 +661,7 @@ public class a extends GamePanel {
 
 				if (!playerHurt && draculaPower > 0) {
 					if (object[OBJ_COLLIDES] == 1) {
-						// test for object-player collision
+						
 						if (playerX2 >= object[OBJ_X] + object[OBJ_X1] && playerX1 <= object[OBJ_X] + object[OBJ_X2] && playerY2 >= object[OBJ_Y] + object[OBJ_Y1]
 								&& playerY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
 							if (object[OBJ_TYPE] == TYPE_CROSS) {
@@ -686,7 +686,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// test for object-whip collision
+						
 						if (playerWhipping > 0 && playerWhipping <= WHIP_EXTENDED && !playerThrowing && whipX2 >= object[OBJ_X] + object[OBJ_X1] && whipX1 <= object[OBJ_X] + object[OBJ_X2]
 								&& whipY2 >= object[OBJ_Y] + object[OBJ_Y1] && whipY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
 							if (object[OBJ_TYPE] == TYPE_FIREBALL || object[OBJ_TYPE] == TYPE_DRACULA_HEAD || object[OBJ_TYPE] == TYPE_IGOR) {
@@ -704,7 +704,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// test for object-cross collision
+						
 						if (object[OBJ_TYPE] == TYPE_FIREBALL || object[OBJ_TYPE] == TYPE_DRACULA_HEAD || object[OBJ_TYPE] == TYPE_IGOR) {
 							for (j = 0; j < crosses.size(); j++) {
 								float[] cross = crosses.get(j);
@@ -728,19 +728,19 @@ public class a extends GamePanel {
 				}
 			}
 
-			// -- update ends ------------------------------------------------------
+			
 
 		} while (nextFrameStartTime < System.nanoTime());
 
-		// -- render starts ------------------------------------------------------
+		
 
-		// clear frame
+		
 		offscreenGraphics.setColor(Color.WHITE);
 		offscreenGraphics.fillRect(0, 0, 256, 240);
 		offscreenGraphics.setColor(Color.BLACK);
 
 		if (gameState != GAME_STATE_ENTRY && draculaState != DRACULA_STATE_HIDDEN) {
-			// draw dracula
+			
 			offscreenGraphics.translate(draculaX, 128);
 			if (draculaReversed) {
 				offscreenGraphics.scale(-1, 1);
@@ -774,21 +774,21 @@ public class a extends GamePanel {
 			}
 
 			if (gameState == GAME_STATE_RISING || firstFadeIn) {
-				// draw floating head
+				
 				offscreenGraphics.drawImage(sprites[SPRITE_DRACULA_3], -7, headY, null);
 			}
 
 			offscreenGraphics.setTransform(affineTransform);
 		}
 
-		// draw subweapon box
+		
 		offscreenGraphics.drawRect(128, 8, 31, 21);
 		offscreenGraphics.drawRect(129, 9, 29, 19);
 		offscreenGraphics.rotate(1.1f);
 		offscreenGraphics.drawImage(sprites[SPRITE_CROSS], 74, -127, null);
 		offscreenGraphics.setTransform(affineTransform);
 
-		// draw power bars
+		
 		for (i = 0; i < 16; i++) {
 			if (playerPower > i) {
 				offscreenGraphics.fillRect(56 + (i << 2), 9, 3, 6);
@@ -802,22 +802,22 @@ public class a extends GamePanel {
 			}
 		}
 
-		// draw triple
+		
 		offscreenGraphics.drawImage(sprites[SPRITE_TRIPLE], 208, 8, null);
 
-		// draw floor
+		
 		for (i = 0; i < 16; i++) {
 			offscreenGraphics.drawImage(sprites[SPRITE_BLOCK], i << 4, 176, null);
 			offscreenGraphics.drawImage(sprites[SPRITE_BLOCK], i << 4, 192, null);
 		}
 
-		// draw player
+		
 		offscreenGraphics.translate(playerX + 8, playerY);
 		if (playerReversed) {
 			offscreenGraphics.scale(-1, 1);
 		}
 
-		// player is faded when stunned briefly after a hit
+		
 		sprites2 = alphaSprites[(playerStunned == 0) ? 255 : 127];
 
 		if (playerDead < 96 && playerDead > 8) {
@@ -849,7 +849,7 @@ public class a extends GamePanel {
 				offscreenGraphics.drawImage(sprites2[SPRITE_BODY_6], -8, 2, null);
 				offscreenGraphics.drawImage(sprites2[SPRITE_BODY_7], 8, 10, null);
 				if (!playerThrowing) {
-					// draw extended whip
+					
 					for (i = 0; i < 4; i++) {
 						offscreenGraphics.drawImage(sprites[SPRITE_WHIP_MIDDLE], 12 + (i << 3), 12, null);
 					}
@@ -871,7 +871,7 @@ public class a extends GamePanel {
 		}
 		offscreenGraphics.setTransform(affineTransform);
 
-		// draw objects
+		
 		for (i = 0; i < queue.size(); i++) {
 			float[] object = queue.get(i);
 			if (object[OBJ_SPRITE] >= 0) {
@@ -888,15 +888,15 @@ public class a extends GamePanel {
 			}
 		}
 
-		// draw fade
+		
 		if (playerDead > 64) {
 			offscreenGraphics.setColor(new Color(((playerDead >= 96) ? (127 - playerDead) : (playerDead - 64)) << 27, true));
 			offscreenGraphics.fillRect(0, 0, 256, 208);
 		}
 
-		// -- render ends --------------------------------------------------------
+		
 
-		// show the hidden buffer
+		
 		g.drawImage(offscreenImage, 0, 0, WIDTH, HEIGHT, null);
 
 	}
@@ -908,8 +908,8 @@ public class a extends GamePanel {
 			final int VK_LEFT = 0x25;
 			final int VK_RIGHT = 0x27;
 			final int VK_DOWN = 0x28;
-			final int VK_WHIP = 0x53; // S
-			final int VK_SUBWEAPON = 0x41; // A
+			final int VK_WHIP = 0x53; 
+			final int VK_SUBWEAPON = 0x41; 
 			final int VK_JUMP = 1;
 
 			int k = keyEvent.getKeyCode();
@@ -919,7 +919,7 @@ public class a extends GamePanel {
 		}
 	}
 
-	// to run in window, uncomment below
+	
 	/*public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Castlevania 4K");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

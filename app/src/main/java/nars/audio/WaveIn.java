@@ -27,18 +27,18 @@ public class WaveIn extends NARService {
     /**
      * target power level, as fraction of the sample depth
      */
-    //float autogain = 0.5f;
+    
     private final float fps = 20f;
     final MiniPID autogain = new MiniPID(1, 0.1, 0.4);
 
     WaveIn(NAR nar, Term id, Supplier<WaveCapture> capture) {
         super(id);
         this.capture = capture;
-        nar.off(this); //default off
+        nar.off(this); 
     }
 
     public Surface surface() {
-        return capturing != null ? capturing.view() : new Label("not enabled try again"); //HACK
+        return capturing != null ? capturing.view() : new Label("not enabled try again"); 
     }
 
     @Override
@@ -55,7 +55,7 @@ public class WaveIn extends NARService {
 
         WaveCapture c = capturing;
         if (autogain!=null && c != null) {
-            //calculate signal peak
+            
             float max = 0;
             for (float s : c.data) {
                 max = Math.max(max, Math.abs(s));
@@ -63,18 +63,18 @@ public class WaveIn extends NARService {
 
             float a = (float) autogain.out(max, 0.9f /* target */);
 
-            //float a = ((AudioSource) capturing.source).gain.floatValue();
-//            if (max <= Float.MIN_NORMAL) {
-//                //totally quiet
-//                a = 1f;
-//            } else {
-//                //HACK this is very crude
-//                if (max < targetAmp * 1f) {
-//                    a = Math.min(1000f, a + 0.1f);
-//                } else if (max > targetAmp * 1f) {
-//                    a = Math.max(0, a - 0.1f);
-//                }
-//            }
+            
+
+
+
+
+
+
+
+
+
+
+
             ((AudioSource) capturing.source).gain.set(a);
         }
 

@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -83,7 +83,7 @@ class BvhTree {
 		int splitIndex = startIndex;
 		int numIndices = endIndex - startIndex;
 
-		// average of centers
+		
 		float splitValue = 0.0f;
 
 		v3 means = new v3();
@@ -105,7 +105,7 @@ class BvhTree {
 
 		splitValue = VectorUtil.coord(means, splitAxis);
 
-		// sort leafNodes so all values larger then splitValue comes first, and smaller values start from 'splitIndex'.
+		
 		for (int i = startIndex; i < endIndex; i++) {
 			primitive_boxes.getBoundMax(i, tmp1);
 			primitive_boxes.getBoundMin(i, tmp2);
@@ -113,22 +113,22 @@ class BvhTree {
 			center.scale(0.5f);
 
 			if (VectorUtil.coord(center, splitAxis) > splitValue) {
-				// swap
+				
 				primitive_boxes.swap(i, splitIndex);
-				//swapLeafNodes(i,splitIndex);
+				
 				splitIndex++;
 			}
 		}
 
-		// if the splitIndex causes unbalanced trees, fix this by using the center in between startIndex and endIndex
-		// otherwise the tree-building might fail due to stack-overflows in certain cases.
-		// unbalanced1 is unsafe: it can cause stack overflows
-		//bool unbalanced1 = ((splitIndex==startIndex) || (splitIndex == (endIndex-1)));
+		
+		
+		
+		
 
-		// unbalanced2 should work too: always use center (perfect balanced trees)
-		//bool unbalanced2 = true;
+		
+		
 
-		// this should be safe too:
+		
 		int rangeBalancedIndices = numIndices / 3;
 		boolean unbalanced = ((splitIndex <= (startIndex + rangeBalancedIndices)) || (splitIndex >= (endIndex - 1 - rangeBalancedIndices)));
 
@@ -153,9 +153,9 @@ class BvhTree {
 					num_nodes++;
 					assert ((frame.endIndex - frame.startIndex) > 0);
 					if ((frame.endIndex - frame.startIndex) == 1) {
-						// We have a leaf node
-						//setNodeBound(curIndex,primitive_boxes[startIndex].m_bound);
-						//m_node_array[curIndex].setDataIndex(primitive_boxes[startIndex].m_data);
+						
+						
+						
 						node_array.set(frame.curIndex, frame.primitive_boxes, frame.startIndex);
 
 						stack.pop();
@@ -207,9 +207,9 @@ class BvhTree {
 	}
 
 	public void build_tree(BvhDataArray primitive_boxes) {
-		// initialize node count to 0
+		
 		num_nodes = 0;
-		// allocate nodes
+		
 		node_array.resize(primitive_boxes.size()*2);
 
 		_build_sub_tree(primitive_boxes, 0, primitive_boxes.size());

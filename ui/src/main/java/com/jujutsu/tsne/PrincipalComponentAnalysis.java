@@ -10,7 +10,7 @@ package com.jujutsu.tsne;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *   http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,17 +59,17 @@ import static org.ejml.dense.row.SingularOps_DDRM.descendingOrder;
  */
 public class PrincipalComponentAnalysis {
 
-    // principal component subspace is stored in the rows
+    
     private DMatrixRMaj V_t;
 
-    // how many principal components are used
+    
     private int numComponents;
 
-    // where the data is stored
+    
     private final DMatrixRMaj A = new DMatrixRMaj(1,1);
     private int sampleIndex;
 
-    // mean values of each element across all the samples
+    
     private double[] mean;
 
     public PrincipalComponentAnalysis() {
@@ -123,7 +123,7 @@ public class PrincipalComponentAnalysis {
 
         this.numComponents = numComponents;
 
-        // compute the mean of all the samples
+        
         for(int i = 0; i < rows; i++ )
             for( int j = 0; j < mean.length; j++ )
                 mean[j] += A.get(i,j);
@@ -131,12 +131,12 @@ public class PrincipalComponentAnalysis {
         for( int j = 0; j < mean.length; j++ )
             mean[j] /= rows;
 
-        // subtract the mean from the original data
+        
         for(int i = 0; i < rows; i++ )
             for( int j = 0; j < mean.length; j++ )
                 A.add(i, j, -mean[j]);
 
-        // Compute SVD and save time by not computing U
+        
         SingularValueDecomposition<DMatrixRMaj> svd =
                 DecompositionFactory_DDRM.svd(A.numRows, A.numCols, false, true, false);
         if( !svd.decompose(A) )
@@ -145,10 +145,10 @@ public class PrincipalComponentAnalysis {
         V_t = svd.getV(null,true);
         DMatrixRMaj W = svd.getW(null);
 
-        // Singular values are in an arbitrary order initially
+        
         descendingOrder(null,false,W,V_t,true);
 
-        // strip off unneeded components and find the basis
+        
         V_t.reshape(numComponents,mean.length,true);
     }
 

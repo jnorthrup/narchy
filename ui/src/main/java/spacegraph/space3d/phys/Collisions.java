@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -51,13 +51,13 @@ public abstract class Collisions<X> extends BulletGlobals {
     /**
      * holds spatials which have not been added to 'objects' yet (beginning of next cycle)
      */
-    //protected FasterList<Spatial<X>> pendingAdd = $.newArrayList();
+    
 
     @NotNull
     public final Intersecter intersecter;
     @NotNull
     protected final DispatcherInfo dispatchInfo = new DispatcherInfo();
-    //protected btStackAlloc*	m_stackAlloc;
+    
     @NotNull
     protected final Broadphase broadphase;
 
@@ -69,22 +69,22 @@ public abstract class Collisions<X> extends BulletGlobals {
         this.broadphase = broadphase;
     }
 
-//	public void destroy() {
-//		// clean up remaining objects
-//		for (int i = 0; i < objects.size(); i++) {
-//			//return array[index];
-//			Collidable collidable = objects.get(i);
-//
-//			Broadphasing bp = collidable.broadphase();
-//			if (bp != null) {
-//				//
-//				// only clear the cached algorithms
-//				//
-//				broadphasePairCache.getOverlappingPairCache().cleanProxyFromPairs(bp, intersecter);
-//				broadphasePairCache.destroyProxy(bp, intersecter);
-//			}
-//		}
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -92,12 +92,12 @@ public abstract class Collisions<X> extends BulletGlobals {
      */
     abstract public List<Collidable> collidables();
 
-    //abstract public void forEachCollidable(IntObjectProcedure<Collidable<X>> each);
+    
 
 
     protected boolean on(Collidable c) {
-        // check that the object isn't already added
-        //assert (!collisionObjects.contains(collisionObject));
+        
+        
 
         Broadphasing currentBroadphase = c.broadphase;
         if (currentBroadphase == null) {
@@ -125,33 +125,33 @@ public abstract class Collisions<X> extends BulletGlobals {
 
 
     protected void solveCollisions() {
-        //BulletStats.pushProfile("performDiscreteCollisionDetection");
-        //DispatcherInfo dispatchInfo = getDispatchInfo();
+        
+        
 
         updateAabbs();
 
-        //BulletStats.pushProfile("calculateOverlappingPairs");
+        
             broadphase.update(intersecter);
 
 
 
-        //BulletStats.pushProfile("dispatchAllCollisionPairs");
+        
         intersecter.dispatchAllCollisionPairs(broadphase.getOverlappingPairCache(), dispatchInfo, this.intersecter);
     }
 
-//	public void removeIf(Predicate<Collidable<X>> removalCondition) {
-//		objects.removeIf((c -> {
-//			if (removalCondition.test(c)) {
-//				removing(c);
-//				return true;
-//			}
-//			return false;
-//		}));
-//	}
 
-//	public final void removeBody(Collidable collidable) {
-//		removing(collidable);
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public OverlappingPairCache pairs() {
@@ -163,14 +163,14 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
 
-    // JAVA NOTE: ported from 2.74, missing contact threshold stuff
+    
     protected void updateSingleAabb(Collidable colObj) {
         v3 minAabb = new v3(), maxAabb = new v3();
         v3 tmp = new v3();
         Transform tmpTrans = new Transform();
 
         colObj.shape().getAabb(colObj.getWorldTransform(tmpTrans), minAabb, maxAabb);
-        // need to increase the aabb for contact thresholds
+        
         v3 contactThreshold = new v3();
 
         float bt = getContactBreakingThreshold();
@@ -181,40 +181,40 @@ public abstract class Collisions<X> extends BulletGlobals {
 
         Broadphase bp = broadphase;
 
-        // moving objects should be moderately sized, probably something wrong if not
-        tmp.sub(maxAabb, minAabb); // TODO: optimize
+        
+        tmp.sub(maxAabb, minAabb); 
         if (colObj.isStaticObject() || (tmp.lengthSquared() < maxAABBLength)) {
             Broadphasing broadphase = colObj.broadphase;
             if (broadphase == null)
                 throw new RuntimeException();
             bp.setAabb(broadphase, minAabb, maxAabb, intersecter);
         } else {
-            // something went wrong, investigate
-            // this assert is unwanted in 3D modelers (danger of loosing work)
+            
+            
             colObj.setActivationState(Collidable.DISABLE_SIMULATION);
 
-//			if (updateAabbs_reportMe && debugDrawer != null) {
-//				updateAabbs_reportMe = false;
-//				debugDrawer.reportErrorWarning("Overflow in AABB, object removed from simulation");
-//				debugDrawer.reportErrorWarning("If you can reproduce this, please email bugs@continuousphysics.com\n");
-//				debugDrawer.reportErrorWarning("Please include above information, your Platform, version of OS.\n");
-//				debugDrawer.reportErrorWarning("Thanks.\n");
-//			}
+
+
+
+
+
+
+
         }
     }
 
     public void updateAabbs() {
-//		BulletStats.pushProfile("updateAabbs");
-//		try {
+
+
         collidables().forEach(this::updateAabbsIfActive);
-//		}
-//		finally {
-//			BulletStats.popProfile();
-//		}
+
+
+
+
     }
 
     private void updateAabbsIfActive(Collidable<X> colObj) {
-        // only update aabb of active objects
+        
         if (colObj.isActive()) {
             updateSingleAabb(colObj);
         }
@@ -236,22 +236,22 @@ public abstract class Collisions<X> extends BulletGlobals {
 
             ConvexShape convexShape = (ConvexShape) collisionShape;
 
-            //#define USE_SUBSIMPLEX_CONVEX_CAST 1
-            //#ifdef USE_SUBSIMPLEX_CONVEX_CAST
+            
+            
             SubsimplexConvexCast convexCaster = new SubsimplexConvexCast(pointShape, convexShape, simplexSolver);
-            //#else
-            //btGjkConvexCast	convexCaster(castShape,convexShape,&simplexSolver);
-            //btContinuousConvexCollision convexCaster(castShape,convexShape,&simplexSolver,0);
-            //#endif //#USE_SUBSIMPLEX_CONVEX_CAST
+            
+            
+            
+            
 
             if (convexCaster.calcTimeOfImpact(rayFromTrans, rayToTrans, colObjWorldTransform, colObjWorldTransform, castResult)) {
-                //add hit
+                
                 if (castResult.normal.lengthSquared() > 0.0001f) {
                     if (castResult.fraction < resultCallback.closestHitFraction) {
-                        //#ifdef USE_SUBSIMPLEX_CONVEX_CAST
-                        //rotate normal into worldspace
+                        
+                        
                         rayFromTrans.basis.transform(castResult.normal);
-                        //#endif //USE_SUBSIMPLEX_CONVEX_CAST
+                        
 
                         castResult.normal.normalize();
                         LocalRayResult localRayResult = new LocalRayResult(
@@ -268,7 +268,7 @@ public abstract class Collisions<X> extends BulletGlobals {
         } else {
             if (collisionShape.isConcave()) {
                 if (collisionShape.getShapeType() == BroadphaseNativeType.TRIANGLE_MESH_SHAPE_PROXYTYPE) {
-                    // optimized version for BvhTriangleMeshShape
+                    
                     BvhTriangleMeshShape triangleMesh = (BvhTriangleMeshShape) collisionShape;
                     Transform worldTocollisionObject = new Transform();
                     worldTocollisionObject.inverse(colObjWorldTransform);
@@ -302,7 +302,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     triangleMesh.processAllTriangles(rcb, rayAabbMinLocal, rayAabbMaxLocal);
                 }
             } else {
-                // todo: use AABB tree or other BVH acceleration structure!
+                
                 if (collisionShape.isCompound()) {
                     CompoundShape compoundShape = (CompoundShape) collisionShape;
                     int i = 0;
@@ -312,7 +312,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                         CollisionShape childCollisionShape = compoundShape.getChildShape(i);
                         Transform childWorldTrans = new Transform(colObjWorldTransform);
                         childWorldTrans.mul(childTrans);
-                        // replace collision shape so that callback can determine the triangle
+                        
                         CollisionShape saveCollisionShape = collidable.shape();
                         collidable.internalSetTemporaryCollisionShape(childCollisionShape);
 
@@ -324,7 +324,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                                 simplexSolver,
                                 resultCallback);
 
-                        // restore
+                        
                         collidable.internalSetTemporaryCollisionShape(saveCollisionShape);
                     }
                 }
@@ -365,21 +365,21 @@ public abstract class Collisions<X> extends BulletGlobals {
         if (collisionShape.isConvex()) {
             ConvexCast.CastResult castResult = new ConvexCast.CastResult();
             castResult.allowedPenetration = allowedPenetration;
-            castResult.fraction = 1f; // ??
+            castResult.fraction = 1f; 
 
             ConvexShape convexShape = (ConvexShape) collisionShape;
             VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
             GjkEpaPenetrationDepthSolver gjkEpaPenetrationSolver = new GjkEpaPenetrationDepthSolver();
 
-            // JAVA TODO: should be convexCaster1
-            //ContinuousConvexCollision convexCaster1(castShape,convexShape,&simplexSolver,&gjkEpaPenetrationSolver);
+            
+            
             GjkConvexCast convexCaster2 = new GjkConvexCast(castShape, convexShape, simplexSolver);
-            //btSubsimplexConvexCast convexCaster3(castShape,convexShape,&simplexSolver);
+            
 
             ConvexCast castPtr = convexCaster2;
 
             if (castPtr.calcTimeOfImpact(convexFromTrans, convexToTrans, colObjWorldTransform, colObjWorldTransform, castResult)) {
-                // add hit
+                
                 if (castResult.normal.lengthSquared() > 0.0001f) {
                     if (castResult.fraction < resultCallback.closestHitFraction) {
                         castResult.normal.normalize();
@@ -405,7 +405,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     convexToLocal.set(convexToTrans);
                     worldTocollisionObject.transform(convexToLocal);
 
-                    // rotation of box in local mesh space = MeshRotation^-1 * ConvexToRotation
+                    
                     Transform rotationXform = new Transform();
                     Matrix3f tmpMat = new Matrix3f();
                     tmpMat.mul(worldTocollisionObject.basis, convexToTrans.basis);
@@ -432,7 +432,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     convexToLocal.set(convexToTrans);
                     worldTocollisionObject.transform(convexToLocal);
 
-                    // rotation of box in local mesh space = MeshRotation^-1 * ConvexToRotation
+                    
                     Transform rotationXform = new Transform();
                     Matrix3f tmpMat = new Matrix3f();
                     tmpMat.mul(worldTocollisionObject.basis, convexToTrans.basis);
@@ -454,7 +454,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     triangleMesh.processAllTriangles(tccb, rayAabbMinLocal, rayAabbMaxLocal);
                 }
             } else {
-                // todo: use AABB tree or other BVH acceleration structure!
+                
                 if (collisionShape.isCompound()) {
                     CompoundShape compoundShape = (CompoundShape) collisionShape;
                     for (int i = 0; i < compoundShape.getNumChildShapes(); i++) {
@@ -462,7 +462,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                         CollisionShape childCollisionShape = compoundShape.getChildShape(i);
                         Transform childWorldTrans = new Transform();
                         childWorldTrans.mul(colObjWorldTransform, childTrans);
-                        // replace collision shape so that callback can determine the triangle
+                        
                         CollisionShape saveCollisionShape = collidable.shape();
                         collidable.internalSetTemporaryCollisionShape(childCollisionShape);
                         objectQuerySingle(castShape, convexFromTrans, convexToTrans,
@@ -470,7 +470,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                                 childCollisionShape,
                                 childWorldTrans,
                                 resultCallback, allowedPenetration);
-                        // restore
+                        
                         collidable.internalSetTemporaryCollisionShape(saveCollisionShape);
                     }
                 }
@@ -488,28 +488,28 @@ public abstract class Collisions<X> extends BulletGlobals {
         Transform rayFromTrans = new Transform(rayFromWorld);
         Transform rayToTrans = new Transform(rayToWorld);
 
-        // go over all objects, and if the ray intersects their aabb, do a ray-shape query using convexCaster (CCD)
+        
         v3 collisionObjectAabbMin = v(), collisionObjectAabbMax = v();
         float[] hitLambda = new float[1];
 
-        //Transform tmpTrans = new Transform();
+        
 
         List<Collidable> objs = collidables();
         for (int i = 0, objsSize = objs.size(); i < objsSize; i++) {
             Collidable collidable = objs.get(i);
-            // terminate further ray tests, once the closestHitFraction reached zero
+            
             if (resultCallback.closestHitFraction == 0f) {
                 break;
             }
 
-            //return array[index];
+            
             if (collidable != null) {
 
                 Broadphasing broadphaseHandle = collidable.broadphase;
 
-                // only perform raycast if filterMask matches
+                
                 if (broadphaseHandle != null && resultCallback.needsCollision(broadphaseHandle)) {
-                    //RigidcollisionObject* collisionObject = ctrl->GetRigidcollisionObject();
+                    
                     CollisionShape shape = collidable.shape();
 
                     Transform worldTransform = collidable.transform;
@@ -553,7 +553,7 @@ public abstract class Collisions<X> extends BulletGlobals {
         v3 castShapeAabbMin = new v3();
         v3 castShapeAabbMax = new v3();
 
-        // Compute AABB that encompasses angular movement
+        
         v3 linVel = new v3();
         v3 angVel = new v3();
         TransformUtil.calculateVelocity(convexFromTrans, convexToTrans, 1f, linVel, angVel);
@@ -566,13 +566,13 @@ public abstract class Collisions<X> extends BulletGlobals {
             castShape.calculateTemporalAabb(R, linVel, angVel, 1f, castShapeAabbMin, castShapeAabbMax);
         }
 
-        //Transform R = new Transform();
+        
         v3 collisionObjectAabbMin = new v3();
         v3 collisionObjectAabbMax = new v3();
         float[] hitLambda = new float[1];
 
-        // go over all objects, and if the ray intersects their aabb + cast shape aabb,
-        // do a ray-shape query using convexCaster (CCD)
+        
+        
 
         v3 hitNormal = new v3();
 
@@ -580,17 +580,17 @@ public abstract class Collisions<X> extends BulletGlobals {
         for (int i = 0, collidablesSize = collidables.size(); i < collidablesSize; i++) {
             Collidable collidable = collidables.get(i);
 
-            // only perform raycast if filterMask matches
+            
             if (resultCallback.needsCollision(collidable.broadphase)) {
-                //RigidcollisionObject* collisionObject = ctrl->GetRigidcollisionObject();
+                
                 Transform S = collidable.transform;
                 CollisionShape shape = collidable.shape();
 
                 shape.getAabb(S, collisionObjectAabbMin, collisionObjectAabbMax);
                 AabbUtil2.aabbExpand(collisionObjectAabbMin, collisionObjectAabbMax, castShapeAabbMin, castShapeAabbMax);
 
-                hitLambda[0] = 1f; // could use resultCallback.closestHitFraction, but needs testing
-                hitNormal.zero(); //may not be necessary
+                hitLambda[0] = 1f; 
+                hitNormal.zero(); 
 
                 if (AabbUtil2.rayAabb(convexFromWorld, convexToWorld, collisionObjectAabbMin, collisionObjectAabbMax, hitLambda, hitNormal)) {
                     objectQuerySingle(castShape, convexFromTrans, convexToTrans,
@@ -605,7 +605,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
 
-    ////////////////////////////////////////////////////////////////////////////
+    
 
     /**
      * LocalShapeInfo gives extra information for complex shapes.
@@ -614,8 +614,8 @@ public abstract class Collisions<X> extends BulletGlobals {
     public static class LocalShapeInfo {
         public int shapePart;
         public int triangleIndex;
-        //const btCollisionShape*	m_shapeTemp;
-        //const btTransform*	m_shapeLocalTransform;
+        
+        
     }
 
     public static final class LocalRayResult {
@@ -699,7 +699,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
     public static class ClosestConvexResultCallback extends ConvexResultCallback {
-        public final v3 convexFromWorld = new v3(); // used to calculate hitPointWorld from hitFraction
+        public final v3 convexFromWorld = new v3(); 
         public final v3 convexToWorld = new v3();
         public final v3 hitNormalWorld = new v3();
         public final v3 hitPointWorld = new v3();
@@ -713,7 +713,7 @@ public abstract class Collisions<X> extends BulletGlobals {
 
         @Override
         public float addSingleResult(LocalConvexResult convexResult, boolean normalInWorldSpace) {
-            // caller already does the filter on the m_closestHitFraction
+            
             assert (convexResult.hitFraction <= closestHitFraction);
 
             closestHitFraction = convexResult.hitFraction;
@@ -724,7 +724,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     System.out.println("CollisionWorld.addSingleResult world " + hitNormalWorld);
                 }
             } else {
-                // need to transform normal into worldspace
+                
                 hitNormalWorld.set(convexResult.hitNormalLocal);
                 hitCollidable.getWorldTransform(new Transform()).basis.transform(hitNormalWorld);
                 if (hitNormalWorld.length() > 2) {

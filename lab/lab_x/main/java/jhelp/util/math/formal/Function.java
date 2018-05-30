@@ -79,7 +79,7 @@ public abstract class Function
       int mark = -1;
       int p = 0;
 
-      // Search the operator max priority index
+      
       for(int i = nb - 1; i >= 0; i--)
       {
          switch(string.charAt(i))
@@ -130,7 +130,7 @@ public abstract class Function
          return string;
       }
 
-      // Search second parameter
+      
       int max = mark + 1;
       boolean b = true;
       p = 0;
@@ -155,7 +155,7 @@ public abstract class Function
          }
       }
 
-      // Search first parameter
+      
       int min = mark - 1;
       b = true;
       p = 0;
@@ -180,7 +180,7 @@ public abstract class Function
          }
       }
 
-      // Add parentheses
+      
       final StringBuffer sb = new StringBuffer(nb + 2);
       if(min == 0)
       {
@@ -198,7 +198,7 @@ public abstract class Function
          sb.append(string.substring(max));
       }
 
-      // Look if need add more parentheses
+      
       return Function.addParentheses(sb.toString());
    }
 
@@ -421,55 +421,55 @@ public abstract class Function
     */
    public static Function parse(String function)
    {
-      // For null we return 0
+      
       if(function == null)
       {
          return Constant.ZERO;
       }
 
-      // Remove all white characters
+      
       function = UtilText.removeWhiteCharacters(function);
 
-      // Empty string return 0
+      
       if(function.length() < 1)
       {
          return Constant.ZERO;
       }
 
-      // Start by - => add 0 before
+      
       if(function.startsWith("-") == true)
       {
          function = "0" + function;
       }
-      // Test if can be treat as real constant
+      
       try
       {
          final double d = Double.parseDouble(function);
-         // If the case, we return the constant
+         
          return new Constant(d);
       }
       catch(final Exception exception)
       {
-         // Else we extract the parameter after add the need parentheses to
-         // respect the priority
+         
+         
          function = Function.getArgument(Function.addParentheses(function));
       }
 
-      // Try to consider as unary operator
+      
       final UnaryOperator unairy = UnaryOperator.parserOperateurUnaire(function);
       if(unairy != null)
       {
          return unairy;
       }
 
-      // Try to consider as binary operator
+      
       final BinaryOperator binairy = BinaryOperator.parseBinaryOperator(function);
       if(binairy != null)
       {
          return binairy;
       }
 
-      // If all fails, this is a variable
+      
       return new Variable(function);
    }
 

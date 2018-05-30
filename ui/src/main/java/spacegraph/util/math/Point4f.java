@@ -39,7 +39,7 @@ package spacegraph.util.math;
 public class Point4f extends Tuple4f {
 
 
-    // Compatible with 1.1
+    
     static final long serialVersionUID = 4643134103185764459L;
 
   /**
@@ -75,14 +75,14 @@ public class Point4f extends Tuple4f {
   }
 
 
-//  /**
-//   * Constructs and initializes a Point4f from the specified Point4d.
-//   * @param p1 the Point4d containing the initialization x y z w data
-//   */
-//  public Point4f(Point4d p1)
-//  {
-//      super(p1);
-//  }
+
+
+
+
+
+
+
+
 
 
     /** 
@@ -144,20 +144,20 @@ public class Point4f extends Tuple4f {
     }
 
 
-// /**
-//   * Computes the square of the distance between this point and point p1.
-//   * @param p1 the other point
-//   * @return the square of distance between these two points as a float
-//   */
-//  public final float distanceSquared(Point4f p1)
-//    {
-//
-//        float dx = this.x - p1.x;
-//        float dy = this.y - p1.y;
-//        float dz = this.z - p1.z;
-//        float dw = this.w - p1.w;
-//        return (dx*dx+dy*dy+dz*dz+dw*dw);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   /**

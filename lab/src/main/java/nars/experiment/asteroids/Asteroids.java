@@ -18,8 +18,8 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     final BufferedImage offscreen;
 
     Graphics2D offg;
-    Spacecraft ship; // Defines "ship" as a Spacecraft, giving it
-    Rock rock;   // parameters such as ship.angle or ship.yspeed
+    Spacecraft ship; 
+    Rock rock;   
     ArrayList<Rock> rockList;
     ArrayList<Bullet> bulletList;
     ArrayList<Debris> explosionList;
@@ -29,7 +29,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     int numAsteroids;
     int numDebris;
     int bulletDeathCounter;
-    //final Boolean[][] starPositions = new Boolean[WIDTH][HEIGHT];
+    
     int starPositionSeed;
     boolean upKey, downKey, leftKey, rightKey, spaceKey, shiftKey, SKey, DKey, PKey, FKey, escKey, RKey;
     boolean isExplosionShip;
@@ -41,8 +41,8 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     DecimalFormat df = new DecimalFormat("#.##");
 
     private final Color clearColor =
-            //new Color(0,0,0,0.1f);
-            //new Color(0,0,0,0.9f);
+            
+            
             Color.BLACK;
 
 
@@ -60,7 +60,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
 
         offscreen =
-                //getGraphicsConfiguration().createCompatibleImage(WIDTH, HEIGHT);
+                
                 new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         offg = (Graphics2D) offscreen.getGraphics();
 
@@ -98,7 +98,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         spaceKeyActivated = false;
         
         gameState = 0;
-        // 0 = game main menu, 1 = game running, 2 = level complete, 3 = game over, 4 = paused
+        
         
         bulletDeathCounter = 30;
         
@@ -114,7 +114,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     }
     
     @Override
-    public void paint(Graphics g) //Method that draws everything
+    public void paint(Graphics g) 
     {
         g.drawImage(offscreen, 0, 0, this);
     }
@@ -122,7 +122,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     @Override
     public void keyPressed(KeyEvent e) {
         
-        // Checks what key is being pressed
+        
         
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             rightKey = true;
@@ -177,7 +177,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     @Override
     public void keyReleased(KeyEvent e) {
         
-        //Checks when keys are released
+        
         
         if (e.getKeyCode() == KeyEvent.VK_UP) {
             upKey = false;
@@ -237,7 +237,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     
     @Override
     public void keyTyped(KeyEvent e) {
-        // Not using this, but Java's key press code doesn't work without alll three related methods.
+        
     }
     
     @Override
@@ -262,7 +262,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
             respawnShip();
             keyCheck();
 
-            // Updates positions of VectorSprites and deletes them at end of range
+            
 
             for (int i = 0; i < rockList.size(); i++) {
                 rockList.get(i).updatePosition(WIDTH, HEIGHT);
@@ -302,27 +302,27 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
     private void render() {
         if (gameState == 0) {
-//            try {
-//                drawMainMenu();
-//            } catch (Exception e) {
-//            }
+
+
+
+
             gameState = 1;
         } else if (gameState == 1) {
-            //Draw background black with stars in the background, randomly generated according to starPositions[][]
+            
             offg.setColor(clearColor);
             offg.fillRect(0, 0, WIDTH, HEIGHT);
 
             offg.setColor(Color.WHITE);
 
-//            for (int i = 0; i < WIDTH; i++) {
-//                for (int n = 0; n < HEIGHT; n++) {
-//                    if (starPositions[i][n] == true) {
-//                        offg.drawLine(i, n, i, n); // Creates a star at the point in the bakground with a 1/1000 probability. (See init())
-//                    }
-//                }
-//            }
 
-            //Draw each asteroid white with white 3D inside lines
+
+
+
+
+
+
+
+            
 
             offg.setColor(Color.WHITE);
 
@@ -342,7 +342,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
                 }
             }
 
-            //Draw each bullet yellow
+            
             offg.setColor(Color.YELLOW);
             for (int i = 0; i < bulletList.size(); i++) {
                 Bullet bullet = bulletList.get(i);
@@ -361,12 +361,12 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         } else if (gameState == 2) {
 
             newLevel();
-            //drawShop();
+            
             gameState = 1;
 
         } else if (gameState == 3) {
 
-            gameState = 1; //respawn
+            gameState = 1; 
 
         } else if (gameState == 4) {
             offg.setColor(Color.GREEN);
@@ -431,19 +431,19 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
                 gameState = 0;
                 init();
             }
-//            else if (gameState == 2 && credits >= 100 && shopSelection == 9 && spaceKeyActivated == false)
-//            {
-//                lives++;
-//                credits -= 100;
-//                spaceKeyActivated = true;
-//            }
-//            else if (gameState == 2 && shopSelection < 9 && credits >= ship.upgradeCost[shopSelection / 3][(shopSelection+1) % 3] && spaceKeyActivated == false &&
-//                    (((shopSelection+1) % 3 != 0) || (ship.upgrades[shopSelection / 3][(shopSelection+1) % 3] == 0)))
-//            {
-//                ship.upgrades[shopSelection / 3][(shopSelection+1) % 3]++;
-//                credits -= ship.upgradeCost[shopSelection / 3][(shopSelection+1) % 3];
-//                spaceKeyActivated = true;
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
             
         }
         
@@ -500,7 +500,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     }
     
     public boolean collision(VectorSprite object1, VectorSprite object2) {
-        //Check if any of the ship points are inside the rock
+        
         for (int i = 0; i < object1.drawShape.npoints; i++) {
             
             if (object2.drawShape.contains(object1.drawShape.xpoints[i], object1.drawShape.ypoints[i]) && object1.active && object2.active) {
@@ -509,7 +509,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
             
         }
         
-        //Check if any of the rock points are inside the rock
+        
         for (int i = 0; i < object2.drawShape.npoints; i++) {
             
             if (object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active) {
@@ -525,19 +525,19 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     public void checkCollisions() {
         for (int i = 0; i < rockList.size(); i++) {
             
-            if (collision(ship, rockList.get(i)) == true && ship.invincible == false) // Checks for ship+asteroid collisions
+            if (collision(ship, rockList.get(i)) == true && ship.invincible == false) 
             {
                 ship.hit();
                 lives -= 1;
                 credits -= 50;
                 for (int e = 0; e < 10 * numDebris; e++) {
                     explosionList.add(new Debris(ship.xposition, ship.yposition));
-                    isExplosionShip = true; // Tells the explosion graphic that the explosion is a ship
-                }                       // blowing up, and not an asteroid being shot
+                    isExplosionShip = true; 
+                }                       
             }
             
             for (int j = 0; j < bulletList.size(); j++) {
-                if (collision(bulletList.get(j), rockList.get(i)) == true) // Checks for bullet+asteroid collisions
+                if (collision(bulletList.get(j), rockList.get(i)) == true) 
                 {
                     bulletList.get(j).active = false;
                     rockList.get(i).health -= ship.damage;
@@ -548,8 +548,8 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
                         
                         for (int e = 0; e < numDebris; e++) {
                             explosionList.add(new Debris(rockList.get(i).xposition, rockList.get(i).yposition));
-                            isExplosionShip = false; // Tells the explosion graphic that the explosion is an asteroid
-                        }                            // being shot, not the ship
+                            isExplosionShip = false; 
+                        }                            
                         
                         credits += 10;
                         
@@ -568,7 +568,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     
     public void fireBullet() {
         if (ship.counter > ship.fireDelay && ship.active == true) {
-            if (ship.weaponType == 1) // Adds multiple bullets, each at slightly different angles, if the multiple-shot gun is selected
+            if (ship.weaponType == 1) 
             {
                 if (ship.upgrades[0][0] == 0)
                 {
@@ -660,25 +660,25 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         
         offg.setColor(Color.CYAN);
         
-//        if (ship.weaponType == 1) {
-//            offg.drawString("WEAPON: DE-82 Disruptor", 50, 50);
-//        }
-//
-//        if (ship.weaponType == 2) {
-//            offg.drawString("WEAPON: Z-850 Vulcan", 50, 50);
-//        }
-//
-//        if (ship.weaponType == 3) {
-//            offg.drawString("WEAPON: C-86 Ion Cannon", 50, 50);
-//        }
+
+
+
+
+
+
+
+
+
+
+
         
-//        offg.drawString("DAMAGE: " + ship.damage, 50, 70);
-//        offg.drawString("RATE OF FIRE: " + df.format((100 / (double) ship.fireDelay)), 50, 90);
-//        offg.drawString("DAMAGE / TIME: " + df.format(((double) ship.damage * 20 / (double) ship.fireDelay)), 50, 110);
+
+
+
         
-//        offg.drawString("LIVES: " + lives, 800, 550);
-//        offg.drawString("CREDITS: " + credits, 100, 550);
-//        offg.drawString("LEVEL: " + level, 450, 550);
+
+
+
     }
     
     public void drawExplosions() {
@@ -719,36 +719,36 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         }
     }
     
-//    public void drawMainMenu() throws IOException {
-//
-////        BufferedImage img = null;
-////        if (isMainInstr == false) {
-////            try {
-////                img = ImageIO.read(new File("mainscreen.jpg"));
-////            } catch (IOException e) {
-////                offg.drawString("Failed to load image. Please check that you have all necessary files and restart the game.", 10, 10);
-////            }
-////        } else {
-////            try {
-////                img = ImageIO.read(new File("instructions.jpg"));
-////            } catch (IOException e) {
-////                offg.drawString("Failed to load image. Please check that you have all necessary files and restart the game.", 10, 10);
-////            }
-////        }
-////        offg.drawImage(img, 0, 0, null);
-//
-//        offg.setColor(Color.WHITE);
-//
-//        offg.drawString("Press S to start the game.", 550, 50);
-//        offg.drawString("Press ESC to quit.", 550, 70);
-//        offg.drawString("Press D to view / hide the instructions.", 550, 90);
-//    }
-//
-//    public void drawEndScreen() {
-//        offg.setColor(Color.RED);
-//        offg.drawString("You Lose! You made it to level " + level + ".", 400, 300);
-//        offg.drawString("Press SPACE to return to the main menu, or ESC to quit.", 300, 320);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     public void drawShop() {
         
@@ -807,7 +807,7 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
     }
     
     public void whichBulletType() {
-        // Sets the bullet type to match the ship's weapon type, so the correct bullet is drawn
+        
         for (int i = 0; i < bulletList.size(); i++) {
             bulletList.get(i).weaponType = ship.weaponType;
         }
@@ -858,17 +858,17 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
         }
     }
     
-//    public void initStarPositions() {
-//        for (int i = 0; i < WIDTH; i++) {
-//            for (int n = 0; n < HEIGHT; n++) {
-//                starPositionSeed = (int) (Math.random() * 2000);
-//
-//                if (starPositionSeed > 1998) {
-//                    starPositions[i][n] = true;
-//                } else {
-//                    starPositions[i][n] = false;
-//                }
-//            }
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

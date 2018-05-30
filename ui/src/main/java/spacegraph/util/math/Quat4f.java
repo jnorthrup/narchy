@@ -39,7 +39,7 @@ import jcog.Util;
  */
 public class Quat4f extends Tuple4f {
 
-    // Combatible with 1.1
+    
     static final long serialVersionUID = 2675933778405442383L;
 
     final static float EPS = 0.000001f;
@@ -87,14 +87,14 @@ public class Quat4f extends Tuple4f {
         super(q1);
     }
 
-//    /**
-//     * Constructs and initializes a Quat4f from the specified Quat4d.
-//     *
-//     * @param q1 the Quat4d containing the initialization x y z w data
-//     */
-//    public Quat4f(Quat4d q1) {
-//        super(q1);
-//    }
+
+
+
+
+
+
+
+
 
 
     /**
@@ -112,18 +112,18 @@ public class Quat4f extends Tuple4f {
     }
 
 
-//    /**
-//     * Constructs and initializes a Quat4f from the specified Tuple4d.
-//     *
-//     * @param t1 the Tuple4d containing the initialization x y z w data
-//     */
-//    public Quat4f(Tuple4d t1) {
-//        double mag = 1.0 / Math.sqrt(t1.x * t1.x + t1.y * t1.y + t1.z * t1.z + t1.w * t1.w);
-//        x = (float) (t1.x * mag);
-//        y = (float) (t1.y * mag);
-//        z = (float) (t1.z * mag);
-//        w = (float) (t1.w * mag);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -367,60 +367,60 @@ public class Quat4f extends Tuple4f {
     }
 
 
-//    /**
-//     * Sets the value of this quaternion to the rotational component of
-//     * the passed matrix.
-//     *
-//     * @param m1 the Matrix4d
-//     */
-//    public final void set(Matrix4d m1) {
-//        double ww = 0.25 * (m1.m00 + m1.m11 + m1.m22 + m1.m33);
-//
-//        if (ww >= 0) {
-//            if (ww >= EPS2) {
-//                this.w = (float) Math.sqrt(ww);
-//                ww = 0.25 / this.w;
-//                this.x = (float) ((m1.m21 - m1.m12) * ww);
-//                this.y = (float) ((m1.m02 - m1.m20) * ww);
-//                this.z = (float) ((m1.m10 - m1.m01) * ww);
-//                return;
-//            }
-//        } else {
-//            this.w = 0;
-//            this.x = 0;
-//            this.y = 0;
-//            this.z = 1;
-//            return;
-//        }
-//
-//        this.w = 0;
-//        ww = -0.5 * (m1.m11 + m1.m22);
-//        if (ww >= 0) {
-//            if (ww >= EPS2) {
-//                this.x = (float) Math.sqrt(ww);
-//                ww = 0.5 / this.x;
-//                this.y = (float) (m1.m10 * ww);
-//                this.z = (float) (m1.m20 * ww);
-//                return;
-//            }
-//        } else {
-//            this.x = 0;
-//            this.y = 0;
-//            this.z = 1;
-//            return;
-//        }
-//
-//        this.x = 0;
-//        ww = 0.5 * (1.0 - m1.m22);
-//        if (ww >= EPS2) {
-//            this.y = (float) Math.sqrt(ww);
-//            this.z = (float) (m1.m21 / (2.0 * (double) (this.y)));
-//            return;
-//        }
-//
-//        this.y = 0;
-//        this.z = 1;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -479,60 +479,60 @@ public class Quat4f extends Tuple4f {
     }
 
 
-//    /**
-//     * Sets the value of this quaternion to the rotational component of
-//     * the passed matrix.
-//     *
-//     * @param m1 the Matrix3d
-//     */
-//    public final void set(Matrix3d m1) {
-//        float ww = 0.25f * (m1.m00 + m1.m11 + m1.m22 + 1.0f);
-//
-//        if (ww >= 0) {
-//            if (ww >= EPS2) {
-//                this.w = (float) Math.sqrt(ww);
-//                ww = 0.25f / this.w;
-//                this.x = (float) ((m1.m21 - m1.m12) * ww);
-//                this.y = (float) ((m1.m02 - m1.m20) * ww);
-//                this.z = (float) ((m1.m10 - m1.m01) * ww);
-//                return;
-//            }
-//        } else {
-//            this.w = 0;
-//            this.x = 0;
-//            this.y = 0;
-//            this.z = 1;
-//            return;
-//        }
-//
-//        this.w = 0;
-//        ww = -0.5 * (m1.m11 + m1.m22);
-//        if (ww >= 0) {
-//            if (ww >= EPS2) {
-//                this.x = (float) Math.sqrt(ww);
-//                ww = 0.5 / this.x;
-//                this.y = (float) (m1.m10 * ww);
-//                this.z = (float) (m1.m20 * ww);
-//                return;
-//            }
-//        } else {
-//            this.x = 0;
-//            this.y = 0;
-//            this.z = 1;
-//            return;
-//        }
-//
-//        this.x = 0;
-//        ww = 0.5 * (1.0 - m1.m22);
-//        if (ww >= EPS2) {
-//            this.y = (float) Math.sqrt(ww);
-//            this.z = (float) (m1.m21 / (2.0 * (double) (this.y)));
-//            return;
-//        }
-//
-//        this.y = 0;
-//        this.z = 1;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -543,7 +543,7 @@ public class Quat4f extends Tuple4f {
      */
     public final void set(AxisAngle4f a) {
         float amag;
-        // Quat = cos(theta/2) + sin(theta/2)(roation_axis)
+        
         float ax = a.x;
         float ay = a.y;
         float az = a.z;
@@ -588,19 +588,19 @@ public class Quat4f extends Tuple4f {
      * @param alpha the alpha interpolation parameter
      */
     public final void interpolate(Quat4f q1, float alpha) {
-        // From "Advanced Animation and Rendering Techniques"
-        // by Watt and Watt pg. 364, function as implemented appeared to be
-        // incorrect.  Fails to choose the same quaternion for the double
-        // covering. Resulting in change of direction for rotations.
-        // Fixed function to negate the first quaternion in the case that the
-        // dot product of q1 and this is negative. Second case was not needed.
+        
+        
+        
+        
+        
+        
 
         float s1, s2, om, sinom;
 
         float dot = x * q1.x + y * q1.y + z * q1.z + w * q1.w;
 
         if (dot < 0) {
-            // negate quaternion
+            
             q1.x = -q1.x;
             q1.y = -q1.y;
             q1.z = -q1.z;
@@ -625,49 +625,49 @@ public class Quat4f extends Tuple4f {
     }
 
 
-//    /**
-//     * Performs a great circle interpolation between quaternion q1
-//     * and quaternion q2 and places the result into this quaternion.
-//     *
-//     * @param q1    the first quaternion
-//     * @param q2    the second quaternion
-//     * @param alpha the alpha interpolation parameter
-//     */
-//    public final void interpolate(Quat4f q1, Quat4f q2, float alpha) {
-//        // From "Advanced Animation and Rendering Techniques"
-//        // by Watt and Watt pg. 364, function as implemented appeared to be
-//        // incorrect.  Fails to choose the same quaternion for the double
-//        // covering. Resulting in change of direction for rotations.
-//        // Fixed function to negate the first quaternion in the case that the
-//        // dot product of q1 and this is negative. Second case was not needed.
-//
-//        double s1, s2, om, sinom;
-//
-//        double dot = q2.x * q1.x + q2.y * q1.y + q2.z * q1.z + q2.w * q1.w;
-//
-//        if (dot < 0) {
-//            // negate quaternion
-//            q1.x = -q1.x;
-//            q1.y = -q1.y;
-//            q1.z = -q1.z;
-//            q1.w = -q1.w;
-//            dot = -dot;
-//        }
-//
-//        if ((1.0 - dot) > EPS) {
-//            om = Math.acos(dot);
-//            sinom = Math.sin(om);
-//            s1 = Math.sin((1.0 - alpha) * om) / sinom;
-//            s2 = Math.sin(alpha * om) / sinom;
-//        } else {
-//            s1 = 1.0 - alpha;
-//            s2 = alpha;
-//        }
-//        w = (float) (s1 * q1.w + s2 * q2.w);
-//        x = (float) (s1 * q1.x + s2 * q2.x);
-//        y = (float) (s1 * q1.y + s2 * q2.y);
-//        z = (float) (s1 * q1.z + s2 * q2.z);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static Quat4f angle(float ax, float ay, float az, float angle) {
         Quat4f q = new Quat4f();
@@ -676,12 +676,12 @@ public class Quat4f extends Tuple4f {
     }
 
     public final v3 rotateVector(final v3 vecIn, final v3 vecOut) {
-//        if ( VectorUtil.isVec3Zero(vecIn, vecInOffset, FloatUtil.EPSILON) ) {
-//            vecOut.set(0,0, 0);
-//        } else {
-            final float vecX = vecIn.x; //vecIn[0+vecInOffset];
-            final float vecY = vecIn.y; //vecIn[1+vecInOffset];
-            final float vecZ = vecIn.z; //vecIn[2+vecInOffset];
+
+
+
+            final float vecX = vecIn.x; 
+            final float vecY = vecIn.y; 
+            final float vecZ = vecIn.z; 
             final float x_x = x*x;
             final float y_y = y*y;
             final float z_z = z*z;

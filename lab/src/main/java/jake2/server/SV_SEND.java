@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 17.01.2004 by RST.
+
 
 package jake2.server;
 
@@ -89,7 +89,7 @@ public class SV_SEND {
 
 		client_t cl;
 
-		// echo to console
+		
 		if (Globals.dedicated.value != 0) {
 
 			Com.Printf(s);
@@ -149,24 +149,24 @@ public class SV_SEND {
 			area1 = CM.CM_LeafArea(leafnum);
 		}
 		else {
-			leafnum = 0; // just to avoid compiler warnings
+			leafnum = 0; 
 			area1 = 0;
 		}
 
-		// if doing a serverrecord, store everything
+		
 		if (SV_INIT.svs.demofile != null)
 			SZ.Write(SV_INIT.svs.demo_multicast, SV_INIT.sv.multicast.data, SV_INIT.sv.multicast.cursize);
 
 		switch (to) {
 			case Defines.MULTICAST_ALL_R :
-				reliable = true; // intentional fallthrough, no break here
+				reliable = true; 
 			case Defines.MULTICAST_ALL :
 				leafnum = 0;
 				mask = null;
 				break;
 
 			case Defines.MULTICAST_PHS_R :
-				reliable = true; // intentional fallthrough
+				reliable = true; 
 			case Defines.MULTICAST_PHS :
 				leafnum = CM.CM_PointLeafnum(origin);
 				cluster = CM.CM_LeafCluster(leafnum);
@@ -174,7 +174,7 @@ public class SV_SEND {
 				break;
 
 			case Defines.MULTICAST_PVS_R :
-				reliable = true; // intentional fallthrough
+				reliable = true; 
 			case Defines.MULTICAST_PVS :
 				leafnum = CM.CM_PointLeafnum(origin);
 				cluster = CM.CM_LeafCluster(leafnum);
@@ -186,7 +186,7 @@ public class SV_SEND {
 				Com.Error(Defines.ERR_FATAL, "SV_Multicast: bad to:" + to + '\n');
 		}
 
-		// send the data to all relevent clients
+		
 		for (j = 0; j < SV_MAIN.maxclients.value; j++) {
 			client = SV_INIT.svs.clients[j];
 
@@ -202,7 +202,7 @@ public class SV_SEND {
 				if (!CM.CM_AreasConnected(area1, area2))
 					continue;
 
-				// quake2 bugfix
+				
 				if (cluster == -1)
 					continue;
 				if (mask != null && (0 == (mask[cluster >> 3] & (1 << (cluster & 7)))))
@@ -265,15 +265,15 @@ public class SV_SEND {
 		if (attenuation < 0 || attenuation > 4)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: attenuation = " + attenuation);
 
-		//	if (channel < 0 || channel > 15)
-		//		Com_Error (ERR_FATAL, "SV_StartSound: channel = %i", channel);
+		
+		
 
 		if (timeofs < 0 || timeofs > 0.255)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: timeofs = " + timeofs);
 
 		ent = entity.index;
 
-		// no PHS flag
+		
 		if ((channel & 8) != 0) {
 			use_phs = false;
 			channel &= 7;
@@ -289,18 +289,18 @@ public class SV_SEND {
 		if (attenuation != Defines.DEFAULT_SOUND_PACKET_ATTENUATION)
 			flags |= Defines.SND_ATTENUATION;
 
-		// the client doesn't know that bmodels have weird origins
-		// the origin can also be explicitly set
+		
+		
 		if ((entity.svflags & Defines.SVF_NOCLIENT) != 0 || (entity.solid == Defines.SOLID_BSP) || origin != null)
 			flags |= Defines.SND_POS;
 
-		// always send the entity number for channel overrides
+		
 		flags |= Defines.SND_ENT;
 
 		if (timeofs != 0)
 			flags |= Defines.SND_OFFSET;
 
-		// use the entity origin unless it is a bmodel or explicitly specified
+		
 		if (origin == null) {
 			origin = origin_v;
 			if (entity.solid == Defines.SOLID_BSP) {
@@ -329,8 +329,8 @@ public class SV_SEND {
 		if ((flags & Defines.SND_POS) != 0)
 			MSG.WritePos(SV_INIT.sv.multicast, origin);
 
-		// if the sound doesn't attenuate,send it to everyone
-		// (global radio chatter, voiceovers, etc)
+		
+		
 		if (attenuation == Defines.ATTN_NONE)
 			use_phs = false;
 
@@ -362,36 +362,36 @@ public class SV_SEND {
 	=======================
 	*/
 	public static boolean SV_SendClientDatagram(client_t client) {
-		//byte msg_buf[] = new byte[Defines.MAX_MSGLEN];
+		
 
 		SV_ENTS.SV_BuildClientFrame(client);
 
 		SZ.Init(msg, msgbuf, msgbuf.length);
 		msg.allowoverflow = true;
 
-		// send over all the relevant entity_state_t
-		// and the player_state_t
+		
+		
 		SV_ENTS.SV_WriteFrameToClient(client, msg);
 
-		// copy the accumulated multicast datagram
-		// for this client out to the message
-		// it is necessary for this to be after the WriteEntities
-		// so that entity references will be current
+		
+		
+		
+		
 		if (client.datagram.overflowed)
 			Com.Printf("WARNING: datagram overflowed for " + client.name + '\n');
 		else
 			SZ.Write(msg, client.datagram.data, client.datagram.cursize);
 		SZ.Clear(client.datagram);
 
-		if (msg.overflowed) { // must have room left for the packet header
+		if (msg.overflowed) { 
 			Com.Printf("WARNING: msg overflowed for " + client.name + '\n');
 			SZ.Clear(msg);
 		}
 
-		// send the datagram
+		
 		Netchan.Transmit(client.netchan, msg.cursize, msg.data);
 
-		// record the size for rate estimation
+		
 		client.message_size[SV_INIT.sv.framenum % Defines.RATE_MESSAGES] = msg.cursize;
 
 		return true;
@@ -425,7 +425,7 @@ public class SV_SEND {
 		int total;
 		int i;
 
-		// never drop over the loopback
+		
 		if (c.netchan.remote_address.type == Defines.NA_LOOPBACK)
 			return false;
 
@@ -459,13 +459,13 @@ public class SV_SEND {
 
 		msglen = 0;
 
-		// read the next demo message if needed
+		
 		if (SV_INIT.sv.state == Defines.ss_demo && SV_INIT.sv.demofile != null) {
 			if (SV_MAIN.sv_paused.value != 0)
 				msglen = 0;
 			else {
-				// get the next message
-				//r = fread (&msglen, 4, 1, sv.demofile);
+				
+				
 				try {
 					msglen = EndianHandler.swapInt(SV_INIT.sv.demofile.readInt());
 				}
@@ -474,7 +474,7 @@ public class SV_SEND {
 					return;
 				}
 
-				//msglen = LittleLong (msglen);
+				
 				if (msglen == -1) {
 					SV_DemoCompleted();
 					return;
@@ -482,7 +482,7 @@ public class SV_SEND {
 				if (msglen > Defines.MAX_MSGLEN)
 					Com.Error(Defines.ERR_DROP, "SV_SendClientMessages: msglen > MAX_MSGLEN");
 
-				//r = fread (msgbuf, msglen, 1, sv.demofile);
+				
 				r = 0;
 				try {
 					r = SV_INIT.sv.demofile.read(msgbuf, 0, msglen);
@@ -497,14 +497,14 @@ public class SV_SEND {
 			}
 		}
 
-		// send a message to each connected client
+		
 		for (i = 0; i < SV_MAIN.maxclients.value; i++) {
 			c = SV_INIT.svs.clients[i];
 
 			if (c.state == 0)
 				continue;
-			// if the reliable message overflowed,
-			// drop the client
+			
+			
 			if (c.netchan.message.overflowed) {
 				SZ.Clear(c.netchan.message);
 				SZ.Clear(c.datagram);
@@ -517,14 +517,14 @@ public class SV_SEND {
 				|| SV_INIT.sv.state == Defines.ss_pic)
 				Netchan.Transmit(c.netchan, msglen, msgbuf);
 			else if (c.state == Defines.cs_spawned) {
-				// don't overrun bandwidth
+				
 				if (SV_RateDrop(c))
 					continue;
 
 				SV_SendClientDatagram(c);
 			}
 			else {
-				// just update reliable	if needed
+				
 				if (c.netchan.message.cursize != 0 || Globals.curtime - c.netchan.last_sent > 1000)
 					Netchan.Transmit(c.netchan, 0, NULLBYTE);
 			}

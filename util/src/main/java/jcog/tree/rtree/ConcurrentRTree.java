@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,14 +36,14 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
     private final Space<T> tree;
 
-//  TODO move this to a subclass
-//    final QueueLock<T> toAdd, toRemove;
-//        if (async) {
-//            toAdd = new QueueLock<>(new DisruptorBlockingQueue<T>(8), this::add);
-//            toRemove = new QueueLock<>(new DisruptorBlockingQueue<T>(8), this::remove);
-//        } else {
-//            toAdd = toRemove = null;
-//        }
+
+
+
+
+
+
+
+
 
 
     public ConcurrentRTree(Space<T> tree) {
@@ -93,32 +93,32 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
         return write(() -> tree.add(t));
     }
 
-//    @Override
-//    public void intersectingNodes(HyperRegion start, Predicate<Node<T, ?>> eachWhile) {
-//        readLock().lock();
-//        try {
-//            tree.intersectingNodes(start, eachWhile);
-//        } finally {
-//            readLock().unlock();
-//        }
-//    }
+
+
+
+
+
+
+
+
+
 
     /**
      * prefer this instead of add() in multithread environments, because it elides what might ordinarily involve a lock wait
      */
     @Override
     public void addAsync(T t) {
-//        if (toAdd!=null)
-//            toAdd.accept(t);
-//        else
+
+
+
         add(t);
     }
 
     @Override
     public void removeAsync(T t) {
-//        if (toRemove!=null)
-//            toRemove.accept(t);
-//        else
+
+
+
         remove(t);
     }
 
@@ -174,7 +174,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     @Override
     public int size() {
         return tree.size();
-        //return readOptimistic(tree::size);
+        
     }
 
     @Override

@@ -42,8 +42,8 @@ public class Tokenizer {
                     indexAt+= matcher.end() - matcher.start();
                     string2 = string2.substring(matcher.end(), string2.length());
                     
-                    // if (debug) System.err.println("last token: " +  tokened.get(tokened.size() - 1));
-                    // if (debug) System.err.println("indexAt next: " +  indexAt);
+                    
+                    
                 }
                 tokenOnIndex++;
             }

@@ -4,7 +4,7 @@ package astar;
  * of a complete solution and not an entire solution */
 public interface Problem<X extends Solution> {
 
-    //costs to a successor
+    
     double cost(X currentNode, X successorNode);
 
     Iterable<X> next(X current);

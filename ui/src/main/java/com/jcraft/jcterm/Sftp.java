@@ -84,7 +84,7 @@ public class Sftp implements Runnable {
 
             StringBuilder sb = new StringBuilder();
             while (true) {
-                //out.print("sftp> ");
+                
                 out.write("sftp> ".getBytes());
                 cmds.removeAllElements();
 
@@ -97,7 +97,7 @@ public class Sftp implements Runnable {
                         break;
                     if (i != 1)
                         continue;
-                    //System.out.println(Integer.toHexString(i)+" "+Integer.toHexString(buf[0]&0xff));
+                    
                     if (buf[0] == 0x08) {
                         if (sb.length() > 0) {
                             sb.setLength(sb.length() - 1);
@@ -142,8 +142,8 @@ public class Sftp implements Runnable {
                     i--;
                 if (i > 0 && buf[i - 1] == 0x0a)
                     i--;
-                //str=new String(buf, 0, i);
-                //System.out.println("|"+str+"|");
+                
+                
                 int s = 0;
                 for (int ii = 0; ii < i; ii++) {
                     if (buf[ii] == ' ') {
@@ -189,7 +189,7 @@ public class Sftp implements Runnable {
                         else
                             c.lcd(path);
                     } catch (SftpException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
@@ -213,7 +213,7 @@ public class Sftp implements Runnable {
                                 break;
                         }
                     } catch (SftpException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
@@ -228,7 +228,7 @@ public class Sftp implements Runnable {
                     File d = new File(c.lpwd(), path);
                     if (!d.mkdir()) {
 
-                        //System.out.println(e.getMessage());
+                        
                         out.write("failed to make directory".getBytes());
                         out.write(lf);
                         out.flush();
@@ -275,7 +275,7 @@ public class Sftp implements Runnable {
                                 break;
                         }
                     } catch (SftpException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
@@ -289,7 +289,7 @@ public class Sftp implements Runnable {
                         str += c.pwd();
                     else
                         str += c.lpwd();
-                    //out.print(str+"\n");
+                    
                     out.write(str.getBytes());
                     out.write(lf);
                     out.flush();
@@ -303,15 +303,15 @@ public class Sftp implements Runnable {
                         java.util.Vector vv = c.ls(path);
                         if (vv != null) {
                             for (int ii = 0; ii < vv.size(); ii++) {
-                                //out.print(vv.elementAt(ii)+"\n");
-                                //out.write(((String)(vv.elementAt(ii))).getBytes());
+                                
+                                
                                 out.write(vv.elementAt(ii).toString().getBytes());
                                 out.write(lf);
                             }
                             out.flush();
                         }
                     } catch (SftpException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
@@ -331,7 +331,7 @@ public class Sftp implements Runnable {
                         }
                         out.flush();
                     } catch (IOException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
@@ -342,7 +342,7 @@ public class Sftp implements Runnable {
                     if (cmds.size() != 2 && cmds.size() != 3)
                         continue;
                     String p1 = (String) cmds.elementAt(1);
-                    //	  String p2=p1;
+                    
                     String p2 = ".";
                     if (cmds.size() == 3)
                         p2 = (String) cmds.elementAt(2);
@@ -353,7 +353,7 @@ public class Sftp implements Runnable {
                         else
                             c.put(p1, p2, monitor);
                     } catch (SftpException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
@@ -371,7 +371,7 @@ public class Sftp implements Runnable {
                         else
                             c.symlink(p1, p2);
                     } catch (SftpException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
@@ -389,13 +389,13 @@ public class Sftp implements Runnable {
                         else
                             attrs = c.lstat(p1);
                     } catch (SftpException e) {
-                        //System.out.println(e.getMessage());
+                        
                         out.write(e.getMessage().getBytes());
                         out.write(lf);
                         out.flush();
                     }
                     if (attrs != null) {
-                        //out.println(attrs);
+                        
                         out.write(attrs.toString().getBytes());
                         out.write(lf);
                         out.flush();
@@ -404,14 +404,14 @@ public class Sftp implements Runnable {
                     continue;
                 }
                 if (cmd.equals("version")) {
-                    //out.print("SFTP protocol version "+c.version()+"\n");
+                    
                     out.write(("SFTP protocol version " + c.version()).getBytes());
                     out.write(lf);
                     out.flush();
                     continue;
                 }
                 if (cmd.equals("help") || cmd.equals("help")) {
-                    //	  out.print(help+"\n");
+                    
                     for (int j = 0; j < help.length; j++) {
                         out.write((help[j]).getBytes());
                         out.write(lf);
@@ -419,7 +419,7 @@ public class Sftp implements Runnable {
                     out.flush();
                     continue;
                 }
-                //out.print("unimplemented command: "+cmd+"\n");
+                
                 out.write(("unimplemented command: " + cmd).getBytes());
                 out.write(lf);
                 out.flush();
@@ -446,7 +446,7 @@ public class Sftp implements Runnable {
 
     public static class MyProgressMonitor implements SftpProgressMonitor {
         final OutputStream out;
-        //    ProgressMonitor monitor;
+        
         long count = 0;
         long max = 0;
         String src;
@@ -462,26 +462,26 @@ public class Sftp implements Runnable {
             count = 0;
             percent = 0;
             status();
-            //      monitor=new ProgressMonitor(null,
-            //                                  ((op==SftpProgressMonitor.PUT)?
-            //                                   "put" : "get")+": "+src,
-            //                                  "",  0, (int)max);
-            //      monitor.setProgress((int)this.count);
-            //      monitor.setMillisToDecideToPopup(1000);
+            
+            
+            
+            
+            
+            
         }
 
         public boolean count(long count) {
             this.count += count;
-            //      monitor.setProgress((int)this.count);
-            //      monitor.setNote("Completed "+this.count+" out of "+max+".");
-            //      return !(monitor.isCanceled());
+            
+            
+            
             percent = (int) (((((float) this.count) / ((float) max))) * 100.0);
             status();
             return true;
         }
 
         public void end() {
-            //      monitor.close();
+            
             percent = (int) (((((float) count) / ((float) max))) * 100.0);
             status();
             try {

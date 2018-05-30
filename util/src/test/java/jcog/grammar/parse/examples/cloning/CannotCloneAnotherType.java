@@ -23,13 +23,13 @@ public class CannotCloneAnotherType {
 		CannotCloneAnotherType ccat = new CannotCloneAnotherType();
 
 		try {
-			ccat.clone(); // this would be Ok.
+			ccat.clone(); 
 		} catch (CloneNotSupportedException e) {
-			e.printStackTrace(); //To change body of catch statement use File | Settings | File Templates.
+			e.printStackTrace(); 
 		}
 
 		Integer i = new Integer(42);
 		System.out.println(i);
-		//i.clone(); // will not compile!
+		
 	}
 }

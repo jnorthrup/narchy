@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,7 +77,7 @@ public class MutableInt extends Number  {
         this.value = Integer.parseInt(value);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets the value as a Integer instance.
      *
@@ -106,7 +106,7 @@ public class MutableInt extends Number  {
         this.value = value.intValue();
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Increments the value.
      *
@@ -175,7 +175,7 @@ public class MutableInt extends Number  {
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a value to the value of this instance.
      *
@@ -274,8 +274,8 @@ public class MutableInt extends Number  {
         return last;
     }
 
-    //-----------------------------------------------------------------------
-    // shortValue and byteValue rely on Number implementation
+    
+    
     /**
      * Returns the value of this MutableInt as an int.
      *
@@ -317,7 +317,7 @@ public class MutableInt extends Number  {
     }
 
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this object to the specified object. The result is <code>true</code> if and only if the argument is
      * not <code>null</code> and is a <code>MutableInt</code> object that contains the same <code>int</code> value
@@ -345,7 +345,7 @@ public class MutableInt extends Number  {
     }
 
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns the String value of this mutable.
      *

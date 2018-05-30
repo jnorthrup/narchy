@@ -170,12 +170,12 @@ public abstract class UnitCompound implements Compound {
         Op o = op();
         out.writeByte(o.id);
 
-        //avoids creating temporary Subterms instance:
-        out.writeByte(1); //one subterm
+        
+        out.writeByte(1); 
         sub().append(out);
 
         if (o.temporal)
-            out.writeInt(dt()); //can happen if ellipsis term
+            out.writeInt(dt()); 
 
     }
 
@@ -226,7 +226,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return reduce.intValueOf(v, sub()); //direct to sub, skips this term
+        return reduce.intValueOf(v, sub()); 
     }
 
     @Override

@@ -4,7 +4,7 @@ public class Color implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	// From AWT Color constant values
+	
 	public static final Color white = new Color(255, 255, 255);
 	public static final Color darkGray = new Color(64, 64, 64);
 	public static final Color black = new Color(0, 0, 0);
@@ -34,7 +34,7 @@ public class Color implements java.io.Serializable {
 		this.A = A;
 	}
 	
-	// returns a new color, interpolated toward c by amount (in range [0,1])
+	
 	public Color interpolateTo(Color c, float amount) {
 		int dR = (int) (amount * (c.R - this.R));
 		int dG = (int) (amount * (c.G - this.G));

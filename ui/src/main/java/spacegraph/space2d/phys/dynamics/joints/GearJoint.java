@@ -37,24 +37,24 @@ import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 
-//Gear Joint:
-//C0 = (coordinate1 + ratio * coordinate2)_initial
-//C = (coordinate1 + ratio * coordinate2) - C0 = 0
-//J = [J1 ratio * J2]
-//K = J * invM * JT
-//= J1 * invM1 * J1T + ratio * ratio * J2 * invM2 * J2T
-//
-//Revolute:
-//coordinate = rotation
-//Cdot = angularVelocity
-//J = [0 0 1]
-//K = J * invM * JT = invI
-//
-//Prismatic:
-//coordinate = dot(p - pg, ug)
-//Cdot = dot(v + cross(w, r), ug)
-//J = [ug cross(r, ug)]
-//K = J * invM * JT = invMass + invI * cross(r, ug)^2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * A gear joint is used to connect two joints together. Either joint can be a revolute or prismatic
@@ -75,12 +75,12 @@ public class GearJoint extends Joint {
     private final JointType m_typeA;
     private final JointType m_typeB;
 
-    // Body A is connected to body C
-    // Body B is connected to body D
+    
+    
     private final Body2D m_bodyC;
     private final Body2D m_bodyD;
 
-    // Solver shared
+    
     private final Tuple2f m_localAnchorA = new Vec2();
     private final Tuple2f m_localAnchorB = new Vec2();
     private final Tuple2f m_localAnchorC = new Vec2();
@@ -97,7 +97,7 @@ public class GearJoint extends Joint {
 
     private float m_impulse;
 
-    // Solver temp
+    
     private int m_indexA, m_indexB, m_indexC, m_indexD;
     private final Tuple2f m_lcA = new Vec2(), m_lcB = new Vec2(), m_lcC = new Vec2(),
             m_lcD = new Vec2();
@@ -121,12 +121,12 @@ public class GearJoint extends Joint {
 
         float coordinateA, coordinateB;
 
-        // TODO_ERIN there might be some problem with the joint edges in Joint.
+        
 
         m_bodyC = m_joint1.getBodyA();
         A = m_joint1.getBodyB();
 
-        // Get geometry of joint1
+        
         Transform xfA = A;
         float aA = A.sweep.a;
         Transform xfC = m_bodyC;
@@ -160,7 +160,7 @@ public class GearJoint extends Joint {
         m_bodyD = m_joint2.getBodyA();
         B = m_joint2.getBodyB();
 
-        // Get geometry of joint2
+        
         Transform xfB = B;
         float aB = B.sweep.a;
         Transform xfD = m_bodyD;
@@ -247,22 +247,22 @@ public class GearJoint extends Joint {
         m_iC = m_bodyC.m_invI;
         m_iD = m_bodyD.m_invI;
 
-        // Vec2 cA = data.positions[m_indexA].c;
+        
         float aA = data.positions[m_indexA].a;
         Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        // Vec2 cB = data.positions[m_indexB].c;
+        
         float aB = data.positions[m_indexB].a;
         Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        // Vec2 cC = data.positions[m_indexC].c;
+        
         float aC = data.positions[m_indexC].a;
         Tuple2f vC = data.velocities[m_indexC];
         float wC = data.velocities[m_indexC].w;
 
-        // Vec2 cD = data.positions[m_indexD].c;
+        
         float aD = data.positions[m_indexD].a;
         Tuple2f vD = data.velocities[m_indexD];
         float wD = data.velocities[m_indexD].w;
@@ -313,7 +313,7 @@ public class GearJoint extends Joint {
             pool.pushVec2(3);
         }
 
-        // Compute effective mass.
+        
         m_mass = m_mass > 0.0f ? 1.0f / m_mass : 0.0f;
 
         if (data.step.warmStarting) {
@@ -338,13 +338,13 @@ public class GearJoint extends Joint {
         pool.pushVec2(1);
         pool.pushRot(4);
 
-        // data.velocities[m_indexA].v = vA;
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v = vB;
+        
         data.velocities[m_indexB].w = wB;
-        // data.velocities[m_indexC].v = vC;
+        
         data.velocities[m_indexC].w = wC;
-        // data.velocities[m_indexD].v = vD;
+        
         data.velocities[m_indexD].w = wD;
     }
 
@@ -386,13 +386,13 @@ public class GearJoint extends Joint {
         wD -= m_iD * impulse * m_JwD;
 
 
-        // data.velocities[m_indexA].v = vA;
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v = vB;
+        
         data.velocities[m_indexB].w = wB;
-        // data.velocities[m_indexC].v = vC;
+        
         data.velocities[m_indexC].w = wC;
-        // data.velocities[m_indexD].v = vD;
+        
         data.velocities[m_indexD].w = wD;
     }
 
@@ -508,16 +508,16 @@ public class GearJoint extends Joint {
         cD.y -= (m_mD * impulse) * JvBD.y;
         aD -= m_iD * impulse * JwD;
 
-        // data.positions[m_indexA].c = cA;
+        
         data.positions[m_indexA].a = aA;
-        // data.positions[m_indexB].c = cB;
+        
         data.positions[m_indexB].a = aB;
-        // data.positions[m_indexC].c = cC;
+        
         data.positions[m_indexC].a = aC;
-        // data.positions[m_indexD].c = cD;
+        
         data.positions[m_indexD].a = aD;
 
-        // TODO_ERIN not implemented
+        
         return linearError < Settings.linearSlop;
     }
 }

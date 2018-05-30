@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -33,7 +33,7 @@ import spacegraph.util.math.v3;
  */
 public abstract class TriangleRaycastCallback extends TriangleCallback {
 	
-	//protected final BulletStack stack = BulletStack.get();
+	
 
 	public final v3 from = new v3();
 	public final v3 to = new v3();
@@ -68,15 +68,15 @@ public abstract class TriangleRaycastCallback extends TriangleCallback {
 		dist_b -= dist;
 
 		if (dist_a * dist_b >= 0f) {
-			return; // same sign
+			return; 
 		}
 
 		float proj_length = dist_a - dist_b;
 		float distance = (dist_a) / (proj_length);
-		// Now we have the intersection point on the plane, we'll see if it's inside the triangle
-		// Add an epsilon as a tolerance for the raycast,
-		// in case the ray hits exacly on the edge of the triangle.
-		// It must be scaled for the triangle size.
+		
+		
+		
+		
 
 		if (distance < hitFraction) {
 			float edge_tolerance = triangleNormal.lengthSquared();

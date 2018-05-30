@@ -1,39 +1,39 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Cyclic CA rules
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class RuleCyclic {
-	public int iClo; // count of states
-	public int iRng; // range
-	public int iThr; // threshold
-	public int iNgh; // neighbourhood type
-	public boolean fGH; // Greenberg-Hastings Model?
+	public int iClo; 
+	public int iRng; 
+	public int iThr; 
+	public int iNgh; 
+	public boolean fGH; 
 
 	public static final int MAX_RANGE = 10;
 
-	// ----------------------------------------------------------------
+	
 	public RuleCyclic() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
-		iClo = 3; // count of states
-		iRng = 1; // range
-		iThr = 3; // threshold
-		iNgh = MJRules.NGHTYP_MOOR; // neighbourhood type
-		fGH = false; // Greenberg-Hastings Model?
+		iClo = 3; 
+		iRng = 1; 
+		iThr = 3; 
+		iNgh = MJRules.NGHTYP_MOOR; 
+		fGH = false; 
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitFromString(String sStr) {
-		//noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		ResetToDefaults();
@@ -41,7 +41,7 @@ public class RuleCyclic {
 		st = new StringTokenizer(sStr, ",/", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
-			//noinspection IfStatementWithTooManyBranches
+			
 			if (sTok.length() > 0 && sTok.charAt(0) == 'R')
 				iRng = Integer.valueOf(sTok.substring(1));
 			else if (sTok.length() > 0 && sTok.charAt(0) == 'T')
@@ -55,11 +55,11 @@ public class RuleCyclic {
 			else if (sTok.startsWith("GH"))
 				fGH = true;
 		}
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	//
+	
+	
 	public void InitFromPrm(int i_Clo, int i_Rng, int i_Thr, int i_Ngh,
 			boolean f_GH) {
 		iClo = i_Clo;
@@ -68,34 +68,34 @@ public class RuleCyclic {
 		iNgh = i_Ngh;
 		fGH = f_GH;
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the Cyclic CA table string
-	// Example: 'R1/T3/C5/NM'
+	
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public String GetAsString() {
 		String sBff;
 
-		// correct parameters first
+		
 		Validate();
 
-		// make the string
+		
 		sBff = 'R' + String.valueOf(iRng) + "/T" + iThr + "/C"
 				+ iClo;
 
 		sBff = sBff + (iNgh == MJRules.NGHTYP_NEUM ? "/NN" : "/NM");
 
 		if (fGH)
-			sBff = sBff + "/GH"; // Greenberg-Hastings Model
+			sBff = sBff + "/GH"; 
 
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the Cyclic CA parameters, correct
-	// them if necessary.
+	
+	
+	
 	public void Validate() {
 		int i, iMax;
 
@@ -111,7 +111,7 @@ public class RuleCyclic {
 
 		iMax = 0;
 		for (i = 1; i <= iRng; i++)
-			// calculate the max. threshold
+			
 			iMax = iMax + i * 8;
 
 		if (iThr < 1)
@@ -120,29 +120,29 @@ public class RuleCyclic {
 			iThr = iMax;
 
 		if (iNgh != MJRules.NGHTYP_NEUM)
-			iNgh = MJRules.NGHTYP_MOOR; // default - Moore neighbourhood
+			iNgh = MJRules.NGHTYP_MOOR; 
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 					   short[][] crrState, short[][] tmpState) {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, j, iCnt;
-		int[] xVector = new int[21]; // 0..9, 10, 11..20
-		int[] yVector = new int[21]; // 0..9, 10, 11..20
+		int[] xVector = new int[21]; 
+		int[] yVector = new int[21]; 
 		int colL, colR, rowT, rowB;
 		int ic, ir, iTmp;
 		short nxtStt;
-		boolean fMoore; // Moore neighbourhood? Else von Neumann.
+		boolean fMoore; 
 
-		fMoore = (iNgh == MJRules.NGHTYP_MOOR); // Moore neighbourhood? Else von Neumann.
+		fMoore = (iNgh == MJRules.NGHTYP_MOOR); 
 
 		for (i = 0; i < sizX; i++) {
 			for (j = 0; j < sizY; j++) {
-				// prepare vectors holding proper rows and columns
-				// of the n-range neighbourhood
+				
+				
 				xVector[10] = i;
 				yVector[10] = j;
 				for (iTmp = 1; iTmp <= iRng; iTmp++) {
@@ -162,11 +162,11 @@ public class RuleCyclic {
 				nxtStt = bOldVal >= (iClo - 1) ? 0 : (short) (bOldVal + 1);
 
 				if ((!fGH) || (bOldVal == 0)) {
-					bNewVal = bOldVal; // default - no change
+					bNewVal = bOldVal; 
 					if (bNewVal >= iClo)
 						bNewVal = (short) (iClo - 1);
 
-					iCnt = 0; // count of neighbours with the next state
+					iCnt = 0; 
 					for (ic = 10 - iRng; ic <= 10 + iRng; ic++) {
 						for (ir = 10 - iRng; ir <= 10 + iRng; ir++) {
 							if ((fMoore)
@@ -178,18 +178,18 @@ public class RuleCyclic {
 						}
 					}
 					if (iCnt >= iThr)
-						bNewVal = nxtStt; // new cell status
+						bNewVal = nxtStt; 
 				} else {
-					bNewVal = nxtStt; // in GH all > 0 automatically advance
+					bNewVal = nxtStt; 
 				}
 
 				tmpState[i][j] = bNewVal;
-				if (bNewVal != bOldVal) // change detected
+				if (bNewVal != bOldVal) 
 				{
-					modCnt++; // one more modified cell
+					modCnt++; 
 				}
-			} // for j
-		} // for i
+			} 
+		} 
 
 		return modCnt;
 	}

@@ -34,9 +34,9 @@ public class BasicLibrary extends Library {
     public BasicLibrary() {
     }
 
-    //
-    // meta-predicates
-    //
+    
+    
+    
 
     /**
      * sets a new theory provided as a text
@@ -57,7 +57,7 @@ public class BasicLibrary extends Library {
             return true;
         } catch (InvalidTheoryException ex) {
             /*Castagna 06/2011*/			
-			//throw PrologError.syntax_error(engine.getEngineManager(), ex.line, ex.pos, new Struct(ex.getMessage()));
+			
             throw PrologError.syntax_error(engine.engine, ex.clause, ex.line, ex.pos, new Struct(ex.getMessage()));
 			/**/
         }
@@ -82,7 +82,7 @@ public class BasicLibrary extends Library {
             return true;
         } catch (InvalidTheoryException ex) {
             /*Castagna 06/2011*/
-        	//throw PrologError.syntax_error(engine.getEngineManager(), ex.line, ex.pos, new Struct(ex.getMessage()));
+        	
             throw PrologError.syntax_error(engine.engine, ex.clause, ex.line, ex.pos, new Struct(ex.getMessage()));
         	/**/
         }
@@ -99,19 +99,19 @@ public class BasicLibrary extends Library {
         }
     }
 
-// 	  MANNINO 14/09/2012
+
     
-//    public boolean load_library_2(Term className, Term libName) {
-//        Struct clName = (Struct) className.getTerm();
-//        libName = libName.getTerm();
-//        try {
-//            Library lib = getEngine().loadLibrary(
-//                    alice.util.Tools.removeApices(clName.getName()));
-//            return unify(libName, new Struct(lib.getName()));
-//        } catch (Exception ex) {
-//            return false;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Loads a library constructed from a theory.
@@ -236,9 +236,9 @@ public class BasicLibrary extends Library {
         return true;
     }
 
-    //
-    // term type inspection
-    //
+    
+    
+    
 
     public static boolean constant_1(Term t) {
         t = t.term();
@@ -298,15 +298,15 @@ public class BasicLibrary extends Library {
         return (t.isGround());
     }
 
-    //
-    // term/espression comparison
-    //
+    
+    
+    
 
     private void handleError(Throwable t, int arg) throws PrologError {
-        // errore durante la valutazione
+        
         if (t instanceof ArithmeticException) {
             ArithmeticException cause = (ArithmeticException) t;
-            // System.out.println(cause.getMessage());
+            
             if (cause.getMessage().equals("/ by zero"))
                 throw PrologError.evaluation_error(engine.engine,
                         arg, "zero_divisor");
@@ -473,7 +473,7 @@ public class BasicLibrary extends Library {
     public static boolean term_greater_than_2(Term arg0, Term arg1) {
         arg0 = arg0.term();
         arg1 = arg1.term();
-        //System.out.println("Confronto "+arg0+" con "+arg1);
+        
         return arg0.isGreater(arg1);
     }
 
@@ -660,8 +660,8 @@ public class BasicLibrary extends Library {
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            // return new Int(val0n.intValue() >> val1n.intValue());
-            // CORRECTED BY ED ON JAN 28, 2011
+            
+            
             return new NumberTerm.Long(val0n.longValue() >> val1n.longValue());
         } else {
             return null;
@@ -680,8 +680,8 @@ public class BasicLibrary extends Library {
         if (val0 instanceof NumberTerm                && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            // return new Int(val0n.intValue() << val1n.intValue());
-            // CORRECTED BY ED ON JAN 28, 2011
+            
+            
             return new NumberTerm.Long(val0n.longValue() << val1n.longValue());
         } else {
             return null;
@@ -701,8 +701,8 @@ public class BasicLibrary extends Library {
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            // return new Int(val0n.intValue() & val1n.intValue());
-            // CORRECTED BY ED ON JAN 28, 2011
+            
+            
             return new NumberTerm.Long(val0n.longValue() & val1n.longValue());
         } else {
             return null;
@@ -722,17 +722,17 @@ public class BasicLibrary extends Library {
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            // return new Int(val0n.intValue() | val1n.intValue());
-            // CORRECTED BY ED ON JAN 28, 2011
+            
+            
             return new NumberTerm.Long(val0n.longValue() | val1n.longValue());
         } else {
             return null;
         }
     }
 
-    //
-    // text/atom manipulation predicates
-    //
+    
+    
+    
 
     /**
      * bidirectional text/term conversion.
@@ -819,16 +819,16 @@ public class BasicLibrary extends Library {
             String iBetween="";
             for(int i=0; i<st2.length(); i++)
             {
-            	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && before) // find non number at first
+            	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && before) 
             		numBefore++;
             	
             	between=false;
-            	if(st2.charAt(i)>='0' && st2.charAt(i)<='9') //found a number
+            	if(st2.charAt(i)>='0' && st2.charAt(i)<='9') 
             	{
             		int k=0;
-            		for(int j=i+1; j<st2.length(); j++) //into the rest of the string
+            		for(int j=i+1; j<st2.length(); j++) 
             		{
-            			if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i>1) // control if there is another numbers
+            			if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i>1) 
             			{
             				k+=i+1;
             				numBetween+=2; 
@@ -903,7 +903,7 @@ public class BasicLibrary extends Library {
         }
     }
 
-    // throw/1
+    
     public static boolean throw_1(Term error) throws PrologError {
         throw new PrologError(error);
     }
@@ -911,9 +911,9 @@ public class BasicLibrary extends Library {
     @Override
     public String getTheory() {
         return
-        //
-        // operators defined by the BasicLibrary theory
-        //
+        
+        
+        
         "':-'(op( 1200, fx,   ':-')). \n"
                 + ":- op( 1200, xfx,  ':-'). \n"
                 + ":- op( 1200, fx,   '?-'). \n"
@@ -923,13 +923,13 @@ public class BasicLibrary extends Library {
                 + ":- op(  900, fy,   '\\+'). \n"
                 + ":- op(  900, fy,   'not'). \n"
                 +
-                //
+                
                 ":- op(  700, xfx,  '='). \n"
                 + ":- op(  700, xfx,  '\\='). \n"
                 + ":- op(  700, xfx,  '=='). \n"
                 + ":- op(  700, xfx,  '\\=='). \n"
                 +
-                //
+                
                 ":- op(  700, xfx,  '@>'). \n"
                 + ":- op(  700, xfx,  '@<'). \n"
                 + ":- op(  700, xfx,  '@=<'). \n"
@@ -941,7 +941,7 @@ public class BasicLibrary extends Library {
                 + ":- op(  700, xfx,  '=<'). \n"
                 + ":- op(  700, xfx,  '>='). \n"
                 +
-                //
+                
                 ":- op(  700, xfx,  'is'). \n"
                 + ":- op(  700, xfx,  '=..'). \n"
                 + ":- op(  500, yfx,  '+'). \n"
@@ -999,7 +999,7 @@ public class BasicLibrary extends Library {
                 + "functor(Term, Functor, Arity) :- var(Term), atomic(Functor), Arity == 0, !, Term = Functor.\n"
                 + "functor(Term, Functor, Arity) :- var(Term), current_prolog_flag(max_arity, Max), Arity>Max, !, false.\n"
                 + "functor(Term, Functor, Arity) :- var(Term), atom(Functor), number(Arity), Arity > 0, !,length(ArgList, Arity),Term =.. [Functor|ArgList].\n"
-                //+ "functor(_Term, _Functor, _Arity) :- throw('Arguments are not sufficiently instantiated.').\n"
+                
                 + "functor(_Term, _Functor, _Arity) :-false.\n"
                 
                 
@@ -1039,12 +1039,12 @@ public class BasicLibrary extends Library {
                 + "not(G)        :- G,!,fail. \n                                                                     "
                 + "not(_). \n"
                 +
-                // catch/3
+                
                 "catch(Goal, Catcher, Handler) :- call(Goal).\n"
                
-                //
-                // All solutions predicates
-                //
+                
+                
+                
                
                 + "findall(Template, Goal, Instances) :- \n"
                 + "all_solutions_predicates_guard(Template, Goal, Instances), \n"
@@ -1104,10 +1104,10 @@ public class BasicLibrary extends Library {
                 + "iterated_goal_term(Goal, G), \n"
                 +"all_solutions_predicates_guard(Template, G, Instances),"
                 + "'splitAndSolve'(Witness, S, Instances,Set,Template,G,Goal). \n"  
-                //+ "'splitAndSolve'(Witness, S, Instances1,Set,Template,G,Goal),"
-                //+"write('  Instances: '),write(Instances),"
-                //+"write('  Instances1: '),write(Instances1),"
-                //+"Instances=Instances1. \n"
+                
+                
+                
+                
                 /*INIT utility function used by bagof*/
                 +"count([],0). \n"
                 +"count([T1|Ts],N):- count(Ts,N1), N is (N1+1). \n"
@@ -1161,9 +1161,9 @@ public class BasicLibrary extends Library {
                 +"S==[] -> fail, !; \n"
                 +"'$wt_list'(S, WT_List), \n"
                 +"'$wt_unify'(Witness, WT_List, Instances,Set,Template,Goal). \n"
-                //+"'$wt_unify'(Witness, WT_List, T_List,Set,Template,Goal), \n"
-                //+"Instances = T_List. \n"
-                //+"write('T_List: '),write(T_List). \n"
+                
+                
+                
                 
                 +"'bag0'(Witness, S, Instances,Set,Template,Goal) :- \n"
                 +"'$wt_list'(S, WT_List), \n"
@@ -1194,12 +1194,12 @@ public class BasicLibrary extends Library {
                 + "quicksort(List, '@<', OrderedList), \n"
                 + "no_duplicates(OrderedList, Instances). \n"
                 
-                // RC, ED Jul 14
+                
                 +"forall(A,B):- \\+(call(A),\\+call(B)). \n"
                 
-                //
-                // theory management predicates
-                //
+                
+                
+                
                 + "assert(C) :- assertz(C). \n"
                 + "retract(Rule) :- retract_guard(Rule), Rule = ':-'(Head, Body), !, clause(Head, Body), '$retract'(Rule). \n"
                 + "retract(Fact) :- retract_guard(Fact), clause(Fact, true), '$retract'(Fact).\n"
@@ -1207,9 +1207,9 @@ public class BasicLibrary extends Library {
                 + "'$retract_clause_list'([]). \n"
                 + "'$retract_clause_list'([E | T]) :- !, '$retract'(E), '$retract_clause_list'(T). \n"
                 +
-                //
-                // auxiliary predicates
-                //
+                
+                
+                
                 
                 " member(E,L) :- member_guard(E,L), member0(E,L).\n                                                                                     "
                 + "member0(E,[E|_]). \n                                                                       "
@@ -1253,7 +1253,7 @@ public class BasicLibrary extends Library {
                 + "   split(X,Tail,Pred,Small,Big).                   \n";
     }
 
-    // Java guards for Prolog predicates
+    
 
     public boolean arg_guard_3(Term arg0, Term arg1, Term arg2)
             throws PrologError {
@@ -1295,15 +1295,15 @@ public class BasicLibrary extends Library {
 
     public boolean all_solutions_predicates_guard_3(Term arg0, Term arg1,
             Term arg2) throws PrologError {
-    	//System.out.println("Entro qui.... ");
+    	
         arg1 = arg1.term();
-        //System.out.println("Arg1 "+arg1);
+        
         if (arg1 instanceof Var){
-        	//System.out.println("ECCEZIONE 1 ");
+        	
             throw PrologError.instantiation_error(engine, 2);
         }
         if (!arg1.isAtomic() && !arg1.isCompound()){
-        	//System.out.println("ECCEZIONE 2 ");
+        	
             throw PrologError.type_error(engine, 2,
                     "callable", arg1); 
          }
@@ -1354,8 +1354,8 @@ public class BasicLibrary extends Library {
         return true;
     }
 
-    // Internal Java predicates which are part of the bagof/3 and setof/3
-    // algorithm
+    
+    
 
     public boolean $wt_unify_3(Term witness, Term wtList, Term tList) {
         Struct list = (Struct) wtList.term();
@@ -1377,12 +1377,12 @@ public class BasicLibrary extends Library {
     	System.out.println("varSet "+varSet);
     	System.out.println("template "+temp);
     	*/
-    	//se ci sono variabili libere nel goal alla fine il risultato deve essere relinked
+    	
     	Struct freeVarList = (Struct) varSet.term();
     	java.util.Iterator<? extends Term> it1 = freeVarList.listIterator();
     	if (it1.hasNext()) {
             (engine.engine).setRelinkVar(true);
-    		//ArrayList<String> l = new ArrayList<String>(); 
+    		
 
             (engine.engine).setBagOFvarSet(varSet);
             (engine.engine).setBagOFgoal(goal);
@@ -1392,26 +1392,26 @@ public class BasicLibrary extends Library {
     	}
     		
     	
-    	//System.out.println("template "+temp);
-    	//System.out.println("goal "+goal);
+    	
+    	
         Struct list = (Struct) wtList.term();
-        //Struct varList = (Struct) varSet.term();
-        //String goalString = goal.toString();
-        //System.out.println("goal string "+goalString);
         
-        //System.out.println("termini wtList "+list);
+        
+        
+        
+        
         Struct result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
             Struct element = (Struct) it.next();
-            //System.out.println("termine wtList "+element);
+            
             Term w = element.sub(0);
             Term t = element.sub(1);
-            //System.out.println("termine W wtList "+w);
-            //System.out.println("termine T wtList "+t);
+            
+            
             if (unify(witness, w)){
-            	//System.out.println("=====witness  "+witness+" unifica con w "+w+" metto t nel risultato "+t);
+            	
             	result.append(t);
-            	//System.out.println("=====****result  "+result);
+            	
                 ArrayList<Term> l = (engine.engine).getBagOFres();
                 ArrayList<String> lString = (engine.engine).getBagOFresString();
             	if(l==null){
@@ -1419,14 +1419,14 @@ public class BasicLibrary extends Library {
             		lString= new ArrayList<>();
             	}
             	l.add(t);
-            	//if(t instanceof Var)
+            	
             	lString.add(t.toString());
             	/*for(int m=0; m<l.size(); m++){
             		System.out.println("=====****elemento lista engine.getEngineManager()).getBagOFres()  "+l.get(m));
             	}*/
                 (engine.engine).setBagOFres(l);
                 (engine.engine).setBagOFresString(lString);
-                //System.out.println("Ho unificato witness con w appendo t al risultato ");
+                
             }
         } 
         return unify(tList, result);

@@ -28,10 +28,10 @@ public class CachedAnon extends Anon {
             return true;
         }
         if (super.rollback(uniques)) {
-            externCache.clear(); //must clear externCache if uniques are removed;
-            //TODO technically we can keep externCache entries that dont involve the removed uniques
+            externCache.clear(); 
+            
 
-            //internCache can remain
+            
             return true;
         }
         return false;
@@ -39,7 +39,7 @@ public class CachedAnon extends Anon {
 
     @Override
     public void clear() {
-        //the internCache is universal so it doesnt need cleared
+        
         externCache.clear();
         super.clear();
     }
@@ -55,9 +55,9 @@ public class CachedAnon extends Anon {
     }
 
     protected TermTransform newGet() {
-        //HACK
+        
         if (externCache == null)
-            //new HashMap(capacity); //<-- cant use; CME's
+            
             externCache = new UnifiedMap<>();
 
         return new CachedTermTransform(new TermTransform() {

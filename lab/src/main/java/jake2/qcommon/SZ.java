@@ -37,10 +37,10 @@ public final class SZ {
 		buf.clear();
 	}
 
-	//===========================================================================
+	
 	
 	public static void Init(sizebuf_t buf, byte data[], int length) {
-	  // TODO check this. cwei
+	  
 	  buf.readcount = 0;
 
 	  buf.data = data;
@@ -73,7 +73,7 @@ public final class SZ {
 	}
 
 	public static void Write(sizebuf_t buf, byte data[], int length) {
-		//memcpy(SZ_GetSpace(buf, length), data, length);
+		
 		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
 	}
 
@@ -83,11 +83,11 @@ public final class SZ {
 
 	public static void Write(sizebuf_t buf, byte data[]) {
 		int length = data.length;
-		//memcpy(SZ_GetSpace(buf, length), data, length);
+		
 		System.arraycopy(data, 0, buf.data, GetSpace(buf, length), length);
 	}
 
-	// 
+	
 	public static void Print(sizebuf_t buf, String data) {
 	    Com.dprintln("SZ.print():<" + data + '>');
 		int length = data.length();
@@ -96,16 +96,16 @@ public final class SZ {
 		if (buf.cursize != 0) {
 	
 			if (buf.data[buf.cursize - 1] != 0) {
-				//memcpy( SZ_GetSpace(buf, len), data, len); // no trailing 0
+				
 				System.arraycopy(str, 0, buf.data, GetSpace(buf, length+1), length);
 			} else {
 				System.arraycopy(str, 0, buf.data, GetSpace(buf, length)-1, length);
-				//memcpy(SZ_GetSpace(buf, len - 1) - 1, data, len); // write over trailing 0
+				
 			}
 		} else
-			// first print.
+			
 			System.arraycopy(str, 0, buf.data, GetSpace(buf, length), length);
-		//memcpy(SZ_GetSpace(buf, len), data, len);
+		
 		
 		buf.data[buf.cursize - 1]=0;
 	}

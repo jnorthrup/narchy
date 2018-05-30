@@ -2,7 +2,7 @@
  * C# / XNA  port of Bullet (c) 2011 Mark Neale <xexuxjy@hotmail.com>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -44,7 +44,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	protected v3 m_localOrigin;
 	protected v3 m_localScaling;
 
-	///terrain data
+	
 	protected int m_heightStickWidth;
 	protected int m_heightStickLength;
 	protected float m_minHeight;
@@ -62,7 +62,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 
 	protected int m_upAxis;
 
-	/// preferred constructor
+	
 	/**
 	  This constructor supports a range of heightfield
 	  data types, and allows for a non-zero minimum height value.
@@ -76,7 +76,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 				heightDataType, flipQuadEdges);
 	}
 
-	/// legacy constructor
+	
 	/**
 	  The legacy constructor assumes the heightfield has a minimum height
 	  of zero.  Only unsigned char or floats are supported.  For legacy
@@ -86,13 +86,13 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	public HeightfieldTerrainShape(int heightStickWidth, int heightStickLength, byte[] heightfieldData,
 			float maxHeight, int upAxis, boolean useFloatData, boolean flipQuadEdges)
 	{
-		// legacy constructor: support only float or unsigned char,
-		// 	and min height is zero
+		
+		
 		PHY_ScalarType hdt = (useFloatData) ? PHY_ScalarType.PHY_FLOAT : PHY_ScalarType.PHY_UCHAR;
 		float minHeight = 0.0f;
 
-		// previously, height = uchar * maxHeight / 65535.
-		// So to preserve legacy behavior, heightScale = maxHeight / 65535
+		
+		
 		float heightScale = maxHeight / 65535;
 
 		initialize(heightStickWidth, heightStickLength, heightfieldData, heightScale, minHeight, maxHeight, upAxis,
@@ -115,17 +115,17 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		case PHY_FLOAT:
             if (m_heightFieldDataFloat != null)
             {
-                // float offset (4 for sizeof)
+                
                 int index = ((y * m_heightStickWidth) + x);
                 val = m_heightFieldDataFloat[index];
                 break;
             }
             else
             {
-                // FIXME - MAN - provide a way of handling different data types
-                // float offset (4 for sizeof)
+                
+                
                 int index = ((y * m_heightStickWidth) + x) * 4;
-                //val = 0f;//BitConverter.ToSingle(m_heightFieldDataByte, index);
+                
 
                 int size = 4;
                 ByteBuffer bb = ByteBuffer.allocate(size).put(m_heightFieldDataByte, index, size);
@@ -139,9 +139,9 @@ public class HeightfieldTerrainShape extends ConcaveShape
             break;
 
             case PHY_SHORT:
-            // FIXME - MAN - provide a way of handling different data types
+            
             int index = ((y * m_heightStickWidth) + x) * 2;
-            short hfValue = 0;//BitConverter.ToInt16(m_heightFieldDataByte, index);
+            short hfValue = 0;
             val = hfValue * m_heightScale;
             break;
         }
@@ -151,7 +151,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 
 	protected void quantizeWithClamp(int[] output, v3 point, int isMax)
 	{
-		/// given input vector, return quantized version
+		
 		/**
 		  This routine is basically determining the gridpoint indices for a given
 		  input vector, answering the question: "which gridpoint is closest to the
@@ -201,7 +201,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
             vertex.set((-m_width / 2f) + x, (-m_length / 2f) + y, height - m_localOrigin.z);
             break;
             default:
-            //need to get valid m_upAxis
+            
             assert (false);
             vertex.set(0f, 0f, 0f);
             break;
@@ -216,7 +216,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		return BroadphaseNativeType.TERRAIN_SHAPE_PROXYTYPE;
 	}
 
-	/// protected initialization
+	
 	/**
 	  Handles the work of constructors so that public constructors can be
 	  backwards-compatible without a lot of copy/paste.
@@ -224,16 +224,16 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	protected void initialize(int heightStickWidth, int heightStickLength, Object heightfieldData, float heightScale,
                               float minHeight, float maxHeight, int upAxis, PHY_ScalarType hdt, boolean flipQuadEdges)
 	{
-		// validation
+		
 		assert heightStickWidth > 1 : "bad width";
 		assert heightStickLength > 1 : "bad length";
 		assert heightfieldData != null : "null heightfield data";
-		// assert(heightScale) -- do we care?  Trust caller here
+		
 		assert minHeight <= maxHeight : "bad min/max height";
 		assert upAxis >= 0 && upAxis < 3 : "bad upAxis--should be in range [0,2]";
 		assert hdt != PHY_ScalarType.PHY_UCHAR || hdt != PHY_ScalarType.PHY_FLOAT || hdt != PHY_ScalarType.PHY_SHORT : "Bad height data type enum";
 
-		// initialize member variables
+		
 
 		m_heightStickWidth = heightStickWidth;
 		m_heightStickLength = heightStickLength;
@@ -242,7 +242,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		m_width = (heightStickWidth - 1);
 		m_length = (heightStickLength - 1);
 		m_heightScale = heightScale;
-		// copy the data in 
+		
 		if (heightfieldData instanceof byte[])
 		{
 			m_heightFieldDataByte = (byte[]) (heightfieldData);
@@ -259,7 +259,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 
 		m_localScaling = new v3();
 		m_localScaling.set(1f, 1f, 1f);
-		// determine min/max axis-aligned bounding box (aabb) values
+		
 
 		m_localAabbMin = new v3();
 		m_localAabbMax = new v3();
@@ -278,12 +278,12 @@ public class HeightfieldTerrainShape extends ConcaveShape
             m_localAabbMax.set(m_width, m_length, m_maxHeight);
             break;
             default:
-            //need to get valid m_upAxis
+            
             assert false : "Bad m_upAxis";
             break;
         }
 
-		// remember origin (defined as exact middle of aabb)
+		
 		m_localOrigin = new v3();
 		m_localOrigin.set(0, 0, 0);
 		VectorUtil.add(m_localOrigin, m_localAabbMin, m_localAabbMax);
@@ -309,7 +309,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		v3 localHalfExtents = new v3();
 		localHalfExtents.sub(m_localAabbMax, m_localAabbMin);
 		VectorUtil.mul(localHalfExtents,localHalfExtents,m_localScaling);
-		//localHalfExtents.mul(localHalfExtents,m_localScaling);
+		
 		localHalfExtents.scale(0.5f);
 
 		v3 localOrigin = new v3();
@@ -337,14 +337,14 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		aabbMax.add(center, extent);
 	}
 
-	/// process all triangles within the provided axis-aligned bounding box
+	
 	/**
 	  basic algorithm:
 	    - convert input aabb to local coordinates (scale down and shift for local origin)
 	    - convert input aabb to a range of heightfield grid points (quantize)
 	    - iterate over all triangles in that subset of the grid
 	 */
-	//quantize the aabbMin and aabbMax, and adjust the start/end ranges
+	
 	int[] quantizedAabbMin = new int[3];
 	int[] quantizedAabbMax = new int[3];
 	v3[] vertices = new v3[3];
@@ -368,7 +368,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
     public void processAllTriangles(TriangleCallback callback, v3 aabbMin, v3 aabbMax)
 	{
 
-		// scale down the input aabb's so they are in local (non-scaled) coordinates
+		
 		v3 invScale = new v3();
 		invScale.set(1f / m_localScaling.x, 1f / m_localScaling.y, 1f / m_localScaling.z);
 
@@ -378,15 +378,15 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		VectorUtil.mul(localAabbMin, aabbMin, invScale);
 		VectorUtil.mul(localAabbMax, aabbMax, invScale);
 
-		// account for local origin
+		
 		VectorUtil.add(localAabbMin, localAabbMin, m_localOrigin);
 		VectorUtil.add(localAabbMax, localAabbMax, m_localOrigin);
 
 		quantizeWithClamp(quantizedAabbMin, localAabbMin, 0);
 		quantizeWithClamp(quantizedAabbMax, localAabbMax, 1);
 
-		// expand the min/max quantized values
-		// this is to catch the case where the input aabb falls between grid points!
+		
+		
 		for (int i = 0; i < 3; ++i)
 		{
 			quantizedAabbMin[i]--;
@@ -431,24 +431,24 @@ public class HeightfieldTerrainShape extends ConcaveShape
                 endJ = quantizedAabbMax[1];
             break;
             default:
-            //need to get valid m_upAxis
+            
             assert (false);
             break;
         }
 
-		// debug draw the boxes?
+		
 		for (int j = startJ; j < endJ; j++)
 		{
 			for (int x = startX; x < endX; x++)
 			{
 				if (m_flipQuadEdges || (m_useDiamondSubdivision && (((j + x) & 1) > 0)))
 				{
-					//first triangle
+					
 					getVertex(x, j, vertices[0]);
 					getVertex(x + 1, j, vertices[1]);
 					getVertex(x + 1, j + 1, vertices[2]);
 					callback.processTriangle(vertices, x, j);
-					//second triangle
+					
 					getVertex(x, j, vertices[0]);
 					getVertex(x + 1, j + 1, vertices[1]);
 					getVertex(x, j + 1, vertices[2]);
@@ -457,30 +457,30 @@ public class HeightfieldTerrainShape extends ConcaveShape
 				}
 				else
 				{
-					//first triangle
+					
 					getVertex(x, j, vertices[0]);
 					getVertex(x, j + 1, vertices[1]);
 					getVertex(x + 1, j, vertices[2]);
 					checkNormal(vertices, callback);
 					callback.processTriangle(vertices, x, j);
 
-					//second triangle
+					
 					getVertex(x + 1, j, vertices[0]);
 					getVertex(x, j + 1, vertices[1]);
 					getVertex(x + 1, j + 1, vertices[2]);
 					checkNormal(vertices, callback);
 					callback.processTriangle(vertices, x, j);
 
-					//	                        getVertex(x, j, vertices[0]);
-					//	                        getVertex(x+1, j, vertices[1]);
-					//	                        getVertex(x + 1, j+1, vertices[2]);
-					//	                        callback.processTriangle(vertices, x, j);
-					//
-					//	                        //second triangle
-					//	                        getVertex(x , j, vertices[0]);
-					//	                        getVertex(x+1, j + 1, vertices[1]);
-					//	                        getVertex(x + 1, j + 1, vertices[2]);
-					//	                        callback.processTriangle(vertices, x, j);
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 
 				}
 			}
@@ -490,7 +490,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 	@Override
     public void calculateLocalInertia(float mass, v3 inertia)
 	{
-		//moving concave objects not supported
+		
 		inertia.set(0f, 0f, 0f);
 	}
 
@@ -507,7 +507,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		return localScaling;
 	}
 
-	//debugging
+	
 	@Override
     public String getName()
 	{

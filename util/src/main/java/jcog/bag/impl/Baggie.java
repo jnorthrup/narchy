@@ -21,8 +21,8 @@ import java.util.stream.Stream;
 
 /**
  * lighter-weight 2nd-generation arraybag
- * https://en.wikipedia.org/wiki/Bag
- * http://www.dictionary.com/browse/baggie
+ * https:
+ * http:
  */
 public class Baggie<X> extends PriMap<X> {
     public int capacity;
@@ -57,10 +57,10 @@ public class Baggie<X> extends PriMap<X> {
         synchronized (this) {
             boolean full = isFull();
             if (full) {
-                //assert (min >= 0);
+                
                 if (pri < min && !containsKey(x)) {
                     pressure += pri;
-                    return false; //rejected
+                    return false; 
                 }
             }
 
@@ -72,13 +72,13 @@ public class Baggie<X> extends PriMap<X> {
             if (from != to) {
                 if (from>0 && to>0)
                     pressure += to - from;
-                update(from, to); //change occurred
+                update(from, to); 
             } else {
-                return true; //no change
+                return true; 
             }
         }
 
-        //after synch:
+        
 
         if (trash[0] != null) {
             ((List<X>) trash[0]).forEach(this::onRemoved);
@@ -111,7 +111,7 @@ public class Baggie<X> extends PriMap<X> {
             trash.add((X) k);
         }
 
-        //remove each by key because each removal will have changed the indexing that sorted refers to
+        
         trash.forEach(this::removeKey);
 
         return trash;
@@ -124,17 +124,17 @@ public class Baggie<X> extends PriMap<X> {
     protected void update(short from, short to) {
         assert (size > 0);
 
-        //if (sorted.length!=size || from == -1 /* new entry */) {
+        
         reBuildSort(from, to);
-//        } else {
-//            reSort(from, to);
-//        }
+
+
+
 
     }
 
     private void reBuildSort(short from, short to) {
 
-        int slen = size; //Math.min(size, capacity); //TODO prealloc once and fill remainder with empties
+        int slen = size; 
         if (slen == 0) {
             clear();
             return;
@@ -150,7 +150,7 @@ public class Baggie<X> extends PriMap<X> {
         int i = 0;
         for (int index = 0, keysLength = (short) keys.length; index < keysLength; index++) {
             Object o = keys[index];
-            if (isNonSentinel(o))// o != null && o!=REM)
+            if (isNonSentinel(o))
                 s[i++] = index;
         }
         assert (i == size);
@@ -163,7 +163,7 @@ public class Baggie<X> extends PriMap<X> {
      */
     private void reSort(short from, short to) {
         int[] s = this.sorted;
-        ArrayUtils.sort(s, 0, s.length - 1, (int x) -> values[x]); //descending
+        ArrayUtils.sort(s, 0, s.length - 1, (int x) -> values[x]); 
         this.max = values[s[0]];
         this.min = values[s[s.length - 1]];
     }
@@ -243,7 +243,7 @@ public class Baggie<X> extends PriMap<X> {
 
     public List<ObjectFloatPair<X>> toList() {
         synchronized (this) {
-            //TODO use non-Stream impl
+            
             return streamDirect().collect(Collectors.toList());
         }
     }
@@ -315,21 +315,21 @@ public class Baggie<X> extends PriMap<X> {
                 boolean removed = false;
                 synchronized (this) {
                     if (l.nextPri < 0) {
-                        //delete
+                        
                         if (removeIt(x)) {
                             removed = true;
                         }
                     } else {
                         if (containsKey(x)) {
-                            //TODO reuse the probed index from containsKey lookup
+                            
                             set(x, l.nextPri);
                             reSort(l.pri, l.nextPri);
                         }
-                        //else it has been removed during the sampling
+                        
                     }
                 }
 
-                if (removed) { //outside of sync
+                if (removed) { 
                     onRemoved(x);
                 }
 
@@ -349,8 +349,8 @@ public class Baggie<X> extends PriMap<X> {
             float max = priShort(this.max);
             float diff = max - min;
             if (diff > Prioritized.EPSILON * size) {
-                float i = random.nextFloat(); //uniform
-                //normalize to the lack of dynamic range
+                float i = random.nextFloat(); 
+                
                 i = Util.lerp(diff, i /* flat */, (i * i) /* curved */);
                 int j = (int) Math.floor(i * (size - 0.5f));
                 if (j >= size) j = size - 1;

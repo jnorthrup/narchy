@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ public class IntVarImpl extends IntVar {
         this.values = values.clone();
         this.sizeT = new TrailedInt(trail, values.length);
 
-        // Compute the minimum and maximum values in the domain.
+        
         int min = MAX_VALUE;
         int max = MIN_VALUE;
         for (int i = 0; i < values.length; i++) {
@@ -82,7 +82,7 @@ public class IntVarImpl extends IntVar {
         this.minT = new TrailedInt(trail, initMin);
         this.maxT = new TrailedInt(trail, initMax);
 
-        // Build the domain representation.
+        
         final int range = max - min + 1;
         this.positions = makeInt(range, i -> range);
         for (int i = 0; i < values.length; i++) {
@@ -146,18 +146,18 @@ public class IntVarImpl extends IntVar {
         }
         int size = sizeT.getValue();
 
-        // We know that the variable is already assigned to value.
+        
         if (size == 1) {
             return true;
         }
 
-        // The value is not in the domain.
+        
         int position = positions[value - initMin];
         if (position >= size) {
             return false;
         }
 
-        // Remove the value and update the domain.
+        
         swap(position, 0);
         minT.setValue(value);
         maxT.setValue(value);
@@ -170,37 +170,37 @@ public class IntVarImpl extends IntVar {
 
     @Override
     public boolean remove(int value) {
-        // The value is already removed if it is not contained
-        // in the range [min, max].
+        
+        
         int min = minT.getValue();
         int max = maxT.getValue();
         if (value < min || value > max) {
             return true;
         }
 
-        // We cannot remove the value if the variable is
-        // already assigned to it.
+        
+        
         int size = sizeT.getValue();
         if (size == 1) {
             return false;
         }
 
-        // Check that the value is not already removed.
+        
         int position = positions[value - initMin];
         if (position >= size) {
             return true;
         }
 
-        // At this point, we know that the value is in the domain and that
-        // the domain is not assigned. We thus remove the value.
+        
+        
         size--;
         swap(position, size);
         sizeT.setValue(size);
 
-        // We now have to notify the propagators and to update one of the
-        // bound if necessary.
+        
+        
         if (size == 1) {
-            // Removing the value assigned the variable.
+            
             if (value == min) {
                 minT.setValue(max);
             } else {
@@ -209,7 +209,7 @@ public class IntVarImpl extends IntVar {
             awakeAssign();
             awakeBounds();
         } else if (min == value) {
-            // We removed the minimum value and thus have to find the new one.
+            
             int i = min - initMin + 1;
             while (positions[i] >= size) {
                 i++;
@@ -217,7 +217,7 @@ public class IntVarImpl extends IntVar {
             minT.setValue(i + initMin);
             awakeBounds();
         } else if (max == value) {
-            // We removed the maximum value and thus have to find the new one.
+            
             int i = max - initMin - 1;
             while (positions[i] >= size) {
                 i--;
@@ -242,7 +242,7 @@ public class IntVarImpl extends IntVar {
         if (value <= min) {
             return true;
         }
-        // Remove values.
+        
         int i = min - initMin;
         int size = sizeT.getValue();
         while (i < value - initMin) {
@@ -252,16 +252,16 @@ public class IntVarImpl extends IntVar {
             }
             i++;
         }
-        // Search new min.
+        
         while (size <= positions[i]) {
             i++;
         }
 
-        // Update the domain.
+        
         minT.setValue(i + initMin);
         sizeT.setValue(size);
 
-        // Awake propagators.
+        
         if (size == 1) {
             awakeAssign();
         }
@@ -283,7 +283,7 @@ public class IntVarImpl extends IntVar {
         if (value >= max) {
             return true;
         }
-        // Remove values.
+        
         int i = max - initMin;
         int size = sizeT.getValue();
         while (i > value - initMin) {
@@ -293,16 +293,16 @@ public class IntVarImpl extends IntVar {
             }
             i--;
         }
-        // Search new max.
+        
         while (size <= positions[i]) {
             i--;
         }
 
-        // Update the domain.
+        
         maxT.setValue(i + initMin);
         sizeT.setValue(size);
 
-        // Awake propagators.
+        
         if (size == 1) {
             awakeAssign();
         }

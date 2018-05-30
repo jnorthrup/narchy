@@ -8,7 +8,7 @@ public class BorderingTest {
 
     public static void main(String[] args) {
         SpaceGraph.window(new Bordering()
-                //.north(PushButton.awesome("times"))
+                
                 .south(PushButton.awesome("times"))
                 .east(PushButton.awesome("times"))
                 .west(PushButton.awesome("times"))

@@ -23,7 +23,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     public static final DepIndepVarIntroduction the = new DepIndepVarIntroduction();
 
-    private final static int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit; //NOT including similarity or inheritance because variables acorss these would be loopy
+    private final static int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit; 
 
     private final static int DepOrIndepBits = Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_PATTERN.bit;
 
@@ -32,9 +32,9 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         if (t.op().var) return 0;
         return t.hasAny(
                 Op.VAR_INDEP.bit
-                //DepOrIndepBits
-                //| Op.NEG.bit //??
-                //| Op.VariableBits //dont re-introduce over variables
+                
+                
+                
         ) ? 0 : 1;
     };
 
@@ -55,7 +55,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     @Override
     protected Term introduce(Term input, Term selected, byte order) {
 
-        if (selected==Imdex || selected==imInt || selected == imExt) //?
+        if (selected==Imdex || selected==imInt || selected == imExt) 
             return null;
 
         Op inOp = input.op();
@@ -64,35 +64,35 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         input.pathsTo(selected, (path, t) ->  {
             if (path.size() >= minPathLength)
                 paths.add(path.toImmutable());
-            return true; //TODO may be able to terminate early if we know this is the last one
+            return true; 
         });
         int pSize = paths.size();
-        //if (pSize == 0)
+        
         if (pSize <= 1)
             return null;
 
-        //byte[][] paths = pp.toArray(new byte[pSize][]);
-
-//        //detect an invalid top-level indep var substitution
-//        if (inOp.statement) {
-//            Iterator<byte[]> pp = paths.iterator();
-//            while (pp.hasNext()) {
-//                byte[] p = pp.next();
-//                if (p.length < 2)
-//                    pp.remove();;
-//                for (byte[] r : paths)
-//                    if (r.length < 2)
-//                        return null; //substitution would replace something at the top level of a statement}
-//            }
-//        }
+        
 
 
-        //use the innermost common parent to decide the type of variable.
-        //in case there is no other common parent besides input itself, use that.
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
         Term commonParent = input.commonParent(paths);
         Op commonParentOp = commonParent.op();
 
-        //decide what kind of variable can be introduced according to the input operator
+        
         boolean depOrIndep;
         switch (commonParentOp) {
             case CONJ:
@@ -102,15 +102,15 @@ public class DepIndepVarIntroduction extends VarIntroduction {
                 depOrIndep = false;
                 break;
             default:
-                return null; //????
-                //throw new UnsupportedOperationException();
+                return null; 
+                
         }
 
 
         ObjectByteHashMap<Term> m = new ObjectByteHashMap<>(0);
         for (int path = 0; path < pSize; path++) {
             ByteList p = paths.get(path);
-            Term t = null; //root
+            Term t = null; 
             int pathLength = p.size();
             for (int i = -1; i < pathLength-1 /* dont include the selected term itself */; i++) {
                 t = (i == -1) ? input : t.sub(p.get(i));
@@ -127,12 +127,12 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
 
         if (!depOrIndep) {
-            //at least one impl/equiv must have both sides covered
+            
             return (m.anySatisfy(b -> b == 0b11)) ?
                     $.v(VAR_INDEP, order) /*varIndep(order)*/ : null;
 
         } else {
-            //at least one conjunction must contain >=2 path instances
+            
             return m.anySatisfy(b -> b >= 2) ?
                     $.v(VAR_DEP, order)  /* $.varDep(order) */ : null;
         }
@@ -145,21 +145,21 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     private static boolean validIndepVarSuperterm(Op o) {
         return o.statement;
-        //return o == IMPL || o == EQUI;
+        
     }
 
 
 }
 
-//        protected boolean introduce(Term x) {
-//            return true;
-////            return x instanceof Compound &&
-////                   introducer.rng.nextFloat() <=
-////                            1f / (1 + x.size())
-////                           //1f / Math.sqrt(x.volume())
-////                           //1f / x.volume()
-////                           //0.5f;
-////                           //(1f / (1f + x.size()))
-////            ;
-//        }
+
+
+
+
+
+
+
+
+
+
+
 

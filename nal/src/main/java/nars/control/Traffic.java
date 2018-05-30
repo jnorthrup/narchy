@@ -27,7 +27,7 @@ public class Traffic extends AtomicFloat {
     }
 
     private void commit(float cur) {
-        //noinspection NonAtomicOperationOnVolatileField
+        
         this.total += (this.last = cur);
     }
 

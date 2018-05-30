@@ -46,34 +46,34 @@ public class Renderer {
             try {
                 Class.forName("jake2.render.JoglDummyRenderer");
             } catch (Throwable t) {
-                // ignore the new jogl driver if runtime not in classpath
+                
                 System.err.println("Catched exception: "+t.getMessage());
-                // t.printStackTrace();
+                
             }
             try {
 
                 Class.forName("com.jogamp.opengl.GL2");
                 Class.forName("jake2.render.JoglGL2Renderer");
             } catch (Throwable t) {
-                // ignore the new jogl driver if runtime not in classpath
+                
                 System.err.println("Catched exception: "+t.getMessage());
-                // t.printStackTrace();
+                
             }
             try {
                 Class.forName("com.jogamp.opengl.GL2ES2");
                 Class.forName("jake2.render.JoglES2Renderer");
             } catch (Throwable t) {
-                // ignore the new jogl driver if runtime not in classpath
+                
                 System.err.println("Catched exception: "+t.getMessage());
-                // t.printStackTrace();
+                
             }
             try {
                 Class.forName("com.jogamp.opengl.GL2ES1");
                 Class.forName("jake2.render.JoglES1Renderer");
             } catch (Throwable t) {
-                // ignore the new jogl driver if runtime not in classpath
+                
                 System.err.println("Catched exception: "+t.getMessage());
-                // t.printStackTrace();
+                
             }
         } catch (Throwable e) {
             e.printStackTrace();
@@ -106,7 +106,7 @@ public class Renderer {
      * @return refexport_t (Renderer singleton)
      */
     public static refexport_t getDriver(String driverName, boolean fast) {
-        // find a driver
+        
         Ref driver = null;
         int count = drivers.size();
         for (Ref driver1 : drivers) {
@@ -115,7 +115,7 @@ public class Renderer {
                 return driver.GetRefAPI((fast) ? fastRenderer : basicRenderer);
             }
         }
-        // null if driver not found
+        
         return null;
     }
 

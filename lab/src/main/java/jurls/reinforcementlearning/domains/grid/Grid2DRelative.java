@@ -60,8 +60,8 @@ public class Grid2DRelative implements World {
                     py++;
                 }
             }
-            //g2.setPaint(Color.RED);
-            //g2.fillRect(focusPositionX-1, focusPositionY-1, 2, 2);
+            
+            
 
             g2.setPaint(new Color(0, 0, 1.0f, 0.85f));
             g2.fillRect((int)Math.round(positionX), (int)Math.round(positionY), 1, 1);
@@ -95,7 +95,7 @@ public class Grid2DRelative implements World {
 
         if (Simulation.DISPLAY) {
             image = new Image2DPanel();
-            //AgentPanel.window(image, true);
+            
         }
         
         this.totalTime = totalTime;
@@ -142,7 +142,7 @@ public class Grid2DRelative implements World {
         focusPositionX = speed * ((double)nextFocusPositionX) + (1.0 - speed) * focusPositionX;
         focusPositionY = speed * ((double)nextFocusPositionY) + (1.0 - speed) * focusPositionY;
 
-        //# At random intervals, jump to a random position in the world
+        
         if (Math.random() < JUMP_FRACTION) {
             randomFocus();
         }
@@ -151,7 +151,7 @@ public class Grid2DRelative implements World {
          # Assign basic_feature_input elements as binary. 
          # Represent the presence or absence of the current position in the bin.
          */
-        //blur the action
+        
         /*if (action2 == null) action2 = new double[action.length];
          for (int i = 0; i < action2.length; i++) {
          action2[i] = action[i];
@@ -159,7 +159,7 @@ public class Grid2DRelative implements World {
          if (i < action2.length-1) action2[i] += 0.5 * action[i+1];
          } */
         /*if (action[0] > 0.5) {
-         //nothing
+         
          }*/
         if ((action[0] > 0.5) && !(action[1] > 0.5)) {
             positionX-=POSITION_VELOCITY * action[0];
@@ -200,7 +200,7 @@ public class Grid2DRelative implements World {
         int iy = (int)Math.round(positionY);
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                final double exp = 1.0; //sharpen
+                final double exp = 1.0; 
 
                 double fdx = x - focusPositionX;
                 double fdy = y - focusPositionY;
@@ -233,9 +233,9 @@ public class Grid2DRelative implements World {
     }
 
     public static void main(String[] args) throws Exception {
-        //Class<? extends Agent> a = BeccaAgent.class;
+        
         Class<? extends Agent> a = RandomAgent.class;
-        //Class<? extends Agent> a = QLAgent.class;
+        
 
         new Simulation(a, new Grid2DRelative(10, 10, 11990000, 0.02, 0.01));
 

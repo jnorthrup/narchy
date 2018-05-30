@@ -47,11 +47,11 @@ public class S {
 	 * Searches for and initializes all known sound drivers.
 	 */
 	static {	    
-			// dummy driver (no sound)
+			
 			try {	    
 			    Class.forName("jake2.sound.DummyDriver");
-			    // initialize impl with the default value
-			    // this is  necessary for dedicated mode
+			    
+			    
 			    useDriver("dummy");
 			} catch (Throwable e) {
 			    Com.DPrintf("could not init dummy sound driver class.");
@@ -61,23 +61,23 @@ public class S {
 				Class.forName("org.lwjgl.openal.AL");
 				Class.forName("jake2.sound.lwjgl.LWJGLSoundImpl");
 			} catch (Throwable e) {
-				// ignore the lwjgl driver if runtime not in classpath
+				
 			    Com.DPrintf("could not init lwjgl sound driver class.");
 			}
 		
                         try {
                                 Class.forName("jake2.sound.jsound.JSoundImpl");
                         } catch (Throwable e) {
-                                // ignore the jsound driver if runtime not in classpath
+                                
                             Com.DPrintf("could not init jsound sound driver class.");
                         }
 
-			// prefered driver
+			
 			try {
 				Class.forName("com.jogamp.openal.AL");
 				Class.forName("jake2.sound.joal.JOALSoundImpl");
 			} catch (Throwable e) {
-				// ignore the joal driver if runtime not in classpath
+				
 			    Com.DPrintf("could not init joal sound driver class.");
 			}
 		
@@ -108,7 +108,7 @@ public class S {
 				return;
 			}
 		}
-		// if driver not found use dummy
+		
 		impl = (Sound)drivers.lastElement();
 	}
 	
@@ -126,7 +126,7 @@ public class S {
 			return;			
 		}
 
-		// set the last registered driver as default
+		
 		String defaultDriver = "dummy";
 		if (drivers.size() > 1){
 			defaultDriver = ((Sound)drivers.lastElement()).getName();
@@ -136,10 +136,10 @@ public class S {
 		useDriver(s_impl.string);
 
 		if (impl.Init()) {
-			// driver ok
+			
 			Cvar.Set("s_impl", impl.getName());
 		} else {
-			// fallback
+			
 			useDriver("dummy");
 		}
 		

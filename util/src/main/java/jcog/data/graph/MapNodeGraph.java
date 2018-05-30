@@ -70,12 +70,12 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     public MutableNode<N, E> addNode(N key) {
 
-//        Node<N, E> r = nodes.get(key);
-//        if (r == null) {
-//            r = newNode(key);
-//            nodes.put(key, r);
-//            onAdd(r);
-//        }
+
+
+
+
+
+
 
         final boolean[] created = {false};
         Node<N, E> r = nodes.computeIfAbsent(key, (x) -> {
@@ -175,26 +175,26 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return nodes.containsKey(x);
     }
 
-//    /**
-//     //     * TODO return zero-copy Iterable
-//     //     */
-//    public List<Node<N,E>> nodesWithIns(int x) {
-//        return nodesWithIns(x, true);
-//    }
-//
-//    /**
-//     * TODO return zero-copy Iterable
-//     */
-//    public List<Node<N,E>> nodesWithIns(int x, boolean includeSelfLoops) {
-//
-//        List<Node<N,E>> result = new ArrayList<>();
-//        for (Node<N, E> n : nodes()) {
-//            if (n.ins(includeSelfLoops) == x) {
-//                result.add(n);
-//            }
-//        }
-//
-//        return result;
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

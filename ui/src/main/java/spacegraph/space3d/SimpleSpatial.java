@@ -24,15 +24,15 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     public Body3D body;
 
     @Nullable
-    private final List<TypedConstraint> constraints = null; //new FasterList();
+    private final List<TypedConstraint> constraints = null; 
 
     /** physics motion state */
-    //public final Motion motion = new Motion();
-    //private final String label;
+    
+    
     public CollisionShape shape;
 
-//    /** prevents physics movement */
-//    public boolean motionLock;
+
+
 
 
     public final float[] shapeColor;
@@ -46,20 +46,20 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         this.shape = newShape();
         scale(1,1,1);
 
-        //String label = label(x);
+        
 
-        //HACK
-        //int MAX_LABEL_LEN = 16;
-        //this.label = label.length() >= MAX_LABEL_LEN ? (label.substring(0, MAX_LABEL_LEN) + "..") : label;
+        
+        
+        
 
     }
 
     @Override
     public void delete(Dynamics3D dyn) {
-//        if (shape!=null) {
-//            shape.setUserPointer(null);
-//            shape = null;
-//        }
+
+
+
+
 
         super.delete(dyn);
 
@@ -141,37 +141,37 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
     public SimpleSpatial move(float x, float y, float z) {
-//        if (motionLock)
-//            return this;
+
+
 
         transform.set(x, y, z);
         reactivate();
         return this;
     }
 
-//    /** interpolates rotation to the specified axis vector and rotation angle around it */
-//    public void rotate(float nx, float ny, float nz, float angle, float speed) {
-//        if (motionLock)
-//            return;
-//
-//        Quat4f tmp = new Quat4f();
-//
-//
-//        Quat4f target = new Quat4f();
-//        target.setAngle(nx,ny,nz,angle);
-//
-//        rotate(target, speed, tmp);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public void rotate(Quaternion target, float speed) {
-//        if (motionLock) return;
+
         rotate(target, speed, new Quaternion());
     }
 
     public void rotate(Quaternion target, float speed, Quaternion tmp) {
-//        if (motionLock)
-//            return;
+
+
 
         Quaternion current = transform.getRotation(tmp);
         current.setSlerp(current, target, speed);
@@ -214,57 +214,57 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     public void scale(float sx, float sy, float sz) {
 
 
-        //if (shape instanceof ConvexInternalShape) {
-//            ((ConvexInternalShape)shape).
-//                    localScaling.set(sx,sy,sz);
-                    //implicitShapeDimensions.set(sx, sy, sz);
+        
+
+
+                    
 
         if (shape instanceof SimpleBoxShape) {
             ((SimpleBoxShape)shape).setSize(sx, sy, sz);
         } else if (shape instanceof SphereShape) {
             shape.setLocalScaling(Math.abs(sx), Math.abs(sy), Math.abs(sz));
-            //((SphereShape)shape).setRadius(Util.max(Math.abs(sx), Math.abs(sy), Math.abs(sz)));
+            
         } else {
             throw new UnsupportedOperationException();
         }
 
-//            ((ConvexInternalShape)shape).
-//                    setLocalScaling(v(sx,sy,sz));
-//
 
-//        } else {
-//            throw new UnsupportedOperationException();
-//        }
 
-//            ((SimpleBoxShape)shape).size(sx, sy, sz);
-//        else
-//        ((SphereShape)shape).implicitShapeDimensions
-//        shape.setLocalScaling(v(sx,sy,sz));
+
+
+
+
+
+
+
+
+
+
 
 
 
         reactivate();
     }
 
-    //TODO make abstract
+    
     protected CollisionShape newShape() {
         return new SimpleBoxShape();
-        //return new BoxShape(v3.v(1, 1, 1));
+        
     }
 
     public Body3D newBody(boolean collidesWithOthersLikeThis) {
         Body3D b = Dynamics3D.newBody(
-                mass(), //mass
-                shape, transform,//motion,
-                +1, //group
-                collidesWithOthersLikeThis ? -1 : -1 & ~(+1) //exclude collisions with self
+                mass(), 
+                shape, transform,
+                +1, 
+                collidesWithOthersLikeThis ? -1 : -1 & ~(+1) 
         );
 
-        //b.setLinearFactor(1,1,0); //restricts movement to a 2D plane
+        
 
 
-        //b.setDamping(0.95f, 0.95f);
-        //b.setFriction(0.9f);
+        
+        
 
 
         return b;
@@ -281,44 +281,44 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         gl.glColor4fv(shapeColor, 0);
     }
 
-//    protected void renderLabel(GL2 gl, float scale) {
-//        gl.glColor4f(1f, 1f, 1f, 1f);
-//        gl.glLineWidth(1f);
-//        Draw.text(gl, marquee(), scale, 0, 0, 0.5f + 0.1f);
-//    }
-//
-//    public String marquee() {
-//        //TODO add animated scrolling marquee substring window
-//        return label;
-//    }
-
-//    @Override
-//    public void start(short order) {
-//        super.start(order);
-//        reactivate();
-//    }
 
 
 
-//    public void motionLock(boolean b) {
-//        motionLock = b;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     public float x() {  return transform().x;        }
     public float y() {  return transform().y;        }
     public float z() {  return transform().z;        }
 
-//    protected void updateContinue() {
-//        //if (body.broadphase()==null)
-//        //reactivate();
-//
-//    }
+
+
+
+
+
 
     @Override
     public void update(Dynamics3D world) {
         if (body == null) {
             this.body = create(world);
         } else {
-            reactivate(); //necessary?
+            reactivate(); 
         }
     }
 
@@ -330,12 +330,12 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         return b;
     }
 
-//
-//    @Override
-//    public boolean stop() {
-//        if (super.stop()) {
-//        }
-//    }
+
+
+
+
+
+
 
     @Override
     public List<TypedConstraint> constraints() {

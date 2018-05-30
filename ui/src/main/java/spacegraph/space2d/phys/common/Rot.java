@@ -32,7 +32,7 @@ import spacegraph.util.math.Tuple2f;
  */
 public class Rot  {
 
-    public float s = 0, c = 1; // sin and cos
+    public float s = 0, c = 1; 
 
     public Rot() {
     }
@@ -83,7 +83,7 @@ public class Rot  {
         yAxis.set(-s, c);
     }
 
-    // @Override // annotation omitted for GWT-compatibility
+    
     public Rot clone() {
         Rot copy = new Rot();
         copy.s = s;
@@ -100,10 +100,10 @@ public class Rot  {
     public static final void mulUnsafe(Rot q, Rot r, Rot out) {
         assert (r != out);
         assert (q != out);
-        // [qc -qs] * [rc -rs] = [qc*rc-qs*rs -qc*rs-qs*rc]
-        // [qs qc] [rs rc] [qs*rc+qc*rs -qs*rs+qc*rc]
-        // s = qs * rc + qc * rs
-        // c = qc * rc - qs * rs
+        
+        
+        
+        
         out.s = q.s * r.c + q.c * r.s;
         out.c = q.c * r.c - q.s * r.s;
     }
@@ -115,10 +115,10 @@ public class Rot  {
     }
 
     public static final void mulTransUnsafe(Rot q, Rot r, Rot out) {
-        // [ qc qs] * [rc -rs] = [qc*rc+qs*rs -qc*rs+qs*rc]
-        // [-qs qc] [rs rc] [-qs*rc+qc*rs qs*rs+qc*rc]
-        // s = qc * rs - qs * rc
-        // c = qc * rc + qs * rs
+        
+        
+        
+        
         out.s = q.c * r.s - q.s * r.c;
         out.c = q.c * r.c + q.s * r.s;
     }

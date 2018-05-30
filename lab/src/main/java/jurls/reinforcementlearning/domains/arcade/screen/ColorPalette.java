@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.screen;
 
@@ -37,7 +37,7 @@ public abstract class ColorPalette {
      */
     public ColorPalette() {
         map = new Color[MAX_ENTRIES];
-        // 0 is always black
+        
         set(Color.BLACK, 0);
     }
 

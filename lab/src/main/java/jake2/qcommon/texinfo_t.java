@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 02.01.2004 by RST.
-// $Id: texinfo_t.java,v 1.2 2004-07-08 15:58:46 hzi Exp $
+
+
 
 package jake2.qcommon;
 
@@ -30,7 +30,7 @@ import java.nio.ByteOrder;
 
 public class texinfo_t {
 
-	// works fine.
+	
 	public texinfo_t(byte[] cmod_base, int o, int len) {
 		this(ByteBuffer.wrap(cmod_base, o, len).order(ByteOrder.LITTLE_ENDIAN));
 	}
@@ -52,14 +52,14 @@ public class texinfo_t {
 
 	public static final int SIZE = 32 + 4 + 4 + 32 + 4;
 
-	//float			vecs[2][4];		// [s/t][xyz offset]
+	
 	public final float[][] vecs = {
 		 { 0, 0, 0, 0 },
 		 { 0, 0, 0, 0 }
 	};
-	public final int flags; // miptex flags + overrides
-	public final int value; // light emission, etc
-	//char			texture[32];	// texture name (textures/*.wal)
+	public final int flags; 
+	public final int value; 
+	
 	public String texture="";
-	public final int nexttexinfo; // for animations, -1 = end of chain
+	public final int nexttexinfo; 
 }

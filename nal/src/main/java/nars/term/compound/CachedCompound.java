@@ -84,7 +84,7 @@ abstract public class CachedCompound implements Compound, The {
             return equals(x) ? 0 : DTERNAL;
         }
 
-        //TODO other assumptions
+        
     }
 
     /** caches a reference to the root for use in terms that are inequal to their root */
@@ -96,13 +96,13 @@ abstract public class CachedCompound implements Compound, The {
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
             this.dt = dt;
-//            try {
-//                if (!root().equals(concept())) {
-//                    System.err.println(this + "\troot()=" + root() + " concept()=" + concept());
-//                }
-//            } catch (Throwable t) {
-//                System.err.println(this + "\t root concept err: " + t.getMessage());
-//            }
+
+
+
+
+
+
+
         }
 
         @Override
@@ -110,16 +110,16 @@ abstract public class CachedCompound implements Compound, The {
             return dt;
         }
 
-        //        @Override
-//        protected void equivalent(CachedUnrootedCompound them) {
-//
-//            if (them.rooted != null && this.rooted != this) this.rooted = them.rooted;
-//            if (this.rooted != null && them.rooted != them) them.rooted = this.rooted;
-//
-//            if (them.concepted != null && this.concepted != this) this.concepted = them.concepted;
-//            if (this.concepted != null && them.concepted != them) them.concepted = this.concepted;
-//
-//        }
+        
+
+
+
+
+
+
+
+
+
 
         @Override
         public Term root() {
@@ -135,18 +135,18 @@ abstract public class CachedCompound implements Compound, The {
 
     }
 
-//    private static class CachedCompoundDT extends TemporalCachedCompound {
-//
-//        CachedCompoundDT(Op op, int dt, Subterms subterms) {
-//            super(op, dt, subterms);
-//
-//        }
-//    }
+
+
+
+
+
+
+
 
 
     private CachedCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
 
-        assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
+        assert(op!=NEG); 
 
         this.op = op.id;
 
@@ -196,7 +196,7 @@ abstract public class CachedCompound implements Compound, The {
 
     @Override
     public final Op op() {
-        //return Op.values()[op];
+        
         return Op.ops[op];
     }
 
@@ -215,45 +215,45 @@ abstract public class CachedCompound implements Compound, The {
             return false;
         return Compound.equals(this, (Term) that);
 
-//        if (that instanceof CachedCompound) {
-////            CachedCompound them = (CachedCompound) that;
-////            Subterms mySubs = subterms;
-////            Subterms theirSubs = them.subterms;
-////            if (mySubs != theirSubs) {
-////                if (!mySubs.equals(theirSubs))
-////                    return false;
-////
-////                if (mySubs instanceof TermVector && theirSubs instanceof TermVector) {
-////                    //prefer the earlier instance for sharing
-////                    if ((((TermVector) mySubs).serial) < (((TermVector) theirSubs).serial)) {
-////                        them.subterms = mySubs;
-////                    } else {
-////                        this.subterms = theirSubs;
-////                    }
-////                }
-////
-////            }
-////
-////            //assert(dt()==DTERNAL && them.dt()==DTERNAL);
-////            if (op != them.op)
-////                return false;
-////
-////            equivalent((CachedCompound) that);
-////            return true;
-//
-//        } else {
-//
-//
-//            return Compound.equals(this, (Term) that);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
-//    /**
-//     * data sharing: call if another instance is known to be equivalent to share some clues
-//     */
-//    protected void equivalent(CachedUnrootedCompound them) {
-//
-//    }
+
+
+
+
+
+
 
 
 }

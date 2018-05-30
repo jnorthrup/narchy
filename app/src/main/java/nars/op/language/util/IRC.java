@@ -15,22 +15,22 @@ import java.io.IOException;
  * Generic IRC Bot interface via PircBotX
  */
 public class IRC extends ListenerAdapter {
-//
-//    static {
-//        //set the logging levels:
-//        $.logLevel(InputParser.class, Level.WARN);
-//        $.logLevel(ThreadedListenerManager.class, Level.WARN);
-//        $.logLevel(OutputRaw.class, Level.INFO);
-//    }
+
+
+
+
+
+
+
 
     public final PircBotX irc;
 
-//    @Override
-//    public void onGenericMessage(GenericMessageEvent event) {
-//        //When someone says ?helloworld respond with "Hello World"
-//        if (event.getMessage().startsWith("?helloworld"))
-//            event.respond("Hello world!");
-//    }
+
+
+
+
+
+
 
     public IRC(String nick, String server, String... channels) {
         this(new Configuration.Builder()
@@ -86,11 +86,11 @@ public class IRC extends ListenerAdapter {
         }
     }
 
-//    public static void main(String[] args) {
-//
-//        IRC bot = new IRC("experiment1", "irc.freenode.net", "#123xyz");
-//
-//    }
+
+
+
+
+
 
 
 }

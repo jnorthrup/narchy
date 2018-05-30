@@ -98,10 +98,10 @@ public class Object2D
 
       try
       {
-         // Compute relative object position
+         
          x -= this.x;
          y -= this.y;
-         // If the over state change, the the mouse enter or exit
+         
          if(this.over != over)
          {
             this.over = over;
@@ -115,24 +115,24 @@ public class Object2D
             }
             return;
          }
-         // If the mouse is not on the object, do nothing
+         
          if(over == false)
          {
             return;
          }
-         // Drag mode test
+         
          if(drag)
          {
             this.fireMouseDrag(x, y, buttonLeft, buttonRight);
             return;
          }
-         // Click mode test
+         
          if(buttonLeft || buttonRight)
          {
             this.fireMouseClick(x, y, buttonLeft, buttonRight);
             return;
          }
-         // Move mode
+         
          this.fireMouseMove(x, y);
       }
       finally

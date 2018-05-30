@@ -26,7 +26,7 @@ package spacegraph.space2d.phys.dynamics.contacts;
 import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 
-// updated to rev 100
+
 public interface ContactCreator {
 
     Contact contactCreateFcn(IWorldPool argPool, Fixture fixtureA, Fixture fixtureB);

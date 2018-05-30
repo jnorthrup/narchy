@@ -50,7 +50,7 @@ public class ClauseInfo {
     public final String libName;
 
 
-    //usata da Find
+    
 
     /**
      * building a valid clause with a time stamp = original time stamp + NumVar in clause
@@ -58,7 +58,7 @@ public class ClauseInfo {
     public ClauseInfo(Struct clause_, String lib) {
         clause = clause_;
         libName = lib;
-        head = (Struct) clause_.sub(0); //extractHead
+        head = (Struct) clause_.sub(0); 
         body = extractBody(clause_.sub(1));
     }
 
@@ -121,17 +121,17 @@ public class ClauseInfo {
     }
 
 
-    //    /**
-//     * Perform copy for assertion operation
-//     */
-//    void performCopy() {
-//        AbstractMap<Var,Var> v = new LinkedHashMap<>();
-//        clause = (Struct) clause.copy(v, Var.ORIGINAL);
-//        v = new IdentityHashMap<>();
-//        head = (Struct)head.copy(v,Var.ORIGINAL);
-//        body = new SubGoalTree();
-//        bodyCopy(body,bodyCopy,v,Var.ORIGINAL);
-//    }
+    
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Perform copy for use in current engine's demostration
@@ -147,7 +147,7 @@ public class ClauseInfo {
         SubGoalTree bodyCopy = new SubGoalTree();
         bodyCopy(body, bodyCopy, v, idExecCtx);
         target.goalsToEval = new SubGoalStore( bodyCopy );
-        //return new ClauseInfo(headCopy, bodyCopy, this.clause, this.libName);
+        
     }
 
     private static void bodyCopy(SubGoalTree source, SubGoalTree destination, AbstractMap<Var, Var> map, int id) {
@@ -167,14 +167,14 @@ public class ClauseInfo {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         ClauseInfo ci = (ClauseInfo)obj;
-        return head.equals(ci.head) && body.equals(ci.body) && clause.equals(ci.clause); //lib?
+        return head.equals(ci.head) && body.equals(ci.body) && clause.equals(ci.clause); 
     }
 
     /**
      * Gets the string representation with default operator representation
      */
     public String toString() {
-        // default prio: xfx
+        
         String st = indentPredicates(clause.sub(1));
         return (clause.sub(0) + " :-\n\t" + st + ".\n");
     }

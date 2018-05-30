@@ -56,96 +56,96 @@ public class ConsoleTerminal extends Widget {
     }
 
 
-    //
-//    private static final ImmutableCharSet TYPED_KEYS_TO_IGNORE = CharSets.immutable.of('\n', '\t', '\r', '\b', '\u001b', '\u007f');
-//
-//    private boolean cursorIsVisible;
-//    private boolean enableInput;
-
-
-//    private final boolean blinkOn;
-
-    //    private TerminalPosition lastDrawnCursorPosition;
+    
 
 
 
 
 
-//    synchronized void onCreated() {
-//        this.enableInput = true;
-//    }
-//
-//    synchronized void onDestroyed() {
-//        this.enableInput = false;
-//    }
 
 
-    //    synchronized void paintComponent(Graphics componentGraphics) {
-//        int width = this.getWidth();
-//        int height = this.getHeight();
-////        this.scrollController.updateModel(term.getBufferLineCount() * this.getFontHeight(), height);
-//        boolean needToUpdateBackBuffer = this.needFullRedraw;
-//        int leftoverWidth;
-//        if (width != this.lastComponentWidth || height != this.lastComponentHeight) {
-//            int columns = width / this.getFontWidth();
-//            leftoverWidth = height / this.getFontHeight();
-//            TerminalSize terminalSize = term.getTerminalSize().withColumns(columns).withRows(leftoverWidth);
-//            term.setTerminalSize(terminalSize);
-//            needToUpdateBackBuffer = true;
-//        }
-//
-////        if (needToUpdateBackBuffer) {
-////            this.updateBackBuffer(this.scrollController.getScrollingOffset());
-////        }
-//
-//        this.ensureGraphicBufferHasRightSize();
-//        Rectangle clipBounds = componentGraphics.getClipBounds();
-//        if (clipBounds == null) {
-//            clipBounds = new Rectangle(0, 0, this.getWidth(), this.getHeight());
-//        }
-//
-//        componentGraphics.drawImage(this.backbuffer, clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, (ImageObserver) null);
-//        leftoverWidth = this.getWidth() % this.getFontWidth();
-//        componentGraphics.setColor(Color.BLACK);
-//        if (leftoverWidth > 0) {
-//            componentGraphics.fillRect(this.getWidth() - leftoverWidth, 0, leftoverWidth, this.getHeight());
-//        }
-//
-//        this.lastComponentWidth = width;
-//        this.lastComponentHeight = height;
-//        componentGraphics.dispose();
-//        this.notifyAll();
-//    }
 
-    //    public int cursorX() {
-//        return term.getCursorPosition().getColumn();
-//    }
-//
-//    public int cursorY() {
-//        return term.getCursorPosition().getRow();
-//    }
-//
-//    public int[] getCursorPos() {
-//        TerminalPosition p = term.getCursorPosition();
-//        int[] cursorPos = new int[2];
-//        cursorPos[0] = p.getColumn();
-//        cursorPos[1] = p.getRow();
-//        return cursorPos;
-//    }
+    
 
 
-//    @Override
-//    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-//        //bmp.pos(bounds);
-//        //bmp.paintIt(gl);
-//        Draw.bounds(gl, this, bmp::paintIt);
-//    }
-//
-//    @Override
-//    public void doLayout(int dtMS) {
-//        super.doLayout(dtMS);
-//        bmp.doLayout(dtMS);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -196,9 +196,9 @@ public class ConsoleTerminal extends Widget {
         } else if (e.isPrintableKey() && !e.isActionKey() && !e.isModifierKey()) {
             char c = e.getKeyChar();
             if (!TerminalTextUtils.isControlCharacter(c) && pressed /* release */) {
-                //eterm.gui.getActiveWindow().handleInput(
+                
                 term.addInput(
-                        //eterm.gui.handleInput(
+                        
                         new KeyStroke(c, e.isControlDown(), e.isAltDown(), e.isShiftDown())
                 );
 
@@ -207,7 +207,7 @@ public class ConsoleTerminal extends Widget {
             }
         } else if (pressed) {
             KeyType c = null;
-            //System.out.println(" keycode: " + e.getKeyCode());
+            
             switch (e.getKeyCode()) {
                 case KeyEvent.VK_BACK_SPACE:
                     c = KeyType.Backspace;
@@ -241,26 +241,26 @@ public class ConsoleTerminal extends Widget {
                     c = KeyType.ArrowDown;
                     break;
 
-                //TODO other control keys
+                
 
                 default:
-                    //System.err.println("character not handled: " + e);
+                    
                     return false;
             }
 
 
-            //eterm.gui.handleInput(
+            
 
-            //eterm.gui.getActiveWindow().handleInput(
+            
             term.addInput(
                     new KeyStroke(c, e.isControlDown(), e.isAltDown(), e.isShiftDown())
             );
-            //                    KeyEvent.isModifierKey(KeyEvent.VK_CONTROL),
-            //                    KeyEvent.isModifierKey(KeyEvent.VK_ALT),
-            //                    KeyEvent.isModifierKey(KeyEvent.VK_SHIFT)
-            //            ));
+            
+            
+            
+            
         } else {
-            //...
+            
         }
 
         return true;
@@ -350,10 +350,10 @@ public class ConsoleTerminal extends Widget {
                         redraw(bufferLine, column, row);
                     }
 
-    //                if (needUpdate.get()) {
-    //                    actuallyDirty = true; //TODO
-    //                    return; //update in next frame
-    //                }
+    
+    
+    
+    
 
                 });
             } else {
@@ -365,8 +365,8 @@ public class ConsoleTerminal extends Widget {
                 if (!dirty.isEmpty()) {
                     for (TerminalPosition e: dirty) {
                         redraw(e.getColumn(), e.getRow());
-    //                    if (needUpdate.get())
-    //                        return false; //update in next frame
+    
+    
                     }
                 }
 
@@ -394,172 +394,172 @@ public class ConsoleTerminal extends Widget {
     }
 
 
-//        public synchronized void enterPrivateMode() {
-//            term.enterPrivateMode();
-//            this.clearBackBuffer();
-//            this.flush();
-//        }
-//
-//        public synchronized void exitPrivateMode() {
-//            term.exitPrivateMode();
-//            this.clearBackBuffer();
-//            this.flush();
-//        }
-//
-//        public synchronized void clearScreen() {
-//            term.clearScreen();
-//            this.clearBackBuffer();
-//        }
 
-//    private void clearBackBuffer() {
-//        if (this.backbuffer != null) {
-//            Graphics2D graphics = this.backbuffer.createGraphics();
-//            Color backgroundColor = Color.BLACK; //this.colorConfiguration.toAWTColor(ANSI.DEFAULT, false, false);
-//            graphics.setColor(backgroundColor);
-//            graphics.fillRect(0, 0, this.getWidth(), this.getHeight());
-//            graphics.dispose();
-//        }
-//
-//    }
 
-//    public synchronized void setCursorPosition(int x, int y) {
-//        this.setCursorPosition(new TerminalPosition(x, y));
-//    }
 
-//        public synchronized void setCursorPosition(TerminalPosition position) {
-//            if (position.getColumn() < 0) {
-//                position = position.withColumn(0);
-//            }
-//
-//            if (position.getRow() < 0) {
-//                position = position.withRow(0);
-//            }
-//
-//            term.setCursorPosition(position);
-//        }
-//
-//        public TerminalPosition getCursorPosition() {
-//            return term.getCursorPosition();
-//        }
-//
-//    public void setCursorVisible(boolean visible) {
-//        this.cursorIsVisible = visible;
-//    }
 
-//        public synchronized void putCharacter(char c) {
-//            term.putCharacter(c);
-//        }
-//
-//        public TextGraphics newTextGraphics() {
-//            return term.newTextGraphics();
-//        }
 
-//        public void enableSGR(SGR sgr) {
-//            term.enableSGR(sgr);
-//        }
-//
-//        public void disableSGR(SGR sgr) {
-//            term.disableSGR(sgr);
-//        }
-//
-//        public void resetColorAndSGR() {
-//            term.resetColorAndSGR();
-//        }
-//
-//        public void setForegroundColor(TextColor color) {
-//            term.setForegroundColor(color);
-//        }
-//
-//        public void setBackgroundColor(TextColor color) {
-//            term.setBackgroundColor(color);
-//        }
-//
-//        public synchronized TerminalSize getTerminalSize() {
-//            return term.getTerminalSize();
-//        }
 
-//    public byte[] enquireTerminal(int timeout, TimeUnit timeoutUnit) {
-//        return this.enquiryString.getBytes();
-//    }
 
-    //        public void bell() {
-//            if (!this.bellOn) {
-//                this.bellOn = true;
-//                this.needFullRedraw = true;
-//                this.updateBackBuffer(this.scrollController.getScrollingOffset());
-//                this.repaint();
-//                (new Thread("BellSilencer") {
-//                    public void run() {
-//                        try {
-//                            Thread.sleep(100L);
-//                        } catch (InterruptedException var2) {
-//                            ;
-//                        }
-//
-//                        bellOn = false;
-//                        needFullRedraw = true;
-//                        updateBackBuffer(scrollController.getScrollingOffset());
-//                        repaint();
-//                    }
-//                }).start();
-//                Toolkit.getDefaultToolkit().beep();
-//            }
-//        }
-//
-//    public synchronized void flush() {
-//        this.updateBackBuffer(this.scrollController.getScrollingOffset());
-//        this.repaint();
-//    }
 
-//    public void close() {
-//    }
 
-//        public void addResizeListener(TerminalResizeListener listener) {
-//            term.addResizeListener(listener);
-//        }
-//
-//        public void removeResizeListener(TerminalResizeListener listener) {
-//            term.removeResizeListener(listener);
-//        }
-//
-//        private void pasteClipboardContent() {
-//            try {
-//                Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-//                if (systemClipboard != null) {
-//                    this.injectStringAsKeyStrokes((String) systemClipboard.getData(DataFlavor.stringFlavor));
-//                }
-//            } catch (Exception var2) {
-//                ;
-//            }
-//
-//        }
-//
-//        private void pasteSelectionContent() {
-//            try {
-//                Clipboard systemSelection = Toolkit.getDefaultToolkit().getSystemSelection();
-//                if (systemSelection != null) {
-//                    this.injectStringAsKeyStrokes((String) systemSelection.getData(DataFlavor.stringFlavor));
-//                }
-//            } catch (Exception var2) {
-//                ;
-//            }
-//
-//        }
 
-//        private void injectStringAsKeyStrokes(String string) {
-//            StringReader stringReader = new StringReader(string);
-//            InputDecoder inputDecoder = new InputDecoder(stringReader);
-//            inputDecoder.addProfile(new DefaultKeyDecodingProfile());
-//
-//            try {
-//                for (KeyStroke keyStroke = inputDecoder.getNextCharacter(false); keyStroke != null && keyStroke.getKeyType() != KeyType.EOF; keyStroke = inputDecoder.getNextCharacter(false)) {
-//                    this.keyQueue.add(keyStroke);
-//                }
-//            } catch (IOException var5) {
-//                ;
-//            }
-//
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

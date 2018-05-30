@@ -69,9 +69,9 @@ public class TermCept extends Fuct  {
             .truth(f, c);
     }
 
-    //TODO scalar direction Polarity for all other commutative/non-commutative statements, ex: ==> <=> <==
-    //TODO scalar temporal directionality for all temporal compounds, ex: =/> =|> =\>
-    //TODO negation polarity which weighs the term with its negated opposite
+    
+    
+    
 
 
     public TermCept set(TermCore core, int address) {

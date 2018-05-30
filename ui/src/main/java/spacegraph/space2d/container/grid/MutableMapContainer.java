@@ -61,19 +61,19 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
     public void forEachValue(Consumer<? super V> each) {
         cellMap.forEachValue(each);
     }
-//    public void forEachVisiblesValue(Consumer<? super V> each) {
-//        cache.forEachValue(e -> {
-//            V s = e.value;
-//            if (s != null)
-//                each.accept(s);
-//        });
-//    }
+
+
+
+
+
+
+
 
 
 
     @Override
     public int childrenCount() {
-        return Math.max(1, cellMap.size()); //may not be accurate HACK force non-empty
+        return Math.max(1, cellMap.size()); 
     }
 
     @Override
@@ -100,10 +100,10 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
 
     }
 
-//    @Nullable
-//    public CellMap.CacheCell<K, V> update(K key, CellMap.CacheCell<K, V> entry, boolean keep) {
-//        return cellMap.update(key, entry, keep);
-//    }
+
+
+
+
 
 
     public boolean remove(K key) {
@@ -184,16 +184,16 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer {
                     delete = true;
                 } else {
                     if (Objects.equals(value, nextValue)) {
-                        //equal value, dont re-create surface
+                        
                     } else {
-                        create = true; //replace
+                        create = true; 
                     }
                 }
                 if (delete || create) {
-                    //TODO different eviction policies
+                    
                     existingSurface.stop();
                 }
-            } else { //if (existingSurface == null) {
+            } else { 
                 if (nextValue != null)
                     create = true;
                 else

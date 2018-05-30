@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * https://github.com/RobertFischer/CleanSweep
+ * https:
  * This class is responsible for monitoring and performing clean-up on garbage collected objects.
  */
 public class Sweeper {
@@ -80,15 +80,15 @@ public class Sweeper {
                 try {
                     for (ref = (Runnable) queue.remove(); ref != null; ref = (RunnableReference) queue.poll()) {
 
-                        //executor.execute(new RemoveFromBag(ref));
+                        
                         handlers.remove(ref);
                         executor.execute(ref);
                     }
 
-                    // Check to see if we should be done
+                    
                     if (isShutdown()) {
                     } else {
-                        // Queue ourselves up to run again
+                        
                         executor.execute(this);
                     }
                 } catch (InterruptedException e) {
@@ -137,7 +137,7 @@ public class Sweeper {
      */
     public void registerShutdownHook() {
         Thread t = new Thread(() -> {
-            // Shutdown and process the rest of the tasks
+            
             for (Runnable r : shutdown()) {
                 r.run();
             }
@@ -231,7 +231,7 @@ public class Sweeper {
         RunnableReference action = null;
         while ((action = (RunnableReference) queue.poll()) != null) {
             workFound = true;
-            //executor.execute(new RemoveFromBag(action));
+            
             handlers.remove(action);
             executor.execute(action);
             action = null;
@@ -310,7 +310,7 @@ public class Sweeper {
          * {@link #setTarget(Object)} is guaranteed to have been called with a non-{@code null}
          * value.
          */
-        //public abstract void run();
+        
 
     }
 

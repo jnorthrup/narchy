@@ -50,21 +50,21 @@ public class Rdp5 extends Rdp {
         this.channels = channels;
     }
 
-//	/**
-//	 * Process an RDP5 packet
-//	 * 
-//	 * @param s
-//	 *            Packet to be processed
-//	 * @param e
-//	 *            True if packet is encrypted
-//	 * @throws RdesktopException
-//	 * @throws OrderException
-//	 * @throws CryptoException
-//	 */
-//	public void rdp5_process(RdpPacket_Localised s, boolean e)
-//			throws RdesktopException, OrderException, CryptoException {
-//		rdp5_process(s, e, false);
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Process an RDP5 packet
@@ -78,7 +78,7 @@ public class Rdp5 extends Rdp {
      */
     public void rdp5_process(RdpPacket s, boolean encryption) throws RdesktopException, OrderException,
             CryptoException {
-        //logger.debug("Processing RDP 5 order");
+        
 
         int length, count;
         int type;
@@ -97,8 +97,8 @@ public class Rdp5 extends Rdp {
             s.copyToByteArray(packet, 0, s.position(), packet.length);
         }
 
-        // printf("RDP5 data:\n");
-        // hexdump(s->p, s->end - s->p);
+        
+        
         RdpPacket bf = new RdpPacket(packet.length);
         bf.copyFromByteArray(packet, 0, 0, packet.length);
         bf.positionAdd(packet.length);
@@ -111,7 +111,7 @@ public class Rdp5 extends Rdp {
             /* next_packet = */
             next = bf.position() + length;
 
-            //logger.info("RDP5: type = " + type);
+            
 
 
             switch (type) {
@@ -132,7 +132,7 @@ public class Rdp5 extends Rdp {
                 case 5:
                     process_null_system_pointer_pdu(bf);
                     break;
-                case 6: // default pointer
+                case 6: 
                     break;
                 case 9:
                     process_colour_pointer_pdu(bf);

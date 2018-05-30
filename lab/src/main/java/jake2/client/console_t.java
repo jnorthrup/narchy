@@ -33,19 +33,19 @@ import jake2.Defines;
 public final class console_t {
 	boolean initialized;
 	final byte[] text = new byte[Defines.CON_TEXTSIZE];
-	int current;	// line where next message will be printed
-	int x;			// offset in current line for next print
-	int display;	// bottom of console displays this line
+	int current;	
+	int x;			
+	int display;	
 
-	int ormask;		// high bit mask for colored characters
+	int ormask;		
 
-	int linewidth;	// characters across screen
-	int totallines;	// total lines in console scrollback
+	int linewidth;	
+	int totallines;	
 
 	float cursorspeed;
 
 	int vislines;
 
-	final float[] times = new float[Defines.NUM_CON_TIMES];	// cls.realtime time the line was generated
-										// for transparent notify lines	
+	final float[] times = new float[Defines.NUM_CON_TIMES];	
+										
 }

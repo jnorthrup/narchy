@@ -65,7 +65,7 @@ public class FSWatch extends Loop {
         WatchKey key;
 
         try {
-            //System.out.println("Waiting for key to be signalled...");
+            
             key = watchService.take();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
@@ -79,7 +79,7 @@ public class FSWatch extends Loop {
             WatchEvent.Kind<?> eventKind = genericEvent.kind();
 
             if (eventKind == OVERFLOW)
-                continue; // pending events for loop
+                continue; 
 
             onEvent.accept(
                 pair(this.path.resolve(
@@ -89,11 +89,11 @@ public class FSWatch extends Loop {
         }
 
         boolean validKey = key.reset();
-        //System.out.println("Key reset");
-        //System.out.println("");
+        
+        
 
         if (!validKey) {
-            //System.out.println("Invalid key");
+            
             return false;
         }
 

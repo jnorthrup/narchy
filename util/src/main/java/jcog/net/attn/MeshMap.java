@@ -85,10 +85,10 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
         try {
             MapKeyValue mkv = Util.fromBytes(m.data(), MapKeyValue.class);
             if (Arrays.equals(map, mkv.map)) {
-                //this map
+                
                 K k = (K)mkv.key;
                 V v = (V)mkv.val;
-                //V existing = data.put(K,V);
+                
                 model.accept(k, v);
             }
         } catch (IOException e) {
@@ -104,7 +104,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
                 y.runFPS(mapFPS);
                 return y;
             } catch (IOException e) {
-                //logger.error("{}",e);
+                
                 e.printStackTrace();
                 return null;
             }

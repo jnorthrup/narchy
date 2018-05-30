@@ -32,7 +32,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         int ysize = yFree.length;  assert(ysize >= 2): Arrays.toString(yFree) + " must offer choice";
 
         yy = yFree;
-        //this.yFree = yFree;
+        
 
 
         this.xEllipsis = xEllipsis;
@@ -52,7 +52,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         Term[] yy = this.yy;
 
         int l = yy.length-1;
-        int shuffle = u.random.nextInt(yy.length); //randomize starting offset
+        int shuffle = u.random.nextInt(yy.length); 
 
         int start = u.now();
 

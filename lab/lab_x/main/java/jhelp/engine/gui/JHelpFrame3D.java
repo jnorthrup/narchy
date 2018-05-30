@@ -205,7 +205,7 @@ public class JHelpFrame3D
          this.setTitle(title);
       }
 
-      //MemorySweeper.launch();
+      
       this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
       this.defaultMouvment = true;
@@ -378,7 +378,7 @@ public class JHelpFrame3D
          final JFrame frame = new JFrame();
          frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
          frame.setLayout(new BorderLayout());
-         //frame.add(new LabelBufferedImage(screenShot), BorderLayout.CENTER);
+         
          frame.pack();
          frame.setVisible(true);
       }
@@ -393,7 +393,7 @@ public class JHelpFrame3D
       final JFrame frame = new JFrame();
       frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       frame.setLayout(new BorderLayout());
-      //frame.add(new LabelJHelpImage(screenShot), BorderLayout.CENTER);
+      
       frame.pack();
       frame.setVisible(true);
    }
@@ -669,19 +669,19 @@ public class JHelpFrame3D
       {
          this.sceneRenderer.setDetectPosition(this.mouseX, this.mouseY, false, false, false);
       }
-      // if(this.enableEvents)
-      // {
-      // Object2D over2D = this.sceneRenderer.getObject2DDetect();
-      // this.sceneRenderer.getGui2d().mouseState(this.mouseX, this.mouseY,
-      // false, false, false,
-      // over2D);
-      // Node over3D = null;
-      // if(over2D == null)
-      // {
-      // over3D = this.sceneRenderer.getNodeDetect();
-      // }
-      // this.sceneRenderer.getScene().mouseState(false, false, over3D);
-      // }
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
    }
 
    /**
@@ -713,19 +713,19 @@ public class JHelpFrame3D
       {
          this.sceneRenderer.setDetectPosition(this.mouseX, this.mouseY, false, false, false);
       }
-      // if(this.enableEvents)
-      // {
-      // Object2D over2D = this.sceneRenderer.getObject2DDetect();
-      // this.sceneRenderer.getGui2d().mouseState(this.mouseX, this.mouseY,
-      // false, false, false,
-      // over2D);
-      // Node over3D = null;
-      // if(over2D == null)
-      // {
-      // over3D = this.sceneRenderer.getNodeDetect();
-      // }
-      // this.sceneRenderer.getScene().mouseState(false, false, over3D);
-      // }
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
    }
 
    /**

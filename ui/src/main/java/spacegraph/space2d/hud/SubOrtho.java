@@ -10,17 +10,17 @@ public class SubOrtho extends Ortho {
 
     public SubOrtho(Surface content) {
         super(content);
-        //maximize();
+        
     }
 
     @Override
     public boolean autoresize() {
         return true;
     }
-    //    public void maximize() {
-//
-//        posWindow(0, 0, 1, 1);
-//    }
+    
+
+
+
 
 
     /** position and size relative to the containing window (1=width, 1=height)*/

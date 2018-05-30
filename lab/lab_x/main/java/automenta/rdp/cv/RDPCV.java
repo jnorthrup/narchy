@@ -81,14 +81,14 @@ public class RDPCV  {
 
     private Scene createScene() {
 
-        // construct the scene contents over a stacked background.
+        
         StackPane layout = new StackPane();
         layout.getChildren().setAll(
-                baseView//,
-                //b
+                baseView
+                
         );
 
-        //a.setOpacity(0.5f);
+        
 
         for (RDPVis v : canvas.vis) {
             Node n = v.getNode();
@@ -96,20 +96,20 @@ public class RDPCV  {
                 layout.getChildren().add(n);
         }
 
-        // wrap the scene contents in a pannable scroll pane.
-        //ScrollPane scroll = createScrollPane(layout);
+        
+        
 
 
-        // bind the preferred size of the scroll area to the size of the scene.
-        //scroll.prefWidthProperty().bind(scene.widthProperty());
-        //scroll.prefHeightProperty().bind(scene.widthProperty());
+        
+        
+        
 
-        // center the scroll contents.
-        //scroll.setHvalue(scroll.getHmin() + (scroll.getHmax() - scroll.getHmin()) / 2);
-        //scroll.setVvalue(scroll.getVmin() + (scroll.getVmax() - scroll.getVmin()) / 2);
+        
+        
+        
 
-        // show the scene.
-        Scene scene = new Scene(layout); //scroll);
+        
+        Scene scene = new Scene(layout); 
         return scene;
     }
 

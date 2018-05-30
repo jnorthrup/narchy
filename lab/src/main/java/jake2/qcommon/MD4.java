@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 02.02.2004 by RST.
+
 
 package jake2.qcommon;
 
@@ -28,13 +28,13 @@ import java.security.MessageDigest;
 
 
 public class MD4 extends MessageDigest implements Cloneable {
-	// MD4 specific object variables
-	//...........................................................................
+	
+	
 
 	/**
 	 * The size in bytes of the input block to the tranformation algorithm.
 	 */
-	private static final int BLOCK_LENGTH = 64; //    = 512 / 8;
+	private static final int BLOCK_LENGTH = 64; 
 
 	/**
 	 * 4 32-bit words (interim result)
@@ -56,8 +56,8 @@ public class MD4 extends MessageDigest implements Cloneable {
 	 */
 	private final int[] X = new int[16];
 
-	// Constructors
-	//...........................................................................
+	
+	
 
 	public MD4() {
 		super("MD4");
@@ -74,8 +74,8 @@ public class MD4 extends MessageDigest implements Cloneable {
 		count = md.count;
 	}
 
-	// Cloneable method implementation
-	//...........................................................................
+	
+	
 
 	/**
 	 * Returns a copy of this MD object.
@@ -85,8 +85,8 @@ public class MD4 extends MessageDigest implements Cloneable {
 		return new MD4(this);
 	}
 
-	// JCE methods
-	//...........................................................................
+	
+	
 
 	/**
 	 * Resets this object disregarding any temporary data present at the
@@ -94,8 +94,8 @@ public class MD4 extends MessageDigest implements Cloneable {
 	 */
 	@Override
     public void engineReset() {
-		// initial values of MD4 i.e. A, B, C, D
-		// as per rfc-1320; they are low-order byte first
+		
+		
 		context[0] = 0x67452301;
 		context[1] = 0xEFCDAB89;
 		context[2] = 0x98BADCFE;
@@ -110,9 +110,9 @@ public class MD4 extends MessageDigest implements Cloneable {
 	 */
 	@Override
     public void engineUpdate(byte b) {
-		// compute number of bytes still unhashed; ie. present in buffer
+		
 		int i = (int) (count % BLOCK_LENGTH);
-		count++; // update number of bytes
+		count++; 
 		buffer[i] = b;
 		if (i == BLOCK_LENGTH - 1)
 			transform(buffer, 0);
@@ -132,13 +132,13 @@ public class MD4 extends MessageDigest implements Cloneable {
 	 */
 	@Override
     public void engineUpdate(byte[] input, int offset, int len) {
-		// make sure we don't exceed input's allocated size/length
+		
 		if (offset < 0 || len < 0 || (long) offset + len > input.length)
 			throw new ArrayIndexOutOfBoundsException();
 
-		// compute number of bytes still unhashed; ie. present in buffer
+		
 		int bufferNdx = (int) (count % BLOCK_LENGTH);
-		count += len; // update number of bytes
+		count += len; 
 		int partLen = BLOCK_LENGTH - bufferNdx;
 		int i = 0;
 		if (len >= partLen) {
@@ -150,7 +150,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 				transform(input, offset + i);
 			bufferNdx = 0;
 		}
-		// buffer remaining input
+		
 		if (i < len)
 			System.arraycopy(input, offset + i, buffer, bufferNdx, len - i);
 	}
@@ -164,35 +164,35 @@ public class MD4 extends MessageDigest implements Cloneable {
 	 */
 	@Override
     public byte[] engineDigest() {
-		// pad output to 56 mod 64; as RFC1320 puts it: congruent to 448 mod 512
+		
 		int bufferNdx = (int) (count % BLOCK_LENGTH);
 		int padLen = (bufferNdx < 56) ? (56 - bufferNdx) : (120 - bufferNdx);
 
-		// padding is alwas binary 1 followed by binary 0s
+		
 		byte[] tail = new byte[padLen + 8];
 		tail[0] = (byte) 0x80;
 
-		// append length before final transform:
-		// save number of bits, casting the long to an array of 8 bytes
-		// save low-order byte first.
+		
+		
+		
 		for (int i = 0; i < 8; i++)
 			tail[padLen + i] = (byte) ((count * 8) >>> (8 * i));
 
 		engineUpdate(tail, 0, tail.length);
 
 		byte[] result = new byte[16];
-		// cast this MD4's context (array of 4 ints) into an array of 16 bytes.
+		
 		for (int i = 0; i < 4; i++)
 			for (int j = 0; j < 4; j++)
 				result[i * 4 + j] = (byte) (context[i] >>> (8 * j));
 
-		// reset the engine
+		
 		engineReset();
 		return result;
 	}
 
-	// own methods
-	//...........................................................................
+	
+	
 
 	/**
 	 *    MD4 basic transformation.
@@ -205,8 +205,8 @@ public class MD4 extends MessageDigest implements Cloneable {
 	 */
 	private void transform(byte[] block, int offset) {
 
-		// encodes 64 bytes from input block into an array of 16 32-bit
-		// entities. Use A as a temp var.
+		
+		
 		for (int i = 0; i < 16; i++)
 			X[i] =
 				(block[offset++] & 0xFF) | (block[offset++] & 0xFF)
@@ -276,7 +276,7 @@ public class MD4 extends MessageDigest implements Cloneable {
 		context[3] += D;
 	}
 
-	// The basic MD4 atomic functions.
+	
 
 	private static int FF(int a, int b, int c, int d, int x, int s) {
 		int t = a + ((b & c) | (~b & d)) + x;

@@ -19,7 +19,7 @@
  * 3. The end-user documentation included with the redistribution, if
  *    any, must include the following acknowlegement:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (http:
  *    Alternately, this acknowlegement may appear in the software itself,
  *    if and wherever such third-party acknowlegements normally appear.
  *
@@ -49,7 +49,7 @@
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <http:
  */
 
 /*
@@ -91,7 +91,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private static void panic() {
         System.out.println("panic");
-        //throw new CError();
+        
     }
 
     private void makeMaps() {
@@ -410,10 +410,10 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private boolean closed = false;
 
-//    protected void finalize() throws Throwable {
-//        close();
-//        super.finalize();
-//    }
+
+
+
+
 
     public void close() throws IOException {
         if (closed) {
@@ -454,10 +454,10 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     private int allowableBlockSize;
 
     private void initBlock() {
-        //        blockNo++;
+        
         mCrc.initialiseCRC();
         last = -1;
-        //        ch = 0;
+        
 
         for (int i = 0; i < 256; i++) {
             inUse[i] = false;
@@ -555,7 +555,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     private void bsFinishedWithStream() throws IOException {
         while (bsLive > 0) {
             int ch = (bsBuff >> 24);
-            bsStream.write(ch); // write 8-bit
+            bsStream.write(ch); 
             bsBuff <<= 8;
             bsLive -= 8;
             bytesOut++;
@@ -565,7 +565,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     private void bsW(int n, int v) throws IOException {
         while (bsLive >= 8) {
             int ch = (bsBuff >> 24);
-            bsStream.write(ch); // write 8-bit
+            bsStream.write(ch); 
             bsBuff <<= 8;
             bsLive -= 8;
             bytesOut++;
@@ -1153,7 +1153,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
           set up the overshoot area for block.
         */
 
-        //   if (verbosity >= 4) fprintf ( stderr, "   sort initialise ...\n" );
+        
         for (i = 0; i < NUM_OVERSHOOT_BYTES; i++) {
             block[last + i + 2] = block[(i % (last + 1)) + 1];
         }
@@ -1352,7 +1352,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             }
             rNToGo--;
             block[i + 1] ^= ((rNToGo == 1) ? 1 : 0);
-            // handle 16 bit signed numbers
+            
             block[i + 1] &= 0xFF;
 
             inUse[block[i + 1]] = true;
@@ -1533,8 +1533,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
         if (block == null || quadrant == null || zptr == null
                 || ftab == null) {
-            //int totalDraw = (n + 1 + NUM_OVERSHOOT_BYTES) + (n + NUM_OVERSHOOT_BYTES) + n + 65537;
-            //compressOutOfMemory ( totalDraw, n );
+            
+            
         }
 
         /*
@@ -1547,7 +1547,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
           of the MTF values when calculating coding tables.
           Seems to improve compression speed by about 1%.
         */
-        //    szptr = zptr;
+        
 
 
         szptr = new short[2 * n];

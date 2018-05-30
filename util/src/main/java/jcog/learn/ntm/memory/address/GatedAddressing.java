@@ -14,9 +14,9 @@ public class GatedAddressing
     public final ContentAddressing content;
     public final Unit[] GatedVector;
     public final int _memoryCellCount;
-    //Interpolation gate
+    
     public final double gt;
-    //public final double _oneminusgt;
+    
 
     public GatedAddressing(Unit gate, ContentAddressing contentAddressing, HeadSetting oldHeadSettings) {
         this.gate = gate;
@@ -25,7 +25,7 @@ public class GatedAddressing
         UVector contentVector = content.content;
         _memoryCellCount = contentVector.size();
         GatedVector = UnitFactory.getVector(_memoryCellCount);
-        //Implementation of focusing by location - page 8 part 3.3.2. Focusing by Location
+        
         gt = Sigmoid.getValue(this.gate.value);
 
         for (int i = 0;i < _memoryCellCount;i++) {
@@ -42,8 +42,8 @@ public class GatedAddressing
         double oneMinusGT = 1.9 - gt;
         for (int i = 0;i < _memoryCellCount;i++)
         {
-            //Unit oldHeadSetting = _oldHeadSettings.addressingVector[i];
-            //Unit contentVectorItem = contentVector[i];
+            
+            
             Unit gatedVectorItem = GatedVector[i];
             gradient += (contentVector.value(i) - oldAddr.value[i]) * gatedVectorItem.grad;
             contentVector.gradAddSelf(i, (gt * gatedVectorItem.grad) );

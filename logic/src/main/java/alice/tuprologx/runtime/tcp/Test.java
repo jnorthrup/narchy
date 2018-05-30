@@ -22,7 +22,7 @@ public class Test
                 System.out.println("yes: "+info.getSolution());
             else
                 System.out.println("no.");
-            //engine.solve("out <- println('ciccio').");
+            
         } catch(Exception e) {
             System.err.println("ERROR: " + e);
             e.printStackTrace(System.out);

@@ -43,10 +43,10 @@ implements Scrollable
     @Override
     public void paint(Graphics g)
     {
-        // Gr��e des Zeichenbereichs erfragen:
+        
         Rectangle bounds = g.getClipBounds();
            
-        // Hintergrundfarbe setzen:
+        
         g.setColor(BACKGROUND_COLOR);
         
         if (image == null)
@@ -60,13 +60,13 @@ implements Scrollable
         int offsetX = (imageWidth < minWidth) ? (minWidth-imageWidth)/2 : 0;
         int offsetY = (imageHeight < minHeight) ? (minHeight-imageHeight)/2 : 0;
         
-        // Darstellungsrechteck des Bildes berechnen:
+        
         int imageX1 = bounds.x-offsetX;
         int imageX2 = bounds.x+bounds.width-offsetX;
         int imageY1 = bounds.y-offsetY;
         int imageY2 = bounds.y+bounds.height-offsetY;
         
-        // Darstellungsrechteck auf realen Bildbereich begrenzen:
+        
         if (imageX1 < 0)
         {
             g.fillRect(bounds.x, bounds.y, -imageX1, bounds.height);
@@ -88,7 +88,7 @@ implements Scrollable
             imageY2 = imageHeight;
         }
         
-        // Bild darstellen:
+        
         if ((imageX2-imageX1 > 0) && (imageY2-imageY1 > 0))
         {
             g.drawImage(image, bounds.x, bounds.y,

@@ -14,9 +14,9 @@ public class CTNode {
 	}
 
 	private long id;
-	protected double logPest; // log KT estimated probability
-	protected double logPweight; // log weighted block probability
-	// one slot for each symbol a,b in CTW literature
+	protected double logPest; 
+	protected double logPweight; 
+	
 	private int count0;
 	private int count1;
 	private CTNode child0;
@@ -71,7 +71,7 @@ public class CTNode {
 		return result;
 	}
 
-	// 1 + number of descendants of a node in the context tree
+	
 	public int size() {
 		int rval = 1;
 		rval += child(false) != null ? child(false).size() : 0;

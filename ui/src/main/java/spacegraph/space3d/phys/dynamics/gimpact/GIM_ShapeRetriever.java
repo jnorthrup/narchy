@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -48,7 +48,7 @@ class GIM_ShapeRetriever {
 	public GIM_ShapeRetriever(GImpactShape gim_shape) {
 		this.gim_shape = gim_shape;
 		
-		// select retriever
+		
 		if (gim_shape.needsRetrieveTriangles()) {
 			current_retriever = tri_retriever;
 		}
@@ -66,7 +66,7 @@ class GIM_ShapeRetriever {
 		return current_retriever.getChildShape(index);
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	public static class ChildShapeRetriever {
 		public GIM_ShapeRetriever parent;

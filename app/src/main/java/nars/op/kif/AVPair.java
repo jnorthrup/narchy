@@ -1,6 +1,6 @@
 
 /* This code is copyrighted by Articulate Software (c) 2003.
-It is released under the GNU Public License <http://www.gnu.org/copyleft/gpl.html>.
+It is released under the GNU Public License <http:
 Users of this code also consent, by use of this code, to credit Articulate Software in any
 writings, briefings, publications, presentations, or other representations of any
 software which incorporates, builds on, or uses this code.
@@ -18,7 +18,7 @@ import java.io.Serializable;
  */
 public class AVPair implements Comparable, Serializable {
 
-    public String attribute = "";  // this is the sort field for comparison
+    public String attribute = "";  
     public String value = "";
 
     /*****************************************************************
@@ -43,8 +43,8 @@ public class AVPair implements Comparable, Serializable {
             throw new ClassCastException("Error in AVPair.compareTo(): "
                                          + "Class cast exception for argument of class: "
                                          + avp.getClass().getName());
-        //System.out.println("Info in AVPair.compareTo(): comparing: " + attribute +
-        //        "to: " + ((AVPair) avp).attribute);
+        
+        
         return attribute.compareTo(((AVPair) avp).attribute);
     }
 

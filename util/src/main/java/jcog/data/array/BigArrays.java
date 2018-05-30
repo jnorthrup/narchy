@@ -7,7 +7,7 @@ package jcog.data.array;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -297,7 +297,7 @@ public enum BigArrays {
 	public static void mergeSort( long from, long to, LongComparator comp, BigSwapper swapper ) {
 		long length = to - from;
 
-		// Insertion sort on smallest arrays
+		
 		if ( length < SMALL ) {
 			for ( long i = from; i < to; i++ ) {
 				for ( long j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
@@ -307,16 +307,16 @@ public enum BigArrays {
 			return;
 		}
 
-		// Recursively sort halves
+		
 		long mid = ( from + to ) >>> 1;
 		mergeSort( from, mid, comp, swapper );
 		mergeSort( mid, to, comp, swapper );
 
-		// If list is already sorted, nothing left to do. This is an
-		// optimization that results in faster sorts for nearly ordered lists.
+		
+		
 		if ( comp.compare( mid - 1, mid ) <= 0 ) return;
 
-		// Merge sorted halves
+		
 		inPlaceMerge( from, mid, to, comp, swapper );
 	}
 
@@ -335,7 +335,7 @@ public enum BigArrays {
 	 */
 	public static void quickSort( long from, long to, LongComparator comp, BigSwapper swapper ) {
 		long len = to - from;
-		// Insertion sort on smallest arrays
+		
 		if ( len < SMALL ) {
 			for ( long i = from; i < to; i++ )
 				for ( long j = i; j > from && ( comp.compare( j - 1, j ) > 0 ); j-- ) {
@@ -344,47 +344,47 @@ public enum BigArrays {
 			return;
 		}
 
-		// Choose a partition element, v
-		long m = from + len / 2; // Small arrays, middle element
+		
+		long m = from + len / 2; 
 		if ( len > SMALL ) {
 			long l = from, n = to - 1;
-			if ( len > MEDIUM ) { // Big arrays, pseudomedian of 9
+			if ( len > MEDIUM ) { 
 				long s = len / 8;
 				l = med3( l, l + s, l + 2 * s, comp );
 				m = med3( m - s, m, m + s, comp );
 				n = med3( n - 2 * s, n - s, n, comp );
 			}
-			m = med3( l, m, n, comp ); // Mid-size, med of 3
+			m = med3( l, m, n, comp ); 
 		}
-		// long v = x[m];
+		
 
 		long a = from, b = a, c = to - 1, d = c;
-		// Establish Invariant: v* (<v)* (>v)* v*
+		
 		while ( true ) {
 			int comparison;
 			while ( b <= c && ( ( comparison = comp.compare( b, m ) ) <= 0 ) ) {
 				if ( comparison == 0 ) {
-					if ( a == m ) m = b; // moving target; DELTA to JDK !!!
-					else if ( b == m ) m = a; // moving target; DELTA to JDK !!!
+					if ( a == m ) m = b; 
+					else if ( b == m ) m = a; 
 					swapper.swap( a++, b );
 				}
 				b++;
 			}
 			while ( c >= b && ( ( comparison = comp.compare( c, m ) ) >= 0 ) ) {
 				if ( comparison == 0 ) {
-					if ( c == m ) m = d; // moving target; DELTA to JDK !!!
-					else if ( d == m ) m = c; // moving target; DELTA to JDK !!!
+					if ( c == m ) m = d; 
+					else if ( d == m ) m = c; 
 					swapper.swap( c, d-- );
 				}
 				c--;
 			}
 			if ( b > c ) break;
-			if ( b == m ) m = d; // moving target; DELTA to JDK !!!
-			else if ( c == m ) m = c; // moving target; DELTA to JDK !!!
+			if ( b == m ) m = d; 
+			else if ( c == m ) m = c; 
 			swapper.swap( b++, c-- );
 		}
 
-		// Swap partition elements back to middle
+		
 		long s;
 		long n = from + len;
 		s = Math.min( a - from, b - a );
@@ -392,7 +392,7 @@ public enum BigArrays {
 		s = Math.min( d - c, n - d - 1 );
 		vecSwap( swapper, b, n - s, s );
 
-		// Recursively sort non-partition-elements
+		
 		if ( ( s = b - a ) > 1 ) quickSort( from, from + s, comp, swapper );
 		if ( ( s = d - c ) > 1 ) quickSort( n - s, n, comp, swapper );
 	}

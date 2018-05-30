@@ -40,7 +40,7 @@ public interface Meter { ;
 
     default Runnable printer(FastMonitorRegistry reg, PrintStream p) {
         return new PollRunnable(
-//                new MonitorRegistryMetricPoller(reg),
+
                 new BaseMetricPoller() {
 
                     @Override

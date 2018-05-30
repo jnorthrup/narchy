@@ -25,8 +25,8 @@ public class ArrayBagTest {
 
     CurveBag<PLink<String>> curveBag(int n, PriMerge mergeFunction) {
         return new CurveBag<>(mergeFunction, new HashMap<>(n),
-                //new XorShift128PlusRandom(1),
-                //new Random(1),
+                
+                
                 n);
     }
 
@@ -60,13 +60,13 @@ public class ArrayBagTest {
         CurveBag<PLink<String>> a = curveBag(n, plus);
 
 
-        //fill with uniform randomness
+        
         for (int i = 0; i < n; i++) {
             a.put(new PLink("x" + i, (float) random.getAsDouble()));
         }
 
         a.commit();
-        //a.printAll();
+        
 
         return a;
 
@@ -95,9 +95,9 @@ public class ArrayBagTest {
 
         a.commit();
 
-        //x should now be ahead
-        assertTrue(a.listCopy().toString().contains("x,")); //x first
-        assertTrue(a.listCopy().toString().contains("y]")); //y second
+        
+        assertTrue(a.listCopy().toString().contains("x,")); 
+        assertTrue(a.listCopy().toString().contains("y]")); 
 
         ii = a.iterator();
         assertEquals("x", ii.next().get());

@@ -130,9 +130,9 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 
 		List<E> toRemove = new ArrayList();
 		terms.forEachKeyValue((E term, int i) -> {
-			double f = values[i][i]; //getFrequency(term);
+			double f = values[i][i]; 
 			if((f < lower || f > upper)){
-				//System.out.println("Elimino " + term  +" che aveva frequenza " + f);
+				
 				toRemove.add(term);
 			}
 		});
@@ -152,7 +152,7 @@ public class TermFrequencies<E> extends DTMatrix<E> implements Iterable<E> {
 	}
 
 
-	private int totWindows; 				// Numero totale di finestre di testo, necessario per calcolare le frequenze relative
-	private boolean finalValues;			// Flag che indica se i valori sono definitivi e possono essere letti
+	private int totWindows; 				
+	private boolean finalValues;			
 	
 }

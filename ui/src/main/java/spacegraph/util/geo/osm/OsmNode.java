@@ -13,7 +13,7 @@ public class OsmNode extends OsmElement {
         this.geoCoordinate = geoCoordinate;
     }
 
-    //    public static OsmNode getOsmNodeById(List<OsmNode> nodes, String id) {
-//        return (OsmNode) elemById(nodes, id);
-//    }
+    
+
+
 }

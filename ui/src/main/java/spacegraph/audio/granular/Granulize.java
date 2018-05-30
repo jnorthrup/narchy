@@ -61,7 +61,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 
         boolean p = isPlaying;
         if (!p)
-            dAmp = (0 - amp) / output.length; //fade out smoothly if isPlaying false
+            dAmp = (0 - amp) / output.length; 
 
         long samples = output.length;
 
@@ -90,7 +90,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 		}
 
 
-        //access and modify these fields only outside of the critical rendering loop
+        
         currentGrain = cGrain;
         fadingGrain = fGrain;
         now = n;
@@ -141,7 +141,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	}
 
 	private long[] nextGrain(long[] targetGrain) {
-		//System.out.println("create grain: " + calculateCurrentBufferIndex() + " " + now);
+		
         targetGrain = nextGrain(targetGrain, calculateCurrentBufferIndex(), now);
         return targetGrain;
 	}
@@ -153,8 +153,8 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 	}
 
 	public Granulize setStretchFactor(float stretchFactor) {
-//		playOffset = calculateCurrentBufferIndex();
-//		playTime = now;
+
+
 		this.stretchFactor.set(stretchFactor);
         return this;
 	}
@@ -167,7 +167,7 @@ public class Granulize extends Granulator implements SoundProducer, SoundProduce
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        //TODO
+        
     }
 
     @Override

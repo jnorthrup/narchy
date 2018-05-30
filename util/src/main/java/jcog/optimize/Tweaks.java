@@ -85,7 +85,7 @@ public class Tweaks<X> {
             FastList<Pair<Class, ObjectGraph.Accessor>> p = path.clone();
             String key = key(p);
 
-            //TODO find matching Super-types
+            
             tweakers.get(Primitives.wrap(targetType)).learn(root, key, p);
 
             discover(key, p);
@@ -117,7 +117,7 @@ public class Tweaks<X> {
      */
     public Tweaks<X> discover(DiscoveryFilter filter, Discovery<X> each) {
 
-        //sample instance
+        
         X x = (this.subjects.get());
 
         ObjectGraph o = new ObjectGraph() {
@@ -125,7 +125,7 @@ public class Tweaks<X> {
             @Override
             protected boolean access(Object root, FasterList<Pair<Class, Accessor>> path, Object target) {
                 if (this.nodes.containsKey(target))
-                    return false; //prevent cycle
+                    return false; 
 
                 Class<?> targetType = target.getClass();
                 if (!filter.includeClass(targetType))
@@ -166,7 +166,7 @@ public class Tweaks<X> {
                 if (tweakable(t)) {
                     return (!primitive || !Modifier.isFinal(m));
                 } else
-                    return !primitive; //explore further into Object's, final or not
+                    return !primitive; 
             }
         };
 
@@ -198,7 +198,7 @@ public class Tweaks<X> {
 
             AtomicBoolean.class, (sample, k, p) -> {
                 final Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
-                AtomicBoolean fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
+                AtomicBoolean fr = get.apply(sample); 
                 tweak(k, 0, 1, 0.5f, (x, v) -> {
                     boolean b = v >= 0.5f;
                     get.apply(x).set(b);
@@ -213,13 +213,13 @@ public class Tweaks<X> {
             },
             IntRange.class, (sample, k, p) -> {
                 final Function<X, IntRange> get = ObjectGraph.getter(p);
-                IntRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
+                IntRange fr = get.apply(sample); 
                 tweak(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> {
-                    get.apply(x).set(v);  //use the min/max at the time this is constructed, which assumes they will remain the same
+                    get.apply(x).set(v);  
                 });
             },
-//            AtomicInteger.class, null,
-//            MutableInteger.class, null,
+
+
 
             Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
                 Function<X, Float> get = ObjectGraph.getter(p);
@@ -228,12 +228,12 @@ public class Tweaks<X> {
                         get::apply,
                         (x,v)->{ set.accept(x,v); return v; });
             },
-//            MutableFloat.class, null,
+
 
 
             FloatRange.class, (sample, k, p) -> {
                 final Function<X, FloatRange> get = ObjectGraph.getter(p);
-                FloatRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
+                FloatRange fr = get.apply(sample); 
                 tweak(k, fr.min, fr.max, Float.NaN,
                     (x)-> get.apply(x).floatValue(),
                     (x, v) -> {
@@ -242,12 +242,12 @@ public class Tweaks<X> {
                     });
             }
 
-//            FloatRangeRounded.class, null
-//            AtomicDouble.class, null,
-//            AtomicLong.class, null,
-//
-//            MutableDouble.class, null,
-//            MutableLong.class, null,
+
+
+
+
+
+
 
     );
 
@@ -327,10 +327,10 @@ public class Tweaks<X> {
             if (additionalHints.isEmpty()) {
                 h = this.hints;
             } else {
-                //combine
+                
                 h = new HashMap();
                 h.putAll(this.hints);
-                h.putAll(additionalHints); //allow supplied hints to override inferred
+                h.putAll(additionalHints); 
             }
         } else {
             h = additionalHints;

@@ -46,27 +46,27 @@ import spacegraph.util.math.v2;
  */
 public abstract class Contact {
 
-    // Flags stored in m_flags
-    // Used when crawling contact graph when forming islands.
+    
+    
     public static final int ISLAND_FLAG = 0x0001;
-    // Set when the shapes are touching.
+    
     public static final int TOUCHING_FLAG = 0x0002;
-    // This contact can be disabled (by user)
+    
     public static final int ENABLED_FLAG = 0x0004;
-    // This contact needs filtering because a fixture filter was changed.
+    
     public static final int FILTER_FLAG = 0x0008;
-    // This bullet contact had a TOI event
+    
     public static final int BULLET_HIT_FLAG = 0x0010;
 
     public static final int TOI_FLAG = 0x0020;
 
     public int m_flags;
 
-    // World pool and list pointers.
+    
     public Contact m_prev;
     public Contact m_next;
 
-    // Nodes for connecting bodies.
+    
     public ContactEdge m_nodeA = null;
     public ContactEdge m_nodeB = null;
 
@@ -239,14 +239,14 @@ public abstract class Contact {
         m_flags |= FILTER_FLAG;
     }
 
-    // djm pooling
+    
     private final Manifold oldManifold = new Manifold();
 
     public void update(ContactListener listener) {
 
         oldManifold.set(m_manifold);
 
-        // Re-enable this contact.
+        
         m_flags |= ENABLED_FLAG;
 
         boolean touching = false;
@@ -260,22 +260,22 @@ public abstract class Contact {
         Body2D bodyB = bFixture.getBody();
         Transform xfA = bodyA;
         Transform xfB = bodyB;
-        // log.debug("TransformA: "+xfA);
-        // log.debug("TransformB: "+xfB);
+        
+        
 
         if (sensor) {
             Shape shapeA = aFixture.shape();
             Shape shapeB = bFixture.shape();
             touching = pool.getCollision().testOverlap(shapeA, aIndex, shapeB, bIndex, xfA, xfB);
 
-            // Sensors don't generate manifolds.
+            
             m_manifold.pointCount = 0;
         } else {
             evaluate(m_manifold, xfA, xfB);
             touching = m_manifold.pointCount > 0;
 
-            // Match old contact ids to new contact ids and copy the
-            // stored impulses to warm start the solver.
+            
+            
             for (int i = 0; i < m_manifold.pointCount; ++i) {
                 ManifoldPoint mp2 = m_manifold.points[i];
                 mp2.normalImpulse = 0.0f;

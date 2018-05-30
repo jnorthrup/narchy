@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -97,21 +97,21 @@ public class Leaf<T> extends AbstractNode<T, T> {
         if (parent != null && !ctm) {
             Node<T, ?> next;
 
-            //TEMPORARY - why can this happen
+            
             for (int i = 0, s = size; i < s; i++) {
                 T x = data[i];
 
-                if (x == null) continue; //in case of optimistic read
+                if (x == null) continue; 
 
                 if (x == t)
-                    return null; //instance already contained
+                    return null; 
 
                 if (x.equals(t)) {
                     model.merge(x, t);
                     return null;
                 }
             }
-            //TEMPORARY
+            
 
             if (size < model.max) {
 
@@ -169,7 +169,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
             for (int i = 0; i < s; i++) {
                 T d = data[i];
                 if (d!=null && (t == d || t.equals(d)))
-                    return true; //instance already contained
+                    return true; 
             }
         }
         return false;
@@ -187,10 +187,10 @@ public class Leaf<T> extends AbstractNode<T, T> {
         for (i = 0; i < size; i++) {
             T d = data[i];
             if (t.equals(d))
-                break; //found
+                break; 
         }
         if (i == size)
-            return this; //not found
+            return this; 
 
         final int j = i + 1;
         if (j < size) {
@@ -237,7 +237,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
     public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
         if (s > 0) {
-            boolean containsAll = s > 1 ? rect.contains(bounds) : false; //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
+            boolean containsAll = s > 1 ? rect.contains(bounds) : false; 
             T[] data = this.data;
             for (int i = 0; i < s; i++) {
                 T d = data[i];
@@ -252,7 +252,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
     public boolean containing(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
         if (s > 0) {
-            boolean containsAll = rect.contains(bounds); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
+            boolean containsAll = rect.contains(bounds); 
             T[] data = this.data;
             for (int i = 0; i < s; i++) {
                 T d = data[i];
@@ -320,7 +320,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
                 final double l1MbrMargin = l1Mbr.perimeter();
                 final double l2MbrMargin = l2Mbr.perimeter();
                 if (Util.equals(l1MbrMargin, l2MbrMargin, eps)) {
-                    // break tie by preferring the smaller smaller
+                    
                     target = ((l1Node.size() <= l2Node.size()) ? l1Node : l2Node);
                 } else {
                     target = (l1MbrMargin <= l2MbrMargin) ? l1Node : l2Node;

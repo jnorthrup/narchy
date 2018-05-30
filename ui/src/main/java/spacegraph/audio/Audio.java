@@ -45,8 +45,8 @@ public class Audio implements Runnable {
 
     private final ByteBuffer soundBuffer = ByteBuffer.allocate(bufferSize * 4);
     private final float[] leftBuf, rightBuf;
-    //private float amplitude = 1;
-    //private float targetAmplitude = 1;
+    
+    
     private boolean alive = true;
     private float now;
 
@@ -96,7 +96,7 @@ public class Audio implements Runnable {
 
         thread = new Thread(this);
         thread.setDaemon(true);
-        //thread.setPriority(10);
+        
         thread.start();
     }
 
@@ -121,21 +121,21 @@ public class Audio implements Runnable {
 
     public void record(String path) throws java.io.FileNotFoundException {
 
-        //if (rec != null) //...
+        
 
         logger.info("recording to: {}", path);
         rec = new FileOutputStream(new File(path), false);
 
-//        PipedInputStream pi = new PipedInputStream();
-//        pi.connect(rec = new PipedOutputStream());
-//
-//        AudioInputStream ais = new AudioInputStream(
-//                pi,
-//                audioFormat, bufferBytes);
-//
-//
-//        // start recording
-//        AudioSystem.write(ais, AudioFileFormat.Type.WAVE, new File(path));
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -183,8 +183,8 @@ public class Audio implements Runnable {
     }
 
     public <S extends SoundProducer> Sound<S> play(S p, SoundSource soundSource, float volume, float priority) {
-//        if (!alive)
-//            return;
+
+
         return listenerMixer.addSoundProducer(p, soundSource, volume, priority);
     }
 
@@ -196,12 +196,12 @@ public class Audio implements Runnable {
     static final int max16 = Short.MAX_VALUE;
 
     void tick() {
-        //soundBuffer.clear();
+        
 
-        //        targetAmplitude = (targetAmplitude - 1) * 0.9f + 1;
-        //        targetAmplitude = (targetAmplitude - 1) * 0.9f + 1;
+        
+        
         listenerMixer.read(leftBuf, rightBuf, rate);
-        ////            if (maxAmplitude > targetAmplitude) targetAmplitude = maxAmplitude;
+        
 
 
         soundBuffer.clear();

@@ -46,7 +46,7 @@ public class Dimensionaleyez extends SimpleSpatial {
         super(id);
 
         s = new StreamingNormalizer(IN);
-        //System.out.println(k + " " + v);
+        
         m = MeshMap.get(id, this::accept);
 
         new Loop() {
@@ -55,10 +55,10 @@ public class Dimensionaleyez extends SimpleSpatial {
             public boolean next() {
                 double[] x;
                 while ((x = queue.poll()) != null) {
-                    float[] df = Util.toFloat(x); //HACK
-                    x = Util.toDouble(s.normalize(df, df)); //HACK
+                    float[] df = Util.toFloat(x); 
+                    x = Util.toDouble(s.normalize(df, df)); 
 
-                    //history.addLast(da);
+                    
 
 
                     n.put(x);
@@ -80,8 +80,8 @@ public class Dimensionaleyez extends SimpleSpatial {
     }
 
 
-//    /** NOTE: history could also be a bag, prioritized by error in order to collect the most anomalous samples */
-//    final CircularArrayList<double[]> history = new CircularArrayList<>(512);
+
+
 
 
     @Override
@@ -95,7 +95,7 @@ public class Dimensionaleyez extends SimpleSpatial {
 
             float d0 = d[0];
             if (d0 != d0) {
-                //System.out.println("NaN" + n);
+                
                 return;
             }
             float x = d0 * s;
@@ -104,10 +104,10 @@ public class Dimensionaleyez extends SimpleSpatial {
 
             float last = ((float) n.getEntry(n.getDimension() - 1) + 1f) / 2f;
 
-            //float[] c = this.s.unnormalize(n);
-            //System.out.println(n4(c) + last);
+            
+            
 
-            //System.out.println(x + " " + y + " " + z + " <- " + n);
+            
 
             gl.glPushMatrix();
             gl.glTranslatef(x, y, z);

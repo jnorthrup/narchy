@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.utils;
 
@@ -128,9 +128,9 @@ public class Utils {
         return dominate;
     }
 
-//    public static void getFirstParetoFront(List<Ranking> tmp, Consumer<Ranking> each) {
-//
-//    }
+
+
+
 
 
     /** return if it will be necessary to call again */
@@ -149,7 +149,7 @@ public class Utils {
 
                 return Utils.isAParetoDominateByB(f1, f2);
             })) {
-                //n2 dominates n1
+                
                 toRemove.add(n1);
             }
         });
@@ -157,7 +157,7 @@ public class Utils {
         if (toRemove.size() > 0) {
             toRemove.forEach(t->r.removeKey(t));
             return r;
-            //return r.withoutAllKeys(toRemove);
+            
         }
 
         return null;
@@ -188,7 +188,7 @@ public class Utils {
         return 100 * tmp.size() / (double) population.size();
     }
 
-    //remove empty extractions 
+    
     public static void removeEmptyExtractions(List<DataSet.Bounds> extractions) {
         for (Iterator<Bounds> it = extractions.iterator(); it.hasNext();) {
             Bounds bounds = it.next();
@@ -284,7 +284,7 @@ public class Utils {
          
 
         char[] cc = charset.toSortedArray();
-        //TreeSet<Character> orderedCharset = new CharSet(charset);
+        
         char start;
         char old;
         char first = cc[0];
@@ -295,8 +295,8 @@ public class Utils {
         for (int i = 1; i < cc.length; i++) {
             char c = cc[i];
 
-            //when we have an "hole" or is the last character it checks if the previous range (old -start) is larger than 1;
-            //Ranges bigger than 1 char are saved
+            
+            
             if (((c - old) > 1 || last == c)) {
                 if ((old - start) > 1) {
                     each.accept(

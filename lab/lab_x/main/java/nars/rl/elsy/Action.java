@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Each instance of this class is responsible for executing
  * one specified action of the Agent. 
- * @author Elser http://www.elsy.gdan.pl
+ * @author Elser http:
  */
 public abstract class Action implements Serializable{
 	private static final long serialVersionUID = 1L;

@@ -10,11 +10,11 @@ public class Hai {
     final Random random;
 
 
-    double Q[][]; //state, action
+    double Q[][]; 
     double et[][];
     int nActions = 0, nStates = 0;
     int lastStateX = 0, lastStateY = 0, lastAction = 0;
-    double Alpha = 0.1, Gamma = 0.8, Lambda = 0.1; //0.1 0.5 0.9
+    double Alpha = 0.1, Gamma = 0.8, Lambda = 0.1; 
     Hsom som;
 
     public Hai(int nactions, int nstates, XORShiftRandom random) {
@@ -81,14 +81,14 @@ public class Hai {
     }
 
 
-//    int Quantify(double val, int quantsteps) {
-//        double step = 1 / ((double) quantsteps);
-//        double wander = 0.0;
-//        int ind = -1;
-//        while (wander <= val) {
-//            wander += step;
-//            ind++;
-//        }
-//        return ind;
-//    }
+
+
+
+
+
+
+
+
+
+
 }

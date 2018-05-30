@@ -42,13 +42,13 @@ public abstract class Base implements QGLConst, RenderAPI {
 
     public static final String REF_VERSION = "GL 0.01";
 
-    // up / down
+    
     public static final int PITCH = 0;
 
-    // left / right
+    
     public static final int YAW = 1;
 
-    // fall over
+    
     public static final int ROLL = 2;
 
     /*
@@ -57,7 +57,7 @@ public abstract class Base implements QGLConst, RenderAPI {
      * 
      * model skin sprite frame wall texture pic
      */
-    // enum imagetype_t
+    
     public static final int it_skin = 0;
 
     public static final int it_sprite = 1;
@@ -68,7 +68,7 @@ public abstract class Base implements QGLConst, RenderAPI {
 
     public static final int it_sky = 4;
 
-    // enum modtype_t
+    
     public static final int mod_bad = 0;
 
     public static final int mod_brush = 1;
@@ -156,7 +156,7 @@ public abstract class Base implements QGLConst, RenderAPI {
 
     public static final int GL_RENDERER_OTHER = 0x80000000;
     
-    // enum rserr_t
+    
     public static final int rserr_ok = 0;
 
     public static final int rserr_invalid_fullscreen = 1;
@@ -194,15 +194,15 @@ public abstract class Base implements QGLConst, RenderAPI {
             rgb = ByteBuffer.allocate(size);
         }
 
-        // change pixel alignment for reading
+        
         if (vid.getWidth() % 4 != 0) {
             gl.glPixelStorei(GL_PACK_ALIGNMENT, 1);
         }
 
-        // read the RGB values into the image buffer
+        
         gl.glReadPixels(0, 0, vid.getWidth(), vid.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgb);
 
-        // reset to default alignment
+        
         gl.glPixelStorei(GL_PACK_ALIGNMENT, 4);
 
         return rgb;

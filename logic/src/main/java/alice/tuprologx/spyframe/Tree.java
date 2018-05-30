@@ -35,7 +35,7 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
   /** Number of lines in the tree.*/
   protected int levels;
 
-  //The following attributes are only for timing optimization
+  
   /** Facts about font geometry (distortion forbidden).*/
   private final FontRenderContext frc=new FontRenderContext(null, true, true);
   /** Height of most letters above the baseline.*/
@@ -126,10 +126,10 @@ public static final Font defaultfont=new Font(Font.SANS_SERIF, Font.PLAIN, 12);
     float kidsw=0;
     for(Node n: node.kids)
       kidsw+=pose(n, xpos+kidsw, level+1);
-    if(kidsw>=nodew){//move this to the right by half the difference
+    if(kidsw>=nodew){
       node.x+=(kidsw-nodew)/2;
       return kidsw;
-    } else{//move the kids to the right by half the difference
+    } else{
       for(Node n: node.kids) n.xShift((nodew-kidsw)/2);
       return nodew;
     }

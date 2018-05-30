@@ -1,6 +1,6 @@
-//
-// Translated by CS2J (http://www.cs2j.com)
-//
+
+
+
 package nars.art;
 
 public class DynamicVector <Type>  

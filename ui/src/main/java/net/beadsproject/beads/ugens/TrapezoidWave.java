@@ -138,7 +138,7 @@ public class TrapezoidWave extends UGen {
                 }
 
             } else {
-                // no attack / decay
+                
                 att = 0;
                 dec = 0;
             }

@@ -39,20 +39,20 @@ public class TimeGraphTest {
     }
 
     final TimeGraph B; {
-        //               .believe("(y ==>+3 x)")
-        //                .believe("(y ==>+2 z)")
-        //                .mustBelieve(cycles, "(z ==>+1 x)", 1.00f, 0.45f)
-        //                .mustNotOutput(cycles, "(z ==>-1 x)", BELIEF, Tense.ETERNAL)
-        //                .mustBelieve(cycles, "(x ==>-1 z)", 1.00f, 0.45f)
-        //                .mustNotOutput(cycles, "(x ==>+1 z)", BELIEF, Tense.ETERNAL)
+        
+        
+        
+        
+        
+        
         B = newTimeGraph(1);
         B.know($$("(y ==>+3 x)"), ETERNAL);
         B.know($$("(y ==>+2 z)"), ETERNAL);
     }
 
-//    @BeforeEach
-//    void init() {
-//    }
+
+
+
 
     @Test
     public void testAtomEvent() {
@@ -164,21 +164,21 @@ public class TimeGraphTest {
 
     @Test
     public void testImplWithConjPredicate2() {
-        assertSolved("(one ==>+- (two &&+- three))", A, //using one@1
+        assertSolved("(one ==>+- (two &&+- three))", A, 
 
                 "(one ==>+- (two &&+1 three))", "(one ==>+1 (two &&+1 three))",
                 "(one ==>+19 (two &&+1 three))", "(one ==>-17 (two &&+1 three))"
-                //using two@20
-                //"(one ==>+1 (two &&+1 three))@19"
+                
+                
         );
     }
     @Test
     public void testImplWithTwoConjPredicates() throws Narsese.NarseseException {
 
-        //wrong:
-        //    $.05 ((a &&+5 b) ==>+3 (b &&+5 c)). -2 %1.0;.41% {4: 1;2} ((%1,%2,belief(positive),notImpl(%2),notImpl(%1)),((%2 ==>+- %1),((Induction-->Belief))))
-        //    $.50 (b &&+5 c). 3 %1.0;.90% {3: 2} Narsese
-        //    $.50 (a &&+5 b). 1 %1.0;.90% {1: 1} Narsese
+        
+        
+        
+        
         TimeGraph C = newTimeGraph(1);
         C.know($.$("(a &&+5 b)"), 1);
         C.know($.$("(b &&+5 c)"), 3);
@@ -188,10 +188,10 @@ public class TimeGraphTest {
     @Test
     public void testImplWithConjSubjDecomposeProperly() throws Narsese.NarseseException {
 
-        //wrong:
-//        $.13 (a &&+1 a2)! 6 %1.0;.62% {7: 1;2} ((%1,(%2==>%3),notImpl(%1)),(subIfUnifiesAny(%2,%3,%1,"$"),((Abduction-->Belief),(Deduction-->Goal))))
-//        $.50 b! 6 %1.0;.90% {6: 2} Narsese
-//        $.50 ((a &&+1 a2)=|>b). 1 %1.0;.90% {1: 1} Narsese
+        
+
+
+
         TimeGraph C = newTimeGraph(1);
         C.know($.$("b"), 6);
         C.know($.$("((a &&+1 a2)=|>b)"), 1);
@@ -243,9 +243,9 @@ public class TimeGraphTest {
         TimeGraph C = newTimeGraph(1);
 
         C.know($.$("((a&&x) ==>+1 b)"), 1);
-        // System.out.println();
+        
         assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
-        // System.out.println();
+        
     }
     @Test
     public void testImplCrossParallelInternalConj() throws Narsese.NarseseException {
@@ -254,39 +254,39 @@ public class TimeGraphTest {
         assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
     }
 
-//    @Test
-//    public void testImplMultipleSolutions() throws Narsese.NarseseException {
-//        Occurrify C = new Occurrify(null) {
-//            XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(1);
-//            @Override
-//            protected Random random() {
-//                return rng;
-//            }
-//
-//            @Override
-//            protected void onNewTerm(Term t) {
-//                link(shadow(t), 0, shadow(t.replace($$("_2"), $.varDep(1))));
-//                link(shadow(t), 0, shadow(t.neg()));
-//            }
-//
-//            @Override
-//            protected Term dt(Term x, int dt) {
-//                return x.dt(dt);
-//            }
-//        };
-//        C.know((Term)$.$("(_2,_1)"), 1590);
-//        C.know((Term)$.$("(_2,_1)"), 2540);
-//        C.know((Term)$.$("(_2,_1)"), 2567);
-////        C.link(C.shadow($.$("_2")), 0, C.shadow($.varDep(1)));
-//        
-//
-//        //several slutions
-//        assertSolved("(((--,(#1,_1)) &&+220 (_2,_1)) ==>+- (_2,_1))", C,
-//                "(((--,(#1,_1)) &&+220 (_2,_1)) ==>+" + (2540-1590) + " (_2,_1))",
-//                "(((--,(#1,_1)) &&+220 (_2,_1)) ==>+" + (2567-1590) + " (_2,_1))"
-//                //..
-//        );
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -299,22 +299,22 @@ public class TimeGraphTest {
 
     ExpectSolutions assertSolved(String inputTerm, TimeGraph t, String... solutions) {
 
-//        int nodesBefore = A.nodes().size();
-//        String nodes = A.nodes().toString();
-//        long edgesBefore = A.edges().count();
-//
+
+
+
+
             System.out.println("solve: " + inputTerm);
             ExpectSolutions ee = new ExpectSolutions(t, solutions);
             ee.solve(inputTerm);
             ee.print();
             System.out.println();
             return ee;
-//        }
-//
-//        int nodesAfter = A.nodes().size();
-//        long edgesAfter = A.edges().count();
-//        //assertEquals(edgesBefore, edgesAfter, "# of edges changed as a result of solving");
-////        assertEquals(nodesBefore, nodesAfter, ()->"# of nodes changed as a result of solving:\n\t" + nodes + "\n\t" + A.nodes());
+
+
+
+
+
+
 
     }
 
@@ -348,7 +348,7 @@ public class TimeGraphTest {
             afterEach.add(() -> {
                 assertEquals(Sets.newTreeSet(List.of(solutions)), this, errorMsg);
                 System.out.print(errorMsg.get());
-                //validate();
+                
             });
         }
 
@@ -368,7 +368,7 @@ public class TimeGraphTest {
 
 
         protected void validate() {
-            //validate consistency of computations
+            
             Term[] events = time.events().keySet().toArray(Op.EmptyTermArray);
 
             IntHashSet[][] dt = new IntHashSet[events.length][events.length];
@@ -398,7 +398,7 @@ public class TimeGraphTest {
                 System.out.println(Arrays.toString(r));
             }
 
-            //check symmetry
+            
             for (int xx = 0, eventsLength = events.length; xx < eventsLength; xx++) {
                 for (int yy = xx+1, eventsLength1 = events.length; yy < eventsLength1; yy++) {
                     assertEquals(dt[xx][yy], dt[yy][xx]);
@@ -426,36 +426,35 @@ public class TimeGraphTest {
 
 }
 
-//    public static void main(String[] args) throws Narsese.NarseseException {
-//
-//        TimeGraph t = new TimeGraph();
-////        t.know($.$("(a ==>+1 b)"), ETERNAL);
-////        t.know($.$("(b ==>+1 (c &&+1 d))"), 0);
-////        t.know($.$("(a &&+1 b)"), 4);
-//
-//        t.know($.$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
-//        t.know($.$("one"), 1);
-//        t.know($.$("two"), 20);
-//
-//        t.print();
-//
-//        System.out.println();
-//
-//        for (String s : List.of(
-//                "one",
-//                "(one &&+1 two)", "(one &&+- two)",
-//                "(two &&+1 three)", "(two &&+- three)",
-//                "(one ==>+- three)",
-//                "(one ==>+- (two &&+1 three))",
-//                "(one ==>+- (two &&+- three))"
-//        )) {
-//            Term x = $.$(s);
-//            System.out.println("SOLVE: " + x);
-//            t.solve(x, (y) -> {
-//                System.out.println("\t" + y);
-//                return true;
-//            });
-//        }
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

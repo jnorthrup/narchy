@@ -104,7 +104,7 @@ public class ArithmeticParser {
 		 */
 		if (expression == null) {
 
-			// expression = term (plusTerm | minusTerm)*;
+			
 			expression = new Seq("expression");
 			expression.get(term());
 

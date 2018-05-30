@@ -24,7 +24,7 @@ public abstract class GraphicsHandler {
 			if (awtMode) {
 				single = new AwtGraphicsHandler();
 			} else {
-				// android!
+				
 			}
 		}
 		return single;

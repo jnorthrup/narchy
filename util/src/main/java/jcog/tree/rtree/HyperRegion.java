@@ -10,7 +10,7 @@ package jcog.tree.rtree;
          * you may not use this file except in compliance with the License.
          * You may obtain a copy of the License at
          *
-         *      http://www.apache.org/licenses/LICENSE-2.0
+         *      http:
          *
          * Unless required by applicable law or agreed to in writing, software
          * distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,19 +71,19 @@ public interface HyperRegion<X> {
      */
     int dim();
 
-//    /**
-//     * Get the minimum HyperPoint of this HyperRect
-//     *
-//     * @return min HyperPoint
-//     */
-//    X min();
-//
-//    /**
-//     * Get the minimum HyperPoint of this HyperRect
-//     *
-//     * @return min HyperPoint
-//     */
-//    X max();
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * returns coordinate scalar at the given extremum and dimension
@@ -149,7 +149,7 @@ public interface HyperRegion<X> {
     default boolean intersects(HyperRegion<X> x) {
         if (this == x) return true;
         int d = dim();
-//            if (min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i])
+
         for (int i = 0; i < d; i++)
             if (coord(false, i) > x.coord(true, i) ||
                     coord(true, i) < x.coord(false, i))
@@ -188,9 +188,9 @@ public interface HyperRegion<X> {
         return p;
     }
 
-//    static <T> HyperRegion[] toArray(T[] data, int size, Function<T, HyperRegion> builder) {
-//        return Util.map(builder::apply, new HyperRegion[size], data);
-//    }
+
+
+
 
     /**
      * gets the distance along a certain dimension from this region's to another's extrema
@@ -204,27 +204,27 @@ public interface HyperRegion<X> {
     }
 
 
-//    @JsonIgnore  default double getRangeMin() {
-//        int dim = dim();
-//        double min = Double.POSITIVE_INFINITY;
-//        for (int i = 0; i < dim; i++) {
-//            double r = getRange(i);
-//            if (r < min) {
-//                min = r;
-//            }
-//        }
-//        return min;
-//    }
 
-//    /** whether any of the dimensions are finite */
-//    @JsonIgnore  default boolean bounded() {
-//        int dim = dim();
-//        for (int i = 0; i < dim; i++) {
-//            double r = getRange(i);
-//            if (Double.isFinite(r))
-//                return true;
-//        }
-//        return false;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

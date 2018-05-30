@@ -20,7 +20,7 @@ import static nars.time.Tense.DTERNAL;
  **/
 public class InterningTermBuilder extends HeapTermBuilder {
 
-    //TODO Atom Cache
+    
 
 
 
@@ -30,7 +30,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     final HijackTermCache[] termCache;
     final HijackTermCache[] termTemporalCache;
-    //public final SubtermsCache subtermCache = new SubtermsCache(128 * 1024, 3);
+    
     {
         termCache = new HijackTermCache[Op.ops.length];
         termTemporalCache = new HijackTermCache[Op.ops.length];
@@ -54,14 +54,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (inOp!=PROD && internable(s)) {
             return compound(PROD, s).subterms();
 
-            //return subtermCache.apply(new InternedSubterms(s));
+            
         } else
             return super.newSubterms(inOp, s);
 
     }
 
     protected boolean internable(Op op, int dt, Term[] u) {
-        return //op!=NEG &&
+        return 
                 internable(u);
     }
 
@@ -72,10 +72,10 @@ public class InterningTermBuilder extends HeapTermBuilder {
         for (Term x : subterms) {
 
 
-//            if (!(x instanceof The)) {
-//                //HACK caching these interferes with unification.  instead fix unification then allow caching of these
-//                return false;
-//            }
+
+
+
+
 
             if (x.hasAny(Op.Temporal))
                 return false;
@@ -85,21 +85,21 @@ public class InterningTermBuilder extends HeapTermBuilder {
             }
 
 
-//            switch (x.dt()) {
-//                case DTERNAL:
-//                case 0:
-//                case XTERNAL:
-//                    break; //OK
-//                default:
-//                    return false; //specific dt: exclude temporal terms polluting the cache
-//            }
+
+
+
+
+
+
+
+
         }
         return true;
     }
 
 
     public String summary() {
-        return  //"subterm cache: " + subtermCache.summary() + "\n" +
+        return  
                 "compound cache: " + summary(termCache, termCache) + "\n" +
                 "termporal cache: " + summary(termCache, termTemporalCache) + "\n"
                 ;

@@ -31,7 +31,7 @@ public class JavaObject<O> extends Term<JavaObject<O>> {
 
     @Override
     public <Z> Z toJava() {
-        //return (Z)_theObject;
+        
         return uncheckedCast(_theObject);
     }
     
@@ -41,7 +41,7 @@ public class JavaObject<O> extends Term<JavaObject<O>> {
     
     static <Z> JavaObject<Z> unmarshalObject(alice.tuprolog.Struct s) {
         if (matches(s)) {           
-            //return new JavaObject<Z>((Z)(PJ.getRegisteredJavaObject(s)));
+            
         	Z auxJavaObject = uncheckedCast(PJ.getRegisteredJavaObject(s));
             return new JavaObject<>(auxJavaObject);
         }

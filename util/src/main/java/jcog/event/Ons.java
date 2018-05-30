@@ -29,10 +29,10 @@ public class Ons extends jcog.list.FastCoWList<Off> {
         clear();
     }
 
-//    public Ons add(On<?>... elements) {
-//        Collections.addAll(this, elements);
-//        return this;
-//    }
+
+
+
+
 
 
 }

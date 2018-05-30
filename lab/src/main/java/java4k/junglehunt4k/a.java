@@ -16,7 +16,7 @@ package java4k.junglehunt4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -28,7 +28,7 @@ import java.util.Random;
 
 public class a extends Applet implements Runnable {
 
-  // keys
+  
   private final boolean[] a = new boolean[32768];
 
   @Override
@@ -270,7 +270,7 @@ public class a extends Applet implements Runnable {
     Graphics2D g = (Graphics2D)image.getGraphics();
     Graphics2D g2 = null;
 
-    // initialize vines
+    
     for(i = 0; i < 1024; i++) {
       vines[i][VINE_RADIUS] = 100 + random.nextInt(12700);
       vines[i][VINE_INCREMENTING] = random.nextInt(2);
@@ -278,10 +278,10 @@ public class a extends Applet implements Runnable {
       vines[i][VINE_SPEED] = random.nextInt(3);
     }
 
-    // decompress sprites
+    
     for(k = i = 0; i < SPRITE_COUNT; i++, k += z >> 1) {
 
-      // height
+      
       z = (i <= SPRITE_VINE_2 || i == SPRITE_CLING_1
               || i == SPRITE_CLING_2) ? 20
           : (i <= SPRITE_LEAVES_15 || i == SPRITE_OXYGEN
@@ -297,7 +297,7 @@ public class a extends Applet implements Runnable {
           : 8;
 
       sprites[i] = new BufferedImage(8, z, 2);
-      sprites[i + SPRITE_COUNT] = new BufferedImage(8, z, 2); // reversed
+      sprites[i + SPRITE_COUNT] = new BufferedImage(8, z, 2); 
 
       for(y = 0; y < z; y++) {
         j = y + (i == SPRITE_RUN_3 ? 1 : i == SPRITE_JUMP_1 ? -1 : 0);
@@ -305,7 +305,7 @@ public class a extends Applet implements Runnable {
           u = (((S.charAt(k + (y >> 1))
               >> (x + (((y & 1) == 0) ? 0 : 8))) & 1) == 1)
               ? 0xFF000000
-              // colors
+              
                   | (i <= SPRITE_JUMP_2 ? ((j < 3 || (j > 5 && j < 14))
                           ? HEX_WHITE : HEX_FLESH)
                       : i <= SPRITE_VINE_2 ? HEX_VINE
@@ -345,7 +345,7 @@ public class a extends Applet implements Runnable {
       do {
         nextFrameStartTime += 16666667;
 
-        // -- update starts ----------------------------------------------------
+        
 
         counter++;
         if (playerDead == 0 && mode != MODE_WON && (counter & 63) == 0
@@ -360,7 +360,7 @@ public class a extends Applet implements Runnable {
         if (mode == MODE_VINES) {
 
           if (playerY > 256) {
-            // lose a life
+            
             lives--;
             playerVine++;
             playerVineOffset = 64;
@@ -379,7 +379,7 @@ public class a extends Applet implements Runnable {
                   : vine[VINE_DIRECTION] == 1 ? SPRITE_CLING_1 : SPRITE_CLING_3;
             }
 
-            // move the vine
+            
             if ((counter & 3) == 3) {
               if (vine[VINE_INCREMENTING] == 1) {
                 vine[VINE_RADIUS] *= 20 + vine[VINE_SPEED];
@@ -399,7 +399,7 @@ public class a extends Applet implements Runnable {
               }
             }
 
-            // apply midpoint circle algorithm to generate vine points
+            
             int radius = vine[VINE_RADIUS];
             t = 1 - radius;
             u = 1;
@@ -437,7 +437,7 @@ public class a extends Applet implements Runnable {
           }
 
           if (playerVy == 0) {
-            // player clings onto vine
+            
             playerX = vinePoints[vineIndex + playerVineOffset] - 1;
             playerY = vinePoints[vineIndex + playerVineOffset + 1];
 
@@ -447,7 +447,7 @@ public class a extends Applet implements Runnable {
               playerVine--;
             } else if (remaining <= 0 && playerDead == 0) {
 
-              // player advances to swimming stage
+              
               remaining = 15 + (level << 1);
               mode = MODE_SWIMMING;
               cameraX = CAMERAX0;
@@ -458,7 +458,7 @@ public class a extends Applet implements Runnable {
               playerOxygen = 16;
               score += POINTS_ADVANCED_LEVEL;
 
-              // initialize crocs
+              
               crocs = new int[3][16];
               for(i = 0; i < 3; i++) {
                 crocs[i][CROC_X] = cameraX << 1;
@@ -478,12 +478,12 @@ public class a extends Applet implements Runnable {
                 y = vinePoints[vineIndex + (i << 1) + 1];
                 if (playerX >= x && playerX <= x + 2
                     && (int)playerY == y) {
-                  // player grabbed vine
+                  
                   playerVineOffset = i << 1;
                   playerVy = 0;
                   targetCameraX -= 80;
                   if (firstMove) {
-                    // maintain the score until the first move of the next game
+                    
                     firstMove = false;
                     score = POINTS_VINE_CATCH;
                   } else {
@@ -508,8 +508,8 @@ public class a extends Applet implements Runnable {
 
           if (playerDead > 0) {
             if (++playerDead > 128) {
-              // lose a life
-              // reset swimming stage
+              
+              
               playerDead = 0;
               remaining += 4;
               lives--;
@@ -520,7 +520,7 @@ public class a extends Applet implements Runnable {
               playerStabbing = 0;
               playerOxygen = 16;
 
-              // initialize crocs
+              
               crocs = new int[3][16];
               for(i = 0; i < 3; i++) {
                 crocs[i][CROC_X] = cameraX << 1;
@@ -581,7 +581,7 @@ public class a extends Applet implements Runnable {
             playerX = cameraX + 81;
           }
 
-          // update crocs
+          
           for(i = 0; i < 3; i++) {
             int[] croc = crocs[i];
             if (croc[CROC_DELAY] > 0) {
@@ -602,7 +602,7 @@ public class a extends Applet implements Runnable {
 
                 if (playerDead == 0 && --remaining <= 0 && !a[VK_DOWN]) {
 
-                  // player advances to rock stage
+                  
                   remaining = 15 + (level << 1);
                   mode = MODE_ROCKS;
                   cameraX = CAMERAX0;
@@ -635,7 +635,7 @@ public class a extends Applet implements Runnable {
                     && playerX <= croc[CROC_X] + 14
                     && playerY >= croc[CROC_Y] + 1
                     && playerY <= croc[CROC_Y] + 3) {
-                  // player stabbed croc
+                  
                   j = playerX - croc[CROC_X];
                   if (j < 5) {
                     score += 100;
@@ -653,7 +653,7 @@ public class a extends Applet implements Runnable {
                     && playerX + 15 >= croc[CROC_X]
                     && playerY - 2 <= croc[CROC_Y]
                     && playerY + 7 >= croc[CROC_Y]) {
-                  // croc killed player
+                  
                   playerDead = 1;
                 }
               }
@@ -668,7 +668,7 @@ public class a extends Applet implements Runnable {
           if (playerDead == 0 && rockX > cameraX + SCREEN_WIDTH) {
             if (--remaining == 0) {
 
-              // player advances to cannibal stage
+              
 
               remaining = 2 + level;
               mode = MODE_CANNIBALS;
@@ -701,8 +701,8 @@ public class a extends Applet implements Runnable {
 
           if (playerDead > 0) {
             if (++playerDead > 128) {
-              // lose a life
-              // reset stage
+              
+              
               playerDead = 0;
               lives--;
               remaining += 2;
@@ -764,12 +764,12 @@ public class a extends Applet implements Runnable {
               }
             }
 
-            i = rockSprite == SPRITE_ROCK_1 ? 11 : 7; // rock height
-            j = 1 + (int)rockY; // rock y
-            k = playerDucking ? 18 : 13; // player height
-            x = 2 + (int)playerY; // player y
+            i = rockSprite == SPRITE_ROCK_1 ? 11 : 7; 
+            j = 1 + (int)rockY; 
+            k = playerDucking ? 18 : 13; 
+            x = 2 + (int)playerY; 
 
-            // collision test between rock and player
+            
             if (rockX + 8 > playerX && playerX + 8 > rockX
                 && j + i > x && x + k > j) {
               playerDead = 1;
@@ -795,14 +795,14 @@ public class a extends Applet implements Runnable {
             time -= 10;
             score += 30;
             if (time <= 0) {
-              // advance level
+              
               levelAdvanceRequest = true;
             }
           }
 
         } else {
 
-          // mode >= MODE_CANNIBAL
+          
 
           rockSprite = (mode == MODE_WOMAN ? SPRITE_WOMAN : SPRITE_CANNIBAL)
               + ((counter & 32) == 0 ? 0 : SPRITE_COUNT);
@@ -823,8 +823,8 @@ public class a extends Applet implements Runnable {
 
           if (playerDead > 0) {
             if (++playerDead > 128) {
-              // lose a life
-              // reset stage
+              
+              
               lives--;
               playerDead = 0;
               playerX = cameraX + 143;
@@ -891,7 +891,7 @@ public class a extends Applet implements Runnable {
                 rockX = cameraX - 72;
                 if (--remaining == 0) {
 
-                  // advance to ending stage
+                  
 
                   rockSprite = SPRITE_WOMAN;
                   mode = MODE_WOMAN;
@@ -921,7 +921,7 @@ public class a extends Applet implements Runnable {
                   + (playerDirection == 1 ? SPRITE_COUNT : 0);
             }
 
-            // collision test between cannibal and player
+            
             if (rockX + 8 > playerX && playerX + 8 > rockX
                 && rockY + 20 > playerY && playerY + 20 > rockY) {
               if (mode == MODE_WOMAN) {
@@ -939,7 +939,7 @@ public class a extends Applet implements Runnable {
         }
 
         if (lives < 0 || time <= 0) {
-          // reset the entire game
+          
           time = 5000;          
           mode = MODE_VINES;
           cameraX = CAMERAX0;
@@ -959,24 +959,24 @@ public class a extends Applet implements Runnable {
           }
           remaining = 10 + (level << 1);
         } else if (!firstMove && !bonusLifeAwarded && score >= 10000) {
-          // gain bonus life after exceeding 10,000 points
+          
           bonusLifeAwarded = true;
           lives++;
         }
 
-        // -- update ends ------------------------------------------------------
+        
 
       } while(nextFrameStartTime < System.nanoTime());
 
-      // -- render starts ------------------------------------------------------
+      
 
-      // draw sky
+      
       g.setColor(COLOR_SKY);
       g.fillRect(0, 0, 152, 191);
 
       if (mode != MODE_SWIMMING) {
 
-        // draw vine sprites
+        
         j = (cameraX >> 4) % 15;
         for(i = 0; i < 11; i++, j++) {
           if (j > 14) {
@@ -988,7 +988,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // draw leaves
+        
         g.setColor(COLOR_LEAVES);
         g.fillRect(0, 0, 152, 43);
         j = cameraX << 1;
@@ -1000,7 +1000,7 @@ public class a extends Applet implements Runnable {
 
       if (mode == MODE_VINES) {
 
-        // draw leaves on ground (background layer)
+        
         g.setColor(COLOR_DIRT);
         g.fillRect(0, 180, 152, 11);      
         j = cameraX;
@@ -1009,17 +1009,17 @@ public class a extends Applet implements Runnable {
               (i << 5) - (j & 31), 164, 32, 16, null);
         }
         
-        // draw moving vine
+        
         g.setColor(COLOR_VINE);
         for(i = 0; i < 384; i += 2) {
           g.fillRect(vinePoints[i] - cameraX, vinePoints[i + 1], 1, 1);
         }
 
-        // draw player
+        
         g.drawImage(sprites[playerSprite],
             playerX - cameraX, (int)playerY, null);
 
-        // draw leaves on ground (foreground layer)
+        
         j = cameraX << 1;
         for(i = 0; i < 6; i++) {
           g.drawImage(sprites[SPRITE_LEAVES_6 + ((i + (j >> 5)) % 5)],
@@ -1028,7 +1028,7 @@ public class a extends Applet implements Runnable {
 
       } else if (mode == MODE_SWIMMING) {
 
-        // draw water
+        
         g.setColor(COLOR_WATER);
         g.fillRect(0, 88, 152, 103);
         j = cameraX << 1;
@@ -1037,14 +1037,14 @@ public class a extends Applet implements Runnable {
               (i << 5) - (j & 31), 80, 32, 8, null);
         }
 
-        // draw coral
+        
         j = cameraX;
         for(i = 0; i < 6; i++) {
           g.drawImage(sprites[SPRITE_CORAL_1 + (((i + (j >> 5)) & 1))],
               (i << 5) - (j & 31), 167, 32, 24, null);
         }
 
-        // draw crocs
+        
         for(i = 0; i < 3; i++) {
           int[] croc = crocs[i];
           g.drawImage(sprites[croc[CROC_SPRITE_1]],
@@ -1053,13 +1053,13 @@ public class a extends Applet implements Runnable {
               croc[CROC_X] - cameraX + 8, croc[CROC_Y], null);
         }
 
-        // draw player
+        
         g.drawImage(sprites[playerSprite], playerX - cameraX,
             (int)playerY, null);
         g.drawImage(sprites[playerSprite2], playerX - cameraX + 8,
             (int)playerY, null);
 
-        // draw oxygen bar (HUD)
+        
         g.setColor(COLOR_BLACK);
         g.fillRect(128, 68, 20, 4);
         for(i = 0; i < 5; i++) {
@@ -1072,20 +1072,20 @@ public class a extends Applet implements Runnable {
 
       } else {
 
-        // draw flat ground
+        
         g.setColor(COLOR_DIRT);
         g.fillRect(0, 135, 152, 56);
 
-        // draw rock
+        
         g.drawImage(sprites[rockSprite], rockX - cameraX, (int)rockY, null);
 
-        // draw player        
+        
         g.drawImage(sprites[playerSprite
               + ((playerDead & 16) == 0 ? 0 : SPRITE_COUNT)],
             playerX - cameraX, (int)playerY, null);
       }
 
-      // draw score
+      
       j = score;
       x = 97;
       do {
@@ -1094,7 +1094,7 @@ public class a extends Applet implements Runnable {
         j /= 10;
       } while(j > 0);
 
-      // draw time
+      
       j = time;
       x = 135;
       do {
@@ -1103,13 +1103,13 @@ public class a extends Applet implements Runnable {
         j /= 10;
       } while(j > 0);
 
-      // draw lives
+      
       g.drawImage(sprites[SPRITE_LIVES], 16, 30, null);
       g.drawImage(sprites[SPRITE_SMALL_DIGIT_0 + lives], 30, 30, null);
 
-      // -- render ends --------------------------------------------------------
+      
 
-      // show the hidden buffer
+      
       if (g2 == null) {
         g2 = (Graphics2D)getGraphics();
         requestFocus();
@@ -1117,7 +1117,7 @@ public class a extends Applet implements Runnable {
         g2.drawImage(image, 0, 0, 608, 382, null);
       }
 
-      // burn off extra cycles
+      
       while(nextFrameStartTime - System.nanoTime() > 0) {
         Thread.yield();
       }
@@ -1145,7 +1145,7 @@ public class a extends Applet implements Runnable {
     }
   }
 
-  // to run in window, uncomment below
+  
   /*public static void main(String[] args) throws Throwable {
     javax.swing.JFrame frame = new javax.swing.JFrame("Jungle Hunt 4K");
     frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

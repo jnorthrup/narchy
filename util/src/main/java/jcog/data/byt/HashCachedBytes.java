@@ -9,7 +9,7 @@ public class HashCachedBytes extends DynBytes {
 
     public HashCachedBytes(int bufferSize) {
         super(bufferSize);
-        compact(); //initialize
+        compact(); 
     }
 
     @Override

@@ -17,7 +17,7 @@ package java4k.mcjob;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -30,7 +30,7 @@ import java.util.Random;
 
 public class a extends Applet implements Runnable {
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 	@Override
@@ -262,7 +262,7 @@ public class a extends Applet implements Runnable {
 		}
 		Color darkGray = CLRS[CLR_DARK_GRAY];
 
-		// decompress sprites
+		
 		for (m = i = 0; i < 30; i++) {
 			k = z = 8;
 			if (i >= SPRITE_BURGER && i < SPRITE_CUSTOMER) {
@@ -291,7 +291,7 @@ public class a extends Applet implements Runnable {
 			}
 		}
 
-		// create customer sprites
+		
 		for (i = 0; i < 8; i++) {
 			customerSprites[i][0] = new BufferedImage(12, 20, BufferedImage.TYPE_INT_ARGB_PRE);
 			customerSprites[i][1] = new BufferedImage(12, 20, BufferedImage.TYPE_INT_ARGB_PRE);
@@ -313,7 +313,7 @@ public class a extends Applet implements Runnable {
 			do {
 				nextFrameStartTime += 16666667;
 
-				// -- update starts ----------------------------------------------------
+				
 
 				if (!(a[VK_UP] || a[VK_DOWN] || a[VK_LEFT] || a[VK_RIGHT] || a[VK_START] || a[VK_PAUSE])) {
 					keysReleased = true;
@@ -324,7 +324,7 @@ public class a extends Applet implements Runnable {
 					paused = !paused;
 				}
 				if (paused) {
-					// game paused
+					
 					continue;
 				}
 
@@ -334,7 +334,7 @@ public class a extends Applet implements Runnable {
 						gameOver = 1;
 						if (keysReleased && (a[VK_UP] || a[VK_DOWN] || a[VK_LEFT] || a[VK_RIGHT] || a[VK_START])) {
 
-							// reset game
+							
 
 							keysReleased = false;
 							showTitle = false;
@@ -365,10 +365,10 @@ public class a extends Applet implements Runnable {
 					continue;
 				}
 
-				// update timer
+				
 				timer++;
 
-				// update lose life flash
+				
 				darkGray = CLRS[CLR_DARK_GRAY];
 				if (beatLevel == 0 && customers.size() == 0 && sliders.size() == 0 && points.size() == 0 && customerCount >= 32 + (level << 3)) {
 					beatLevel = 300;
@@ -382,7 +382,7 @@ public class a extends Applet implements Runnable {
 					if (((--loseLife) & 31) == 0) {
 						if (lives == 0) {
 
-							// GAME OVER
+							
 
 							gameOver = 600;
 						} else {
@@ -401,7 +401,7 @@ public class a extends Applet implements Runnable {
 					darkGray = Color.getHSBColor(beatLevel / 60f, 1, 1);
 				}
 
-				// update floating points
+				
 				for (i = points.size() - 1; i >= 0; i--) {
 					point = points.get(i);
 					if (--point[POINTS_COUNTER] == 0) {
@@ -411,7 +411,7 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// update customers
+				
 				for (i = 0; i < 4; i++) {
 					columnBlinking[i] = false;
 				}
@@ -426,7 +426,7 @@ public class a extends Applet implements Runnable {
 					if (walkCounter == 0) {
 						customer[CUSTOMER_WALK_INDEX] ^= 1;
 						if (--customer[CUSTOMER_Y] < 80) {
-							// player failed to service a customer in time
+							
 							customers.remove(i);
 							loseLife += 32;
 							break;
@@ -437,11 +437,11 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// create customers
+				
 				if (--spawnDelay < 0 && customerCount < 32 + (level << 3)) {
 					customerCount++;
 
-					// walk rate increases as level progresses
+					
 					i = 16 - (level >> 1);
 					if (i < 8) {
 						i = 8;
@@ -462,7 +462,7 @@ public class a extends Applet implements Runnable {
 					customers.add(customer);
 				}
 
-				// update queue
+				
 				for (i = sliders.size() - 1; i >= 0; i--) {
 					slider = sliders.get(i);
 					if (slider[SLIDER_STATE] == SLIDER_STATE_DOWN) {
@@ -470,12 +470,12 @@ public class a extends Applet implements Runnable {
 						if (slider[SLIDER_Y] > 300) {
 							sliders.remove(i);
 							if (slider[SLIDER_HOLDING] >= 0) {
-								// player send the wrong tray and no customer collected it
+								
 								loseLife += 32;
 							}
 						} else {
 
-							// test for collsion with customer
+							
 							for (j = customers.size() - 1; j >= 0; j--) {
 								customer = customers.get(j);
 								k = customer[CUSTOMER_Y] - slider[SLIDER_Y] - 3;
@@ -514,7 +514,7 @@ public class a extends Applet implements Runnable {
 							if (random.nextInt(7) < level) {
 								slider[SLIDER_STATE] = SLIDER_STATE_UP;
 							} else if (random.nextInt(7) > level) {
-								// create coin
+								
 								x = slider[SLIDER_X] + 2;
 								y = slider[SLIDER_Y] - 4;
 								z = slider[SLIDER_COLUMN];
@@ -531,7 +531,7 @@ public class a extends Applet implements Runnable {
 						if (--slider[SLIDER_Y] <= 64) {
 							sliders.remove(i);
 							if (slider[SLIDER_COLUMN] == (playerX - 34) >> 6) {
-								// player collects empty tray or coin at top
+								
 								points.add(point = new int[16]);
 								point[POINTS_X] = playerX + 17;
 								point[POINTS_Y] = 60;
@@ -542,18 +542,18 @@ public class a extends Applet implements Runnable {
 								}
 								score += k;
 							} else if (slider[SLIDER_TRAY] == 1) {
-								// player failed to catch returned tray
+								
 								loseLife += 32;
 							}
 						}
 
-						// test for collision with other slider
+						
 						for (j = sliders.size() - 1; j > i; j--) {
 							customer = sliders.get(j);
 							k = customer[CUSTOMER_Y] - slider[SLIDER_Y] - 3;
 							if (slider[SLIDER_COLUMN] == customer[SLIDER_COLUMN] && customer[SLIDER_STATE] == SLIDER_STATE_DOWN && k <= 8 && k >= -8) {
 								sliders.remove(i);
-								// player collects empty tray or coin by collision with tray
+								
 								points.add(point = new int[16]);
 								point[POINTS_X] = slider[SLIDER_X] + 12;
 								point[POINTS_Y] = slider[SLIDER_Y] + 8;
@@ -569,7 +569,7 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// update player
+				
 				if (playerRunning > 0) {
 					playerRunning -= 16;
 					playerX -= 16;
@@ -597,7 +597,7 @@ public class a extends Applet implements Runnable {
 					} else if (beatLevel == 0 && a[VK_DOWN]) {
 						keysReleased = false;
 						if (playerHolding >= 0) {
-							// create tray with food on it
+							
 							sliders.add(slider = new int[16]);
 							slider[SLIDER_X] = playerX + 4;
 							slider[SLIDER_Y] = 64;
@@ -609,20 +609,20 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// -- update ends ------------------------------------------------------
+				
 
 			} while (nextFrameStartTime < System.nanoTime());
 
-			// -- render starts ------------------------------------------------------
+			
 
 			if (showTitle) {
-				// draw title
+				
 				g.setColor(CLRS[CLR_BLACK]);
 				g.fillRect(0, 0, 256, 300);
 				g.drawImage(sprites[SPRITE_TITLE], 65, 95, 126, 110, null);
 			} else {
 
-				// draw background
+				
 				for (y = 96; y < 300; y += 16) {
 					for (i = 0; i < 256; i += 64) {
 						g.drawImage(sprites[SPRITE_FLOOR_TILE], i, y, null);
@@ -654,19 +654,19 @@ public class a extends Applet implements Runnable {
 					g.fillRect(33 + (i << 6), 80, 30, 235);
 				}
 
-				// draw menu
+				
 				for (i = 0; i < 4; i++) {
 					if (i != playerHolding) {
 						g.drawImage(sprites[SPRITE_BURGER + i], 40 + (i << 6), 16, null);
 					}
 				}
 
-				// draw held food
+				
 				if (playerHolding >= 0) {
 					g.drawImage(sprites[SPRITE_BURGER + playerHolding], playerX + 6, 21, null);
 				}
 
-				// draw objects
+				
 				for (i = sliders.size() - 1; i >= 0; i--) {
 					slider = sliders.get(i);
 					g.drawImage(sprites[slider[SLIDER_TRAY] == 1 ? SPRITE_TRAY : SPRITE_COIN], slider[SLIDER_X], slider[SLIDER_Y], null);
@@ -675,10 +675,10 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// draw player
+				
 				g.drawImage(sprites[playerHolding < 0 ? SPRITE_PLAYER_STANDING : SPRITE_PLAYER_HOLDING], playerX, 37, null);
 
-				// draw customers
+				
 				for (i = 0; i < customers.size(); i++) {
 					customer = customers.get(i);
 					g.drawImage(customerSprites[customer[CUSTOMER_SPRITE_INDEX]][customer[CUSTOMER_WALK_INDEX]], customer[CUSTOMER_X] + 10, customer[CUSTOMER_Y], null);
@@ -688,19 +688,19 @@ public class a extends Applet implements Runnable {
 					}
 				}
 
-				// print LEVEL
+				
 				g.drawImage(sprites[SPRITE_LETTER_L], 3, 3, null);
 				g.drawImage(sprites[SPRITE_LETTER_E], 11, 3, null);
 				g.drawImage(sprites[SPRITE_LETTER_V], 19, 3, null);
 				g.drawImage(sprites[SPRITE_LETTER_E], 27, 3, null);
 				g.drawImage(sprites[SPRITE_LETTER_L], 35, 3, null);
 
-				// draw extra lives
+				
 				for (i = 0; i < lives; i++) {
 					g.drawImage(sprites[SPRITE_EXTRA_LIFE], 84 + (i << 4), 3, null);
 				}
 
-				// draw float points, level number and score
+				
 				for (i = points.size() + 1; i >= 0; i--) {
 					j = score;
 					x = 245;
@@ -722,7 +722,7 @@ public class a extends Applet implements Runnable {
 				}
 
 				if (gameOver > 0) {
-					// draw bouncing GAME OVER
+					
 					g.drawImage(sprites[SPRITE_LETTER_G], (int) (128 - 36 * gameOverScale), 146, null);
 					g.drawImage(sprites[SPRITE_LETTER_A], (int) (128 - 28 * gameOverScale), 146, null);
 					g.drawImage(sprites[SPRITE_LETTER_M], (int) (128 - 20 * gameOverScale), 146, null);
@@ -734,9 +734,9 @@ public class a extends Applet implements Runnable {
 				}
 			}
 
-			// -- render ends --------------------------------------------------------
+			
 
-			// show the hidden buffer
+			
 			if (g2 == null) {
 				g2 = (Graphics2D) getGraphics();
 				requestFocus();
@@ -744,7 +744,7 @@ public class a extends Applet implements Runnable {
 				g2.drawImage(image, 0, 0, 512, 600, null);
 			}
 
-			// burn off extra cycles
+			
 			while (nextFrameStartTime - System.nanoTime() > 0) {
 				Thread.yield();
 			}
@@ -762,7 +762,7 @@ public class a extends Applet implements Runnable {
 		final int VK_S = 0x53;
 		final int VK_A = 0x41;
 		final int VK_D = 0x44;
-		final int VK_PAUSE = 0x50; // press p for pause
+		final int VK_PAUSE = 0x50; 
 
 		int k = keyEvent.getKeyCode();
 		if (k > 0) {
@@ -771,7 +771,7 @@ public class a extends Applet implements Runnable {
 		}
 	}
 
-	// to run in window, uncomment below
+	
 	/*public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("McJob");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

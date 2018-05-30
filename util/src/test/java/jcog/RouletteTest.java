@@ -19,7 +19,7 @@ public class RouletteTest {
         for (int i = 0; i < samples; i++)
             f.addValue(Roulette.selectRoulette(uniques, (k) -> 0.5f, rng));
 
-        //System.out.println(f);
+        
         assertEquals(f.getUniqueCount(), uniques);
         float total = f.getSumFreq();
         for (int i = 0; i < uniques; i++)

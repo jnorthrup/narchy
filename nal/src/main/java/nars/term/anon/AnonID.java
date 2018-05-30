@@ -10,7 +10,7 @@ import nars.term.var.NormalizedVariable;
  */
 public interface AnonID extends Term, The {
 
-    //leave the last bit alone, it will get affected by negation. that leaves 7 bits to play with here
+    
     short ATOM_MASK = 0;
     short VARDEP_MASK = 1 << 8;
     short VARINDEP_MASK = 2 << 8;

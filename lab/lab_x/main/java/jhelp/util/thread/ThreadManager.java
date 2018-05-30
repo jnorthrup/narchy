@@ -368,16 +368,16 @@ public final class ThreadManager
 
          this.priorityQueue.add(threadElement);
 
-//         try
-//         {
-//            if(this.waitCount > 0)
-//            {
-//               ThreadManager.LOCK.notify();
-//            }
-//         }
-//         catch(final Exception exception)
-//         {
-//         }
+
+
+
+
+
+
+
+
+
+
       }
    }
 

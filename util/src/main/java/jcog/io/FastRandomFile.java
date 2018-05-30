@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *  http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,34 +27,34 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   public FastRandomFile(String name, String mode, String inCharset) throws java.io.IOException
   {
     myCharset = inCharset;
-//    isI18N = Sage.I18N_CHARSET.equals(myCharset);
-//    if (crypto = mode.endsWith("c"))
-//      mode = mode.substring(0, mode.length() - 1);
+
+
+
     raf = new java.io.RandomAccessFile(name, mode);
-//    if (crypto)
-//      cryptoKeys = (byte[]) (Sage.q);
+
+
   }
 
-//  public FastRandomFile(java.io.File file, String mode, String inCharset) throws java.io.IOException
-//  {
-//    myCharset = inCharset;
-//    isI18N = Sage.I18N_CHARSET.equals(myCharset);
-//    if (crypto = mode.endsWith("c"))
-//      mode = mode.substring(0, mode.length() - 1);
-//    raf = new java.io.RandomAccessFile(file, mode);
-//    if (crypto)
-//      cryptoKeys = (byte[]) (Sage.q);
-//  }
 
-//  public void setCrypto(byte[] crypt)
-//  {
-//    cryptoKeys = crypt;
-//  }
 
-  // This is used to do network file streaming so that the local file isn't actually opened
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
   protected FastRandomFile(String inCharset) {
     myCharset = inCharset;
-    //isI18N = Sage.I18N_CHARSET.equals(myCharset);
+    
   }
 
   public long getFilePointer()
@@ -65,14 +65,14 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   public void close() throws java.io.IOException
   {
     flush();
-    // This is required to actually cause the disk write, flush() or close() doesn't do it
+    
     try
     {
       raf.getFD().sync();
     }
     catch (Throwable t)
     {
-      // this can fail for RO filesystems
+      
     }
 
     raf.close();
@@ -92,10 +92,10 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public void write(byte b) throws java.io.IOException
   {
-//    if (crypto)
-//    {
-//      b = (byte) ((((b & 0x0F) << 4) | ((b & 0xF0) >> 4)) ^ (cryptoKeys[((int)fp) % 128]));
-//    }
+
+
+
+
     if (circularFileSize > 0 && fp == circularFileSize)
       seek(0);
     fp++;
@@ -121,10 +121,10 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     }
   }
 
-  // This is intended to be an efficient way of writing data to the file for cmd length headers.
-  // If we can skip back the desired amount and just write it into the current buffer, then we will do that,
-  // otherwise, we'll just skip back to write the one int and then be back at the current buffer
-  // position as before the call
+  
+  
+  
+  
   private final byte[] intWriteBuf = new byte[4];
   public void writeIntAtOffset(long targetFp, int s) throws java.io.IOException
   {
@@ -132,15 +132,15 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     byte b2 = (byte)((s >>> 16) & 0xFF);
     byte b3 = (byte)((s >>> 8) & 0xFF);
     byte b4 = (byte)(s & 0xFF);
-//    if (crypto)
-//    {
-//      b1 = (byte) ((((b1 & 0x0F) << 4) | ((b1 & 0xF0) >> 4)) ^ (cryptoKeys[((int)targetFp) % 128]));
-//      b2 = (byte) ((((b2 & 0x0F) << 4) | ((b2 & 0xF0) >> 4)) ^ (cryptoKeys[((int)(targetFp + 1)) % 128]));
-//      b3 = (byte) ((((b3 & 0x0F) << 4) | ((b3 & 0xF0) >> 4)) ^ (cryptoKeys[((int)(targetFp + 2)) % 128]));
-//      b4 = (byte) ((((b4 & 0x0F) << 4) | ((b4 & 0xF0) >> 4)) ^ (cryptoKeys[((int)(targetFp + 3)) % 128]));
-//    }
-    // We need to check the buffer location for each byte written, or else we may have part of our 32 bit write
-    // stomped on by the buffer write out later
+
+
+
+
+
+
+
+    
+    
     int skipBackWriteAmount = Math.min(4, (int)(fp - buffptr - targetFp));
     if (skipBackWriteAmount > 0)
     {
@@ -205,14 +205,14 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 
   public int read() throws java.io.IOException
   {
-//    if (crypto)
-//    {
-//      int b = raf.read();
-//      b = b ^ (cryptoKeys[((int)(fp++)) % 128]);
-//      b = (((b & 0x0F) << 4) | ((b & 0xF0) >> 4));
-//      return b;
-//    }
-//    else
+
+
+
+
+
+
+
+
     {
       fp++;
       return raf.read();
@@ -260,11 +260,11 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     return ((long)(readInt()) << 32) + (readInt() & 0xFFFFFFFFL);
   }
 
-  // For optimizing UTF reads
+  
   private byte[] bytearr = null;
   private char[] chararr = null;
-  // NOTE: We have a special case here where we want to handle strings that are larger than 64k. We do that by writing out 0xFFFF for the length which indicates that the next 4 bytes will
-  // have the actual string length; then we go from there.
+  
+  
   public String readUTF()	throws java.io.IOException
   {
     if (isI18N)
@@ -287,7 +287,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       readFully(bytearr, 0, utflen);
 
       while (incount < utflen) {
-        // Fast path for all 7 bit ASCII chars
+        
         c = bytearr[incount] & 0xFF;
         if (c > 127) break;
         incount++;
@@ -302,15 +302,15 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           chararr[outcount++]=(char)c;
           continue;
         }
-        // Look at the top four bits only, since only they can affect this
+        
         x = c >> 4;
         if (x == 12 || x == 13) {
-          // 110xxxxx 10xxxxxx - 2 bytes for this char
+          
           incount += 2;
           if (incount > utflen)
             throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
           c2 = bytearr[incount - 1];
-          // Verify next byte starts with 10xxxxxx
+          
           if ((c2 & 0xC0) != 0x80)
             throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
                 Integer.toString(c2, 16) + " count: " + incount);
@@ -318,13 +318,13 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         }
         else if (x == 14)
         {
-          // 1110xxxx 10xxxxxx 10xxxx - 3 bytes for this char
+          
           incount += 3;
           if (incount > utflen)
             throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
           c2 = bytearr[incount - 2];
           c3 = bytearr[incount - 1];
-          // Verify next bytes start with 10xxxxxx
+          
           if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
             throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
                 Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
@@ -332,7 +332,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         }
         else
         {
-          // No need to support beyond this, as we only have 16 bit chars in Java
+          
           throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
               Integer.toString(c, 16) + " count:" + incount);
         }
@@ -376,7 +376,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
       readFully(bytearr, 0, utflen);
 
       while (incount < utflen) {
-        // Fast path for all 7 bit ASCII chars
+        
         c = bytearr[incount] & 0xFF;
         if (c > 127) break;
         incount++;
@@ -391,15 +391,15 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
           sb.setCharAt(outcount++, (char)c);
           continue;
         }
-        // Look at the top four bits only, since only they can affect this
+        
         x = c >> 4;
         if (x == 12 || x == 13) {
-          // 110xxxxx 10xxxxxx - 2 bytes for this char
+          
           incount += 2;
           if (incount > utflen)
             throw new java.io.UTFDataFormatException("bad UTF data: missing second byte of 2 byte char at " + incount);
           c2 = bytearr[incount - 1];
-          // Verify next byte starts with 10xxxxxx
+          
           if ((c2 & 0xC0) != 0x80)
             throw new java.io.UTFDataFormatException("bad UTF data: second byte format after 110xxxx is wrong char: 0x" +
                 Integer.toString(c2, 16) + " count: " + incount);
@@ -407,13 +407,13 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         }
         else if (x == 14)
         {
-          // 1110xxxx 10xxxxxx 10xxxx - 3 bytes for this char
+          
           incount += 3;
           if (incount > utflen)
             throw new java.io.UTFDataFormatException("bad UTF data: missing extra bytes of 3 byte char at " + incount);
           c2 = bytearr[incount - 2];
           c3 = bytearr[incount - 1];
-          // Verify next bytes start with 10xxxxxx
+          
           if (((c2 & 0xC0) != 0x80) || ((c3 & 0xC0) != 0x80))
             throw new java.io.UTFDataFormatException("bad UTF data: extra byte format after 1110xxx is wrong char2: 0x" +
                 Integer.toString(c2, 16) + " char3: " + Integer.toString(c3, 16) + " count: " + incount);
@@ -421,7 +421,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
         }
         else
         {
-          // No need to support beyond this, as we only have 16 bit chars in Java
+          
           throw new java.io.UTFDataFormatException("bad UTF data: we don't support more than 16 bit chars char: " +
               Integer.toString(c, 16) + " count:" + incount);
         }
@@ -431,7 +431,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     }
     else
     {
-      // NOTE: THIS IS NOT OPTIMAL; BUT WE DON'T USE THIS CODE PATH
+      
       int len = readShort();
       if (len > 0)
       {
@@ -444,7 +444,7 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   }
   public void writeUTF(String s) throws java.io.IOException
   {
-    // Just in case a null gets in here; it's much better to write it out as an empty string than to simply crash with an exception
+    
     if (s == null) s = "";
     if (isI18N)
     {
@@ -617,15 +617,15 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
   public void readFully(byte b[], int off, int len) throws java.io.IOException
   {
     raf.readFully(b, off, len);
-//    if (crypto)
-//    {
-//      for (int i = 0; i < len; i++)
-//      {
-//        int x = b[i] ^ (cryptoKeys[((int)(fp++)) % 128]);
-//        b[i] = (byte)(((x & 0x0F) << 4) | ((x & 0xF0) >> 4));
-//      }
-//    }
-//    else
+
+
+
+
+
+
+
+
+
       fp += len;
   }
 
@@ -670,13 +670,13 @@ public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
     return n;
   }
 
-//  public void setCharset(String x){ myCharset = x; isI18N = Sage.I18N_CHARSET.equals(myCharset); }
+
 
   public void setCircularSize(long x) { circularFileSize = x; }
 
   protected String myCharset;
   protected boolean isI18N;
-//  protected boolean crypto;
-//  protected byte[] cryptoKeys;
+
+
   protected long circularFileSize;
 }

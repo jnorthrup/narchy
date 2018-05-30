@@ -41,7 +41,7 @@ public abstract class TypeHandler {
 	 * compiler
 	 */
 
-	// Format constants
+	
 	public static final int CF_TEXT = 1;
 
 	public static final int CF_BITMAP = 2;

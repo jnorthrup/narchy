@@ -20,7 +20,7 @@ public abstract class AtomicConst implements Atomic {
 
     protected AtomicConst(byte[] raw) {
         this.bytesCached = raw;
-        this.hash = (int) Util.hashELF(raw, 1); //Util.hashWangJenkins(s.hashCode());
+        this.hash = (int) Util.hashELF(raw, 1); 
     }
 
     protected AtomicConst(Op op, String s) {
@@ -32,14 +32,14 @@ public abstract class AtomicConst implements Atomic {
     }
 
     protected static byte[] bytes(byte opID, String str) {
-        //if (s == null) s = toString(); //must be a constant method
-        //int slen = str.length(); //TODO will this work for UTF-16 containing strings?
+        
+        
 
         byte[] stringbytes = str.getBytes();
         int slen = stringbytes.length;
 
         byte[] sbytes = new byte[slen + 3];
-        sbytes[0] = opID; //(op != null ? op : op()).id;
+        sbytes[0] = opID; 
         sbytes[1] = (byte) (slen >> 8 & 0xff);
         sbytes[2] = (byte) (slen & 0xff);
         arraycopy(stringbytes, 0, sbytes, 3, slen);
@@ -68,9 +68,9 @@ public abstract class AtomicConst implements Atomic {
 
     @Override
     public void append(Appendable w) throws IOException {
-        //TODO 2-char special case
+        
         if (bytesCached.length==3+1) {
-            //special case single char ASCII
+            
             w.append((char)bytesCached[3]);
         } else {
             Atomic.super.append(w);

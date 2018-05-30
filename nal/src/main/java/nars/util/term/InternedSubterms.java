@@ -17,7 +17,7 @@ public final class InternedSubterms extends UnitPri implements HijackMemoize.Com
 
     public transient Term[] rawSubs;
 
-    //Y
+    
     public Subterms y = null;
 
     public InternedSubterms(Term... subs) {
@@ -43,7 +43,7 @@ public final class InternedSubterms extends UnitPri implements HijackMemoize.Com
 
     @Override
     public boolean equals(Object obj) {
-        //op == p.op && dt == p.dt &&
+        
         InternedSubterms p = (InternedSubterms) obj;
         return hash == p.hash && Arrays.equals(subs, p.subs);
     }

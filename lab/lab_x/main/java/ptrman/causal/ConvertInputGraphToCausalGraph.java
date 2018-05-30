@@ -11,7 +11,7 @@ public class ConvertInputGraphToCausalGraph
         int[] numberOfOutputEdges;
         int nodeIndex;
         
-        // indices for the index into the arrays of the nodes
+        
         int[] incommingEdgesIndices;
         int[] outgoingEdgesIndices;
         
@@ -21,14 +21,14 @@ public class ConvertInputGraphToCausalGraph
         resultGraph = new DecoratedCausalGraph();
         resultGraph.nodes = createNodes(input.numberOfNodes);
         
-        // count all input/output edges
+        
         for( InputGraph.Connection iterationConnection : input.connections )
         {
             numberOfOutputEdges[iterationConnection.sourceIndex]++;
             numberOfInputEdges[iterationConnection.destinationIndex]++;
         }
         
-        // allocate all input/output edges
+        
         nodeIndex = 0;
         for( DecoratedCausalGraph.Node iterationNode : resultGraph.nodes )
         {
@@ -38,7 +38,7 @@ public class ConvertInputGraphToCausalGraph
             nodeIndex++;
         }
         
-        // fill incomming/outgoing edge arrays
+        
         incommingEdgesIndices = new int[input.numberOfNodes];
         outgoingEdgesIndices = new int[input.numberOfNodes];
         

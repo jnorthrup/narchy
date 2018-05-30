@@ -12,13 +12,13 @@ public class FileBrowser extends ConsoleGUI {
 
     @Override
     protected void init(BasicWindow window) {
-        //window.getTextGUI().getGUIThread().invokeLater(()->{
+        
                 window.setComponent(
                         new FileDialogBuilder()
 
                                 .build().getComponent() );
-                        //.showDialog(window.getTextGUI());
-        //});
+                        
+        
 
     }
 

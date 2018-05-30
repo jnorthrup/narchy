@@ -34,7 +34,7 @@ public class NormalizingDeriverBudgeting implements DeriverBudgeting {
                 clear();
             }
 
-            premisePri = d.pri; //priority of the premise about to be derived; to be applied to the next batch
+            premisePri = d.pri; 
         }
     }
 

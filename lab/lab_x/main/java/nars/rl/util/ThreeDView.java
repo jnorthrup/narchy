@@ -168,15 +168,15 @@ public class ThreeDView extends JFXPanel {
                     modifier = 10.0;
                 }
                 if (me.isPrimaryButtonDown()) {
-                    cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0);  // +
-                    cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0);  // -
+                    cameraXform.ry.setAngle(cameraXform.ry.getAngle() - mouseDeltaX * modifierFactor * modifier * 2.0);  
+                    cameraXform.rx.setAngle(cameraXform.rx.getAngle() + mouseDeltaY * modifierFactor * modifier * 2.0);  
                 } else if (me.isSecondaryButtonDown()) {
                     double z = camera.getTranslateZ();
                     double newZ = z + mouseDeltaX * modifierFactor * modifier;
                     camera.setTranslateZ(newZ);
                 } else if (me.isMiddleButtonDown()) {
-                    cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  // -
-                    cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  // -
+                    cameraXform2.t.setX(cameraXform2.t.getX() + mouseDeltaX * modifierFactor * modifier * 0.3);  
+                    cameraXform2.t.setY(cameraXform2.t.getY() + mouseDeltaY * modifierFactor * modifier * 0.3);  
                 }
             }
         });
@@ -270,11 +270,11 @@ public class ThreeDView extends JFXPanel {
                         if (event.isControlDown() && event.isShiftDown()) {
                             cameraXform2.t.setX(cameraXform2.t.getX() - 10.0 * CONTROL_MULTIPLIER);
                         } else if (event.isAltDown() && event.isShiftDown()) {
-                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 10.0 * ALT_MULTIPLIER);  // -
+                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 10.0 * ALT_MULTIPLIER);  
                         } else if (event.isControlDown()) {
                             cameraXform2.t.setX(cameraXform2.t.getX() - 1.0 * CONTROL_MULTIPLIER);
                         } else if (event.isAltDown()) {
-                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  // -
+                            cameraXform.ry.setAngle(cameraXform.ry.getAngle() + 2.0 * ALT_MULTIPLIER);  
                         }
                         break;
                 }
@@ -401,7 +401,7 @@ public class ThreeDView extends JFXPanel {
 
         public Xform(RotateOrder rotateOrder) {
             super();
-            // choose the order of rotations based on the rotateOrder
+            
             switch (rotateOrder) {
                 case XYZ:
                     getTransforms().addAll(t, p, rz, ry, rx, s, ip);
@@ -413,7 +413,7 @@ public class ThreeDView extends JFXPanel {
                     getTransforms().addAll(t, p, rz, rx, ry, s, ip);
                     break;
                 case YZX:
-                    getTransforms().addAll(t, p, rx, rz, ry, s, ip);  // For Camera
+                    getTransforms().addAll(t, p, rx, rz, ry, s, ip);  
                     break;
                 case ZXY:
                     getTransforms().addAll(t, p, ry, rx, rz, s, ip);
@@ -435,11 +435,11 @@ public class ThreeDView extends JFXPanel {
             t.setY(y);
         }
 
-    // Cannot override these methods as they are final:
-        // public void setTranslateX(double x) { t.setX(x); }
-        // public void setTranslateY(double y) { t.setY(y); }
-        // public void setTranslateZ(double z) { t.setZ(z); }
-        // Use these methods instead:
+    
+        
+        
+        
+        
         public void setTx(double x) {
             t.setX(x);
         }
@@ -494,11 +494,11 @@ public class ThreeDView extends JFXPanel {
             s.setZ(z);
         }
 
-    // Cannot override these methods as they are final:
-        // public void setScaleX(double x) { s.setX(x); }
-        // public void setScaleY(double y) { s.setY(y); }
-        // public void setScaleZ(double z) { s.setZ(z); }
-        // Use these methods instead:
+    
+        
+        
+        
+        
         public void setSx(double x) {
             s.setX(x);
         }
@@ -556,78 +556,78 @@ public class ThreeDView extends JFXPanel {
 
     private void buildMolecule() {
 
-//        final PhongMaterial redMaterial = new PhongMaterial();
-//        redMaterial.setDiffuseColor(Color.DARKRED);
-//        redMaterial.setSpecularColor(Color.RED);
-//
-//        final PhongMaterial whiteMaterial = new PhongMaterial();
-//        whiteMaterial.setDiffuseColor(Color.WHITE);
-//        whiteMaterial.setSpecularColor(Color.LIGHTBLUE);
-//
-//        final PhongMaterial greyMaterial = new PhongMaterial();
-//        greyMaterial.setDiffuseColor(Color.DARKGREY);
-//        greyMaterial.setSpecularColor(Color.GREY);
-//
-//        // Molecule Hierarchy
-//        // [*] moleculeXform
-//        //     [*] oxygenXform
-//        //         [*] oxygenSphere
-//        //     [*] hydrogen1SideXform
-//        //         [*] hydrogen1Xform
-//        //             [*] hydrogen1Sphere
-//        //         [*] bond1Cylinder
-//        //     [*] hydrogen2SideXform
-//        //         [*] hydrogen2Xform
-//        //             [*] hydrogen2Sphere
-//        //         [*] bond2Cylinder
-//        Xform moleculeXform = new Xform();
-//        Xform oxygenXform = new Xform();
-//        Xform hydrogen1SideXform = new Xform();
-//        Xform hydrogen1Xform = new Xform();
-//        Xform hydrogen2SideXform = new Xform();
-//        Xform hydrogen2Xform = new Xform();
-//
-//        final PhongMaterial whiteMaterial = new PhongMaterial();
-//        whiteMaterial.setDiffuseColor(Color.WHITE);
-//        whiteMaterial.setSpecularColor(Color.LIGHTBLUE);//        Sphere oxygenSphere = new Sphere(40.0);
-//        oxygenSphere.setMaterial(redMaterial);
-//
-//        Sphere hydrogen1Sphere = new Sphere(30.0);
-//        hydrogen1Sphere.setMaterial(whiteMaterial);
-//        hydrogen1Sphere.setTranslateX(0.0);
-//
-//        Sphere hydrogen2Sphere = new Sphere(30.0);
-//        hydrogen2Sphere.setMaterial(whiteMaterial);
-//        hydrogen2Sphere.setTranslateZ(0.0);
-//
-//        Cylinder bond1Cylinder = new Cylinder(5, 100);
-//        bond1Cylinder.setMaterial(greyMaterial);
-//        bond1Cylinder.setTranslateX(50.0);
-//        bond1Cylinder.setRotationAxis(Rotate.Z_AXIS);
-//        bond1Cylinder.setRotate(90.0);
-//
-//        Cylinder bond2Cylinder = new Cylinder(5, 100);
-//        bond2Cylinder.setMaterial(greyMaterial);
-//        bond2Cylinder.setTranslateX(50.0);
-//        bond2Cylinder.setRotationAxis(Rotate.Z_AXIS);
-//        bond2Cylinder.setRotate(90.0);
-//
-//        moleculeXform.getChildren().add(oxygenXform);
-//        moleculeXform.getChildren().add(hydrogen1SideXform);
-//        moleculeXform.getChildren().add(hydrogen2SideXform);
-//        oxygenXform.getChildren().add(oxygenSphere);
-//        hydrogen1SideXform.getChildren().add(hydrogen1Xform);
-//        hydrogen2SideXform.getChildren().add(hydrogen2Xform);
-//        hydrogen1Xform.getChildren().add(hydrogen1Sphere);
-//        hydrogen2Xform.getChildren().add(hydrogen2Sphere);
-//        hydrogen1SideXform.getChildren().add(bond1Cylinder);
-//        hydrogen2SideXform.getChildren().add(bond2Cylinder);
-//
-//        hydrogen1Xform.setTx(100.0);
-//        hydrogen2Xform.setTx(100.0);
-//        hydrogen2SideXform.setRotateY(104.5);
 
-        //space.getChildren().add(moleculeXform);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
 
     }
 

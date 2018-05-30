@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -44,10 +44,10 @@ import spacegraph.util.math.v3;
  */
 public class HingeConstraint extends TypedConstraint {
 
-	private final JacobianEntry[] jac/*[3]*/ = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() }; // 3 orthogonal linear constraints
-	private final JacobianEntry[] jacAng/*[3]*/ = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() }; // 2 orthogonal angular constraints+ 1 for limit/motor
+	private final JacobianEntry[] jac/*[3]*/ = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() }; 
+	private final JacobianEntry[] jacAng/*[3]*/ = { new JacobianEntry(), new JacobianEntry(), new JacobianEntry() }; 
 
-	private final Transform rbAFrame = new Transform(); // constraint axii. Assumes z is hinge axis.
+	private final Transform rbAFrame = new Transform(); 
 	private final Transform rbBFrame = new Transform();
 
 	private float motorTargetVelocity;
@@ -83,7 +83,7 @@ public class HingeConstraint extends TypedConstraint {
 
 		rbAFrame.set(pivotInA);
 
-		// since no frame is given, assume this to be zero angle and just pick rb transform axis
+		
 		v3 rbAxisA1 = new v3();
 		v3 rbAxisA2 = new v3();
 
@@ -117,7 +117,7 @@ public class HingeConstraint extends TypedConstraint {
 		rbBFrame.basis.setRow(1, rbAxisB1.y, rbAxisB2.y, -axisInB.y);
 		rbBFrame.basis.setRow(2, rbAxisB1.z, rbAxisB2.z, -axisInB.z);
 
-		// start with free
+		
 		lowerLimit = 1e30f;
 		upperLimit = -1e30f;
 		biasFactor = 0.3f;
@@ -131,8 +131,8 @@ public class HingeConstraint extends TypedConstraint {
 		angularOnly = false;
 		enableAngularMotor = false;
 
-		// since no frame is given, assume this to be zero angle and just pick rb transform axis
-		// fixed axis in worldspace
+		
+		
 		v3 rbAxisA1 = new v3();
 		Transform centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
 		centerOfMassA.basis.getColumn(0, rbAxisA1);
@@ -169,7 +169,7 @@ public class HingeConstraint extends TypedConstraint {
 		rbBFrame.basis.setRow(1, rbAxisB1.y, rbAxisB2.y, axisInB.y);
 		rbBFrame.basis.setRow(2, rbAxisB1.z, rbAxisB2.z, axisInB.z);
 
-		// start with free
+		
 		lowerLimit = 1e30f;
 		upperLimit = -1e30f;
 		biasFactor = 0.3f;
@@ -185,12 +185,12 @@ public class HingeConstraint extends TypedConstraint {
 		angularOnly = false;
 		enableAngularMotor = false;
 
-		// flip axis
+		
 		this.rbBFrame.basis.m02 *= -1f;
 		this.rbBFrame.basis.m12 *= -1f;
 		this.rbBFrame.basis.m22 *= -1f;
 
-		// start with free
+		
 		lowerLimit = 1e30f;
 		upperLimit = -1e30f;
 		biasFactor = 0.3f;
@@ -206,9 +206,9 @@ public class HingeConstraint extends TypedConstraint {
 		angularOnly = false;
 		enableAngularMotor = false;
 
-		// not providing rigidbody B means implicitly using worldspace for body B
+		
 
-		// flip axis
+		
 		this.rbBFrame.basis.m02 *= -1f;
 		this.rbBFrame.basis.m12 *= -1f;
 		this.rbBFrame.basis.m22 *= -1f;
@@ -216,7 +216,7 @@ public class HingeConstraint extends TypedConstraint {
 		this.rbBFrame.set(this.rbAFrame);
 		rbA.getCenterOfMassTransform(new Transform()).transform(this.rbBFrame);
 
-		// start with free
+		
 		lowerLimit = 1e30f;
 		upperLimit = -1e30f;
 		biasFactor = 0.3f;
@@ -280,18 +280,18 @@ public class HingeConstraint extends TypedConstraint {
 			}
 		}
 
-		// calculate two perpendicular jointAxis, orthogonal to hingeAxis
-		// these two jointAxis require equal angular velocities for both bodies
+		
+		
 
-		// this is unused for now, it's a todo
+		
 		v3 jointAxis0local = new v3();
 		v3 jointAxis1local = new v3();
 
 		rbAFrame.basis.getColumn(2, tmp);
 		TransformUtil.planeSpace1(tmp, jointAxis0local, jointAxis1local);
 
-		// TODO: check this
-		//getRigidBodyA().getCenterOfMassTransform().getBasis() * m_rbAFrame.getBasis().getColumn(2);
+		
+		
 
 		v3 jointAxis0 = new v3(jointAxis0local);
 		centerOfMassA.basis.transform(jointAxis0);
@@ -311,24 +311,24 @@ public class HingeConstraint extends TypedConstraint {
 				rbA.getInvInertiaDiagLocal(new v3()),
 				rbB.getInvInertiaDiagLocal(new v3()));
 
-		// JAVA NOTE: reused mat1 and mat2, as recomputation is not needed
+		
 		jacAng[1].init(jointAxis1,
 				mat1,
 				mat2,
 				rbA.getInvInertiaDiagLocal(new v3()),
 				rbB.getInvInertiaDiagLocal(new v3()));
 
-		// JAVA NOTE: reused mat1 and mat2, as recomputation is not needed
+		
 		jacAng[2].init(hingeAxisWorld,
 				mat1,
 				mat2,
 				rbA.getInvInertiaDiagLocal(new v3()),
 				rbB.getInvInertiaDiagLocal(new v3()));
 
-		// Compute limit information
+		
 		float hingeAngle = getHingeAngle();
 
-		//set bias, sign, clear accumulator
+		
 		correction = 0f;
 		limitSign = 0f;
 		solveLimit = false;
@@ -347,7 +347,7 @@ public class HingeConstraint extends TypedConstraint {
 			}
 		}
 
-		// Compute K = J*W*J' for hinge axis
+		
 		v3 axisA = new v3();
 		rbAFrame.basis.getColumn(2, axisA);
 		centerOfMassA.basis.transform(axisA);
@@ -373,7 +373,7 @@ public class HingeConstraint extends TypedConstraint {
 
 		float tau = 0.3f;
 
-		// linear part
+		
 		if (!angularOnly) {
 			v3 rel_pos1 = new v3();
 			rel_pos1.sub(pivotAInW, rbA.getCenterOfMassPosition(tmpVec));
@@ -392,9 +392,9 @@ public class HingeConstraint extends TypedConstraint {
 
 				float rel_vel;
 				rel_vel = normal.dot(vel);
-				// positional error (zeroth order error)
+				
 				tmp.sub(pivotAInW, pivotBInW);
-				float depth = -(tmp).dot(normal); // this is the error projected on the normal
+				float depth = -(tmp).dot(normal); 
 				float impulse = depth * tau / timeStep * jacDiagABInv - rel_vel * jacDiagABInv;
 				appliedImpulse += impulse;
 				v3 impulse_vector = new v3();
@@ -410,9 +410,9 @@ public class HingeConstraint extends TypedConstraint {
 		}
 
 
-        // solve angular part
+        
 
-        // get axes in world space
+        
         v3 axisA = new v3();
         rbAFrame.basis.getColumn(2, axisA);
         centerOfMassA.basis.transform(axisA);
@@ -439,7 +439,7 @@ public class HingeConstraint extends TypedConstraint {
         v3 velrelOrthog = new v3();
         velrelOrthog.sub(angAorthog, angBorthog);
 
-        // solve orthogonal angular velocity correction
+        
         float relaxation = 1f;
         float len = velrelOrthog.length();
         if (len > 0.00001f) {
@@ -448,14 +448,14 @@ public class HingeConstraint extends TypedConstraint {
 
             float denom = getRigidBodyA().computeAngularImpulseDenominator(normal) +
                     getRigidBodyB().computeAngularImpulseDenominator(normal);
-            // scale for mass and relaxation
-            // todo:  expose this 0.9 factor to developer
+            
+            
             velrelOrthog.scale((1f / denom) * relaxationFactor);
         }
 
-        // solve angular positional correction
-        // TODO: check
-        //v3 angularError = -axisA.cross(axisB) *(btScalar(1.)/timeStep);
+        
+        
+        
         v3 angularError = new v3();
         angularError.cross(axisA, axisB);
         angularError.negate();
@@ -477,14 +477,14 @@ public class HingeConstraint extends TypedConstraint {
         tmp.sub(velrelOrthog, angularError);
         rbB.torqueImpulse(tmp);
 
-        // solve limit
+        
         if (solveLimit) {
             tmp.sub(angVelB, angVelA);
             float amplitude = ((tmp).dot(axisA) * relaxationFactor + correction * (1f / timeStep) * biasFactor) * limitSign;
 
             float impulseMag = amplitude * kHinge;
 
-            // Clamp the accumulated impulse
+            
             float temp = accLimitImpulse;
             accLimitImpulse = Math.max(accLimitImpulse + impulseMag, 0f);
             impulseMag = accLimitImpulse - temp;
@@ -498,9 +498,9 @@ public class HingeConstraint extends TypedConstraint {
             rbB.torqueImpulse(tmp);
         }
 
-        // apply motor
+        
         if (enableAngularMotor) {
-            // todo: add limits too
+            
             v3 angularLimit = new v3();
             angularLimit.set(0f, 0f, 0f);
 
@@ -512,7 +512,7 @@ public class HingeConstraint extends TypedConstraint {
             float motor_relvel = desiredMotorVel - projRelVel;
 
             float unclippedMotorImpulse = kHinge * motor_relvel;
-            // todo: should clip against accumulated impulse
+            
             float clippedMotorImpulse = unclippedMotorImpulse > maxMotorImpulse ? maxMotorImpulse : unclippedMotorImpulse;
             clippedMotorImpulse = clippedMotorImpulse < -maxMotorImpulse ? -maxMotorImpulse : clippedMotorImpulse;
             v3 motorImp = new v3();

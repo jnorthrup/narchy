@@ -68,7 +68,7 @@ public class SphereLight extends Light implements Shader
 		lightRadius = radius;
         lightColor.set(color);
         
-        // Sichtbares Objekt zur Szene hinzuf�gen:
+        
         sphere = new Sphere(lightCenter, lightRadius, this);
         sphere.isLight = true;
 	}
@@ -100,8 +100,8 @@ public class SphereLight extends Light implements Shader
     @Override
     public void startRay(Vector3d point)
     {
-        // Bestimme, wie viele Strahlen vom aktuellen Punkt aus zu der Lichtquelle
-        // geschickt werden sollen:
+        
+        
         if (RaytracerConstants.SOFT_SHADOWS_ENABLED)
         {
             this.point.sub(lightCenter, point);
@@ -120,28 +120,28 @@ public class SphereLight extends Light implements Shader
             raysToSend = 1;
         }
         
-        // Punkt festlegen, f�r den Strahlen zum Licht generiert werden:
+        
         this.point.set(point);
         
-        // Orthogonale aufspannende Vektoren der Ebene bestimmen, deren Normale
-        // der Richtungsvektor zum Punkt ist.
-        // Diese Ebene umfasst die sichtbare Kreisfl�che der Kugel.
+        
+        
+        
         axis2.sub(lightCenter, point);
         
-        // 1. Vektor bestimmen:
+        
         axis1.x = 1.0; axis1.y = 0.0; axis1.z = 0.0;
         axis1.cross(axis1, axis2);
         if ((axis1.x == 0.0) && (axis1.y == 0.0) && (axis1.z == 0.0))
         {
-            // Beide Vektoren sind linear abh�ngig. Versuche es erneut:
+            
             axis1.z = 1.0;
             axis1.cross(axis1, axis2);
         }
         
-        // 2. Vektor bestimmen:
+        
         axis2.cross(axis1, axis2);
         
-        // Aufspannende Vektoren auf die halbe L�nge des Radiuses normieren:
+        
         axis1.scale(lightRadius/axis1.length());
         axis2.scale(lightRadius/axis2.length());
     }
@@ -156,7 +156,7 @@ public class SphereLight extends Light implements Shader
 	@Override
     public Ray genRay()
     {
-        // Pr�fen, ob noch Strahlen zu senden sind:
+        
         if (raysToSend <= 0)
             return null;
         raysToSend--;
@@ -165,8 +165,8 @@ public class SphereLight extends Light implements Shader
         
         if (RaytracerConstants.SOFT_SHADOWS_ENABLED)
         {
-            // Bestimme einen beliebigen (gleich verteilten) Punkt auf dem
-            // Einheitskreis:
+            
+            
             double x, y;
             do
             {
@@ -175,14 +175,14 @@ public class SphereLight extends Light implements Shader
             }
             while (x*x+y*y > 1.0);
             
-            // Zuf�lligen Punkt auf der sichtbaren Kreisfl�che der Kugel erzeugen:
+            
             ray.dir.scaleAdd(x, axis1, ray.dir);
             ray.dir.scaleAdd(y, axis2, ray.dir);
         }
         ray.dir.sub(point);
         ray.length = 1.0;
         
-        // Entfernung des betrachteten Lichtpunktes merken:
+        
         lastRayLength = (float)ray.dir.length();
         
         ray.ignoreLights = true;
@@ -192,7 +192,7 @@ public class SphereLight extends Light implements Shader
     @Override
     public ColorEx getIlluminance()
     {
-        // Lichtabschw�chung berechnen:
+        
         ColorEx color = new ColorEx(lightColor);
         color.scale(1.0f /(RaytracerConstants.LIGHT_ATTENUATION_CONSTANT +
                 RaytracerConstants.LIGHT_ATTENUATION_LINEAR*lastRayLength +
@@ -262,7 +262,7 @@ public class SphereLight extends Light implements Shader
 		double t;
 		n.sub(org,center);
 		
-		//Bestimmung der Ebene, auf die die Kugel reduziert wird.
+		
 		for(;;) {
 			t = Math.random()*2-1;
 			r.x = t;
@@ -289,13 +289,13 @@ public class SphereLight extends Light implements Shader
 		ray.org.set(org);
 		for(int i=0 ; i<4 ; i++) {
 			
-			//4 Punkte auf der H�lle der Kugel werden getestet.
+			
 			if(i==0) ray.dir.add(center, dir1);
 			if(i==1) ray.dir.add(center, dir2);
 			if(i==2) ray.dir.scaleAdd(-1, dir1, center);
 			if(i==3) ray.dir.scaleAdd(-1, dir2, center);
 			ray.dir.sub(ray.dir, org);
-			//ray = genRay(intersection.getPoint());
+			
 			
     		if (!intersection.scene.occlude(ray)) {
     			count++;

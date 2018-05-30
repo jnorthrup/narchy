@@ -23,9 +23,9 @@ public class Log4JOutput extends Output implements LogOutput {
         Logger.getRootLogger().addAppender(sa);
         
         ConsoleAppender console = new ConsoleAppender();
-        //String PATTERN = "%d [%p|%c|%C{1}] %m%n";
         
-        //http://logging.apache.org/log4j/2.x/manual/layouts.html#HTMLLayout
+        
+        
         String PATTERN = "%c{1} %m%n";
         
         console.setLayout(new PatternLayout(PATTERN)); 

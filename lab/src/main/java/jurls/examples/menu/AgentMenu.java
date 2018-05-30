@@ -27,10 +27,10 @@ public class AgentMenu extends RLMenu {
     public JRadioButtonMenuItem brain = null;
     public AgentMenu soulMenu = null;
 
-    //TODO make a menu for this
+    
     private ActionSelector getActionSelector() {
         return new EpsilonGreedyActionSelector();
-        //return new ByQActionSelector();
+        
     }
 
     public AgentMenu(String prefix, int depth) {
@@ -72,9 +72,9 @@ public class AgentMenu extends RLMenu {
             RLParameters rLParameters
     ) {
 
-//        if (haiq.isSelected()) {
-//            return new HsomQBrain(s0.length, numActions);
-//        }
+
+
+
 
         UpdateProcedure up = null;
 

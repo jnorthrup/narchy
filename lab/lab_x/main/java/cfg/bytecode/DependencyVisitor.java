@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-//http://websvn.ow2.org/filedetails.php?repname=asm&path=%2Ftrunk%2Fasm%2Fexamples%2Fdependencies%2Fsrc%2Forg%2Fobjectweb%2Fasm%2Fdepend%2FDependencyVisitor.java
+
 
 
 /**
@@ -35,7 +35,7 @@ public class DependencyVisitor extends ClassVisitor {
         super(Opcodes.ASM5);
     }
 
-    // ClassVisitor
+    
 
     @Override
     public void visit(int version, int access, String name,
@@ -282,7 +282,7 @@ public class DependencyVisitor extends ClassVisitor {
         }
     }
 
-    // ---------------------------------------------
+    
 
     private String getGroupKey(String name) {
         int n = name.lastIndexOf('/');

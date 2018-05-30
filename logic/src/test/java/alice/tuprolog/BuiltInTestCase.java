@@ -30,7 +30,7 @@ public class BuiltInTestCase {
 		assertEquals(new Struct("->", results), BuiltIn.convertTermToGoal(new Struct("->", arguments)));
 	}
 	
-	//Based on the bug #59 Grouping conjunctions in () changes result on sourceforge
+	
 	@Test public void testGroupingConjunctions() throws InvalidTheoryException, MalformedGoalException {
 		Prolog engine = new Prolog();
 		engine.setTheory(new Theory("g1. g2."));

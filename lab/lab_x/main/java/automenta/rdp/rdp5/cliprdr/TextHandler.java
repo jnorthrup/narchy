@@ -51,7 +51,7 @@ public class TextHandler extends TypeHandler {
 	}
 
 	public static Transferable handleData(AbstractRdpPacket data, int length) {
-		StringBuilder thingy = new StringBuilder(length);// thingy = "";
+		StringBuilder thingy = new StringBuilder(length);
 		for (int i = 0; i < length; i++) {
 			int aByte = data.get8();
 			if (aByte != 0)
@@ -88,10 +88,10 @@ public class TextHandler extends TypeHandler {
 				s = e.toString();
 			}
 
-			// TODO: think of a better way of fixing this
+			
 			s = s.replace('\n', (char) 0x0a);
-			// s = s.replaceAll("" + (char) 0x0a, "" + (char) 0x0d + (char)
-			// 0x0a);
+			
+			
 			s = Utilities_Localised.strReplaceAll(s, "" + (char) 0x0a, ""
 					+ (char) 0x0d + (char) 0x0a);
 			return s.getBytes();
@@ -115,14 +115,14 @@ public class TextHandler extends TypeHandler {
 				s = e.toString();
 			}
 
-			// TODO: think of a better way of fixing this
+			
 			s = s.replace('\n', (char) 0x0a);
-			// s = s.replaceAll("" + (char) 0x0a, "" + (char) 0x0d + (char)
-			// 0x0a);
+			
+			
 			s = Utilities_Localised.strReplaceAll(s, "" + (char) 0x0a, ""
 					+ (char) 0x0d + (char) 0x0a);
 
-			// return s.getBytes();
+			
 			c.send_data(s.getBytes(), s.length());
 		}
 	}

@@ -27,9 +27,9 @@ public class CameraSensorTest {
 
         n.log();
 
-//        System.out.println("set to NaN");
-//        for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = Float.NaN;
-//        assertEquals(c, f, n);
+
+
+
 
         System.out.println("all 0");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 0f;
@@ -37,13 +37,13 @@ public class CameraSensorTest {
         n.run(1);
         assertEquals(c, f, n.time(),n);
 
-        n.run(3); //delay
+        n.run(3); 
 
 
         System.out.println("all 1");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
         c.input();
-        n.run(3);  //delay
+        n.run(3);  
         assertEquals(c, f, n.time(),n);
 
 
@@ -53,7 +53,7 @@ public class CameraSensorTest {
         n.run(1);
         assertEquals(c, f, n.time(), n);
 
-        n.run(3); //delay
+        n.run(3); 
 
         System.out.println("all 1");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
@@ -61,7 +61,7 @@ public class CameraSensorTest {
         n.run(1);
         assertEquals(c, f, n.time(), n);
 
-        //TODO test individual pixel motion
+        
     }
 
     static void assertEquals(Bitmap2DSensor c, float[][] f, long when, NAR n) {

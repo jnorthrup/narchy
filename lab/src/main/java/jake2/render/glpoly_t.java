@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: glpoly_t.java,v 1.3 2005-01-09 22:32:10 cawe Exp $
+
+
 
 package jake2.render;
 
@@ -33,9 +33,9 @@ public abstract class glpoly_t {
 	public glpoly_t next;
 	public glpoly_t chain;
 	public int numverts;
-	public int flags; // for SURF_UNDERWATER (not needed anymore?)
+	public int flags; 
 	
-	// the array position (glDrawArrays) 
+	
 	public int pos;
 	
 	protected glpoly_t() {

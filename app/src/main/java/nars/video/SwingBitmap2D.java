@@ -23,15 +23,15 @@ public class SwingBitmap2D extends BufferedImageBitmap2D {
         update();
     }
 
-//    final AtomicBoolean ready = new AtomicBoolean(true);
+
 
     @Override public void update() {
-//        if (ready.compareAndSet(true, false)) {
-            //SwingUtilities.invokeLater(() -> {
-//                ready.set(true);
+
+            
+
                 out = AWTCamera.get(component, out, selection);
-            //});
-//        }
+            
+
     }
 
 
@@ -82,7 +82,7 @@ public class SwingBitmap2D extends BufferedImageBitmap2D {
         int isw = (int)sw;
         int ish = (int)sh;
         if ((isw == rw) && (ish == rh))
-            return false; //no change
+            return false; 
 
         double dx = (sw - rw)/2.0;
         double dy = (sh - rh)/2.0;

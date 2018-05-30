@@ -30,85 +30,85 @@ public interface TemporalBeliefTable extends TaskTable {
      */
     static float value(Task t, long start, long end, long dur) {
 
-//        float focusedEvi = Revision.eviInteg(t, start, end, dur);
+
         float absDistance =
-//                t.minDistanceTo(start) + ((start!=end) ? t.minDistanceTo(end) : 0) //both start and end dist, separately
-//                ;
-                t.midDistanceTo( start ) + ((start!=end) ? t.midDistanceTo(end) : 0); //both start and end dist, separately
-                //t.midDistanceTo((start + end) / 2L);
-                //t.minDistanceTo(start, end) / ((float)dur);
-                //t.maxDistanceTo(start, end);
+
+
+                t.midDistanceTo( start ) + ((start!=end) ? t.midDistanceTo(end) : 0); 
+                
+                
+                
         float ownEvi =
                 Revision.eviInteg(t, t.start(), t.end(), dur);
 
-        //the ownEvi * 0.5 might be somewhat of an analog of the HORIZON parameter, reducing the strength of old evidence in relation to newer
-//        return (1 + focusedEvi) * (1 + ownEvi * 0.5f) / (1 + absDistance);
+        
+
         return  ( ownEvi / (1 + (/*Math.log(1+*/absDistance/ dur)));
-//        return focusedEvi;
 
-//        if (t.isDeleted())
-//            return Float.NEGATIVE_INFINITY;
 
-        //return ((1+t.conf()) * (1+t.priElseZero())) / (1f + Math.abs((start+end)/2 - t.mid())/((float)dur));
-        //return t.conf() / (1f + t.distanceTo(start, end)/((float)dur));
-        //return (float) (t.conf() / (1f + Math.log(1f+t.distanceTo(start, end)/((float)dur))));
-        //return t.conf() / (1f + t.distanceTo(start, end)/dur);
 
-//
-//        //float fdur = dur;
-//        //float range = t.range();
 
-//        if (focusedEvi > Float.MIN_NORMAL) {
-//            return focusedEvi;
-//        } else {
-//            //rank out-of-range by distance divided by its evidence integral
-//
-//            return
-//                    //-t.minDistanceTo(start, end)
-//                    //-t.midDistanceTo(start, end) //TODO
-//                    absDistance
-//                    /
-//                    +t.eviInteg(dur, t.start(), t.end());
-//        }
 
-//        if (dt == 0)
-//            return ee; //full integral
-//        else {
-//            //reduce the full integration by a factor relating to the distance (ex: isoceles triangle below)
-//            /*
-//            -----------+
-//                       |   .      .
-//                       |                 .     .
-//                       ^  - - - -  - - - - - - -
-//                      end                      ? <- time point being sampled
-//             */
-//            return (float) Param.evi(ee, dt, dur);
-//        }
+        
+        
+        
+        
 
-                //t.evi() * (1/(1+t.minDistanceTo(start, end)/dur))
-                //t.evi() * (1+Interval.intersectLength(start, end, t.start(), t.end()))
 
-////                //t.conf(now, dur) *
-////                //t.evi(now, dur) *
-////                //* range == 0 ? 1f : (float) (1f + Math.sqrt(t.range()) / dur); ///(1+t.distanceTo(start, end)))); ///fdur
 
-//        float fdur = dur;
-//        return
-//                //(1f + t.evi()) *
-//                //(t.evi(start,end,dur))
-//                (t.conf(start,end,dur))
-//                * (float)Math.sqrt(1f + t.range()/fdur) //boost for duration
-//                ;
-//
-//                //(1f + t.evi()) * //raw because time is considered below. this covers cases where the task eternalizes
-//                //(1f / (1 + t.distanceTo(start, end)/fdur));
-//
-//                //(1f + t.conf()) * //raw because time is considered below. this covers cases where the task eternalizes
-//                //t.evi(start,end,dur) *
-//                //t.conf(now, dur) *
-//                //t.evi(now, dur) *
-//                /* ((float)Math.sqrt(1+t.range()/fdur)) */
-//                 //1 / ((1 + t.distanceTo(start, end)/fdur));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     static FloatFunction<TaskRegion> mergabilityWith(Task x, float tableDur) {
@@ -117,7 +117,7 @@ public interface TemporalBeliefTable extends TaskTable {
         long xStart = x.start();
         long xEnd = x.end();
 
-        //how important the weak confidence is
+        
         float weakConfFactor = 0.25f;
 
         return (TaskRegion _y) -> {
@@ -126,11 +126,11 @@ public interface TemporalBeliefTable extends TaskTable {
             if (Stamp.overlapsAny(xStamp, y.stamp()))
                 return Float.NaN;
 
-            //float freqCoherence = 1 - Math.abs(x.freq() - y.freq());
+            
             return
                     (1f / (1f +
                             (Math.abs(y.start() - xStart) + Math.abs(y.end() - xEnd))/tableDur))
-                    //* (1f + weakConfFactor * (1f - y.conf())) //prefer weak
+                    
             ;
         };
     }
@@ -174,7 +174,7 @@ public interface TemporalBeliefTable extends TaskTable {
 
         @Override
         public int capacity() {
-            //throw new UnsupportedOperationException();
+            
             return Integer.MAX_VALUE;
         }
 
@@ -236,7 +236,7 @@ public interface TemporalBeliefTable extends TaskTable {
             if (!x.isDeleted() && x.intersects(minT, maxT))
                 return each.test(x);
             else
-                return true; //continue
+                return true; 
         });
     }
 

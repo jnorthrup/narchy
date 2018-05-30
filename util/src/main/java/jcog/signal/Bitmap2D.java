@@ -23,7 +23,7 @@ public interface Bitmap2D {
 
     /** RGB filtered brightness, if supported; otherwise the factors are ignored */
     default float brightness(int xx, int yy, float rFactor, float gFactor, float bFactor) {
-        return brightness(xx, yy); //DEFAULT: unsupported
+        return brightness(xx, yy); 
     }
 
     static float rgbToMono(int r, int g, int b) {
@@ -44,14 +44,14 @@ public interface Bitmap2D {
         void pixel(int index, float whiteLevel);
     }
 
-//    default void see(EachPixelRGBf m) {
-//        see((x, y, p)-> {
-//            intToFloat(m, x, y, p);
-//        });
-//    }
+
+
+
+
+
 
     default void intToFloat(EachPixelRGBf m, int x, int y, int p) {
-        //int a = (p & 0xff000000) >> 24;
+        
         int a = 255;
         float r = decodeRed(p);
         float g = decodeGreen(p);
@@ -60,22 +60,22 @@ public interface Bitmap2D {
     }
 
 
-//    default void seeMono(PerPixelMono m) {
-//        see((x, y, p)-> {
-//            int r = (p & 0x00ff0000) >> 16;
-//            int g = (p & 0x0000ff00) >> 8;
-//            int b = (p & 0x000000ff);
-//
-//            m.pixel(x, y, ((r+g+b) / 256f)/3f);
-//        });
-//    }
-//
-//
-//    default void seeMono(PerIndexMono m) {
-//        seeMono((x, y, p)-> {
-//            m.pixel(width() * y + x, p);
-//        });
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     static float decodeRed(int p) {
@@ -91,11 +91,11 @@ public interface Bitmap2D {
 
 
 
-//    public static float noise(float v, float noiseLevel, Random rng) {
-//        if (noiseLevel > 0) {
-//            return Util.clamp(v + (rng.nextFloat() * noiseLevel));
-//        }
-//        return v;
-//    }
+
+
+
+
+
+
 
 }

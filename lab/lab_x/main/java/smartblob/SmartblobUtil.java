@@ -29,40 +29,40 @@ public class SmartblobUtil{
 	
 	public static List<ChangeSpeed> defaultChangeSpeeds = Collections.unmodifiableList(Arrays.<ChangeSpeed>asList(
 		new AccelerateLinearlyFromDistanceConstraints(10f),
-		//new AccelerateLinearlyFromDistanceConstraints(200f),
-		//new AccelerateConstantFromDistanceConstraints(140),
-		//new AccelerateLinearlyFromDistanceConstraints(523f),
-		//new AccelerateLinearlyFromDistanceConstraints(30f),
-		//new AccelerateLinearlyFromDistanceConstraints(10f),
-		//new AccelerateLinearlyFromDistanceConstraints(2f),
+		
+		
+		
+		
+		
+		
 			
-		//new Friction(2f),
-		//new Friction(5f),
-		//new Friction(15f),
+		
+		
+		
 		new Friction(2f),
-		//new Friction(-3f),
-		//new Friction(5f),
-		//new Friction(50f),
+		
+		
+		
 			
-		//new RelativeFriction(.3f),
-		//new RelativeFriction(.5f)
-		//new RelativeFriction(20f),
+		
+		
+		
 		new RelativeMotion(10f)
-		//new RelativeFriction(1000f),
+		
 			
-		//new HoldCenterTogether()
+		
 			
-		//new HoldSpeedConstant(40)
+		
 	));
 	
 	public static LayeredZigzag simpleSmartblobExample(int layers, int layerSize, float r){
 		
-		//Smartblob blob = new LayeredZigzag(null, 6, 16, 260, 100, 90);
-		//LayeredZigzag blob = new LayeredZigzag(null, 5, 16, 100, 100, 90);
+		
+		
 		LayeredZigzag blob = new LayeredZigzag(null, layers, layerSize, 100, 100, r);
-		//LayeredZigzag blob = new LayeredZigzag(null, 7, 32, 100, 100, 90);
-		//LayeredZigzag blob = new LayeredZigzag(null, 7, 32, 100, 100, 90);
-		//LayeredZigzag blob = new LayeredZigzag(null, 8, 16, 260, 100, 90);
+		
+		
+		
 		
 		blob.mutablePhysics().addAll(defaultChangeSpeeds);
 		
@@ -77,7 +77,7 @@ public class SmartblobUtil{
 			double fraction = (double)layer/(layers-1);
 			boolean layerIsOdd = (layer&1)==1;
 			for(int p=0; p<layerSize; p++){
-				//TODO optimize by reversing order of these loops?
+				
 				CornerData c = blob.corners[layer][p];
 				double minRadius = fraction*outerMinRadius;
 				double maxRadius = fraction*outerMaxRadius;
@@ -97,12 +97,12 @@ public class SmartblobUtil{
 	/** Add smartblobs to it later */
 	public static SmartblobSim newSimWithDefaultOptions(){
 		return new SmartblobSim(
-			//new Gravity(1.5f),
-			//new Gravity(3000),
+			
+			
 			new Gravity(100),
-			//new Gravity(700),
-			//new Gravity(1000),
-			//new Gravity(30),
+			
+			
+			
 			new CollisionsChangeSpeed(),
 			new BounceOnSimpleWall(0, true, false),
 			new BounceOnSimpleWall(0, false, false),
@@ -112,10 +112,10 @@ public class SmartblobUtil{
 	}
 	
 	public static void moveAll(SmartblobSim sim, float secondsSinceLastMove){
-//		Smartblob blobArray[];
-//		synchronized(sim.smartblobs){
-//			blobArray = sim.smartblobs.toArray(new Smartblob[0]);
-//		}
+
+
+
+
 		for(Smartblob blob : sim.smartblobs){
 			blob.onStartUpdatePositions();
 			if(blob instanceof LayeredZigzag){
@@ -138,7 +138,7 @@ public class SmartblobUtil{
 		}
 	}
 	
-	//public static float epsilon = .000001f;
+	
 	
 	/** Distance from the given point to closest point on the line segment.
 	The LineData must be the first LineData in an inward facing TriData,
@@ -151,12 +151,12 @@ public class SmartblobUtil{
 		float by = cornerB.y;
 		float bx = cornerB.x;
 		
-		//What if its close to a part of the infinite line that doesnt exist in the segment?
-		//Thats why cant use closest point to infinite line code.
-		float getYX[] = new float[2]; //point L somewhere on the infinite line
+		
+		
+		float getYX[] = new float[2]; 
 		getClosestPointToInfiniteLine(getYX, ay, ax, by, bx, y, x);
 		float ly = getYX[0], lx = getYX[1];
-		/*if(g != null){ //TODO remove this testing code
+		/*if(g != null){ 
 			g.setColor(Color.red);
 			g.fillRect((int)lx-5, (int)ly-5, 10, 10);
 		}*/
@@ -166,41 +166,41 @@ public class SmartblobUtil{
 		float minY = Math.min(ay,by)- EPSILON;
 		float maxY = Math.max(ay,by)+ EPSILON;
 		boolean lInYOfLine = minY < ly && ly < maxY;
-		if(lInXOfLine){ //somewhere in line segment instead of using its ends
+		if(lInXOfLine){ 
 			float plDy = y-ly, plDx = x-lx;
 			return (float)/*Math.sqrt*/(plDy*plDy + plDx*plDx);
-			//return 100;
-		}else{ //closest end of line segment
+			
+		}else{ 
 			float aDy = y-ay, aDx = x-ax;
 			float distToASquared = aDy*aDy + aDx*aDx;
 			float bDy = y-by, bDx = x-bx;
 			float distToBSquared = bDy*bDy + bDx*bDx;
 			return (float)/*Math.sqrt*/(Math.min(distToASquared, distToBSquared));
-			//return 0;
+			
 		}
 		
 		/*
-		float getYX[] = new float[2]; //point L somewhere on the infinite line
+		float getYX[] = new float[2]; 
 		float ly = getYX[0], lx = getYX[1];
 		getClosestPointToInfiniteLine(getYX, ay, ax, by, bx, y, x);
 		float abDy = by-ay, abDx = bx-ax;
-		float distanceABSquared = abDy*abDy + abDx*abDx; //between ends of line segment
+		float distanceABSquared = abDy*abDy + abDx*abDx; 
 		float alDy = ly-ay, alDx = lx-ax;
-		float distanceALSquared = alDy*alDy + alDx*alDx; //between a and point
+		float distanceALSquared = alDy*alDy + alDx*alDx; 
 		float blDy = ly-by, blDx = lx-bx;
-		float distanceBLSquared = blDy*blDy + blDx*blDx; //between b and point
-		if(distanceALSquared < distanceBLSquared){ //L is closer to A than to B
+		float distanceBLSquared = blDy*blDy + blDx*blDx; 
+		if(distanceALSquared < distanceBLSquared){ 
 			if(distanceABSquared < distanceBLSquared){
-				//return distance P (outside line) to B
-				//float bDy = y-by, bDx = x-bx;
-				//return (float)Math.sqrt(bDy*bDy + bDx*bDx);
+				
+				
+				
 				return .3f;
 			}
-		}else{ //L is closer to B than to A
+		}else{ 
 			if(distanceABSquared < distanceALSquared){
-				//return distance P (outside line) to A
-				//float aDy = y-ay, aDx = x-ax;
-				//return (float)Math.sqrt(aDy*aDy + aDx*aDx);''
+				
+				
+				
 				return .7f;
 			}
 		}
@@ -216,19 +216,19 @@ public class SmartblobUtil{
 		*/
 		
 		/*
-		//https://en.wikipedia.org/wiki/Distance_from_a_point_to_a_line
+		
 		float dy = by-ay, dx = bx-ax;
 		double twoPointsOnLineDist = Math.sqrt(dy*dy + dx*dx);
 		float lineDist = (float)((dy*x - dx*y + bx*ay - by*ax)/twoPointsOnLineDist);
 		return lineDist;
-		//return Math.min(minOfDistToAOrb, lineDist);
+		
 		*/
 		
 		
-		//older code, only uses either outer corner of triangle:
-		//float dy = y-by, dx = x-bx;
-		//float dy = y-ay, dx = x-ax;
-		//return (float)Math.sqrt(dy*dy + dx*dx);
+		
+		
+		
+		
 	}
 	
 	/** Returns true if the point is on the side of the line that the nearest
@@ -243,12 +243,12 @@ public class SmartblobUtil{
 		CornerData p2 = closestOuterTri.adjacentCorners[2];
 		float ay = y, ax = x;
 		float by = p2.y, bx = p2.x;
-		//Is (y,x) on the same side as closestOuterTri.adjacentCorners[2].(y and x)?
-		//http://math.stackexchange.com/questions/162728/how-to-determine-if-2-points-are-on-opposite-sides-of-a-line
-		//How can I determine whether the 2 points (ax,ay) and (bx,by)
-		//are on opposite sides of the line (x1,y1)→(x2,y2)? 
-		//Explicitly, they are on opposite sides iff 
-		//((y1−y2)(ax−x1)+(x2−x1)(ay−y1))((y1−y2)(bx−x1)+(x2−x1)(by−y1))<0.
+		
+		
+		
+		
+		
+		
 		float first = (y1-y2)*(ax-x1) + (x2-x1)*(ay-y1);
 		float second = (y1-y2)*(bx-x1) + (x2-x1)*(by-y1);
 		return 0 < first*second;
@@ -261,7 +261,7 @@ public class SmartblobUtil{
 	}
 	
 	public static void getClosestPointToInfiniteLine(final float getYX[], final float y1, final float x1, final float y2, final float x2, final float y, final float x){
-		//http://www.java2s.com/Code/Java/2D-Graphics-GUI/Returnsclosestpointonsegmenttopoint.htm
+		
 		float xDelta = x2 - x1;
 		float yDelta = y2 - y1;
 		float u = ((x - x1) * xDelta + (y - y1) * yDelta) / (xDelta * xDelta + yDelta * yDelta);
@@ -287,9 +287,9 @@ public class SmartblobUtil{
 		throw new RuntimeException("TODO");
 	}
 	
-	//"TODO this unexpectedly destabilizes BounceOnSimpleWall. Why? TODO for each kind of bounce (wall and on other smartblob) mirror the part of position thats past instead of just speeds. This will need extra vars in CornerData since cant change position directly." 
 	
-	//TODO? bounce on corners instead of infinite line, to handle negative curve which appears to be causing noncircle shaped objects to stick together
+	
+	
 	
 
 }

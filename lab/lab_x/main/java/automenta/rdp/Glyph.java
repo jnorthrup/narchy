@@ -29,8 +29,8 @@
  */
 package automenta.rdp;
 
-// import java.awt.*;
-// import java.awt.image.*;
+
+
 
 public class Glyph {
 

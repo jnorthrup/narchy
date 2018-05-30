@@ -38,9 +38,9 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             int sizeBeforeClear = id.size();
             id.clear();
             if (sizeBeforeClear > compactThreshold())
-                id.compact(); //shrink internal key/value array
+                id.compact(); 
         }
-        //id = null;
+        
 
         if (other != null) other.clear();
     }
@@ -83,7 +83,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
                         f.apply(key, p));
             }
         } else {
-            //use the map's native computeIfAbsent..
+            
             if (other == null) {
                 X next = f.apply(key, null);
                 if (next!=null) {
@@ -99,15 +99,15 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     public X computeIfAbsent(Term key,
                              Function<? super Term, ? extends X> mappingFunction) {
 
-//        X v;
-//        if ((v = get(key)) == null) {
-//            X newValue;
-//            if ((newValue = mappingFunction.apply(key)) != null) {
-//                put(key, newValue);
-//                return newValue;
-//            }
-//        }
-//        return v;
+
+
+
+
+
+
+
+
+
 
         if (key instanceof AnonID) {
             short a = ((AnonID) key).anonID();
@@ -122,7 +122,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
                         mappingFunction.apply(key));
             }
         } else {
-            //use the map's native computeIfAbsent..
+            
             if (other == null) {
                 X next = mappingFunction.apply(key);
                 if (next!=null) {
@@ -197,7 +197,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     protected Map<Term, X> newOtherMap() {
         return new UnifiedMap<>(initialHashCapacity(), 0.99f);
-        //return new HashMap(initialHashCapacity(), 0.99f);
+        
     }
 
     @Override
@@ -216,32 +216,32 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         other = null;
     }
 
-//    @Override
-//    public X computeIfAbsent(Term key, Function<? super Term, ? extends X> mappingFunction) {
-//        return null;
-//    }
 
-//    /**
-//     * Extended indexing and aggregate functionality
-//     * TODO - computes Subterms-like aggregates on the keySet
-//     */
-//    static class TermHashMapX<X> extends TermHashMap<X> {
-//        /**
-//         * an accumulated structure of the keys, lazily updated
-//         */
-//        public int structure() {
-//            throw new TODO();
-//        }
-//
-//        /**
-//         * an accumulated structure of the keys, lazily updated
-//         */
-//        public int volume() {
-//            throw new TODO();
-//        }
-//
-//        //other Subterms methods
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static class AnonMapEntrySet<X> extends AbstractSet<Map.Entry<Term, X>> {
         private final ShortObjectHashMap<X> id;

@@ -51,7 +51,7 @@ public class GUI extends JFrame implements IMonitorOpenNode, IMonitorInitialize,
     Solver solver;
     Parameters parameters;
 
-    // SWING
+    
     JTabbedPane tabbedpanel = new JTabbedPane();
 
     JButton playB = new JButton("Run");
@@ -83,7 +83,7 @@ public class GUI extends JFrame implements IMonitorOpenNode, IMonitorInitialize,
         parameters = new Parameters(this);
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(newControlPanel(), BorderLayout.WEST);
-        //getContentPane().add(tabbedpanel, BorderLayout.CENTER);
+        
         
         ChocoMetrics m = new ChocoMetrics(solver);
         graphPanel = new GraphPanel(m);
@@ -200,7 +200,7 @@ public class GUI extends JFrame implements IMonitorOpenNode, IMonitorInitialize,
         statistics[RES].setText(pad(solver.getMeasures().getRestartCount() + " restarts"));
         statistics[TIM].setText(pad(String.format("%.1f s.", solver.getMeasures().getTimeCount())));
         statistics[NpS].setText(pad(String.format("%.2f n/s", solver.getMeasures().getNodeCount() / solver.getMeasures().getTimeCount())));
-        solver.getMeasures().updateTimeCount(); // to deal with the first print
+        solver.getMeasures().updateTimeCount(); 
     }
 
     private static String pad(String txt) {

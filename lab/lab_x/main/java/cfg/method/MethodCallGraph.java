@@ -75,7 +75,7 @@ public class MethodCallGraph extends DirectedMultigraph<CGMethod, Object> {
     }
 
     public void register(JavaClass jc, MethodGen mg) {
-//        System.out.println("register(JavaClass, MethodGen): " + jc.getClassName() + ", " + mg.getName());
+
 
         register(CGClass.create(jc));
         register(CGMethod.create(jc, mg));
@@ -130,15 +130,15 @@ public class MethodCallGraph extends DirectedMultigraph<CGMethod, Object> {
     }
 
     public void register(JavaClass jc, MethodGen mg, InvokeInstruction ii) {
-//        System.out.println("register(JavaClass, MethodGen, InvokeInstruction): " + jc.getClassName() + ", " + mg.getName());
-        // register caller class and method
+
+        
         CGClass callerClass = CGClass.create(jc);
         register(callerClass);
         CGMethod callerMethod = CGMethod.create(jc, mg);
         register(callerMethod);
         callerClass.methods.add(callerMethod);
 
-        // register target class and method
+        
         CGClass targetClass = CGClass.create(jc, mg, ii);
         register(targetClass);
         CGMethod targetMethod = CGMethod.create(jc, mg, ii);
@@ -150,14 +150,14 @@ public class MethodCallGraph extends DirectedMultigraph<CGMethod, Object> {
         if (!callerMethod.equals(targetMethod)) {
             addVertex(targetMethod);
 
-            //between methods directly
+            
             addEdge(callerMethod, targetMethod, ii);
         }
 
     }
 
     public void register(JavaClass jc, Method m) {
-//        System.out.println("register(JavaClass, Method): " + jc.getClassName() + ", " + m.getName());
+
         register(CGClass.create(jc));
         register(CGMethod.create(jc, m));
     }
@@ -165,7 +165,7 @@ public class MethodCallGraph extends DirectedMultigraph<CGMethod, Object> {
     public List<CGClass> getClasses(String rootRegex) {
         List<CGClass> output = new ArrayList<>(cacheClass.values().stream().filter(root -> root.className.matches(rootRegex)).collect(Collectors.toList()));
 
-        // find root classes
+        
         CGClass current;
 
         return output;

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -54,25 +54,25 @@ public class MinkowskiSumShape extends ConvexInternalShape {
 		v3 supVertexA = new v3();
 		v3 supVertexB = new v3();
 
-		// btVector3 supVertexA = m_transA(m_shapeA->localGetSupportingVertexWithoutMargin(-vec*m_transA.getBasis()));
+		
 		tmp.negate(vec);
 		MatrixUtil.transposeTransform(tmp, tmp, transA.basis);
 		shapeA.localGetSupportingVertexWithoutMargin(tmp, supVertexA);
 		transA.transform(supVertexA);
 
-		// btVector3 supVertexB = m_transB(m_shapeB->localGetSupportingVertexWithoutMargin(vec*m_transB.getBasis()));
+		
 		MatrixUtil.transposeTransform(tmp, vec, transB.basis);
 		shapeB.localGetSupportingVertexWithoutMargin(tmp, supVertexB);
 		transB.transform(supVertexB);
 
-		//return supVertexA - supVertexB;
+		
 		out.sub(supVertexA, supVertexB);
 		return out;
 	}
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		//todo: could make recursive use of batching. probably this shape is not used frequently.
+		
 		for (int i = 0; i < numVectors; i++) {
 			localGetSupportingVertexWithoutMargin(vectors[i], supportVerticesOut[i]);
 		}

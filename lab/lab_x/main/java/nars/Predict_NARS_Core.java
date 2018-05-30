@@ -21,8 +21,8 @@ import nars.narsese.Narsese;
 
 /**
  *
- * https://github.com/encog/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/predict/sunspot/PredictSunspotElman.java
- * https://github.com/encog/encog-java-examples/blob/master/src/main/java/org/encog/examples/neural/recurrent/elman/ElmanXOR.java
+ * https:
+ * https:
  *
  * @author me
  */
@@ -44,7 +44,7 @@ public class Predict_NARS_Core {
         NAR n = new NAR(new Default());
         n.param.duration.set(duration);
         n.param.noiseLevel.set(0);
-        //n.param.conceptForgetDurations.set(16);
+        
         
         n.on(TaskImmediateProcess.class, new TaskImmediateProcess() {
             int curmax=0;
@@ -84,7 +84,7 @@ public class Predict_NARS_Core {
         }
         TimelineVis tc = new TimelineVis(
                 new LineChart(0,1,observed).thickness(16f).height(128),                          new LineChart(predictions[0]).thickness(16f).height(128)
-                //new BarChart(reflections).thickness(16f).height(128)
+                
                 /*new LineChart(predictions[1]).thickness(16f).height(128),
                 new LineChart(predictions[2]).thickness(16f).height(128),*/
         );
@@ -106,24 +106,24 @@ public class Predict_NARS_Core {
             n.run(thinkInterval);
             Thread.sleep(30);
             
-            //signal  = (float)Math.max(0, Math.min(1.0, Math.tan(freq * n.time()) * 0.5f + 0.5f));
-            signal  = (float)Math.sin(freq * n.time()) * 0.5f + 0.5f;
-            //signal = ((float) Math.sin(freq * n.time()) > 0 ? 1f : -1f) * 0.5f + 0.5f;
-            //signal *= 1.0 + (Math.random()-0.5f)* 2f * noiseRate;
             
-            observed.removeData((int) (lasttime+1));  //this
-            observed.removeData((int) (lasttime+2));  //is not good practice
+            signal  = (float)Math.sin(freq * n.time()) * 0.5f + 0.5f;
+            
+            
+            
+            observed.removeData((int) (lasttime+1));  
+            observed.removeData((int) (lasttime+2));  
             observed.add((int) n.time(), signal);
-            observed.add((int) n.time()+1, -1); //but is fine
-            observed.add((int) n.time()+2, 1); //for now (just wanted a line at the end)
+            observed.add((int) n.time()+1, -1); 
+            observed.add((int) n.time()+2, 1); 
             
             lastsignal=signal;
             lasttime=n.time();
             predictions[0].setData(0, maxval);
-            //if(cnt<1000) { //switch to see what NARS does when observations end :)
+            
                 int val=(int)(((int)((signal*discretization))*(10.0/discretization)));
                 chg.set("<{x} --> y"+val+">. :|:");
-                //System.out.println(val);
+                
             /*} else if (cnt==1000){
                 System.out.println("observation phase end, residual predictions follow");
             }*/

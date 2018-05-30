@@ -75,8 +75,8 @@ public class Maze {
 	
 	public static Maze create(int width, int height) {
 		
-		//width = Math.max(width, 17);
-		//height = Math.max(height, 15);
+		
+		
 		
 		width |= 1;
 		height |= 3;
@@ -256,17 +256,17 @@ public class Maze {
 				
 				if(isDot(x, y)) {
 						
-					boolean[] corners = {false, false, false, false}; //top left, top right, bottom left, bottom right
+					boolean[] corners = {false, false, false, false}; 
 					
 					if(!isWall(tiles[x-2][y-1]) || !isWall(tiles[x-1][y-2])) corners[0] = true;
 					if(!isWall(tiles[x+2][y-1]) || !isWall(tiles[x+1][y-2])) corners[1] = true;
 					if(!isWall(tiles[x-2][y+1]) || !isWall(tiles[x-1][y+2])) corners[2] = true;
 					if(!isWall(tiles[x+2][y+1]) || !isWall(tiles[x+1][y+2])) corners[3] = true;
 					
-					if(corners[0] && corners[1]) tiles[x][y-1] = 2; //top
-					else if(corners[1] && corners[3]) tiles[x+1][y] = 2; //right
-					else if(corners[2] && corners[3]) tiles[x][y+1] = 2; //bottom
-					else if(corners[0] && corners[2]) tiles[x-1][y] = 2; //left
+					if(corners[0] && corners[1]) tiles[x][y-1] = 2; 
+					else if(corners[1] && corners[3]) tiles[x+1][y] = 2; 
+					else if(corners[2] && corners[3]) tiles[x][y+1] = 2; 
+					else if(corners[0] && corners[2]) tiles[x-1][y] = 2; 
 					
 				}
 				

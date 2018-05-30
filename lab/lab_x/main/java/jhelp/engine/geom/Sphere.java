@@ -83,16 +83,16 @@ public class Sphere
 
       this.nodeType = NodeType.SPHERE;
 
-      // Temporary vertex
+      
       Vertex vertex;
 
-      // Angles compute for slice and stack
+      
       double sliceAngle;
       double stackAngle;
       double sliceAngleFutur;
       double stackAngleFutur;
 
-      // Cosinus and sinus of angles
+      
       double cosSliceAngle;
       double cosStackAngle;
       double cosSliceAngleFutur;
@@ -102,13 +102,13 @@ public class Sphere
       double sinSliceAngleFutur;
       double sinStackAngleFutur;
 
-      // Computed UV
+      
       float uA;
       float vA;
       float uF;
       float vF;
 
-      // Computed normals
+      
       float nxAA;
       float nyAA;
       float nzAA;
@@ -122,11 +122,11 @@ public class Sphere
       float nyFF;
       float nzFF;
 
-      // To walk throw slice and stack
+      
       int sli;
       int sta;
 
-      // Initialize
+      
       if(slice < 2)
       {
          slice = 2;
@@ -143,39 +143,39 @@ public class Sphere
 
       vertex = new Vertex();
 
-      // For each slice
+      
       for(sli = 0; sli < slice; sli++)
       {
-         // Compute slice angles, cosinus and sinus
+         
          sliceAngle = ((2d * Math.PI * sli) / slice) - Math.PI;
          sliceAngleFutur = ((2d * Math.PI * (sli + 1)) / slice) - Math.PI;
-         //
+         
          cosSliceAngle = Math.cos(sliceAngle);
          cosSliceAngleFutur = Math.cos(sliceAngleFutur);
          sinSliceAngle = Math.sin(sliceAngle);
          sinSliceAngleFutur = Math.sin(sliceAngleFutur);
 
-         // Computes U (Slice walk throw U)
+         
          uA = multU - ((multU * sli) / slice);
          uF = multU - ((multU * (sli + 1)) / slice);
 
-         // For each stack
+         
          for(sta = 0; sta < stack; sta++)
          {
-            // Compute stack angles, cosinus and sinus
+            
             stackAngle = ((Math.PI * sta) / stack) - (Math.PI / 2d);
             stackAngleFutur = ((Math.PI * (sta + 1)) / stack) - (Math.PI / 2d);
-            //
+            
             cosStackAngle = Math.cos(stackAngle);
             cosStackAngleFutur = Math.cos(stackAngleFutur);
             sinStackAngle = Math.sin(stackAngle);
             sinStackAngleFutur = Math.sin(stackAngleFutur);
 
-            // Computes V (Stack walk throw V)
+            
             vA = (multV * sta) / stack;
             vF = (multV * (sta + 1)) / stack;
 
-            // Computes normals
+            
             nxAA = (float) (cosSliceAngle * cosStackAngle);
             nyAA = (float) (sinSliceAngle * cosStackAngle);
             nzAA = (float) sinStackAngle;
@@ -189,28 +189,28 @@ public class Sphere
             nyFF = (float) (sinSliceAngleFutur * cosStackAngleFutur);
             nzFF = (float) sinStackAngleFutur;
 
-            // Compute each vertex of the actual face
+            
             vertex.setPosition(new Point3D(nxAA, nyAA, nzAA));
             vertex.setUv(new Point2D(uA, vA));
             vertex.setNormal(new Point3D(-nxAA, -nyAA, -nzAA));
             this.add(vertex);
-            //
+            
             vertex.setPosition(new Point3D(nxAF, nyAF, nzAF));
             vertex.setUv(new Point2D(uA, vF));
             vertex.setNormal(new Point3D(-nxAF, -nyAF, -nzAF));
             this.add(vertex);
-            //
+            
             vertex.setPosition(new Point3D(nxFF, nyFF, nzFF));
             vertex.setUv(new Point2D(uF, vF));
             vertex.setNormal(new Point3D(-nxFF, -nyFF, -nzFF));
             this.add(vertex);
-            //
+            
             vertex.setPosition(new Point3D(nxFA, nyFA, nzFA));
             vertex.setUv(new Point2D(uF, vA));
             vertex.setNormal(new Point3D(-nxFA, -nyFA, -nzFA));
             this.add(vertex);
 
-            // Pass to the next face
+            
             this.nextFace();
          }
 
@@ -338,10 +338,10 @@ public class Sphere
    {
       this.southPole = -1;
 
-      // Same algorithm see for constructs the sphere
-      // Just put it on new mesh, and change the sphere's mesh at the end
+      
+      
       final Mesh mesh = new Mesh();
-      //
+      
       Vertex vertex;
       double sliceAngle;
       double stackAngle;
@@ -373,7 +373,7 @@ public class Sphere
       float nzFF;
       int sli;
       int sta;
-      //
+      
       if(slice < 2)
       {
          slice = 2;
@@ -393,28 +393,28 @@ public class Sphere
       {
          sliceAngle = ((2d * Math.PI * sli) / slice) - Math.PI;
          sliceAngleFutur = ((2d * Math.PI * (sli + 1)) / slice) - Math.PI;
-         //
+         
          cosSliceAngle = Math.cos(sliceAngle);
          cosSliceAngleFutur = Math.cos(sliceAngleFutur);
          sinSliceAngle = Math.sin(sliceAngle);
          sinSliceAngleFutur = Math.sin(sliceAngleFutur);
-         //
+         
          uA = (multU * sli) / slice;
          uF = (multU * (sli + 1)) / slice;
-         //
+         
          for(sta = 0; sta < stack; sta++)
          {
             stackAngle = ((Math.PI * sta) / stack) - (Math.PI / 2d);
             stackAngleFutur = ((Math.PI * (sta + 1)) / stack) - (Math.PI / 2d);
-            //
+            
             cosStackAngle = Math.cos(stackAngle);
             cosStackAngleFutur = Math.cos(stackAngleFutur);
             sinStackAngle = Math.sin(stackAngle);
             sinStackAngleFutur = Math.sin(stackAngleFutur);
-            //
+            
             vA = (multV * sta) / stack;
             vF = (multV * (sta + 1)) / stack;
-            //
+            
             nxAA = (float) (cosSliceAngle * cosStackAngle);
             nyAA = (float) (sinSliceAngle * cosStackAngle);
             nzAA = (float) sinStackAngle;
@@ -427,27 +427,27 @@ public class Sphere
             nxFF = (float) (cosSliceAngleFutur * cosStackAngleFutur);
             nyFF = (float) (sinSliceAngleFutur * cosStackAngleFutur);
             nzFF = (float) sinStackAngleFutur;
-            //
+            
             vertex.setPosition(new Point3D(nxAA, nyAA, nzAA));
             vertex.setUv(new Point2D(uA, vA));
             vertex.setNormal(new Point3D(-nxAA, -nyAA, -nzAA));
             mesh.addVertexToTheActualFace(vertex);
-            //
+            
             vertex.setPosition(new Point3D(nxAF, nyAF, nzAF));
             vertex.setUv(new Point2D(uA, vF));
             vertex.setNormal(new Point3D(-nxAF, -nyAF, -nzAF));
             mesh.addVertexToTheActualFace(vertex);
-            //
+            
             vertex.setPosition(new Point3D(nxFF, nyFF, nzFF));
             vertex.setUv(new Point2D(uF, vF));
             vertex.setNormal(new Point3D(-nxFF, -nyFF, -nzFF));
             mesh.addVertexToTheActualFace(vertex);
-            //
+            
             vertex.setPosition(new Point3D(nxFA, nyFA, nzFA));
             vertex.setUv(new Point2D(uF, vA));
             vertex.setNormal(new Point3D(-nxFA, -nyFA, -nzFA));
             mesh.addVertexToTheActualFace(vertex);
-            //
+            
             mesh.endFace();
          }
 
@@ -456,7 +456,7 @@ public class Sphere
             this.southPole = this.mesh.lastIndexPoint();
          }
       }
-      //
+      
       this.mesh = mesh;
       this.reconstructTheList();
    }

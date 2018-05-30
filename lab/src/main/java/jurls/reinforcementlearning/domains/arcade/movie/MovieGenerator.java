@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.movie;
 
@@ -53,11 +53,11 @@ public class MovieGenerator {
     public MovieGenerator(String baseFilename) {
         this.baseFilename = baseFilename;
 
-        // Create the relevant directory if necessary
+        
         File fp = new File(baseFilename);
         File directory = fp.getParentFile();
 
-        // Create the directory if necessary; fail if it exists and is not a directory
+        
         if (!directory.isDirectory()) {
             if (!directory.exists())
                 directory.mkdir();
@@ -73,29 +73,29 @@ public class MovieGenerator {
      * @param image
      */
     public void record(BufferedImage image) {
-        // We need a filename in order to save frames
+        
         if (baseFilename == null)
             throw new IllegalArgumentException("Base filename is not defined.");
 
-        // Create a formatter to generate 6-digit indices
+        
         NumberFormat formatter = NumberFormat.getInstance();
         formatter.setMinimumIntegerDigits(indexDigits);
         formatter.setGroupingUsed(false);
 
-        // Obtain a 6-digit character representation of pngIndex
+        
         String indexString = formatter.format(pngIndex);
 
-        // Create the full filename
+        
         String filename = baseFilename + indexString + ".png";
 
-        // Save the image to disk
+        
         try {
             ImageIO.write(image, "png", new File(filename));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        // Increment pngIndex so that the next frame has a different filename
+        
         pngIndex++;
     }
 }

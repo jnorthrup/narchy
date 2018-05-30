@@ -34,23 +34,23 @@ public class XMLTest {
         Predicate<String> oracle = (q) -> {
             try {
                 XMLInputFactory.newDefaultFactory().createXMLEventReader(new StringReader(q)).forEachRemaining(r->{
-                    //System.out.println(r);
+                    
                 });
                 return true;
             } catch (Throwable e) {
-                //e.printStackTrace();
+                
                 return false;
             }
         };
 
-        // learn grammar
+        
         GrammarUtils.Grammar grammar = GrammarSynthesis.learn(examples, oracle);
 
-        // fuzz using grammar
+        
         Iterable<String> samples = new GrammarFuzzer.GrammarMutationSampler(grammar, new GrammarFuzzer.SampleParameters(new double[]{
-                0.2, 0.2, 0.2, 0.4}, // (multinomial) distribution of repetitions
-                0.8,                                          // probability of using recursive production
-                0.1,                                          // probability of a uniformly random character (vs. a special character)
+                0.2, 0.2, 0.2, 0.4}, 
+                0.8,                                          
+                0.1,                                          
                 100),
                 1000, 20, new XoRoShiRo128PlusRandom(1));
 
@@ -74,7 +74,7 @@ public class XMLTest {
         float rate = (float) pass / numSamples;
         Log.info("PASS RATE: " + rate);
 
-        //assertEquals(pass, numSamples);
+        
         assertTrue(rate > 0.7f);
 
     }

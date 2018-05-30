@@ -18,7 +18,7 @@ class NARServiceTest {
         Set<Service<NAR>> before = n.services.stream().collect(toSet());
 
         DurService d = DurService.on(n, () -> {
-            //nothing
+            
         });
 
         n.synch();

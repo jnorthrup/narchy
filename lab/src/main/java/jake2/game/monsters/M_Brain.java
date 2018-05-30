@@ -18,9 +18,9 @@
  *  
  */
 
-// Created on 13.11.2003 by RST.
 
-// $Id: M_Brain.java,v 1.4 2005-11-20 22:18:33 salomo Exp $
+
+
 
 package jake2.game.monsters;
 
@@ -527,9 +527,9 @@ public class M_Brain {
         }
     };
 
-    //
-    //	   STAND
-    //
+    
+    
+    
 
     static final mframe_t[] brain_frames_stand = {
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -576,9 +576,9 @@ public class M_Brain {
         }
     };
 
-    //
-    //	   IDLE
-    //
+    
+    
+    
 
     static final mframe_t[] brain_frames_idle = {
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -627,9 +627,9 @@ public class M_Brain {
         }
     };
 
-    //
-    //	   WALK
-    //
+    
+    
+    
     static final mframe_t[] brain_frames_walk1 = {
             new mframe_t(GameAI.ai_walk, 7, null),
             new mframe_t(GameAI.ai_walk, 2, null),
@@ -646,7 +646,7 @@ public class M_Brain {
     static final mmove_t brain_move_walk1 = new mmove_t(FRAME_walk101, FRAME_walk111,
             brain_frames_walk1, null);
 
-    //	   walk2 is FUBAR, do not use
+    
     /*
      * # if 0 void brain_walk2_cycle(edict_t self) { if (random() > 0.1)
      * self.monsterinfo.nextframe= FRAME_walk220; }
@@ -661,7 +661,7 @@ public class M_Brain {
      * mframe_t(ai_walk, 0, null), new mframe_t(ai_walk, 1, null), new
      * mframe_t(ai_walk, 0, null), new mframe_t(ai_walk, 0, null), new
      * mframe_t(ai_walk, 0, null), new mframe_t(ai_walk, 0, null), new
-     * mframe_t(ai_walk, 0, null), new mframe_t(ai_walk, 10, null, // Cycle
+     * mframe_t(ai_walk, 0, null), new mframe_t(ai_walk, 10, null, 
      * Start)
      * 
      * new mframe_t(ai_walk, -1, null), new mframe_t(ai_walk, 7, null), new
@@ -683,17 +683,17 @@ public class M_Brain {
         public String getID() { return "brain_walk"; }
         @Override
         public boolean think(edict_t self) {
-            //			if (random() <= 0.5)
+            
             self.monsterinfo.currentmove = brain_move_walk1;
-            //		else
-            //			self.monsterinfo.currentmove = &brain_move_walk2;
+            
+            
             return true;
         }
     };
 
-    //
-    //	   DUCK
-    //
+    
+    
+    
 
     static final EntThinkAdapter brain_duck_down = new EntThinkAdapter() {
     	@Override
@@ -801,9 +801,9 @@ public class M_Brain {
     static final mmove_t brain_move_death1 = new mmove_t(FRAME_death101,
             FRAME_death118, brain_frames_death1, brain_dead);
 
-    //
-    //	   MELEE
-    //
+    
+    
+    
 
     static final EntThinkAdapter brain_swing_right = new EntThinkAdapter() {
     	@Override
@@ -958,9 +958,9 @@ public class M_Brain {
         }
     };
 
-    //
-    //	   RUN
-    //
+    
+    
+    
 
     static final mframe_t[] brain_frames_run = {
             new mframe_t(GameAI.ai_run, 9, null),
@@ -1084,7 +1084,7 @@ public class M_Brain {
 
             self.pain_debounce_time = GameBase.level.time + 3;
             if (GameBase.skill.value == 3)
-                return; // no pain anims in nightmare
+                return; 
 
             r = Lib.random();
             if (r < 0.33) {
@@ -1115,7 +1115,7 @@ public class M_Brain {
             self.s.effects = 0;
             self.monsterinfo.power_armor_type = Defines.POWER_ARMOR_NONE;
 
-            //	   check for gib
+            
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
@@ -1137,7 +1137,7 @@ public class M_Brain {
             if (self.deadflag == Defines.DEAD_DEAD)
                 return;
 
-            //	   regular death
+            
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_death, 1,
                     Defines.ATTN_NORM, 0);
             self.deadflag = Defines.DEAD_DEAD;
@@ -1198,7 +1198,7 @@ public class M_Brain {
         self.monsterinfo.walk = brain_walk;
         self.monsterinfo.run = brain_run;
         self.monsterinfo.dodge = brain_dodge;
-        //		self.monsterinfo.attack = brain_attack;
+        
         self.monsterinfo.melee = brain_melee;
         self.monsterinfo.sight = brain_sight;
         self.monsterinfo.search = brain_search;

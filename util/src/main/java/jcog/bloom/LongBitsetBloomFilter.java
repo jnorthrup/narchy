@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ import java.util.function.Function;
  * Internally, this implementation of bloom filter uses Murmur3 fast non-cryptographic hash
  * algorithm. Although Murmur2 is slightly faster than Murmur3 in Java, it suffers from hash
  * collisions for specific sequence of repeating bytes. Check the following link for more info
- * https://code.google.com/p/smhasher/wiki/MurmurHash2Flaw
+ * https:
  */
 public class LongBitsetBloomFilter {
     public static final float DEFAULT_FPP = 0.05f;
@@ -64,7 +64,7 @@ public class LongBitsetBloomFilter {
         bitSet = MetalBitSet.bits(m);
     }
 
-    // deserialize bloomfilter. see serialize() for the format.
+    
     public LongBitsetBloomFilter(List<Long> serializedBloom) {
         this(serializedBloom.get(0), Double.longBitsToDouble(serializedBloom.get(1)));
         List<Long> bitSet = serializedBloom.subList(2, serializedBloom.size());
@@ -92,7 +92,7 @@ public class LongBitsetBloomFilter {
 
     public long sizeInBytes() {
         return bitSet instanceof MetalBitSet.LongArrayBitSet ? ((MetalBitSet.LongArrayBitSet)bitSet).bitSize() / 8 :
-                4; //Int
+                4; 
     }
 
     public boolean test(byte[] val) {
@@ -124,12 +124,12 @@ public class LongBitsetBloomFilter {
     }
 
     public final void add(byte[] val) {
-        // We use the trick mentioned in "Less Hashing, Same Performance: Building a Better Bloom Filter"
-        // by Kirsch et.al. From abstract 'only two hash functions are necessary to effectively
-        // implement a Bloom filter without any loss in the asymptotic false positive probability'
+        
+        
+        
 
-        // Lets split up 64-bit hashcode into two 32-bit hashcodes and employ the technique mentioned
-        // in the above paper
+        
+        
         long hash64 = Murmur3Hash.hash64(val);
         int hash1 = (int) hash64;
         int hash2 = (int) (hash64 >>> 32);
@@ -146,7 +146,7 @@ public class LongBitsetBloomFilter {
 
     protected static int combineHash(int hash1, int hash2, int i) {
         int combinedHash = hash1 + (i * hash2);
-        // hashcode should be positive, flip all the bits if it's negative
+        
         if (combinedHash < 0) {
             combinedHash = ~combinedHash;
         }
@@ -162,12 +162,12 @@ public class LongBitsetBloomFilter {
     }
 
     public void addInt(int val) {
-        // puts int in little endian order
+        
         add(intToByteArrayLE(val));
     }
 
     public boolean addIfNotContained(int val) {
-        // puts int in little endian order
+        
         byte[] bb = intToByteArrayLE(val);
         boolean b = test(bb);
         if (!b) {
@@ -178,7 +178,7 @@ public class LongBitsetBloomFilter {
     }
 
     public void addLong(long val) {
-        // puts long in little endian order
+        
         add(longToByteArrayLE(val));
     }
 
@@ -250,21 +250,21 @@ public class LongBitsetBloomFilter {
         return n;
     }
 
-//    /**
-//     * First 2 entries are expected entries (n) and false positive percentage (fpp). fpp which is a
-//     * double is serialized as long. The entries following first 2 entries are the actual bit set.
-//     *
-//     * @return bloom filter as list of long
-//     */
-//    public List<Long> serialize() {
-//        List<Long> serialized = new ArrayList<>();
-//        serialized.add(n);
-//        serialized.add(Double.doubleToLongBits(fpp));
-//        for (long l : bitSet.getData()) {
-//            serialized.add(l);
-//        }
-//        return serialized;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Check if the specified bloom filter is compatible with the current bloom filter.

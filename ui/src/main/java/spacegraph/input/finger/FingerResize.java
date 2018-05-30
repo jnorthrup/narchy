@@ -108,11 +108,11 @@ public abstract class FingerResize extends FingerDragging {
                 float bh = before.h;
                 float tx = (fx - posStart.x);
                 float ty = (fy - posStart.y);
-                resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy); //TODO limit aspect ratio change
+                resize(pmx - bw + tx, pmy - bh + ty, pmx, pmy); 
             }
             break;
 
-            //TODO the other directions
+            
 
             default:
                 return false;

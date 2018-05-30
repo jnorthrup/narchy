@@ -13,14 +13,14 @@ public class Wire {
     private volatile long aLastActive = Long.MIN_VALUE, bLastActive = Long.MIN_VALUE;
     private volatile int aTypeHash = 0, bTypeHash = 0;
 
-    //final AtomicHistogram hits = new AtomicHistogram();
+    
 
     final Surface a, b;
 
     public Wire(Surface a, Surface b) {
         assert(a!=b);
         if (a.id > b.id) {
-            //ordering
+            
             Surface x = b;
             b = a;
             a = x;
@@ -52,7 +52,7 @@ public class Wire {
             Class<?> cl = s.getClass();
             int th = cl.hashCode();
             if (cl.isArray()) {
-                //include the array length as part of the hash to additionally differentiate them
+                
                 th = Util.hashCombine(th, Array.getLength(s));
             }
 
@@ -107,7 +107,7 @@ public class Wire {
     public int typeHash(boolean aOrB) {
         int x = aOrB ? aTypeHash : bTypeHash;
         if (x == 0 && (aOrB ? aLastActive : bLastActive)==Long.MIN_VALUE)
-            return (aOrB ? bTypeHash : aTypeHash ); //if nothing was sent from this side, just use the other (either also inactive, or has some value) to represent the entire wire's activity
+            return (aOrB ? bTypeHash : aTypeHash ); 
         else
             return x;
     }

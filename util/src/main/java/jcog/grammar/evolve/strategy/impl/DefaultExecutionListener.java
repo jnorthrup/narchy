@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -46,14 +46,14 @@ public class DefaultExecutionListener implements ExecutionListener,ExecutionList
     @Override
     public void evolutionComplete(RunStrategy strategy, int generation, Collection<Ranking> population) {
         int jobId = strategy.getConfiguration().getJobId();
-//
-//        try {
-//            Node best = population.iterator().next().getNode();
-//            StringBuilder abuilder = new StringBuilder();
-//            best.describe(abuilder);
-//        } catch (Exception ex) {
-//            LOG.log(Level.SEVERE, null, ex);
-//        }
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -85,11 +85,11 @@ public class DefaultExecutionListener implements ExecutionListener,ExecutionList
 
     @Override
     public void register(ExecutionStrategy strategy) {
-        //NO OP
+        
     }
     
     @Override
     public void evolutionStopped() {
-        //let's do nothing, there is no status here
+        
     }
 }

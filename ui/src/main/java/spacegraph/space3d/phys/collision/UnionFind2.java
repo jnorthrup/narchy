@@ -6,7 +6,7 @@ import spacegraph.space3d.phys.math.MiscUtil;
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -32,7 +32,7 @@ import spacegraph.space3d.phys.math.MiscUtil;
  */
 public class UnionFind2 {
 
-    // Optimization: could use short ints instead of ints (halving memory, would limit the number of rigid bodies to 64k, sounds reasonable).
+    
 
     protected int[][] ele = new int[0][2];
     int numElements;
@@ -42,23 +42,23 @@ public class UnionFind2 {
      * It sorts the elements, based on island id, in order to make it easy to iterate over islands.
      */
     public void sortIslands() {
-        // first store the original body index, and islandId
+        
 
         int[][] elements = this.ele;
         int n = this.numElements;
         for (int i = 0; i < n; i++) {
-            //return array[index];
+            
             int[] e = elements[i];
             e[0] = find(i);
             e[1] = i;
         }
 
-        // Sort the vector using predicate and std::sort
-        //std::sort(m_elements.begin(), m_elements.end(), btUnionFindElementSortPredicate);
-        //perhaps use radix sort?
-        //elements.heapSort(btUnionFindElementSortPredicate());
+        
+        
+        
+        
 
-        //Collections.sort(elements);
+        
         MiscUtil.quickSort(elements, n);
     }
 
@@ -76,7 +76,7 @@ public class UnionFind2 {
             e[1] = 1;
         }
 
-        //empty any remaining entries
+        
         for (int j = N; j < ele.length; j++) {
             int[] e = ee[j];
             e[0] = -1;
@@ -89,7 +89,7 @@ public class UnionFind2 {
     }
 
     public boolean isRoot(int x) {
-        //return array[index];
+        
         return (x == ele[x][0]);
     }
 
@@ -103,59 +103,59 @@ public class UnionFind2 {
 
     public void unite(int p, int q) {
 
-        if (p == -1 || q == -1) return; //ignore
+        if (p == -1 || q == -1) return; 
 
         int i = find(p), j = find(q);
         if (i == j) {
             return;
         }
 
-        //#ifndef USE_PATH_COMPRESSION
-        ////weighted quick union, this keeps the 'trees' balanced, and keeps performance of unite O( log(n) )
-        //if (m_elements[i].m_sz < m_elements[j].m_sz)
-        //{
-        //	m_elements[i].m_id = j; m_elements[j].m_sz += m_elements[i].m_sz;
-        //}
-        //else
-        //{
-        //	m_elements[j].m_id = i; m_elements[i].m_sz += m_elements[j].m_sz;
-        //}
-        //#else
-        //return array[index];
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         int[] ei = ele[i];
 
         ei[0] = j;
-        //return array[index];
-        //return array[index];
+        
+        
         ele[j][1] += ei[1];
-        //#endif //USE_PATH_COMPRESSION
+        
     }
 
     public int find(int x) {
-        //assert(x < m_N);
-        //assert(x >= 0);
+        
+        
 
         int numElements = this.numElements;
 
-        //return array[index];
+        
         int[][] e = this.ele;
         while (x != e[x][0]) {
-            // not really a reason not to use path compression, and it flattens the trees/improves find performance dramatically
+            
 
-            //#ifdef USE_PATH_COMPRESSION
-            //return array[index];
-            //return array[index];
-            //return array[index];
+            
+            
+            
+            
             int i = e[x][0];
             if (!valid(i, numElements))
                 return x;
 
             e[x][0] = e[i][0];
-            //#endif //
-            //return array[index];
+            
+            
             x = e[x][0];
-            //assert(x < m_N);
-            //assert(x >= 0);
+            
+            
 
             if (!valid(x, numElements))
                 return x;
@@ -170,32 +170,32 @@ public class UnionFind2 {
     static boolean valid(int x, int numElements) {
 
         return x >= 0 && (x < numElements);
-            ///throw new RuntimeException("overflow");
+            
     }
 
     public final int id(int i) {
-        //valid(index);
-        //return array[index];
+        
+        
         return ele[i][0];
     }
     public final int sz(int i) {
-        //valid(index);
-        //return array[index];
+        
+        
         return ele[i][1];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    
 
-//	public static class Element {
-//		public int id;
-//		public int sz;
-//	}
 
-//	private static final Comparator<int[]> elementComparator = new Comparator<>() {
-//		@Override
-//        public int compare(int[] o1, int[] o2) {
-//			return o1[0] < o2[0] ? -1 : +1;
-//		}
-//	};
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -59,8 +59,8 @@ public enum Op {
 
 
         public Term compound(int dt, Term[] u) {
-            //assert(u.length == 1);
-            if (u.length != 1) //assert (dt == DTERNAL || dt == XTERNAL);
+            
+            if (u.length != 1) 
                 throw new RuntimeException("negation requires one subterm");
             return Neg.the(u[0]);
         }
@@ -77,7 +77,7 @@ public enum Op {
     SIM("<->", true, 2, OpType.Statement, Args.Two) {
         @Override
         public Term compound(int dt, Term[] u) {
-            if (u.length == 1) { //similarity has been reduced
+            if (u.length == 1) { 
                 assert (this == SIM);
                 return u[0] == Null ? Null : True;
             } else {
@@ -158,36 +158,36 @@ public enum Op {
                 case 1:
                     Term only = u[0];
                     if (only instanceof EllipsisMatch) {
-                        //unwrap
+                        
                         return compound(dt, ((EllipsisMatch) only).arrayShared());
                     } else {
 
-                        //preserve unitary ellipsis for patterns etc
+                        
                         return only instanceof Ellipsislike ?
-                                compound(CONJ, dt, only) //special; preserve the surrounding conjunction
+                                compound(CONJ, dt, only) 
                                 :
                                 only;
                     }
 
             }
 
-            int trues = 0; //# of trues to ignore
+            int trues = 0; 
             for (Term t : u) {
                 if (t == Null || t == False)
-                    return t; //short-circuit
+                    return t; 
                 else if (t == True)
                     trues++;
             }
 
             if (trues > 0) {
-                //filter out all boolean terms
+                
                 int sizeAfterTrueRemoved = u.length - trues;
                 switch (sizeAfterTrueRemoved) {
                     case 0:
-                        //nothing remains, this term vaporizes to an innocuous True
+                        
                         return True;
                     case 1: {
-                        //find and return the only non-True term
+                        
                         for (Term uu : u) {
                             if (uu != True) {
                                 assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
@@ -205,7 +205,7 @@ public enum Op {
                                 y[j++] = uu;
                         }
                         assert (j == y.length);
-                        //return CONJ.the(dt, y);
+                        
                         u = y;
                     }
                 }
@@ -217,7 +217,7 @@ public enum Op {
                 case DTERNAL:
                 case 0:
                     if (u.length == 2) {
-                        //fast n=2 cases
+                        
 
 
                         Term a = u[0];
@@ -230,16 +230,16 @@ public enum Op {
                         }
 
                         if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
-                        //if (!a.hasAny(Op.CONJ.bit | Op.NEG.bit) && !b.hasAny(Op.CONJ.bit | Op.NEG.bit)) {
-                            //fast case: no inner conjunction or negations
+                        
+                            
                             return compound(CONJ, dt, sorted(u[0], u[1]));
                         }
 
                     }
 
-                    //TODO if there are no negations in u then an accelerated construction is possible
+                    
 
-                    assert u.length > 1; //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
+                    assert u.length > 1; 
                     Conj c = new Conj();
                     long sdt = dt == DTERNAL ? ETERNAL : 0;
                     for (Term x : u) {
@@ -249,14 +249,14 @@ public enum Op {
                     return c.term();
 
                 case XTERNAL:
-                    //sequence or xternal
-                    //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
+                    
+                    
 
-                    //rebalance and align
-                    //convention: left align all sequences
-                    //ex: (x &&+ (y &&+ z))
-                    //      becomes
-                    //    ((x &&+ y) &&+ z)
+                    
+                    
+                    
+                    
+                    
 
                     int ul = u.length;
                     if (ul > 1) {
@@ -270,12 +270,12 @@ public enum Op {
                         if (unordered) {
                             u = u.clone();
                             if (ul == 2) {
-                                //just swap
+                                
                                 Term u0 = u[0];
                                 u[0] = u[1];
                                 u[1] = u0;
                             } else {
-                                Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
+                                Arrays.sort(u); 
                             }
                         }
 
@@ -304,10 +304,10 @@ public enum Op {
                                     int va1 = aa[1].volume();
                                     int vamin = Math.min(va0, va1);
 
-                                    //if left remains heavier by donating its smallest
+                                    
                                     if ((va - vamin) > (vb + vamin)) {
                                         int min = va0 <= va1 ? 0 : 1;
-                                        //return CONJ.compound(XTERNAL, new Term[]{CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]});
+                                        
                                         Term[] xu = {CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
                                         Arrays.sort(xu);
                                         return compound(CONJ, XTERNAL, xu);
@@ -377,7 +377,7 @@ public enum Op {
     },
 
 
-    ///-----------------------------------------------------
+    
 
 
     VAR_DEP('#', Op.ANY_LEVEL, OpType.Variable),
@@ -389,62 +389,62 @@ public enum Op {
 
     BOOL("B", Op.ANY_LEVEL, OpType.Other),
 
-    //SPACE("+", true, 7, Args.GTEOne),
+    
 
 
-//    //VIRTUAL TERMS
-//    @Deprecated
-//    INSTANCE("-{-", 2, OpType.Statement, Args.Two) {
-//        @Override
-//        protected Term _the(int dt, Term[] u) {
-//            assert (u.length == 2);
-//            return INH.the(SETe.the(u[0]), u[1]);
-//        }
-//    },
-//
-//    @Deprecated
-//    PROPERTY("-]-", 2, OpType.Statement, Args.Two) {
-//        @Override
-//        protected Term _the(int dt, Term[] u) {
-//            assert (u.length == 2);
-//            return INH.the(u[0], SETi.the(u[1]));
-//        }
-//    },
-//
-//    @Deprecated
-//    INSTANCE_PROPERTY("{-]", 2, OpType.Statement, Args.Two) {
-//        @Override
-//        protected Term _the(int dt, Term[] u) {
-//            assert (u.length == 2);
-//            return INH.the(SETe.the(u[0]), SETi.the(u[1]));
-//        }
-//    },
-//
-//    @Deprecated
-//    DISJ("||", true, 5, Args.GTETwo) {
-//        @Override
-//        protected Term _the(int dt, Term[] u) {
-//            assert (dt == DTERNAL);
-//            if (u.length == 1 && u[0].op() != VAR_PATTERN)
-//                return u[0];
-//            return NEG.the(CONJ.the(Terms.neg(u)));
-//        }
-//    },
 
-//    /**
-//     * extensional image
-//     */
-//    IMGe("/", 4, Args.GTEOne),
-//
-//    /**
-//     * intensional image
-//     */
-//    IMGi("\\", 4, Args.GTEOne),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * for ellipsis, when seen as a term
      */
-    //SUBTERMS("...", 1, OpType.Other)
+    
     ;
 
 
@@ -464,7 +464,7 @@ public enum Op {
     public static final String TENSE_PAST = ":\\:";
     public static final String TENSE_PRESENT = ":|:";
     public static final String TENSE_FUTURE = ":/:";
-    public static final String TENSE_ETERNAL = ":-:"; //ascii infinity symbol
+    public static final String TENSE_ETERNAL = ":-:"; 
     public static final String TASK_RULE_FWD = "|-";
     public static final char BUDGET_VALUE_MARK = '$';
     public static final char TRUTH_VALUE_MARK = '%';
@@ -605,7 +605,7 @@ public enum Op {
         }
         @Override
         public Term unneg() {
-            return True; //doesnt change
+            return True; 
         }
     };
     public static final VarDep imInt = new ImDep((byte) 126, (byte) '\\');
@@ -622,7 +622,7 @@ public enum Op {
 
     public static TermBuilder terms =
             new InterningTermBuilder();
-            //new HeapTermBuilder();
+            
 
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
@@ -630,7 +630,7 @@ public enum Op {
     public static final Term EmptySet = new CachedCompound.SimpleCachedCompound(Op.SETe, EmptySubterms);
 
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
-    public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; //indexed from 0..7, meaning index 7 is NAL8, index 0 is NAL1
+    public static final int[] NALLevelEqualAndAbove = new int[8 + 1]; 
 
     static final ImmutableMap<String, Op> stringToOperator;
     /**
@@ -649,98 +649,98 @@ public enum Op {
      * specifier for any NAL level
      */
     private static final int ANY_LEVEL = 0;
-    //    public interface TermInstancer {
-//
-//
-//        default Term compound(NewCompound apc, int dt) {
-//            return compound(apc.op(), apc.theArray()).dt(dt);
-//        }
-//
-//        Compound compound(Op o, Term[] subterms);
-//
-//        TermContainer subterms(Term... x);
-//
-//    }
-//
-//    /**
-//     * memoization
-//     */
-//    public static class MemoizedTermInstancer implements TermInstancer {
-//
-//        final Function<ProtoCompound, Termlike> buildTerm = (C) -> {
-//            try {
-//
-//                Op o = C.op();
-//                if (o != null) {
-//                    return compound(C);
-//                } else
-//                    return subterms(C.subterms());
-//
-//            } catch (InvalidTermException e) {
-//                if (Param.DEBUG_EXTRA)
-//                    logger.error("Term Build: {}, {}", C, e);
-//                return Null;
-//            } catch (Throwable t) {
-//                logger.error("{}", t);
-//                return Null;
-//            }
-//        };
-//
-//
-//    public static boolean internable(Term[] x) {
-//        boolean internable = true;
-//        for (Term y : x) {
-//            if (y instanceof NonInternable) { //"must not intern non-internable" + y + "(" +y.getClass() + ")";
-//                internable = false;
-//                break;
-//            }
-//        }
-//        return internable;
-//    }
-//        public static final Memoize<ProtoCompound, Termlike> cache =
-//                new HijackMemoize<>(buildTerm, 128 * 1024 + 1, 3);
-//        //CaffeineMemoize.builder(buildTerm, 128 * 1024, true /* Param.DEBUG*/);
-//
-//
-//        @NotNull
-//        @Override
-//        public Term compound(NewCompound apc, int dt) {
-//
-//            if (apc.OR(x -> x instanceof NonInternable)) {
-//                return compound(apc.op, apc, false).dt(dt);
-//            } else {
-//                Term x = (Term) cache.apply(apc.commit());
-//
-//                if (dt != DTERNAL && x instanceof Compound)
-//                    return x.dt(dt);
-//                else
-//                    return x;
-//            }
-//        }
-//
-//        @Override
-//        public TermContainer subterms(Term... x) {
-////        if (s.length < 2) {
-////            return _subterms(s);
-////        } else {
-//
-//            boolean internable = internable(x);
-//
-//            if (internable) {
-//                return (TermContainer) cache.apply(new NewCompound(null, x).commit());
-//            } else {
-//                return TermVector.the(x);
-//            }
-//
-//        }
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static final int InvalidImplicationSubj = or(IMPL);
     public static int ConstantAtomics = Op.ATOM.bit | Op.INT.bit;
 
     static {
         for (Op o : Op.values()) {
             int l = o.minLevel;
-            if (l < 0) l = 0; //count special ops as level 0, so they can be detected there
+            if (l < 0) l = 0; 
             for (int i = l; i <= 8; i++) {
                 NALLevelEqualAndAbove[i] |= o.bit;
             }
@@ -748,22 +748,22 @@ public enum Op {
 
         final Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);
 
-        //Setup NativeOperator String index hashtable
+        
         for (Op r : Op.values()) {
             _stringToOperator.put(r.toString(), r);
 
         }
         stringToOperator = Maps.immutable.ofMap(_stringToOperator);
 
-        //System.out.println(Arrays.toString(byteSymbols));
+        
 
 
-//        //Setup NativeOperator Character index hashtable
-//        for (Op r : Op.values()) {
-//            char c = r.ch;
-//            if (c!=0)
-//                Op._charToOperator.put(c, r);
-//        }
+
+
+
+
+
+
     }
 
     public final Atom strAtom;
@@ -862,11 +862,11 @@ public enum Op {
         this.statement = str.equals("-->") || isImpl || str.equals("<->");
         boolean isConj = str.equals("&&");
         this.temporal = isConj || isImpl;
-        //in(or(CONJUNCTION, IMPLICATION, EQUIV));
+        
 
         this.hasNumeric = temporal;
 
-        //negation does not contribute to structure vector
+        
         this.bit = (1 << ordinal());
 
         final Set<String> ATOMICS = Set.of(".", "+", "B");
@@ -876,7 +876,7 @@ public enum Op {
         conceptualizable = !var &&
                 !str.equals("B") /* Bool */
 
-        //str.equals("+") /* INT */ ||
+        
         ;
 
         goalable = conceptualizable && !isImpl;
@@ -893,43 +893,43 @@ public enum Op {
      */
     public static Term dt(Compound base, int nextDT) {
 
-        //if (base.dt() == nextDT) return base;
+        
 
         return base.op().compound(nextDT, base.arrayShared());
 
-//        if (nextDT == XTERNAL) {
-//            return new CompoundDTLight(base, XTERNAL);
-//        } else {
-//            Subterms subs = base.subterms();
-//            int ns = subs.subs();
-////                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
-////                    return base; //re-use base only if the terms are inequal
-//
-//            /*@NotNull*/
-//            if (ns > 2 && !concurrent(nextDT))
-//                return Null; //tried to temporalize what can only be commutive
-//
-//
-//            Term[] ss = subs.arrayShared();
-//
-//            Op o = base.op();
-//            assert (o.temporal);
-//            if (o.commutative) {
-//
-//                if (ss.length == 2) {
-//                    //must re-arrange the order to lexicographic, and invert dt
-//                    return o.the(nextDT != DTERNAL ? -nextDT : DTERNAL, ss[1], ss[0]);
-//                } else {
-//                    return o.the(nextDT, ss);
-//                }
-//            } else {
-//                return o.the(nextDT, ss);
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
-    //CaffeineMemoize.builder(buildTerm, -1 /* softref */, true /* Param.DEBUG*/);
-    //new NullMemoize<>(buildTerm);
+    
+    
 
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
@@ -943,248 +943,248 @@ public enum Op {
         return x == True || x == False;
     }
 
-//    /*@NotNull*/
-//    static public Term conjMerge0(Term a, @Deprecated long aStart, Term b, long bStart) {
-//
-//        int ae = a.eventCount();
-//        int be = b.eventCount();
-//        if (ae == 1 && be == 1) {
-//            long bo = bStart - aStart;
-//            assert (bo < Integer.MAX_VALUE);
-//            return conjSeqFinal((int) bo, a, b);
-//        }
-//
-//        LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap(ae + be);
-//
-//        LongObjectPredicate<Term> insert = (long w, Term xb) -> {
-//            Collection<Term> ab = eventSets.updateValue(w,
-//                    () -> {
-//                        Collection<Term> x = new UnifiedSet<>(1);
-//                        x.add(xb);
-//                        return x;
-//                    },
-//                    (Collection<Term> xx) -> {
-//                        if (xx.add(xb)) {
-//                            Op o = xb.op();
-//                            if (o == NEG) {
-//                                if (xx.contains(xb.unneg()))
-//                                    return null;
-//                            } else {
-//                                //if (xa.contains(xb.neg())) return null;
-//                                for (Term z : xx) {
-//                                    if (z.op() == NEG && z.sub(0).equals(xb))
-//                                        return null;
-//                                }
-//                            }
-//                        }
-//                        return xx;
-//                    });
-//            return ab != null;
-//        };
-//
-//        if (!(a.eventsWhile(insert, aStart) && b.eventsWhile(insert, bStart)))
-//            return False;
-//
-//        LongObjectHashMap<Term> eventSet = new LongObjectHashMap<>();
-//        Term[] cut = {null};
-//        if (!eventSets.keyValuesView().allSatisfy((ws) -> {
-//            Term[] sps = sorted(ws.getTwo());
-//            assert (sps.length > 0);
-//            Term pp;
-//            if (sps.length == 1)
-//                pp = sps[0];
-//            else {
-//                pp = implInConjReduce(instance(CONJ, 0, sps)); //direct
-//            }
-//            if (pp instanceof Bool) {
-//                cut[0] = pp;
-//                return false;
-//            }
-//            eventSet.put(ws.getOne(), pp);
-//            return true;
-//        })) {
-//            return cut[0];
-//        }
-//
-//
-//        FasterList<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
-//        eventSet.forEachKeyValue((w, t) -> events.add(PrimitiveTuples.pair(w, t)));
-//        return conj(events);
-//
-////        //group all parallel clusters
-////        LongObjectPair<Term> e0 = events.get(0);
-////
-////        long headAt = e0.getOne();
-////        int groupStart = -1;
-////        for (int i = 1; i <= ee; i++) {
-////            long nextAt = (i != ee) ? events.get(i).getOne() : ETERNAL;
-////            if (nextAt == headAt) {
-////                if (groupStart == -1) groupStart = i - 1;
-////            } else {
-////                if (groupStart != -1) {
-////                    int groupEnd = i;
-////                    Term[] p = new Term[groupEnd - groupStart];
-////                    assert (p.length > 1);
-////                    long when = events.get(groupStart).getOne();
-////                    for (int k = 0, j = groupStart; j < groupEnd; j++) {
-////                        p[k++] = events.get(groupStart).getTwo();
-////                        events.remove(groupStart);
-////                        i--;
-////                        ee--;
-////                    }
-////                    Term replacement = p.length > 1 ? CONJ.the(0, p) : p[0];
-////                    if (events.isEmpty()) {
-////                        //got them all here
-////                        return replacement;
-////                    }
-////                    events.add(i, PrimitiveTuples.pair(when, replacement));
-////                    i++;
-////                    ee++;
-////                    groupStart = -1; //reset
-////                }
-////            }
-////            headAt = nextAt;
-////        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static boolean concurrent(int dt) {
         return (dt == DTERNAL) || (dt == 0);
     }
 
-    //    /**
-//     * constructs a correctly merged conjunction from a list of events
-//     * note: this modifies the event list
-//     */
-//    public static Term conj0(FasterList<LongObjectPair<Term>> events) {
-//
-//        final int ee = events.size();
-//        switch (ee) {
-//            case 0:
-//                return True;
-//            case 1:
-//                return events.get(0).getTwo();
-//            default:
-//                events.sortThisByLong(LongObjectPair::getOne);
-//
-//                LongHashSet times = new LongHashSet(ee); //TODO lazy alloc only after a duplicate sequence time has been detected
-//                LongByteHashMap collides = null;
-//
-//                for (int i = 0; i < ee; i++) {
-//                    LongObjectPair<Term> p = events.get(i);
-//                    long pt = p.getOne();
-//                    if (!times.add(pt)) {
-//                        if (collides == null)
-//                            collides = new LongByteHashMap(2);
-//
-//                        byte n = collides.getIfAbsentPut(pt, (byte) 1);
-//                        collides.addToValue(pt, (byte) 1);
-//                    }
-//                }
-//                if (collides != null) {
-//                    ListIterator<LongObjectPair<Term>> ii = events.listIterator();
-//                    int batchRemain = 0;
-//                    Term[] batch = null;
-//                    while (ii.hasNext()) {
-//                        LongObjectPair<Term> p = ii.next();
-//
-//                        if (batchRemain == 0) {
-//                            long pt = p.getOne();
-//                            batchRemain = collides.removeKeyIfAbsent(pt, (byte) 0);
-//                            assert (batchRemain == 0 || batchRemain > 1) : "batchRemain=" + batchRemain;
-//                            if (batchRemain > 0) {
-//                                ii.remove();
-//                                batch = new Term[batchRemain--];
-//                                batch[0] = p.getTwo();
-//                            }
-//                        } else {
-//                            ii.remove();
-//                            batch[batch.length - batchRemain--] = p.getTwo();
-//
-//                            if (batchRemain == 0) {
-//                                Term b = CONJ.the(0, batch);
-//                                if (b == False)
-//                                    return False;
-//                                if (b == Null)
-//                                    return Null;
-//                                if (b != True)
-//                                    ii.add(pair(p.getOne(), b));
-//                                batch = null;
-//                            }
-//                        }
-//
-//                    }
-//                }
-////                //TODO optimize this
-////                ListIterator<LongObjectPair<Term>> ii = events.listIterator();
-////                long prevtime = TIMELESS;
-////                int prevtimeStart = 0;
-////                while (ii.hasNext()) {
-////                    LongObjectPair<Term> x = ii.next();
-////                    Term xt = x.getTwo();
-////                    if (xt == True) {
-////                        ii.remove(); //skip
-////                    } else if (xt == False) {
-////                        return False;
-////                    } else if (xt == Null) {
-////                        return Null;
-////                    }
-////
-////                    long now = x.getOne();
-////
-////                    if (now == ETERNAL)
-////                        throw new TODO();
-////                    else if (now == TIMELESS)
-////                        throw new RuntimeException();
-////                    int at = ii.previousIndex();
-////
-////                    boolean hasNext = ii.hasNext();
-////                    if (prevtime == now && hasNext) {
-////                        //continue, will be grouped when the # changes
-////                    } else {
-////                        if ((hasNext && prevtimeStart < at - 1) || (!hasNext && prevtime == now)) {
-////                            Term[] s = new Term[at - prevtimeStart + (!hasNext ? 1 : 0)];
-////                            assert (s.length > 1);
-////                            int j = 0;
-////                            if (!hasNext) {
-////                                s[j++] = xt; //include current
-////                                ii.remove();
-////                            } else {
-////                                ii.previous();
-////                            }
-////                            for (; j < s.length; ) {
-////                                LongObjectPair<Term> e = ii.previous();
-////                                ii.remove();
-////                                s[j++] = e.getTwo();
-////                            }
-////                            Term xyt = CONJ.the(0, s);
-////                            if (xyt == Null) return Null;
-////                            if (xyt == False) return False;
-////                            if (xyt != True) {
-////                                LongObjectPair<Term> xy = pair(prevtime, xyt);
-////                                ii.add(xy);
-////                                if (hasNext)
-////                                    ii.next();
-////                            }
-////                            prevtimeStart = ii.previousIndex();
-////                        } else {
-////                            prevtimeStart = at;
-////                        }
-////                        prevtime = now;
-////                    }
-////                }
-//                int e = events.size();
-//                switch (e) {
-//                    case 0:
-//                        return True;
-//                    case 1:
-//                        return events.get(0).getTwo();
-//                    default:
-//                        return Conj.conjSeq(events);
-//                }
-//
-//        }
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static boolean hasNull(Term[] t) {
         for (Term x : t)
@@ -1196,13 +1196,13 @@ public enum Op {
     private static Term differ(/*@NotNull*/ Op op, Term... t) {
 
 
-//        if (hasNull(t))
-//            return Null;
 
-        //TODO product 1D, 2D, etc unwrap
-        //if (t.length >= 2 && Util.and((Term tt) -> tt.op() == PROD && tt.subs()==1, t)) {
-        //return $.p(differ())
-        //}
+
+
+        
+        
+        
+        
 
 
         switch (t.length) {
@@ -1220,13 +1220,13 @@ public enum Op {
                 if (et0 == Null || et1 == Null)
                     return Null;
 
-                //false tautology - the difference of something with itself will always be nothing, ie. freq=0, ie. False
-                //if (et0.equals(et1))
+                
+                
                 if (et0.equalsRoot(et1))
                     return False;
 
 
-                //the difference of something with its negation; depends if the first argument is positive or not
+                
                 if (et1.equalsNegRoot(et0)) {
                     if (et0.op() == NEG || et0 == False)
                         return False;
@@ -1234,17 +1234,17 @@ public enum Op {
                         return True;
                 }
 
-//                if (et0 == True && et1 == False) //TRUE - FALSE
-//                    return True;
 
-                //null tautology - incomputable comparisons with truth
+
+
+                
                 if (isTrueOrFalse(et0) || isTrueOrFalse(et1))
                     return Null;
 
 
                 if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
                         || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
-                    return Null; //TODO handle this better, there may be detectable or iteratively simplified reductions
+                    return Null; 
 
                 if (op == DIFFe && et0 instanceof Int.IntRange && et1.op() == INT) {
                     Term simplified = ((Int.IntRange) et0).subtract(et1);
@@ -1252,7 +1252,7 @@ public enum Op {
                         return simplified;
                 }
 
-                //corresponding set type for reduction:
+                
                 Op set = op == DIFFe ? SETe : SETi;
                 if ((et0.op() == set && et1.op() == set)) {
                     return differenceSet(set, et0, et1);
@@ -1268,9 +1268,9 @@ public enum Op {
     }
 
     private static Term differenceSect(Op diffOp, Term a, Term b) {
-        //intersection
-        // (c --> ((a & x)-(b & x)))  ===>  (c --> ((a-b)&x))
-        // (((a | x)~(b | x)) --> c)  ===>  (((a~b)|x) --> c)
+        
+        
+        
         Op ao = a.op();
         if (((diffOp == DIFFi && ao == SECTe) || (diffOp == DIFFe && ao == SECTi)) && (b.op() == ao)) {
             Subterms aa = a.subterms();
@@ -1279,17 +1279,17 @@ public enum Op {
             if (common != null) {
                 int cs = common.size();
                 if (aa.subs() == cs || bb.subs() == cs)
-                    return Null; //completely contained by the other
+                    return Null; 
                 return ao.the(common.with(
                         diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
                 ));
             }
         }
 
-        //union
-        // (c --> ((a | x)-(b | x)))  ===>  (c --> ((a-b)|(--,x)))
-        // (((a & x)~(b & x)) --> c)  ===>  (((a~b)&(--,x)) --> c)
-        // TODO
+        
+        
+        
+        
         if (((diffOp == DIFFi && ao == SECTi) || (diffOp == DIFFe && ao == SECTe)) && (b.op() == ao)) {
             Subterms aa = a.subterms();
             Subterms bb = b.subterms();
@@ -1297,7 +1297,7 @@ public enum Op {
             if (common != null) {
                 int cs = common.size();
                 if (aa.subs() == cs || bb.subs() == cs)
-                    return Null; //completely contained by the other
+                    return Null; 
                 return ao.the(common.collect(Term::neg).with(
                         diffOp.the(ao.the(aa.termsExcept(common)), ao.the(bb.termsExcept(common)))
                 ));
@@ -1309,10 +1309,10 @@ public enum Op {
 
     /*@NotNull*/
     public static Term differenceSet(/*@NotNull*/ Op o, Term a, Term b) {
-        //assert (!o.temporal) : "this impl currently assumes any constructed term will have dt=DTERNAL";
+        
 
         if (a.equals(b))
-            return Null; //empty set
+            return Null; 
 
         if (o == INT) {
             if (!(a instanceof Int.IntRange))
@@ -1321,16 +1321,16 @@ public enum Op {
                 Term aMinB = ((Int.IntRange) a).subtract(b);
                 if (aMinB != Null) {
                     if (a.equals(aMinB))
-                        return Null; //
+                        return Null; 
                     return aMinB;
                 }
             }
         }
 
-//        //quick test: intersect the mask: if nothing in common, then it's entirely the first term
-//        if ((a.structure() & b.structure()) == 0) {
-//            return a;
-//        }
+
+
+
+
 
         int size = a.subs();
         Collection<Term> terms = o.commutative ? new TreeSet() : new FasterList(size);
@@ -1343,10 +1343,10 @@ public enum Op {
         }
 
         int retained = terms.size();
-        if (retained == size) { //same as 'a', quick re-use of instance
+        if (retained == size) { 
             return a;
         } else if (retained == 0) {
-            return Null; //empty set
+            return Null; 
         } else {
             return o.the(DTERNAL, terms);
         }
@@ -1354,8 +1354,8 @@ public enum Op {
     }
 
 
-//        else
-//            return compound(new NewCompound(op, subterms), dt);
+
+
 
     /**
      * decode a term which may be a functor, return null if it isnt
@@ -1393,9 +1393,9 @@ public enum Op {
         return bits;
     }
 
-//    public static final Predicate<Term> onlyTemporal =
-//            c -> concurrent(c.dt());
-    //c.op()!=CONJ || concurrent(c.dt()); //!c.op().temporal || concurrent(c.dt());
+
+
+    
 
     /*@NotNull*/
     static Term statement(/*@NotNull*/ Op op, int dt, final Term subject, final Term predicate) {
@@ -1407,164 +1407,164 @@ public enum Op {
         if (dtConcurrent) {
             if (subject.equals(predicate))
                 return True;
-//            if (subject.equalsRoot(predicate))
-//                return True;
+
+
         }
 
         if (op == INH || op == SIM) {
             if (isTrueOrFalse(subject)) {
-                //nothing is or is the intension of true or false
+                
                 return Null;
             }
             if (op == SIM && isTrueOrFalse(predicate)) {
-                // similarity with truth is prevented since it being a commutive operator,
-                //      then at best, no information can gained
-                // but inheritance is allowed and this can link term-level truth and task-level truth
+                
+                
+                
                 return Null;
             }
         }
 
         if (op == IMPL) {
 
-            //special case for implications: reduce to --predicate if the subject is False
+            
 
-            //if (dtConcurrent) { //no temporal basis
+            
             if (subject == True)
-                return predicate; //true tautology: always
+                return predicate; 
             if (subject == False)
-                return Null; //false tautology: never happens, so the rule is better forgotten
+                return Null; 
 
             if (predicate instanceof Bool)
-                return Null; //nothing is the "cause" of tautological trueness or falseness
-//            if (predicate == True)
-//                return subject;
-//            if (predicate == False)
-//                return subject.neg();
+                return Null; 
+
+
+
+
 
             if (predicate.op() == NEG) {
-                //negated predicate gets unwrapped to outside
+                
                 return IMPL.compound(dt, subject, predicate.unneg()).neg();
             }
 
 
-//                //factor out any common subterms iff concurrent
-//                if (dtConcurrent) {
-//
-//                    //factor common events from subj/pred in concurrent impl
-//
-//                    boolean subjConj = subject.op() == CONJ;
-//                    boolean predConj = predicate.op() == CONJ;
-//                    boolean subjConjComm = subjConj && concurrent(subject.dt());
-//                    boolean predConjComm = predConj && concurrent(predicate.dt());
-//
-//                    if (subjConjComm) {
-//                        TermContainer subjs = subject.subterms();
-//                        if (subjs.contains(predicate)) {
-//                            //if (X and Y) then (X), yes obviously
-//                            return True;
-//                        }
-//                        if (subjs.contains(predicate.neg())) {
-//                            //if (--X and Y) then (X), no: contradiction
-//                            return Null;
-//                        }
-//                    } else if (predConjComm) {
-//                        TermContainer preds = predicate.subterms();
-//                        if (preds.contains(subject)) {
-//                            ////if X then (X and Y), no not necessarily
-//                            return Null;
-//                        }
-//                        if (preds.contains(subject.neg())) {
-//                            ////if X then (--X and Y), no: contradiction
-//                            return Null;
-//                        }
-//                    }
-//
-////                    if (subjConjComm && predConjComm) {
-////                        final Term csub = subject;
-////                        TermContainer subjs = csub.subterms();
-////                        final Term cpred = predicate;
-////                        TermContainer preds = cpred.subterms();
-////
-////                        Term[] common = TermContainer.intersect(subjs, preds);
-////                        if (common != null) {
-////
-////                            Set<Term> sss = subjs.toSortedSet();
-////                            boolean modifiedS = false;
-////                            for (Term cc : common)
-////                                modifiedS |= sss.remove(cc);
-////
-////                            if (modifiedS) {
-////                                int s0 = sss.size();
-////                                switch (s0) {
-////                                    case 0:
-////                                        subject = True;
-////                                        break;
-////                                    case 1:
-////                                        subject = sss.iterator().next();
-////                                        break;
-////                                    default:
-////                                        subject = CONJ.the(/*DTERNAL?*/csub.dt(), sss);
-////                                        break;
-////                                }
-////                            }
-////
-////                            SortedSet<Term> ppp = preds.toSortedSet();
-////                            boolean modifiedP = false;
-////                            for (Term cc : common)
-////                                modifiedP |= ppp.remove(cc);
-////
-////                            if (modifiedP) {
-////                                int s0 = ppp.size();
-////                                switch (s0) {
-////                                    case 0:
-////                                        predicate = True;
-////                                        break;
-////                                    case 1:
-////                                        predicate = ppp.iterator().next();
-////                                        break;
-////                                    default:
-////                                        predicate = CONJ.the(cpred.dt(), sorted(ppp));
-////                                        break;
-////                                }
-////                            }
-////
-////
-////                            return IMPL.the(dt, subject, predicate).negIf(!polarity);
-////                        }
-////
-////                    }
-//
-//
-//                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             if (subject.hasAny(InvalidImplicationSubj))
-                return Null; //throw new InvalidTermException(op, dt, "Invalid equivalence subject", subject, predicate);
+                return Null; 
 
 
-            // (C ==>+- (A ==>+- B))   <<==>>  ((C &&+- A) ==>+- B)
+            
             switch (predicate.op()) {
                 case IMPL: {
                     return IMPL.compound(predicate.dt(), CONJ.compound(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1));
                 }
-//                case CONJ: {
-//                    // (C ==>+- (A &&+ B))   <<==>>  ((C &&+- A) ==>+ B)
-//                    // only if (A &&+ B) is temporal and A is the earlier of the two events
-//                    int pdt = predicate.dt();
-//                    if (pdt != 0 && pdt != XTERNAL && pdt != DTERNAL) {
-//                        int e = conjEarlyLate(predicate, true);
-//                        Term early = predicate.sub(e);
-//                        Term late = predicate.sub(1 - e);
-//                        return IMPL.the(pdt,
-//                                CONJ.the(dt /*caDT */, subject, early),
-//                                late);
-//                    }
-//
-//                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
 
 
-            //filter duplicate events and detect contradictions
-            //TODO use CONJ and slice at the temporal boundary?
+            
+            
 
             if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
@@ -1581,15 +1581,15 @@ public enum Op {
 
                 final boolean[] peChange = {false};
 
-                //if there is DT between subject and predicate,
-                // dont decompose parallel to keep a parallel grouping in the predicate intact. otherwise it will get arbitrarily split
+                
+                
                 boolean contradiction = !predicate.eventsWhile((w, t) -> {
                     LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
                     if (se.contains(x)) {
-                        //dont repeat it in the predicate
+                        
                         peChange[0] = true;
                     } else if (se.contains(pair(w, t.neg()))) {
-                        return false; //contradiction
+                        return false; 
                     } else {
                         pe.add(x);
                     }
@@ -1599,8 +1599,8 @@ public enum Op {
                 if (contradiction)
                     return False;
 
-                //merge or contradict any DTERNAL predicate components occurring
-                // at same time
+                
+                
                 if ((dt == DTERNAL || dt == 0)) {
                     for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
                         LongObjectPair<Term> pex = pi.next();
@@ -1618,31 +1618,31 @@ public enum Op {
                                     LongObjectPair<Term> sse = si.next();
                                     if (sse.getOne() == at) {
 
-                                        //determine if each component either is absorbed or contradicted
-                                        //note: true or false are propagated upward the conjunction stack, it may get eliminated
+                                        
+                                        
                                         Term sset = sse.getTwo();
 
                                         for (int i = 0; i < subPextsN; i++) {
                                             Term subPext = subPexts.sub(i);
                                             Term merge = CONJ.compound(dt, new Term[]{sset, subPext});
-                                            if (merge == Null) return Null; //invalid
+                                            if (merge == Null) return Null; 
                                             else if (merge == False) {
-                                                //contradict
+                                                
                                                 return False;
                                             } else if (merge.equals(sset)) {
-                                                //unchanged, just drop it
+                                                
                                                 if (pextRemovals == null)
                                                     pextRemovals = new RoaringBitmap();
                                                 pextRemovals.add(i);
                                             } else {
-                                                //?? leave in predicate
+                                                
                                             }
                                         }
                                     }
                                 }
                                 if (pextRemovals != null) {
                                     if (pextRemovals.getCardinality() == subPextsN) {
-                                        //completely absorbed
+                                        
                                         pi.remove();
                                     } else {
                                         pi.set(pair(at, CONJ.compound(pdt, subPexts.termsExcept(pextRemovals))));
@@ -1656,24 +1656,24 @@ public enum Op {
 
 
                 if (pe.isEmpty())
-                    return True; //fully reduced
+                    return True; 
 
-//                int pes = pe.size();
-//                switch (pes) {
-//                    case 0:
-//                        return True;
-//                    case 1:
+
+
+
+
+
                 if (peChange[0]) {
-                    //change occurred, duplicates were removed, reconstruct new predicate
+                    
                     int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
                     Term newPredicate;
                     if (pe.size() == 1) {
                         newPredicate = pe.getOnly().getTwo();
                     } else if (predicate.dt() == DTERNAL) {
-                        //construct && from the subterms since it was originally && otherwise below will construct &|
+                        
                         Conj c = new Conj();
                         for (int i = 0, peSize = pe.size(); i < peSize; i++) {
-                            if (!c.add(pe.get(i).getTwo(), ETERNAL)) //override as ETERNAL
+                            if (!c.add(pe.get(i).getTwo(), ETERNAL)) 
                                 break;
                         }
                         newPredicate = c.term();
@@ -1683,49 +1683,49 @@ public enum Op {
 
                     return IMPL.compound(ndt, new Term[]{subject, newPredicate});
                 }
-//                        break;
-//                    default: {
-                //TODO if pred has >1 events, and dt is temporal, pull all the events except the last into a conj for the subj then impl the final event
-
-//                        if (dt != DTERNAL) {
-//                            long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
-//                            Term finalEvent = null;
-//                            int moved = 0;
-//                            for (int i = 0; i < pes; i++) {
-//                                LongObjectPair<Term> m = pe.get(i);
-//                                if (m.getOne() != finalEventTime) {
-//                                    se.add(m);
-//                                    moved++;
-//                                } else {
-//                                    if (finalEvent == null) finalEvent = m.getTwo();
-//                                    else finalEvent = CONJ.the(0, finalEvent, m.getTwo());
-//                                }
-//                            }
-//                            if (moved > 0 || !finalEvent.equals(predicate)) {
-//                                long ndt = dtNotDternal ?
-//                                        finalEventTime - ((FasterList<LongObjectPair<Term>>) se.list).maxBy(LongObjectPair::getOne).getOne() :
-//                                        DTERNAL;
-//                                assert (ndt < Integer.MAX_VALUE);
-//                                return IMPL.the((int) ndt,
-//                                        Op.conjEvents(new FasterList(se)),
-//                                        finalEvent
-//                                );
-//                            }
-//                        }
 
 
-//                    }
-//              }
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             }
 
 
-//            if (op == INH || op == SIM || dt == 0 || dt == DTERNAL) {
-//                if ((subject instanceof Compound && subject.varPattern() == 0 && subject.containsRecursively(predicate)) ||
-//                        (predicate instanceof Compound && predicate.varPattern() == 0 && predicate.containsRecursively(subject))) {
-//                    return False; //self-reference
-//                }
-//            }
+
+
+
+
+
+
 
         }
 
@@ -1736,10 +1736,10 @@ public enum Op {
             Predicate<Term> delim = (op == IMPL) ?
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
 
-            //apply to: inh, sim, and concurrent impl
+            
             if ((containEachOther(subject, predicate, delim))) {
-                //(!(su instanceof Variable) && predicate.contains(su)))
-                return Null; //cyclic
+                
+                return Null; 
             }
             boolean sa = subject instanceof AliasConcept.AliasAtom;
             if (sa) {
@@ -1760,25 +1760,25 @@ public enum Op {
 
         }
 
-        //already sorted here if commutive
-//        if (op.commutative) {
-//
-////            //normalize co-negation
-////            boolean sn = subject.op() == NEG;
-////            boolean pn = predicate.op() == NEG;
-////
-//            if (/*(sn == pn) && */(subject.compareTo(predicate) > 0)) {
-//                Term x = predicate;
-//                predicate = subject;
-//                subject = x;
-//                if (dt != XTERNAL && !dtConcurrent)
-//                    dt = -dt;
-//            }
-//
-//            //assert (subject.compareTo(predicate) <= 0);
-//            //System.out.println( "\t" + subject + " " + predicate + " " + subject.compareTo(predicate) + " " + predicate.compareTo(subject));
-//
-//        }
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         return compound(op, dt, subject, predicate);
@@ -1796,29 +1796,29 @@ public enum Op {
             return y.containsRecursively(x, true, delim);
     }
 
-//    private static Term conjDrop(Term conj, int i) {
-//        TermContainer cs = conj.subterms();
-//        if (cs.subs() == 2) {
-//            return conj.sub(1 - i);
-//        } else {
-//            Term[] s = cs.theArray();
-//            int sl = s.length;
-//            Term[] t = new Term[sl - 1];
-//            if (i > 0)
-//                System.arraycopy(s, 0, t, 0, i);
-//            if (i < s.length - 1)
-//                System.arraycopy(s, i + 1, t, i, sl - 1 - i);
-//            return CONJ.the(conj.dt(), t);
-//        }
-//    }
 
 
-//    public static boolean equalsOrContainEachOther(Term x, Term y) {
-//        return x.unneg().equals(y.unneg()) || containEachOther(x, y);
-//    }
-//    public static boolean containEachOther(Term x, Term y) {
-//        return containEachOther(x, y, recursiveCommonalityDelimeterStrong);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Nullable
     public static Op the(String s) {
@@ -1838,7 +1838,7 @@ public enum Op {
         int trues = 0;
         for (Term x : t) {
             if (x == True) {
-                //everything intersects with the "all", so remove this TRUE below
+                
                 trues++;
             } else if (x == Null || x == False) {
                 return Null;
@@ -1846,15 +1846,15 @@ public enum Op {
         }
         if (trues > 0) {
             if (trues == t.length) {
-                return True; //all were true
+                return True; 
             } else if (t.length - trues == 1) {
-                //find the element which is not true and return it
+                
                 for (Term x : t) {
                     if (x != True)
                         return x;
                 }
             } else {
-                //filter the True statements from t
+                
                 Term[] t2 = new Term[t.length - trues];
                 int yy = 0;
                 for (Term x : t) {
@@ -1883,7 +1883,7 @@ public enum Op {
             case 2:
                 return intersect2(t[0], t[1], intersection, setUnion, setIntersection);
             default:
-                //HACK use more efficient way
+                
                 Term a = intersect2(t[0], t[1], intersection, setUnion, setIntersection);
 
                 Term b = intersect(copyOfRange(t, 2, t.length), intersection, setUnion, setIntersection);
@@ -1906,18 +1906,18 @@ public enum Op {
         Op o2 = term2.op();
 
         if ((o1 == setUnion) && (o2 == setUnion)) {
-            //the set type that is united
+            
             return SetFunc.union(setUnion, term1.subterms(), term2.subterms());
         }
 
 
         if ((o1 == setIntersection) && (o2 == setIntersection)) {
-            //the set type which is intersected
+            
             return SetFunc.intersect(setIntersection, term1.subterms(), term2.subterms());
         }
 
         if (o2 == intersection && o1 != intersection) {
-            //put them in the right order so everything fits in the switch:
+            
             Term x = term1;
             term1 = term2;
             term2 = x;
@@ -1925,7 +1925,7 @@ public enum Op {
             o1 = intersection;
         }
 
-        //reduction between one or both of the intersection type
+        
 
         TreeSet<Term> args = new TreeSet<>();
         if (o1 == intersection) {
@@ -1948,7 +1948,7 @@ public enum Op {
     }
 
     public static boolean goalable(Term c) {
-        return !c.hasAny(Op.NonGoalable);// && c.op().goalable;
+        return !c.hasAny(Op.NonGoalable);
     }
 
     /**
@@ -1967,9 +1967,9 @@ public enum Op {
 
         switch (cs.subs()) {
             case 1:
-                return Null; //removed itself
+                return Null; 
             case 2:
-                //shortcut: return the other
+                
                 Term remain = cs.sub(1 - i);
                 Op o = container.op();
                 return o.isSet() ? o.the(remain) : remain;
@@ -1989,22 +1989,22 @@ public enum Op {
                 return earlyOrLate ? 0 : 1;
 
             default: {
-//                int d = x.sub(0).compareTo(x.sub(1));
-//                if (d > 0)
-//                    throw new RuntimeException();
-//                if (dt < 0) earlyOrLate = !earlyOrLate;
-//                return (d <= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
+
+
+
+
+
                 return (dt < 0) ? (earlyOrLate ? 1 : 0) : (earlyOrLate ? 0 : 1);
             }
         }
     }
 
-//    public static Term conjEternalize(FasterList<LongObjectPair<Term>> events, int start, int end) {
-//        if (end - start == 1)
-//            return events.get(start).getTwo();
-//        else
-//            return CONJ.compound(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
-//    }
+
+
+
+
+
+
 
     public final Term the(Subterms s) {
         return the(s.arrayShared());
@@ -2033,7 +2033,7 @@ public enum Op {
 
 
         if (dt == 0) {
-            //special case: parallel
+            
             String s;
             switch (this) {
                 case CONJ:
@@ -2042,9 +2042,9 @@ public enum Op {
                 case IMPL:
                     s = ("=|>");
                     break;
-//                case EQUI:
-//                    s = ("<|>");
-//                    break;
+
+
+
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -2191,7 +2191,7 @@ public enum Op {
 
         @Override
         public boolean unifyReverse(Term x, Unify u) {
-            return x == this; //shouldnt get called
+            return x == this; 
         }
 
         @Override
@@ -2213,42 +2213,42 @@ public enum Op {
     }
 
 
-//        /**
-//         * array implementation of the conjunction true/false filter
-//         */
-//        @NotNull
-//        private Term[] conjTrueFalseFilter(Term... u) {
-//            int trues = 0; //# of True subterms that can be eliminated
-//            for (Term x : u) {
-//                if (x == True) {
-//                    trues++;
-//                } else if (x == False) {
-//
-//                    //false subterm in conjunction makes the entire condition false
-//                    //this will eventually reduce diectly to false in this method's only callee HACK
-//                    return FalseArray;
-//                }
-//            }
-//
-//            if (trues == 0)
-//                return u;
-//
-//            int ul = u.length;
-//            if (ul == trues)
-//                return TrueArray; //reduces to an Imdex itself
-//
-//            Term[] y = new Term[ul - trues];
-//            int j = 0;
-//            for (int i = 0; j < y.length; i++) {
-//                Term uu = u[i];
-//                if (!(uu == True)) // && (!uu.equals(False)))
-//                    y[j++] = uu;
-//            }
-//
-//            assert (j == y.length);
-//
-//            return y;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

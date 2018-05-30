@@ -17,7 +17,7 @@ package java4k.demonattack4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -130,7 +130,7 @@ public class a extends GamePanel {
 	ArrayList<float[]> bullets = new ArrayList<float[]>();
 	ArrayList<float[]>[] demonsInRows = new ArrayList[4];
 
-	// keys
+	
 	private final boolean[] a = new boolean[32768];
 
 	long nextFrameStartTime;
@@ -154,7 +154,7 @@ public class a extends GamePanel {
 
 		String S = "\u3e00\u2626\u2626\u2626\u3e26\u1c00\u1818\u1818\u1818\u1818\u3e00\u3232\u3c30\u3202\u3e32\u3e00\u3232\u1c30\u3230\u3e32\u3200\u3232\u3232\u7e32\u3030\u3e00\u0232\u303e\u3230\u3e32\u3e00\u3232\u3e02\u3232\u3e32\u3e00\u3232\u1830\u0c18\u0c0c\u3e00\u2626\u3e26\u3232\u3e32\u3e00\u3232\u3e32\u3230\u3e32\u02fc\u9112\u9191\u9291\ufc02\u00ff\u2ac5\uea2a\u2a2a\uff00\u00ff\ua598\ub585\u99a5\uff00\u403f\u924c\u8282\u4c92\u3f40\u1414\u1414\u3636\u7777\u6363\u6363\u8010\uf840\u62c4\u0032\u2000\u8e00\uc073\u0060\u4000\u980f\ue070\u00c0\u0000\uf0c0\u2428\"\u6000\u26f8\u4121\u0002\uf030\u2428\u8444\b\u0824\u2712\uf94d\u0040\u5000\u2410\u784c\u0090\u2000\u2050\ub840\u006c\u124c\u31e1\u3219\u00e4\u0e20\ue111\u1931\u00f2\u2600\u1109\uf1e1\u00f9\ue2fc\u2242\u0412\b\ue418\u24c4\u2414\u0004\u2810\uc4c4\u2224\u0020\u6000\u9090\u6090\u0000\u0000\ua0c0\u00c0\u0000\u0000\u8080\u0000\u0000\u9000\u2004\u0002\"\u1240\u2000\u1002\u0002\u0208\u0040\u0410\u0011\u2804\u1610\u0428\u0000\u0221\u0528\u2048\u0002\u4209\u0128\u2088\u0004\u3e08\u4163\u2241\u0000\u0000\u6b36\u4141\u0000\u6341\u1436\b\u0000\u0021\u0000\u0001\u0024\u0110\u0002\u4010\u0209\u0000\u2200\u0841\u0000\u0208\u4020\b\u0820\u0040\u0050\u4000\u8020\u0060\u0000\uc080\u0060";
 
-		// Decompress digits, IMAGIC logo and player's ship sprites
+		
 		for (i = 0; i < 15; i++) {
 			k = i < 14 ? 10 : 12;
 			sprites[i] = new BufferedImage(8, k, 2);
@@ -171,11 +171,11 @@ public class a extends GamePanel {
 			}
 		}
 
-		// Decompress enemy sprites for each level
-		// (demon sprites, bird sprites, their explosions and formations)
+		
+		
 		for (k = 0; k < 256; k++) {
 
-			// create palette for level
+			
 			random.setSeed(18 + (k << 3));
 			for (i = 0; i < 8; i++) {
 				palette[i] = 0xFF;
@@ -190,7 +190,7 @@ public class a extends GamePanel {
 			}
 
 			if (k == 2) {
-				// Decompress player's ship exploding sprites
+				
 				for (i = 0; i < 8; i++) {
 					sprites[i + 15] = new BufferedImage(16, 48, 2);
 					for (y = 0; y < 6; y++) {
@@ -209,7 +209,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// decompress sprites for levels
+			
 			for (i = 0; i < 12; i++) {
 				z = i < 9 ? 16 : 8;
 				enemySprites[k][i] = new BufferedImage(z, 8, 2);
@@ -227,7 +227,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// Create floor colors
+		
 		for (i = 0; i < 120; i++) {
 			for (j = 0; j < 7; j++) {
 				float w = (float) Math.sin(6 * Math.PI * i / 119);
@@ -235,12 +235,12 @@ public class a extends GamePanel {
 			}
 		}
 
-		// Create extra lives colors
+		
 		for (i = 0; i < 100; i++) {
 			extraLivesColors[i] = new Color(Color.HSBtoRGB(i / 100f, 0.46f, 0.65f + 0.35f * (float) Math.cos(0.594245f + 0.35f * i)));
 		}
 
-		// Create exploding flash colors
+		
 		for (i = 0; i < 16; i++) {
 			float intensity = (float) Math.sin(0.196f * i);
 			explodingFlashColors[i] = new Color(intensity, intensity, intensity);
@@ -253,7 +253,7 @@ public class a extends GamePanel {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		// burn off extra cycles
+		
 		while (nextFrameStartTime - System.nanoTime() > 0) {
 			Thread.yield();
 		}
@@ -261,7 +261,7 @@ public class a extends GamePanel {
 		do {
 			nextFrameStartTime += 16666667;
 
-			// -- update starts ----------------------------------------------------
+			
 
 			if (!a[VK_SHOOT]) {
 				fireReleased = true;
@@ -281,9 +281,9 @@ public class a extends GamePanel {
 			}
 
 			if (demoMode || gameOver == 119) {
-				// test for press start
+				
 				if (fireReleased && a[VK_SHOOT]) {
-					// start game
+					
 					fireReleased = false;
 					demoMode = false;
 					level = -1;
@@ -318,7 +318,7 @@ public class a extends GamePanel {
 				} else if (gameOverDelay < 600) {
 					gameOverDelay++;
 				} else {
-					// return to demo mode 10 seconds after Game Over
+					
 					demoMode = true;
 					level = 0;
 					playerX = 76;
@@ -348,8 +348,8 @@ public class a extends GamePanel {
 					playerBulletX = 79;
 					playerBulletY = 175;
 
-					// give player half a second to recover from being blown up
-					// before demons begin to fire again
+					
+					
 					noShootDelay = 30;
 
 					if (!demoMode) {
@@ -363,7 +363,7 @@ public class a extends GamePanel {
 			} else {
 				if (demoMode) {
 
-					// update demo player ship
+					
 					if (playerX < demoTargetX) {
 						playerX++;
 					} else if (playerX > demoTargetX) {
@@ -372,7 +372,7 @@ public class a extends GamePanel {
 						demoTargetX = 25 + random.nextInt(110);
 					}
 
-					// update demo player bullet
+					
 					if (playerBulletY == 175) {
 						playerBulletX = playerX + 3;
 						if (--demoShootDelay < 0) {
@@ -386,14 +386,14 @@ public class a extends GamePanel {
 						playerBulletY -= playerBulletSpeed;
 					}
 				} else {
-					// update player ship
+					
 					if (a[VK_LEFT] && playerX > 25) {
 						playerX--;
 					} else if (a[VK_RIGHT] && playerX < 135) {
 						playerX++;
 					}
 
-					// update player bullet
+					
 					if (playerBulletY == 175) {
 						playerBulletX = playerX + 3;
 						if (fireReleased && a[VK_SHOOT]) {
@@ -409,7 +409,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// update enemy bullets
+			
 			for (i = bullets.size() - 1; i >= 0; i--) {
 				float[] bullet = bullets.get(i);
 				bullet[BULLET_Y] += bulletSpeed;
@@ -419,14 +419,14 @@ public class a extends GamePanel {
 					bullets.remove(i);
 				}
 
-				// test if enemy bullet hit player's ship
+				
 				if (playerExploding == 0 && bullet[BULLET_Y] <= 185 && bullet[BULLET_Y] >= 175 && bullet[BULLET_X] >= playerX && bullet[BULLET_X] <= playerX + 7) {
 					bullets.remove(i);
 					playerExploding = 63;
 				}
 			}
 
-			// update enemy firing pattern
+			
 			shoot = false;
 			if (noShootDelay > 0) {
 				noShootDelay--;
@@ -449,7 +449,7 @@ public class a extends GamePanel {
 			if (nextLevelDelay > 0) {
 				if (gameOver == 0 && --nextLevelDelay == 0) {
 					if (extraLives < 6) {
-						// gain an extra life for beating level
+						
 						extraLives++;
 					}
 					level++;
@@ -469,12 +469,12 @@ public class a extends GamePanel {
 					extraDemons = 5;
 					tinyEnemies = (level % 12) > 9;
 
-					// create initial 3 demons
+					
 					for (i = 0; i < 3; i++) {
 
 						j = 16 + random.nextInt(96);
 
-						// create demon
+						
 						float[] demon = new float[32];
 						demons.add(demon);
 						demon[DEMON_X] = -32;
@@ -498,7 +498,7 @@ public class a extends GamePanel {
 
 				if (level > 3) {
 
-					// test if bird should dive
+					
 					if (demonsInRows[2].size() == 1) {
 						float[] demon = demonsInRows[2].get(0);
 						if (demon[DEMON_BIRD] == 1 && demon[DEMON_DIVING] == 0 && demonsInRows[3].size() == 0) {
@@ -512,7 +512,7 @@ public class a extends GamePanel {
 						}
 					}
 
-					// demons move down to fill in gaps
+					
 					for (i = 1; i >= 0; i--) {
 						if (demonsInRows[i + 1].size() == 0) {
 							for (j = demonsInRows[i].size() - 1; j >= 0; j--) {
@@ -524,7 +524,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// fill in gaps with new demons if available
+				
 				if (extraDemons > 0) {
 					for (i = 2; i >= 0; i--) {
 						if (demonsInRows[i].size() == 0) {
@@ -532,7 +532,7 @@ public class a extends GamePanel {
 								extraDemons--;
 							}
 
-							// create demon
+							
 							j = 16 + random.nextInt(96);
 							float[] demon = new float[32];
 							demons.add(demon);
@@ -553,11 +553,11 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update demons
+				
 				for (i = demons.size() - 1; i >= 0; i--) {
 					float[] demon = demons.get(i);
 
-					// advance sprite index if necessary
+					
 					if (advanceSprite == 0) {
 						if (++demon[DEMON_SPRITE] == 4) {
 							demon[DEMON_SPRITE] = 0;
@@ -567,7 +567,7 @@ public class a extends GamePanel {
 					if (demon[DEMON_HIDDEN] > 0) {
 						demon[DEMON_HIDDEN]--;
 					} else if (demon[DEMON_FORMING] == 1) {
-						// 2 halfs of demon come together (reform)
+						
 						demon[DEMON_PERCENT_X] += DEMON_REFORM_SPEED;
 						demon[DEMON_X] += demon[DEMON_DELTA_X];
 						demon[DEMON_X2] += demon[DEMON_DELTA_X2];
@@ -581,7 +581,7 @@ public class a extends GamePanel {
 							if (++demon[DEMON_EXPLODING_INDEX] == 3) {
 								if (level > 3 && demon[DEMON_BIRD] == 0) {
 
-									// create birds
+									
 									demon[DEMON_BIRD] = 1;
 									demon[DEMON_EXPLODING] = 0;
 									demon[DEMON_SHOOTER] = 1;
@@ -607,7 +607,7 @@ public class a extends GamePanel {
 					} else {
 
 						if (demon[DEMON_DIVING] == 1) {
-							// bird dives
+							
 							demon[DEMON_Y] = demon[DEMON_DIVING_Y] + 16 * (float) Math.sin(3.14f * demon[DEMON_PERCENT_X]);
 							demon[DEMON_DIVING_Y] += 0.25f;
 							demon[DEMON_PERCENT_X] += demonSpeed * 0.07f;
@@ -625,13 +625,13 @@ public class a extends GamePanel {
 								}
 							}
 
-							// test if diving demon hit player's ship
+							
 							if (playerExploding == 0 && demon[DEMON_Y] >= 171 && demon[DEMON_Y] <= 185 && demon[DEMON_X] + 7 >= playerX && demon[DEMON_X] <= playerX + 7) {
 								demons.remove(i);
 								demonsInRows[3].remove(0);
 								playerExploding = 63;
 							} else if (demon[DEMON_Y] > 182) {
-								// diving bird hit the ground
+								
 								demons.remove(i);
 								demonsInRows[3].remove(0);
 							}
@@ -640,12 +640,12 @@ public class a extends GamePanel {
 
 							boolean shooter = demon[DEMON_ROW] == 2 && (demon[DEMON_BIRD] == 0 || demon[DEMON_SHOOTER] == 1) && demonsInRows[3].size() == 0;
 
-							// should demon fire?
+							
 							if (shooting && shooter) {
 
 								if (shoot) {
-									// enemy shoots
-									// either create 1 bullet or a pair of bullets
+									
+									
 									if (lasers || random.nextBoolean()) {
 										float[] bullet = new float[32];
 										bullets.add(bullet);
@@ -674,7 +674,7 @@ public class a extends GamePanel {
 
 							} else {
 
-								// wander in y-direction
+								
 								if (demon[DEMON_PERCENT_Y] >= 1) {
 									demon[DEMON_PERCENT_Y] = 0;
 									demon[DEMON_DELTA_PERCENT_Y] = 1.57f / (30 + random.nextInt(15));
@@ -690,7 +690,7 @@ public class a extends GamePanel {
 									demon[DEMON_Y] = demon[DEMON_START_Y] + demon[DEMON_DELTA_Y] * (float) Math.sin(demon[DEMON_PERCENT_Y]);
 								}
 
-								// wander in x-direction
+								
 								if (demon[DEMON_PERCENT_X] >= 1) {
 									demon[DEMON_PERCENT_X] = 0;
 									demon[DEMON_START_X] = demon[DEMON_X];
@@ -699,12 +699,12 @@ public class a extends GamePanel {
 										x = random.nextInt(144);
 									} else {
 										if (demon[DEMON_ROW] < 2 || (demon[DEMON_BIRD] == 1 && demon[DEMON_SHOOTER] == 0)) {
-											// upper row demons attempt not to cross the player
+											
 											y = playerX + 8 + random.nextInt(136 - playerX);
 											z = random.nextInt(playerX - 8);
 											x = (demon[DEMON_X] + 4 < playerX) ? (playerX < 57) ? y : z : (playerX > 103) ? z : y;
 										} else {
-											// lowest row demon approaches player
+											
 											x = playerX - 28 + random.nextInt(48);
 										}
 									}
@@ -719,7 +719,7 @@ public class a extends GamePanel {
 									demon[DEMON_PERCENT_X] += demon[DEMON_DELTA_PERCENT_X];
 									demon[DEMON_X] = demon[DEMON_START_X] + demon[DEMON_DELTA_X] * (float) Math.sin(demon[DEMON_PERCENT_X]);
 									if (shooter && level > 7) {
-										// these bullets track under the enemy as it moves
+										
 										for (j = bullets.size() - 1; j >= 0; j--) {
 											bullets.get(j)[BULLET_DEMON_X] = demon[DEMON_X];
 										}
@@ -728,7 +728,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// test if player bullet hit demon
+						
 						if (playerBulletY < 175 && playerBulletY <= demon[DEMON_Y] + 7 && playerBulletY + 7 >= demon[DEMON_Y]
 								&& playerBulletX >= demon[DEMON_X] + (demon[DEMON_BIRD] == 0 && tinyEnemies ? 4 : 0)
 								&& playerBulletX <= demon[DEMON_X] + (demon[DEMON_BIRD] == 1 ? 7 : (tinyEnemies ? 11 : 15))) {
@@ -739,7 +739,7 @@ public class a extends GamePanel {
 							playerBulletX = playerX + 3;
 
 							if (!demoMode) {
-								// compute awarded points and add to total score
+								
 								j = 10 + 5 * (level >> 1);
 								j = (j > 35) ? 35 : j;
 								j <<= (int) (demon[DEMON_BIRD] + demon[DEMON_DIVING]);
@@ -749,7 +749,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update advance sprite counter
+				
 				if (advanceSprite == 0) {
 					advanceSprite = 8;
 				} else {
@@ -757,27 +757,27 @@ public class a extends GamePanel {
 				}
 			}
 
-			// -- update ends ------------------------------------------------------
+			
 
 		} while (nextFrameStartTime < System.nanoTime());
 
-		// -- render starts ------------------------------------------------------
+		
 
-		// draw background
+		
 		Color backgroundColor = playerExploding > 47 ? explodingFlashColors[63 - playerExploding] : Color.BLACK;
 		offscreenGraphics.setColor(backgroundColor);
 		offscreenGraphics.fillRect(0, 20, 160, 168);
 
 		if (gameOver == 0) {
 
-			// draw enemy bullets
+			
 			offscreenGraphics.setColor(enemyBulletColor);
 			for (i = bullets.size() - 1; i >= 0; i--) {
 				float[] bullet = bullets.get(i);
 				offscreenGraphics.fillRect((int) bullet[BULLET_X], (int) bullet[BULLET_Y], 1, 4);
 			}
 
-			// draw demons
+			
 			for (i = demons.size() - 1; i >= 0; i--) {
 				float[] demon = demons.get(i);
 				j = (demon[DEMON_SPRITE] == 3) ? 1 : (int) demon[DEMON_SPRITE];
@@ -797,28 +797,28 @@ public class a extends GamePanel {
 			}
 
 			if (playerExploding > 0) {
-				// draw player's ship exploding
+				
 				offscreenGraphics.drawImage(sprites[(playerExploding >> 3) + 15], playerX - 4, 153, null);
 			} else {
-				// draw player bullet
+				
 				offscreenGraphics.setColor(playerBulletColor);
 				offscreenGraphics.fillRect(playerBulletX, (int) playerBulletY, 1, 8);
 
-				// draw player's ship
+				
 				offscreenGraphics.drawImage(sprites[14], playerX, 174, null);
 			}
 		}
 
-		// draw header bar
+		
 		offscreenGraphics.setColor(backgroundColor);
 		offscreenGraphics.fillRect(0, 0, 160, 20);
 		if (demoMode && score == 0) {
-			// draw IMAGIC logo
+			
 			for (i = 0; i < 4; i++) {
 				offscreenGraphics.drawImage(sprites[10 + i], 63 + (i << 3), 6, null);
 			}
 		} else {
-			// draw score
+			
 			j = score;
 			x = 95;
 			do {
@@ -829,7 +829,7 @@ public class a extends GamePanel {
 		}
 
 		if (level < 84) {
-			// draw ground
+			
 			for (i = 0; i < 7; i++) {
 				offscreenGraphics.setColor(floorColors[gameOver][i]);
 				offscreenGraphics.fillRect(0, 188 + i, 160, 1);
@@ -837,7 +837,7 @@ public class a extends GamePanel {
 			offscreenGraphics.fillRect(0, 195, 160, 15);
 
 			if (!demoMode) {
-				// draw extra lives
+				
 				offscreenGraphics.setColor(extraLivesColors[nextLevelDelay]);
 				for (i = 0; i < extraLives; i++) {
 					offscreenGraphics.fillRect(17 + (i << 3), 190, 1, 3);
@@ -846,14 +846,14 @@ public class a extends GamePanel {
 				}
 			}
 		} else {
-			// draw kill screen
+			
 			offscreenGraphics.setColor(backgroundColor);
 			offscreenGraphics.fillRect(0, 20, 160, 190);
 		}
 
-		// -- render ends --------------------------------------------------------
+		
 
-		// show the hidden buffer
+		
 		g.drawImage(offscreenImage, 0, 0, 640, 420, null);
 
 	}
@@ -881,7 +881,7 @@ public class a extends GamePanel {
 		}
 	}
 
-	// to run in window, uncomment below
+	
 	/*public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Demon Attack 4K");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

@@ -21,20 +21,20 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
     final int numActions = 2;
 
-    //final int discretization = 3;
+    
 
-     //if movement, should be an odd number so the middle value = 0 (no movement)
+     
     
     double speed = 0.05;
     double targetSpeed = 1;
-    double closeThresh = speed * 2; //threshold that distance must be less than to receive positive rewards
+    double closeThresh = speed * 2; 
 
     private final int history = 64;
 
 
-    final int historyPoints = 1; //includes current value
+    final int historyPoints = 1; 
     
-    final int historyInterval = history / (historyPoints+1); //how many history points to skip for each observation
+    final int historyInterval = history / (historyPoints+1); 
     
     @Override
     public int numActions() {
@@ -108,7 +108,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
         if (observation == null) {
             observation = new double[historyPoints*2];
         }
-        //Arrays.fill(observation, -1);
+        
         double my = 0, target = 0;
         if (positions.isEmpty()) return observation;
 
@@ -116,13 +116,13 @@ public class Follow1DTwoPoint implements RLEnvironment {
             int j = positions.size() - 1 - (i * historyInterval);
             my = positions.get(j);
             target = targets.get(j);
-            //observation[i+historyPoints] = my - 0.5;
-            //int index = Discretize.i(target, discretization);
+            
+            
 
-//            for (int k = 0; k < discretization; k++) {
-//                double v = Discretize.pSmoothDiscrete(target, k, discretization);
-//                observation[i * discretization + k] = v;
-//            }
+
+
+
+
             observation[i++] = 2 * ( target - 0.5 );
             observation[i++] = 2 * ( my - 0.5 );
         }
@@ -172,9 +172,9 @@ public class Follow1DTwoPoint implements RLEnvironment {
     }
 
     public void updateTarget(int time) {        
-        //updateTargetSine(time);
+        
         updateTargetXOR(time);
-        //updateTargetRandom(time);
+        
     }
 
             
@@ -206,8 +206,8 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
         double myV;
         if (direction==0) {
-            //decelerate on zero
-            //myV *= decelerationFactor;
+            
+            
             myV = 0;
         }
         else {
@@ -215,7 +215,7 @@ public class Follow1DTwoPoint implements RLEnvironment {
         }
         myPos += myV;
 
-        //TODO detect bump and do not report succesful act
+        
         return true;
 
     }
@@ -225,11 +225,11 @@ public class Follow1DTwoPoint implements RLEnvironment {
 
         if (myPos > maxPos) {
             myPos = maxPos;
-            //myV = -myV/2; //bounce
+            
         }
         if (myPos < 0) {
             myPos = 0;
-            //myV = -myV/2; //bounce -- may not work well, if it oscillates
+            
         }
 
 

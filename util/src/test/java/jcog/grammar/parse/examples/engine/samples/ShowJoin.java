@@ -76,7 +76,7 @@ public class ShowJoin {
 
 		Structure s2 = new Structure("order", new Term[] { custNum, type, pounds });
 
-		// customer(Name, CustNum), order(CustNum, Type, Pounds)
+		
 		Query q = new Query(p, new Structure[] { s1, s2 });
 
 		while (q.canFindNextProof()) {

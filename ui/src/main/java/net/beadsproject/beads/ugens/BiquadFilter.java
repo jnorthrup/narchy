@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -151,11 +151,11 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
 	protected final float pi_over_sf;
     public static final float SQRT2 = (float) Math.sqrt(2);
 
-    // for analysis
+    
     protected double w, ampResponse, phaseResponse, phaseDelay;
     protected double frReal, frImag;
 
-    // filter memory
+    
     protected final float[] bo1m;
 	protected final float[] bo2m;
 	protected final float[] bi1m;
@@ -330,14 +330,14 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
 
             if (areAllStatic) {
 
-                // first two samples
+                
                 bo[0] = (b0 * bi[0] + b1 * bi1 + b2 * bi2 - a1 * bo1 - a2 * bo2)
                         / a0;
                 bo[1] = (b0 * bi[1] + b1 * bi[0] + b2 * bi1 - a1 * bo[0] - a2
                         * bo1)
                         / a0;
 
-                // main loop
+                
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                     bo[currsamp] = (b0 * bi[currsamp] + b1 * bi[currsamp - 1]
                             + b2 * bi[currsamp - 2] - a1 * bo[currsamp - 1] - a2
@@ -351,7 +351,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                 qUGen.update();
                 gainUGen.update();
 
-                // first two samples
+                
                 freq = freqUGen.getValue(0, 0);
                 q = qUGen.getValue(0, 0);
                 gain = gainUGen.getValue(0, 0);
@@ -367,7 +367,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                         * bo1)
                         / a0;
 
-                // main loop
+                
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                     freq = freqUGen.getValue(0, currsamp);
                     q = qUGen.getValue(0, currsamp);
@@ -382,18 +382,18 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
 
             }
 
-            // get 2 samples of "memory" between sample vectors
+            
             bi1 = bi[bufferSize - 1];
             bi2 = bi[bufferSize - 2];
             bo1 = bo[bufferSize - 1];
             bo2 = bo[bufferSize - 2];
 
-            // check to make sure filter didn't blow up
+            
             if (Float.isNaN(bo1))
                 reset();
 
         } else {
-            // multi-channel version
+            
 
             if (cuedInputMemory) {
                 for (int i = 0; i < channels; i++) {
@@ -417,7 +417,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                     bi = bufIn[i];
                     bo = bufOut[i];
 
-                    // first two samples
+                    
                     bo[0] = (b0 * bi[0] + b1 * bi1m[i] + b2 * bi2m[i] - a1
                             * bo1m[i] - a2 * bo2m[i])
                             / a0;
@@ -425,7 +425,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                             * bo[0] - a2 * bo1m[i])
                             / a0;
 
-                    // main loop
+                    
                     for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
 
                         bo[currsamp] = (b0 * bi[currsamp] + b1
@@ -434,12 +434,12 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                                 / a0;
                     }
 
-                    // get 2 samples of "memory" between sample vectors
+                    
                     bi2m[i] = bi[bufferSize - 2];
                     bi1m[i] = bi[bufferSize - 1];
                     bo2m[i] = bo[bufferSize - 2];
 
-                    // and check to make sure filter didn't blow up
+                    
                     if (Float.isNaN(bo1m[i] = bo[bufferSize - 1]))
                         reset();
 
@@ -451,7 +451,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                 qUGen.update();
                 gainUGen.update();
 
-                // first two samples
+                
                 freq = freqUGen.getValue(0, 0);
                 q = qUGen.getValue(0, 0);
                 gain = gainUGen.getValue(0, 0);
@@ -473,7 +473,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                             / a0;
                 }
 
-                // main loop
+                
                 for (int currsamp = 2; currsamp < bufferSize; currsamp++) {
                     freq = freqUGen.getValue(0, currsamp);
                     q = qUGen.getValue(0, currsamp);
@@ -492,12 +492,12 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
                 }
 
                 for (int i = 0; i < channels; i++) {
-                    // get 2 samples of "memory" between sample vectors
+                    
                     bi2m[i] = bufIn[i][bufferSize - 2];
                     bi1m[i] = bufIn[i][bufferSize - 1];
                     bo2m[i] = bufOut[i][bufferSize - 2];
 
-                    // and check to make sure filter didn't blow up
+                    
                     if (Float.isNaN(bo1m[i] = bufOut[i][bufferSize - 1]))
                         reset();
                 }
@@ -574,7 +574,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         @Override
         public void calcVals() {
             float w = two_pi_over_sf * freq;
-            // float a = (float) Math.sin(w) / q * .5f;
+            
             b1 = 0;
             b2 = 0 - (b0 = (float) Math.sin(w) / q * .5f);
             a0 = 1 + b0;
@@ -611,7 +611,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         public void calcVals() {
             float A = (float) Math.pow(10, gain * .025);
             float w = two_pi_over_sf * freq;
-            // float cosw = (float) Math.cos(w);
+            
             float a = (float) (Math.sin(w) / q * .5);
             b2 = 2 - (b0 = 1 + a * A);
             a1 = b1 = -2 * (float) Math.cos(w);
@@ -691,7 +691,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
             a0 = b0 + (SQRT2 * k) + 1;
             a1 = 2f * (b0 - 1);
             a2 = b0 - (SQRT2 * k) + 1;
-            // System.out.println(k + "^2 = " + k2);
+            
         }
     }
 
@@ -709,7 +709,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
         }
     }
 
-    // same as BP_PEAK! but less efficient...
+    
     @SuppressWarnings("unused")
     private class ButterworthBPValCalculator extends ValCalculator {
         @Override
@@ -1501,7 +1501,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
          * @param gain The gain of the filter.
          */
         public void calcCoeffs(float freq, float q, float gain) {
-            // override with coefficient calculations
+            
         }
     }
 

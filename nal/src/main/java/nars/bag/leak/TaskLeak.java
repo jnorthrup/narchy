@@ -21,15 +21,15 @@ public abstract class TaskLeak extends Causable {
     protected final DtLeak<Task, PLink<Task>> queue;
 
     protected TaskLeak(int capacity, float ratePerDuration, NAR n) {
-        //noinspection Convert2Diamond
+        
         this(
-                //new ConcurrentArrayBag<Task, PLink<Task>>(PriMerge.max, capacity) {
+                
                 new PLinkArrayBag(Param.taskMerge, capacity)
-//              {      @Nullable
-//                    @Override
-//                    public Task key(PLink<Task> t) {
-//                        return t.get();
-//                    } }
+
+
+
+
+
                 , ratePerDuration, n
         );
     }
@@ -71,11 +71,11 @@ public abstract class TaskLeak extends Causable {
 
     @Override
     protected int next(NAR nar, int work) {
-//        return in.commit(nar.time(), dt, nar.dur(),
-//                work/((float)in.bag.capacity()));
+
+
 
         if (queue.isEmpty())
-            return -1; //done for the cycle
+            return -1; 
 
         float done = queue.commit(nar, work);
         return (int) Math.floor(done);

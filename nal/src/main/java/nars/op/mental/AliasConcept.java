@@ -25,7 +25,7 @@ public final class AliasConcept extends TaskConcept {
 
     public static class AliasAtom extends Atom {
 
-        //TODO weakref?
+        
         public final Term target;
 
         protected AliasAtom(String id, Term target) {
@@ -35,24 +35,24 @@ public final class AliasConcept extends TaskConcept {
 
         @Override
         public boolean unifyReverse(Term x, Unify u) {
-            //dereference alias
+            
             return x.unify(target, u);
         }
 
-        //        @Override
-//        public Term evalSafe(TermContext context, int remain) {
-//            Term e = target.evalSafe(context, remain);
-//            if (e != target)
-//                return e; //if a dynamic result, return that
-//            else
-//                return this; //otherwise if constant, return this
-//        }
+        
 
 
-//        @Override
-//        public boolean equals(Object u) {
-//            return super.equals(u) || super.equals(target);
-//        }
+
+
+
+
+
+
+
+
+
+
+
 
         @Override
         public boolean unify(Term y, Unify subst) {
@@ -62,15 +62,15 @@ public final class AliasConcept extends TaskConcept {
 
             Term target = this.target;
             if (y instanceof AliasAtom) {
-                //try to unify with y's abbreviated
-//                if (tt.unify( ((AliasConcept)y).abbr.term(), subst ))
-//                    return true;
+                
 
-                //if this is constant (no variables) then all it needs is equality test
+
+
+                
                 return target.unify(((AliasAtom) y).target, subst);
             }
 
-            //try to unify with 'y'
+            
             return target.unify(y, subst);
         }
 
@@ -80,28 +80,28 @@ public final class AliasConcept extends TaskConcept {
     public final Concept abbr;
 
     AliasConcept( Term id, Concept decompressed, NAR nar) {
-        super( //new AliasAtom(id, decompressed.term()),
+        super( 
                 id,
                 null, null, null, null,
                 new Bag[]{decompressed.termlinks(), decompressed.tasklinks()});
 
         this.abbr = decompressed;
 
-//        Term decompressedTerm = ((AliasAtom)term).target;
-//        Collection<Termed> baseTemplates = decompressed.templates();
-//        this.templates = new FasterList(baseTemplates.size());
-//        //try to resolve all the templates to their abbreviated forms to maximize the usage of abbreviations.  then add this term to it
-//
-//        templates.add(this);
-//        for (Termed t : baseTemplates) {
-//            Term x = t.term();
-//            if (x.equals(decompressedTerm))
-//                continue; //ignore the term itself
-//            Termed y = nar.applyIfPossible(x);
-//            templates.add(y);
-//        }
 
-        //rewriteLinks(nar);
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     }
 
     @Override
@@ -111,7 +111,7 @@ public final class AliasConcept extends TaskConcept {
             return false;
         }
         return ((TaskConcept)abbr).add(Task.clone(t, abbr.term()), n);
-        //return super.add(t, n);
+        
     }
 
     @Override
@@ -141,76 +141,76 @@ public final class AliasConcept extends TaskConcept {
     public QuestionTable quests() {
         return abbr.quests();
     }
-//    @Override
-//    public boolean isDeleted() {
-//        return abbr.isDeleted() || super.isDeleted();
-//    }
 
-//    @Override
-//    public void delete(NAR nar) {
-//        //unreference the target. this avoids creating a GC nightmare
-//        //((AliasAtom)term).target = ((AliasAtom)term);
-//        if (!abbr.isDeleted()) {
-//            nar.concepts.set(abbr.term(), abbr); //restore abbr's entry in the index
-//
-//            //dont delete the bags and tables as invoking the super method would,
-//            // since they may be held by the abbreviated concept if it still exists
-//        }
-//
-//        //dont just call super.delete since it will erase the abbreviant's links too!
-//        state(ConceptState.Deleted);
-//        meta.clear();
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     protected void beliefCapacity(int be, int bt, int ge, int gt) {
-        //ignore
+        
     }
 
-    //
-//        /**
-//         * rewrite termlinks and tasklinks which contain the abbreviated term...
-//         * (but are not equal to since tasks can not have atom content)
-//         * ...replacing it with this alias
-//         */
-//        private void rewriteLinks( NAR nar) {
-//            Term that = abbr.term();
-//            termlinks().compute(existingLink -> {
-//                Term x = existingLink.get();
-//                Term y = nar.concepts.replace(x, that, this);
-//                return (y != null && y != x && y != Term.False) ?
-//                        termlinks().newLink(y, existingLink) :
-//                        existingLink;
-//            });
-//            tasklinks().compute(existingLink -> {
-//                Task xt = existingLink.get();
-//                Term x = xt.term();
-//
-//                if (!x.equals(that) && !x.hasTemporal()) {
-//                    Term y = $.terms.replace(x, that, this);
-//                    if (y != x && y instanceof Compound) {
-//                        Task yt = MutableTask.clone(xt, (Compound) y, nar);
-//                        if (yt != null)
-//                            return termlinks().newLink(yt, existingLink);
-//                    }
-//                }
-//
-//                return existingLink;
-//
-//            });
-//        }
+    
 
 
-//        @Override
-//        public boolean equals(Object u) {
-//            return super.equals(u);
-//        }
 
 
-//        @Override
-//        public final Activation process( Task input, NAR nar) {
-//            return abbr.process(input, nar);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         

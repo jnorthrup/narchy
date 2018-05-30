@@ -23,17 +23,17 @@ public class VpTree<StorageType> {
 	}
 
 	public void search(DataPoint target, int k, List<DataPoint> results, List<Double> distances) {
-		// Use a priority queue to store intermediate results on
-		// Javas prio heap is by default in ascending order, we want descending... 
+		
+		
 		PriorityQueue<HeapItem> heap = new PriorityQueue<>(k, (o1, o2) -> -1 * o1.compareTo(o2));
         
-        // Variable that tracks the distance to the farthest point in our results
+        
         double tau = Double.MAX_VALUE;
         
-        // Perform the search
+        
        _root.search(_root, target, k, heap, tau);
         
-        // Gather final results
+        
         results.clear(); 
         distances.clear();
         while(!heap.isEmpty()) {
@@ -42,42 +42,42 @@ public class VpTree<StorageType> {
             heap.remove();
         }
         
-        // Results are in reverse order 
+        
         Collections.reverse(results);
         Collections.reverse(distances);
 	}
 
-	// Function that (recursively) fills the tree
+	
     private Node buildFromPoints(int lower, int upper)
 	{
-		if (upper == lower) {     // indicates that we're done here!
+		if (upper == lower) {     
 			return null;
 		}
 
-		// Lower index is center of current node
+		
 		Node node = createNode();
 		node.index = lower;
 
-		if (upper - lower > 1) {      // if we did not arrive at leaf yet
+		if (upper - lower > 1) {      
 
-			// Choose an arbitrary point and move it to the start
+			
 			int i = (int) (ThreadLocalRandom.current().nextDouble() * (upper - lower - 1)) + lower;
 			swap(_items, lower, i);
 
-			// Partition around the median distance
+			
 			int median = (upper + lower) / 2;
 			nth_element(_items, lower + 1,	median,	upper, new DistanceComparator(_items[lower],distance));
 
-			// Threshold of the new node will be the distance to the median
+			
 			node.threshold = distance(_items[lower], _items[median]);
 
-			// Recursively build tree
+			
 			node.index = lower;
 			node.left = buildFromPoints(lower + 1, median);
 			node.right = buildFromPoints(median, upper);
 		}
 
-		// Return result
+		
 		return node;
 	}
 	
@@ -89,7 +89,7 @@ public class VpTree<StorageType> {
 		return _root;
 	}
 	
-	// Quick and dirty... optimize later :D
+	
 	static void nth_element(DataPoint [] array, int low, int mid, int high,
 							Comparator<DataPoint> distanceComparator) {
 		DataPoint [] tmp = new DataPoint[high-low];
@@ -118,7 +118,7 @@ public class VpTree<StorageType> {
 		items[idx2] = dp;
 	}
 
-	// An item on the intermediate result queue
+	
     static class HeapItem implements Comparable<HeapItem> {
     	final int index;
     	final double dist;
@@ -163,43 +163,43 @@ public class VpTree<StorageType> {
 			return right;
 		}
 
-		// Helper function that searches the tree    
+		
 		double search(Node node, DataPoint target, int k, Queue<HeapItem> heap, double _tau)
 		{
-			if(node == null) return _tau;     // indicates that we're done here
+			if(node == null) return _tau;     
 
-			// Compute distance between target and current node
+			
 			double dist = distance(_items[node.index], target);
 
-			// If current node within radius tau
+			
 			if(dist < _tau) {
-				if(heap.size() == k) heap.remove();           // remove farthest node from result list (if we already have k results)
-				heap.add(new HeapItem(node.index, dist));     // add current node to result list
-				if(heap.size() == k) _tau = heap.peek().dist; // update value of tau (farthest point in result list)
+				if(heap.size() == k) heap.remove();           
+				heap.add(new HeapItem(node.index, dist));     
+				if(heap.size() == k) _tau = heap.peek().dist; 
 			}
 
-			// Return if we arrived at a leaf
+			
 			if(node.left == null && node.right == null) {
 				return _tau;
 			}
 
-			// If the target lies within the radius of ball
+			
 			if(dist < node.threshold) {
-				if(dist - _tau <= node.threshold) {         // if there can still be neighbors inside the ball, recursively search left child first
+				if(dist - _tau <= node.threshold) {         
 					_tau = search(node.left, target, k, heap, _tau);
 				}
 
-				if(dist + _tau >= node.threshold) {         // if there can still be neighbors outside the ball, recursively search right child
+				if(dist + _tau >= node.threshold) {         
 					_tau = search(node.right, target, k, heap, _tau);
 				}
 
-				// If the target lies outside the radius of the ball
+				
 			} else {
-				if(dist + _tau >= node.threshold) {         // if there can still be neighbors outside the ball, recursively search right child first
+				if(dist + _tau >= node.threshold) {         
 					_tau = search(node.right, target, k, heap, _tau);
 				}
 
-				if (dist - _tau <= node.threshold) {         // if there can still be neighbors inside the ball, recursively search left child
+				if (dist - _tau <= node.threshold) {         
 					_tau = search(node.left, target, k, heap, _tau);
 				}
 			}

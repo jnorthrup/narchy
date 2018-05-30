@@ -49,8 +49,8 @@ import java.util.List;
  */
 public class SymbolNode {
 	private final char myChar;
-	private final List<SymbolNode> children = new ArrayList<>(); // of
-	// Node
+	private final List<SymbolNode> children = new ArrayList<>(); 
+	
 	private boolean valid = false;
 	private final SymbolNode parent;
 

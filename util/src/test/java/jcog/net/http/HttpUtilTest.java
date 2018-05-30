@@ -66,20 +66,20 @@ public class HttpUtilTest
         public void testFindCRLFIgnoreLWS()
         {
                 ByteBuffer buf = ByteBuffer.allocate(100);
-                buf.put((byte) 't'); //0
-                buf.put((byte) 'e'); //1
-                buf.put((byte) 's'); //2
-                buf.put((byte) 't'); //3
-                buf.put((byte) '\r');//4
-                buf.put((byte) '\n');//5
-                buf.put((byte) ' '); //6
-                buf.put((byte) 'a'); //7
-                buf.put((byte) 'b'); //8
-                buf.put((byte) 'c'); //9
-                buf.put((byte) '\r');//10
-                buf.put((byte) '\n');//11
-                buf.put((byte) '\r');//12
-                buf.put((byte) '\n');//13
+                buf.put((byte) 't'); 
+                buf.put((byte) 'e'); 
+                buf.put((byte) 's'); 
+                buf.put((byte) 't'); 
+                buf.put((byte) '\r');
+                buf.put((byte) '\n');
+                buf.put((byte) ' '); 
+                buf.put((byte) 'a'); 
+                buf.put((byte) 'b'); 
+                buf.put((byte) 'c'); 
+                buf.put((byte) '\r');
+                buf.put((byte) '\n');
+                buf.put((byte) '\r');
+                buf.put((byte) '\n');
                 buf.flip();
                 
                 assertEquals(10, HttpUtil.findCRLFIgnoreLWS(buf, 0));

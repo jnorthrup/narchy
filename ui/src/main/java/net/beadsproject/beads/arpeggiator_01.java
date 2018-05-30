@@ -24,14 +24,14 @@ public class arpeggiator_01 {
         synth.setup();
     }
 
-    // construct the synthesizer
+    
     public void setup() {
         AudioContext ac = new AudioContext();
 
-        // the gain envelope
+        
         gainEnvelope = new Envelope(ac, 0.0f);
 
-        // set up a custom function to arpeggiate the pitch
+        
         arpeggiator = new FuncGen(gainEnvelope) {
 
             @Override
@@ -45,50 +45,50 @@ public class arpeggiator_01 {
                 if (tick >= 4) tick = 0;
             }
         };
-        // add arpeggiator as a dependent to the AudioContext
+        
         ac.out(arpeggiator);
 
-        // the square generator
+        
         square = new WavePlayer(ac, arpeggiator, WaveFactory.SQUARE);
 
-        // set up a clock to keep time
+        
         beatClock = new Clock(ac, 500.0f);
         beatClock.setTicksPerBeat(4);
         beatClock.on(arpeggiator);
         ac.out.dependsOn(beatClock);
 
-        // set up the Gain and connect it to the main output
+        
         gain = new Gain(ac, 1, gainEnvelope);
         gain.in(square);
 
 
         ac.out.in(gain);
 
-        // set up the keyboard input
-//    MidiKeyboard keys = new MidiKeyboard();
-//    keys.addActionListener(new ActionListener(){
-//      @Override
-//      public void actionPerformed(ActionEvent e)
-//      {
-//        // if the event is not null
-//        if( e != null )
-//        {
-//          // if the event is a MIDI event
-//          if( e.getSource() instanceof ShortMessage)
-//          {
-//            // get the MIDI event
-//            ShortMessage sm = (ShortMessage)e.getSource();
-//
-//            // if the event is a key down
-//            if( sm.getCommand() == MidiKeyboard.NOTE_ON && sm.getData2() > 1 )
-//              keyDown(sm.getData1());
-//            // if the event is a key up
-//            else if( sm.getCommand() == MidiKeyboard.NOTE_OFF )
-//              keyUp(sm.getData1());
-//          }
-//        }
-//      }
-//    });
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         keyDown(79);
 
         beatClock.start();
@@ -98,7 +98,7 @@ public class arpeggiator_01 {
     public static float midiPitchToFrequency(int midiPitch) {
         /*
          *  MIDI pitch number to frequency conversion equation from
-         *  http://newt.phys.unsw.edu.au/jw/notes.html
+         *  http:
          */
         double exponent = (midiPitch - 69.0) / 12.0;
         return (float) (Math.pow(2, exponent) * 440.0f);
@@ -108,20 +108,20 @@ public class arpeggiator_01 {
         if (square != null && gainEnvelope != null) {
             lastKeyPressed = midiPitch;
 
-            // restart the arpeggiator
+            
             frequency = midiPitchToFrequency(midiPitch);
             tick = -1;
             beatClock.reset();
 
-            // interrupt the envelope
+            
             gainEnvelope.clear();
-            // attack segment
+            
             gainEnvelope.add(0.5f, 10.0f);
         }
     }
 
     public void keyUp(int midiPitch) {
-        // release segment
+        
         if (midiPitch == lastKeyPressed && gainEnvelope != null)
             gainEnvelope.add(0.0f, 50.0f);
     }

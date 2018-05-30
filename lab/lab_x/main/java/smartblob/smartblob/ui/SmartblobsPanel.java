@@ -44,9 +44,9 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
 
     protected double lastTimeMouseMoved = CoreUtil.time();
 
-    //public double simulateThisManySecondsAfterMouseMove = 0;
-    //public double simulateThisManySecondsAfterMouseMove = 20;
-    //public double simulateThisManySecondsAfterMouseMove = 2e50;
+    
+    
+    
 
     /**
      * target frame time
@@ -55,12 +55,12 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
 
     public static final float simTimePerCycle = 0.05f;
 
-    public int subCyclesPerCycle = 500; //increasing increases simulation accuracy
+    public int subCyclesPerCycle = 500; 
 
 
-    //public int simCyclesPerDraw = 30;
-    //public int simCyclesPerDraw = 100;
-    //public int simCyclesPerDraw = 5;
+    
+    
+    
 
     public boolean drawBoundingRectangles = false;
 
@@ -75,7 +75,7 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
 
     public long frames = 0, cycles = 0;
 
-    //protected float testPointA[] = new float[2], testPointB[] = new float[2];
+    
 
     /**
      * Starts self as task. Includes an example smartblob. They can be changed later
@@ -91,23 +91,23 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
         for (CornerData cd : z.corners()) {
             cd.x += 200;
             cd.speedX = 100;
-            //cd.speedX = 30;
-            //cd.speedX = 2;
+            
+            
         }
-        //z.updateBoundingRectangle();
+        
             sim.smartblobs.add(z);
 
 
 
-        //LayeredZigzag w = SmartblobUtil.simpleSmartblobExample();
+        
         LayeredZigzag w = SmartblobUtil.wavegear(
                 null, 250, 500, 75, 90,
-                //null, 250, 500, 40, 40,
-                //5, 32, 5);
+                
+                
                 3, 32, 5);
-        //4, 8, 5);
+        
 
-        //Color c = new Color(.5f, .5f, .5f);
+        
         for (int layer = 1; layer < w.layers; layer++) {
             Color c = new Color(0.1f * layer, .7f, 0f);
             for (int p = 0; p < w.layerSize; p++) {
@@ -134,9 +134,9 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
         RealtimeScheduler.start(this);
     }
 
-    //protected LayeredZigzag testBlob = new LayeredZigzag(null, 5, 16, 100, 100, 90);
-    //protected LayeredZigzag testBlob = new LayeredZigzag(null, 9, 64, 100, 100, 90);
-    //protected LayeredZigzag testBlob = new LayeredZigzag(null, 7, 32, 100, 100, 90);
+    
+    
+    
 
 
     public void paint(Graphics g) {
@@ -150,22 +150,22 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
 			testPointB[1] = getWidth()*CoreUtil.strongRand.nextFloat();
 		}*/
 
-        //int w = getWidth(), h = getHeight();
-        //testBlob = new LayeredZigzag(null, 5, 16, h/2, w/2, Math.min(w,h)/2);
-        //testBlob = new LayeredZigzag(null, 9, 16, h/2, w/2, Math.min(w,h)/2);
-        //testBlob = new LayeredZigzag(null, 7, 32, h/2, w/2, Math.min(w,h)/2);
+        
+        
+        
+        
 
-//		Smartblob blobsArray[];
-//		synchronized(sim.smartblobs){
-//			blobsArray = sim.smartblobs.toArray(new Smartblob[0]);
-//		}
+
+
+
+
         Graphics2D g2 = (Graphics2D) g;
         for (final Smartblob blob : sim.smartblobs) {
             draw(g2, blob);
         }
 
 		/*
-		//test nearest point on line math
+		
 		float getYX[] = new float[2];
 		SmartblobUtil.getClosestPointToInfiniteLine(
 			getYX, testPointA[0], testPointA[1], testPointB[0], testPointB[1], mouseY, mouseX);
@@ -190,7 +190,7 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
         Polygon p = null;
         if (drawShape) {
             s = smartblob.shape();
-            if (s instanceof Polygon) { //TODO what to draw here
+            if (s instanceof Polygon) { 
                 p = (Polygon) s;
             } else {
                 throw new RuntimeException("TODO use pathiterator of Shape for " + s);
@@ -211,16 +211,16 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
         if (drawBoundingRectangles) {
             g.setColor(Color.red);
             Rectangle r = smartblob.boundingRectangle();
-            //If rectangle hangs off positive y (bottom) of the panel,
-            //panel enlarges and it continues appearing to fall.
+            
+            
             int h = getHeight(), w = getWidth();
             int startY = Math.max(0, r.y);
             int startX = Math.max(0, r.x);
-            int endY = Math.min(r.y + r.height - 1, h - 1); //inclusive
+            int endY = Math.min(r.y + r.height - 1, h - 1); 
             int endX = Math.min(r.x + r.width - 1, w - 1);
             g.drawRect(startX, startY, endX - startX + 1, endY - startY + 1);
-            //System.out.println("w="+w+" h="+h+" startY="+startY+" endY="+endY+" r="+r);
-            //System.out.println("blob="+smartblob);
+            
+            
         }
     }
 
@@ -230,12 +230,12 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
     public void draw(Graphics2D g, LayeredZigzag smartblob) {
 
 
-        int triX[] = new int[3], triY[] = new int[3]; //filled in from corners float positions
+        int triX[] = new int[3], triY[] = new int[3]; 
 
-        //g.setColor(Color.blue);
-        //g.setColor(new Color(.9f, .9f, .9f));
+        
+        
 
-        //g.setColor(new Color(0,0,1f));
+        
         for (int layer = 1; layer < smartblob.layers; layer++) {
             for (int p = 0; p < smartblob.layerSize; p++) {
 				/*Shape triangle = testBlob.triangleShape(layer, p, true);
@@ -253,13 +253,13 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
                 g.fillPolygon(triX, triY, 3);
             }
         }
-        //g.setColor(new Color(0,0,1f));
-        //g.setColor(Color.black);
-        //g.setColor(new Color(0, .85f, 0));
-        //g.setColor(Color.white);
-        //g.setColor(new Color(.9f, .9f, .9f));
-        //g.setColor(new Color(.9f, .9f, .9f));
-        //g.setColor(new Color(1,0,1f));
+        
+        
+        
+        
+        
+        
+        
         for (int layer = 0; layer < smartblob.layers - 1; layer++) {
             for (int p = 0; p < smartblob.layerSize; p++) {
 				/*Shape triangle = testBlob.triangleShape(layer, p, false);
@@ -285,8 +285,8 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
                     triY[c] = (int) cd.y;
                     triX[c] = (int) cd.x;
                 }
-                //g.setColor(Color.red);
-                //g.fillPolygon(triX, triY, 3);
+                
+                
 
                 float getYX[] = new float[2];
                 SmartblobUtil.getClosestPointToInfiniteLine(getYX, t, mouseY, mouseX);
@@ -296,7 +296,7 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
 					CornerData cd = t.adjacentCorners[2];
 					t.smartblob.onStartUpdateSpeeds();
 					float secondsSinceLastDraw = .02;
-					cd.speedY -= 10*secondsSinceLastDraw; //TODO do this in nextState
+					cd.speedY -= 10*secondsSinceLastDraw; 
 					t.smartblob.onEndUpdateSpeeds();
 				}*/
             }
@@ -338,27 +338,27 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
     }
 
     public void event() {
-//        {
-//            double now = CoreUtil.time();
-//
-//            double sinceMouseMove = now - lastTimeMouseMoved;
-//
-//            if (sinceMouseMove > simulateThisManySecondsAfterMouseMove) {
-//                return;
-//            }
-//        }
+
+
+
+
+
+
+
+
+
 
 
         int h = getHeight(), w = getWidth();
 
-        //double secondsSinceLast = timer.secondsSinceLastCall();
+        
         final float dt = simTimePerCycle / subCyclesPerCycle;
 
 
         for (GlobalChangeSpeed p : sim.physicsParts) {
             if (p instanceof BounceOnSimpleWall) {
                 BounceOnSimpleWall b = (BounceOnSimpleWall) p;
-                //the left and top sides of screen stay at 0
+                
                 if (b.maxInsteadOfMin) {
                     b.position = b.verticalInsteadOfHorizontal ? h : w;
                 }
@@ -366,13 +366,13 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
         }
 
 
-        //TODO!!! FIXME float sec = Math.min(maxSecondsToSimAtOnce,(float)secondsSinceLast);
-        //float sec = simTimeSec; //trying constant update time to see if it improves stability of smartblob bouncing vs sticking together
+        
+        
 
 
-        //if (drawOuterTriMouseIsClosestTo) {
+        
         if (mouseButtonDown[0]) {
-            //Smartblob blobsArray[];
+            
 
 
             float a = 5000;
@@ -387,7 +387,7 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
                     TriData t = z.findCollision(mouseY, mouseX);
                     if (t != null) {
 
-                        //t.colorOrNull = Color.red;
+                        
 
                         Iterator<ChangeSpeed> iter = z.mutablePhysics().iterator();
                         while (iter.hasNext()) {
@@ -405,7 +405,7 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
                 }
             }
         }
-        //}
+        
 
 
         for (int subcycle = 0; subcycle < subCyclesPerCycle; subcycle++) {
@@ -416,7 +416,7 @@ public class SmartblobsPanel extends JComponent implements MouseMotionListener, 
 
         frames++;
 
-        //System.out.println("cyc this time "+cyc);
+        
         repaint();
 
     }

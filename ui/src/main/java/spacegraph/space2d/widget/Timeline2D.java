@@ -34,62 +34,62 @@ public class Timeline2D<E> extends Graph2D<E> {
         this.model = model;
         nodeBuilder(view);
 
-        //simple hack to prevent event nodes from overlapping.  it could be better
-//        Graph2DLayout<E> l = new ForceDirected2D<E>() {
-//            {
-//                repelSpeed.set(0.25f);
-//            }
-//            @Override
-//            protected void apply(NodeVis<E> n, RectFloat2D target) {
-//
-//                float h = Timeline2D.this.h()/8; //TODO parameterizable func
-//                float y = Util.clamp(target.cy(), Timeline2D.this.top() + h/2, Timeline2D.this.bottom()-h/2);
-//                long[] r = model.range(n.id);
-//                float x1 = x(r[0]);
-//                float x2 = x(r[1]+1);
-//                n.pos(x1, y - h/2, x2, y + h/2);
-//            }
-//        };
+        
 
-//        Graph2DLayout<E> l = new Dyn2DLayout<>() {
-//
-//            @Override
-//            public void initialize(Graph2D<E> g, NodeVis<E> n) {
-//                long[] r = model.range(n.id);
-//                float x1 = x(r[0]);
-//                float x2 = x(r[1]+1);
-//                float cy = (float) (g.y() + (Math.random() * g.h()));
-//                float h= g.h()/8;
-//                n.pos(x1, cy-h/2, x2, cy+h/2);
-//            }
-//
-//            @Override
-//            protected void apply(NodeVis<E> n, RectFloat2D target) {
-//                float h = Timeline2D.this.h()/8;
-//
-//                //System.out.println(n + " " + target);
-//
-//                float y = Util.clamp(Util.lerp(0.75f,
-//                        n.cy(),
-//                        //target.cy()
-//                        //Util.clamp(target.cy(), 0 + h/2, Timeline2D.this.h() - h/2)
-//                        target.cy() ),
-//
-//                    //    Timeline2D.this.top(), Timeline2D.this.bottom())
-//                    h/2, Timeline2D.this.h() - h/2)
-//
-//                        + 0//  (float)(Math.random()-0.5f)*h/10f
-//                ;
-//
-//                long[] r = model.range(n.id);
-//                float x1 = x(r[0]);
-//                float x2 = x(r[1]+1);
-//
-//                n.pos(x1, Timeline2D.this.top() + y - h/2, x2, Timeline2D.this.top() + y + h/2);
-//
-//                //super.apply(n, target);
-//            }
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         layout(new DefaultTimelineLayout());
     }
 
@@ -170,32 +170,32 @@ public class Timeline2D<E> extends Graph2D<E> {
         return this;
     }
 
-//    @Override
-//    protected void doLayout(int dtMS) {
-//        //final int[] lane = {0};
-//        //int lanes = cellMap.cache.size();
-//        float height = h()/8; //TODO
-//        forEachKeySurface((e,s)->{
-//            long[] r = model.range(e);
-//            float x1 = x(r[0]);
-//            float x2 = x(r[1]+1);
-//            float y = s.cy();
-//            float y1 = y -height/2;
-//            float y2 = y +height/2;
-//            //float yy[] = y(e, lane[0]++, lanes);
-////            float h = h();
-////            float y = y();
-//            s.pos(x1, y1, x2, y2); //only affect X
-//        });
-//    }
 
 
-//    /** range of values between 0..1 */
-//    float[] y(E event, int lane, int lanes) {
-//        float thick = 1f/lanes;
-//        float margin = 0.02f * thick;
-//        return new float[] { lane * thick + margin, (lane+1)*thick - margin };
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public interface TimelineModel<X> {
         /** any events intersecting with the provided range */
@@ -241,7 +241,7 @@ public class Timeline2D<E> extends Graph2D<E> {
             int xc = Long.compare(rx[0], ry[0]);
             if (xc!=0)
                 return xc;
-            return ((Comparable)x).compareTo(y); //Integer.compare(x.hashCode(), y.hashCode());
+            return ((Comparable)x).compareTo(y); 
         }
 
     }
@@ -282,7 +282,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
-            //HACK TODO use NavigableMap iterators correctly
+            
             return Iterables.filter(this, x-> intersects(x, start, end));
         }
 
@@ -318,7 +318,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
         @Override
         public Iterable<SimpleEvent> events(long start, long end) {
-            //HACK TODO use NavigableMap iterators correctly
+            
             return Iterables.filter(this, x-> intersects(x, start, end));
         }
 
@@ -336,7 +336,7 @@ public class Timeline2D<E> extends Graph2D<E> {
 
     private class DefaultTimelineLayout implements Graph2DLayout<E> {
 
-//        FasterList<NodeVis<E>> last = new FasterList(); //TODO prevent re-sorting every update
+
 
         @Override
         public void layout(Graph2D<E> g, int dtMS) {
@@ -347,17 +347,17 @@ public class Timeline2D<E> extends Graph2D<E> {
             if (next.isEmpty())
                 return;
 
-//            if (last.equals(next))
-//                return; //no change
+
+
 
             List<RoaringBitmap> lanes = new FasterList();
             RoaringBitmap l0 = new RoaringBitmap();
-            l0.add(0); //largest event assigned to lane 0
+            l0.add(0); 
             lanes.add(l0);
 
             for (int i = 1, byDurationSize = next.size(); i < byDurationSize; i++) {
                 NodeVis<E> in = next.get(i);
-                //find lowest lane that doesnt intersect
+                
                 int lane = -1;
                 nextLane: for (int l = 0, lanesSize = lanes.size(); l < lanesSize; l++) {
                     RoaringBitmap r = lanes.get(l);
@@ -367,7 +367,7 @@ public class Timeline2D<E> extends Graph2D<E> {
                         int j = rr.next();
                         if (model.intersectLength(next.get(j).id,in.id)>0) {
                             collision = true;
-                            break ; //next lane
+                            break ; 
                         }
                     }
                     if (!collision) {

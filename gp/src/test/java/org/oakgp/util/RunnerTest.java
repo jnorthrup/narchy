@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ public class RunnerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test() {
-        // Create mock objects to pass as arguments to process method of Runner
+        
         GenerationRanker ranker = mock(GenerationRanker.class);
         GenerationEvolver evolver = mock(GenerationEvolver.class);
         Predicate<Candidates> terminator = mock(Predicate.class);
@@ -44,7 +44,7 @@ public class RunnerTest {
         Candidates output = Evolution.process(ranker, evolver, terminator, initialPopulation);
         RankedCandidate actual = output.best();
 
-        // confirm output matches expected behaviour
+        
         assertSame(expected, actual);
     }
 }

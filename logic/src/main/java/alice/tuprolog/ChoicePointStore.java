@@ -41,21 +41,21 @@ public class ChoicePointStore {
         return pointer;
     }
     
-//    /**
-//     * Check if a choice point exists in the store.
-//     * As a side effect, removes choice points which have been already used and are now empty.
-//     * @return
-//     */
-//    protected boolean existChoicePoint() {
-//        ChoicePointContext pointer = this.pointer;
-//        if (pointer == null)
-//            return false;
-//        do {
-//            if (pointer.compatibleGoals.existCompatibleClause())
-//                return true;
-//        } while ((pointer = pointer.prevChoicePointContext) != null);
-//        return false;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      * Check if a choice point exists in the store.
      * As a side effect, removes choice points which have been already used and are now empty.
@@ -77,18 +77,18 @@ public class ChoicePointStore {
      * Removes choice points which have been already used and are now empty.
      */
     protected void removeUnusedChoicePoints() {
-        // Note: it uses the side effect of this.existChoicePoint()!
+        
         existChoicePoint();
     }
     
     /**
      * Cut at defined depth (toDepth)
      */
-//    void cut(int toDepth) {
-//        while (pointer != null && pointer.executionContext.depth >= toDepth) {
-//            pointer = pointer.prevChoicePointContext;
-//        }
-//    }
+
+
+
+
+
     
     public String toString(){
         return pointer + "\n";

@@ -109,7 +109,7 @@ public class Line {
   public boolean closestPointToRay(Vec3f rayStart,
                                    Vec3f rayDirection,
                                    Vec3f closestPoint) {
-    // Line 1 is this one. Line 2 is the incoming one.
+    
     Mat2f A = new Mat2f();
     A.set(0, 0, -direction.lengthSquared());
     A.set(1, 1, -rayDirection.lengthSquared());
@@ -127,7 +127,7 @@ public class Line {
     Vec2f x = new Vec2f();
     A.xformVec(b, x);
     if (x.y() < 0) {
-      // Means that ray start is closest point to this line
+      
       closestPoint.set(rayStart);
     } else {
       closestPoint.set(direction);
@@ -137,9 +137,9 @@ public class Line {
     return true;
   }
 
-  //----------------------------------------------------------------------
-  // Internals only below this point
-  //
+  
+  
+  
   
   private void recalc() {
     float denom = direction.lengthSquared();

@@ -1,7 +1,7 @@
 /**
  */
 package jhelp.engine;
-//
+
 
 import com.jogamp.opengl.glu.GLU;
 import jhelp.engine.io.ConstantsXML;
@@ -123,15 +123,15 @@ public class Camera
     */
    void render(final GLU glu)
    {
-      // If the camera must look a node, compute look vector
+      
       if(this.keepLookOnMe != null)
       {
          this.look = this.keepLookOnMe.getProjection(this.keepLookOnMe.getCenter()).substract(this.position);
       }
 
-      glu.gluLookAt(//
-            this.position.getX(), this.position.getY(), this.position.getZ(),//
-            this.look.getX(), this.look.getY(), this.look.getZ(),//
+      glu.gluLookAt(
+            this.position.getX(), this.position.getY(), this.position.getZ(),
+            this.look.getX(), this.look.getY(), this.look.getZ(),
             this.up.getX(), this.up.getY(), this.up.getZ());
    }
 

@@ -40,13 +40,13 @@ public class Optimizing<X,Y> {
 
     /** feature of an evaluation; evaluated after */
     abstract public static class Optimal<Y,V> {
-        final String id; //must not conflict with any tweaks
+        final String id; 
 
         protected Optimal(String id) {
             this.id = id;
         }
 
-        abstract ObjectFloatPair<V> eval(Y x); //observation + relative score
+        abstract ObjectFloatPair<V> eval(Y x); 
 
         public void defineIn(Schema data) {
             data.defineNumeric(id);
@@ -112,7 +112,7 @@ public class Optimizing<X,Y> {
         tweaksReady.forEach(t -> t.defineIn(data));
 
         if (seeks.length > 1) {
-            //dont include repeat score column if single objective
+            
             for (Optimal o : seeks)
                 o.defineIn(data);
         }

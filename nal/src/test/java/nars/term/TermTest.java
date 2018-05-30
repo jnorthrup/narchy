@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package nars.term;
 
@@ -94,7 +94,7 @@ public class TermTest {
             Termed term1 = $.$(term1String);
             Termed term2 = $.$(term2String);
 
-            //assertNotEquals(term1String, term2String);
+            
 
             assertEquivalentTerm(term1.term(), term2.term());
 
@@ -165,11 +165,11 @@ public class TermTest {
                 $.sim($("{Tweety}"),$("{Birdie}"))
         );
 
-//        //test ordering after derivation
-//        assertEquals("<{Birdie}<->{Tweety}>",
-//            (((Compound)$("<{Birdie}<->{Tweety}>")).term(
-//                new Term[] { $("{Tweety}"), $("{Birdie}") }).toString())
-//        );
+
+
+
+
+
     }
 
     @Test
@@ -200,9 +200,9 @@ public class TermTest {
 
     }
 
-//    @Test public void testDisjunctionEllipsis() throws Narsese.NarseseException {
-//         assertEquals("(||,%A..+)", $.$("(||,%A..+)"));
-//    }
+
+
+
     @Test
     public void testConjunction1Term() throws Narsese.NarseseException {
 
@@ -215,21 +215,21 @@ public class TermTest {
         assertEquals("((before-->x) &&+10 (after-->x))",
                 $.$("(x:before &&+10 x:after)").toString());
 
-        //assertEquals("a", n.term("(&&+0,a)").toString());
-        //assertEquals("a", n.term("(&&+3,a)").toString());
+        
+        
     }
 
     @Test
     public void testConjunctionTreeSet() throws Narsese.NarseseException {
 
-        //these 2 representations are equal, after natural ordering
+        
         String term1String = "<#1 --> (&,boy,(/,taller_than,{Tom},_))>";
         Term term1 = $.$(term1String).term();
         String term1Alternate = "<#1 --> (&,(/,taller_than,{Tom},_),boy)>";
         Term term1a = $.$(term1Alternate).term();
 
 
-        // <#1 --> (|,boy,(/,taller_than,{Tom},_))>
+        
         Term term2 = $.$("<#1 --> (|,boy,(/,taller_than,{Tom},_))>").term();
 
         assertEquals(term1a.toString(), term1.toString());
@@ -239,8 +239,8 @@ public class TermTest {
         assertSame(term1.op(), INH);
 
 
-        //System.out.println("t1: " + term1 + ", complexity=" + term1.getComplexity());
-        //System.out.println("t2: " + term2 + ", complexity=" + term2.getComplexity());
+        
+        
 
 
         boolean t1e2 = term1.equals(term2);
@@ -280,8 +280,8 @@ public class TermTest {
         Compound cterm1 = ((Compound) term1);
         Compound cterm2 = ((Compound) term2);
 
-        //test subterms
-        assertEquals(cterm1.sub(0), cterm2.sub(0)); //'a'
+        
+        assertEquals(cterm1.sub(0), cterm2.sub(0)); 
 
     }
 
@@ -302,35 +302,35 @@ public class TermTest {
 
     }
 
-//    @Test
-//    public void testEscaping() {
-//        bidiEscape("c d", "x$# x", "\\\"sdkf sdfjk", "_ _");
-//
-////        NAR n = NARS.shell().builder();
-////        n.addInput("<a --> \"b c\">.");
-////        n.step(1);
-////        n.finish(1);
-////
-////        Term t = new Term("\\\"b_c\\\"");
-////        System.out.println(t);
-////        System.out.println(n.memory.getConcepts());
-////        System.out.println(n.memory.conceptProcessor.getConcepts());
-////
-////
-////        assertTrue(n.memory.concept(new Term("a"))!=null);
-////        assertTrue(n.memory.concept(t)!=null);
-//
-//    }
 
-//    protected void bidiEscape(String... tests) {
-//        for (String s : tests) {
-//            s = '"' + s + '"';
-//            String escaped = Texts.escape(s).toString();
-//            String unescaped = Texts.unescape(escaped).toString();
-//            //System.out.println(s + " " + escaped + " " + unescaped);
-//            assertEquals(s, unescaped);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void invalidTermIndep() {
@@ -360,9 +360,9 @@ public class TermTest {
 
 
 
-//        } catch (Throwable ex) {
-//            assertTrue(ex.toString(), false);
-//        }
+
+
+
     }
 
     @Test public void testValidIndep() {
@@ -372,7 +372,7 @@ public class TermTest {
 
     @Deprecated static boolean isOperation(Termed _t) {
         Term t = _t.term();
-        if (t.op() == Op.INH) { //Op.hasAll(t.structure(), Op.OperationBits) &&
+        if (t.op() == Op.INH) { 
             Compound c = (Compound) t;
             return c.subIs(1, Op.ATOM) &&
                     c.subIs(0, Op.PROD);
@@ -383,8 +383,8 @@ public class TermTest {
     @Test
     public void testParseOperationInFunctionalForm() throws Narsese.NarseseException {
 
-//        assertFalse(Op.isOperation(n.term("(a,b)")));
-//        assertFalse(Op.isOperation(n.term("^wonder")));
+
+
 
             Term x = $.$("wonder(a,b)").term();
             assertEquals(INH, x.op());
@@ -408,30 +408,30 @@ public class TermTest {
         }
     }
 
-//    public void nullCachedName(String term) {
-//        NAR n = NARS.shell();
-//        n.input(term + ".");
-//        n.run(1);
-//        assertNull("term name string was internally generated although it need not have been", ((Compound) n.concept(term).getTerm()).nameCached());
-//    }
-//
-//    @Test public void avoidsNameConstructionUnlessOutputInheritance() {
-//        nullCachedName("<a --> b>");
-//    }
-//
-//    @Test public void avoidsNameConstructionUnlessOutputNegationAtomic() {
-//        nullCachedName("(--, a)");
-//    }
-//    @Test public void avoidsNameConstructionUnlessOutputNegationCompound() {
-//        nullCachedName("(--, <a-->b> )");
-//    }
-//
-//    @Test public void avoidsNameConstructionUnlessOutputSetInt1() {
-//        nullCachedName("[x]");
-//    }
-//    @Test public void avoidsNameConstructionUnlessOutputSetExt1() {
-//        nullCachedName("{x}");
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test public void testPatternVar() throws Narsese.NarseseException {
         assertSame($("%x").op(), Op.VAR_PATTERN);
@@ -470,7 +470,7 @@ public class TermTest {
         NAR n2 = NARS.shell();
         Term b = $.$(s).term();
 
-        //assertTrue(a != b);
+        
 
         if (a instanceof Compound) {
             assertEquals(a.subterms(), b.subterms());
@@ -545,20 +545,20 @@ public class TermTest {
         TimeAware n2 = NARS.shell();
         Termed b = $.$(s);
 
-        //assertTrue(a != b);
+        
         assertEquals(a, b);
 
-        //todo: method results ignored ?
+        
 
-//        assertEquals("re-normalizing doesn't affect: " + n2.concept(a), b,
-//                n2.concept(a));
+
+
 
     }
 
 
     @Test
     public void statementHash() throws Narsese.NarseseException {
-        //this is a case where a faulty hash function produced a collision
+        
         statementHash("i4", "i2");
         statementHash("{i4}", "{i2}");
         statementHash("<{i4} --> r>", "<{i2} --> r>");
@@ -578,10 +578,10 @@ public class TermTest {
     @Test
     public void statementHash3() throws Narsese.NarseseException {
 
-        //this is a case where a faulty hash function produced a collision
+        
         statementHash("<<{i0} --> r> ==> A(8)>", "<<{i1} --> r> ==> A(7)>");
 
-        //this is a case where a faulty hash function produced a collision
+        
         statementHash("<<{i10} --> r> ==> A(1)>", "<<{i11} --> r> ==> A(0)>");
     }
 
@@ -609,7 +609,7 @@ public class TermTest {
     }
 
     @Test public void testHashDistribution() {
-        int ah = new UnitSubterm($.the("x")).hashCode(); //one letter apart
+        int ah = new UnitSubterm($.the("x")).hashCode(); 
         int bh = new UnitSubterm($.the("y")).hashCode();
         assertTrue(Math.abs(ah-bh) > 1, ah + " vs " + bh);
     }
@@ -664,35 +664,35 @@ public class TermTest {
         return a;
     }
 
-//    @Disabled
-//    @Test
-//    public void testSubtermsVector() {
-//
-//        NAR n = NARS.shell();
-//
-//        Term a3 = n.term("c");
-//
-//        Compound a = testStructure("<c </> <a --> b>>", "1000000000000000000001000001");
-//        Compound a0 = testStructure("<<a --> b> </> c>", "1000000000000000000001000001");
-//
-//        Compound a1 = testStructure("<c <|> <a --> b>>", "10000000000000000000001000001");
-//        Compound a2 = testStructure("<c <=> <a --> b>>", "100000000000000000001000001");
-//
-//        Compound b = testStructure("<?1 </> <$2 --> #3>>", "1000000000000000000001001110");
-//        Compound b2 = testStructure("<<$1 --> #2> </> ?3>", "1000000000000000000001001110");
-//
-//
-//        assertTrue(a.impossibleStructureMatch(b.structure()));
-//        assertFalse(a.impossibleStructureMatch(a3.structure()));
-//
-//
-//        assertEquals("no additional structure code in upper bits",
-//                a.structure(), a.structure());
-//        assertEquals("no additional structure code in upper bits",
-//                b.structure(), b.structure());
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -718,7 +718,7 @@ public class TermTest {
 
 
         } catch (Exception e) {
-            //correct if happens here
+            
         }
     }
 
@@ -733,133 +733,133 @@ public class TermTest {
 
 
         } catch (Exception e) {
-            //correct if happens here
+            
         }
     }
 
-//    @Test
-//    public void testImageInhConstruction() {
-//        Compound p = $.p("a", "b", "c");
-//        assertEquals("(a-->(/,_,b,c))", $.imge(0, p).toString());
-//        assertEquals("(a-->(/,_,b,c))", $.image(0, p.toArray()).toString());
-//        assertEquals("(b-->(/,a,_,c))", $.imge(1, p).toString());
-//        assertEquals("(c-->(/,a,b,_))", $.imge(2, p).toString());
-//
-//        assertEquals("((\\,_,b,c)-->a)", $.imgi(0, p).toString());
-//        assertEquals("((\\,_,b,c)-->a)", $.imgi(0, p.toArray()).toString());
-//        assertEquals("((\\,a,_,c)-->b)", $.imgi(1, p).toString());
-//        assertEquals("((\\,a,b,_)-->c)", $.imgi(2, p).toString());
-//
-//    }
 
 
 
-//    @Test
-//    public void testImageConstructionExt() throws Narsese.NarseseException {
-//
-//
-//
-//
-//        assertEquals(
-//            "(A-->(/,%1,_))", $("<A --> (/, %1, _)>").toString()
-//        );
-//        assertEquals(
-//            "(A-->(/,_,%1))", $("<A --> (/, _, %1)>").toString()
-//        );
-////        assertEquals(
-////                "(/,_,%X)", $("(/, _, %X)").toString()
-////        );
-//
-//        assertEquals(
-//                imageExt($("X"), $("_"), $("Y")), $("(/, X, _, Y)")
-//        );
-//        assertEquals(
-//                imageExt($("_"), $("X"), $("Y")), $("(/, _, X, Y)")
-//        );
-//        assertEquals(
-//                imageExt($("X"), $("Y"), $("_")), $("(/, X, Y, _)")
-//        );
-//    }
-//    @Test
-//    public void testImageConstructionInt() throws Narsese.NarseseException {
-//        assertEquals(
-//                imageInt($("X"), $("_"), $("Y")), $("(\\, X, _, Y)")
-//        );
-//        assertEquals(
-//                imageInt($("_"), $("X"), $("Y")), $("(\\, _, X, Y)")
-//        );
-//        assertEquals(
-//                imageInt($("X"), $("Y"), $("_")), $("(\\, X, Y, _)")
-//        );
-//    }
 
-//    @Test
-//    public void testImageOrdering1() throws Narsese.NarseseException {
-//        testImageOrdering('/');
-//    }
-//
-//    @Test
-//    public void testImageOrdering2() throws Narsese.NarseseException {
-//        testImageOrdering('\\');
-//    }
-//
-//    void testImageOrdering(char v) throws Narsese.NarseseException {
-//        NAR n = new Terminal(16);
-//
-//        Termed<Compound> aa = n.term("(" + v + ",x, y, _)");
-//        Compound a = aa.term();
-//        Termed<Compound> bb = n.term("(" + v + ",x, _, y)");
-//        Compound b = bb.term();
-//        Termed<Compound> cc = n.term("(" + v + ",_, x, y)");
-//        Compound c = cc.term();
-//        assertNotEquals(a.dt(), b.dt());
-//        assertNotEquals(b.dt(), c.dt());
-//
-//        assertNotEquals(a, b);
-//        assertNotEquals(b, c);
-//        assertNotEquals(a, c);
-//
-//        assertNotEquals(a.hashCode(), b.hashCode());
-//        assertNotEquals(b.hashCode(), c.hashCode());
-//        assertNotEquals(a.hashCode(), c.hashCode());
-//
-//        assertEquals(+1, a.compareTo(b));
-//        assertEquals(-1, b.compareTo(a));
-//
-//        assertEquals(+1, a.compareTo(c));
-//        assertEquals(-1, c.compareTo(a));
-//
-//        assertNotEquals(0, b.compareTo(c));
-//        assertEquals(-c.compareTo(b), b.compareTo(c));
-//
-//
-//    }
-//
-//    @Test
-//    public void testImageStructuralVector() throws Narsese.NarseseException {
-//
-//        String i1 = "(/,x,y,_)";
-//        String i2 = "(/,x,_,y)";
-//        Compound a = testStructure(i1, "1000000000001");
-//        Compound b = testStructure(i2, "1000000000001");
-//
-//        /*assertNotEquals("additional structure code in upper bits",
-//                a.structure2(), b.structure2());*/
-//        assertNotEquals(a.dt(), b.dt());
-//        assertNotEquals("structure code influenced contentHash",
-//                b.hashCode(), a.hashCode());
-//
-//        NAR n = new Terminal(8);
-//        Termed<Compound> x3 = n.term('<' + i1 + " --> z>");
-//        Termed<Compound> x4 = n.term('<' + i1 + " --> z>");
-//
-//        assertFalse("i2 is a possible subterm of x3, structurally, even if the upper bits differ",
-//                x3.term().impossibleSubTermOrEquality(n.term(i2).term()));
-//        assertFalse(
-//                x4.term().impossibleSubTermOrEquality(n.term(i1).term()));
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Test
@@ -933,10 +933,10 @@ public class TermTest {
     public static void assertInvalid(@NotNull Supplier<Term> o) {
         try {
             Term recv = o.get();
-            if (recv!=Null) //False also signals invalid reduction
+            if (recv!=Null) 
                 fail(recv + " was not null");
         } catch (Term.InvalidTermException e) {
-            //correct if happens here
+            
         }
     }
 

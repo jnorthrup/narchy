@@ -10,7 +10,7 @@ import java.io.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// Based on the work of Sara Sabioni
+
 @Disabled
 public class ISOIOLibraryTestCase {
 
@@ -27,7 +27,7 @@ public class ISOIOLibraryTestCase {
 		try
 		{	
 			engine = new Prolog("alice.tuprolog.lib.BasicLibrary",
-					//"alice.tuprolog.lib.IOLibrary",
+					
 					"alice.tuprolog.lib.ISOIOLibrary");
 
 			File file = new File(".");
@@ -52,27 +52,27 @@ public class ISOIOLibraryTestCase {
 
 	@Test public void test_open() throws MalformedGoalException, InvalidTheoryException
 	{
-		// Apertura di un file esistente
+		
 		info = engine.solve("open('" + writePath +"','write',X,[alias('editor'), type(text)]).");
 		assertTrue(info.isSuccess());
 
-		// Apertura di un file NON esistente
+		
 		info = engine.solve("open('" + writePath.replace(".txt", ".myext") +"','write',X,[alias('editor'), type(text)]).");
 		assertFalse(info.isSuccess());
 
-		// Passando al posto di una variabile una lista:
+		
 		info = engine.solve("open('" + writePath + "','read',[]).");
 		assertFalse(info.isSuccess());
 
-		// Passando al posto di una lista una variabile:
+		
 		info = engine.solve("open('" + writePath + "','read',X,X).");
 		assertFalse(info.isSuccess());
 
-		// Passando una proprieta' in una lista illecita:
+		
 		info = engine.solve("open('" + writePath + "','read',X,[ciao(caramelle)]).");
 		assertFalse(info.isSuccess());
 
-		// CLOSE (in questo modo teso anche la close e la flush e poi anche le funzioni ausiliarie)
+		
 		String theoryText = "test:- open('" + writePath + "','write',X),close(X,force(true)).\n";
 		engine.setTheory(new Theory(theoryText));
 		info = engine.solve("test.");
@@ -127,8 +127,8 @@ public class ISOIOLibraryTestCase {
 	@Test public void test_5() throws InvalidTheoryException, MalformedGoalException, IOException
 	{
 		final String dataToRead = "ciao";
-		// Per beccare l'output
-		//TODO Da rivedere
+		
+		
 		OutputListener listener = e -> assertEquals("", dataToRead, e.msg);
 
 		engine.addOutputListener(listener);
@@ -148,8 +148,8 @@ public class ISOIOLibraryTestCase {
 	@Test public void test_6() throws InvalidTheoryException, MalformedGoalException, IOException
 	{
 		final String[] dataToRead = { "c", "\n", "iao" };
-		// Per beccare l'output
-		//TODO Da rivedere
+		
+		
 		OutputListener listener = new OutputListener() {
 
 			int count;
@@ -182,8 +182,8 @@ public class ISOIOLibraryTestCase {
 	@Test public void test_7() throws InvalidTheoryException, MalformedGoalException, IOException
 	{
 		final String dataToRead = "c";
-		// Per beccare l'output
-		//TODO Da rivedere
+		
+		
 		OutputListener listener = e -> assertEquals("", dataToRead, e.msg);
 
 		engine.addOutputListener(listener);
@@ -199,8 +199,8 @@ public class ISOIOLibraryTestCase {
 	@Test public void test_8() throws InvalidTheoryException, MalformedGoalException, IOException
 	{
 		final int dataToRead = 51;
-		// Per beccare l'output
-		//TODO Da rivedere
+		
+		
 		OutputListener listener = e -> assertEquals("", dataToRead+"", e.msg);
 
 		engine.addOutputListener(listener);
@@ -234,10 +234,10 @@ public class ISOIOLibraryTestCase {
 
 	@Test public void test_10() throws InvalidTheoryException, MalformedGoalException, IOException
 	{
-		final int[] dataToRead = { 99, 105, 105 }; // 'c', 'i', 'i'
+		final int[] dataToRead = { 99, 105, 105 }; 
 
-		// Per beccare l'output
-		//TODO Da rivedere
+		
+		
 		OutputListener listener = new OutputListener() {
 
 			int count;

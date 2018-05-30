@@ -56,7 +56,7 @@ public class TruthletTaskTest {
                 Truth ti = xb.truth(i, n);
                 if (i < 0 || i > 3) {
                     if (t instanceof SustainTruthlet) {
-                        assertTrue(ti.conf() < 0.9f); //fade out
+                        assertTrue(ti.conf() < 0.9f); 
                     } else {
                         assertNull(ti);
                     }

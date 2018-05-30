@@ -95,7 +95,7 @@ public class AllZero implements Bits{
 	
 	public int efficientBlockSize(){ return 1; }
 	
-	//Functions that are normally implemented as combinations of pre(long) andOr suf(long):
+	
 	
 	public Bits cat(Bits suf){
 		long sufSiz = suf.siz();

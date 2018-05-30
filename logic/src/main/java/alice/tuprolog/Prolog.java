@@ -47,8 +47,8 @@ public class Prolog {
     /*  spying activated ?  */
     private boolean spy;
 
-//	/*  warning activated ?  */
-//	private boolean warning;
+
+
 
     /* listeners registrated for virtual machine output events */
     /*Castagna 06/2011*/
@@ -60,7 +60,7 @@ public class Prolog {
     private final CopyOnWriteArrayList<SpyListener> spyListeners;
 
     /* listeners registrated for virtual machine state change events */
-    //private final ArrayList<WarningListener> warningListeners;
+    
     public final static Logger logger = LoggerFactory.getLogger(Prolog.class);
 
     /*Castagna 06/2011*/
@@ -165,7 +165,7 @@ public class Prolog {
         ops = new OperatorManager();
         prims = new PrimitiveManager();
         engine = new EngineManager(this);
-        //config managers
+        
         theories = new TheoryManager(this, dynamics);
         libs.start(this);
         prims.start(this);
@@ -188,15 +188,15 @@ public class Prolog {
         return directory;
     }
 
-//	/**
-//	 * Sets the last Element of the path list
-//	 */
-//	public void setCurrentDirectory(String s) {
-//		this.lastPath=s;
-//	}
 
 
-    // theory management interface
+
+
+
+
+
+
+    
 
     /**
      * Sets a new theory
@@ -205,7 +205,7 @@ public class Prolog {
      * @throws InvalidTheoryException if the new theory is not valid
      * @see Theory
      */
-    public Prolog setTheory(Theory th) throws InvalidTheoryException {    //no syn
+    public Prolog setTheory(Theory th) throws InvalidTheoryException {    
         theories.clear();
         input(th);
         return this;
@@ -219,7 +219,7 @@ public class Prolog {
      * @throws InvalidTheoryException if the new theory is not valid
      * @see Theory
      */
-    public Prolog input(Theory th) throws InvalidTheoryException {    //no syn
+    public Prolog input(Theory th) throws InvalidTheoryException {    
 
         Consumer<Theory> ifSuccessful;
         if (!theoryListeners.isEmpty()) {
@@ -248,7 +248,7 @@ public class Prolog {
      *
      * @return current(dynamic) theory
      */
-    public Theory getTheory() {    //no syn
+    public Theory getTheory() {    
         try {
             return new Theory(theories.getTheory(true));
         } catch (Exception ex) {
@@ -263,16 +263,16 @@ public class Prolog {
     /**
      * Clears current theory
      */
-    public void clearTheory() {    //no syn
+    public void clearTheory() {    
         try {
             setTheory(Theory.Null);
         } catch (InvalidTheoryException e) {
-            // this should never happen
+            
         }
     }
 
 
-    // libraries management interface
+    
 
     /**
      * Loads a library.
@@ -284,7 +284,7 @@ public class Prolog {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public Library addLibrary(String className) throws InvalidLibraryException {    //no syn
+    public Library addLibrary(String className) throws InvalidLibraryException {    
         return libs.loadClass(className);
     }
 
@@ -299,7 +299,7 @@ public class Prolog {
      * @return the reference to the Library just loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public Library addLibrary(String className, String... paths) throws InvalidLibraryException {    //no syn
+    public Library addLibrary(String className, String... paths) throws InvalidLibraryException {    
         return libs.loadClass(className, paths);
     }
 
@@ -313,7 +313,7 @@ public class Prolog {
      * @param lib the (Java class) name of the library to be loaded
      * @throws InvalidLibraryException if name is not a valid library
      */
-    public void addLibrary(Library lib) throws InvalidLibraryException {    //no syn
+    public void addLibrary(Library lib) throws InvalidLibraryException {    
         libs.load(lib);
     }
 
@@ -324,7 +324,7 @@ public class Prolog {
      * @param name of the library to be unloaded
      * @throws InvalidLibraryException if name is not a valid loaded library
      */
-    public void removeLibrary(String name) throws InvalidLibraryException {        //no syn
+    public void removeLibrary(String name) throws InvalidLibraryException {        
         libs.unload(name);
     }
 
@@ -336,34 +336,34 @@ public class Prolog {
      * @return the reference to the library loaded, null if the library is
      * not found
      */
-    public Library library(String name) {    //no syn
+    public Library library(String name) {    
         return libs.getLibrary(name);
     }
 
 
-//	protected Library getLibraryPredicate(String name, int nArgs) {		//no syn
-//		return prims.getLibraryPredicate(name,nArgs);
-//	}
 
 
-//	protected Library getLibraryFunctor(String name, int nArgs) {		//no syn
-//		return prims.getLibraryFunctor(name,nArgs);
-//	}
 
 
-    // operators management
+
+
+
+
+
+
+    
 
     /**
      * Gets the list of the operators currently defined
      *
      * @return the list of the operators
      */
-    public Iterable<Operator> operators() {    //no syn
+    public Iterable<Operator> operators() {    
         return ops.operators();
     }
 
 
-    // solve interface
+    
 
     /**
      * Solves a query
@@ -390,13 +390,13 @@ public class Prolog {
     }
 
     public Prolog solve(Term g, Consumer<Solution> eachSolution, long timeoutMS) {
-        //System.out.println("ENGINE SOLVE #0: "+g);
+        
         Solution next = null;
         do {
             if (next == null) {
                 next = engine.solve(g);
                 if (next == null)
-                    break; //no solutions
+                    break; 
             } else {
                 try {
                     next = engine.solveNext( /* TODO subdivide input time */);
@@ -458,7 +458,7 @@ public class Prolog {
     /**
      * Accepts current solution
      */
-    public void solveEnd() {    //no syn
+    public void solveEnd() {    
         engine.solveEnd();
     }
 
@@ -469,7 +469,7 @@ public class Prolog {
      *
      * @return true if open alternatives are present
      */
-    public boolean hasOpenAlternatives() {        //no syn
+    public boolean hasOpenAlternatives() {        
         return engine.hasOpenAlternatives();
     }
 
@@ -478,7 +478,7 @@ public class Prolog {
      *
      * @return true if the demonstration was stopped
      */
-    public boolean isHalted() {        //no syn
+    public boolean isHalted() {        
         return engine.isHalted();
     }
 
@@ -489,7 +489,7 @@ public class Prolog {
      * @param t1 second term to be unified
      * @return true if the unification was successful
      */
-    public static boolean match(Term t0, Term t1) {    //no syn
+    public static boolean match(Term t0, Term t1) {    
         return t0.unifiable(t1);
     }
 
@@ -500,7 +500,7 @@ public class Prolog {
      * @param t1 second term to be unified
      * @return true if the unification was successful
      */
-    public boolean unify(Term t0, Term t1) {    //no syn
+    public boolean unify(Term t0, Term t1) {    
         return t0.unify(this, t1);
     }
 
@@ -513,7 +513,7 @@ public class Prolog {
      * @return the term parsed from the string
      * @throws InvalidTermException if the string does not represent a valid term
      */
-    public Term toTerm(String st) throws InvalidTermException {    //no syn
+    public Term toTerm(String st) throws InvalidTermException {    
         return Parser.parseSingleTerm(st, ops);
     }
 
@@ -524,20 +524,20 @@ public class Prolog {
      * @param term the term to be represented as a string
      * @return the string representing the term
      */
-    public String toString(Term term) {        //no syn
+    public String toString(Term term) {        
         return (term.toStringAsArgY(ops, OperatorManager.OP_HIGH));
     }
 
 
-//	/**
-//	 * Defines a new flag
-//	 */
-//	public boolean defineFlag(String name, Struct valueList, Term defValue, boolean modifiable, String libName) {
-//		return flags.defineFlag(name,valueList,defValue,modifiable,libName);
-//	}
 
 
-    // spy interface ----------------------------------------------------------
+
+
+
+
+
+
+    
 
     /**
      * Switches on/off the notification of spy information events
@@ -573,7 +573,7 @@ public class Prolog {
      * @param s TODO
      */
     protected void spy(State s, Engine e) {
-        //System.out.println("spy: "+i+"  "+s+"  "+g);
+        
         if (spy && spyListeners.size() > 0) {
             ExecutionContext ctx = e.currentContext;
             if (ctx != null) {
@@ -588,20 +588,20 @@ public class Prolog {
         }
     }
 
-//
-//	/**
-//	 * Notifies a warn information event
-//	 *
-//	 *
-//	 * @param m the warning message
-//	 */
-//	public void warn(String m) {
-//		logger.warn(m);
-////		if (warning){
-////			notifyWarning(new WarningEvent(this, m));
-////			//log.warn(m);
-////		}
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*Castagna 06/2011*/
 
@@ -650,7 +650,7 @@ public class Prolog {
 
         int outputListenersSize = outputListeners.size();
         if (outputListenersSize == 0)
-            return; //ignored
+            return; 
 
         OutputEvent e = new OutputEvent(this, m);
         synchronized (outputListeners) {
@@ -660,7 +660,7 @@ public class Prolog {
         }
     }
 
-    // event listeners management
+    
 
     /**
      * Adds a listener to ouput events
@@ -711,14 +711,14 @@ public class Prolog {
         spyListeners.add(l);
     }
 
-//	/**
-//	 * Adds a listener to warning events
-//	 *
-//	 * @param l the listener
-//	 */
-//	public synchronized void addWarningListener(WarningListener l) {
-//		warningListeners.add(l);
-//	}
+
+
+
+
+
+
+
+
 
     /*Castagna 06/2011*/
 
@@ -796,21 +796,21 @@ public class Prolog {
         spyListeners.clear();
     }
 
-//	/**
-//	 * Removes a listener to warning events
-//	 *
-//	 * @param l the listener
-//	 */
-//	public synchronized void removeWarningListener(WarningListener l) {
-//		warningListeners.remove(l);
-//	}
-//
-//	/**
-//	 * Removes all warning event listeners
-//	 */
-//	public synchronized void removeAllWarningListeners() {
-//		warningListeners.clear();
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /* Castagna 06/2011*/
 
@@ -833,65 +833,65 @@ public class Prolog {
         exceptionListeners.clear();
     }
     /**/
-//
-//	/**
-//	 * Gets a copy of current listener list to output events
-//	 */
-//	public synchronized List<OutputListener> getOutputListenerList() {
-//		return new ArrayList<>(outputListeners);
-//	}
 
-//	/**
-//	 * Gets a copy of current listener list to warning events
-//	 *
-//	 */
-//	public synchronized List<WarningListener> getWarningListenerList() {
-//		return new ArrayList<>(warningListeners);
-//	}
-//
-//	/*Castagna 06/2011*/
-//	/**
-//	 * Gets a copy of current listener list to exception events
-//	 *
-//	 */
-//	public synchronized List<ExceptionListener> getExceptionListenerList() {
-//		return new ArrayList<>(exceptionListeners);
-//	}
-//	/**/
-//
-//	/**
-//	 * Gets a copy of current listener list to spy events
-//	 *
-//	 */
-//	public synchronized List<SpyListener> getSpyListenerList() {
-//		return new ArrayList<>(spyListeners);
-//	}
-//
-//	/**
-//	 * Gets a copy of current listener list to theory events
-//	 *
-//	 */
-//	public synchronized List<TheoryListener> getTheoryListenerList() {
-//		return new ArrayList<>(theoryListeners);
-//	}
-//
-//	/**
-//	 * Gets a copy of current listener list to library events
-//	 *
-//	 */
-//	public synchronized List<LibraryListener> getLibraryListenerList() {
-//		return new ArrayList<>(libraryListeners);
-//	}
-//
-//	/**
-//	 * Gets a copy of current listener list to query events
-//	 *
-//	 */
-//	public synchronized List<QueryListener> getQueryListenerList() {
-//		return new ArrayList<>(queryListeners);
-//	}
-//
-//	// notification
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Notifies a spy information event
@@ -912,7 +912,7 @@ public class Prolog {
      * @param e the event
      */
     protected void notifyException(ExceptionEvent e) {
-        //
+        
         for (int i = 0, exceptionListenersSize = exceptionListeners.size(); i < exceptionListenersSize; i++) {
             exceptionListeners.get(i).onException(e);
         }
@@ -920,7 +920,7 @@ public class Prolog {
     }
     /**/
 
-    //
+    
 
     /**
      * Notifies a library loaded event
@@ -957,9 +957,9 @@ public class Prolog {
             for (int i = 0, queryListenersSize = qls; i < queryListenersSize; i++) {
                 queryListeners.get(i).accept(e);
             }
-        }// else {
-        //throw new RuntimeException("no query listeners attached");
-        //}
+        }
+        
+        
     }
 
 
@@ -992,7 +992,7 @@ public class Prolog {
             Parser p = new Parser(st, ops);
             return p.nextTerm(true);
         } catch (InvalidTermException e) {
-            //TODO: Term.NULL
+            
             return Term.term("null");
         }
     }
@@ -1004,14 +1004,14 @@ public class Prolog {
     public boolean isTrue(Term s) {
         Solution r = solve(s);
         return r.isSuccess();
-//        switch (r.toString()) {
-//            case Term.YES:
-//                return true;
-//            case Term.NO:
-//                return false;
-//            default:
-//                throw new RuntimeException(s + " has non-boolean solution " + r);
-//        }
+
+
+
+
+
+
+
+
     }
 
     public static void warn(String s) {

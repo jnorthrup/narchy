@@ -101,24 +101,24 @@ public class Autoencoder {
 			}
 			if (noiseLevel > 0) {
 				v +=
-					//r.nextGaussian() * noiseLevel;
-					(r.nextFloat()-0.5f) * 2 * noiseLevel; //uniform
+					
+					(r.nextFloat()-0.5f) * 2 * noiseLevel; 
 
-//				if (nx < 0)
-//					nx = 0;
-//				if (nx > 1)
-//					nx = 1;
+
+
+
+
 			}
 			xx[i] = v;
 		}
 
 		for (int i = 0, inputLength = xx.length; i < inputLength; i++)
-            xx[i] = Util.clamp(xx[i], 0, 1f); //safety
+            xx[i] = Util.clamp(xx[i], 0, 1f); 
 
 		return xx;
 	}
 
-	// Encode
+	
 	public float[] encode(float[] x, float[] y, boolean sigmoid, boolean normalize) {
 
 		float[][] W = this.W;
@@ -126,8 +126,8 @@ public class Autoencoder {
 		int ins = x.length;
 		int outs = y.length;
 
-//		if (y == null)
-//			y = new float[outs];
+
+
 
 		float[] hbias = this.hbias;
 
@@ -168,29 +168,29 @@ public class Autoencoder {
 				}
 			}
 
-//			float maxMin = max - min;
-//			if (maxMin > NORMALIZATION_EPSILON) {
-//
-//				for (int i = 0; i < outs; i++) {
-//					y[i] = Util.clamp((y[i] - min) / maxMin, 0f, +1f);
-//				}
-//			 else {
-//				//fill(y, 0);
-//				randomize(1f / y.length, y);
-//			}
 
-//to check unit result:
-//			float len = cartesianLength(y);
-//			if (len > 0) {
-//				for (int i = 0; i < nh; i++) {
-//					y[i] = y[i] / len;
-//				}
-//				System.out.println(Arrays.toString(y) + " " + len + " " + cartesianLength(y));
-//			}
 
-//			for (int i = 0; i < nh; i++) {
-//				y[i] = (y[i] - min) / (max-min);
-//			}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		}
 
@@ -219,7 +219,7 @@ public class Autoencoder {
 		Util.mul(mult, this.L_vbias);
 	}
 
-	// Decode
+	
 	public float[] decode(float[] y, boolean sigmoid) {
 		float[][] w = W;
 
@@ -237,7 +237,7 @@ public class Autoencoder {
 
 			zi = sigmoid ?
 					Util.sigmoid(zi)
-					//(Util.tanhFast(zi) + 1) / 2f
+					
 					:
 					zi;
 
@@ -293,7 +293,7 @@ public class Autoencoder {
 
 		float[] z = this.z;
 
-		// vbias
+		
 		for (int i = 0; i < ins; i++) {
 
 			float delta = x[i] - z[i];
@@ -305,7 +305,7 @@ public class Autoencoder {
 		float[] hbias = this.hbias;
 
 
-		// hbias
+		
 		for (int i = 0; i < outs; i++) {
 			L_hbias[i] = 0f;
 			float[] wi = W[i];
@@ -321,7 +321,7 @@ public class Autoencoder {
 			hbias[i] += learningRate * L_hbias[i];
 		}
 
-		// W
+		
 		float[] xx = this.x;
 		for (int i = 0; i < outs; i++) {
 			float yi = y[i];
@@ -363,7 +363,7 @@ public class Autoencoder {
 		int best = -1;
 		float[] y = this.y;
 		int outs = y.length;
-		int start = rng.nextInt(outs); //random starting point to give a fair chance to all if the value is similar
+		int start = rng.nextInt(outs); 
 		for (int i = 0; i < outs; i++) {
 			int ii = (i + start) % outs;
 			float Y = y[ii];

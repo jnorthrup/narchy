@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Screen {
 	/*
-	 * public static final int MAP_WIDTH = 64; // Must be 2^x public static final int MAP_WIDTH_MASK = MAP_WIDTH - 1;
+	 * public static final int MAP_WIDTH = 64; 
 	 * 
 	 * public int[] tiles = new int[MAP_WIDTH * MAP_WIDTH]; public int[] colors = new int[MAP_WIDTH * MAP_WIDTH]; public int[] databits = new int[MAP_WIDTH * MAP_WIDTH];
 	 */
@@ -26,7 +26,7 @@ public class Screen {
 
 		pixels = new int[w * h];
 
-		// Random random = new Random();
+		
 
 		/*
 		 * for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) { colors[i] = Color.get(00, 40, 50, 40); tiles[i] = 0;
@@ -113,14 +113,14 @@ public class Screen {
 		if (y0 < 0) y0 = 0;
 		if (x1 > w) x1 = w;
 		if (y1 > h) y1 = h;
-		// System.out.println(x0 + ", " + x1 + " -> " + y0 + ", " + y1);
+		
 		for (int yy = y0; yy < y1; yy++) {
 			int yd = yy - y;
 			yd = yd * yd;
 			for (int xx = x0; xx < x1; xx++) {
 				int xd = xx - x;
 				int dist = xd * xd + yd;
-				// System.out.println(dist);
+				
 
 				if (dist <= rr) {
 					float br = 255 - dist * 255f / (rr);

@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-//don't touch this file - patham9
+
 
 public class LinkageTest extends NALTest {
 
@@ -35,8 +35,8 @@ public class LinkageTest extends NALTest {
 
         test.requireConditions = false;
         TestNAR tester = test;
-        tester.believe(premise1); //.en("If robin is a type of bird then robin can fly.");
-        tester.believe(premise2); //.en("Robin is a type of bird.");
+        tester.believe(premise1); 
+        tester.believe(premise2); 
 
         tester.run(runCycles);
 
@@ -55,7 +55,7 @@ public class LinkageTest extends NALTest {
         } catch (Narsese.NarseseException e) {
             return false;
         }
-        if (ret2 != null) {// && ret2.getTermLinks()!=null) {
+        if (ret2 != null) {
             for (PriReference<Term> entry : ret2.termlinks()) {
                 Term w = entry.get().term();
                 if (w.equals(premise1)) {
@@ -70,14 +70,14 @@ public class LinkageTest extends NALTest {
         ProperlyLinkedIndirectlyTest(spremise1, BELIEF, spremise2);
     }
 
-    //interlinked with an intermediate concept, this is needed in order to select one as task and the other as belief
+    
     public void ProperlyLinkedIndirectlyTest(@NotNull String spremise1, byte punc, @NotNull String spremise2) throws Exception {
 
 
         test.requireConditions = false;
         NAR nar = test.nar;
 
-        //nar.log();
+        
 
         Termed premise1 = $.$(spremise1);
         assertEquals($.$(spremise1), premise1, "reparsed");
@@ -94,19 +94,19 @@ public class LinkageTest extends NALTest {
 
         nar.input(t1, t2).run(runCycles);
 
-        //List<String> fails = new ArrayList();
+        
 
 
         @Nullable Concept p1 = nar.concept(premise1);
         assertNotNull(p1.state());
 
 
-        //p1.print(); System.out.println("------------------------");
+        
 
         Concept p2 = nar.concept(premise2);
         assertNotNull(p2);
         assertNotNull(p2.state());
-        //c2.print(); System.out.println("------------------------");
+        
 
         AdjGraph<Term, Float> g = TermGraph.termlink(nar);
 
@@ -123,29 +123,29 @@ public class LinkageTest extends NALTest {
         assertTrue(numNodes > 0);
         assertTrue(g.edgeCount()>0, g.toString());
 
-//        for (Term x : g.nodes()) {
-//            assertEquals(x + " not reachable by all other nodes", numNodes, Graphs.reachableNodes(g.asGraph(), x).size());
-//        }
 
-//        //g.print(System.out);
-//        //System.out.println(g.isConnected() + " " + g.vertexSet().size() + " " + g.edgeSet().size());
-//        if (!g.isConnected()) {
-////        if (!g.isStronglyConnected()) {
-////            StrongConnectivityInspector ci =
-//            ConnectivityInspector ci = new ConnectivityInspector(g);
-////                    new StrongConnectivityInspector(g);
-//
-//            System.out.println("premises: " + premise1 + " and " + premise2 + " termlink subgraph connectivity:");
-//
-//            ci
-//                .connectedSets()
-//                //.stronglyConnectedSubgraphs()
-//                .forEach( s -> System.out.println("\t" + s));
-//
-//            nar.forEachConceptActive(x -> x.get().print());
-//
-//        }
-//        assertTrue(g.isConnected());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     }
@@ -169,7 +169,7 @@ public class LinkageTest extends NALTest {
 
         for (PriReference<Term> entry : src.termlinks()) {
 
-            //test 1st level link
+            
             Term w = entry.get();
             if (target.equals(w))
                 return true;
@@ -181,7 +181,7 @@ public class LinkageTest extends NALTest {
                     return true;
                 }
 
-                //test 2nd level link
+                
                 for (PriReference<Term> entry2 : ww.termlinks()) {
                     Term e = entry2.get();
                     if (target.equals(e))
@@ -199,12 +199,12 @@ public class LinkageTest extends NALTest {
     }
 
 
-    //interlinked with an intermediate concept, this is needed in order to select one as task and the other as belief
+    
     public void ProperlyLinkedIndirectlyLayer2Test(@NotNull String premise1, @NotNull String premise2) throws Exception {
 
         TestNAR tester = test;
-        tester.believe(premise1); //.en("If robin is a type of bird then robin can fly.");
-        tester.believe(premise2); //.en("Robin is a type of bird.");
+        tester.believe(premise1); 
+        tester.believe(premise2); 
         tester.nar.run(1);
 
         boolean passed = links(premise1, premise2, tester);
@@ -213,7 +213,7 @@ public class LinkageTest extends NALTest {
         assertTrue(passed2);
 
 
-        //dummy
+        
         tester.believe("<a --> b>");
         tester.mustBelieve(1, "<a --> b>", 0.9f);
     }
@@ -276,31 +276,31 @@ public class LinkageTest extends NALTest {
         ProperlyLinkedIndirectlyTest("<<$1-->bird>==><$1-->animal>>", "(tiger-->animal)");
     }
 
-    //here the problem is: they should be interlinked by lock
+    
     @Test
     public void Part_Indirect_Linkage_NAL6_multiple_variable_elimination4() throws Exception {
         ProperlyLinkedIndirectlyTest("<#1 --> lock>", "<{lock1} --> lock>");
     }
 
-//    @Test
-//    public void Indirect_Linkage_NAL6_multiple_variable_elimination4() throws Exception {
-//        ProperlyLinkedIndirectlyTest(
-//                "(&&, <#1 --> (/, open, #2, _)>, <#1 --> lock>, <#2 --> key>)",
-//                "<{lock1} --> lock>");
-//    }
-//
-//    @Test
-//    public void Indirect_Linkage_NAL6_abduction_with_variable_elimination_abduction() throws Exception {
-//        ProperlyLinkedIndirectlyTest(
-//                "<<lock1 --> (/, open, $1, _)> ==> <$1 --> key>>",
-//                "<(&&, <#1 --> (/, open, $2, _)>, <#1 --> lock>) ==> <$2 --> key>>"
-//        );
-//    }
-//
-//    @Test
-//    public void Indirect_Linkage_NAL6_second_variable_introduction_induction() throws Exception {
-//        ProperlyLinkedIndirectlyTest("<<lock1 --> (/, open, $1, _)> ==> <$1 --> key>>", "<lock1 --> lock>");
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void Indirect_Linkage_NAL6_multiple_variable_elimination() throws Exception {
@@ -308,12 +308,12 @@ public class LinkageTest extends NALTest {
                 "<{lock1} --> lock>");
     }
 
-//    @Test
-//    public void Indirect_Linkage_NAL6_second_level_variable_unification2() throws Exception {
-//        ProperlyLinkedIndirectlyTest(
-//                "<<$1 --> lock> ==> (&&, <$1 --> (/, open, #2, _)>, <#2 --> key>)>",
-//                "<{key1} --> key>");
-//    }
+
+
+
+
+
+
 
     @Test
     public void Indirect_Linkage_NAL6_variable_elimination_deduction() throws Exception {
@@ -338,16 +338,16 @@ public class LinkageTest extends NALTest {
 
     @Test
     public void Indirect_Linkage_NAL6_second_level_variable_unification() throws Exception {
-        //ProperlyLinkedIndirectlyTest("(&&, <#1 --> lock>, <<$2 --> key> ==> <#1 --> (/, open, $2, _)>>)", "<{key1} --> key>");
+        
         ProperlyLinkedIndirectlyTest(
                 "(lock:#1 && (key:$2 ==> ($2, #1):open))",
                 "key:{key1}");
     }
 
-//    @Test
-//    public void Indirect_Linkage_NAL6_second_level_variable_unification_alt() throws Exception {
-//        ProperlyLinkedIndirectlyTest("(&&, <#1 --> lock>, <<$2 --> key> ==> open($2, #1)>)", "<{key1} --> key>");
-//    }
+
+
+
+
 
     @Test
     public void Indirect_Linkage_Basic() throws Exception {
@@ -429,20 +429,20 @@ public class LinkageTest extends NALTest {
         testConceptFormed("(&&,<#1 --> lock>,<<$2 --> key> ==> open($2, #1)>)");
     }
 
-//    @Test
-//    public void Advanced_Concept_Formation_Test4() throws Exception {
-//        testConceptFormed("(&&,<#1 --> (/,open,#2,_)>,<#1 --> lock>,<#2 --> key>)");
-//    }
+
+
+
+
 
 
     @Test
     public void Variable_Normalization_1() throws Exception {
-        //this.activeTasks = activeTasks;
+        
         NAR tester = NARS.tmp();
         test.requireConditions = false;
 
         String nonsense = "<(&&,<#1 --> M>,<#2 --> M>) ==> <#1 --> nonsense>>";
-        tester.believe(nonsense); //.en("If robin is a type of bird then robin can fly.");
+        tester.believe(nonsense); 
         tester.run(1);
         Concept c = tester.conceptualize(nonsense);
         assertNotNull(c);

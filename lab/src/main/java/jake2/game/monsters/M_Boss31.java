@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 13.11.2003 by RST.
-// $Id: M_Boss31.java,v 1.6 2009-12-13 19:18:03 salomo Exp $
+
+
 package jake2.game.monsters;
 
 import jake2.Defines;
@@ -567,8 +567,8 @@ public class M_Boss31 {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            // Lessen the chance of him going into his pain frames if he takes
-            // little damage
+            
+            
             if (damage <= 40)
                 if (Lib.random() <= 0.6)
                     return;
@@ -595,7 +595,7 @@ public class M_Boss31 {
 
             self.pain_debounce_time = GameBase.level.time + 3;
             if (GameBase.skill.value == 3)
-                return; // no pain anims in nightmare
+                return; 
 
             if (damage <= 50) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
@@ -754,8 +754,8 @@ public class M_Boss31 {
             /*
              * edict_t tempent;
              * 
-             * //VectorSet (self.mins, -16, -16, -24); //VectorSet (self.maxs,
-             * 16, 16, -8); // Jorg is on modelindex2. Do not clear him.
+             * 
+             * 16, 16, -8); 
              * VectorSet( self.mins, -60, -60, 0); VectorSet(self.maxs, 60, 60,
              * 72); self.movetype= MOVETYPE_TOSS; self.nextthink= 0;
              * gi.linkentity(self);
@@ -801,7 +801,7 @@ public class M_Boss31 {
             float enemy_yaw;
 
             if (self.enemy.health > 0) {
-                // see if any entities are in the way of the shot
+                
                 Math3D.VectorCopy(self.s.origin, spot1);
                 spot1[2] += self.viewheight;
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
@@ -812,7 +812,7 @@ public class M_Boss31 {
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA);
 
-                // do we have a clear shot?
+                
                 if (tr.ent != self.enemy)
                     return false;
             }
@@ -823,7 +823,7 @@ public class M_Boss31 {
 
             self.ideal_yaw = enemy_yaw;
 
-            // melee attack
+            
             if (enemy_range == Defines.RANGE_MELEE) {
                 if (self.monsterinfo.melee != null)
                     self.monsterinfo.attack_state = Defines.AS_MELEE;
@@ -832,7 +832,7 @@ public class M_Boss31 {
                 return true;
             }
 
-            //	   missile attack ?
+            
             if (self.monsterinfo.attack == null)
                 return false;
 
@@ -872,9 +872,9 @@ public class M_Boss31 {
         }
     };
 
-    //
-    //	   stand
-    //
+    
+    
+    
 
     static final mframe_t[] jorg_frames_stand = {
             new mframe_t(GameAI.ai_stand, 0, jorg_idle),
@@ -887,7 +887,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 10
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -898,7 +898,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 20
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -909,7 +909,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 30
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -920,7 +920,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_stand, 6, null),
             new mframe_t(GameAI.ai_stand, 9, jorg_step_right),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 40
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -931,8 +931,8 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_stand, -17, jorg_step_left),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, -12, null),
-            // 50
-            new mframe_t(GameAI.ai_stand, -14, jorg_step_right) // 51
+            
+            new mframe_t(GameAI.ai_stand, -14, jorg_step_right) 
     };
 
     static final mmove_t jorg_move_stand = new mmove_t(FRAME_stand01, FRAME_stand51,
@@ -957,9 +957,9 @@ public class M_Boss31 {
     static final mmove_t jorg_move_run = new mmove_t(FRAME_walk06, FRAME_walk19,
             jorg_frames_run, null);
 
-    //
-    //	   walk
-    //
+    
+    
+    
 
     static final mframe_t[] jorg_frames_start_walk = {
             new mframe_t(GameAI.ai_walk, 5, null),
@@ -1081,7 +1081,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 10
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1092,7 +1092,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 20
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1103,7 +1103,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 30
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1114,7 +1114,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 40
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1124,7 +1124,7 @@ public class M_Boss31 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, M_Boss32.MakronToss),
-            new mframe_t(GameAI.ai_move, 0, M_Supertank.BossExplode) // 50
+            new mframe_t(GameAI.ai_move, 0, M_Supertank.BossExplode) 
     };
 
     static final mmove_t jorg_move_death = new mmove_t(FRAME_death01, FRAME_death50,

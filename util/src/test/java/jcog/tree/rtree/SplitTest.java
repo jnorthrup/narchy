@@ -25,8 +25,8 @@ public class SplitTest {
                     int TOTAL = Math.round(max/8f * rects.length);
                     if (TOTAL%2==1) TOTAL++;
 
-                    assert(TOTAL<=entryCount); //even # only
-                    assert(TOTAL%2==0); //even # only
+                    assert(TOTAL<=entryCount); 
+                    assert(TOTAL%2==0); 
                     int HALF = TOTAL/2;
 
 
@@ -36,21 +36,21 @@ public class SplitTest {
                         RectDouble2D r = rects[i1];
                         boolean added = t.add(r);
                         if (!added) {
-                            t.add(r); //for debugging: try again and see what happened
+                            t.add(r); 
                             fail("");
                         }
                         assertTrue(added);
                         assertEquals(++i, t.size());
-                        //assertEquals(i, rTree.stats().getEntryCount());
+                        
 
                         boolean tryAddingAgainToTestForNonMutation = t.add(r);
                         if (tryAddingAgainToTestForNonMutation) {
-                            t.add(r); //for debugging: try again and see what happened
+                            t.add(r); 
                             fail("");
                         }
-                        assertFalse(tryAddingAgainToTestForNonMutation, i + "==?" + t.size()); //reinsertion of existing element will not affect size and will return false here
-                        assertEquals(i, t.size()); //reinsertion should cause no change in size
-                        //assertEquals(i, rTree.stats().getEntryCount());
+                        assertFalse(tryAddingAgainToTestForNonMutation, i + "==?" + t.size()); 
+                        assertEquals(i, t.size()); 
+                        
                     }
 
 
@@ -60,7 +60,7 @@ public class SplitTest {
 
 
                     for (int k = 0; k < HALF; k++) {
-                        assertFalse(t.add(rects[k])); //should detect the duplicate
+                        assertFalse(t.add(rects[k])); 
                     }
 
                     for (int k = 0; k < HALF; k++) {
@@ -72,23 +72,23 @@ public class SplitTest {
                         assertTrue(t.contains(a));
                         t.replace(a, b);
 
-//                        if (t.contains(a))
-//                            t.replace(a, b); //try again for debugging
+
+
 
                         assertFalse(t.contains(a));
                         assertTrue(t.contains(b));
 
-                        assertEquals(HALF, t.size()); //size unchanged
+                        assertEquals(HALF, t.size()); 
 
                     }
 
-                    //size should remain equal
+                    
                     assertEquals(HALF, t.size());
 
                     assertEquals(HALF, t.stats().size());
 
                     for (int k = 0; k < HALF; k++) {
-                        assertTrue(t.add(rects[k])); //should be unique, so it should be dded
+                        assertTrue(t.add(rects[k])); 
                     }
 
 

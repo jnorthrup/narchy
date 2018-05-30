@@ -24,11 +24,11 @@ public class AtomicMetalBitSet extends MetalBitSet {
         final boolean[] got = {false};
         _x.updateAndGet(this, v->{
             if (((v & mask) != 0)==expect) {
-                //set
+                
                 got[0] = true;
                 return set ? v|mask : v&(~mask);
             } else {
-                //no change
+                
                 return v;
             }
         });

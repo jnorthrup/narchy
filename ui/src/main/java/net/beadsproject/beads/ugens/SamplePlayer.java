@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -166,7 +166,7 @@ public class SamplePlayer extends UGen {
     /**
      * The loop cross fade in milliseconds.
      */
-    protected float loopCrossFade; // TODO loop crossfade behaviour
+    protected float loopCrossFade; 
 
     /**
      * Flag to determine whether playback starts at the beginning of the sample
@@ -244,7 +244,7 @@ public class SamplePlayer extends UGen {
      */
     public void setSample(Sample sample) {
         this.sample = sample;
-        // sampleRate = sample.getSampleRate();
+        
         frame = new float[sample.getNumChannels()];
     }
 
@@ -505,24 +505,24 @@ public class SamplePlayer extends UGen {
         this.interpolationType = interpolationType;
     }
 
-//	/**
-//	 * Gets the loop cross fade.
-//	 *
-//	 * @return the loop cross fade in milliseconds.
-//	 */
-//	public float getLoopCrossFade() {
-//		return loopCrossFade;
-//	}
 
-//	/**
-//	 * Sets the loop cross fade.
-//	 *
-//	 * @param loopCrossFade
-//	 *            the new loop cross fade in milliseconds.
-//	 */
-//	public void setLoopCrossFade(float loopCrossFade) {
-//		this.loopCrossFade = loopCrossFade;
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Gets the loop end envelope.
@@ -659,24 +659,24 @@ public class SamplePlayer extends UGen {
             if (positionEnvelope != null) {
                 positionEnvelope.update();
             } else {
-                // major speed up possible here if these envelopes are all
-                // either null or paused
-                // if this holds true we can tell buffer to just grab the whole
-                // frame at the given rate
-                // and then update the position all at once.
+                
+                
+                
+                
+                
                 rateEnvelope.update();
                 loopStartEnvelope.update();
                 loopEndEnvelope.update();
             }
-            // depending on the envelope type, we either copy whole chunks of
-            // data (COARSE), or step per frame (FINE)
+            
+            
             if (envelopeType == EnvelopeType.COARSE) {
-                // from the envelopes (if they exist)
-                // compute the position and rate
-                // and number of frames to get from Sample
+                
+                
+                
                 if (positionEnvelope != null) {
-                    // use the first and last values in the current envelope
-                    // and provide a linear interpolation between them
+                    
+                    
                     float startPosition = positionEnvelope.getValue(0, 0);
                     float endPosition = positionEnvelope.getValue(0,
                             bufferSize - 1);
@@ -690,16 +690,16 @@ public class SamplePlayer extends UGen {
                         float[][] samples = new float[getOuts()][(int) numSamples];
                         sample.getFrames((int) startPosInSamples, samples);
                         AudioUtils.stretchBuffer(samples, bufOut);
-                    } else { // endPosInSamples < startPosInSamples (i.e., rate is
-                        // negative)
+                    } else { 
+                        
                         float[][] samples = new float[getOuts()][(int) numSamples];
                         sample.getFrames((int) endPosInSamples, samples);
                         AudioUtils.reverseBuffer(samples);
                         AudioUtils.stretchBuffer(samples, bufOut);
                     }
                     position = endPosition;
-                } else { // use the position variable and rate envelopes
-                    // coarsely sample the rate envelope
+                } else { 
+                    
                     rate = rateEnvelope.getValue(0, 0);
                     switch (loopType) {
                         case NO_LOOP_FORWARDS:
@@ -709,14 +709,14 @@ public class SamplePlayer extends UGen {
                             long numSamples = (long) (Math.abs(rate) * bufferSize);
                             double numMs = sample.samplesToMs(numSamples);
                             boolean isPlayingForwards;
-                            if (normalisedRate >= 0) // we are playing forwards
+                            if (normalisedRate >= 0) 
                             {
                                 isPlayingForwards = true;
                                 if (numMs + position > sample.getLength()) {
                                     numSamples = (long) sample.msToSamples(sample
                                             .getLength() - position);
                                 }
-                            } else // playing backwards
+                            } else 
                             {
                                 isPlayingForwards = false;
                                 if (position - numMs < 0) {
@@ -748,10 +748,10 @@ public class SamplePlayer extends UGen {
                             stop();
                     }
                 }
-            } else // envelopeType==EnvelopeType.FINE
+            } else 
             {
                 for (int i = 0; i < bufferSize; i++) {
-                    // calculate the samples
+                    
                     switch (interpolationType) {
                         case ADAPTIVE:
                             if (rate > ADAPTIVE_INTERP_HIGH_THRESH) {
@@ -774,9 +774,9 @@ public class SamplePlayer extends UGen {
                     }
                     for (int j = 0; j < outs; j++) {
                         bufOut[j][i] = frame[j % sample.getNumChannels()];
-                        //TODO loop crossfades here?
+                        
                     }
-                    // update the position, loop state, direction
+                    
                     calculateNextPosition(i);
                 }
             }

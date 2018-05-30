@@ -17,7 +17,7 @@ package java4k.dord;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 public class a extends GamePanel {
 
-  // keys
+  
   private final boolean[] a = new boolean[65535];
   
   public a() {
@@ -796,39 +796,39 @@ public class a extends GamePanel {
         + "igaaagaggagbbggi";    
     
     final int TILES = 34;
-    final int TILE_BRICK = 0;            // a
-    final int TILE_RED_BRICK = 1;        // b
-    final int TILE_GREEN_BRICK = 2;      // c
-    final int TILE_BLUE_BRICK = 3;       // d 
-    final int TILE_RIGHT_BRICK = 4;      // e
-    final int TILE_LEFT_BRICK = 5;       // f
+    final int TILE_BRICK = 0;            
+    final int TILE_RED_BRICK = 1;        
+    final int TILE_GREEN_BRICK = 2;      
+    final int TILE_BLUE_BRICK = 3;       
+    final int TILE_RIGHT_BRICK = 4;      
+    final int TILE_LEFT_BRICK = 5;       
     
-    final int TILE_EMPTY = 6;            // g
-    final int TILE_DIAMOND = 7;          // h
-    final int TILE_SPIKES = 8;           // i
-    final int TILE_RED_KEY = 9;          // j
-    final int TILE_GREEN_KEY = 10;       // k
-    final int TILE_BLUE_KEY = 11;        // l
-    final int TILE_ANTIGRAVITY = 12;     // m
-    final int TILE_APPEARING_BLOCK = 13; // n
+    final int TILE_EMPTY = 6;            
+    final int TILE_DIAMOND = 7;          
+    final int TILE_SPIKES = 8;           
+    final int TILE_RED_KEY = 9;          
+    final int TILE_GREEN_KEY = 10;       
+    final int TILE_BLUE_KEY = 11;        
+    final int TILE_ANTIGRAVITY = 12;     
+    final int TILE_APPEARING_BLOCK = 13; 
     
-    final int TILE_RED_ENEMY_0 = 14;         // q
+    final int TILE_RED_ENEMY_0 = 14;         
     final int TILE_RED_ENEMY_1 = 15;
-    final int TILE_GREEN_ENEMY_0 = 16;       // r
+    final int TILE_GREEN_ENEMY_0 = 16;       
     final int TILE_GREEN_ENEMY_1 = 17;
-    final int TILE_BLUE_ENEMY_0 = 18;        // s
+    final int TILE_BLUE_ENEMY_0 = 18;        
     final int TILE_BLUE_ENEMY_1 = 19;
-    final int TILE_SPIKES_ENEMY_0 = 20;      // t
+    final int TILE_SPIKES_ENEMY_0 = 20;      
     final int TILE_SPIKES_ENEMY_1 = 21; 
-    final int TILE_YELLOW_ENEMY_0 = 22;      // u
+    final int TILE_YELLOW_ENEMY_0 = 22;      
     final int TILE_YELLOW_ENEMY_1 = 23; 
-    final int TILE_FLIPPED_RED_ENEMY_0 = 24; // v
+    final int TILE_FLIPPED_RED_ENEMY_0 = 24; 
     final int TILE_FLIPPED_RED_ENEMY_1 = 25; 
-    final int TILE_ORANGE_ENEMY_0 = 26;      // w
+    final int TILE_ORANGE_ENEMY_0 = 26;      
     final int TILE_ORANGE_ENEMY_1 = 27; 
-    final int TILE_MAGENETA_ENEMY_0 = 28;    // x
+    final int TILE_MAGENETA_ENEMY_0 = 28;    
     final int TILE_MAGENETA_ENEMY_1 = 29;    
-    final int TILE_PLAYER_0 = 30;            // z
+    final int TILE_PLAYER_0 = 30;            
     final int TILE_PLAYER_1 = 31; 
     final int TILE_PLAYER_2 = 32;    
     final int TILE_PLAYER_3 = 33;    
@@ -925,7 +925,7 @@ public class a extends GamePanel {
     float playerY = 0;
     float playerVy = 0;
     
-    // decompress sprites
+    
     for(; i < TILES; i++) {
       tiles[i] = new BufferedImage(10, 10, BufferedImage.TYPE_4BYTE_ABGR_PRE);
       if (i != TILE_EMPTY) {
@@ -970,17 +970,17 @@ public class a extends GamePanel {
     while(true) {
 
       do {
-        nextFrameStartTime += 10000000; // 100 frames per second  
+        nextFrameStartTime += 10000000; 
 
-        // -- update starts ----------------------------------------------------
         
-        // reset level test
+        
+        
         if (resetDelay > 0) {
           if (--resetDelay == 0) {
             playerVy = 0;
             level = (level + advanceLevel + LEVELS) % LEVELS;
             
-            // decompress level
+            
             enemies.clear();
             blockClear = false;
             diamonds = 0;
@@ -998,14 +998,14 @@ public class a extends GamePanel {
                   appearingBlocks++;
                   k = CHAR_EMPTY;
                 } else if (k == CHAR_PLAYER) {
-                  // create player                  
+                  
                   playerX = 10 * x;
                   playerY = 10 * y;
                   k = p == CHAR_ANTIGRAVITY 
                       ? CHAR_ANTIGRAVITY : CHAR_EMPTY;                 
                 } else if (k >= CHAR_RED_ENEMY) {
                   for(i = 0; i < (k == CHAR_ORANGE_ENEMY ? 3 : 1); i++) {
-                    // create enemy                  
+                    
                     enemy = new int[8];
                     enemy[ENEMY_X] = 10 * (x + i);
                     enemy[ENEMY_Y] = 10 * y;
@@ -1031,7 +1031,7 @@ public class a extends GamePanel {
           }
         }
         
-        // update appearing blocks
+        
         if (appearingBlocks > 0 && --blockDelay == 0) {          
           blockDelay = APPEARING_BLOCK_DELAY;
           if (blockClear) {
@@ -1054,7 +1054,7 @@ public class a extends GamePanel {
           }
         }
         
-        // update player
+        
         int px = playerX;
         int py = (int)playerY;
         if (!(a[KEY_X] || a[KEY_R] || a[KEY_N] || a[KEY_P])) {
@@ -1081,7 +1081,7 @@ public class a extends GamePanel {
         if (map[((5 + ((int)playerY) + FRAME_HEIGHT) % FRAME_HEIGHT) / 10]
                  [((5 + playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10] 
                       == TILE_ANTIGRAVITY) {
-          // inside of antigravity field
+          
           floorY = -1;
           vk = -1;
           if (playerVy == 0) {
@@ -1089,7 +1089,7 @@ public class a extends GamePanel {
           }
         }
         if ((counter & 1) == 1) {
-          // conveyor belts
+          
           i = map[((10 + ((int)playerY) + FRAME_HEIGHT) % FRAME_HEIGHT) / 10]
                  [((playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10];
           j = map[((10 + ((int)playerY) + FRAME_HEIGHT) % FRAME_HEIGHT) / 10]
@@ -1128,16 +1128,16 @@ public class a extends GamePanel {
             }
           } else {
             if (vk * playerVy < 0        
-              || (map // test if supported
+              || (map 
                   [((floorY + ((int)playerY) + FRAME_HEIGHT) % FRAME_HEIGHT) / 10]
                   [((playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10] 
                       > TILE_LEFT_BRICK
-              && map // test if supported
+              && map 
                   [((floorY + ((int)playerY) + FRAME_HEIGHT) % FRAME_HEIGHT) / 10]
                   [((9 + playerX + FRAME_WIDTH) % FRAME_WIDTH) / 10] 
                       > TILE_LEFT_BRICK)
               || insideOfBrick) {
-              // if not supported by bricks or moving upwards
+              
               if (k == 1) {                
                 playerVy += vk * GRAVITY;
                 if (playerVy > MAX_VY) {
@@ -1173,7 +1173,7 @@ public class a extends GamePanel {
               z = map[my][mx];
               if (z <= TILE_LEFT_BRICK) {
                 if (!insideOfBrick) {
-                  // player intersected a brick, revert position
+                  
                   playerX = x;
                   playerY = Y;
                   if (k > 0 && vk * playerVy < 0) {
@@ -1200,7 +1200,7 @@ public class a extends GamePanel {
           }
         }
         
-        // update appearing bricks
+        
         for(i = 0; i < 2; i++) {
           for(j = 0; j < 2; j++) {
             p = ((9 * j + px + FRAME_WIDTH) % FRAME_WIDTH) / 10;            
@@ -1224,7 +1224,7 @@ public class a extends GamePanel {
           }
         }
         
-        // update enemies
+        
         counter++;
         for(i = 0; i < enemies.size(); i++) {
           enemy = enemies.get(i);
@@ -1232,9 +1232,9 @@ public class a extends GamePanel {
               || (enemy[ENEMY_TYPE] == ENEMY_TYPE_BLUE 
                   && enemy[ENEMY_Y] == (int)playerY)
               || enemy[ENEMY_TYPE] == ENEMY_TYPE_MAGENETA) {
-            // move enemies
+            
             if (enemy[ENEMY_TYPE] == ENEMY_TYPE_MAGENETA) {
-              // update magenta enemy
+              
               if (enemy[ENEMY_Y] % 10 == 0) {                
                 if (enemy[ENEMY_V] == 0) {
                   x = playerX - enemy[ENEMY_X];
@@ -1260,7 +1260,7 @@ public class a extends GamePanel {
               }
             } else if (enemy[ENEMY_TYPE] == ENEMY_TYPE_YELLOW
                 || enemy[ENEMY_TYPE] == ENEMY_TYPE_ORANGE) {
-              // update yellow and orange enemies
+              
               float d = enemy[ENEMY_TYPE] == ENEMY_TYPE_ORANGE ? 16 : 8;
               enemy[ENEMY_X] = enemy[ENEMY_CX] + (int)(enemy[ENEMY_RADIUS] 
                   * (float)Math.cos(enemy[ENEMY_V] / d));
@@ -1268,7 +1268,7 @@ public class a extends GamePanel {
                   * (float)Math.sin(enemy[ENEMY_V] / d));
               enemy[ENEMY_V]++;
             } else if (enemy[ENEMY_TYPE] == ENEMY_TYPE_SPIKES) {
-              // update spikes enemy
+              
               if (enemy[ENEMY_Y] == 0) {
                 enemy[ENEMY_V] = 1;
               } else if (enemy[ENEMY_Y] == FRAME_HEIGHT - 10) {
@@ -1276,7 +1276,7 @@ public class a extends GamePanel {
               }              
               enemy[ENEMY_Y] += enemy[ENEMY_V];
             } else if (enemy[ENEMY_TYPE] != ENEMY_TYPE_GREEN) {
-              // update red and blue enemies (upside-down ones also)
+              
               if (enemy[ENEMY_X] % 10 == 0) {                
                 x = ((enemy[ENEMY_X] / 10) 
                     + enemy[ENEMY_V] + MAP_WIDTH) % MAP_WIDTH;
@@ -1295,7 +1295,7 @@ public class a extends GamePanel {
               enemy[ENEMY_X] = (enemy[ENEMY_X] + enemy[ENEMY_V] 
                   + FRAME_WIDTH) % FRAME_WIDTH;
             } else {
-              // update green enemy
+              
               if (enemy[ENEMY_Y] % 10 == 0) {
                 x = enemy[ENEMY_X] / 10;
                 y = ((enemy[ENEMY_Y] / 10) 
@@ -1311,36 +1311,36 @@ public class a extends GamePanel {
             }
           }
           
-          // test if player collides with enemy
+          
           x = ((playerX + FRAME_WIDTH) % FRAME_WIDTH) 
               - ((enemy[ENEMY_X] + FRAME_WIDTH) % FRAME_WIDTH);
           y = (((int)playerY + FRAME_HEIGHT) % FRAME_HEIGHT) 
               - ((enemy[ENEMY_Y] + FRAME_HEIGHT) % FRAME_HEIGHT);
           if (x <= 9 && x >= -9 && y <= 9 && y >= -9) { 
-            // player collides with enemy
+            
             resetDelay = 1;
             advanceLevel = 0;
           }
         }
         
         if (diamonds == 0) {
-          // all diamonds collected, advance to next level
+          
           resetDelay = ADVANCE_LEVEL_DELAY;
           advanceLevel = 1;
         }
-        // -- update ends ------------------------------------------------------
+        
 
       } while(nextFrameStartTime < System.nanoTime());
 
-      // -- render starts ------------------------------------------------------
-            
-      // -- render ends --------------------------------------------------------
       
-      // clear frame
+            
+      
+      
+      
       g.setColor(BACKGROUND_COLOR);
       g.fillRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
       
-      // draw tiles
+      
       for(y = 0; y < MAP_HEIGHT; y++) {
         for(x = 0; x < MAP_WIDTH; x++) {
           i = map[y][x];
@@ -1350,7 +1350,7 @@ public class a extends GamePanel {
         }
       }
       
-      // draw enemies (and wrap-around copies)
+      
       for(k = 0; k < enemies.size(); k++) {
         enemy = enemies.get(k);
         for(i = 0; i < 3; i++) {
@@ -1363,7 +1363,7 @@ public class a extends GamePanel {
         }  
       }
       
-      // draw player (and wrap-around copies)
+      
       for(i = 0; i < 3; i++) {
         for(j = 0; j < 3; j++) {
           g.drawImage(tiles[TILE_PLAYER_0 + ((arrowTime >> 3) & 1) 
@@ -1373,14 +1373,14 @@ public class a extends GamePanel {
         }
       }      
       
-      // show the hidden buffer
+      
       if (g2 == null) {
         g2 = (Graphics2D)getGraphics();        
       } else {
         g2.drawImage(imageBuffer, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, null);
       }
 
-      // burn off extra cycles
+      
       while(nextFrameStartTime - System.nanoTime() > 0);
     }
   }
@@ -1400,7 +1400,7 @@ public class a extends GamePanel {
             = e.id == 401 || e.id == 403;
   }  
 
-  // to run in window, uncomment below
+  
   public static void main(String[] args) throws Throwable {
     javax.swing.JFrame frame = new javax.swing.JFrame(
         "Dord");

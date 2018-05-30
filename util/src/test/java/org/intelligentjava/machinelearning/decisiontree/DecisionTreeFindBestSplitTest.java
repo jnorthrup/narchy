@@ -34,19 +34,19 @@ public class DecisionTreeFindBestSplitTest {
         features.add(feature("x1", false));
         features.add(feature("x2", false));
         
-        // test finding split
+        
         Predicate<Function<String,Object>> bestSplit = tree.bestSplit(labelColumnName,dataSet, features);
         assertEquals("x1 = true", bestSplit.toString());
         
         List<List<Function<String,Object>>> split = DecisionTree.split(bestSplit, dataSet).collect(toList());
         
-        // test splitting data
+        
         assertEquals(TRUE_LABEL, split.get(0).get(0).apply(labelColumnName));
         assertEquals(FALSE_LABEL, split.get(0).get(1).apply(labelColumnName));
         assertEquals(FALSE_LABEL, split.get(1).get(0).apply(labelColumnName));
         assertEquals(FALSE_LABEL, split.get(1).get(1).apply(labelColumnName));
 
-        // next best split
+        
         Predicate<Function<String,Object>> newBestSplit = tree.bestSplit(labelColumnName,split.get(0), features);
         assertEquals("x2 = true", newBestSplit.toString());
 

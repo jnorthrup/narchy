@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -38,11 +38,11 @@ import spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm;
  */
 public class DefaultCollisionConfiguration extends CollisionConfiguration {
 
-	//default simplex/penetration depth solvers
+	
 	protected final VoronoiSimplexSolver simplexSolver;
 	protected final ConvexPenetrationDepthSolver pdSolver;
 
-	//default CreationFunctions, filling the m_doubleDispatch table
+	
 	protected final CollisionAlgorithmCreateFunc convexConvexCreateFunc;
 	protected final CollisionAlgorithmCreateFunc convexConcaveCreateFunc;
 	protected final CollisionAlgorithmCreateFunc swappedConvexConcaveCreateFunc;
@@ -61,15 +61,15 @@ public class DefaultCollisionConfiguration extends CollisionConfiguration {
 	public DefaultCollisionConfiguration() {
 		simplexSolver = new VoronoiSimplexSolver();
 
-		//#define USE_EPA 1
-		//#ifdef USE_EPA
+		
+		
 		pdSolver = new GjkEpaPenetrationDepthSolver();
-		//#else
-		//pdSolver = new MinkowskiPenetrationDepthSolver();
-		//#endif//USE_EPA
+		
+		
+		
 
 		/*
-		//default CreationFunctions, filling the m_doubleDispatch table
+		
 		*/
 		convexConvexCreateFunc = new ConvexConvexAlgorithm.CreateFunc(simplexSolver, pdSolver);
 		convexConcaveCreateFunc = new ConvexConcaveCollisionAlgorithm.CreateFunc();
@@ -91,13 +91,13 @@ public class DefaultCollisionConfiguration extends CollisionConfiguration {
 		m_boxBoxCF = new(mem)btBoxBoxCollisionAlgorithm::CreateFunc;
 		*/
 
-		// convex versus plane
+		
 		convexPlaneCF = new ConvexPlaneCollisionAlgorithm.CreateFunc();
 		planeConvexCF = new ConvexPlaneCollisionAlgorithm.CreateFunc();
 		planeConvexCF.swapped = true;
 
 		/*
-		///calculate maximum element size, big enough to fit any collision algorithm in the memory pool
+		
 		int maxSize = sizeof(btConvexConvexAlgorithm);
 		int maxSize2 = sizeof(btConvexConcaveCollisionAlgorithm);
 		int maxSize3 = sizeof(btCompoundCollisionAlgorithm);
@@ -203,7 +203,7 @@ public class DefaultCollisionConfiguration extends CollisionConfiguration {
             return swappedCompoundCreateFunc;
         }
 
-		// failed to find an algorithm
+		
 		return emptyCreateFunc;
 	}
 

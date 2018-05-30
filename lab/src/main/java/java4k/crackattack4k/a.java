@@ -15,7 +15,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -181,7 +181,7 @@ public class a extends GamePanel {
 	BufferedImage backgroundImage;
 	Graphics2D offscreenGraphics;
 
-	// keys
+	
 	private final int[] a = new int[4];
 
 	long nextFrameStartTime;
@@ -197,7 +197,7 @@ public class a extends GamePanel {
 		backgroundImage = new BufferedImage(104, 200, 1);
 		offscreenGraphics = (Graphics2D) offscreenImage.getGraphics();
 
-		// decompress symbols, faces and tiles
+		
 		for (k = 0; k < 3; k++) {
 			float saturation = k == 2 ? 0 : 1;
 			float brightness = k == 1 ? 0.5f : 1;
@@ -209,20 +209,20 @@ public class a extends GamePanel {
 
 					float hue = (i < 4 ? i : -1) / 6f;
 
-					// symbol
+					
 					for (x = 0; x < 8; x++) {
 						pixels[x] = pixels[15 - x] = ((S.charAt((i << 3) + (y >> 1)) >> (((y & 1) << 3) + x)) & 1) * Color.HSBtoRGB(hue, saturation, brightness);
 					}
 					sprites[10 * k + i].setRGB(0, y, 16, 1, pixels, 0, 16);
 
-					// faces
+					
 					for (x = 0; x < 8; x++) {
 						j = (S.charAt(72 + (i << 4) + y) >> (x << 1)) & 3;
 						pixels[x] = pixels[15 - x] = j == 3 ? 0xFFD0D0D0 : j == 1 ? i == 0 ? 0xFFC0C000 : i == 4 ? 0xFF0038F8 : 0xFFF81800 : Color.HSBtoRGB(hue, 1, j == 0 ? 0.4f : 1);
 					}
 					sprites[SPRITE_FACE_1 + i].setRGB(0, y, 16, 1, pixels, 0, 16);
 
-					// tile
+					
 					for (x = 0; x < 16; x++) {
 						j = (S.charAt((x < 8 ? 41 : 40) + (y << 1)) >> ((x & 7) << 1)) & 3;
 						if (k == 2) {
@@ -235,7 +235,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// decompress digits, hypthen and cursor pieces
+		
 		for (i = 0; i < 14; i++) {
 			j = i == 13 ? 12 : 8;
 			sprites[SPRITE_DIGIT_0 + i] = new BufferedImage(j, 8, 2);
@@ -256,7 +256,7 @@ public class a extends GamePanel {
 	@Override
 	public void paintComponent(Graphics g) {
 
-		// burn off extra cycles
+		
 		if (nextFrameStartTime - System.nanoTime() > 0) {
 			return;
 		}
@@ -264,11 +264,11 @@ public class a extends GamePanel {
 		do {
 			nextFrameStartTime += 16666667;
 
-			// -- update starts ----------------------------------------------------
+			
 
 			if (resetLevel) {
 
-				// reset level
+				
 				resetLevel = false;
 				swapping = false;
 				cameraBlocked = false;
@@ -296,7 +296,7 @@ public class a extends GamePanel {
 
 				chains.clear();
 
-				// create random tiles
+				
 				for (y = 0; y < 128; y++) {
 					for (x = 0; x < 6; x++) {
 						if (y < 2) {
@@ -318,7 +318,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// create background image
+				
 				for (y = 0; y < 200; y++) {
 					for (x = 0; x < 104; x++) {
 						pixels[x] = Color.HSBtoRGB((0.0015f + 0.0005f * (level / 5)) * y - 0.15f + 0.7f * (level / 5), 1, 0.5f);
@@ -398,7 +398,7 @@ public class a extends GamePanel {
 					lastScore = score;
 					lastLevel = level;
 					if (level == 44) {
-						// return to menu after level 9-5
+						
 						menuMode = true;
 					} else {
 						level++;
@@ -441,7 +441,7 @@ public class a extends GamePanel {
 			dangerBounce = ((counter << 1) & 31) / 3;
 			dangerBounce = dangerBounce >= 7 ? 4 : dangerBounce < 4 ? dangerBounce : 6 - dangerBounce;
 
-			// position cursor
+			
 			x = (a[MOUSE_X] - 12) / 3;
 			y = (a[MOUSE_Y] - 12) / 3;
 
@@ -495,7 +495,7 @@ public class a extends GamePanel {
 			}
 
 			if (swapping) {
-				// update swap
+				
 				swapOffset += 4;
 				if (swapOffset == 16) {
 					swapping = false;
@@ -516,9 +516,9 @@ public class a extends GamePanel {
 				}
 			}
 
-			// scan for holes, danger columns, losing state and winning state
-			// update falling, bouncing and exploding tiles
-			// test for winning and losing
+			
+			
+			
 			i = 128;
 			j = cameraY >> 4;
 			k = -32;
@@ -556,7 +556,7 @@ public class a extends GamePanel {
 						}
 						if (y < 2) {
 							if (y == 0) {
-								// player lost
+								
 								dying = 1;
 								cameraY2 = cameraY;
 								continue;
@@ -588,14 +588,14 @@ public class a extends GamePanel {
 			if (i >= limitTileY) {
 				bonusTime = 0;
 				if (!(cameraBlocked || fallingFound || swapping)) {
-					// player won
+					
 					winning = 1;
 					score += 100;
 					continue;
 				}
 			}
 
-			// scan for horizontal combos
+			
 			cleared = 0;
 			int clearedX = 0;
 			int clearedY = 0;
@@ -639,7 +639,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// scan for vertical combos
+			
 			for (x = 5; x >= 0; x--) {
 				i = 0;
 				for (y = 10; y >= 0; y--) {
@@ -691,7 +691,7 @@ public class a extends GamePanel {
 
 				score += 10 * (cleared - 2);
 
-				// add chain
+				
 				int[] chain = new int[5];
 				chain[CHAIN_Y] = (clearedY << 4) - cameraY + 8;
 				chain[CHAIN_WIDTH] = cleared > 9 ? 24 : 16;
@@ -712,7 +712,7 @@ public class a extends GamePanel {
 				chains.add(chain);
 			}
 
-			// update chains
+			
 			for (i = chains.size() - 1; i >= 0; i--) {
 				int[] chain = chains.get(i);
 				if (++chain[CHAIN_COUNT] == 32) {
@@ -726,7 +726,7 @@ public class a extends GamePanel {
 					bonusTime--;
 				} else {
 
-					// advance camera
+					
 					if (cameraYTarget > cameraY) {
 						cameraY++;
 					} else {
@@ -739,22 +739,22 @@ public class a extends GamePanel {
 				}
 			}
 
-			// -- update ends ------------------------------------------------------
+			
 
 		} while (nextFrameStartTime < System.nanoTime());
 
-		// -- render starts ------------------------------------------------------
+		
 
 		if (menuMode || tiles == null) {
-			// clear background
+			
 			offscreenGraphics.setColor(Color.BLACK);
 			offscreenGraphics.fillRect(0, 0, 104, 200);
 		} else {
-			// draw background
+			
 			offscreenGraphics.drawImage(backgroundImage, 0, 0, null);
 		}
 
-		// draw score
+		
 		if (score == 0) {
 			offscreenGraphics.drawImage(sprites[SPRITE_DIGIT_0], 48, 5, null);
 		} else {
@@ -775,12 +775,12 @@ public class a extends GamePanel {
 
 		if (menuMode || tiles == null) {
 
-			// draw level
+			
 			offscreenGraphics.drawImage(sprites[SPRITE_DIGIT_1 + (level / 5)], 40, 80, null);
 			offscreenGraphics.drawImage(sprites[SPRITE_HYPHEN], 48, 80, null);
 			offscreenGraphics.drawImage(sprites[SPRITE_DIGIT_1 + (level % 5)], 56, 80, null);
 
-			// draw buttons
+			
 			offscreenGraphics.drawImage(sprites[overButton == OVER_UP ? 28 : 8], 44, 62, null);
 			offscreenGraphics.drawImage(sprites[overButton == OVER_DOWN ? 28 : 8], 44, 90, null);
 			offscreenGraphics.drawImage(sprites[3], 44 + (overButton == OVER_UP && !mouseReleased ? 1 : 0), 62 + (overButton == OVER_UP && !mouseReleased ? 1 : 0), null);
@@ -791,7 +791,7 @@ public class a extends GamePanel {
 
 		} else {
 
-			// draw tiles
+			
 			drawFlash = !drawFlash;
 			i = cameraY & 15;
 			j = cameraY >> 4;
@@ -832,13 +832,13 @@ public class a extends GamePanel {
 			}
 
 			if (dying == 0 && winning == 0) {
-				// draw limit line
+				
 				offscreenGraphics.setColor(Color.WHITE);
 				offscreenGraphics.fillRect(4 + (limitLine << 4), (limitTileY << 4) - cameraY + 4, 16, 1);
 			}
 
 			if (swapping) {
-				// draw tiles being swapped
+				
 
 				if (swapTileLeft >= 0) {
 					offscreenGraphics.drawImage(sprites[swapTileLeft + 5], 4 + (swapX << 4) + swapOffset, 4 + (swapY << 4) - cameraY, null);
@@ -851,7 +851,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw border
+			
 			offscreenGraphics.setColor(borderColor1);
 			offscreenGraphics.drawRect(0, 0, 103, 199);
 			offscreenGraphics.setColor(borderColor2);
@@ -862,13 +862,13 @@ public class a extends GamePanel {
 
 			if (countdown >= 0) {
 
-				// draw level
+				
 				offscreenGraphics.drawImage(sprites[SPRITE_DIGIT_1 + (level / 5)], 40, 80, null);
 				offscreenGraphics.drawImage(sprites[SPRITE_HYPHEN], 48, 80, null);
 				offscreenGraphics.drawImage(sprites[SPRITE_DIGIT_1 + (level % 5)], 56, 80, null);
 
 				if (countdownZ > Z0) {
-					// draw countdown
+					
 					offscreenGraphics.translate(52, 100);
 					float scale = Z0 / (float) (Z0 - countdownZ);
 					offscreenGraphics.scale(scale, scale);
@@ -878,14 +878,14 @@ public class a extends GamePanel {
 			}
 
 			if (dying > 0 || winning > 0) {
-				// draw fade out
+				
 				i = dying + winning;
 				offscreenGraphics.setColor(new Color(0, 0, 0, (i >= 128) ? 255 : (i << 1)));
 				offscreenGraphics.fillRect(0, 0, 104, 200);
 			}
 
 			if (dying == 0) {
-				// draw explosions
+				
 				i = cameraY & 15;
 				j = cameraY >> 4;
 				for (y = 0; y < 13; y++) {
@@ -922,7 +922,7 @@ public class a extends GamePanel {
 				}
 
 				if (winning == 0 && countdown < 0) {
-					// draw cursor
+					
 					y = cursorExpanded ? 1 : 0;
 					offscreenGraphics.drawImage(sprites[SPRITE_CURSOR_1], cursorX - y, cursorY - y, null);
 					offscreenGraphics.drawImage(sprites[SPRITE_CURSOR_4], cursorX - y, cursorY + 12 + y, null);
@@ -931,7 +931,7 @@ public class a extends GamePanel {
 					offscreenGraphics.drawImage(sprites[SPRITE_CURSOR_2], cursorX + 28 + y, cursorY - y, null);
 					offscreenGraphics.drawImage(sprites[SPRITE_CURSOR_5], cursorX + 28 + y, cursorY + 12 + y, null);
 
-					// draw chain messages
+					
 					for (i = chains.size() - 1; i >= 0; i--) {
 						int[] chain = chains.get(i);
 
@@ -962,14 +962,14 @@ public class a extends GamePanel {
 		}
 
 		if (fadeState != FADE_NONE) {
-			// draw fade
+			
 			offscreenGraphics.setColor(new Color(0, 0, 0, fadeIntensity));
 			offscreenGraphics.fillRect(0, 0, 104, 200);
 		}
 
-		// -- render ends --------------------------------------------------------
+		
 
-		// show the hidden buffer
+		
 		g.drawImage(offscreenImage, 0, 0, 312, 600, null);
 	}
 
@@ -993,7 +993,7 @@ public class a extends GamePanel {
 		}
 	}
 
-	// to run in window, uncomment below
+	
 	/*public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Crack Attack 4K");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

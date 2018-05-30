@@ -21,7 +21,7 @@ public class CommonVariableTest {
 
     @Test
     public void commonVariableTest1() {
-        //same forward and reverse
+        
         Variable p1p2 = CommonVariable.common(p1, p2);
         assertEquals("##1#2#", p1p2.toString());
         Variable p2p1 = CommonVariable.common(p2, p1);
@@ -37,7 +37,7 @@ public class CommonVariableTest {
 
     @Test
     public void CommonVariableDirectionalityPreserved() {
-        //different lengths
+        
 
         Variable c12_reverse = CommonVariable.common(p2, p1);
 
@@ -49,7 +49,7 @@ public class CommonVariableTest {
         Variable c123 = CommonVariable.common( c12,  p3);
         assertEquals("###1#2##3# class nars.term.var.CommonVariable", (c123 + " " + c123.getClass()));
 
-        //duplicate: already included
+        
         assertEquals("####1#2##3##2#", CommonVariable.common( c123, p2).toString());
 
 

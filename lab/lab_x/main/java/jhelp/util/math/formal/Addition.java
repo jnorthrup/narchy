@@ -217,14 +217,14 @@ public class Addition
 
                if(f1.equals(f2) == true)
                {
-                  // (C1 * X) + (C2 * X) => C3 * X // Where C3 = C1+C2
-                  // (C1 * X) + (X * C2) => C3 * X // Where C3 = C1+C2
-                  // (X * C1) + (C2 * X) => C3 * X // Where C3 = C1+C2
-                  // (X * C1) + (X * C2) => C3 * X // Where C3 = C1+C2
-                  // (C1 * X) + X => C2 * X // Where C2 = C1+1
-                  // (X * C1) + X => C2 * X // Where C2 = C1+1
-                  // X + (C1 * X) => C2 * X // Where C2 = C1+1
-                  // X + (X * C1) => C2 * X // Where C2 = C1+1
+                  
+                  
+                  
+                  
+                  
+                  
+                  
+                  
                   return Function.createMultiplication(new Constant(value), f1.simplify());
                }
             }

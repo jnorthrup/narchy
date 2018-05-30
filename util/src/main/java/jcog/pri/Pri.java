@@ -33,12 +33,12 @@ public class Pri implements Priority {
     public boolean delete() {
         float p = pri;
         if (p==p) {
-        //if (!isDeleted()) { //dont call isDeleted it may be overridden in a cyclical way
+        
             this.pri = Float.NaN;
             return true;
         }
-        //logger.warn("alredy deleted");
-//            throw new RuntimeException("Already Deleted");
+        
+
         return false;
     }
 

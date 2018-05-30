@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.configuration;
 
@@ -79,18 +79,18 @@ public class Configuration {
                 "jcog.grammar.evolve.tree.operator.ListMatch",
                 "jcog.grammar.evolve.tree.operator.ListNotMatch",
                 "jcog.grammar.evolve.tree.operator.MatchOneOrMore",
-                //"jcog.grammar.evolve.tree.operator.MatchOneOrMoreGreedy",
+                
                 "jcog.grammar.evolve.tree.operator.MatchZeroOrMore",
-                //"jcog.grammar.evolve.tree.operator.MatchZeroOrMoreGreedy",
+                
                 "jcog.grammar.evolve.tree.operator.MatchZeroOrOne",
-                //"jcog.grammar.evolve.tree.operator.MatchZeroOrOneGreedy",
+                
                 "jcog.grammar.evolve.tree.operator.MatchMinMax"
-                //"jcog.grammar.evolve.tree.operator.MatchMinMaxGreedy",
-                //"jcog.grammar.evolve.tree.operator.Backreference",
-                //"jcog.grammar.evolve.tree.Anchor"
+                
+                
+                
         );
 
-        //Add context wise operators (lookaround)
+        
         Collections.addAll(operators,
             "jcog.grammar.evolve.tree.operator.PositiveLookbehind",
             "jcog.grammar.evolve.tree.operator.NegativeLookbehind",
@@ -98,11 +98,11 @@ public class Configuration {
             "jcog.grammar.evolve.tree.operator.NegativeLookahead");
         
       
-        this.initNodeFactory(); //initNodeFactory also instantiate the NodeFactory object, this decouples the terminalset between threads
+        this.initNodeFactory(); 
 
         List<Leaf> terminalSet = this.nodeFactory.getTerminalSet();
 
-        //Add default ranges
+        
         Collections.addAll(terminalSet,
             new RegexRange("A-Z"),
             new RegexRange("a-z"),
@@ -124,9 +124,9 @@ public class Configuration {
         
         
         this.strategyParameters.put("threads","2");
-        this.strategy = new CombinedMultithreadStrategy(); //MultithreadStrategy();
+        this.strategy = new CombinedMultithreadStrategy(); 
         
-        //TerminalSet and population builder setup is performed later
+        
         this.terminalSetBuilderParameters = new HashMap<>();
         this.terminalSetBuilderParameters.put("tokenThreashold","80.0");
         this.terminalSetBuilder = new TokenizedContextTerminalSetBuilder();
@@ -166,7 +166,7 @@ public class Configuration {
         this.outputFolder = cc.getOutputFolder();
         this.outputFolderName = cc.getOutputFolderName();
         this.strategy = cc.getStrategy();
-        this.strategyParameters = new LinkedHashMap<>(cc.getStrategyParameters()); //Permits runtime modification of Configuration objects (do not affect other configurations); Used in combined strategy
+        this.strategyParameters = new LinkedHashMap<>(cc.getStrategyParameters()); 
         this.configName = cc.getConfigName();
         this.populationBuilder = cc.getPopulationBuilder();
         this.terminalSetBuilderParameters = cc.getTerminalSetBuilderParameters();
@@ -175,14 +175,14 @@ public class Configuration {
         this.datasetContainer = cc.getDatasetContainer();
         this.postprocessor = cc.getPostProcessor();
         this.postprocessorParameters = cc.getPostprocessorParameters();
-        //nodeFactory is not dublicated 
+        
         this.bestSelector = cc.getBestSelector();
         this.bestSelectorParameters = cc.getBestSelectorParameters();
         this.constants = cc.constants;
         this.ranges = cc.ranges;
         this.operators = cc.operators;
         this.isFlagging = cc.isIsFlagging();
-        this.initNodeFactory(); //initialized nodeFacory after introducing constants and operators
+        this.initNodeFactory(); 
     }
     
     
@@ -288,9 +288,9 @@ public class Configuration {
         return operators;
     }
 
-//    public void setOperators(List<String> operators) {
-//        this.operators = operators;
-//    }
+
+
+
 
     public int getJobId() {
         return jobId;
@@ -478,6 +478,6 @@ public class Configuration {
             LOG.log(Level.SEVERE, "Unable to create required objective: " + objectiveClass, ex);
             System.exit(1);
         }
-        //NO OP  
+        
     }
 }

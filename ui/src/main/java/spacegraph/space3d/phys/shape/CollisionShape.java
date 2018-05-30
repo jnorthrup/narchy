@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -38,11 +38,11 @@ import static spacegraph.util.math.v3.v;
  */
 public abstract class CollisionShape {
 
-	//protected final BulletStack stack = BulletStack.get();
+	
 
 	protected Object userPointer;
 	
-	///getAabb returns the axis aligned bounding box in the coordinate frame of the given transform t.
+	
 	public abstract void getAabb(Transform t, v3 aabbMin, v3 aabbMax);
 
 	public float getBoundingRadius() {
@@ -66,16 +66,16 @@ public abstract class CollisionShape {
 		return radius;
 	}
 
-	///getAngularMotionDisc returns the maximus radius needed for Conservative Advancement to handle time-of-impact with rotations.
+	
 	public float getAngularMotionDisc() {
 		v3 center = new v3();
 		return getBoundingSphere(center) + center.length();
 	}
 
-	///calculateTemporalAabb calculates the enclosing aabb for the moving object over interval [0..timeStep)
-	///result is conservative
+	
+	
 	public void calculateTemporalAabb(Transform curTrans, v3 linvel, v3 angvel, float timeStep, v3 temporalAabbMin, v3 temporalAabbMax) {
-		//start with static aabb
+		
 		getAabb(curTrans, temporalAabbMin, temporalAabbMax);
 
 		float temporalAabbMaxx = temporalAabbMax.x;
@@ -85,10 +85,10 @@ public abstract class CollisionShape {
 		float temporalAabbMiny = temporalAabbMin.y;
 		float temporalAabbMinz = temporalAabbMin.z;
 
-		// add linear motion
+		
 		v3 linMotion = new v3(linvel, timeStep);
 
-		//todo: simd would have a vector max/min operation, instead of per-element access
+		
 		if (linMotion.x > 0f) {
 			temporalAabbMaxx += linMotion.x;
 		}
@@ -108,7 +108,7 @@ public abstract class CollisionShape {
 			temporalAabbMinz += linMotion.z;
 		}
 
-		//add conservative angular motion
+		
 		float angularMotion = angvel.length() * getAngularMotionDisc() * timeStep;
 		v3 angularMotion3d = new v3();
 		angularMotion3d.set(angularMotion, angularMotion, angularMotion);
@@ -119,7 +119,7 @@ public abstract class CollisionShape {
 		temporalAabbMax.add(angularMotion3d);
 	}
 
-//#ifndef __SPU__
+
 	public boolean isPolyhedral() {
 		return getShapeType().isPolyhedral();
 	}
@@ -136,7 +136,7 @@ public abstract class CollisionShape {
 		return getShapeType().isCompound();
 	}
 
-	///isInfinite is used to catch simulation error (aabb check)
+	
 	public boolean isInfinite() {
 		return getShapeType().isInfinite();
 	}
@@ -145,20 +145,20 @@ public abstract class CollisionShape {
 
 	public abstract void setLocalScaling(v3 scaling);
 	
-	// TODO: returns const
+	
 	public abstract v3 getLocalScaling(v3 out);
 
 	public abstract void calculateLocalInertia(float mass, v3 inertia);
 
 
-//debugging support
+
 	public abstract String getName();
-//#endif //__SPU__
+
 	public abstract CollisionShape setMargin(float margin);
 
 	public abstract float getMargin();
 	
-	// optional user data pointer
+	
 	public void setUserPointer(Object userPtr) {
 		userPointer = userPtr;
 	}

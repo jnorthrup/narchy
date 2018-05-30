@@ -56,25 +56,25 @@ public interface TaskMatch {
             this.end = end;
 
             if (start == ETERNAL) {
-                //DEFAULT ETERNAL VALUE FUNCTION
+                
 
                 value = (Task t) -> (t.isBeliefOrGoal() ?
-                        //BELIEFS/GOALS
-                        //t.evi()
+                        
+                        
                         t.conf()
                         :
-                        //QUESTIONS/QUESTS
+                        
                         1 + (t.pri() * t.originality())
                 );
             } else {
-                //DEFAULT TEMPORAL VALUE FUNCTION
+                
 
                 int dur = (int)(end - start + 1);
                 value = (Task t) -> (t.isBeliefOrGoal() ?
-                        //BELIEFS/GOALS
+                        
                         TemporalBeliefTable.value(t, start, end, dur)
                         :
-                        //QUESTIONS/QUESTS
+                        
                         1 + (t.pri() / (1f + (t.minDistanceTo(start, end)/((float)dur))))
                 );
             }
@@ -141,7 +141,7 @@ public interface TaskMatch {
                 if (p > max)
                     max = p;
                 else if (p < max) {
-                    //already below the current, elide call to the additional factor since this is simple multiplication
+                    
                     return Float.NEGATIVE_INFINITY;
                 }
             }

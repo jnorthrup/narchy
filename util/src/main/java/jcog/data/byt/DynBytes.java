@@ -52,7 +52,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
      */
     public int compress(int from) {
 
-        //TODO add parameter for from..to range compresion, currently this will only skip a prefix
+        
 
         int to = length();
         int len = to - from;
@@ -62,9 +62,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
 
         int bufferLen = from + Snappy.maxCompressedLength(len);
-        //byte[] compressed = new byte[bufferLen];
-//        ArrayPool<byte[]> bb = ArrayPool.bytes();
-        byte[] compressed = new byte[bufferLen]; //bb.getMin(bufferLen);
+        
+
+        byte[] compressed = new byte[bufferLen]; 
 
         int compressedLength = Snappy.compress(
                 this.bytes, from, len,
@@ -74,18 +74,18 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         if (compressedLength < (len * minCompressionRatio)) {
 
             if (from > 0)
-                System.arraycopy(this.bytes, 0, compressed, 0, from); //copy prefix
-            //TODO copy suffix
+                System.arraycopy(this.bytes, 0, compressed, 0, from); 
+            
 
             this.bytes = compressed;
             this.len = from + compressedLength;
             return compressedLength;
         } else {
             return -1;
-            //bb.release(compressed);
+            
         }
 
-//        return -1;
+
     }
 
 
@@ -98,9 +98,9 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         return Util.hash(bytes, from, to);
     }
 
-//    public long hash64(int from, int to) {
-//        return AbstractBytes.hash64(bytes, from, to);
-//    }
+
+
+
 
     @Override
     public boolean equals(Object obj) {
@@ -118,7 +118,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     @Override
     public final int length() {
         return len;
-//        return Integer.MAX_VALUE;
+
     }
 
     @Override
@@ -132,7 +132,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
             return new OneByteSeq(at(start));
 
         if (start == 0 && end == length())
-            return this; //no change
+            return this; 
 
         return new WindowBytes(bytes, start, end);
     }
@@ -302,43 +302,43 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     @Override
     public final void writeDouble(double v) {
         throw new UnsupportedOperationException("yet");
-//        long bits = Double.doubleToLongBits(v);
-//
-//        int e = this.buffer.length - this.position;
-//        if (e < 8) {
-//
-//            this.buffer[0] = (byte) ((int) (bits >> 56));
-//            this.buffer[1] = (byte) ((int) (bits >> 48));
-//            this.buffer[2] = (byte) ((int) (bits >> 40));
-//            this.buffer[3] = (byte) ((int) (bits >> 32));
-//            this.buffer[4] = (byte) ((int) (bits >> 24));
-//            this.buffer[5] = (byte) ((int) (bits >> 16));
-//            this.buffer[6] = (byte) ((int) (bits >> 8));
-//            this.buffer[7] = (byte) ((int) bits);
-//            this.position = 8;
-//        } else {
-//            int s = this.position;
-//            this.position = s + 8;
-//            this.buffer[s] = (byte) ((int) (bits >> 56));
-//            this.buffer[s + 1] = (byte) ((int) (bits >> 48));
-//            this.buffer[s + 2] = (byte) ((int) (bits >> 40));
-//            this.buffer[s + 3] = (byte) ((int) (bits >> 32));
-//            this.buffer[s + 4] = (byte) ((int) (bits >> 24));
-//            this.buffer[s + 5] = (byte) ((int) (bits >> 16));
-//            this.buffer[s + 6] = (byte) ((int) (bits >> 8));
-//            this.buffer[s + 7] = (byte) ((int) bits);
-//        }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
     @Override
     public void writeBytes(String s) {
-//        int len = s.length();
-//
-//        for (int i = 0; i < len; ++i) {
-//            this.write(s.charAt(i));
-//        }
+
+
+
+
+
         throw new UnsupportedOperationException("TODO");
 
     }
@@ -352,11 +352,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     @Override
     public void writeChars(String s) {
-//        int len = s.length();
-//
-//        for (int i = 0; i < len; ++i) {
-//            this.writeChar(s.charAt(i));
-//        }
+
+
+
+
+
         throw new UnsupportedOperationException("TODO");
 
     }
@@ -366,19 +366,19 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
         throw new UnsupportedOperationException("yet");
 
-        //WARNING this isnt UTF8
-//        this.write(strToBytes(s));
-//        this.writeByte(0); //null-terminated
-
-        //IO.writeWithPreLen(s, this);
+        
 
 
-//        byte[] ss = Hack.bytes(s);
-//        this.writeShort(ss.length);
-//        this.write(ss);
 
-//        UTF8Writer
-//        UTFUtils.writeUTFBytes(this, s);
+        
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -389,7 +389,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     @Override
     public Appendable append(CharSequence csq, int start, int end) {
         for (int i = start; i < end; i++) {
-            writeChar(csq.charAt(i)); //TODO optimize
+            writeChar(csq.charAt(i)); 
         }
         return this;
     }
@@ -421,52 +421,52 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         o.write(bytes, 0, len);
     }
 
-//    @Override
-//    public void flush()  {
-//        int pos = this.position;
-//        ByteOutput byteOutput = this.byteOutput;
-//        if (byteOutput != null) {
-//            if (pos > 0) {
-//                byteOutput.write(this.buffer, 0, pos);
-//            }
-//
-//            this.position = 0;
-//            byteOutput.flush();
-//        }
-//
-//    }
 
-//    protected void shallowFlush()  {
-//        int pos = this.position;
-//        ByteOutput byteOutput = this.byteOutput;
-//        if (byteOutput != null) {
-//            if (pos > 0) {
-//                byteOutput.write(this.buffer, 0, pos);
-//            }
-//
-//            this.position = 0;
-//        }
-//
-//    }
 
-//    protected void start(ByteOutput byteOutput)  {
-//        this.byteOutput = byteOutput;
-//        this.buffer = new byte[this.bufferSize];
-//    }
 
-//    protected void finish()  {
-//        try {
-//            
-//        } finally {
-//            this.buffer = null;
-//            this.byteOutput = null;
-//        }
-//
-//    }
-//
-//    @Override
-//    public void close()  {
-//        
-//        this.byteOutput.close();
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

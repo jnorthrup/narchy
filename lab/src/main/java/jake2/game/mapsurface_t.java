@@ -18,18 +18,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 02.01.2004 by RST.
-// $Id: mapsurface_t.java,v 1.1 2004-07-07 19:59:26 hzi Exp $
+
+
 
 package jake2.game;
 
 
-// import jake2.*;
-// import jake2.client.*;
-// import jake2.game.*;
-// import jake2.qcommon.*;
-// import jake2.render.*;
-// import jake2.server.*;
+
+
+
+
+
+
 
 public class mapsurface_t {
 	public final csurface_t c = new csurface_t();

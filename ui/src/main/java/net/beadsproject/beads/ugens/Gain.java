@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -35,9 +35,9 @@ public class Gain extends UGen implements DataBeadReceiver {
         setGain(gainEnvelope);
     }
 
-//    public Gain(AudioContext context, UGen gainEnvelope) {
-//        this(context, 1, gainEnvelope);
-//    }
+
+
+
 
     /**
      * Instantiates a new Gain with a {@link Static} gain envelop with the given

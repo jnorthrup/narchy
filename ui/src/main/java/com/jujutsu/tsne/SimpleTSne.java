@@ -12,7 +12,7 @@ import static com.jujutsu.tsne.matrix.MatrixOps.*;
 * dimensionality reduction technique that is particularly well suited 
 * for the visualization of high-dimensional datasets
 *
- * http://www.cs.toronto.edu/~hinton/absps/tsne.pdf
+ * http:
  *
  * cost function parameters: perplexity Perp,
  * optimization parameters: number of iterations T, learning rate η, momentum α(
@@ -26,7 +26,7 @@ public class SimpleTSne implements TSne {
 	private double[][] gains;
 
 	double momentum = .5;
-	//double final_momentum   = 0.8;
+	
 	double eta                 = 0.5;
 	double min_gain         = Double.MIN_NORMAL;
 	private double[][] X;
@@ -43,14 +43,14 @@ public class SimpleTSne implements TSne {
 		String IMPLEMENTATION_NAME = this.getClass().getSimpleName();
 		System.out.println("X:Shape is = " + X.length + " x " + X[0].length);
 		System.out.println("Running " + IMPLEMENTATION_NAME + '.');
-		// Initialize variables
-//		boolean use_pca   = config.usePca();
-//		int initial_dims  = config.getInitialDims();
-//		if(use_pca && X[0].length > initial_dims && initial_dims > 0) {
-//			PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
-//			X = pca.pca(X, initial_dims);
-//			System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
-//		}
+		
+
+
+
+
+
+
+
 
 
 		int n = X.length;
@@ -59,21 +59,21 @@ public class SimpleTSne implements TSne {
 		iY          = fillMatrix(n,no_dims,0.0);
 		gains       = fillMatrix(n,no_dims,1.0);
 		
-		// Compute P-values
+		
 		P = x2p(X, 1e-5, perplexity).P;
 		P = plus(P , transpose(P));
 		P = scalarDivide(P,sum(P));
-		P = scalarMult(P , 4);					// early exaggeration
+		P = scalarMult(P , 4);					
 		P = maximum(P, Double.MIN_NORMAL);
 
 		System.out.println("Y:Shape is = " + Y.length + " x " + Y[0].length);
 		
-		// Run iterations
+		
 		for (int iter = 0; iter < max_iter && !abort; iter++) {
 			next(iter);
 		}
 
-		// Return solution
+		
 		return Y;
 	}
 
@@ -81,7 +81,7 @@ public class SimpleTSne implements TSne {
 	protected void next(int iter) {
 		int n = X.length;
 
-		// Compute pairwise affinities
+		
 		double [][] sum_Y = transpose(sum(square(Y), 1));
 
 		numMatrix = scalarInverse(scalarPlus(addRowVector(transpose(addRowVector(scalarMult(
@@ -95,7 +95,7 @@ public class SimpleTSne implements TSne {
 
 		Q = maximum(Q, Float.MIN_NORMAL /*1e-12*/);
 
-		// Compute gradient
+		
 		double[][] L = scalarMultiply(minus(P , Q), numMatrix);
 		dY = scalarMult(times(minus(diag(sum(L, 1)),L) , Y), 4);
 
@@ -105,27 +105,27 @@ public class SimpleTSne implements TSne {
 		assignAllLessThan(gains, min_gain, min_gain);
 		iY = minus(scalarMult(iY,momentum) , scalarMult(scalarMultiply(gains , dY),eta));
 		Y = plus(Y , iY);
-		//double [][] tile = tile(mean(Y, 0), n, 1);
+		
 		Y = minus(Y , tile(mean(Y, 0), n, 1));
 
-		// Compute current value of cost function
+		
 		if (iter % 10 == 0 && logger.isInfoEnabled())   {
 			double error = sum(scalarMultiply(P, replaceNaN(log(scalarDivide(P , Q)),
 					0
-					//Double.MIN_VALUE
+					
 			)));
 			logger.info("iteration {}: error={}", iter, error);
 		}
 
-//			// Stop lying about P-values
-//			if (iter == 100)
-//				P = scalarDivide(P , 4);
+
+
+
 
 	}
 
 	private static R Hbeta(double[][] D, double beta){
 		double [][] P = exp(scalarMult(scalarMult(D,beta),-1));
-		double sumP = sum(P);   // sumP confirmed scalar
+		double sumP = sum(P);   
 		double H = Math.log(sumP) + beta * sum(scalarMultiply(D,P)) / sumP;
 		P = scalarDivide(P,sumP);
 		R r = new R();
@@ -140,7 +140,7 @@ public class SimpleTSne implements TSne {
 		double [][] times   = scalarMult(times(X, transpose(X)), -2);
 		double [][] prodSum = addColumnVector(transpose(times), sum_X);
 		double [][] D       = addRowVector(prodSum, transpose(sum_X));
-		// D seems correct at this point compared to Python version
+		
 		double [][] P       = fillMatrix(n,n,0.0);
 		double [] beta      = fillMatrix(n,n,1.0)[0];
 		double logU         = Math.log(perplexity);
@@ -156,7 +156,7 @@ public class SimpleTSne implements TSne {
 			double H = hbeta.H;
 			double [][] thisP = hbeta.P;
 
-			// Evaluate whether the perplexity is within tolerance
+			
 			double Hdiff = H - logU;
 			int tries = 0;
 			while(Math.abs(Hdiff) > tol && tries < 50){

@@ -64,28 +64,28 @@ public class Scale extends BufferedImageBitmap2D implements ImageObserver {
                 outgfx.dispose();
 
             out = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_RGB);
-            outgfx = out.createGraphics(); //create a graphics object to paint to
-//            outgfx.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-//                    RenderingHints.VALUE_INTERPOLATION_BICUBIC
-//                    //RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
-//            );
-//            outgfx.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-//                    RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
-//                    //RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
-//            );
-//            outgfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-//                    RenderingHints.VALUE_ANTIALIAS_ON
-//                    //RenderingHints.VALUE_ANTIALIAS_OFF
-//            );
+            outgfx = out.createGraphics(); 
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
 
 
 
         outgfx.setColor(Color.BLACK);
-        outgfx.fillRect(0, 0, pw, ph); //TODO add fade option
-//        boolean stillChanging =
-//                outgfx.drawImage(in, 0, 0, pw, ph, this); //draw the image scaled
+        outgfx.fillRect(0, 0, pw, ph); 
+
+
 
         /*
             public abstract boolean drawImage(Image img,
@@ -104,7 +104,7 @@ public class Scale extends BufferedImageBitmap2D implements ImageObserver {
                 Math.round(sy2 * sh),
                 Color.BLACK, this);
         if (stillChanging) {
-            //TODO better handling here
+            
             Thread.yield();
         }
 

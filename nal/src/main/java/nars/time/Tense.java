@@ -86,7 +86,7 @@ public enum Tense {
         if (dither > 1) {
             if (t == ETERNAL) return ETERNAL;
             else if (t == TIMELESS) return TIMELESS;
-            else return Math.round(Util.round(t, dither)); //collapse to simultaneous if less than the dither
+            else return Math.round(Util.round(t, dither)); 
         } else {
             return Math.round(t);
         }
@@ -96,7 +96,7 @@ public enum Tense {
         if (dither > 1) {
             if (t == ETERNAL) return ETERNAL;
             else if (t == TIMELESS) return TIMELESS;
-            else return Util.round(t, dither); //collapse to simultaneous if less than the dither
+            else return Util.round(t, dither); 
         } else {
             return t;
         }
@@ -120,17 +120,17 @@ public enum Tense {
                 case 0:
                     return 0;
                 default:
-                    //collapse to simultaneous if less than the dither
+                    
                     return Util.round(dt, dither);
         }
 
-        return dt; //unaffected
+        return dt; 
     }
 
     public static long[] union(TaskRegion... tt) {
         long start = Long.MAX_VALUE;
         long end = Long.MIN_VALUE;
-        //computes the time range from the union of the involved tasks
+        
         for (TaskRegion x : tt) {
             if (x == null)
                 continue;
@@ -143,7 +143,7 @@ public enum Tense {
             end = Math.max(xe, end);
         }
         if (start == Long.MAX_VALUE) {
-            //assume all the tasks are ETERNAL
+            
             start = end = ETERNAL;
         }
         return new long[] { start, end };

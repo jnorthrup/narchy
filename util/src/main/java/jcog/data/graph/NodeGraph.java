@@ -175,10 +175,10 @@ public abstract class NodeGraph<N, E> {
             return new MutableNode<>(id,
                     new ArrayHashSet<>(inOutInitialCapacity),
                     new ArrayHashSet<>(inOutInitialCapacity)
-                    //new FastIteratingHashSet<>(inOutInitialCapacity),
-                    //new HashSet<>();
-                    //new FastIteratingHashSet<>(inOutInitialCapacity)
-                    //new HashSet<>();
+                    
+                    
+                    
+                    
             );
         }
 
@@ -208,14 +208,14 @@ public abstract class NodeGraph<N, E> {
 
         public int ins(boolean countSelfLoops) {
             if (countSelfLoops) {
-                return in.size(); //(int) streamIn().count();
+                return in.size(); 
             } else {
                 return (int) streamIn().filter(e -> e.from != this).count();
             }
         }
 
         public int outs() {
-            //return (int) streamOut().count();
+            
             return out.size();
         }
 
@@ -229,12 +229,12 @@ public abstract class NodeGraph<N, E> {
         }
 
         protected boolean removeIn(ImmutableDirectedEdge<N, E> e) {
-            //assert inEdges.contains(e);
+            
             return in.remove(e);
         }
 
         protected boolean removeOut(ImmutableDirectedEdge<N, E> e) {
-            //assert outEdges.contains(e);
+            
             return out.remove(e);
         }
 

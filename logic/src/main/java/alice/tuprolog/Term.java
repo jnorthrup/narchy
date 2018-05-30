@@ -32,19 +32,19 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public abstract class Term implements Serializable, SubTree {
 
-    // true and false constants
+    
     public static final Term TRUE  = new Struct("true");
     public static final Term FALSE = new Struct("false");
     public static final String HALT = "halt.";
     public static final String NO = "no.";
     public static final String YES = "yes.";
 
-    // checking type and properties of the Term
+    
 
     /** is this term a null term?*/
     public abstract boolean isEmptyList();
     
-    //
+    
     
     /** is this term a constant prolog term? */
     public abstract boolean isAtom();
@@ -93,7 +93,7 @@ public abstract class Term implements Serializable, SubTree {
 
     private final static AtomicLong tick = new AtomicLong(0);
     public static long now() {
-        // //System.currentTimeMillis();
+        
         return tick.getAndIncrement();
     }
 
@@ -182,9 +182,9 @@ public abstract class Term implements Serializable, SubTree {
             ExecutionContext ec = engine.getCurrentContext();
             if (ec != null) {
 
-                // Update trailingVars
+                
                 ec.trailingVars = new OneWayList<>(v1, ec.trailingVars);
-                // Renaming after unify because its utility regards not the engine but the user
+                
                 int count = 0;
                 Engine env = engine.getEnv();
                 int id = (env ==null)? Var.PROGRESSIVE : env.nDemoSteps;
@@ -279,7 +279,7 @@ public abstract class Term implements Serializable, SubTree {
         return new Parser(text).iterator();
     }
     
-    // term representation
+    
     
     /**
      * Gets the string representation of this term
@@ -308,7 +308,7 @@ public abstract class Term implements Serializable, SubTree {
         return toString();
     }
     
-    //
+    
     
     /**
      * The iterated-goal term G of a term T is a term defined

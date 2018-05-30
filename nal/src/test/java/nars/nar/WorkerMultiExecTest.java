@@ -43,11 +43,11 @@ public class WorkerMultiExecTest {
         DummyCan c = new DummyCan("c", dutyTimeNS, n, (int j)->Util.sleep(2*j)).value(1f);
 
 
-//        n.onCycle(nn -> {
-//            Focus.Schedule s = exe.focus.schedule.read();
-//            System.out.println(nn.time() + " " +
-//                   Arrays.toString(s.active) + "->" + n4(s.weight));
-//        });
+
+
+
+
+
 
         long start = System.nanoTime();
         Loop l = n.startFPS(5f /* this shouldnt matter to the degree the DummyCan are short-lived executions */);
@@ -71,13 +71,13 @@ public class WorkerMultiExecTest {
     }
 
     public static float expectedDuty(DummyCan a) {
-        //return a.value*a.dutyTimeNS.get()/a.executed.get();
+        
         return a.value;
     }
 
     @Test public void testValueDerivationBranches() throws Narsese.NarseseException {
-//        int threads = 1;
-//        Exec exe = new MultiExec(32, threads, 2);
+
+
         Exec exe = new UniExec(32);
         NAR n = new NARS()
                 .withNAL(1, 1)
@@ -85,15 +85,15 @@ public class WorkerMultiExecTest {
                 .exe(exe)
                 .get();
 
-        //all -1 except goal production
+        
         Arrays.fill(n.emotion.want, -1);
         n.emotion.want(MetaGoal.Desire, +1);
 
         Exec.Revaluator r = new Focus.DefaultRevaluator();
         int cycles = 100;
 
-        //2 competing independent processes. NAL1 rules will apply to one, and NAL6 rules apply to ther other.
-        //measure the amount of derivation work occurring for each
+        
+        
         ByteIntHashMap byPunc = new ByteIntHashMap();
         n.onTask(t -> {
            if (t instanceof DerivedTask) {
@@ -150,13 +150,13 @@ public class WorkerMultiExecTest {
         @Override
         protected int next(NAR n, int iterations) {
             executed.addAndGet(iterations);
-//            System.out.println(this + " x " + iterations
-//                    //+ " " + exe.focus
-//                    );
+
+
+
             long start = System.nanoTime();
             try {
                 return duty.valueOf(iterations);
-                //Util.sleep(iterations * delayMS);
+                
             } finally {
                 dutyTimeNS.addAndGet( (System.nanoTime() - start ) );
             }

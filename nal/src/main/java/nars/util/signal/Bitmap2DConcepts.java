@@ -107,7 +107,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
         long tEnd = now + dur/2;
         return IntStream.range(start, end)
                 .mapToObj(i -> get(i).update(tStart, tEnd, truther, dur, nar))
-                //.filter(Objects::nonNull)
+                
         ;
     }
 

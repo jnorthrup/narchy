@@ -55,32 +55,32 @@ public enum SpaceGraph { ;
         Dyn2DSurface s = new Dyn2DSurface();
         s.pos(-1, -1, 1, 1);
 
-        //SpaceLogConsole log = new SpaceLogConsole();
-        //log.visible(false);
+        
+        
 
-        //Label statusBar = new Label();
+        
 
 
-//        HUDOrtho hud = new HUDOrtho();
-//
-//        hud.set(
-//                new Splitting(new EmptySurface(),
-//                        //new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-//                        new Gridding(new EmptySurface(), statusBar),
-//                        0.1f)
-//        );
-//        //log.pos(0, 0.9f, 0.5f * width, 1f);
-//        ///System.out.println(hud.bounds);
-//
-////        log.visible(false);
-////        hud.set(
-////            new Splitting(
-////                new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-////                new Gridding(new PushButton("+"),
-////                        //new OmniBox(),
-////                new CheckBox("Log", (Runnable)log::visible)),
-////                0.1f
-////        ));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         SpaceGraphFlat g = new SpaceGraphFlat(
                 new ZoomOrtho(s) {
@@ -94,20 +94,20 @@ public enum SpaceGraph { ;
 
                     @Override
                     public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
-                        //if (log.visible())
-                        //log.log(key, duration, level, message);
-//                        if (statusBar.visible())
-//                            statusBar.text(message.get());
-                        //else: buffer?
+                        
+                        
+
+
+                        
                     }
                 }
-                //,hud
+                
         );
         g.show(width, height, false);
 
 
 
-        //win.setUndecorated(true);
+        
         return s;
     }
 }

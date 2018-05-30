@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -50,14 +50,14 @@ import spacegraph.util.math.v3;
  */
 public class PersistentManifold {
 
-	//protected final BulletStack stack = BulletStack.get();
+	
 	
 	public static final int MANIFOLD_CACHE_SIZE = 4;
 	
 	private final ManifoldPoint[] pointCache = new ManifoldPoint[MANIFOLD_CACHE_SIZE];
 	public final BulletGlobals globals;
-	/// this two body pointers can point to the physics rigidbody class.
-	/// void* will allow any rigidbody class
+	
+	
 	private Object body0;
 	private Object body1;
 	private int cachedPoints;
@@ -72,9 +72,9 @@ public class PersistentManifold {
 		this.globals = globals;
 	}
 
-//	public PersistentManifold(Object body0, Object body1, int bla) {
-//		init(body0, body1, bla);
-//	}
+
+
+
 
 	public void init(Object body0, Object body1, int bla) {
 		this.body0 = body0;
@@ -83,14 +83,14 @@ public class PersistentManifold {
 		index1a = 0;
 	}
 
-	/// sort cached points so most isolated points come first
+	
 	private int sortCachedPoints(ManifoldPoint pt) {
-		//calculate 4 possible cases areas, and take biggest area
-		//also need to keep 'deepest'
+		
+		
 
 		int maxPenetrationIndex = -1;
-//#define KEEP_DEEPEST_POINT 1
-//#ifdef KEEP_DEEPEST_POINT
+
+
         float maxPenetration = pt.distance1;
 		for (int i = 0; i < 4; i++) {
 			ManifoldPoint pii = pointCache[i];
@@ -100,7 +100,7 @@ public class PersistentManifold {
 				maxPenetration = pid;
 			}
 		}
-//#endif //KEEP_DEEPEST_POINT
+
 
 		float res0 = 0f, res1 = 0f, res2 = 0f, res3 = 0f;
 		if (maxPenetrationIndex != 0) {
@@ -159,7 +159,7 @@ public class PersistentManifold {
 		return biggestarea;
 	}
 
-	//private int findContactPoint(ManifoldPoint unUsed, int numUnused, ManifoldPoint pt);
+	
 
 	public final Object getBody0() {
 		return body0;
@@ -177,28 +177,28 @@ public class PersistentManifold {
 	public void clearUserCache(ManifoldPoint pt) {
 		Object oldPtr = pt.userPersistentData;
 		if (oldPtr != null) {
-//#ifdef DEBUG_PERSISTENCY
-//			int i;
-//			int occurance = 0;
-//			for (i = 0; i < cachedPoints; i++) {
-//				if (pointCache[i].userPersistentData == oldPtr) {
-//					occurance++;
-//					if (occurance > 1) {
-//						throw new InternalError();
-//					}
-//				}
-//			}
-//			assert (occurance <= 0);
-//#endif //DEBUG_PERSISTENCY
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 			if (pt.userPersistentData != null && globals.getContactDestroyedCallback() != null) {
 				globals.getContactDestroyedCallback().contactDestroyed(pt.userPersistentData);
 				pt.userPersistentData = null;
 			}
 
-//#ifdef DEBUG_PERSISTENCY
-//			DebugPersistency();
-//#endif
+
+
+
 		}
 	}
 
@@ -210,7 +210,7 @@ public class PersistentManifold {
 		return pointCache[index];
 	}
 
-	// todo: get this margin from the current physics / collision environment
+	
 	public float getContactBreakingThreshold() {
 		return globals.getContactBreakingThreshold();
 	}
@@ -239,9 +239,9 @@ public class PersistentManifold {
 
         int insertIndex = cachedPoints;
 		if (insertIndex == MANIFOLD_CACHE_SIZE) {
-			//#if MANIFOLD_CACHE_SIZE >= 4
+			
 			insertIndex = MANIFOLD_CACHE_SIZE >= 4 ? sortCachedPoints(newPoint) : 0;
-			//#endif
+			
 			
 			clearUserCache(pointCache[insertIndex]);
 		}
@@ -257,11 +257,11 @@ public class PersistentManifold {
 		clearUserCache(pointCache[index]);
 
         int lastUsedIndex = cachedPoints - 1;
-//		m_pointCache[index] = m_pointCache[lastUsedIndex];
+
 		if (index != lastUsedIndex) {
-			// TODO: possible bug
+			
 			pointCache[index].set(pointCache[lastUsedIndex]);
-			//get rid of duplicated userPersistentData pointer
+			
 			pointCache[lastUsedIndex].userPersistentData = null;
 			pointCache[lastUsedIndex].appliedImpulse = 0f;
 			pointCache[lastUsedIndex].lateralFrictionInitialized = false;
@@ -277,8 +277,8 @@ public class PersistentManifold {
 	public void replaceContactPoint(ManifoldPoint newPoint, int insertIndex) {
 		assert (validContactDistance(newPoint));
 
-//#define MAINTAIN_PERSISTENCY 1
-//#ifdef MAINTAIN_PERSISTENCY
+
+
 		int lifeTime = pointCache[insertIndex].lifeTime;
 		float appliedImpulse = pointCache[insertIndex].appliedImpulse;
 		float appliedLateralImpulse1 = pointCache[insertIndex].appliedImpulseLateral1;
@@ -295,30 +295,30 @@ public class PersistentManifold {
 		pointCache[insertIndex].appliedImpulseLateral2 = appliedLateralImpulse2;
 
 		pointCache[insertIndex].lifeTime = lifeTime;
-//#else
-//		clearUserCache(m_pointCache[insertIndex]);
-//		m_pointCache[insertIndex] = newPoint;
-//#endif
+
+
+
+
 	}
 
 	private boolean validContactDistance(ManifoldPoint pt) {
 		return pt.distance1 <= globals.getContactBreakingThreshold();
 	}
 
-	/// calculated new worldspace coordinates and depth, and reject points that exceed the collision margin
+	
 	public void refreshContactPoints(Transform trA, Transform trB) {
 		v3 tmp = new v3();
 		int i;
-//#ifdef DEBUG_PERSISTENCY
-//	printf("refreshContactPoints posA = (%f,%f,%f) posB = (%f,%f,%f)\n",
-//		trA.getOrigin().getX(),
-//		trA.getOrigin().getY(),
-//		trA.getOrigin().getZ(),
-//		trB.getOrigin().getX(),
-//		trB.getOrigin().getY(),
-//		trB.getOrigin().getZ());
-//#endif //DEBUG_PERSISTENCY
-		// first refresh worldspace positions and distance
+
+
+
+
+
+
+
+
+
+		
 		for (i = numContacts() - 1; i >= 0; i--) {
 
 			ManifoldPoint manifoldPoint = pointCache[i];
@@ -336,19 +336,19 @@ public class PersistentManifold {
 			manifoldPoint.lifeTime++;
 		}
 
-		// then 
+		
 		float distance2d;
 		v3 projectedDifference = new v3(), projectedPoint = new v3();
 
 		for (i = numContacts() - 1; i >= 0; i--) {
 
 			ManifoldPoint manifoldPoint = pointCache[i];
-			// contact becomes invalid when signed distance exceeds margin (projected on contactnormal direction)
+			
 			if (!validContactDistance(manifoldPoint)) {
 				removeContactPoint(i);
 			}
 			else {
-				// contact also becomes invalid when relative movement orthogonal to normal exceeds margin
+				
 				tmp.scale(manifoldPoint.distance1, manifoldPoint.normalWorldOnB);
 				projectedPoint.sub(manifoldPoint.positionWorldOnA, tmp);
 				projectedDifference.sub(manifoldPoint.positionWorldOnB, projectedPoint);
@@ -357,7 +357,7 @@ public class PersistentManifold {
 					removeContactPoint(i);
 				}
 				else {
-					// contact point processed callback
+					
 					ContactProcessedCallback cpc = globals.getContactProcessedCallback();
 					if (cpc != null) {
 						cpc.contactProcessed(manifoldPoint, body0, body1);
@@ -365,9 +365,9 @@ public class PersistentManifold {
 				}
 			}
 		}
-//#ifdef DEBUG_PERSISTENCY
-//	DebugPersistency();
-//#endif //
+
+
+
 	}
 
 	public void clearManifold() {

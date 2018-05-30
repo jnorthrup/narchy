@@ -27,8 +27,8 @@ public class LeakySetTest {
         assertTrue(isContained);
     }
 
-    // This test is not valid for arbitrary values since Bloom filters can yield false positives.
-    // For this special case it does work though.
+    
+    
     @Test
     public void whenAskedIfContainsNotAddedObject_returnsFalse() {
         String string1 = "somestr";

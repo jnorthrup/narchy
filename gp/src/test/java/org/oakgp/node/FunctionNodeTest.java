@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,14 +34,14 @@ public class FunctionNodeTest {
         ConstantNode arg1 = integerConstant(42);
         VariableNode arg2 = createVariable(0);
 
-        // construct using Node array
+        
         FunctionNode n1 = new FunctionNode(function, arg1, arg2);
 
-        // Construct using Arguments
+        
         Arguments arguments = new Arguments(new Node[]{arg1, arg2});
         FunctionNode n2 = new FunctionNode(function, arguments);
 
-        // assert the result is the same
+        
         assertEquals(n1, n2);
     }
 
@@ -86,7 +86,7 @@ public class FunctionNodeTest {
     public void testEqualsAndHashCode1() {
         final FunctionNode n1 = createFunctionNode();
         final FunctionNode n2 = createFunctionNode();
-        assertNotSame(n1, n2); // just to sanity check createFunctionNode() doesn't return cached versions
+        assertNotSame(n1, n2); 
         assertEquals(n1, n1);
         assertEquals(n1.hashCode(), n2.hashCode());
         assertEquals(n1, n2);
@@ -97,7 +97,7 @@ public class FunctionNodeTest {
     public void testEqualsAndHashCode2() {
         Node n1 = readNode("(* 288 v1)");
         Node n2 = readNode("(* 288 v1)");
-        assertNotSame(n1, n2); // just to sanity check readNode doesn't return cached versions
+        assertNotSame(n1, n2); 
         assertEquals(n1, n1);
         assertEquals(n1, n2);
         assertEquals(n2, n1);
@@ -110,38 +110,38 @@ public class FunctionNodeTest {
 
         final FunctionNode n = new FunctionNode(add, createVariable(0), integerConstant(7));
 
-        // verify (sanity-check) that equals will return true when it should
+        
         assertEquals(n, new FunctionNode(add, createVariable(0), integerConstant(7)));
 
-        // test different function
+        
         Function multiply = the.getMultiply();
         assertNotEquals(n, new FunctionNode(multiply, createVariable(0), integerConstant(7)));
 
-        // test different first argument
+        
         assertNotEquals(n, new FunctionNode(add, createVariable(1), integerConstant(7)));
 
-        // test different second argument
+        
         assertNotEquals(n, new FunctionNode(add, createVariable(0), integerConstant(6)));
 
-//        // test same arguments but different order
-//        assertNotEquals(n, new FunctionNode(add, integerConstant(7), createVariable(0)));
-//
-//        // test wrong arguments but different order
-//        assertNotEquals(n, new FunctionNode(add, integerConstant(0), createVariable(7)));
 
-        // test extra argument
+
+
+
+
+
+        
         assertNotEquals(n, new FunctionNode(add, createVariable(0), integerConstant(7), integerConstant(7)));
 
-        // test one less argument
+        
         assertNotEquals(n, new FunctionNode(add, createVariable(0)));
 
-        // test no arguments
+        
         assertNotEquals(n, new FunctionNode(add));
 
-        // test not equal to other Node implementations
+        
         assertNotEquals(n, integerConstant(7));
 
-        // test not equal to other non-Node instances
+        
         assertNotEquals(n, new Object());
 
         assertFalse(n.equals(null));
@@ -177,28 +177,28 @@ public class FunctionNodeTest {
 
     @Test
     public void testHashCode() {
-        // In Java the following results in two lists that have the same hashCode (even though they are different);
-        // List a = new ArrayList();
-        // a.add(Arrays.asList(9, 1));
-        // a.add(Arrays.asList(2, 9));
-        //
-        // List b = new ArrayList();
-        // b.add(Arrays.asList(9, 2));
-        // b.add(Arrays.asList(1, 9));
-        //
-        // assertEquals(a.hashCode(), b.hashCode());
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-        // This is also true of Clojure's PersistentVector:
-        // user=> (def x [[9 1] [2 9]])
-        // #'user/x
-        // user=> (def y [[9 2] [1 9]])
-        // #'user/y
-        // user=> (.hashCode x)
-        // 40464
-        // user=> (.hashCode y)
-        // 40464
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
-        // test that result of reading the following expressions is nodes with different hash codes:
+        
         Node n1 = readNode("(- (- (* -1 v3) 0) (- 13 v1))");
         Node n2 = readNode("(- (- (* -1 v3) 13) (- 0 v1))");
         assertNotEquals(n1.hashCode(), n2.hashCode());

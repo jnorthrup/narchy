@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -40,55 +40,55 @@ public class Player extends LivingEntity {
 	public void updateHand(GraphicsHandler g, float cameraX, float cameraY, float mouseX,
 			float mouseY, World world, int tileSize) {
 		
-		// float startX = this.getCenterX(tileSize);
-		// float startY = this.getCenterY(tileSize);
-		//
-		// float stepX = startX;
-		// float stepY = startY;
-		//
-		// float prevX = -1;
-		// float prevY = -1;
-		//
-		// float m;
-		// if(startX - mouseX == 0)
-		// m = Float.MAX_VALUE;
-		// else
-		// m = (startY - mouseY)/(startX - mouseX);
-		//
-		// float pixel = 1f/tileSize;
-		//
-		// float nudgeX = pixel*m;//(pixel - startY)/m + startX;
-		// float nudgeY = pixel*(1/m);//m*(startX-pixel) + startY;
-		//
-		// int steps = 0;
-		// while(!world.isBreakable((int)stepX, (int)stepY))
-		// {
-		// prevX = stepX;
-		// prevY = stepY;
-		//
-		// stepX += nudgeX;//startX + steps*pixel;
-		// stepY += nudgeY; //-m*(startX - stepX) + startY;
-		// steps++;
-		// if(steps > armLength*tileSize)
-		// {
-		// handBreakPos.x = -1;
-		// handBreakPos.y = -1;
-		//
-		// handBuildPos.x = -1;
-		// handBuildPos.y = -1;
-		// return;
-		// }
-		// }
-		//
-		//
-		// handBreakPos.x = (int)stepX;
-		// handBreakPos.y = (int)stepY;
-		//
-		// handBuildPos.x = (int)prevX;
-		// handBuildPos.y = (int)prevY;
-		//
-		// handEndX = prevX+1;
-		// handEndY = prevY;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		float x = .5f + (int) this.getCenterX(tileSize);
 		float y = .5f + (int) this.getCenterY(tileSize);
@@ -130,23 +130,23 @@ public class Player extends LivingEntity {
 				float upY = py - 1;
 				float leftX = px;
 				
-				if ((x >= px && x >= mouseX) && // left
-						(y >= py && y >= mouseY)) // up
+				if ((x >= px && x >= mouseX) && 
+						(y >= py && y >= mouseY)) 
 				{
 					right = findIntersection(x, y, m, px + 1, py, px + 1, py + 1);
 					down = findIntersection(x, y, m, px, py + 1, px + 1, py + 1);
-				} else if ((x - .5f <= px && x <= mouseX) && // right
-						(y - .5f >= py && y >= mouseY)) // up
+				} else if ((x - .5f <= px && x <= mouseX) && 
+						(y - .5f >= py && y >= mouseY)) 
 				{
 					left = findIntersection(x, y, m, px, py, px, py + 1);
 					down = findIntersection(x, y, m, px, py + 1, px + 1, py + 1);
-				} else if ((x >= px && x >= mouseX) && // left
-						(y - 1 < py && y <= mouseY)) // down
+				} else if ((x >= px && x >= mouseX) && 
+						(y - 1 < py && y <= mouseY)) 
 				{
 					right = findIntersection(x, y, m, px + 1, py, px + 1, py + 1);
 					up = findIntersection(x, y, m, px, py, px + 1, py);
-				} else if ((x - .5f <= px && x <= mouseX) && // right
-						(y - .5f <= py && y <= mouseY)) // down
+				} else if ((x - .5f <= px && x <= mouseX) && 
+						(y - .5f <= py && y <= mouseY)) 
 				{
 					left = findIntersection(x, y, m, px, py, px, py + 1);
 					up = findIntersection(x, y, m, px, py, px + 1, py);
@@ -155,17 +155,17 @@ public class Player extends LivingEntity {
 				}
 				
 				if (down != -1 || left != -1 || up != -1 || right != -1) {
-					// Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY,
-					// tileSize, tileSize, tileSize, x, y);
 					
-					// int posX = pos.x;
-					// int posY = pos.y;
-					// pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
-					// tileSize, tileSize, px, py);
-					// g.setColor(Color.red);
-					// g.drawLine(pos.x, pos.y, posX, posY);
-					// SpriteStore.get().getSprite("sprites/tiles/diamondore.png").draw(g, pos.x,
-					// pos.y, tileSize, tileSize);
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 					
 					float newTMax = (float) Math.sqrt(Math.pow(Math.abs(x) - Math.abs(px), 2)
 							+ Math.pow(Math.abs(y) - Math.abs(py), 2));
@@ -215,7 +215,7 @@ public class Player extends LivingEntity {
 		Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth,
 				screenHeight, tileSize, x, y);
 		if (StockMethods.onScreen) {
-			int frame = (int) x % 4;// (int) ((ticksAlive/20)%4);
+			int frame = (int) x % 4;
 			if (facingRight) {
 				if (frame == 0 || frame == 2 || dx <= 0) {
 					sprite.draw(g, pos.x, pos.y, widthPX, heightPX);

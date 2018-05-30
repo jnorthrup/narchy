@@ -23,7 +23,7 @@ public class Obstacle {
 		x = d(-World.SIZE, World.SIZE);
 		y = d(-World.SIZE, World.SIZE);
 		r = d(MIN_SIZE, MAX_SIZE);
-		//c = new Color( Video.colorHSB( 0.7f  + 0.1f * (float)((r - MIN_SIZE) / (MAX_SIZE - MIN_SIZE)), 0.65f, 0.85f ) );
+		
 		c = Color.ORANGE;
 	}
 

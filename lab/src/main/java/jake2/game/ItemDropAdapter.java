@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 08.11.2003 by RST.
-// $Id: ItemDropAdapter.java,v 1.2 2005-11-20 22:18:33 salomo Exp $
+
+
 
 package jake2.game;
 

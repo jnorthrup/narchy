@@ -30,7 +30,7 @@ public class TermPanel extends JPanel implements ActionListener{
     public Node makeTreeFrom(Term term) {
         Node node = new Node(String.valueOf(term));
         node.textcolor = node.bordercolor = Color.BLACK;
-        //make it more specific if possible
+        
         if (term instanceof Var) {
             Var var = (Var) term;
             node.text = var.name();

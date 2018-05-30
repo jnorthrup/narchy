@@ -19,7 +19,7 @@
  * 3. The end-user documentation included with the redistribution, if
  *    any, must include the following acknowlegement:
  *       "This product includes software developed by the
- *        Apache Software Foundation (http://www.apache.org/)."
+ *        Apache Software Foundation (http:
  *    Alternately, this acknowlegement may appear in the software itself,
  *    if and wherever such third-party acknowlegements normally appear.
  *
@@ -49,7 +49,7 @@
  * This software consists of voluntary contributions made by many
  * individuals on behalf of the Apache Software Foundation.  For more
  * information on the Apache Software Foundation, please see
- * <http://www.apache.org/>.
+ * <http:
  */
 
 /*
@@ -70,12 +70,12 @@ import java.io.InputStream;
  *
  * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
  *
- * http://www.kohsuke.org/bzip2/
+ * http:
  */
 public class BZip2InputStream extends InputStream implements BZip2Constants {
     private static void cadvise() {
         System.out.println("CRC Error");
-        //throw new CCoruptionError();
+        
     }
 
     private static void badBGLengths() {
@@ -273,7 +273,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
         blockRandomised = bsR(1) == 1;
 
-        //        currBlockNo++;
+        
         getAndMoveToFrontDecode();
 
         mCrc.initialiseCRC();
@@ -323,7 +323,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                 }
             }
         } catch (IOException ioe) {
-            //ignore
+            
         }
     }
 
@@ -343,9 +343,9 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             } catch (IOException e) {
                 compressedStreamEOF();
             }
-//            if (thech == -1) {
-//                compressedStreamEOF();
-//            }
+
+
+
             zzi = thech;
             bsBuff = (bsBuff << 8) | (zzi & 0xff);
             bsLive += 8;
@@ -862,7 +862,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     private void setDecompressStructureSizes(int newSize100k) {
         if (!(0 <= newSize100k && newSize100k <= 9 && 0 <= blockSize100k
                 && blockSize100k <= 9)) {
-            // throw new IOException("Invalid block size");
+            
         }
 
         blockSize100k = newSize100k;

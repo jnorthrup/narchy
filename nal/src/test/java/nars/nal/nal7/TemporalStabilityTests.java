@@ -15,9 +15,9 @@ public class TemporalStabilityTests {
 
     static final int CYCLES = 1500;
 
-//    static {
-//
-//    }
+
+
+
 
     static class T1 extends TemporalStabilityTest {
 
@@ -43,7 +43,7 @@ public class TemporalStabilityTests {
 
         @Override
         public boolean validOccurrence(long o) {
-            //return whens.contains((int)o);
+            
             return (o >= minT-tolerance) && (o <= maxT+tolerance);
         }
 
@@ -59,14 +59,14 @@ public class TemporalStabilityTests {
 
 
 
-//    @Override
-//    public void input(NAR n) {
-//
-//        n
-//        .inputAt(1, "a:b. :|:")
-//        .inputAt(2, "b:c. :|:")
-//        .inputAt(5, "c:d. :|:");
-//    }
+
+
+
+
+
+
+
+
 
     static final IntToObjectFunction<String> inheritencer = (j) -> {
         char c = (char) ('a' + j);
@@ -86,22 +86,22 @@ public class TemporalStabilityTests {
     };
     static final IntToObjectFunction<String> linkedproductor = (j) -> {
         char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); //next
+        char d = (char) ('a' + (j+1)); 
         return "(" + c + "," + d + ")";
     };
     static final IntToObjectFunction<String> linkedinh= (j) -> {
         char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); //next
+        char d = (char) ('a' + (j+1)); 
         return "(" + c + "-->" + d + ")";
     };
     static final IntToObjectFunction<String> linkedimpl= (j) -> {
         char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); //next
+        char d = (char) ('a' + (j+1)); 
         return "(" + c + "==>" + d + ")";
     };
     static final IntToObjectFunction<String> conjSeq2 = (j) -> {
         char c = (char) ('a' + j);
-        char d = (char) ('a' + (j+1)); //next
+        char d = (char) ('a' + (j+1)); 
         return "(" + c + " &&+5 " + d + ")";
     };
     static final IntToObjectFunction<String> conjInvertor = (j) -> {
@@ -159,7 +159,7 @@ public class TemporalStabilityTests {
     }
     @Test public void testTemporalStabilityLinkedImplExt2() {
 
-        //
+        
 
         @NotNull NAR n = NARS.tmp();
         n.termVolumeMax.set(16);
@@ -173,8 +173,8 @@ public class TemporalStabilityTests {
 
         n.run(time);
 
-//        a.evaluate(n);
-//        b.evaluate(n);
+
+
 
     }
 

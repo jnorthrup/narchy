@@ -66,7 +66,7 @@ public interface NARIn {
     }
 
     default DurService taskWhile(Term term, byte punc, Truth tru, Predicate<Task> cond) {
-        NAR n = (NAR)this; //HACK
+        NAR n = (NAR)this; 
 
         long start = n.time();
         float activeFreq = tru.freq();
@@ -86,21 +86,21 @@ public interface NARIn {
 
         return DurService.onWhile(n, (nn)->{
 
-//            nn.runLater(()->{
-//                t.concept(nn, false).goals().print();
-//                System.out.println();
-//            });
+
+
+
+
 
             long now = nn.time();
             boolean kontinue;
             Truthlet tt;
             if (!cond.test(t)) {
-                //convert from step function to impulse function which
-                // stops at the current time and end the service
+                
+                
                 tt = Truthlet.impulse(start, now, activeFreq, inactiveFreq, evi);
                 kontinue = false;
             } else {
-                //stretch the step function to current time
+                
                 tt = stepUntil.apply(now);
                 kontinue = true;
             }

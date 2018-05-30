@@ -60,13 +60,13 @@ public final class HttpUtil
         
         public static boolean isCR(byte by)
         {
-                return by == '\r'; // (13)
+                return by == '\r'; 
         }
 
         
         public static boolean isLF(byte by)
         {
-                return by == '\n'; // (10)
+                return by == '\n'; 
         }
 
         
@@ -86,15 +86,15 @@ public final class HttpUtil
         {
                 return by == '"';
         }
-        // Request-Line   = Method SP Request-URI SP HTTP-Version CRLF
-        // Request-URI    = "*" | absoluteURI | abs_path | authority
+        
+        
         public static final Pattern requestLine = Pattern.compile("^([A-Z]+) ([\\x20-\\x7E]+) HTTP/1\\.(\\d+)$");
-        // message-header = field-name ":" [ field-value ]
-        // field-name     = token
-        // field-value    = *( TEXT | LWS )
-        // TEXT           = <any OCTET except CTLs, but including LWS>
+        
+        
+        
+        
         public static final Pattern headerLine = Pattern.compile("^([!#$%&'*+\\-.0-9A-Z^_`a-z|~]+):[ \t\r\n]*([\\x20-\\x7E\n\r\t]+)$");
-        // Simple range header (only read the first range)
+        
         public static final Pattern simpleRange = Pattern.compile("^bytes[ \t\r\n]*=[ \t\r\n]*(\\d*)[ \t\r\n]*-[ \t\r\n]*(\\d*)?");
 
         /**
@@ -122,11 +122,11 @@ public final class HttpUtil
 
                         if (isCHAR(by))
                         {
-                                dest.append((char) by); // ASCII
+                                dest.append((char) by); 
                         }
                 }
 
-                // Place the position past CRLF
+                
                 buf.get();
                 buf.get();
 
@@ -136,7 +136,7 @@ public final class HttpUtil
         
         public static int findCRLF(ByteBuffer buf, int offset)
         {
-                //  do not loop over the last character, so that a + 1 does not fail
+                
                 for (int a = offset; a < buf.limit() - 1; a++)
                 {
                         if (isCR(buf.get(a)) && isLF(buf.get(a + 1)))
@@ -151,14 +151,14 @@ public final class HttpUtil
         
         public static int findCRLFIgnoreLWS(ByteBuffer buf, int offset)
         {
-                //  LWS            = [CRLF] 1*( SP | HT )
+                
 
-                //  do not loop over the last character, so that a + 2 does not fail
+                
                 for (int a = offset; a < buf.limit() - 2; a++)
                 {
                         if (isCR(buf.get(a)) && isLF(buf.get(a + 1)))
                         {
-                                // linear white space? Has the header been split over multiple lines?
+                                
                                 if (!isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2)))
                                 {
                                         return a;
@@ -187,8 +187,8 @@ public final class HttpUtil
         {
                 UNKNOWN,
                 OPTIONS,
-                GET, // MUST be supported
-                HEAD, // MUST be supported
+                GET, 
+                HEAD, 
                 POST,
                 PUT,
                 DELETE,
@@ -262,7 +262,7 @@ public final class HttpUtil
         
         public static int binarySizeUTF8(String str)
         {
-                // Java strings are UTF-16
+                
 
                 int bytes = 0;
                 for (int a = 0; a < str.length(); ++a)
@@ -277,14 +277,14 @@ public final class HttpUtil
                         {
                                 bytes += 2;
                         }
-                        else if (codePoint <= 0xFFFF) // End of BMP
+                        else if (codePoint <= 0xFFFF) 
                         {
                                 bytes += 3;
                         }
                         else
                         {
                                 bytes += 4;
-                                a++; // skip the next one, becuase it will be a low surrogate
+                                a++; 
                         }
                 }
 
@@ -439,8 +439,8 @@ public final class HttpUtil
                     {
                             startDate = DEFAULT_TWO_DIGIT_YEAR_START;
                     }
-                    // trim single quotes around date if present
-                    // see issue #5279
+                    
+                    
                     if (dateValue.length() > 1
                             && dateValue.startsWith("'")
                             && dateValue.endsWith("'"))
@@ -460,7 +460,7 @@ public final class HttpUtil
                             }
                     }
 
-                    // we were unable to parse the date
+                    
                     throw new DateParseException("Unable to parse the date " + dateValue);
             }
 

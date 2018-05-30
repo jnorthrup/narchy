@@ -17,7 +17,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     protected final Versioning context;
     public final Map<X, Versioned<Y>> map;
-    public final int elementStackSizeDefault; //stackSizePerElement
+    public final int elementStackSizeDefault; 
 
 
     public VersionMap(Versioning context) {
@@ -35,8 +35,8 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      */
     public VersionMap(Versioning context, int mapCap, int eleCap) {
         this(context,
-                //new HashMap(mapCap)
-                //new LinkedHashMap<>(mapCap)
+                
+                
                 new UnifiedMap(mapCap)
                 , eleCap
         );
@@ -92,30 +92,30 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         map.forEach((k, v) -> {
             Y vv = v.get();
             if (vv != null) {
-                //TODO new LazyMapEntry(k, v)
+                
                 e.add(new SimpleEntry<>(k, vv));
             }
         });
         return e;
     }
 
-//    public static class LazyMapEntry<K,V>  implements Map.Entry<K,V> {
-//
-//        @Override
-//        public K getKey() {
-//            return key;
-//        }
-//
-//        @Override
-//        public V getValue() {
-//            return null;
-//        }
-//
-//        @Override
-//        public V setValue(V value) {
-//            return null;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * records an assignment operation
@@ -133,17 +133,17 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     public final Versioned<Y> getOrCreateIfAbsent(X key) {
         return map.computeIfAbsent(key, this::newEntry);
 
-//        Versioned<Y> v = map.get(key);
-//        if (v!=null) return v;
-//        v = newEntry(key);
-//        map.put(key, v);
-//        return v;
+
+
+
+
+
     }
 
     protected Versioned<Y> newEntry(X x) {
         return new Versioned<>(context, elementStackSizeDefault);
-        //return cache(k) ? new Versioned(context) :
-        //return new RemovingVersionedEntry(k);
+        
+        
     }
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {
@@ -168,17 +168,17 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return true;
     }
 
-//    public boolean replace(Function<? super Y, Y> eachValue) {
-//        Set<Entry<X, Versioned<Y>>> eee = map.entrySet();
-//        for (Entry<X, Versioned<Y>> e : eee) {
-//            Versioned<Y> ee = e.getValue();
-//            Y x = ee.get();
-//            if (x != null) {
-//                ee.replaceTop(eachValue.apply(x));
-//            }
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -213,29 +213,29 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return result[0];
     }
 
-//    @Nullable
-//    public Y get(X key, @NotNull Supplier<Y> ifAbsentPut) {
-//        //TODO use compute... Map methods
-//        Y o = get(key);
-//        if (o == null) {
-//            o = ifAbsentPut.get();
-//            put(key, o);
-//        }
-//        return o;
-//    }
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
     public final boolean containsKey(Object key) {
-        throw new UnsupportedOperationException(); //requires filtering
-        //return map.containsKey(key);
+        throw new UnsupportedOperationException(); 
+        
     }
 
     @NotNull
     @Override
     public Set<X> keySet() {
-        throw new UnsupportedOperationException(); //requires filtering
-        //return map.keySet();
+        throw new UnsupportedOperationException(); 
+        
     }
 
     public static final VersionMap Empty = new VersionMap(new Versioning<>(1, 0), 0, 0) {

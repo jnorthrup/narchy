@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -63,22 +63,22 @@ final class Multiply extends ArithmeticOperator {
         Node arg2 = arguments.secondArg();
 
         if (NODE_COMPARATOR.compare(arg1, arg2) > 0) {
-            // as for addition the order of the arguments is not important, order arguments in a consistent way
-            // e.g. (* v1 1) -> (* 1 v1)
+            
+            
             return new FunctionNode(this, arg2, arg1);
         } else if (numberUtils.zero.equals(arg1)) {
-            // anything multiplied by zero is zero
-            // e.g. (* 0 v0) -> 0
+            
+            
             return numberUtils.zero;
         } else if (numberUtils.zero.equals(arg2)) {
-            // the earlier ordering or arguments means we should never get here
+            
             throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
         } else if (numberUtils.one.equals(arg1)) {
-            // anything multiplied by one is itself
-            // e.g. (* 1 v0) -> v0
+            
+            
             return arg2;
         } else if (numberUtils.one.equals(arg2)) {
-            // the earlier ordering or arguments means we should never get here
+            
             throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
         } else {
             if (isConstant(arg1) && numberUtils.isArithmeticExpression(arg2)) {
@@ -93,7 +93,7 @@ final class Multiply extends ArithmeticOperator {
                     } else if (numberUtils.isMultiply(f)) {
                         return new FunctionNode(this, numberUtils.multiply(arg1, fnArg1), fnArg2);
                     } else if (numberUtils.isDivide(f)) {
-                        //TODO?
+                        
                         return null;
                     } else {
                         throw new IllegalArgumentException();

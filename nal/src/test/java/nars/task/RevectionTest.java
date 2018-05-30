@@ -31,14 +31,14 @@ public class RevectionTest {
 
     @Test
     public void testRevisionEquivalence() throws Narsese.NarseseException {
-        TaskBuilder a = t(1f, 0.5f, 0); //c~=0.67
+        TaskBuilder a = t(1f, 0.5f, 0); 
         a.evidence(0);
         TaskBuilder b = t(1f, 0.5f, 0);
-        b.evidence(1); //cause different hash
+        b.evidence(1); 
 
-        //assertEquals(a.truth(), TruthPolation.truth(0, a, a)); //same item
+        
 
-        //System.out.println( TruthPolation.truth(0, a, b) );
+        
         assertEquals(Revision.revise(a, b),
                 new FocusingLinearTruthPolation(0, 0, n.dur())
                         .add(Lists.newArrayList(a.apply(n), b.apply(n)))
@@ -59,7 +59,7 @@ public class RevectionTest {
         @Nullable Truth rt = Revision.revise(a, b);
 
         assertEquals(pt.freq(), rt.freq(), 0.01f);
-        assertTrue(pt.conf() < rt.conf()); //revection result will be less than eternal revision
+        assertTrue(pt.conf() < rt.conf()); 
 
     }
 
@@ -118,24 +118,24 @@ public class RevectionTest {
         return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
     }
 
-//    public static void _main(String[] args) {
-//        TruthPolation p = new DefaultTruthPolation(4,
-//                0f);
-//        //0.1f);
-//
-//        List<Task> l = Global.newArrayList();
-//
-//        //NAR n = new Default();
-//        l.add( new TaskBuilder("a:b", BELIEF, new DefaultTruth(0f, 0.5f) ).occurr(0).setCreationTime(0) );
-//        l.add( new TaskBuilder("a:b", BELIEF, new DefaultTruth(1f, 0.5f) ).occurr(5).setCreationTime(0) );
-//        l.add( new TaskBuilder("a:b", BELIEF, new DefaultTruth(0f, 0.75f) ).occurr(10).setCreationTime(0) );
-//        print(p, l, -5, 15);
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static void print(@NotNull List<Task> l, int start, int end) {
-        //interpolation (revision) and extrapolation (projection)
+        
         System.out.println("INPUT");
         for (Task t : l) {
             System.out.println(t);
@@ -270,21 +270,21 @@ public class RevectionTest {
 
 
 
-        int maxBeliefs = 4; //includes 3 eternal beliefs we arent using:
+        int maxBeliefs = 4; 
         NAR n = newNAR(maxBeliefs);
 
 
         BeliefAnalysis b = new BeliefAnalysis(n, "<a-->b>");
 
 
-        //assertEquals(0.0, (Double) b.energy().get(MemoryBudget.Budgeted.ActiveConceptPrioritySum), 0.001);
+        
 
 
         b.believe(0.5f, 0.0f, 0.85f, 5);
         n.run();
         b.believe(0.5f, 0.95f, 0.85f, 10);
         n.run();
-        b.believe(0.5f, 1.0f, 0.85f, 11); //this and the previous one should get combined when inserting the 4th
+        b.believe(0.5f, 1.0f, 0.85f, 11); 
         n.run();
 
         b.print();
@@ -292,12 +292,12 @@ public class RevectionTest {
         assertEquals(5, b.wave().start());
         assertEquals(11, b.wave().end());
 
-        b.believe(0.5f, 1.0f, 0.99f, 12); //this should cause the cycle=10 and cycle=11 beliefs to get revected into one and allow this belief to be inserted
-        //the cycle=5 belief should remain since it is more unique
+        b.believe(0.5f, 1.0f, 0.99f, 12); 
+        
 
         n.run(3);
         b.print();
-        //assertEquals(4+4, b.capacity(true));
+        
         assertEquals(4, b.size(true));
 
         b.print();
@@ -311,18 +311,18 @@ public class RevectionTest {
 
     @Test public void testSequenceIntermpolation1() throws Narsese.NarseseException {
 
-        //these terms appear entirely different but they in fact would
-        //resolve to the same concept and would appear side-by-side in the
-        //same temporal belief table.
-        //
-        //this exemplifies the entire point of my NAL7 redesign
-        //
-        //now this test will show how these different sequences can be merged
-        //to form a new sequence which may or may not resolve to the same concept due to the
-        //various ways the two sequences can overlap, creating repeats, inversions, etc
-        //with otional dt dithering to blend the perception of nearly simultaneous events
-        //to more generalizable parallel conjunctions
-        //          :)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
 
         n.dtMergeOrChoose.set(false);
@@ -366,7 +366,7 @@ public class RevectionTest {
         Task at = n.believe(a, Tense.Present, 1f);
         n.believe(b, Tense.Present);
         n.concept(a).beliefs().setCapacity(1, 1);
-        n.input(at); //force belief table compression even though it's a duplicate
+        n.input(at); 
 
 
         n.run(1);

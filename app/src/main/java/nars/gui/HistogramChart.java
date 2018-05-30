@@ -26,33 +26,33 @@ public class HistogramChart extends Surface {
 
     }
 
-//    public HistogramChart(NAR nar, FloatFunction<PLink<Concept>> meter, int bins, Color3f dark, Color3f light) {
-//
-//        float[] data = new float[bins];
-//        this.data = () -> data;
-//        this.dark = dark;
-//        this.light = light;
-//
-//        nar.onCycle(nn -> {
-//            nn.conceptsActive().forEach(c -> {
-//                float p = meter.floatValueOf(c);
-//                int b = Util.bin(p, bins - 1);
-//                data[b]++;
-//            });
-//
-//            float total = 0;
-//            for (float e : data) {
-//                total += e;
-//            }
-//            if (total > 0) {
-//                for (int i = 0; i < bins; i++)
-//                    data[i] /= total;
-//            }
-//
-//                    //priHistogram(data);
-//        });
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     protected void paint(GL2 gl, SurfaceRender surfaceRender) {
@@ -69,7 +69,7 @@ public class HistogramChart extends Surface {
         int N = data.length;
         float max = data[Util.argmax(data)];
         if (max == 0)
-            return; //empty
+            return; 
 
         float x = 0;
 

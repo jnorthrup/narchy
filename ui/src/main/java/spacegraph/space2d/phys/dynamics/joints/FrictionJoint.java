@@ -45,13 +45,13 @@ public class FrictionJoint extends Joint {
     private final Tuple2f m_localAnchorA;
     private final Tuple2f m_localAnchorB;
 
-    // Solver shared
+    
     private final Tuple2f m_linearImpulse;
     private float m_angularImpulse;
     private float m_maxForce;
     private float m_maxTorque;
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_rA = new v2();
@@ -153,18 +153,18 @@ public class FrictionJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective mass matrix.
+        
         Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), m_rA);
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
 
-        // J = [-I -r1_skew I r2_skew]
-        // [ 0 -1 0 1]
-        // r_skew = [-ry; rx]
+        
+        
+        
 
-        // Matlab
-        // K = [ mA+r1y^2*iA+mB+r2y^2*iB, -r1y*iA*r1x-r2y*iB*r2x, -r1y*iA-r2y*iB]
-        // [ -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB, r1x*iA+r2x*iB]
-        // [ -r1y*iA-r2y*iB, r1x*iA+r2x*iB, iA+iB]
+        
+        
+        
+        
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
@@ -183,7 +183,7 @@ public class FrictionJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            // Scale impulses to support a variable time step.
+            
             m_linearImpulse.scaled(data.step.dtRatio);
             m_angularImpulse *= data.step.dtRatio;
 
@@ -203,10 +203,10 @@ public class FrictionJoint extends Joint {
             m_linearImpulse.setZero();
             m_angularImpulse = 0.0f;
         }
-//    data.velocities[m_indexA].v.set(vA);
+
         assert !(data.velocities[m_indexA].w != wA) || (data.velocities[m_indexA].w != wA);
         data.velocities[m_indexA].w = wA;
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushRot(2);
@@ -226,7 +226,7 @@ public class FrictionJoint extends Joint {
 
         float h = data.step.dt;
 
-        // Solve angular friction
+        
         {
             float Cdot = wB - wA;
             float impulse = -m_angularMass * Cdot;
@@ -240,7 +240,7 @@ public class FrictionJoint extends Joint {
             wB += iB * impulse;
         }
 
-        // Solve linear friction
+        
         {
             final Tuple2f Cdot = pool.popVec2();
             final Tuple2f temp = pool.popVec2();
@@ -277,11 +277,11 @@ public class FrictionJoint extends Joint {
 
         }
 
-//    data.velocities[m_indexA].v.set(vA);
+
         assert !(data.velocities[m_indexA].w != wA) || (data.velocities[m_indexA].w != wA);
         data.velocities[m_indexA].w = wA;
 
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(4);

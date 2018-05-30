@@ -49,28 +49,28 @@ public class MovingRectFloat2D {
     }
 
     public RectFloat2D get(float ox, float oy) {
-//        float lx1 = limits.left();
-//        float x1 = left();
-//        if (x1 +dx < lx1) {
-//            dx = x1 - lx1; //bounce left
-//        }
-//        float ly1 = limits.top();
-//        float y1 = top();
-//        if (y1 + dy < ly1) {
-//            dy = y1 - ly1; //bounce top
-//        }
-//        float lx2 = limits.right();
-//        float x2 = right();
-//        if (x2 + dx > lx2) {
-//            dx = lx2 - x2; //bounce right
-//        }
-//        float ly2 = limits.bottom();
-//        float y2 = bottom();
-//        if (y2 + dy > ly2) {
-//            dy = ly2 - y2; //bounce bottom
-//        }
-//        dx = Util.clamp(dx, -maxMovement, +maxMovement);
-//        dy = Util.clamp(dy, -maxMovement, +maxMovement);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return RectFloat2D.XYWH(
                 ox + cx(),
                 oy + cy(),

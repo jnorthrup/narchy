@@ -52,8 +52,8 @@ public class RdpPacket extends AbstractRdpPacket {
 	}
 
 	public void reset(int length) {
-		// logger.info("RdpPacket_Localised.reset(" + length + "), capacity = "
-		// + bb.capacity());
+		
+		
 		this.end = 0;
 		this.start = 0;
 		if (bb.capacity() < length)
@@ -63,18 +63,18 @@ public class RdpPacket extends AbstractRdpPacket {
 	}
 
 	public void set8(int where, int what) {
-//		if (where < 0 || where >= bb.capacity()) {
-//			throw new ArrayIndexOutOfBoundsException(
-//					"memory accessed out of Range!");
-//		}
+
+
+
+
 		bb.put(where, (byte) what);
 	}
 
 	public void set8(int what) {
-//		if (bb.position() >= bb.capacity()) {
-//			throw new ArrayIndexOutOfBoundsException(
-//					"memory accessed out of Range!");
-//		}
+
+
+
+
 		bb.put((byte) what);
 
 	}
@@ -86,54 +86,54 @@ public class RdpPacket extends AbstractRdpPacket {
 		bb.put(b, offset, len);
 	}
 
-	// where is a 8-bit offset
+	
 	public int get8(int where) {
-//		if (where < 0 || where >= bb.capacity()) {
-//			throw new ArrayIndexOutOfBoundsException(
-//					"memory accessed out of Range!");
-//		}
-		return bb.get(where) & 0xff; // treat as unsigned byte
+
+
+
+
+		return bb.get(where) & 0xff; 
 	}
 
-	// where is a 8-bit offset
+	
 	public int get8() {
-//		if (bb.position() >= bb.capacity()) {
-//			throw new ArrayIndexOutOfBoundsException(
-//					"memory accessed out of Range!");
-//		}
-		return bb.get() & 0xff; // treat as unsigned byte
+
+
+
+
+		return bb.get() & 0xff; 
 	}
 
 	public void copyFromByteArray(byte[] array, int array_offset,
 			int mem_offset, int len) {
-//		if ((array_offset >= array.length)
-//				|| (array_offset + len > array.length)
-//				|| (mem_offset + len > bb.capacity())) {
-//			throw new ArrayIndexOutOfBoundsException(
-//					"memory accessed out of Range!");
-//		}
-		// store position
+
+
+
+
+
+
+		
 		int oldpos = position();
 
 		position(mem_offset);
 		bb.put(array, array_offset, len);
 
-		// restore position
+		
 		position(oldpos);
 	}
 
 	/** use the array directly */
 	@Deprecated public void copyToByteArray(byte[] array, int array_offset, int mem_offset,
 			int len) {
-//		if ((array_offset >= array.length))
-//			throw new ArrayIndexOutOfBoundsException(
-//					"Array offset beyond end of array!");
-//		if (array_offset + len > array.length)
-//			throw new ArrayIndexOutOfBoundsException(
-//					"Not enough bytes in array to copy!");
-//		if (mem_offset + len > bb.capacity())
-//			throw new ArrayIndexOutOfBoundsException(
-//					"Memory accessed out of Range!");
+
+
+
+
+
+
+
+
+
 
 		int oldpos = position();
 		position(mem_offset);
@@ -184,10 +184,10 @@ public class RdpPacket extends AbstractRdpPacket {
 		return bb.capacity();
 	}
 
-	// return size in bytes
+	
 	public int size() {
 		return size;
-		// return bb.capacity(); //this.end - this.start;
+		
 	}
 
 	public int position() {
@@ -276,20 +276,20 @@ public class RdpPacket extends AbstractRdpPacket {
 
 	public void positionAdd(int length) {
 
-//		if (length > bb.capacity() || length + bb.position() > bb.capacity()
-//				|| length < 0) {
-//			throw new ArrayIndexOutOfBoundsException();
-//		}
+
+
+
+
 		bb.position(bb.position() + length);
 	}
 
 	public void position(int position) {
-//		if (position > bb.capacity() || position < 0) {
-//			logger.error("stream position =" + position() + " end ="
-//					+ getEnd() + " capacity =" + capacity() + ";" +
-//					"setPosition(" + position + ") failed");
-//			throw new ArrayIndexOutOfBoundsException();
-//		}
+
+
+
+
+
+
 		bb.position(position);
 	}
 

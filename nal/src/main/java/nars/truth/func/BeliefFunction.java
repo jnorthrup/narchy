@@ -15,7 +15,7 @@ import java.util.Map;
 import static nars.Op.BELIEF;
 
 /**
- * http://aleph.sagemath.org/?q=qwssnn
+ * http:
  * <patham9> only strong rules are allowing overlap
  * <patham9> except union and revision
  * <patham9> if you look at the graph you see why
@@ -24,18 +24,18 @@ import static nars.Op.BELIEF;
 public enum BeliefFunction implements TruthOperator {
 
 
-//    @AllowOverlap StructuralAbduction() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-//            return abduction($.t(1, m.confDefault(BELIEF)), B, minConf);
-//        }
-//    },
+
+
+
+
+
+
 
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
             return TruthFunctions.deduction(T, B.freq(), B.conf(), minConf);
-            //return TruthFunctions2.deduction(T, B.freq(), B.conf(), minConf);
+            
         }
     },
 
@@ -45,12 +45,12 @@ public enum BeliefFunction implements TruthOperator {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
         }
     },
-//    @SinglePremise @AllowOverlap StructuralDeductionWeak() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-//            return T != null ? TruthFunctions.deduction1(T, confDefault(m)*0.5f, minConf) : null;
-//        }
-//    },
+
+
+
+
+
+
 
     /**
      * keeps the same input frequency but reduces confidence
@@ -62,17 +62,17 @@ public enum BeliefFunction implements TruthOperator {
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
-//    /** similar to structural deduction but preserves the frequency of the task */
-//   @SinglePremise @AllowOverlap StructuralDecompose() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-//            float conf = T.conf() * defaultConfidence(m);
-//            if (conf >= minConf)
-//                return $.t(T.freq(), conf);
-//            else
-//                return null;
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * polarizes according to an implication belief and its effective negation reduction
@@ -91,22 +91,22 @@ public enum BeliefFunction implements TruthOperator {
     },
 
 
-//    //@AllowOverlap
-//    DeductionRecursive() {
-//        @Override
-//        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-//            return Deduction.apply(T, B, m, minConf);
-//        }
-//    },
 
-//    @AllowOverlap
-//    //* TODO rename 'PB' to 'Sym'
-//    DeductionRecursivePB() {
-//        @Override
-//        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-//            return DeductionPB.apply(T, B, m, minConf);
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Induction() {
         @Override
@@ -114,7 +114,7 @@ public enum BeliefFunction implements TruthOperator {
             return TruthFunctions.induction(T, B, minConf);
         }
     },
-    //* TODO rename 'PB' to 'Sym'
+    
     InductionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -126,25 +126,25 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    /** task frequency negated induction */
-//    InductionNeg() {
-//        
-//        @Override public Truth apply( final Truth T,  final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            return TruthFunctions.induction(T.negated(), B, minConf);
-//        }
-//    },
-//    /** belief frequency negated induction */
-//    InductionNegB() {
-//        
-//        @Override public Truth apply( final Truth T,  final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            return TruthFunctions.induction(T, B.negated(), minConf);
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Abduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
-            //Abduction(X,Y)=Induction(Y,X)
+            
             return Induction.apply(B, T, n, minConf);
         }
     },
@@ -172,21 +172,21 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    //@AllowOverlap
-//    //* TODO rename 'PB' to 'Sym'
-//    AbductionRecursivePB() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return AbductionPB.apply(T,B,m,minConf);
-//        }
-//    },
 
-//    AbductionNeg() {
-//        
-//        @Override public Truth apply( final Truth T,  final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            return TruthFunctions.abduction(T.negated(), B, minConf);
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     Comparison() {
         @Override
@@ -195,12 +195,12 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    ComparisonNeg() {
-//        
-//        @Override public Truth apply( final Truth T,  final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            return TruthFunctions.comparison(T, B, true, minConf);
-//        }
-//    },
+
+
+
+
+
+
 
     Conversion() {
         @Override
@@ -209,13 +209,13 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    @SinglePremise
-//    Negation() {
-//        
-//        @Override public Truth apply( final Truth T, /* nullable */ final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            return TruthFunctions.negation(T, minConf);
-//        }
-//    },
+
+
+
+
+
+
+
 
     @SinglePremise
     Contraposition() {
@@ -225,18 +225,18 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    Resemblance() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return TruthFunctions.resemblance(T, B, minConf);
-//        }
-//    },
+
+
+
+
+
+
 
     Intersection() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions.intersection(T, B, minConf);
-            //return TruthFunctions2.intersectionX(T, B, minConf);
+            
         }
     },
     Union() {
@@ -302,21 +302,21 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    ReduceDisjunction() {
-//        
-//        @Override public Truth apply( final Truth T,  final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            if (B == null || T == null) return null;
-//            return TruthFunctions.reduceDisjunction(T, B,minConf);
-//        }
-//    },
 
-//    ReduceConjunctionNeg() {
-//        
-//        @Override public Truth apply( final Truth T,  final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            if (B == null || T == null) return null;
-//            return TruthFunctions.reduceConjunctionNeg(T, B,minConf);
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     AnonymousAnalogy() {
         @Override
@@ -383,17 +383,17 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    /**
-//     * same as identity but allows overlap
-//     */
-//    @SinglePremise
-//    @AllowOverlap
-//    IdentityTransform() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return TruthOperator.identity(T, minConf);
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
 
     BeliefIdentity() {
         @Override
@@ -415,26 +415,26 @@ public enum BeliefFunction implements TruthOperator {
     BeliefStructuralAbduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-            //if (B == null) return null;
+            
             return Abduction.apply($.t(1f, confDefault(m)), B, m, minConf);
         }
     },
 
-//    BeliefStructuralIntersection() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-//            return B != null ? TruthFunctions.intersection(B, $.t(1, m.confDefault(BELIEF)), minConf) : null;
-//        }
-//    },
 
 
-//    BeliefStructuralAnalogy() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-//            if (B == null) return null;
-//            return TruthFunctions.analogy(B, 1f, defaultConfidence(m), minConf);
-//        }
-//    },
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @AllowOverlap
     BeliefStructuralDifference() {
@@ -446,12 +446,12 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-//    BeliefNegation() {
-//        
-//        @Override public Truth apply(final Truth T,  final Truth B, /*@NotNull*/ Memory m, float minConf) {
-//            return TruthFunctions.negation(B, minConf);
-//        }
-//    }
+
+
+
+
+
+
 
     ;
 
@@ -461,16 +461,16 @@ public enum BeliefFunction implements TruthOperator {
     }
 
 
-//    /**
-//     * @param T taskTruth
-//     * @param B beliefTruth (possibly null)
-//     * @return
-//     */
-//    @Override
-//    abstract public Truth apply(Truth T, Truth B, /*@NotNull*/ Memory m);
 
 
-    //TODO use an enum map with terms bound to the enum values directly
+
+
+
+
+
+
+
+    
     static final Map<Term, TruthOperator> atomToTruthModifier = $.newHashMap(BeliefFunction.values().length);
 
 
@@ -482,9 +482,9 @@ public enum BeliefFunction implements TruthOperator {
     public static TruthOperator get(Term a) {
         return atomToTruthModifier.get(a);
     }
-//    public static TruthOperator get(String a) {
-//        return get($.the(a));
-//    }
+
+
+
 
     public final boolean single;
     public final boolean overlap;

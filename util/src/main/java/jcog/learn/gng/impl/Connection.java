@@ -11,7 +11,7 @@ public class Connection<N extends Centroid>  {
     private int age;
 
     public Connection(N from, N to) {
-        //sort by id
+        
         if (from.id > to.id) {
             N t = to;
             to = from;

@@ -11,14 +11,14 @@ public class CPU{
 		while(true){
 			String res = "0x" + toHexString((byte)memory[mem.pc]).toLowerCase();
 			switch(res){
-				case "0x00":print(); break;//NOP
-				case "0x01":    //LXI B,D16
+				case "0x00":print(); break;
+				case "0x01":    
                     mem.b = memory[mem.pc+2];
                     mem.c = memory[mem.pc+1];
                     mem.pc+=2;
                     print();
                     break;
-                case "0x05":{	//DCR B
+                case "0x05":{	
 					int resp = mem.b-1;
 					mem.z = (resp ==0);
 					mem.s = (0x80 == (resp & 0x80));
@@ -26,12 +26,12 @@ public class CPU{
 					mem.b = resp;
 					print(); break;
 				}	
-				case "0x06":    //MVI B,byte
+				case "0x06":    
                     mem.b = memory[mem.pc+1];
                     mem.pc++;
                     print();
                     break;
-                case "0x09":{	//DAD B
+                case "0x09":{	
 					int hl = (mem.h << 8) | (mem.l);
 					int bc  = (mem.b <<8) | (mem.c);
 					int resp = hl + bc;
@@ -40,7 +40,7 @@ public class CPU{
 					mem.cy = ((resp & 0xffff0000) > 0);
 					print(); break;
 				}
-				case "0x0d":{	//DCR C
+				case "0x0d":{	
 					int resp = mem.c - 1;
 					mem.z = (resp == 0);
 					mem.s = (0x80 == (resp & 0x80));
@@ -48,31 +48,31 @@ public class CPU{
 					mem.c = resp;
 					print(); break;
 				}
-				case "0x0e":    //MVI C,byte
+				case "0x0e":    
                     mem.c = memory[mem.pc+1];
                     mem.pc++;
                     print();
                     break;
-                case "0x0f":{	//RRC
+                case "0x0f":{	
 					int x = mem.a;
 					mem.a = ((x & 1) << 7) | (x >> 1);
 					mem.cy = (1 == (x&1));
 					print(); break;
 				}
-				case "0x11":    //LXI D,word
+				case "0x11":    
                     mem.e = memory[mem.pc+1];
                     mem.d = memory[mem.pc+2];
                     mem.pc+=2;
                     print();
                     break;
-                case "0x13":    //INX D
+                case "0x13":    
                     mem.e++;
                     if(mem.e == 0){
                         mem.d++;
                     }
                     print();
                     break;
-                case "0x19":{	//DAD D
+                case "0x19":{	
 					int hl = (mem.h << 8) | mem.l;
 				    int de = (mem.d << 8) | mem.e;
 					int resp = hl + de;
@@ -81,30 +81,30 @@ public class CPU{
 					mem.cy = ((resp & 0xffff0000) != 0);
 					print(); break;
 				}
-				case "0x1a":{	//LDAX D
+				case "0x1a":{	
 					int offset=(mem.d<<8) | mem.e;
 					mem.a = memory[offset];
 					print(); break;
 				}
-				case "0x21":    //LXI H, D16
+				case "0x21":    
                     mem.l = memory[mem.pc+1];
                     mem.h = memory[mem.pc+2];
                     mem.pc+=2;
                     print();
                     break;
-                case "0x23":    //INX H
+                case "0x23":    
                     mem.l++;
                     if(mem.l == 0){
                         mem.h++;
                     }
                     print();
                     break;
-                case "0x26":    //MVI H,D8
+                case "0x26":    
                     mem.h = memory[mem.pc+1];
                     mem.pc++;
                     print();
                     break;
-                case "0x29":    //DAD H
+                case "0x29":    
                     int hl = (mem.h << 8) | mem.l;
                     int resp = hl + hl;
                     mem.h = (resp & 0xff00) >> 8;
@@ -112,109 +112,109 @@ public class CPU{
                     mem.cy = ((resp & 0xffff0000) != 0);
                     print();
                     break;
-                case "0x31":    //LXI SP,D16
+                case "0x31":    
                     mem.sp = (memory[mem.pc+2]<<8) | memory[mem.pc+1];
                     mem.pc+= 2;
                     print();
                     break;
-                case "0x32":{	//STA adr
+                case "0x32":{	
 					int offset = (memory[mem.pc+2]<<8) | (memory[mem.pc+1]);
 					memory[offset] = mem.a;
 					mem.pc+=2;
 					print(); break;
 				}
-				case "0x36":{	//MVI M,D8
+				case "0x36":{	
 					int offset = (mem.h<<8) | mem.l;
 					memory[offset] = memory[mem.pc+1];
 					mem.pc++;
 					print(); break;
 				}
-				case "0x3a":{	//LDA adr
+				case "0x3a":{	
 					int offset = (memory[mem.pc+2]<<8) | (memory[mem.pc+1]);
 					mem.a = memory[offset];
 					mem.pc+=2;
 					print(); break;
 				}
-				case "0x3e":    //MVI A,D8
+				case "0x3e":    
                     mem.a = memory[mem.pc+1];
                     mem.pc++;
                     print();
                     break;
-                case "0x56":{	//MOV D,M
+                case "0x56":{	
 					int offset = (mem.h<<8) | (mem.l);
 					mem.d = memory[offset];
 					print(); break;
 				}
-				case "0x5e":{	//MOV E,M
+				case "0x5e":{	
 					int offset = (mem.h<<8) | (mem.l);
 					mem.e = memory[offset];
 					print(); break;
 				}
-				case "0x66":{	//MOV H,M
+				case "0x66":{	
 					int offset = (mem.h<<8) | (mem.l);
 					mem.h = memory[offset];
 					print(); break;
 				}
-				case "0x6f":    //MOV L,A
+				case "0x6f":    
                     mem.l = mem.a;
                     print();
                     break;
-                case "0x77":{	//MOV M,A
+                case "0x77":{	
 					int offset = (mem.h<<8) | (mem.l);
 					memory[offset] = mem.a;
 					print(); break;
 				}
-				case "0x7a":    //MOV A,D
+				case "0x7a":    
                     mem.a = mem.d;
                     print();
                     break;
-                case "0x7b":    //MOV A,E
+                case "0x7b":    
                     mem.a = mem.e;
                     print();
                     break;
-                case "0x7c":    //MOV A,H
+                case "0x7c":    
                     mem.a = mem.h;
                     print();
                     break;
-                case "0x7e":    //MOV A,M
+                case "0x7e":    
                     int offset = (mem.h<<8) | (mem.l);
                     mem.a = memory[offset];
                     print();
                     break;
-                case "0xa7":    //ANA A
+                case "0xa7":    
                     mem.a = mem.a & mem.a;
                     LogicFlags();
                     print();
                     break;
-                case "0xaf":    //XRA A
+                case "0xaf":    
                     mem.a = mem.a ^ mem.a;
                     LogicFlags();
                     print();
                     break;
-                case "0xc1":    //POP B
+                case "0xc1":    
                     mem.c = memory[mem.sp];
                     mem.b = memory[mem.sp+1];
                     mem.sp += 2;
                     print();
                     break;
-                case "0xc2":    //JNZ adr
+                case "0xc2":    
                     if (mem.z == false)
                         mem.pc = (memory[mem.pc+2] << 8) | memory[mem.pc+1];
                     else
                         mem.pc+=2;
                     print();
                     break;
-                case "0xc3":    //JMP adr
+                case "0xc3":    
                     mem.pc = (memory[mem.pc+2] << 8) | memory[mem.pc+1];
                     print();
                     break;
-                case "0xc5":    //PUSH B
+                case "0xc5":    
                     memory[mem.sp-1] = mem.b;
                     memory[mem.sp-2] = mem.c;
                     mem.sp = mem.sp - 2;
                     print();
                     break;
-                case "0xc6":{	//ADI D8
+                case "0xc6":{	
 					int x = mem.a + memory[mem.pc+1];
 					mem.z = ((x & 0xff) == 0);
 					mem.s = (0x80 == (x & 0x80));
@@ -224,12 +224,12 @@ public class CPU{
 					mem.pc++;
 					print(); break;
 				}
-				case "0xc9":    //RET
+				case "0xc9":    
                     mem.pc = memory[mem.sp] | (memory[mem.sp+1] << 8);
                     mem.sp += 2;
                     print();
                     break;
-                case "0xcd":    //CALL adr
+                case "0xcd":    
                     int ret = mem.pc+2;
                     memory[mem.sp-1] = (ret >> 8) & 0xff;
                     memory[mem.sp-2] = (ret & 0xff);
@@ -237,41 +237,41 @@ public class CPU{
                     mem.pc = (memory[mem.pc+2] << 8) | memory[mem.pc+1];
                     print();
                     break;
-                case "0xd1":    //POP D
+                case "0xd1":    
                     mem.e = memory[mem.sp];
                     mem.d = memory[mem.sp+1];
                     mem.sp+=2;
                     print();
                     break;
-                case "0xd3":    //OUT D8
+                case "0xd3":    
                     mem.pc++;
                     print();
                     break;
-                case "0xd5":    //PUSH D
+                case "0xd5":    
                     memory[mem.sp-1] = mem.d;
                     memory[mem.sp-2] = mem.e;
                     mem.sp = mem.sp - 2;
                     print();
                     break;
-                case "0xe1":    //POP H
+                case "0xe1":    
                     mem.l = memory[mem.sp];
                     mem.h = memory[mem.sp+1];
                     mem.sp += 2;
                     print();
                     break;
-                case "0xe5":    //PUSH H
+                case "0xe5":    
                     memory[mem.sp-1] = mem.h;
                     memory[mem.sp-2] = mem.l;
                     mem.sp = mem.sp - 2;
                     print();
                     break;
-                case "0xe6":    //ANI D8
+                case "0xe6":    
                     mem.a = mem.a & memory[mem.pc+1];
                     LogicFlags();
                     mem.pc++;
                     print();
                     break;
-                case "0xeb":    //XCHG
+                case "0xeb":    
                     int save1 = mem.d;
                     int save2 = mem.e;
                     mem.d = mem.h;
@@ -280,7 +280,7 @@ public class CPU{
                     mem.l = save2;
                     print();
                     break;
-                case "0xf1":    //POP PSW
+                case "0xf1":    
                     mem.a = memory[mem.sp+1];
                     int psw = memory[mem.sp];
                     mem.z  = (0x01 == (psw & 0x01));
@@ -291,18 +291,18 @@ public class CPU{
                     mem.sp +=2;
                     print();
                     break;
-                case "0xf5":    //PUSH PSW
-//					memory[mem.sp-1] = mem.a;
-//					int psw = (mem.z | mem.s << 1 |mem.p << 2 | mem.cy << 3 |mem.ac << 4 );
-//					memory[mem.sp-2] = psw;
-//					mem.sp = mem.sp - 2;
+                case "0xf5":    
+
+
+
+
                     print();
                     break;
-                case "0xfb":    //EI
+                case "0xfb":    
                     mem.int_enable = 1;
                     print();
                     break;
-                case "0xfe":    //CPI D8
+                case "0xfe":    
                     int x = mem.a - memory[mem.pc+1];
                     mem.z = (x == 0);
                     mem.s = (0x80 == (x & 0x80));

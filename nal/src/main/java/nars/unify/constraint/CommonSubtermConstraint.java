@@ -26,16 +26,16 @@ public final class CommonSubtermConstraint extends RelationConstraint {
         int vx = x.volume();
         int vy = y.volume();
         if (vx == vy || x.op().var || y.op().var /* variables excluded from recursive containment test */) {
-            //
+            
         } else {
             if (vy > vx) {
-                //swap so that v is larger
+                
                 Term c = x;
                 x = y;
                 y = c;
             }
             if (x.containsRecursively(y, true, (t)->true))
-                return false; //valid, one is completely contained by the other
+                return false; 
         }
 
         return !Subterms.hasCommonSubtermsRecursive(x, y, true);

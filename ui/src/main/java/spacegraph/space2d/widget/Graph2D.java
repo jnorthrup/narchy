@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
 
-    //int edgesMax = 1024;
+    
     protected final AtomicBoolean busy = new AtomicBoolean(false);
     final List<Graph2DLayer<X>> layers = new FasterList<>();
 
@@ -111,7 +111,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     public Graph2D<X> add(Iterable<X> nodes) {
-        if (!busy.get()) //avoids creating the iterator if the graph is busy
+        if (!busy.get()) 
             return add(nodes.iterator());
         return this;
     }
@@ -121,12 +121,12 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
     }
 
     public Graph2D<X> set(Iterable<X> nodes) {
-        if (!busy.get()) //avoids creating the iterator if the graph is busy
+        if (!busy.get()) 
             return set(nodes.iterator());
         return this;
     }
 
-    //TODO remove(Iterable...)
+    
 
     public Graph2D<X> set(Iterator<X> nodes) {
         return update(nodes, false);
@@ -134,14 +134,14 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
     @Override
     public void clear() {
-        //TODO this wont work if bag is busy
+        
         set(List.of());
     }
 
     protected Graph2D<X> update(Iterator<X> nodes, boolean addOrReplace) {
 
         if (!busy.compareAndSet(false, true)) {
-            //TODO trigger refresh?
+            
             return this;
         }
         try {
@@ -168,9 +168,9 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         while (nodes.hasNext()) {
             X x = nodes.next();
             if (x == null)
-                continue; //ignore nulls in the input
+                continue; 
 
-            //TODO computeIfAbsent and re-use existing model
+            
             CellMap.CacheCell nv = cellMap.compute(x, xx -> {
                 if (xx == null) {
                     xx = nodePool.get();
@@ -180,13 +180,13 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
                     layout.initialize(this, xx);
                     return xx;
                 } else
-                    return xx; //re-use existing
+                    return xx; 
             });
 
             dontRemain.remove(nv);
 
             if (nCount++ == nodesMax)
-                break; //reached node limit
+                break; 
         }
 
         if (!dontRemain.isEmpty()) {
@@ -276,44 +276,44 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
     }
 
-    //    public Graph2D<X> commit(Bag<?, X> g) {
-//        return commit(g, (nothing) -> null);
-//    }
-//
-//    public Graph2D<X> commit(Graph<X> g) {
-//        return commit(g.nodes(), g::successors);
-//    }
-//
-//    public Graph2D<X> commit(SuccessorsFunction<X> g, X start) {
-//        return commit(g, List.of(start));
-//    }
-//
-//    public Graph2D<X> commit(SuccessorsFunction<X> s, Iterable<X> start) {
-//        return commit(new MapNodeGraph<>(s, start));
-//    }
-//
-//    public Graph2D<X> commit(AdjGraph<X, Object> g) {
-//        return commit(
-//                Iterables.transform(g.nodes.keySet(), t -> t.v),
-//                (X x) -> {
-//                    List<X> adj = new FasterList();
-//                    g.neighborEdges(x, (v, e) -> {
-//                        adj.add(v);
-//                    });
-//                    return adj;
-//                }
-//        );
-//    }
-//
-//    public Graph2D<X> commit(MapNodeGraph<X, Object> g) {
-//        return commit(
-//                Iterables.transform(g.nodes(), x -> x.id),
-//                x -> Iterables.transform(
-//                        g.node(x).edges(false, true),
-//                        //zz -> zz.id //edge label
-//                        zz -> zz.to.id //edge target
-//                ));
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * layer of the graph, responsible for materializing and settng visual properties from input
@@ -357,7 +357,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
 
         @Override
         protected void paintBelow(GL2 gl) {
-            float alpha = 0.8f;//weight * 0.5f + 0.5f; //TODO make variable
+            float alpha = 0.8f;
             gl.glColor4f(r, g, b, alpha);
             Draw.rect(gl, bounds);
         }
@@ -369,7 +369,7 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
         }
 
         public boolean pinned() {
-            //TODO
+            
             return false;
         }
     }
@@ -412,8 +412,8 @@ public class Graph2D<X> extends MutableMapContainer<X, Graph2D.NodeVis<X>> {
             if (node.id instanceof NodeGraph.Node) {
                 NodeGraph.Node<N, E> nn = (NodeGraph.Node<N, E>) node.id;
                 nn.edges(false, true).forEach((ImmutableDirectedEdge<N, E> e) -> {
-                    Graph2D.EdgeVis<N> ee = graph.edge(node, e.other(nn));//.color(0.5f, 0.5f, 0.5f);
-                    //ee.color(0.8f, 0.8f, 0.8f);
+                    Graph2D.EdgeVis<N> ee = graph.edge(node, e.other(nn));
+                    
 
                 });
                 node.color(0.5f, 0.5f, 0.5f);

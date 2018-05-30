@@ -105,7 +105,7 @@ public class Alternation extends CollectionParser {
 	 */
 	private List<String> randomSettle(int maxDepth, int depth) {
 
-		// which alternatives are terminals?
+		
 
 		List<Terminal> terms = new ArrayList<>();
 		for (Parser j : subparsers) {
@@ -114,8 +114,8 @@ public class Alternation extends CollectionParser {
 			}
 		}
 
-		// pick one of the terminals or, if there are no
-		// terminals, pick any subparser
+		
+		
 
 		List<? extends Parser> which = terms;
 		if (terms.isEmpty()) {
@@ -139,9 +139,9 @@ public class Alternation extends CollectionParser {
 
 	@Override
 	public Iterable<Parser> leftChildren() {
-//		Set<Parser> leftChildren = new HashSet<>(1);
-//		leftChildren.addAll(subparsers);
-//		return leftChildren;
+
+
+
 		return subparsers;
 	}
 

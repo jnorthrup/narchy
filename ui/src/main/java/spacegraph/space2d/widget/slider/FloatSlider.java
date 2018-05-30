@@ -134,7 +134,7 @@ public class FloatSlider extends Widget {
         protected void update() {
             FloatSlider p = parent(FloatSlider.class);
             if (p!=null) {
-                FloatSupplier input = p.input; //HACK
+                FloatSupplier input = p.input; 
                 if (input != null)
                     super.value(input.asFloat());
             }
@@ -159,8 +159,8 @@ public class FloatSlider extends Widget {
 
                 parent.updateText();
 
-                //TODO other setter models, ex: AtomicDouble etc
-                FloatSupplier input = parent.input; //HACK
+                
+                FloatSupplier input = parent.input; 
                 if (input instanceof MutableFloat) {
                     ((MutableFloat) input).set(v(p));
                 }

@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 /* High-performance Circular (Ring) Buffer. Not thread safe, and sacrifices safety for speed in other ways. */
 public class CircularArrayList<E> extends AbstractList<E> implements RandomAccess, Deque<E>, Serializable {
 
-    private int n = -1; // buffer length
+    private int n = -1; 
     public E[] array;
     private int head;
     private int tail;
@@ -97,16 +97,16 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     /*
      private int wrapIndex(final int i) {
      int m = i % n;
-     if (m < 0) // java modulus can be negative
+     if (m < 0) 
      m += n;       
      return m;
      }
      */
-    // This method is O(n) but will never be called if the
-    // CircularArrayList is used in its typical/intended role.
-    // TODO use array copy
+    
+    
+    
     private void shiftBlock(int startIndex, int endIndex) {
-        //assert (endIndex > startIndex);        
+        
         for (int i = endIndex - 1; i >= startIndex; i--) {
             setFast(i + 1, get(i));
         }
@@ -115,18 +115,18 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     @Override
     public int size() {
         return size;
-        //return tail - head + (tail < head ? n : 0);
+        
     }
 
     @Override
     public E get(int i) {
-        //same as the original function below but avoid another function call to help guarante inlining
-        //int m = ;
-        //if (m < 0) m += n;
+        
+        
+        
         return array[(head + i) % n];
 
-        //original code:
-        //return buf[wrapIndex(head + i)];
+        
+        
     }
 
     public final E getAndSet(int i, E newValue) {
@@ -146,9 +146,9 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
         /*if (i < 0 || i >= size()) {
          throw new IndexOutOfBoundsException();
          }*/
-        //same as the original function below but avoid another function call to help guarante inlining
+        
         int m = (head + i) % n;
-        //if (m < 0) m += n;        
+        
 
         E existing = array[m];
         array[m] = e;

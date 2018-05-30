@@ -35,12 +35,12 @@ public class cparticle_t {
 	public cparticle_t next;
 	public float time;
 
-	public final float[] org = {0, 0, 0}; // vec3_t
-	public final float[] vel = {0, 0, 0}; // vec3_t
-	public final float[] accel = {0, 0, 0}; // vec3_t
+	public final float[] org = {0, 0, 0}; 
+	public final float[] vel = {0, 0, 0}; 
+	public final float[] accel = {0, 0, 0}; 
 
 	public float color;
-	//public float colorvel;
+	
 	public float alpha;
 	public float alphavel;
 }

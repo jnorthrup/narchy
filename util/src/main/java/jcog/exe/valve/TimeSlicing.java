@@ -27,7 +27,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
     public final AtomicLong cycleTimeNS = new AtomicLong(/* 10hz default: = 100ms = */ 100 * 1000 * 1000);
 
     final MultithreadConcurrentQueue<InstrumentedWork> pending = new MultithreadConcurrentQueue<>(512);
-    //final MultithreadConcurrentQueue<InstrumentedWork> running = new MultithreadConcurrentQueue<>(512);
+    
 
     private final Semaphore concurrency;
 
@@ -36,7 +36,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
         this.concurrency = new Semaphore(concurrency, false);
     }
 
-    //TODO update fps rate: setFPS
+    
 
 
     @Override
@@ -48,7 +48,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
     public void onAdd(InstrumentedWork<Who,What> iw) {
         queue(iw);
 
-        //will spawn up to concurrency then no more will be created
+        
         if (concurrency.tryAcquire()) {
             spawn();
         }
@@ -61,41 +61,41 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
     }
 
     protected void spawn() {
-        //TODO make this impl by different ways: dedicated worker threads, or re-entrant ForkJoinPool submissions
+        
         ForkJoinPool.commonPool().execute((RunnableFuture)new Worker());
     }
 
     @Override
     public void onRemove(InstrumentedWork<Who,What> value) {
-        //TODO remove associated InstrumentedWork from queue
+        
     }
 
     @Override
     public TimeSlicing commit() {
-        //TODO wake sleeping queue items by moving them to the pending queue
+        
         super.commit();
 
-//        work();
+
         return this;
     }
 
-//    protected void work() {
-//
-////            if (getSurplusQueuedTaskCount()>0) {
-////                ForkJoinTask.helpQuiesce();
-////            }
-//
-//            ForkJoinTask<?> next;
-//            while ((next = ForkJoinPool.commonPool().) != null) {
-////                        try {
-//                    ((Runnable)next).run();
-////                        } catch (InterruptedException | ExecutionException e) {
-////                            e.printStackTrace();
-////                        }
-//
-//
-//            }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void stop() {
         cycleTimeNS.set(-1);
@@ -112,14 +112,14 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
 
             long cycleNS = cycleTimeNS.longValue();
             if (cycleNS < 0) {
-                return true; //TimeSlicing has been stopped
+                return true; 
             }
 
             InstrumentedWork x = pending.poll();
 
             if (x == null) {
                 concurrency.release();
-                return true; //DONE
+                return true; 
             } else {
 
                 try {
@@ -138,7 +138,7 @@ public class TimeSlicing<Who, What> extends Mix<Who, What, InstrumentedWork<Who,
                         }
 
                     } else {
-                        //TODO move to sleep queue
+                        
                     }
 
 

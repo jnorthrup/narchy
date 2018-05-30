@@ -30,18 +30,18 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
 
 
 
-    //static final ObjectMapper json = new ObjectMapper();
+    
 
     public static void printJSONArray(PrintStream out, Object[] row, boolean includeBrackets) {
-//        try {
-//            String r = json.writeValueAsString(row);
-//            if (!includeBrackets) {
-//                r = r.substring(1, r.length()-1);
-//            }
-//            out.println(r);
-//        } catch (JsonProcessingException e) {
-//            e.printStackTrace();
-//        }
+
+
+
+
+
+
+
+
+
     }
 
     
@@ -84,7 +84,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         return s.getMax();
     }
     
-    //TODO make a batch version of this
+    
     public void updateBounds(int signal) {
         
         Signal s = getSignal(signal);
@@ -111,14 +111,14 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         Class meter = Signals.class;
         for (Field f : c.getFields()) {
 
-//System.out.println("field: " + f.getType() + " " + f.isAccessible() + " " + Meter.class.isAssignableFrom( f.getType() ));
+
 
             if ( meter.isAssignableFrom( f.getType() ) ) {
                 Signals m = null;
                 try {
                     m = (Signals)f.get(obj);
                 } catch (IllegalAccessException e) {
-                    //TODO ignore or handle errors?
+                    
                 }
                 add(m);
             }
@@ -198,7 +198,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         
     }
     
-    private RowKey nextRowKey; //TODO use AtomicReference
+    private RowKey nextRowKey; 
     
     /** the columns of the table */
     private final List<Signals<?>> meters = new ArrayList<>();
@@ -271,7 +271,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         boolean[] extremaToInvalidate = new boolean[ numColumns ];
         
         Object[] nextRow = new Object[ numColumns ];
-        append(nextRow, extremaToInvalidate); //append it so that any derivative columns further on can work with the most current data (in lower array indices) while the array is being formed
+        append(nextRow, extremaToInvalidate); 
 
         int c = 0;
         for (Signals m : meters) {
@@ -304,7 +304,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
             if (extremaToInvalidate[i]) {        
                 updateBounds(i);
             }
-            //if (i == 0) System.out.println(get extremaToInvalidate[0] + " "  + history);
+            
         }
         
     }
@@ -324,7 +324,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
             boolean maxNAN = Double.isNaN(max);
             
             if (added) {
-                //for rows which have been added
+                
                 if ((minNAN) || (n < min))  {                     
                     setMin(i, n);
                 }
@@ -333,7 +333,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
                 }
             }
             else {
-                //for rows which have been removed
+                
                 if (minNAN || (n == min))  { extremaToInvalidate[i] = true; continue; }
                 if (maxNAN || (n == max))  { extremaToInvalidate[i] = true;
                 }
@@ -427,7 +427,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         return getData(signal, null);
     }
     
-    //Table<Signal,Object (row),Object (value)> getSignalTable(int columns...)
+    
     
     /*    public Signal getSignal(int column) {
         int p = 0;
@@ -447,7 +447,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     
     public Iterator<Object[]> iterator(int... columns) {
         if (columns.length == 1) {
-            //fast 1-argument
+            
             return Iterators.transform(iterator(), new firstColumnIterator(columns));
         }
                 
@@ -500,21 +500,21 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     }
 
     public void printCSVHeader(PrintStream out) {
-        //printJSONArray(out, getSignalIDs(),false );
+        
         printCSVRow(out, getSignalIDs());
     }
 
-//    public void printCSVLastLine(PrintStream out) {
-//        if (!rows.isEmpty())
-//            printJSONArray(out, rowLast(), false);
-//    }
+
+
+
+
 
     public void printCSV(PrintStream out) {
-//        printCSVHeader(out);
-//        for (Object[] row : this) {
-//            printCSVRow(out, row);
-//        }
-//        out.flush();
+
+
+
+
+
 
         printCSV4(out);
     }
@@ -532,17 +532,17 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     }
 
     private static void printCSVRow(PrintStream out, Object[] row) {
-//        for (Object o : row) {
-//            //TODO quote strings
-//            out.append(String.valueOf(o)).append(',');
-//        }
-//        out.append('\n');
+
+
+
+
+
         printCSVRow4(out, row);
     }
 
     private static void printCSVRow4(PrintStream out, Object[] row) {
         for (Object o : row) {
-            //TODO quote strings
+            
             if (o instanceof Number) {
                 Number n = (Number)o;
                 out.append(Texts.n4(n.floatValue()));
@@ -569,7 +569,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
     }
 
     public void printARFF(PrintStream out, Predicate<Object[]> p) {
-        //http://www.cs.waikato.ac.nz/ml/weka/arff.html
+        
         out.println("@RELATION " + name());
 
 
@@ -577,7 +577,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         for (Signals<?> m : meters) {
             for (Signal s : m.getSignals()) {
                 if (n == 0) {
-                    //key, for now we'll use string
+                    
                     out.println("@ATTRIBUTE " + s.id + " STRING");
                 }
                 else if ((m instanceof DoubleMeter) || (m instanceof HitMeter)) {
@@ -585,13 +585,13 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
                 }
                 else {
                     out.println("@ATTRIBUTE " + s.id + " STRING");
-                    //TODO use nominal by finding the unique values
+                    
                 }
                 n++;
             }
         }
 
-        out.print('%'); //ARFF comment character
+        out.print('%'); 
         printCSVHeader(out);
 
         out.println("@DATA");
@@ -609,7 +609,7 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
                         out.print('\"' + y.toString() + '\"');
                 }
                 else {
-                    //pad extra values with '?'
+                    
                     out.print('?');
                 }
                 if (i!=numColumns-1)
@@ -621,22 +621,22 @@ public class Metrics<RowKey> implements Iterable<Object[]> {
         }
     }
 
-//    public final static Gson json = new GsonBuilder()
-//             .registerTypeAdapter(Double.class, new JsonSerializer<Double>()  {
-//                        @Override
-//                        public JsonElement serialize(Double value, Type theType,
-//JsonSerializationContext context) {
-//                                if (value.isNaN()) {
-//                                        return new JsonPrimitive("NaN");
-//                                } else if (value.isInfinite()) {
-//                                        return new JsonPrimitive(value);
-//                                } else {
-//                                        return new JsonPrimitive(
-//                                                new BigDecimal(value).
-//                                                    setScale(PRECISION,
-//                                                    BigDecimal.ROUND_HALF_UP).stripTrailingZeros());
-//                                }
-//                        }
-//                })
-//                .create();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

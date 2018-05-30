@@ -84,7 +84,7 @@ public class AtomicFloatFieldUpdater<X>  {
 
 
 
-//    public void addAndGet(X v, float x) {
-//        this.updater.updateAndGet(v, (i)-> floatToIntBits(intBitsToFloat(i) + x ));
-//    }
+
+
+
 }

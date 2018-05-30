@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -38,8 +38,8 @@ public class ContactSolverInfo {
 	public int numIterations = 10;
 	public float maxErrorReduction = 20f;
 	public float sor = 1.3f;
-	public float erp = 0.2f; // used as Baumgarte factor
-	public final float erp2 = 0.1f; // used in Split Impulse
+	public float erp = 0.2f; 
+	public final float erp2 = 0.1f; 
 	public boolean splitImpulse;
 	public final float splitImpulsePenetrationThreshold = -0.02f;
 	public float linearSlop;

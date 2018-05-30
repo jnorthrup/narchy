@@ -40,7 +40,7 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     protected void commit() {
-        this.copy = //(size == 0) ? null :
+        this.copy = 
                 toArrayRecycled(arrayBuilder);
     }
 
@@ -105,10 +105,10 @@ public class FastCoWList<X> extends FasterList<X> {
     @Override
     public void forEach(Consumer c) {
         X[] copy = this.copy;
-        //if (copy != null) {
+        
             for (X x : copy)
                 c.accept(x);
-        //}
+        
     }
 
     @Override

@@ -17,7 +17,7 @@ package spacegraph.space2d.dyn2d.jbox2d;
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
  *
- * http://creativecommons.org/licenses/LGPL/2.1/
+ * http:
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -51,8 +51,8 @@ public class VerletTest implements ICase {
 
     @Override
     public void init(Dynamics2D w) {
-        //physics.addBehavior(new GravityBehavior2D(new Vec2D(0,0.1)));
-        //physics.setWorldBounds(new Rect(0,0,width,height));
+        
+        
         List<Body2D> particles = new FasterList();
         for(int y=0,idx=0; y<DIM; y++) {
             for(int x=0; x<DIM; x++) {
@@ -76,27 +76,27 @@ public class VerletTest implements ICase {
         spring(w, particles.get(DIM-1), particles.get(particles.size()-DIM),
                 INNER_STRENGTH, (float)sqrt(sqr(REST_LENGTH*(DIM-1))*2));
 
-//        head=physics.particles.get((DIM-1)/2);
-//        head.lock();
+
+
 
     }
 
     public void spring(Dynamics2D w, Body2D p, Body2D q, float STRENGTH, float REST_LENGTH) {
-//        RevoluteJoint j = (RevoluteJoint) w.addJoint(new RevoluteJointDef(p, q));
-//        j.positionFactor = 1f - STRENGTH;
-//        j.getLocalAnchorA().set(+REST_LENGTH/2,0);
-//        j.getLocalAnchorB().set(-REST_LENGTH/2,0);
+
+
+
+
 
         RopeJoint j = (RopeJoint) w.addJoint(new RopeJointDef(p, q));
         j.setTargetLength(REST_LENGTH);
         j.setPositionFactor(STRENGTH);
-        //j.getLocalAnchorA().set(+REST_LENGTH/2,0);
-        //j.getLocalAnchorB().set(-REST_LENGTH/2,0);
+        
+        
 
-//        DistanceJoint j = (DistanceJoint ) w.addJoint(new DistanceJointDef().initialize(
-//            p, q, new v2(0,0), new v2(+REST_LENGTH,0)
-//        ));
-//        j.setDampingRatio(0.9f);
+
+
+
+
 
     }
 

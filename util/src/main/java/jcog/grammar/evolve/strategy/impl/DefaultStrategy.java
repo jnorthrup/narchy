@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -59,8 +59,8 @@ public class DefaultStrategy implements RunStrategy {
     protected Variation variation;
     protected EvolutionParameters param;
     protected ExecutionListener listener;
-    protected boolean terminationCriteria = false; //Termination criteria enables/disables the premature termination of thread when best regex/individual doens't change for
-    //a speciefied amount of generations (terminationCriteriaGenerations)
+    protected boolean terminationCriteria = false; 
+    
 
     @Deprecated
     protected int terminationCriteriaGenerations = 200;
@@ -76,7 +76,7 @@ public class DefaultStrategy implements RunStrategy {
 
         this.context = new Context(Context.EvaluationPhases.TRAINING, configuration);
         this.maxDepth = param.getCreationMaxDepth();
-        //cloning the objective 
+        
         this.objective = configuration.getObjective();
         this.selection = new Tournament(this.context);
         this.variation = new Variation(this.context);
@@ -88,7 +88,7 @@ public class DefaultStrategy implements RunStrategy {
     protected void readParameters(Configuration configuration) {
         Map<String, String> parameters = configuration.getStrategyParameters();
         if (parameters != null) {
-            //add parameters if needed
+            
             if (parameters.containsKey("terminationCriteriaGenerations")) {
                 terminationCriteriaGenerations = Integer.valueOf(parameters.get("terminationCriteriaGenerations"));
             }
@@ -112,29 +112,29 @@ public class DefaultStrategy implements RunStrategy {
             int popSize = param.getPopulationSize();
             population.addAll(ramped.generate(popSize - this.population.size()));
 
-            //IntObjectHashMap<Ranking> remaining = new IntObjectHashMap(newPopulation.size());
-            //Set<Ranking> remaining = new UnifiedSet(population.size());
-            //this.rankings = new TreeSet(RankingComparator);
+            
+            
+            
             eachRankings(population, objective, (n, f) -> {
                 rankings.add(new Ranking(n, f));
-                //population.add(n);
+                
             });
 
-//        rankings.clear();
-//
-//        final int popSize = population.size();
-//        while (!remaining.isEmpty() /*|| rankings.size() < popSize*/) {
-//            Utils.getFirstParetoFront(remaining);
-//            sortByFirst(rankings);
-//        }
-//
-//
-//        population.clear();
-//
-//        Obtain an ordinated (as Rankings are) population
-//        rankings.forEach(rr -> population.add(rr.getTree()));
 
-            //Variables for termination criteria
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
             String oldGenerationBestValue = null;
             int terminationCriteriaGenerationsCounter = 0;
             int doneGenerations = 0;
@@ -179,7 +179,7 @@ public class DefaultStrategy implements RunStrategy {
 
             }
 
-            //                //We have to evaluate the new solutions on the testing dataset
+            
             TreeSet<Ranking> tmp = new TreeSet(RankingComparator);
             sortRankings(population, objective, tmp);
 
@@ -187,10 +187,10 @@ public class DefaultStrategy implements RunStrategy {
             listener.evolutionComplete(this, doneGenerations - 1, tmp);
 
 
-//            //now generation value is already last generation + 1, no reason to add +1
-//            if (listener != null) {
-//                listener.evolutionComplete(this, doneGenerations, rankings);
-//            }
+
+
+
+
             return null;
         } catch (Throwable x) {
             throw new TreeEvaluationException("Error during evaluation of a tree", x, this);
@@ -200,63 +200,63 @@ public class DefaultStrategy implements RunStrategy {
     protected void evolve() {
         throw new RuntimeException("share the impl from DiversityElitismStrategy");
 
-//        List<Node> newPopulation = new ArrayList<>(population.size());
-//        int popSize = population.size();
-//        int oldPopSize = (int) (popSize * 0.9);
-//
-//        boolean allPerfect = true;
-//        for (double fitness : rankings.get(0).getFitness()) {
-//            if (Math.round(fitness * 10000) != 0) {
-//                allPerfect = false;
-//                break;
-//            }
-//        }
-//        if (allPerfect) {
-//            return;
-//        }
-//
-//        for (int index = 0; index < param.getElitarism(); index++) {
-//            Node elite = rankings.remove(0).getTree();
-//            newPopulation.add(elite);
-//        }
-//
-//        while (newPopulation.size() < oldPopSize) {
-//
-//            double random = context.getRandom().nextDouble();
-//
-//            if (random <= param.getCrossoverProbability() && oldPopSize - newPopulation.size() >= 2) {
-//                Node selectedA = selection.select(rankings);
-//                Node selectedB = selection.select(rankings);
-//
-//                Twin<Node> newIndividuals = variation.crossover(selectedA, selectedB, maxCrossoverTries);
-//                if (newIndividuals != null) {
-//                    newPopulation.add(newIndividuals.getOne());
-//                    newPopulation.add(newIndividuals.getTwo());
-//                }
-//            } else if (random <= param.getCrossoverProbability() + param.getMutationPobability()) {
-//                Node mutant = selection.select(this.rankings);
-//                mutant = variation.mutate(mutant);
-//                newPopulation.add(mutant);
-//
-//            } else {
-//                Node duplicated = selection.select(rankings);
-//                newPopulation.add(duplicated);
-//            }
-//        }
-//
-//        Generation ramped = new Ramped(maxDepth, context);
-//        List<Node> generated = ramped.generate(popSize - oldPopSize);
-//        newPopulation.addAll(generated);
-//
-//        population = newPopulation;
-//        List<Ranking> tmp = buildRankings(population, objective);
-//        rankings.clear();
-//        while (tmp.size() > 0) {
-//            List<Ranking> t = Utils.getFirstParetoFront(tmp);
-//            tmp.removeAll(t);
-//            sortByFirst(t);
-//            rankings.addAll(t);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     protected static MutableMap<Node, double[]> buildRankings(List<Node> population, Objective objective) {
@@ -314,21 +314,21 @@ public class DefaultStrategy implements RunStrategy {
                 double v2 = f2[i];
                 if (v1==v2) continue;
 
-                //int result = Double.compare(v1, v2);
+                
                 balance += (v1/(v1+v2) - 0.5);
             }
 
-            //TODO weight of fitness objectives
+            
 
             if (balance > 0) return 1;
             if (balance < 0) return -1;
 
-//            if (result == 0) {
-//                return o1.getDescription().
-//                        compareTo(o2.getDescription());
-//            }
 
-            //??
+
+
+
+
+            
             return Integer.compare(o1.hashCode(), o2.hashCode());
         }
     };

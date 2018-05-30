@@ -15,13 +15,13 @@ public class ServicesTest {
 
         s.print(System.out);
 
-        //ForkJoinPool.commonPool().awaitQuiescence()
+        
 
         s.stop();
 
         s.print(System.out);
 
-        //System.out.println(sb);
+        
     }
 
     private static class DummyService extends Service {
@@ -29,6 +29,11 @@ public class ServicesTest {
 
         public DummyService(StringBuilder sb) {
             this.sb = sb;
+        }
+
+        @Override
+        public void off() {
+
         }
 
         @Override

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FunctorTest {
 
     @Test
-    public void testImmediateTransformOfInput() throws Narsese.NarseseException { //as opposed to deriver's use of it
+    public void testImmediateTransformOfInput() throws Narsese.NarseseException { 
         NAR n = NARS.tmp();
 
 
@@ -66,26 +66,26 @@ public class FunctorTest {
         TestNAR t = new TestNAR(NARS.tmp());
         t.believe("((complexity($1)<->3)==>c3($1))");
         t.ask("c3(x:y)");
-//        t.ask("c3(?1)");
+
         t.mustBelieve(1024, "c3(x:y)", 1f, 0.81f);
-//        t.nar.at(1000, ()->{
-//           t.nar.concept($.the("c3")).print();
-//            t.nar.concept($.the("(complexity((y-->x))<->3)")).print();
-//
-//        });
+
+
+
+
+
         t.test();
 
     }
 
     @Test
     public void testFunctor2() throws Narsese.NarseseException {
-        //
+        
 
         int TIME = 512;
         TestNAR t = new TestNAR(NARS.tmp());
 
-        //
-        //t.log();
+        
+        
         t.believe("(equal(complexity($1),complexity($2)) ==> c({$1,$2}))");
         t.ask("c({x, y})");
         t.ask("c({x, (x)})");
@@ -116,26 +116,26 @@ public class FunctorTest {
         d.input("anon((a,b),#x)?");
         d.run(3);
     }
-//    @Test
-//    public void testJSON1() throws Narsese.NarseseException {
-//        Term t = IO.fromJSON("{ \"a\": [1, 2], \"b\": \"x\", \"c\": { \"d\": 1 } }");
-//        assertEquals($("{(\"x\"-->b),a(1,2),({(1-->d)}-->c)}").toString(), t.toString());
-//    }
-//
-//    @Test
-//    public void testJSON2() {
-//        assertEquals("{a(1,2)}", IO.fromJSON("{ \"a\": [1, 2] }").toString());
-//    }
 
-//    @Test
-//    public void testParseJSONTermFunction() throws Narsese.NarseseException {
-//        Term u = NARS.shell().inputAndGet("fromJSON(\"{ \"a\": [1, 2] }\").").term();
-//        assertEquals("{a(1,2)}", u.toString());
-//    }
-//    @Test
-//    public void testToStringJSONTermFunction() throws Narsese.NarseseException {
-//        Term u = NARS.shell().inputAndGet("toJSON((x,y,z)).").term();
-//        assertEquals("json(\"[\"x\",\"y\",\"z\"]\")", u.toString());
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

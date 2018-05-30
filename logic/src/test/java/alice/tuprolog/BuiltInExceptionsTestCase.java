@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class BuiltInExceptionsTestCase {
 
-	// verifico che asserta(X) lancia un errore di instanziazione
+	
 	@Test
 	public void test_asserta_1_1() throws Exception {
 		Prolog engine = new Prolog();
@@ -28,7 +28,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che asserta(1) lancia un errore di tipo
+	
 	@Test public void test_asserta_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(asserta(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -44,7 +44,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che assertz(X) lancia un errore di instanziazione
+	
 	@Test public void test_assertz_1_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(assertz(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -56,7 +56,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che assertz(1) lancia un errore di tipo
+	
 	@Test public void test_assertz_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(assertz(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -72,7 +72,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che '$retract'(X) lancia un errore di instanziazione
+	
 	@Test public void test_$retract_1_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$retract'(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -84,7 +84,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che '$retract'(1) lancia un errore di tipo
+	
 	@Test public void test_$retract_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$retract'(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -100,7 +100,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che abolish(X) lancia un errore di instanziazione
+	
 	@Test public void test_abolish_1_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(abolish(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -112,7 +112,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che abolish(1) lancia un errore di tipo
+	
 	@Test public void test_abolish_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(abolish(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -128,7 +128,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che abolish(p(X)) lancia un errore di tipo
+	
 	@Test public void test_abolish_1_3() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(abolish(p(X)), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -145,7 +145,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("p", new Var("X"))));
 	}
 
-	// verifico che halt(X) lancia un errore di instanziazione
+	
 	@Test public void test_halt_1_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(halt(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -157,7 +157,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che halt(1.5) lancia un errore di tipo
+	
 	@Test public void test_halt_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(halt(1.5), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -173,7 +173,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1.5, culprit.doubleValue(), 0.01);
 	}
 
-	// verifico che load_library(X) lancia un errore di instanziazione
+	
 	@Test public void test_load_library_1_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(load_library(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -185,7 +185,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che load_library(1) lancia un errore di tipo
+	
 	@Test public void test_load_library_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(load_library(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -201,8 +201,8 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che load_library_1 lancia un errore di esistenza se la libreria
-	// LibraryName non esiste
+	
+	
 	@Test public void test_load_library_1_3() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(load_library('a'), error(existence_error(ObjectType, Culprit), existence_error(Goal, ArgNo, ObjectType, Culprit, Message)), true).";
@@ -220,7 +220,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(message.isEqual(new Struct("InvalidLibraryException: a at -1:-1")));
 	}
 
-	// verifico che unload_library(X) lancia un errore di instanziazione
+	
 	@Test public void test_unload_library_1_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(unload_library(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -232,7 +232,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che unload_library(1) lancia un errore di tipo
+	
 	@Test public void test_unload_library_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(unload_library(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -248,8 +248,8 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che unload_library(LibraryName) lancia un errore di esistenza se
-	// la libreria LibraryName non esiste
+	
+	
 	@Test public void test_unload_library_1_3() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(unload_library('a'), error(existence_error(ObjectType, Culprit), existence_error(Goal, ArgNo, ObjectType, Culprit, Message)), true).";
@@ -267,7 +267,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(message.isEqual(new Struct("InvalidLibraryException: null at 0:0")));
 	}
 
-	// verifico che '$call'(X) lancia un errore di instanziazione
+	
 	@Test public void test_$call_1_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$call'(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -279,7 +279,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che '$call'(1) lancia un errore di tipo
+	
 	@Test public void test_$call_1_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$call'(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -295,7 +295,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che is(X, Y) lancia un errore di instanziazione
+	
 	@Test public void test_is_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(is(X, Y), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -307,7 +307,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(2, argNo.intValue());
 	}
 
-	// verifico che is(X, a) lancia un errore di tipo
+	
 	@Test public void test_is_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(is(X, a), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -323,7 +323,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 	
-	// verifico che is(X, 1/0) lancia l'errore di valutazione "zero_divisor"
+	
 	@Test public void test_is_2_3() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(is(X, 1/0), error(evaluation_error(Error), evaluation_error(Goal, ArgNo, Error)), true).";
@@ -337,7 +337,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(error.isEqual(new Struct("zero_divisor")));
 	}
 	
-	// verifico che is(X, 1//0) lancia l'errore di valutazione "zero_divisor"
+	
 	@Test public void test_is_2_4() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(is(X, 1//0), error(evaluation_error(Error), evaluation_error(Goal, ArgNo, Error)), true).";
@@ -351,7 +351,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(error.isEqual(new Struct("zero_divisor")));
 	}
 	
-	// verifico che is(X, 1 div 0) lancia l'errore di valutazione "zero_divisor"
+	
 	@Test public void test_is_2_5() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(is(X, 1 div 0), error(evaluation_error(Error), evaluation_error(Goal, ArgNo, Error)), true).";
@@ -365,7 +365,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(error.isEqual(new Struct("zero_divisor")));
 	}
 	
-	// verifico che '$tolist'(X, List) lancia un errore di instanziazione
+	
 	@Test public void test_$tolist_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$tolist'(X, List), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -378,7 +378,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che '$tolist'(1, List) lancia un errore di tipo
+	
 	@Test public void test_$tolist_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$tolist'(1, List), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -395,7 +395,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che '$fromlist'(Struct, X) lancia un errore di instanziazione
+	
 	@Test public void test_$fromlist_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$fromlist'(Struct, X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -408,7 +408,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(2, argNo.intValue());
 	}
 
-	// verifico che '$fromlist'(Struct, a) lancia un errore di tipo
+	
 	@Test public void test_$fromlist_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$fromlist'(Struct, a), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -425,7 +425,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 
-	// verifico che '$append'(a, X) lancia un errore di instanziazione
+	
 	@Test public void test_$append_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$append'(a, X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -438,7 +438,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(2, argNo.intValue());
 	}
 
-	// verifico che '$append'(a, b) lancia un errore di tipo
+	
 	@Test public void test_$append_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$append'(a, b), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -455,7 +455,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("b")));
 	}
 
-	// verifico che '$find'(X, []) lancia un errore di instanziazione
+	
 	@Test public void test_$find_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$find'(X, []), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -467,7 +467,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che '$find'(p(X), a) lancia un errore di tipo
+	
 	@Test public void test_$find_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$find'(p(X), a), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -484,7 +484,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 
-	// verifico che set_prolog_flag(X, 1) lancia un errore di instanziazione
+	
 	@Test public void test_set_prolog_flag_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(set_prolog_flag(X, 1), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -497,7 +497,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che set_prolog_flag(a, X) lancia un errore di instanziazione
+	
 	@Test public void test_set_prolog_flag_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(set_prolog_flag(a, X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -510,7 +510,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(2, argNo.intValue());
 	}
 
-	// verifico che set_prolog_flag(1, 1) lancia un errore di tipo
+	
 	@Test public void test_set_prolog_flag_2_3() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(set_prolog_flag(1, 1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -527,7 +527,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che set_prolog_flag(a, p(X)) lancia un errore di tipo
+	
 	@Test public void test_set_prolog_flag_2_4() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(set_prolog_flag(a, p(X)), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -544,8 +544,8 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("p", new Var("X"))));
 	}
 
-	// verifico che set_prolog_flag(Flag, Value) lancia un errore di dominio se
-	// il Flag non e' definito nel motore
+	
+	
 	@Test public void test_set_prolog_flag_2_5() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(set_prolog_flag(a, 1), error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)), true).";
@@ -562,7 +562,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 
-	// verifico che set_prolog_flag(bounded, a) lancia un errore di dominio
+	
 	@Test public void test_set_prolog_flag_2_6() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(set_prolog_flag(bounded, a), error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)), true).";
@@ -579,8 +579,8 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 
-	// verifico che set_prolog_flag(bounded, false) lancia un errore di permesso
-	//   bounded flag seems to be modifiable so this succeeds and the test fails.  it is tested basicaly the same way in another prolog flag test so this will remain disabled
+	
+	
 	@Disabled
 	@Test public void test_set_prolog_flag_2_7() throws Exception {
 		Prolog engine = new Prolog();
@@ -600,7 +600,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(message.isEqual(new NumberTerm.Int(0)));
 	}
 
-	// verifico che get_prolog_flag(X, Value) lancia un errore di instanziazione
+	
 	@Test public void test_get_prolog_flag_2_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(get_prolog_flag(X, Value), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -613,7 +613,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che get_prolog_flag(1, Value) lancia un errore di tipo
+	
 	@Test public void test_get_prolog_flag_2_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(get_prolog_flag(1, Value), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -630,8 +630,8 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che get_prolog_flag(Flag, Value) lancia un errore di dominio se
-	// il Flag non e' definito nel motore
+	
+	
 	@Test public void test_get_prolog_flag_2_3() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch(get_prolog_flag(a, Value), error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)), true).";
@@ -648,7 +648,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 
-	// verifico che '$op'(Priority, yfx, '+') lancia un errore di instanziazione
+	
 	@Test public void test_$op_3_1() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(Priority, yfx, '+'), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -661,8 +661,8 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, argNo.intValue());
 	}
 
-	// verifico che '$op'(600, Specifier, '+') lancia un errore di
-	// instanziazione
+	
+	
 	@Test public void test_$op_3_2() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(600, Specifier, '+'), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -675,7 +675,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(2, argNo.intValue());
 	}
 
-	// verifico che '$op'(600, yfx, Operator) lancia un errore di instanziazione
+	
 	@Test public void test_$op_3_3() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(600, yfx, Operator), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
@@ -688,7 +688,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(3, argNo.intValue());
 	}
 
-	// verifico che '$op'(a, yfx, '+') lancia un errore di tipo
+	
 	@Test public void test_$op_3_4() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(a, yfx, '+'), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -705,7 +705,7 @@ public class BuiltInExceptionsTestCase {
 		assertTrue(culprit.isEqual(new Struct("a")));
 	}
 
-	// verifico che '$op'(600, 1, '+') lancia un errore di tipo
+	
 	@Test public void test_$op_3_5() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(600, 1, '+'), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -722,7 +722,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che '$op'(600, yfx, 1) lancia un errore di tipo
+	
 	@Test public void test_$op_3_6() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(600, yfx, 1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
@@ -739,7 +739,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1, culprit.intValue());
 	}
 
-	// verifico che '$op'(1300, yfx, '+') lancia un errore di dominio
+	
 	@Test public void test_$op_3_7() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(1300, yfx, '+'), error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)), true).";
@@ -756,7 +756,7 @@ public class BuiltInExceptionsTestCase {
 		assertEquals(1300, culprit.intValue());
 	}
 
-	// verifico che '$op'(600, a, '+') lancia un errore di dominio
+	
 	@Test public void test_$op_3_8() throws Exception {
 		Prolog engine = new Prolog();
 		String goal = "catch('$op'(600, a, '+'), error(domain_error(ValidDomain, Culprit), domain_error(Goal, ArgNo, ValidDomain, Culprit)), true).";

@@ -20,7 +20,7 @@ public class FingerResizeWindow extends FingerResize {
 
     @Override
     protected v2 pos(Finger finger) {
-        //screen absolute
+        
         return finger.posScreen.scale(1f,-1f);
     }
 
@@ -42,7 +42,7 @@ public class FingerResizeWindow extends FingerResize {
         assert(y1 <= y2);
 
         int w = Math.max(MIN_WIDTH, Math.round(x2 - x1));
-        int h = Math.max(MIN_HEIGHT, Math.round(y2 - y1)); //y2-y1);
+        int h = Math.max(MIN_HEIGHT, Math.round(y2 - y1)); 
 
         window.setPositionAndSize(Math.round(x1), Math.round(y1), w, h);
     }

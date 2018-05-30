@@ -41,7 +41,7 @@ import java.io.IOException;
 
 public class DIBHandler extends TypeHandler implements ImageObserver {
 
-//    protected static Logger logger = LoggerFactory.getLogger((DIBHandler.class);
+
 
     @Override
     public boolean formatValid(int format) {
@@ -65,7 +65,7 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
 
     @Override
     public void handleData(RdpPacket data, int length, ClipInterface c) {
-        // System.out.println("DIBHandler.handleData");
+        
         BMPToImageThread t = new BMPToImageThread(data, length, c);
         t.start();
     }

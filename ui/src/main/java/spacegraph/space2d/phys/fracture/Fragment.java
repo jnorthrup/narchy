@@ -23,14 +23,14 @@ public class Fragment extends Polygon {
         super(sides);
     }
 
-//    /**
-//     * Inicializuje fragment na zaklade vstupneho pola (priradi referenciu).
-//     *
-//     * @param ar
-//     */
-//    public Fragment(Tuple2f[] ar) {
-//        super(ar);
-//    }
+
+
+
+
+
+
+
+
 
     /**
      * Ohnisko fragmentu
@@ -66,20 +66,20 @@ public class Fragment extends Polygon {
         }
     }
 
-//    /**
-//     * Zotriedi vrcholy polygonu do konvexneho polygonu, ako idu za sebou.
-//     * Triedi podla uhlu, aky zviera usecka tvoriaca bodmi focus a lubovolny
-//     * vrchol polygonu. Polygony su vacsinou velmi male, cca 8 bodov, preto
-//     * je vyuzivany selected sort ako najrychlejsi algoritmus na data takehoto
-//     * typu.
-//     *
-//     * @param focus Vlozi vnutorny bod, podla ktoreho zotriedi polygon - podla
-//     *              uhlu spojnice daneho bodu a parametra.
-//     */
-//    void sort(Tuple2f focus) {
-//        this.focus = focus;
-//        resort();
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Vymeni 2 vrcholy polygonu

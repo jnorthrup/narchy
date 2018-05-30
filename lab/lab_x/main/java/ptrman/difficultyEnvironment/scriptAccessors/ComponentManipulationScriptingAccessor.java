@@ -99,7 +99,7 @@ public class ComponentManipulationScriptingAccessor {
         return new TwoDimensionalRaysComponent(raysStartDistance, raysLength, numberOfRays, raysSpreadAngleInRadiants);
     }
 
-    // belongs into EvenManiputationScriptingAccessor
+    
     public ExecuteJavascriptAnimationEvent createExecuteJavascriptAnimationEventWithScriptString(String script) {
         return ExecuteJavascriptAnimationEvent.createWithScriptString(script);
     }

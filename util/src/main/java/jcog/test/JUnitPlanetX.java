@@ -50,9 +50,9 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
     private final Queue<Pair<TestDescriptor, JupiterEngineExecutionContext>> all = new ConcurrentLinkedQueue<>();
 
-    //private final TestExecutionListenerRegistry listenerRegistry = new TestExecutionListenerRegistry();
+    
     private final Node.DynamicTestExecutor dte = testDescriptor -> {
-        //System.err.println("TODO: dynamic: " + testDescriptor);
+        
     };
     private final Iterable<TestEngine> testEngines;
     private final LauncherDiscoveryRequestBuilder request;
@@ -90,15 +90,15 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
             if (t instanceof TestTemplateTestDescriptor && ctx.getExtensionContext() != null) {
                 target.add(pair(t, subCTX));
-//                    Stream<TestTemplateInvocationContext> s = ParameterizedTestExtension.getTestTemplateInvocationContexts(
-//                            ((TestTemplateTestDescriptor)t).getTestMethod(), subCTX.getExtensionContext());
-//                    List<TestTemplateInvocationContext> dyn = s.collect(toList());
-//                    if (!dyn.isEmpty()) {
-//                        //System.out.println(dyn);
-//                        dyn.forEach(ic -> {
-//                            t.ex
-//                        });
-//                    }
+
+
+
+
+
+
+
+
+
             }
 
             JupiterEngineExecutionContext finalSubCTX = subCTX;
@@ -129,9 +129,9 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
     private static boolean isDisabled(Annotation[] annotations) {
         for (Annotation a : annotations) {
             if (a.annotationType() == Disabled.class) {
-                //@Disabled
-                // "When applied at the method level, the presence of this annotation does not
-                // prevent the test class from being instantiated."
+                
+                
+                
                 return true;
             }
         }
@@ -156,20 +156,20 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
     public JUnitPlanetX run() {
         LauncherDiscoveryRequest req = request.build();
 
-        //                        .configurationParameter(EXTENSIONS_AUTODETECTION_ENABLED_PROPERTY_NAME, "true")
+        
 
         final ExtensionRegistry reg = ExtensionRegistry
                 .createRegistryWithDefaultExtensions(req.getConfigurationParameters());
-        //reg.registerExtension(ParameterizedTestExtension.class);
-//            reg.registerExtension(new ParameterizedTestExtension(), this);
+        
 
-//            BeforeEachCallback before =
-//                    context -> System.out.println("before: " + context);
-//            reg.registerExtension(before, before);
-//
-//            AfterTestExecutionCallback after =
-//                    context -> System.out.println("after: " + context);
-//            reg.registerExtension(after, after);
+
+
+
+
+
+
+
+
 
         JupiterEngineExecutionContext ctx = new JupiterEngineExecutionContext(this, req.getConfigurationParameters()) {
 
@@ -177,39 +177,39 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
                 @Override
                 public void execute(Executable executable) {
                     throw new UnsupportedOperationException("unused");
-//                        ForkJoinPool.commonPool().submit(() -> {
-//                            try {
-//                                //System.out.println(Thread.currentThread() + " exe " + executable);
-//                                executable.execute();
-//                                //onSuccess(executable)
-//                            } catch (Throwable throwable) {
-//                                throwable.printStackTrace();
-//                            }
-//                        });
+
+
+
+
+
+
+
+
+
 
                 }
             };
 
-            //                @Override
-//                public TestInstanceProvider getTestInstanceProvider() {
-//                    return new TestInstanceProvider() {
-//                        @Override
-//                        public Object getTestInstance(Optional<ExtensionRegistry> reg) {
-//                            TestSource t = x.getSource().get();
-//                            if (t instanceof org.junit.platform.engine.support.descriptor.MethodSource) {
-//                                try {
-//
-//                                    Object inst = Class.forName(((org.junit.platform.engine.support.descriptor.MethodSource) t).getClassName())
-//                                            .newInstance();
-//                                    return inst;
-//                                } catch (Exception e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                            throw new UnsupportedOperationException();
-//                        }
-//                    };
-//                }
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             @Override
             public EngineExecutionListener getExecutionListener() {
@@ -230,29 +230,29 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
             @Override
             public ExtensionContext getExtensionContext() {
                 return null;
-//                            return new MethodExtensionContext(null,
-//                                    getExecutionListener(), (TestMethodTestDescriptor)x,
-//                                    getConfigurationParameters(), getTestInstanceProvider().getTestInstance(null),
-//                                    getThrowableCollector());
+
+
+
+
             }
         };
 
-        //Preconditions.notNull(req, "LauncherDiscoveryRequest must not be null");
-        //Preconditions.notNull(listeners, "TestExecutionListener array must not be null");
-//        if (listeners.length > 0) {
-//            throw new RuntimeException("ignoring listeners: " + Arrays.toString(listeners));
-//        }
-        //Preconditions.containsNoNullElements(listeners, "individual listeners must not be null");
-
-        //            TestExecutionListenerRegistry listenerRegistry = buildListenerRegistryForExecution(listeners);
-//            TestPlan testPlan = TestPlan.from(root);//.getEngineDescriptors());
-//            TestExecutionListener testExecutionListener = this; //listenerRegistry.getCompositeTestExecutionListener();
-        //testExecutionListener.testPlanExecutionStarted(testPlan);
-//            ExecutionListenerAdapter engineExecutionListener = new ExecutionListenerAdapter(testPlan,
-//                    testExecutionListener);
+        
+        
 
 
-        //TestDescriptor testDescriptor = root;//.getTestDescriptorFor(testEngine);
+
+        
+
+        
+
+
+        
+
+
+
+
+        
 
         for (TestDescriptor t : discoverRoot(req, "execution")) {
             flatten(all, t, ctx);
@@ -264,10 +264,10 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
         do {
             all.removeIf(x -> {
-                //logger.info("deq {}", x);
+                
                 TestDescriptor test = x.getOne();
                 exe.execute(() -> {
-                    //logger.info("exe {}", x);
+                    
                     JupiterEngineExecutionContext tctx = x.getTwo();
 
 
@@ -294,7 +294,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
 
                     } catch (Throwable e) {
-                        //e.printStackTrace();
+                        
                         fail = true;
                     }
                     long end = System.nanoTime();
@@ -302,7 +302,7 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
                     try {
                         t.after(tctx);
 
-                        //dynamic tests are descendants
+                        
                         if (!((TestDescriptor) t).getDescendants().isEmpty()) {
                             ((TestDescriptor) t).getDescendants().forEach(d -> {
                                 try {
@@ -315,11 +315,11 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
                             });
                         }
 
-//                            if (!((TestDescriptor)t).getChildren().isEmpty())
-//                                System.out.println(((TestDescriptor)t).getChildren());
 
 
-                        //t.cleanUp(tctx);
+
+
+                        
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -327,12 +327,12 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
                     boolean success = !fail && !tctx.getThrowableCollector().isNotEmpty();
                     results.put(new TestRun(klass,
                             test.getParent().get() instanceof TestTemplateTestDescriptor ?
-                                    "\"" + method + ":" + test.getDisplayName() + "\"" : //include dynamic's params
+                                    "\"" + method + ":" + test.getDisplayName() + "\"" : 
                                     "\"" + method + "\"",
-                            //test.getUniqueId() + " " + test.getDisplayName(),
-                            //test.getUniqueId().toString(),
-                            //test.getDisplayName() + "/" + tctx.getExtensionContext().getDisplayName(), //getUniqueId().toString(),
-                            //test.getDisplayName() + " "  + tctx.getExtensionContext().getUniqueId(),
+                            
+                            
+                            
+                            
                             start, end - start, success));
 
                 });
@@ -364,9 +364,9 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
     @Override
     public void registerTestExecutionListeners(TestExecutionListener... listeners) {
         throw new RuntimeException("ignored");
-//            Preconditions.notEmpty(listeners, "listeners array must not be null or empty");
-//            Preconditions.containsNoNullElements(listeners, "individual listeners must not be null");
-        //this.listenerRegistry.registerListeners(listeners);
+
+
+        
     }
 
     @Override
@@ -375,9 +375,9 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
         return TestPlan.from(discoverRoot(discoveryRequest, "discovery"));
     }
 
-//        TestExecutionListenerRegistry getTestExecutionListenerRegistry() {
-//            return listenerRegistry;
-//        }
+
+
+
 
     @Override
     public void execute(LauncherDiscoveryRequest discoveryRequest, TestExecutionListener... listeners) {
@@ -387,26 +387,26 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
         List<TestDescriptor> root = new FasterList<>();
 
         for (TestEngine testEngine : this.testEngines) {
-            // @formatter:off
+            
             boolean engineIsExcluded = discoveryRequest.getEngineFilters().stream()
                     .map(engineFilter -> engineFilter.apply(testEngine))
                     .anyMatch(FilterResult::excluded);
-            // @formatter:on
+            
 
             if (engineIsExcluded) {
-//                    logger.debug(() -> String.format(
-//                            "Test discovery for engine '%s' was skipped due to an EngineFilter in phase '%s'.",
-//                            testEngine.getId(), phase));
+
+
+
                 continue;
             }
 
-//                logger.debug(() -> String.format("Discovering tests during Launcher %s phase in engine '%s'.", phase,
-//                        testEngine.getId()));
+
+
 
             discoverEngineRoot(testEngine, discoveryRequest).ifPresent(root::add);
         }
-        //root.applyPostDiscoveryFilters(discoveryRequest);
-        //root.prune();
+        
+        
         return root;
     }
 
@@ -432,27 +432,27 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
         BlacklistedExceptions.rethrowIfBlacklisted(throwable);
     }
 
-//        private TestExecutionListenerRegistry buildListenerRegistryForExecution(TestExecutionListener... listeners) {
-//            if (listeners.length == 0) {
-//                return this.listenerRegistry;
-//            }
-//            TestExecutionListenerRegistry registry = new TestExecutionListenerRegistry(this.listenerRegistry);
-//            registry.registerListeners(listeners);
-//            return registry;
-//        }
 
-//        private void execute(TestEngine testEngine, ExecutionRequest executionRequest) {
-//            try {
-//                testEngine.execute(executionRequest);
-//            }
-//            catch (Throwable throwable) {
-//                handleThrowable(testEngine, "execute", throwable);
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void dynamicTestRegistered(TestDescriptor testDescriptor) {
-        //System.err.println("dyn: " + testDescriptor);
+        
     }
 
     @Override
@@ -462,12 +462,12 @@ public class JUnitPlanetX implements Launcher, EngineExecutionListener, TestExec
 
     @Override
     public void executionStarted(TestDescriptor testDescriptor) {
-        //System.out.println("started: " + testDescriptor);
+        
     }
 
     @Override
     public void executionFinished(TestDescriptor testDescriptor, TestExecutionResult testExecutionResult) {
-        //System.out.println("finished : " + testDescriptor);
+        
     }
 
     @Override

@@ -9,9 +9,9 @@ public final class OpIsNot extends MatchConstraint {
 
     private final int op;
 
-//    public OpNotConstraint(/*@NotNull*/ Op o) {
-//        this(o.bit);
-//    }
+
+
+
 
     public OpIsNot(Term target, int opVector) {
         super(target, "opIsNot", $.the(opVector));

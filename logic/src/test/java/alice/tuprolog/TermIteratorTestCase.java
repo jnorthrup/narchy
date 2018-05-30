@@ -57,13 +57,13 @@ public class TermIteratorTestCase {
 						"q(7).";
 		Iterator<Term> i = Term.getIterator(theory);
 		assertTrue(i.hasNext());
-		i.next(); // skip the first term
+		i.next(); 
 		assertEquals(new Struct("q", new NumberTerm.Int(1)), i.next());
 		assertEquals(new Struct("q", new NumberTerm.Int(2)), i.next());
 		assertEquals(new Struct("q", new NumberTerm.Int(3)), i.next());
 		assertEquals(new Struct("q", new NumberTerm.Int(5)), i.next());
 		assertEquals(new Struct("q", new NumberTerm.Int(7)), i.next());
-		// no more terms
+		
 		assertFalse(i.hasNext());
 		try {
 			i.next();
@@ -72,7 +72,7 @@ public class TermIteratorTestCase {
 	}
 	
 	@Test public void testIteratorOnInvalidTerm() {
-		String t = "q(1)"; // missing the End-Of-Clause!
+		String t = "q(1)"; 
 		try {
 			Term.getIterator(t);
 			fail("");
@@ -82,7 +82,7 @@ public class TermIteratorTestCase {
 	@Test public void testIterationOnInvalidTheory() {
 		String theory = "q(1)." + "\n" +
 		                "q(2)." + "\n" +
-						"q(3) " + "\n" + // missing the End-Of-Clause!
+						"q(3) " + "\n" + 
 						"q(5)." + "\n" +
 						"q(7).";
 		Struct firstTerm = new Struct("q", new NumberTerm.Int(1));

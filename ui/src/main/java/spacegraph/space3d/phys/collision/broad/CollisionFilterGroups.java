@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -36,6 +36,6 @@ public class CollisionFilterGroups {
 	public static final short DEBRIS_FILTER    = 8;
 	public static final short SENSOR_TRIGGER   = 16;
 	public static final short CHARACTER_FILTER = 32;
-	public static final short ALL_FILTER       = -1; // all bits sets: DefaultFilter | StaticFilter | KinematicFilter | DebrisFilter | SensorTrigger
+	public static final short ALL_FILTER       = -1; 
 	
 }

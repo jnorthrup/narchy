@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -59,11 +59,11 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
 
         sampsPerMS = (float) context.msToSamples(1);
 
-        // start with a minor low-pass filter.
+        
         src = new OnePoleFilter(context, 4000);
 
-        // Early reflections unit: start with a delay, then 3 allpass filters in
-        // series. Takes input from the source filter src.
+        
+        
         earlyTapIn = new TapIn(context, 125);
         earlyTapOut = new TapOut(context, earlyTapIn, 10);
         eAPF1 = new AllpassFilter(context, (int) (12.812 * sampsPerMS), 113,
@@ -73,11 +73,11 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         eAPF3 = new AllpassFilter(context, (int) (12.812 * sampsPerMS * 9.4),
                 1051, .5f);
         Gain earlyGainEcho = new Gain(context, 1, -.3f);
-        // The early reflections output gets fed back in at the top...
+        
 
-        // Late reverb unit: 4 allpass filters in series.
-        // Takes input from the source filter src, the early reflections output
-        // earlyGainEcho, and an echo of itself
+        
+        
+        
         lAPF1 = new AllpassFilter(context, (int) (140f * sampsPerMS), 19, .72f);
         lAPF2 = new AllpassFilter(context, (int) (140f * sampsPerMS), 23, .7f);
         lAPF3 = new AllpassFilter(context, (int) (140f * sampsPerMS), 29, .65f);
@@ -87,14 +87,14 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         TapOut lateTapOut1 = new TapOut(context, lateTapIn, 10);
         TapOut lateTapOut2 = new TapOut(context, lateTapIn, 31.17f);
         Gain lateGainEcho = new Gain(context, 1, -.25f);
-        // double tap - this gets put back in at the top of the filter series.
+        
 
-        // Collect the early reflections and the late reverb here
+        
         earlyGain = new Gain(context, 1, 1);
         lateGain = new Gain(context, 1, 1);
         Gain collectedGain = new Gain(context, 1, 1);
 
-        // used to modulate the delay times, to help reduce ringing.
+        
         delayModulator = new RandomPWM(context, RandomPWM.RAMPED_NOISE, 4000,
                 15000, 1);
 

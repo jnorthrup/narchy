@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -49,8 +49,8 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 	protected TriangleMeshShape(StridingMeshInterface meshInterface) {
 		this.meshInterface = meshInterface;
 
-		// JAVA NOTE: moved to BvhTriangleMeshShape
-		//recalcLocalAabb();
+		
+		
 	}
 
 	public v3 localGetSupportingVertex(v3 vec, v3 out) {
@@ -134,7 +134,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		// moving concave objects not supported
+		
 		assert (false);
 		inertia.zero();
 	}
@@ -170,7 +170,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 		return "TRIANGLEMESH";
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	private static class SupportVertexCallback extends TriangleCallback {
 		private final v3 supportVertexLocal = new v3();
@@ -220,7 +220,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 		@Override
         public void internalProcessTriangleIndex(v3[] triangle, int partId, int triangleIndex) {
 			if (AabbUtil2.testTriangleAgainstAabb2(triangle, aabbMin, aabbMax)) {
-				// check aabb in triangle-space, before doing this
+				
 				callback.processTriangle(triangle, partId, triangleIndex);
 			}
 		}

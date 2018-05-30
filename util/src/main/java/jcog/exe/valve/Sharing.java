@@ -11,22 +11,22 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * quality of service (QoS)
  * mixer board / equalizer
  **/
-//public enum Valve { ;
+
 public class Sharing<What,Who> {
 
     final static int MAX_CUSTOMERS = 64;
 
 
-//    /** allocation state, constraint solution */
+
     final ConcurrentFastIteratingHashMap<What,Mix<Who,What,Share<Who,What>>> alloc = new ConcurrentFastIteratingHashMap<>(new Mix[] { });
 
 
-//    static class Distribution<What,Who> extends Services<Distribution<What,Who>, What, Distributor<Who,What>> {
-//
-//        public Distribution() {
-//            super();
-//        }
-//    }
+
+
+
+
+
+
 
 
     /** CAN/provide/offer something */
@@ -40,7 +40,7 @@ public class Sharing<What,Who> {
         Mix<Who, What, Share<Who,What>> b = alloc.get(s.what);
         if (b == null) {
             throw new UnsupportedOperationException("unsupported resource type for: " + s);
-            //return null; //resource type unsupported
+            
         } else
             return b.put(s);
     }
@@ -60,7 +60,7 @@ public class Sharing<What,Who> {
     }
 
     public Demand<Who, What> start(Who id) {
-        //TODO check if customer with same id is registered. could be catastrophic if duplicates have access
+        
         return new Demand<>(id, this);
     }
 

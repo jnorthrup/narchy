@@ -5,7 +5,7 @@ final public class SigmoidNeuron implements Neuron
 	@Override
 	final public double activate(final double x) {
 
-		//return 1.0 / (1.0 + FastMath.exp(-x));
+		
 		return 1.0 / (1.0 + Math.exp(-x));
 	}
 

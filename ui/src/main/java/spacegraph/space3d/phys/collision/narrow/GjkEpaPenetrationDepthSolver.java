@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -46,14 +46,14 @@ public class GjkEpaPenetrationDepthSolver extends ConvexPenetrationDepthSolver {
 	{
 		float radialmargin = 0f;
 
-		// JAVA NOTE: 2.70b1: update when GjkEpaSolver2 is ported
+		
 		
 		GjkEpaSolver.Results results = new GjkEpaSolver.Results();
 		if (gjkEpaSolver.collide(pConvexA, transformA,
 				pConvexB, transformB,
 				radialmargin/*,stackAlloc*/, results)) {
-			//debugDraw->drawLine(results.witnesses[1],results.witnesses[1]+results.normal,btVector3(255,0,0));
-			//resultOut->addContactPoint(results.normal,results.witnesses[1],-results.depth);
+			
+			
 			wWitnessOnA.set(results.witness0);
 			wWitnessOnB.set(results.witness1);
 			return true;

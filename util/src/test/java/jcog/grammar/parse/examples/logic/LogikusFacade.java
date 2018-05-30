@@ -59,7 +59,7 @@ public class LogikusFacade {
 			reportNoMatch(ts, type);
 		}
 		if (out.hasNext()) {
-			// allow an extra semicolon
+			
 			if (!out.remainder("").equals(";")) {
 				reportLeftovers(out, type);
 			}
@@ -84,7 +84,7 @@ public class LogikusFacade {
 		TokenStringSource tss = new TokenStringSource(new Tokenizer(s), ";");
 		while (true) {
 			TokenString ts = tss.nextTokenString();
-			if (ts == null) { // no more token strings
+			if (ts == null) { 
 				break;
 			}
 			p.addAxiom(axiom(ts));

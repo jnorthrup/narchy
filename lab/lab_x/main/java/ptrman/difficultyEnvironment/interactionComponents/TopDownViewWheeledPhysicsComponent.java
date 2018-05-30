@@ -42,11 +42,11 @@ public class TopDownViewWheeledPhysicsComponent implements IComponent {
             return;
         }
 
-        angle += cachedPhysics2dBody.body.getAngle();// + Math.PI / 2; //compensate for initial orientation
-        //cachedPhysics2dBody.body..applyForceToCenter(new Vec2((float) Math.cos(angle) * force, (float) Math.sin(angle) * force));
+        angle += cachedPhysics2dBody.body.getAngle();
+        
         Vec2 v = new Vec2((float) Math.cos(angle) * force, (float) Math.sin(angle) * force);
         cachedPhysics2dBody.body.setLinearVelocity(v);
-        //cachedPhysics2dBody.body..applyLinearImpulse(v, torso.getWorldCenter(), true);
+        
 
         if( setRotationOfPhysics2dBody ) {
             cachedPhysics2dBody.body.setTransform(cachedPhysics2dBody.body.getPosition(), angle);
@@ -59,8 +59,8 @@ public class TopDownViewWheeledPhysicsComponent implements IComponent {
         }
 
         cachedPhysics2dBody.body.setAngularVelocity(v);
-        //cachedPhysics2dBody.body.applyAngularImpulse(v);
-        //cachedPhysics2dBody.body.applyTorque(torque);
+        
+        
     }
 
 

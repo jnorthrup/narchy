@@ -8,17 +8,17 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-//Point-to-point constraint
-//Cdot = v2 - v1
-//   = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-//J = [-I -r1_skew I r2_skew ]
-//Identity used:
-//w k % (rx i + ry j) = w * (-ry i + rx j)
 
-//Angle constraint
-//Cdot = w2 - w1
-//J = [0 0 -1 0 0 1]
-//K = invI1 + invI2
+
+
+
+
+
+
+
+
+
+
 
 /**
  * A motor joint is used to control the relative motion between two bodies. A typical usage is to
@@ -28,7 +28,7 @@ import spacegraph.util.math.v2;
  */
 public class MotorJoint extends Joint {
 
-    // Solver shared
+    
     private final Tuple2f m_linearOffset = new v2();
     private float m_angularOffset;
     private final v2 m_linearImpulse = new v2();
@@ -37,7 +37,7 @@ public class MotorJoint extends Joint {
     private float m_maxTorque;
     private float m_correctionFactor;
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_rA = new v2();
@@ -194,22 +194,22 @@ public class MotorJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective mass matrix.
-        // m_rA = b2Mul(qA, -m_localCenterA);
-        // m_rB = b2Mul(qB, -m_localCenterB);
+        
+        
+        
         m_rA.x = qA.c * -m_localCenterA.x - qA.s * -m_localCenterA.y;
         m_rA.y = qA.s * -m_localCenterA.x + qA.c * -m_localCenterA.y;
         m_rB.x = qB.c * -m_localCenterB.x - qB.s * -m_localCenterB.y;
         m_rB.y = qB.s * -m_localCenterB.x + qB.c * -m_localCenterB.y;
 
-        // J = [-I -r1_skew I r2_skew]
-        // [ 0 -1 0 1]
-        // r_skew = [-ry; rx]
+        
+        
+        
 
-        // Matlab
-        // K = [ mA+r1y^2*iA+mB+r2y^2*iB, -r1y*iA*r1x-r2y*iB*r2x, -r1y*iA-r2y*iB]
-        // [ -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB, r1x*iA+r2x*iB]
-        // [ -r1y*iA-r2y*iB, r1x*iA+r2x*iB, iA+iB]
+        
+        
+        
+        
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
@@ -225,14 +225,14 @@ public class MotorJoint extends Joint {
             m_angularMass = 1.0f / m_angularMass;
         }
 
-        // m_linearError = cB + m_rB - cA - m_rA - b2Mul(qA, m_linearOffset);
+        
         Rot.mulToOutUnsafe(qA, m_linearOffset, temp);
         m_linearError.x = cB.x + m_rB.x - cA.x - m_rA.x - temp.x;
         m_linearError.y = cB.y + m_rB.y - cA.y - m_rA.y - temp.y;
         m_angularError = aB - aA - m_angularOffset;
 
         if (data.step.warmStarting) {
-            // Scale impulses to support a variable time step.
+            
             m_linearImpulse.x *= data.step.dtRatio;
             m_linearImpulse.y *= data.step.dtRatio;
             m_angularImpulse *= data.step.dtRatio;
@@ -252,9 +252,9 @@ public class MotorJoint extends Joint {
         pool.pushMat22(1);
         pool.pushRot(2);
 
-        // data.velocities[m_indexA].v = vA;
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v = vB;
+        
         data.velocities[m_indexB].w = wB;
     }
 
@@ -273,7 +273,7 @@ public class MotorJoint extends Joint {
 
         final Tuple2f temp = new v2();
 
-        // Solve angular friction
+        
         {
             float Cdot = wB - wA + inv_h * m_correctionFactor * m_angularError;
             float impulse = -m_angularMass * Cdot;
@@ -289,10 +289,10 @@ public class MotorJoint extends Joint {
 
         final Tuple2f Cdot = new v2();
 
-        // Solve linear friction
+        
         {
-            // Cdot = vB + b2Cross(wB, m_rB) - vA - b2Cross(wA, m_rA) + inv_h * m_correctionFactor *
-            // m_linearError;
+            
+            
             Cdot.x =
                     vB.x + -wB * m_rB.y - vA.x - -wA * m_rA.y + inv_h * m_correctionFactor * m_linearError.x;
             Cdot.y =
@@ -325,9 +325,9 @@ public class MotorJoint extends Joint {
         }
 
 
-        // data.velocities[m_indexA].v.set(vA);
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v.set(vB);
+        
         data.velocities[m_indexB].w = wB;
     }
 

@@ -38,10 +38,10 @@ import java.nio.ShortBuffer;
  * @author cwei
  */
 public class qfiles {
-	//
-	// qfiles.h: quake file formats
-	// This file must be identical in the quake and utils directories
-	//
+	
+	
+	
+	
 
 	/*
 	========================================================================
@@ -60,7 +60,7 @@ public class qfiles {
 	*/
 	public static class pcx_t {
 
-		// size of byte arrays
+		
 		static final int PALETTE_SIZE = 48;
 		static final int FILLER_SIZE = 58;
 
@@ -71,26 +71,26 @@ public class qfiles {
 		public final int xmin;
 		public final int ymin;
 		public final int xmax;
-		public final int ymax; // unsigned short
+		public final int ymax; 
 		public final int hres;
-		public final int vres; // unsigned short
-		public final byte[] palette; //unsigned byte; size 48
+		public final int vres; 
+		public final byte[] palette; 
 		public final byte reserved;
 		public final byte color_planes;
-		public final int bytes_per_line; // unsigned short
-		public final int palette_type; // unsigned short
-		public final byte[] filler; // size 58
-		public final ByteBuffer data; //unbounded data
+		public final int bytes_per_line; 
+		public final int palette_type; 
+		public final byte[] filler; 
+		public final ByteBuffer data; 
 
 		public pcx_t(byte[] dataBytes) {
 			this(ByteBuffer.wrap(dataBytes));
 		}
 
 		public pcx_t(ByteBuffer b) {
-			// is stored as little endian
+			
 			b.order(ByteOrder.LITTLE_ENDIAN);
 
-			// fill header
+			
 			manufacturer = b.get();
 			version = b.get();
 			encoding = b.get();
@@ -108,7 +108,7 @@ public class qfiles {
 			palette_type = b.getShort() & 0xffff;
 			b.get(filler = new byte[FILLER_SIZE]);
 
-			// fill data
+			
 			data = b.slice();
 		}
 	}
@@ -122,31 +122,31 @@ public class qfiles {
 	*/
 	public static class tga_t {
 		
-		// targa header
+		
 		public final int id_length;
 		public final int colormap_type;
-		public final int image_type; // unsigned char
+		public final int image_type; 
 		public final int colormap_index;
-		public final int colormap_length; // unsigned short
-		public final int colormap_size; // unsigned char
+		public final int colormap_length; 
+		public final int colormap_size; 
 		public final int x_origin;
 		public final int y_origin;
 		public final int width;
-		public final int height; // unsigned short
+		public final int height; 
 		public final int pixel_size;
-		public final int attributes; // unsigned char
+		public final int attributes; 
 
-		public final ByteBuffer data; // (un)compressed data
+		public final ByteBuffer data; 
 
 		public tga_t(byte[] dataBytes) {
 			this(ByteBuffer.wrap(dataBytes));
 		}
 
 		public tga_t(ByteBuffer b) {
-			// is stored as little endian
+			
 			b.order(ByteOrder.LITTLE_ENDIAN);
 
-			// fill header
+			
 			id_length = b.get() & 0xFF;
 			colormap_type = b.get() & 0xFF;
 			image_type = b.get() & 0xFF;
@@ -160,7 +160,7 @@ public class qfiles {
 			pixel_size = b.get() & 0xFF;
 			attributes = b.get() & 0xFF;
 
-			// fill data
+			
 			data = b.slice();
 		}			
 
@@ -215,10 +215,10 @@ public class qfiles {
 	public static final int DTRIVERTX_SIZE = 4;
 	
 	public static class  daliasframe_t {
-		public final float[] scale = {0, 0, 0}; // multiply byte verts by this
-		public final float[] translate = {0, 0, 0};	// then add this
-		public final String name; // frame name from grabbing (size 16)
-		public int[] verts;	// variable sized
+		public final float[] scale = {0, 0, 0}; 
+		public final float[] translate = {0, 0, 0};	
+		public final String name; 
+		public int[] verts;	
 		
 		public daliasframe_t(ByteBuffer b) {
 			scale[0] = b.getFloat();	scale[1] = b.getFloat();	scale[2] = b.getFloat();
@@ -229,13 +229,13 @@ public class qfiles {
 		}
 	}
 	
-	//	   the glcmd format:
-	//	   a positive integer starts a tristrip command, followed by that many
-	//	   vertex structures.
-	//	   a negative integer starts a trifan command, followed by -x vertexes
-	//	   a zero indicates the end of the command list.
-	//	   a vertex consists of a floating point s, a floating point t,
-	//	   and an integer vertex index.
+	
+	
+	
+	
+	
+	
+	
 	
 	public static class dmdl_t {
 		public final int ident;
@@ -243,23 +243,23 @@ public class qfiles {
 
 		public final int skinwidth;
 		public final int skinheight;
-		public final int framesize; // byte size of each frame
+		public final int framesize; 
 
 		public final int num_skins;
 		public final int num_xyz;
-		public final int num_st; // greater than num_xyz for seams
+		public final int num_st; 
 		public final int num_tris;
-		public final int num_glcmds; // dwords in strip/fan command list
+		public final int num_glcmds; 
 		public final int num_frames;
 
-		public final int ofs_skins; // each skin is a MAX_SKINNAME string
-		public final int ofs_st; // byte offset from start for stverts
-		public final int ofs_tris; // offset for dtriangles
-		public final int ofs_frames; // offset for first frame
+		public final int ofs_skins; 
+		public final int ofs_st; 
+		public final int ofs_tris; 
+		public final int ofs_frames; 
 		public final int ofs_glcmds;
-		public final int ofs_end; // end of file
+		public final int ofs_end; 
 		
-		// wird extra gebraucht
+		
 		public String[] skinNames;
 		public dstvert_t[] stVerts;
 		public dtriangle_t[] triAngles;
@@ -273,21 +273,21 @@ public class qfiles {
 
 			skinwidth = b.getInt();
 			skinheight = b.getInt();
-			framesize = b.getInt(); // byte size of each frame
+			framesize = b.getInt(); 
 
 			num_skins = b.getInt();
 			num_xyz = b.getInt();
-			num_st = b.getInt(); // greater than num_xyz for seams
+			num_st = b.getInt(); 
 			num_tris = b.getInt();
-			num_glcmds = b.getInt(); // dwords in strip/fan command list
+			num_glcmds = b.getInt(); 
 			num_frames = b.getInt();
 
-			ofs_skins = b.getInt(); // each skin is a MAX_SKINNAME string
-			ofs_st = b.getInt(); // byte offset from start for stverts
-			ofs_tris = b.getInt(); // offset for dtriangles
-			ofs_frames = b.getInt(); // offset for first frame
+			ofs_skins = b.getInt(); 
+			ofs_st = b.getInt(); 
+			ofs_tris = b.getInt(); 
+			ofs_frames = b.getInt(); 
 			ofs_glcmds = b.getInt();
-			ofs_end = b.getInt(); // end of file
+			ofs_end = b.getInt(); 
 		}
 
 		/*
@@ -306,7 +306,7 @@ public class qfiles {
 	
 	========================================================================
 	*/
-	// little-endian "IDS2"
+	
 	public static final int IDSPRITEHEADER = (('2'<<24)+('S'<<16)+('D'<<8)+'I');
 	public static final int SPRITE_VERSION = 2;
 
@@ -314,8 +314,8 @@ public class qfiles {
 		public final int width;
 		public final int height;
 		public final int origin_x;
-		public final int origin_y; // raster coordinates inside pic
-		public final String name; // name of pcx file (MAX_SKINNAME)
+		public final int origin_y; 
+		public final String name; 
 		
 		public dsprframe_t(ByteBuffer b) {
 			width = b.getInt();
@@ -333,7 +333,7 @@ public class qfiles {
 		public final int ident;
 		public final int version;
 		public final int numframes;
-		public final dsprframe_t[] frames; // variable sized
+		public final dsprframe_t[] frames; 
 		
 		public dsprite_t(ByteBuffer b) {
 			ident = b.getInt();
@@ -359,12 +359,12 @@ public class qfiles {
 		static final int MIPLEVELS = 4;
 		static final int NAME_SIZE = 32;
 
-		public final String name; // char name[32];
+		public final String name; 
 		public final int width;
 		public final int height;
-		public final int[] offsets = new int[MIPLEVELS]; // 4 mip maps stored
-		// next frame in animation chain
-		public final String animname; //	char	animname[32];
+		public final int[] offsets = new int[MIPLEVELS]; 
+		
+		public final String animname; 
 		public final int flags;
 		public final int contents;
 		public final int value;
@@ -374,11 +374,11 @@ public class qfiles {
 		}
 
 		public miptex_t(ByteBuffer b) {
-			// is stored as little endian
+			
 			b.order(ByteOrder.LITTLE_ENDIAN);
 
 			byte[] nameBuf = new byte[NAME_SIZE];
-			// fill header
+			
 			b.get(nameBuf);
 			name = new String(nameBuf).trim();
 			width = b.getInt();
@@ -406,7 +406,7 @@ public class qfiles {
 
 	public static final int IDBSPHEADER = (('P'<<24)+('S'<<16)+('B'<<8)+'I');
 
-	// =============================================================================
+	
 
 	public static class dheader_t {
 
@@ -445,18 +445,18 @@ public class qfiles {
 		}
 		public final float[] mins = { 0, 0, 0 };
 		public final float[] maxs = { 0, 0, 0 };
-		public final float[] origin = { 0, 0, 0 }; // for sounds or lights
+		public final float[] origin = { 0, 0, 0 }; 
 		public final int headnode;
 		public final int firstface;
-		public final int numfaces; // submodels just draw faces
-		// without walking the bsp tree
+		public final int numfaces; 
+		
 
 		public static final int SIZE = 3 * 4 + 3 * 4 + 3 * 4 + 4 + 8;
 	}
 	
 	public static class dvertex_t {
 		
-		public static final int SIZE = 3 * 4; // 3 mal 32 bit float 
+		public static final int SIZE = 3 * 4; 
 		
 		public final float[] point = { 0, 0, 0 };
 		
@@ -468,7 +468,7 @@ public class qfiles {
 	}
 
 
-	// planes (x&~1) and (x&~1)+1 are always opposites
+	
 	public static class dplane_t {
 
 		public dplane_t(ByteBuffer bb) {
@@ -484,7 +484,7 @@ public class qfiles {
 
 		public final float[] normal = { 0, 0, 0 };
 		public final float dist;
-		public final int type; // PLANE_X - PLANE_ANYZ ?remove? trivial to regenerate
+		public final int type; 
 
 		public static final int SIZE = 3 * 4 + 4 + 4;
 	}
@@ -515,28 +515,28 @@ public class qfiles {
 
 		public final int planenum;
 		public final int[] children = { 0, 0 };
-		// negative numbers are -(leafs+1), not nodes
-		public final short[] mins = { 0, 0, 0 }; // for frustom culling
+		
+		public final short[] mins = { 0, 0, 0 }; 
 		public final short[] maxs = { 0, 0, 0 };
 
 		/*
 		unsigned short	firstface;
-		unsigned short	numfaces;	// counting both sides
+		unsigned short	numfaces;	
 		*/
 
 		public final int firstface;
 		public final int numfaces;
 
-		public static final int SIZE = 4 + 8 + 6 + 6 + 2 + 2; // counting both sides
+		public static final int SIZE = 4 + 8 + 6 + 6 + 2 + 2; 
 	}
 	
 
 
-	// note that edge 0 is never used, because negative edge nums are used for
-	// counterclockwise use of the edge in a face
+	
+	
 	
 	public static class dedge_t {
-		// unsigned short v[2];
+		
 		final int v[] = { 0, 0 };
 	}
 	
@@ -547,17 +547,17 @@ public class qfiles {
 			+	2 * Defines.SIZE_OF_INT
 			+	Defines.MAXLIGHTMAPS;
 
-		//unsigned short	planenum;
+		
 		public final int planenum;
 		public final short side;
 
-		public final int firstedge; // we must support > 64k edges
+		public final int firstedge; 
 		public final short numedges;
 		public final short texinfo;
 
-		// lighting info
+		
 		public final byte[] styles = new byte[Defines.MAXLIGHTMAPS];
-		public final int lightofs; // start of [numstyles*surfsize] samples
+		public final int lightofs; 
 		
 		public dface_t(ByteBuffer b) {
 			planenum = b.getShort() & 0xFFFF;
@@ -601,19 +601,19 @@ public class qfiles {
 
 		public static final int SIZE = 4 + 8 * 2 + 4 * 2;
 
-		public final int contents; // OR of all brushes (not needed?)
+		public final int contents; 
 
 		public final short cluster;
 		public final short area;
 
-		public final short[] mins = { 0, 0, 0 }; // for frustum culling
+		public final short[] mins = { 0, 0, 0 }; 
 		public final short[] maxs = { 0, 0, 0 };
 
-		public final int firstleafface; // unsigned short
-		public final int numleaffaces; // unsigned short
+		public final int firstleafface; 
+		public final int numleaffaces; 
 
-		public final int firstleafbrush; // unsigned short
-		public final int numleafbrushes; // unsigned short
+		public final int firstleafbrush; 
+		public final int numleafbrushes; 
 	}
 	
 	public static class dbrushside_t {
@@ -625,8 +625,8 @@ public class qfiles {
 			texinfo = bb.getShort();
 		}
 
-		//unsigned short planenum;
-		final int planenum; // facing out of the leaf
+		
+		final int planenum; 
 
 		final short texinfo;
 
@@ -649,14 +649,14 @@ public class qfiles {
 		final int contents;
 	}
 
-	//	#define	ANGLE_UP	-1
-	//	#define	ANGLE_DOWN	-2
+	
+	
 
-	// the visibility lump consists of a header with a count, then
-	// byte offsets for the PVS and PHS of each cluster, then the raw
-	// compressed bit vectors
-	// #define	DVIS_PVS	0
-	// #define	DVIS_PHS	1
+	
+	
+	
+	
+	
 
 	public static class dvis_t {
 
@@ -673,12 +673,12 @@ public class qfiles {
 		}
 
 		public final int numclusters;
-		public int bitofs[][] = new int[8][2]; // bitofs[numclusters][2]	
+		public int bitofs[][] = new int[8][2]; 
 	}
 	
-	// each area has a list of portals that lead into other areas
-	// when portals are closed, other areas may not be visible or
-	// hearable even if the vis info says that it should be
+	
+	
+	
 	
 	public static class dareaportal_t {
 

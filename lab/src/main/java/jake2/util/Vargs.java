@@ -34,7 +34,7 @@ import java.util.Vector;
  */
 public class Vargs {
 
-	// initial capacity
+	
 	static final int SIZE = 5;
 
 	Vector v;
@@ -45,7 +45,7 @@ public class Vargs {
 
 	public Vargs(int initialSize) {
 		if (v != null)
-			v.clear(); // clear previous list for GC
+			v.clear(); 
 		v = new Vector(initialSize);
 	}
 
@@ -105,9 +105,9 @@ public class Vargs {
 	}
 
 	public Vector toVector() {
-		//		Vector tmp = v;
-		//		v = null;
-		//		return tmp;
+		
+		
+		
 		return (Vector) v.clone();
 	}
 

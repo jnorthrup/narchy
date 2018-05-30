@@ -39,8 +39,8 @@ public class NTMSequenceLearningTest {
         @Override
         protected TrainingSequence nextTrainingSequence() {
             return SequenceGenerator.generateSequenceXOR(vectorSize);
-            //return SequenceGenerator.generateSequenceSawtooth(rand.nextInt(10) + 1, vectorSize);
-            //return SequenceGenerator.generateSequenceWTF(rand.nextInt(20) + 1, vectorSize);
+            
+            
         }
 
         @Override

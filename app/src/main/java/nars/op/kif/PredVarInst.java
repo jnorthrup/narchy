@@ -1,7 +1,7 @@
 package nars.op.kif;
 
 /** This code is copyright Articulate Software (c) 2014.
- This software is released under the GNU Public License <http://www.gnu.org/copyleft/gpl.html>.
+ This software is released under the GNU Public License <http:
  Users of this code also consent, by use of this code, to credit Articulate Software
  and Teknowledge in any writings, briefings, publications, presentations, or
  other representations of any software which incorporates, builds on, or uses this
@@ -16,13 +16,13 @@ import java.util.*;
 
 public class PredVarInst {
     
-    // The implied arity of a predicate variable from its use in a Formula
+    
     private static final HashMap<String,Integer> predVarArity = new HashMap<String,Integer>();
     
-    // All predicates that meet that class membership and arity constraints for the given variable
+    
     private static final HashMap<String,HashSet<String>> candidatePredicates = new HashMap<String,HashSet<String>>();
 
-    //The list of logical terms that not related to arity check, will just jump with these precicates
+    
     private static final List<String> logicalTerms=Arrays.asList("forall","exists","=>","and","or","<=>","not");
 
     /** ***************************************************************
@@ -70,17 +70,17 @@ public class PredVarInst {
         HashSet<String> predVars = gatherPredVars(kb,input);
         if (predVars == null )
             return null;
-        if (predVars.size() == 0)   // Return empty if input does not have predicate variables
+        if (predVars.size() == 0)   
             return result;
-        // 1. get types for predicate variables from domain definitions
+        
         HashMap<String,HashSet<String>> varTypes = findPredVarTypes(input,kb);
-        // 2. add explicitly defined types for predicate variables
+        
         varTypes = addExplicitTypes(kb,input,varTypes);
         Iterator<String> it = varTypes.keySet().iterator();
         while (it.hasNext()) {
             String var = it.next();
             Iterator<String> it2 = kb.kbCache.relations.iterator();
-            // 3.1 check: predVarArity should match arity of substituted relation
+            
             while (it2.hasNext()) {
                 String rel = it2.next();
                 if (kb.kbCache.valences.get(rel).equals(predVarArity.get(var))) {
@@ -88,13 +88,13 @@ public class PredVarInst {
                     Iterator<String> it3 = varTypes.get(var).iterator();
                     while (it3.hasNext()) {
                         String varType = it3.next();
-                        // 3.2 check: candidate relation should be the instance of predicate variables' types
+                        
                         if (!kb.isInstanceOf(rel, varType)) {
                             ok = false;
                             break;
                         }
                     }
-                    // 4. If ok, instantiate the predicate variable using the candidate relation
+                    
                     if (ok == true) {
                         Formula f = input.deepCopy();
                         f = f.replaceVar(var, rel);
@@ -105,7 +105,7 @@ public class PredVarInst {
                 }
             }
         }
-        if (result.size() == 0) {   // Return null if input contains predicate variables but cannot be initialized
+        if (result.size() == 0) {   
             String errStr = "No predicate instantiations for ";
             errStr += input.theFormula;
             input.errors.add(errStr);
@@ -125,7 +125,7 @@ public class PredVarInst {
         String rel = f.getArgument(0);
         ArrayList<String> l = f.complexArgumentsToArrayList(1);
         int val = 0;
-        //if the relation position is also a list, this condition is due to Formula.cdr()
+        
         if (Formula.listP(rel)) {
             Formula p = new Formula();
             p.read(rel);
@@ -134,7 +134,7 @@ public class PredVarInst {
                 return res;
         }
         else {
-            // (term) like wors, just return null, this condition is due to
+            
             if (l == null) {
                 return null;
             }
@@ -146,12 +146,12 @@ public class PredVarInst {
             else {
                 if (l.size() != 0 && !logicalTerms.contains(rel) && !rel.startsWith("?")) {
                     System.out.printf("INFO in PredVarInst.hasCorrectArityRecurse(): Predicate %s does not have an arity defined in KB, can't get the arity number!\n%s\n", rel, f, f.getSourceFile(), f.startLine);
-                    //throw new IllegalArgumentException();
+                    
                 }
             }
-            //check the arity number of current level predict
+            
             if (kb.kbCache == null || !kb.kbCache.transInstOf(rel, "VariableArityRelation")) {
-                //System.out.println("INFO in PredVarInst.hasCorrectArityRecurse() variable arity: " + f);
+                
                 if (val > 0 && val != l.size()) {
                     System.out.println("Error in PredVarInst.hasCorrectArityRecurse() expected arity " +
                             val + " but found " + l.size() + " for relation " + rel + " in formula: " + f);
@@ -159,7 +159,7 @@ public class PredVarInst {
                 }
             }
             if (f.isSimpleClause(kb)) {
-                //check if the clasue has function clause and check arity of function clause
+                
                 for (String arg : l) {
                     if (kb.isFunction(arg)) {
                         String result = hasCorrectArityRecurse(new Formula(arg), kb);
@@ -169,7 +169,7 @@ public class PredVarInst {
                 }
             }
             else {
-                //if quantifiered, just check the third arguemnt
+                
                 if (Formula.isQuantifier(f.car()))
                     return hasCorrectArityRecurse(f.cddrAsFormula(), kb);
             }
@@ -229,7 +229,7 @@ public class PredVarInst {
      int i = 0;
      int j = 0;
      
-     // Sort the query lits by number of variables.
+     
      ArrayList sortedQLits = new ArrayList(queryLits);
      sortedQLits.remove(0);
      if (sortedQLits.size() > 1) {
@@ -243,7 +243,7 @@ public class PredVarInst {
      Collections.sort(sortedQLits, Collections.reverseOrder(comp));
      }
      
-     // Put instance literals last.
+     
      List tmplist = new ArrayList(sortedQLits);
      List ioLits = new ArrayList();
      sortedQLits.clear();
@@ -257,18 +257,18 @@ public class PredVarInst {
      }
      sortedQLits.addAll(ioLits);
      
-     // Literals that will be used to try to simplify the
-     // formula before pred var instantiation.
+     
+     
      ArrayList simplificationLits = new ArrayList();
      
-     // The literal that will serve as the pattern for
-     // extracting var replacement terms from answer
-     // literals.
+     
+     
+     
      List keyLit = null;
      
-     // The list of answer literals retrieved using the
-     // query lits, possibly built up via a sequence of
-     // multiple queries.
+     
+     
+     
      ArrayList answers = null;
      
      Set working = new HashSet();
@@ -277,23 +277,23 @@ public class PredVarInst {
      boolean satisfiable = true;
      boolean tryNextQueryLiteral = true;
      
-     // The first query lit for which we get an answer is the key lit.
+     
      for (i = 0; (i < sortedQLits.size()) && tryNextQueryLiteral; i++) {
      ql = (List) sortedQLits.get(i);
      accumulator = kb.askWithLiteral(ql);
      satisfiable = ((accumulator != null) && !accumulator.isEmpty());
      tryNextQueryLiteral = (satisfiable || (getVarCount(ql) > 1));
-     // !((String)(ql.get(0))).equals("instance")
+     
      if (satisfiable) {
      simplificationLits.add(ql);
      if (keyLit == null) {
      keyLit = ql;
      answers = KB.formulasToArrayLists(accumulator);
      }
-     else {  // if (accumulator.size() < answers.size()) {
+     else {  
      accumulator = KB.formulasToArrayLists(accumulator);
      
-     // Winnow the answers list.
+     
      working.clear();
      List ql2 = null;
      int varPos = ql.indexOf(idxVar);
@@ -301,9 +301,9 @@ public class PredVarInst {
      for (j = 0; j < accumulator.size(); j++) {
      ql2 = (List) accumulator.get(j);
      term = (String) (ql2.get(varPos));
-     // if (!term.endsWith("Fn")) {
+     
      working.add(term);
-     // }
+     
      }
      accumulator.clear();
      accumulator.addAll(answers);
@@ -353,9 +353,9 @@ public class PredVarInst {
      : gatherPredVars());
      if (!varsWithTypes.isEmpty()) {
      String yOrN = (String) varsWithTypes.get("arg0");
-     // If the formula doesn't contain any arg0 pred vars, do nothing.
+     
      if (!StringUtil.emptyString(yOrN) && yOrN.equalsIgnoreCase("yes")) {
-     // Try to simplify the formula.
+     
      ArrayList varWithTypes = null;
      ArrayList indexedQueryLits = null;
      
@@ -381,36 +381,36 @@ public class PredVarInst {
     private static HashSet<String> gatherPredVarRecurse(KB kb, Formula f) {
         
         HashSet<String> ans = new HashSet<String>();
-        //System.out.println("INFO in PredVarInst.gatherPredVarRecurse(): " + f);
+        
         if (f == null || f.empty() || Formula.atom(f.theFormula) || f.isVariable())
             return ans;
         if (f.isSimpleClause(kb)) {
             String arg0 = f.getArgument(0);
-            //System.out.println("INFO in PredVarInst.gatherPredVarRecurse(): simple clause with: " + arg0);
+            
             if (arg0.startsWith("?")) {
                 ArrayList<String> arglist = f.complexArgumentsToArrayList(1);
-                if (arglist != null && arglist.size() > 0) {// a variable could be an argument to a higher-order formula
-                    //System.out.println("INFO in PredVarInst.gatherPredVarRecurse(): adding: " + arg0 +
-                    //        " with arglist: " + arglist);
+                if (arglist != null && arglist.size() > 0) {
+                    
+                    
                     ans.add(arg0);
                     predVarArity.put(arg0,Integer.valueOf(arglist.size()));
                 }
                 else {
-                    //System.out.println("INFO in PredVarInst.gatherPredVarRecurse(): not a predicate var: " + arg0);
+                    
                 }
             }
         }
         else if (Formula.isQuantifier(f.car())) {
-            //System.out.println("INFO in PredVarInst.gatherPredVarRecurse(): found quantifier: " + f);
+            
             Formula f2 = f.cddrAsFormula();
             ans.addAll(gatherPredVarRecurse(kb,f2));
         }
         else {
-            //System.out.println("INFO in PredVarInst.gatherPredVarRecurse(): not simple or quant: " + f);
+            
             ans.addAll(gatherPredVarRecurse(kb,f.carAsFormula()));
             ans.addAll(gatherPredVarRecurse(kb,f.cdrAsFormula()));
         }
-        //System.out.println("INFO in PredVarInst.gatherPredVarRecurse(): returning: " + ans);
+        
         return ans;
     }
     
@@ -570,7 +570,7 @@ public class PredVarInst {
      ArrayList<String> sig = kb.kbCache.signatures.get(predicate);
      for (int i = 1; i < sig.size(); i++) {
      String argType = sig.get(i);
-     if (!argType.endsWith("+")) {   // domainSubclass
+     if (!argType.endsWith("+")) {   
      HashSet<String> prents = kb.kbCache.getParentClasses(argType);
      if (prents != null && prents.contains("Relation"))
      return true;
@@ -598,7 +598,7 @@ public class PredVarInst {
      String var = (String) varWithTypes.get(0);
      Set added = new HashSet();
      
-     // Get the clauses for this Formula.
+     
      List clauses = _f.getClauses();
      Map varMap = _f.getVarMap();
      String qlString = null;
@@ -611,7 +611,7 @@ public class PredVarInst {
      while (it1.hasNext()) {
      List clause = (List) it1.next();
      List negLits = (List) clause.get(0);
-     // List poslits = (List) clause.get(1);
+     
      if (!negLits.isEmpty()) {
      int flen = -1;
      String arg = null;
@@ -622,12 +622,12 @@ public class PredVarInst {
      boolean working = true;
      for (int ci = 0;
      ci < 1;
-     // (ci < clause.size()) && ans.isEmpty();
+     
      ci++) {
-     // Try the neglits first.  Then try the poslits only if there still are no resuls.
+     
      lit = (List)(clause.get(ci));
      it2 = lit.iterator();
-     // System.out.println("  lit == " + lit);
+     
      while (it2.hasNext()) {
      f = (Formula) it2.next();
      if (f.theFormula.matches(".*SkFn\\s+\\d+.*")
@@ -635,10 +635,10 @@ public class PredVarInst {
      continue;
      flen = f.listLength();
      arg0 = f.getArgument(0);
-     // System.out.println("  var == " + var + "\n  f.theFormula == " + f.theFormula + "\n  arg0 == " + arg0);
+     
      if (!StringUtil.emptyString(arg0)) {
-     // If arg0 corresponds to var, then var has to be of type Predicate, not of
-     // types Function or List.
+     
+     
      if (Formula.isVariable(arg0)) {
      origVar = Clausifier.getOriginalVar(arg0, varMap);
      if (origVar.equals(var)
@@ -661,15 +661,15 @@ public class PredVarInst {
      queryLit.add(arg);
      }
      }
-     // System.out.println("  arg0 == " + arg0 + "\n  queryLit == " + queryLit);
+     
      if (queryLit.size() != flen)
      continue;
-     // If the literal does not start with a variable or with "holds" and does not
-     // contain Skolem terms, but does contain the variable in which we're interested,
-     // it is probably suitable as a query template, or might serve as a starting
-     // place.  Use it, or a literal obtained with it.
+     
+     
+     
+     
      if (isPossibleRelnArgQueryPred(kb, arg0) && foundVar) {
-     // || arg0.equals("disjoint"))
+     
      term = "";
      if (queryLit.size() > 2)
      term = (String) queryLit.get(2);
@@ -678,7 +678,7 @@ public class PredVarInst {
      String queryLitStr = queryLit.toString().intern();
      if (!added.contains(queryLitStr)) {
      ans.add(queryLit);
-     // System.out.println("  queryLitStr == " + queryLitStr);
+     
      added.add(queryLitStr);
      }
      }
@@ -691,8 +691,8 @@ public class PredVarInst {
      }
      }
      
-     // If we have previously collected type info for the variable,
-     // convert that info query lits now.
+     
+     
      String argType = null;
      int vtLen = varWithTypes.size();
      if (vtLen > 1) {
@@ -711,8 +711,8 @@ public class PredVarInst {
      }
      }
      }
-     // Add the variable to the front of the answer list, if it contains
-     // any query literals.
+     
+     
      if (!ans.isEmpty())
      ans.add(0, var);
      return ans;
@@ -759,12 +759,12 @@ public class PredVarInst {
             System.out.println("INFO in PredVarInst.test() not variable arity: ");
         System.out.println("INFO in PredVarInst.test(): " + kb.kbCache.instances.get("partition"));
         System.out.println("INFO in PredVarInst.test(): " + kb.kbCache.insts.contains("partition"));
-        //String formStr = "(=> (inverse ?REL1 ?REL2) (forall (?INST1 ?INST2) (<=> (?REL1 ?INST1 ?INST2) (?REL2 ?INST2 ?INST1))))";
+        
         String formStr = "(<=> (instance ?REL TransitiveRelation) " +
         "(forall (?INST1 ?INST2 ?INST3) " +
         "(=> (and (?REL ?INST1 ?INST2) " +
         "(?REL ?INST2 ?INST3)) (?REL ?INST1 ?INST3))))";
-        //Formula f = kb.formulaMap.get(formStr);
+        
         Formula f = new Formula(formStr);
         System.out.println("Formula: " + f);
         System.out.println("Pred vars: " + gatherPredVars(kb,f));
@@ -781,7 +781,7 @@ public class PredVarInst {
         "(and " +
         "(instance ?DECISION LegalDecision) " +
         "(agent ?DECISION ?JURY))) ?JURY))";
-        //f = kb.formulaMap.get(formStr);
+        
         f = new Formula(formStr);
         System.out.println("Formula: " + f);
         System.out.println("Pred vars: " + gatherPredVars(kb,f));
@@ -793,7 +793,7 @@ public class PredVarInst {
      */
     public static void main(String[] args) {
         
-        //arityTest();
+        
         test();
         /*
          KBmanager.getMgr().initializeOnce();
@@ -803,7 +803,7 @@ public class PredVarInst {
          "(=> (and (?REL ?INST1 ?INST2) " +
          "(?REL ?INST2 ?INST3)) (?REL ?INST1 ?INST3))))";
          formStr = "(=> (inverse ?REL1 ?REL2) (forall (?INST1 ?INST2) (<=> (?REL1 ?INST1 ?INST2) (?REL2 ?INST2 ?INST1))))";
-         // formStr = " (=> (reflexiveOn ?REL ?CLASS) (forall (?INST) (=> (instance ?INST ?CLASS) (?REL ?INST ?INST))))";
+         
          Formula f = kb.formulaMap.get(formStr);
          if (f == null) {
         	System.out.println("Error " + formStr + " not found.");

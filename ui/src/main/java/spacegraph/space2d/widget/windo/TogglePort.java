@@ -14,7 +14,7 @@ public class TogglePort extends Gridding {
 
         margin = 0.25f;
 
-        //if enabled, this will forward to the output
+        
         this.port = new Port() {
             @Override
             protected void paintBelow(GL2 gl) {
@@ -27,7 +27,7 @@ public class TogglePort extends Gridding {
             }
         };
         port.on((w, x)-> {
-            port.out(x); //forward
+            port.out(x); 
         });
 
         set(new CheckBox("", port::enable).set(true),

@@ -70,7 +70,7 @@ public enum ListFunc { ;
 
         @Override
         protected Term computeXfromYandXY(Term x, Term y, Term xy) {
-            //solve HEAD
+            
             Term yy;
             if (y.op() != PROD)
                 yy = $.pFast(y);
@@ -82,7 +82,7 @@ public enum ListFunc { ;
             int remainderLength = xy.subs() - ys;
             if (remainderLength >= 0) {
                 if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
-                    //the suffix matches
+                    
                     if (remainderLength == 0)
                         return Evaluation.solve(s -> s.replace(x, Op.EmptyProduct));
                     else
@@ -92,14 +92,14 @@ public enum ListFunc { ;
                 }
             }
             return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
-                    null //unknown
+                    null 
                     :
-                    Null; //impossible
+                    Null; 
         }
 
         @Override
         protected Term computeYfromXandXY(Term x, Term y, Term xy) {
-            //solve TAIL
+            
             Term xx;
             if (x.op() != PROD)
                 xx = $.pFast(x);
@@ -110,7 +110,7 @@ public enum ListFunc { ;
             int remainderLength = xy.subs() - xs;
             if (remainderLength >= 0) {
                 if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
-                    //the prefix matches
+                    
                     if (remainderLength == 0)
                         return Evaluation.solve(s -> s.replace(y, Op.EmptyProduct));
                     else
@@ -120,9 +120,9 @@ public enum ListFunc { ;
                 }
             }
             return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
-                    null //unknown
+                    null 
                     :
-                    Null; //impossible
+                    Null; 
         }
     };
 
@@ -136,7 +136,7 @@ public enum ListFunc { ;
     });
     public static Functor subs = Functor.f2Or3("subs", (Term[] args)->{
         if (args.length == 2) {
-            //from arg N to end
+            
             Term x = args[0];
             Term n = args[1];
             if (n.op()==INT) {
@@ -146,7 +146,7 @@ public enum ListFunc { ;
                 if (nn < m) {
                     return PROD.the(xx.toArraySubRange(nn, m));
                 } else {
-                    return Null; //OOB or empty range
+                    return Null; 
                 }
             } else {
                 return null;

@@ -83,9 +83,9 @@ public abstract class Library implements Serializable {
         return "";
     }
     
-//    public static String getTheory(int a) {
-//    	return "";
-//    }
+
+
+
     
     /**
      * Gets the synonym mapping, as array of
@@ -130,10 +130,10 @@ public abstract class Library implements Serializable {
             final Struct t = (Struct) val;
             boolean primitive = t.isPrimitive();
             if (!primitive && term != t) {
-                engine.prims.identify(t, FUNCTOR); //identifyFunctor(t);
+                engine.prims.identify(t, FUNCTOR); 
             } else if (primitive) {
                 PrologPrimitive bt = t.getPrimitive();
-                if ((bt.type == FUNCTOR)) // check for library functors
+                if ((bt.type == FUNCTOR)) 
                     return bt.evalAsFunctor(t);
             }
         } else if (val instanceof NumberTerm) {
@@ -174,7 +174,7 @@ public abstract class Library implements Serializable {
             mapPrimitives.put(PrologPrimitive.DIRECTIVE, new FasterList<>());
             mapPrimitives.put(FUNCTOR, new FasterList<>());
             mapPrimitives.put(PrologPrimitive.PREDICATE, new FasterList<>());
-            //{new ArrayList<PrimitiveInfo>(), new ArrayList<PrimitiveInfo>(), new ArrayList<PrimitiveInfo>()};
+            
             
             for (int i = 0; i < mlist.length; i++) {
                 String name = mlist[i].getName();
@@ -202,7 +202,7 @@ public abstract class Library implements Serializable {
                 if (index!=-1) {
                     try {
                         int arity = Integer.parseInt(name.substring(index + 1, name.length()));
-                        // check arg number
+                        
                         if (clist.length == arity) {
                             boolean valid = true;
                             for (int j=0; j<arity; j++) {
@@ -216,9 +216,9 @@ public abstract class Library implements Serializable {
                                 String key = rawName + '/' + arity;
                                 PrologPrimitive prim = new PrologPrimitive(type, key, this, mlist[i], arity);
                                 mapPrimitives.get(type).add(prim);
-                                //
-                                // adding also or synonims
-                                //
+                                
+                                
+                                
                                 if (synonyms != null) {
                                     String[] stringFormat = {"directive", "predicate", "functor"};
                                     for (int j = 0; j< synonyms.length; j++){
@@ -251,18 +251,18 @@ public abstract class Library implements Serializable {
      * the builtin has not any linked service)
      */
     /*    public Method getLinkedMethod(Struct s){
-     //System.out.println("get linked for "+s);         
+     
       
       int arity = s.getArity();
       String name = s.getName()+"_"+arity; 
       
-      // NOT found, Try with synonims
+      
        Method m = findMethod(name,arity);    
        if (m!=null){
        return m;
        }
        
-       // try with synonims
+       
         if (opMappingCached!=null){
         String rawName=s.getName();
         for (int j=0; j<opMappingCached.length; j++){

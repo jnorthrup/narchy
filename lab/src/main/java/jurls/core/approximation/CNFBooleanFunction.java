@@ -13,7 +13,7 @@ import java.util.Random;
 /**
  *
  * @author thorsten
- * @see http://en.wikipedia.org/wiki/Conjunctive_normal_form
+ * @see http:
  */
 public class CNFBooleanFunction implements ParameterizedFunction {
 
@@ -174,7 +174,7 @@ public class CNFBooleanFunction implements ParameterizedFunction {
                 }
             }
 
-            // ps is the "LOGIC GRADIENT" (my invention)
+            
             if (!ps.isEmpty()) {
                 int p = ps.get(random.nextInt(ps.size()));
                 parameters[p] ^= 1l << i;
@@ -194,22 +194,22 @@ public class CNFBooleanFunction implements ParameterizedFunction {
 
     @Override
     public void parameterGradient(double[] output, double... xs) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     @Override
     public void addToParameters(double[] deltas) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     @Override
     public double minOutputDebug() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
     @Override
     public double maxOutputDebug() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
 
 }

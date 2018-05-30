@@ -24,7 +24,7 @@ public class StructTest {
 
         Student student = new Student();
         student.gender.set(Gender.MALE);
-        student.name.set("John Doe"); // Null terminated (C compatible)
+        student.name.set("John Doe"); 
         int age = 2003 - student.birth.year.get();
         student.grades[2].set(12.5f);
 
@@ -35,7 +35,7 @@ public class StructTest {
         {
             Student a = new Student();
             a.gender.set(Gender.MALE);
-            a.name.set("John Doe"); // Null terminated (C compatible)
+            a.name.set("John Doe"); 
             a.grades[2].set(12.5f);
         }
 

@@ -57,14 +57,14 @@ public class Explosives {
 
 
             if (barrel.W.realtimeMS - lastFire < minFirePeriodMS) {
-                return; //too soon
+                return; 
             } else {
                 this.lastFire = barrel.W.realtimeMS;
             }
 
             float bulletLength = barrelThick * 2f;
-//                Tuple2f barrelTip = //barrel.getWorldPoint(new v2(barrel., 0));
-//                        barrel.getWorldVector(new v2(barrelLength+bulletLength+0.01f, 0));
+
+
 
             float heading = barrel.angle() + 2 * (rng.nextFloat() - 0.5f) * inaccuracy;
             v2 direction = new v2((float) Math.cos(heading), (float) Math.sin(heading));
@@ -87,18 +87,18 @@ public class Explosives {
 
 
             projectile.setTransform(barrel.pos.add(direction.scaled((barrelLength / 2f) + bulletLength)), heading);
-            //projectile.set((Rot)barrel);
-            //projectile.applyLinearImpulse(direction.scaled(power), new v2(), true);
+            
+            
 
             {
-                //propulsion
+                
                 projectile.applyForceToCenter(direction.scaled(power));
 
-                //recoil
+                
                 barrel.applyForceToCenter(direction.scaled(-1));
             }
 
-            //      projectile.setLinearVelocity(direction.scaled(power*70f));
+            
 
         }
 
@@ -122,10 +122,10 @@ public class Explosives {
 
         @Override
         protected void onRemoval() {
-            //fixtures.shape().radius * 2f; //<- not working
+            
             W.invoke(() -> {
                     int blasts = 1;
-                    float bulletRadius = 0.2f; //fixtures.shape().radius * 2f; //<- not working
+                    float bulletRadius = 0.2f; 
                     float blastScatter = bulletRadius * (blasts - 1);
                     float blastRadius = bulletRadius;
                     for (int i = 0; i < blasts; i++) {
@@ -158,13 +158,13 @@ public class Explosives {
         public Fireball(Dynamics2D w, Tuple2f center, float maxRad) {
             super(new BodyDef(
                     BodyType.KINEMATIC
-                    //BodyType.DYNAMIC
+                    
             ), w);
 
             this.maxRad = maxRad;
 
             shape = new CircleShape();
-            rad = shape.radius = 0.05f; //initial
+            rad = shape.radius = 0.05f; 
 
             w.addBody(this,
                     new FixtureDef(shape, 0.001f, 0.1f));
@@ -175,12 +175,12 @@ public class Explosives {
         public boolean preUpdate() {
             if (rad < maxRad) {
                 Fireball.this.rad *= 1.2f;
-                //W.invokeLater(() -> {
+                
                     updateFixtures((f) -> {
                         shape.radius = rad;
                         f.setShape(shape);
                     });
-                //});
+                
                 return true;
             } else {
                 return false;
@@ -194,9 +194,9 @@ public class Explosives {
             float r = circle.radius;
             v2 v = new v2();
             getWorldPointToOut(circle.center, v);
-            //Point p = getPoint(v);
-            //int wr = (int) (r * zoom);
-            //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
+            
+            
+            
             Draw.colorUnipolarHue(gl, rng.nextFloat(), 0.1f, 0.3f, 0.8f);
             Draw.circle(gl, v, true, r, 9);
 
@@ -210,7 +210,7 @@ public class Explosives {
         Dynamics2D w = p.W;
         w.setContactListener(new ExplosionContacts());
 
-        //w.setGravity(new v2(0, -2.8f));
+        
 
         staticBox(w, -8, -4, 8, 4);
 
@@ -236,17 +236,17 @@ public class Explosives {
         public boolean beginContact(Contact contact) {
             Body2D a = contact.aFixture.body;
             Body2D b = contact.bFixture.body;
-            //TODO use proper collision group filtering
-            if (a instanceof Projectile) { // && !(b instanceof Projectile)) { //HACK TODO use an explosive callback tag
+            
+            if (a instanceof Projectile) { 
                 if (b instanceof Fireball || b instanceof Projectile) {
-                    //TODO contribute to existing explosion
+                    
                     return false;
                 }
                 explode(a, b);
             }
-            if (b instanceof Projectile) { // && !(a instanceof Projectile)) {
+            if (b instanceof Projectile) { 
                 if (a instanceof Fireball || a instanceof Projectile) {
-                    //TODO contribute to existing explosion
+                    
                     return false;
                 }
                 explode(b, a);

@@ -14,34 +14,34 @@ import static nars.$.$;
 /**
  * see Natural_Language_Processing2.md
  */
-//@RunWith(Parameterized.class)
+
 public class PatrickTests extends NALTest {
 
-//    public PatrickTests(Supplier<NAR> b) {
-//        super(b);
-//    }
-//
-//    @Parameterized.Parameters(name = "{0}")
-//    public static Iterable<Supplier<NAR>> configurations() {
-//        return AbstractNALTest.nars(8);
-//    }
-//
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testExample1() {
         /*
-        ////Example 1, REPRESENT relation with lifting
-        //the whole can sometimes be understood by understanding what the parts represent (lifting)
+        
+        
 
         <(&&,<$1 --> (/,REPRESENT,_,$3)>,<$2 --> (/,REPRESENT,_,$4)>) ==> <(*,(*,$1,$2),(*,$3,$4)) --> REPRESENT>>.
-        //the word fish represents the concept FOOD
+        
         <cat --> (/,REPRESENT,_,ANIMAL)>.
-        //the word eats represents the concept EATING
+        
         <eats --> (/,REPRESENT,_,EATING)>.
 
-        //what does cat eats represent?
+        
         <(*,(*,cat,eats),?what) --> REPRESENT>?
-        //RESULT: <(*,(*,cat,eats),(*,ANIMAL,EATING)) --> REPRESENT>. %1.00;0.73%
+        
          */
 
         TestNAR tt = test;
@@ -49,52 +49,52 @@ public class PatrickTests extends NALTest {
         tt.confTolerance(0.2f);
 
         tt
-//.log()
+
                 .believe("(((REPRESENT,_,$3):$1 && (REPRESENT,_,$4):$2) ==> REPRESENT(($1,$2),($3,$4)))")
                 .believe("(REPRESENT,_,ANIMAL):cat")
                 .believe("(REPRESENT,_,EATING):eats")
 
-//should WORK with either of these two questions:
-//.askAt(1250,"REPRESENT:((eats,cat),?what)")
+
+
                 .askAt(500, "REPRESENT:((cat,eats),(?x, ?y))")
 
                 .mustBelieve(2000, "REPRESENT((eats,cat),(EATING,ANIMAL))", 0.9f, 1f, 0.15f, 0.99f);
-        //.mustBelieve(2500, "REPRESENT:((eats, cat),(EATING,ANIMAL))", 1f, 0.73f);
+        
 
     }
 
-//    @Test public void testExample1a() {
-//        /*
-//        ////Example 1, REPRESENT relation with lifting
-//        //the whole can sometimes be understood by understanding what the parts represent (lifting)
-//
-//        <(&&,<$1 --> (/,REPRESENT,_,$3)>,<$2 --> (/,REPRESENT,_,$4)>) ==> <(*,(*,$1,$2),(*,$3,$4)) --> REPRESENT>>.
-//        //the word fish represents the concept FOOD
-//        <cat --> (/,REPRESENT,_,ANIMAL)>.
-//        //the word eats represents the concept EATING
-//        <eats --> (/,REPRESENT,_,EATING)>.
-//
-//        //what does cat eats represent?
-//        <(*,(*,cat,eats),?what) --> REPRESENT>?
-//        //RESULT: <(*,(*,cat,eats),(*,ANIMAL,EATING)) --> REPRESENT>. %1.00;0.73%
-//         */
-//        TestNAR t = test();
-//        //t.nar.DEFAULT_JUDGMENT_PRIORITY = 0.1f;
-//        //t.nar.DEFAULT_QUESTION_PRIORITY = 0.1f;
-//        t
-//.log()
-//.believe("(($1:(/,REPR,_,$3) && $2:(/,REPR,_,$4)) ==> REPR:(($1,$3)<->($2,$4)))")
-//.believe("cat:(/,REPR,_,ANIMATING)")
-//.believe("eats:(/,REPR,_,EATING)")
-//
-////should WORK with either of these two questions:
-////.askAt(100,"REPR:((cat,ANIMATING)<->?what)")
-//.askAt(10000,"REPR:((cat,ANIMATING)<->(?x, ?y))")
-//
-//.mustBelieve(11250, "REPR:((eats,EATING)<->(cat,ANIMATING))", 1f, 0.73f);
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Test
@@ -116,29 +116,29 @@ public class PatrickTests extends NALTest {
 
 
         TestNAR tt = test;
-        //Param.TRACE = true;
+        
 
         int cycles = 1000;
 
         tt.confTolerance(0.5f);
-//        MetaGoal.Desire.want(nar.want, 0.5f);
+
         tt.nar.freqResolution.set(0.05f);
         tt.nar.confResolution.set(0.01f);
 
-        //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
+        
         int dur = 5;
         tt.nar.time.dur(dur);
         tt.nar.termVolumeMax.set(24);
-        //tt.nar.deep.set(0.75f);
-        //tt.log();
-//        tt.nar.emotion.deriveFailTemporal.why.on((x)->System.out.println(x));
+        
+        
 
 
 
-//        tt.nar.onCycle(()->{
-//            System.err.println(tt.nar.time());
-//        });
-        //tt.log();
+
+
+
+
+        
         tt.input(
                 "made_of(toothbrush,plastic).",
                 "( ( made_of($1, plastic) &| lighter(I, $1) ) ==>+10 <$1 --> [heated]>).",
@@ -148,20 +148,20 @@ public class PatrickTests extends NALTest {
                 "(( <$1 --> [pliable]> &| reshape(I,$1)) ==>+10 <$1 --> [hardened]>).",
                 "(<$1 --> [hardened]> =|> <$1 --> [unscrews]>).",
 
-//                "<toothbrush --> [unscrews]>! :|:", //make something that is here a screwdriver
-//                "<toothbrush --> [unscrews]>! :|:", //make something that is here a screwdriver
-//                "<toothbrush --> [unscrews]>! :|:", //make something that is here a screwdriver
-//                "<toothbrush --> [unscrews]>! :|:", //make something that is here a screwdriver
-                "$1.0 (toothbrush --> [unscrews])! :|:" //make something that is here a screwdriver
-                //"<toothbrush --> here>. :|:" //there is a toothbrush here NOW
+
+
+
+
+                "$1.0 (toothbrush --> [unscrews])! :|:" 
+                
         );
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,
-                //when it decides
-                t -> t > 0  //some time after zero
+                
+                t -> t > 0  
         );
-        //tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, t-> t==ETERNAL || (t>dur/2 || t <-dur/2) );
+        
 
 
 
@@ -173,21 +173,21 @@ public class PatrickTests extends NALTest {
 
 
         TestNAR tt = test;
-        //Param.TRACE = true;
+        
 
         int cycles = 2000;
 
         tt.confTolerance(0.9f);
-//        MetaGoal.Desire.want(nar.want, 0.5f);
+
         tt.nar.freqResolution.set(0.05f);
         tt.nar.confResolution.set(0.02f);
 
-        //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
+        
         tt.nar.time.dur(10);
         tt.nar.termVolumeMax.set(17);
-        //tt.nar.deep.set(0.75f);
-        //tt.log();
-//        tt.nar.emotion.deriveFailTemporal.why.on((x)->System.out.println(x));
+        
+        
+
 
 
 
@@ -228,7 +228,7 @@ public class PatrickTests extends NALTest {
         100
         <b --> B>. :|: <a --> A>. :|: %0% <c --> C>. %0%
         100
-        <?1 =/> <c --> C>>? //this line needs to be translated to NARchy syntax
+        <?1 =/> <c --> C>>? 
 
         Expected result: (also in OpenNARS syntax)
         For appropriate Interval term "time", "time2",
@@ -245,7 +245,7 @@ public class PatrickTests extends NALTest {
         n.termVolumeMax.set(16);
 
 
-        //n.log();
+        
         n.inputAt(0, "  A:a. :|:    --B:b. :|:    --C:c. :|:");
         n.inputAt(8, "  B:b. :|:    --A:a. :|:    --C:c. :|:");
         n.inputAt(16, "  C:c. :|:    --A:a. :|:    --B:b. :|:");
@@ -256,9 +256,9 @@ public class PatrickTests extends NALTest {
         n.clear();
 
         n.input("       $0.9 (?x ==>   C:c)?");
-        //n.input("       $0.9;0.9$ (?x ==>+8 C:c)?");
-        //n.input("       $0.9;0.9$ ((A:a && B:b) ==> C:c)?");
-        //n.input("       $0.9;0.9$ ((A:a && B:b) ==> C:c)? :|:");
+        
+        
+        
         n.run(2000);
 
         /*
@@ -278,30 +278,30 @@ public class PatrickTests extends NALTest {
     @Test @Disabled
     public void testPixelImage() throws Narsese.NarseseException {
 
-        //this.activeTasks = activeTasks;
+        
         NAR n = NARS.tmp();
-        //n.log();
-        //n.truthResolution.setValue(0.05f);
+        
+        
         n.termVolumeMax.set(60);
         n.beliefPriDefault.set(0.05f);
         n.questionPriDefault.set(0.9f);
 
-        n.input("<#x --> P>. %0.0;0.25%"); //assume that unless pixel isnt specified then it's black
+        n.input("<#x --> P>. %0.0;0.25%"); 
 
-// to what extent was
-//    |          |
-//    |    ██    |
-//    |  ██████  |
-//    |    ██    |
-//    |          |
-//observed in experience?
 
-//imperfectly observed pattern
-//    |      ░░  |
-//    |    ▓▓    |
-//    |░░▓▓██    |
-//    |    ▒▒  ░░|
-//    |      ░░  |
+
+
+
+
+
+
+
+
+
+
+
+
+
         String image1 =
                 "<p_1_1 --> P>. :|: %0.5;0.9%\n" +
                         "<p_1_2 --> P>. :|: %0.5;0.9%\n" +
@@ -334,26 +334,26 @@ public class PatrickTests extends NALTest {
         n.input(image1.split("\n"));
 
 
-        //(&|,<p_2_3 --> pixel>,<p_3_2 --> pixel>,<p_3_3 --> pixel>,<p_3_4 --> pixel>,<p_4_3 --> pixel>,<example1 --> name>)?\n" +
+        
 
-        //for (int i = 0; i < 2; i++) {
+        
         n.question($.parallel($("P:p_2_3"), $("P:p_3_2"), $("P:p_3_4"), $("P:p_4_3"), $("name:example1")));
-        //}
+        
 
-        //Answer (&|,<example1 --> name>,<p_2_3 --> pixel>,<p_3_2 --> pixel>,<p_3_3 --> pixel>,<p_3_4 --> pixel>,<p_4_3 --> pixel>). :-1: %0.80;0.16%
-        //ex: (&&,(example1-->name),(p_2_3-->pixel),(p_3_2-->pixel),(p_3_4-->pixel),(p_4_3-->pixel)). %.61;.06%"".
+        
+        
 
 
         n.run(6000);
 
         n.clear();
 
-//imperfectly observed pattern
-//    |      ░░  |
-//    |    ▓▓    |
-//    |░░    ▓▓  |
-//    |    ▒▒  ░░|
-//    |      ░░  |
+
+
+
+
+
+
         String image2 =
                 "<p_1_1 --> pixel>. :|: %0.5;0.9%\n" +
                         "<p_1_2 --> pixel>. :|: %0.5;0.9%\n" +
@@ -385,14 +385,14 @@ public class PatrickTests extends NALTest {
         n.input(image2.split("\n"));
 
 
-        //(&|,<p_2_3 --> pixel>,<p_3_2 --> pixel>,<p_3_3 --> pixel>,<p_3_4 --> pixel>,<p_4_3 --> pixel>,<example2 --> name>)?
+        
 
-        //for (int i = 0; i < 8; i++) {
+        
         n.question($.parallel($("P:p_2_3"), $("P:p_3_2"), $("P:p_3_3"), $("P:p_3_4"), $("P:p_4_3"), $("name:example2")));
         n.run(6000);
-        //}
+        
 
-        //Answer (&|,<example2 --> name>,<p_2_3 --> pixel>,<p_3_2 --> pixel>,<p_3_3 --> pixel>,<p_3_4 --> pixel>,<p_4_3 --> pixel>). %0.50;0.40%
+        
 
 
     }

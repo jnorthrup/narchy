@@ -29,7 +29,7 @@ import spacegraph.space2d.phys.dynamics.SolverData;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 
-// updated to rev 100
+
 
 /**
  * The base joint class. Joints are used to constrain two bodies together in various fashions. Some
@@ -52,7 +52,7 @@ public abstract class Joint {
     }
 
     public static Joint build(Dynamics2D world, JointDef def) {
-        // Joint joint = null;
+        
         switch (def.type) {
             case MOUSE:
                 return new MouseJoint(world.pool, (MouseJointDef) def);
@@ -101,10 +101,10 @@ public abstract class Joint {
 
     protected IWorldPool pool;
 
-    // Cache here per time step to reduce cache misses.
-    // final Vec2 m_localCenterA, m_localCenterB;
-    // float m_invMassA, m_invIA;
-    // float m_invMassB, m_invIB;
+    
+    
+    
+    
 
     protected Joint(IWorldPool worldPool, JointDef def) {
         assert (def.bodyA != def.bodyB);
@@ -129,8 +129,8 @@ public abstract class Joint {
         edgeB.prev = null;
         edgeB.next = null;
 
-        // m_localCenterA = new Vec2();
-        // m_localCenterB = new Vec2();
+        
+        
     }
 
     /**

@@ -1,22 +1,22 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Neumann binary rules
+package nars.ca;
+
+
+
 
 public class RuleNeumBin {
 	public static final int MAX_STATES = 3;
-	public int iClo; // actual count of states
+	public int iClo; 
 	public int[][][][][] states = new int[MAX_STATES][MAX_STATES][MAX_STATES][MAX_STATES][MAX_STATES];
 
-	// ----------------------------------------------------------------
+	
 	public RuleNeumBin() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
-		iClo = 3; // count of states
+		iClo = 3; 
 		for (int i = 0; i < MAX_STATES; i++)
 			for (int j = 0; j < MAX_STATES; j++)
 				for (int k = 0; k < MAX_STATES; k++)
@@ -25,8 +25,8 @@ public class RuleNeumBin {
 							states[i][j][k][l][m] = 0;
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
+	
+	
 	public void InitFromString(String sStr) {
 		int iPos = 0;
 		int iStt;
@@ -54,28 +54,28 @@ public class RuleNeumBin {
 							states[i][j][k][l][m] = iStt;
 						}
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	//
+	
+	
 	public void InitFromPrm(int i_Clo, int[][][][][] sttAry) {
 		iClo = i_Clo;
 		states = sttAry;
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the Neumann binary rule string
-	// Example: '30010202100...'
+	
+	
+	
 	public String GetAsString() {
 		String sBff;
 
-		// correct parameters first
+		
 		Validate();
 
-		// make the string
+		
 		sBff = String.valueOf(iClo);
 		for (int i = 0; i < iClo; i++)
 			for (int j = 0; j < iClo; j++)
@@ -88,9 +88,9 @@ public class RuleNeumBin {
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the Neumann binary rule parameters, correct
-	// them if necessary.
+	
+	
+	
 	public void Validate() {
 		int i, iMax;
 
@@ -100,25 +100,25 @@ public class RuleNeumBin {
 			iClo = MAX_STATES;
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState) {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, j, iCnt;
-		int[] lurd = new int[4]; // 0-left, 1-up, 2-right, 3-down
+		int[] lurd = new int[4]; 
 		int[] iCntAry = new int[iClo];
 		int iTmp;
 		int l, u, r, d;
 
 		for (i = 0; i < sizX; ++i) {
-			// determine left and right cells
+			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
 
 			for (j = 0; j < sizY; ++j) {
-				// determine up and down cells
+				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
 				bOldVal = crrState[i][j];
@@ -138,12 +138,12 @@ public class RuleNeumBin {
 
 				tmpState[i][j] = bNewVal;
 				if (bNewVal != bOldVal) {
-					modCnt++; // one more modified cell
+					modCnt++; 
 				}
 			}
 		}
 
 		return modCnt;
 	}
-	// ----------------------------------------------------------------
+	
 }

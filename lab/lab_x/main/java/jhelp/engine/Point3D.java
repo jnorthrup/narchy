@@ -255,7 +255,7 @@ public class Point3D
    public Point3D(final Vec4f vec4f)
    {
       final float w = vec4f.w();
-      //
+      
       this.x = vec4f.x() / w;
       this.y = vec4f.y() / w;
       this.z = vec4f.z() / w;
@@ -459,9 +459,9 @@ public class Point3D
     */
    public Point3D product(final Point3D vector)
    {
-      return new Point3D(//
-            (this.y * vector.z) - (this.z * vector.y), //
-            (this.x * vector.z) - (this.z * vector.x), //
+      return new Point3D(
+            (this.y * vector.z) - (this.z * vector.y), 
+            (this.x * vector.z) - (this.z * vector.x), 
             (this.x * vector.y) - (this.y * vector.x));
    }
 
@@ -517,7 +517,7 @@ public class Point3D
    public void set(final Vec4f vec4f)
    {
       final float w = vec4f.w();
-      //
+      
       this.x = vec4f.x() / w;
       this.y = vec4f.y() / w;
       this.z = vec4f.z() / w;

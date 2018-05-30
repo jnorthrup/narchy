@@ -4,10 +4,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Poly2TriUtils {
 
-    // const double PI=3.141592653589793238462643383279502884197169399375105820974944592308;
+    
     public static final double PI = Math.PI;
 
-    //enum  Type      { UNKNOWN, INPUT, INSERT, START, END, MERGE, SPLIT, REGULAR_UP, REGULAR_DOWN};
+    
     public static final int UNKNOWN = 1;
     public static final int INPUT = 2;
     public static final int INSERT = 3;
@@ -59,7 +59,7 @@ public class Poly2TriUtils {
 		typedef map<unsigned int, set<unsigned int> >   AdjEdgeMap;
 	 */
 
-    //#define sqr(t)  (t)*(t)
+    
 
     /**
      * In original poly2tri there is an exact arithemtic from
@@ -77,7 +77,7 @@ public class Poly2TriUtils {
         return detleft - detright;
     }
 
-    public static final AtomicInteger l_id = new AtomicInteger(); // changed to INT ... because of hash maps
-    public static final AtomicInteger p_id = new AtomicInteger(); // changed to INT ... because of hash maps
+    public static final AtomicInteger l_id = new AtomicInteger(); 
+    public static final AtomicInteger p_id = new AtomicInteger(); 
 
 }

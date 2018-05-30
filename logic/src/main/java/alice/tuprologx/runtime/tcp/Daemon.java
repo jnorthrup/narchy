@@ -21,7 +21,7 @@ class Acceptor implements Runnable {
             outStream=new ObjectOutputStream(socket.getOutputStream());
             inStream=new ObjectInputStream(socket.getInputStream());
         } catch (Exception ex){
-            //ex.printStackTrace();
+            
             initOk=false;
         }
     }
@@ -37,7 +37,7 @@ class Acceptor implements Runnable {
                 Method m=core.getClass().getMethod(msg.methodName, inStream.getClass(), outStream.getClass());
                 m.invoke(core, inStream, outStream);
             } catch (Exception e){
-                //e.printStackTrace();
+                
                 break;
             }
         }

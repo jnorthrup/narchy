@@ -86,41 +86,41 @@ public class Triangle extends Shape
     {
         super(shader);
         
-        // Punkte initialisieren:
+        
         this.a.set(a);
         this.b.set(b);
         this.c.set(c);
         
-        // Texturkoordinaten initialisieren:
+        
         textureA.x = 0.0; textureA.y = 0.0;
         textureAB.x = 1.0; textureAB.y = 0.0;
         textureAC.x = 0.0; textureAC.y = 1.0;
         
-        // Seitenvektoren des Dreiecks berechnen:
+        
         normalPlaneA.sub(this.c, this.b);
         normalPlaneB.sub(this.a, this.c);
         normalPlaneC.sub(this.b, this.a);
         
-        // Normalenvektoren des Dreiecks berechnen:
+        
         normal.cross(normalPlaneB, normalPlaneC);
         
-        // Sicher stellen, dass keine zwei Seiten des Dreiecks voneinander
-        // linear abh�ngig sind:
+        
+        
         if ((normal.x == 0.0) && (normal.y == 0.0) && (normal.z == 0.0))
             throw new LinearlyDependentException();
         
-        // H�henvektoren des Dreiecks berechnen:
+        
         normalPlaneA.cross(normal, normalPlaneA);
         normalPlaneB.cross(normal, normalPlaneB);
         normalPlaneC.cross(normal, normalPlaneC);
         
-        // Wichtige Werte zwischenspeichern:
+        
         recompute();
 	}
     
     protected void recompute()
     {
-        // Skalarprodukte berechnen:
+        
         aDotNormal = (float)a.dot(normal);
         bDotNormalPlaneA = (float)b.dot(normalPlaneA);
         cDotNormalPlaneB = (float)c.dot(normalPlaneB);
@@ -171,8 +171,8 @@ public class Triangle extends Shape
             return adjustNormal(new Vector3d(normal), point);
         else
         {
-            // Normalenvektor aus den Normalenvektoren an den Punkten des Dreiecks
-            // mit entsprechender Gewichtung berechnen:
+            
+            
             Vector3d normal = new Vector3d();
             normal.scaleAdd((normalPlaneA.dot(point)- (double) bDotNormalPlaneA)/ (double) aMinusBDotNormalPlaneA, normalA, normal);
             normal.scaleAdd((normalPlaneB.dot(point)- (double) cDotNormalPlaneB)/ (double) bMinusCDotNormalPlaneB, normalB, normal);
@@ -194,7 +194,7 @@ public class Triangle extends Shape
         normalB = (b == null) ? null : new Vector3d(b);
         normalC = (c == null) ? null : new Vector3d(c);
         
-        // Normalenvektoren normalisieren:
+        
         if (normalA != null)
             normalA.normalize();
         if (normalB != null)
@@ -226,7 +226,7 @@ public class Triangle extends Shape
     @Override
     public byte compareAxis(byte axisId, double axisValue)
     {
-        // Vorzeichen der Abst�nde der Punkte von der Ebene berechnen:
+        
         byte sign1, sign2, sign3;
         switch (axisId)
         {
@@ -252,7 +252,7 @@ public class Triangle extends Shape
             throw new IllegalArgumentException();
         }
         
-        // Laga des Objekts zur�ckgeben:
+        
         if ((sign1 != sign2) || (sign2 != sign3))
             return (byte) 0;
         return sign1;
@@ -288,12 +288,12 @@ public class Triangle extends Shape
     @Override
     public void transform(Transformation t)
     {
-        // Punkte des Dreiecks transformieren:
+        
         t.transformPoint(a);
         t.transformPoint(b);
         t.transformPoint(c);
 
-        // Normalenvektoren transformieren:
+        
         t.transformVector(normal);
         if (normalA != null)
             t.transformVector(normalA);
@@ -302,12 +302,12 @@ public class Triangle extends Shape
         if (normalC != null)
             t.transformVector(normalC);
         
-        // Normalenvektoren der Ebenen transformieren:
+        
         t.transformVector(normalPlaneA);
         t.transformVector(normalPlaneB);
         t.transformVector(normalPlaneC);
         
-        // Zwischengespeicherte Werte aktualisieren:
+        
         recompute();
     }
 
@@ -315,41 +315,41 @@ public class Triangle extends Shape
     @Override
     public boolean intersect(Ray ray)
     {
-        // Lichter ignorieren, falls erw�nscht:
+        
         if ((isLight) && (ray.ignoreLights))
             return false;
         
         double dot = normal.dot(ray.dir);
         
-        // Falls es keinen Schnittpunkt gibt:
+        
         if (dot == 0.0)
             return false;
         
-        // Schnittpunkt berechnen:
+        
         double t = ((double) aDotNormal -normal.dot(ray.org))/dot;
         
-        // Falls der Schnittpunkt auf der falschen Seite liegt oder
-        // zu nahe am Ursprung liegt:
+        
+        
         if ((double) FloatingPoint.compareTolerated(t, 0.0) <= 0.0)
             return false;
         
-        // Vorzeichen der Abst�nde vom Schnittpunkt und der Seiten des Dreiecks berechnen:
+        
         float signA = (float)(normalPlaneA.dot(ray.org)+normalPlaneA.dot(ray.dir)*t- (double) bDotNormalPlaneA);
         float signB = (float)(normalPlaneB.dot(ray.org)+normalPlaneB.dot(ray.dir)*t- (double) cDotNormalPlaneB);
         float signC = (float)(normalPlaneC.dot(ray.org)+normalPlaneC.dot(ray.dir)*t- (double) aDotNormalPlaneC);
         
-        // Falls eines der Vorzeichen nengativ ist, liegt 'p' nicht im Dreieck.
-        // Andernfalls liegt 'p' im Dreieck:
+        
+        
         if (((double) signA < 0.0) || ((double) signB < 0.0) || ((double) signC < 0.0))
             return false;
 
-        // Falls der Strahl bereits ein anderes Objekt schneidet, das weiter
-        // vorne liegt:
+        
+        
         if (ray.length <= t)
             return false;
         
-        ray.length = t;     // Strahl schneidet das Dreieck
-        ray.hit = this;     // Geschnittenes Objekt
+        ray.length = t;     
+        ray.hit = this;     
         return true;
 	}
 
@@ -382,13 +382,13 @@ public class Triangle extends Shape
         Vector3d ac = new Vector3d();
         ac.sub(c, a);
 
-        // Linearfaktorzerlegung des Punktes:
+        
         double cTy = ac.dot(normalPlaneC);
         double pTy = normalPlaneC.dot(point)-normalPlaneC.dot(a);
         double lambda1 = ((ab.dot(point)-ab.dot(a))*cTy-ac.dot(ab)*pTy)/(ab.dot(ab)*cTy);
         double lambda2 = pTy/cTy;
         
-        // Texturkoodinate berechnen und zur�ckgeben:
+        
         Vector2d coords = new Vector2d(textureA);
         coords.scaleAdd(lambda1, textureAB, coords);
         coords.scaleAdd(lambda2, textureAC, coords);
@@ -398,7 +398,7 @@ public class Triangle extends Shape
     @Override
     public void transformTexture(Transformation t)
     {
-        // Texturkoordinaten des Dreiecks transformieren:
+        
         t.transformPoint(textureA);
         t.transformVector(textureAB);
         t.transformVector(textureAC);
@@ -412,7 +412,7 @@ public class Triangle extends Shape
                 (normalA != null) && (normalB != null) && (normalC != null);
         GL2 gl = (GL2)drawable.getGL();
 
-        // Dreieck zeichnen:
+        
         gl.glBegin((RaytracerConstants.GL_GRID_MODE_ENABLED) ?
                 GL.GL_LINE_LOOP : GL.GL_TRIANGLES);
         if (smoothNormals)

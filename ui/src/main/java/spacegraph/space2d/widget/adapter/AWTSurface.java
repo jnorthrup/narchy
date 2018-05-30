@@ -36,9 +36,9 @@ public class AWTSurface extends Widget {
         }
     }
 
-//    static {
-//        System.setProperty("java.awt.headless", "true");
-//    }
+
+
+
 
     Component component;
     private final Tex tex = new Tex();
@@ -72,24 +72,24 @@ public class AWTSurface extends Widget {
 
 
             Window frame = new MyFrame();
-//        frame.getContentPane().setLayout(new BorderLayout());
-//        frame.getContentPane().add(component, BorderLayout.CENTER);
-//        frame.add(component);
-            //frame.setIgnoreRepaint(true);
 
-//        frame.addNotify();
+
+
+            
+
+
             component.addNotify();
 
 
-            //frame.setIgnoreRepaint(true);
+            
             component.setPreferredSize(psize);
-            //component.setMaximumSize(psize);
+            
             component.setSize(psize);
             frame.pack();
 
             component.setVisible(true);
 
-            //component.requestFocus();
+            
 
             component.validate();
 
@@ -103,7 +103,7 @@ public class AWTSurface extends Widget {
                 if (!busy.compareAndSet(false, true))
                     return;
 
-                //if (component.getIgnoreRepaint() && !component.is)
+                
                 SwingUtilities.invokeLater(()->{
                     try {
                         buffer = AWTCamera.get(component, buffer);
@@ -186,13 +186,13 @@ public class AWTSurface extends Widget {
             }
         }
 
-//        if (myFocus==null) {
-//            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(ee);
-//        } else {
-//            ((JTextComponent)myFocus).dispatchEvent(ee);
-//            KeyboardFocusManager.getCurrentKeyboardFocusManager().
-//                    processKeyEvent(myFocus, ee);
-//        }
+
+
+
+
+
+
+
 
         return false;
     }
@@ -213,7 +213,7 @@ public class AWTSurface extends Widget {
                 ));
             }
             lpx = lpy = -1;
-            return; //untouch //TODO mouseExited?
+            return; 
         }
 
         v2 rp = finger.relativePos(this);
@@ -232,7 +232,7 @@ public class AWTSurface extends Widget {
         }
 
 
-        //SwingUtilities.convertPoint(this.frame, new Point(px, py), source);
+        
         Component target = SwingUtilities.getDeepestComponentAt(this.component, px, py);
         if (target == null)
             target = this.component;
@@ -241,7 +241,7 @@ public class AWTSurface extends Widget {
             py -= target.getY();
         }
 
-        //        this(source, id, when, modifiers, x, y, clickCount, popupTrigger, NOBUTTON);
+        
 
         if (finger.pressing(0) && !finger.prevButtonDown.get(0)) {
             handle(new MouseEvent(target,
@@ -265,9 +265,9 @@ public class AWTSurface extends Widget {
 
         boolean moved = lpx != px || lpy != py;
 
-        //TODO filter if no distance moved
+        
         if (finger.pressing(0)) {
-            //drag
+            
             if (moved && finger.prevButtonDown.get(0)) {
                 handle(new MouseEvent(target,
                         MouseEvent.MOUSE_DRAGGED,
@@ -280,8 +280,8 @@ public class AWTSurface extends Widget {
 
 
                 myFocus = target;
-                //target.requestFocus(FocusEvent.Cause.MOUSE_EVENT);
-                //target.requestFocusInWindow(FocusEvent.Cause.MOUSE_EVENT);
+                
+                
 
             }
         } else {
@@ -294,17 +294,17 @@ public class AWTSurface extends Widget {
             }
         }
 
-        //new MouseEvent(underCursor, id, when, modifiers, point.x, point.y, 0, 0, clickCount, false, button)
+        
     }
 
     public void handle(AWTEvent e) {
-//        component.dispatchEvent(e);
-//        frame.dispatchEvent(e);
-//        if (component instanceof Container) {
-//            for (Component c : ((Container)component).getComponents()) {
-//                c.dispatchEvent(e);
-//            }
-//        }
+
+
+
+
+
+
+
         Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(e);
     }
 
@@ -323,28 +323,28 @@ public class AWTSurface extends Widget {
         public boolean isFocusable() {
             return true;
         }
-        ////
-////            @Override
-////            public boolean isVisible() {
-////                return true;
-////            }
-////
-////            @Override
-////            public boolean isDisplayable() {
-////                return true;
-////            }
-//
-//            @Override
-//            protected void processEvent(AWTEvent e) {
-//                super.processEvent(e);
-//            }
+        
 
-//            Point zero = new Point(0, 0);
-//
-//            @Override
-//            public Point getLocationOnScreen() {
-//                return zero;
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         @Override
         public boolean isShowing() {

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public enum CommonSets {
     ;
-    private static final char[] SLW; // slash lower w \w
+    private static final char[] SLW; 
 
     static {
         List<Character> chList = new ArrayList<>();
@@ -26,11 +26,11 @@ public enum CommonSets {
         SLW = listToArray(chList);
     }
 
-    private static final char[] SUW = complementarySet(SLW); // slash upper w \W
+    private static final char[] SUW = complementarySet(SLW); 
 
-    private static final char[] SLS = {' ', '\t'}; // slash lower s \s
+    private static final char[] SLS = {' ', '\t'}; 
 
-    private static final char[] SUS = complementarySet(SLS); // slash upper s \S
+    private static final char[] SUS = complementarySet(SLS); 
 
     private static final char[] SLD = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
@@ -52,7 +52,7 @@ public enum CommonSets {
 
     private static final List<Character> DOT_L = Collections.unmodifiableList(arrayToList(DOT));
 
-    public static final int ENCODING_LENGTH = 128; // ascii encoding length, to support unicode, change this num, and change above sets also.
+    public static final int ENCODING_LENGTH = 128; 
 
     public static char[] listToArray(List<Character> charList) {
         char[] result = new char[charList.size()];
@@ -70,7 +70,7 @@ public enum CommonSets {
         return chList;
     }
 
-    public static char[] complementarySet(char[] set) { // complementary set among ascii
+    public static char[] complementarySet(char[] set) { 
         boolean[] book = emptyBook();
         for (char b : set) {
             book[b] = true;
@@ -78,7 +78,7 @@ public enum CommonSets {
         return bookToSet(book, false);
     }
 
-    public static char[] minimum(char[] set) { // [e, a, d, f, f, c, c, k, \s] -> {a, c, d, e, f, k, \0, \t}
+    public static char[] minimum(char[] set) { 
         boolean[] book = emptyBook();
         for (char b : set) {
             book[b] = true;
@@ -136,9 +136,9 @@ public enum CommonSets {
 
     private static boolean[] emptyBook() {
         boolean[] book = new boolean[ENCODING_LENGTH];
-//        for (int i = 0; i < book.length; i++) {
-//            book[i] = false;
-//        }
+
+
+
         return book;
     }
 

@@ -51,11 +51,11 @@ public class WrappedImage {
     }
 
     public WrappedImage(int arg0, int arg1, int arg2, IndexColorModel cm) {
-        bi = new BufferedImage(arg0, arg1, BufferedImage.TYPE_INT_RGB); // super(arg0,
+        bi = new BufferedImage(arg0, arg1, BufferedImage.TYPE_INT_RGB); 
         this.bi.setAccelerationPriority(1f);
         this.gfx = bi.getGraphics();
-        // arg1,
-        // BufferedImage.TYPE_INT_RGB);
+        
+        
         this.cm = cm;
     }
 
@@ -104,8 +104,8 @@ public class WrappedImage {
     }
 
     public void setRGB(int x, int y, int color) {
-        // if(x >= bi.getWidth() || x < 0 || y >= bi.getHeight() || y < 0)
-        // return;
+        
+        
 
         if (cm != null)
             color = cm.getRGB(color);
@@ -132,8 +132,8 @@ public class WrappedImage {
     public void setRGB(int x, int y, int cx, int cy, int[] data, int offset,
                        int w) {
         if (cm != null && data != null && data.length > 0) {
-//            for (int i = 0; i < data.length; i++)
-//                data[i] = cm.getRGB(data[i]);
+
+
             cm.getRGBs(data);
         }
 
@@ -146,8 +146,8 @@ public class WrappedImage {
     }
 
     public int getRGB(int x, int y) {
-        // if(x >= this.getWidth() || x < 0 || y >= this.getHeight() || y < 0)
-        // return 0;
+        
+        
 
         if (cm == null)
             return bi.getRGB(x, y);
@@ -155,10 +155,10 @@ public class WrappedImage {
             int pix = bi.getRGB(x, y) & 0xFFFFFF;
             int[] vals = {(pix >> 16) & 0xFF, (pix >> 8) & 0xFF, (pix) & 0xFF};
             int out = cm.getDataElement(vals, 0);
-//            if (cm.getRGB(out) != bi.getRGB(x, y) && logger.isEnabledFor(Level.INFO))
-//                logger.info("Did not get correct colour value for color ("
-//                        + Integer.toHexString(pix) + "), got ("
-//                        + cm.getRGB(out) + ") instead");
+
+
+
+
             return out;
         }
     }

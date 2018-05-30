@@ -15,14 +15,14 @@ public interface SurfaceRoot extends SurfaceBase, SpaceLogger {
     }
 
     default void zoom(Surface s) {
-        //ignored
+        
     }
     default void unzoom() {
-        //ignored
+        
     }
 
-    ///** broadcast notifications, logs, etc */
-    //On onLog(Consumer o);
+    
+    
 
 
     /**

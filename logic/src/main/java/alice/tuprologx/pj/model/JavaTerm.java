@@ -57,7 +57,7 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
             java.util.Vector<Compound2<Atom,Term<?>>> termArr = new java.util.Vector<Compound2<Atom,Term<?>>>();
             java.beans.BeanInfo binfo = java.beans.Introspector.getBeanInfo(po.getClass());
             for (java.beans.PropertyDescriptor pdesc : binfo.getPropertyDescriptors()) {
-                //only read-write properties are translated into a compound
+                
                 if (pdesc.getReadMethod()!=null && pdesc.getWriteMethod()!=null) { 
                     Object o = pdesc.getReadMethod().invoke(po);
                     Atom propertyName = new Atom(pdesc.getName());
@@ -80,7 +80,7 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
             java.beans.BeanInfo binfo = java.beans.Introspector.getBeanInfo(_object.getClass());
             int count = 0;
             for (java.beans.PropertyDescriptor pdesc : binfo.getPropertyDescriptors()) {
-                //only read-write properties are translated into a compound
+                
                 if (pdesc.getReadMethod()!=null && pdesc.getWriteMethod()!=null) {
                     Object o = pdesc.getReadMethod().invoke(_object);
                     Term<?> t = o != null ? Term.fromJava(o) : new Var<>("X" + count);
@@ -88,7 +88,7 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
                     count++;
                 }
             }
-            //System.out.println(termArr);
+            
             
         }
         catch (Exception e) {
@@ -110,11 +110,11 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
             alice.tuprolog.Term[] termArr = new alice.tuprolog.Term[_properties.size()];
             int count = 0;
             for (Term<?> term : _properties) {
-                //only read-write properties are translated into a compound
+                
                 termArr[count] = term.marshal();
                 count++;
             }
-            //System.out.println(java.util.Arrays.asList(termArr));
+            
             hashtable.put(getName(), this._class);
             return new TermifiableStruct<O>(getName(), termArr).setJavaTerm(this);
         }
@@ -156,20 +156,20 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
         try {                
             Object po = _class.newInstance();
             java.beans.BeanInfo binfo = java.beans.Introspector.getBeanInfo(_class);
-            //int i = 0;
+            
             java.util.Iterator<Term<?>> it = _properties.iterator();
             for (java.beans.PropertyDescriptor pdesc : binfo.getPropertyDescriptors()) {
                 if (pdesc.getReadMethod()!=null && pdesc.getWriteMethod()!=null) {
                     Term<?> property = it.next();
                     /* ED 2013-05-21 */ Var<Term<?>> auxProperty = uncheckedCast(property);
-                    //if (!((property instanceof Var) && ((Var<Term<?>>)property).getValue()==null)) {
+                    
                     if (!((property instanceof Var) && (auxProperty).getValue()==null)) {
-                        //System.out.println(property.toJava().getClass() + " " + pdesc.getWriteMethod().getName());
+                        
                         pdesc.getWriteMethod().invoke(po, property.toJava());
                     }
                 }
             }            
-            // return (Z)po;
+            
             return uncheckedCast(po);
         }
         catch (Exception e) {
@@ -178,12 +178,12 @@ public class JavaTerm<O> extends Compound<JavaTerm<O>> {
     }
 
     static boolean matches(alice.tuprolog.Term t) {
-//        try {
-//            return (!(t instanceof alice.tuprolog.Var) && t.isCompound() && !t.isList() && Class.forName(((alice.tuprolog.Struct)t).getName())!=null);
-//        }
-//        catch (Exception e) {
-//            return false;
-//        }
+
+
+
+
+
+
         return (t instanceof TermifiableStruct<?>) || ((t.term() instanceof alice.tuprolog.Struct) && hashtable.containsKey(((alice.tuprolog.Struct)t.term()).name()));
     }
     

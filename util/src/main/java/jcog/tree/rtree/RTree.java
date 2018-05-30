@@ -10,7 +10,7 @@ package jcog.tree.rtree;
          * you may not use this file except in compliance with the License.
          * You may obtain a copy of the License at
          *
-         *      http://www.apache.org/licenses/LICENSE-2.0
+         *      http:
          *
          * Unless required by applicable law or agreed to in writing, software
          * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ import java.util.stream.Stream;
  * such as geographical coordinates or rectangles. Groups information and represents them with a
  * minimum bounding rectangle (mbr). When searching through the tree, any query that does not
  * intersect an mbr can ignore any data entries in that mbr.</p>
- * <p>More information can be @see <a href="https://en.wikipedia.org/wiki/R-tree">https://en.wikipedia.org/wiki/R-tree</a></p>
+ * <p>More information can be @see <a href="https:
  * <p>
  * Created by jcairns on 4/30/15.</p>
  */
@@ -99,7 +99,7 @@ public class RTree<T> implements Space<T> {
      */
     @Override
     public boolean add(/*@NotNull*/ final T t) {
-//        int before = size;
+
 
         boolean[] added = new boolean[1];
         Node<T, ?> nextRoot = root.add(t, this, model, added);
@@ -110,7 +110,7 @@ public class RTree<T> implements Space<T> {
                 return true;
             }
         }
-        return false; //duplicate or merged
+        return false; 
     }
 
 
@@ -140,15 +140,15 @@ public class RTree<T> implements Space<T> {
     public boolean replace(final T told, final T tnew) {
         if (told == tnew) {
             return true;
-            //throw new UnsupportedOperationException("equivalent instance");
+            
         }
 
         if (model.bounds(told).equals(model.bounds(tnew))) {
-            //same bounds, so replace inline
+            
             root = root.replace(told, tnew, model);
             return true;
         } else {
-            //different bounds, so remove first then add
+            
             boolean removed = remove(told);
             if (!removed) {
                 return false;
@@ -161,21 +161,21 @@ public class RTree<T> implements Space<T> {
         }
     }
 
-//    /**
-//     * returns whether or not the HyperRect will enclose all of the data entries in t
-//     *
-//     * @param rect HyperRect to contain entries
-//     * @param t    Data entries to be evaluated
-//     * @return Whether or not all entries lie inside rect
-//     */
-//    public boolean contains(final HyperRect rect, final T... t) {
-//        for (int i = 0; i < t.length; i++) {
-//            if (!rect.contains(spatialize.apply(t[i]))) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @return number of data entries stored in the RTree
@@ -185,9 +185,9 @@ public class RTree<T> implements Space<T> {
         return size.get(this);
     }
 
-//    static boolean isEqual(final double a, final double b, final double eps) {
-//        return Math.abs(a - b) <= ((Math.abs(Math.abs(a) < Math.abs(b) ? b : a)) * eps);
-//    }
+
+
+
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
@@ -249,12 +249,12 @@ public class RTree<T> implements Space<T> {
     }
 
 
-//    @Override
-//    public void intersectingNodes(HyperRegion start, Predicate<Node<T, ?>> eachWhile) {
-//        if (size == 0)
-//            return;
-//        root.intersectingNodes(start, eachWhile, model);
-//    }
+
+
+
+
+
+
 
     @Override
     public String toString() {

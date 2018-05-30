@@ -53,30 +53,30 @@ import java.util.List;
  * @author cwei
  */
 public class VID extends Globals {
-	//	   Main windowed and fullscreen graphics interface module. This module
-	//	   is used for both the software and OpenGL rendering versions of the
-	//	   Quake refresh engine.
+	
+	
+	
 
-	// Global variables used internally by this module
-	// Globals.viddef
-	// global video state; used by other modules
+	
+	
+	
 
-	// Structure containing functions exported from refresh DLL
-	// Globals.re;
+	
+	
 
-	// Console variables that we need to access from this module
+	
 	static cvar_t vid_gamma;
-	static cvar_t vid_ref;			// Name of Refresh DLL loaded
-	static cvar_t vid_xpos;			// X coordinate of window position
-	static cvar_t vid_ypos;			// Y coordinate of window position
+	static cvar_t vid_ref;			
+	static cvar_t vid_xpos;			
+	static cvar_t vid_ypos;			
 	static cvar_t vid_width;
 	static cvar_t vid_height;
 	static cvar_t vid_fullscreen;
 
-	// Global variables used internally by this module
-	// void *reflib_library;		// Handle to refresh DLL 
+	
+	
 	static boolean reflib_active;
-	// const char so_file[] = "/etc/quake2.conf";
+	
 
 	/*
 	==========================================================================
@@ -91,14 +91,14 @@ public class VID extends Globals {
 	}
 
 	public static void Printf(int print_level, String fmt, Vargs vargs) {
-		// static qboolean inupdate;
+		
 		if (print_level == Defines.PRINT_ALL)
 			Com.Printf(fmt, vargs);
 		else
 			Com.DPrintf(fmt, vargs);
 	}
 
-	// ==========================================================================
+	
 
 	/*
 	============
@@ -259,17 +259,17 @@ public class VID extends Globals {
 			vid_ref.modified = false;
 			vid_fullscreen.modified = true;
 			Globals.cl.refresh_prepped = false;
-			Globals.cls.disable_screen = 1.0f; // true;
+			Globals.cls.disable_screen = 1.0f; 
 
 			
 			if ( !LoadRefresh( vid_ref.string, true ) )
 			{
 				String renderer;
 				if (vid_ref.string.equals(Renderer.getPreferedName())) {
-				    // try the default renderer as fallback after prefered
+				    
 				    renderer = Renderer.getDefaultName();
 				} else {
-				    // try the prefered renderer as first fallback
+				    
 				    renderer = Renderer.getPreferedName();
 				}
 				if ( vid_ref.string.equals(Renderer.getDefaultName())) {
@@ -298,7 +298,7 @@ public class VID extends Globals {
 					}
 				}
 			}
-			Globals.cls.disable_screen = 0.0f; //false;
+			Globals.cls.disable_screen = 0.0f; 
 		}
 	}
 
@@ -330,7 +330,7 @@ public class VID extends Globals {
 		});
 		
 		/* Disable the 3Dfx splash screen */
-		// putenv("FX_GLIDE_NO_SPLASH=0");
+		
 		
 		/* Start the graphics mode and load refresh DLL */
                 vid_ref.modified = true;
@@ -354,11 +354,11 @@ public class VID extends Globals {
 		}
 	}
 
-	// ==========================================================================
-	// 
-	//	vid_menu.c
-	//
-	// ==========================================================================
+	
+	
+	
+	
+	
 
 	static final int REF_OPENGL_JOGL = 0;
 	static final int REF_OPENGL_FASTJOGL =1;
@@ -379,7 +379,7 @@ public class VID extends Globals {
 	*/
 
 	static final Menu.menuframework_s	s_opengl_menu = new Menu.menuframework_s();
-	static Menu.menuframework_s s_current_menu; // referenz
+	static Menu.menuframework_s s_current_menu; 
 
 	static final Menu.menulist_s s_mode_list = new Menu.menulist_s();
 
@@ -402,7 +402,7 @@ public class VID extends Globals {
 
 	static void DriverCallback( Object unused )
 	{
-		s_current_menu = s_opengl_menu; // s_software_menu;
+		s_current_menu = s_opengl_menu; 
 	}
 
 	static void ScreenSizeCallback( Object s )
@@ -416,8 +416,8 @@ public class VID extends Globals {
 	{
 		Menu.menuslider_s slider = (Menu.menuslider_s) s;
 
-		// if ( stricmp( vid_ref.string, "soft" ) == 0 ||
-		//	stricmp( vid_ref.string, "softx" ) == 0 )
+		
+		
 		if ( vid_ref.string.equalsIgnoreCase("soft") ||
 			 vid_ref.string.equalsIgnoreCase("softx") )
 		{
@@ -438,11 +438,11 @@ public class VID extends Globals {
 		/*
 		** invert sense so greater = brighter, and scale to a range of 0.5 to 1.3
 		*/
-		// the original was modified, because on CRTs it was too dark.
-		// the slider range is [5; 13]
-		// gamma: [1.1; 0.7]
+		
+		
+		
 		float gamma = ( 0.4f - ( s_brightness_slider.curvalue/20.0f - 0.25f ) ) + 0.7f;
-		// modulate:  [1.0; 2.6]
+		
 		float modulate = s_brightness_slider.curvalue * 0.2f;
 
 		Cvar.SetValue( "vid_gamma", gamma );
@@ -450,7 +450,7 @@ public class VID extends Globals {
 		Cvar.SetValue( "gl_picmip", 3 - s_tq_slider.curvalue );
 		Cvar.SetValue( "vid_fullscreen", s_fs_box.curvalue );
 		Cvar.SetValue( "gl_swapinterval", s_vsync_box.curvalue);
-		// set always true because of vid_ref or mode changes
+		
 		gl_swapinterval.modified = true;
 		Cvar.SetValue( "gl_ext_palettedtexture", s_paletted_texture_box.curvalue );
 		Cvar.SetValue( "gl_mode", s_mode_list.curvalue );
@@ -496,7 +496,7 @@ public class VID extends Globals {
                 final ArrayList<vidmode_t> fs_modes_list = new ArrayList<>();
                 final HashSet<DimensionImmutable> resSet = new HashSet<>();
 		for (int i = 0; i < modes.size(); i++) {
-		    final MonitorMode mm = modes.get(modes.size() - 1 - i); // reverse order: low -> high res.
+		    final MonitorMode mm = modes.get(modes.size() - 1 - i); 
                     final SurfaceSize ss = mm.getSurfaceSize();
                     final DimensionImmutable m = ss.getResolution();
                     if( resSet.add(m) ) {

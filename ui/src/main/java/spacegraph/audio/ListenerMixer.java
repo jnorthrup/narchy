@@ -39,17 +39,17 @@ public class ListenerMixer extends CopyOnWriteArrayList<Sound> implements Stereo
             return !updating || !sound.update(soundSource, alpha);
         });
 
-//        for (Iterator it = sounds.iterator(); it.hasNext();)         {
-//
-//            Sound sound = (Sound) it.next();
-//
-//            if (updating)
-//                sound.update(soundListener, alpha);
-//
-//            if (!sound.isLive()) {
-//                it.remove();
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override

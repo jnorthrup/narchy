@@ -56,7 +56,7 @@ public class FirstPhongShader implements Shader
     {
         this.mainShader = mainShader;
         
-        // Abspeichern der Parameterwerte:
+        
         this.ambientRatio.set(ambientRatio);
         this.diffuseRatio.set(diffuseRatio);
         this.specularRatio.set(specularRatio);
@@ -64,7 +64,7 @@ public class FirstPhongShader implements Shader
         emissionRatio.y = 0.0f;
         emissionRatio.z = 0.0f;
         
-        // Licht-Richtungsvektor normalisieren:
+        
         lightDirection.normalize();
     }
     
@@ -83,13 +83,13 @@ public class FirstPhongShader implements Shader
     {
         this.mainShader = mainShader;
         
-        // Abspeichern der Parameterwerte:
+        
         this.ambientRatio.set(ambientRatio);
         this.diffuseRatio.set(diffuseRatio);
         this.specularRatio.set(specularRatio);
         this.emissionRatio.set(emissionRatio);
         
-        // Licht-Richtungsvektor normalisieren:
+        
         lightDirection.normalize();
     }
     
@@ -97,17 +97,17 @@ public class FirstPhongShader implements Shader
 	@Override
     public ColorEx shade(Intersection intersection)
 	{
-        // Farbe des Objekts bestimmen:
+        
         ColorEx color = mainShader.shade(intersection);
 
         Vector3d eyelight = new Vector3d(intersection.ray.dir);
-        Vector3d normal = intersection.getNormal();     // Bereits normalisiert
+        Vector3d normal = intersection.getNormal();     
         
-        // Vorzeichen anpassen: Die Normale muss immer in die Richtung Zeigen,
-        // von der der Strahl kommt:
+        
+        
         byte sign = (byte)Math.signum(normal.dot(eyelight));
         
-        // Diffusen Winkel 'cos(alpha)' nach dem Phong-Modell berechnen:
+        
         float cosalpha = (float) (sign * normal.dot(lightDirection));
         float cosbeta;
         if ((double) cosalpha <= 0.0)
@@ -117,13 +117,13 @@ public class FirstPhongShader implements Shader
         }
         else
         {
-            // Spekularen Winkel 'cos(beta)' nach dem Blinn-Modell berechnen:
+            
             eyelight.normalize();
             eyelight.add(lightDirection);
             cosbeta = (float)((double) sign *normal.dot(eyelight)/eyelight.length());
         }
 
-        // Farbe berechnen:
+        
         ColorEx result = new ColorEx();
         result.mul2Add(ambientRatio, lightAmbient);
         result.mul2Add(cosalpha, diffuseRatio, lightColor);
@@ -131,7 +131,7 @@ public class FirstPhongShader implements Shader
         result.add(emissionRatio);
         result.mul(color);
         
-        // Farbe zur�ckgeben:
+        
         if (RaytracerConstants.LIMIT_COLOR_INTENSITY)
             result.clampMax(1.0f);
 		return result;

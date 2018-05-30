@@ -19,14 +19,14 @@ import spacegraph.util.math.v2;
  * @author Daniel Murphy
  */
 public class RopeJoint extends Joint {
-    // Solver shared
+    
     private final Tuple2f localAnchorA = new v2();
     private final Tuple2f localAnchorB = new v2();
     private float targetLength;
     private float length;
     protected float m_impulse;
 
-    // Solver temp
+    
     private int indexA;
     private int indexB;
     private final Tuple2f m_u = new v2();
@@ -87,7 +87,7 @@ public class RopeJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective masses.
+        
         Rot.mulToOutUnsafe(qA, temp.set(localAnchorA).subbed(m_localCenterA), m_rA);
         Rot.mulToOutUnsafe(qB, temp.set(localAnchorB).subbed(m_localCenterB), m_rB);
 
@@ -101,19 +101,19 @@ public class RopeJoint extends Joint {
         if (length > Settings.linearSlop) {
 
             m_u.scaled(1.0f / length);
-//            if (C > Settings.linearSlop) {
+
                 state = LimitState.AT_UPPER;
-//            }
-//            /*else if (C < -Settings.linearSlop) {
-//                state = LimitState.AT_LOWER;
-//            } */ else {
-//                state = LimitState.INACTIVE;
-//                m_u.setZero();
-//                m_mass = 0.0f;
-//                m_impulse = 0.0f;
-//                length = 0;
-//                return;
-//            }
+
+
+
+
+
+
+
+
+
+
+
         } else {
             state = LimitState.INACTIVE;
             m_u.setZero();
@@ -123,15 +123,15 @@ public class RopeJoint extends Joint {
             return;
         }
 
-        // Compute effective mass.
+        
         float crA = Tuple2f.cross(m_rA, m_u);
         float crB = Tuple2f.cross(m_rB, m_u);
         float invMass = m_invMassA + m_invIA * crA * crA + m_invMassB + m_invIB * crB * crB;
 
         m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
 
-//        if (data.step.warmStarting) {
-            // Scale the impulse to support a variable time step.
+
+            
             m_impulse *= data.step.dtRatio * positionFactor;
 
             float Px = m_impulse * m_u.x;
@@ -143,15 +143,15 @@ public class RopeJoint extends Joint {
             vB.x += m_invMassB * Px;
             vB.y += m_invMassB * Py;
             wB += m_invIB * (m_rB.x * Py - m_rB.y * Px);
-//        } else {
-//            m_impulse = 0.0f;
-//        }
 
 
 
-        // data.velocities[m_indexA].v = vA;
+
+
+
+        
         data.velocities[indexA].w = wA;
-        // data.velocities[m_indexB].v = vB;
+        
         data.velocities[indexB].w = wB;
     }
 
@@ -169,7 +169,7 @@ public class RopeJoint extends Joint {
         Tuple2f vB = VB;
         float wB = VB.w;
 
-        // Cdot = dot(u, v + cross(w, r))
+        
         Tuple2f vpA = pool.popVec2();
         Tuple2f vpB = pool.popVec2();
         Tuple2f temp = pool.popVec2();
@@ -181,13 +181,13 @@ public class RopeJoint extends Joint {
 
         float dLen = length - targetLength;
         float Cdot = Tuple2f.dot(m_u, temp.set(vpB).subbed(vpA))
-                //*dLen; //elasticity factor?
+                
         ;
 
-        // Predictive constraint.
-        //if (dLen < 0.0f) {
+        
+        
             Cdot += data.step.inv_dt * Math.abs(dLen) * positionFactor;
-        //}
+        
 
         float impulse = -m_mass * Cdot;
         float oldImpulse = m_impulse;
@@ -207,8 +207,8 @@ public class RopeJoint extends Joint {
 
         pool.pushVec2(3);
 
-        // data.velocities[m_indexA].v = vA;
-        // data.velocities[m_indexB].v = vB;
+        
+        
     }
 
     @Override
@@ -231,7 +231,7 @@ public class RopeJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective masses.
+        
         Rot.mulToOutUnsafe(qA, temp.set(localAnchorA).subbed(m_localCenterA), rA);
         Rot.mulToOutUnsafe(qB, temp.set(localAnchorB).subbed(m_localCenterB), rB);
         u.set(cB).added(rB).subbed(cA).subbed(rA);
@@ -239,7 +239,7 @@ public class RopeJoint extends Joint {
         float length = u.normalize();
         float C = length - targetLength;
 
-//        C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
+
 
         float impulse = -m_mass * C;
         float Px = impulse * u.x;
@@ -255,9 +255,9 @@ public class RopeJoint extends Joint {
         pool.pushRot(2);
         pool.pushVec2(4);
 
-        // data.positions[m_indexA].c = cA;
+        
         data.positions[indexA].a = aA;
-        // data.positions[m_indexB].c = cB;
+        
         data.positions[indexB].a = aB;
 
         return Math.abs(length - targetLength) < Settings.linearSlop;
@@ -299,8 +299,8 @@ public class RopeJoint extends Joint {
         this.positionFactor = positionFactor;
     }
 
-//    public LimitState getLimitState() {
-//        return state;
-//    }
+
+
+
 
 }

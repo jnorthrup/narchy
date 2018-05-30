@@ -21,149 +21,149 @@ public enum Texts {
     ;
 
 
-    //TODO find more appropriate symbol mapping
-    //TODO escape any mapped characters if they appear in input during encoding
-    //http://www.ssec.wisc.edu/~tomw/java/unicode.html
-
-//    private final static Map<Character,Character> escapeMap = new HashMap(256);
-//    private final static Map<Character,Character> escapeMapReverse = new HashMap(256);
-//    static {
-//        char[][] escapings = new char[][] {
-//            {':', '\u25B8'},
-//            {' ', '\u2581'},
-//            {'%', '\u25B9'},
-//            {'#', '\u25BA'},
-//            {'&', '\u25BB'},
-//            {'?', '\u25FF'},
-//            {'/', '\u279A'},
-//            {'=', '\u25BD'},
-//            {';', '\u25BE'},
-//            {'-', '\u25BF'},
-//            {'.', '\u00B8'},
-//            {'<', '\u25B4'},
-//            {'>', '\u25B5'},
-//            {'[', '\u25B6'},
-//            {']', '\u25B7'},
-//                {'(', '\u26B6'},
-//                {')', '\u26B7'},
-//                {'{', '\u27B6'},
-//                {'}', '\u27B7'},
-//            {'$', '\u25B3'}
-//        };
-//
-//        for (final char[] pair : escapings) {
-//            Character existing = escapeMap.put(pair[0], pair[1]);
-//            if (existing!=null) {
-//                System.err.println("escapeMap has duplicate key: " + pair[0] + " can not apply to both " + existing + " and " + pair[1] );
-//                System.exit(1);
-//            }
-//        }
-//
-//        //generate reverse mapping
-//        for (Map.Entry<Character, Character> e : escapeMap.entrySet())
-//            escapeMapReverse.put(e.getValue(), e.getKey());
-//    }
+    
+    
+    
 
 
-//    protected static StringBuilder escape(CharSequence s, boolean unescape, boolean useQuotes) {
-//        StringBuilder b = new StringBuilder(s.length());
-//
-//
-//        final Map<Character,Character> map = unescape ? escapeMapReverse : escapeMap;
-//
-//        boolean inQuotes = !useQuotes;
-//        char lastChar = 0;
-//
-//        for (int i = 0; i < s.length(); i++) {
-//            char c = s.charAt(i);
-//
-//
-//            if (c == Symbols.QUOTE) {
-//                b.append(Symbols.QUOTE);
-//
-//                if (useQuotes) {
-//                    if (lastChar != '\\')
-//                        inQuotes = !inQuotes;
-//                }
-//
-//                continue;
-//            }
-//
-//            if (!inQuotes) {
-//                b.append(c);
-//                continue;
-//            }
-//
-//            Character d = map.get(c);
-//            if (d == null)
-//                d = c;
-//            b.append(d);
-//
-//            if (unescape)
-//                lastChar = d;
-//            else
-//                lastChar = c;
-//        }
-//        return b;
-//    }
-//
-//    /** returns an escaped representation for input.  ranges that begin and end with Symbols.QUOTE are escaped, otherwise the string is not modified.
-//     */
-//    public static StringBuilder escape(CharSequence s) {
-//        return escape(s, false, true);
-//    }
-//
-//    /** returns an unescaped represntation of input */
-//    public static StringBuilder unescape(CharSequence s) {
-//        return escape(s, true, true);
-//    }
 
 
-//    
-//    public static String enterm(String s) {
-//        return s.replaceAll(":", "\u25B8")
-//                .replaceAll(" ", "\u2581")
-//                
-//                .replaceAll(">", "\u25B5") //TODO find a different unicode char
-//                .replaceAll("[", "\u25B6") //TODO find a different unicode char
-//                .replaceAll("]", "\u25B7") //TODO find a different unicode char
-//                .replaceAll("$", "\u25B8") //TODO find a different unicode char
-//                .replaceAll("%", "\u25B9") //TODO find a different unicode char
-//                .replaceAll("#", "\u25BA") //TODO find a different unicode char
-//                .replaceAll("&", "\u25BB") //TODO find a different unicode char
-//                .replaceAll("\\?", "\u25FF") //TODO find a different unicode char
-//                .replaceAll("/", "\u279A") //TODO find a different unicode char
-//                .replaceAll("=", "\u25BD") //TODO find a different unicode char
-//                .replaceAll(";", "\u25BE") //TODO find a different unicode char
-//                .replaceAll("-", "\u25BF")   
-//                .replaceAll("\\.", "\u00B8") //TODO find a different unicode char
-//                ;
-//    
-//    }
-//        
-
-//    /** escapeLiteral does not involve quotes. this can be used to escape characters directly.*/
-//    public static StringBuilder escapeLiteral(CharSequence s) {
-//        return escape(s, false, false);
-//    }
-//
-//    /** unescapeLiteral does not involve quotes. this can be used to unescape characters directly.*/
-//    public static StringBuilder unescapeLiteral(CharSequence s) {
-//        return escape(s, true, false);
-//    }
-
-//    public static char[] getCharArray(String s) {
-//        return Rope.getCharArray(s);
-//    }
-//
-//    public static char[] getCharArray(StringBuilder s) {
-//        return Rope.getCharArray(s);
-//    }
 
 
-//    public static int fuzzyDistance(CharSequence a, CharSequence b) {
-//        return StringUtils.getFuzzyDistance(a, b, Locale.getDefault());
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*
     public static void main(String[] args) {
@@ -171,51 +171,51 @@ public enum Texts {
     String t = "Notreally";
     mutate(s, t);
     StdOut.println(t);
-    // strings are interned so this doesn't even print "Immutable" (!)
+    
     StdOut.println("Immutable");
     }
      */
 
     static final ThreadLocal<Format> oneDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0"));
 
-    //    /**
-//     * Change the first min(|s|, |t|) characters of s to t
-//     * TODO must reset the hashcode field
-//     * TODO this is untested and probably not yet functional
-//     */
-//    public static void overwrite(CharSequence s, CharSequence t) {
-//        try {
-//            char[] value = (char[]) StringHack.val.get(s);
-//
-//            for (int i = 0; i < Math.min(s.length(), t.length()); i++) {
-//                value[i] = t.charAt(i);
-//            }
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-//
-//    public static boolean containsChar(CharSequence n, char c) {
-//        if (n instanceof String)
-//            return ((String) n).indexOf(c) != -1;
-//
-//        int l = n.length();
-//        for (int i = 0; i < l; i++)
-//            if (n.charAt(i) == c)
-//                return true;
-//        return false;
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static final ThreadLocal<Format> threeDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.000"));
     static final ThreadLocal<Format> fourDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0000"));
 
-    //    public static String n1char(double x) {
-//        return oneDecimal.get().format(x);
-//    }
+    
+
+
     @Deprecated
     static final ThreadLocal<DecimalFormat> twoDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.00"));
 
     /**
-     * @author http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Java
+     * @author http:
      */
     public static int levenshteinDistance(CharSequence a, CharSequence b) {
         if (a.equals(b)) return 0;
@@ -272,13 +272,13 @@ public enum Texts {
         return fourDecimal.get().format(x);
     }
 
-//    public static final String n2Slow(final float x) {
-//        return twoDecimal.format(x);
-//    }
 
-//    public static long thousandths(float d) {
-//        return (long) ((d * 1000.0f + 0.5f));
-//    }
+
+
+
+
+
+
 
     public static long hundredths(float d) {
         return (long) ((d * 100.0f + 0.5f));
@@ -290,14 +290,14 @@ public enum Texts {
 
     public static String n2(float x) {
         if (x != x)
-            return "NaN"; //NaN
+            return "NaN"; 
 
         if ((x < 0) || (x > 1.0f))
-            return twoDecimal.get().format(x);//HACK
+            return twoDecimal.get().format(x);
 
         int hundredths = (int) hundredths(x);
         switch (hundredths) {
-            //some common values
+            
             case 100:
                 return "1.0";
             case 99:
@@ -322,16 +322,16 @@ public enum Texts {
         }
     }
 
-    //final static Format oneDecimal = new DecimalFormat("0.0");
+    
 
     /**
      * 1 character representing a 1 decimal of a value between 0..1.0;
-     * representation; 0..9 //, A=1.0
+     * representation; 0..9 
      */
     public static char n1char(float x) {
         int i = tens(x);
         if (i >= 10)
-            i = 9; //return 'A';
+            i = 9; 
         return (char) ('0' + i);
     }
 
@@ -442,9 +442,9 @@ public enum Texts {
                 return i3(s, ifMissing);
             default:
 
-                //attempt to avoid throwing a stack trace
+                
                 for (int i = 0; i < s.length(); i++)
-                    if (i(s.charAt(i)) == -1) //non-digit found
+                    if (i(s.charAt(i)) == -1) 
                         return ifMissing;
 
 
@@ -452,7 +452,7 @@ public enum Texts {
                     return Integer.parseInt(s);
                 } catch (NumberFormatException e) {
                     return ifMissing;
-                    //throw new RuntimeException("non-integer case should have been caught earlier");
+                    
                 }
         }
     }
@@ -627,7 +627,7 @@ public enum Texts {
         int s = v.length;
         for (int i = 0; i < s; i++) {
             sb.append(n4(v[i]));
-            if (i != s - 1) sb.append('\t'); //TSV
+            if (i != s - 1) sb.append('\t'); 
         }
         return sb.toString();
     }
@@ -644,31 +644,31 @@ public enum Texts {
         return sb.toString();
     }
 
-//    /** fast append to CharBuffer */
-//    public final static CharBuffer append(final CharBuffer c, final CharSequence s) {
-//        if (s instanceof CharBuffer) {            
-//            
-//            c.append((CharBuffer)s);
-//            return c;
-//        }
-//        else if (s instanceof String) {
-//            //c.put(getCharArray((String)s), 0, s.length());            
-//            return c.append(s);
-//        }
-//        else {
-//            return c.append(s);
-//        }
-//    }
 
-//    public final static CharBuffer append(final CharBuffer c, final CharBuffer s) {
-//        return c.put(s);        
-//    }
-//    public final static CharBuffer append(final CharBuffer c, final String s) {
-//        return c.put(getCharArray(s));        
-//    }
-//    public final static CharBuffer append(final CharBuffer b, final char c) {
-//        return b.put(c);        
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Return formatted Date String: yyyy.MM.dd HH:mm:ss
@@ -676,7 +676,7 @@ public enum Texts {
      *
      * @param timestamp seconds since start of Unix-time
      * @return String formatted as - yyyy.MM.dd HH:mm:ss
-     * from: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/Utils.java
+     * from: https:
      */
     public static String dateStr(long timestamp) {
         Date date = new Date(timestamp * 1000);
@@ -687,13 +687,13 @@ public enum Texts {
 
     /**
      * string repr of an amount of nanoseconds
-     * from: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/Utils.java
+     * from: https:
      */
     public static String timeStr(double ns) {
         if (ns < 1000) return n4(ns) + "ns";
         if (ns < 1_000_000) return n4(ns / 1_000d) + "us";
         if (ns < 1_000_000_000) return n4(ns / 1_000_000d) + "ms";
-        //if (ns < 3_000_000_000_000d) return String.format("%.2f", ns / 1_000_000_000d);
+        
         if (ns < 1_000_000_000_000d) return n2(ns / 1_000_000_000d) + "s";
         long sec = Math.round(ns / 1_000_000_000d);
         if (sec < 5 * 60) return (sec / 60) + "m" + (sec % 60) + 's';
@@ -706,7 +706,7 @@ public enum Texts {
     }
 
     /**
-     * from: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/Utils.java
+     * from: https:
      */
     public static String byteCountString(long size) {
         if (size < 2 * (1L << 10)) return size + "b";
@@ -716,13 +716,13 @@ public enum Texts {
     }
 
     /**
-     * from: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/Utils.java
+     * from: https:
      */
     public static String repeat(String s, int n) {
 
         if (s.length() == 1) {
             char c = s.charAt(0);
-            if (c < 0xff) { //ASCII, 8bit
+            if (c < 0xff) { 
                 byte[] bb = new byte[n];
                 Arrays.fill(bb, (byte) c);
                 return new String(bb);
@@ -750,7 +750,7 @@ public enum Texts {
     }
 
     public static void histogramDecode(AbstractHistogram h, String header, int linearStep, BiConsumer<String, Object> x) {
-        int digits = (int) (1 + Math.log10(h.getMaxValue())); //pad leading number for lexicographic / ordinal coherence
+        int digits = (int) (1 + Math.log10(h.getMaxValue())); 
         h.linearBucketValues(linearStep).forEach((p) -> {
             x.accept(header + " [" +
                             iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
@@ -794,7 +794,7 @@ public enum Texts {
             if (length == 1) {
                 s = "\"\\\"\"";
             } else {
-                //already quoted the empty string
+                
             }
         } else {
             s = ("\"" + quoteEscaper.build().escape(s) + '"');

@@ -88,7 +88,7 @@ public class ChipSource implements AxiomSource {
 		Vector v;
 		Enumeration e;
 
-		// chips
+		
 
 		d = ChipBase.chip();
 		e = d.elements();
@@ -96,7 +96,7 @@ public class ChipSource implements AxiomSource {
 			p.addAxiom(fact((Chip) e.nextElement()));
 		}
 
-		// customers
+		
 
 		d = ChipBase.customer();
 		e = d.elements();
@@ -104,7 +104,7 @@ public class ChipSource implements AxiomSource {
 			p.addAxiom(fact((Customer) e.nextElement()));
 		}
 
-		// orders
+		
 
 		v = ChipBase.order();
 		e = v.elements();

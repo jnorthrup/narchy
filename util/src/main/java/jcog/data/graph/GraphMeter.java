@@ -36,8 +36,8 @@ import java.util.Random;
  */
 public class GraphMeter {
 
-// =================== public fields ==================================
-// ====================================================================
+
+
 
     public final static int WHITE = 0;
     public final static int GREY = 1;
@@ -62,8 +62,8 @@ public class GraphMeter {
     private int counter;
     private Graph g;
 
-// =================== private methods ================================
-// ====================================================================
+
+
 
     public static <X> double clustering(AdjGraph<X,?> g, X node) {
         int n = g.node(node);
@@ -104,7 +104,7 @@ public class GraphMeter {
         return n.length + (((float)edges) * 2.0) / (n.length * (n.length - 1));
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Performs anti-entropy epidemic multicasting from node 0.
@@ -132,8 +132,8 @@ public class GraphMeter {
                     it.next();
                 int randn = it.next();
 
-                // push pull exchane with random neighbour
-                if (c1[i] == BLACK) //c2[i] is black too
+                
+                if (c1[i] == BLACK) 
                 {
                     if (c2[randn] == WHITE) ++black;
                     c2[randn] = BLACK;
@@ -149,7 +149,7 @@ public class GraphMeter {
         for (; k < b.length; ++k) b[k] = g.size();
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Collects nodes accessible from node "from" using depth-first search.
@@ -180,8 +180,8 @@ public class GraphMeter {
         color[from] = BLACK;
     }
 
-// =================== public methods ================================
-// ====================================================================
+
+
 
     /**
      * Collects nodes accessible from node "from" using breadth-first search.
@@ -224,7 +224,7 @@ public class GraphMeter {
         }
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * The recursive part of the Tarjan algorithm.
@@ -240,13 +240,13 @@ public class GraphMeter {
                 tarjanVisit(j);
             }
             if (color[j] > 0 && color[root[j]] < color[root[i]])
-            // inComponent is false and have to update root
+            
             {
                 root[i] = root[j];
             }
         });
 
-        if (root[i] == i) //this node is the root of its cluster
+        if (root[i] == i) 
         {
             int j;
             int s = stack.size();
@@ -259,7 +259,7 @@ public class GraphMeter {
         }
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Returns the weakly connected cluster indexes with size as a value.
@@ -275,7 +275,7 @@ public class GraphMeter {
         if (cluster == null) cluster = new IntHashSet();
         if (color == null || color.length < size) color = new int[size];
 
-        // cluster numbers are negative integers
+        
 
         for (int i = 0; i < size; ++i) color[i] = WHITE;
         int actCluster = 0;
@@ -285,7 +285,7 @@ public class GraphMeter {
                 continue;
 
             cluster.clear();
-            bfs(i); // dfs is recursive, for large graphs not ok
+            bfs(i); 
             --actCluster;
             for (j = 0; j < size; ++j) {
                 int cj = color[j];
@@ -310,7 +310,7 @@ public class GraphMeter {
         return x;
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * In <code>{@link #d}[j]</code> returns the length of the shortest path between
@@ -330,7 +330,7 @@ public class GraphMeter {
         bfs(i);
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Performs flooding from given node.
@@ -349,7 +349,7 @@ public class GraphMeter {
         }
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Tarjan: Returns the strongly connected cluster roots with size as a value.
@@ -359,7 +359,7 @@ public class GraphMeter {
      * are strongly connected (such as large rings) you can get stack overflow
      * because of the large depth of recursion.
      */
-//XXX implement a non-recursive version ASAP!!!
+
     public IntIntHashMap strongly(Graph g) {
 
         this.g = g;
@@ -370,9 +370,9 @@ public class GraphMeter {
         for (int i = 0; i < size; ++i) color[i] = WHITE;
         counter = 1;
 
-        // color is WHITE (0): not visited
-        // not WHITE, positive (c>1): visited as the c-th node
-        // color is negative (c<1): inComponent true
+        
+        
+        
         for (int i = 0; i < size; ++i) {
             if (color[i] == WHITE) tarjanVisit(i);
         }

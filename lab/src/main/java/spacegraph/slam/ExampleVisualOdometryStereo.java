@@ -52,24 +52,24 @@ public class ExampleVisualOdometryStereo {
 
 	public static void main( String args[] ) {
 
-//		MediaManager media = DefaultMediaManager.INSTANCE;
 
-//		String directory = UtilIO.pathExample("vo/backyard/");
 
-		// load camera description and the video sequence
-//		StereoParameters stereoParam =
-//				//CalibrationIO.load(media.openFile(directory + "stereo.yaml"));
-//				ExampleStereoTwoViewsOneCamera.intrinsic;
-		//SimpleImageSequence<GrayU8> video1;
-//		SimpleImageSequence<GrayU8> video2;
-		//= media.openVideo(directory + "left.mjpeg", ImageType.single(GrayU8.class));
-		//SimpleImageSequence<GrayU8> video2 = media.openVideo(directory+"right.mjpeg", ImageType.single(GrayU8.class));
+
+
+		
+
+
+
+		
+
+		
+		
 
 		WebcamInterface webcamInterface = new DynamicWebcamInterface();
 		webcamInterface.open(null, 640, 480, ImageType.single(GrayU8.class));
 
 
-		// specify how the image features are going to be tracked
+		
 		PkltConfig configKlt = new PkltConfig();
 		configKlt.pyramidScaling = new int[]{1, 2, 4, 8};
 		configKlt.templateRadius = 3;
@@ -78,18 +78,18 @@ public class ExampleVisualOdometryStereo {
 				FactoryPointTrackerTwoPass.klt(configKlt, new ConfigGeneralDetector(300, 3, 1),
 						GrayU8.class, GrayS16.class);
 
-		// computes the depth of each point
+		
 		StereoDisparitySparse<GrayU8> disparity =
 				FactoryStereoDisparity.regionSparseWta(0, 150, 3, 3, 50, -1, true, GrayU8.class);
 
-		// declares the algorithm
+		
 		StereoVisualOdometry<GrayU8> visualOdometry = FactoryVisualOdometry.stereoDepth(1.5,120, 2,300,50,true,
 				disparity, tracker, GrayU8.class);
 
-		// Pass in intrinsic/extrinsic calibration.  This can be changed in the future.
-//		Se3_F64 initialEstimate = new Se3_F64();
-//		initialEstimate.reset();
-//		initialEstimate.setTranslation(1,0,0);
+		
+
+
+
 
 
 		GrayU8 left = null, right = null;
@@ -98,7 +98,7 @@ public class ExampleVisualOdometryStereo {
 				ExampleStereoTwoViewsOneCamera.intrinsic, ExampleStereoTwoViewsOneCamera.intrinsic,
 				new Se3_F64());
 
-		// Process the video sequence and output the location plus number of inliers
+		
 		List<AssociatedPair> matchedFeatures = new FasterList();
 
 		ImagePanel i = ShowImages.showWindow(Webcam.getDefault().getImage(),"cam");
@@ -115,11 +115,11 @@ public class ExampleVisualOdometryStereo {
 
 			computeMatches(left, right, matchedFeatures);
 
-			//System.out.println("matchedFeatures: " + matchedFeatures.size());
+			
 
 			Se3_F64 cameraMotion = estimateCameraMotion(ExampleStereoTwoViewsOneCamera.intrinsic, matchedFeatures);
 			if (cameraMotion == null) {
-				//System.out.println("no motion");
+				
 			} else {
 
 				System.out.println("motion: " + cameraMotion.getT());
@@ -127,7 +127,7 @@ public class ExampleVisualOdometryStereo {
 				visualOdometry.setCalibration(stereoParam);
 
 				if( !visualOdometry.process(left,right) ) {
-					//throw new RuntimeException("VO Failed!");
+					
 					System.out.println("odom fail");
 				} else {
 
@@ -149,12 +149,12 @@ public class ExampleVisualOdometryStereo {
 	 */
 	static public void computeMatches(GrayU8 left, GrayU8 right, List<AssociatedPair> matchedFeatures) {
 		DetectDescribePoint detDesc = FactoryDetectDescribe.surfStable(
-//				new ConfigFastHessian(
-//						1, 2, 0, 1, 9, 4, 4),
-//				null,null, GrayU8.class);
+
+
+
 				new ConfigFastHessian(1, 2, 200, 1, 9, 4, 4), null,null, GrayU8.class);
 
-		//DetectDescribePoint detDesc = FactoryDetectDescribe.sift(null,new ConfigSiftDetector(2,0,200,5),null,null);
+		
 
 		ScoreAssociation<BrightFeature> scorer = FactoryAssociation.scoreEuclidean(BrightFeature.class,true);
 		AssociateDescription<BrightFeature> associate = FactoryAssociation.greedy(scorer, 1, true);
@@ -186,11 +186,11 @@ public class ExampleVisualOdometryStereo {
 
 		if (!epipolarMotion.process(x))
 			return null;
-		//throw new RuntimeException("Motion estimation failed");
+		
 
-		// save inlier set for debugging purposes
-//		inliers.clear();
-//		inliers.addAll(epipolarMotion.getMatchSet());
+		
+
+
 
 		return epipolarMotion.getModelParameters();
 	}

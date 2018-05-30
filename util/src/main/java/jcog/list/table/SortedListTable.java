@@ -20,13 +20,13 @@ abstract public class SortedListTable<X, Y> extends ArrayListTable<X, Y> impleme
     /**
      * array of lists of items, for items on different level
      */
-    //protected final SortedList_1x4<L> items;
+    
     public final @NotNull SortedArray<Y> items;
 
 
     public SortedListTable(SortedArray<Y> items, @NotNull Map<X, Y> map) {
         super(map);
-        //this.items = new SortedList_1x4<>(items, this, searchType, false);
+        
         this.items = items;
     }
 
@@ -44,7 +44,7 @@ abstract public class SortedListTable<X, Y> extends ArrayListTable<X, Y> impleme
 
     @Override
     public final Y get(int i) {
-        return items.list[i];//array()[i];
+        return items.list[i];
     }
 
     @Override
@@ -77,39 +77,39 @@ abstract public class SortedListTable<X, Y> extends ArrayListTable<X, Y> impleme
 
 
 
-//    /** gets the key associated with a value */
-//    @Nullable @Override
-//    abstract public X key(@NotNull Y l);
 
 
 
 
-//    @Nullable
-//    @Override
-//    @Deprecated protected Y addItem(@NotNull Y i) {
-//        int cap = capacity();
-//        if (cap < 1) {
-//            return i; //bounce
-//        }
-//
-//        int size = size();
-//
-//        Y displaced = null;
-//
-//        if (size == cap) {
-//            Y last = items.last();
-//            if (Float.compare(floatValueOf(last), floatValueOf(i)) < 0) {
-//                //insufficient rank, bounce
-//                return i;
-//            }
-//
-//            displaced = items.removeLast(); //remove last
-//        }
-//
-//        items.add(i, this);
-//
-//        return displaced;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @NotNull
     public List<Y> listCopy() {
@@ -119,15 +119,15 @@ abstract public class SortedListTable<X, Y> extends ArrayListTable<X, Y> impleme
     }
 
 
-//    protected final class ArrayMapping extends CollectorMap<V, L> {
-//
-//        final SortedIndex<L> items;
-//
-//        public ArrayMapping(Map<V, L> map, SortedIndex<L> items) {
-//            super(map);
-//            this.items = items;
-//        }
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
 }

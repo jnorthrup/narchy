@@ -10,7 +10,7 @@ public class PrologTestCase  {
 	@Test
 	public void testEngineInitialization() {
 		Prolog engine = new Prolog();
-		//assertEquals(4, engine.getCurrentLibraries().length);
+		
 		assertNotNull(engine.library("alice.tuprolog.lib.BasicLibrary"));
 		assertNotNull(engine.library("alice.tuprolog.lib.ISOLibrary"));
 		assertNotNull(engine.library("alice.tuprolog.lib.IOLibrary"));
@@ -23,16 +23,16 @@ public class PrologTestCase  {
 		assertNotNull(engine.library("alice.tuprolog.StringLibrary"));
 	}
 
-//	@Disabled
-//	@Test public void testLoadLibraryAsObject() throws InvalidLibraryException {
-//		Prolog engine = new Prolog();
-//		Library stringLibrary = new StringLibrary();
-//		engine.loadLibrary(stringLibrary);
-//		assertNotNull(engine.getLibrary("alice.tuprolog.StringLibrary"));
-//		Library javaLibrary = new alice.tuprolog.lib.OOLibrary();
-//		engine.loadLibrary(javaLibrary);
-//		assertSame(javaLibrary, engine.getLibrary("alice.tuprolog.lib.JavaLibrary"));
-//	}
+
+
+
+
+
+
+
+
+
+
 	
 	@Test public void testGetLibraryWithName() throws InvalidLibraryException {
 		Prolog engine = new Prolog("alice.tuprolog.TestLibrary");
@@ -59,18 +59,18 @@ public class PrologTestCase  {
 		}
 	}
 	
-//	@Test public void testSpyListenerManagement() {
-//		Prolog engine = new Prolog();
-//		SpyListener listener1 = new SpyListener() {
-//			public void onSpy(SpyEvent e) {}
-//		};
-//		SpyListener listener2 = new SpyListener() {
-//			public void onSpy(SpyEvent e) {}
-//		};
-//		engine.addSpyListener(listener1);
-//		engine.addSpyListener(listener2);
-//		assertEquals(2, engine.getSpyListenerList().size());
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	@Test public void testLibraryListener() throws InvalidLibraryException {
 		Prolog engine = new Prolog(new String[]{});

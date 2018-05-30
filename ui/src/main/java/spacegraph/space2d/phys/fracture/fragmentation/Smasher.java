@@ -31,13 +31,13 @@ public class Smasher {
      */
     public Polygon[] fragments;
 
-    public final HashTabulka<Fracture> fractures = new HashTabulka<>(); //TODO move into Smasher
+    public final HashTabulka<Fracture> fractures = new HashTabulka<>(); 
 
     private Tuple2f[] focee;
     private Polygon p;
 
-    float constant[]; //storage for precalculated constants (same size as polyX)
-    float multiple[]; //storage for precalculated multipliers (same size as polyX)
+    float constant[]; 
+    float multiple[]; 
 
     private final HashTabulka<EdgeDiagram> table = new HashTabulka<>();
 
@@ -54,14 +54,14 @@ public class Smasher {
     public void calculate(Polygon p, Tuple2f[] focee, Tuple2f contactPoint, IContains ic) {
         this.focee = focee;
         this.p = p;
-        //Geometry geom = new Geometry(foceeAll, p);
+        
         List<Fragment> list = getVoronoi();
 
         List<EdgePolygon> polygonEdgesList = new FasterList<>();
         HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
         HashTabulka<EdgePolygon> polygonEdges = new HashTabulka<>();
 
-        //vlozim hrany polygonu do hashovacej tabulky hran polygonu
+        
         int count = p.size();
         for (int i = 1; i <= count; i++) {
             Tuple2f p1 = p.get(i - 1);
@@ -71,7 +71,7 @@ public class Smasher {
             polygonEdgesList.add(e);
         }
 
-        //vlozim hrany diagramu do hashovacej tabulky hran diagramu
+        
         for (Fragment pp : list) {
             count = pp.size();
             for (int i = 1; i <= count; i++) {
@@ -117,7 +117,7 @@ public class Smasher {
 
         EVec2[] vectors = vectorList.toArray(new EVec2[vectorList.size()]);
 
-        Arrays.sort(vectors); //zotriedim body
+        Arrays.sort(vectors); 
 
 
         for (EVec2 e : vectors) {
@@ -126,22 +126,22 @@ public class Smasher {
                     EdgeDiagram ex = (EdgeDiagram) e.e;
                     diagramEdges.add(ex);
 
-//                    for (EdgePolygon px : polygonEdges.toArray(new EdgePolygon[polygonEdges.size()])) {
-//                        process(px, ex);
-//                    }
+
+
+
                     polygonEdges.forEach(px -> process(px, ex));
 
                 } else {
                     diagramEdges.remove(e.e);
                 }
-            } else { //je instanciou EdgePolygon
+            } else { 
                 if (e.start) {
                     EdgePolygon px = (EdgePolygon) e.e;
                     polygonEdges.add(px);
 
                     diagramEdges.forEach(ex -> process(px, ex));
-//                    for (EdgeDiagram ex : diagramEdges.toArray(new EdgeDiagram[diagramEdges.size()]))
-//                        process(px, ex);
+
+
 
 
                 } else {
@@ -183,13 +183,13 @@ public class Smasher {
         }
 
         MyList<Fragment> allIntersections = new MyList<>();
-        //ostatne algoritmy generovali diery - tento je najlepsi - najdem najblizsi bod na hrane polygonu a zistim kolizny fargment - od neho prehladavam do sirky a kontrolujem vzdialenost a viditelnost (jednoduche, ciste)
+        
 
         precalc_values();
 
         for (Fragment ppp : list) {
             List<Fragment> intsc = getIntersections(ppp, polygonAll);
-            if (intsc == null) { // cely polygon sa nachadza vnutri fragmentu
+            if (intsc == null) { 
                 fragments = new Polygon[]{p};
                 return;
             }
@@ -198,8 +198,8 @@ public class Smasher {
 
         table.clear();
 
-        //vytvoria sa hrany a nastane prehladavanie do sirky
-        //vytvorim hashovaciu tabulku hran
+        
+        
         for (Fragment f : allIntersections) {
             for (int i = 0; i < f.size(); ++i) {
                 Tuple2f v1 = f.get(i);
@@ -216,17 +216,17 @@ public class Smasher {
             }
         }
 
-        //rozdelim polygony na 2 mnoziny - na tie, ktore budu ulomky a tie, ktore budu spojene a drzat spolu
+        
         final double[] distance = {Double.MAX_VALUE};
         final Fragment[] startPolygon = {null};
         final Tuple2f[] kolmicovyBod = {null};
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
-        //EdgeDiagram[] ee = table.toArray(new EdgeDiagram[table.size()]);
+        
         table.forEach(ep->{
             if (ep.d2 == null) {
 
-                //toto sa nahradi vzorcom na vypocet vzdialenosti body od usecky
+                
                 Tuple2f vv = ep.kolmicovyBod(contactPoint);
                 double newDistance = contactPoint.distanceSq(vv);
                 if (newDistance <= distance[0]) {
@@ -262,14 +262,14 @@ public class Smasher {
                     if (ic.contains(centroid)) {
                         boolean intersection = false;
                         for (EdgeDiagram edge : allEdgesPolygon) {
-                            //neberie do uvahy hrany polygonu
+                            
                             if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
                                 intersection = true;
                                 break;
                             }
                         }
 
-                        //tu bude podmienka - ci ten polygon vezmem do uvahy, ak hej, priplnim ho do MyListu
+                        
                         if (!intersection) {
                             ppx.add(opposite);
                         }

@@ -23,7 +23,7 @@ public class NAL8DecomposedGoalTest extends NALTest {
     public void testIntersectGoal1Pos() {
         test
             .input("((a|b)-->g)!")
-            //.input("(a-->g). %0.75;0.90%")
+            
             .mustGoal(cycles,"(a-->g)", 1f, 0.81f)
             .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
     }
@@ -69,13 +69,13 @@ public class NAL8DecomposedGoalTest extends NALTest {
                 .mustGoal(cycles,"b", 1f, 0.81f);
     }
 
-//    @Test
-//    public void testMutexNegConj2() {
-//        test
-//                .input("(||, --(a&|b), a, b,(--a &| --b))!")
-//                .input("a.")
-//                .mustGoal(cycles,"--b", 1f, 0.81f);
-//    }
+
+
+
+
+
+
+
 
     @Test
     public void testMutexDiffGoal1Neg() {
@@ -89,7 +89,7 @@ public class NAL8DecomposedGoalTest extends NALTest {
     public void testIntersectGoal1Neg() {
         test
                 .input("(--,((a|b)-->g))!")
-                //.input("(a-->g).")
+                
                 .mustGoal(cycles,"(a-->g)", 0f, 0.81f)
                 .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
     }
@@ -126,13 +126,13 @@ public class NAL8DecomposedGoalTest extends NALTest {
         }
 
         void testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, float f, float c) {
-            //extension
+            
             testGoalDiff(goalPolarity, beliefPolarity, diffIsGoal, diffIsFwd,
             true, f, c);
 
-//            //intension
-//            testGoalDiff(goalPolarity, beliefPolarity, diffIsGoal, diffIsFwd,
-//                    false, f, c);
+
+
+
         }
 
         TestNAR testGoalDiff(boolean goalPolarity, boolean beliefPolarity, boolean diffIsGoal, boolean diffIsFwd, boolean diffIsEx, float f, float c) {
@@ -172,7 +172,7 @@ public class NAL8DecomposedGoalTest extends NALTest {
 
             return new TestNAR(NARS.tmp(3))
                     .input(goalTask)
-                    .input(beliefTask) //no difference
+                    .input(beliefTask) 
                     .mustGoal(cycles, YY, f, c)
                     .run(16);
         }

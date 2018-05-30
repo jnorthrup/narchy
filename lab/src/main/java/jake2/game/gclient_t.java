@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 31.10.2003 by RST.
+
 
 package jake2.game;
 
@@ -33,20 +33,20 @@ public class gclient_t
 	{
 		this.index = index;
 	}
-	//	this structure is cleared on each PutClientInServer(),
-	//	except for 'client->pers'
+	
+	
 
-	// known to server
-	public final player_state_t ps = new player_state_t(); // communicated by server to clients
+	
+	public final player_state_t ps = new player_state_t(); 
 	public int ping;
 
-	// private to game
+	
 	public client_persistant_t pers = new client_persistant_t();
 	public client_respawn_t resp = new client_respawn_t();
-	public pmove_state_t old_pmove = new pmove_state_t(); // for detecting out-of-pmove changes
+	public pmove_state_t old_pmove = new pmove_state_t(); 
 
-	public boolean showscores; // set layout stat
-	public boolean showinventory; // set layout stat
+	public boolean showscores; 
+	public boolean showinventory; 
 	public boolean showhelp;
 	public boolean showhelpicon;
 
@@ -60,26 +60,26 @@ public class gclient_t
 
 	public gitem_t newweapon;
 
-	// sum up damage over an entire frame, so
-	// shotgun blasts give a single big kick
-	public int damage_armor; // damage absorbed by armor
-	public int damage_parmor; // damage absorbed by power armor
-	public int damage_blood; // damage taken out of health
-	public int damage_knockback; // impact damage
-	public float[] damage_from = { 0, 0, 0 }; // origin for vector calculation
+	
+	
+	public int damage_armor; 
+	public int damage_parmor; 
+	public int damage_blood; 
+	public int damage_knockback; 
+	public float[] damage_from = { 0, 0, 0 }; 
 
-	public float killer_yaw; // when dead, look at killer
+	public float killer_yaw; 
 
 	public int weaponstate;
-	public float[] kick_angles = { 0, 0, 0 }; // weapon kicks
+	public float[] kick_angles = { 0, 0, 0 }; 
 	public float[] kick_origin = { 0, 0, 0 };
-	public float v_dmg_roll, v_dmg_pitch, v_dmg_time; // damage kicks
-	public float fall_time, fall_value; // for view drop on fall
+	public float v_dmg_roll, v_dmg_pitch, v_dmg_time; 
+	public float fall_time, fall_value; 
 	public float damage_alpha;
 	public float bonus_alpha;
 	public float[] damage_blend = { 0, 0, 0 };
-	public float[] v_angle = { 0, 0, 0 }; // aiming direction
-	public float bobtime; // so off-ground doesn't change it
+	public float[] v_angle = { 0, 0, 0 }; 
+	public float bobtime; 
 	public float[] oldviewangles = { 0, 0, 0 };
 	public float[] oldvelocity = { 0, 0, 0 };
 
@@ -87,15 +87,15 @@ public class gclient_t
 	public int old_waterlevel;
 	public int breather_sound;
 
-	public int machinegun_shots; // for weapon raising
+	public int machinegun_shots; 
 
-	// animation vars
+	
 	public int anim_end;
 	public int anim_priority;
 	public boolean anim_duck;
 	public boolean anim_run;
 
-	// powerup timers
+	
 	public float quad_framenum;
 	public float invincible_framenum;
 	public float breather_framenum;
@@ -108,14 +108,14 @@ public class gclient_t
 
 	public float pickup_msg_time;
 
-	public float flood_locktill; // locked from talking
-	public float flood_when[] = new float[10]; // when messages were said
-	public int flood_whenhead; // head pointer for when said
+	public float flood_locktill; 
+	public float flood_when[] = new float[10]; 
+	public int flood_whenhead; 
 
-	public float respawn_time; // can respawn when time > this
+	public float respawn_time; 
 
-	public edict_t chase_target; // player we are chasing
-	public boolean update_chase; // need to update chase info?
+	public edict_t chase_target; 
+	public boolean update_chase; 
 
 	public final int index;
 
@@ -128,8 +128,8 @@ public class gclient_t
 		resp = new client_respawn_t();
 		old_pmove = new pmove_state_t();
 		
-		showscores = false; // set layout stat
-		showinventory = false; // set layout stat
+		showscores = false; 
+		showinventory = false; 
 		showhelp = false;
 		showhelpicon = false;
 
@@ -172,7 +172,7 @@ public class gclient_t
 		anim_duck = false;
 		anim_run = false;
 		
-		// powerup timers
+		
 		quad_framenum = 0;
 		invincible_framenum = 0;
 		breather_framenum = 0;
@@ -185,14 +185,14 @@ public class gclient_t
 
 		pickup_msg_time = 0;
 
-		flood_locktill = 0; // locked from talking
-		flood_when  = new float[10]; // when messages were said
-		flood_whenhead = 0; // head pointer for when said
+		flood_locktill = 0; 
+		flood_when  = new float[10]; 
+		flood_whenhead = 0; 
 
-		respawn_time = 0; // can respawn when time > this
+		respawn_time = 0; 
 
-		chase_target = null; // player we are chasing
-		update_chase = false; // need to update chase info?
+		chase_target = null; 
+		update_chase = false; 
 	}
 
 	/** Reads a game client from the file. */

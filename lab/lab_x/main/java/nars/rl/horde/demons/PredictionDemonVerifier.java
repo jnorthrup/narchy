@@ -117,17 +117,17 @@ public class PredictionDemonVerifier<A> implements Serializable {
         errorMonitor = new TDErrorMonitor(gamma, precision);
     }
 
-//    public PredictionDemonVerifier(PredictionDemon predictionDemon) {
-//        this(extractGamma(predictionDemon.predicter()), predictionDemon);
-//    }
-//
-//    static public double extractGamma(OnPolicyTD learner) {
-//        if (learner instanceof TD)
-//            return ((TD) learner).gamma();
-//        if (learner instanceof TDLambdaAutostep)
-//            return ((TDLambdaAutostep) learner).gamma();
-//        throw new NotImplemented();
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     public TDErrorMonitor errorMonitor() {
         return errorMonitor;

@@ -59,14 +59,14 @@ public final class IN extends Globals {
         if (!mouse_avail)
             return;
         if (!mouse_active) {
-            KBD.mx = KBD.my = 0; // don't spazz
+            KBD.mx = KBD.my = 0; 
             install_grabs();
             mouse_active = true;
         }
     }
 
     public static void DeactivateMouse() {
-        // if (!mouse_avail || c == null) return;
+        
         if (mouse_active) {
             uninstall_grabs();
             mouse_active = false;
@@ -102,7 +102,7 @@ public final class IN extends Globals {
     }
 
     public static void Real_IN_Init() {
-        // mouse variables
+        
         Globals.m_filter = Cvar.Get("m_filter", "0", 0);
         Globals.in_mouse = Cvar.Get("in_mouse", "1", CVAR_ARCHIVE);
         Globals.freelook = Cvar.Get("freelook", "1", 0);
@@ -140,7 +140,7 @@ public final class IN extends Globals {
             }
         });
 
-        //IN.mouse_avail = true;
+        
     }
 
     public static void Commands() {
@@ -189,7 +189,7 @@ public final class IN extends Globals {
         KBD.mx = (int) (KBD.mx * Globals.sensitivity.value);
         KBD.my = (int) (KBD.my * Globals.sensitivity.value);
 
-        // add mouse X/Y movement to cmd
+        
         if ((CL_input.in_strafe.state & 1) != 0
                 || ((Globals.lookstrafe.value != 0) && IN.mlooking)) {
             cmd.sidemove += Globals.m_side.value * KBD.mx;

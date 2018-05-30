@@ -61,7 +61,7 @@ public abstract class CacheElement<ELEMENT>
    {
       ELEMENT element = null;
 
-      // Check if element is already store
+      
       if(this.softReference != null)
       {
          element = this.softReference.get();
@@ -69,11 +69,11 @@ public abstract class CacheElement<ELEMENT>
 
       if(element != null)
       {
-         // If already store, return it
+         
          return element;
       }
 
-      // Create element and store it
+      
       element = this.createElement();
       this.softReference = new SoftReference<ELEMENT>(element);
 

@@ -38,11 +38,11 @@ import java.util.List;
  */
 public abstract class JoglDummyDriver extends DummyGL implements GLDriver {
 
-    protected static final GLProfile glp = GLProfile.getGL2ES2(); // exception if n/a is desired
+    protected static final GLProfile glp = GLProfile.getGL2ES2(); 
     
     protected JoglDummyDriver() {
         super();
-        // singleton
+        
     }
 
     private NEWTWin newtWin;
@@ -83,14 +83,14 @@ public abstract class JoglDummyDriver extends DummyGL implements GLDriver {
      */
     @Override
     public boolean init(int xpos, int ypos) {
-        // clear the screen
-        // first buffer
+        
+        
         beginFrame(0.0f);
         glViewport(0, 0, newtWin.window.getWidth(), newtWin.window.getHeight());
         glClearColor(0, 0, 0, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         endFrame();
-        // second buffer
+        
         beginFrame(0.0f);
         glViewport(0, 0, newtWin.window.getWidth(), newtWin.window.getHeight());
         glClearColor(0, 0, 0, 0);
@@ -107,23 +107,23 @@ public abstract class JoglDummyDriver extends DummyGL implements GLDriver {
     @Override
     public void endFrame() {
         newtWin.checkQuit();
-        // newtWin.swapBuffers();
-        // deactivate();
+        
+        
     }
 
     @Override
     public void appActivate(boolean activate) {
-        // do nothing
+        
     }
 
     @Override
     public void enableLogging(boolean enable) {
-        // do nothing
+        
     }
 
     @Override
     public void logNewFrame() {
-        // do nothing
+        
     }
 
     /*
@@ -142,5 +142,5 @@ public abstract class JoglDummyDriver extends DummyGL implements GLDriver {
         newtWin.deactivateGLContext();        
     }
     
-    // --------------------------------------------------------------------------    
+    
 }

@@ -35,20 +35,20 @@ public class TheoJansen {
         v2 pivot = new v2(scale * 0.0f, scale * 0.8f);
 
 
-//            // Balls
-//            for (int i = 0; i < 40; ++i) {
-//                CircleShape shape = new CircleShape();
-//                shape.m_radius = scale * 0.25f;
-//
-//                BodyDef bd = new BodyDef();
-//                bd.type = BodyType.DYNAMIC;
-//                bd.position.set(-40.0f + 2.0f * i, 0.5f);
-//
-//                Body2D body = world.addBody(bd);
-//                body.addFixture(shape, 1.0f);
-//            }
 
-        // Chassis
+
+
+
+
+
+
+
+
+
+
+
+
+        
         {
             PolygonShape shape = new PolygonShape();
             shape.setAsBox(scale * 2.5f, scale * 1.0f);
@@ -189,9 +189,9 @@ public class TheoJansen {
 
         DistanceJointDef djd = new DistanceJointDef();
 
-        // Using a soft distance constraint can reduce some jitter.
-        // It also makes the structure seem a bit more fluid by
-        // acting like a suspension system.
+        
+        
+        
         djd.dampingRatio = 0.5f;
         djd.frequencyHz = 10.0f;
 

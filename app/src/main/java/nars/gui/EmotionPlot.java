@@ -12,7 +12,7 @@ import spacegraph.space2d.widget.meter.Plot2D;
 public class EmotionPlot extends Gridding {
 
     Plot2D plot1, plot2, plot3;
-    //    private final int plotHistory;
+    
 
     private Ons on;
 
@@ -39,26 +39,26 @@ public class EmotionPlot extends Gridding {
                 Truth t = hc.beliefs().truth(a.now, a.nar());
                 return t == null ? Float.NaN : t.freq();
             }, 0, 1f);
-//                plot3.add("WantHpy", () -> {
-//                    return hc.goals().freq(a.now, a.nar);
-//                }, 0, 1f);
+
+
+
         });
 
-        //plot1.add("Conf", nar.emotion.confident::getSum);
+        
 
 
 
 
-//            plot4.add("Sad", () -> {
-//                return a.sad.beliefs().freq(a.now, a.nar);
-//            }, 0, 1f);
-//            plot4.add("WantSad", () -> {
-//                return a.sad.goals().exp(a.now, a.nar);
-//            }, 0, 1f);
 
-//            plot4.add("Hapy", nar.emotion.happy::getSum);
-//            plot4.add("Sad", nar.emotion.sad::getSum);
-//                plot4.add("Errr", ()->nar.emotion.errr.getSum());
+
+
+
+
+
+
+
+
+
 
         Ons ons = new Ons(
                 a.onFrame(n -> plot1.update()),

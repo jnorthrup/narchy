@@ -19,18 +19,18 @@ public class BomberSndEffect extends Thread {
         /** if Java 2 is available */
         if (Main.J2) {
             SoundPlayer sound = null;
-//            try {
-//                /** create sound player */
-//                sound = new SoundPlayer(
-//                new File(BomberMain.RP +
-//                "Sounds/BomberSndEffects/" +  str + ".mid").
-//                getCanonicalPath());
-//            }
-//            catch (Exception e) { }
-//            /** open file */
-//            sound.open();
-//            /** then play sound */
-//            sound.change(0, false);
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 }

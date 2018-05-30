@@ -3,9 +3,9 @@ package automenta.rdp.crypto;
 /**
  * This class is for any unexpected exception in the crypto library.
  * <p>
- * <b>Copyright</b> &copy; 1997 <a href="http://www.systemics.com/">Systemics
+ * <b>Copyright</b> &copy; 1997 <a href="http:
  * Ltd</a> on behalf of the <a
- * href="http://www.systemics.com/docs/cryptix/">Cryptix Development Team</a>.
+ * href="http:
  * <br>
  * All rights reserved.
  * <p>

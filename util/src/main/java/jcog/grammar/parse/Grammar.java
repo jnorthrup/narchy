@@ -1,6 +1,6 @@
 package jcog.grammar.parse;
 
-//import groovy.lang.Closure;
+
 
 import jcog.grammar.parse.tokens.*;
 

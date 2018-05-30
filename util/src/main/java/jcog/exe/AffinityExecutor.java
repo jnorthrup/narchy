@@ -54,12 +54,12 @@ public class AffinityExecutor implements Executor {
 
 
             try (AffinityLock lock = AffinityLock.acquireCore()) {
-                cmd.run(); //avoid virtual call to super etc
+                cmd.run(); 
             } catch (Exception e) {
                 logger.warn("Could not acquire affinity lock; executing normally: {} ", e.getMessage());
 
-                //AffinityLock.dumpLocks();
-                //e.printStackTrace();
+                
+                
 
                 cmd.run();
             }
@@ -83,7 +83,7 @@ public class AffinityExecutor implements Executor {
 
     public final void execute(Runnable worker, int count) {
 
-            //assert (threads.isEmpty());
+            
 
             for (int i = 0; i < count; i++) {
                 AffinityThread at = new AffinityThread(
@@ -102,13 +102,13 @@ public class AffinityExecutor implements Executor {
     }
 
 
-//        @Override
-//        public String toString()
-//        {
-//            return "BasicExecutor{" +
-//                    "threads=" + dumpThreadInfo() +
-//                    '}';
-//        }
+
+
+
+
+
+
+
 
     private String dumpThreadInfo() {
         final StringBuilder sb = new StringBuilder();

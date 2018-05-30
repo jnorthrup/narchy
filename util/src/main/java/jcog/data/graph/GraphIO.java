@@ -32,8 +32,8 @@ public class GraphIO {
     }
 
 
-// ================== public static methods =========================
-// ==================================================================
+
+
 
 
     /**
@@ -50,7 +50,7 @@ public class GraphIO {
         }
     }
 
-// ------------------------------------------------------------------
+
 
     /**
      * Prints graph in neighbor list format. Each line starts with the
@@ -69,7 +69,7 @@ public class GraphIO {
         }
     }
 
-// ------------------------------------------------------------------
+
 
     /**
      * Saves the given graph to
@@ -92,7 +92,7 @@ public class GraphIO {
         out.println("}");
     }
 
-// ------------------------------------------------------------------
+
 
     /**
      * Saves the given graph to
@@ -116,7 +116,7 @@ public class GraphIO {
         out.println("]");
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Saves the given graph to
@@ -139,7 +139,7 @@ public class GraphIO {
         out.println("*Edges");
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Saves the given graph to
@@ -159,7 +159,7 @@ public class GraphIO {
         out.println();
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Saves the given graph to
@@ -180,7 +180,7 @@ public class GraphIO {
         out.println();
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Saves the given graph to
@@ -208,7 +208,7 @@ public class GraphIO {
         out.println();
     }
 
-// -------------------------------------------------------------------
+
 
     /**
      * Read a graph in newscast graph format.
@@ -249,7 +249,7 @@ public class GraphIO {
         final int CACHESIZE = dis.readInt();
         final int GRAPHSIZE = dis.readInt();
 
-//System.out.println("header: "+MODE+" "+CACHESIZE+" "+GRAPHSIZE);
+
 
         for (int i = 1; i <= GRAPHSIZE; ++i) {
             int iind = gr.addNode(i);

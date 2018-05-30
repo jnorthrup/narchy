@@ -50,7 +50,7 @@ public class PrologPrimitive {
     /**
 	 * for optimization purposes
 	 */
-    //private final Object[] primitive_args;
+    
     public final String key;
     private final MethodHandle mh;
 
@@ -89,7 +89,7 @@ public class PrologPrimitive {
         for (int i=0; i<primitive_args.length; i++) {
             primitive_args[i] = g.subResolve(i);
         }
-        //method.invoke(source,primitive_args);
+        
         try {
             mh.invokeWithArguments(primitive_args);
         } catch (Throwable throwable) {
@@ -108,12 +108,12 @@ public class PrologPrimitive {
             primitive_args[i] = g.sub(i);
         }
         try {
-        	//System.out.println("PRIMITIVE INFO evalAsPredicate sto invocando metodo "+method.getName());
+        	
             return (boolean)mh.invokeWithArguments(primitive_args);
-            //return (Boolean) method.invoke(source, primitive_args);
+            
         } catch (InvocationTargetException e) {
-            // throw new Exception(e.getCause());
-            throw //new JavaException
+            
+            throw 
                     (e.getCause());
         }
     }
@@ -124,25 +124,25 @@ public class PrologPrimitive {
      * @throws Throwable
      */
     public Term evalAsFunctor(Struct g) throws Throwable {
-//        try {
+
         Object[] primitive_args = newArgs();
             for (int i=0; i<primitive_args.length; i++) {
                 primitive_args[i] = g.subResolve(i);
             }
 
             return (Term)mh.invokeWithArguments(primitive_args);
-            //return ((Term)method.invoke(source,primitive_args));
-//        } catch (Exception ex) {
-//            //throw ex.getCause();
-//            throw ex;
-//        }
+            
+
+
+
+
     }
 
 
 
     public String toString() {
         return "[ primitive: method "+method.getName()+" - "
-                //+primitive_args+" - N args: "+primitive_args.length+" - "
+                
                 +source.getClass().getName()+" ]\n";
     }
     

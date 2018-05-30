@@ -22,17 +22,17 @@ package jcog.grammar.parse.examples.sling;
  * for a few different times:
  *
  * <blockquote><pre>
- *     // s = sling(r, 1);
+ *     
  *     Variable r = new Variable("r"); 
  *     SlingFunction s = new Sling(r, new Point(0, 1));
  *     System.out.println("s: " + s);
  * 
- *     // set r to 10 and evaluate s into a new function s10
+ *     
  *     r.setValue(new Point(0, 10));
  *     SlingFunction s10 = s.eval();
  *     System.out.println("s10: " + s10);
  * 
- *     // show s10 a few times
+ *     
  *     for (double time = 0; time < 0.25; time += .05) { 
  *         System.out.println(s10.f(time));
  *     }
@@ -66,7 +66,7 @@ public class Variable extends SlingFunction {
 	 */
 	public Variable(String name) {
 		this.name = name;
-		// a place to store a term
+		
 		this.source = new SlingFunction[1];
 	}
 

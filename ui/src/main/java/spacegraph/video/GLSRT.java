@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2007 Erwin Coumans  http://continuousphysics.com/Bullet/
+ * Copyright (c) 2003-2007 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -34,7 +34,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-// import javabullet.demos.opengl.FontRender.GLFont;
+
 
 /**
  *
@@ -42,15 +42,15 @@ import java.util.Map;
  */
 public class GLSRT {
 
-    public static final boolean VBO_CACHE = true; // JAU
-    // public static final boolean VBO_CACHE = false;
+    public static final boolean VBO_CACHE = true; 
+    
 
     /*static {
         ImmModeSink.setVBOUsage(false);
     }*/
 
 	private final GLU    glu;
-	// private GLFont font;
+	
 
 	public GLSRT(GLU glu) {
         System.out.println("VBO_CACHE: "+VBO_CACHE);
@@ -83,10 +83,10 @@ public class GLSRT {
                                   3, GL.GL_FLOAT,  // normal
                                   0, GL.GL_FLOAT); // texture*/
 					ImmModeSink.createFixed(24,
-					3, GL.GL_FLOAT, // vertex
-					0, GL.GL_FLOAT, // color
-					3, GL.GL_FLOAT, // normal
-					0, GL.GL_FLOAT, // texCoords
+					3, GL.GL_FLOAT, 
+					0, GL.GL_FLOAT, 
+					3, GL.GL_FLOAT, 
+					0, GL.GL_FLOAT, 
 					GL.GL_STATIC_DRAW);
             vboCube.glBegin(GL.GL_TRIANGLES);
             vboCube.glNormal3f( 0f, 0f, 1f); 
@@ -152,7 +152,7 @@ public class GLSRT {
     };
     private final ByteBuffer cubeIndices= Buffers.newDirectByteBuffer(s_cubeIndices);
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	private static GLUquadric cylinder;
 	private static GLUquadric sphere;
@@ -203,7 +203,7 @@ public class GLSRT {
         }
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	
 	private static class CylinderKey {
@@ -265,9 +265,9 @@ public class GLSRT {
                 assert (false);
         }
 
-		// The gluCylinder subroutine draws a cylinder that is oriented along the z axis. 
-		// The base of the cylinder is placed at z = 0; the top of the cylinder is placed at z=height. 
-		// Like a sphere, the cylinder is subdivided around the z axis into slices and along the z axis into stacks.
+		
+		
+		
 
 		cylinderKey.set(radius, halfHeight);
 		ImmModeSink vbo = cylinderDisplayLists.get(cylinderKey);
@@ -288,7 +288,7 @@ public class GLSRT {
 		gl.glPopMatrix();
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public void drawString() {
         /*

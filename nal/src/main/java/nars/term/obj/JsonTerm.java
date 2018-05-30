@@ -40,11 +40,11 @@ public enum JsonTerm { ;
                 Term v = the(f.getValue());
                 s[i[0]++] =
                         $.inh(v, k);
-                        //$.p(k, v);
+                        
 
             });
             return SETe.the(s);
-        } else {// if (j.isJsonObject()) {
+        } else {
             throw new UnsupportedOperationException("TODO");
         }
     }

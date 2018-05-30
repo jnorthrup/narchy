@@ -4,7 +4,7 @@ import java.awt.*;
 
 public class VectorSprite
 {
-    //VARIABLES//
+    
     double xposition;
     double yposition;
     double xspeed;
@@ -15,11 +15,11 @@ public class VectorSprite
     double damage;
     double spreadModifier;
     
-    //CONSTANTS//
+    
     double ROTATION;
     double THRUST;
     
-    //INTEGERS//
+    
     int counter;
     int burstCounter;
     boolean bursting;
@@ -34,7 +34,7 @@ public class VectorSprite
     
     boolean active;
     
-    final int[][] upgrades = new int [3][4]; // First slot tells which gun is being upgraded, second slot tells what is being upgraded
+    final int[][] upgrades = new int [3][4]; 
     final int [][] upgradeCost = new int [3][4];
     private final boolean eternal = true;
 

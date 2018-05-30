@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -49,7 +49,7 @@ public class SideScrollMinicraft {
 	public Player player;
 	public World world;
 	
-//	public MusicPlayer musicPlayer = new MusicPlayer("sounds/music.ogg");
+
 	public final Int2 screenMousePos = new Int2(0, 0);
 	
 	/**
@@ -78,7 +78,7 @@ public class SideScrollMinicraft {
 		
 		entities.clear();
 		if (load) {
-			// check to see loading is possible (and if so load)
+			
 			load = SaveLoad.doLoad(this);
 		}
 		
@@ -92,7 +92,7 @@ public class SideScrollMinicraft {
 			}
 		}
 		if (!load) {
-			// make a new world and player
+			
 			world = new World(worldWidth, worldHeight, random);
 			player = new Player(true, world.spawnLocation.x, world.spawnLocation.y,
 					7 * (tileSize / 8), 14 * (tileSize / 8));
@@ -104,7 +104,7 @@ public class SideScrollMinicraft {
 			}
 		}
 		
-		// load sprites
+		
 		final SpriteStore ss = SpriteStore.get();
 		builderIcon = ss.getSprite("sprites/other/builder.png");
 		minerIcon = ss.getSprite("sprites/other/miner.png");
@@ -112,7 +112,7 @@ public class SideScrollMinicraft {
 		halfHeart = ss.getSprite("sprites/other/half_heart.png");
 		emptyHeart = ss.getSprite("sprites/other/empty_heart.png");
 		bubble = ss.getSprite("sprites/other/bubble.png");
-		// there's no empty bubble image, so we'll just use this for now
+		
 		emptyBubble = ss.getSprite("sprites/other/bubble_pop2.png");
 		
 		breakingSprites = new Sprite[8];
@@ -120,7 +120,7 @@ public class SideScrollMinicraft {
 			breakingSprites[i] = ss.getSprite("sprites/tiles/break" + i + ".png");
 		}
 		
-//		musicPlayer.play();
+
 		System.gc();
 	}
 	
@@ -135,25 +135,25 @@ public class SideScrollMinicraft {
 			startGame(false, 512);
 		}
 		
-		// keep looping round till the game ends
+		
 		boolean gameRunning = true;
 		while (gameRunning) {
 			long delta = 0;
 			if (delay) {
 				ticksRunning++;
-				//delta = SystemTimer.getTime() - lastLoopTime;
+				
 				lastLoopTime = SystemTimer.getTime();
 			}
 
 			frame();
 
-//			if (viewFPS) {
-//				String fps = "Fps: " + 1 / (delta / 1000) + '('
-//						+ Runtime.getRuntime().freeMemory() / 1024 / 1024 + " / "
-//						+ Runtime.getRuntime().totalMemory() / 1024 / 1024 + ") Free MB";
-//				g.setColor(Color.white);
-//				g.drawString(fps, 10, 10);
-//			}
+
+
+
+
+
+
+
 
 			if (delay)
 				SystemTimer.sleep(lastLoopTime + 16 - SystemTimer.getTime());
@@ -227,7 +227,7 @@ public class SideScrollMinicraft {
                     name = TileID.SAPLING;
                 }
                 Item newItem = Constants.itemTypes.get((char) name.breaksInto);
-                if (newItem != null) // couldn't find that item
+                if (newItem != null) 
                 {
                     newItem = newItem.clone();
                     newItem.x = player.handBreakPos.x + random.nextFloat()
@@ -244,12 +244,12 @@ public class SideScrollMinicraft {
 
 		if (rightClick) {
             if (world.isCraft(player.handBreakPos.x, player.handBreakPos.y)) {
-                // clicked on a crafting table
-                // TODO: expand this to any item with a GUI
+                
+                
                 player.inventory.tableSizeAvailable = 3;
                 player.inventory.setVisible(true);
             } else {
-                // placing a block
+                
                 rightClick = false;
                 InventoryItem current = player.inventory.selectedItem();
                 if (!current.isEmpty()) {
@@ -259,7 +259,7 @@ public class SideScrollMinicraft {
 
                         if (isPassable || !player.inBoundingBox(player.handBuildPos, tileSize)) {
                             if (world.addTile(player.handBuildPos, itemID)) {
-                                // placed successfully
+                                
                                 player.inventory.decreaseSelected(1);
                             }
                         }
@@ -286,7 +286,7 @@ public class SideScrollMinicraft {
 
 
 
-		// Draw the UI
+		
 		if (player.handBreakPos.x != -1) {
             Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
                     tileSize, tileSize, player.handBuildPos.x, player.handBuildPos.y);
@@ -297,16 +297,16 @@ public class SideScrollMinicraft {
             minerIcon.draw(g, pos.x, pos.y, tileSize, tileSize);
         }
 
-		// draw the hotbar, and optionally the inventory screen
+		
 		player.inventory.draw(g, screenWidth, screenHeight);
 
-		// draw the mouse
+		
 		Int2 mouseTest = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, tileSize,
                 tileSize, tileSize, worldMouseX, worldMouseY);
 		drawMouse(g, mouseTest);
 
-		// HACK: draw hearts for health bar
-		// TODO: move this elsewhere, don't use so many magic constants
+		
+		
 		int heartX = (screenWidth - 250) / 2;
 		int heartY = screenHeight - 50;
 		for (int heartIdx = 1; heartIdx <= 10; ++heartIdx) {
@@ -322,7 +322,7 @@ public class SideScrollMinicraft {
         }
 
 		if (player.isHeadUnderWater(world, tileSize)) {
-            // another HACK: draw air bubbles
+            
             int bubbleX = (screenWidth + 50) / 2;
             int numBubbles = player.airRemaining();
             for (int bubbleIdx = 1; bubbleIdx <= 10; ++bubbleIdx) {
@@ -343,9 +343,9 @@ public class SideScrollMinicraft {
 		g.setColor(Color.gray);
 		int w1 = 2 * 8;
 		g.fillOval(pos.x - w1/2, pos.y - w1/2, w1, w1);
-//		g.setColor(Color.black);
-//		int w0 = 4 * 6;
-//		g.fillOval(pos.x - w0/2, pos.y - w0/2, w0, w0);
+
+
+
 	}
 	
 	public static void drawTileBackground(GraphicsHandler g, Sprite sprite, int tileSize) {
@@ -396,7 +396,7 @@ public class SideScrollMinicraft {
 	}
 	
 	public void tossItem() {
-		// TODO: move this into Player
+		
 		InventoryItem inventoryItem = player.inventory.selectedItem();
 		if (!inventoryItem.isEmpty()) {
 			Item newItem = inventoryItem.getItem();
@@ -418,12 +418,12 @@ public class SideScrollMinicraft {
 	public void goToMainMenu() {
 		zoom(0);
 		SaveLoad.doSave(this);
-//		musicPlayer.pause();
-		inMenu = true; // go back to the main menu
+
+		inMenu = true; 
 	}
 	
 	public static void quit() {
-//		musicPlayer.close();
+
 		System.exit(0);
 	}
 	
@@ -436,7 +436,7 @@ public class SideScrollMinicraft {
 	 *            The arguments that are passed into our game
 	 */
 	public static void main(String argv[]) {
-		// really simple argument parsing
+		
 		Constants.DEBUG = true;
 		for (String arg : argv) {
 			if (arg.equals("-d") || arg.equals("--debug")) {
@@ -445,12 +445,12 @@ public class SideScrollMinicraft {
 				System.err.println("Unrecognized argument: "+arg);
 			}
 		}
-		// initialize the game state
+		
 		SideScrollMinicraft g = new SideScrollMinicraft();
 		
-		// Start the main game loop, note: this method will not
-		// return until the game has finished running. Hence we are
-		// using the actual main thread to run the game.
+		
+		
+		
 		g.start(true);
 	}
 }

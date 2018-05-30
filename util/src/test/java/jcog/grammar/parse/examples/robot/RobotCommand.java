@@ -37,7 +37,7 @@ public class RobotCommand implements PubliclyCloneable<RobotCommand> {
 		try {
 			return (RobotCommand) super.clone();
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

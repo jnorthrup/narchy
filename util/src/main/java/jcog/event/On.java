@@ -50,12 +50,12 @@ abstract public class On<V> implements Off {
         }
     }
 
-//    public static final On Dummy = new On((Consumer)null) {
-//        @Override
-//        public void off() {
-//
-//        }
-//    };
+
+
+
+
+
+
 
     public static class Weak<V> extends On<V> implements Consumer<V> {
 
@@ -81,7 +81,7 @@ abstract public class On<V> implements Off {
                     off();
                 }
             } else {
-                //reference has been lost, so unregister:
+                
                 off();
             }
         }
@@ -91,11 +91,11 @@ abstract public class On<V> implements Off {
             disconnector.accept(this);
         }
 
-//        @Override
-//        public String toString() {
-//
-//            //return "On.weak:" + topic + "->" + reaction.get();
-//        }
+
+
+
+
+
     }
 
 }

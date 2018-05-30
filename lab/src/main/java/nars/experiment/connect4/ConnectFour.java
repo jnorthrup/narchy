@@ -14,14 +14,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static nars.experiment.connect4.C4.dropConcept;
 
-//import aima.core.environment.connectfour.ConnectFourAIPlayer;
-//import aima.core.environment.connectfour.ConnectFourGame;
-//import aima.core.environment.connectfour.ConnectFourState;
-//import aima.core.search.adversarial.AdversarialSearch;
-//import aima.core.search.adversarial.AlphaBetaSearch;
-//import aima.core.search.adversarial.IterativeDeepeningAlphaBetaSearch;
-//import aima.core.search.adversarial.MinimaxSearch;
-//import aima.core.search.framework.Metrics;
+
+
+
+
+
+
+
+
 
 /**
  * Simple graphical Connect Four game application. It demonstrates the Minimax
@@ -238,53 +238,53 @@ public class ConnectFour {
             }
         }
 
-//        public int analyzePotentialWinPositions(Integer action) {
-//            final int[] rowIncr = new int[]{1, 0, 1, 1};
-//            final int[] colIncr = new int[]{0, 1, -1, 1};
-//            int moveCol = action;
-//            int moveRow = freeRow(moveCol);
-//
-//            int playerNum = moving();
-//            int result = 0;
-//            for (int i = 0; i < 4; i++) {
-//                int rIncr = rowIncr[i];
-//                int cIncr = colIncr[i];
-//                int posCountSum = 0;
-//
-//                for (int j = 0; j < 2; j++) {
-//                    int rBound = rIncr > 0 ? rows : -1;
-//                    int cBound = cIncr > 0 ? cols : -1;
-//                    int posCount = 0;
-//
-//                    int row = moveRow + rIncr;
-//                    int col = moveCol + cIncr;
-//                    while (row != rBound && col != cBound && posCount < 3) {
-//                        int plNum = get(row, col);
-//                        if (plNum == 3 - playerNum)
-//                            break;
-//                        posCount++;
-//                        row += rIncr;
-//                        col += cIncr;
-//                    }
-//                    posCountSum += posCount;
-//                    rIncr = -rIncr;
-//                    cIncr = -cIncr;
-//                }
-//                if (posCountSum >= 3)
-//                    result += posCountSum;
-//            }
-//            return result;
-//        }
 
 
-//        public List<Integer> getActions() {
-//            ConnectFourState state = this;
-//            List<Integer> result = new ArrayList<>();
-//            for (int i = 0; i < state.cols; i++)
-//                if (state.get(0, i) == 0)
-//                    result.add(i);
-//            return result;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public boolean isTerminal() {
             return utility() != -1;
@@ -303,38 +303,38 @@ public class ConnectFour {
             return result;
         }
 
-//        public ConnectFourState clone() {
-//            ConnectFourState result = null;
-//            try {
-//                result = (ConnectFourState) super.clone();
-//            } catch (CloneNotSupportedException e) {
-//                e.printStackTrace();
-//            }
-//            result.board = board.clone();
-//            return result;
-//        }
 
-//        @Override
-//        public int hashCode() {
-//            int result = 0;
-//            for (byte aBoard : board) result = result * 7 + aBoard + 1;
-//            return result;
-//        }
 
-//        @Override
-//        public boolean equals(Object obj) {
-//            if (obj != null && getClass() == obj.getClass()) {
-//                ConnectFourState s = (ConnectFourState) obj;
-//                for (int i = 0; i < board.length; i++)
-//                    if (board[i] != s.board[i])
-//                        return false;
-//                return true;
-//            }
-//            return false;
-//        }
 
-        // ////////////////////////////////////////////////////////////////////
-        // nested classes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
 
         private static class WinPositionInfo {
             int row = -1;
@@ -405,8 +405,8 @@ public class ConnectFour {
             }
 
             public void see() {
-                //synchronized (game) {
-                    //scan through board by calling its methods providing sight of the board state
+                
+                    
                     for (int r = 0; r < game.rows; r++)
                         for (int c = 0; c < game.cols; c++) {
                             int x = game.get(r, c);
@@ -414,7 +414,7 @@ public class ConnectFour {
                             board(r, c, "red", 1==x);
                             board(r, c, "yel", 2==x);
                         }
-                //}
+                
 
             }
 
@@ -434,7 +434,7 @@ public class ConnectFour {
                 try {
                     nar.input(dropConcept(which, nar, true, game, player) +
                             "! |"
-                            //"! |..+100ms"
+                            
                     );
                 } catch (Narsese.NarseseException e) {
                     e.printStackTrace();
@@ -445,59 +445,59 @@ public class ConnectFour {
     }
 
 
-//    /**
-//     * Provides an implementation of the ConnectFour game which can be used for
-//     * experiments with the Minimax algorithm.
-//     *
-//     * @author Ruediger Lunde
-//     */
-//    public static class ConnectFourGame implements Game<ConnectFourState, Integer, String> {
-//        private String[] players = new String[]{"red", "yellow"};
-//        private ConnectFourState initialState = new ConnectFourState(6, 7);
-//
-//        @Override
-//        public ConnectFourState getInitialState() {
-//            return initialState;
-//        }
-//
-//        @Override
-//        public String[] getPlayers() {
-//            return players;
-//        }
-//
-//        @Override
-//        public String getPlayer(ConnectFourState state) {
-//            return getPlayer(state.moving());
-//        }
-//
-//        /**
-//         * Returns the player corresponding to the specified player number. For
-//         * efficiency reasons, <code>ConnectFourState</code>s use numbers
-//         * instead of strings to identify players.
-//         */
-//        public String getPlayer(int playerNum) {
-//            switch (playerNum) {
-//                case 1:
-//                    return players[0];
-//                case 2:
-//                    return players[1];
-//            }
-//            return null;
-//        }
-//
-//        /**
-//         * Returns the player number corresponding to the specified player. For
-//         * efficiency reasons, <code>ConnectFourState</code>s use numbers instead of
-//         * strings to identify players.
-//         */
-//        public int getPlayerNum(String player) {
-//            for (int i = 0; i < players.length; i++)
-//                if (Objects.equals(players[i], player))
-//                    return i + 1;
-//            throw new IllegalArgumentException("Wrong player number.");
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -505,11 +505,11 @@ public class ConnectFour {
      */
     private static class ConnectFourPanel extends JPanel implements ActionListener {
         final JButton clearButton;
-        //JButton proposeButton;
+        
         final JLabel statusBar;
 
         final ConnectFourState game;
-        //Metrics searchMetrics;
+        
 
         /**
          * Standard constructor.
@@ -554,20 +554,20 @@ public class ConnectFour {
          */
         @Override
         public void actionPerformed(ActionEvent e) {
-//            //searchMetrics = null;
-//            if (e == null || e.getSource() == clearButton) {
-//                game.clear();
-//            } else if (!game.isTerminal()) {
-////                if (e.getSource() == proposeButton) {
-////                    proposeMove();
-//                /*} else */
-////                if (e.getSource() instanceof GridElement) {
-////                    GridElement el = (GridElement) e.getSource();
-////                    game.drop(el.col, ..);
-////                    // turn
-////                }
-//            }
-            repaint(); // paint all disks!
+
+
+
+
+
+
+
+
+
+
+
+
+
+            repaint(); 
 
 
         }
@@ -575,33 +575,33 @@ public class ConnectFour {
         /**
          * Uses adversarial search for selecting the next action.
          */
-//        private void proposeMove() {
-//                Integer action;
-//                int time = (timeCombo.getSelectedIndex() + 1) * 5;
-//                AdversarialSearch<ConnectFourState, Integer> search;
-//                switch (strategyCombo.getSelectedIndex()) {
-//                    case 0:
-//                        search = MinimaxSearch.createFor(game);
-//                        break;
-//                    case 1:
-//                        search = AlphaBetaSearch.createFor(game);
-//                        break;
-//                    case 2:
-//                        search = IterativeDeepeningAlphaBetaSearch.createFor(game, 0.0,
-//                                1.0, time);
-//                        break;
-//                    case 3:
-//                        search = new ConnectFourAIPlayer(game, time);
-//                        break;
-//                    default:
-//                        search = new ConnectFourAIPlayer(game, time);
-//                        ((ConnectFourAIPlayer) search).setLogEnabled(true);
-//                }
-//                action = search.makeDecision(currState);
-        //searchMetrics = search.getMetrics();
 
-        //currState = game.getResult(currState, action);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        
+
 
         /**
          * Updates the status bar.
@@ -628,8 +628,8 @@ public class ConnectFour {
                     statusText = "No winner :-(";
                 statusBar.setForeground(Color.WHITE);
             }
-//                if (searchMetrics != null)
-//                    statusText += "    " + searchMetrics;
+
+
             statusBar.setText(statusText);
             return won;
         }
@@ -649,11 +649,11 @@ public class ConnectFour {
             }
 
             public void paintComponent(Graphics g) {
-                super.paintComponent(g); // should have look and feel of a
-                // button...
+                super.paintComponent(g); 
+                
                 int playerNum = game.get(row, col);
                 if (playerNum != 0) {
-                    drawDisk(g, playerNum); // draw disk on top!
+                    drawDisk(g, playerNum); 
                 }
                 for (int pNum = 1; pNum <= 2; pNum++)
                     if (game.isWinPositionFor(row, col, pNum))
@@ -684,54 +684,54 @@ public class ConnectFour {
     }
 
 }
-//package nars.experiment.connect4;
-//
-//import java.util.List;
-//
-///**
-// * Artificial Intelligence A Modern Approach (3rd Edition): page 165.<br>
-// * <br>
-// * A game can be formally defined as a kind of search problem with the following
-// * elements: <br>
-// * <ul>
-// * <li>S0: The initial state, which specifies how the game is set up at the
-// * start.</li>
-// * <li>PLAYER(s): Defines which player has the move in a state.</li>
-// * <li>ACTIONS(s): Returns the set of legal moves in a state.</li>
-// * <li>RESULT(s, a): The transition model, which defines the result of a move.</li>
-// * <li>TERMINAL-TEST(s): A terminal test, which is true when the game is over
-// * and false TERMINAL STATES otherwise. States where the game has ended are
-// * called terminal states.</li>
-// * <li>UTILITY(s, p): A utility function (also called an objective function or
-// * payoff function), defines the final numeric value for a game that ends in
-// * terminal state s for a player p. In chess, the outcome is a win, loss, or
-// * draw, with values +1, 0, or 1/2 . Some games have a wider variety of possible
-// * outcomes; the payoffs in backgammon range from 0 to +192. A zero-sum game is
-// * (confusingly) defined as one where the total payoff to all players is the
-// * same for every instance of the game. Chess is zero-sum because every game has
-// * payoff of either 0 + 1, 1 + 0 or 1/2 + 1/2 . "Constant-sum" would have been a
-// * better term, but zero-sum is traditional and makes sense if you imagine each
-// * player is charged an entry fee of 1/2.</li>
-// * </ul>
-// *
-// * @param <S>  Type which is used for states in the game.
-// * @param <A> Type which is used for actions in the game.
-// * @param <P> Type which is used for players in the game.
-// * @author Ruediger Lunde
-// */
-//public interface Game<S, A, P> {
-//
-//    S getInitialState();
-//
-//    P[] getPlayers();
-//
-//    P getPlayer(S state);
-//
-//    List<A> getActions(S state);
-//
-//    S getResult(S state, A action);
-//
-//    boolean isTerminal(S state);
-//
-//    double getUtility(S state, P player);
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

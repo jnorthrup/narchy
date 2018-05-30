@@ -71,23 +71,23 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     protected Map newBagMap(int volume) {
 
 
-//        if (concurrent()) {
-////            //return new ConcurrentHashMap(defaultInitialCap, 1f);
-////            //return new NonBlockingHashMap(cap);
-////            return new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>();
-////            //ConcurrentHashMapUnsafe(cap);
-////        } else {
-////            return new HashMap(defaultInitialCap, 1f);
-//            //   if (volume < 16) {
-//            return new ConcurrentHashMap(0, loadFactor);
-//
-////            } else if (volume < 32) {
-////                return new SynchronizedHashMap(0, loadFactor);
-////                //return new TrieMap();
-////            } else {
-////                return new SynchronizedUnifiedMap(0, loadFactor);
-////            }
-//        } else {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         float loadFactor = 0.99f;
         if (volume < 8) {
@@ -95,15 +95,15 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         } else {
             return new UnifiedMap(2, loadFactor);
         }
-//        }
+
 
     }
 
     @Override
     public Bag[] newLinkBags(Term t) {
         int v = t.volume();
-        //if (/*v > 3 && */v < 16) {
-//        Map sharedMap = newBagMap(v);
+        
+
 
         Bag<Term, PriReference<Term>> termbag =
                 new CurveBag<>(Param.termlinkMerge, newBagMap(v), 0);
@@ -111,21 +111,21 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                 new TaskLinkCurveBag(newBagMap(v));
 
         return new Bag[]{termbag, taskbag};
-//        } else {
-//            return new Bag[]{
-//                    new MyDefaultHijackBag(Param.termlinkMerge),
-//                    new MyDefaultHijackBag(Param.tasklinkMerge)
-//            };
-//        }
+
+
+
+
+
+
 
     }
 
 
     @Override
     public BeliefTable newTable(Term c, boolean beliefOrGoal) {
-        //TemporalBeliefTable newTemporalTable(final int tCap, NAR nar) {
-        //return new HijackTemporalBeliefTable(tCap);
-        //return new RTreeBeliefTable(tCap);
+        
+        
+        
         if (c.op().beliefable && !c.hasAny(Op.VAR_QUERY) && (beliefOrGoal || goalable(c))) {
             return new DefaultBeliefTable(newTemporalTable(c));
         } else {
@@ -135,12 +135,12 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
     @Override
     public TemporalBeliefTable newTemporalTable(Term c) {
-//        if (c.complexity() < 12) {
+
         return RTreeBeliefTable.build(c);
-        //c.complexity() < 6 ? new DisruptorBlockingQueue() : new LinkedBlockingQueue<>()/
-//        } else {
-//            return new HijackTemporalBeliefTable();
-//        }
+        
+
+
+
     }
 
     @Override
@@ -148,7 +148,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         Op o = term.op();
         if (questionOrQuest ? o.beliefable : o.goalable) {
             return new QuestionTable.HijackQuestionTable(4, 2);
-            //return new QuestionTable.DefaultQuestionTable();
+            
         } else {
             return QuestionTable.Empty;
         }
@@ -171,18 +171,18 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         return sleep;
     }
 
-//    public boolean concurrent() {
-//        return nar.exe.concurrent();
-//    }
 
-//    private class MyDefaultHijackBag extends DefaultHijackBag {
-//        public MyDefaultHijackBag(PriMerge merge) {
-//            super(merge, 0, 5);
-//        }
-//
-//        @Override
-//        protected Random random() {
-//            return nar.random();
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

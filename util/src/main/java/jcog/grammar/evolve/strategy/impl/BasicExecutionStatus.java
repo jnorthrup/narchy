@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -30,7 +30,7 @@ public class BasicExecutionStatus {
     public String evolutionEta;
     public FinalSolution best = null;
     
-    //public double bestPerformance;
+    
     public int jobTotal = 0;
     public int jobDone = 0;
     public int jobFailed = 0;
@@ -51,7 +51,7 @@ public class BasicExecutionStatus {
             this.best = candidate;
             return;
         }
-        //int index = 0;
+        
         Double bestPerformance = best.getTrainingPerformances().get("match f-measure");
         Double candidatePerformance = candidate.getTrainingPerformances().get("match f-measure");
         if((candidatePerformance > bestPerformance) || 

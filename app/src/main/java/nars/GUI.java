@@ -32,30 +32,30 @@ public class GUI {
 
         NAR nar = NARchy.ui();
 
-        Loop loop = nar.startFPS(10f); //10hz alpha
-        //((NARLoop) loop).throttle.set(0.1f);
+        Loop loop = nar.startFPS(10f); 
+        
 
-        //1. try to open a Spacegraph openGL window
+        
         logger.info("start SpaceGraph UI");
 
-        //            window(new ConsoleTerminal(new TextUI(nar).session(8f)) {
-        //                {
-        //                    Util.pause(50); term.addInput(KeyStroke.fromString("<pageup>")); //HACK trigger redraw
-        //                }
-        //            }, 800, 600);
+        
+        
+        
+        
+        
 
 
         SpaceGraph.window(new Widget(NARui.top(nar)), 1024, 800);
 
-        //wall(nar);
+        
 
-        //nar.inputNarsese(new FileInputStream("/home/me/d/sumo_merge.nal"));
+        
 
-//        try {
-//            Thread.currentThread().join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+
+
+
+
+
     }
 
     static void wall(NAR nar) {
@@ -94,7 +94,7 @@ public class GUI {
 
             public Querying start() {
                 if (query.get() == this) {
-                    //System.out.println("query start: " + q);
+                    
                     user.run(this);
                 }
                 return this;
@@ -102,7 +102,7 @@ public class GUI {
 
             @Override
             public boolean test(User.DocObj docObj) {
-                //System.out.println(q + ": " + docObj);
+                
                 if (query.get()!=this)
                     return false;
                 else {
@@ -143,20 +143,20 @@ public class GUI {
             public final String id;
             public final String type;
             final Document doc;
-            //icon
+            
 
             Result(Document doc) {
                 this.doc = doc;
                 this.id = doc.get("i");
                 switch (this.type = doc.get("c")) {
                     case "blob":
-                        //
+                        
                         break;
                 }
-//            System.out.println(id);
-//            d.forEach(f -> {
-//                System.out.println(f.name() + " " + f.fieldType());
-//            });
+
+
+
+
             }
 
             Object get() {

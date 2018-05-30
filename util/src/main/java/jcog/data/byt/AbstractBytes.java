@@ -87,9 +87,9 @@ public interface AbstractBytes {
                 return this;
 
             throw new UnsupportedOperationException();
-//            if ((start!=0) || (end!=0))
-//                throw new RuntimeException();
-//            return this;
+
+
+
         }
 
 

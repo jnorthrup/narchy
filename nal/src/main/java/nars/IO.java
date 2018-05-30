@@ -38,9 +38,9 @@ import static nars.time.Tense.XTERNAL;
  * this limits max # of direct subterms to 127 in signed decimals which i currently dont have any problem with. i count volume with short so the total recursive size of a compound limited to ~16000. these limits are more or less arbitrary and can be re-decided.
  * <p>
  * the set of "anom" atoms, and normalized variables are special cases of atoms which get a more compact encoding due to their frequent repeated appearance during internal term activity: one 16-bit containing the 8-bit op select followed by an 8-bit ordinal id up to 127/255 also mostly wasted. this also supporting fast reads/decodes/deserialization that only needs to lookup a particular array index of for the associated globally-shared immutable instance.
- * https://github.com/automenta/narchy/blob/skynet5/nal/src/main/java/nars/term/anon/AnonID.java#L11
+ * https:
  * <p>
- * certain subterm implementations have accelerated read/write procedures, such as https://github.com/automenta/narchy/blob/skynet5/nal/src/main/java/nars/term/anon/AnonVector.java#L51 which is used when every subterm is an Anon instance ("anom" atoms or normalized variables, which can be used to account for 99% of the unification activity). the write procedure for example essentially decompresses its short[] that fully describes its contents, including any negations (element's highest bit is set)
+ * certain subterm implementations have accelerated read/write procedures, such as https:
  * <p>
  * other atoms serialize their entirity as UTF8 byte[], allowing unicode, etc. append() methods write directly to printable output streams or string builders. unnormalized variables, and other special cases get a default UTF-8 encoding for output that is reversible through the general narsese parser as a final option before failing due to suspected garbage input.
  * <p>
@@ -52,8 +52,8 @@ import static nars.time.Tense.XTERNAL;
  * <p>
  * the compressibility of individual terms and task byte[] keys is not as as good as a batch block encoding of several terms and tasks sharing repeated common subterms. but an individual byte[] term or task 'key' is still somewhat compressible and snappy and lz4 can produce canonically compressed versions of terms but use of this can be decided depending if the uncompressed string exceeds some global threshold length due to seek acceptable balance between cpu and memory cost.
  *
- * @see: RLP classes: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/RLP.java
- * TODO use http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/io/ByteStreams.html
+ * @see: RLP classes: https:
+ * TODO use http:
  */
 public class IO {
 
@@ -63,31 +63,31 @@ public class IO {
         return readTasks(new ByteArrayInputStream(t), each);
     }
 
-//    public interface TermEncoder {
-//        default void write(Term x) {
-//            write(x, new DynBytes(x.volume() * 4 /* ESTIMATE */));
-//        }
-//
-//        void write(Term x, DynBytes to);
-//    }
 
-//    public static class DefaultTermEncoder implements TermEncoder {
-//
-//        @Override
-//        public void write(Term x, DynBytes to) {
-//
-//            x.append((ByteArrayDataOutput) to);
-//
-//        }
-//    }
 
-//TODO
-//    public interface TermDecoder {
-//        void Term
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static int readTasks(InputStream i, Consumer<Task> each) throws IOException {
-        //SnappyFramedInputStream i = new SnappyFramedInputStream(tasks, true);
+        
         DataInputStream ii = new DataInputStream(i);
         int count = 0;
         while (i.available() > 0 /*|| (i.available() > 0) || (ii.available() > 0)*/) {
@@ -141,7 +141,7 @@ public class IO {
     }
 
     public static Truth readTruth(DataInput in) throws IOException {
-        //return DiscreteTruth.intToTruth(in.readInt());
+        
         return Truth.read(in);
     }
 
@@ -155,11 +155,11 @@ public class IO {
         byte p = t.punc();
         out.writeByte(p);
 
-        //        if (out instanceof ByteArrayDataOutput) {
+        
         t.term().append((ByteArrayDataOutput) out);
-//        } else {
-//            out.write(IO.termToBytes(tt)); //buffer to bytes
-//        }
+
+
+
 
 
         if (p!=COMMAND) {
@@ -173,43 +173,43 @@ public class IO {
 
             writeBudget(out, t);
 
-            out.writeLong(t.creation()); //put this last because it is the least useful really
+            out.writeLong(t.creation()); 
         }
 
     }
 
-//    /**
-//     * with Term last
-//     */
-//    public static void writeTask2(DataOutput out, Task t) throws IOException {
-//
-//        byte p = t.punc();
-//        out.writeByte(p);
-//
-//        writeBudget(out, t);
-//
-//        out.writeLong(t.start());
-//        out.writeLong(t.end());
-//
-//        if (hasTruth(p)) {
-//            out.writeFloat(t.freq());
-//            out.writeFloat(t.conf());
-//        }
-//
-//        //writeEvidence(out, t.evidence());
-//
-//        //out.writeLong(t.creation()); //put this last because it is the least useful really
-//
-//        IO.writeUTF8WithPreLen(t.term().toString(), out);
-//    }
 
-    //    public static void writeStringUTF(DataOutput out, String s) throws IOException {
-//
-//        //byte[] bb = s.getBytes(Charset.defaultCharset());
-//        byte[] bb = s.getBytes(Charset.defaultCharset()); //Hack.bytes(s);
-//        out.writeShort(bb.length);
-//        out.write(bb);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
 
     public static void writePriority(DataOutput out, Prioritized t) throws IOException {
         out.writeFloat(t.priElseZero());
@@ -232,51 +232,51 @@ public class IO {
     }
 
 
-//    /**
-//     * direct method of reading Atomic from a byte[]
-//     */
-//    public static Atomic readAtomic(byte[] b) {
-//        byte oo = b[0];
-//        if (oo == SPECIAL_OP)
-//            return (Atomic) termFromBytes(b);
-//
-//        Op o = ov[oo];
-//        switch (o) {
-//
-//            case ATOM:
-//                return new Atom(b);
-//
-//            case VAR_PATTERN:
-//            case VAR_DEP:
-//            case VAR_QUERY:
-//            case VAR_INDEP:
-//                return $.v(o, b[1]);
-//
-//            case INT:
-////                byte subType = in.readByte();
-////                switch (subType) {
-////                    case 0: return Int.the( in.readInt());
-////                    case 1: return Int.range( in.readInt(), in.readInt() );
-////                    default: throw new TODO();
-////                }
-//                return (Atomic) termFromBytes(b);
-//            //throw new TODO();
-//
-//
-//            //TODO normalized Variable cases
-//
-//            default:
-//
-//
-////                try {
-////                    return $.$(new String(b));
-////                } catch (Narsese.NarseseException e) {
-////                }
-////                    throw new TODO();
-//                return (Atomic) termFromBytes(b);
-//
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     static Atomic readAtomic(DataInput in, /*@NotNull*/ Op o, byte subType) throws IOException {
 
@@ -304,12 +304,12 @@ public class IO {
             }
             default:
                 throw new UnsupportedEncodingException();
-//                String s = in.readUTF();
-//                try {
-//                    return $.$(s);
-//                } catch (Narsese.NarseseException e) {
-//                    throw new UnsupportedEncodingException(e.getMessage());
-//                }
+
+
+
+
+
+
         }
 
     }
@@ -324,7 +324,7 @@ public class IO {
         if (opByte == SPECIAL_OP)
             return readSpecialTerm(in);
         else {
-            //base op contained in lower 5-bits (0..31)
+            
             byte op = (byte) (opByte & 0b00011111);
             Op o = Op.ops[op];
             if (o.var)
@@ -408,9 +408,9 @@ public class IO {
         if (y instanceof Bool)
             throw new Term.InvalidTermException(o, dt, v, "invalid term");
 
-//        if (key == null)
-//            throw new UnsupportedOperationException();
-//        return (Compound) t.normalize(key, true);
+
+
+
         return y;
     }
 
@@ -424,43 +424,43 @@ public class IO {
         }
     }
 
-//    public static void saveTasksToTemporaryTSVFile(NAR nar) throws IOException {
-//        Path f = Files.createTempFile(Paths.get("/tmp"), "nar", ".tsv");
-//        System.out.println("saving tasks: " + f);
-//        FileOutputStream os = new FileOutputStream(f.toFile());
-//        PrintStream ps = new PrintStream(os);
-//        nar.tasks().forEach(t -> {
-//            Task tt = t;
-//            try {
-//                tt.appendTSV(ps);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
 
-//    public static void saveTasksToTemporaryTextFile(NAR nar) throws IOException {
-//        Path f = Files.createTempFile(Paths.get("/tmp"), "nar", ".nal");
-//        System.out.println("saving tasks: file://" + f);
-//        FileOutputStream os = new FileOutputStream(f.toFile());
-//        PrintStream ps = new PrintStream(os);
-//        nar.tasks().forEach(t -> {
-//            Task tt = t;
-//            try {
-//                tt.appendTo(ps);
-//                ps.append('\n');
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Nullable
     public static byte[] taskToBytes(Task x) {
-//        return taskToBytes(x, TermFirst);
-//    }
-//
-//    public static byte[] taskToBytes(Task x, TaskSerialization mode) {
+
+
+
+
         DynBytes dos = new DynBytes(x.volume() * 8);
 
         return bytes(x, dos).array();
@@ -468,15 +468,15 @@ public class IO {
 
     @Nullable public static DynBytes bytes(Task x, DynBytes dos) {
         try {
-//            switch (mode) {
-//                case TermFirst:
+
+
             dos.clear();
             IO.bytes(dos, x);
-//                    break;
-//                case TermLast:
-//                    IO.writeTask2(dos, x);
-//                    break;
-//            }
+
+
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -507,13 +507,13 @@ public class IO {
 
     public static ByteArrayDataInput input(byte[] b) {
         return input(b, 0);
-        //return ByteStreams.newDataInput(b);
-        //return new DataInputStream(new ByteArrayInputStream(b));
+        
+        
     }
 
     public static ByteArrayDataInput input(byte[] b, int offset) {
         return ByteStreams.newDataInput(b, offset);
-        //return new DataInputStream(new ByteArrayInputStream(b, offset, b.length - offset));
+        
     }
 
     public static void writeUTF8WithPreLen(String s, DataOutput o) throws IOException {
@@ -532,7 +532,7 @@ public class IO {
 
         int level = 0;
         final int MAX_LEVELS = 16;
-        byte[][] levels = new byte[MAX_LEVELS][2]; //level stack x (op, subterms remaining) tuple
+        byte[][] levels = new byte[MAX_LEVELS][2]; 
 
         do {
 
@@ -544,7 +544,7 @@ public class IO {
 
 
             if (o.var) {
-                i += 1; //int id = input(term, i).readByte();
+                i += 1; 
             } else if (o.atomic) {
 
                 int hi = term[i++] & 0xff;
@@ -566,15 +566,15 @@ public class IO {
                 byte[] ll = levels[level - 1];
                 byte subtermsRemain = ll[1];
                 if (subtermsRemain == 0) {
-                    //end of compound:
+                    
                     Op ol = Op.values()[ll[0]];
                     if (ol.temporal)
-                        i += 4; //skip temporal dt (32 bits)
+                        i += 4; 
                     level--;
-                    continue pop; //see if the next level up is finished
+                    continue pop; 
                 } else {
                     ll[1] = (byte) (subtermsRemain - 1);
-                    break; //continue to next subterm
+                    break; 
                 }
             }
 
@@ -587,145 +587,145 @@ public class IO {
 
 
 
-//    public static void writeUTF8(String s, DataOutput o) throws IOException {
-//        new Utf8Writer(o).write(s);
-//    }
+
+
+
 
     public enum TaskSerialization {
         TermFirst,
         TermLast
     }
 
-//    public static Term fromJSON(String json) {
-//        JsonValue v = Json.parse(json);
-//        return fromJSON(v);
-//    }
-//
-//    public static Term toJSON(Term term) {
-//        return $.func("json", $.quote(toJSONValue(term)));
-//    }
-//
-//    public static JsonValue toJSONValue(Term term) {
-//        switch (term.op()) {
-//
-//            //TODO other types
-//
-//            /*case SETe: {
-//                JsonObject o = Json.object();
-//                for (Term x : term)
-//                    o.add
-//            }*/
-//            case PROD:
-//                JsonArray a = (JsonArray) Json.array();
-//                for (Term x : ((Compound) term))
-//                    a.add(toJSONValue(x));
-//                return a;
-//            default:
-//                return Json.value(term.toString());
-//        }
-//    }
-//
-//    public static Term fromJSON(JsonValue v) {
-//        if (v instanceof JsonObject) {
-//            JsonObject o = (JsonObject) v;
-//            int s = o.size();
-//            List<Term> members = $.newArrayList(s);
-//            o.forEach(m -> members.add($.inh(fromJSON(m.getValue()), $.the(m.getName()))));
-//            return $.
-//                    //parallel
-//                            sete
-//                    //secte
-//                            (members/*.toArray(new Term[s])*/);
-//
-//        } else if (v instanceof JsonArray) {
-//            JsonArray o = (JsonArray) v;
-//            List<Term> vv = $.newArrayList(o.size());
-//            o.forEach(x -> vv.add(fromJSON(x)));
-//            return $.p(vv);
-//        }
-//        String vv = v.toString();
-//        return $.the(vv);
-//        //return $.quote(vv);
-//    }
 
-//    /**
-//     * Writes a string to the specified DataOutput using
-//     * <a href="DataInput.html#modified-utf-8">modified UTF-8</a>
-//     * encoding in a machine-independent manner.
-//     * <p>
-//     * First, two bytes are written to out as if by the <code>writeShort</code>
-//     * method giving the number of bytes to follow. This value is the number of
-//     * bytes actually written out, not the length of the string. Following the
-//     * length, each character of the string is output, in sequence, using the
-//     * modified UTF-8 encoding for the character. If no exception is thrown, the
-//     * counter <code>written</code> is incremented by the total number of
-//     * bytes written to the output stream. This will be at least two
-//     * plus the length of <code>str</code>, and at most two plus
-//     * thrice the length of <code>str</code>.
-//     *
-//     * @param out destination to write to
-//     * @param str a string to be written.
-//     * @return The number of bytes written out.
-//     * @throws IOException if an I/O error occurs.
-//     */
-//    public static void writeUTFWithoutLength(DataOutput out, String str) throws IOException {
-//
-//
-//        //int c, count = 0;
-//
-////        /* use charAt instead of copying String to char array */
-////        for (int i = 0; i < strlen; i++) {
-////            c = str.charAt(i);
-////            if ((c >= 0x0001) && (c <= 0x007F)) {
-////                utflen++;
-////            } else if (c > 0x07FF) {
-////                utflen += 3;
-////            } else {
-////                utflen += 2;
-////            }
-////        }
-////
-////        if (utflen > 65535)
-////            throw new UTFDataFormatException(
-////                    "encoded string too long: " + utflen + " bytes");
-//
-//        //byte[] bytearr = null;
-////        if (out instanceof DataOutputStream) {
-////            DataOutputStream dos = (DataOutputStream)out;
-////            if(dos.bytearr == null || (dos.bytearr.length < (utflen+2)))
-////                dos.bytearr = new byte[(utflen*2) + 2];
-////            bytearr = dos.bytearr;
-////        } else {
-//        //bytearr = new byte[utflen];
-////        }
-//
-//        //Length information, not written
-//        //bytearr[count++] = (byte) ((utflen >>> 8) & 0xFF);
-//        //bytearr[count++] = (byte) ((utflen >>> 0) & 0xFF);
-//
-//        int strlen = str.length();
-//        int i, c;
-//        for (i = 0; i < strlen; i++) {
-//            c = str.charAt(i);
-//            if (!((c >= 0x0001) && (c <= 0x007F))) break;
-//            out.writeByte((byte) c);
-//        }
-//
-//        for (; i < strlen; i++) {
-//            c = str.charAt(i);
-//            if ((c >= 0x0001) && (c <= 0x007F)) {
-//                out.writeByte((byte) c);
-//
-//            } else if (c > 0x07FF) {
-//                out.writeByte((byte) (0xE0 | ((c >> 12) & 0x0F)));
-//                out.writeByte((byte) (0x80 | ((c >> 6) & 0x3F)));
-//                out.writeByte((byte) (0x80 | ((c >> 0) & 0x3F)));
-//            } else {
-//                out.writeByte((byte) (0xC0 | ((c >> 6) & 0x1F)));
-//                out.writeByte((byte) (0x80 | ((c >> 0) & 0x3F)));
-//            }
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public interface Printer {
 
@@ -798,8 +798,8 @@ public class IO {
                     productAppend(c.subterms(), p);
                     return;
 
-                //case INHERIT: inheritAppend(c, p, pretty); return;
-                //case SIMILAR: similarAppend(c, p, pretty); return;
+                
+                
 
                 case NEG:
                     /**
@@ -809,7 +809,7 @@ public class IO {
 
                     if (c.op() == NEG) {
                         Term cx = c.unneg();
-                        if (cx.op() == CONJ && cx.dt() == DTERNAL) { //for DTERNAL only
+                        if (cx.op() == CONJ && cx.dt() == DTERNAL) { 
                             if (Terms.allNegated(cx.subterms())) {
                                 compoundAppend(Op.DISJstr, cx.subterms(), Term::neg, p);
                                 return;
@@ -820,7 +820,7 @@ public class IO {
 
             if (op.statement || c.subs() == 2) {
 
-                //special case: functional form
+                
                 if (c.hasAll(Op.FuncBits)) {
                     Term subj = c.sub(0);
                     if (op == INH && subj.op() == Op.PROD) {
@@ -840,26 +840,26 @@ public class IO {
             }
         }
 
-//        static void inheritAppend(Compound c, Appendable p) throws IOException {
-//            Term a = Statement.subj(c);
-//            Term b = Statement.pred(c);
-//
-//            p.append(Symbols.COMPOUND_TERM_OPENER);
-//            b.append(p);
-//            p.append(Symbols.INHERIT_SEPARATOR);
-//            a.append(p);
-//            p.append(Symbols.COMPOUND_TERM_CLOSER);
-//        }
-//        static void similarAppend(Compound c, Appendable p) throws IOException {
-//            Term a = Statement.subj(c);
-//            Term b = Statement.pred(c);
-//
-//            p.append(Symbols.COMPOUND_TERM_OPENER);
-//            a.append(p);
-//            p.append(Symbols.SIMILAR_SEPARATOR);
-//            b.append(p);
-//            p.append(Symbols.COMPOUND_TERM_CLOSER);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         static void statementAppend(Compound c, Appendable p, /*@NotNull*/ Op op) throws IOException {
 
@@ -909,7 +909,7 @@ public class IO {
 
             int len = set.subs();
 
-            //duplicated from above, dont want to store this as a field in the class
+            
             char opener, closer;
             if (set.op() == Op.SETe) {
                 opener = Op.SETe.ch;
@@ -931,12 +931,12 @@ public class IO {
 
         static void operationAppend(Compound argsProduct, Atomic operator, Appendable p) throws IOException {
 
-            //Term predTerm = operator.identifier(); //getOperatorTerm();
-            //        if ((predTerm.volume() != 1) || (predTerm.hasVar())) {
-            //            //if the predicate (operator) of this operation (inheritance) is not an atom, use Inheritance's append format
-            //            appendSeparator(p, pretty);
-            //            return;
-            //        }
+            
+            
+            
+            
+            
+            
 
 
             Term[] xt = argsProduct.arrayShared();
@@ -977,104 +977,104 @@ public class IO {
     }
 
 }
-//    /**
-//     * serialization and deserialization of terms, tasks, etc.
-//     */
-//    public static class DefaultCodec extends FSTConfiguration {
-//
-//        final TermIndex index;
-//
-//        public DefaultCodec(TermIndex t) {
-//            super(null);
-//
-//            this.index = t;
-//
-//            createDefaultConfiguration();
-//            //setStreamCoderFactory(new FBinaryStreamCoderFactory(this));
-//            setForceSerializable(true);
-//
-//
-//            //setCrossPlatform(false);
-//            setShareReferences(false);
-//            setPreferSpeed(true);
-//            setCrossPlatform(false);
-//
-//
-//            registerClass(Atom.class, GenericCompound.class,
-//                    AbstractTask.class,
-//                    Term[].class,
-//                    TermContainer.class,
-//                    //long[].class, char.class,
-//                    Op.class);
-//
-//
-//            registerSerializer(AbstractTask.class, new FSTBasicObjectSerializer() {
-//
-//                @Override
-//                public void readObject(FSTObjectInput in, Object toRead, FSTClazzInfo clzInfo, FSTClazzInfo.FSTFieldInfo referencedBy) throws Exception {
-//                }
-//
-//                @NotNull
-//                @Override
-//                public Object instantiate(Class objectClass, FSTObjectInput in, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo referencee, int streamPosition) throws IOException {
-//                    return readTask(in, index);
-//                }
-//
-//                @Override
-//                public void writeObject(FSTObjectOutput out, Object toWrite, FSTClazzInfo clzInfo, FSTClazzInfo.FSTFieldInfo referencedBy, int streamPosition) throws IOException {
-//                    writeTask(out, (Task) toWrite);
-//                }
-//            }, true);
-//
-//
-//            registerSerializer(Atom.class, terms, true);
-//            registerSerializer(Atomic.class, terms, true);
-//
-//            registerSerializer(GenericCompound.class, terms, true);
-//
-//            registerSerializer(AtomConcept.class, terms, true);
-//            registerSerializer(CompoundConcept.class, terms, true);
-//
-//        }
-//
-////        @Nullable
-////        final FSTBasicObjectSerializer termContainers = new FSTBasicObjectSerializer() {
-////
-////            @Override
-////            public void readObject(FSTObjectInput in, Object toRead, FSTClazzInfo clzInfo, FSTClazzInfo.FSTFieldInfo referencedBy) throws Exception {
-////            }
-////
-////            @Nullable
-////            @Override
-////            public Object instantiate(Class objectClass, FSTObjectInput in, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo referencee, int streamPosition) throws IOException {
-////                return readTermContainer(in, index);
-////            }
-////
-////            @Override
-////            public void writeObject(FSTObjectOutput out, Object toWrite, FSTClazzInfo clzInfo, FSTClazzInfo.FSTFieldInfo referencedBy, int streamPosition) throws IOException {
-////                writeTermContainer(out, (TermContainer) toWrite);
-////            }
-////        };
-//
-//        @Nullable
-//        final FSTBasicObjectSerializer terms = new FSTBasicObjectSerializer() {
-//
-//            @Override
-//            public void readObject(FSTObjectInput in, Object toRead, FSTClazzInfo clzInfo, FSTClazzInfo.FSTFieldInfo referencedBy) throws Exception {
-//            }
-//
-//            @Nullable
-//            @Override
-//            public Object instantiate(Class objectClass, FSTObjectInput in, FSTClazzInfo serializationInfo, FSTClazzInfo.FSTFieldInfo referencee, int streamPosition) throws IOException {
-//                return readTerm(in, index);
-//            }
-//
-//            @Override
-//            public void writeObject(FSTObjectOutput out, Object toWrite, FSTClazzInfo clzInfo, FSTClazzInfo.FSTFieldInfo referencedBy, int streamPosition) throws IOException {
-//                writeTerm(out, (Term) toWrite);
-//            }
-//        };
-//
-//
-//    }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

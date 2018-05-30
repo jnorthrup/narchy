@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -85,22 +85,22 @@ public class Body3D<X> extends Collidable<X> {
 	private float linearDamping;
 	private float angularDamping;
 
-//	private boolean additionalDamping;
-//	private float additionalDampingFactor;
-//	private float additionalLinearDampingThresholdSqr;
-//	private float additionalAngularDampingThresholdSqr;
-//	private float additionalAngularDampingFactor;
+
+
+
+
+
 
 	private float linearSleepingThreshold;
 	private float angularSleepingThreshold;
 
-//	// optionalMotionState allows to automatic synchronize the world transform for active objects
-//	private MotionState optionalMotionState;
 
-	// keep track of typed constraints referencing this rigid body
+
+
+	
 	private final OArrayList<TypedConstraint> constraintRefs = new OArrayList<>();
 
-	// for experimental overriding of friction/contact solver func
+	
 	public int contactSolverType;
 	public int frictionSolverType;
 	
@@ -128,7 +128,7 @@ public class Body3D<X> extends Collidable<X> {
 		angularDamping = 0.5f;
 		this.linearSleepingThreshold = linearSleepingThreshold;
 		this.angularSleepingThreshold = angularSleepingThreshold;
-		//this.optionalMotionState = motionState;
+		
 		contactSolverType = 0;
 		frictionSolverType = 0;
 
@@ -137,28 +137,28 @@ public class Body3D<X> extends Collidable<X> {
 		 * Such damping is undesirable, so once the overall simulation quality of the rigid body dynamics
 		 * system has improved, this should become obsolete.
 		 */
-//		float additionalDampingFactor = 0.005f;
-//		float additionalLinearDampingThresholdSqr = 0.01f;
-//		float additionalAngularDampingThresholdSqr = 0.01f;
-//		float additionalAngularDampingFactor = 0.01f;
 
-//		this.additionalDamping = false;
-//		this.additionalDampingFactor = additionalDampingFactor;
-//		this.additionalLinearDampingThresholdSqr = additionalLinearDampingThresholdSqr;
-//		this.additionalAngularDampingThresholdSqr = additionalAngularDampingThresholdSqr;
-//		this.additionalAngularDampingFactor = additionalAngularDampingFactor;
 
-//		if (optionalMotionState != null)
-//		{
-//			optionalMotionState.getWorldTransform(worldTransform);
-//		} else
-//		{
-//			this.transform.setIdentity();
-//		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		interpolationWorldTransform.set(transform);
-//		interpolationLinearVelocity.set(0f, 0f, 0f);
-//		interpolationAngularVelocity.set(0f, 0f, 0f);
+
+
 
 
 		/** Best simulation results when friction is non-zero. */
@@ -175,35 +175,35 @@ public class Body3D<X> extends Collidable<X> {
 	}
 	
 	public void destroy(Collisions world) {
-		// No constraints should point to this rigidbody
-		// Remove constraints from the dynamics world before you delete the related rigidbodies. 
+		
+		
 		assert (constraintRefs.isEmpty());
 		forceActivationState(Collidable.DISABLE_SIMULATION);
 		data = null;
 
         Broadphasing bp = broadphase;
 		if (bp != null) {
-			//
-			// only clear the cached algorithms
-			//
+			
+			
+			
 
 			world.broadphase.getOverlappingPairCache().cleanProxyFromPairs(bp, world.intersecter);
 			world.broadphase.destroyProxy(bp, world.intersecter);
 			broadphase(null);
 		} /*else {
-        	//System.err.println(collidable + " missing broadphase");
+        	
 			throw new RuntimeException(collidable + " missing broadphase");
 		}*/
 
-//		if (broadphaseHandle!=null) {
-//			//broadphaseHandle.data = null;
-//			broadphaseHandle = null;
-//		}
 
-//		if (collisionShape!=null) {
-//			collisionShape.setUserPointer(null);
-//			collisionShape = null;
-//		}
+
+
+
+
+
+
+
+
 
 	}
 
@@ -237,19 +237,19 @@ public class Body3D<X> extends Collidable<X> {
 		if (!isKinematicObject())
 			return;
 
-		//todo: clamp to some (user definable) safe minimum timestep, to limit maximum angular/linear velocities
+		
 		if (timeStep != 0f) {
-//			//if we use motionstate to synchronize world transforms, get the new kinematic/animated world transform
-//            if (optionalMotionState != null) {
-//                optionalMotionState.getWorldTransform(worldTransform);
-//			}
-			//Vector3f linVel = new Vector3f(), angVel = new Vector3f();
+
+
+
+
+			
 
 			TransformUtil.calculateVelocity(interpolationWorldTransform, transform, timeStep, linearVelocity, angularVelocity);
-//			interpolationLinearVelocity.set(linearVelocity);
-//			interpolationAngularVelocity.set(angularVelocity);
+
+
 			interpolationWorldTransform.set(transform);
-		//printf("angular = %f %f %f\n",m_angularVelocity.getX(),m_angularVelocity.getY(),m_angularVelocity.getZ());
+		
 		}
 	}
 	
@@ -297,57 +297,57 @@ public class Body3D<X> extends Collidable<X> {
 	 * Damps the velocity, using the given linearDamping and angularDamping.
 	 */
 	public void applyDamping(float timeStep) {
-		// On new damping: see discussion/issue report here: http://code.google.com/p/bullet/issues/detail?id=74
-		// todo: do some performance comparisons (but other parts of the engine are probably bottleneck anyway
+		
+		
 
-		//#define USE_OLD_DAMPING_METHOD 1
-		//#ifdef USE_OLD_DAMPING_METHOD
-		//linearVelocity.scale(MiscUtil.GEN_clamped((1f - timeStep * linearDamping), 0f, 1f));
-		//angularVelocity.scale(MiscUtil.GEN_clamped((1f - timeStep * angularDamping), 0f, 1f));
-		//#else
+		
+		
+		
+		
+		
 		if (linearDamping > 0)
 			linearVelocity.scale((float) Math.pow(1f - linearDamping, timeStep));
 		if (angularDamping > 0)
 			angularVelocity.scale((float) Math.pow(1f - angularDamping, timeStep));
-		//#endif
+		
 
-//		if (additionalDamping) {
-//			// Additional damping can help avoiding lowpass jitter motion, help stability for ragdolls etc.
-//			// Such damping is undesirable, so once the overall simulation quality of the rigid body dynamics system has improved, this should become obsolete
-//			if ((angularVelocity.lengthSquared() < additionalAngularDampingThresholdSqr) &&
-//					(linearVelocity.lengthSquared() < additionalLinearDampingThresholdSqr)) {
-//				angularVelocity.scale(additionalDampingFactor);
-//				linearVelocity.scale(additionalDampingFactor);
-//			}
-//
-//			float speed = linearVelocity.length();
-//			if (speed < linearDamping) {
-//				float dampVel = 0.005f;
-//				if (speed > dampVel) {
-//					v3 dir = new v3(linearVelocity);
-//					dir.normalize();
-//					dir.scale(dampVel);
-//					linearVelocity.sub(dir);
-//				}
-//				else {
-//					linearVelocity.set(0f, 0f, 0f);
-//				}
-//			}
-//
-//			float angSpeed = angularVelocity.length();
-//			if (angSpeed < angularDamping) {
-//				float angDampVel = 0.005f;
-//				if (angSpeed > angDampVel) {
-//					v3 dir = new v3(angularVelocity);
-//					dir.normalize();
-//					dir.scale(angDampVel);
-//					angularVelocity.sub(dir);
-//				}
-//				else {
-//					angularVelocity.set(0f, 0f, 0f);
-//				}
-//			}
-//		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	}
 
 	public void setMass(float mass, v3 inertia) {
@@ -392,7 +392,7 @@ public class Body3D<X> extends Collidable<X> {
 		invInertiaTensorWorld.transform(totalTorque);
 		angularVelocity.scaleAdd(step, totalTorque, angularVelocity);
 
-		// clamp angular velocity. collision calculations will fail on higher angular velocities	
+		
 		float angvel = angularVelocity.lengthSquared();
 		if (angvel > Util.sqr(MAX_ANGVEL/step)) {
 			angularVelocity.scale((MAX_ANGVEL / step) / angvel);
@@ -401,8 +401,8 @@ public class Body3D<X> extends Collidable<X> {
 
 	public void setCenterOfMassTransform(Transform xform) {
 		interpolationWorldTransform.set(isStaticOrKinematicObject() ? transform : xform);
-//		getLinearVelocity(interpolationLinearVelocity);
-//		getAngularVelocity(interpolationAngularVelocity);
+
+
 		transform.set(xform);
 		updateInertiaTensor();
 	}
@@ -429,15 +429,15 @@ public class Body3D<X> extends Collidable<X> {
 	public void torque(v3 torque) {
 		totalTorque.add(torque);
 	}
-//
-//	public void force(v3 force, v3 rel_pos) {
-//		applyCentralForce(force);
-//
-//		v3 tmp = new v3();
-//		tmp.cross(rel_pos, force);
-//		tmp.scale(angularFactor);
-//		torque(tmp);
-//	}
+
+
+
+
+
+
+
+
+
 
 	/** applied to the center */
 	public void impulse(v3 impulse) {
@@ -535,14 +535,14 @@ public class Body3D<X> extends Collidable<X> {
 	}
 
 	public v3 getVelocityInLocalPoint(v3 rel_pos, v3 out) {
-		// we also calculate lin/ang velocity for kinematic objects
+		
 		v3 vec = out;
 		vec.cross(angularVelocity, rel_pos);
 		vec.add(linearVelocity);
 		return out;
 
-		//for kinematic objects, we could also use use:
-		//		return 	(m_worldTransform(rel_pos) - m_interpolationWorldTransform(rel_pos)) / m_kinematicTimeStep;
+		
+		
 	}
 
 	public void translate(v3 v) {
@@ -607,16 +607,16 @@ public class Body3D<X> extends Collidable<X> {
 	}
 
 
-//	public MotionState getMotionState() {
-//		return optionalMotionState;
-//	}
 
-//	public void setMotionState(MotionState motionState) {
-//		this.optionalMotionState = motionState;
-//		if (optionalMotionState != null) {
-//			motionState.getWorldTransform(worldTransform);
-//		}
-//	}
+
+
+
+
+
+
+
+
+
 
 	public void setAngularFactor(float angFac) {
 		angularFactor = angFac;
@@ -626,23 +626,23 @@ public class Body3D<X> extends Collidable<X> {
 		return angularFactor;
 	}
 
-//	/**
-//	 * Is this rigidbody added to a CollisionWorld/DynamicsWorld/Broadphase?
-//	 */
-//	public boolean isInWorld() {
-//        return (broadphaseHandle != null);
-//	}
+
+
+
+
+
+
 
 	@Override
 	public boolean checkCollideWithOverride(Collidable co) {
-		// TODO: change to cast
+		
 		Body3D otherRb = ifDynamic(co);
 		if (otherRb == null) {
 			return true;
 		}
 
 		for (int i = 0; i < constraintRefs.size(); ++i) {
-			//return array[index];
+			
 			TypedConstraint c = constraintRefs.get(i);
 			if (c.getRigidBodyA() == otherRb || c.getRigidBodyB() == otherRb) {
 				return false;
@@ -668,7 +668,7 @@ public class Body3D<X> extends Collidable<X> {
 
 	public TypedConstraint getConstraintRef(int index) {
 		return constraintRefs.get(index);
-		//return array[index];
+		
 	}
 
 	public void velAdd(v3 delta) {
@@ -679,9 +679,9 @@ public class Body3D<X> extends Collidable<X> {
 
 
 
-//
-//	public int getNumConstraintRefs() {
-//		return constraintRefs.size();
-//	}
+
+
+
+
 
 }

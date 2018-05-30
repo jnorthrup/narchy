@@ -54,7 +54,7 @@ public class RunningAverage implements PubliclyCloneable<RunningAverage> {
 		try {
 			return (RunningAverage) super.clone();
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

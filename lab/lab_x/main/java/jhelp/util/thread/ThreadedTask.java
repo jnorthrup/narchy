@@ -97,7 +97,7 @@ public abstract class ThreadedTask<PARAMETER, RESULT, PROGRESS>
          this.postProgress = new PostProgress<PROGRESS>();
       }
 
-      ThreadManager.THREAD_MANAGER.doThread(this.postProgress,//
+      ThreadManager.THREAD_MANAGER.doThread(this.postProgress,
             new Pair<ThreadedTask<?, ?, PROGRESS>, PROGRESS>(this, progress));
    }
 

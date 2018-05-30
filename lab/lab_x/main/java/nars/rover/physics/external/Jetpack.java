@@ -76,7 +76,7 @@ public class Jetpack {
 		
 		isHovering = fuel < hoverStartPercent;
 		
-		// apply force and drain fuel if the jetpack is on
+		
 		if(jetpackOn && fuel > 0.0f){
 			applyForce(timeStep);
 			if(isHovering)
@@ -88,7 +88,7 @@ public class Jetpack {
 				this.disable();
 		}
 		
-		// add fuel if jetpack is recharging
+		
 		if(fuel < 100.0f && !jetpackOn){
 			if(this.fastRecharging)
 				fuel += timeStep * fastRechargeRate;
@@ -100,18 +100,18 @@ public class Jetpack {
 				fuel = 100.0f;
 		}
 		
-//		// recharges faster after the player hits the ground
-//		if(player.getJumpSensor().numContacts() > 0)
-//			fastRecharging = true;
+
+
+
 	}
 	
 	private void updateSettings(){
 		EmitterSettings settings = jetpackEmitter.settings;
 		
-		// set offset
+		
 		settings.offset = new Vec2(rng.nextFloat() * settings.xLocationVariance * -0.2f, rng.nextFloat() * settings.yLocationVariance * 0.02f);
 		
-		// set particle lifetime
+		
 		if(rng.nextFloat() > 0.9f){
 			float low = 0.8f, high = 1.0f;
 			float liveLong = rng.nextFloat();
@@ -125,7 +125,7 @@ public class Jetpack {
 			settings.particleLifetime = rng.nextFloat() * 0.75f;
 		}
 		
-		// set particle force
+		
 		settings.particleForce = new Vec2(rng.nextBoolean() ? rng.nextFloat() * -5.0f : rng.nextFloat() * -5.0f, rng.nextFloat() * -50.0f);
 	}
 	

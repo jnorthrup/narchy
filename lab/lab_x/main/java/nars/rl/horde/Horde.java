@@ -25,17 +25,17 @@ public class Horde<A> implements Serializable {
         this.scheduler = scheduler;
     }
 
-//  public String demonLabel(int i) {
-//    return Labels.label(demons.get(i));
-//  }
-//
-//  public String beforeFunctionLabel(int i) {
-//    return Labels.label(beforeFunctions.get(i));
-//  }
-//
-//  public String afterFunctionLabel(int i) {
-//    return Labels.label(afterFunctions.get(i));
-//  }
+
+
+
+
+
+
+
+
+
+
+
 
     public void update(final RealVector o_tp1, final RealVector x_t, final A a_t, final RealVector x_tp1) {
         scheduler.update(new HordeScheduler.Context() {

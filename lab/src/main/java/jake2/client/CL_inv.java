@@ -24,7 +24,7 @@
 
  */
 
-// Created on 31.01.2004 by RST.
+
 package jake2.client;
 
 import jake2.Defines;
@@ -96,7 +96,7 @@ public class CL_inv {
 			}
 		}
 
-		// determine scroll point
+		
 		top = selected_num - DISPLAY_ITEMS / 2;
 		if (num - top < DISPLAY_ITEMS)
 			top = num - DISPLAY_ITEMS;
@@ -106,7 +106,7 @@ public class CL_inv {
 		x = (Globals.viddef.getWidth() - 256) / 2;
 		y = (Globals.viddef.getHeight() - 240) / 2;
 
-		// repaint everything next frame
+		
 		SCR.DirtyScreen();
 
 		Globals.re.DrawPic(x, y + 8, "inventory");
@@ -118,9 +118,9 @@ public class CL_inv {
 		y += 16;
 		for (i = top; i < num && i < top + DISPLAY_ITEMS; i++) {
 			item = index[i];
-			// search for a binding
-			//Com_sprintf (binding, sizeof(binding), "use %s",
-			// cl.configstrings[CS_ITEMS+item]);
+			
+			
+			
 			binding = "use " + Globals.cl.configstrings[Defines.CS_ITEMS + item];
 			bind = "";
 			for (j = 0; j < 256; j++)
@@ -133,7 +133,7 @@ public class CL_inv {
 					Globals.cl.configstrings[Defines.CS_ITEMS + item]));
 			if (item != selected)
 				string = getHighBitString(string);
-			else // draw a blinky cursor by the selected item
+			else 
 			{
 				if ((Globals.cls.realtime * 10 & 1) != 0)
 					Globals.re.DrawChar(x - 8, y, 15);

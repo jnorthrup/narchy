@@ -17,9 +17,9 @@ public class FirstHitRayCastCallback implements RayCastCallback {
 
 	public float reportFixture(Fixture fixture, Vec2 point, Vec2 normal,
 							   float fraction) {
-		hit = (DynamicEntity)fixture.getUserData(); //PhysicsHelper.getDynamicEntity(fixture);
+		hit = (DynamicEntity)fixture.getUserData(); 
 
-		// returning 0 here terminates the callback
+		
 		return 0;
 	}
 

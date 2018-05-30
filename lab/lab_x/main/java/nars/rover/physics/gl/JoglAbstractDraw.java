@@ -90,26 +90,26 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         for (SwingDraw.LayerDraw l : layers) l.drawGround(this, w);
 
         int flags = getFlags();
-        //boolean wireframe = (flags & DebugDraw.e_wireframeDrawingBit) != 0;
+        
 
-        //if ((flags & DebugDraw.e_shapeBit) != 0) {
+        
         for (Body b = w.getBodyList(); b != null; b = b.getNext()) {
             drawBody(b, time);
         }
-        //drawParticleSystem(m_particleSystem);
-        //}
+        
+        
 
-        //if ((flags & DebugDraw.e_jointBit) != 0) {
+        
 
         for (Joint j = w.getJointList(); j != null; j = j.getNext()) {
-            //drawJoint(j);
+            
         }
-        //}
+        
 
 
         for (SwingDraw.LayerDraw l : layers) l.drawSky(this, w);
 
-        //flush();
+        
 
     }
 
@@ -186,7 +186,7 @@ public abstract class JoglAbstractDraw extends DebugDraw {
             case CIRCLE: {
                 CircleShape circle = (CircleShape) fixture.getShape();
 
-                // Vec2 center = Mul(xf, circle.m_p);
+                
                 Transform.mulToOutUnsafe(xf, circle.m_p, center);
                 float radius = circle.m_radius;
                 xf.q.getXAxis(axis);
@@ -224,7 +224,7 @@ public abstract class JoglAbstractDraw extends DebugDraw {
 
 
                 for (int i = 0; i < vertexCount; ++i) {
-                    // vertices[i] = Mul(xf, poly.m_vertices[i]);
+                    
                     Transform.mulToOutUnsafe(xf, poly.m_vertices[i], vertices[i]);
                 }
                 if (wireframe) {
@@ -266,33 +266,33 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         return super.getViewportTranform();
     }
 
-    //
+    
     public void transformViewport(GL2 gl, Vec2 center) {
 
         Vec2 e = viewportTransform.getExtents();
         Vec2 vc = viewportTransform.getCenter();
-        //Mat22 vt = viewportTransform.getMat22Representation();
+        
         Vec2 ee = viewportTransform.getExtents();
 
-//    int f = viewportTransform.isYFlip() ? -1 : 1;
-//    mat[0] = exx;//vt.ex.x;
-//    mat[4] = eyx; //vt.ey.x;
-//    // mat[8] = 0;
-//    mat[12] = e.x;
-//    mat[1] = f * exy; //vt.ex.y;
-//    mat[5] = f * eyy; //vt.ey.y;
-//    // mat[9] = 0;
-//    mat[13] = e.y;
-//    // mat[2] = 0;
-//    // mat[6] = 0;
-//    // mat[10] = 1;
-//    // mat[14] = 0;
-//    // mat[3] = 0;
-//    // mat[7] = 0;
-//    // mat[11] = 0;
-//    // mat[15] = 1;
 
-        //gl.glMultMatrixf(mat, 0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
         gl.glLoadIdentity();
 
         Vec2 scale = viewportTransform.getExtents();
@@ -330,28 +330,28 @@ public abstract class JoglAbstractDraw extends DebugDraw {
     }
 
     public void drawSolidRect(float px, float py, float w, float h, float r, float G, float b) {
-        //saveState(g);
+        
 
-//        getWorldToScreenToOut(px, py, temp);
-//        int ipx = (int)temp.x;  int ipy = (int)temp.y;
-//        getWorldToScreenToOut(px+w, py+h, temp);
-//
-//        int jpx = (int)temp.x;  int jpy = (int)temp.y;
-//        int iw = Math.abs(jpx - ipx);
-//        int ih = Math.abs(jpy - ipy);
 
-//        if ((ipy/2 > g.getDeviceConfiguration().getBounds().getHeight()) ||
-//                (ipx/2 > g.getDeviceConfiguration().getBounds().getWidth()))
-//                    return;
 
-//        g.setColor(new Color(r, G, b));
-//        g.fillRect(ipx-iw/2, ipy-ih/2, iw, ih);
 
-        //if (g.getDeviceConfiguration().getBounds().intersects(ipx-iw/2, ipy-ih/2, iw, ih)) {
-        //}
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
 
         Vec2[] vert = new Vec2[4];
-        //float ulx = ipx-iw/2, uly = ipy-ih/2;
+        
         float ulx = px, uly = py;
         w/=2;
         h/=2;
@@ -375,7 +375,7 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         }
         gl.glEnd();
 
-        //OUTLINE
+        
         /*
         gl.glBegin(GL2.GL_LINE_LOOP);
         gl.glColor4f(color.x, color.y, color.z, 1f);
@@ -404,7 +404,7 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         gl.glColor4f(color.x, color.y, color.z, 1);
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
-            // apply the rotation matrix
+            
             float temp = x;
             x = c * x - s * y;
             y = s * temp + c * y;
@@ -429,7 +429,7 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         gl.glColor4f(color.x, color.y, color.z, 1);
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
-            // apply the rotation matrix
+            
             float temp = x;
             x = c * x - s * y;
             y = s * temp + c * y;
@@ -458,7 +458,7 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         gl.glColor4f(color.x, color.y, color.z, .4f);
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
-            // apply the rotation matrix
+            
             float temp = x;
             x = c * x - s * y;
             y = s * temp + c * y;
@@ -468,7 +468,7 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         gl.glColor4f(color.x, color.y, color.z, 1);
         for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
             gl.glVertex3f(x + cx, y + cy, 0);
-            // apply the rotation matrix
+            
             float temp = x;
             x = c * x - s * y;
             y = s * temp + c * y;
@@ -506,76 +506,76 @@ public abstract class JoglAbstractDraw extends DebugDraw {
         gl.glPopMatrix();
     }
 
-//  @Override
-//  public void drawParticles(Vec2[] centers, float radius, ParticleColor[] colors, int count) {
-//    GL2 gl = panel.getGL().getGL2();
-//    gl.glPushMatrix();
-//    transformViewport(gl, zero);
-//
-//    float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-//    float c = MathUtils.cos(theta);
-//    float s = MathUtils.sin(theta);
-//
-//    float x = radius;
-//    float y = 0;
-//
-//    for (int i = 0; i < count; i++) {
-//      Vec2 center = centers[i];
-//      float cx = center.x;
-//      float cy = center.y;
-//      gl.glBegin(GL2.GL_TRIANGLE_FAN);
-//      if (colors == null) {
-//        gl.glColor4f(1, 1, 1, .4f);
-//      } else {
-//        ParticleColor color = colors[i];
-//        gl.glColor4b(color.r, color.g, color.b, color.a);
-//      }
-//      for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
-//        gl.glVertex3f(x + cx, y + cy, 0);
-//        float temp = x;
-//        x = c * x - s * y;
-//        y = s * temp + c * y;
-//      }
-//      gl.glEnd();
-//    }
-//    gl.glPopMatrix();
-//  }
 
 
-//  @Override
-//  public void drawParticlesWireframe(Vec2[] centers, float radius, ParticleColor[] colors, int count) {
-//    GL2 gl = panel.getGL().getGL2();
-//    gl.glPushMatrix();
-//    transformViewport(gl, zero);
-//
-//    float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
-//    float c = MathUtils.cos(theta);
-//    float s = MathUtils.sin(theta);
-//
-//    float x = radius;
-//    float y = 0;
-//
-//    for (int i = 0; i < count; i++) {
-//      Vec2 center = centers[i];
-//      float cx = center.x;
-//      float cy = center.y;
-//      gl.glBegin(GL2.GL_LINE_LOOP);
-//      if (colors == null) {
-//        gl.glColor4f(1, 1, 1, 1);
-//      } else {
-//        ParticleColor color = colors[i];
-//        gl.glColor4b(color.r, color.g, color.b, (byte) 127);
-//      }
-//      for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
-//        gl.glVertex3f(x + cx, y + cy, 0);
-//        float temp = x;
-//        x = c * x - s * y;
-//        y = s * temp + c * y;
-//      }
-//      gl.glEnd();
-//    }
-//    gl.glPopMatrix();
-//  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private final Vec2 temp = new Vec2();
     private final Vec2 temp2 = new Vec2();

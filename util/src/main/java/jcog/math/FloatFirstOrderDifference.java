@@ -26,7 +26,7 @@ public class FloatFirstOrderDifference implements FloatSupplier {
         long now = clock.getAsLong();
         long before = lastUpdate.get();
         if (!lastUpdate.compareAndSet(before, now)) {
-            return lastDifference; //cached
+            return lastDifference; 
         }
 
         float currentValue = in.asFloat();

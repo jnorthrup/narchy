@@ -24,8 +24,8 @@
 /*
  * JBox2D - A Java Port of Erin Catto's Box2D
  *
- * JBox2D homepage: http://jbox2d.sourceforge.net/
- * Box2D homepage: http://www.box2d.org
+ * JBox2D homepage: http:
+ * Box2D homepage: http:
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -54,12 +54,12 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-//C = norm(p2 - p1) - L
-//u = (p2 - p1) / norm(p2 - p1)
-//Cdot = dot(u, v2 + cross(w2, r2) - v1 - cross(w1, r1))
-//J = [-u -cross(r1, u) u cross(r2, u)]
-//K = J * invM * JT
-//= invMass1 + invI1 * cross(r1, u)^2 + invMass2 + invI2 * cross(r2, u)^2
+
+
+
+
+
+
 
 /**
  * A distance joint constrains two points on two bodies to remain at a fixed distance from each
@@ -71,14 +71,14 @@ public class DistanceJoint extends Joint {
     private float m_dampingRatio;
     private float m_bias;
 
-    // Solver shared
+    
     private final Tuple2f m_localAnchorA;
     private final Tuple2f m_localAnchorB;
     private float m_gamma;
     private float m_impulse;
     private float m_length;
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_u = new v2();
@@ -192,14 +192,14 @@ public class DistanceJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // use m_u as temporary variable
+        
         Rot.mulToOutUnsafe(qA, m_u.set(m_localAnchorA).subbed(m_localCenterA), m_rA);
         Rot.mulToOutUnsafe(qB, m_u.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
         m_u.set(cB).added(m_rB).subbed(cA).subbed(m_rA);
 
         pool.pushRot(2);
 
-        // Handle singularity.
+        
         float length = m_u.length();
         if (length > Settings.linearSlop) {
             m_u.x *= 1.0f / length;
@@ -213,22 +213,22 @@ public class DistanceJoint extends Joint {
         float crBu = Tuple2f.cross(m_rB, m_u);
         float invMass = m_invMassA + m_invIA * crAu * crAu + m_invMassB + m_invIB * crBu * crBu;
 
-        // Compute the effective mass matrix.
+        
         m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
 
         if (m_frequencyHz > 0.0f) {
             float C = length - m_length;
 
-            // Frequency
+            
             float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
-            // Damping coefficient
+            
             float d = 2.0f * m_mass * m_dampingRatio * omega;
 
-            // Spring stiffness
+            
             float k = m_mass * omega * omega;
 
-            // magic formulas
+            
             float h = data.step.dt;
             m_gamma = h * (d + h * k);
             m_gamma = m_gamma != 0.0f ? 1.0f / m_gamma : 0.0f;
@@ -242,7 +242,7 @@ public class DistanceJoint extends Joint {
         }
         if (data.step.warmStarting) {
 
-            // Scale the impulse to support a variable time step.
+            
             m_impulse *= data.step.dtRatio;
 
             Tuple2f P = pool.popVec2();
@@ -260,9 +260,9 @@ public class DistanceJoint extends Joint {
         } else {
             m_impulse = 0.0f;
         }
-//    data.velocities[m_indexA].v.set(vA);
+
         data.velocities[m_indexA].w = wA;
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
     }
 
@@ -276,7 +276,7 @@ public class DistanceJoint extends Joint {
         final Tuple2f vpA = pool.popVec2();
         final Tuple2f vpB = pool.popVec2();
 
-        // Cdot = dot(u, v + cross(w, r))
+        
         Tuple2f.crossToOutUnsafe(wA, m_rA, vpA);
         vpA.added(vA);
         Tuple2f.crossToOutUnsafe(wB, m_rB, vpB);
@@ -297,9 +297,9 @@ public class DistanceJoint extends Joint {
         vB.y += m_invMassB * Py;
         wB += m_invIB * (m_rB.x * Py - m_rB.y * Px);
 
-//    data.velocities[m_indexA].v.set(vA);
+
         data.velocities[m_indexA].w = wA;
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(2);
@@ -344,9 +344,9 @@ public class DistanceJoint extends Joint {
         cB.y += m_invMassB * Py;
         aB += m_invIB * (rB.x * Py - rB.y * Px);
 
-//    data.positions[m_indexA].c.set(cA);
+
         data.positions[m_indexA].a = aA;
-//    data.positions[m_indexB].c.set(cB);
+
         data.positions[m_indexB].a = aB;
 
         pool.pushVec2(3);

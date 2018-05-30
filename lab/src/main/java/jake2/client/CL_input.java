@@ -113,10 +113,10 @@ public class CL_input {
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else
-			k = -1; // typed manually at the console for continuous down
+			k = -1; 
 
 		if (k == b.down[0] || k == b.down[1])
-			return; // repeating key
+			return; 
 
 		if (b.down[0] == 0)
 			b.down[0] = k;
@@ -128,15 +128,15 @@ public class CL_input {
 		}
 
 		if ((b.state & 1) != 0)
-			return; // still down
+			return; 
 
-		// save timestamp
+		
 		c = Cmd.Argv(2);
 		b.downtime = Lib.atoi(c);
 		if (b.downtime == 0)
 			b.downtime = Globals.sys_frame_time - 100;
 
-		b.state |= 3; // down + impulse down
+		b.state |= 3; 
 	}
 
 	static void KeyUp(kbutton_t b) {
@@ -148,10 +148,10 @@ public class CL_input {
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else {
-			// typed manually at the console, assume for unsticking, so clear
-			// all
+			
+			
 			b.down[0] = b.down[1] = 0;
-			b.state = 4; // impulse up
+			b.state = 4; 
 			return;
 		}
 
@@ -160,14 +160,14 @@ public class CL_input {
 		else if (b.down[1] == k)
 			b.down[1] = 0;
 		else
-			return; // key up without coresponding down (menu pass through)
+			return; 
 		if (b.down[0] != 0 || b.down[1] != 0)
-			return; // some other key is still holding it down
+			return; 
 
 		if ((b.state & 1) == 0)
-			return; // still up (this should not happen)
+			return; 
 
-		// save timestamp
+		
 		c = Cmd.Argv(2);
 		uptime = Lib.atoi(c);
 		if (uptime != 0)
@@ -175,8 +175,8 @@ public class CL_input {
 		else
 			b.msec += 10;
 
-		b.state &= ~1; // now up
-		b.state |= 4; // impulse up
+		b.state &= ~1; 
+		b.state |= 4; 
 	}
 
 	static void IN_KLookDown() {
@@ -312,13 +312,13 @@ public class CL_input {
 		float val;
 		long msec;
 
-		key.state &= 1; // clear impulses
+		key.state &= 1; 
 
 		msec = key.msec;
 		key.msec = 0;
 
 		if (key.state != 0) {
-			// still down
+			
 			msec += Globals.sys_frame_time - key.downtime;
 			key.downtime = Globals.sys_frame_time;
 		}
@@ -332,7 +332,7 @@ public class CL_input {
 		return val;
 	}
 
-	//	  ==========================================================================
+	
 
 	/*
 	 * ================ CL_AdjustAngles
@@ -372,7 +372,7 @@ public class CL_input {
 	static void BaseMove(usercmd_t cmd) {
 		AdjustAngles();
 
-		//memset (cmd, 0, sizeof(*cmd));
+		
 		cmd.clear();
 
 		Math3D.VectorCopy(Globals.cl.viewangles, cmd.angles);
@@ -392,9 +392,9 @@ public class CL_input {
 			cmd.forwardmove -= Globals.cl_forwardspeed.value * KeyState(in_back);
 		}
 
-		//
-		//	   adjust for speed key / running
-		//
+		
+		
+		
 		if (((in_speed.state & 1) ^ (int) (Globals.cl_run.value)) != 0) {
 			cmd.forwardmove *= 2;
 			cmd.sidemove *= 2;
@@ -412,9 +412,9 @@ public class CL_input {
 			pitch -= 360;
 
 		if (Globals.cl.viewangles[Defines.PITCH] + pitch < -360)
-			Globals.cl.viewangles[Defines.PITCH] += 360; // wrapped
+			Globals.cl.viewangles[Defines.PITCH] += 360; 
 		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 360)
-			Globals.cl.viewangles[Defines.PITCH] -= 360; // wrapped
+			Globals.cl.viewangles[Defines.PITCH] -= 360; 
 
 		if (Globals.cl.viewangles[Defines.PITCH] + pitch > 89)
 			Globals.cl.viewangles[Defines.PITCH] = 89 - pitch;
@@ -429,9 +429,9 @@ public class CL_input {
 		int ms;
 		int i;
 
-		//
-		//	   figure button bits
-		//	
+		
+		
+		
 		if ((in_attack.state & 3) != 0)
 			cmd.buttons |= Defines.BUTTON_ATTACK;
 		in_attack.state &= ~2;
@@ -443,10 +443,10 @@ public class CL_input {
 		if (Key.anykeydown != 0 && Globals.cls.key_dest == Defines.key_game)
 			cmd.buttons |= Defines.BUTTON_ANY;
 
-		// send milliseconds of time to apply the move
+		
 		ms = (int) (Globals.cls.frametime * 1000);
 		if (ms > 250)
-			ms = 100; // time was unreasonable
+			ms = 100; 
 		cmd.msec = (byte) ms;
 
 		ClampPitch();
@@ -456,7 +456,7 @@ public class CL_input {
 		cmd.impulse = (byte) in_impulse;
 		in_impulse = 0;
 
-		// send the ambient light level at the player's current position
+		
 		cmd.lightlevel = (byte) Globals.cl_lightlevel.value;
 	}
 
@@ -464,7 +464,7 @@ public class CL_input {
 	 * ================= CL_CreateCmd =================
 	 */
 	static void CreateCmd(usercmd_t cmd) {
-		//usercmd_t cmd = new usercmd_t();
+		
 
 		frame_msec = Globals.sys_frame_time - old_sys_frame_time;
 		if (frame_msec < 1)
@@ -472,17 +472,17 @@ public class CL_input {
 		if (frame_msec > 200)
 			frame_msec = 200;
 
-		// get basic movement from keyboard
+		
 		BaseMove(cmd);
 
-		// allow mice or other external controllers to add to the move
+		
 		IN.Move(cmd);
 
 		FinishMove(cmd);
 
 		old_sys_frame_time = Globals.sys_frame_time;
 
-		//return cmd;
+		
 	}
 
 	/*
@@ -697,15 +697,15 @@ public class CL_input {
 		usercmd_t cmd, oldcmd;
 		int checksumIndex;
 
-		// builder a command even if not connected
+		
 
-		// save this command off for prediction
+		
 		i = Globals.cls.netchan.outgoing_sequence & (Defines.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
-		Globals.cl.cmd_time[i] = Globals.cls.realtime; // for netgraph
-															 // ping calculation
+		Globals.cl.cmd_time[i] = Globals.cls.realtime; 
+															 
 
-		// fill the cmd
+		
 		CreateCmd(cmd);
 
 		Globals.cl.cmd.set(cmd);
@@ -719,7 +719,7 @@ public class CL_input {
 			return;
 		}
 
-		// send a userinfo update if needed
+		
 		if (Globals.userinfo_modified) {
 			CL.FixUpGender();
 			Globals.userinfo_modified = false;
@@ -730,34 +730,34 @@ public class CL_input {
 		SZ.Init(buf, data, data.length);
 
 		if (cmd.buttons != 0 && Globals.cl.cinematictime > 0 && !Globals.cl.attractloop
-				&& Globals.cls.realtime - Globals.cl.cinematictime > 1000) { // skip
-																			 // the
-																			 // rest
-																			 // of
-																			 // the
-																			 // cinematic
+				&& Globals.cls.realtime - Globals.cl.cinematictime > 1000) { 
+																			 
+																			 
+																			 
+																			 
+																			 
 			SCR.FinishCinematic();
 		}
 
-		// begin a client move command
+		
 		MSG.WriteByte(buf, Defines.clc_move);
 
-		// save the position for a checksum byte
+		
 		checksumIndex = buf.cursize;
 		MSG.WriteByte(buf, 0);
 
-		// let the server know what the last frame we
-		// got was, so the next message can be delta compressed
+		
+		
 		if (cl_nodelta.value != 0.0f || !Globals.cl.frame.valid || Globals.cls.demowaiting)
-			MSG.WriteLong(buf, -1); // no compression
+			MSG.WriteLong(buf, -1); 
 		else
 			MSG.WriteLong(buf, Globals.cl.frame.serverframe);
 
-		// send this and the previous cmds in the message, so
-		// if the last packet was dropped, it can be recovered
+		
+		
 		i = (Globals.cls.netchan.outgoing_sequence - 2) & (Defines.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];
-		//memset (nullcmd, 0, sizeof(nullcmd));
+		
 		nullcmd.clear();
 
 		MSG.WriteDeltaUsercmd(buf, nullcmd, cmd);
@@ -774,13 +774,13 @@ public class CL_input {
 
 		MSG.WriteDeltaUsercmd(buf, oldcmd, cmd);
 
-		// calculate a checksum over the move commands
+		
 		buf.data[checksumIndex] = Com.BlockSequenceCRCByte(buf.data, checksumIndex + 1, buf.cursize - checksumIndex - 1,
 				Globals.cls.netchan.outgoing_sequence);
 
-		//
-		// deliver the message
-		//
+		
+		
+		
 		Netchan.Transmit(Globals.cls.netchan, buf.cursize, buf.data);
 	}
 }

@@ -84,51 +84,51 @@ public class SubIfUnify extends Functor  {
     public Term apply(/*@NotNull*/ Subterms a) {
 
 
-        //parse parameters
+        
         boolean strict = false;
         @Nullable Op op = null;
 
-        //TODO compile at function construction time
+        
 
-//        boolean force = false;
+
         int pp = a.subs();
         for (int p = 3; p < pp; p++) {
             Term ai = a.sub(p);
             if (ai.equals(Subst.STRICT))
                 strict = true;
             else if (ai.equals(INDEP_VAR)) {
-                //;in this cases also dependent var elimination is fine!
-                //
-                //   (let [[mode check-var-type] (if (= var-symbol "$")
-                //                             [:ind #(or (= % 'ind-var) (= % 'dep-var))]
-                //                             [:dep #(= % 'dep-var)])
-                //op = VAR_INDEP;
+                
+                
+                
+                
+                
+                
             } else if (ai.equals(DEP_VAR)) {
                 op = VAR_DEP;
-//            } else if (ai.equals(Subst.FORCE)) {
-//                force = true;
+
+
             } else
                 throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
 
         /** term being transformed if x unifies with y */
         Term c = a.sub(0);
-        //if (input instanceof Bool)return Null;
-        //if (input == Null) return Null;
+        
+        
 
         Term x = Image.imageNormalize( a.sub(1) );
-        //if (x == Null) return Null;
+        
 
         Term y = Image.imageNormalize( a.sub(2) );
-        //if (y == Null) return Null;
+        
 
         if (x.equals(y)) {
-            return strict ? Null : c; //unification would occurr but no changes would result
+            return strict ? Null : c; 
         }
 
         Term output;
         if (c.equals(x)) {
-            //input equals X so it is entirely replaced by 'y'
+            
             output = y;
         } else {
 
@@ -138,7 +138,7 @@ public class SubIfUnify extends Functor  {
                         (op != null && x.hasAny(op));
 
             if (!tryUnify/* && mustSubstitute()*/) {
-                output = null; //no change
+                output = null; 
             } else {
                 SubUnify su = new MySubUnify(op, strict);
                 output = su.tryMatch(c, x, y);
@@ -146,13 +146,13 @@ public class SubIfUnify extends Functor  {
             }
 
             if (output == null) {
-//                if (!force) {
+
                     return Null;
-//                } else {
-//                    output = c.replace(x, y); //force: apply substitution even if un-unifiable
-//                    if (output == null)
-//                        return Null;
-//                }
+
+
+
+
+
             }
 
         }
@@ -171,119 +171,119 @@ public class SubIfUnify extends Functor  {
         @Override
         protected boolean tryMatch(Term result) {
             if (!strict || !result.equals(transformed)) {
-                //adjust the substitution map for temporalization and other usages of reverse resolution
+                
 
                 this.xy.forEach(parent.untransform::put);
-                //this.xy.forEach(parent::replaceXY);
+                
 
-                //parent.replaceXY(transformed, result);
-                //parent.replaceXY(result, transformed);
+                
+                
                 return true;
             }
             return false;
         }
     }
 
-    //    public static class substituteIfUnifiesDep extends substituteIfUnifies {
-//
-//        final static Atom func = (Atom) $.the("subIfUnifiesDep");
-//
-//        public substituteIfUnifiesDep(Derivation parent) {
-//            super(func, parent);
-//        }
-//
-//
-//    }
-
-//    public static final class substituteIfUnifiesIndep extends substituteIfUnifies {
-//
-//
-//        public substituteIfUnifiesIndep(Derivation parent) {
-//            super("subIfUnifiesIndep", parent);
-//        }
-//
-//
-//        /*@NotNull*/
-//        @Override
-//        public Op unifying() {
-//            return Op.VAR_INDEP;
-//        }
-//    }
-//    public static final class substituteOnlyIfUnifiesDep extends substituteIfUnifies {
-//
-//        public substituteOnlyIfUnifiesDep(PremiseEval parent) {
-//            super("subOnlyIfUnifiesDep", parent);
-//        }
-//
-//        @Override
-//        protected boolean mustSubstitute() {
-//            return true;
-//        }
-//
-//        /*@NotNull*/
-//        @Override
-//        public Op unifying() {
-//            return Op.VAR_DEP;
-//        }
-//    }
-
-//    public static final class substituteIfUnifiesIndep extends substituteIfUnifies {
-//
-//        public substituteIfUnifiesIndep(PremiseEval parent) {
-//            super("subIfUnifiesIndep",parent);
-//        }
-//
-//
-//        /*@NotNull*/
-//        @Override
-//        public Op unifying() {
-//            return Op.VAR_INDEP;
-//        }
-//    }
+    
 
 
-//    /** specifies a forward ordering constraint, for example:
-//     *      B, (C && A), time(decomposeBelief) |- substituteIfUnifiesIndepForward(C,A,B), (Desire:Strong)
-//     *
-//     *  if B unifies with A then A must be eternal, simultaneous, or future with respect to C
-//     *
-//     *  for now, this assumes the decomposed term is in the belief position
-//     */
-//    public static final class substituteIfUnifiesForward extends substituteIfUnifies {
-//
-//        public substituteIfUnifiesForward(Derivation parent) {
-//            super("subIfUnifiesForward",parent);
-//        }
-//
-//        @Override
-//        protected boolean forwardOnly() {
-//            return true;
-//        }
-//
-//        @Override
-//        protected @Nullable Op unifying() {
-//            return null;
-//        }
-//    }
 
-//    public static final class substituteOnlyIfUnifiesIndep extends substituteIfUnifies {
-//
-//        public substituteOnlyIfUnifiesIndep(PremiseEval parent) {
-//
-//            super("subOnlyIfUnifiesIndep", parent);
-//        }
-//
-//        @Override
-//        protected boolean mustSubstitute() {
-//            return true;
-//        }
-//
-//        /*@NotNull*/
-//        @Override
-//        public Op unifying() {
-//            return Op.VAR_INDEP;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Less powerful one-match only unification
@@ -311,15 +311,15 @@ public class SubIfUnify extends Functor  {
             if (transformed != null) {
                 Term result = transformed.transform(this);
                 if (result != null && tryMatch(result)) {
-                //if (result != null && ()) {
+                
 
-    //                int before = parent.now();
-    //                if (xy.forEachVersioned(parent::putXY)) {
+    
+    
                         this.result = result;
                         stop();
-    //                } else {
-    //                    parent.revert(before); //continue trying
-    //                }
+    
+    
+    
 
                 }
             }

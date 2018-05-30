@@ -20,7 +20,7 @@ public class ShowList {
 		Structure snakes = Structure.list(new Object[] { "cobra", "garter", "python" });
 		System.out.println("A list of three snakes: " + snakes);
 
-		// unify this list with a list of three variables
+		
 
 		Variable a = new Variable("A");
 		Variable b = new Variable("B");
@@ -32,8 +32,8 @@ public class ShowList {
 		abc.unify(snakes);
 		System.out.println("\n... giving: \n" + "A: " + a + "\n" + "B: " + b + "\n" + "C: " + c + "\n");
 
-		// unify this list with a list of three variables;
-		// note the change in the List constructor
+		
+		
 
 		Variable head = new Variable("Head");
 		Variable tail = new Variable("Tail");

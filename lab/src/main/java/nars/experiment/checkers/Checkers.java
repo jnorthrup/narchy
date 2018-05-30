@@ -16,7 +16,7 @@ public class Checkers {
 
 	private final ArrayList<int[]> movementHistory = new ArrayList<>();
 	private final Piece[][] pieces;
-	private char turn = TURN_DARK;	// dark is basically an alias for player 1
+	private char turn = TURN_DARK;	
 	private int remainingJumpX = -1, remainingJumpY = -1;
 
 	public Checkers() 	{
@@ -28,12 +28,12 @@ public class Checkers {
 		HEIGHT = height;
 		pieces = (Piece[][]) Array.newInstance(Piece.class, WIDTH, HEIGHT);
             
-		// create initial context
+		
 		for(int i = 0; i < WIDTH; i++)
 		{
 			for(int j = 0; j < HEIGHT; j++)
 			{
-				// create and set pieces
+				
 				if(i % 2 == j % 2)
 				{
 					if(j < (HEIGHT / 2) - 1)
@@ -107,27 +107,27 @@ public class Checkers {
 		{
 			if(srcX - dstX == 2 || srcX - dstX == -2)
 			{
-				// jump
+				
 				jump(srcX, srcY, dstX, dstY);
 
 				if(pieceCouldJumpToFrom(dstX, dstY).isEmpty())
 				{
 					advanceTurn();
 					if(hasRemainingJump())
-						unsetRemainingJump();	// no remaining jumps from here
+						unsetRemainingJump();	
 				}
 				else
-					setRemainingJump(dstX, dstY);	// player's next move has to be a jump from here
+					setRemainingJump(dstX, dstY);	
 			}
 			else
 			{
-				// move
+				
 				pieces[dstX][dstY] = pieces[srcX][srcY];
 				pieces[srcX][srcY] = null;
-				advanceTurn();	// other player to move next
+				advanceTurn();	
 			}
 
-			if(!(pieces[dstX][dstY] instanceof King)) // has yet to be crowned perhaps
+			if(!(pieces[dstX][dstY] instanceof King)) 
 			{
 				if((dstY == HEIGHT - 1) && pieces[dstX][dstY].isLight())
 					pieces[dstX][dstY] = King.createLightKing();
@@ -155,25 +155,25 @@ public class Checkers {
 
 		if(pieces[srcX][srcY].isLight() || pieces[srcX][srcY] instanceof King)
 		{
-			if(srcY <= HEIGHT - 3)		// otherwise simply impossible to jump ..
+			if(srcY <= HEIGHT - 3)		
 			{
-				if(srcX + 2 < WIDTH)	// jump right
+				if(srcX + 2 < WIDTH)	
 				{
-					// check if the destination is empty
+					
 					if(pieces[srcX + 2][srcY + 2] == null)
 					{
-						// check if there is an enemy in front of us
+						
 						if(pieces[srcX + 1][srcY + 1] != null && !pieces[srcX + 1][srcY + 1].getColor().equals(pieces[srcX][srcY].getColor()))
 							destinations.add(new int[]{srcX + 2, srcY + 2});
 					}
 				}
 
-				if(srcX - 2 >= 0)		// jump left
+				if(srcX - 2 >= 0)		
 				{
-					// check if the destination is empty
+					
 					if(pieces[srcX - 2][srcY + 2] == null)
 					{
-						// check if there is an enemy in front of us
+						
 						if(pieces[srcX - 1][srcY + 1] != null && !pieces[srcX - 1][srcY + 1].getColor().equals(pieces[srcX][srcY].getColor()))
 							destinations.add(new int[]{srcX - 2, srcY + 2});
 					}
@@ -181,27 +181,27 @@ public class Checkers {
 			}
 		}
 
-		if(pieces[srcX][srcY].isDark() || pieces[srcX][srcY] instanceof King)	// we're allowed to jump backwards
+		if(pieces[srcX][srcY].isDark() || pieces[srcX][srcY] instanceof King)	
 		{
-			if(srcY >= 2)	// otherwise simply impossible to jump ..
+			if(srcY >= 2)	
 			{
-				if(srcX + 2 < WIDTH)	// jump right
+				if(srcX + 2 < WIDTH)	
 				{
-					// check if the destination is empty
+					
 					if(pieces[srcX + 2][srcY - 2] == null)
 					{
-						// check if there is an enemy in front of us
+						
 						if(pieces[srcX + 1][srcY - 1] != null && !pieces[srcX + 1][srcY - 1].getColor().equals(pieces[srcX][srcY].getColor()))
 							destinations.add(new int[]{srcX + 2, srcY - 2});
 					}
 				}
 
-				if(srcX - 2 >= 0)		// jump left
+				if(srcX - 2 >= 0)		
 				{
-					// check if the destination is empty
+					
 					if(pieces[srcX - 2][srcY - 2] == null)
 					{
-						// check if there is an enemy in front of us
+						
 						if(pieces[srcX - 1][srcY - 1] != null && !pieces[srcX - 1][srcY - 1].getColor().equals(pieces[srcX][srcY].getColor()))
 							destinations.add(new int[]{srcX - 2, srcY - 2});
 					}
@@ -226,38 +226,38 @@ public class Checkers {
 		{
 			if(pieces[srcX][srcY].isLight() || pieces[srcX][srcY] instanceof King)
 			{
-				// upwards
+				
 				if(srcY + 1 < HEIGHT)
 				{
 					if(srcX + 1 < WIDTH)
 					{
 						if(pieces[srcX + 1][srcY + 1] == null)
-							destinations.add(new int[]{srcX + 1, srcY + 1});	// right
+							destinations.add(new int[]{srcX + 1, srcY + 1});	
 					}
 
 					if(srcX - 1 >= 0)
 					{
 						if(pieces[srcX - 1][srcY + 1] == null)
-							destinations.add(new int[]{srcX - 1, srcY + 1});	// left
+							destinations.add(new int[]{srcX - 1, srcY + 1});	
 					}
 				}
 			}
 
 			if(pieces[srcX][srcY].isDark() || pieces[srcX][srcY] instanceof King)
 			{
-				// downwards
+				
 				if(srcY - 1 >= 0)
 				{
 					if(srcX + 1 < WIDTH)
 					{
 						if(pieces[srcX + 1][srcY - 1] == null)
-							destinations.add(new int[]{srcX + 1, srcY - 1});	// right
+							destinations.add(new int[]{srcX + 1, srcY - 1});	
 					}
 
 					if(srcX - 1 >= 0)
 					{
 						if(pieces[srcX - 1][srcY - 1] == null)
-							destinations.add(new int[]{srcX - 1, srcY - 1});	// left
+							destinations.add(new int[]{srcX - 1, srcY - 1});	
 					}
 				}
 			}
@@ -266,16 +266,16 @@ public class Checkers {
 		return destinations;
 	}
 
-//	/**
-//	 *
-//	 * @return
-//	 */
-//	public ArrayList<Game> getPossibleFollowingContexts()
-//	{
-//		ArrayList<Game> contexts = new ArrayList<>();
-//
-//		return contexts;
-//	}
+
+
+
+
+
+
+
+
+
+
 
 	/**
 	 * 

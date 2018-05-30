@@ -84,7 +84,7 @@ public class NAL8EquivalenceTest extends NALTest {
 
         test
                 .input("(R)! :|:")
-                .input("((S) <=>+5 --(R)).") //internally, this reduces to --(S ==> R)
+                .input("((S) <=>+5 --(R)).") 
                 .mustGoal(cycles, "(S)", 0.0f, 0.81f, 0);
 
     }
@@ -95,7 +95,7 @@ public class NAL8EquivalenceTest extends NALTest {
         test
 
                 .input("g(x)! :|:")
-                .input("(f($1) <=>+5 --g($1)).") //internally, this reduces to --(S ==> R)
+                .input("(f($1) <=>+5 --g($1)).") 
                 .mustGoal(cycles, "f(x)", 0.0f, 0.81f, 0)
                 .mustNotOutput(cycles, "goto({t003})", GOAL, 0);
 
@@ -106,7 +106,7 @@ public class NAL8EquivalenceTest extends NALTest {
 
         test
                 .input("--(R)! :|:")
-                .input("((S) <=>+5 --(R)).") //internally, this reduces to --(S <=> R)
+                .input("((S) <=>+5 --(R)).") 
                 .mustGoal(cycles, "(S)", 1.0f, 0.81f, 0 /* shifted to present */)
                 .mustNotOutput(cycles, "(S)", GOAL, 0f, 0.5f, 0f, 1f, 0)
                 .mustNotOutput(cycles, "(S)", GOAL, 0, 0.5f, 0f, 1f, -5)
@@ -126,9 +126,9 @@ public class NAL8EquivalenceTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("(a:b<=>c:d)."); //ETERNAL
-        tester.input("(c:d &&+0 e:f). :|:"); //PRESENT
-        tester.input("e:f! :|:"); //PRESENT
+        tester.input("(a:b<=>c:d)."); 
+        tester.input("(c:d &&+0 e:f). :|:"); 
+        tester.input("e:f! :|:"); 
         tester.mustGoal(cycles, "a:b", 1.0f, 0.73f, 0);
         tester.mustNotOutput(cycles, "a:b", GOAL, ETERNAL);
     }
@@ -138,8 +138,8 @@ public class NAL8EquivalenceTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("(a:b<=>c:d)."); //ETERNAL
-        tester.input("(c:d &| e:f). :|:"); //PRESENT
+        tester.input("(a:b<=>c:d)."); 
+        tester.input("(c:d &| e:f). :|:"); 
         tester.mustBelieve(cycles, "(a:b &| e:f)", 1.0f, 0.81f, 0);
         tester.mustNotOutput(cycles, "(a:b &| e:f)", BELIEF, ETERNAL);
     }
@@ -149,8 +149,8 @@ public class NAL8EquivalenceTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("(a:b<=>c:d)."); //ETERNAL
-        tester.input("(c:d &&+0 e:f)! :|:"); //PRESENT
+        tester.input("(a:b<=>c:d)."); 
+        tester.input("(c:d &&+0 e:f)! :|:"); 
         tester.mustGoal(cycles, "(a:b &&+0 e:f)", 1.0f, 0.81f, 0);
         tester.mustNotOutput(cycles, "(a:b &&+0 e:f)", BELIEF, ETERNAL);
     }
@@ -160,8 +160,8 @@ public class NAL8EquivalenceTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("(a:b <=>+0 c:d)."); //ETERNAL or Zero, for now dont allow time relation
-        tester.input("(c:d &&+0 e:f). :|:"); //PRESENT
+        tester.input("(a:b <=>+0 c:d)."); 
+        tester.input("(c:d &&+0 e:f). :|:"); 
         tester.mustBelieve(cycles, "(a:b &&+0 e:f)", 1.0f, 0.81f, 0);
         tester.mustNotOutput(cycles, "(a:b &&+0 e:f)", BELIEF, ETERNAL);
     }
@@ -172,35 +172,35 @@ public class NAL8EquivalenceTest extends NALTest {
 
         TestNAR tester = test;
 
-        tester.input("(a:b <=>+1 c:d)."); //ETERNAL or Zero, for now dont allow time relation
-        tester.input("(x:y <=>+0 c:d)."); //ETERNAL or Zero, for now dont allow time relation
-        tester.input("(c:d &&+0 e:f). :|:"); //PRESENT
+        tester.input("(a:b <=>+1 c:d)."); 
+        tester.input("(x:y <=>+0 c:d)."); 
+        tester.input("(c:d &&+0 e:f). :|:"); 
         tester.mustBelieve(cycles, "(x:y &&+0 e:f)", 1.0f, 0.81f, 0);
-        //tester.mustNotOutput(cycles, "(a:b &&+0 e:f)", BELIEF, 0, ETERNAL);
+        
     }
   @Test
     public void equiSubstitutionViaEquivalence() {
 
         test
-                .input("(a:b<->c:d).") //ETERNAL
-                .input("(e:f <=>+1 c:d). :|:") //PRESENT
+                .input("(a:b<->c:d).") 
+                .input("(e:f <=>+1 c:d). :|:") 
                 .mustBelieve(cycles, "(e:f <=>+1 a:b)", 1.0f, 0.81f, 0)
                 .mustNotOutput(cycles, "(e:f <=>+1 a:b)", BELIEF, ETERNAL);
     }
     @Test
     public void testPredictiveEquivalenceTemporalEternal() {
 
-        //Param.TRACE = true;
-//        test.nar.onCycle(()->{
-//            nar.exe.print(System.out);
-//        });
+        
+
+
+
         test
-                //.log()
+                
                 .inputAt(0, "((out) <=>-3 (happy)). :|:")
                 .inputAt(5, "(happy)!")
-                //.mustDesire(cycles, "(out)", 1f, 0.04f, 17)
+                
                 .mustGoal(16, "(out)", 1f, 0.81f, 3)
-        //.mustNotOutput(cycles, "(out)", GOAL, 13, 0)
+        
         ;
     }
 

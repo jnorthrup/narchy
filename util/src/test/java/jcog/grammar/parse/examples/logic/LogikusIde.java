@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.logic;
 
-//import javax.swing.*;
-//import javax.swing.border.*;
+
+
 
 import jcog.grammar.parse.examples.utensil.SwingUtensil;
 

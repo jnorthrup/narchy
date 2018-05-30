@@ -49,7 +49,7 @@ public class Level {
 			maps = LevelGen.createAndValidateUndergroundMap(w, h, -level);
 			monsterDensity = 4;
 		} else {
-			maps = LevelGen.createAndValidateSkyMap(w, h); // Sky level
+			maps = LevelGen.createAndValidateSkyMap(w, h); 
 			monsterDensity = 4;
 		}
 
@@ -151,7 +151,7 @@ public class Level {
 				List<Entity> entities = entitiesInTiles[x + y * this.w];
 				for (int i = 0; i < entities.size(); i++) {
 					Entity e = entities.get(i);
-					// e.render(screen);
+					
 					int lr = e.getLightRadius();
 					if (lr > 0) screen.renderLight(e.x - 1, e.y - 4, lr * 8);
 				}
@@ -162,9 +162,9 @@ public class Level {
 		screen.setOffset(0, 0);
 	}
 
-	// private void renderLight(Screen screen, int x, int y, int r) {
-	// screen.renderLight(x, y, r);
-	// }
+	
+	
+	
 
 	private void sortAndRender(Screen screen, List<Entity> list) {
 		Collections.sort(list, spriteSorter);

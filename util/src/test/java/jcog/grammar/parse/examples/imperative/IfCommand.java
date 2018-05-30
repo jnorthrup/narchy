@@ -18,9 +18,9 @@ import jcog.grammar.parse.examples.engine.BooleanTerm;
  * <pre>
  * 
  * if (x &gt; 7) {
- * 	// body to execute if condition is true
+ * 	
  * } else {
- * 	// body to execute if condition is false
+ * 	
  * }
  * </pre>
  * 

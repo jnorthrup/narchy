@@ -39,8 +39,8 @@ public class ConcatShader implements Shader
      */
     public ConcatShader(Shader mainShader, float subRatio, Shader subShader)
     {
-        // Falls die Licht-Intensit�t nicht limitiert ist, wird der Farbanteil
-        // des Haupt-Shaders nicht reduziert:
+        
+        
         mainRatio = (RaytracerConstants.LIMIT_COLOR_INTENSITY) ? 1.0f-subRatio : 1.0f;
         
         this.mainShader = mainShader;
@@ -70,17 +70,17 @@ public class ConcatShader implements Shader
     {
         float savedWeight = intersection.ray.weight;
         
-        // Gespiegelte Farbe berechnen:
+        
         intersection.ray.weight = savedWeight*mainRatio;
         ColorEx mainColor = mainShader.shade(intersection);
         
-        // "Normal" geshaderte Farbe berechnen:
+        
         intersection.ray.weight = savedWeight*subRatio;
         ColorEx subColor = subShader.shade(intersection);
         
         intersection.ray.weight = savedWeight;
         
-        // Farbe berechnen und zur�ckgeben:
+        
         subColor.scale(subRatio);
         mainColor.scaleAdd(mainRatio, subColor);
         return mainColor;

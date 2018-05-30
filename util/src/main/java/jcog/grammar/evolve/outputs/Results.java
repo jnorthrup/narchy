@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.outputs;
 
@@ -54,31 +54,31 @@ public class Results {
     private Date experimentDate = new Date();
     transient private String machineHardwareSpecifications;
     private FinalSolution bestSolution;
-    //extractions of best solution on the learning dataset
+    
     private List<DataSet.Bounds[]> bestExtractions;
     private List<List<String>> bestExtractionsStrings;
-    //original dataset examples, these are optional properties
+    
     private List<Example> examples;
-    private List<BasicStats> bestExtractionsStats; //bestExtractionsStats stores for all examples tp and fp stats.
+    private List<BasicStats> bestExtractionsStats; 
     
     private long overallExecutionTimeMillis;
-    //Learning set stats, useful for Knoledge avaiable computation
-    //These stats are about the learning dataset (all provided examples)
+    
+    
     private int numberMatches;
     private int numberUnmatches;  
     private int numberMatchedChars = 0;
     private int numberUnmatchedChars = 0;
     private int numberAnnotatedChars;
-    //The characters of all Dataset
+    
     private int numberAllChars;
-    //training set informations
+    
     private int numberTrainingMatches;
     private int numberTrainingUnmatches;  
     
     private long characterEvaluations = 0;
     transient private Configuration configuration;
     
-    //This is set transient only in this developement code in order to not persist Jobs details in serialization.
+    
     transient private List<JobEvolutionTrace> jobEvolutionTrace; 
     
     
@@ -263,20 +263,20 @@ public class Results {
     
     public static Results load(String fileName) {
         throw new TODO();
-//        FileInputStream fis = new FileInputStream(new File(fileName));
-//        InputStreamReader isr = new InputStreamReader(fis);
-//        StringBuilder sb;
-//        try (BufferedReader bufferedReader = new BufferedReader(isr)) {
-//            sb = new StringBuilder();
-//            String line;
-//            while ((line = bufferedReader.readLine()) != null) {
-//                sb.append(line);
-//            }
-//        }
-//        String json = sb.toString();
-//        Gson gson = new Gson();
-//        Results result = gson.fromJson(json, Results.class);
-//        return result;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
     
 }

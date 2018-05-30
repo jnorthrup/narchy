@@ -49,8 +49,8 @@ public class LevelPanel extends JComponent implements MouseListener
 	
 	JCheckBox bezierChk = new JCheckBox("Export beziers");
 		
-	// The directory that is opened in the file choosers. Is updated when a
-	// file is opened or saved.
+	
+	
 	File currentDirectory;
 	File currentFile;
 	
@@ -66,7 +66,7 @@ public class LevelPanel extends JComponent implements MouseListener
 		this.editor = editor;
 		
 		currentDirectory = new File(System.getProperty("user.dir"));
-		//openLevel(new File(System.getProperty("user.dir") + "/levelShort.bin"));
+		
 		openLevel(new File(System.getProperty("user.dir") + "/a"));
 		
 		Dimension preferredSize = new Dimension(level.getSize());
@@ -89,7 +89,7 @@ public class LevelPanel extends JComponent implements MouseListener
 		runBtn.setMnemonic(KeyEvent.VK_R);
 		bezierBtn.setMnemonic(KeyEvent.VK_B);
 
-		// setup toolbar
+		
 		selectBtn.addActionListener(this);
 		lineBtn.addActionListener(this);
 		sircleBtn.addActionListener(this);
@@ -154,8 +154,8 @@ public class LevelPanel extends JComponent implements MouseListener
             Graphics2D g2d = (Graphics2D)g.create();
 
             if (backgroundImage != null) {
-            	//int width = backgroundImage.getWidth() * 1400 / backgroundImage.getHeight();
-            	//g.drawImage(backgroundImage, 0, 0, width, 1400, null);
+            	
+            	
             	g.drawImage(backgroundImage, 0, 0, null);
             }
             
@@ -212,7 +212,7 @@ public class LevelPanel extends JComponent implements MouseListener
         		break;
         	}
             
-            // draw cross
+            
             if (movedPoint != null) {
             	Point p = snapToGrid(movedPoint);
             	g2d.setColor(new Color(0xffffff00));
@@ -233,7 +233,7 @@ public class LevelPanel extends JComponent implements MouseListener
             	g2d.drawRect(r.x, r.y, r.width, r.height);
             }
             
-            g2d.dispose(); //clean up
+            g2d.dispose(); 
     	} catch (Throwable t) {
     		t.printStackTrace();
     	}

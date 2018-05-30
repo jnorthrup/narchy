@@ -16,7 +16,7 @@ package jcog.data.bit;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  *
  */
 
@@ -63,7 +63,7 @@ import java.util.Arrays;
  * 
  * <p><strong>Warning</strong>: In some cases, you might want to cache locally the result
  * of {@link #bits()} to speed up computations on immutable bit vectors (this is what happens, for instance,
- * in <a href="http://sux.dsi.unimi.it/docs/it/unimi/dsi/sux4j/bits/Rank.html">static ranking structures</a>). This class, however, does its own serialisation
+ * in <a href="http:
  * of the bit vector: as a result, all cached references to the result of {@link #bits()}
  * must be marked as transient and rebuilt at deserialisation
  * time, or you will end up saving the bits twice. 
@@ -300,13 +300,13 @@ public class LongArrayBitVector extends AbstractBitVector implements Cloneable, 
 		int startBit = bit( from );
 
 		if ( startBit == 0 ) {
-			// If we're copying from the first bit, we just copy the array. 
+			
 			System.arraycopy( bits, startWord, copy.bits, 0, numWords );
 			int endBit = bit( to );
 			if ( endBit > 0 ) copy.bits[ numWords - 1 ] &= ( 1L << endBit ) - 1;
 		}
 		else if ( startWord == word( to - 1 ) ) {
-			// Same word, startBit > 0
+			
 			copy.bits[ 0 ] = bits[ startWord ] >>> startBit & ( ( 1L << to - from ) - 1 );
 		}
 		else {
@@ -706,74 +706,74 @@ public class LongArrayBitVector extends AbstractBitVector implements Cloneable, 
 		return (int)( ( h >>> 32 ) ^ h );
 	}
 	
-//	/** A list-of-integers view of a bit vector.
-//	 *
-//	 * <P>This class implements in the obvious way a view
-//	 * of a bit vector as a list of integers of given width. The vector is enlarged as needed (i.e., when
-//	 * adding new elements), but it is never shrunk.
-//	 */
-//
-//	protected static class LongBigListView extends AbstractBitVector.LongBigListView {
-//		private static final long serialVersionUID = 1L;
-//		@SuppressWarnings("hiding")
-//		private final LongArrayBitVector bitVector;
-//
-//		public LongBigListView( final LongArrayBitVector bitVector, final int width ) {
-//			super( bitVector, width );
-//			this.bitVector = bitVector;
-//		}
-//
-//
-//		public boolean add( long value ) {
-//			bitVector.append( value, width );
-//			return true;
-//		}
-//
-//		@Override
-//		public long getLong( long index ) {
-//			final long start = index * width;
-//			return bitVector.getLong( start, start + width );
-//		}
-//
-//		public void clear() {
-//			bitVector.clear();
-//		}
-//
-//		@Override
-//		public long set( long index, long value ) {
-//			if ( width == 0 ) return 0;
-//			if ( width != Long.SIZE && value > fullMask ) throw new IllegalArgumentException( "Value too large: " + value );
-//			final long bits[] = bitVector.bits;
-//			final long start = index * width;
-//			final int startWord = word( start );
-//			final int endWord = word( start + width - 1 );
-//			final int startBit = bit( start );
-//			final long oldValue;
-//
-//			if ( startWord == endWord ) {
-//				oldValue = bits[ startWord ] >>> startBit & fullMask;
-//				bits[ startWord ] &= ~ ( fullMask << startBit );
-//				bits[ startWord ] |= value << startBit;
-//				if ( ASSERTS ) assert value == ( bits[ startWord ] >>> startBit & fullMask );
-//			}
-//			else {
-//				// Here startBit > 0.
-//				oldValue = bits[ startWord ] >>> startBit | bits[ endWord ] << ( BITS_PER_WORD - startBit ) & fullMask;
-//				bits[ startWord ] &= ( 1L << startBit ) - 1;
-//				bits[ startWord ] |= value << startBit;
-//				bits[ endWord ] &=  - ( 1L << width - BITS_PER_WORD + startBit );
-//				bits[ endWord ] |= value >>> BITS_PER_WORD - startBit;
-//
-//				if ( ASSERTS ) assert value == ( bits[ startWord ] >>> startBit | bits[ endWord ] << ( BITS_PER_WORD - startBit ) & fullMask );
-//			}
-//			return oldValue;
-//		}
-//	}
-//
-////	@Override
-////	public LongBigList asLongBigList( final int width ) {
-////		return new LongBigListView( this, width );
-////	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	private void writeObject( ObjectOutputStream s ) throws IOException {
 		s.defaultWriteObject();

@@ -21,8 +21,8 @@ public class Graph2DTest {
             h.addNode(("y"));
             h.addNode(("z"));
             h.addNode(("w"));
-//            for (int i = 0; i < 100; i++)
-//                h.addNode("_" + i);
+
+
             h.addEdge(("x"), ("xy"), ("y"));
             h.addEdge(("x"), ("xz"), ("z"));
             h.addEdge(("y"), ("yz"), ("z"));

@@ -61,7 +61,7 @@ public class Optimize<X> {
      * @return
      */
     public <Y> Optimizing.Result run(final ARFF data, int maxIterations, int repeats,
-                                 //FloatFunction<Supplier<X>> eval,
+                                 
                                  Function<X,Y> experiment,
                                  Optimizing.Optimal<Y, ?>[] seeks,
                                  Function<Callable,Future> exe) {
@@ -73,26 +73,26 @@ public class Optimize<X> {
         final int numTweaks = tweaks.size();
 
         double[] mid = new double[numTweaks];
-        //double[] sigma = new double[n];
+        
         double[] min = new double[numTweaks];
         double[] max = new double[numTweaks];
         double[] inc = new double[numTweaks];
-//        double[] range = new double[dim];
+
 
         X example = subject.get();
         int i = 0;
         for (Tweak w : tweaks) {
             TweakFloat s = (TweakFloat) w;
 
-            //initial guess: get from sample, otherwise midpoint of min/max range
+            
             Object guess = s.get(example);
             mid[i] = guess != null ? ((float) guess) : ((s.getMax() + s.getMin()) / 2f);
 
             min[i] = (s.getMin());
             max[i] = (s.getMax());
             inc[i] = s.getInc();
-//            range[i] = max[i] - min[i];
-            //sigma[i] = Math.abs(max[i] - min[i]) * 0.75f; //(s.getInc());
+
+            
             i++;
         }
 
@@ -115,14 +115,14 @@ public class Optimize<X> {
                         Y y = experiment.apply(xx);
 
                         float subScore = 0;
-                        Map<String, Object> e = new LinkedHashMap(seeks.length); //lhm to maintain seek order
+                        Map<String, Object> e = new LinkedHashMap(seeks.length); 
                         for (Optimizing.Optimal<Y, ?> o : seeks) {
                             ObjectFloatPair<?> xy = o.eval(y);
                             e.put(o.id, xy.getOne());
                             subScore += xy.getTwo();
                         }
 
-                        e.put("_", subScore); //HACK
+                        e.put("_", subScore); 
 
                         return e;
 
@@ -150,14 +150,14 @@ public class Optimize<X> {
 
 
             int numResults = 0;
-            //TODO variance? etc
+            
 
             for (Future<Map<String, Object>> y : each) {
 
                 try {
                     Map<String, Object> ee = y.get();
                     if (ee != null) {
-                        //iterated in LHM-presered order
+                        
                         int j = 0;
                         for (Map.Entry<String, Object> entry : ee.entrySet()) {
                             String k = entry.getKey();
@@ -181,13 +181,13 @@ public class Optimize<X> {
                 return Float.NEGATIVE_INFINITY;
 
 
-            //TODO interplate and store the detected features
+            
 
             score = sum / numResults;
 
 
-//            if (trace)
-//                csv.out(ArrayUtils.add(point, 0, score));
+
+
             FasterList p = new FasterList(numTweaks + numSeeks + 1);
 
             p.add(score);
@@ -196,7 +196,7 @@ public class Optimize<X> {
                 p.add(pp);
 
             if (numSeeks > 1) {
-                //dont repeat a score column other than the master score if single objective
+                
 
                 for (int si = 0; si < numSeeks; si++) {
                     p.add(seekMean.get(si) / numResults);
@@ -209,10 +209,10 @@ public class Optimize<X> {
         });
 
 
-//        if (trace)
-//            csv = new CSVOutput(System.out, Stream.concat(
-//                    Stream.of("score"), tweaks.stream().map(t -> t.id)
-//            ).toArray(String[]::new));
+
+
+
+
 
 
         experimentStart();
@@ -228,23 +228,23 @@ public class Optimize<X> {
 
     void solve(int dim, ObjectiveFunction func, double[] mid, double[] min, double[] max, double[] inc, int maxIterations) {
         if (dim == 1) {
-            //use a solver capable of 1 dim
+            
             try {
                 new SimplexOptimizer(1e-10, 1e-30).optimize(
                         new MaxEval(maxIterations),
                         func,
                         GoalType.MAXIMIZE,
                         new InitialGuess(mid),
-                        //new NelderMeadSimplex(inc)
+                        
                         new MultiDirectionalSimplex(inc)
                 );
             } catch (TooManyEvaluationsException e) {
-                //done
+                
             }
         } else {
 
             int popSize =
-                    //4 + 3 ln(n)
+                    
                     (int) Math.ceil(4 + 3 * Math.log(tweaks.size()));
 
 
@@ -261,18 +261,18 @@ public class Optimize<X> {
                     new SimpleBounds(min, max),
                     new InitialGuess(mid)
             );
-            //m.print(System.out);
+            
 
-//            final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
-//            new BOBYQAOptimizer(numIterpolationPoints,
-//                    dim * 2.0,
-//                    1.0E-4D /* ? */).optimize(
-//                    MaxEval.unlimited(), //new MaxEval(maxIterations),
-//                    new MaxIter(maxIterations),
-//                    func,
-//                    GoalType.MAXIMIZE,
-//                    new SimpleBounds(min, max),
-//                    new InitialGuess(mid));
+
+
+
+
+
+
+
+
+
+
         }
 
     }
@@ -300,26 +300,26 @@ public class Optimize<X> {
 
 }
 
-//public class MeshOptimize<X> extends Optimize<X> {
-//
-//    /** experiment id's */
-//    private static final AtomicInteger serial = new AtomicInteger();
-//
-//    /** should get serialized compactly though by msgpack */
-//    private final MeshMap<Integer, List<Float>> m;
-//
-//    public MeshOptimize(String id, Supplier<X> subject, Tweaks<X> tweaks) {
-//        super(subject, tweaks);
-//
-//        m = MeshMap.get(id, (k,v)->{
-//            System.out.println("optimize recv: " + v);
-//        });
-//
-//    }
-//
-//    @Override
-//    protected void experimentIteration(double[] point, double score) {
-//        super.experimentIteration(point, score);
-//        m.put(serial.incrementAndGet(), Floats.asList(ArrayUtils.add(Util.toFloat(point), (float)score)));
-//    }
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

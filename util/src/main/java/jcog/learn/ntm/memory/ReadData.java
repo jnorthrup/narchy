@@ -23,10 +23,10 @@ public class ReadData  {
             for (int j = 0;j < cellHeight;j++) {
                 temp += head.addressingVector.value[j] * mem.data[j][i].value;
             }
-            //if (double.IsNaN(temp))
-            //{
-            //    throw new Exception("Memory error");
-            //}
+            
+            
+            
+            
             read[i] = new Unit(temp);
         }
     }

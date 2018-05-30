@@ -1,41 +1,41 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// User DLL rules
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class RuleUser {
-	public boolean isHist; // with history?
-	public int iClo; // count of states
+	public boolean isHist; 
+	public int iClo; 
 
-	private static final int RIDX_RUG = 1; // Rug
-	private static final int RIDX_DIB = 2; // Digital Inkblots
-	private static final int RIDX_HOD = 3; // Hodge
-	private static final int RIDX_GRH = 4; // GreenHast
+	private static final int RIDX_RUG = 1; 
+	private static final int RIDX_DIB = 2; 
+	private static final int RIDX_HOD = 3; 
+	private static final int RIDX_GRH = 4; 
 
 	private int RuleIdx;
-	private int Increment; // used in Rug, Digital Ink., Aurora, etc.
+	private int Increment; 
 
-	// ----------------------------------------------------------------
+	
 	public RuleUser() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
-		isHist = true; // with history?
-		iClo = 16; // count of colors
-		RuleIdx = RIDX_HOD; // default rule
-		Increment = 3; // increment
+		isHist = true; 
+		iClo = 16; 
+		RuleIdx = RIDX_HOD; 
+		Increment = 3; 
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
-	// Example: RUG,C128,I1
+	
+	
+	
 	public void InitFromString(String sStr) {
-		// noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		int i;
@@ -43,7 +43,7 @@ public class RuleUser {
 		if (sStr.length() < 3)
 			return;
 
-		// noinspection IfStatementWithTooManyBranches
+		
 		if (sStr.compareTo("Rug") == 0)
 			sStr = "RUG,C64,I1";
 		else if (sStr.compareTo("Digital_Inkblots") == 0)
@@ -53,7 +53,7 @@ public class RuleUser {
 		else if (sStr.compareTo("GreenHast") == 0)
 			sStr = "GRH";
 
-		// noinspection IfStatementWithTooManyBranches
+		
 		if (sStr.startsWith("RUG"))
 			RuleIdx = RIDX_RUG;
 		else if (sStr.startsWith("DIB"))
@@ -72,31 +72,31 @@ public class RuleUser {
 				iClo = Integer.valueOf(sTok.substring(1));
 		}
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the Rules table string
+	
+	
 	public String GetAsString() {
 		String sBff = "";
 
-		// correct parameters first
+		
 		Validate();
 
 		switch (RuleIdx) {
-			case RIDX_RUG : // Rug
+			case RIDX_RUG : 
 				sBff = "RUG,C" + iClo;
 				sBff = sBff + ",I" + Increment;
 				break;
-			case RIDX_DIB : // Digital Inkblots
+			case RIDX_DIB : 
 				sBff = "DIB,C" + iClo;
 				sBff = sBff + ",I" + Increment;
 				break;
-			case RIDX_HOD : // Hodge
+			case RIDX_HOD : 
 				sBff = "HOD,C" + iClo;
 				sBff = sBff + ",I" + Increment;
 				break;
-			case RIDX_GRH : // GreenHast
+			case RIDX_GRH : 
 				sBff = "GRH";
 				break;
 		}
@@ -104,8 +104,8 @@ public class RuleUser {
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the parameters, correct them if necessary.
+	
+	
 	public void Validate() {
 		if (iClo < 2)
 			iClo = 2;
@@ -113,29 +113,29 @@ public class RuleUser {
 			iClo = MJBoard.MAX_CLO;
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState) {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, j, iCnt;
-		int[] lurd = new int[4]; // 0-left, 1-up, 2-right, 3-down
+		int[] lurd = new int[4]; 
 
 		for (i = 0; i < sizX; ++i) {
-			// determine left and right cells
+			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
 			for (j = 0; j < sizY; ++j) {
-				// determine up and down cells
+				
 				lurd[1] = j > 0 ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
 				bOldVal = crrState[i][j];
 
 				bNewVal = bOldVal;
 				switch (RuleIdx) {
-					case RIDX_RUG : // Rug
-						// total of neighbours
+					case RIDX_RUG : 
+						
 						iCnt = crrState[lurd[0]][lurd[1]]
 								+ crrState[lurd[0]][j]
 								+ crrState[lurd[0]][lurd[3]]
@@ -143,13 +143,13 @@ public class RuleUser {
 								+ crrState[lurd[2]][lurd[1]]
 								+ crrState[lurd[2]][j]
 								+ crrState[lurd[2]][lurd[3]];
-						bNewVal = (short) (((iCnt / 8) + Increment) % iClo); // new
-																				// cell
-																				// status
+						bNewVal = (short) (((iCnt / 8) + Increment) % iClo); 
+																				
+																				
 						break;
 
-					case RIDX_DIB : // Digital Inkblots
-						// total of neighbours
+					case RIDX_DIB : 
+						
 						iCnt = crrState[lurd[0]][lurd[1]]
 								+ crrState[lurd[0]][j]
 								+ crrState[lurd[0]][lurd[3]]
@@ -158,12 +158,12 @@ public class RuleUser {
 								+ crrState[lurd[2]][lurd[1]]
 								+ crrState[lurd[2]][j]
 								+ crrState[lurd[2]][lurd[3]];
-						bNewVal = (short) (((iCnt / 9) + Increment) % iClo); // new
-																				// cell
-																				// status
+						bNewVal = (short) (((iCnt / 9) + Increment) % iClo); 
+																				
+																				
 						break;
 
-					case RIDX_HOD : // Hodge
+					case RIDX_HOD : 
 						int sum8 = crrState[lurd[0]][lurd[1]]
 								+ crrState[lurd[0]][j]
 								+ crrState[lurd[0]][lurd[3]]
@@ -173,7 +173,7 @@ public class RuleUser {
 								+ crrState[lurd[2]][lurd[3]];
 						bNewVal = 0;
 
-						// CelLab's version
+						
 						if (bOldVal == 0) {
 							if (sum8 < Increment) {
 								bNewVal = 0;
@@ -192,18 +192,18 @@ public class RuleUser {
 						}
 						break;
 
-					case RIDX_GRH : // GreenHast
+					case RIDX_GRH : 
 						int r = 0,
 						d = 0;
 						int prevState;
 
-						prevState = (bOldVal >> 2) & 3; // get the previous
-														// state
-						bOldVal = (short) (bOldVal & 3); // throw the previous
-															// state away
+						prevState = (bOldVal >> 2) & 3; 
+														
+						bOldVal = (short) (bOldVal & 3); 
+															
 
 						switch (bOldVal) {
-							case 0 : // dead
+							case 0 : 
 								int i4Sum = 0;
 								i4Sum = (((crrState[lurd[0]][j] & 3) == 1)
 										? 1
@@ -220,30 +220,30 @@ public class RuleUser {
 								r = 0;
 								d = (i4Sum > 0) ? 1 : 0;
 								break;
-							case 1 : // alive
+							case 1 : 
 								r = 2;
 								d = 0;
 								break;
-							case 2 : // dying
+							case 2 : 
 								r = 0;
 								d = 0;
 								break;
 						}
-						bNewVal = (short) ((r + d - prevState + 3) % 3 + (bOldVal << 2)); // store
-																							// Me
-																							// for
-																							// next
-																							// calls
+						bNewVal = (short) ((r + d - prevState + 3) % 3 + (bOldVal << 2)); 
+																							
+																							
+																							
+																							
 						break;
-				} // switch
+				} 
 
 				tmpState[i][j] = bNewVal;
 				if (bNewVal != bOldVal) {
-					modCnt++; // one more modified cell
+					modCnt++; 
 				}
 			}
 		}
 		return modCnt;
 	}
-	// ----------------------------------------------------------------
+	
 }

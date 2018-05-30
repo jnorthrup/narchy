@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,59 +36,59 @@ import java.util.stream.Stream;
  */
 public interface Space<T> extends Nodelike<T> {
 
-//    int DEFAULT_MIN_M = 2;
-//    int DEFAULT_MAX_M = 8;
-//    Spatialization.DefaultSplits DEFAULT_SPLIT_TYPE = Spatialization.DefaultSplits.AXIAL;
 
-//    /**
-//     * Create an R-Tree with default values for m, M, and split type
-//     *
-//     * @param spatializer - Builder implementation used to create HyperRects out of T's
-//     * @param <T>         - The store type of the bound
-//     * @return SpatialSearch - The spatial search and index structure
-//     */
-//    static <T> Space<T> rTree(final Function<T, HyperRegion> spatializer) {
-//        return new RTree<>(spatializer, DEFAULT_MIN_M, DEFAULT_MAX_M, DEFAULT_SPLIT_TYPE);
-//    }
 
-//    /**
-//     * Create an R-Tree with specified values for m, M, and split type
-//     *
-//     * @param builder   - Builder implementation used to create HyperRects out of T's
-//     * @param minM      - minimum number of entries per node of this tree
-//     * @param maxM      - maximum number of entries per node of this tree (exceeding this causes node split)
-//     * @param splitType - type of split to use when M+1 entries are added to a node
-//     * @param <T>       - The store type of the bound
-//     * @return SpatialSearch - The spatial search and index structure
-//     */
-//    static <T> Space<T> rTree(final Function<T, HyperRegion> builder, final int minM, final int maxM, final Spatialization.DefaultSplits splitType) {
-//        return new RTree<>(builder, minM, maxM, splitType);
-//    }
-//
-//    /**
-//     * Create a protected R-Tree with default values for m, M, and split type
-//     *
-//     * @param builder - Builder implementation used to create HyperRects out of T's
-//     * @param <T>     - The store type of the bound
-//     * @return SpatialSearch - The spatial search and index structure
-//     */
-//    static <T> Spatialized<T> lockingRTree(final Function builder) {
-//        return new LockingRTree<>(rTree(builder), new ReentrantReadWriteLock(true));
-//    }
 
-//    /**
-//     * Create a protected R-Tree with specified values for m, M, and split type
-//     *
-//     * @param builder   - Builder implementation used to create HyperRects out of T's
-//     * @param minM      - minimum number of entries per node of this tree
-//     * @param maxM      - maximum number of entries per node of this tree (exceeding this causes node split)
-//     * @param splitType - type of split to use when M+1 entries are added to a node
-//     * @param <T>       - The store type of the bound
-//     * @return SpatialSearch - The spatial search and index structure
-//     */
-//    static <T> SpatialSearch<T> lockingRTree(final RectBuilder<T> builder, final int minM, final int maxM, final RTree.Split splitType) {
-//        return new LockingRTree<>(rTree(builder, minM, maxM, splitType), new ReentrantReadWriteLock(true));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -113,12 +113,12 @@ public interface Space<T> extends Nodelike<T> {
     boolean AND(Predicate<T> o);
     void forEach(Consumer<? super T> consumer);
 
-//    default boolean intersecting(HyperRegion rect, Consumer<T> consumer) {
-//        return intersecting(rect, (x) -> {
-//            consumer.accept(x);
-//            return true;
-//        });
-//    }
+
+
+
+
+
+
 
     /** continues finding intersecting regions until the predicate returns false */
     void whileEachIntersecting(HyperRegion rect, Predicate<T> t);
@@ -172,13 +172,13 @@ public interface Space<T> extends Nodelike<T> {
         throw new UnsupportedOperationException();
     }
 
-//    default RTreeCursor<T> cursor(HyperRegion start) {
-//        return new RTreeCursor<>(this).in(start);
-//    }
+
+
+
 
     Node<T, ?> root();
 
-//    void intersectingNodes(HyperRegion start, Predicate<Node<T, ?>> eachWhile);
+
 
     HyperRegion bounds(T task);
 
@@ -189,29 +189,29 @@ public interface Space<T> extends Nodelike<T> {
         if (s ==0)
             return Collections.emptyIterator();
 
-        //HACK
+        
         List<T> snapshot = new FasterList(s);
         forEach(snapshot::add);
         return snapshot.iterator();
 
-//        return new Iterator<T>() {
-//            List<Node> stack = new FasterList();
-//            {
-//                stack.add(root());
-//            }
-//            Iterator<>
-//
-//            @Override
-//            public boolean hasNext() {
-//
-//                return false;
-//            }
-//
-//            @Override
-//            public T next() {
-//                return null;
-//            }
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     default List<T> asList() {

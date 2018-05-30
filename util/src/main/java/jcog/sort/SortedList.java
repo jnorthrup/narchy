@@ -1,6 +1,6 @@
 package jcog.sort;
 
-//package net.sourceforge.nite.other;
+
 
 import jcog.list.FasterList;
 
@@ -14,22 +14,22 @@ import jcog.list.FasterList;
  */
 public class SortedList<E extends Comparable> extends FasterList<E> {
 
-    //private static final Comparator comparator = defaultComparator;
+    
 
-    //static final Comparator<Comparable> defaultComparator = Comparable::compareTo;
+    
 
-//    private boolean allowDuplicate;
 
-//    /**
-//     * <p>
-//     * Constructs a new sorted list. The objects in the list will be sorted
-//     * according to the specified comparator.</p>
-//     *
-//     * @param c a comparator
-//     */
-//    public SortedList(Comparator<E> c) {
-//        this.comparator = c;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -45,12 +45,12 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
     public SortedList(E[] toSort, E[] scratch) {
         super(0, scratch);
         for (E e : toSort)
-            add(e); //must add them sequentially to remove duplicates and sort
+            add(e); 
     }
 
-//    public void setAllowDuplicate(boolean allowDuplicate) {
-//        this.allowDuplicate = allowDuplicate;
-//    }
+
+
+
 
 
     /**
@@ -74,35 +74,35 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
         }
 
 
-        //binary search
+        
         int high = s - 1;
 
-//        boolean allowDuplicate = this.allowDuplicate;
 
-        //Comparator cmpr = defaultComparator;
+
+        
 
         while (low <= high) {
             int mid = (low + high) / 2;
             E midVal = get(mid);
 
-            int cmp = midVal.compareTo(o); //cmpr.compare(midVal, o);
+            int cmp = midVal.compareTo(o); 
 
             if (cmp < 0) {
                 low = mid + 1;
             } else if (cmp > 0) {
                 high = mid - 1;
             } else {
-                // key found, insert after it
-                //if (!allowDuplicate)
+                
+                
                 orderChangedOrDeduplicated = true;
                 return false;
-//                super.add(mid, o);
-//                return true;
+
+
             }
         }
 
         if (low == s) {
-            super.addWithoutResizeCheck(o); //HACK for using FastList
+            super.addWithoutResizeCheck(o); 
         } else {
             orderChangedOrDeduplicated = true;
             super.add(low, o);

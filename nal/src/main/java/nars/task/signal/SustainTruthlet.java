@@ -38,13 +38,13 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
         long start, end;
 
         long w;
-        //nearest endpoint
+        
         if (when < (start=start())) {
             dist = Math.abs((w = start) - when);
         } else if (when > (end=end())) {
             dist = Math.abs(when - (w = end));
         } else {
-            dist = 0; //contained; use full internal value
+            dist = 0; 
             w = when;
         }
 
@@ -52,13 +52,13 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
         if (dist > 0) {
             float f = freqEvi[0];
             if (f == f)
-                freqEvi[1] = (float) Param.evi(freqEvi[1], dist, /* dur */ dur()); //dist is relative to the event's range
+                freqEvi[1] = (float) Param.evi(freqEvi[1], dist, /* dur */ dur()); 
         }
 
     }
 
     public long dur() {
-        //return 1 + range() / 2;
+        
         return dur;
     }
 }

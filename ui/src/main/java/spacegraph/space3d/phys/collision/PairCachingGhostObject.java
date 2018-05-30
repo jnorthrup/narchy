@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -47,7 +47,7 @@ public class PairCachingGhostObject extends GhostObject {
 		Collidable otherObject = otherProxy.data;
 		assert (otherObject != null);
 
-		// if this linearSearch becomes too slow (too many overlapping objects) we should add a more appropriate data structure
+		
 		int index = overlappingObjects.indexOf(otherObject);
 		if (index == -1) {
 			overlappingObjects.add(otherObject);
@@ -64,7 +64,7 @@ public class PairCachingGhostObject extends GhostObject {
 		assert (otherObject != null);
 		int index = overlappingObjects.indexOf(otherObject);
 		if (index != -1) {
-            //return array[index];
+            
             overlappingObjects.setFast(index, overlappingObjects.get(overlappingObjects.size() - 1));
 			overlappingObjects.removeFast(overlappingObjects.size()-1);
 			hashPairCache.removeOverlappingPair(actualThisProxy, otherProxy, intersecter);

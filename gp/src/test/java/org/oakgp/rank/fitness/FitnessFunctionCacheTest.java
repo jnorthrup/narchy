@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,7 +26,7 @@ import static org.oakgp.TestUtils.integerConstant;
 public class FitnessFunctionCacheTest {
     @Test
     public void test() {
-        // set-up expectations
+        
         final Node n1 = integerConstant(1);
         final Node n2 = integerConstant(2);
         final double fitness1 = 9;
@@ -43,10 +43,10 @@ public class FitnessFunctionCacheTest {
             }
         };
 
-        // create object to test
+        
         final FitnessFunctionCache cache = new FitnessFunctionCache(3, mockFitnessFunction);
 
-        // test evaluate is only called once per node
+        
         assertEquals(fitness1, cache.evaluate(n1), 0.001f);
         assertEquals(1, evaluateCtr.get());
         assertEquals(fitness2, cache.evaluate(n2), 0.001f);

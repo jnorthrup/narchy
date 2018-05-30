@@ -8,15 +8,15 @@ import java.util.SortedMap;
 abstract public class InstrumentedLoop extends Loop {
 
     private long beforeIteration;
-//    private float lag, lagSum;
+
 
     protected final int windowLength = 4;
 
     /**
      * in seconds
      */
-    public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); //in millisecond
-    public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); //in millisecond
+    public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); 
+    public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); 
 
     public long cycleTimeNS = 0;
     public double cycleTimeS = 0;
@@ -45,10 +45,10 @@ abstract public class InstrumentedLoop extends Loop {
 
 
     public void stats(String prefix, SortedMap<String, Object> x) {
-        x.put(prefix + " cycle time mean", cycleTime.getMean()); //in seconds
-        x.put(prefix + " cycle time vary", cycleTime.getVariance()); //in seconds
-        x.put(prefix + " duty time mean", dutyTime.getMean()); //in seconds
-        x.put(prefix + " duty time vary", dutyTime.getVariance()); //in seconds
-        //x.put(prefix + " lag", lag);
+        x.put(prefix + " cycle time mean", cycleTime.getMean()); 
+        x.put(prefix + " cycle time vary", cycleTime.getVariance()); 
+        x.put(prefix + " duty time mean", dutyTime.getMean()); 
+        x.put(prefix + " duty time vary", dutyTime.getVariance()); 
+        
     }
 }

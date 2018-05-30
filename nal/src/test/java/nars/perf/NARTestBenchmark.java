@@ -22,7 +22,7 @@ public class NARTestBenchmark {
         perf(NARTestBenchmark.class, (x) -> {
             x.measurementIterations(4);
             x.warmupIterations(0);
-            //x.jvmArgs("-Xint");
+            
             x.forks(1);
             x.threads(1);
         });
@@ -32,11 +32,11 @@ public class NARTestBenchmark {
             NAL1Test.class,
             NAL2Test.class,
             NAL3Test.class,
-//            NAL4Test.class,
-//            NAL5Test.class,
-//            NAL6Test.class,
-//            NAL7Test.class,
-//            NAL8Test.class
+
+
+
+
+
     };
 
 
@@ -56,67 +56,67 @@ public class NARTestBenchmark {
     }
 
 
-//    @Benchmark
-//    @BenchmarkMode(Mode.AverageTime)
-//    @Fork(1)
-//    public void testHeap() {
-//        Op.terms = new HeapTermBuilder();
-//        runTests();
-//    }
 
 
 
-//    @Benchmark
-//    @BenchmarkMode(Mode.AverageTime)
-//    @Fork(1)
-//    public void testY() {
-//        The.Compound.the = FastCompound.FAST_COMPOUND_BUILDER;
-////        Param.SynchronousExecution_Max_CycleTime = 0.0001f;
-//
-//        junit(testclass);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 
-//public class TestBenchmark1 {
-//
-////    static String eval(String script) {
-////        // We don't actually need the context object here, but we need it to have
-////        // been initialized since the
-////        // constructor for Ctx sets static state in the Clojure runtime.
-////
-////        Object result = Compiler.eval(RT.readString(script));
-////
-////        return RT.printString(result) + " (" +result.getClass() + ")";
-////    }
-////    @Benchmark
-////    @BenchmarkMode(value = Mode.SingleShotTime)
-////    public void eval1() {
-////
-////        new Dynajure().eval("(+ 1 1)");
-////    }
-////
-////    @Benchmark
-////    @BenchmarkMode(value = Mode.SingleShotTime)
-////    public void eval2() {
-////        new Dynajure().eval("(* (+ 1 1) 8)");
-////        //out.println(eval("'(inh a b)") );
-////        //out.println(eval("'[inh a b]") );
-////    }
-//
-//    @Benchmark
-//    @BenchmarkMode(Mode.SingleShotTime)
-//    public void testExecution() throws Narsese.NarseseException {
-//        NAR n = new NARS().get();
-//        //n.log();
-//        n.input("a:b!");
-//        n.input("<(rand 5)==>a:b>.");
-//
-//        n.run(6);
-//    }
-//
-////    public static void main(String[] args) throws RunnerException {
-////        perf(TestBenchmark1.class, 6, 10);
-////
-////    }
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -48,7 +48,7 @@ public class NoteFS extends NARService {
                     return load(p, t);
                 } catch (FileNotFoundException e) {
                     if (exists!=null) {
-                        //deleted, or otherwise not found
+                        
                         logger.warn("{} {}", p, e.getMessage());
                     } else {
                         logger.error("{} {}", p, e);
@@ -58,7 +58,7 @@ public class NoteFS extends NARService {
                 }
             }
 
-            return null; //Collections.emptyList();
+            return null; 
         });
     }
 
@@ -67,9 +67,9 @@ public class NoteFS extends NARService {
     }
 
     private List<Task> load(Path path, List<Task> tasks) {
-//        tasks.forEach(x -> {
-//            logger.info("+ {}", x.toString(nar));
-//        });
+
+
+
         nar.input(tasks);
         return tasks;
     }

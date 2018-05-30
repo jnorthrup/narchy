@@ -50,8 +50,8 @@ public class TermTrie<K extends Term, V> extends Trie<List<K>, V> implements Tri
             indent(from * 4);
 
             out.println(Joiner.on(" , ").join(seq.subList(from, n.end())
-                    //.stream().map(x ->
-                    //'[' + x.getClass().getSimpleName() + ": " + x + "/]").collect(Collectors.toList())
+                    
+                    
             ));
 
             printSummary(n, out);
@@ -61,7 +61,7 @@ public class TermTrie<K extends Term, V> extends Trie<List<K>, V> implements Tri
     }
 
 
-    //TODO use the compiled rule trie
+    
     @NotNull
     @Deprecated
     public SummaryStatistics costAnalyze(FloatFunction<K> costFn, @Nullable PrintStream o) {
@@ -98,7 +98,7 @@ public class TermTrie<K extends Term, V> extends Trie<List<K>, V> implements Tri
 
             int from = n.start();
 
-            //out.print(n.childCount() + "|" + n.getSize() + "  ");
+            
 
             int to = n.end();
             sequenceLength.addValue(to-from);
@@ -107,7 +107,7 @@ public class TermTrie<K extends Term, V> extends Trie<List<K>, V> implements Tri
                 termCost.addValue(costFn.floatValueOf(seq.get(i)));
             }
 
-            //indent(from * 4);
+            
             currentDepth[0]++;
 
             costAnalyze(costFn, termCost, sequenceLength, branchFanOut, endDepth, currentDepth, n);

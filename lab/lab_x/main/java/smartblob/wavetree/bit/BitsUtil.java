@@ -1,7 +1,7 @@
 /** Ben F Rayfield offers Wavetree opensource GNU LGPL 2+ */
 package smartblob.wavetree.bit;
 
-//import common.Nanotimer;
+
 
 /** Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are
 <br><br>
@@ -15,10 +15,10 @@ public class BitsUtil{
 	public static Bits intToBits(int i){
 		short high = (short)(i>>>16);
 		short low = (short)(i&0xffff);
-		//Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are
+		
 		return Fast0To16Bits.get(high).cat(Fast0To16Bits.get(low));
-		//OLD: littleEndian is standard for this software
-		//return Fast0To16Bits.get(low).cat(Fast0To16Bits.get(high));
+		
+		
 	}
 	
 	/** TODO create a kind of Bits that holds a long.
@@ -26,12 +26,12 @@ public class BitsUtil{
 	*/
 	public static Bits longToBits(long g){
 		int high = (int)(g>>>32);
-		//int low = (int)(g&0xffffffff);
+		
 		int low = (int)g;
-		//Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are
+		
 		return intToBits(high).cat(intToBits(low));
-		//OLD: littleEndian is standard for this software
-		//return intToBits(low).cat(intToBits(high));
+		
+		
 	}
 	
 	/** TODO create a kind of Bits that holds a long */
@@ -56,7 +56,7 @@ public class BitsUtil{
 			h++;
 		}*/
 		Bits bits = Fast0To16Bits.EMPTY;
-		//Nanotimer t = new Nanotimer();
+		
 		int count = 0;
 		for(byte nextByte : b){
 			bits = bits.cat(Fast0To16Bits.get(nextByte));
@@ -67,7 +67,7 @@ public class BitsUtil{
 			}*/
 		}
 		return bits;
-		//FIXME for speed, If know the height, can concat in an order that gets minimum tree height. Always use powers of 2. It wont solve the general speed problems when we dont know what will be concat later, but we can at least get bits of byte array much faster, and that is a common thing to do.
+		
 	}
 
 }

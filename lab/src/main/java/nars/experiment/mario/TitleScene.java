@@ -33,8 +33,8 @@ public class TitleScene extends Scene
         bgLayer1.setCam(tick+160, 0);
         bgLayer1.render(g, tick, alpha);
         bgLayer0.render(g, tick, alpha);
-//        g.setColor(Color.decode("#8080a0"));
-//        g.fillRect(0, 0, 320, 240);
+
+
         int yo = 16- Math.abs((int)(Math.sin((tick+alpha)/6.0)*8));
         g.drawImage(Art.logo, 0, yo, null);
         g.drawImage(Art.titleScreen, 0, 120, null);

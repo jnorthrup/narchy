@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.gui;
 
@@ -72,12 +72,12 @@ public class MessageHistory {
         while (!messages.isEmpty()) {
             Message m = messages.getFirst();
 
-            // Delete this message if it is old enough
+            
             long age = currentTime - m.timeStamp;
             if (age > maxAge)
                 messages.removeFirst();
             else
-                break; // Messages are ordered by timestamp so we can stop
+                break; 
         }
     }
 }

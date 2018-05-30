@@ -27,9 +27,9 @@ public class Generator {
       throw new ExceptionInInitializerError(e);
     }
     
-//    if(System.getProperty("java.vm.name").equals("IKVM.NET"))
-//    	ikvm.runtime.Startup.addBootClassPathAssemby(Assembly.Load("IKVM.OpenJDK.Tools"));
-//
+
+
+
     jc = ToolProvider.getSystemJavaCompiler();
     if (jc == null) {
     	throw new UnsupportedOperationException( "Cannot find java compiler!  " + "Probably only JRE installed.");
@@ -59,7 +59,7 @@ public class Generator {
     if (result) {
       return createClass(loader, gcf);
     } else {
-      // use your logging system of choice here
+      
       System.err.println("Compile failed:");
       System.err.println(javaSource);
       for (Diagnostic<?> d : dc.getDiagnostics()) {

@@ -40,7 +40,7 @@ public enum TermGraph {
                 c.termlinks().forEach(tl -> {
                     Term t = tl.get();
                     if (t.equals(s))
-                        return; //no self loop
+                        return; 
                     g.addNode(t);
                     float p = tl.pri();
                     if (p == p)
@@ -55,34 +55,34 @@ public enum TermGraph {
     public enum Statements {
         ;
 
-        //final static String VERTEX = "V";
+        
 
-//        public ImplGraph() {
-//            super();
-////            nar.onTask(t -> {
-////                if (t.isBelief())
-////                    task(nar, t);
-////            });
-//
-//        }
 
-//        protected boolean accept(Task t) {
-//            //example:
-//            return t.op() == IMPL;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         public static void update(AdjGraph<Term, Term> g, Iterable<Term> sources, NAR nar, Predicate<Term> acceptNode, Predicate<Term> acceptEdge) {
 
             @Deprecated Set<Term> done =
-                    //Sets.newConcurrentHashSet();
+                    
                     new HashSet();
 
-            //TODO bag for pending concepts to visit?
+            
             Set<Termed> next =
                     Sets.newConcurrentHashSet();
-                    //new UnifiedSet();
-                    //new LinkedHashSet<>();
+                    
+                    
 
             Iterables.addAll(next, sources);
 
@@ -97,7 +97,7 @@ public enum TermGraph {
 
                     Concept tc = nar.concept(t);
                     if (tc == null || !(tc instanceof TaskConcept))
-                        return; //ignore non-conceptualized
+                        return; 
 
                     recurseTerm(nar, g, (impl) -> {
                         if (acceptEdge.test(impl) && done.add(impl)) {
@@ -132,47 +132,47 @@ public enum TermGraph {
 
         }
 
-//        private static void impl(AdjGraph<Term, Term> g, NAR nar, Term l, Term subj, Term pred) {
-//
-////            int dur = nar.dur();
-////            Task t = nar.belief(l, when);
-////            if (t == null)
-////                return;
-//
-////            int dt = t.dt();
-////            if (dt == DTERNAL)
-////                dt = 0;
-////
-////            float evi =
-////                    t.evi(when, dur);
-////            //dt!=DTERNAL ? w2c(TruthPolation.evidenceDecay(t.evi(), dur, dt)) : t.conf();
-////
-////            float freq = t.freq();
-////            boolean neg;
-////            float val = (freq - 0.5f) * 2f * evi;
-////            if (val < 0f) {
-////                val = -val;
-////                neg = true;
-////            } else {
-////                neg = false;
-////            }
-////
-////            val *= TruthPolation.evidenceDecay(1f, dur, Math.abs(dt));
-////
-////            if (val!=val || val < Priority.EPSILON)
-////                return;
-////
-////            boolean reverse = dt < 0;
-////            Term S = reverse ? pred.negIf(neg) : subj;
-////            Term P = reverse ? subj : pred.negIf(neg);
-//
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
     protected static void recurseTerm(NAR nar, AdjGraph<Term, Term> g, Consumer<Term> next, Concept tc)  {
 
-        //if (g.antinodes.contains())
+        
 
         Consumer<TaskLink> each = ml -> {
 
@@ -182,19 +182,19 @@ public enum TermGraph {
             if (term == null) return;
 
             if (term.op() == IMPL && !term.hasVarQuery() /*&& l.subterms().containsRecursively(t)*/ /* && m.vars()==0 */
-                //&& ((Compound)m).containsTermRecursively(t)) {
+                
                     ) {
 
 
-                //if (!g.nodes().contains(s) || !done.contains(p)) {
-//                            if ((s.equals(t) || s.containsRecursively(t)) ||
-//                                    (p.equals(t) || p.containsRecursively(t))) {
+                
+
+
                 next.accept(term.concept());
-                // }
-                //}
+                
+                
             }
         };
-        //tc.termlinks().forEach(each);
+        
         tc.tasklinks().forEach(each);
     }
 
@@ -202,64 +202,64 @@ public enum TermGraph {
 
 }
 
-//    public static final class ImplLink extends RawPLink<Term> {
-//
-//        final boolean subjNeg;
-//        final boolean predNeg;
-//
-//        public ImplLink(Term o, float p, boolean subjNeg, boolean predNeg) {
-//            super(o, p);
-//            this.subjNeg = subjNeg;
-//            this.predNeg = predNeg;
-//        }
-//
-//        @Override
-//        public boolean equals(@NotNull Object that) {
-//            return super.equals(that) && ((ImplLink)that).subjNeg == subjNeg;
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            return super.hashCode() * (subjNeg ? -1 : +1);
-//        }
-//
-//    }
-//
-//    class ConceptVertex  {
-//
-//        //these are like more permanent set of termlinks for the given context they are stored by
-//        final HijackBag<Term, ImplLink> in;
-//        final HijackBag<Term, ImplLink> out;
-//
-//        public ConceptVertex(Random rng) {
-//            in = new MyPLinkHijackBag(rng);
-//            out = new MyPLinkHijackBag(rng);
-//        }
-//
-//        private class MyPLinkHijackBag extends PLinkHijackBag {
-//            public MyPLinkHijackBag(Random rng) {
-//                super(32, 4, rng);
-//            }
-//
-//            @Override
-//            public float pri(@NotNull PLink key) {
-//                float p = key.pri();
-//                return Math.max(p - 0.5f, 0.5f - p); //most polarizing
-//            }
-//
-//            @Override
-//            protected float merge(@Nullable PLink existing, @NotNull PLink incoming, float scale) {
-//
-//                //average:
-//                if (existing != null) {
-//                    float pAdd = incoming.priElseZero();
-//                    existing.priAvg(pAdd, scale);
-//                    return 0;
-//                } else {
-//                    return 0;
-//                }
-//
-//            }
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

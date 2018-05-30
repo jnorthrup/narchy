@@ -1,16 +1,16 @@
-// Copyright 2015-2016 Stanford University
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 package jcog.grammar.synthesize;
 
@@ -68,55 +68,55 @@ public class GrammarSerializer {
     public static void serialize(Grammar grammar, DataOutputStream dos) throws IOException {
         List<Node> nodes = GrammarUtils.getAllNodes(grammar.node);
         Map<Node, Integer> nodeIds = GrammarUtils.getInverse(nodes);
-        dos.writeInt(nodes.size()); // 0
+        dos.writeInt(nodes.size()); 
         for (Node node : nodes) {
-            dos.writeInt(nodeIds.get(node)); // 1
-            serialize(node.getData(), dos); // 2
+            dos.writeInt(nodeIds.get(node)); 
+            serialize(node.getData(), dos); 
             if (node instanceof ConstantNode) {
-                dos.writeInt(0); // 3/1
+                dos.writeInt(0); 
             } else if (node instanceof AlternationNode) {
                 AlternationNode altNode = (AlternationNode) node;
-                dos.writeInt(1); // 3/1
-                dos.writeInt(nodeIds.get(altNode.first)); // 3/2
-                dos.writeInt(nodeIds.get(altNode.second)); // 3/3
+                dos.writeInt(1); 
+                dos.writeInt(nodeIds.get(altNode.first)); 
+                dos.writeInt(nodeIds.get(altNode.second)); 
             } else if (node instanceof MultiAlternationNode) {
-                dos.writeInt(2); // 3/1
-                dos.writeInt(node.getChildren().size()); // 3/2
+                dos.writeInt(2); 
+                dos.writeInt(node.getChildren().size()); 
                 for (Node child : node.getChildren()) {
-                    dos.writeInt(nodeIds.get(child)); // 3/3
+                    dos.writeInt(nodeIds.get(child)); 
                 }
             } else if (node instanceof RepetitionNode) {
                 RepetitionNode repNode = (RepetitionNode) node;
-                dos.writeInt(3); // 3/1
-                dos.writeInt(nodeIds.get(repNode.start)); // 3/2
-                dos.writeInt(nodeIds.get(repNode.rep)); // 3/3
-                dos.writeInt(nodeIds.get(repNode.end)); // 3/4
+                dos.writeInt(3); 
+                dos.writeInt(nodeIds.get(repNode.start)); 
+                dos.writeInt(nodeIds.get(repNode.rep)); 
+                dos.writeInt(nodeIds.get(repNode.end)); 
             } else if (node instanceof MultiConstantNode) {
                 MultiConstantNode mconstNode = (MultiConstantNode) node;
-                dos.writeInt(4); // 3/1
-                dos.writeInt(mconstNode.characterOptions.size()); // 3/2
+                dos.writeInt(4); 
+                dos.writeInt(mconstNode.characterOptions.size()); 
                 for (int i = 0; i < mconstNode.characterOptions.size(); i++) {
                     Set<Character> characterOption = mconstNode.characterOptions.get(i);
-                    dos.writeInt(characterOption.size()); // 3/3
+                    dos.writeInt(characterOption.size()); 
                     for (char c : characterOption) {
-                        dos.writeChar(c); // 3/4
+                        dos.writeChar(c); 
                     }
                     Set<Character> characterChecks = mconstNode.characterChecks.get(i);
-                    dos.writeInt(characterChecks.size()); // 3/5
+                    dos.writeInt(characterChecks.size()); 
                     for (char c : characterChecks) {
-                        dos.writeChar(c); // 3/6
+                        dos.writeChar(c); 
                     }
                 }
             } else {
                 throw new RuntimeException("Unrecognized node type: " + node.getClass().getName());
             }
         }
-        dos.writeInt(grammar.merges.keySet().size()); // 4
+        dos.writeInt(grammar.merges.keySet().size()); 
         for (Node first : grammar.merges.keySet()) {
-            dos.writeInt(grammar.merges.get(first).size()); // 5
+            dos.writeInt(grammar.merges.get(first).size()); 
             for (Node second : grammar.merges.get(first)) {
-                dos.writeInt(nodeIds.get(first)); // 6
-                dos.writeInt(nodeIds.get(second)); // 7
+                dos.writeInt(nodeIds.get(first)); 
+                dos.writeInt(nodeIds.get(second)); 
             }
         }
     }
@@ -250,61 +250,61 @@ public class GrammarSerializer {
     }
 
     public static Grammar deserializeNodeWithMerges(DataInputStream dis) throws IOException {
-        int numNodes = dis.readInt(); // 0
+        int numNodes = dis.readInt(); 
         List<NodeSerialization> nodeSerializations = new ArrayList<>(numNodes);
         for (int i = 0; i < numNodes; i++) {
             nodeSerializations.add(null);
         }
         for (int i = 0; i < numNodes; i++) {
-            int id = dis.readInt(); // 1
-            NodeData data = deserializeNodeData(dis); // 2
-            int type = dis.readInt(); // 3/1
+            int id = dis.readInt(); 
+            NodeData data = deserializeNodeData(dis); 
+            int type = dis.readInt(); 
             switch (type) {
                 case 0:
                     nodeSerializations.set(id, new ConstantNodeSerialization(data));
                     break;
                 case 1:
-                    int first = dis.readInt(); // 3/2
+                    int first = dis.readInt(); 
 
-                    int second = dis.readInt(); // 3/3
+                    int second = dis.readInt(); 
 
                     nodeSerializations.set(id, new AlternationNodeSerialization(data, first, second));
                     break;
                 case 2:
-                    int numChildren = dis.readInt(); // 3/2
+                    int numChildren = dis.readInt(); 
 
                     List<Integer> children = new ArrayList<>();
                     for (int j = 0; j < numChildren; j++) {
-                        children.add(dis.readInt()); // 3/3
+                        children.add(dis.readInt()); 
                     }
                     nodeSerializations.set(id, new MultiAlternationNodeSerialization(data, children));
                     break;
                 case 3:
-                    int start = dis.readInt(); // 3/2
+                    int start = dis.readInt(); 
 
-                    int rep = dis.readInt(); // 3/3
+                    int rep = dis.readInt(); 
 
-                    int end = dis.readInt(); // 3/4
+                    int end = dis.readInt(); 
 
                     nodeSerializations.set(id, new RepetitionNodeSerialization(data, start, rep, end));
                     break;
                 case 4:
-                    int numCharacterOptions = dis.readInt(); // 3/2
+                    int numCharacterOptions = dis.readInt(); 
 
                     List<List<Character>> characterOptions = new ArrayList<>();
                     List<List<Character>> characterChecks = new ArrayList<>();
                     for (int j = 0; j < numCharacterOptions; j++) {
-                        int numCharacterOption = dis.readInt(); // 3/3
+                        int numCharacterOption = dis.readInt(); 
                         List<Character> characterOption = new ArrayList<>();
                         for (int k = 0; k < numCharacterOption; k++) {
-                            char c = dis.readChar(); // 3/4
+                            char c = dis.readChar(); 
                             characterOption.add(c);
                         }
                         characterOptions.add(characterOption);
                         List<Character> characterCheck = new ArrayList<>();
-                        int numCharacterCheck = dis.readInt(); // 3/5
+                        int numCharacterCheck = dis.readInt(); 
                         for (int k = 0; k < numCharacterCheck; k++) {
-                            char c = dis.readChar(); // 3/6
+                            char c = dis.readChar(); 
                             characterCheck.add(c);
                         }
                         characterChecks.add(characterCheck);
@@ -317,12 +317,12 @@ public class GrammarSerializer {
         }
         List<Node> nodes = new NodeDeserializer(nodeSerializations).deserialize();
         NodeMerges merges = new NodeMerges();
-        int numMerges = dis.readInt(); // 4
+        int numMerges = dis.readInt(); 
         for (int i = 0; i < numMerges; i++) {
-            int numCurMerges = dis.readInt(); // 5
+            int numCurMerges = dis.readInt(); 
             for (int j = 0; j < numCurMerges; j++) {
-                int first = dis.readInt(); // 6
-                int second = dis.readInt(); // 7
+                int first = dis.readInt(); 
+                int second = dis.readInt(); 
                 merges.add(nodes.get(first), nodes.get(second));
             }
         }

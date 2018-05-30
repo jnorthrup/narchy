@@ -23,16 +23,16 @@ public class RunAgent {
 
 
 
-        // Parameters; default values
+        
         boolean useGUI = true;
         String namedPipesName = alePath + "/ale_fifo_";
 
-        //HumanAgent agent = new HumanAgent(useGUI, namedPipesName, false);
+        
         RLAgent agent = new RLAgent(useGUI, namedPipesName);
 
         agent.run();
 
-        //proc.waitFor();
+        
         System.in.read();
     }
 

@@ -28,23 +28,23 @@ import static nars.io.Texts.n4;
  */
 public class BooleanChallenge implements Reaction<Class,Object[]> {
 
-    final float freqThresh = 0.2f; //threshold diff from 0.0 or 1.0 considered too uncertain to count as answer
+    final float freqThresh = 0.2f; 
     private final double complete;
-    boolean failOnError = false; //exit on the first logical error
+    boolean failOnError = false; 
     private boolean correctFeedback = true;
-    boolean ignoreCorrectProvided = false; //if true, scores will only be updated if the answer is was not provided or if it was incorrect (provided or not provided)
-    float confThreshold = 0.01f; //confidence threshold for being counted as an answer
+    boolean ignoreCorrectProvided = false; 
+    float confThreshold = 0.01f; 
     float inputConf = 0.99f;
 
     public static void main(String[] args) {
         Global.DEBUG = true;
         NAR n = new NAR(new Equalized(1024, 4, 3).setInternalExperience(null));
 
-        //NAR n = new NAR(new Discretinuous());
-        //new NARPrologMirror(n, 0.95f, true, true, false);
-        //NAR n = new CurveBagNARBuilder().builder();
+        
+        
+        
 
-        //new TraceWriter(n, System.out);
+        
         new TextOutput(n, System.out);
 
         new BooleanChallenge(n, 2, 122550, 0.65f).getScore();
@@ -73,20 +73,20 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
 
         this.bits = bits;
 
-//        n.on(new Reaction() {
-//
-//            @Override
-//            public void event(Class event, Object[] arguments) {
-//                double p = Math.random();
-//                if (p < inputProb) {
-//                    p = Math.random();
-//                    inputBoolean(bits, (p < questionRatio));
-//                }
-//
-//
-//            }
-//
-//        }, CycleEnd.class);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         inputAxioms();
 
@@ -107,8 +107,8 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
 
         n.on(this, OUT.class);
 
-        //begin watchign for answers after input is finished
-        //this belief will signal the test to begin
+        
+        
         n.input(startChallenge + ".");
 
         while (questionScores.size() < toAsk) {
@@ -169,20 +169,20 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
             return;
 
         if (answer.isInput()) {
-            //this is a repetition of something explicitly input
+            
             return;
         }
 
-//        if (!started) {
-//            if (answer.getTerm().toString().equals(startChallenge)) {
-//                started = true;
-//            }
-//            else {
-//                return;
-//            }
-//        }
 
-        Term qterm = answer.getTerm(); //for now, assume the qustion term is answer term
+
+
+
+
+
+
+
+
+        Term qterm = answer.getTerm(); 
 
         if (answerProvided.contains(qterm)) {
             return;
@@ -193,7 +193,7 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
                 if (!question.sentence.isQuestion())
                     return;
                 if (!questionScores.containsKey(question.getTerm())) {
-                    //this is a response to a question it asked itself
+                    
                     return;
                 }
                 */
@@ -226,7 +226,7 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
                         case "xor":
                             correct = evalXor(n);
                             break;
-                        //case "not": correct = evalNot(n); break;
+                        
                         default:
                             return;
                     }
@@ -235,12 +235,12 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
                     float conf = answer.getConfidence();
 
                     if (freq < freqThresh) {
-                        correct = !correct; //invert
+                        correct = !correct; 
                         freq = 1f - freq;
                     }
 
                     if (freq < (1.0 - freqThresh)) {
-                        //not clear 0 or 1
+                        
                         return;
                     }
 
@@ -252,9 +252,9 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
                         if (failOnError)
                             System.exit(1);
 
-                        //give correct answer
+                        
                         if (correctFeedback) {
-                            //String c = getTerm(n[0], n[1], pred.toString(), not(n[2])) + ('.');
+                            
                             Term fc = nar.term(getTerm(n[0], n[1], pred.toString(), n[2]));
                             String c = "(--," + fc + ("). %1.00;" + n2(inputConf) + "%");
 
@@ -291,10 +291,10 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
         AtomicInteger i = new AtomicInteger(0);
         int[] x = new int[count];
 
-        //extract all numbers from the product recursively, depth first
+        
         p.recurseTerms((t, parent) -> {
             String ts = t.toString();
-            if (!ts.startsWith("b")) return; //b prefix
+            if (!ts.startsWith("b")) return; 
             ts = ts.toString().substring(1);
             if (isNumber(ts.toString())) {
                 x[i.getAndIncrement()] = (Integer.parseInt(ts));
@@ -308,18 +308,18 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
 
 
 
-//    public void updateScore() {
-//        double s = 0;
-//        qanswered = 0;
-//        for (Double q : questionScores.values()) {
-//            if (q!=null) {
-//                s += q;
-//                qanswered++;
-//            }
-//        }
-//        //scoreRate = s/ nar.time();
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     void inputAxioms() {
 
@@ -350,11 +350,11 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
 
 
         double s;
-        s = expectation; // / ( 1 + delay * delayFactor );
+        s = expectation; 
 
-//        if (!questionScores.containsKey(questionTerm)) {
-//            System.out.println("question not asked: " + questionTerm + " but these are: " + questionScores.keySet());
-//        }
+
+
+
 
         double existingScore = questionScores.getIfAbsent(questionTerm,0);
         if (correct) {
@@ -419,7 +419,7 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
             y = correct;
 
 
-        //String term = "<(*,(*," + b(a) + "," + b(b) + ")," + b(y) + ") --> " + op + ">";
+        
         String term = getTerm(a, b, op, y);
         Term t;
         try {
@@ -431,17 +431,17 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
 
 
         if (question) {
-            //dont ask alredy answered
+            
             if (answerProvided.contains(t)) {
                 return;
             }
-            //only ask once
+            
             if (questionScores.containsKey(t))
                 return;
             questionScores.put(t, 0);
         } else {
             if (questionScores.containsKey(t)) {
-                //dont give answer to a question
+                
                 return;
             }
             answerProvided.add(t);
@@ -454,9 +454,9 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
         String ii = term +
                 (question ? '?' : '.') + " %" + n2(truth) + ";" + n2(inputConf) + "%";
 
-        //System.out.println(ii);
-        //System.out.println(questionScores.keySet());
-        //System.out.println(answerProvided);
+        
+        
+        
 
         nar.input(ii);
 
@@ -481,19 +481,19 @@ public class BooleanChallenge implements Reaction<Class,Object[]> {
         return sb.toString();
 
 
-        //use the { } --> form and not -{- because this is the form answers will return in
-        //return "<{(*," + b(a) + "," + b(b) + "," + b(y) + ")} --> " + op + ">";
+        
+        
 
-        //return "<(*,(*," + b(a) + "," + b(b) + ")," + b(y) + ") --> " + op + ">";        
+        
 
 
-        //return "<(&/," + b(a) + "," + b(b) + "," + b(y) + ") --> " + op + ">";        
+        
 
-        //return "(&/," + op + "," + b(a) + "," + b(b) + "," + b(y) + ")";
+        
 
-        //return "<(*," + op + ", (*," + b(a) + "," + b(b) + ")) --> " + b(y) + ">";
+        
 
-        //return "<(*," + op + ", (*," + b(a) + "," + b(b) + ")) <=> " + b(y) + ">";
+        
 
     }
 

@@ -1,39 +1,39 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Margolus rules
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class RuleMarg {
-	public static final int TYPE_MS = 1; // Simple Margolus
-	public int iClo; // count of states, not used yet
-	public int iTyp; // Margolus rule type, 1-simple
-	public boolean isHist; // with history? not used yet
+	public static final int TYPE_MS = 1; 
+	public int iClo; 
+	public int iTyp; 
+	public boolean isHist; 
 	public int[] swapArray = new int[16];
 
-	// ----------------------------------------------------------------
+	
 	public RuleMarg() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
-		iClo = 2; // count of states
+		iClo = 2; 
 		isHist = true;
-		iTyp = TYPE_MS; // simple
+		iTyp = TYPE_MS; 
 		for (int i = 0; i <= 15; i++)
 			swapArray[i] = i;
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
-	// Example: "MS,D0;8;4;3;2;5;9;7;1;6;10;11;12;13;14;15"
+	
+	
+	
 	public void InitFromString(String sStr) {
 		String sTok, sSwaps;
 		int i, iNum, iVal;
-		// noinspection UseOfStringTokenizer
+		
 		StringTokenizer st, std;
 
 		ResetToDefaults();
@@ -41,11 +41,11 @@ public class RuleMarg {
 		st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken();
-			if (sTok.length() > 0 && sTok.charAt(0) == 'M') // Margholus rule
-															// type
+			if (sTok.length() > 0 && sTok.charAt(0) == 'M') 
+															
 			{
-				iTyp = TYPE_MS; // simple - the only one available now
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'D') // definition
+				iTyp = TYPE_MS; 
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'D') 
 			{
 				std = new StringTokenizer(sTok.substring(1), ";", false);
 				iNum = 0;
@@ -59,27 +59,27 @@ public class RuleMarg {
 			}
 		}
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Initialize from separate parameters
+	
+	
 	public void InitFromPrm(int i_Clo, boolean is_Hist, int[] ary) {
 		ResetToDefaults();
-		iClo = i_Clo; // count of colors
-		isHist = is_Hist; // with history?
+		iClo = i_Clo; 
+		isHist = is_Hist; 
 		swapArray = ary;
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the rule string
-	// Example: 'MS,D0;8;4;3;2;5;9;7;1;6;10;11;12;13;14;15'
+	
+	
+	
 	public String GetAsString() {
-		// correct parameters first
+		
 		Validate();
 
-		// make the string
+		
 		String sBff = "MS,D";
 
 		for (int i = 0; i <= 14; i++)
@@ -89,9 +89,9 @@ public class RuleMarg {
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the parameters, correct
-	// them if necessary.
+	
+	
+	
 	public void Validate() {
 		if (iClo < 2)
 			iClo = 2;
@@ -103,12 +103,12 @@ public class RuleMarg {
 				swapArray[i] = i;
 	}
 
-	// ----------------------------------------------------------------
-	// swap four cells according to the rule
+	
+	
 	private void SwapMargCells(int[] mgCells) {
 		int iCnt, iNewCnt;
 
-		// if at least 1 cell is > 1 than the location is locked
+		
 		if ((mgCells[0] < 2) && (mgCells[1] < 2) && (mgCells[2] < 2)
 				&& (mgCells[3] < 2)) {
 			iCnt = 0;
@@ -129,66 +129,66 @@ public class RuleMarg {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		int modCnt = 0;
 		int i, j, ic;
 		int c1, c2, r1, r2;
-		int[] mgCells = new int[4]; // Margolus neighbourhood 2x2 block
-		int[] mgCellsOld = new int[4]; // a copy for changes detection
-		boolean isOdd; // odd pass?
+		int[] mgCells = new int[4]; 
+		int[] mgCellsOld = new int[4]; 
+		boolean isOdd; 
 
 		isOdd = ((mjb.Cycle % 2) != 0);
 		i = 0;
 		if (isOdd)
-			i--; // odd pass, shift blocks left
+			i--; 
 		while (i < sizX) {
 			c1 = i;
 			if (c1 < 0)
-				c1 = (isWrap) ? sizX - 1 : sizX; // wrapping
+				c1 = (isWrap) ? sizX - 1 : sizX; 
 			c2 = i + 1;
 			if (c2 >= sizX)
 				c2 = (isWrap) ? 0 : sizX;
 			j = 0;
 			if (isOdd)
-				j--; // odd pass, shift blocks up
+				j--; 
 			while (j < sizY) {
 				r1 = j;
 				if (r1 < 0)
-					r1 = (isWrap) ? sizY - 1 : sizY; // wrapping
+					r1 = (isWrap) ? sizY - 1 : sizY; 
 				r2 = j + 1;
 				if (r2 >= sizY)
 					r2 = (isWrap) ? 0 : sizY;
-				mgCellsOld[0] = mgCells[0] = tmpState[c1][r1] = crrState[c1][r1]; // ul
-				mgCellsOld[1] = mgCells[1] = tmpState[c2][r1] = crrState[c2][r1]; // ur
-				mgCellsOld[2] = mgCells[2] = tmpState[c1][r2] = crrState[c1][r2]; // ll
-				mgCellsOld[3] = mgCells[3] = tmpState[c2][r2] = crrState[c2][r2]; // lr
+				mgCellsOld[0] = mgCells[0] = tmpState[c1][r1] = crrState[c1][r1]; 
+				mgCellsOld[1] = mgCells[1] = tmpState[c2][r1] = crrState[c2][r1]; 
+				mgCellsOld[2] = mgCells[2] = tmpState[c1][r2] = crrState[c1][r2]; 
+				mgCellsOld[3] = mgCells[3] = tmpState[c2][r2] = crrState[c2][r2]; 
 
 				if ((mgCells[0] + mgCells[1] + mgCells[2] + mgCells[3] > 0)
 						|| (swapArray[0] > 0)) {
-					SwapMargCells(mgCells); // apply the rule
+					SwapMargCells(mgCells); 
 
-					for (ic = 0; ic <= 3; ic++) // check if any of 4 cells was
-												// modified
+					for (ic = 0; ic <= 3; ic++) 
+												
 					{
-						if (mgCellsOld[ic] != mgCells[ic]) // change detected
+						if (mgCellsOld[ic] != mgCells[ic]) 
 						{
-							modCnt++; // one more changed cell
+							modCnt++; 
 							switch (ic) {
 								case 0 :
 									tmpState[c1][r1] = (short) mgCells[ic];
-									break; // ul
+									break; 
 								case 1 :
 									tmpState[c2][r1] = (short) mgCells[ic];
-									break; // ur
+									break; 
 								case 2 :
 									tmpState[c1][r2] = (short) mgCells[ic];
-									break; // ll
+									break; 
 								case 3 :
 									tmpState[c2][r2] = (short) mgCells[ic];
-									break; // lr
+									break; 
 							}
 						}
 					}
@@ -202,5 +202,5 @@ public class RuleMarg {
 
 		return modCnt;
 	}
-	// ----------------------------------------------------------------
+	
 }

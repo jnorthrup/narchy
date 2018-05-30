@@ -49,9 +49,9 @@ public class UserContextInputStream extends InputStream {
                 e.printStackTrace();
             }
         }
-//        if (this.result != input) {
-//
-//        }
+
+
+
         this.result = input;
         available = true;
         notifyAll();
@@ -100,9 +100,9 @@ public class UserContextInputStream extends InputStream {
 
     }
 
-//        public void setReadListener(ReadListener r)
-//        {
-//                this.readListeners.add(r);
-//        }
+
+
+
+
     /***/
 }

@@ -30,28 +30,28 @@ abstract public class FastCompound implements Compound /* The */ {
 
     private static final int MAX_LAYERS = 8;
 
-//    private final int MAX_LAYER_LEN = 8;
-//
-//    /** TODO */
-//    abstract public static class FastCompoundSerializedAtoms extends FastCompound {
-//        @NotNull
-//        private final byte[][] atoms;
-//
-//        protected FastCompoundSerializedAtoms(byte[][] atoms, byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
-//            super(shadow, structure, hash, volume, normalized);
-//            this.atoms = atoms;
-//        }
-//
-//        @Override
-//        protected Term atom(byte id) {
-//            return IO.readAtomic(atoms[id]);
-//        }
-//
-//        @Override
-//        protected int atomCount() {
-//            return atoms.length;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static class FastCompoundInstancedAtoms extends FastCompound {
         @NotNull
@@ -126,7 +126,7 @@ abstract public class FastCompound implements Compound /* The */ {
         ObjectByteHashMap<Term> atoms = new ObjectByteHashMap();
 
         DynBytes shadow = new DynBytes(256);
-        //UncheckedBytes shadow = new UncheckedBytes(Bytes.wrapForWrite(new byte[256]));
+        
 
 
         shadow.writeUnsignedByte(o.ordinal());
@@ -136,7 +136,7 @@ abstract public class FastCompound implements Compound /* The */ {
         int structure = o.bit, hashCode = 1;
         byte volume = 1;
 
-        for (Term x : subterms) { //TODO use non-iterator method
+        for (Term x : subterms) { 
             x.recurseTerms(child -> {
                 shadow.writeUnsignedByte((byte) child.op().ordinal());
                 if (child.op().atomic) {
@@ -144,7 +144,7 @@ abstract public class FastCompound implements Compound /* The */ {
                     shadow.writeUnsignedByte((byte) aid);
                 } else {
                     shadow.writeUnsignedByte(child.subs());
-                    //TODO use last bit of the subs byte to indicate presence or absence of subsequent 'dt' value (32 bits)
+                    
                 }
             });
             structure |= x.structure();
@@ -155,18 +155,18 @@ abstract public class FastCompound implements Compound /* The */ {
         hashCode = Util.hashCombine(hashCode, o.id);
 
         assert(volume < 127);
-        boolean normalized = false; //TODO calculate normalized by the encountered sequence of variable id's - whether it is monotonically increasing by 1 each time the max value does increase or something
+        boolean normalized = false; 
 
-        //TODO sort atoms to canonicalize its dictionary for sharing with other terms
+        
 
         FastCompound y;
-//        {
-//            byte[][] a = new byte[atoms.size()][];
-//            for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
-//                a[p.getTwo()] = IO.termToBytes(p.getOne());
-//            }
-//            y = new FastCompoundSerializedAtoms(a, shadow.toByteArray(), x.hashCode(), x.hashCodeSubTerms(), (byte) x.volume(), x.isNormalized());
-//        }
+
+
+
+
+
+
+
         {
             Term[] a = new Term[atoms.size()];
             for (ObjectBytePair<Term> p : atoms.keyValuesView()) {
@@ -179,21 +179,21 @@ abstract public class FastCompound implements Compound /* The */ {
     }
 
     public void print() {
-//        System.out.println(shadow.toDebugString());
-//        System.out.println(shadow.toHexString());
-//        System.out.println(shadow.to8bitString());
 
-//        System.out.println("shadow: (" + shadow.length + " bytes)\t");
-//        System.out.println(new UncheckedBytes(Bytes.wrapForRead(shadow)).toHexString());
-//        System.out.println("atoms:\t");
-//        for (Object b : atoms()) {
-//            //System.out.println("\t" + (b instanceof byte[] ? (IO.termFromBytes((byte[])b) + + " (" + b.length + " bytes)") : b) );
-//
-//        }
+
+
+
+
+
+
+
+
+
+
         System.out.println();
     }
 
-    //abstract public Iterable<Term> atoms();
+    
 
 
     @Override
@@ -205,11 +205,11 @@ abstract public class FastCompound implements Compound /* The */ {
         }
     }
 
-//TODO
-//    @Override
-//    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-//        return inSubtermsOf.test(this) && subterms().containsRecursively(t, root, inSubtermsOf);
-//    }
+
+
+
+
+
 
     protected abstract boolean containsAtomic(Atomic t);
 
@@ -232,50 +232,50 @@ abstract public class FastCompound implements Compound /* The */ {
         boolean test(byte a, int b);
     }
 
-//    public int[] subtermOffsetsAt(int at) {
-//        int[] b = new int[subtermCountAt(at)];
-//        subtermsAt(at, (i, c) -> {
-//            b[i] = c;
-//            return true;
-//        });
-//        return b;
-//    }
 
-//    /**
-//     * returns byte[] of the offset of each subterm
-//     */
-//    public void subtermsAt(int at, ByteIntPredicate each /* subterm #, offset # */) {
-//        byte[] shadow = this.shadow;
-//
-//        assert (!ov[shadow[at]].atomic);
-//
-//        byte[] stack = new byte[MAX_LAYERS];
-//
-//        byte depth = 0;
-//        byte subs0 = stack[0] = subtermCountAt(at);
-//
-//        at += 2; //skip compound header
-//
-//        for (byte i = 0; i < subs0; ) {
-//            if (depth == 0 && !each.test(i, at))
-//                break;
-//
-//            byte op = shadow[at++]; //get op and skip past it
-//
-//            if (ov[op].atomic) {
-//                at++; //skip past atom id
-//            } else {
-//                stack[++depth] = shadow[at++]; //store subcount and skip past it
-//            }
-//
-//            if (depth == 0)
-//                i++;
-//
-//            if (--stack[depth] == 0)
-//                depth--; //ascend
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public byte subtermCountAt(int at) {
         return shadow[at + 1];
@@ -286,7 +286,7 @@ abstract public class FastCompound implements Compound /* The */ {
      */
     public int subtermOffsetAt(int subterm, int at) {
         if (subterm == 0) {
-            //quick case
+            
             return at + 2;
         }
 
@@ -315,27 +315,27 @@ abstract public class FastCompound implements Compound /* The */ {
         byte[] stack = new byte[MAX_LAYERS];
         stack[0] = subterms;
 
-        at += 2; //skip compound header
+        at += 2; 
 
         for (byte i = 0; i < subterms; ) {
             if (depth == 0) {
-                if (!each.test(i, at) || i == subterms-1) //tail call early exit we dont need to scan the contents of the last subterm
+                if (!each.test(i, at) || i == subterms-1) 
                     return;
             }
 
-            byte op = shadow[at++]; //get op and skip past it
+            byte op = shadow[at++]; 
 
 
             if (ov[op].atomic) {
-                at++; //skip past atom id
+                at++; 
             } else {
-                stack[++depth] = shadow[at++]; //store subcount and skip past it
+                stack[++depth] = shadow[at++]; 
             }
 
 
 
             if (--stack[depth] == 0)
-                depth--; //ascend
+                depth--; 
             if (depth == 0)
                 i++;
         }
@@ -350,7 +350,7 @@ abstract public class FastCompound implements Compound /* The */ {
 
     @Override
     public int dt() {
-        return DTERNAL; //TODO
+        return DTERNAL; 
     }
 
     @NotNull
@@ -366,15 +366,15 @@ abstract public class FastCompound implements Compound /* The */ {
     public Term term(int offset) {
         Op opAtSub = ov[shadow[offset]];
         if (opAtSub.atomic) {
-            //return IO.termFromBytes(atoms[shadow[offset + 1]]);
+            
             return atom(shadow[offset + 1]);
 
         } else {
-            //TODO sub view
-            //return opAtSub.the(DTERNAL, subs(subOffset));
+            
+            
             return Op.terms.theCompound(opAtSub,
                     Op.terms.subterms(new SubtermView(this, offset))
-                    //new SubtermView(this, offset)
+                    
             );
         }
     }
@@ -387,15 +387,15 @@ abstract public class FastCompound implements Compound /* The */ {
 
     }
 
-//    public Term[] subs(int offset) {
-//        //new SubtermView(this, offset).theArray()
-//        int[] b = subtermOffsetsAt(offset);
-//        Term[] t = new Term[b.length];
-//        for (int i = 0; i < b.length; i++) {
-//            t[i] = term(b[i]);
-//        }
-//        return t;
-//    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public boolean equals(@Nullable Object that) {
@@ -410,7 +410,7 @@ abstract public class FastCompound implements Compound /* The */ {
             if (aa == f.atomCount()) {
                 if (Arrays.equals(shadow, f.shadow)) {
                     for (byte i = 0; i < aa; i++)
-                        if (!atom(i).equals(f.atom(i))) //TODO for byte[]
+                        if (!atom(i).equals(f.atom(i))) 
                             return false;
                     return true;
                 }
@@ -457,7 +457,7 @@ abstract public class FastCompound implements Compound /* The */ {
             final int[] vv = {v};
             c.subtermOffsets(o, (subterm, at)->{
                 Term t = c.term(at);
-                //System.out.println(subterm + " " + at + " " + t);
+                
                 vv[0] = reduce.intValueOf(vv[0], t);
                 return true;
             });
@@ -466,7 +466,7 @@ abstract public class FastCompound implements Compound /* The */ {
 
         @Override
         public int hashCode() {
-            //TODO maybe cache this value while offset doesnt change
+            
             int h = _hash;
             if (h == 0) {
                 return _hash = intifyShallow((i, t) -> Util.hashCombine(i, t.hashCode()), 1);
@@ -512,22 +512,22 @@ abstract public class FastCompound implements Compound /* The */ {
         }
     }
 
-//    /**
-//     * for use in: Builder.Compound.the
-//     */
-//    public static final BiFunction<Op, List<Term>, Term> FAST_COMPOUND_BUILDER = (op, terms) -> {
-//        //HACK creating an intermediate GenericCompound should not be necessary
-//        CachedCompound g = Op.theCompound(op, Subterms.subterms(terms));
-//        try {
-//
-//            if (!g.isTemporal())
-//                return get(g);
-//            else
-//                return g;
-//
-//        } catch (Throwable t) {
-//            return g;
-//        }
-//    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

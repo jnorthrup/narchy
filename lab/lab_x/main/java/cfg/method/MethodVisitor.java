@@ -37,7 +37,7 @@ import java.util.Iterator;
 /**
  * The simplest of method visitors, prints any invoked method signature for all method invocations.
  *
- * Class copied with modifications from CJKM: http://www.spinellis.gr/sw/ckjm/
+ * Class copied with modifications from CJKM: http:
  */
 public class MethodVisitor extends EmptyVisitor {
 
@@ -64,9 +64,9 @@ public class MethodVisitor extends EmptyVisitor {
             if (stack.isEmpty())
                 stack.addLast(ih.getInstruction());
 
-            //if (!visitInstruction(i)) {
+            
                 i.accept(this);
-            //}
+            
         }
     }
 
@@ -105,11 +105,11 @@ public class MethodVisitor extends EmptyVisitor {
     }
 
 
-//    @Override
-//    public void visitRET(RET obj) {
-//        super.visitRET(obj);
-//        stack.removeLast();
-//    }
+
+
+
+
+
 
 
     public InvokeInstruction getLastInvocation(Instruction p) {

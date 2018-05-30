@@ -119,9 +119,9 @@ public class ISOLibrary extends Library {
                     "integer", arg1);
     }
 
-    //
+    
 
-    // functors
+    
 
     public Term sin_1(Term val) {
         Term val0 = null;
@@ -378,9 +378,9 @@ public class ISOLibrary extends Library {
     @Override
     public String getTheory() {
         return
-        //
-        // operators defined by the ISOLibrary theory
-        //
+        
+        
+        
         ":- op(  300, yfx,  'div'). \n"
                 + ":- op(  400, yfx,  'mod'). \n"
                 + ":- op(  400, yfx,  'rem'). \n"
@@ -391,9 +391,9 @@ public class ISOLibrary extends Library {
                 + ":- op(  200, fx,   'exp'). \n"
                 + ":- op(  200, fx,   'log'). \n"
                 +
-                //
-                // flags defined by the ISOLibrary theory
-                //
+                
+                
+                
                 ":- flag(bounded, [true,false], true, false).\n"
                 + ":- flag(max_integer, ["
                 + Integer.MAX_VALUE
@@ -415,12 +415,12 @@ public class ISOLibrary extends Library {
                 + ",false).\n"
                 + ":- flag(undefined_predicate, [error,fail,warning], fail, false).\n"
                 + ":- flag(double_quotes, [atom,chars,codes], atom, false).\n"
-                //
-                //
+                
+                
                 + "bound(X):-ground(X).\n                                                                                  "
                 + "unbound(X):-not(ground(X)).\n                                                                          "
                 
-                //
+                
                 + "atom_concat(F,S,R) :- catch(atom_concat0(F,S,R), Error, false).\n"
                 + "atom_concat0(F,S,R) :- var(R), !,(atom_chars(S,SL),append(FL,SL,RS),atom_chars(F,FL),atom_chars(R,RS)).  \n"
                 + "atom_concat0(F,S,R) :-(atom_chars(R,RS), append(FL,SL,RS),atom_chars(F,FL),atom_chars(S,SL)).\n"
@@ -446,14 +446,14 @@ public class ISOLibrary extends Library {
                 + "number_codes(Number,List):-catch(number_codes0(Number,List), Error, false).\n"
                 + "number_codes0(Number,List):-nonvar(Number),!,num_atom(Number,Struct),atom_codes(Struct,List).\n"
                 + "number_codes0(Number,List):-atom_codes(Struct,List),num_atom(Number,Struct).\n";
-        //
-        // ISO default
-        // "current_prolog_flag(changeable_flags,[ char_conversion(on,off), debug(on,off), undefined_predicate(error,fail,warning),double_quotes(chars,codes,atom) ]).\n"+
-        // "current_prolog_flag(changeable_flags,[]).\n                                                              "+
+        
+        
+        
+        
 
     }
 
-    // Java guards for Prolog predicates
+    
 
     public boolean sub_atom_guard_5(Term arg0, Term arg1, Term arg2, Term arg3, Term arg4)
             throws PrologError {

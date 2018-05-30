@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -52,7 +52,7 @@ public abstract class LivingEntity extends Entity {
 			dy = -.3f;
 			jumping = true;
 		} else {
-			dy = -maxWaterDY - .000001f;// BIG HACK
+			dy = -maxWaterDY - .000001f;
 		}
 	}
 	
@@ -68,7 +68,7 @@ public abstract class LivingEntity extends Entity {
 		if (climbing) {
 			if (isSwimClimb) {
 				jumping = false;
-				dy = -maxWaterDY - .000001f;// BIG HACK
+				dy = -maxWaterDY - .000001f;
 			} else {
 				jump(world, tileSize);
 			}
@@ -80,12 +80,12 @@ public abstract class LivingEntity extends Entity {
 		if (this.isInWater(world, tileSize)) {
 			jumping = false;
 		}
-		// drown check
+		
 		if (this.isHeadUnderWater(world, tileSize)) {
 			ticksUnderwater++;
 			if (this.airRemaining() == 0) {
 				this.takeDamage(5);
-				// back to about 4 bubbles' worth of air
+				
 				ticksUnderwater = 300;
 			}
 		} else {
@@ -134,15 +134,15 @@ public abstract class LivingEntity extends Entity {
 	public static float findIntersection(float rayOx, float rayOy, float m, float p1x, float p1y,
 										 float p2x, float p2y) {
 		float freeVar = -1;
-		if (p1x == p2x)// segment is vertical
+		if (p1x == p2x)
 		{
-			freeVar = -m * (rayOx - p1x) + rayOy;// y1
+			freeVar = -m * (rayOx - p1x) + rayOy;
 			if ((freeVar < p1y && freeVar < p2y) || (freeVar > p1y && freeVar > p2y)) {
 				return -1;
 			}
-		} else if (p1y == p2y)// segment is horizontal
+		} else if (p1y == p2y)
 		{
-			freeVar = -(rayOy - p1y) / m + rayOx;// x1
+			freeVar = -(rayOy - p1y) / m + rayOx;
 			if ((freeVar < p1x && freeVar < p2x) || (freeVar > p1x && freeVar > p2x)) {
 				return -1;
 			}
@@ -155,7 +155,7 @@ public abstract class LivingEntity extends Entity {
 	@Override
 	public void takeDamage(int amount) {
 		this.hitPoints -= amount;
-		// TODO: play sound, check for death
+		
 		System.out.println("Took " + amount + " damage. Current health = " + this.hitPoints);
 	}
 	

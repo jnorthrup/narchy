@@ -29,7 +29,7 @@ public class Path2D extends FloatArrayList {
         addAll(p.x, p.y);
     }
 
-    //TODO addIfFurtherThan(float x, float y, float minDistance)
+    
 
     /**
      * adds the point if the total size is below the maxPoints limit,
@@ -38,38 +38,38 @@ public class Path2D extends FloatArrayList {
      */
     public synchronized void add(Tuple2f p, int maxPoints) {
         assert (maxPoints > 3);
-//        if (points() < maxPoints) {
-//            add(p);
-//        } else {
+
+
+
             add(p);
             if (points() > maxPoints)
                 collinearSimplifyNext();
-            //collinearSimplify(0.01f, maxPoints);
-//            //TODO path simplification
-//            //make subclass which stores triples of values:
-//            //x,y,[distance to next vertex]
-//            //total distance can be stored in the final unused triple
-//            //the distance value will help determine what points to interpolate during simplification
-//
-//            //HACK remove point at random
-//            int toRemove = 1 + ThreadLocalRandom.current().nextInt(maxPoints - 2);
-//            float rx = removeAtIndex(toRemove * 2);
-//            float ry = removeAtIndex(toRemove * 2); //called twice at the same index
-//
-//
-//            //interpolate 33% with after
-//            items[toRemove * 2 + 0] = Util.lerp(items[toRemove * 2 + 0], rx, 0.33f);
-//            items[toRemove * 2 + 1] = Util.lerp(items[toRemove * 2 + 1], ry, 0.33f);
-//
-//
-//            if (toRemove > 1) {
-//                //interpolate 33% with prev
-//                items[toRemove * 2 - 2] = Util.lerp(items[toRemove * 2 - 2], rx, 0.33f);
-//                items[toRemove * 2 - 1] = Util.lerp(items[toRemove * 2 - 1], ry, 0.33f);
-//            }
-//
-//            add(p);
-//        }
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     void collinearSimplifyNext() {
@@ -100,7 +100,7 @@ public class Path2D extends FloatArrayList {
     }
 
     void collinearSimplify(float collinearityTolerance, int maxPoints) {
-        // We can't simplify polygons under 3 vertices
+        
         assert(maxPoints >= 3);
 
         int n = points();
@@ -138,7 +138,7 @@ public class Path2D extends FloatArrayList {
 
 
     public v2 start() {
-        //assert (size > 0);
+        
         return point(0);
     }
 
@@ -166,10 +166,10 @@ public class Path2D extends FloatArrayList {
         forEach(gl::glVertex2f);
     }
 
-//    @Override
-//    public int size() {
-//        throw new UnsupportedOperationException();
-//    }
+
+
+
+
 
     public int points() {
         return size / 2;

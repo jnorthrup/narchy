@@ -216,10 +216,10 @@ public class VirtualPlane
       final float x = point.getX();
       final float y = point.getY();
       final float z = point.getZ();
-      return new Point3D(//
-            (((b2 + c2) * x) - (a * b * y) - (a * c * z) - (d * a)) / div,//
-            (((-a * b * x) + ((a2 + c2) * y)) - (b * c * z) - (d * b)) / div,//
-            ((((-a * c * x) - (b * c * y)) + ((a2 + b2) * z)) - (d * c)) / div//
+      return new Point3D(
+            (((b2 + c2) * x) - (a * b * y) - (a * c * z) - (d * a)) / div,
+            (((-a * b * x) + ((a2 + c2) * y)) - (b * c * z) - (d * b)) / div,
+            ((((-a * c * x) - (b * c * y)) + ((a2 + b2) * z)) - (d * c)) / div
       );
    }
 
@@ -246,10 +246,10 @@ public class VirtualPlane
       final float xp = (((b2 + c2) * x) - (a * b * y) - (a * c * z) - (d * a)) / div;
       final float yp = (((-a * b * x) + ((a2 + c2) * y)) - (b * c * z) - (d * b)) / div;
       final float zp = ((((-a * c * x) - (b * c * y)) + ((a2 + b2) * z)) - (d * c)) / div;
-      return new Point3D(//
-            x + (2 * (xp - x)),//
-            y + (2 * (yp - y)),//
-            z + (2 * (zp - z)//
+      return new Point3D(
+            x + (2 * (xp - x)),
+            y + (2 * (yp - y)),
+            z + (2 * (zp - z)
                   ));
    }
 

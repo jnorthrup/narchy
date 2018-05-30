@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class AnimationComponent implements IComponent {
     public List<AnimationEvent> events = new ArrayList<>();
-    public int currentIndex = 0; // -1 if anaimation is disabled
+    public int currentIndex = 0; 
 
     @Override
     public void frameInteraction(JavascriptDescriptor javascriptDescriptor, EntityDescriptor entityDescriptor, float timedelta) {

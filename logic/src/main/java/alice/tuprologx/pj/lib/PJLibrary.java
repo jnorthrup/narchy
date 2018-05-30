@@ -73,22 +73,22 @@ public class PJLibrary extends Library {
 	@Override
 	public String getTheory() {
 		return
-		//
-		// operators defined by the JavaLibrary theory
-		//
+		
+		
+		
 		":- op(800,xfx,'<-').\n" +
         ":- op(800,xfx,':=').\n" +
 		":- op(850,xfx,'returns').\n" +
 		":- op(200,xfx,'as').\n" +
 		":- op(600,xfx,'.'). \n" +
-		//
-		// flags defined by the JavaLibrary theory
-		//
-		//":- flag(java_object_backtrackable,[true,false],false,true).\n" +
-		//
-		//
-		//"java_object(ClassName,Args,Id):- current_prolog_flag(java_object_backtrackable,false),!,java_object_nb(ClassName,Args,Id).\n" +
-		//"java_object(ClassName,Args,Id):- !,java_object_bt(ClassName,Args,Id).\n" +
+		
+		
+		
+		
+		
+		
+		
+		
 		
 		"java_object_bt(ClassName,Args,Id):- java_object(ClassName,Args,Id).\n" +
 		"java_object_bt(ClassName,Args,Id):- destroy_object(Id).\n" +
@@ -119,7 +119,7 @@ public class PJLibrary extends Library {
 	
 	@Override
 	public   void onSolveBegin(Term goal) {
-		//id = 0;
+		
 		currentObjects.clear();
 		currentObjects_inverse.clear();
 		for(Map.Entry<Object, Struct> en: staticObjects_inverse.entrySet()){
@@ -143,7 +143,7 @@ public class PJLibrary extends Library {
 		}
 	}
 	
-	//----------------------------------------------------------------------------
+	
 	
 	/**
 	 * Creates of a java object - not backtrackable case
@@ -157,7 +157,7 @@ public class PJLibrary extends Library {
 				return false;
 			}
 			String clName = ((Struct) className).name();
-			// check for array type
+			
 			if (clName.endsWith("[]")) {
 				Object[] list = getArrayFromList(arg);
 				int nargs = ((NumberTerm) list[0]).intValue();
@@ -167,15 +167,15 @@ public class PJLibrary extends Library {
 			if (args == null) {
 				return false;
 			}
-			// object creation with argument described in args
+			
 			try {
 				Class<?> cl = Class.forName(clName);
 				Object[] args_value = args.getValues();
-				//
-				//Constructor co=cl.getConstructor(args.getTypes());
+				
+				
 				Constructor<?> co = lookupConstructor(cl, args.getTypes(), args_value);
-				//
-				//
+				
+				
 				if (co==null){
 					Prolog.warn("Constructor not found: class " + clName);
 					return false;
@@ -249,9 +249,9 @@ public class PJLibrary extends Library {
 			
 			String text = alice.util.Tools.removeApostrophes(classSource.toString());
 			
-			//System.out.println("class source: "+text+
-			//                   "\nid: "+id+
-			//                   "\npath: "+fullClassPath);
+			
+			
+			
 			String fullClassPath = fullClassName.replace('.', '/');
 			try {
 				FileWriter file = new FileWriter(fullClassPath + ".java");
@@ -263,7 +263,7 @@ public class PJLibrary extends Library {
 				return false;
 			}
 			String cmd = "javac " + cp + ' ' + fullClassPath + ".java";
-			//System.out.println("EXEC: "+cmd);
+			
 			try {
 				Process jc = Runtime.getRuntime().exec(cmd);
 				int res = jc.waitFor();
@@ -305,8 +305,8 @@ public class PJLibrary extends Library {
 		String methodName = null;
 		try {
 			methodName = method.name();
-			// check for accessing field   Obj.Field <- set/get(X)
-			//  in that case: objId is '.'(Obj, Field)
+			
+			
 			
 			if (!objId.isAtomic()) {
 				if (objId instanceof Var) {
@@ -323,27 +323,27 @@ public class PJLibrary extends Library {
 			
 			args = parseArg(method);
 			
-			// object and argument must be instantiated
+			
 			if (objId instanceof Var || args == null)
 				return false;			
             
-			//System.out.println(args);
+			
 			String objName = alice.util.Tools.removeApostrophes(objId.toString());
 			Object obj = currentObjects.get(objName);
 			Object res = null;
 			
 			if (obj != null) {                
 				Class<?> cl = obj.getClass();
-				//
-				//
+				
+				
 				Object[] args_values = args.getValues();                
 				Method m = lookupMethod(cl, methodName, args.getTypes(), args_values);                
-				//
-				//
+				
+				
                 if (m == null) {                    
                     Object[] newValues = new Object[args_values.length];
                     Class<?>[] newTypes = new Class<?>[args_values.length];
-                    //boolean ok = true;
+                    
                     for (int i = 0; i < method.subs(); i++) {
                         newValues[i] = alice.tuprologx.pj.model.Term.unmarshal(method.sub(i));
                         newTypes[i] = newValues[i].getClass();                        
@@ -354,8 +354,8 @@ public class PJLibrary extends Library {
                 }
 				if (m != null) {
 					try {
-						// works only with JDK 1.2, NOT in Sun Application Server!
-						//m.setAccessible(true);
+						
+						
 						res = m.invoke(obj, args_values);
 						
 					} catch (IllegalAccessException ex) {
@@ -377,19 +377,19 @@ public class PJLibrary extends Library {
 							m.setAccessible(true);
 							res = m.invoke(null, args.getValues());
 						} catch (ClassNotFoundException ex) {
-							// if not found even as a class id -> consider as a String object value
+							
 							Prolog.warn("Unknown class.");
 							ex.printStackTrace();
 							return false;
 						}
 					} else {
-						// the object is the string itself
+						
 						Method m = java.lang.String.class.getMethod(methodName, args.getTypes());
 						m.setAccessible(true);
 						res = m.invoke(objName, args.getValues());
 					}
 				} else {
-					// the object is the string itself
+					
 					Method m = java.lang.String.class.getMethod(methodName, args.getTypes());
 					m.setAccessible(true);
 					res = m.invoke(objName, args.getValues());
@@ -408,7 +408,7 @@ public class PJLibrary extends Library {
 		} catch (IllegalArgumentException ex) {
 			ex.printStackTrace();
 			Prolog.warn("Invalid arguments " + args+ " - ( method: " + methodName + " )");
-			//ex.printStackTrace();
+			
 			return false;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -422,7 +422,7 @@ public class PJLibrary extends Library {
 	 * set the field value of an object
 	 */
 	private boolean java_set(Term objId, Term fieldTerm, Term what) {
-		//System.out.println("SET "+objId+" "+fieldTerm+" "+what);
+		
 		what = what.term();
 		if (!fieldTerm.isAtomic() || what instanceof Var)
 			return false;
@@ -452,7 +452,7 @@ public class PJLibrary extends Library {
 				}
 			}
 			
-			// first check for primitive data field
+			
 			Field field = cl.getField(fieldName);            
             if (field.isAnnotationPresent(alice.tuprologx.pj.annotations.PrologField.class)) {                
                 alice.tuprologx.pj.model.Term<?> t = alice.tuprologx.pj.model.Term.unmarshal(what);
@@ -479,7 +479,7 @@ public class PJLibrary extends Library {
                     if (obj2 != null) {
                         field.set(obj, obj2);
                     } else {
-                        // consider value as a simple string
+                        
                         field.set(obj, what_name);
                     }
                 }
@@ -498,7 +498,7 @@ public class PJLibrary extends Library {
 	 * get the value of the field
 	 */
 	private boolean java_get(Term objId, Term fieldTerm, Term what) {
-		//System.out.println("GET "+objId+" "+fieldTerm+" "+what);
+		
 		if (!fieldTerm.isAtomic()) {
 			return false;
 		}
@@ -529,10 +529,10 @@ public class PJLibrary extends Library {
 			
 			Field field = cl.getField(fieldName);
 			Class<?> fc = field.getType();
-			// work only with JDK 1.2
+			
 			field.setAccessible(true);
 			
-			// first check for primitive types
+			
 			if (fc.equals(Integer.TYPE) || fc.equals(Byte.TYPE)) {
 				int value = field.getInt(obj);
 				return unify(what, new NumberTerm.Int(value));
@@ -546,20 +546,20 @@ public class PJLibrary extends Library {
 				double value = field.getDouble(obj);
 				return unify(what, new NumberTerm.Double(value));
 			} else {
-				// the field value is an object
+				
 				Object res = field.get(obj);
 				return bindDynamicObject(what, res);
 			}
-			//} catch (ClassNotFoundException ex){
-			//    getEngine().warn("object of unknown class "+objId);
-			//ex.printStackTrace();
-			//    return false;
+			
+			
+			
+			
 		} catch (NoSuchFieldException ex) {
 			Prolog.warn("Field " + fieldName + " not found in class " + objId);
 			return false;
 		} catch (Exception ex) {
 			Prolog.warn("Generic error in accessing the field");
-			//ex.printStackTrace();
+			
 			return false;
 		}
 	}
@@ -568,7 +568,7 @@ public class PJLibrary extends Library {
 		Struct objId = (Struct) obj_id.term();
 		NumberTerm index = (NumberTerm) i.term();
 		what = what.term();
-		//System.out.println("SET "+objId+" "+fieldTerm+" "+what);
+		
 		if (!index.isInteger()){
 			return false;
 		}
@@ -666,7 +666,7 @@ public class PJLibrary extends Library {
 		Struct objId = (Struct) obj_id.term();
 		NumberTerm index = (NumberTerm) i.term();
 		what = what.term();
-		//System.out.println("SET "+objId+" "+fieldTerm+" "+what);
+		
 		if (!index.isInteger()) {
 			return false;
 		}
@@ -762,7 +762,7 @@ public class PJLibrary extends Library {
             }
 			return bindDynamicObject(id, array);
 		} catch (Exception ex) {
-			//ex.printStackTrace();
+			
 			return false;
 		}
 	}
@@ -828,7 +828,7 @@ public class PJLibrary extends Library {
 					types[i] = java.lang.Float.TYPE;
 				}
 			} else if (term instanceof Struct) {
-				// argument descriptors
+				
 				Struct tc = (Struct) term;
 				if (tc.name().equals("as")) {
 					return parse_as(values, types, i, tc.subResolve(0), tc.subResolve(1));
@@ -860,7 +860,7 @@ public class PJLibrary extends Library {
 			if (!(castWhat instanceof NumberTerm)) {
 				String castTo_name = alice.util.Tools.removeApostrophes(((Struct) castTo).name());
 				String castWhat_name = alice.util.Tools.removeApostrophes(castWhat.term().toString());
-				//System.out.println(castWhat_name+" "+castTo_name);
+				
 				if (castTo_name.equals("java.lang.String") && 
 						castWhat_name.equals("true")){
 					values[i]="true";
@@ -918,7 +918,7 @@ public class PJLibrary extends Library {
                             }
 							types[i] = Boolean.TYPE;
 						} else {
-							// conversion to array
+							
 							return false;
 						}
 					} else {
@@ -1013,7 +1013,7 @@ public class PJLibrary extends Library {
 	 */
 	private boolean parseResult(Term id, Object obj) {
 		if (obj == null) {
-			//return unify(id,Term.TRUE);
+			
 			return unify(id, new Var());
 		}
 		try {
@@ -1074,12 +1074,12 @@ public class PJLibrary extends Library {
 		if (!id.isGround()) {
 			throw new InvalidObjectIdException();
 		}
-		// already registered object?
+		
 		synchronized (staticObjects){
 			Object aKey = staticObjects_inverse.get(obj);
 			
 			if (aKey != null) {
-				// object already referenced
+				
 				return false;
 			} else {
 				String raw_name = alice.util.Tools.removeApostrophes(id.term().toString());
@@ -1100,15 +1100,15 @@ public class PJLibrary extends Library {
 	 * @return fresh id
 	 */	
 	public   Struct register(Object obj) {
-		//System.out.println("lib: "+this+" current id: "+this.id);
 		
-		// already registered object?
+		
+		
 		synchronized (staticObjects){
 			Object aKey = staticObjects_inverse.get(obj);
 			if (aKey != null) {
-				// object already referenced -> unifying terms
-				// referencing the object
-				//log("obj already registered: unify "+id+" "+aKey);
+				
+				
+				
 				return (Struct) aKey;
 			} else {
 				Struct id = generateFreshId();
@@ -1186,15 +1186,15 @@ public class PJLibrary extends Library {
 	 * @return identifier
 	 */
 	public   Struct registerDynamic(Object obj) {
-		//System.out.println("lib: "+this+" current id: "+this.id);
 		
-		// already registered object?
+		
+		
 		synchronized (currentObjects){
 			Object aKey = currentObjects_inverse.get(obj);
 			if (aKey != null) {
-				// object already referenced -> unifying terms
-				// referencing the object
-				//log("obj already registered: unify "+id+" "+aKey);
+				
+				
+				
 				return (Struct) aKey;
 			} else {
 				Struct id = generateFreshId();
@@ -1243,7 +1243,7 @@ public class PJLibrary extends Library {
 	 * Term id can be a variable or a ground term.
 	 */
 	protected boolean bindDynamicObject(Term id, Object obj) {
-		// null object are considered to _ variable
+		
 		if (obj == null) {
 			return unify(id, new Var());
 		}
@@ -1251,34 +1251,34 @@ public class PJLibrary extends Library {
             alice.tuprologx.pj.model.Term<?> t = (alice.tuprologx.pj.model.Term<?>)obj;
             return unify(id, t.marshal());
         }*/
-		// already registered object?
+		
 		synchronized (currentObjects){
 			Object aKey = currentObjects_inverse.get(obj);
 			if (aKey != null) {
-				// object already referenced -> unifying terms
-				// referencing the object
-				//log("obj already registered: unify "+id+" "+aKey);
+				
+				
+				
 				return unify(id, (Term) aKey);
 			} else {
-				// object not previously referenced
+				
 				if (id instanceof Var) {
-					// get a ground term
+					
 					Struct idTerm = generateFreshId();
 					unify(id, idTerm);
 					registerDynamic(idTerm, obj);
-					//log("not ground id for a new obj: "+id+" as ref for "+obj);
+					
 					return true;
 				} else {
-					// verify of the id is already used
+					
 					String raw_name = alice.util.Tools.removeApostrophes(id.term().toString());
 					Object linkedobj = currentObjects.get(raw_name);
 					if (linkedobj == null) {
 						registerDynamic((Struct)(id.term()), obj);
-						//log("ground id for a new obj: "+id+" as ref for "+obj);
+						
 						return true;
 					} else {
-						// an object with the same id is already
-						// present: must be the same object
+						
+						
 						return obj == linkedobj;
 					}
 				}
@@ -1326,20 +1326,20 @@ public class PJLibrary extends Library {
 		preregisterObjects();
 	}
 	
-	// --------------------------------------------------
+	
 	
 	private static Method lookupMethod(Class<?> target, String name,
                                        Class<?>[] argClasses, Object... argValues) throws NoSuchMethodException {
-		// first try for exact match
+		
 		try {
 			return target.getMethod(name, argClasses);
 		} catch (NoSuchMethodException e) {
-			if (argClasses.length == 0) { // if no args & no exact match, out of luck
+			if (argClasses.length == 0) { 
 				return null;
 			}
 		}
 		
-		// go the more complicated route
+		
 		Method[] methods = target.getMethods();
 		Vector<Method> goodMethods = new Vector<>();
 		for (int i = 0; i != methods.length; i++) {
@@ -1349,21 +1349,21 @@ public class PJLibrary extends Library {
 		}
 		switch (goodMethods.size()) {
 		case 0:
-			// no methods have been found checking for assignability
-			// and (int -> long) conversion. One last chance:
-			// looking for compatible methods considering also
-			// type conversions:
-			//    double --> float
-			// (the first found is used - no most specific
-			//  method algorithm is applied )
+			
+			
+			
+			
+			
+			
+			
 			
 			for (int i = 0; i != methods.length; i++) {
 				if (name.equals(methods[i].getName())) {
 					Class<?>[] types = methods[i].getParameterTypes();
 					Object[] val = matchClasses(types, argClasses, argValues);
 					if (val != null) {
-						// found a method compatible
-						// after type conversions
+						
+						
 						for (int j = 0; j < types.length; j++) {
 							argClasses[j] = types[j];
 							argValues[j] = val[j];
@@ -1382,16 +1382,16 @@ public class PJLibrary extends Library {
 	}
 	
 	private static Constructor<?> lookupConstructor(Class<?> target, Class<?>[] argClasses, Object... argValues) throws NoSuchMethodException {
-		// first try for exact match
+		
 		try {
 			return target.getConstructor(argClasses);
 		} catch (NoSuchMethodException e) {
-			if (argClasses.length == 0) { // if no args & no exact match, out of luck
+			if (argClasses.length == 0) { 
 				return null;
 			}
 		}
 		
-		// go the more complicated route
+		
 		Constructor<?>[] constructors = target.getConstructors();
 		Vector<Constructor<?>> goodConstructors = new Vector<>();
 		for (int i = 0; i != constructors.length; i++) {
@@ -1400,20 +1400,20 @@ public class PJLibrary extends Library {
 		}
 		switch (goodConstructors.size()) {
 		case 0:
-			// no constructors have been found checking for assignability
-			// and (int -> long) conversion. One last chance:
-			// looking for compatible methods considering also
-			// type conversions:
-			//    double --> float
-			// (the first found is used - no most specific
-			//  method algorithm is applied )
+			
+			
+			
+			
+			
+			
+			
 			
 			for (int i = 0; i != constructors.length; i++) {
 				Class<?>[] types = constructors[i].getParameterTypes();
 				Object[] val = matchClasses(types, argClasses, argValues);
 				if (val != null) {
-					// found a method compatible
-					// after type conversions
+					
+					
 					for (int j = 0; j < types.length; j++) {
 						argClasses[j] = types[j];
 						argValues[j] = val[j];
@@ -1430,7 +1430,7 @@ public class PJLibrary extends Library {
 		}
 	}
 	
-	// 1st arg is from method, 2nd is actual parameters
+	
 	private static boolean matchClasses(Class<?>[] mclasses, Class<?>... pclasses) {
 		if (mclasses.length == pclasses.length) {
 			for (int i = 0; i != mclasses.length; i++) {
@@ -1472,7 +1472,7 @@ public class PJLibrary extends Library {
 			throw new NoSuchMethodException(">1 most specific method");
 	}
 	
-	// true if c1 is more specific than c2
+	
 	private static boolean moreSpecific(Method c1, Method c2) {
 		Class<?>[] p1 = c1.getParameterTypes();
 		Class<?>[] p2 = c2.getParameterTypes();
@@ -1502,7 +1502,7 @@ public class PJLibrary extends Library {
 			throw new NoSuchMethodException(">1 most specific constructor");
 	}
 	
-	// true if c1 is more specific than c2
+	
 	private static boolean moreSpecific(Constructor<?> c1, Constructor<?> c2) {
 		Class<?>[] p1 = c1.getParameterTypes();
 		Class<?>[] p2 = c2.getParameterTypes();
@@ -1516,24 +1516,24 @@ public class PJLibrary extends Library {
 	}
 	
 	
-	// Checks compatibility also considering explicit type conversion.
-	// The method returns the argument values, since they could be changed
-	// after a type conversion.
-	//
-	// In particular the check must be done for the DEFAULT type of tuProlog,
-	// that are int and double; so
-	//   (required X, provided a DEFAULT -
-	//        with DEFAULT to X conversion 'conceivable':
-	//        for instance *double* to *int* is NOT considered good
-	//
-	//   required a float,  provided an  int  OK
-	//   required a double, provided a   int  OK
-	//   required a long,   provided a   int ==> already considered by
-	//                                   previous match test
-	//   required a float,  provided a   double OK
-	//   required a int,    provided a   double => NOT CONSIDERED
-	//   required a long,   provided a   double => NOT CONSIDERED
-	//
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	private static Object[] matchClasses(Class<?>[] mclasses, Class<?>[] pclasses, Object... values) {
 		if (mclasses.length == pclasses.length) {
 			Object[] newvalues = new Object[mclasses.length];
@@ -1545,18 +1545,18 @@ public class PJLibrary extends Library {
 					newvalues[i] = values[i];
 				} else if (mclasses[i].equals(java.lang.Float.TYPE) &&
 						pclasses[i].equals(java.lang.Double.TYPE)) {
-					// arg required: a float, arg provided: a double
-					// so we need an explicit conversion...
+					
+					
 					newvalues[i] = ((java.lang.Double) values[i]).floatValue();
 				} else if (mclasses[i].equals(java.lang.Float.TYPE) &&
 						pclasses[i].equals(java.lang.Integer.TYPE)) {
-					// arg required: a float, arg provided: an int
-					// so we need an explicit conversion...
+					
+					
 					newvalues[i] = (float) (Integer) values[i];
 				} else if (mclasses[i].equals(java.lang.Double.TYPE) &&
 						pclasses[i].equals(java.lang.Integer.TYPE)) {
-					// arg required: a double, arg provided: an int
-					// so we need an explicit conversion...
+					
+					
 					newvalues[i] = ((Integer) values[i]).doubleValue();
 				} else if (values[i] == null && !mclasses[i].isPrimitive()) {
 					newvalues[i] = null;
@@ -1616,12 +1616,12 @@ class ClassLoader extends java.lang.ClassLoader {
 class ListenerInfo implements Serializable {
 	public final String listenerInterfaceName;
 	public final EventListener listener;
-	//public String eventName;
+	
 	public final String eventFullClass;
 	
 	public ListenerInfo(EventListener l, String eventClass, String n) {
 		listener = l;
-		//this.eventName=eventName;
+		
 		this.eventFullClass = eventClass;
 		listenerInterfaceName = n;
 	}

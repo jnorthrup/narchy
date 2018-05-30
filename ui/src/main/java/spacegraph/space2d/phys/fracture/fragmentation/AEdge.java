@@ -51,9 +51,9 @@ abstract class AEdge {
         Tuple2f V = b.p2.sub(b.p1);
         Tuple2f A = new v2(a.p1);
         Tuple2f C = new v2(b.p1);
-        double uv = dCross(U, V); //treba double precision (aby sa eliminovali aj ojedinele neziaduce pripady)
+        double uv = dCross(U, V); 
         if (uv == 0) {
-            return null; //su to rovnobezky (ak su v jednej polohe, system to neosetruje)
+            return null; 
         }
         double k = (dCross(C, V) - dCross(A, V)) / uv;
         double o = (dCross(C, U) - dCross(A, U)) / uv;
@@ -79,7 +79,7 @@ abstract class AEdge {
         Tuple2f C = new v2(b1);
         float uv = cross(U, V);
         if (uv == 0)
-            return false; //su to rovnobezky (ak su v jednej polohe, system to neosetruje)
+            return false; 
 
         float k = (cross(C, V) - cross(A, V)) / uv;
         float o = (cross(C, U) - cross(A, U)) / uv;
@@ -95,7 +95,7 @@ abstract class AEdge {
         Tuple2f V = new v2(p1.y - p2.y, p2.x - p1.x);
         float uv = cross(U, V);
         if (uv == 0) {
-            return null; //su to rovnobezky (ak su v jednej polohe, system to neosetruje)
+            return null; 
         }
         float k = (cross(point, V) - cross(p1, V)) / uv;
         if (k >= 0 && k <= 1) {

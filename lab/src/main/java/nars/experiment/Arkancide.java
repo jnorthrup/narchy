@@ -28,13 +28,13 @@ public class Arkancide extends NAgentX {
     static boolean cam = true;
 
     public final FloatRange ballSpeed = new FloatRange(0.75f, 0.04f, 6f);
-    //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
+    
 
 
     final int visW = 48;
     final int visH = 32;
 
-    //final int afterlife = 60;
+    
 
     static float paddleSpeed;
 
@@ -44,25 +44,25 @@ public class Arkancide extends NAgentX {
     private float prevScore;
 
     public static void main(String[] args) {
-        //
+        
 
-        //runRT(Arkancide::new);
-        //nRT(Arkancide::new, 25, 5);
+        
+        
 
         TimeAware timeAware = runRT((NAR n) -> {
 
             Arkancide a = new Arkancide(n, cam, numeric);
-                //a.curiosity.setValue(0.05f);
+                
 
-                //a.trace = true;
-                //((RealTime)a.nar.time).durSeconds(0.05f);
-                //a.nar.log();
+                
+                
+                
 
 
 
-            //new RLBooster(a, HaiQAgent::new, 2 );
+            
 
-            //new Implier(1, a, new float[] { 1 });
+            
 
 
             return a;
@@ -70,20 +70,20 @@ public class Arkancide extends NAgentX {
         }, 30, 30);
 
 
-//        nar.forEachActiveConcept(c -> {
-//            c.forEachTask(t -> {
-//                System.out.println(t);
-//            });
-//        });
 
-        //IO.saveTasksToTemporaryTextFile(nar);
 
-        //System.out.println(ts.db.getInfo());
 
-        //ts.db.close();
 
-        //nar.beliefConfidence(0.75f);
-        //nar.goalConfidence(0.75f);
+
+
+        
+
+        
+
+        
+
+        
+        
     }
 
 
@@ -93,46 +93,46 @@ public class Arkancide extends NAgentX {
 
     public Arkancide(NAR nar, boolean cam, boolean numeric)  {
         super("noid", nar);
-        //super(nar, HaiQAgent::new);
+        
 
 
         noid = new Arkanoid(true);
-//        {
-//            @Override
-//            protected void die() {
-//                //nar.time.tick(afterlife); //wont quite work in realtime mode
-//                super.die();
-//            }
-//        };
+
+
+
+
+
+
+
 
 
         paddleSpeed = 50 * noid.BALL_VELOCITY;
 
-        //initBipolarDirect();
-        //initBipolarRelative();
-        //initUnipolar();
+        
+        
+        
         initToggle();
 
-        float resX = 0.01f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
-        float resY = 0.01f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
+        float resX = 0.01f; 
+        float resY = 0.01f; 
 
         if (cam) {
 
             Bitmap2DConcepts<Scale> cc = senseCamera(id /*$.the("cam")*/, new Scale(
                     new SwingBitmap2D(noid)
-                    //32, 24
+                    
                     , visW, visH
-                    //10,4
-                    //16,8
+                    
+                    
             )/*.blur()*/).resolution(0.02f);
-//            BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid.canvas), visW, visH).blur();
-//            Bitmap2DConcepts cc = senseCamera(id.toString(), sw, visW, visH)
-//                    .resolution(0.1f);
-//            CameraSensor ccAe = senseCameraReduced($.the("noidAE"), sw, 16)
-//                    .resolution(0.25f);
 
-            //senseCameraRetina("noid", noid, visW/2, visH/2, (v) -> $.t(v, alpha));
-            //new CameraGasNet($.the("camF"),new Scale(new SwingCamera(noid), 80, 80), this, 64);
+
+
+
+
+
+            
+            
         }
 
 
@@ -141,37 +141,37 @@ public class Arkancide extends NAgentX {
             senseNumber($.the("dx"), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
             senseNumber($.the("bx"), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
             senseNumber($.the("by"), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
-            //SensorConcept d = senseNumber("noid:bvx", new FloatPolarNormalized(() -> noid.ball.velocityX)).resolution(0.25f);
-            //SensorConcept e = senseNumber("noid:bvy", new FloatPolarNormalized(() -> noid.ball.velocityY)).resolution(0.25f);
+            
+            
 
-            //experimental cheat
-//            nar.input("--(paddle-ball):x! :|:",
-//                      "--(ball-paddle):x! :|:"
-//            );
+            
 
-//            SpaceGraph.window(Vis.beliefCharts(100,
-//                    Lists.newArrayList(ab.term(), a.term(), b.term(), c.term()),
-//                    nar), 600, 600);
-//
-//            nar.onTask(t -> {
-//                if (//t instanceof DerivedTask &&
-//                        //t.isEternal()) {
-//                        t.isGoal()) {
-//                    System.err.println(t.proof());
-//                }
-//            });
 
-//            window(Vis.beliefCharts(64, java.util.List.of(px, dx, bx, by), nar), 300, 300);
-//
-//            new BeliefPredict(
-//                    Iterables.concat(actions.keySet(), java.util.List.of(px, dx, bx, by)),
-//                    8,
-//                    12,
-//                    Iterables.concat(actions.keySet(), java.util.List.of(px, dx, bx, by)),
-//                    //new LivePredictor.LSTMPredictor(0.1f, 2),
-//                    new LivePredictor.MLPPredictor(),
-//                    nar
-//            );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         /*action(new ActionConcept( $.func("dx", "paddleNext", "noid"), nar, (b, d) -> {
@@ -181,77 +181,77 @@ public class Arkancide extends NAgentX {
             return $.t(paddleSpeed, nar.confidenceDefault('.'));
         }));*/
 
-//        actionUnipolarTransfer(paddleControl, (v) -> {
-//            return noid.paddle.moveTo(v, maxPaddleSpeed);
-//        });
+
+
+
         /*actionTriState*/
-//        actionBipolar($.the("x"), (s) -> {
-////           switch (s) {
-////               case 0:
-////                   break;
-////               case -1:
-////               case 1:
-////                    if (s > 0 && Util.equals(noid.paddle.x, noid.getWidth(), 1f))
-////                        return 0f; //edge
-////                    if (s < 0 && Util.equals(noid.paddle.x, 0, 1f))
-////                        return 0f; //edge
-//                   if (!noid.paddle.move( maxPaddleSpeed * s)) {
-//                       return 0f; //against wall
-//                   }
-////                    break;
-////           }
-//                    return s;
-//
-//        });///.resolution(0.1f);
-
-//
-//        nar.onTask((t) -> {
-//            if (!t.isInput() && (t.isGoal() || t.isEternal())) {
-//                System.err.println(t.proof());
-//            }
-//        });
 
 
-//
-//        nar.onTask(x -> {
-//            if (x.isGoal()
-//                    && !x.isInput() && (!(x instanceof ActionConcept.CuriosityTask))
-//                    //&& x.term().equals(paddleControl)
-//            ) {
-//                System.err.println(x.proof());
-//            }
-//        });
 
 
-//        actionUnipolar($.inh(Atomic.the("paddle"), Atomic.the("nx") ), (v) -> {
-//            noid.paddle.moveTo(v, paddleSpeed.floatValue() * maxPaddleSpeed);
-//            return true;
-//        });
-//        action(new ActionConcept( $.func("nx", "paddle"), nar, (b, d) -> {
-//
-//
-//            float pct;
-//            if (d != null) {
-//                pct = noid.paddle.moveTo(d.freq(), paddleSpeed.floatValue() * maxPaddleSpeed);// * d.conf());
-//            } else {
-//                pct = noid.paddle.x / Arkanoid.SCREEN_WIDTH; //unchanged
-//            }
-//            return $.t(pct, nar.confidenceDefault(BELIEF));
-//            //return null; //$.t(0.5f, alpha);
-//        })/*.feedbackResolution(resX)*/);
 
-        //nar.log();
-//        predictors.add( (MutableTask)nar.input(
-//                //"(((noid) --> #y) && (add(#x,1) <-> #y))?"
-//                "((cam --> ($x,$y)) && (camdiff($x,$y) --> similaritree($x,$y))). %1.00;0.99%"
-//        ).get(0) );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
 
     }
 
     private void initBipolarRelative() {
         actionBipolar($.the("X"), false, (dx) -> {
 
-            //System.out.println(dx);
+            
             if (noid.paddle.move(dx * paddleSpeed))
                 return dx;
             else
@@ -269,8 +269,8 @@ public class Arkancide extends NAgentX {
                 (b) -> { if (b) noid.paddle.move(-paddleSpeed); },
                 (b) -> { if (b) noid.paddle.move(+paddleSpeed); }
                 );
-//        actionPushButton($.the("L"), );
-//        actionPushButton($.the("R"), () -> noid.paddle.move(+paddleSpeed));
+
+
     }
     private void initUnipolar() {
         actionUnipolar($.the("L"), (u)-> noid.paddle.move(-paddleSpeed*u) ? u : 0);
@@ -283,13 +283,13 @@ public class Arkancide extends NAgentX {
         float nextScore = noid.next();
         float reward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
         this.prevScore = nextScore;
-        //if (reward == 0) return Float.NaN;
+        
         return reward;
     }
 
 
     /**
-     * https://gist.github.com/Miretz/f10b18df01f9f9ebfad5
+     * https:
      */
     public static class Arkanoid extends Frame implements KeyListener {
 
@@ -322,14 +322,14 @@ public class Arkancide extends NAgentX {
 
         public Arkanoid(boolean visible) {
 
-//            this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
             this.setUndecorated(false);
             this.setResizable(false);
 
 
-//            this.setLocationRelativeTo(null);
-            //setIgnoreRepaint(true);
-//            addKeyListener(this);
+
+            
+
             if (visible)
                 this.setVisible(true);
 
@@ -362,8 +362,8 @@ public class Arkancide extends NAgentX {
         public final Ball ball = new Ball(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
         public final Collection<Brick> bricks = Collections.newSetFromMap(new ConcurrentHashMap());
 
-        //private float lastFt;
-        //private float currentSlice;
+        
+        
 
         abstract class GameObject {
             abstract float left();
@@ -421,7 +421,7 @@ public class Arkancide extends NAgentX {
 
         class Paddle extends Rectangle {
 
-//            public float velocity;
+
 
             public Paddle(float x, float y) {
                 this.x = x;
@@ -438,30 +438,30 @@ public class Arkancide extends NAgentX {
                 x = Util.clamp(x + dx, sizeX, SCREEN_WIDTH - sizeX);
                 return !Util.equals(px, x, 1f);
             }
-//
-//            void update() {
-//                x += velocity * FT_STEP;
-//            }
-//
-//            void stopMove() {
-//                velocity = 0.0f;
-//            }
-//
-//            void moveLeft() {
-//                if (left() > 0.0) {
-//                    velocity = -paddleSpeed;
-//                } else {
-//                    velocity = 0.0f;
-//                }
-//            }
-//
-//            void moveRight() {
-//                if (right() < SCREEN_WIDTH) {
-//                    velocity = paddleSpeed;
-//                } else {
-//                    velocity = 0.0f;
-//                }
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             void draw(Graphics g) {
                 g.setColor(Color.WHITE);
@@ -522,7 +522,7 @@ public class Arkancide extends NAgentX {
             public float x, y;
             float radius = BALL_RADIUS;
 
-            //45 degree angle initially
+            
             public float velocityX;
             public float velocityY;
 
@@ -533,7 +533,7 @@ public class Arkancide extends NAgentX {
             }
 
             public void setVelocityRandom() {
-                this.setVelocity(BALL_VELOCITY, (float) (Math.random() * -Math.PI * (2 / 3f) + -Math.PI - Math.PI / 6)); //angled downward
+                this.setVelocity(BALL_VELOCITY, (float) (Math.random() * -Math.PI * (2 / 3f) + -Math.PI - Math.PI / 6)); 
             }
 
             public void setVelocity(float speed, float angle) {
@@ -631,8 +631,8 @@ public class Arkancide extends NAgentX {
         }
 
         void initializeBricks(Collection<Brick> bricks) {
-            // deallocate old bricks
-            //synchronized(bricks) {
+            
+            
             bricks.clear();
 
             for (int iX = 0; iX < COUNT_BLOCKS_X; ++iX) {
@@ -641,7 +641,7 @@ public class Arkancide extends NAgentX {
                             (iY + 2) * (BLOCK_HEIGHT + 3) + BLOCK_TOP_MARGIN));
                 }
             }
-            //}
+            
         }
 
 
@@ -652,33 +652,33 @@ public class Arkancide extends NAgentX {
             ball.setVelocityRandom();
         }
 
-        //	void run() {
-        //
-        //
-        //		running = true;
-        //
-        //		reset();
-        //
-        //		while (running) {
-        //
-        //			next();
-        //
-        //		}
-        //
-        //		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-        //
-        //	}
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
         public float next() {
 
-            //currentSlice += lastFt;
+            
 
-            //for (; currentSlice >= FT_SLICE; currentSlice -= FT_SLICE) {
+            
 
             ball.update(paddle);
             testCollision(paddle, ball);
 
-            //synchronized (bricks) {
+            
             Iterator<Brick> it = bricks.iterator();
             while (it.hasNext()) {
                 Brick brick = it.next();
@@ -687,9 +687,9 @@ public class Arkancide extends NAgentX {
                     it.remove();
                 }
             }
-            //}
+            
 
-            //}
+            
 
             return score;
         }
@@ -732,38 +732,38 @@ public class Arkancide extends NAgentX {
     }
 }
 
-//                {
-//                    Default m = new Default(256, 48, 1, 2, n.random,
-//                            new CaffeineIndex(new DefaultConceptBuilder(), 2048, false, null),
-//                            new RealTime.DSHalf().durSeconds(1f));
-//                    float metaLearningRate = 0.9f;
-//                    m.confMin.setValue(0.02f);
-//                    m.goalConfidence(metaLearningRate);
-//                    m.termVolumeMax.setValue(16);
-//
-//                    MetaAgent metaT = new MetaAgent(a, m); //init before loading from file
-//                    metaT.trace = true;
-//                    metaT.init();
-//
-//                    String META_PATH = "/tmp/meta.nal";
-//                    try {
-//                        m.input(new File(META_PATH));
-//                    } catch (IOException e) {
-//                    }
-//                    getRuntime().addShutdownHook(new Thread(() -> {
-//                        try {
-//                            m.output(new File(META_PATH), (x) -> {
-//                                if (x.isBeliefOrGoal() && !x.isDeleted() && (x.op() == IMPL || x.op() == Op.EQUI || x.op() == CONJ)) {
-//                                    //Task y = x.eternalized();
-//                                    //return y;
-//                                    return x;
-//                                }
-//                                return null;
-//                            });
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }));
-//                n.onCycle(metaT.nar::cycle);
-//                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

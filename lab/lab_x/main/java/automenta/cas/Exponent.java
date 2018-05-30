@@ -48,7 +48,7 @@ public class Exponent extends Operation {
                 return Product.make(tmp);
             }
             other = new Exponent(new E(), Product.make(other.exponent, Logarithm.make(new E(), other.base)));
-            // throw new UnsupportedOperationException("derivative of " + this);
+            
         }
     }
     
@@ -108,7 +108,7 @@ public class Exponent extends Operation {
         Expr conditioned = conditioned();
         if (conditioned != null) return conditioned;
         
-        if (base instanceof Num && ((Num) base).val() == 0 && exponent instanceof Num && ((Num) exponent).val() == 0) return new Undef(); // 0^0
+        if (base instanceof Num && ((Num) base).val() == 0 && exponent instanceof Num && ((Num) exponent).val() == 0) return new Undef(); 
         if (base instanceof Num && ((Num) base).val() == 0) return Num.make();
         if (exponent instanceof Num && ((Num) exponent).val() == 0) return Num.make(1);
         if (base instanceof Num && ((Num) base).val() == 1) return Num.make(1);

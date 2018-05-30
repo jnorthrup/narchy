@@ -86,9 +86,9 @@ class Row {
 
         for (Map.Entry<Symbol, Double> e : other.cells.entrySet()) {
 
-            //insert(s, coeff);  this line looks different than the c++
+            
 
-            //changes start here
+            
 
 
             this.cells.merge(e.getKey(), e.getValue() * coefficient,
@@ -121,7 +121,7 @@ class Row {
     void remove(Symbol symbol) {
 
         cells.remove(symbol);
-        // not sure what this does, can the symbol be added more than once?
+        
         /*CellMap::iterator it = m_cells.find( symbol );
         if( it != m_cells.end() )
             m_cells.erase( it );*/

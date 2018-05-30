@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: glstate_t.java,v 1.1 2004-07-07 19:59:35 hzi Exp $
+
+
 
 package jake2.render;
 
@@ -40,8 +40,8 @@ public class glstate_t
 	public float camera_separation;
 	public final boolean stereo_enabled = false;
 
-//	public byte originalRedGammaTable[]= new byte [256];
-//	public byte originalGreenGammaTable[]= new byte [256];
-//	public byte originalBlueGammaTable[]= new byte [256];
+
+
+
 
 }

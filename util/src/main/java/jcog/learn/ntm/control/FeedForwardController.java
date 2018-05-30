@@ -34,19 +34,19 @@ public class FeedForwardController
 
     @Override
     public FeedForwardController clone() {
-//        try
-//        {
+
+
             return new FeedForwardController(hidden.clone(), output.clone());
-//        }
-//        catch (RuntimeException __dummyCatchVar0)
-//        {
-//            throw __dummyCatchVar0;
-//        }
-//        catch (Exception __dummyCatchVar0)
-//        {
-//            throw new RuntimeException(__dummyCatchVar0);
-//        }
-//
+
+
+
+
+
+
+
+
+
+
     }
 
     public void process(double[] input, ReadData[] readDatas) {

@@ -19,7 +19,7 @@ public enum GranulizerDemo {
 
         audio.play(ts, SoundSource.center, 1, 1);
 
-        //audio.play(new SamplePlayer(smp, 0.5f), SoundListener.zero, 1, 1);
+        
 
         audio.thread.join();
     }

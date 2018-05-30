@@ -31,9 +31,9 @@ public class KeyValueModel implements GridModel {
     @Override
     public Object get(int x, int y) {
         switch (x) {
-            case 0: //key
+            case 0: 
                 return keys[y];
-            case 1: //value
+            case 1: 
                 return map.get(keys[y]);
         }
         return null;

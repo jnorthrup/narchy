@@ -75,7 +75,7 @@ public class CanvasOpenGLMaker
       point += tested.getBlueBits();
       point += tested.getStencilBits();
 
-      //
+      
       Debug.println(DebugLevel.VERBOSE, "Test : ");
       Debug.println(DebugLevel.VERBOSE, tested);
       Debug.println(DebugLevel.VERBOSE, "With " + point + " points");
@@ -89,14 +89,14 @@ public class CanvasOpenGLMaker
       int chosen = -1;
       int actualPointChoice = 0;
       final int length = available.length;
-      //
+      
       if((windowSystemRecommendedChoice >= 0) && (windowSystemRecommendedChoice < length))
       {
          chosen = windowSystemRecommendedChoice;
          actualPointChoice = this.computePoint(available[chosen], (GLCapabilities) desired) + 1;
          Debug.printMark(DebugLevel.VERBOSE, "windowSystemRecommendedChoice=" + windowSystemRecommendedChoice + " | " + actualPointChoice);
       }
-      //
+      
       for(int i = 0; i < length; i++)
       {
          final int point = this.computePoint(available[i], (GLCapabilities) desired);
@@ -106,13 +106,13 @@ public class CanvasOpenGLMaker
             actualPointChoice = point;
          }
       }
-      //
+      
       Debug.printMark(DebugLevel.VERBOSE, "Choosen capabilitie");
       Debug.println(DebugLevel.VERBOSE, available[chosen]);
       Debug.println(DebugLevel.VERBOSE, "With " + actualPointChoice + " points");
-      //
+      
       this.capabilities = available[chosen];
-      //
+      
       return chosen;
    }
 
@@ -133,12 +133,12 @@ public class CanvasOpenGLMaker
       capabilities.setAlphaBits(8);
       capabilities.setNumSamples(1);
 
-//      final GLCapabilities capabilities = new GLCapabilities(GLProfile.getMaximum(true));
-//      capabilities.setDoubleBuffered(true);
-//      capabilities.setHardwareAccelerated(true);
-//      capabilities.setSampleBuffers(true);
-//      //capabilities.setNumSamples(4);
-//      //capabilities.setDepthBits(32);
+
+
+
+
+
+
       return this.newGLCanvas(capabilities);
    }
 
@@ -151,7 +151,7 @@ public class CanvasOpenGLMaker
     */
    public GLCanvas newGLCanvas(final GLCapabilities capabilities)
    {
-      //return new GLCanvas(capabilities);
+      
       return new GLCanvas(capabilities);
    }
 }

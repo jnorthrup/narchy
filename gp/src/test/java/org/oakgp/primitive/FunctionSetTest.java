@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,18 +41,18 @@ public class FunctionSetTest {
 
     private static FunctionSet createFunctionSet() {
         return new FunctionSet(
-                // arithmetic
+                
                 ADD, SUBTRACT, MULTIPLY,
-                // comparison
+                
                 LessThan.create(integerType()), LessThanOrEqual.create(integerType()), new GreaterThan(integerType()), new GreaterThanOrEqual(integerType()),
                 new Equal(integerType()), new NotEqual(integerType()),
-                // selection
+                
                 new If(integerType()),
-                // higher-order functions
+                
                 new Reduce(integerType()), new Filter(integerType()), new org.oakgp.function.hof.Map(integerType(), booleanType()),
-                // classify
+                
                 new IsPositive(), new IsNegative(), new IsZero(),
-                // collections
+                
                 new Count(integerType()), new Count(booleanType()));
     }
 
@@ -87,7 +87,7 @@ public class FunctionSetTest {
         Count countBooleanArray = new Count(booleanType());
         FunctionSet functionSet = new FunctionSet(ADD, SUBTRACT, countIntegerArray, countBooleanArray);
 
-        // sanity check we have added 4 functions with a return type of integer
+        
         assertEquals(4, functionSet.getByType(integerType()).size());
 
         List<Function> integers = functionSet.getBySignature(new Signature(integerType(), integerType(), integerType()));

@@ -9,11 +9,11 @@ public class ContentAddressing
     public final BetaSimilarity[] BetaSimilarities;
     public final UVector content;
 
-    //Implementation of focusing by content (Page 8, Unit 3.3.1 Focusing by Content)
+    
     public ContentAddressing(BetaSimilarity[] betaSimilarities) {
         BetaSimilarities = betaSimilarities;
         content = new UVector(betaSimilarities.length);
-        //Subtracting max increase numerical stability
+        
         double max = BetaSimilarities[0].value;
         for( BetaSimilarity iterationBetaSimilarity : betaSimilarities ) {
             max = Math.max(max, iterationBetaSimilarity.value);
@@ -30,12 +30,12 @@ public class ContentAddressing
     }
 
     public void backwardErrorPropagation() {
-//        double gradient = 0.0;
-//        for (Object __dummyForeachVar1 : content)
-//        {
-//            Unit unit = (Unit)__dummyForeachVar1;
-//            gradient += unit.grad * unit.value;
-//        }
+
+
+
+
+
+
         double gradient = content.sumGradientValueProducts();
 
         for (int i = 0;i < content.size();i++)        {

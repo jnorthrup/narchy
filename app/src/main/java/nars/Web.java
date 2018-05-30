@@ -63,7 +63,7 @@ public class Web implements HttpModel {
 
     @Override
     public boolean wssConnect(SelectionKey key) {
-//        ((WebSocketSelector.ServerWebSocketImpl)key.attachment()).
+
         return true;
     }
 
@@ -77,7 +77,7 @@ public class Web implements HttpModel {
 
         NAR n = reasoners.computeIfAbsent(ws, (Function<WebSocket,NAR>)this::reasoner);
         ws.setAttachment(n);
-        //System.out.println(ws.getAttachment() + " " + ws.getAttachment().getClass());
+        
     }
 
     private NAR reasoner(WebSocket ws) {
@@ -97,26 +97,26 @@ public class Web implements HttpModel {
             e.printStackTrace();
         }
         n.onTask(new WebSocketLogger(ws, n, initialFPS));
-//        n.log(new Appendable() {
-//
-//            @Override
-//            public Appendable append(CharSequence charSequence) throws IOException {
-//                ws.send(charSequence.toString());
-//                return this;
-//            }
-//
-//            @Override
-//            public Appendable append(CharSequence charSequence, int i, int i1) throws IOException {
-//                append(charSequence.subSequence(i, i1));
-//                return null;
-//            }
-//
-//            @Override
-//            public Appendable append(char c) throws IOException {
-//                append(String.valueOf(c));
-//                return null;
-//            }
-//        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return n;
     }
 
@@ -158,12 +158,12 @@ public class Web implements HttpModel {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            //connect();
+            
         }
 
         @Override
         public void onOpen(ServerHandshake handshakedata) {
-            //System.out.println(handshakedata);
+            
         }
 
         @Override
@@ -203,14 +203,14 @@ public class Web implements HttpModel {
                 try {
                     w.send(t.toString(true).toString());
                 } catch (Exception e) {
-                    w = null; //remove reference to websocket allowing it to be reclaimed
+                    w = null; 
                     n.stop();
                     w.close();
                 }
             } else {
-                //if it was already running
+                
                 if (n.loop.isRunning()) {
-                    w = null;  //remove reference to websocket allowing it to be reclaimed
+                    w = null;  
                     n.stop();
                 }
             }

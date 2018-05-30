@@ -23,7 +23,7 @@ public class RandomWeightInitializer implements WeightUpdaterBase {
     }
 
     private double next() {
-        //return  rng.nextGaussian() - 0.5;
+        
         return rng.nextDouble() - 0.5;
     }
 

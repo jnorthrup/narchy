@@ -27,7 +27,7 @@ public abstract class RelativeSignalClassifier  {
         double varianceThresh = history.getVariance();
         history.addValue(h);
 
-        //TODO add more discretization range parmeters
+        
         int y;
 
         Compound e;

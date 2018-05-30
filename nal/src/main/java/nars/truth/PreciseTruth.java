@@ -31,9 +31,9 @@ public class PreciseTruth extends DiscreteTruth {
 
         float e;
         if (xIsConfOrEvidence)
-            e = c2wSafe(ce); //CONF -> EVI
+            e = c2wSafe(ce); 
         else
-            e = ce; //EVI -> EVI
+            e = ce; 
 
         this.e = Util.clamp(e, Param.TRUTH_MIN_EVI, Param.TRUTH_MAX_EVI);
         this.f = Util.clamp(freq, 0, 1f);

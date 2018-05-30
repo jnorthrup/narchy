@@ -8,7 +8,7 @@ public class IncrementalAverage implements MeanVar {
     private int n = 0;
     private double m2 = 0.0;
 
-    // http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#On-line_algorithm
+    
     @Override
     public void update(double x) {
         n++;

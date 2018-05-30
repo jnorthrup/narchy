@@ -18,7 +18,7 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindo
 
     public final JoglSpace space;
 
-    //TODO merge these into one Map
+    
     RoaringBitmap queue = new RoaringBitmap();
 
     final IntObjectHashMap<FloatProcedure> _keyPressed = new IntObjectHashMap<>();
@@ -44,7 +44,7 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindo
                 this.queue = new RoaringBitmap();
             }
             queue.forEach((int k) -> {
-                boolean s = k >= 0; //shouldnt ever be zero actually
+                boolean s = k >= 0; 
                 FloatProcedure f = ((s) ? keyPressed : keyReleased).get(Math.abs(k));
                 if (f != null)
                     f.value(dt);
@@ -61,7 +61,7 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindo
         }
     }
 
-    //TODO unwatch
+    
 
     @Override
     public void keyReleased(KeyEvent e) {

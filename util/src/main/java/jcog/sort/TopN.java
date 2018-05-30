@@ -13,15 +13,15 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
     public TopN(E[] target, FloatFunction<E> rank) {
         this.list = target;
-        this.rank = rank; //(x) -> -rank.floatValueOf(x); //descending
+        this.rank = rank; 
     }
 
     public final float rank(E x) {
-        return rank.floatValueOf(x); //negative for descending
+        return rank.floatValueOf(x); 
     }
 
     public final float rankNeg(E x) {
-        return -rank.floatValueOf(x); //negative for descending
+        return -rank.floatValueOf(x); 
     }
 
     public void clear(int newCapacity, IntFunction<E[]> newArray) {
@@ -39,7 +39,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         if (this.size == list.length) {
             if (elementRank >= minValueIfFull()) {
                 rejectOnEntry(element);
-                return -1; //insufficient
+                return -1; 
             }
         }
 

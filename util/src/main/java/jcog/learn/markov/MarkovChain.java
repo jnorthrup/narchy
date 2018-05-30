@@ -74,14 +74,14 @@ public class MarkovChain<T> {
      */
     public MarkovChain learn(Stream<T> phrase, float strength) {
 
-        // All phrases start at the header.
+        
         final Chain[] current = {START};
 
-        // Make temporary lists to help us resolve nodes.
+        
         final List<T>[] tuple = new List[]{new FasterList<T>()};
 
-        // Find or create each node, add to its weight for the current node
-        // and iterate to the next node.
+        
+        
         phrase.forEach((T t) -> {
             List<T> tu = tuple[0];
 
@@ -92,19 +92,19 @@ public class MarkovChain<T> {
                 current[0] = current[0].learn(getOrAdd(tu), strength);
                 tuple[0] = new FasterList<T>(1);
                 tuple[0].add(t);
-                //tuple[0].add(t);
+                
             }
         });
 
         Chain c = current[0];
         List<T> t = tuple[0];
 
-        // Add any incomplete tuples if needed.
+        
         if (!t.isEmpty()) {
             c = c.learn(getOrAdd(t), strength);
         }
 
-        // We've reached the end of the phrase, add an edge to the trailer node.
+        
         c.learn(END, strength);
         return this;
     }
@@ -209,52 +209,52 @@ public class MarkovChain<T> {
             return data.get(i);
         }
 
-//        public int getTerminalPathLength(int mNodeCount) {
-//            boolean visits[] = new boolean[mNodeCount];
-//            return doGetTerminalPathLength(visits);
-//        }
-//
-//        private int doGetTerminalPathLength(boolean visits[]) {
-//            // The path length is 0 if this is a terminal node.
-//            if (isTerminal()) return 0;
-//
-//            // We have visited the node we are currently in
-//            visits[id] = true;
-//
-//            // Make this variable exist outside the scope of following loop
-//            Edge e = null;
-//            int i = 0;
-//
-//            // First let's iterate to find the first node we haven't visited
-//            for (i = 0; i < mEdges.size(); i++) {
-//                e = mEdges.get(i);
-//                if (visits[e.node.id] == false) break;
-//            }
-//
-//            // If we never found one, this path does not terminate
-//            if (visits[e.node.id] == true) {
-//                visits[id] = false;
-//                return Integer.MAX_VALUE;
-//            }
-//
-//            // Set the terminal path length of this first node as the minimum
-//            int min = e.node.doGetTerminalPathLength(visits);
-//
-//            for (i++; i < mEdges.size(); i++) {
-//                e = mEdges.get(i);
-//
-//                // Skip this guy if we have already visited
-//                if (visits[e.node.id] == true) continue;
-//
-//                // Decide which is smaller
-//                int pathLength = e.node.doGetTerminalPathLength(visits);
-//                min = Math.min(min, pathLength);
-//            }
-//
-//            // Set this guy to unvisited and return the path length
-//            visits[id] = false;
-//            return (min == Integer.MAX_VALUE) ? min : min + 1;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         public boolean isTerminal() {
             return data.isEmpty();
@@ -282,7 +282,7 @@ public class MarkovChain<T> {
          * @return the node that was learned
          */
         public Chain<T> learn(final Chain<T> n, float strength) {
-            // Iterate through the edges and see if we can find that node.
+            
             WLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new WLink<>(nn, 0));
             e.priAdd(strength);
             return e.get();
@@ -299,33 +299,33 @@ public class MarkovChain<T> {
             return selectRoulette(rng, edges.values()).get();
         }
 
-//        protected Node nextTerminal(Random rng) {
-//            if (edges.isEmpty()) return null;
-//
-//            List<Edge> candidates = new ArrayList<Edge>();
-//            Edge e = edges.get(0);
-//            candidates.add(e);
-//            //int min = e.node.getTerminalPathLength(mNodeCount);
-//
-//            for (int i = 1; i < edges.size(); i++) {
-//                e = edges.get(i);
-//                //int pathLength = e.node.getTerminalPathLength(mNodeCount);
-//                //if (pathLength == min) {
-//                    candidates.add(e);
-//                //} else if (pathLength < min) {
-//                  //  candidates.clear();
-//                    //candidates.add(e);
-//                    //min = pathLength;
-//                //}
-//            }
-//
-//            //if (min == Integer.MAX_VALUE) return null;
-//
-//            Edge choice = selectRoulette(rng, candidates);
-////			System.out.printf("Terminal path: %d\n", min);
-////			System.out.printf("%s --> %s\n", data.toString(), choice.node.data.toString());
-//            return choice.node;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         static <T> WLink<T> selectRoulette(Random RNG, Collection<WLink<T>> edges) {
             int s = edges.size();
@@ -334,32 +334,32 @@ public class MarkovChain<T> {
             if (s == 1)
                 return edges.iterator().next();
 
-            // First things first: count up the entirety of all the weight.
+            
             float totalScore = 0;
             for (WLink e : edges)
                 totalScore += e.pri();
 
-            // Choose a random number that is less than or equal to that weight
+            
             float r = RNG.nextFloat() * totalScore;
 
-            // This variable contains how much weight we have "seen" in our loop.
+            
             int current = 0;
 
-            // Iterate through the edges and find out where our generated number landed.
+            
             for (WLink e : edges) {
 
-                // Is it between the weight we've seen and the weight of this node?
+                
                 float dw = e.pri();
 
                 if (r >= current && r < current + dw) {
                     return e;
                 }
 
-                // Add the weight we've seen
+                
                 current += dw;
             }
 
-            //accident here
+            
             return edges.iterator().next();
         }
 

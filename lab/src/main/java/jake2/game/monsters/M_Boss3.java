@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 13.11.2003 by RST.
-// $Id: M_Boss3.java,v 1.3 2005-11-20 22:18:33 salomo Exp $
+
+
 package jake2.game.monsters;
 
 import jake2.Defines;

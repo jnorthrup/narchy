@@ -22,9 +22,9 @@ public class PacmanGame {
 
 		ghosts = new Ghost[]{
 				new Ghost(maze, maze.playerStart().x, maze.playerStart().y - 3, Color.red)
-//				,new Ghost(maze, maze.playerStart().x, maze.playerStart().y - 2, Color.red),
-//				new Ghost(maze, maze.playerStart().x + 1, maze.playerStart().y - 2, Color.red),
-//				new Ghost(maze, maze.playerStart().x - 1, maze.playerStart().y - 2, Color.red)
+
+
+
 		};
 
 	}
@@ -86,23 +86,23 @@ public class PacmanGame {
 		frame.pack();
 
 
-//
-//		new Thread(()-> {
-//			long time = 0;
-//			while (running) {
-//
-//				update();
-//
-//				//do {
-//
-//
-//				Util.sleep(periodMS);
-//				//} while (System.currentTimeMillis() - time < 10);
-//
-//				//time = System.currentTimeMillis();
-//
-//			}
-//		}).start();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	}
 
@@ -177,7 +177,7 @@ public class PacmanGame {
 					if(g.scared) {
 
 						ghostEatCount++;
-						score += 4;//0 * Math.pow(2, ghostEatCount);
+						score += 4;
 						splashes.add(new PacComponent.SplashModel("" + 100 * Math.pow(2, ghostEatCount), g.x, g.y, Color.white));
 						g.reset();
 
@@ -346,14 +346,14 @@ public class PacmanGame {
 	public static void win() {
 		
 		System.out.println("You Win!");
-		//running = false;
+		
 		
 	}
 	
 	public static void lose() {
 		
 		System.out.println("You Lose!");
-		//running = false;
+		
 		
 	}
 	

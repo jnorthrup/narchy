@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -38,7 +38,7 @@ public class GeometryUtil {
 	public static boolean isPointInsidePlanes(OArrayList<Vector4f> planeEquations, v3 point, float margin) {
 		int numbrushes = planeEquations.size();
 		for (int i = 0; i < numbrushes; i++) {
-            //return array[index];
+            
             Vector4f N1 = planeEquations.get(i);
 			float dist = VectorUtil.dot3(N1, point) + N1.w - margin;
 			if (dist > 0f) {
@@ -51,7 +51,7 @@ public class GeometryUtil {
 	public static boolean areVerticesBehindPlane(Vector4f planeNormal, OArrayList<v3> vertices, float margin) {
 		int numvertices = vertices.size();
 		for (int i = 0; i < numvertices; i++) {
-            //return array[index];
+            
             v3 N1 = vertices.get(i);
 			float dist = VectorUtil.dot3(planeNormal, N1) + planeNormal.w - margin;
 			if (dist > 0f) {
@@ -64,7 +64,7 @@ public class GeometryUtil {
 	private static boolean notExist(Vector4f planeEquation, OArrayList<Vector4f> planeEquations) {
 		int numbrushes = planeEquations.size();
 		for (int i = 0; i < numbrushes; i++) {
-            //return array[index];
+            
             Vector4f N1 = planeEquations.get(i);
 			if (VectorUtil.dot3(planeEquation, N1) > 0.999f) {
 				return false;
@@ -79,17 +79,17 @@ public class GeometryUtil {
 		v3 tmp = new v3();
 
 		int numvertices = vertices.size();
-		// brute force:
+		
 		for (int i = 0; i < numvertices; i++) {
-            //return array[index];
+            
             v3 N1 = vertices.get(i);
 
 			for (int j = i + 1; j < numvertices; j++) {
-                //return array[index];
+                
                 v3 N2 = vertices.get(j);
 
 				for (int k = j + 1; k < numvertices; k++) {
-                    //return array[index];
+                    
                     v3 N3 = vertices.get(k);
 
 					edge0.sub(N2, N1);
@@ -106,7 +106,7 @@ public class GeometryUtil {
 							if (notExist(planeEquation, planeEquationsOut)) {
 								planeEquation.w = -VectorUtil.dot3(planeEquation, N1);
 
-								// check if inside, and replace supportingVertexOut if needed
+								
 								if (areVerticesBehindPlane(planeEquation, vertices, 0.01f)) {
 									planeEquationsOut.add(new Vector4f(planeEquation));
 								}
@@ -119,59 +119,59 @@ public class GeometryUtil {
 		}
 	}
 
-//	public static void getVerticesFromPlaneEquations(OArrayList<Vector4f> planeEquations, OArrayList<v3> verticesOut) {
-//		v3 n2n3 = new v3();
-//		v3 n3n1 = new v3();
-//		v3 n1n2 = new v3();
-//		v3 potentialVertex = new v3();
-//
-//		int numbrushes = planeEquations.size();
-//		// brute force:
-//		for (int i = 0; i < numbrushes; i++) {
-//            //return array[index];
-//            Vector4f N1 = planeEquations.get(i);
-//
-//			for (int j = i + 1; j < numbrushes; j++) {
-//                //return array[index];
-//                Vector4f N2 = planeEquations.get(j);
-//
-//				for (int k = j + 1; k < numbrushes; k++) {
-//                    //return array[index];
-//                    Vector4f N3 = planeEquations.get(k);
-//
-//					VectorUtil.cross3(n2n3, N2, N3);
-//					VectorUtil.cross3(n3n1, N3, N1);
-//					VectorUtil.cross3(n1n2, N1, N2);
-//
-//					if ((n2n3.lengthSquared() > 0.0001f) &&
-//							(n3n1.lengthSquared() > 0.0001f) &&
-//							(n1n2.lengthSquared() > 0.0001f)) {
-//						// point P out of 3 plane equations:
-//
-//						// 	     d1 ( N2 * N3 ) + d2 ( N3 * N1 ) + d3 ( N1 * N2 )
-//						// P =  -------------------------------------------------------------------------
-//						//    N1 . ( N2 * N3 )
-//
-//						float quotient = VectorUtil.dot3(N1, n2n3);
-//						if (Math.abs(quotient) > 0.000001f) {
-//							quotient = -1f / quotient;
-//							n2n3.scale(N1.w);
-//							n3n1.scale(N2.w);
-//							n1n2.scale(N3.w);
-//							potentialVertex.set(n2n3);
-//							potentialVertex.add(n3n1);
-//							potentialVertex.add(n1n2);
-//							potentialVertex.scale(quotient);
-//
-//							// check if inside, and replace supportingVertexOut if needed
-//							if (isPointInsidePlanes(planeEquations, potentialVertex, 0.01f)) {
-//								verticesOut.add(new v3(potentialVertex));
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 }

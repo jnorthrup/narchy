@@ -16,7 +16,7 @@ package jcog.math.random;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  *
  */
 
@@ -25,7 +25,7 @@ import java.util.Random;
 
 /**
  * A non-splittable version of the <span style="font-variant: small-caps">SplitMix</span> pseudorandom number generator used by Java 8's
- * <a href="http://docs.oracle.com/javase/8/docs/api/java/util/SplittableRandom.html"><code>SplittableRandom</code></a>. Due to
+ * <a href="http:
  * the fixed increment constant and to different strategies in generating finite ranges, the methods of this generator
  * are faster than those of <code>SplittableRandom</code>. Indeed, this is the fastest generator of the collection that
  * passes the BigCrush battery of tests.
@@ -61,10 +61,10 @@ public class SplitMix64Random extends Random {
      */
     private long x;
 
-//	/** Creates a new generator seeded using {@link Util#randomSeed()}. */
-//	public SplitMix64Random() {
-//		this( Util.randomSeed() );
-//	}
+
+
+
+
 
     /**
      * Creates a new generator using a given seed.
@@ -75,7 +75,7 @@ public class SplitMix64Random extends Random {
         setSeed(seed);
     }
 
-    /* David Stafford's (http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html)
+    /* David Stafford's (http:
      * "Mix13" variant of the 64-bit finalizer in Austin Appleby's MurmurHash3 algorithm. */
     private static long staffordMix13(long z) {
         z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
@@ -83,7 +83,7 @@ public class SplitMix64Random extends Random {
         return z ^ (z >>> 31);
     }
 
-    /* David Stafford's (http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html)
+    /* David Stafford's (http:
      * "Mix4" variant of the 64-bit finalizer in Austin Appleby's MurmurHash3 algorithm. */
     private static int staffordMix4Upper32(long z) {
         z = (z ^ (z >>> 33)) * 0x62A9D9ED799705F5L;
@@ -93,12 +93,12 @@ public class SplitMix64Random extends Random {
     /**
      * Avalanches the bits of a long integer by applying the finalisation step of MurmurHash3.
      * <p>
-     * <p>This method implements the finalisation step of Austin Appleby's <a href="http://code.google.com/p/smhasher/">MurmurHash3</a>.
+     * <p>This method implements the finalisation step of Austin Appleby's <a href="http:
      * Its purpose is to avalanche the bits of the argument to within 0.25% bias. It is used, among other things, to scramble quickly (but deeply) the hash
      * values returned by {@link Object#hashCode()}.
      * <p>
      * <p>Incidentally, iterating this method starting from a nonzero value will generate a sequence of nonzero
-     * values that <a href="http://prng.di.unimi.it/">passes strongest statistical tests</a>.
+     * values that <a href="http:
      *
      * @param x a long integer.
      * @return a hash value with good avalanching properties.
@@ -128,7 +128,7 @@ public class SplitMix64Random extends Random {
      * this random number generator's sequence.
      * <p>
      * <p>The hedge &ldquo;approximately&rdquo; is due to the fact that to be always
-     * faster than <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadLocalRandom.html"><code>ThreadLocalRandom</code></a>
+     * faster than <a href="http:
      * we return
      * the upper 63 bits of {@link #nextLong()} modulo {@code n} instead of using
      * {@link Random}'s fancy algorithm (which {@link #nextLong(long)} uses though).
@@ -158,7 +158,7 @@ public class SplitMix64Random extends Random {
      */
     public long nextLong(long n) {
         if (n <= 0) throw new IllegalArgumentException();
-        // No special provision for n power of two: all our bits are good.
+        
         while (true) {
             long bits = staffordMix13(x += PHI) >>> 1;
             long value = bits % n;

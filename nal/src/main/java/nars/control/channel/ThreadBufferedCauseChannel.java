@@ -45,5 +45,5 @@ public class ThreadBufferedCauseChannel<X extends Priority> extends ThreadLocal<
     public void input(List<? extends X> x) {
         get().input(x);
     }
-    //..
+    
 }

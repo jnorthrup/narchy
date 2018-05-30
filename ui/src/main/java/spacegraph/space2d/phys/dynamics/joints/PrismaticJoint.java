@@ -30,72 +30,72 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-//Linear constraint (point-to-line)
-//d = p2 - p1 = x2 + r2 - x1 - r1
-//C = dot(perp, d)
-//Cdot = dot(d, cross(w1, perp)) + dot(perp, v2 + cross(w2, r2) - v1 - cross(w1, r1))
-//   = -dot(perp, v1) - dot(cross(d + r1, perp), w1) + dot(perp, v2) + dot(cross(r2, perp), v2)
-//J = [-perp, -cross(d + r1, perp), perp, cross(r2,perp)]
-//
-//Angular constraint
-//C = a2 - a1 + a_initial
-//Cdot = w2 - w1
-//J = [0 0 -1 0 0 1]
-//
-//K = J * invM * JT
-//
-//J = [-a -s1 a s2]
-//  [0  -1  0  1]
-//a = perp
-//s1 = cross(d + r1, a) = cross(p2 - x1, a)
-//s2 = cross(r2, a) = cross(p2 - x2, a)
 
 
-//Motor/Limit linear constraint
-//C = dot(ax1, d)
-//Cdot = = -dot(ax1, v1) - dot(cross(d + r1, ax1), w1) + dot(ax1, v2) + dot(cross(r2, ax1), v2)
-//J = [-ax1 -cross(d+r1,ax1) ax1 cross(r2,ax1)]
 
-//Block Solver
-//We develop a block solver that includes the joint limit. This makes the limit stiff (inelastic) even
-//when the mass has poor distribution (leading to large torques about the joint anchor points).
-//
-//The Jacobian has 3 rows:
-//J = [-uT -s1 uT s2] // linear
-//  [0   -1   0  1] // angular
-//  [-vT -a1 vT a2] // limit
-//
-//u = perp
-//v = axis
-//s1 = cross(d + r1, u), s2 = cross(r2, u)
-//a1 = cross(d + r1, v), a2 = cross(r2, v)
 
-//M * (v2 - v1) = JT * df
-//J * v2 = bias
-//
-//v2 = v1 + invM * JT * df
-//J * (v1 + invM * JT * df) = bias
-//K * df = bias - J * v1 = -Cdot
-//K = J * invM * JT
-//Cdot = J * v1 - bias
-//
-//Now solve for f2.
-//df = f2 - f1
-//K * (f2 - f1) = -Cdot
-//f2 = invK * (-Cdot) + f1
-//
-//Clamp accumulated limit impulse.
-//lower: f2(3) = max(f2(3), 0)
-//upper: f2(3) = min(f2(3), 0)
-//
-//Solve for correct f2(1:2)
-//K(1:2, 1:2) * f2(1:2) = -Cdot(1:2) - K(1:2,3) * f2(3) + K(1:2,1:3) * f1
-//                    = -Cdot(1:2) - K(1:2,3) * f2(3) + K(1:2,1:2) * f1(1:2) + K(1:2,3) * f1(3)
-//K(1:2, 1:2) * f2(1:2) = -Cdot(1:2) - K(1:2,3) * (f2(3) - f1(3)) + K(1:2,1:2) * f1(1:2)
-//f2(1:2) = invK(1:2,1:2) * (-Cdot(1:2) - K(1:2,3) * (f2(3) - f1(3))) + f1(1:2)
-//
-//Now compute impulse to be applied:
-//df = f2 - f1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * A prismatic joint. This joint provides one degree of freedom: translation along an axis fixed in
@@ -106,7 +106,7 @@ import spacegraph.util.math.v2;
  */
 public class PrismaticJoint extends Joint {
 
-    // Solver shared
+    
     protected final Tuple2f m_localAnchorA;
     protected final Tuple2f m_localAnchorB;
     protected final v2 m_localXAxisA;
@@ -122,7 +122,7 @@ public class PrismaticJoint extends Joint {
     private boolean m_enableMotor;
     private LimitState m_limitState;
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_localCenterA = new v2();
@@ -135,7 +135,7 @@ public class PrismaticJoint extends Joint {
     private float m_s1, m_s2;
     private float m_a1, m_a2;
     private final Mat33 m_K;
-    private float m_motorMass; // effective mass for motor/limit translational constraint.
+    private float m_motorMass; 
 
     protected PrismaticJoint(IWorldPool argWorld, PrismaticJointDef def) {
         super(argWorld, def);
@@ -415,7 +415,7 @@ public class PrismaticJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective masses.
+        
         Rot.mulToOutUnsafe(qA, d.set(m_localAnchorA).subbed(m_localCenterA), rA);
         Rot.mulToOutUnsafe(qB, d.set(m_localAnchorB).subbed(m_localCenterB), rB);
         d.set(cB).subbed(cA).added(rB).subbed(rA);
@@ -423,7 +423,7 @@ public class PrismaticJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        // Compute motor Jacobian and effective mass.
+        
         {
             Rot.mulToOutUnsafe(qA, m_localXAxisA, m_axis);
             temp.set(d).added(rA);
@@ -436,7 +436,7 @@ public class PrismaticJoint extends Joint {
             }
         }
 
-        // Prismatic constraint.
+        
         {
             Rot.mulToOutUnsafe(qA, m_localYAxisA, m_perp);
 
@@ -449,7 +449,7 @@ public class PrismaticJoint extends Joint {
             float k13 = iA * m_s1 * m_a1 + iB * m_s2 * m_a2;
             float k22 = iA + iB;
             if (k22 == 0.0f) {
-                // For bodies with fixed rotation.
+                
                 k22 = 1.0f;
             }
             float k23 = iA * m_a1 + iB * m_a2;
@@ -460,7 +460,7 @@ public class PrismaticJoint extends Joint {
             m_K.ez.set(k13, k23, k33);
         }
 
-        // Compute motor and limit terms.
+        
         if (m_enableLimit) {
 
             float jointTranslation = Tuple2f.dot(m_axis, d);
@@ -490,7 +490,7 @@ public class PrismaticJoint extends Joint {
         }
 
         if (data.step.warmStarting) {
-            // Account for variable time step.
+            
             m_impulse.mulLocal(data.step.dtRatio);
             m_motorImpulse *= data.step.dtRatio;
 
@@ -515,9 +515,9 @@ public class PrismaticJoint extends Joint {
             m_motorImpulse = 0.0f;
         }
 
-        // data.velocities[m_indexA].v.set(vA);
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v.set(vB);
+        
         data.velocities[m_indexB].w = wB;
 
         pool.pushRot(2);
@@ -536,7 +536,7 @@ public class PrismaticJoint extends Joint {
 
         final Tuple2f temp = pool.popVec2();
 
-        // Solve linear motor constraint.
+        
         if (m_enableMotor && m_limitState != LimitState.EQUAL) {
             temp.set(vB).subbed(vA);
             float Cdot = Tuple2f.dot(m_axis, temp) + m_a2 * wB - m_a1 * wA;
@@ -566,10 +566,10 @@ public class PrismaticJoint extends Joint {
         temp.set(vB).subbed(vA);
         Cdot1.x = Tuple2f.dot(m_perp, temp) + m_s2 * wB - m_s1 * wA;
         Cdot1.y = wB - wA;
-        // System.out.println(Cdot1);
+        
 
         if (m_enableLimit && m_limitState != LimitState.INACTIVE) {
-            // Solve prismatic and limit constraint in block form.
+            
             float Cdot2;
             temp.set(vB).subbed(vA);
             Cdot2 = Tuple2f.dot(m_axis, temp) + m_a2 * wB - m_a1 * wA;
@@ -582,7 +582,7 @@ public class PrismaticJoint extends Joint {
 
             f1.set(m_impulse);
             m_K.solve33ToOut(Cdot.negateLocal(), df);
-            // Cdot.negateLocal(); not used anymore
+            
             m_impulse.addLocal(df);
 
             if (m_limitState == LimitState.AT_LOWER) {
@@ -591,8 +591,8 @@ public class PrismaticJoint extends Joint {
                 m_impulse.z = MathUtils.min(m_impulse.z, 0.0f);
             }
 
-            // f2(1:2) = invK(1:2,1:2) * (-Cdot(1:2) - K(1:2,3) * (f2(3) - f1(3))) +
-            // f1(1:2)
+            
+            
             final Tuple2f b = pool.popVec2();
             final Tuple2f f2r = pool.popVec2();
 
@@ -624,7 +624,7 @@ public class PrismaticJoint extends Joint {
             pool.pushVec2(3);
             pool.pushVec3(3);
         } else {
-            // Limit is inactive, just solve the prismatic constraint in block form.
+            
             final Tuple2f df = pool.popVec2();
             m_K.solve22ToOut(Cdot1.negated(), df);
             Cdot1.negated();
@@ -648,9 +648,9 @@ public class PrismaticJoint extends Joint {
             pool.pushVec2(2);
         }
 
-        // data.velocities[m_indexA].v.set(vA);
+        
         data.velocities[m_indexA].w = wA;
-        // data.velocities[m_indexB].v.set(vB);
+        
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(2);
@@ -683,7 +683,7 @@ public class PrismaticJoint extends Joint {
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
 
-        // Compute fresh Jacobians
+        
         Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), rA);
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), rB);
         d.set(cB).added(rB).subbed(cA).subbed(rA);
@@ -707,21 +707,21 @@ public class PrismaticJoint extends Joint {
         if (m_enableLimit) {
             float translation = Tuple2f.dot(axis, d);
             if (Math.abs(m_upperTranslation - m_lowerTranslation) < 2.0f * Settings.linearSlop) {
-                // Prevent large angular corrections
+                
                 C2 =
                         MathUtils.clamp(translation, -Settings.maxLinearCorrection,
                                 Settings.maxLinearCorrection);
                 linearError = MathUtils.max(linearError, Math.abs(translation));
                 active = true;
             } else if (translation <= m_lowerTranslation) {
-                // Prevent large linear corrections and allow some slop.
+                
                 C2 =
                         MathUtils.clamp(translation - m_lowerTranslation + Settings.linearSlop,
                                 -Settings.maxLinearCorrection, 0.0f);
                 linearError = MathUtils.max(linearError, m_lowerTranslation - translation);
                 active = true;
             } else if (translation >= m_upperTranslation) {
-                // Prevent large linear corrections and allow some slop.
+                
                 C2 =
                         MathUtils.clamp(translation - m_upperTranslation - Settings.linearSlop, 0.0f,
                                 Settings.maxLinearCorrection);
@@ -736,7 +736,7 @@ public class PrismaticJoint extends Joint {
             float k13 = iA * s1 * a1 + iB * s2 * a2;
             float k22 = iA + iB;
             if (k22 == 0.0f) {
-                // For fixed rotation
+                
                 k22 = 1.0f;
             }
             float k23 = iA * a1 + iB * a2;
@@ -767,7 +767,7 @@ public class PrismaticJoint extends Joint {
             K.ex.set(k11, k12);
             K.ey.set(k12, k22);
 
-            // temp is impulse1
+            
             K.solveToOut(C1.negated(), temp);
             C1.negated();
 
@@ -790,9 +790,9 @@ public class PrismaticJoint extends Joint {
         cB.y += mB * Py;
         aB += iB * LB;
 
-        // data.positions[m_indexA].c.set(cA);
+        
         data.positions[m_indexA].a = aA;
-        // data.positions[m_indexB].c.set(cB);
+        
         data.positions[m_indexB].a = aB;
 
         pool.pushVec2(7);

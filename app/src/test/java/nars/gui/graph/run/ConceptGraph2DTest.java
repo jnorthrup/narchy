@@ -11,19 +11,19 @@ class ConceptGraph2DTest {
 
         NAR n = NARS.tmp(4);
         n.termVolumeMax.set(10);
-//        n.input("a:b.");
-//        n.input("b:c.");
-//        n.input("c:d.");
-//        n.input("d:e.");
-//        n.run(10);
+
+
+
+
+
         new DeductiveMeshTest(n, 5, 5);
 
         ConceptGraph2D g = new ConceptGraph2D(n);
 
         SpaceGraph.window(
-                //new Widget(
+                
                 new Windo(g.widget())
-                //)
+                
                 , 800, 800
         );
 

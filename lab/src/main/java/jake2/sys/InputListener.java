@@ -35,7 +35,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public final class InputListener implements KeyListener, MouseListener, WindowListener {
 
-	// modifications of eventQueue must be thread safe!
+	
 	private static final Queue<Jake2InputEvent> eventQueue = new LinkedBlockingQueue();
 
 	static void addEvent(Jake2InputEvent ev) {

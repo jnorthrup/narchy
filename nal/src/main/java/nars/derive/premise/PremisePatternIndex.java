@@ -43,15 +43,15 @@ public class PremisePatternIndex extends MapConceptIndex {
     }
 
 
-//    /**
-//     * installs static and NAR-specific functors
-//     */
-//    public PatternIndex(NAR nar) {
-//        this();
-////        for (Termed t : Derivation.ruleFunctors(nar)) {
-////            set(t);
-////        }
-//    }
+
+
+
+
+
+
+
+
+
 
     @SuppressWarnings("Java8MapApi")
     @Override
@@ -61,11 +61,11 @@ public class PremisePatternIndex extends MapConceptIndex {
 
 
 
-        //avoid recursion-caused concurrent modification exception
+        
         Termed y = concepts.get(x);
         if (y == null) {
             if (nar!=null && x.op()==ATOM) {
-                //resolve NAR built-in functors
+                
                 Termed xx = nar.concepts.get(x,false);
                 if (xx!=null) {
                     concepts.put(xx.term(), xx);
@@ -96,7 +96,7 @@ public class PremisePatternIndex extends MapConceptIndex {
         Subterms s = x.subterms();
         int ss = s.subs();
         Term[] bb = new Term[ss];
-        boolean changed = false;//, temporal = false;
+        boolean changed = false;
         for (int i = 0; i < ss; i++) {
             Term a = s.sub(i);
             Term b = get(a, true).term();
@@ -111,72 +111,72 @@ public class PremisePatternIndex extends MapConceptIndex {
 
         Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
 
-//        Subterms v = changed ? Subterms.subtermsInterned(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
-//                Terms.sorted(bb) :
-//                bb) : s;
+
+
+
 
         Ellipsis e = Ellipsis.firstEllipsis(bb);
         return e != null ?
                 ellipsis(x, v, e) :
                 Op.terms.theCompound(x.op(), x.dt(), v);
-                    //x.op().the(x.dt(), v.arrayShared()); //new PatternCompound.PatternCompoundSimple(x.op(), x.dt(), v);
+                    
     }
 
 
-    //    static boolean canBuildConcept(/*@NotNull*/ Term y) {
-//        if (y instanceof Compound) {
-//            return y.op() != NEG;
-//        } else {
-//            return !(y instanceof Variable);
-//        }
-//
-//    }
+    
+
+
+
+
+
+
+
 
 
     /*@NotNull*/
     private static PremisePatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
 
 
-        //this.ellipsisTransform = hasEllipsisTransform(this);
-        //boolean hasEllipsisTransform = false;
-        //int xs = seed.size();
-//        for (int i = 0; i < xs; i++) {
-//            if (seed.sub(i) instanceof EllipsisTransform) {
-//                hasEllipsisTransform = true;
-//                break;
-//            }
-//        }
+        
+        
+        
+
+
+
+
+
+
 
         Op op = seed.op();
 
-        //boolean ellipsisTransform = hasEllipsisTransform;
+        
         boolean commutative = (/*!ellipsisTransform && */op.commutative);
 
         if (commutative) {
-//            if (ellipsisTransform)
-//                throw new RuntimeException("commutative is mutually exclusive with ellipsisTransform");
+
+
 
             return new PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive(seed.op(),
-                    //seed.dt(),
+                    
                     seed.op() != CONJ ? seed.dt() : XTERNAL,
                     e, v);
         } else {
-//            if (ellipsisTransform) {
-//                if (op != Op.PROD)
-//                    throw new RuntimeException("imageTransform ellipsis must be in an Image or Product compound");
-//
-//                return new PatternCompound.PatternCompoundWithEllipsisLinearImageTransform(
-//                        seed, (EllipsisTransform)e, v);
-//            } else {
+
+
+
+
+
+
+
             return new PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear(seed.op(), seed.dt(), e, v);
-//            }
+
         }
 
     }
 
-//    public Term pattern(Term x) {
-//        return x instanceof Compound ? pattern((Compound) x) : get(x, true).term();
-//    }
+
+
+
 
     /**
      * returns an normalized, optimized pattern term for the given compound
@@ -192,74 +192,74 @@ public class PremisePatternIndex extends MapConceptIndex {
         protected Variable newVariable(/*@NotNull*/ Variable x) {
 
 
-//            if (x instanceof Ellipsis.EllipsisTransformPrototype) {
-//                //special
-//
-//                Ellipsis.EllipsisTransformPrototype ep = (Ellipsis.EllipsisTransformPrototype) x;
-//
-////                Term from = ep.from;
-////                if (from != Op.Imdex) from = applyAfter((GenericVariable)from);
-////                Term to = ep.to;
-////                if (to != Op.Imdex) to = applyAfter((GenericVariable)to);
-////
-//                return EllipsisTransform.make(varPattern(actualSerial + ELLIPSIS_TRANSFORM_ID_OFFSET), ep.from, ep.to, this);
-//
-//            } else
+
+
+
+
+
+
+
+
+
+
+
+
+
             if (x instanceof Ellipsis.EllipsisPrototype) {
                 return Ellipsis.EllipsisPrototype.make((byte) count,
                         ((Ellipsis.EllipsisPrototype) x).minArity);
             } else if (x instanceof Ellipsis || x == Op.imExt || x == Op.imInt) {
                 return x;
 
-                //throw new UnsupportedOperationException("?");
-//                int idOffset;
-//                if (v instanceof EllipsisTransform) {
-//                    idOffset = ELLIPSIS_TRANSFORM_ID_OFFSET;
-//                } else if (v instanceof EllipsisZeroOrMore) {
-//                    idOffset = ELLIPSIS_ZERO_OR_MORE_ID_OFFSET;
-//                } else if (v instanceof EllipsisOneOrMore) {
-//                    idOffset = ELLIPSIS_ONE_OR_MORE_ID_OFFSET;
-//                } else {
-//                    throw new RuntimeException("N/A");
-//                }
-//
-//                Variable r = ((Ellipsis) v).clone(varPattern(actualSerial + idOffset), this);
-//                offset = 0; //return to zero
-//                return r;
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             } /*else if (v instanceof GenericVariable) {
-                return ((GenericVariable) v).normalize(actualSerial); //HACK
+                return ((GenericVariable) v).normalize(actualSerial); 
             } else {
                 return v(v.op(), actualSerial);
             }*/
             return super.newVariable(x);
         }
 
-//        @Override
-//        public final boolean testSuperTerm(/*@NotNull*/ Compound t) {
-//            //descend all, because VAR_PATTERN is not yet always considered a variable
-//            return true;
-//        }
 
-//        /*@NotNull*/
-//        public Term applyAfter(/*@NotNull*/ Variable secondary) {
-//            if (secondary.equals(Op.Imdex))
-//                return secondary; //dont try to normalize any imdex
-//            else
-//                return apply(secondary);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Deprecated
     abstract public static class PremisePatternCompound extends LightCompoundDT {
 
-    //    final int sizeCached;
-    //    final int structureNecessary;
-    //    private final boolean commutative; //cached
-    //    transient final private Op op; //cached
-    //    private final int minVolumeNecessary;
-    //    private final int size;
+    
+    
+    
+    
+    
+    
 
-    //    @Nullable public final Set<Variable> uniqueVars;
+    
 
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
             super((Compound) op.the(subterms.arrayShared()), dt);
@@ -271,13 +271,13 @@ public class PremisePatternIndex extends MapConceptIndex {
         abstract protected static class PremisePatternCompoundWithEllipsis extends PremisePatternCompound {
 
             final Ellipsis ellipsis;
-            //final int structureRequired;
+            
 
             PremisePatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
                 super(seed, dt, subterms);
 
                 this.ellipsis = ellipsis;
-                //this.structureRequired = subterms.structure() & ~(Op.VariableBits);
+                
             }
 
             abstract protected boolean matchEllipsis(Term y, Unify subst);
@@ -311,7 +311,7 @@ public class PremisePatternIndex extends MapConceptIndex {
                 int xsize = subs();
                 int ysize = Y.subs();
 
-                //TODO check for shim and subtract xsize?
+                
 
                 while (i < xsize) {
                     Term x = sub(i++);
@@ -319,24 +319,24 @@ public class PremisePatternIndex extends MapConceptIndex {
                     if (x instanceof Ellipsis) {
                         int available = ysize - j;
 
-                        Term eMatched = u.xy(x); //EllipsisMatch, or null
+                        Term eMatched = u.xy(x); 
                         if (eMatched == null) {
 
-                            //COLLECT
+                            
                             if (i == xsize) {
-                                //SUFFIX
+                                
                                 if (!ellipsis.validSize(available))
                                     return false;
 
                                 return ellipsis.unify(EllipsisMatch.match(Y, j, j + available), u);
 
                             } else {
-                                //PREFIX the ellipsis occurred at the start and there are additional terms following it
-                                //TODO
+                                
+                                
                                 return false;
                             }
                         } else {
-                            //assert(false): "TODO check this case in PatternCompound ellipsis linear";
+                            
 
                             if (eMatched instanceof EllipsisMatch) {
                                 EllipsisMatch ex = (EllipsisMatch) eMatched;
@@ -344,29 +344,29 @@ public class PremisePatternIndex extends MapConceptIndex {
                                     return false;
                                 j += ex.subs();
                             } else {
-                                //it is a single ellipsis term to unify against
+                                
                                 if (!sub(j).unify(eMatched, u))
                                     j++;
                             }
                         }
-                        //previous match exists, match against what it had
-    //                        if (i == xsize) {
-    //                        //SUFFIX - match the remaining terms against what the ellipsis previously collected
-    //                        //HACK this only works with EllipsisMatch type
-    //                        Term[] sp = ((EllipsisMatch) eMatched).term;
-    //                        if (sp.length!=available)
-    //                            return false; //incorrect size
-    //
-    //                        //match every item
-    //                        for (Term aSp : sp) {
-    //                            if (!match(aSp, Y.term(j++)))
-    //                                return false;
-    //                        }
-    //                        } else {
-    //                            //TODO other cases
-    //                            return false;
-    //                        }
-    //                    }
+                        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
                     } else {
                         if (ysize <= j || !x.unify(Y.sub(j++), u))
                             return false;
@@ -383,8 +383,8 @@ public class PremisePatternIndex extends MapConceptIndex {
         public static final class PremisePatternCompoundWithEllipsisCommutive extends PremisePatternCompoundWithEllipsis {
 
 
-    //        /** the components of this pattern compound other than the ellipsis "*/
-    //        final ImmutableSet<Term> fixed;
+    
+    
 
             public PremisePatternCompoundWithEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
                 super(op,
@@ -392,12 +392,12 @@ public class PremisePatternIndex extends MapConceptIndex {
                       ellipsis, subterms);
 
 
-    //            MutableSet<Term> f = new UnifiedSet();
-    //            subterms.forEach(s -> {
-    //                if (!s.equals(ellipsis))
-    //                    f.add(s);
-    //            });
-    //            this.fixed = f.toImmutable();
+    
+    
+    
+    
+    
+    
 
             }
 
@@ -407,7 +407,7 @@ public class PremisePatternIndex extends MapConceptIndex {
              * X pattern contains:
              * <p>
              * one unmatched ellipsis (identified)
-             * <p>                    //HACK should not need new list
+             * <p>                    
              * <p>
              * zero or more "constant" (non-pattern var) terms
              * all of which Y must contain
@@ -432,12 +432,12 @@ public class PremisePatternIndex extends MapConceptIndex {
                     throw new TODO();
 
                 Subterms y = Y.subterms();
-                //return subst.matchEllipsedCommutative(
-                //        this, ellipsis, y
-                //);
-                //public final boolean matchEllipsedCommutative(Compound X, Ellipsis Xellipsis, Compound Y) {
+                
+                
+                
+                
 
-                SortedSet<Term> xFixed = new TreeSet();//$.newHashSet(0); //Global.newHashSet(0);
+                SortedSet<Term> xFixed = new TreeSet();
 
 
                 Ellipsis ellipsis = this.ellipsis;
@@ -460,7 +460,7 @@ public class PremisePatternIndex extends MapConceptIndex {
                                     return false;
                                 ellipsis = null;
                             } else {
-                                //single-term matched for the ellipsis, so wont be EllipsisMatch instance
+                                
                                 if (u.constant(v) && !yFree.remove(v))
                                     return false;
                             }
@@ -469,115 +469,115 @@ public class PremisePatternIndex extends MapConceptIndex {
                         continue;
                     }
 
-                    //find (randomly) at least one element of 'y' which unifies with this fixed variable
-                    //if one matches, remove it from yFree
-                    //if none match, fail
-                    //TODO this should be part of the termutator since there could be more than one match
-    //                int dir = subst.random.nextBoolean() ? +1 : -1;
-    //                int u = subst.random.nextInt(s);
-    //                boolean matched = false;
-    //                for (int w = 0; w < s; w++, u+=dir) {
-    //                    if (u == -1) u = s - 1;
-    //                    else if (u == s) u = 0;
-    //                    //if (!yFree.contains(yu)) continue //?? would this help?
-    //                    Term yu = y.sub(u);
-    //                    if (subst.putXY(x, yu)) {
-    //                        matched = true;
-    //                        yFree.remove(yu);
-    //                        break;
-    //                    }
-    //                }
-    //                if (!matched)
-    //                    return false;
+                    
+                    
+                    
+                    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
                     /*if (v instanceof EllipsisMatch) {
 
-                        //assume it's THE ellipsis here, ie. x == xEllipsis by testing that Y contains all of these
+                        
                         if (!((EllipsisMatch) v).addWhileMatching(y, alreadyInY, ellipsis.sizeMin())) {
                             return false;
                         } else {
-                            //Xellipsis = null;
+                            
                             ellipsisMatched = true;
-                            break; //continued below
+                            break; 
                         }
 
 
                     } else */
-    //                if (v != null) {
-    //
-    //                    if (!yFree.remove(v)) {
-    //                        //required but not actually present in Y
-    //                        return false;
-    //                    }
-    //
-    //                } else {
+    
+    
+    
+    
+    
+    
+    
+    
 
 
                     boolean xConst = u.constant(x);
                     if (!xConst) {
-    //                    //try to resolve an already assigned and thus resolvable to constant
-    //                    @Nullable Term previouslyMatched = u.xy(x);
-    //                    if (previouslyMatched != null) {
-    //                        x = previouslyMatched;
-    //                    }
+    
+    
+    
+    
+    
 
-                        xFixed.add(x); //x is a variable which must be termuted when everything non-X is assigned
+                        xFixed.add(x); 
 
                     } else {
 
                         if (!yFree.remove(x)) {
                             return false;
                         }
-    //                        //matched constant
-    //                        //xFixed.remove(x); //<- probably not necessary
-    //                    } else {
-    //                        if ((u.type == null && (x.vars()+x.varPattern()==0)) || (u.type!=null && !x.hasAny(u.type)))
-    //                            return false; //unmatched constant offers no possibility of eventual unification
-    //
-    //                        xFixed.add(x);
-    //                    }
+    
+    
+    
+    
+    
+    
+    
+    
 
-    //                    if (!yFree.remove(x))
-    //                        xFixed.add(x);
+    
+    
                     }
 
-                    //         }
+                    
 
 
                 }
 
                 if (ellipsis == null)
-                    return yFree.isEmpty(); //if unmatched terms in y, then fail; otherwise done
+                    return yFree.isEmpty(); 
 
                 final int xs = xFixed.size();
                 int ys = yFree.size();
                 int numRemainingForEllipsis = ys - xs;
 
-                //if not invalid size there wouldnt be enough remaining matches to satisfy ellipsis cardinality
+                
                 boolean vs = ellipsis.validSize(numRemainingForEllipsis);
                 if (!vs)
                     return false;
 
                 switch (xs) {
-                    case 0: //match everything to everything
+                    case 0: 
 
                         Term match = ys > 0 ? EllipsisMatch.match(yFree) : EllipsisMatch.empty;
 
-//                        if (complexity()==subs()-1) {
-                            //all terms are matched, the ellipsis disappears, and there is only one canonical ordering
+
+                            
                             return this.ellipsis.unify(match, u);
-//                        } else {
-//                            //permute may be necessary to unify the correct dep/indep terms for 2nd layer
-//                            int xcs = xFixed.size();
-//                            if (xcs == match.subs()) {
-//
-//
-//                                return u.termutes.add(new CommutivePermutations(
-//                                        Op.terms.subterms(xFixed),
-//                                        match.subterms().sorted()));
-//                            } else
-//                                return false; //?
-//                        }
+
+
+
+
+
+
+
+
+
+
+
+
 
                     case 1:
                         Term x0 = xFixed.first();
@@ -591,7 +591,7 @@ public class PremisePatternIndex extends MapConceptIndex {
                         return u.termutes.add(new Choose2(this.ellipsis, u, xFixed, yFree));
 
                     default:
-                        //3 or more combination
+                        
                         throw new RuntimeException("unimpl: " + xs + " arity combination unimplemented");
                 }
 

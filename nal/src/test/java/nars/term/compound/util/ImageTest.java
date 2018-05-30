@@ -36,7 +36,7 @@ class ImageTest {
 
     @Test
     public void testNormlizeSubterms() {
-        //implicit transformation to image normal form
+        
         assertEquals(
                 "(reaction(acid,base)<->x)",
                 $$("(x <-> (acid --> (reaction,/,base)))").toString()

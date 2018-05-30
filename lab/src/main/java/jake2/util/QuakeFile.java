@@ -18,9 +18,9 @@
 
  */
 
-// Created on 24.07.2004 by RST.
 
-// $Id: QuakeFile.java,v 1.6 2005-11-20 22:18:34 salomo Exp $
+
+
 
 package jake2.util;
 
@@ -97,7 +97,7 @@ public class QuakeFile extends RandomAccessFile {
     public edict_t readEdictRef() throws IOException {
         int i = readInt();
 
-        // handle -1
+        
         if (i < 0)
             return null;
 
@@ -106,7 +106,7 @@ public class QuakeFile extends RandomAccessFile {
             return null;
         }
 
-        // valid edict.
+        
         return GameBase.g_edicts[i];
     }
 
@@ -132,7 +132,7 @@ public class QuakeFile extends RandomAccessFile {
         String id = readString();
 
         if (id == null) {
-            // null adapter. :-)
+            
             return null;
         }
 

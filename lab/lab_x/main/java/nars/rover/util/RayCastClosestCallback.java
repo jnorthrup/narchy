@@ -22,16 +22,16 @@ public class RayCastClosestCallback implements RayCastCallback {
 
     public float reportFixture(Fixture fixture, Vec2 point, Vec2 normal, float fraction) {
         Body body = fixture.getBody();
-        //Object userData = body.getUserData();
+        
         this.body = body;
 
-//        if (userData != null) {
-//          int index = (Integer) userData;
-//          if (index == 0) {
-//            // filter
-//            return -1f;
-//          }
-//        }
+
+
+
+
+
+
+
 
         m_hit = true;
         m_point = point;

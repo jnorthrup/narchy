@@ -1,53 +1,53 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Color palette class
+package nars.ca;
+
+
+
 
 import java.awt.*;
 
 public class MJPalette {
-	public final int[] Palette = new int[MJBoard.MAX_CLO + 1]; // color palette
-	public final int[] GridColor = new int[2]; // normal, bold
+	public final int[] Palette = new int[MJBoard.MAX_CLO + 1]; 
+	public final int[] GridColor = new int[2]; 
 	public String PalName = "MJCell Standard";
 
-	// ----------------------------------------------------------------
-	// Constructor
+	
+	
 	MJPalette() {
 		ActivatePalette("MJCell Standard", MJBoard.MAX_CLO + 1);
 	}
 
-	// ----------------------------------------------------------------
-	// Make RGB value out of its 3 components
+	
+	
 	private int MakeRGB(int r, int g, int b) {
 		return b + (g << 8) + (r << 16) + (0xff << 24);
 	}
 
-	// ----------------------------------------------------------------
-	// Activate the given palette with the 'iSttCnt' states
+	
+	
 	public void ActivatePalette(String palNam, int iSttCnt) {
 		int i, j;
-		// noinspection IfStatementWithTooManyBranches
+		
 		if ("Red & blue".equalsIgnoreCase(palNam)) {
 			GeneratePalette(Color.red, Color.blue, iSttCnt);
 			Palette[0] = Color.white.getRGB();
-			// gray
-			GridColor[0] = MakeRGB(208, 208, 208); // normal
-			GridColor[1] = MakeRGB(160, 160, 160); // bold
+			
+			GridColor[0] = MakeRGB(208, 208, 208); 
+			GridColor[1] = MakeRGB(160, 160, 160); 
 		} else if ("Dolphin".equalsIgnoreCase(palNam)) {
 			GeneratePalette(new Color(0, 0, 255), Color.cyan, iSttCnt);
 			Palette[0] = Color.white.getRGB();
-			// gray
-			GridColor[0] = MakeRGB(208, 208, 208); // normal
-			GridColor[1] = MakeRGB(160, 160, 160); // bold
+			
+			GridColor[0] = MakeRGB(208, 208, 208); 
+			GridColor[1] = MakeRGB(160, 160, 160); 
 		} else if ("Milky way".equalsIgnoreCase(palNam)) {
 			GeneratePalette(Color.white, new Color(16, 16, 255), iSttCnt);
 			Palette[0] = MakeRGB(0, 0, 80);
-			// gray
-			GridColor[0] = MakeRGB(0, 0, 128); // normal
-			GridColor[1] = MakeRGB(0, 0, 160); // bold
+			
+			GridColor[0] = MakeRGB(0, 0, 128); 
+			GridColor[1] = MakeRGB(0, 0, 160); 
 		} else if ("8 colors".equalsIgnoreCase(palNam)) {
-			GridColor[0] = 4194304 + (0xff << 24); // normal
-			GridColor[1] = 6488833 + (0xff << 24); // bold
+			GridColor[0] = 4194304 + (0xff << 24); 
+			GridColor[1] = 6488833 + (0xff << 24); 
 			Palette[0] = 0;
 			Palette[1] = 16711680;
 			Palette[2] = 255;
@@ -75,31 +75,31 @@ public class MJPalette {
 			Palette[23] = 65535;
 			Palette[24] = 65280;
 
-			// copy it 14x, up to 248
+			
 			for (i = 0; i <= 13; i++) {
 				for (j = 1; j <= 16; j++) {
 					Palette[24 + i * 16 + j] = Palette[8 + j];
 				}
 			}
 
-			// the rest
+			
 			for (i = 249; i <= 255; i++)
 				Palette[i] = Palette[i - 240];
 
-			// make it Java RGB
+			
 			for (i = 0; i < 256; i++)
 				Palette[i] += (0xff << 24);
-		} else // "MJCell Standard"
+		} else 
 		{
 			if (iSttCnt <= 16) {
 				GeneratePalette(Color.yellow, Color.red, iSttCnt);
 				Palette[0] = Color.black.getRGB();
-				// brown
-				GridColor[0] = 4194304 + (0xff << 24); // normal
-				GridColor[1] = 6488833 + (0xff << 24); // bold
+				
+				GridColor[0] = 4194304 + (0xff << 24); 
+				GridColor[1] = 6488833 + (0xff << 24); 
 			} else {
-				GridColor[0] = 4194304 + (0xff << 24); // normal
-				GridColor[1] = 6488833 + (0xff << 24); // bold
+				GridColor[0] = 4194304 + (0xff << 24); 
+				GridColor[1] = 6488833 + (0xff << 24); 
 				Palette[0] = 0;
 				Palette[1] = 16776960;
 				Palette[2] = 16767744;
@@ -165,7 +165,7 @@ public class MJPalette {
 				Palette[62] = 14723136;
 				Palette[63] = 15514936;
 
-				for (i = 1; i <= 3; i++) // copy colors to states 64..255
+				for (i = 1; i <= 3; i++) 
 				{
 					for (j = 0; j < 64; j++) {
 						Palette[64 * i + j] = Palette[j];
@@ -175,15 +175,15 @@ public class MJPalette {
 				Palette[128] = Palette[66];
 				Palette[192] = Palette[66];
 
-				// make it Java RGB
+				
 				for (i = 0; i < 256; i++)
 					Palette[i] += (0xff << 24);
 			}
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Generate the color palette
+	
+	
 	public void GeneratePalette(Color c1, Color c2, int iSttCnt) {
 		int r, dr, r1, r2;
 		int g, dg, g1, g2;
@@ -199,15 +199,15 @@ public class MJPalette {
 		dg = (g2 - g1) / (iSttCnt - 1);
 		db = (b2 - b1) / (iSttCnt - 1);
 
-		// Palette[0] = Color.black;
+		
 		for (i = 1; i < iSttCnt; i++) {
 			Palette[i] = (i == iSttCnt - 1) && (iSttCnt > 2) ? MakeRGB(r2, g2,
 					b2) : MakeRGB(r1 + (i - 1) * dr, g1 + (i - 1) * dg, b1
 					+ (i - 1) * db);
 		}
 	}
-	// ----------------------------------------------------------------
-	// ----------------------------------------------------------------
-	// ----------------------------------------------------------------
+	
+	
+	
 
 }

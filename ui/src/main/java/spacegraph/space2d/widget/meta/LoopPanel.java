@@ -32,7 +32,7 @@ public class LoopPanel extends Gridding {
                     .add("cycleTime", iloop.cycleTime::getMean)
                     .add("dutyTime", iloop.dutyTime::getMean);
         } else {
-            cycleTimePlot = null; //TODO
+            cycleTimePlot = null; 
         }
 
         set(
@@ -51,12 +51,12 @@ public class LoopPanel extends Gridding {
 
                                 if (!pause) {
                                     pause = true;
-                                    update(); //update because this view wont be updated while paused
+                                    update(); 
                                 }
                             }
                         })
                         ),
-                        fpsLabel, //TODO number spin control
+                        fpsLabel, 
                         cycleTimePlot
                 ));
         update();
@@ -79,11 +79,11 @@ public class LoopPanel extends Gridding {
                 cycleTimePlot.update();
             } else {
                 if (loop.isRunning()) {
-                    //TODO save the FPS in a variable, current method is not working
+                    
                     loop.stop();
                     fpsLabel.set(0);
                 }
-                //TODO fpsLabel.disable(); // but don't: set(0)
+                
             }
         }
 

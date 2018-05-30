@@ -5,7 +5,7 @@ import spacegraph.audio.SoundProducer;
 
 /**
  * Binaural Beats for Human Brainwave Entrainment and Hemispheric Synchronization
- * http://en.wikipedia.org/wiki/Binaural_beats
+ * http:
  *
  * TODO make this a set of 2 SoundProducer's, set at fixed ambient Left/Right positions
  */

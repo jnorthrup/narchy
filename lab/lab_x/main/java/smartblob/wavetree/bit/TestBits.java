@@ -80,8 +80,8 @@ public class TestBits{
 		Bits F = Fast0To16Bits.FALSE;
 		Bits T = Fast0To16Bits.TRUE;
 		Bits empty = Fast0To16Bits.EMPTY;
-		//TODO verify empty.cat(anyBits) and anyBits.cat(empty) both == anyBits,
-		//because otherwise tree could get too deep by continuing to concat empty
+		
+		
 		Bits TF = T.cat(F);
 		verifyClassIs(TF, Fast0To16Bits.class);
 		Bits TFTF = TF.cat(TF);
@@ -120,16 +120,16 @@ public class TestBits{
 		Bits F32F = F32.cat(F);
 		verifyClassIs(F32F, AllZero.class);
 		verifyHeightIs(F32F, 0);
-		Bits FF32 = F.cat(F32); //Since F is a Fast0To16Bits its not expected to check if all bits equal
+		Bits FF32 = F.cat(F32); 
 		verifyClassIs(FF32, AvlBitstring.class);
 		verifyHeightIs(FF32, 1);
 		Bits F32FT = F32F.cat(T);
 		verifyBitContent(F32FT, "0000000000000000000000000000000001");
 		verifyClassIs(F32FT, AvlBitstring.class);
 		
-		//verify bigEndian, at least in int case (TODO more tests)
+		
 		Bits thirtyTwoBits = T17FT32TF16T.sub(3, 35);
-		//String correctThirtyTwoBits = "11111111111111011111111111111111";
+		
 		int correctThirtyTwoBits = (int)Long.parseLong("11111111111111011111111111111111",2);
 		int thirtyTwoBitsIntAt0 = thirtyTwoBits.intAt(0);
 		int T17FT32TF16TIntAt3 = T17FT32TF16T.intAt(3);
@@ -141,14 +141,14 @@ public class TestBits{
 			+Integer.toString(correctThirtyTwoBits,2));
 		
 		
-		//Next test avl tree rotation a variety of ways...
 		
-		Fast0To16Bits.main(new String[0]); //test that class
 		
-		AvlBitstring.main(new String[0]); //test that class
+		Fast0To16Bits.main(new String[0]); 
 		
-		//TODO before filling in code wherever throw TODO is in code, write test here for it
-		//throw new RuntimeException("Need more tests");
+		AvlBitstring.main(new String[0]); 
+		
+		
+		
 		
 	}
 

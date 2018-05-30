@@ -59,14 +59,14 @@ public class CommunicationMonitor {
         else {
             int p = 0;
             while (locker != null) {
-//                try {
-                    //Thread.sleep(100);
+
+                    
                     Util.pauseNext(p++);
-//                } catch (InterruptedException e) {
-//                    System.err.println("InterruptedException: "
-//                            + e.getMessage());
-//                    e.printStackTrace();
-//                }
+
+
+
+
+
             }
         }
     }

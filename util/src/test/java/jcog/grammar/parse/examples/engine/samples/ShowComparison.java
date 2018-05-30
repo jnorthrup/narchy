@@ -19,7 +19,7 @@ public class ShowComparison {
 		Atom alt1 = new Atom(new Integer(5280));
 		Atom alt2 = new Atom(new Integer(19));
 
-		Query q1 = new Query(null, // no axiom source
+		Query q1 = new Query(null, 
 				new Comparison(">", alt1, alt2));
 
 		System.out.println(q1 + " : " + q1.canFindNextProof());

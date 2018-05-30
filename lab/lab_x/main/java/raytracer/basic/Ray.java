@@ -167,7 +167,7 @@ public class Ray
     {
         Vector3d point = new Vector3d();
         
-        // ray.org + ray.dir*ray.length()
+        
         point.scaleAdd(length, dir, org);
         return point;
     }

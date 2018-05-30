@@ -75,13 +75,13 @@ public class CubeMap
    {
       if(this.isComplete() == false)
       {
-         // Not complete, so quit
+         
          return;
       }
 
       if(this.videoMemoryID < 0)
       {
-         // Not in video memory, so put it in
+         
          BufferUtils.TEMPORARY_INT_BUFFER.rewind();
          BufferUtils.TEMPORARY_INT_BUFFER.put(1);
          BufferUtils.TEMPORARY_INT_BUFFER.rewind();
@@ -94,7 +94,7 @@ public class CubeMap
 
       if(this.neeedRefresh == true)
       {
-         // If the cube map need to be refresh, refresh it
+         
          gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, this.videoMemoryID);
 
          gl.glTexImage2D(GL2.GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL2.GL_RGBA, this.xPositive.width, this.xPositive.height, 0, GL2.GL_RGBA, GL2.GL_UNSIGNED_BYTE, BufferUtils.transferByte(this.xPositive.pixels));
@@ -112,11 +112,11 @@ public class CubeMap
          gl.glTexParameteri(GL2.GL_TEXTURE_CUBE_MAP, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_NEAREST);
          gl.glTexParameteri(GL2.GL_TEXTURE_CUBE_MAP, GL2.GL_TEXTURE_MIN_FILTER, GL2.GL_NEAREST);
 
-         // Cube map has been refresh
+         
          this.neeedRefresh = false;
       }
 
-      // Activate cube map
+      
       gl.glBindTexture(GL2.GL_TEXTURE_CUBE_MAP, this.videoMemoryID);
       gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_MODULATE);
       gl.glEnable(GL2.GL_TEXTURE_CUBE_MAP);
@@ -160,42 +160,42 @@ public class CubeMap
       final int width = texture.width / 3;
       final int height = texture.height >> 2;
 
-      // X positive
+      
       this.xPositive = Texture.obtainTexture(texture.getTextureName() + "_CUBE_MAP_X_POSITIVE");
       if(this.xPositive == null)
       {
          this.xPositive = texture.obtainParcel(width, 0, width, height, "_CUBE_MAP_X_POSITIVE");
       }
 
-      // X negative
+      
       this.xNegative = Texture.obtainTexture(texture.getTextureName() + "_CUBE_MAP_X_NEGATIVE");
       if(this.xNegative == null)
       {
          this.xNegative = texture.obtainParcel(width, height << 1, width, height, "_CUBE_MAP_X_NEGATIVE");
       }
 
-      // Y positive
+      
       this.yPositive = Texture.obtainTexture(texture.getTextureName() + "_CUBE_MAP_Y_POSITIVE");
       if(this.yPositive == null)
       {
          this.yPositive = texture.obtainParcel(0, height, width, height, "_CUBE_MAP_Y_POSITIVE");
       }
 
-      // Y negative
+      
       this.yNegative = Texture.obtainTexture(texture.getTextureName() + "_CUBE_MAP_Y_NEGATIVE");
       if(this.yNegative == null)
       {
          this.yNegative = texture.obtainParcel(width << 1, height, width, height, "_CUBE_MAP_Y_NEGATIVE");
       }
 
-      // Z positive
+      
       this.zPositive = Texture.obtainTexture(texture.getTextureName() + "_CUBE_MAP_Z_POSITIVE");
       if(this.zPositive == null)
       {
          this.zPositive = texture.obtainParcel(width, height, width, height, "_CUBE_MAP_Z_POSITIVE");
       }
 
-      // Z negative
+      
       this.zNegative = Texture.obtainTexture(texture.getTextureName() + "_CUBE_MAP_Z_NEGATIVE");
       if(this.zNegative == null)
       {

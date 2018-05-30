@@ -68,28 +68,28 @@ public class Configuration {
     public synchronized void addFgBg(String d) {
         fg_bg = add(d, fg_bg);
     }
-//
-//  static String[] parseDestinations(String d){
-//    String[] tmp = d.split(",");
-//    if(tmp.length==1 && tmp[0].isEmpty())
-//      tmp = new String[0];
-//    return tmp;
-//  }
 
-//  static String[] parseFgBg(String fg_bg){
-//    Vector<String> v = new Vector<>();
-//    String[] _fg_bg = fg_bg.split(",");
-//    for(int i=0; i < _fg_bg.length; i++){
-//      String[] tmp = _fg_bg[i].split(":");
-//      if(tmp.length!=2)
-//        continue;
-//      Color fg = JCTermSwing.toColor(tmp[0]);
-//      Color bg = JCTermSwing.toColor(tmp[1]);
-//      if(fg!=null && bg!=null){
-//        v.addElement(_fg_bg[i]);
-//      }
-//    }
-//    if(v.isEmpty()) return null;
-//    return v.toArray(new String[0]);
-//  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

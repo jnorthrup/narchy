@@ -59,14 +59,14 @@ final class NativeLibInfo
     */
    public final static String getJarFileName()
    {
-      // Get local library information
+      
       final NativeLibInfo nativeLibInfo = NativeLibInfo.getNativeLibInfo();
-      // If no information, then the OS is not JOGL compatible
+      
       if(nativeLibInfo == null)
       {
          return null;
       }
-      // For Mac OS be sure that jawt library is load
+      
       if(nativeLibInfo.isMacOS() == false)
       {
          try
@@ -78,7 +78,7 @@ final class NativeLibInfo
             Debug.printError(error, "jawt not load !");
          }
       }
-      // return the name
+      
       return NativeLibInfo.PREFIX + nativeLibInfo.osNameAndArchPair + NativeLibInfo.SUFIX;
    }
 

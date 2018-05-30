@@ -45,22 +45,22 @@ abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
     @Override
     public Void get() {
         return null;
-//        Object r = result;
-//        return r == this ? null : (T) r;
+
+
     }
 
     @Override
     public Void get(long timeout, TimeUnit unit) {
         return null;
-//        Void r;
-//
-//        long deadline = System.currentTimeMillis() + unit.toMillis(timeout);
-//        while ((r = get()) == null) {
-//            Util.sleep(DEFAULT_TIMEOUT_POLL_PERIOD_MS);
-//            if (System.currentTimeMillis() >= deadline)
-//                break;
-//        }
-//        return r == this ? null : r;
+
+
+
+
+
+
+
+
+
     }
 
 }

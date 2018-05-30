@@ -16,7 +16,7 @@ package java4k.fzero4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -27,7 +27,7 @@ import java.awt.image.BufferedImage;
 
 public class M extends JFrame {
 
-  boolean[] K = new boolean[65535]; // pressed keys
+  boolean[] K = new boolean[65535]; 
 
   public M() {
 
@@ -41,20 +41,20 @@ public class M extends JFrame {
     final int[][][] wiresBitmap = new int[32][256][256];
     final int[][][] bitmaps = new int[6][32][32];
     final byte[][] raceTrack = new byte[512][512]; 
-      // -1 = space
-      // 0 = road
-      // 1 = barrier
-      // 2 = power
-      // 3 = white circle
-      // 4 = dark road
-      // 5 = checkered road
+      
+      
+      
+      
+      
+      
+      
     double playerAngle = 0;
     final double[][] vehicleMetrics = new double[10][9]; 
-      // 0 = x, 1 = y
-      // 2 = stunned velocity x, 3 = stunned velocity y
-      // 4 = projected x, 5 = projected z
-      // 6 = velocity magnitude
-      // 7 = vx, 8 = vy
+      
+      
+      
+      
+      
     final int[] powerOvalY = new int[2];
     boolean onPowerBar = false;
     boolean playing = false;
@@ -75,7 +75,7 @@ public class M extends JFrame {
     
     
     
-// -- GENERATE WIRES BITMAP BEGIN ----------------------------------------------
+
     
     for(int i = 0; i < 32; i++) {
       for(double t = 0; t < 2.0 * Math.PI; t += 0.001) {
@@ -90,9 +90,9 @@ public class M extends JFrame {
       }
     }
     
-// -- GENERATE WIRES BITMAP END ------------------------------------------------
+
     
-// -- GENERATE VEHICLE SPRITES BEGIN -------------------------------------------    
+
 
     for(int spriteIndex = 0; spriteIndex < 10; spriteIndex++) {
       vehicleSprites[spriteIndex] = new BufferedImage(
@@ -156,9 +156,9 @@ public class M extends JFrame {
           0, 0, 64, 32, vehicleSpriteData, 0, 64);
     }
     
-// -- GENERATE VEHICLE SPRITES BEGIN -------------------------------------------
 
-// -- GENERATE RACE TRACK BEGIN ------------------------------------------------
+
+
 
     for(int y = 0; y < 512; y++) {
       for(int x = 0; x < 512; x++) {
@@ -200,9 +200,9 @@ public class M extends JFrame {
       }
     }
     
-// -- GENERATE RACE TRACK END --------------------------------------------------
 
-// -- GENERATE BITMAPS BEGIN --------------------------------------------
+
+
 
     for(int y = 0; y < 32; y++) {
       for(int x = 0; x < 32; x++) {
@@ -223,9 +223,9 @@ public class M extends JFrame {
       }
     }
 
-// -- GENERATE BITMAPS END -----------------------------------------------------
 
-// -- COMPUTE PROJECTION MAP BEGIN ---------------------------------------------
+
+
 
     for(int y = 0; y < 192; y++) {
       for(int x = 0; x < 320; x++) {
@@ -235,7 +235,7 @@ public class M extends JFrame {
       }
     }
     
-// -- COMPUTE PROJECTION MAP END -----------------------------------------------
+
 
     setTitle("F-Zero 4K");
     setIconImage(vehicleSprites[0]);
@@ -254,9 +254,9 @@ public class M extends JFrame {
     long nextFrameStart = System.nanoTime();
     while(true) {
       do {
-// -- UPDATE MODEL BEGIN -------------------------------------------------------
 
-        // rotate the background colors
+
+        
         wiresBitmapIndex = 0x1F & (wiresBitmapIndex + 1);
 
         if (paused > 0) {
@@ -285,7 +285,7 @@ public class M extends JFrame {
           }
         } else if (vehicleMetrics[0][1] < 81984 && power > 0) {
         
-          // compute rank
+          
           rank = 1;
           for(int i = 1; i < 4; i++) {
             if (vehicleMetrics[0][1] < vehicleMetrics[i][1]) {
@@ -293,7 +293,7 @@ public class M extends JFrame {
             }
           }
 
-          // reduce power while hitting a wall
+          
           if (hitWallCount > 0) {
             hitWallCount--;
             power -= 1;
@@ -302,7 +302,7 @@ public class M extends JFrame {
             }
           }
 
-          // process player input
+          
           if (playing) {
             if (K[KeyEvent.VK_LEFT]) {
               playerAngle += 0.075;
@@ -324,7 +324,7 @@ public class M extends JFrame {
           }
 
           if (playing) {
-            // compute computer-controlled-vehicles velocities
+            
             for(int i = 1; i < 10; i++) {
               if ((i < 4 && vehicleMetrics[i][6] < 20.5) 
                   || vehicleMetrics[i][6] < 10)  {
@@ -351,7 +351,7 @@ public class M extends JFrame {
                   = vehicleMetrics[i][2] + vehicleMetrics[i][6] * vz / mag;
             }
 
-            // player on power bar?
+            
             onPowerBar = false;
             if (raceTrack[0x1FF & (((int)vehicleMetrics[0][1]) >> 5)]
                 [0x1FF & (((int)vehicleMetrics[0][0]) >> 5)] == 2) {               
@@ -372,10 +372,10 @@ public class M extends JFrame {
             vehicleMetrics[0][8] = vehicleMetrics[0][3] 
                + vehicleMetrics[0][6] * cos;
 
-            // vehicle hitting something?      
+            
             for(int j = 0; j < 10; j++) {
 
-              // vehicle hitting another vehicle?
+              
               for(int i = 0; i < 10; i++) {
                 if (i != j) {
                   double normalX = (vehicleMetrics[j][0] 
@@ -407,7 +407,7 @@ public class M extends JFrame {
                 }
               }
 
-              // vehicle hitting a wall?
+              
               int vehicleX = ((int)vehicleMetrics[j][0]) >> 5;
               int vehicleZ = ((int)vehicleMetrics[j][1]) >> 5;
               for(int z = -2; z <= 2; z++) {
@@ -461,12 +461,12 @@ public class M extends JFrame {
           paused = 175;
         }
         
-// -- UPDATE MODEL END ---------------------------------------------------------
+
         nextFrameStart += 28571429;
       } while(nextFrameStart < System.nanoTime());
-// -- RENDER FRAME BEGIN -------------------------------------------------------
 
-      // Draw sky
+
+      
       double skyRed = 0x65;
       double skyGreen = 0x91;
       for(int y = 0, k = 0; y < 48; y++) {
@@ -479,7 +479,7 @@ public class M extends JFrame {
         skyGreen += 1.625;
       }
 
-      // Draw earth
+      
       for(int y = 0, k = 15360; y < 192; y++) {
         for(int x = 0; x < 320; x++, k++) {
           double X = projectionMap[y][x][0] - VIEWER_X;
@@ -496,7 +496,7 @@ public class M extends JFrame {
             tileIndex = (z == 2) ? 5 : 4;
           }
           if (tileIndex < 0) {
-            //screenBuffer[k] = 0;
+            
             screenBuffer[k] 
                 = wiresBitmap[wiresBitmapIndex][0xFF & zr][0xFF & xr];
           } else {
@@ -507,7 +507,7 @@ public class M extends JFrame {
 
       image.setRGB(0, 0, 320, 240, screenBuffer, 0, 320);
 
-      // Draw vehicles
+      
       for(int i = 0; i < 10; i++) {
         double X = vehicleMetrics[i][0] - vehicleMetrics[0][0];
         double Z = vehicleMetrics[i][1] - vehicleMetrics[0][1];     
@@ -534,14 +534,14 @@ public class M extends JFrame {
         }
       }
       
-      // Draw power bar
+      
       imageGraphics.setColor(power < 20 && (wiresBitmapIndex & 8) == 0 
             ? Color.WHITE : powerColor);
       imageGraphics.fillRect(224, 20, (int)power, 10);
       imageGraphics.setColor(Color.WHITE);
       imageGraphics.drawRect(224, 20, 80, 10);
       
-      // Draw recharge ovals
+      
       if (onPowerBar) {
         imageGraphics.setColor(Color.GREEN);
         for(int i = 0; i < 2; i++) {
@@ -551,7 +551,7 @@ public class M extends JFrame {
             
       
       if (power <= 0 || (vehicleMetrics[0][1] >= 81984 && rank > 3)) {
-        // Draw fail message  
+        
         String failString = "FAIL";
         imageGraphics.setFont(largeFont);
         int width = imageGraphics.getFontMetrics().stringWidth(failString);
@@ -561,7 +561,7 @@ public class M extends JFrame {
         imageGraphics.setColor(Color.RED);
         imageGraphics.drawString(failString, x, 145);
       } else if (vehicleMetrics[0][1] >= 81984) {
-        // Display winning rank 
+        
         String rankString = Integer.toString(rank);
         imageGraphics.setFont(largeFont);
         int width = imageGraphics.getFontMetrics().stringWidth(rankString);
@@ -572,7 +572,7 @@ public class M extends JFrame {
             ? Color.WHITE : Color.GREEN);
         imageGraphics.drawString(rankString, x, 145);
       } else {
-        // Display racing rank        
+        
         imageGraphics.setColor((rank == 4) ? (wiresBitmapIndex & 8) == 0 
             ? Color.WHITE : Color.RED : Color.GREEN);
         imageGraphics.drawString(Integer.toString(rank), 16, 32);        
@@ -584,7 +584,7 @@ public class M extends JFrame {
         panelGraphics.dispose();
       }
 
-// -- RENDER FRAME END ---------------------------------------------------------
+
       long remaining = nextFrameStart - System.nanoTime();
       if (remaining > 0) {
         try {

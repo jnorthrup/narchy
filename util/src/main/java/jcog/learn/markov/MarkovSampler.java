@@ -46,23 +46,23 @@ public class MarkovSampler<T> {
      * @return generated phrase
      */
     public List<T> generate(int maxLen) {
-        // Go ahead and choose our first node
+        
         MarkovChain.Chain<T> current = model.START.next(rng);
 
-        // We will put our generated phrase in here.
+        
         List<T> phrase = new FasterList<T>();
 
-        // As a safety, check for nulls
-        // Iterate til we get to the trailer
+        
+        
         int s = 0;
         while (current != null && current != model.END) {
-            // Iterate over the data tuple in the node and add stuff to the phrase
-            // if it is non-null
+            
+            
             List<T> cd = current.data;
 
             if (maxLen != -1 && (s + cd.size() >= maxLen)) {
 
-                //only get the prefix up to a certain length to avoid
+                
                 for (int i = 0; i < maxLen - s; i++) {
                     phrase.add(cd.get(i));
                     s++;
@@ -80,7 +80,7 @@ public class MarkovSampler<T> {
             current = current.next(rng);
         }
 
-        // Out pops pure genius
+        
         return phrase;
     }
 
@@ -134,10 +134,10 @@ public class MarkovSampler<T> {
         if (model.nodes.isEmpty())
             return null;
 
-        // In case mCurrent hasn't been initialized yet.
+        
         if (current == null || current == model.START) current = model.START.next(rng);
 
-        // Handle behavior in case we're at the trailer at the start.
+        
         if (current == model.END) {
             if (loop == true) {
 
@@ -148,7 +148,7 @@ public class MarkovSampler<T> {
 
                 tupleIndex = 0;
             }
-            // No more data for non-loopers
+            
             else {
                 return null;
             }
@@ -159,7 +159,7 @@ public class MarkovSampler<T> {
         tupleIndex++;
         chainSize++;
 
-        // We've reached the end of this tuple.
+        
         if (tupleIndex >= current.length()) {
 
             if (maxLength > 0 && chainSize >= maxLength) current = current.next(rng);

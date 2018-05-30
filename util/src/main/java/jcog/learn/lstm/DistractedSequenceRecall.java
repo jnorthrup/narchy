@@ -25,7 +25,7 @@ public class DistractedSequenceRecall extends AbstractTraining {
 			int target1 = random.nextInt(outputs);
 			int target2 = random.nextInt(outputs);
 			for (int t = 0; t < length; t++) {
-				seq[t] = random.nextInt(outputs) + outputs;//+4 so as not to overlap with target symbols
+				seq[t] = random.nextInt(outputs) + outputs;
 			}
 			int loc1 = random.nextInt(length);
 			int loc2 = random.nextInt(length);
@@ -44,14 +44,14 @@ public class DistractedSequenceRecall extends AbstractTraining {
 				input[seq[t]] = 1.0;
 
 				Interaction inter = new Interaction();
-//				if (t == 0)
-//					inter.forget = 1f;
+
+
 				inter.actual = input;
 				experience.accept(inter);
 
 			}
 
-			//final 2 steps
+			
 			double[] input1 = new double[inputs];
 			input1[8] = 1.0;
 			double[] target_output1 = new double[outputs];

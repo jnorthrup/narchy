@@ -80,7 +80,7 @@ public class AutoSurface<X> extends Gridding {
             return;
         }
 
-        if (x instanceof Services) { //first
+        if (x instanceof Services) { 
             target.add(new AutoServices((Services) x));
             return;
         }
@@ -99,8 +99,8 @@ public class AutoSurface<X> extends Gridding {
             target.add(new MyIntSlider((IntRange) x, yLabel));
         } else if (x instanceof AtomicBoolean) {
             target.add(new CheckBox(yLabel, (AtomicBoolean) x));
-//                    } else if (y instanceof MutableBoolean) {
-//                        l.add(new CheckBox(k, (MutableBoolean) y));
+
+
         } else if (x instanceof Runnable) {
             target.add(new PushButton(yLabel, (Runnable) x));
         } else if (x instanceof EnumParam) {
@@ -150,7 +150,7 @@ public class AutoSurface<X> extends Gridding {
     void collectFields(Object x, List<Surface> target, int depth) {
         Class cc = x.getClass();
         for (Field f : cc.getFields()) {
-            //SuperReflect.fields(x, (String k, Class c, SuperReflect v) -> {
+            
             int mods = f.getModifiers();
             if (Modifier.isStatic(mods))
                 continue;
@@ -161,12 +161,12 @@ public class AutoSurface<X> extends Gridding {
 
             try {
 
-                //Class c = f.getType();
+                
                 f.trySetAccessible();
 
 
                 Object y = f.get(x);
-                if (y != null && y != x) //avoid self loop
+                if (y != null && y != x) 
                     collect(y, target, depth, f.getName());
 
             } catch (Throwable t) {
@@ -215,16 +215,16 @@ public class AutoSurface<X> extends Gridding {
                 Service<?> s = ks.getValue();
 
                 if (addService(s)) {
-                    String label = s.toString(); //StringUtils.abbreviate(s.toString(), 16);
-//                FloatSlider fs = new FloatSlider(s.pri(), 0f, 1f).on((f, v) -> {
-//                    if (v < 0.01f) {
-//                        x.off(key);
-//                    } else {
-//                        x.on(key, v);
-//                        //TODO set aux power parameter
-//                    }
-//                });
-//                controls.put(s, fs);
+                    String label = s.toString(); 
+
+
+
+
+
+
+
+
+
 
                     l.add(
                             new PushButton(IconBuilder.simpleBuilder.apply(s)).click(()->{
@@ -232,35 +232,35 @@ public class AutoSurface<X> extends Gridding {
                                         new LabeledPane(label, new AutoSurface(s)),
                                         500, 500);
                             })
-                            //new Cover(
+                            
 
-//                                    () -> new PushButton(
-//                                            label)
-                                            //yLabel!=null ? yLabel : sx.toString(),
-//                                            new Gridding(
-//                                                    //enable
-////                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
-////                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
-////                                    if (on) {
-////                                        x.on(key);
-////                                    } else {
-////                                        x.off(key);
-////                                    }
-////                                }),
-//                                                    new WindowToggleButton("..", () -> s)
-//                                            )))
+
+
+                                            
+
+
+
+
+
+
+
+
+
+
+
+
                     );
                 }
 
-//            ons.add(x.change.on((co) -> {
-//                Services.Service<Object> z = co.getOne();
-//                FloatSlider c = controls.get(z);
-//                if (c != null) {
-//                    c.valueRelative(
-//                            co.getTwo() ? Util.round(z.pri(), 0.01f) : 0
-//                    );
-//                }
-//            }));
+
+
+
+
+
+
+
+
+
             });
 
             content(new Gridding(0.25f, l));

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,11 +32,11 @@ public class ArithmeticExpressionSimplifierTest {
 
     @Test
     public void testCombineWithChildNodes() {
-        // constants
+        
         assertCombineWithChildNodes("3", "7", true, "10");
         assertCombineWithChildNodes("3", "7", false, "-4");
 
-        // adding constant to a function
+        
         assertCombineWithChildNodes("(+ 1 v0)", "7", true, "(+ 8 v0)");
         assertCombineWithChildNodes("(+ 1 v0)", "7", false, "(+ -6 v0)");
         assertCombineWithChildNodes("(+ 1 (- (- v0 9) 8))", "7", true, "(+ 8 (- (- v0 9) 8))");
@@ -44,17 +44,17 @@ public class ArithmeticExpressionSimplifierTest {
         assertCombineWithChildNodes("(- 1 v0)", "7", false, "(- -6 v0)");
         assertCombineWithChildNodes("(- 1 (- (- v0 9) 8))", "7", true, "(- 8 (- (- v0 9) 8))");
 
-        // adding variable to function
+        
         assertCombineWithChildNodes("(+ 1 (- v0 9))", "v0", true, "(+ 1 (- (* 2 v0) 9))");
         assertCombineWithChildNodes("(+ 1 (- v0 9))", "v0", false, "(+ 1 (- 0 9))");
 
-        // multiplication of variable
+        
         assertCombineWithChildNodes("(* 3 v0)", "v0", true, "(* 4 v0)");
         assertCombineWithChildNodes("(* 3 v0)", "v0", false, "(* 2 v0)");
         assertCombineWithChildNodes("(* -3 v0)", "v0", true, "(* -2 v0)");
         assertCombineWithChildNodes("(* -3 v0)", "v0", false, "(* -4 v0)");
 
-        // combination of multiplication of the same variable
+        
         assertCombineWithChildNodes("(* 3 v0)", "(* 7 v0)", true, "(* 10 v0)");
         assertCombineWithChildNodes("(* 3 v0)", "(* -7 v0)", true, "(* -4 v0)");
         assertCombineWithChildNodes("(* -3 v0)", "(* 7 v0)", true, "(* 4 v0)");
@@ -64,7 +64,7 @@ public class ArithmeticExpressionSimplifierTest {
         assertCombineWithChildNodes("(* -3 v0)", "(* 7 v0)", false, "(* -10 v0)");
         assertCombineWithChildNodes("(* -3 v0)", "(* -7 v0)", false, "(* 4 v0)");
 
-        // adding to a sub-node of a function
+        
         assertCombineWithChildNodes("(+ 1 (- v0 9))", "v0", true, "(+ 1 (- (* 2 v0) 9))");
         assertCombineWithChildNodes("(+ 1 (- v0 9))", "v0", false, "(+ 1 (- 0 9))");
         assertCombineWithChildNodes("(+ 1 (* 2 v0))", "v0", true, "(+ 1 (* 3 v0))");
@@ -137,7 +137,7 @@ public class ArithmeticExpressionSimplifierTest {
     private void assertSimplify(String input, String expectedOutput) {
         FunctionNode in = readFunctionNode(input);
         Arguments args = in.args();
-        Node simplifiedVersion = NodeSimplifier.simplify(in); //simplify(in, args).orElse(in);
+        Node simplifiedVersion = NodeSimplifier.simplify(in); 
         assertNodeEquals(expectedOutput, simplifiedVersion);
         if (!simplifiedVersion.equals(in)) {
             int[][] assignedValues = {{0, 0}, {1, 21}, {2, 14}, {3, -6}, {7, 3}, {-1, 9}, {-7, 0}};

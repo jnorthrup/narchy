@@ -17,7 +17,7 @@ import java.util.Vector;
  * @author maurizio
  */
 public class List<X extends Term<?>> extends Term<List<X>> implements Iterable<X> {
-//public class List<X extends Term<?>> extends Compound<List<X>> {
+
 	protected final java.util.Vector<X> _theList;
         
         public final static List<?> NIL = new List<>(new Vector<>());
@@ -37,11 +37,11 @@ public class List<X extends Term<?>> extends Term<List<X>> implements Iterable<X
     public <Z> Z/*Collection<Z>*/ toJava() {
 		Vector<Z> _javaList = new Vector<>(_theList.size());
 		for (Term<?> t : _theList) {
-			// _javaList.add( (Z)t.toJava() );
+			
 			Z auxList = uncheckedCast(t.toJava());
 			_javaList.add( auxList );
 		}
-		//return (Z)_javaList;
+		
 		return uncheckedCast(_javaList);
 	}
 
@@ -54,7 +54,7 @@ public class List<X extends Term<?>> extends Term<List<X>> implements Iterable<X
         }
         
         public List<X> getTail() {
-            //Vector<X> tail = (Vector<X>)_theList.clone();
+            
             Vector<X> tail = uncheckedCast(_theList.clone());
             tail.remove(0);
             return new List<>(tail);

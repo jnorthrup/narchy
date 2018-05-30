@@ -34,7 +34,7 @@ class HttpResponse {
     private long rangeEnd = 0;
     private long rangeLength = 0;
 
-    //TODO non-File , byte[] response method
+    
 
     HttpResponse(METHOD requestMethod, int status, String statusMessage, boolean close, File file) {
         this.requestMethod = requestMethod;
@@ -127,7 +127,7 @@ class HttpResponse {
 
 
             if (sendFile && rangeValue != null) {
-                // only 1 range is supported
+                
                 Matcher rangeMatcher = HttpUtil.simpleRange.matcher(rangeValue);
                 if (rangeMatcher.matches()) {
                     range = true;
@@ -144,15 +144,15 @@ class HttpResponse {
 
 
                         if (start == null && end == null) {
-                            throw new NumberFormatException(); // invalid range
+                            throw new NumberFormatException(); 
                         }
 
-                        // The final 500 bytes (byte offsets 9500-9999, inclusive): bytes=-500
+                        
                         if (start == null) {
                             rangeStart = fileLength - Long.parseLong(end, 10);
                             rangeEnd = fileLength - 1;
                         }
-                        // Or bytes=9500-
+                        
                         else if (end == null) {
                             rangeStart = Long.parseLong(start, 10);
                             rangeEnd = fileLength - 1;
@@ -186,7 +186,7 @@ class HttpResponse {
             }
         }
 
-        // HTTP/1.1 200 OK\r\n
+        
         headerString.append("HTTP/1.1 ");
         headerString.append(status);
         headerString.append(' ');
@@ -211,7 +211,7 @@ class HttpResponse {
 
         if (!sendFile) {
             headerString.append("Content-Type: ");
-            String contentType = statusMessage.startsWith("<html") ? "text/html" : "text/plain"; //HACK
+            String contentType = statusMessage.startsWith("<html") ? "text/html" : "text/plain"; 
             headerString.append(contentType);
             headerString.append(" charset=UTF-8\r\n");
 
@@ -221,7 +221,7 @@ class HttpResponse {
                 headerString.append("\r\n");
             }
 
-            headerString.append("\r\n"); // end of headers
+            headerString.append("\r\n"); 
 
             if (requestMethod != METHOD.HEAD) {
                 if (sendStatusAsContent) {
@@ -260,7 +260,7 @@ class HttpResponse {
             headerString.append("\r\n");
         }
 
-        //System.out.println(headerString.toString());
+        
         this.headers = ByteBuffer.wrap(headerString.toString().getBytes(HttpUtil.UTF8));
     }
 
@@ -275,7 +275,7 @@ class HttpResponse {
                 throw new IOException("closed");
             }
 
-            if (headers.hasRemaining()) // unable to write further, try again later
+            if (headers.hasRemaining()) 
             {
                 return false;
             } else {
@@ -286,7 +286,7 @@ class HttpResponse {
         if (raf != null) {
             if (fileBuffer == null) {
                 fileBuffer = ByteBuffer.wrap(new byte[1024]);
-                fileBuffer.position(fileBuffer.limit()); // so that hasRemaining returns false
+                fileBuffer.position(fileBuffer.limit()); 
             }
 
             while (true) {
@@ -312,10 +312,10 @@ class HttpResponse {
 
                     if (range && fileBytesSent >= rangeLength) {
                         raf.close();
-                        return true; // done
+                        return true; 
                     }
 
-                    if (fileBuffer.hasRemaining()) // unable to write further, try again later
+                    if (fileBuffer.hasRemaining()) 
                     {
                         return false;
                     }
@@ -323,6 +323,6 @@ class HttpResponse {
             }
         }
 
-        return true; // done
+        return true; 
     }
 }

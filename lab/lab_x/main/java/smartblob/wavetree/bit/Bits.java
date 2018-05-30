@@ -1,7 +1,7 @@
 /** Ben F Rayfield offers Wavetree opensource GNU LGPL 2+ */
 package smartblob.wavetree.bit;
 
-//import coredatastruct.Internable;
+
 
 /** Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are.
 <br><br> 
@@ -139,7 +139,7 @@ public interface Bits /*extends Internable<Bits>*/{
 	*/
 	public void bits(byte getBits[], long offset, long start, long end);
 	
-	//Functions that are normally implemented as combinations of prefix(long) andOr suffix(long):
+	
 	
 	/** Concat. Uses at most logBase2 steps. Can use as few as 1 step, if balancing isnt done. */
 	public Bits cat(Bits suf);
@@ -176,7 +176,7 @@ public interface Bits /*extends Internable<Bits>*/{
 	like linkedlists, or allow maxHeightDiff more than 1 to reuse more branches.
 	*/
 	public int height();
-	//public byte height();
+	
 	
 	/** Cached, takes only 1 step.
 	<br><br>
@@ -190,7 +190,7 @@ public interface Bits /*extends Internable<Bits>*/{
 	by doing tree balancing in concat func.
 	*/
 	public int maxHeightDiff();
-	//public byte maxHeightDiff();
+	
 	
 	/** TODO Are some of these functions logBase2 squared?
 	Or does balanceTree only need to be done at most a constant number of times in those functions?
@@ -221,9 +221,9 @@ public interface Bits /*extends Internable<Bits>*/{
 	public Bits intern();
 	*/
 	
-	//TODO? public askequal equalsCallsThis();
 	
-	//Moved here from superinterface:
+	
+	
 	
 	/** true when quantity of bits is 0, so firstBit, lastBit, chompFirstBit, chompLastBit
 	should not be called. TODO what should they return?
@@ -261,7 +261,7 @@ public interface Bits /*extends Internable<Bits>*/{
 	public Bits chompLastBit();
 	*/
 	
-	//public Bits concat(Bits b);
+	
 	
 	/** I've decided (pending actually trying it) on a hashcode and equals standard for bitstrings,
 	which is by == of objects, so no comparing by content is done. Build your own equality checker

@@ -179,7 +179,7 @@ public class Box2DTests extends JComponent implements Runnable {
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                //synchronized (Tests.this) {
+                
                 switch (e.getButton()) {
                     case 3:
                         clickedPoint = null;
@@ -190,7 +190,7 @@ public class Box2DTests extends JComponent implements Runnable {
                         }
                         break;
                 }
-                //}
+                
             }
 
             @Override
@@ -274,7 +274,7 @@ public class Box2DTests extends JComponent implements Runnable {
         public void run() {
             for (; ; ) {
                 long l1 = System.nanoTime();
-                //synchronized(Tests.this) {
+                
                 if (running) {
                     w.step(1.0f / stepsInSecond / plynuleSlowMo, velocity, iterations);
                 }
@@ -290,7 +290,7 @@ public class Box2DTests extends JComponent implements Runnable {
                     mjdef.bodyA.setAwake(true);
                     mjdef = null;
                 }
-                //}
+                
 
                 repaint();
 
@@ -344,9 +344,9 @@ public class Box2DTests extends JComponent implements Runnable {
             float r = radius * zoom;
 
             if (r < 0.5f) {
-                g.drawLine(pp.x, pp.y, pp.x, pp.y); //ak je zoom priliz maly, tak by kvapalinu nezobrazilo
+                g.drawLine(pp.x, pp.y, pp.x, pp.y); 
             } else {
-                //int radInt = Math.round(r * 2);
+                
                 g.fillOval(pp.x - (int) r, pp.y - (int) r, (int) (r * 2), (int) (r * 2));
             }
         }
@@ -436,18 +436,18 @@ public class Box2DTests extends JComponent implements Runnable {
         g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-//        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
 
-        //predpripravi scenu
+
+        
 
 
         /*synchronized(this)*/
         {
             g.setColor(clearColor);
-            //g.fillRect(0, 0, getWidth(), getHeight());
+            
             g.clearRect(0, 0, getWidth(), getHeight());
 
-            //vykresli particles
+            
             drawParticles();
 
             w.bodies(this::drawBody);
@@ -456,9 +456,9 @@ public class Box2DTests extends JComponent implements Runnable {
 
         }
 
-        //text
+        
         {
-//            g.setColor(Color.DARK_GRAY);
+
             g.setFont(new Font("Courier New", Font.BOLD, 16));
             g.setColor(Color.ORANGE);
             g.drawString("s - start/stop", 20, 20);
@@ -468,13 +468,13 @@ public class Box2DTests extends JComponent implements Runnable {
             g.drawString("Screen position: [" + center.x + ", " + center.y + ']', 20, 80);
             g.drawString("Zoom:      " + zoom, 20, 100);
             g.drawString("Bodies:    " + w.getBodyCount(), 20, 120);
-//            g.drawString("Fixtures:  " + fixtures, 20, 140);
+
             g.drawString("Contacts:  " + w.getContactCount(), 20, 160);
             g.drawString("Particles: " + w.getParticleCount(), 20, 180);
         }
 
-//        g.setFont(new Font("Courier New", Font.BOLD, 16));
-//        g.drawString("Marek Beňovič © 2015", 20, getHeight() - 20);
+
+
 
         graphics.drawImage(bi, 0, 0, null);
     }
@@ -548,7 +548,7 @@ public class Box2DTests extends JComponent implements Runnable {
                             canvas.running = !canvas.running;
                             break;
                         case 'r':
-                            try { //pockam, kym vlakno dobehne (robilo to nejake problemy s logami)
+                            try { 
                                 canvas.t.interrupt();
                                 canvas.t.join();
                             } catch (InterruptedException ex) {

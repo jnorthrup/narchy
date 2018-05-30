@@ -26,7 +26,7 @@ public class HaiQae extends HaiQ {
     public FloatSupplier perceptionError;
     public float lastPerceptionError;
 
-    //float aeForget = 1f;
+    
 
     /**
      * "horizontal" state selection
@@ -44,17 +44,17 @@ public class HaiQae extends HaiQ {
 
     public HaiQae(int inputs, int states, int outputs) {
         super(states, outputs);
-        //logger.info("start {} -> {} -> {}", inputs, states, outputs);
+        
         this.perceptionAlpha =
-                //1f/(inputs);
+                
                 0.1f;
         this.perceptionError =
                 ()->0.01f;
-                //FloatAveragedAsync.averaged(()->lastPerceptionError, inputs/2);
+                
 
         decideState =
                 DecideEpsilonGreedy.ArgMax;
-                //new DecideSoftmax(0.25f, rng);
+                
 
         this.ae = perception(inputs, states);
     }
@@ -64,12 +64,12 @@ public class HaiQae extends HaiQ {
     }
 
 
-//    @Override
-//    protected int nextAction(int state) {
-//        //alpha is applied elsewhere, so here directly choose
-//
-//        return choose(state);
-//    }
+
+
+
+
+
+
 
     @Override
     protected int perceive(float[] input) {
@@ -82,61 +82,61 @@ public class HaiQae extends HaiQ {
     @Override
     public int act(float reward, float[] input) {
 
-        //learn more slowly while the perception is not settled
+        
         float pErr = perceptionError.asFloat();
         return act(reward, input, pErr);
     }
 
     protected int act(float reward, float[] input, float pErr) {
-        //float learningRate = 1f / (1f + pErr);
-        float learningRate = 1f - (pErr); //pErr/states is more lenient
+        
+        float learningRate = 1f - (pErr); 
         if (learningRate > 0) {
-            //System.out.println(learningRate + "  "+ pErr);
+            
             int a = learn(perceive(input), reward, learningRate, true);
             return a;
         } else {
-            perceive(input); //perceive only
+            perceive(input); 
             return rng.nextInt(actions);
         }
 
 
     }
 
-//		@Override
-//		protected int lastAction() {
-//			//evaluate the actual desire values of the action concepts to get a sense of what the NAR actually wants/wanted to do
-//			//and what it ideally would have done if it could execute them all in parallel in proportional amounts
-//
-//			//Termed best = null;
-//			int best = -1;
-//			float bestE = Float.NEGATIVE_INFINITY;
-//
-//			int s = actions;
-//
-//			final float epsi = Epsilon;
-//
-//
-//			for (int j = 0; j < s; j++) {
-//
-//				//float e = output.get(j).ran();
-//				float e = 0;
-//
-//				//add noise
-//				if (epsi != 0) {
-//					e += epsi * (rng.nextFloat() - 0.5f) * 2f;
-//				}
-//
-//				//System.out.println(outs.get(j) + " " + e);
-//
-//				//System.out.println("last action: " + j + " "  + e);
-//				if (e >= bestE) {
-//					//best = c;
-//					best = j;
-//					bestE = e;
-//				}
-//			}
-//
-//			return best;
-//		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

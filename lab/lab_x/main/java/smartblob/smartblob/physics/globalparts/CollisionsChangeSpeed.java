@@ -24,7 +24,7 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 			blobArray = sim.smartblobs.toArray(new Smartblob[0]);
 		}
 		for(int i=0; i<blobArray.length-1; i++){
-			for(int j=i+1; j<blobArray.length; j++){ //for all pairs
+			for(int j=i+1; j<blobArray.length; j++){ 
 				nextPair(blobArray[i], blobArray[j]);
 			}
 		}
@@ -34,7 +34,7 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 		Rectangle ra = a.boundingRectangle();
 		Rectangle rb = b.boundingRectangle();
 		if(ra.intersects(rb)){
-			//System.out.println("intersection: "+ra.intersection(rb));
+			
 			if(a instanceof LayeredZigzag && b instanceof LayeredZigzag){
 				rectanglesIntersect((LayeredZigzag)a, (LayeredZigzag)b);
 			}else{
@@ -48,9 +48,9 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 	
 	/** Their bounding rectangles are known to intersect. The smartblobs may intersect. */
 	public void rectanglesIntersect(LayeredZigzag a, LayeredZigzag b){
-		//Consider only points in the intersection of their bounding rectangles.
-		//TODO I'd like to only consider lines that intersect those rectangles,
-		//but its easier for now to just check them all. Its small quantity.
+		
+		
+		
 		Rectangle intersect = a.boundingRectangle().intersection(b.boundingRectangle());
 		handleIntersectsBetweenPointAndWeightedSumOfLine(intersect, a, b);
 		handleIntersectsBetweenPointAndWeightedSumOfLine(intersect, b, a);
@@ -67,18 +67,18 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 		for(int p=0; p<myPoints.layerSize; p++){
 			CornerData point = myPoints.corners[lastLayer][p];
 			if(intersect.contains(point.x, point.y)){
-				//may have crossed an outer line in the other smartblob
+				
 				TriData t = myLines.findCollision(point.y, point.x);
-				if(t != null){ //collision found
+				if(t != null){ 
 					
-					//Find point on infinite line its closest to, and absVal part of speed thats toward it
+					
 					SmartblobUtil.getClosestPointToInfiniteLine(getYX, t, point.y, point.x);
-					//vector from [closest point on infinite line] to point.
+					
 					float vectorY = point.y-getYX[0];
 					float vectorX = point.x-getYX[1];
 					float vectorLen = (float)Math.sqrt(vectorY*vectorY + vectorX*vectorX);
 					if(vectorLen == 0){
-						//Dont bounce if its only touching the line. Wait until crosses.
+						
 						continue;
 					}
 					
@@ -88,15 +88,15 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 					float distanceA = (float)Math.sqrt(aDy*aDy + aDx*aDx);
 					float bDy = getYX[0]-b.y, bDx = getYX[1]-b.x; 
 					float distanceB = (float)Math.sqrt(bDy*bDy + bDx*bDx);
-					//TODO These fractions may be slightly above 1 and the other negative, but usually normal fractions.
-					//By distance, they reverse their behavior when it goes past either end of line,
-					//but that only happens when border of smartblob has negative curve, unlike a circle.
+					
+					
+					
 					float distanceSum = distanceA+distanceB;
 					float fractionLineEndA = distanceA/distanceSum;
 					float fractionLineEndB = 1-fractionLineEndA;
 					
-					//Speed of pointOnLine is a weightedSum of speeds at the line's ends.
-					//TODO this is a little inaccurate if the point on the line segment is past either end.
+					
+					
 					float speedYOfPointOnLine = a.speedY*fractionLineEndA + fractionLineEndB*b.speedY;
 					float speedXOfPointOnLine = a.speedX*fractionLineEndA + fractionLineEndB*b.speedX;
 					
@@ -105,30 +105,30 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 					
 					float normVY = vectorY/vectorLen;
 					float normVX = vectorX/vectorLen;
-					//"If vector is in same direction as third corner, flip it.
-					//Since we already know theres a collision, always flip here.
+					
+					
 					normVY = -normVY;
 					normVX = -normVX;
-					//Now (normVY,normVX) is length 1 and point outward from smartblob.
-					//Get the part of speed vector aligned with normVector, then flip it.
-					//TODO should that speed be difference between the 2 smartblobs at that point,
-					//or do them separately? Doing them separately, at least for now.
 					
-					//float speedDotNorm = point.speedY*normVY + point.speedX*normVX;
+					
+					
+					
+					
+					
 					float speedDotNorm = ddy*normVY + ddx*normVX;
 					
-					//If speedDotNorm is positive, the smartblob is moving away (if the line was at rest)
+					
 					if(speedDotNorm < 0){
-						//Like the BounceOnSimpleWall code, use absVal.
-						//partOfSpeedVec is the part aligned with normVec (TODO opposite?)
+						
+						
 						float partOfSpeedVecY = normVY*speedDotNorm;
 						float partOfSpeedVecX = normVX*speedDotNorm;
 						float addToSpeedY = -2*partOfSpeedVecY;
 						float addToSpeedX = -2*partOfSpeedVecX;
 						float addToEachSpeedY = addToSpeedY/2;
 						float addToEachSpeedX = addToSpeedX/2;
-						//point.speedY -= 2*partOfSpeedVecY;
-						//point.speedX -= 2*partOfSpeedVecX;
+						
+						
 						
 						point.speedY += addToEachSpeedY;
 						a.speedY -= fractionLineEndA*addToEachSpeedY;
@@ -139,14 +139,14 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 						b.speedX -= fractionLineEndB*addToEachSpeedX;
 						
 						
-						//TODO equal and opposite force, between this and weightedSum between 2 ends of line (even if it hangs past ends, just do something like 1.1*endA - .1*endB
-						//"TODO use fractionLineEndA and fractionLineEndB"
-						//TODO
+						
+						
+						
 					}
 					
 				}
 				/*LineData lineData = myLines.findCollision(point.y, point.x);
-				if(lineData != null){ //collision found
+				if(lineData != null){ 
 					throw new RuntimeException("TODO");
 				}
 				*/
@@ -166,44 +166,44 @@ public class CollisionsChangeSpeed implements GlobalChangeSpeed {
 		for(int p=0; p<myPoints.layerSize; p++){
 			CornerData point = myPoints.corners[lastLayer][p];
 			if(intersect.contains(point.x, point.y)){
-				//may have crossed an outer line in the other smartblob
+				
 				TriData t = myLines.findCollision(point.y, point.x);
-				if(t != null){ //collision found
-					//Find point on infinite line its closest to, and absVal part of speed thats toward it
+				if(t != null){ 
+					
 					SmartblobUtil.getClosestPointToInfiniteLine(getYX, t, point.y, point.x);
-					//vector from [closest point on infinite line] to point.
+					
 					float vectorY = point.y-getYX[0];
 					float vectorX = point.x-getYX[1];
 					float vectorLen = (float)Math.sqrt(vectorY*vectorY + vectorX*vectorX);
 					if(vectorLen == 0){
-						//Dont bounce if its only touching the line. Wait until crosses.
+						
 						continue;
 					}
 					float normVY = vectorY/vectorLen;
 					float normVX = vectorX/vectorLen;
-					//"If vector is in same direction as third corner, flip it.
-					//Since we already know theres a collision, always flip here.
+					
+					
 					normVY = -normVY;
 					normVX = -normVX;
-					//Now (normVY,normVX) is length 1 and point outward from smartblob.
-					//Get the part of speed vector aligned with normVector, then flip it.
-					//TODO should that speed be difference between the 2 smartblobs at that point,
-					//or do them separately? Doing them separately, at least for now.
+					
+					
+					
+					
 					float speedDotNorm = point.speedY*normVY + point.speedX*normVX;
-					//If speedDotNorm is positive, the smartblob is moving away (if the line was at rest)
+					
 					if(speedDotNorm < 0){
-						//Like the BounceOnSimpleWall code, use absVal.
-						//partOfSpeedVec is the part aligned with normVec (TODO opposite?)
+						
+						
 						float partOfSpeedVecY = normVY*speedDotNorm;
 						float partOfSpeedVecX = normVX*speedDotNorm;
 						point.speedY -= 2*partOfSpeedVecY;
 						point.speedX -= 2*partOfSpeedVecX;
-						//TODO equal and opposite force, between this and weightedSum between 2 ends of line (even if it hangs past ends, just do something like 1.1*endA - .1*endB
-						//TODO
+						
+						
 					}
 				}
 				/*LineData lineData = myLines.findCollision(point.y, point.x);
-				if(lineData != null){ //collision found
+				if(lineData != null){ 
 					throw new RuntimeException("TODO");
 				}
 				*/

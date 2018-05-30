@@ -35,22 +35,22 @@ public class ImplicationNetworkTest {
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
         Truth aBelief = aBeliefs.truth(ETERNAL, n);
-        //n.concept(a).print();
+        
 
-        //a belief state should not exceed the input (default confidence) and freq remain stable
-        //additional beliefs are not helpful
-        //assertEquals(1, aBeliefs.size());
+        
+        
+        
 
         BeliefTable bBeliefs = n.concept(b).beliefs();
         Truth bBelief = bBeliefs.truth(ETERNAL, n);
-        //n.concept(b).print();
-        //assertEquals(1, bBeliefs.size());
+        
+        
 
-        //b should have less conf than a but higher than c
-        //same freq among all
+        
+        
 
         Truth cBelief = n.concept(c).beliefs().truth(ETERNAL, n);
-        //n.concept(c).print();
+        
 
         System.out.println("a: " + aBelief);
         System.out.println("b: " + bBelief);
@@ -76,10 +76,10 @@ public class ImplicationNetworkTest {
 
         BeliefTable aGoals = n.concept(a).goals();
         Truth aGoal = aGoals.truth(ETERNAL, n);
-        //n.concept(a).print();
+        
 
-        //a belief state should not exceed the input (default confidence) and freq remain stable
-        //additional beliefs are not helpful
+        
+        
         assertEquals(1, aGoals.size());
 
         BeliefTable bGoals = n.concept(b).goals();
@@ -87,13 +87,13 @@ public class ImplicationNetworkTest {
         n.concept(b).print();
         assertEquals(1, bGoals.size());
 
-        //b should have less conf than a but higher than c
-        //same freq among all
+        
+        
 
         BeliefTable cGoals = n.concept(c).goals();
         Truth cGoal = cGoals.truth(ETERNAL, n);
         n.concept(c).print();
-        //assertEquals(1, cGoals.size());
+        
 
         System.out.println("a: " + aGoal);
         System.out.println("b: " + bGoal);
@@ -118,15 +118,15 @@ public class ImplicationNetworkTest {
         n.run(100);
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
-//        Truth aBelief = aBeliefs.truth(ETERNAL, n);
 
-        //a belief state should not exceed the input (default confidence) and freq remain stable
-        //additional beliefs are not helpful
-        //assertEquals(1, aBeliefs.size());
+
+        
+        
+        
 
 
         Truth bBelief = n.concept(b).beliefs().truth(ETERNAL, n);
-        assertNull(bBelief); //NOTHING
+        assertNull(bBelief); 
 
     }
     @Test public void testEternal_A_NegBelief_NegToBC_AB_only() {
@@ -143,7 +143,7 @@ public class ImplicationNetworkTest {
         BeliefTable bb = n.concept(b).beliefs();
 
         aa.print();
-        //bb.print();
+        
         bb.forEachTask(x -> System.out.println(x.proof()));
 
         Truth bBelief = bb.truth(ETERNAL, n);
@@ -169,9 +169,9 @@ public class ImplicationNetworkTest {
         BeliefTable cc = n.concept(c).beliefs();
         aa.print();
         bb.print();
-        //cc.print();
+        
         cc.forEachTask(x -> System.out.println(x.proof()));
-        //assertEquals(1, aBeliefs.size());
+        
 
 
         Truth bBelief = bb.truth(ETERNAL, n);
@@ -196,7 +196,7 @@ public class ImplicationNetworkTest {
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
         aBeliefs.print();
-        //assertEquals(1, aBeliefs.size());
+        
 
         Truth bBelief = n.concept(b).beliefs().truth(ETERNAL, n);
         Truth cBelief = n.concept(c).beliefs().truth(ETERNAL, n);

@@ -42,18 +42,18 @@ public class StateBacktrack extends State {
     @Override
     void run(Engine e) {
         ChoicePointContext curChoice = e.choicePointSelector.fetch();
-        //verify ChoicePoint
+        
         if (curChoice == null) {
             e.nextState = c.END_FALSE;
-            //Struct goal = e.currentContext.currentGoal;
-            // COMMENTED OUT BY ED ON JAN 25, 2011
-            // DE-COMMENTED BY ED ON JAN 28, 2011
-            //c.warn("The predicate " + goal.getPredicateIndicator() + " is unknown.");
+            
+            
+            
+            
             return;
         }
         e.currentAlternative = curChoice;
         
-        //deunify variables and reload old goal
+        
         e.currentContext = curChoice.executionContext;
         Term curGoal = e.currentContext.goalsToEval.backTo(curChoice.indexSubGoal).term();
         if (!(curGoal instanceof Struct)) {
@@ -63,16 +63,16 @@ public class StateBacktrack extends State {
         e.currentContext.currentGoal = (Struct) curGoal;
         
         
-        // Rende coerente l'execution_stack
+        
         ExecutionContext curCtx = e.currentContext;
         OneWayList<List<Var>> pointer = curCtx.trailingVars;
         OneWayList<List<Var>> stopDeunify = curChoice.varsToDeunify;
         List<Var> varsToDeunify = stopDeunify.head;
         Var.free(varsToDeunify);
         varsToDeunify.clear();
-        // bring parent contexts to a previous state in the demonstration
+        
         do {
-            // deunify variables in sibling contexts
+            
             while (pointer != stopDeunify) {
                 Var.free(pointer.head);
                 pointer = pointer.tail;
@@ -94,7 +94,7 @@ public class StateBacktrack extends State {
             pointer = curCtx.trailingVars;
         } while (true);
         
-        //set next state
+        
         e.nextState = c.GOAL_EVALUATION;
     }
     

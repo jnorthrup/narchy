@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 18.11.2003 by RST.
+
 
 package jake2.game;
 
@@ -168,17 +168,17 @@ public class GameSpawn {
             ent.movetype = Defines.MOVETYPE_PUSH;
             ent.solid = Defines.SOLID_BSP;
             ent.inuse = true;
-            // since the world doesn't use G_Spawn()
+            
             ent.s.modelindex = 1;
-            // world model is always index 1
-            //---------------
-            // reserve some spots for dead player bodies for coop / deathmatch
+            
+            
+            
             PlayerClient.InitBodyQue();
-            // set configstrings for items
+            
             GameItems.SetItemNames();
             if (GameBase.st.nextmap != null)
                 GameBase.level.nextmap = GameBase.st.nextmap;
-            // make some data visible to the server
+            
             if (ent.message != null && ent.message.length() > 0) {
                 game_import_t.configstring(Defines.CS_NAME, ent.message);
                 GameBase.level.level_name = ent.message;
@@ -195,13 +195,13 @@ public class GameSpawn {
             game_import_t.configstring(Defines.CS_CDTRACK, "" + ent.sounds);
             game_import_t.configstring(Defines.CS_MAXCLIENTS, ""
                     + (int) (GameBase.maxclients.value));
-            // status bar program
+            
             if (GameBase.deathmatch.value != 0)
                 game_import_t.configstring(Defines.CS_STATUSBAR, "" + dm_statusbar);
             else
                 game_import_t.configstring(Defines.CS_STATUSBAR, "" + single_statusbar);
-            //---------------
-            // help icon for statusbar
+            
+            
             game_import_t.imageindex("i_help");
             GameBase.level.pic_health = game_import_t.imageindex("i_health");
             game_import_t.imageindex("help");
@@ -211,16 +211,16 @@ public class GameSpawn {
             else
                 game_import_t.cvar_set("sv_gravity", GameBase.st.gravity);
             GameBase.snd_fry = game_import_t.soundindex("player/fry.wav");
-            // standing in lava / slime
+            
             GameItems.PrecacheItem(GameItems.FindItem("Blaster"));
             game_import_t.soundindex("player/lava1.wav");
             game_import_t.soundindex("player/lava2.wav");
             game_import_t.soundindex("misc/pc_up.wav");
             game_import_t.soundindex("misc/talk1.wav");
             game_import_t.soundindex("misc/udeath.wav");
-            // gibs
+            
             game_import_t.soundindex("items/respawn1.wav");
-            // sexed sounds
+            
             game_import_t.soundindex("*death1.wav");
             game_import_t.soundindex("*death2.wav");
             game_import_t.soundindex("*death3.wav");
@@ -228,10 +228,10 @@ public class GameSpawn {
             game_import_t.soundindex("*fall1.wav");
             game_import_t.soundindex("*fall2.wav");
             game_import_t.soundindex("*gurp1.wav");
-            // drowning damage
+            
             game_import_t.soundindex("*gurp2.wav");
             game_import_t.soundindex("*jump1.wav");
-            // player jump
+            
             game_import_t.soundindex("*pain25_1.wav");
             game_import_t.soundindex("*pain25_2.wav");
             game_import_t.soundindex("*pain50_1.wav");
@@ -240,9 +240,9 @@ public class GameSpawn {
             game_import_t.soundindex("*pain75_2.wav");
             game_import_t.soundindex("*pain100_1.wav");
             game_import_t.soundindex("*pain100_2.wav");
-            // sexed models
-            // THIS ORDER MUST MATCH THE DEFINES IN g_local.h
-            // you can add more, max 15
+            
+            
+            
             game_import_t.modelindex("#w_blaster.md2");
             game_import_t.modelindex("#w_shotgun.md2");
             game_import_t.modelindex("#w_sshotgun.md2");
@@ -254,25 +254,25 @@ public class GameSpawn {
             game_import_t.modelindex("#w_hyperblaster.md2");
             game_import_t.modelindex("#w_railgun.md2");
             game_import_t.modelindex("#w_bfg.md2");
-            //-------------------
+            
             game_import_t.soundindex("player/gasp1.wav");
-            // gasping for air
+            
             game_import_t.soundindex("player/gasp2.wav");
-            // head breaking surface, not gasping
+            
             game_import_t.soundindex("player/watr_in.wav");
-            // feet hitting water
+            
             game_import_t.soundindex("player/watr_out.wav");
-            // feet leaving water
+            
             game_import_t.soundindex("player/watr_un.wav");
-            // head going underwater
+            
             game_import_t.soundindex("player/u_breath1.wav");
             game_import_t.soundindex("player/u_breath2.wav");
             game_import_t.soundindex("items/pkup.wav");
-            // bonus item pickup
+            
             game_import_t.soundindex("world/land.wav");
-            // landing thud
+            
             game_import_t.soundindex("misc/h2ohit1.wav");
-            // landing splash
+            
             game_import_t.soundindex("items/damage.wav");
             game_import_t.soundindex("items/protect.wav");
             game_import_t.soundindex("items/protect4.wav");
@@ -286,46 +286,46 @@ public class GameSpawn {
             game_import_t.modelindex("models/objects/gibs/chest/tris.md2");
             game_import_t.modelindex("models/objects/gibs/skull/tris.md2");
             game_import_t.modelindex("models/objects/gibs/head2/tris.md2");
-            //
-            // Setup light animation tables. 'a' is total darkness, 'z' is
-            // doublebright.
-            //
-            // 0 normal
+            
+            
+            
+            
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 0, "m");
-            // 1 FLICKER (first variety)
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 1,
                     "mmnmmommommnonmmonqnmmo");
-            // 2 SLOW STRONG PULSE
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 2,
                     "abcdefghijklmnopqrstuvwxyzyxwvutsrqponmlkjihgfedcba");
-            // 3 CANDLE (first variety)
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 3,
                     "mmmmmaaaaammmmmaaaaaabcdefgabcdefg");
-            // 4 FAST STROBE
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 4, "mamamamamama");
-            // 5 GENTLE PULSE 1
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 5,
                     "jklmnopqrstuvwxyzyxwvutsrqponmlkj");
-            // 6 FLICKER (second variety)
+            
             game_import_t
                     .configstring(Defines.CS_LIGHTS + 6, "nmonqnmomnmomomno");
-            // 7 CANDLE (second variety)
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 7,
                     "mmmaaaabcdefgmmmmaaaammmaamm");
-            // 8 CANDLE (third variety)
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 8,
                     "mmmaaammmaaammmabcdefaaaammmmabcdefmmmaaaa");
-            // 9 SLOW STROBE (fourth variety)
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 9, "aaaaaaaazzzzzzzz");
-            // 10 FLUORESCENT FLICKER
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 10,
                     "mmamammmmammamamaaamammma");
-            // 11 SLOW PULSE NOT FADE TO BLACK
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 11,
                     "abcdefghijklmnopqrrqponmlkjihgfedcba");
-            // styles 32-62 are assigned by the light program for switchable
-            // lights
-            // 63 testing
+            
+            
+            
             game_import_t.configstring(Defines.CS_LIGHTS + 63, "a");
             return true;
         }
@@ -387,7 +387,7 @@ public class GameSpawn {
         GameBase.st = new spawn_temp_t();
         while (true) {
 
-            // parse key
+            
             com_token = Com.Parse(ph);
             if (com_token.equals("}"))
                 break;
@@ -397,7 +397,7 @@ public class GameSpawn {
 
             keyname = com_token;
 
-            // parse value
+            
             com_token = Com.Parse(ph);
 
             if (ph.isEof())
@@ -407,8 +407,8 @@ public class GameSpawn {
                 game_import_t.error("ED_ParseEntity: closing brace without data");
 
             init = true;
-            // keynames with a leading underscore are used for utility comments,
-            // and are immediately discarded by quake
+            
+            
             if (keyname.charAt(0) == '_')
                 continue;
 
@@ -487,7 +487,7 @@ public class GameSpawn {
         String com_token;
         int i;
         float skill_level;
-        //skill.value =2.0f;
+        
         skill_level = (float) Math.floor(GameBase.skill.value);
 
         if (skill_level < 0)
@@ -507,7 +507,7 @@ public class GameSpawn {
         GameBase.level.mapname = mapname;
         GameBase.game.spawnpoint = spawnpoint;
 
-        // set client fields on player ents
+        
         for (i = 0; i < GameBase.game.maxclients; i++)
             GameBase.g_edicts[i + 1].client = GameBase.game.clients[i];
 
@@ -516,7 +516,7 @@ public class GameSpawn {
 
         Com.ParseHelp ph = new Com.ParseHelp(entities);
 
-        while (true) { // parse the opening brace
+        while (true) { 
 
             com_token = Com.Parse(ph);
             if (ph.isEof())
@@ -534,14 +534,14 @@ public class GameSpawn {
             Com.DPrintf("spawning ent[" + ent.index + "], classname=" + 
                     ent.classname + ", flags= " + Integer.toHexString(ent.spawnflags));
             
-            // yet another map hack
+            
             if (0 == Lib.Q_stricmp(GameBase.level.mapname, "command")
                     && 0 == Lib.Q_stricmp(ent.classname, "trigger_once")
                     && 0 == Lib.Q_stricmp(ent.model, "*27"))
                 ent.spawnflags &= ~Defines.SPAWNFLAG_NOT_HARD;
 
-            // remove things (except the world) from different skill levels or
-            // deathmatch
+            
+            
             if (ent != GameBase.g_edicts[0]) {
                 if (GameBase.deathmatch.value != 0) {
                     if ((ent.spawnflags & Defines.SPAWNFLAG_NOT_DEATHMATCH) != 0) {
@@ -583,42 +583,42 @@ public class GameSpawn {
         PlayerTrail.Init();
     }
 
-    static final String single_statusbar = "yb	-24 " //	   health
-            + "xv	0 " + "hnum " + "xv	50 " + "pic 0 " //	   ammo
+    static final String single_statusbar = "yb	-24 " 
+            + "xv	0 " + "hnum " + "xv	50 " + "pic 0 " 
             + "if 2 " + "	xv	100 " + "	anum " + "	xv	150 " + "	pic 2 "
-            + "endif " //	   armor
+            + "endif " 
             + "if 4 " + "	xv	200 " + "	rnum " + "	xv	250 " + "	pic 4 "
-            + "endif " //	   selected item
-            + "if 6 " + "	xv	296 " + "	pic 6 " + "endif " + "yb	-50 " //	   picked
-            // up
-            // item
+            + "endif " 
+            + "if 6 " + "	xv	296 " + "	pic 6 " + "endif " + "yb	-50 " 
+            
+            
             + "if 7 " + "	xv	0 " + "	pic 7 " + "	xv	26 " + "	yb	-42 "
             + "	stat_string 8 " + "	yb	-50 " + "endif "
-            //	   timer
+            
             + "if 9 " + "	xv	262 " + "	num	2	10 " + "	xv	296 " + "	pic	9 "
             + "endif "
-            //		help / weapon icon
+            
             + "if 11 " + "	xv	148 " + "	pic	11 " + "endif ";
 
-    static final String dm_statusbar = "yb	-24 " //	   health
-            + "xv	0 " + "hnum " + "xv	50 " + "pic 0 " //	   ammo
+    static final String dm_statusbar = "yb	-24 " 
+            + "xv	0 " + "hnum " + "xv	50 " + "pic 0 " 
             + "if 2 " + "	xv	100 " + "	anum " + "	xv	150 " + "	pic 2 "
-            + "endif " //	   armor
+            + "endif " 
             + "if 4 " + "	xv	200 " + "	rnum " + "	xv	250 " + "	pic 4 "
-            + "endif " //	   selected item
-            + "if 6 " + "	xv	296 " + "	pic 6 " + "endif " + "yb	-50 " //	   picked
-            // up
-            // item
+            + "endif " 
+            + "if 6 " + "	xv	296 " + "	pic 6 " + "endif " + "yb	-50 " 
+            
+            
             + "if 7 " + "	xv	0 " + "	pic 7 " + "	xv	26 " + "	yb	-42 "
             + "	stat_string 8 " + "	yb	-50 " + "endif "
-            //	   timer
+            
             + "if 9 " + "	xv	246 " + "	num	2	10 " + "	xv	296 " + "	pic	9 "
             + "endif "
-            //		help / weapon icon
-            + "if 11 " + "	xv	148 " + "	pic	11 " + "endif " //		frags
-            + "xr	-50 " + "yt 2 " + "num 3 14 " //	   spectator
+            
+            + "if 11 " + "	xv	148 " + "	pic	11 " + "endif " 
+            + "xr	-50 " + "yt 2 " + "num 3 14 " 
             + "if 17 " + "xv 0 " + "yb -58 " + "string2 \"SPECTATOR MODE\" "
-            + "endif " //	   chase camera
+            + "endif " 
             + "if 16 " + "xv 0 " + "yb -68 " + "string \"Chasing\" " + "xv 64 "
             + "stat_string 16 " + "endif ";
 
@@ -1352,7 +1352,7 @@ public class GameSpawn {
         if (null == ent.classname) {
             game_import_t.dprintf("ED_CallSpawn: null classname\n");
             return;
-        } // check item spawn functions
+        } 
         for (i = 1; i < GameBase.game.num_items; i++) {
 
             item = GameItemList.itemlist[i];
@@ -1362,14 +1362,14 @@ public class GameSpawn {
 
             if (item.classname == null)
                 continue;
-            if (item.classname.equalsIgnoreCase(ent.classname)) { // found it
+            if (item.classname.equalsIgnoreCase(ent.classname)) { 
                 GameItems.SpawnItem(ent, item);
                 return;
             }
-        } // check normal spawn functions
+        } 
 
         for (i = 0; (s = spawns[i]) != null && s.name != null; i++) {
-            if (s.name.equalsIgnoreCase(ent.classname)) { // found it
+            if (s.name.equalsIgnoreCase(ent.classname)) { 
 
                 if (s.spawn == null)
                     game_import_t.error("ED_CallSpawn: null-spawn on index=" + i);

@@ -78,7 +78,7 @@ public class Cvar extends Globals {
         var.string = var_value;
         var.modified = true;
         var.value = Lib.atof(var.string);
-        // link the variable in
+        
         var.next = Globals.cvar_vars;
         Globals.cvar_vars = var;
 
@@ -116,14 +116,14 @@ public class Cvar extends Globals {
         cvar_t var;
 
         var = Cvar.FindVar(var_name);
-        if (null == var) { // create it
+        if (null == var) { 
             return Cvar.Get(var_name, value, flags);
         }
 
         var.modified = true;
 
         if ((var.flags & CVAR_USERINFO) != 0)
-            Globals.userinfo_modified = true; // transmit at next oportunity
+            Globals.userinfo_modified = true; 
 
         var.string = value;
         var.value = Lib.atof(var.string);
@@ -154,7 +154,7 @@ public class Cvar extends Globals {
 
         cvar_t var = Cvar.FindVar(var_name);
         if (var == null) { 
-        	// create it
+        	
             return Cvar.Get(var_name, value, 0);
         }
 
@@ -201,12 +201,12 @@ public class Cvar extends Globals {
         }
 
         if (value.equals(var.string))
-            return var; // not changed
+            return var; 
 
         var.modified = true;
 
         if ((var.flags & CVAR_USERINFO) != 0)
-            Globals.userinfo_modified = true; // transmit at next oportunity
+            Globals.userinfo_modified = true; 
 
         var.string = value;
         try {
@@ -326,12 +326,12 @@ public class Cvar extends Globals {
     public static boolean Command() {
         cvar_t v;
 
-        // check variables
+        
         v = Cvar.FindVar(Cmd.Argv(0));
         if (v == null)
             return false;
 
-        // perform a variable print or set
+        
         if (Cmd.Argc() == 1) {
             Com.Printf('"' + v.name + "\" is \"" + v.string + "\"\n");
             return true;
@@ -427,7 +427,7 @@ public class Cvar extends Globals {
 
         Vector vars = new Vector();
 
-        // check match
+        
         for (cvar_t cvar = Globals.cvar_vars; cvar != null; cvar = cvar.next)
             if (cvar.name.startsWith(partial))
                 vars.add(cvar.name);

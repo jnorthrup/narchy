@@ -117,7 +117,7 @@ public class JavaDynamicClassLoaderTestCase {
 
     private void setPath(boolean valid) throws IOException {
         File file = new File(".");
-        // Array paths contains a valid path
+        
         if (valid) {
             paths[0] = file.getCanonicalPath()
                     + File.separator + "test"

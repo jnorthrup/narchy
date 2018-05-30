@@ -38,7 +38,7 @@ package spacegraph.util.math;
  */
 public class Vector4f extends Tuple4f {
 
-  // Compatible with 1.1
+  
   static final long serialVersionUID = 8749319902347760659L;
 
   /**
@@ -73,15 +73,15 @@ public class Vector4f extends Tuple4f {
       super(v1);
   }
 
-//
-//  /**
-//   * Constructs and initializes a Vector4f from the specified Vector4d.
-//   * @param v1 the Vector4d containing the initialization x y z w data
-//   */
-//  public Vector4f(Vector4d v1)
-//  {
-//      super(v1);
-//  }
+
+
+
+
+
+
+
+
+
 
 
     /**

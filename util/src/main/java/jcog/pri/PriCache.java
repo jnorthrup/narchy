@@ -42,7 +42,7 @@ public class PriCache<X, Y> extends AbstractMap<X, Y> {
     abstract public static class TLink<X, Y> implements Supplier<Y> {
         public final X key;
         public final int hash;
-        //TODO support hash64 and larger
+        
 
         /** activity counter */
         long action = 0;
@@ -68,7 +68,7 @@ public class PriCache<X, Y> extends AbstractMap<X, Y> {
 
         public void updateAction(long boost, long now, float forgetRate) {
 
-            //TODO use atomics to avoid synch block
+            
             synchronized (key) {
                 long prevLastActive = this.lastActive;
                 long dt = now - prevLastActive;
@@ -118,8 +118,8 @@ public class PriCache<X, Y> extends AbstractMap<X, Y> {
     TLink<X, Y> link(@Nullable TLink<X, Y> t, X k, Y v, Hold mode) {
 
         if (v == null) {
-            //if (t!=null) t.delete();
-            return null; //pass-through for map removal
+            
+            return null; 
         }
         if (mode == null)
             mode = mode(k, v);
@@ -337,7 +337,7 @@ public class PriCache<X, Y> extends AbstractMap<X, Y> {
 
         @Override
         public Iterator iterator() {
-            //TODO this SimpleEntry can be recycled
+            
             return Iterators.transform(e.iterator(), ee -> new SimpleEntry(ee.getKey(), ee.getValue().get()));
         }
 
@@ -372,7 +372,7 @@ public class PriCache<X, Y> extends AbstractMap<X, Y> {
 
             evict(evictPower);
 
-            //TODO adjust cycle time in proportion to eviction power
+            
             setPeriodMS((int)Util.round( Util.lerp(1f - (evictPower*evictPower), (float)minPeriod, maxPeriod),
                     2 /* ms increments */) );
 

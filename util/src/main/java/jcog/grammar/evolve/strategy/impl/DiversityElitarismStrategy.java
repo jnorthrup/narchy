@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -48,7 +48,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         super.readParameters(configuration); 
          Map<String, String> parameters = configuration.getStrategyParameters();
         if (parameters != null) {
-            //add parameters if needed
+            
             if (parameters.containsKey("deepDiversity")) {
                 deepDiversity = Boolean.valueOf(parameters.get("deepDiversity"));
             }
@@ -58,7 +58,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
     @Override
     protected void evolve() {
         int popSize = population.size();
-        int oldPopSize = (int) (popSize * 0.9); //oldPopsize are the number of individuals generated from the older population
+        int oldPopSize = (int) (popSize * 0.9); 
 
         List<Node> newPopulation = new UniqueList<>(popSize);
         
@@ -123,14 +123,14 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
             newPopulation.addAll(population);
         }
 
-        //IntObjectHashMap<Ranking> remaining = new IntObjectHashMap(newPopulation.size());
+        
         MutableMap<Node,double[]> remaining = new UnifiedMap(newPopulation.size());
         eachRankings(newPopulation, objective, remaining);
 
         int maxPopulation = param.getPopulationSize();
         int nextPopSize =
                 Math.min( remaining.size(),
-                          maxPopulation ); //(int)Math.ceil(maxPopulation * 0.7));
+                          maxPopulation ); 
 
         do {
 
@@ -142,7 +142,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
 
         }while (remaining.size() > nextPopSize);
 
-        List<Node> pp = population; //Obtain an ordinated (as Rankings are) population
+        List<Node> pp = population; 
         pp.clear();
 
         Set<Ranking> rankings = this.rankings;

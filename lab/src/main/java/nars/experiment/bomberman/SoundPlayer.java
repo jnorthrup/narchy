@@ -247,9 +247,9 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             catch(Exception e)
             {
                 /** load midi & rmf as inputstreams for now */
-                //try {
-                //currentSound = MidiSystem.getSequence((File) object);
-                //} catch (Exception e2) {
+                
+                
+                
                 try
                 {
                     /** open the file */
@@ -260,7 +260,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
                 catch (Exception e1)
                 {
                 }
-                //}
+                
             }
         }
 

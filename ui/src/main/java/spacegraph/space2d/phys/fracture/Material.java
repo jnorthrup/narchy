@@ -67,12 +67,12 @@ public abstract class Material {
      */
     public float m_radius = 2.0f;
 
-//    /**
-//     * Aky material sa definuje na fragmenty. this - fragmenty preberaju material
-//     * od povodneho predka, null - ziadne rekurzivne triestenie. Pomocou inych
-//     * referencii sa da dobre definovat napr. cihlova stena.
-//     */
-//    public final Material m_fragments = this;
+
+
+
+
+
+
 
     /**
      * Abstraktna funkcia urcujuca sposob triesenia.
@@ -95,11 +95,11 @@ public abstract class Material {
     protected Polygon[] split(Smasher geom, Polygon p, Tuple2f localPos, Tuple2f localVel, float normalImpulse) {
         Tuple2f[] foceeArray = focee(localPos, localVel);
 
-        //inverzna tranformacia
+        
         float ln = localVel.length();
 
-        //definicia filtru posobnosti
-        float r = m_radius; // polomer
+        
+        float r = m_radius; 
         float rr = r * r;
 
         float c = 2;

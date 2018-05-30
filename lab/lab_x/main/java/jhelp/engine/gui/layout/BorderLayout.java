@@ -119,7 +119,7 @@ public class BorderLayout
       }
 
       return new Dimension(
-            Math.max(UtilMath.maxIntegers(topLeftWidth, leftWidth, bottomLeftWidth) + UtilMath.maxIntegers(topWidth, centerWidth, bottomWidth) + UtilMath.maxIntegers(topRightWidth, rightWidth, bottomRightWidth), width),//
+            Math.max(UtilMath.maxIntegers(topLeftWidth, leftWidth, bottomLeftWidth) + UtilMath.maxIntegers(topWidth, centerWidth, bottomWidth) + UtilMath.maxIntegers(topRightWidth, rightWidth, bottomRightWidth), width),
             Math.max(UtilMath.maxIntegers(topLeftHeight, leftHeight, bottomLeftHeight) + UtilMath.maxIntegers(topHeight, centerHeight, bottomHeight) + UtilMath.maxIntegers(topRightHeight, rightHeight, bottomRightHeight), height));
    }
 

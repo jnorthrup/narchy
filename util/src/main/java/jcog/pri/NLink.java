@@ -19,7 +19,7 @@ public class NLink<X> extends Pri implements PriReference<X> {
     @Override
     public boolean isDeleted() {
         float p = pri;
-        return p!=p; //fast NaN check
+        return p!=p; 
     }
     @Override
     public int hashCode() {
@@ -31,29 +31,29 @@ public class NLink<X> extends Pri implements PriReference<X> {
         return id;
     }
 
-//    @Override
-//    public boolean equals(/*@NotNull*/ Object that) {
-//        if (this == that) return true;
-//
-////        return //hashCode()==that.hashCode() &&
-////                Objects.equals(get(),
-////                    (that instanceof Supplier) ? ((Supplier)that).get() : that);
-//
-//        Object y = ((NLink)that).get();
-//        if (y == null) return false;
-//        Object x = get();
-//        if (x == null) return false;
-//        return x.equals(y);
-//
-////        return
-////            (x!=null)
-////                &&
-////            (
-////                x.equals(that)
-////                    ||
-////                ((that instanceof Supplier) && x.equals(((Supplier) that).get()))
-////            );
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override

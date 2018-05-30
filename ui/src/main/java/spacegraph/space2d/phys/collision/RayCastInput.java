@@ -26,7 +26,7 @@ package spacegraph.space2d.phys.collision;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.Tuple2f;
 
-// updated to rev 100
+
 
 /**
  * Ray-cast input data. The ray extends from p1 to p1 + maxFraction * (p2 - p1).

@@ -22,7 +22,7 @@ abstract public class ImageContext implements ImageProcess {
                 for (ImageProcess ip : stages) {
                     prev = ip.apply(prev);
                 }
-                return output = (InterleavedU8) prev; //HACK
+                return output = (InterleavedU8) prev; 
             }
         };
     }

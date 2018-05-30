@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -75,7 +75,7 @@ public enum Mocker {
 
     @NotNull
     public static <T> T intercepting(@NotNull Class<T> tClass, @NotNull BiConsumer<String, Object[]> consumer, T t) {
-        //noinspection unchecked
+        
         return (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class[]{tClass}, new AbstractInvocationHandler(ConcurrentHashMap::new) {
             @Override
             protected Object doInvoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
@@ -89,7 +89,7 @@ public enum Mocker {
 
     @NotNull
     public static <T> T ignored(@NotNull Class<T> tClass) {
-        //noinspection unchecked
+        
         return (T) Proxy.newProxyInstance(tClass.getClassLoader(), new Class[]{tClass}, new AbstractInvocationHandler(ConcurrentHashMap::new) {
             @Override
             protected Object doInvoke(Object proxy, Method method, Object[] args) {
@@ -99,28 +99,28 @@ public enum Mocker {
     }
 
     static public abstract class AbstractInvocationHandler implements InvocationHandler {
-        // Lookup which allows access to default methods in another package.
+        
         private static final ClassLocal<MethodHandles.Lookup> PRIVATE_LOOKUP = ClassLocal.withInitial(AbstractInvocationHandler::acquireLookup);
         private static final Object[] NO_ARGS = {};
-        // called when close() is called.
+        
         private Closeable closeable;
-//        // cache the proxy to MethodHandler lookup.
-//        private Map<Object, Function<Method, MethodHandle>> proxyToLambda;
-//        private Map<Method, MethodHandle> defaultMethod;
+
+
+
 
         /**
          * @param mapSupplier ConcurrentHashMap::new for thread safe, HashMap::new for single thread, Collections::emptyMap to turn off.
          */
         protected AbstractInvocationHandler(Supplier<Map> mapSupplier) {
-//            //noinspection unchecked
-//            proxyToLambda = mapSupplier.get();
-//            //noinspection unchecked
-//            defaultMethod = mapSupplier.get();
+
+
+
+
         }
 
         private static MethodHandles.Lookup acquireLookup(Class<?> c) {
             try {
-                // try to create one using a constructor
+                
                 Constructor<MethodHandles.Lookup> lookupConstructor =
                         MethodHandles.Lookup.class.getDeclaredConstructor(Class.class, Integer.TYPE);
                 if (!lookupConstructor.isAccessible()) {
@@ -130,12 +130,12 @@ public enum Mocker {
             } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException ignored) {
             }
             try {
-                // Try to grab an internal one,
+                
                 final Field field = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
                 field.setAccessible(true);
                 return (MethodHandles.Lookup) field.get(null);
             } catch (Exception e) {
-                // use the default to produce an error message.
+                
                 return MethodHandles.lookup();
             }
         }
@@ -151,11 +151,11 @@ public enum Mocker {
                 closeQuietly(closeable);
                 return null;
 
-//        } else if (method.isDefault()) {
-//            // this will call the default impl. of the method, not the proxy's impl.
-//            Function<Method, MethodHandle> function = proxyToLambda.computeIfAbsent(proxy, p -> m -> methodHandleForProxy(p, m));
-//            MethodHandle methodHandle = defaultMethod.computeIfAbsent(method, function);
-//            return methodHandle.invokeWithArguments(args);
+
+
+
+
+
             }
 
             if (args == null)

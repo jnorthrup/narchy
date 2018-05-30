@@ -34,21 +34,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Locale;
 
-// import java.util.Locale;
+
 
 /**
  * Jake2 is the main class of Quake2 for Java.
  */
 public final class Jake2 {
 
-    // public static Q2DataDialog q2DataTool;
+    
     public static Q2DataTool q2DataTool;
 
     /* pp */ static final void initQ2DataTool() {
         q2DataTool = new Q2DataTool();
-        // q2DataTool = new Q2DataDialog();
+        
         Locale.setDefault(Locale.US);
-        // q2DataTool.setVisible(true);        
+        
     }
     
     /**
@@ -65,7 +65,7 @@ public final class Jake2 {
     public static void run(String[] args, @Nullable Runnable onFrame) {
         boolean dedicated = false;
 
-        // check if we are in dedicated mode to hide the java dialog.
+        
         for (int n = 0; n <  args.length; n++)
         {
             if (args[n].equals("+set"))
@@ -87,7 +87,7 @@ public final class Jake2 {
             }
         }
 
-        // TODO: check if dedicated is set in config file
+        
 
         Globals.dedicated= Cvar.Get("dedicated", "0", Qcommon.CVAR_NOSET);
 
@@ -95,12 +95,12 @@ public final class Jake2 {
             Globals.dedicated.value = 1.0f;
 
 
-        // open the q2dialog, if we are not in dedicated mode.
+        
         if (Globals.dedicated.value != 1.0f) {
             Jake2.initQ2DataTool();
         }
 
-        // in C the first arg is the filename
+        
         int argc = (args == null) ? 1 : args.length + 1;
         String[] c_args = new String[argc];
         c_args[0] = "Jake2";
@@ -116,7 +116,7 @@ public final class Jake2 {
         int newtime;
         int time;
         while (true) {
-            // find time spending rendering last frame
+            
             newtime = Timer.Milliseconds();
             time = newtime - oldtime;
 

@@ -93,7 +93,7 @@ public class Plane
    private void initialize(int horizontal, int vertical, final boolean invU, final boolean invV)
    {
       this.nodeType = NodeType.PLANE;
-      // Initialization
+      
       if(horizontal < 1)
       {
          horizontal = 1;
@@ -120,21 +120,21 @@ public class Plane
       final Vertex vertex = new Vertex();
       vertex.setNormal(0, 0, -1f);
 
-      // For each vertical part
+      
       for(y = 0; y < vertical; y++)
       {
-         // Compute Y
+         
          yy = y / v;
          yy1 = (y + 1f) / v;
 
-         // For each horizontal part
+         
          for(x = 0; x < horizontal; x++)
          {
-            // Compute X
+            
             xx = x / h;
             xx1 = (x + 1f) / h;
 
-            // Add the face
+            
             vertex.setPosition(new Point3D(xx - 0.5f, yy - 0.5f, 0));
             vertex.setUv(this.makeUV(xx, yy, invU, invV));
             this.add(vertex);
@@ -147,7 +147,7 @@ public class Plane
             vertex.setPosition(new Point3D(xx1 - 0.5f, yy - 0.5f, 0));
             vertex.setUv(this.makeUV(xx1, yy, invU, invV));
             this.add(vertex);
-            //
+            
             this.nextFace();
          }
       }

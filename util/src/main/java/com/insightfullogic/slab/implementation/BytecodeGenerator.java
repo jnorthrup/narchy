@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 
 import static org.objectweb.asm.Type.LONG_TYPE;
 
-//import org.objectweb.asm.util.CheckClassAdapter;
+
 
 @SuppressWarnings("restriction")
 public class BytecodeGenerator<T extends Cursor> implements Opcodes {
@@ -51,7 +51,7 @@ public class BytecodeGenerator<T extends Cursor> implements Opcodes {
     @SuppressWarnings("unchecked")
 	public Class<T> generate() {
     	ClassWriter out = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-    	ClassVisitor writer = out; //new CheckClassAdapter(out);
+    	ClassVisitor writer = out; 
 
 		declareClass(writer);
     	declareConstructor(writer);
@@ -109,7 +109,7 @@ public class BytecodeGenerator<T extends Cursor> implements Opcodes {
 		method.visitCode();
 		declareUnsafe(fieldOffset, method);
 		
-		// unsafe.getLong
+		
 		String unsafeGetter = "get" + type.unsafeMethodSuffix();
 		String unsafeDescriptor = getUnsafeMethodDescriptor(unsafeGetter, Long.TYPE);
 		method.visitMethodInsn(INVOKEVIRTUAL, UNSAFE_NAME, unsafeGetter, unsafeDescriptor);
@@ -125,10 +125,10 @@ public class BytecodeGenerator<T extends Cursor> implements Opcodes {
 		method.visitLabel(start);
 		declareUnsafe(fieldOffset, method);
 
-		// load parameter 1
+		
 		method.visitVarInsn(type.loadOpcode, 1);
 
-		// unsafe.putLong
+		
 		String unsafeSetter = "put" + type.unsafeMethodSuffix();
 		String unsafeDescriptor = getUnsafeMethodDescriptor(unsafeSetter, Long.TYPE, type.javaEquivalent);
 		method.visitMethodInsn(INVOKEVIRTUAL, UNSAFE_NAME, unsafeSetter, unsafeDescriptor);
@@ -144,10 +144,10 @@ public class BytecodeGenerator<T extends Cursor> implements Opcodes {
 	}
 
 	private void declareUnsafe(int fieldOffset, MethodVisitor method) {
-		// DirectMemoryCursor.unsafe
+		
 		method.visitFieldInsn(GETSTATIC, DIRECT_CLASS_NAME, "unsafe", UNSAFE_DESCRIPTOR);
 
-		// this.pointer  + fieldOffset
+		
 		method.visitVarInsn(ALOAD, 0);
 		method.visitFieldInsn(GETFIELD, implementationName, "pointer", LONG_TYPE.getDescriptor());
 		method.visitLdcInsn((long)fieldOffset);

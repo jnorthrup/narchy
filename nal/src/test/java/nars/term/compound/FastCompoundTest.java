@@ -61,7 +61,7 @@ public class FastCompoundTest {
         FastCompound f = FastCompound.get(c);
         TermTest.assertReallyEquals(c, f);
 
-//        f.print();
+
     }
 
 }

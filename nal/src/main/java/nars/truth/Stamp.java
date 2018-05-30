@@ -16,7 +16,7 @@
  * GNU General Pbulic License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Open-NARS.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Open-NARS.  If not, see <http:
  */
 package nars.truth;
 
@@ -75,27 +75,27 @@ public interface Stamp {
 
         int baseLength = Math.min(aLen + bLen, maxLen);
 
-        //how many items to exclude from each due to weighting
+        
         int aMin = 0, bMin = 0;
         if (aLen + bLen > maxLen) {
             if (!newToOld)
                 throw new UnsupportedOperationException("reverse weighted not yet unimplemented");
 
-            //find which ones to exclude from
+            
 
-            //usedA + usedB = maxLen
+            
             if (aToB <= 0.5f) {
                 int usedA = Math.max(1, (int) Math.floor(aToB * (aLen + bLen)));
                 if (usedA < aLen) {
                     if (bLen + usedA < maxLen)
-                        usedA += maxLen - usedA - bLen; //pad to fill
+                        usedA += maxLen - usedA - bLen; 
                     aMin = Math.max(0, aLen - usedA);
                 }
             } else /* aToB > 0.5f */ {
                 int usedB = Math.max(1, (int) Math.floor((1f - aToB) * (aLen + bLen)));
                 if (usedB < bLen) {
                     if (aLen + usedB < maxLen)
-                        usedB += maxLen - usedB - aLen;  //pad to fill
+                        usedB += maxLen - usedB - aLen;  
                     bMin = Math.max(0, bLen - usedB);
                 }
             }
@@ -104,14 +104,14 @@ public interface Stamp {
 
         long[] c = new long[baseLength];
         if (newToOld) {
-            //"forward" starts with newes, oldest are trimmed
+            
             int ib = bLen - 1, ia = aLen - 1;
             for (int i = baseLength - 1; i >= 0; ) {
                 boolean ha = (ia >= aMin), hb = (ib >= bMin);
 
-//                c[i--] = ((ha && hb) ?
-//                            ((i & 1) > 0) : ha) ?
-//                            a[ia--] : b[ib--];
+
+
+
                 long next;
                 if (ha && hb) {
                     next = (i & 1) > 0 ? a[ia--] : b[ib--];
@@ -126,7 +126,7 @@ public interface Stamp {
                 c[i--] = next;
             }
         } else {
-            //"reverse" starts with oldest, newest are trimmed
+            
             int ib = 0, ia = 0;
             for (int i = 0; i < baseLength; ) {
 
@@ -144,12 +144,12 @@ public interface Stamp {
         return new LongHashSet(task.stamp()).toImmutable();
     }
 
-//    /** computes an estimate of self-overlap of a stamp
-//     * TODO refine */
-//    static float cyclicity(long[] s) {
-//
-//        return isCyclic(s) ? (float) (0.9f / Math.sqrt(s.length-1)) : 0;
-//    }
+
+
+
+
+
+
 
     boolean isCyclic();
 
@@ -161,20 +161,20 @@ public interface Stamp {
 
         /*if (oc == Stamp.TIMELESS)
             throw new RuntimeException("invalid occurrence time");*/
-//        if (ct == ETERNAL)
-//            throw new RuntimeException("invalid creation time");
 
-        //however, timeless creation time means it has not been perceived yet
 
-//        if (oc == ETERNAL) {
-//            if (ct == TIMELESS) {
-//                sb.append(":-:");
-//            } else {
-//                sb.append(':').append(ct).append(':');
-//            }
-//
-//        } else if (oc == TIMELESS) {
-//            sb.append("N/A");
+
+        
+
+
+
+
+
+
+
+
+
+
 
         if (oc != ETERNAL) {
             int estTimeLength = 8; /* # digits */
@@ -187,12 +187,12 @@ public interface Stamp {
             }
 
 
-            //sb.append(ct);
+            
 
-//            long OCrelativeToCT = (oc - ct);
-//            if (OCrelativeToCT >= 0)
-//                sb.append('+'); //+ sign if positive or zero, negative sign will be added automatically in converting the int to string:
-//            sb.append(OCrelativeToCT);
+
+
+
+
 
         }
 
@@ -217,7 +217,7 @@ public interface Stamp {
             appendTime(buffer);
         } else {*/
         buffer.append(creation());
-        //}
+        
         buffer.append(Op.STAMP_STARTER).append(' ');
 
         for (int i = 0; i < len; i++) {
@@ -229,12 +229,12 @@ public interface Stamp {
         }
 
         if (isCyclic())
-            buffer.append('©'); //ASCII 184 trailing cyclic value
+            buffer.append('©'); 
 
-        buffer.append(Op.STAMP_CLOSER); //.append(' ');
+        buffer.append(Op.STAMP_CLOSER); 
 
-        //this is for estimating an initial size of the stringbuffer
-        //System.out.println(baseLength + " " + derivationChain.size() + " " + buffer.baseLength());
+        
+        
 
         return buffer;
 
@@ -250,7 +250,7 @@ public interface Stamp {
     static long[] toSetArray(/*@NotNull*/ long[] x, final int outputLen) {
         int l = x.length;
 
-        //copy evidentialBase and sort it
+        
         return (l < 2) ? x : _toSetArray(outputLen, Arrays.copyOf(x, l));
     }
 
@@ -258,12 +258,12 @@ public interface Stamp {
     /*@NotNull*/
     static long[] _toSetArray(int outputLen, /*@NotNull*/ long[] sorted) {
 
-        //Arrays.sort(sorted, 0, isCyclic(sorted) ? sorted.length-1 : sorted.length);
+        
         Arrays.sort(sorted);
 
-        //2. count unique elements
+        
         long lastValue = -1;
-        int uniques = 0; //# of unique items
+        int uniques = 0; 
 
         for (long v : sorted) {
             if (lastValue != v)
@@ -272,11 +272,11 @@ public interface Stamp {
         }
 
         if ((uniques == outputLen) && (sorted.length == outputLen)) {
-            //if no duplicates and it's the right size, just return it
+            
             return sorted;
         }
 
-        //3. de-duplicate
+        
         int outSize = Math.min(uniques, outputLen);
         long[] dedupAndTrimmed = new long[outSize];
         int uniques2 = 0;
@@ -306,8 +306,8 @@ public interface Stamp {
     static boolean overlapsAny(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
 
         if (Param.DEBUG) {
-//            if (a == null || b == null)
-//                throw new RuntimeException("null evidence");
+
+
 
         }
         if (a.length == 0 || b.length == 0) {
@@ -320,9 +320,9 @@ public interface Stamp {
 
             for (long y : b) {
                 if (x == y) {
-                    return true; //commonality detected
+                    return true; 
                 } else if (y > x) {
-                    break; //any values after y in b will not be equal to x
+                    break; 
                 }
             }
         }
@@ -343,7 +343,7 @@ public interface Stamp {
      * assumes the arrays are sorted and contain no duplicates
      */
     static float overlapFraction(long[] a, long[] b) {
-        //prefer to make a set of the shorter length input
+        
         int al = a.length;
         int bl = b.length;
 
@@ -352,7 +352,7 @@ public interface Stamp {
         }
 
         if (al > bl) {
-            //swap
+            
             long[] ab = a;
             a = b;
             b = ab;
@@ -365,7 +365,7 @@ public interface Stamp {
         int denom = Math.min(al, bl);
         assert (denom != 0);
 
-        return Util.unitize(((float) common) / denom); //max: +1
+        return Util.unitize(((float) common) / denom); 
     }
 
 
@@ -419,32 +419,32 @@ public interface Stamp {
     /*@NotNull*/
     long[] stamp();
 
-    //Stamp setEvidence(long... evidentialSet);
+    
 
-//    /*@NotNull*/
-//    static long[] zip(/*@NotNull*/ Task a, /*@NotNull*/ Task b) {
-//        @Nullable long[] bb = b.stamp();
-//        @Nullable long[] aa = a.stamp();
-//        return (a.creation() > b.creation()) ?
-//                Stamp.zip(bb, aa) :
-//                Stamp.zip(aa, bb);
-//    }
 
-//    static int evidenceLength(int aLen, int bLen) {
-//        return Math.max(Param.STAMP_CAPACITY, aLen + bLen);
-//    }
-//    static int evidenceLength(/*@NotNull*/ Task a, /*@NotNull*/ Task b) {
-//        return evidenceLength(a.stamp().length, b.stamp().length);
-//    }
 
-//    static long[] zip(/*@NotNull*/ TemporalBeliefTable s) {
-//        return zip(s, s.size(), Param.STAMP_CAPACITY);
-//    }
 
-//    static long[] zip(/*@NotNull*/ Collection<? extends Stamp> s) {
-//        assert(!s.isEmpty());
-//        return zip(s, Param.STAMP_CAPACITY);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -457,9 +457,9 @@ public interface Stamp {
         if (S == 1) {
             return pair(s.get(0).stamp(), 0f);
         } else if (S > maxLen) {
-            //too many stamps, not enough to sample one evidence from any
-            //throw new RuntimeException("stamp overflow (capacity=" + maxLen + "): " + s);
-            S = maxLen; //HACK
+            
+            
+            S = maxLen; 
         }
 
         LongHashSet l = new LongHashSet(maxLen);
@@ -469,12 +469,12 @@ public interface Stamp {
 
         int totalEvidence = 0;
 
-        byte[] ptr = new byte[S]; //assumes stamps are < 127 in length
+        byte[] ptr = new byte[S]; 
         for (int i = 0, sSize = S; i < sSize; i++) {
             Stamp si = s.get(i);
             long[] x = si.stamp();
             if (x == UNSTAMPED_OVERLAPPING)
-                continue; //dont count this
+                continue; 
             int xl = x.length;
             int r = xl;
             totalEvidence += r;
@@ -487,7 +487,7 @@ public interface Stamp {
         List<long[]> stamps = Lists.transform(s, Stamp::stamp);
 
         int limit = maxLen;
-        int size = 0; //better than l.size()
+        int size = 0; 
         boolean halted = false;
         main:
         while (done < S && size < limit) {
@@ -514,7 +514,7 @@ public interface Stamp {
         }
 
         if (halted) {
-            //count remaining overlap
+            
             for (int i = 0, ptrLength = ptr.length; i < ptrLength; i++) {
                 int rr = ptr[i];
                 if (rr >= 0) {
@@ -530,26 +530,26 @@ public interface Stamp {
 
         assert (size <= limit);
 
-//        long[] e = new long[size];
-//        MutableLongIterator ll = l.longIterator();
-//        int k = 0;
-//        while (ll.hasNext()) {
-//            e[k++] = ll.next();
-//        }
-//
-//
-//        if (size > 1)
-//            Arrays.sort(e);
+
+
+
+
+
+
+
+
+
+
 
         long[] e = l.toSortedArray();
 
         float overlap = ((float) repeats) / totalEvidence;
-//        //HACK count cyclic as part of the scalar returned, but this isnt an accurate value
-//        for (int i = 0, sSize = s.size(); i < sSize; i++) {
-//            Stamp x = s.get(i);
-//            if (x.isCyclic())
-//                overlap += 1f/sSize;
-//        }
+
+
+
+
+
+
 
         return pair(e, Util.unitize(overlap));
     }
@@ -568,43 +568,43 @@ public interface Stamp {
     }
 
 
-//    static long[] uncyclic(/*@NotNull*/ long[] assumedCyclic) {
-//
-//        return ArrayUtils.remove(assumedCyclic, assumedCyclic.length-1);
-//    }
-//    static long[] cyclic(/*@NotNull*/ long[] x) {
-//        int l = x.length;
-//
-//        if (isCyclic(x))
-//            return x;
-//
-//        long[] y;
-//        if (l >= Param.STAMP_CAPACITY) {
-//            y = new long[Param.STAMP_CAPACITY];
-//            //shift left by one to leave the last entry free
-//            System.arraycopy(x, 1, y, 0, Param.STAMP_CAPACITY -1);
-//        } else {
-//            y = new long[l+1];
-//            System.arraycopy(x, 0, y, 0, l);
-//        }
-//
-//        y[y.length-1] = Long.MAX_VALUE;
-//        return y;
-//    }
 
-//    static boolean equalsIgnoreCyclic(long[] a, long[] b) {
-//        boolean aCyclic = isCyclic(a);
-//        if (aCyclic ^ isCyclic(b)) {
-//            int alen = a.length;
-//            if (aCyclic) {
-//                if (alen != b.length+1) return false;
-//                return Util.equals(a, b, alen-1);
-//            } else {
-//                if (alen != b.length-1) return false;
-//                return Util.equals(a, b, alen);
-//            }
-//        } else {
-//            return Util.equals(a, b);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

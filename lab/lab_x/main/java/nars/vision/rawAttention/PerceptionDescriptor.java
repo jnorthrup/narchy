@@ -13,14 +13,14 @@ public class PerceptionDescriptor {
 
     public boolean[][] pixelMap;
 
-    // updated by recalculatePerceptionMap()
+    
     public boolean[][] cachedPerceptionMap;
 
     public void createPixelMap(int width, int height) {
         pixelMap = new boolean[width][height];
     }
 
-    // just for visualisation
+    
     public void recalculatePerceptionMap() {
         cachedPerceptionMap = calculatePerceptionMap();
     }
@@ -59,13 +59,13 @@ public class PerceptionDescriptor {
     public void populateSensorOffsetsFor(int centerWidthDiv2, int centerHeightDiv2, int radiusLogarithmDistribution) {
         sensorOffsets.clear();
 
-        // center box
+        
         for( int y = -centerHeightDiv2; y < centerHeightDiv2; y++ ) {
             for( int x = -centerWidthDiv2; x < centerWidthDiv2; x++ ) {
                 sensorOffsets.add(new int[]{x, y});
             }
         }
 
-        // TODO< logarithm distributed periphial vision >
+        
     }
 }

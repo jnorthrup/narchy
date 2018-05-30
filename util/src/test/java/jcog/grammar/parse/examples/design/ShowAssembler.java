@@ -22,7 +22,7 @@ public class ShowAssembler {
 	 */
 	public static void main(String args[]) {
 
-		// As Polonius says, in "Hamlet"...
+		
 		String quote = "Brevity is the soul of wit";
 
 		Assembly in = new TokenAssembly(quote);

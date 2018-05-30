@@ -19,7 +19,7 @@ package java4k.di4klo;
 * for more details.
 * 
 * You should have received a copy of the GNU General Public License along 
-* with this program; if not, see <http://www.gnu.org/licenses>.
+* with this program; if not, see <http:
 *
 */
 
@@ -79,7 +79,7 @@ public class A extends GamePanel {
 	int[] entityData = new int[255];
 	int[] spriteSize = new int[255];
 
-	// entity specific variables
+	
 	int[] activity = new int[255];
 	int[] life = new int[255];
 	int[] xeAim = new int[255];
@@ -99,7 +99,7 @@ public class A extends GamePanel {
 	double[] xe = new double[255];
 	double[] ye = new double[255];
 	Rectangle[] eRectangle = new Rectangle[255];
-	// end of entity specific variables
+	
 
 	Color[] colorChart = new Color[255];
 	BufferedImage[] spriteChart = new BufferedImage[255];
@@ -140,7 +140,7 @@ public class A extends GamePanel {
 
 		g2dScr = backBuffer.createGraphics();
 
-		// data tables initialization 
+		
 		for (i = 0; i < 26; i++)
 			colorChart[i] = new Color(colorTable[i]);
 		for (i = 0; i < 120; i++)
@@ -148,7 +148,7 @@ public class A extends GamePanel {
 		for (i = 120; i < 140; i++)
 			spriteSize[i - 120] = gameData.charAt(i) - 97;
 
-		// draw life and mana orbs
+		
 		g2d = lifeOrb.createGraphics();
 		g2d.setColor(colorChart[15]);
 		g2d.fillOval(0, 0, 29, 29);
@@ -156,7 +156,7 @@ public class A extends GamePanel {
 		g2d.setColor(colorChart[3]);
 		g2d.fillOval(0, 0, 29, 29);
 
-		// sprite uncompression
+		
 		for (i = 0; i < 30; i++) {
 			m = 2 * entityData[i * 4];
 			n = 2 * entityData[i * 4 + 2] + 2;
@@ -178,14 +178,14 @@ public class A extends GamePanel {
 							g2d.fillRect(((g - z - j * h) % spriteSize[m]) * n, ((g - z - j * h) / spriteSize[m]) * n, n, n);
 
 					if (i == 6 || i == 8 || i == 21) {
-						g2d.setColor(colorChart[12]); // draw bow
+						g2d.setColor(colorChart[12]); 
 						g2d.fillRect(2, 4, 2, 2);
 						g2d.fillRect(2, 16, 2, 2);
 						g2d.fillRect(0, 6, 2, 10);
 					}
 
 					if (i == 7) {
-						g2d.setColor(colorChart[11]); // draw sword
+						g2d.setColor(colorChart[11]); 
 						g2d.fillRect(0, 0, 2, 16);
 					}
 
@@ -207,7 +207,7 @@ public class A extends GamePanel {
 	@Override
 	public void paintComponent(Graphics sg) {
 
-		// handle FPS
+		
 		long remaining = nextFrameStart - System.nanoTime();
 		if (remaining > 0) {
 			return;
@@ -215,9 +215,9 @@ public class A extends GamePanel {
 
 		do {
 
-			//************************************************
-			//************************************************
-			// transitions between dungeon levels
+			
+			
+			
 
 			if (gameState != 0) {
 				gameState++;
@@ -225,7 +225,7 @@ public class A extends GamePanel {
 				if (gameState == 48)
 					gameState = 0;
 
-				if (gameState == 2) { // game initialization
+				if (gameState == 2) { 
 					endCounter = 0;
 					dungeonLevel = 0;
 					difficulty = 0;
@@ -233,9 +233,9 @@ public class A extends GamePanel {
 					life[0] = playerMana = 127;
 				}
 
-				if (gameState == 3) { // dungeon level initialization
+				if (gameState == 3) { 
 
-					// tile graphic creation (128x63 pixels)
+					
 					colVar = colorChart[dungeonLevel + 19];
 					g2d = tile.createGraphics();
 					g2d.setColor(colVar);
@@ -246,7 +246,7 @@ public class A extends GamePanel {
 						j = (i < 31) ? j + 2 : j - 2;
 					}
 
-					// stairs graphic creation (66x33 pixels)
+					
 					g2d = stairs.createGraphics();
 					g2d.setColor(colorChart[1]);
 					if (dungeonLevel == 5)
@@ -285,13 +285,13 @@ public class A extends GamePanel {
 						h -= 3;
 					}
 
-					// various variable initialization
+					
 					zBoardLength = 0;
 					h = 0;
 					for (i = 0; i < 255; i++)
 						activity[i] = -1;
 
-					// 32x32 dungeon level map generation                      
+					
 					for (i = 0; i < 1024; i++)
 						levelMap[i] = 0;
 
@@ -300,8 +300,8 @@ public class A extends GamePanel {
 						for (i = 0; i < 11; i++)
 							for (j = 0; j < 11; j++)
 								levelMap[32 * i + j + 100] = 1;
-						mem0 = 265; // player start position
-						mem1 = 256 * rand.nextInt(2) + 8 * rand.nextInt(2) + 133; // stairs position
+						mem0 = 265; 
+						mem1 = 256 * rand.nextInt(2) + 8 * rand.nextInt(2) + 133; 
 
 					} else {
 
@@ -319,12 +319,12 @@ public class A extends GamePanel {
 
 								if (levelMap[mem0] == 0) {
 									if (h == 0)
-										mem1 = mem0; // stairs position put in room 0
+										mem1 = mem0; 
 									if (h == 9)
 										if (mem0 == mem1 - 6 || mem0 == mem1 + 6 || mem0 == mem1 - 192 || mem0 == mem1 + 192)
-											continue; // avoid player and stairs too closed
+											continue; 
 									if (h != 0 && h != 9)
-										life[h + 224] = mem0; // memorize chest position
+										life[h + 224] = mem0; 
 									h++;
 									m = rand.nextInt(3) + 1;
 									n = rand.nextInt(3) + 1;
@@ -344,12 +344,12 @@ public class A extends GamePanel {
 
 						}
 
-					} // end of dungeon level map generation
+					} 
 
-					// mem0 contains player start position
-					// mem1 contains stairs position
+					
+					
 
-					// player data creation
+					
 					xeAim[0] = 64 * (mem0 % 32) - 64 * (mem0 / 32) + 2037;
 					yeAim[0] = 32 * (mem0 % 32) + 32 * (mem0 / 32) + 8;
 					xe[0] = xeAim[0];
@@ -367,7 +367,7 @@ public class A extends GamePanel {
 					spriteToDraw[0] = 84;
 					eRectangle[0] = new Rectangle((int) xe[0] + 4, (int) ye[0] + 12, 12, 12);
 
-					// clear dungeon level image                                
+					
 					colVar = colorChart[0];
 					if (dungeonLevel == 0)
 						colVar = colorChart[13];
@@ -377,11 +377,11 @@ public class A extends GamePanel {
 					g2d.setPaint(colVar);
 					g2d.fillRect(0, 0, 4096, 2048);
 
-					// report chest position on level map
+					
 					for (i = 225; i < 233; i++)
 						levelMap[life[i]] = i;
 
-					// draw dungeon level map, place chests and enemies
+					
 					n = 0;
 					for (i = 0; i < 1024; i++)
 						if (levelMap[i] != 0) {
@@ -393,7 +393,7 @@ public class A extends GamePanel {
 							if (i == mem1 && dungeonLevel != 6)
 								g2d.drawImage(stairs, q, z + 15, null);
 
-							if (j > 1 && dungeonLevel != 0) { // if there is a chest
+							if (j > 1 && dungeonLevel != 0) { 
 								xe[j] = q + 55;
 								ye[j] = z + 23;
 								eWidth[j] = 18;
@@ -431,13 +431,13 @@ public class A extends GamePanel {
 										continue;
 								j = 1;
 								if (dungeonLevel == 4)
-									j = 2; // for spiders
+									j = 2; 
 								if (n == 224)
-									n = 1; // n = monster population
+									n = 1; 
 								n++;
 								eType[n] = rand.nextInt(2);
 
-								if (i == mem1) { // if stair position, place level boss
+								if (i == mem1) { 
 									eType[1] = 2;
 									m = n;
 									n = 1;
@@ -478,18 +478,18 @@ public class A extends GamePanel {
 
 						}
 
-				} // end **if (gameState==3) {**
+				} 
 
-			} // end **if (gameState!=0) {**
+			} 
 
-			//************************************************
-			//************************************************
-			// active game playing
+			
+			
+			
 
-			else { // equal **if (gameState==0) {**
+			else { 
 
-				//************************************************
-				// suppress inactive entities from zBoard
+				
+				
 				for (i = 0; i <= zBoardLength; i++)
 					if (activity[zBoard[i]] <= 0) {
 						for (j = i; j <= zBoardLength; j++)
@@ -497,8 +497,8 @@ public class A extends GamePanel {
 						zBoardLength--;
 					}
 
-				//************************************************
-				// handle player movements and shots
+				
+				
 				if ((k[1] == true || k[3] == true) && activity[0] > 0) {
 
 					xeAim[0] = (int) xe[0] + v / 3 - 129;
@@ -507,9 +507,9 @@ public class A extends GamePanel {
 					anglee[0] = Math.atan2(yeAim[0] - ye[0], xeAim[0] - xe[0]);
 
 					i = direction[0];
-					direction[0] = 84; // west facing
+					direction[0] = 84; 
 					if (Math.abs(anglee[0]) < Math.PI / 2)
-						direction[0] = 86; // east facing
+						direction[0] = 86; 
 					if (i != direction[0])
 						spriteToDraw[0] = direction[0];
 
@@ -527,13 +527,13 @@ public class A extends GamePanel {
 
 				}
 
-				//************************************************        
+				
 
 				if (playerMana < 127)
-					playerMana++; // regenerate player mana
+					playerMana++; 
 
-				//************************************************
-				// missile creation
+				
+				
 				for (i = 0; i <= zBoardLength; i++) {
 
 					n = zBoard[i];
@@ -545,7 +545,7 @@ public class A extends GamePanel {
 							while (activity[++j] == 1)
 								;
 							speed[j] = 64;
-							eType[j] = 5; // player arrow
+							eType[j] = 5; 
 							g = yeAim[n] + 24;
 							h = xeAim[n] + 10;
 
@@ -554,7 +554,7 @@ public class A extends GamePanel {
 							while (activity[++j] == 1 && j < 254)
 								;
 							speed[j] = dungeonLevel / 2 + difficulty + 48;
-							eType[j] = 6; // enemy missile
+							eType[j] = 6; 
 							g = (int) ye[0] + 12;
 							h = (int) xe[0] + 10;
 						}
@@ -576,30 +576,30 @@ public class A extends GamePanel {
 
 				}
 
-				//************************************************
-				// handle entity activities
+				
+				
 				for (i = 0; i < 47; i++) {
 					if (++currentEntity == 255)
 						currentEntity = 1;
 
-					if (activity[currentEntity] != -1) { // if living entity
-						if (Math.abs(xe[currentEntity] - xe[0]) < 192 && Math.abs(ye[currentEntity] - ye[0]) < 144) { // if entity in border
+					if (activity[currentEntity] != -1) { 
+						if (Math.abs(xe[currentEntity] - xe[0]) < 192 && Math.abs(ye[currentEntity] - ye[0]) < 144) { 
 
-							if (activity[currentEntity] == 0) { // if deactivated entity, then activate it
+							if (activity[currentEntity] == 0) { 
 								activity[currentEntity] = 1;
 								zBoard[++zBoardLength] = currentEntity;
 							}
 
-							if (currentEntity < 225) { // if entity is a monster                                                       
+							if (currentEntity < 225) { 
 								if (firingCounter[currentEntity] == 1 && life[0] > 0)
-									firingCounter[currentEntity] = 2; // activate shooting
+									firingCounter[currentEntity] = 2; 
 
-								if (activity[currentEntity] == 1) { // if no obstacle, entity aim = player 
+								if (activity[currentEntity] == 1) { 
 									xeAim[currentEntity] = (int) xe[0] + 20 - eWidth[currentEntity] / 2;
 									yeAim[currentEntity] = (int) ye[0] + 24 - eHeight[currentEntity];
 								}
 
-								if (activity[currentEntity] == 2) { // if obstacle, entity aim = random
+								if (activity[currentEntity] == 2) { 
 									xeAim[currentEntity] = (int) xe[currentEntity] + rand.nextInt(63) - 31;
 									yeAim[currentEntity] = (int) ye[currentEntity] + rand.nextInt(63) - 31;
 								}
@@ -611,21 +611,21 @@ public class A extends GamePanel {
 								anglee[currentEntity] = Math.atan2(yeAim[currentEntity] - ye[currentEntity], xeAim[currentEntity] - xe[currentEntity]);
 
 								j = direction[currentEntity];
-								direction[currentEntity] = eDIndex[currentEntity]; // west facing
+								direction[currentEntity] = eDIndex[currentEntity]; 
 								if (Math.abs(anglee[currentEntity]) < Math.PI / 2)
-									direction[currentEntity] += 2; // east facing
+									direction[currentEntity] += 2; 
 								if (j != direction[currentEntity])
 									spriteToDraw[currentEntity] = direction[currentEntity];
 
 							}
 
 						} else
-							activity[currentEntity] = 0; // deactivate out of border and alive entity
+							activity[currentEntity] = 0; 
 					}
 				}
 
-				//************************************************
-				// handle entity movement and collision
+				
+				
 				for (i = 0; i <= zBoardLength; i++) {
 
 					n = zBoard[i];
@@ -647,21 +647,21 @@ public class A extends GamePanel {
 					x = eWidth[n];
 					y = eHeight[n];
 
-					// wall collision
+					
 					z = 1;
 					if (entityData[eDIndex[n]] == 3)
-						z = 2; // for spider
+						z = 2; 
 					g = (int) xe[n] + x / 2;
 					h = (int) ye[n] + y / z;
 					m = backGroundImage.getRGB(g, h);
 
 					if (m == mem0) {
 
-						if (n > 232) { // if it is a missile
+						if (n > 232) { 
 							if (dungeonLevel != 3 && dungeonLevel != 6 || eType[n] == 5)
 								activity[n] = -1;
 
-						} else { // if it is not a missile
+						} else { 
 							if (dungeonLevel != 3 && dungeonLevel != 6 || eType[n] == 7) {
 								xe[n] = oldxe;
 								ye[n] = oldye;
@@ -675,7 +675,7 @@ public class A extends GamePanel {
 
 					}
 
-					// player detection on stairs
+					
 					if (n == 0)
 						if (m == -16777201 || m == -49408) {
 							gameState = 2;
@@ -683,7 +683,7 @@ public class A extends GamePanel {
 							equipmentRating += difficulty + 2;
 						}
 
-					// handle collisions between entities
+					
 					g = x;
 					h = y / 2;
 					xr = (int) xe[n];
@@ -705,9 +705,9 @@ public class A extends GamePanel {
 
 						if (eRectangle[n].intersects(eRectangle[m])) {
 
-							if (m == 0) { // if collision between entity n and player m
+							if (m == 0) { 
 
-								if (eType[n] == 3) { // collision with locked chest
+								if (eType[n] == 3) { 
 									eType[n] = 4;
 									spriteToDraw[n] = 89;
 									life[0] = 127;
@@ -716,26 +716,26 @@ public class A extends GamePanel {
 										equipmentRating--;
 								}
 
-								if (eType[n] == 6) { // collision with enemy missile
+								if (eType[n] == 6) { 
 									activity[n] = -1;
 									life[0] -= entityData[eDIndex[n] + 2] + equipmentRating + 4;
 								}
 
-								if (n < 225) { // collision with monster
+								if (n < 225) { 
 									life[0] -= equipmentRating / 3 + 1;
 								}
 
 							}
 
-							if (m != 0 && eType[n] == 5) { // collision between player arrow and monster
+							if (m != 0 && eType[n] == 5) { 
 								activity[n] = -1;
 								if (rand.nextInt(20) >= equipmentRating)
 									life[m]--;
 							}
 
-							if (n < 225) { // collision between monsters and player
+							if (n < 225) { 
 
-								if (m == 0 || n == 0) { // if monster-player or player-monster collision         
+								if (m == 0 || n == 0) { 
 									xe[n] = oldxe;
 									ye[n] = oldye;
 									eRectangle[n] = oldRectangle;
@@ -744,11 +744,11 @@ public class A extends GamePanel {
 
 								if (m != 0 && n > 1)
 									if (activity[n] == 1)
-										activity[n] = 2; // if monster-monster or player-monster collision
+										activity[n] = 2; 
 
 							}
 
-							// handle monster or player death
+							
 							if (life[m] < 1) {
 
 								activity[m] = -1;
@@ -757,18 +757,18 @@ public class A extends GamePanel {
 								xt = (int) xe[m] + z;
 								yt = (int) ye[m] + eHeight[m];
 
-								g2d.setPaint(colorChart[7]); // set default green blood color
+								g2d.setPaint(colorChart[7]); 
 
-								if (m == 0) { // if the player is dead
+								if (m == 0) { 
 									endCounter = 1;
 									g2d.setPaint(colorChart[15]);
 								} else if (dungeonLevel == 4)
-									yt -= eHeight[m] / 2; // if a spider is dead 
+									yt -= eHeight[m] / 2; 
 
 								if (m == 1 && dungeonLevel == 6)
-									endCounter = 1; // if Di4klo is dead
+									endCounter = 1; 
 
-								if (entityData[eDIndex[m]] == 1 || entityData[eDIndex[m]] == 2) { // if a skeleton or a spectre is defeated
+								if (entityData[eDIndex[m]] == 1 || entityData[eDIndex[m]] == 2) { 
 									g2d.setPaint(colorChart[entityData[eDIndex[m] + 3]]);
 									z -= 2;
 									q -= 2;
@@ -795,7 +795,7 @@ public class A extends GamePanel {
 
 					}
 
-					// block player when firing
+					
 					if (n == 0 && playerFiring == 1) {
 						xe[0] = oldxe;
 						ye[0] = oldye;
@@ -812,8 +812,8 @@ public class A extends GamePanel {
 
 				}
 
-				//************************************************
-				// reset game if player is dead, or reset difficulty level if Di4klo is dead
+				
+				
 				if (endCounter > 0)
 					if (++endCounter == 255)
 						if (life[0] < 1)
@@ -824,8 +824,8 @@ public class A extends GamePanel {
 							dungeonLevel = 0;
 						}
 
-				//************************************************
-				// sort zBoard
+				
+				
 				for (j = 1; j <= zBoardLength; j++) {
 					m = zBoard[j];
 					i = j - 1;
@@ -834,20 +834,20 @@ public class A extends GamePanel {
 					zBoard[i + 1] = m;
 				}
 
-			} // end of **if (gameState==0) {**
+			} 
 
-			nextFrameStart += 19922944; // 20971520  /  19922944  /  18874368
+			nextFrameStart += 19922944; 
 
 		} while (nextFrameStart < System.nanoTime());
 
-		//************************************************                     
-		//************************************************
-		// display world and entities
+		
+		
+		
 
-		// display background image                
+		
 		g2dScr.drawImage(backGroundImage, 0, 0, 256, 192, (int) xe[0] - 119, (int) ye[0] - 80, (int) xe[0] + 137, (int) ye[0] + 112, null);
 
-		//display entity sprites
+		
 		for (j = 0; j <= zBoardLength; j++) {
 			i = zBoard[j];
 			trans.setTransform(identity);
@@ -857,13 +857,13 @@ public class A extends GamePanel {
 			g2dScr.drawImage(spriteChart[spriteToDraw[i]], trans, this);
 		}
 
-		// display life and mana orbs
+		
 		i = (int) (29 * (1 - ((double) life[0] / 127)));
 		j = (int) (29 * (1 - ((double) playerMana / 127)));
 		g2dScr.drawImage(lifeOrb, 0, 163 + i, 29, 192, 0, i, 29, 29, null);
 		g2dScr.drawImage(manaOrb, 226, 163 + j, 255, 192, 0, j, 29, 29, null);
 
-		// display dungeon level, equipment rating and difficulty level                     
+		
 		g2dScr.drawString(String.valueOf(-dungeonLevel), 240, 16);
 		g2dScr.drawString(String.valueOf((char) (equipmentRating + 65)), 124, 186);
 
@@ -874,7 +874,7 @@ public class A extends GamePanel {
 		if (difficulty == 3)
 			g2dScr.drawString("Play at www.java4k.com to discover the true ending message !", 31, 127);
 
-		// display transition screen with game title         
+		
 		if (gameState != 0) {
 			g2dScr.setColor(colorChart[0]);
 			g2dScr.fillRect(0, 0, 256, 192);
@@ -883,10 +883,10 @@ public class A extends GamePanel {
 			g2dScr.setColor(colorChart[5]);
 		}
 
-		// draw backbuffer on frontbuffer
+		
 		sg.drawImage(backBuffer, 0, 0, 768, 576, 0, 0, 256, 192, null);
 
-	} // end run method
+	} 
 
 	@Override
 	public void processAWTEvent(AWTEvent awtEvent) {

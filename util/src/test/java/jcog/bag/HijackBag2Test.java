@@ -34,19 +34,19 @@ class HijackBag2Test {
 
     private static void testPutMinMaxAndUniqueness(DefaultHijackBag<Integer> a) {
         float pri = 0.5f;
-        int n = a.capacity() * 16; //insert enough to fully cover all slots. strings have bad hashcode when input iteratively so this may need to be a high multiple
+        int n = a.capacity() * 16; 
 
 
         for (int i = 0; i < n; i++) {
             a.put(i, pri);
         }
 
-        a.commit(null); //commit but dont forget
+        a.commit(null); 
         assertEquals(a.capacity(), a.size());
 
-        //a.print();
+        
 
-        //System.out.println(n + " " + a.size());
+        
 
         List<Integer> keys = new FasterList(a.capacity());
         a.forEachKey(keys::add);
@@ -80,13 +80,13 @@ class HijackBag2Test {
             b.put("z" + i, 0.5f);
         assertEquals(b.capacity(), b.space());
 
-        //limit reached, nothing added will grow any further
+        
         for (int i = 0; i < 64; i++)
             b.put("w" + i, 0.8f);
         assertEquals(b.capacity(), b.space());
-        assertTrue(Math.abs(b.capacity() - b.size()) <= 2); //close to capacity
+        assertTrue(Math.abs(b.capacity() - b.size()) <= 2); 
 
-        //now try shrinking
+        
         b.setCapacity(cap / 2);
         assertEquals(cap / 2, b.capacity());
         assertEquals(cap / 2, b.space());
@@ -113,7 +113,7 @@ class HijackBag2Test {
 
         assertEquals(1, c.capacity());
 
-        //insert an item with (nearly) zero budget
+        
         c.put("x", 2 * Prioritized.EPSILON);
         c.commit();
 
@@ -147,11 +147,11 @@ class HijackBag2Test {
 
         a.commit();
         int size = a.size();
-        //assertTrue(size >= 20 && size <= 30);
+        
 
-//        TreeSet<String> keys = new TreeSet();
-//        Iterators.transform(a.iterator(), x -> x.get()).forEachRemaining(keys::add);
-//        System.out.println( keys.size() + " " + Joiner.on(' ').join(keys) );
+
+
+
 
         TreeSet<String> keys2 = new TreeSet();
         a.forEach((b) -> {
@@ -162,17 +162,17 @@ class HijackBag2Test {
 
         assertEquals(size, keys2.size());
 
-//        int b = 20;
-//        EmpiricalDistribution e = getSamplingPriorityDistribution(a, n * 500, b);
-//
-//        printDist(e);
-//
-//        //monotonically increasing:
-//        assertTrue(e.getBinStats().get(0).getMean() < e.getBinStats().get(b-1).getMean());
-        //assertTrue(e.getBinStats().get(0).getMean() < e.getBinStats().get(b/2).getMean());
-        //assertTrue(e.getBinStats().get(b/2).getMean() < e.getBinStats().get(b-2).getMean());
 
-        //a.print();
+
+
+
+
+
+
+        
+        
+
+        
     }
 
     @Test
@@ -206,7 +206,7 @@ class HijackBag2Test {
     private static void testBagSamplingDistribution(DefaultHijackBag<String> bag, float batchSizeProp) {
 
 
-        //bag.forEach(System.out::println);
+        
 
         int cap = bag.capacity();
         int batchSize = (int)Math.ceil(batchSizeProp * cap);
@@ -220,9 +220,9 @@ class HijackBag2Test {
 
         float[] ff = f1.get();
 
-        //monotonically increasing
+        
 
-        float orderThresh = 0.1f; //TODO minimize this
+        float orderThresh = 0.1f; 
         for (int j = 0; j < ff.length; j++) {
             for (int i = j+1; i < ff.length; i++) {
                 float diff = ff[j] - ff[i];
@@ -233,7 +233,7 @@ class HijackBag2Test {
             }
         }
 
-        final float MIN_RATIO = 1.5f; //should be higher
+        final float MIN_RATIO = 1.5f; 
 
         for (int lows : ff.length > 4 ? new int[] { 0, 1} : new int[] { 0 }  ) {
             for (int highs : ff.length > 4 ? new int[] { ff.length-1, ff.length-2} : new int[] { ff.length-1 }  ) {
@@ -246,21 +246,21 @@ class HijackBag2Test {
         }
 
 
-        //TODO verify the histogram resulting from the above execution is relatively flat:
-        //ex: [0.21649484536082475, 0.2268041237113402, 0.28865979381443296, 0.26804123711340205]
-        //the tests below assume that it begins with a relatively flat distribution
-//        System.out.println(Arrays.toString(bag.priHistogram(4)));
-//        System.out.println(Arrays.toString(bag.priHistogram(8)));
+        
+        
+        
 
 
-//        System.out.print("Sampling: " );
-//        printDist(samplingPriDistribution((CurveBag) n.core.concepts, 1000));
-//        System.out.print("Priority: " );
-//        EmpiricalDistribution pri;
-//        printDist(pri = getSamplingPriorityDistribution(n.core.concepts, 1000));
-//
-//        List<SummaryStatistics> l = pri.getBinStats();
-//        assertTrue(l.get(0).getN() < l.get(l.size() - 1).getN());
+
+
+
+
+
+
+
+
+
+
 
     }
     private static Tensor samplingPriDist(@NotNull DefaultHijackBag<String> b, int batches, int batchSize, int bins) {
@@ -295,7 +295,7 @@ class HijackBag2Test {
             fail("all elements must have been sampled at least once");
         }
 
-        //System.out.println(hits);
+        
 
         return f.scale(1f / total);
     }
@@ -303,14 +303,14 @@ class HijackBag2Test {
     private static void fillLinear(DefaultHijackBag<String> bag, int c) {
         assertTrue(bag.isEmpty());
 
-        //insert biggest items first
+        
         for (int i = c-1; i >= 0; i--) {
-            bag.put(i + "x", (i + 0.5f) / c); //midpoint of (i,i+1)
+            bag.put(i + "x", (i + 0.5f) / c); 
         }
         bag.commit(null);
         assertEquals(c, bag.size());
         assertEquals(0.5f / c, bag.priMin(), 0.03f);
-        assertEquals(1 - 1f/(c*2f), bag.priMax(), 0.03f); //no pressure should have been applied because capacity was only reached after the last put
+        assertEquals(1 - 1f/(c*2f), bag.priMax(), 0.03f); 
     }
     private static void populate(DefaultHijackBag<String> a, Random rng, int count, int dimensionality, float minPri, float maxPri) {
         float dPri = maxPri - minPri;
@@ -328,29 +328,29 @@ class HijackBag2Test {
         Random rng = rng();
         DefaultHijackBag<String> b = new DefaultHijackBag(MAX, 0, 7);
         populate(b, rng, 10, 20, 0f, 1f);
-        //        assertEquals(b.reprobes /*0*/, b.size());
+        
 
 
         int dimensionality = 50;
         b.setCapacity(dimensionality * 2);
 
         populate(b, rng, dimensionality * 5, dimensionality, 0f, 1f);
-        //System.out.println("under capacity");
+        
         b.print();
         assertApproximatelySized(b, dimensionality, 0.5f);
 
         b.setCapacity(dimensionality / 2 * 2);
 
-        //System.out.println("half capacity");
+        
         b.print();
 
         assertApproximatelySized(b, dimensionality / 2 * 2, 0.5f);
 
         populate(b, rng, dimensionality * 3, dimensionality, 0f, 1f);
-        //System.out.println("under capacity, refilled");
+        
         b.print();
 
-        //test
+        
 
 
         b.setCapacity(dimensionality * 2);
@@ -360,7 +360,7 @@ class HijackBag2Test {
         b.print();
 
         assertApproximatelySized(b, dimensionality, 0.25f);
-        //test
+        
 
 
     }

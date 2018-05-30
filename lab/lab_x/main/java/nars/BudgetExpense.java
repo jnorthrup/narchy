@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package nars.timeline;
 
@@ -44,9 +44,9 @@ public class BudgetExpense extends TimelineExample {
         
         TimelineVis tc = new TimelineVis(
 
-            //new BarChart(new FirstOrderDifferenceTimeSeries("d(concepts)", t.metrics.get("concept.count"))),
+            
 
-           // new StackedPercentageChart(t.getCharts("concept.priority.hist.0", "concept.priority.hist.1", "concept.priority.hist.2", "concept.priority.hist.3")).height(2),
+           
 /*
             new LineChart(
                     new ConceptBagTreeMLData(nar, nar.memory.concepts, cycles, Mode.ConceptPriorityTotal)            
@@ -62,7 +62,7 @@ public class BudgetExpense extends TimelineExample {
             new LineChart(t.getCharts("task.novel.add", "task.immediate_processed")).height(3),
             new LineChart(t.getCharts("task.goal.process", "task.question.process", "task.judgment.process")).height(3),
             new LineChart(t.getCharts("emotion.busy")).height(1)
-            //new EventChart(t, false, false, true).height(3)
+            
         );
                 
         nar.run(cycles);

@@ -33,8 +33,8 @@ public final class STMLinkage extends TaskService {
         strength.set(1f / capacity);
 
         stm = Util.blockingQueue(capacity + 1 /* extra slot for good measure */);
-//        for (int i = 0; i < capacity+1; i++)
-//            stm.add(null); //fill with nulls initially
+
+
 
         cause = nar.newCause(this);
     }
@@ -47,17 +47,17 @@ public final class STMLinkage extends TaskService {
         if (ca != null) {
             Concept cb = tb.concept(nar, true);
             if (cb != null) {
-                if (!cb.equals(ca)) { //null or same concept?
+                if (!cb.equals(ca)) { 
 
-                    //TODO handle overflow?
+                    
                     cb.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
                     ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), pri, cid));
 
-//                        //tasklinks, not sure:
-//                        Tasklinks.linkTask(ta, interStrength, cb);
-//                        Tasklinks.linkTask(tb, interStrength, ca);
+
+
+
                 } else {
-                    //create a self-termlink
+                    
                     ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
                 }
             }
@@ -83,10 +83,10 @@ public final class STMLinkage extends TaskService {
         float strength = this.strength.floatValue();
         float tPri = t.priElseZero();
 
-//        short cid = cause.id;
+
         float p = strength * tPri;
         for (Task u : stm) {
-            if (u == null) continue; //skip null's and dummy's
+            if (u == null) continue; 
             link(t, p * u.priElseZero(), u, cause.id, nar);
         }
 

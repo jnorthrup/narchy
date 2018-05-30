@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ public class CandidatesTest {
             itr.next();
             fail("");
         } catch (NoSuchElementException e) {
-            // expected
+            
         }
     }
 
@@ -118,7 +118,7 @@ public class CandidatesTest {
 
     @Test
     public void testImmutable() {
-        // test that making subsequent changes to the array given to the constructor does not alter the RandedCandidate
+        
         final RankedCandidate[] input = {element3, element1, element2};
         final Candidates rankedCandidates = new Candidates(input);
         input[0] = element4;
@@ -142,7 +142,7 @@ public class CandidatesTest {
             candidates.get(index);
             fail("");
         } catch (ArrayIndexOutOfBoundsException e) {
-            // expected
+            
         }
     }
 }

@@ -75,7 +75,7 @@ abstract public class Container extends Surface {
             showing = true;
         }
 
-        //TODO maybe in a separate update thread
+        
         if (mustLayout) {
             mustLayout = false;
             doLayout(dtMS);
@@ -87,7 +87,7 @@ abstract public class Container extends Surface {
 
         forEach(c -> {
             c.render(gl, r);
-        }); //render children, if any
+        }); 
 
         paintAbove(gl, r);
     }
@@ -108,9 +108,9 @@ abstract public class Container extends Surface {
         if (!showing())
             return null;
 
-        if (childrenCount() > 0) { //isEmpty? accurate count may not be readily computable
+        if (childrenCount() > 0) { 
 
-            // Draw forward, propagate touch events backwards
+            
             if (finger == null) {
                 forEach(c -> c.tryTouch(null));
                 return null;
@@ -118,29 +118,29 @@ abstract public class Container extends Surface {
 
                 Surface[] found = new Surface[1];
 
-                //HACK
+                
                 float fx = finger.pos.x;
                 float fy = finger.pos.y;
 
-                //iterate in reverse, so that the contents drawn last are tested first for interaction (sloppy z-ordering)
+                
                 whileEachReverse(c -> {
 
-//                    if (found[0] != null) //TODO use whileEach() with a predicate for fast terminate
-//                        return;
 
-                    //TODO factor in the scale if different from 1
 
-                    //                if (/*csx != csx || */csx <= 0 || /*csy != csy ||*/ csy <= 0)
-                    //                    return;
 
-                    //project to child's space
+                    
 
-                    //subHit.sub(tx, ty);
+                    
+                    
 
-                    //                float hx = relativeHit.x, hy = relativeHit.y;
+                    
+
+                    
+
+                    
 
                     if (!c.showing())
-                        return true; //continue
+                        return true; 
 
                     if ((c instanceof Container && !((Container)c).clipBounds) || (
                             fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
@@ -148,10 +148,10 @@ abstract public class Container extends Surface {
 
                         Surface s = c.tryTouch(finger);
                         if (s != null) {
-//                            if (found[0] == null || found[0].bounds.cost() > s.bounds.cost())
-//                                found[0] = s; //FIFO
+
+
                             found[0] = s;
-                            return false; //done
+                            return false; 
                         }
                     }
 

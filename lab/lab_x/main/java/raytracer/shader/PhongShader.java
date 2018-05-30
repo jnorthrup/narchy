@@ -53,7 +53,7 @@ public class PhongShader implements Shader
     {
         this.mainShader = mainShader;
         
-        // Abspeichern der Parameterwerte:
+        
         this.ambientRatio.set(ambientRatio);
         this.diffuseRatio.set(diffuseRatio);
         this.specularRatio.set(specularRatio);
@@ -78,7 +78,7 @@ public class PhongShader implements Shader
     {
         this.mainShader = mainShader;
         
-        // Abspeichern der Parameterwerte:
+        
         this.ambientRatio.set(ambientRatio);
         this.diffuseRatio.set(diffuseRatio);
         this.specularRatio.set(specularRatio);
@@ -103,7 +103,7 @@ public class PhongShader implements Shader
     {
         this.mainShader = mainShader;
         
-        // Abspeichern der Parameterwerte:
+        
         this.ambientRatio.set(ambientRatio);
         this.diffuseRatio.set(diffuseRatio);
         this.specularRatio.set(specularRatio);
@@ -115,19 +115,19 @@ public class PhongShader implements Shader
 	@Override
     public ColorEx shade(Intersection intersection)
 	{
-        // Farbe des Objekts bestimmen:
+        
         ColorEx color = mainShader.shade(intersection);
 
         Vector3d eyelight = new Vector3d(intersection.ray.dir);
-        Vector3d normal = intersection.getNormal();     // Bereits normalisiert
+        Vector3d normal = intersection.getNormal();     
         Vector3d point = intersection.getPoint();
         ColorEx result = new ColorEx(), lightResult = new ColorEx();
 
-        // Vorzeichen anpassen: Die Normale muss immer in die Richtung Zeigen,
-        // von der der Strahl kommt:
+        
+        
         byte sign = (byte)-Math.signum(normal.dot(eyelight));
         
-        // Vektoren normalisieren:
+        
         eyelight.normalize();
 
         List<Light> lights = intersection.scene.getLights();
@@ -138,7 +138,7 @@ public class PhongShader implements Shader
                 continue;
             light.startRay(point);
         	
-            // So lange wie n�tig Strahlen zum Licht senden:
+            
             int lightRayCount = 0;
             lightResult.x = 0.0f; lightResult.y = 0.0f; lightResult.z = 0.0f;
             boolean noshadow;
@@ -152,16 +152,16 @@ public class PhongShader implements Shader
                         break;
                     shadow = noshadow = false;
                     
-                    // Falls eine Schattengrenze gefunden wurde, schicke noch
-                    // mehr Strahlen:
+                    
+                    
                     light.increaseNumberOfRays();
                     continue;
                 }
                 
                 lightRayCount++;
                 
-                //TODO: Schatten durch transparente Fl�chen funktioniert so nicht!
-                // Pr�fen, ob die Sicht zum Licht frei ist:
+                
+                
         		if (intersection.scene.occlude(lightRay))
                 {
                     shadow = true;
@@ -170,10 +170,10 @@ public class PhongShader implements Shader
                 else
                     noshadow = true;
         		
-        		// Richtung des Lichts ermitteln:
+        		
                 lightRay.dir.normalize();
         		
-        		// Diffusen Winkel 'cos(alpha)' nach dem Phong-Modell berechnen:
+        		
                 float cosalpha = (float) (sign * normal.dot(lightRay.dir));
                 float cosbeta;
                 if ((double) cosalpha <= 0.0)
@@ -187,12 +187,12 @@ public class PhongShader implements Shader
             		cosbeta = (float)((double) -(int) sign *normal.dot(eyelight)/eyelight.length());
             		eyelight.add(lightRay.dir);
             		
-                    // Shininess berechnen:
+                    
                     if (shininess != 1.0f)
                         cosbeta = (float)Math.pow((double) cosbeta, (double) shininess);
                 }
                 
-                // Farbe des Lichts ermitteln:
+                
                 ColorEx lightColor = light.getIlluminance();
                 lightResult.mul2Add(cosalpha, diffuseRatio, lightColor);
                 lightResult.mul2Add(cosbeta, specularRatio, lightColor);   
@@ -200,12 +200,12 @@ public class PhongShader implements Shader
             result.scaleAdd(1.0f/ (float) lightRayCount, lightResult, result);
         }
     
-        // Farbberechnung abschlie�en:
+        
         result.add(emissionRatio);
         result.mul2Add(ambientRatio, intersection.scene.getAmbientLight());
         result.mul(color);
         
-        // Farbe zur�ckgeben:
+        
         if (RaytracerConstants.LIMIT_COLOR_INTENSITY)
             result.clampMax(1.0f);
 		return result;

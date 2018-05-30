@@ -36,8 +36,8 @@ public class LevelScene extends Scene implements SpriteContext
     public int startTime;
     private int timeLeft;
 
-    //    private Recorder recorder = new Recorder();
-    //    private Replayer replayer = null;
+    
+    
     
     private final long levelSeed;
     private final MarioComponent renderer;
@@ -74,9 +74,9 @@ public class LevelScene extends Scene implements SpriteContext
          }
          else
          {*/
-//        level = LevelGenerator.createLevel(320, 15, levelSeed);
+
         level = LevelGenerator.createLevel(320, 15, levelSeed, levelDifficulty, levelType);
-        //        }
+        
 
         /*        if (recorder != null)
          {
@@ -254,7 +254,7 @@ public class LevelScene extends Scene implements SpriteContext
 
             if (hasShotCannon)
             {
-                //sound.play(Art.samples[Art.SAMPLE_CANNON_FIRE], new FixedSoundSource(xCannon * 16, yCam + 120), 1, 1, 1);
+                
             }
 
             for (Sprite sprite : sprites)
@@ -316,14 +316,14 @@ public class LevelScene extends Scene implements SpriteContext
     {
         int xCam = (int) (mario.xOld + (mario.x - mario.xOld) * alpha) - 160;
         int yCam = (int) (mario.yOld + (mario.y - mario.yOld) * alpha) - 120;
-        //int xCam = (int) (xCamO + (this.xCam - xCamO) * alpha);
-        //        int yCam = (int) (yCamO + (this.yCam - yCamO) * alpha);
+        
+        
         if (xCam < 0) xCam = 0;
         if (yCam < 0) yCam = 0;
         if (xCam > level.width * 16 - 320) xCam = level.width * 16 - 320;
         if (yCam > level.height * 16 - 240) yCam = level.height * 16 - 240;
 
-        //      g.drawImage(Art.background, 0, 0, null);
+        
 
 
         if (renderBackground) {
@@ -374,7 +374,7 @@ public class LevelScene extends Scene implements SpriteContext
             t = t * t * 0.6f;
             renderBlackout(g, 160, 120, (int) (t));
         }
-//        mario.x>level.xExit*16
+
         if (mario.winTime > 0)
         {
             float t = mario.winTime + alpha;
@@ -383,8 +383,8 @@ public class LevelScene extends Scene implements SpriteContext
             if (t > 900)
             {
                 renderer.levelWon();
-                //              replayer = new Replayer(recorder.getBytes());
-//                init();
+                
+
             }
 
             renderBlackout(g, mario.xDeathPos - xCam, mario.yDeathPos - yCam, (int) (320 - t));
@@ -393,17 +393,17 @@ public class LevelScene extends Scene implements SpriteContext
         if (mario.deathTime > 0)
         {
             renderer.levelFailed();
-//            float t = mario.deathTime + alpha;
-//            t = t * t * 0.4f;
-//
-//            if (t > 1800)
-//            {
-//                renderer.levelFailed();
-//                //              replayer = new Replayer(recorder.getBytes());
-////                init();
-//            }
-//
-//            renderBlackout(g, (int) (mario.xDeathPos - xCam), (int) (mario.yDeathPos - yCam), (int) (320 - t));
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 
@@ -478,12 +478,12 @@ public class LevelScene extends Scene implements SpriteContext
     public float getX(float alpha)
     {
         int xCam = (int) (mario.xOld + (mario.x - mario.xOld) * alpha) - 160;
-        //        int yCam = (int) (mario.yOld + (mario.y - mario.yOld) * alpha) - 120;
-        //int xCam = (int) (xCamO + (this.xCam - xCamO) * alpha);
-        //        int yCam = (int) (yCamO + (this.yCam - yCamO) * alpha);
+        
+        
+        
         if (xCam < 0) xCam = 0;
-        //        if (yCam < 0) yCam = 0;
-        //        if (yCam > 0) yCam = 0;
+        
+        
         return xCam + 160;
     }
 
@@ -505,7 +505,7 @@ public class LevelScene extends Scene implements SpriteContext
 
             if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_SPECIAL) > 0)
             {
-                //sound.play(Art.samples[Art.SAMPLE_ITEM_SPROUT], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+                
                 if (!Mario.large)
                 {
                     addSprite(new Mushroom(this, x * 16 + 8, y * 16 + 8));
@@ -518,7 +518,7 @@ public class LevelScene extends Scene implements SpriteContext
             else
             {
                 Mario.getCoin();
-                //sound.play(Art.samples[Art.SAMPLE_GET_COIN], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+                
                 addSprite(new CoinAnim(x, y));
             }
         }
@@ -528,7 +528,7 @@ public class LevelScene extends Scene implements SpriteContext
             bumpInto(x, y - 1);
             if (canBreakBricks)
             {
-                //sound.play(Art.samples[Art.SAMPLE_BREAK_BLOCK], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+                
                 level.setBlock(x, y, (byte) 0);
                 for (int xx = 0; xx < 2; xx++)
                     for (int yy = 0; yy < 2; yy++)
@@ -547,7 +547,7 @@ public class LevelScene extends Scene implements SpriteContext
         if (((Level.TILE_BEHAVIORS[block & 0xff]) & Level.BIT_PICKUPABLE) > 0)
         {
             Mario.getCoin();
-            //sound.play(Art.samples[Art.SAMPLE_GET_COIN], new FixedSoundSource(x * 16 + 8, y * 16 + 8), 1, 1, 1);
+            
             level.setBlock(x, y, (byte) 0);
             addSprite(new CoinAnim(x, y + 1));
         }

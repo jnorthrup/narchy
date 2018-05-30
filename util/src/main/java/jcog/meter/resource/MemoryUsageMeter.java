@@ -7,11 +7,11 @@ import jcog.meter.event.DoubleMeter;
  * Relatively slow, use a setResolutionDivisor to sample every Nth cycle
  * @author me
  * Uses Runtime methods to calculate changes in memory use, measured in KiloBytes (1024 bytes)
- * TODO also use https://github.com/dropwizard/metrics/blob/master/metrics-jvm/src/main/java/com/codahale/metrics/jvm/MemoryUsageGaugeSet.java
+ * TODO also use https:
  */
 public class MemoryUsageMeter extends DoubleMeter {
 
-    //long lastUsedMemory = -1;
+    
 
     public MemoryUsageMeter(String id) {
         super(id);

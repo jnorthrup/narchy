@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST
+
 
 package jake2.game;
 
@@ -29,24 +29,24 @@ import java.io.IOException;
 public class level_locals_t
 {
 	
-	//	this structure is cleared as each map is entered
-	//	it is read/written to the level.sav file for savegames
-	//
+	
+	
+	
 	public int framenum;
 	public float time;
 
-	public String level_name= ""; // the descriptive name (Outer Base, etc)
-	public String mapname= ""; // the server name (base1, etc)
-	public String nextmap= ""; // go here when fraglimit is hit
+	public String level_name= ""; 
+	public String mapname= ""; 
+	public String nextmap= ""; 
 
-	// intermission state
-	public float intermissiontime; // time the intermission was started
+	
+	public float intermissiontime; 
 	public String changemap;
 	public boolean exitintermission;
 	public float[] intermission_origin= { 0, 0, 0 };
 	public float[] intermission_angle= { 0, 0, 0 };
 
-	public edict_t sight_client; // changed once each frame for coop games
+	public edict_t sight_client; 
 
 	public edict_t sight_entity;
 	public int sight_entity_framenum;
@@ -68,10 +68,10 @@ public class level_locals_t
 	public int total_monsters;
 	public int killed_monsters;
 
-	public edict_t current_entity; // entity running from G_RunFrame
-	public int body_que; // dead bodies
+	public edict_t current_entity; 
+	public int body_que; 
 
-	public int power_cubes; // ugly necessity for coop
+	public int power_cubes; 
 
 	/** Writes the levellocales to the file.*/	
 	public void write(QuakeFile f) throws IOException  
@@ -107,10 +107,10 @@ public class level_locals_t
 		f.writeInt(killed_monsters);
 		
 		f.writeEdictRef(current_entity); 
-		f.writeInt(body_que); // dead bodies
-		f.writeInt(power_cubes); // ugly necessity for coop
+		f.writeInt(body_que); 
+		f.writeInt(power_cubes); 
 		
-		// rst's checker :-)		
+		
 		f.writeInt(4711);
 	}
 	
@@ -148,10 +148,10 @@ public class level_locals_t
 		killed_monsters = f.readInt();
 		
 		current_entity = f.readEdictRef(); 
-		body_que = f.readInt(); // dead bodies
-		power_cubes = f.readInt(); // ugly necessity for coop		
+		body_que = f.readInt(); 
+		power_cubes = f.readInt(); 
 		
-		// rst's checker :-)
+		
 		if (f.readInt()!= 4711)
 			System.out.println("error in reading level_locals.");
 	}

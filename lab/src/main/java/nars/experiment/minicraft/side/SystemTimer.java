@@ -1,7 +1,7 @@
 package nars.experiment.minicraft.side;
 
 
-//AdvancedTimer;
+
 
 
 import jcog.Util;
@@ -10,20 +10,20 @@ import jcog.Util;
  * A wrapper class that provides timing methods. This class
  * provides us with a central location where we can add
  * our current timing implementation. Initially, we're going to
- * rely on the GAGE timer. (@see http://java.dnsalias.com)
+ * rely on the GAGE timer. (@see http:
  * 
  * @author Kevin Glass
  */
 public class SystemTimer {
 	/** Our link into the GAGE timer library */
-	//private static AdvancedTimer timer = new AdvancedTimer();
+	
 	/** The number of "timer ticks" per second */
 	private static long timerTicksPerSecond;
 	
 	/** A little initialization at startup, we're just going to get the GAGE timer going */
 	static {
-		//timer.start();
-		//timerTicksPerSecond = AdvancedTimer.getTicksPerSecond();
+		
+		
 	}
 	
 	/**
@@ -32,13 +32,13 @@ public class SystemTimer {
 	 * @return The high resolution time in milliseconds
 	 */
 	public static long getTime() {
-		// we get the "timer ticks" from the high resolution timer
-		// multiply by 1000 so our end result is in milliseconds
-		// then divide by the number of ticks in a second giving
-		// us a nice clear time in milliseconds
+		
+		
+		
+		
 
 		return System.currentTimeMillis();
-		//return (timer.getClockTicks() * 1000) / timerTicksPerSecond;
+		
 	}
 	
 	/**
@@ -50,6 +50,6 @@ public class SystemTimer {
 	public static void sleep(long duration) {
 		if (duration <= 0) return;
 		Util.sleep(duration);
-		//timer.sleep((duration * timerTicksPerSecond) / 1000);
+		
 	}
 }

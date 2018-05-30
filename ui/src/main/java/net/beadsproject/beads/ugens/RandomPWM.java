@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -130,7 +130,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
                 count--;
             }
         } else {
-            // for NOISE
+            
             for (int i = 0; i < bo.length; i++) {
                 if (count <= 0) {
                     calcVals();

@@ -25,7 +25,7 @@ public class Course implements PubliclyCloneable<Course> {
 			copy.setTextbook(textbook.clone());
 			return copy;
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

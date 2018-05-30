@@ -6,7 +6,7 @@ package spacegraph.space2d.phys.fracture.hertelmehlhorn;
  * @author Marek Benovic
  */
 class Diagonal {
-    private static final int PRIME = 0x534D3595; //pseudonahodny int - prvocislo, v ktorom nejdu po sebe viac ako dve jednicky, alebo 2 nuly (najvacsie)
+    private static final int PRIME = 0x534D3595; 
 
     /**
      * Index prveho trojuholnika
@@ -49,7 +49,7 @@ class Diagonal {
 
     @Override
     public int hashCode() {
-        //throw new TODO("check if this hash is consistent");
+        
         return hashCode(n11.index, n12.index);
     }
 

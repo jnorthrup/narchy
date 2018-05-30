@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RevisionTest {
 
     static NAR newNAR(int fixedNumBeliefs) {
-        //this.activeTasks = activeTasks;
+        
         NAR d = NARS.tmp();
 
         /*
@@ -39,7 +39,7 @@ public class RevisionTest {
         }
         */
 
-        //}
+        
         DefaultConceptState cb = (DefaultConceptState) d.conceptBuilder.awake();
         cb.beliefsMaxEte = (fixedNumBeliefs);
         cb.beliefsMaxTemp = (fixedNumBeliefs);
@@ -52,22 +52,22 @@ public class RevisionTest {
 
     @Test
     public void testBeliefRevision1() {
-        testRevision(1, true); //short term immediate test for correct revisionb ehavior
+        testRevision(1, true); 
     }
 
     @Test
     public void testGoalRevision1() {
-        testRevision(32, false); //longer term test
+        testRevision(32, false); 
     }
 
     @Test
     public void testBeliefRevision32() {
-        testRevision(32, true); //longer term test
+        testRevision(32, true); 
     }
 
     @Test
     public void testGoalRevision32() {
-        testRevision(32, false); //longer term test
+        testRevision(32, false); 
     }
 
 
@@ -78,7 +78,7 @@ public class RevisionTest {
 
         NAR n = newNAR(6);
 
-        //arbitrary time delays in which to observe that certain behavior does not happen
+        
 
         BeliefAnalysis b = new BeliefAnalysis(n, x)
             .input(beliefOrGoal, 1f, 0.9f).run(1);
@@ -89,7 +89,7 @@ public class RevisionTest {
 
         b.run(delay1);
 
-        //b.print(beliefOrGoal);
+        
 
         b.table(beliefOrGoal).print();
         assertEquals( 3, b.size(beliefOrGoal));
@@ -104,7 +104,7 @@ public class RevisionTest {
     @Test
     public void testTruthOscillation() {
 
-        NAR n = NARS.shell(); //newNAR(8);
+        NAR n = NARS.shell(); 
 
         n.log();
 
@@ -112,21 +112,21 @@ public class RevisionTest {
 
         BeliefAnalysis b = new BeliefAnalysis(n, x);
 
-        //assertEquals(0.0, (Double) b.energy().get(MemoryBudget.Budgeted.ActiveConceptPrioritySum), 0.001);
+        
 
         b.believe(1.0f, 0.9f, Tense.Present);
         b.run(1);
-        //b.printEnergy();
+        
 
         b.run(1);
-        //b.printEnergy();
+        
 
         b.believe(0.0f, 0.9f, Tense.Present);
         b.run(1);
-        //b.printEnergy();
+        
 
         b.run(1);
-        //b.printEnergy();
+        
 
         b.print();
         assertEquals(2, b.size(true));
@@ -135,10 +135,10 @@ public class RevisionTest {
                 .believe(0.0f, 0.9f, Tense.Present);
 
         for (int i = 0; i < 16; i++) {
-            //b.printEnergy();
-            //b.print();
+            
+            
             n.run(1);
-            //TODO test that they are sorted ?
+            
         }
 
 
@@ -157,7 +157,7 @@ public class RevisionTest {
 
         BeliefAnalysis b = new BeliefAnalysis(n, x);
 
-        //assertEquals(0.0, (Double) b.energy().get(MemoryBudget.Budgeted.ActiveConceptPrioritySum), 0.001);
+        
 
         int period = 8;
         int loops = 4;
@@ -166,12 +166,12 @@ public class RevisionTest {
 
 
             b.run(period);
-            //b.printEnergy();
+            
 
             b.believe(0.0f, 0.9f, Tense.Present);
 
             b.run(period);
-            //b.printEnergy();
+            
             b.print();
         }
 
@@ -179,7 +179,7 @@ public class RevisionTest {
 
         b.print();
 
-        //TODO test the belief table for something like the following:
+        
     /*
     Beliefs[@72] 16/16
     <a --> b>. %0.27;0.98% [1, 2, 3, 4, 6] [Revision]
@@ -201,8 +201,8 @@ public class RevisionTest {
      */
 
 
-//        b.believe(1.0f, 0.9f, Tense.Present).run(offCycles)
-//                .believe(0.0f, 0.9f, Tense.Present);
+
+
 
     /*for (int i = 0; i < 16; i++) {
         b.printEnergy();
@@ -215,7 +215,7 @@ public class RevisionTest {
 
     @Test public void testRevision3Eternals() throws Narsese.NarseseException {
         NAR n = newNAR(6);
-        //n.log();
+        
         n.input("(a). %1.0;0.5%",
                 "(a). %0.0;0.5%",
                 "(a). %0.1;0.5%"
@@ -278,10 +278,10 @@ public class RevisionTest {
         float linksBeforeRevisionLink = tasklinks.priSum();
 
         b.believe(0.0f, 0.5f).run(1);
-//        assertEquals(2, tasklinks.size());
+
         printTaskLinks(b);        System.out.println("--------");
 
-        b.run(1); //allow enough time for tasklinks bag to commit
+        b.run(1); 
         tasklinks.commit();
 
         printTaskLinks(b);        System.out.println("--------");
@@ -295,27 +295,27 @@ public class RevisionTest {
         float beliefAfter2;
         assertEquals(1.0f, beliefAfter2 = b.priSum(), 0.1f /* large delta to allow for forgetting */);
 
-        //assertEquals(linksBeforeRevisionLink, tasklinks.priSum(), 0.01f);
+        
 
-        assertEquals(0.71f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.06f); //the revised task on top
+        assertEquals(0.71f, b.beliefs().match(ETERNAL, null, n).truth().conf(), 0.06f); 
 
         b.print();
 
-        //revised:
+        
         assertEquals(3, b.size(true));
 
-        //3 if a non-revised eternal task (which creates a revision) revised eternal task is also input/processed. 2 if it is not
-        //assertEquals(3, tasklinks.size());
+        
+        
 
-        assertEquals(beliefAfter2, b.priSum(), 0.01f); //CONSERVED BELIEF BUDGET
+        assertEquals(beliefAfter2, b.priSum(), 0.01f); 
 
-        //tasklinks.commit();
-        //tasklinks.print();
+        
+        
 
-        //without tasklink balancing: 1.24 - 0.97
-        //with balancing: 1.10 - 0.97
+        
+        
 
-        //assertEquals( linksBeforeRevisionLink, tasklinks.priSum(), 0.1f); //CONSERVED LINK BUDGET
+        
 
     }
 
@@ -449,7 +449,7 @@ public class RevisionTest {
 
         assertEquals(a.concept(), b.concept());
 
-        //@NotNull Set<Term> ut = ((Compound) a).recurseTermsToSet(ATOM);
+        
 
         Set<Term> ss = new TreeSet();
 
@@ -457,11 +457,11 @@ public class RevisionTest {
         for (int i = 0; i < n; i++) {
             Term ab = Revision.intermpolate(a, b, s.random().nextFloat(), s);
 
-            //assertTrue(ab.conceptual().equals(a.conceptual()));
+            
 
 
-//            assertTrue(ab + " not valid interpolation of: " + a + " x " + b,
-//                    validIntermpolation(ut, ab));
+
+
             ss.add(ab);
         }
 
@@ -488,12 +488,12 @@ public class RevisionTest {
             assertEquals("(a,(b ==>+2 c))",
                     Revision.intermpolate(a, b, 1f, nar).toString());
 
-            //TODO test in-between because it is randomly selected
+            
         }
     }
 
-//    private boolean validIntermpolation(@NotNull Set<Term> ut, Term ab) {
-//        return ut.equals( ((Compound)ab).recurseTermsToSet(ATOM) );
-//    }
+
+
+
 
 }

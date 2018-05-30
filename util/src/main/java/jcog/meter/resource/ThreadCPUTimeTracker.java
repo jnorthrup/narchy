@@ -4,7 +4,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *    http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,12 +27,12 @@ import java.lang.management.ThreadMXBean;
  */
 public class ThreadCPUTimeTracker extends DoubleMeter {
 
-    //private long startCPUTime; // nanos
+    
 
     public ThreadCPUTimeTracker(String id) {
         super(id);
 
-        //ensureCPUTimeMonitoringEnabled();
+        
     }
 
     public static double getCPUTime() {
@@ -70,7 +70,7 @@ public class ThreadCPUTimeTracker extends DoubleMeter {
                 threadMXBean.setThreadContentionMonitoringEnabled(true);
                 contentionMonitoringEnabled = true;
 
-                //logger.info("Enabling thread contention monitoring");
+                
 
             } else {
                 System.err.println("Thread contention monitoring is not supported in this JVM; "
@@ -91,7 +91,7 @@ public class ThreadCPUTimeTracker extends DoubleMeter {
                 threadMXBean.setThreadCpuTimeEnabled(true);
                 cpuTimeMonitoringEnabled = true;
 
-                //logger.info("Enabling thread CPU time monitoring");
+                
             } else {
                 System.err.println("Thread CPU time monitoring is not supported in this JVM; "
                         + "Thread CPU time related trackers will be silent");

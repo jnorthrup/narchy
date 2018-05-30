@@ -30,7 +30,7 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Funct
     }
     
     public double valueEvidence(double x) {
-        //linear interpolate between two closest values
+        
         Map.Entry<Double, Double> eLow = evidence.lowerEntry(x);
         Map.Entry<Double, Double> eHigh = evidence.higherEntry(x);
         
@@ -82,7 +82,7 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Funct
         double x = X[0];
        
         while (evidence.size() > numPoints) {
-            //remove a random point; this can be improved by merging points which are near
+            
             double low = evidence.firstKey();
             double high = evidence.lastKey();
             double r = Math.random() * ( high - low ) + low;
@@ -101,7 +101,7 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Funct
     
     @Override
     public int numberOfParameters() {
-        //TODO 
+        
         return numPoints;
     }
 
@@ -120,15 +120,15 @@ public class LinearInterpolationFunction implements ParameterizedFunction, Funct
         return 0;
     }
 
-//    @Override
-//    public double getParameter(int i) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public void setParameter(int i, double v) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
+
+
+
+
+
+
+
+
+
 
 }
 

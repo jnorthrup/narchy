@@ -10,7 +10,7 @@ package jcog.tree.rtree.split;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,7 +39,7 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
         final Node<T, T> l1Node = model.newLeaf();
         final Node<T, T> l2Node = model.newLeaf();
 
-        // find the two rectangles that are most wasteful
+        
         double minCost = Double.MIN_VALUE;
         short size = leaf.size;
         int r1Max = 0, r2Max = size - 1;
@@ -58,14 +58,14 @@ public final class QuadraticSplitLeaf<T> implements Split<T> {
             }
         }
 
-        // two seeds
+        
         l1Node.add(data[r1Max], leaf, model, dummy);
         dummy[0] = false;
         l2Node.add(data[r2Max], leaf, model, dummy);
 
         for (int i = 0; i < size; i++) {
             if ((i != r1Max) && (i != r2Max)) {
-                // classify with respect to nodes
+                
                 leaf.transfer(l1Node, l2Node, data[i], model);
             }
         }

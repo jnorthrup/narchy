@@ -69,9 +69,9 @@ public class Evaluation {
     public static ArrayHashSet<Term> solveAll(Term x, TermContext context) {
         ArrayHashSet<Term> all = new ArrayHashSet<>();
         solve(x, context, (y) -> {
-//            if ((Operator.func(y).equals(Evaluation.TRUE))) {
-//                y = Operator.arg(y, 0); //unwrap
-//            }
+
+
+
             all.add(y);
 
             return true;
@@ -83,10 +83,10 @@ public class Evaluation {
 
         Term y = needsEvaluation(x, context);
         if (y == null)
-            return each.test(x); // no change
+            return each.test(x); 
 
         Evaluation s = Evaluation.clear();
-        ///new Evaluation();
+        
 
         return s.get(y, each);
     }
@@ -127,34 +127,34 @@ public class Evaluation {
     }
 
     static protected Term eval(Term c) {
-//
-//        if (!c.hasAll(Op.FuncBits))
-//            return c;
-//
-////        if (!(_context instanceof Evaluation.TermContext.MapTermContext)) {
-//        //pre-resolve functors
-//        UnifiedMap<Term, Term> resolved = new UnifiedMap<>(4);
-//        c.recurseTerms(t -> t.hasAny(ATOM), t -> {
-//            if (t.op() == ATOM) {
-//                resolved.computeIfAbsent(t, tt -> {
-//                    Termed ttt = apply(tt);
-//                    if ((ttt instanceof Functor || ttt instanceof Operator)) {
-//                        return ttt.term();
-//                    } else {
-//                        return null; //dont map
-//                    }
-//                });
-//            }
-//            return true;
-//        }, null);
-//        if (resolved.isEmpty())
-//            return c;
 
-//            context = new Evaluation.TermContext.MapTermContext(resolved);
-//        } else {
-//            //re-use existing pre-solved Context
-//            context = _context;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -162,18 +162,18 @@ public class Evaluation {
         /*if (hasAll(opBits))*/
 
 
-//        Termed ff = context.applyIfPossible(this);
-//        if (!ff.equals(this))
-//            return ff.term();
+
+
+
 
         /*if (subterms().hasAll(opBits))*/
 
         Subterms uu = c.subterms();
         Term[] xy = null;
-        //any contained evaluables
+        
         Op o = c.op();
-        //int possiblyFunctional = o == INH ? Op.funcInnerBits : Op.funcBits;
-        //boolean recurseIfChanged = false;
+        
+        
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
         for (int i = 0, n = uu.subs(); i < n; i++) {
@@ -181,12 +181,12 @@ public class Evaluation {
             Term yi = possiblyNeedsEval(xi) ? eval(xi) : xi;
             if (xi != yi) {
                 if (yi == null) {
-                    //nothing
+                    
                 } else {
                     if (yi == Null)
                         return Null;
-//                    if (yi == False && (o == CONJ))
-//                        return False; //short-circuit fast fail
+
+
 
                     if (yi instanceof EllipsisMatch) {
                         int ys = yi.subs();
@@ -196,7 +196,7 @@ public class Evaluation {
 
                     if (xi.getClass() != yi.getClass() || !xi.equals(yi)) {
                         if (xy == null) {
-                            xy = ((Compound) c).arrayClone(); //begin clone copy
+                            xy = ((Compound) c).arrayClone(); 
                         }
                         xy[i] = yi;
                     }
@@ -208,20 +208,20 @@ public class Evaluation {
         Term u;
         if (xy != null) {
             if (ellipsisAdds > 0) {
-                //flatten ellipsis
+                
                 xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
             }
 
             u = o.compound(c.dt(), xy);
-            o = u.op(); //refresh root operator in case it has changed
-            uu = u.subterms(); //refresh subterms
+            o = u.op(); 
+            uu = u.subterms(); 
         } else {
             u = c;
         }
 
 
-        //recursively compute contained subterm functors
-        //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
+        
+        
         if (o == INH && uu.hasAll(Op.FuncInnerBits)) {
             Term pred, subj;
             if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
@@ -230,15 +230,15 @@ public class Evaluation {
                 if (v instanceof AbstractPred) {
                     u = $.the(((Predicate) v).test(null));
                 } else if (v == null) {
-                    //null means to keep 'u' unchanged same
+                    
                 } else {
-                    u = v; //continue with the evaluation result
+                    u = v; 
                 }
             }
         }
 
         if (u != c && (u.equals(c) && u.getClass() == c.getClass()))
-            return c; //return to this instance, undoing any substitutions necessary to reach this eval
+            return c; 
 
         return u;
     }
@@ -259,13 +259,13 @@ public class Evaluation {
 
         switch (np) {
             case 0:
-                //return Collections.singleton(x); //TODO do any substitutions need applied?
+                
                 return each.test(x);
 
-//            case 1:
-//                //length=1 special case doesnt need cartesian product
-//                pp = Iterators.singletonIterator(proc.get(0)); //<- not working right
-//                break;
+
+
+
+
             default: {
                 Iterable[] aa = new Iterable[np];
                 for (int i = 0; i < np; i++) {
@@ -307,9 +307,9 @@ public class Evaluation {
             if (z != null && !each.test(z))
                 return false;
 
-            if (np < proc.size()) { //proc added
+            if (np < proc.size()) { 
                 int before = v.now();
-                if (!get(z, each)) //recurse
+                if (!get(z, each)) 
                     return false;
                 v.revert(before);
             }
@@ -324,12 +324,12 @@ public class Evaluation {
         if (z == Null)
             return Null;
         if (z == True || z == False || z.hasAny(Op.BOOL)) {
-            boolean hasFalse = z == False || z.ORrecurse(t -> t == False); //TODO can be found faster with smart recursive descent
-//            if (hasFalse)
-//                z = False; //TODO maybe record what part causes the falsity
+            boolean hasFalse = z == False || z.ORrecurse(t -> t == False); 
 
-            //determined absolutely true or false: implies that this is the answer to a question
-            //return $.func(TRUE, z == False ? y.neg() : y);
+
+
+            
+            
             return hasFalse ? False : True;
         }
         return z;
@@ -351,7 +351,7 @@ public class Evaluation {
             return (m) -> {
                 Term px = m.get(x);
                 if (px != null) {
-                    return px.equals(xx); //set to other value, return true iff equal
+                    return px.equals(xx); 
                 } else {
                     m.tryPut(x, xx);
                     return true;
@@ -374,9 +374,9 @@ public class Evaluation {
              */
             default Term applyTermIfPossible(/*@NotNull*/ Term x, Op supertermOp, int subterm) {
 
-//            if (x instanceof Compound) {
-//                return applyCompound((Compound) x, supertermOp, subterm);
-//            }
+
+
+
 
 
                 Termed y = apply(x);
@@ -419,7 +419,7 @@ public class Evaluation {
             @Override
             public @Nullable Termed transformAtomic(Term z) {
                 if (z instanceof Functor)
-                    hasFunctor = true; //already has it
+                    hasFunctor = true; 
 
                 if (z.op() == ATOM) {
                     Term zz = context.applyTermIfPossible(z, null, 0);

@@ -144,7 +144,7 @@ public class GrammarTest {
         grammar.addRule("mystart", startClause);
         grammar.check();
 
-        //Add recursive clause reference
+        
         startClause.get(new Repetition(new RuleReference("mystart", grammar)));
         grammar.check();
 
@@ -207,7 +207,7 @@ public class GrammarTest {
     @Test
     public void performanceTest() {
         defineTrackRobotGrammar();
-        grammar.check(); //Checking performance will not be measured
+        grammar.check(); 
         String[] sentences = new String[]{"pick carrier from LINE_IN", "place carrier at DB101_IN", "scan DB101_OUT"};
         long before = System.currentTimeMillis();
         for (int i = 0; i < 1000; i++) {
@@ -216,7 +216,7 @@ public class GrammarTest {
             }
         }
         long after = System.currentTimeMillis();
-        //assertTrue("Time in msecs: " + (after - before), (after - before) < 1000L);
+        
     }
 
     @Test
@@ -243,7 +243,7 @@ public class GrammarTest {
     }
 
     private void defineTrackRobotGrammar() {
-        //From BPWJ, pp. 50
+        
         Alternation command = new Alternation();
         command.get(new RuleReference("pickCommand", grammar));
         command.get(new RuleReference("placeCommand", grammar));
@@ -273,67 +273,66 @@ public class GrammarTest {
         grammar.check();
     }
 
-    //	@Test
-    //	public void parameterizedRule() {
-    //		Sequence startClause = new Sequence();
-    //
-    //		grammar.addRule("mystart", startClause);
-    //		grammar.defineStartRule("mystart");
-    //
-    //		grammar.addRule("parameterized", new ParameterizedRule(new Repetition()));
-    //
-    //		assertTrue(grammar.parse("").isCompleteMatch());
-    //		assertFalse(grammar.parse("hello").isCompleteMatch());
-    //	}
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 }
 
-//TODO convert from Mockito to Junit
-//    @Test
-//    public void assemblyInitialization() {
-//        InitTokenizer initializer = mock(InitTokenizer.class);
-//        grammar.initTokenizer(initializer);
-//        grammar.addRule("mystart", new Empty());
-//        grammar.parse("");
-//        verify(initializer).init(any(Tokenizer.class));
-//    }
-//    @Test
-//    public void textualRuleWithParserMatched() {
-//        BiConsumer<List<Object>, Stack<Object>> matched = mock(BiConsumer.class);
-//        String ruleName = grammar.defineRule("mystart = \"test\"", matched);
-//        assertEquals("mystart", ruleName);
-//        grammar.parse("test");
-//        List<Object> expectedMatches = new ArrayList<Object>();
-//        expectedMatches.add(new Token("test"));
-//        verify(matched).accept(expectedMatches, new Stack<Object>());
-//    }
-//
-//    @Test
-//    public void addRuleTogetherWithAssembler() {
-//        IAssembler assembler = mock(IAssembler.class);
-//        grammar.addRule("mystart", new Literal("test"), assembler);
-//        grammar.parse("test");
-//        verify(assembler).workOn(any(Assembly.class));
-//    }
-//
-//    @Test
-//    public void assemblersWorkWithRuleReference() {
-//        grammar.addRule("mystart", new RuleReference("ref", grammar));
-//        IAssembler assembler = mock(IAssembler.class);
-//        grammar.addRule("ref", new Word());
-//        grammar.addAssembler("ref", assembler);
-//        assertTrue(grammar.parse("aWord").isCompleteMatch());
-//        verify(assembler).workOn(any(Assembly.class));
-//    }
-//
-//    @Test
-//    public void assemblersWorkWithRuleReferenceInSequence() {
-//        Sequence mystart = new Sequence();
-//        mystart.add(new RuleReference("ref", grammar));
-//        grammar.addRule("mystart", mystart);
-//        IAssembler assembler = mock(IAssembler.class);
-//        grammar.addRule("ref", new Word());
-//        grammar.addAssembler("ref", assembler);
-//        assertTrue(grammar.parse("aWord").isCompleteMatch());
-//        verify(assembler).workOn(any(Assembly.class));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

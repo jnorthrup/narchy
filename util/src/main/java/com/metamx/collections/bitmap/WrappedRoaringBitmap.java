@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,9 +28,9 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 
 public class WrappedRoaringBitmap implements MutableBitmap {
-    // attempt to compress long runs prior to serialization (requires RoaringBitmap version 0.5 or better)
-    // this may improve compression greatly in some cases at the expense of slower serialization
-    // in the worst case.
+    
+    
+    
     private final boolean compressRunOnSerialization;
     /**
      * Underlying bitmap.
@@ -156,12 +156,12 @@ public class WrappedRoaringBitmap implements MutableBitmap {
 
                                 @Override
                                 public void close() {
-                                    // unnecessary
+                                    
                                 }
 
                                 @Override
                                 public void flush() {
-                                    // unnecessary
+                                    
                                 }
 
                                 @Override
@@ -182,7 +182,7 @@ public class WrappedRoaringBitmap implements MutableBitmap {
                     )
             );
         } catch (IOException e) {
-            e.printStackTrace(); // impossible in theory
+            e.printStackTrace(); 
         }
     }
 

@@ -32,7 +32,7 @@ public class TemporalTermTest {
     static Term ceptualStable(String s) throws Narsese.NarseseException {
         Term c = $(s);
         Term c1 = c.concept();
-        //assertNotEquals(c, c1);
+        
         Term c2 = c1.concept();
         assertEquals(c1, c2, () -> "unstable: irst " + c1 + "\n\t, then " + c2);
         return c1;
@@ -50,8 +50,8 @@ public class TemporalTermTest {
         assertEquals("((--,(x)) &&+- (x))", n.conceptualize($("((x) &&+10 (--,(x)))")).toString());
         assertEquals("((--,(x)) &&+- (x))", n.conceptualize($("((x) &&-10 (--,(x)))")).toString());
 
-//        assertEquals("((x) <=>+- (x))", n.conceptualize(n.term("((x) <=>+10 (--,(x)))")).toString());
-//        assertEquals("((x) <=>+- (x))", n.conceptualize(n.term("((x) <=>-10 (--,(x)))")).toString());
+
+
     }
 
     @Test
@@ -69,10 +69,10 @@ public class TemporalTermTest {
     @Test
     public void testCoNegatedSubtermTask() throws Narsese.NarseseException {
 
-        //allowed
+        
         assertNotNull(Narsese.the().task("((x) &&+1 (--,(x))).", n));
 
-        //not allowed
+        
         assertInvalidTask("((x) && (--,(x))).");
         assertInvalidTask("((x) &&+0 (--,(x))).");
     }
@@ -103,11 +103,11 @@ public class TemporalTermTest {
 
     @Test
     public void testInvalidInheritanceOfEternalTemporalNegated() throws Narsese.NarseseException {
-        assertEquals( //since one is negative it's allowed
+        assertEquals( 
                 "((--,(a &&+1 b))-->(a&&b))",
                 $("(--(a &&+1 b)-->(a && b))").toString()
         );
-        assertEquals( //since one is negative it's allowed
+        assertEquals( 
                 "((a &&+1 b)-->(--,(a&&b)))",
                 $("((a &&+1 b) --> --(a && b))").toString()
         );
@@ -133,8 +133,8 @@ public class TemporalTermTest {
 
         Term abc = $("((a&|b) &&+5 (b&|c))");
         assertEquals(
-                //"[0:(a&|b), 5:(b&|c)]",
-                //"[a:0, b:0, (a&|b):0, b:5, c:5, (b&|c):5]",
+                
+                
                 "[0:a, 0:b, 5:b, 5:c]",
                 abc.eventList().toString());
         assertEquals(4, abc.eventCount());
@@ -147,11 +147,11 @@ public class TemporalTermTest {
         assertEquals("(&&,((#1,(2,true),true)-->#2),tetris(#1,(11,true),true),((gameOver,(),true)-->#2))", c1.toString());
     }
 
-//    @Test
-//    public void testStableConceptualization3() throws Narsese.NarseseException {
-//        Term c1 = ceptualStable("((--,(P==>((--,L)&&(--,Q)))) &&+1 L)");
-//        assertEquals("((--,(P==>((--,L)&&(--,Q)))) &&+- L)", c1.toString());
-//    }
+
+
+
+
+
 
     @Test
     public void testConceptualizationWithoutConjReduction() throws Narsese.NarseseException {
@@ -178,7 +178,7 @@ public class TemporalTermTest {
         Term c1 = ceptualStable("(((a)&&(b))&|do(that))");
         assertEquals(
                 "(((a)&&(b)) &&+- do(that))",
-                //"(&&,do(that),(a),(b))",
+                
                 c1.toString());
     }
 
@@ -208,14 +208,14 @@ public class TemporalTermTest {
 
     @Test
     public void testEventsWithXTERNAL() throws Narsese.NarseseException {
-        //cant decompose
+        
         assertEquals("[0:(x &&+- y)]", $("(x &&+- y)").eventList().toString());
         assertEquals("[0:(x &&+- y), 1:z]", $("((x &&+- y) &&+1 z)").eventList().toString());
     }
 
     @Test
     public void testEventsWithDTERNAL() throws Narsese.NarseseException {
-        //cant decompose
+        
         assertEquals("[0:(x&&y)]", $("(x && y)").eventList().toString());
         assertEquals("[0:(x&&y), 1:z]", $("((x && y) &&+1 z)").eventList().toString());
     }
@@ -255,7 +255,7 @@ public class TemporalTermTest {
 
     @Test
     public void testAtemporalization4() throws Narsese.NarseseException {
-        //maintain temporal information that would otherwise be factored out if non-temporal
+        
 
         assertEquals("((x&&$1) ==>+- (y&&$1))",
                 $("((x&&$1) ==>+- (y&&$1))").root().toString());
@@ -272,8 +272,8 @@ public class TemporalTermTest {
             assertEquals("((x && y) ==>+- z)",
                     c.root().toString());
 
-//            assertEquals("((x==>y) &&+- z)",
-//                    c.root().toString());
+
+
         }
     }
 
@@ -335,8 +335,8 @@ public class TemporalTermTest {
 
         assertSame(na.sub(0), nc.sub(0));
 
-//        System.out.println(b.concept(n));
-//        System.out.println(c.concept(n));
+
+
 
         assertEquals(b.concept(n, true).sub(0), c.concept(n, true).sub(0));
 
@@ -351,22 +351,22 @@ public class TemporalTermTest {
     public void testParseOperationInFunctionalForm2() throws Narsese.NarseseException {
         assertEquals(
                 "(((a)&&(b))&|do(that))",
-                //"(&|,do(that),(a),(b))",
+                
                 $("(do(that) &&+0 ((a)&&(b)))").toString());
 
         Termed nt = $("(((that)-->do) &&+0 ((a)&&(b)))");
         assertEquals(
                 "(((a)&&(b))&|do(that))",
-                //"(&|,do(that),(a),(b))",
+                
                 nt.toString());
 
-        //assertNotNull(n.conceptualize(nt, UnitBudget.One));
+        
         assertEquals(
-                //"(&&,do(that),(a),(b))",
+                
                 "(((a)&&(b)) &&+- do(that))",
                 n.conceptualize(nt).toString(), () -> nt + " conceptualized");
 
-        //assertEquals("(&&,do(that),(a),(b))", n.conceptualize(nt, UnitBudget.One).toString()); ????????
+        
 
     }
 
@@ -378,7 +378,7 @@ public class TemporalTermTest {
 
         assertEquals("((do(that)&&(a))==>(b))", n.conceptualize(nn).toString());
 
-        //assertEquals("(&&,do(that),(a),(b))", n.conceptualize(nt, UnitBudget.One).toString()); ??
+        
 
     }
 
@@ -391,8 +391,8 @@ public class TemporalTermTest {
 
     @Test
     public void testCommutiveTemporalityConjEquiv() {
-//        testParse("((#1-->$2) <=>-20 ({(row,3)}-->$2))", "(({(row,3)}-->$1) <=>+20 (#2-->$1))");
-//        testParse("(({(row,3)}-->$2) <=>+20 (#1-->$2))", "(({(row,3)}-->$1) <=>+20 (#2-->$1))");
+
+
 
         testParse("((#1-->$2) &&-20 ({(row,3)}-->$2))", "(({(row,3)}-->$1) &&+20 (#2-->$1))");
     }
@@ -499,18 +499,18 @@ public class TemporalTermTest {
         n.log();
 
         n.input("(goto(#1) &&+5 ((SELF,#1)-->at)).");
-        //n.step();
+        
 
         n.input("(goto(#1) &&-5 ((SELF,#1)-->at)).");
-        //n.step();
+        
 
         n.input("(goto(#1) &&+0 ((SELF,#1)-->at)).");
-        //n.step();
+        
         n.input("(((SELF,#1)-->at) &&-3 goto(#1)).");
-        //n.step();
-        //n.input("(((SELF,#1)-->at) &&+3 goto(#1)).");
-        //n.step();
-        //n.input("(((SELF,#1)-->at) &&+0 goto(#1)).");
+        
+        
+        
+        
 
 
         n.run(2);
@@ -557,11 +557,11 @@ public class TemporalTermTest {
             Concept f = n.conceptualize(f0);
             assertSame(e, f, e + "==" + f);
 
-            //repeat
+            
             Concept g = n.conceptualize($("(x " + op + "+- x)"));
             assertEquals("(x " + op + "+- x)", g.toString());
 
-            //co-negation
+            
             Concept h = n.conceptualize($("(x " + op + "+- (--,x))"));
             assertEquals("((--,x) " + op + "+- x)", h.toString());
 
@@ -572,7 +572,7 @@ public class TemporalTermTest {
 
     @Test
     public void parseTemporalRelation() throws Narsese.NarseseException {
-        //TODO move to NarseseTest
+        
         assertEquals("(x ==>+5 y)", $("(x ==>+5 y)").toString());
         assertEquals("(x &&+5 y)", $("(x &&+5 y)").toString());
 
@@ -621,10 +621,10 @@ public class TemporalTermTest {
         Term c = seq($("((--,(b0)) &&+0 (pre_1))"), 10, $("(else_0)"));
         Term d = seq($("(else_0)"), -10, $("((--,(b0)) &&+0 (pre_1))"));
 
-//        System.out.println(a);
-//        System.out.println(b);
-//        System.out.println(c);
-//        System.out.println(d);
+
+
+
+
 
         assertEquals(b, c);
         assertEquals(c, d);
@@ -652,15 +652,15 @@ public class TemporalTermTest {
         int indexSize = n.concepts.size();
         n.concepts.print(System.out);
 
-        n.input("(x ==>+1 y). :|:"); //present
+        n.input("(x ==>+1 y). :|:"); 
         n.run();
 
-        //d.concept("(x==>y)").print();
+        
 
         assertEquals(4, xImplY.beliefs().size());
 
         n.concepts.print(System.out);
-        assertEquals(indexSize, n.concepts.size()); //remains same amount
+        assertEquals(indexSize, n.concepts.size()); 
 
         n.conceptualize("(x==>y)").print();
     }
@@ -680,7 +680,7 @@ public class TemporalTermTest {
     @Test
     public void testEmbeddedChangedRootVariations() throws Narsese.NarseseException {
         {
-            //preserve DTERNAL
+            
             Term x = $("(a ==> (b &&+1 (c && d)))");
             assertEquals("(a==>(b &&+1 (c&&d)))", x.toString());
             assertEquals("(a ==>+- (&&,b,c,d))", x.root().toString());
@@ -707,20 +707,20 @@ public class TemporalTermTest {
 
     @Test
     public void testSubtermTimeNegAnon() throws Narsese.NarseseException {
-        //"(--,noid(_0,#1)) not found in superterm: (&|,(--,noid(_0,#1)),(\"+\"-->(X-->noid)),noid(#1,#1))"
+        
         String needle = "(--,noid(_0,#1))";
         String haystack = "(&|,(--,noid(_0,#1)),(\"+\"-->(X-->noid)),noid(#1,#1))";
         assertEquals(0, $(haystack).subTimeSafe($(needle)));
         assertEquals(0, $(haystack).anon().subTimeSafe($(needle).anon()));
     }
 
-//    @Test
-//    public void testSubtermNonCommutivePosNeg() throws Narsese.NarseseException {
-//        Term x = $("((d-->c) ==>-3 (a-->b))");
-//        assertEquals(0, x.subTime($("(d-->c)")));
-//        assertEquals(-3, x.subTime($("(a-->b)")));
-//        assertEquals(DTERNAL, x.subTimeSafe($("a"))); //a is not an event within x
-//    }
+
+
+
+
+
+
+
 
     @Test
     public void testSubtermRepeat() throws Narsese.NarseseException {
@@ -780,17 +780,17 @@ public class TemporalTermTest {
         assertEquals(0, d.subTime(A));
         assertEquals(5, d.subTime(B));
 
-//        Compound e = $("(a <=>+1 b)");
-//        assertEquals(0, e.subtermTime(A));
-//        assertEquals(1, e.subtermTime(B));
-//
-//        Compound f = $("(a <=>-1 b)");
-//        assertEquals(1, f.subtermTime(A));
-//        assertEquals(0, f.subtermTime(B));
-//
-//        Compound g = $("(b <=>+1 a)");
-//        assertEquals(1, g.subtermTime(A));
-//        assertEquals(0, g.subtermTime(B));
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -846,7 +846,7 @@ public class TemporalTermTest {
         TreeSet d = new TreeSet(Comparator.comparing(Object::toString));
         n.conceptsActive().forEach(x -> d.add(x.get()));
 
-        //2 unique impl concepts created
+        
         assertTrue(d.contains($("((x)==>(y))")));
         assertTrue(d.contains($("((y)==>(x))")));
     }
@@ -880,14 +880,14 @@ public class TemporalTermTest {
 
     @Test
     public void testConjRoot() throws Narsese.NarseseException {
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertEquals("", $.terms.atemporalize())
+        
+
+
+
+
+
+
+        
         Term a = $("(x && y)");
 
         Term b = $("(x &&+1 y)");
@@ -928,41 +928,41 @@ public class TemporalTermTest {
 
     }
 
-//    @Test
-//    public void testAtemporalization1() throws Narsese.NarseseException {
-//        Term x = $("(((--,(tetris-->(_n,#2))) &&+1 $1) <=>+1 ($1 &&+0 (--,(tetris-->(_n,#2)))))");
-//        Term y = x.eternal();
-//        assertEquals("(((--,(tetris-->(_n,#1))) &&+- $2) <=>+- ((--,(tetris-->(_n,#1))) &&+- $2))", y.toString());
-//    }
+
+
+
+
+
+
 
     @Disabled
     @Test
     public void testEqualsAnonymous3() throws Narsese.NarseseException {
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertTrue(Terms.equalAtemporally($("(x && (y ==> z))"), $.$("(x &&+1 (y ==> z))")));
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
+        
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
 
         assertEquals($.<Compound>$("(x && (y ==> z))").temporalize(Retemporalize.retemporalizeAllToXTERNAL),
                 $.<Compound>$("(x &&+1 (y ==>+1 z))").temporalize(Retemporalize.retemporalizeAllToXTERNAL));
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
+        
+
+
+
+
+
+
         assertEquals("((x &&+1 z) ==>+1 w)",
                 $("(x &&+1 (z ==>+1 w))").toString());
 
@@ -972,61 +972,61 @@ public class TemporalTermTest {
 
     @Test
     public void testEqualsAnonymous4() {
-        //temporal terms within non-temporal terms
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertTrue(Terms.equalAtemporally($("(a <-> (y ==> z))"), $.$("(a <-> (y ==>+1 z))")));
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertFalse(Terms.equalAtemporally($("(a <-> (y ==> z))"), $.$("(a <-> (w ==>+1 z))")));
+        
+        
 
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertTrue(Terms.equalAtemporally($("((a ==> b),(b ==> c))"), $.$("((a ==> b),(b ==>+1 c))")));
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertTrue(Terms.equalAtemporally($("((a ==>+1 b),(b ==> c))"), $.$("((a ==> b),(b ==>+1 c))")));
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+        
+
+        
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+        
     }
 
     @Test
     public void testEqualAtemporally5() {
-        //special handling for images
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertTrue(Terms.equalAtemporally($("(/, (a ==> b), c, _)"), $.$("(/, (a ==>+1 b), c, _)")));
-        //        if (as == bs) {
-//            return true;
-//        } else if (as instanceof Compound && bs instanceof Compound) {
-//            return equalsAnonymous((Compound) as, (Compound) bs);
-//        } else {
-//            return as.equals(bs);
-//        }
-        //assertFalse(Terms.equalAtemporally($("(/, a, b, _)"), $.$("(/, a, _, b)")));
+        
+        
+
+
+
+
+
+
+        
+        
+
+
+
+
+
+
+        
     }
 
     @Test
@@ -1038,9 +1038,9 @@ public class TemporalTermTest {
         Term xe = t.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         assertEquals("(--,(happy))", xe.toString());
 
-        //TODO this will require a refactor allowing arbitrary function mapping matched dt source value to a target dt
-//        Term xz = $.terms.retemporalize(t, $.terms.retemporalizeZero);
-//        assertEquals("((--,((--,(o))&|(happy)))&|(--,(happy)))", xz.toString());
+        
+
+
     }
 
     @Test
@@ -1068,7 +1068,7 @@ public class TemporalTermTest {
         assertConceptual("(((--,(nario,zoom))&&happy) &&+- (--,(x,(--,x))))", "(((--,(nario,zoom)) &&+- happy) &&+- (--,(x,(--,x))))");
 
         String c =
-                //"((--,(nario,zoom)) &&+- (vx&&vy))";
+                
                 "(&&,(--,(nario,zoom)),vx,vy)";
         assertConceptual(
                 c, "((vx &&+97 vy) &&+156 (--,(nario,zoom)))");
@@ -1085,15 +1085,15 @@ public class TemporalTermTest {
         assertEquals(s,
                 Op.CONJ.compound(XTERNAL, new Term[]{the("x"), the("x").neg(), the("y")}).toString());
         assertEquals(s,
-                Op.CONJ.compound(XTERNAL, new Term[]{the("y"), the("x"), the("x").neg()}).toString()); //changed order to test sorting
+                Op.CONJ.compound(XTERNAL, new Term[]{the("y"), the("x"), the("x").neg()}).toString()); 
     }
 
-//    @Test
-//    public void testConceptual2b() throws Narsese.NarseseException {
-//        assertConceptual(
-//                "(((--,(happy &&+- vy)) &&+- (happy &&+- vy))==>((--,(happy &&+- vy)) &&+- (--,vx)))",
-//                "(((--,(vy &&+84 happy))&&(happy&|vy)) ==>+84 ((--,vx) &&+21 (--,(happy &&+146 vy))))");
-//    }
+
+
+
+
+
+
 
     @Test
     public void testConceptual2() throws Narsese.NarseseException {
@@ -1102,11 +1102,11 @@ public class TemporalTermTest {
         assertTrue(x instanceof Compound);
         Term y = $("((--,(vy &&+84 happy))&&(happy&|vy))");
         assertEquals(
-                //"(&|,(--,(vy &&+84 happy)),happy,vy)",
+                
                 "((--,(vy &&+84 happy))&&(vy&|happy))",
                 y.toString());
         assertEquals(
-                //"(&&,(--,(happy &&+- vy)),happy,vy)",
+                
                 "((--,(vy&&happy)) &&+- (vy&&happy))",
                 y.concept().toString());
 
@@ -1126,39 +1126,39 @@ public class TemporalTermTest {
 
     }
 
-//    @Test public void testRelationTaskNormalization() {
-//        String a = "pick({t002})";
-//        String b = "reachable:(SELF,{t002})";
-//
-//        String x = "(" + a + " &&+5 " + b + ")";
-//        String y = "(" + b + " &&+5 " + a + ")";
-//
-//        NAR n = new Default();
-//        Task xt = n.inputTask(x + ". :|:");
-//        Task yt = n.inputTask(y + ". :|:");
-//        out.println(xt);
-//        out.println(yt);
-//        assertEquals(5, xt.term().dt());
-//        assertEquals(0, xt.occurrence());
-//
-//        //should have been shifted to place the earliest component at
-//        // the occurrence time expected by the semantics of the input
-//        assertEquals(-5, yt.term().dt());
-//        assertEquals(5, yt.occurrence());
-//
-//
-//    }
 
-//    @Test
-//    public void testAfter() {
-//
-//        assertTrue("after", Tense.after(1, 4, 1));
-//
-//        assertFalse("concurrent (equivalent)", Tense.after(4, 4, 1));
-//        assertFalse("before", Tense.after(6, 4, 1));
-//        assertFalse("concurrent (by duration range)", Tense.after(3, 4, 3));
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testImpossibleSubtermWrong() throws Narsese.NarseseException {
@@ -1168,19 +1168,19 @@ public class TemporalTermTest {
         assertTrue(!sooper.impossibleSubTerm(sub));
         assertEquals(0, sooper.subTimeSafe(sub));
 
-        //(({(0,0)}-->shape)&|cam(0,0))
-        //cam(0,0)
+        
+        
     }
 
     @Test public void testDiffOfTemporalConj() {
         Term x = $$("((x&|y)~(y &&+1 x))");
-        assertEquals(False, x); //disallowed for now
+        assertEquals(False, x); 
         Term xNeg = $$("(--(x&|y)~(y &&+1 x))");
-        assertEquals(False, xNeg); //disallowed for now
+        assertEquals(False, xNeg); 
 
-//        assertEquals("", x.root());
-//        assertEquals("", x.concept());
 
-        //(((left &&+676 (tetris-->happy)) &&+234 (happy(tetris,chronic) &&+806 happy(tetris,acute)))~(&|,happy(tetris,acute),happy(tetris,chronic),(tetris-->happy),left))
+
+
+        
     }
 }

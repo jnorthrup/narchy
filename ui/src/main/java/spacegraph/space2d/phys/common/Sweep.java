@@ -92,16 +92,16 @@ public class Sweep implements Serializable {
      */
     public final void getTransform(final Transform xf, final float beta) {
         assert (xf != null);
-        // xf->p = (1.0f - beta) * c0 + beta * c;
-        // float32 angle = (1.0f - beta) * a0 + beta * a;
-        // xf->q.Set(angle);
+        
+        
+        
         xf.pos.x = (1.0f - beta) * c0.x + beta * c.x;
         xf.pos.y = (1.0f - beta) * c0.y + beta * c.y;
         float angle = (1.0f - beta) * a0 + beta * a;
         xf.set(angle);
 
-        // Shift to origin
-        // xf->p -= b2Mul(xf->q, localCenter);
+        
+        
         final Rot q = xf;
         xf.pos.x -= q.c * localCenter.x - q.s * localCenter.y;
         xf.pos.y -= q.s * localCenter.x + q.c * localCenter.y;
@@ -114,10 +114,10 @@ public class Sweep implements Serializable {
      */
     public final void advance(final float alpha) {
         assert (alpha0 < 1.0f);
-        // float32 beta = (alpha - alpha0) / (1.0f - alpha0);
-        // c0 += beta * (c - c0);
-        // a0 += beta * (a - a0);
-        // alpha0 = alpha;
+        
+        
+        
+        
         float beta = (alpha - alpha0) / (1.0f - alpha0);
         c0.x += beta * (c.x - c0.x);
         c0.y += beta * (c.y - c0.y);

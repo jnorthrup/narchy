@@ -22,8 +22,8 @@ abstract public class RunAgentTest {
 	@BeforeEach
 	public void setUp() throws Exception {
 
-		// set up the biased coin environment. The coin lands on one side with a
-		// probability of 0.7.
+		
+		
 		env = environment();
 
 		WorldModelSettings modelSettings = new WorldModelSettings();
@@ -58,8 +58,8 @@ abstract public class RunAgentTest {
 		int n = 10000;
 		log.info("Play " + n + " rounds against the biased coin environment");
 
-		// A smart agent should learn to always choose the biased side and
-		// should come close to an average reward of 0.7
+		
+		
 		controller.play(n, false);
 		
 	}

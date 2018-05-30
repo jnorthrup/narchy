@@ -49,7 +49,7 @@ public class TextIn3DUtil
       int length;
       int index;
 
-      // Cut the text in lines
+      
       stringTokenizer = new StringTokenizer(text, "\n", false);
       length = stringTokenizer.countTokens();
       lines = new String[length];
@@ -59,7 +59,7 @@ public class TextIn3DUtil
          lines[index++] = stringTokenizer.nextToken();
       }
 
-      // Create the texture
+      
       return TextIn3DUtil.createTextTexture(lines, font, textAlignment, foreGround, backGround);
    }
 
@@ -94,7 +94,7 @@ public class TextIn3DUtil
       int x;
       int y;
 
-      // No lines, so little texture is need
+      
       length = lines.length;
       if(length < 1)
       {
@@ -103,12 +103,12 @@ public class TextIn3DUtil
 
       linesWidth = new int[length];
 
-      // Compute textu height
+      
       fontMetrics = Toolkit.getDefaultToolkit().getFontMetrics(font);
       fontHeight = fontMetrics.getHeight();
       height = fontHeight * length;
 
-      // Compute texture width and memorize each line width
+      
       width = 0;
       for(index = 0; index < length; index++)
       {
@@ -116,7 +116,7 @@ public class TextIn3DUtil
          width = Math.max(width, linesWidth[index]);
       }
 
-      // Compute near power of dimension values
+      
       widthP2 = Math3D.computePowerOf2couple(width)[1];
       heightP2 = Math3D.computePowerOf2couple(height)[1];
 
@@ -131,16 +131,16 @@ public class TextIn3DUtil
       }
       Debug.println(DebugLevel.VERBOSE, "TextUtil.createTextTexture() AFTER " + width + "x" + height + " => " + widthP2 + "x" + heightP2);
 
-      // For good card only ...
-      // widthP2 = width;
-      // heightP2 = height;
-      // ... For good card only
+      
+      
+      
+      
 
-      // Create empty texture
+      
       texture = new Texture("TEXT_" + (TextIn3DUtil.NEXT_ID++), widthP2, heightP2, ColorsUtil.TRANSPARENT);
       texture.fillRect(0, 0, width, height, backGround, false);
 
-      // Print each line
+      
       y = fontMetrics.getAscent();
       for(index = 0; index < length; index++)
       {

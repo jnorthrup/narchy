@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -59,7 +59,7 @@ public class MainMenu {
 		SideScrollMinicraft.drawCenteredX(g, menu_loadUp, 250, 160, 64);
 		SideScrollMinicraft.drawCenteredX(g, menu_quitUp, 350, 160, 64);
 		int mouseY = game.screenMousePos.y;
-		// TODO: use the mouse x-value as well
+		
 		if (mouseY >= 350 && mouseY <= 414) {
 			SideScrollMinicraft.drawCenteredX(g, menu_quitDown, 350, 160, 64);
 		} else if (mouseY >= 250 && mouseY <= 314) {
@@ -72,11 +72,11 @@ public class MainMenu {
 		}
 		game.leftClick = false;
 		if (mouseY >= 350 && mouseY <= 414) {
-			SideScrollMinicraft.quit();  // "quit" button
+			SideScrollMinicraft.quit();  
 		} else if (mouseY >= 250 && mouseY <= 314) {
-			game.startGame(true, menu_mediumWidth);  // "load" button
+			game.startGame(true, menu_mediumWidth);  
 		} else if (mouseY >= 150 && mouseY <= 214) {
-			newGame = true;  // "new" button
+			newGame = true;  
 		}
 	}
 	
@@ -85,7 +85,7 @@ public class MainMenu {
 		SideScrollMinicraft.drawCenteredX(g, menu_mediumUp, 250, 160, 64);
 		SideScrollMinicraft.drawCenteredX(g, menu_bigUp, 350, 160, 64);
 		int mouseY = game.screenMousePos.y;
-		// TODO: use the mouse x-value as well
+		
 		if (mouseY >= 350 && mouseY <= 414) {
 			SideScrollMinicraft.drawCenteredX(g, menu_bigDown, 350, 160, 64);
 		} else if (mouseY >= 250 && mouseY <= 314) {

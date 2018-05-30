@@ -68,18 +68,18 @@ public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
         return (o == null) ? 0 : o.prio;
     }
 
-//    /**
-//     * Returns the priority nearest (lower) to the priority of a defined operator
-//     */
-//    public int opNext(int prio) {
-//        int n = 0;
-//        for (Operator opFromList : values()) {
-//            int oprio = opFromList.prio;
-//            if (oprio > n && oprio < prio)
-//                n = oprio;
-//        }
-//        return n;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Gets the list of the operators currently defined
@@ -87,7 +87,7 @@ public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
      * @return the list of the operators
      */
     public Iterable<Operator> operators() {
-        return values(); //new LinkedList<>(values());
+        return values(); 
     }
 
 
@@ -96,12 +96,12 @@ public class OperatorManager extends ConcurrentHashMap<String, Operator> /**/ {
      * 16/05/2011		 
      * Clone operation added		 
      */
-//    @Override
-//    public IOperatorManager clone() {
-//    	OperatorManager om = new OperatorManager();
-//    	om.operatorList = (OperatorRegister)this.operatorList.clone();
-//    	return om;
-//    }
+
+
+
+
+
+
 /**/
 
 }

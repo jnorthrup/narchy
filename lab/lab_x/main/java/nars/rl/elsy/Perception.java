@@ -44,7 +44,7 @@ public abstract class Perception implements Serializable{
 	public void perceive() {
 		outputIter = 0;
 		if (addRandomInput) {
-			setNextValue(d(-2, 2)); // random value
+			setNextValue(d(-2, 2)); 
 		}
 		updateInputValues();
 	}

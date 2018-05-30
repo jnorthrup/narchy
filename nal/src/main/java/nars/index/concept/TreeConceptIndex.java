@@ -24,7 +24,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     float maxFractionThatCanBeRemovedAtATime = 0.05f;
     float descentRate = 0.5f;
-    //int iterationLimit = -1; //TODO tune iterationLimit by the overflow amount
+    
 
     public final TermRadixTree<Termed> concepts;
 
@@ -54,14 +54,14 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         };
         this.sizeLimit = sizeLimit;
 
-//        Thread t = new Thread(this, this.toString() + "_Forget");
-//        //t.setPriority(Thread.MAX_PRIORITY - 1);
-//        t.setUncaughtExceptionHandler((whichThread, e) -> {
-//            logger.error("Forget: {}", e);
-//            e.printStackTrace();
-//            System.exit(1);
-//        });
-//        t.start();
+
+
+
+
+
+
+
+
 
     }
 
@@ -77,27 +77,27 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         nar.onCycle(this);
     }
 
-    //    //1. decide how many items to remove, if any
-//    //2. search for items to meet this quota and remove them
-//    @Override
-//    public void run() {
-//
-//        while (true) {
-//
-//            try {
-//                Thread.sleep(updatePeriodMS);
-//            } catch (InterruptedException e) {
-//            }
-//
-//            if (nar != null)
-//                forgetNextLater();
-//        }
-//
-//    }
-//
-//    private void forgetNextLater() {
-//        nar.runLater(this::forgetNext);
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void forgetNext() {
 
@@ -133,13 +133,13 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
                     int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
 
                     if (subTreeSize > 0) {
-                        //long preBatch = sizeEst();
+                        
                         concepts.removeHavingAcquiredWriteLock(s, true);
-                        //if (logger.isDebugEnabled())
-                          //  logger.info("  Forgot {}", preBatch - sizeEst());
+                        
+                          
                     }
 
-                    s = null; //restart
+                    s = null; 
                 }
 
             }
@@ -147,8 +147,8 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
             concepts.releaseWriteLock();
         }
 
-//        int sizeAfter = sizeEst();
-//        logger.info("Forgot {} Concepts", sizeBefore - sizeAfter);
+
+
 
     }
 
@@ -160,11 +160,11 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         List<MyConcurrentRadixTree.Node> l = concepts.root.getOutgoingEdges();
         int levels = l.size();
 
-        //HEURISTIC: x^n sharp curve
+        
         float r = rng.nextFloat();
-        r = (r * r); //r^2
-        //r = (r * r); //r^4
-        //r = (r * r); //r^8
+        r = (r * r); 
+        
+        
 
         return l.get( Math.round((levels - 1) * (1 - r)) );
     }
@@ -173,14 +173,14 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
         return concepts.sizeEst();
     }
 
-//    /** relative capacitance; >0 = over-capacity, <0 = under-capacity */
-//    private float capacitance() {
-//        int s = sizeEst();
-//        //if (s > sizeLimit) {
-//        return s - sizeLimit;
-//        //}
-//        //return 0;
-//    }
+
+
+
+
+
+
+
+
 
     private static boolean removeable(Concept c) {
         return !(c instanceof PermanentConcept);
@@ -214,7 +214,7 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
         concepts.acquireWriteLock();
         try {
-            Termed existing = concepts.get(k); //TODO cache ref to where this resolved to accelerate the put() below
+            Termed existing = concepts.get(k); 
             if (existing!=target && !(existing instanceof PermanentConcept)) {
                 concepts.put(k, target);
             }
@@ -235,13 +235,13 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     @Override
     public int size() {
-        return concepts.size(); //WARNING may be slow
+        return concepts.size(); 
     }
 
 
     @Override
     public String summary() {
-        //return ((nar.random.nextFloat() < SIZE_UPDATE_PROB) ? (this.lastSize = size()) : ("~" + lastSize)) + " terms";
+        
         return concepts.sizeEst() + " concepts";
     }
 
@@ -266,52 +266,52 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     }
 
 
-//    /**
-//     * Tree-index with a front-end "L1" non-blocking hashmap cache
-//     */
-//    public static class L1TreeIndex extends TreeTermIndex {
-//
-//        @NotNull
-//        private final HijacKache<Term, Termed> L1;
-//
-//        public L1TreeIndex(ConceptBuilder conceptBuilder, int sizeLimit, int cacheSize, int reprobes) {
-//            super(conceptBuilder, sizeLimit);
-//            this.L1 = new HijacKache<>(cacheSize, reprobes);
-//        }
-//
-//        @Override
-//        public @Nullable Termed get(Term t, boolean createIfMissing) {
-//
-//            Object o = L1.computeIfAbsent2(t,
-//                    createIfMissing ?
-//                            ttt -> super.get(ttt, true) :
-//                            ttt -> {
-//                                Termed v = super.get(ttt, false);
-//                                if (v == null)
-//                                    return L1; //this will result in null at the top level, but the null will not be stored in L1 itself
-//                                return v;
-//                            }
-//            );
-//
-//            if (o instanceof Termed)
-//                return (Termed) o;
-//            else if (createIfMissing) { //HACK try again: this should be handled by computeIfAbsent2, not here
-//                L1.miss++;
-//                return super.get(t, true);
-//            } else {
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        public String summary() {
-//            return super.summary() + "\t, L1:" + L1.summary(true);
-//        }
-//
-//        @Override
-//        protected void onRemoval(Concept r) {
-//            super.onRemoval(r);
-//            L1.remove(r);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -38,11 +38,11 @@ public class BufferedCoWList<X> extends FastCoWList<X> {
         throw new TODO();
     }
 
-//    @Override
-//    public boolean isEmpty() {
-//        return super.isEmpty();
-//                //&& q.isEmpty() /* to be certain */;
-//    }
+
+
+
+
+
 
     @Override
     public void clear() {

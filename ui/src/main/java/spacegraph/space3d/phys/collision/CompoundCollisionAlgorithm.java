@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -59,7 +59,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 		int numChildren = compoundShape.getNumChildShapes();
 		int i;
 
-		//childCollisionAlgorithms.resize(numChildren);
+		
 		for (i = 0; i < numChildren; i++) {
 			CollisionShape tmpShape = colObj.shape();
 			CollisionShape childShape = compoundShape.getChildShape(i);
@@ -73,8 +73,8 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 	public void destroy() {
 		int numChildren = childCollisionAlgorithms.size();
 		for (int i=0; i<numChildren; i++) {
-			//childCollisionAlgorithms.get(i).destroy();
-            //return array[index];
+			
+            
             Intersecter.freeCollisionAlgorithm(childCollisionAlgorithms.get(i));
 		}
 		childCollisionAlgorithms.clear();
@@ -88,12 +88,12 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 		assert (colObj.shape().isCompound());
 		CompoundShape compoundShape = (CompoundShape) colObj.shape();
 
-		// We will use the OptimizedBVH, AABB tree to cull potential child-overlaps
-		// If both proxies are Compound, we will deal with that directly, by performing sequential/parallel tree traversals
-		// given Proxy0 and Proxy1, if both have a tree, Tree0 and Tree1, this means:
-		// determine overlapping nodes of Proxy1 using Proxy0 AABB against Tree1
-		// then use each overlapping node AABB against Tree0
-		// and vise versa.
+		
+		
+		
+		
+		
+		
 
 		Transform tmpTrans = new Transform();
 		Transform orgTrans = new Transform();
@@ -104,10 +104,10 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 		int numChildren = childCollisionAlgorithms.size();
 		int i;
 		for (i = 0; i < numChildren; i++) {
-			// temporarily exchange parent btCollisionShape with childShape, and recurse
+			
 			CollisionShape childShape = compoundShape.getChildShape(i);
 
-			// backup
+			
 			colObj.getWorldTransform(orgTrans);
 			colObj.getInterpolationWorldTransform(orgInterpolationTrans);
 
@@ -116,12 +116,12 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 			colObj.transform(newChildWorldTrans);
 			colObj.setInterpolationWorldTransform(newChildWorldTrans);
 
-			// the contactpoint is still projected back using the original inverted worldtrans
+			
 			CollisionShape tmpShape = colObj.shape();
 			colObj.internalSetTemporaryCollisionShape(childShape);
-            //return array[index];
+            
             childCollisionAlgorithms.get(i).processCollision(colObj, otherObj, dispatchInfo, resultOut);
-			// revert back
+			
 			colObj.internalSetTemporaryCollisionShape(tmpShape);
 			colObj.transform(orgTrans);
 			colObj.setInterpolationWorldTransform(orgInterpolationTrans);
@@ -137,12 +137,12 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 		CompoundShape compoundShape = (CompoundShape) colObj.shape();
 
-		// We will use the OptimizedBVH, AABB tree to cull potential child-overlaps
-		// If both proxies are Compound, we will deal with that directly, by performing sequential/parallel tree traversals
-		// given Proxy0 and Proxy1, if both have a tree, Tree0 and Tree1, this means:
-		// determine overlapping nodes of Proxy1 using Proxy0 AABB against Tree1
-		// then use each overlapping node AABB against Tree0
-		// and vise versa.
+		
+		
+		
+		
+		
+		
 
 		Transform tmpTrans = new Transform();
 		Transform orgTrans = new Transform();
@@ -152,26 +152,26 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 		int numChildren = childCollisionAlgorithms.size();
 		int i;
 		for (i = 0; i < numChildren; i++) {
-			// temporarily exchange parent btCollisionShape with childShape, and recurse
+			
 			CollisionShape childShape = compoundShape.getChildShape(i);
 
-			// backup
+			
 			colObj.getWorldTransform(orgTrans);
 
 			compoundShape.getChildTransform(i, childTrans);
-			//btTransform	newChildWorldTrans = orgTrans*childTrans ;
+			
 			tmpTrans.set(orgTrans);
 			tmpTrans.mul(childTrans);
 			colObj.transform(tmpTrans);
 
 			CollisionShape tmpShape = colObj.shape();
 			colObj.internalSetTemporaryCollisionShape(childShape);
-            //return array[index];
+            
             float frac = childCollisionAlgorithms.get(i).calculateTimeOfImpact(colObj, otherObj, dispatchInfo, resultOut);
 			if (frac < hitFraction) {
 				hitFraction = frac;
 			}
-			// revert back
+			
 			colObj.internalSetTemporaryCollisionShape(tmpShape);
 			colObj.transform(orgTrans);
 		}
@@ -181,12 +181,12 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 	@Override
 	public void getAllContactManifolds(OArrayList<PersistentManifold> manifoldArray) {
 		for (int i=0; i<childCollisionAlgorithms.size(); i++) {
-            //return array[index];
+            
             childCollisionAlgorithms.get(i).getAllContactManifolds(manifoldArray);
 		}
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static class CreateFunc extends CollisionAlgorithmCreateFunc {
 

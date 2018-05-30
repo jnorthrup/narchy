@@ -66,7 +66,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     public BasicValue newValue(final Type type) {
         BasicValue basicValue = super.newValue(type);
         if (basicValue == BasicValue.REFERENCE_VALUE)
-            // record the exact type and not just "Ljava/lang/Object"
+            
             basicValue = new BasicValue(type);
 
         return basicValue;
@@ -104,10 +104,10 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     public BasicValue ternaryOperation(final AbstractInsnNode insn,
                                        final BasicValue v1, final BasicValue v2, final BasicValue v3)
             throws AnalyzerException {
-        // this method is only called for xASTORE instructions, parameter v1 is
-        // the value corresponding to the NEWARRAY, ANEWARRAY or MULTIANEWARRAY
-        // instruction having created the array, we need to insert a special
-        // dependency edge from the array creator to this xSTORE instruction
+        
+        
+        
+        
         additionalEdges.add(new Edge(insn, findArrayCreatorPredecessor(v1)));
         return createNode(insn, super.ternaryOperation(insn, null, null, null),
                 v1, v2, v3);
@@ -142,8 +142,8 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
 
     @Override
     public BasicValue merge(final BasicValue v, final BasicValue w) {
-        // we don't actually merge values but use the control flow detection to
-        // deal with conditionals
+        
+        
         return v;
     }
 
@@ -186,7 +186,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
     }
 
     public void finish() {
-        // add all edges so far not included
+        
         for (final Edge edge : additionalEdges) {
             InstructionGraphNode node = getGraphNode(edge.from);
             if (node == null)

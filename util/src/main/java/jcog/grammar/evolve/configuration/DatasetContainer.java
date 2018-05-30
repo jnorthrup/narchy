@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.configuration;
 
@@ -37,7 +37,7 @@ public final class DatasetContainer {
     private List<Range> training = new ArrayList<>();
     private List<Range> validation = new ArrayList<>();
     private boolean dataSetStriped = false;
-    private double datasetStripeMarginSize = Integer.MAX_VALUE; //no slices are done
+    private double datasetStripeMarginSize = Integer.MAX_VALUE; 
     private int normalProposedDatasetInterval = 0;
     private transient DataSet trainingDataset;
     private transient DataSet validationDataset;
@@ -95,7 +95,7 @@ public final class DatasetContainer {
         this.setDataset(dataset);
         this.dataset.populateAnnotatedStrings();
         this.dataset.updateStats();
-        //generate Ranges
+        
         if(defaultRanges){
             this.createDefaultRanges(defaultRangesSeed);
             this.updateSubDataset();
@@ -112,7 +112,7 @@ public final class DatasetContainer {
         
         Random random = new Random(randomSeed);
         int overallNumberMatchesInTraining = (int) Math.ceil(this.dataset.getNumberMatches() / 2.0);
-        overallNumberMatchesInTraining = (overallNumberMatchesInTraining == 0) ? 1 : overallNumberMatchesInTraining; //not less than one example is allowed
+        overallNumberMatchesInTraining = (overallNumberMatchesInTraining == 0) ? 1 : overallNumberMatchesInTraining; 
         int matchesInTrainingCountdown = overallNumberMatchesInTraining;
         List<Integer> examplePositiveIndexes = new ArrayList<>();
         List<Integer> exampleNegativeIndexes = new ArrayList<>();
@@ -130,14 +130,14 @@ public final class DatasetContainer {
         
         for(Integer exampleIndex : examplePositiveIndexes){
             Example example = this.dataset.getExamples().get(exampleIndex);
-            //When learning set has one element, the example goes in training; if validation is empty and the example has less matches than overallNumberMatchesInTraining, it goes in validation;
-            //In case the number of matches in training are less than overallNumberMatchesInTraining and the previous conditions are false the example goes into training set.
+            
+            
             if(examplePositiveIndexes.size() == 1 ||  ((matchesInTrainingCountdown > 0) && !(validation.isEmpty() && example.getNumberMatches()<overallNumberMatchesInTraining))){
-                //example is in training
+                
                 this.training.add(new Range(exampleIndex, exampleIndex));
                 matchesInTrainingCountdown-=example.getNumberMatches();
             } else {
-                //example is in validation
+                
                 this.validation.add(new Range(exampleIndex, exampleIndex));             
             }
         }
@@ -291,9 +291,9 @@ public final class DatasetContainer {
      */
     public void loadDatasetJson(String jsonDataset) {
         throw new TODO();
-//        Gson gson = new GsonBuilder().disableHtmlEscaping().create();;
-//        this.dataset = gson.fromJson(jsonDataset, DataSet.class);
-//        this.update();
+
+
+
     }
 
     public final void updateSubDataset() {
@@ -303,10 +303,10 @@ public final class DatasetContainer {
         this.validationDataset.updateStats();
        
         this.learningDataset = new DataSet("learning");
-        //the Learning set is all the dataset, there is no testing phase in this code.
-        //We change the code in a way that learning set equals all dataset. 
-        //This has been done in order to minimize changes and mantain the dataset examples 
-        //order into the Learning collection. 
+        
+        
+        
+        
         
         this.learningDataset.getExamples().addAll(dataset.getExamples());
         this.learningDataset.updateStats();

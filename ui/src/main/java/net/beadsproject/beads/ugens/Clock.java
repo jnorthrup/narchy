@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -146,8 +146,8 @@ public class Clock extends UGen implements IntegerBead {
      */
     public void reset() {
         point = 0.0f;
-        count = -1;    //OLLIE - hack to get the first tick to be a beat
-//        tick();	//OLLIE - this must be pointless, if we haven't connect the clock to anything
+        count = -1;    
+
     }
 
     /**
@@ -173,7 +173,7 @@ public class Clock extends UGen implements IntegerBead {
      * Gets the interval envelope.
      *
      * @return the interval envelope.
-     * //@deprecated
+     * 
      */
     public UGen getIntervalEnvelope() {
         return intervalEnvelope;
@@ -204,10 +204,10 @@ public class Clock extends UGen implements IntegerBead {
             double value = Math.max(1.0, Math.abs(interval) / ticksPerBeat);
             boolean backwards = interval < 0;
             if (backwards) value *= -1;
-            point += 1.0 / context.msToSamples(value); //OLLIE - TODO We don't get a BEAT on the first TICK
-            //what happens if we start going backwards?
+            point += 1.0 / context.msToSamples(value); 
+            
             double sign = Math.signum(interval);
-            while (!backwards && point >= count + 1) {// || point < -count) {
+            while (!backwards && point >= count + 1) {
                 tick();
                 count += sign;
             }

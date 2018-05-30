@@ -37,12 +37,12 @@ public abstract class AbstractPolygonBot extends Robotic {
     public float linearThrustPerCycle = 8f;
     public float angularSpeedPerCycle = 0.44f * 0.25f;
     int mission = 0;
-    //public float curiosity = 0.1f;
+    
     int motionPeriod = 3;
     public Vec2 point1 = new Vec2();
     public Vec2 point2 = new Vec2();
     public Vec2 d = new Vec2();
-    boolean feel_motion = true; //todo add option in gui
+    boolean feel_motion = true; 
     protected void thrustRelative(float f) {
         if (f == 0) {
             torso.setLinearVelocity(new Vec2());
@@ -61,7 +61,7 @@ public abstract class AbstractPolygonBot extends Robotic {
 
     protected void addAxioms() {
 
-        //alpha curiosity parameter
+        
         if (nar.time() < 50) {
             curious(0.9f, 0.7f);
         }
@@ -71,12 +71,12 @@ public abstract class AbstractPolygonBot extends Robotic {
 
 
 
-        //nar.input("<{left,right,forward,reverse} --> direction>.");
-        //nar.input("<{wall,empty,food,poison} --> material>.");
-        //nar.input("<{0,x,xx,xxx,xxxx,xxxxx,xxxxxx,xxxxxxx,xxxxxxxx,xxxxxxxxx,xxxxxxxxxx} --> magnitude>.");
-        //nar.input("<{0,1,2,3,4,5,6,7,8,9} --> magnitude>.");
+        
+        
+        
+        
 
-        //nar.input("< ( ($n,#x) &| ($n,#y) ) =/> lessThan(#x,#y) >?");
+        
 
         /*
         for (int i = 0; i < 2; i++) {
@@ -87,16 +87,16 @@ public abstract class AbstractPolygonBot extends Robotic {
         }
         */
 
-//        nar.input("<0 <-> x>. %0.60;0.60%");
-//        nar.input("<x <-> xx>. %0.60;0.60%");
-//        nar.input("<xx <-> xxx>. %0.60;0.60%");
-//        nar.input("<xxx <-> xxxx>. %0.60;0.60%");
-//        nar.input("<xxxx <-> xxxxx>. %0.60;0.60%");
-//        nar.input("<xxxxx <-> xxxxxx>. %0.60;0.60%");
-//        nar.input("<xxxxxx <-> xxxxxxx>. %0.60;0.60%");
-//        nar.input("<xxxxxxx <-> xxxxxxxxx>. %0.60;0.60%");
-//        nar.input("<xxxxxxxx <-> xxxxxxxxxx>. %0.60;0.60%");
-//        nar.input("<0 <-> xxxxxxxxx>. %0.00;0.90%");
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -106,27 +106,27 @@ public abstract class AbstractPolygonBot extends Robotic {
 
         nar.goal("<goal --> [health]>", 1.00f, 0.90f);
 
-        nar.believe("<goal --> [health]>", Tense.Present, 0.50f, 0.99f); //reset
+        nar.believe("<goal --> [health]>", Tense.Present, 0.50f, 0.99f); 
 
         try {
             if (mission == 0) {
-                //seek food
-                //curiosity = 0.05f;
+                
+                
 
-                //nar.goal("<goal --> food>", 1.00f, 0.90f);
+                
                 nar.input("<goal --> [food]>! :|:");
-                nar.goal("<goal --> [food]>. :|:", 0.50f, 0.99f); //reset
+                nar.goal("<goal --> [food]>. :|:", 0.50f, 0.99f); 
 
 
-                //nar.input("goal(food)! %1.00;0.99%");
-                //nar.input("goal(stop)! %0.00;0.99%");
-                //nar.addInput("Wall! %0.00;0.50%");
-                //nar.input("goal(see)! %1.00;0.70%");
-                //nar.input("goal(moved)! %1.00;0.70%");
-                //nar.input("goal(rotated)! %1.00;0.70%");
+                
+                
+                
+                
+                
+                
             } else if (mission == 1) {
-                //rest
-                //curiosity = 0;
+                
+                
                 nar.input("moved(0)! %1.00;0.9%");
                 nar.input("<goal --> [food]>! %0.00;0.9%");
             }
@@ -134,15 +134,15 @@ public abstract class AbstractPolygonBot extends Robotic {
         catch (Exception e) {
             e.printStackTrace();
         }
-        //..
+        
     }
 
     public void taste(Body eatable, float distance) {
-//        Rover2.Material m = (Rover2.Material)eatable.getUserData();
-//        if (m instanceof Rover2.FoodMaterial) {
-//            float c = 1.0f / (1.0f + (distance - biteDistanceThreshold) / (tasteDistanceThreshold - biteDistanceThreshold));
-//            mouthInput.set("<goal --> food>. :|: %0." + (0.5f + c / 2f) + ";0." + (c / 2f) + "%");
-//        }
+
+
+
+
+
     }
 
     public void eat(Body eaten) {
@@ -162,7 +162,7 @@ public abstract class AbstractPolygonBot extends Robotic {
         @Deprecated int sz = 48;
         float x = (float) Math.random() * sz - sz / 2f;
         float y = (float) Math.random() * sz - sz / 2f;
-        //random new position
+        
         eaten.setTransform(new Vec2(x * 2.0f, y * 2.0f), eaten.getAngle());
     }
 
@@ -181,7 +181,7 @@ public abstract class AbstractPolygonBot extends Robotic {
         }
         /*if(cnt>=do_sth_importance) {
         cnt=0;
-        do_sth_importance+=decrease_of_importance_step; //increase
+        do_sth_importance+=decrease_of_importance_step; 
         nar.addInput("(^motor,random)!");
         }*/
         if (feel_motion && sim.cnt % motionPeriod == 0) {
@@ -197,17 +197,17 @@ public abstract class AbstractPolygonBot extends Robotic {
     }
 
     public void thrust(float angle, float force) {
-        angle += torso.getAngle();// + Math.PI / 2; //compensate for initial orientation
-        //torso.applyForceToCenter(new Vec2((float) Math.cos(angle) * force, (float) Math.sin(angle) * force));
+        angle += torso.getAngle();
+        
         Vec2 v = new Vec2((float) Math.cos(angle) * force, (float) Math.sin(angle) * force);
         torso.setLinearVelocity(v);
-        //torso.applyLinearImpulse(v, torso.getWorldCenter(), true);
+        
     }
 
     public void rotate(float v) {
         torso.setAngularVelocity(v);
-        //torso.applyAngularImpulse(v);
-        //torso.applyTorque(torque);
+        
+        
     }
 
     protected abstract void feelMotion();
@@ -279,7 +279,7 @@ public abstract class AbstractPolygonBot extends Robotic {
         }
 
         @Override protected void learn(float value) {
-            //learn the absolute value because the stimate will include the negative range as freq < 0.5f
+            
             super.learn(Math.abs(value));
             super.learn(0);
         }
@@ -292,7 +292,7 @@ public abstract class AbstractPolygonBot extends Robotic {
             else
                 proportional = ((value) / (range[1]))/2f + 0.5f;
 
-            //System.out.println(value + "-> +-" + range[1] + " " + " -> " + proportional);
+            
 
             if (proportional > 1f) proportional = 1f;
             if (proportional < 0f) proportional = 0f;
@@ -318,8 +318,8 @@ public abstract class AbstractPolygonBot extends Robotic {
 
         public void observe(float value) {
             float freq = model.observe(value);
-            //System.out.println(range[0] + ".." + range[1]);
-            //System.out.println(b);
+            
+            
 
             float conf = 0.75f;
 
@@ -328,7 +328,7 @@ public abstract class AbstractPolygonBot extends Robotic {
             if (t!=null)
                 nar.input(t);
 
-            //System.out.println(t);
+            
         }
     }
 
@@ -391,7 +391,7 @@ public abstract class AbstractPolygonBot extends Robotic {
         }
 
         public Task getFeedback(float feedback) {
-            //since it's expectation, using 0.99 conf is like preserving the necessary truth as was desired, if feedback = desire
+            
             return nar.task((Compound) term).present().belief().truth(feedback, 0.99f).normalized();
         }
 
@@ -401,7 +401,7 @@ public abstract class AbstractPolygonBot extends Robotic {
                 concept = nar.concept(term);
             }
 
-            //try remembering it
+            
             if (concept == null) {
                 concept = nar.memory.conceptualize(term, remember);
             }
@@ -430,7 +430,7 @@ public abstract class AbstractPolygonBot extends Robotic {
                     return Float.NaN;
                 }
             };
-            //this will be executed directly after positive, so we put the event handler in negative
+            
             this.negative = new CycleDesire(negativeTerm, desireFunction, n) {
 
                 @Override
@@ -462,30 +462,30 @@ public abstract class AbstractPolygonBot extends Robotic {
                         nar.input(this.positive.getFeedback(posFeedback));
                         nar.input(this.negative.getFeedback(0));
 
-//                        //counteract the interference
-//                        negFeedback = (negativeDesire - (positiveDesire - feedback));
-//                        if (negFeedback < 0) negFeedback = 0;
-//                        Task iit = this.negative.getFeedback(negFeedback)
-//                                .goal()
-//                                .truth(negFeedback, 0.75f) //adjust confidence too
-//                                .get();
-//
-//                        nar.inputDirect(iit);
+
+
+
+
+
+
+
+
+
 
                     } else {
                         negFeedback = feedback;
                         nar.input(this.negative.getFeedback(negFeedback));
                         nar.input(this.positive.getFeedback(0));
 
-//                        //counteract the interference
-//                        posFeedback = (positiveDesire - (negativeDesire - feedback));
-//                        if (posFeedback < 0) posFeedback = 0;
-//                        Task iit = this.positive.getFeedback(posFeedback)
-//                                .goal()
-//                                .truth(posFeedback, 0.75f)
-//                                .get();
-//
-//                        nar.inputDirect(iit);
+
+
+
+
+
+
+
+
+
 
 
                     }

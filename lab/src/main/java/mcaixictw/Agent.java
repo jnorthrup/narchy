@@ -17,17 +17,17 @@ public class Agent {
 		lastUpdatePercept = false;
 	}
 
-	private final int actions; // number of actions
-	private final int actionBits; // number of bits to represent an action
-	private final int obsBits; // number of bits to represent an observation
-	private final int rewBits; // number of bits to represent a reward
-	private Worldmodel model; // Context Tree representing the agent's beliefs
-	private int timeCycle; // How many time cycles the agent has been alive
-	private int totalReward; // The total reward received by the agent
-	private boolean lastUpdatePercept; // True if the last update was a percept
-										// update
+	private final int actions; 
+	private final int actionBits; 
+	private final int obsBits; 
+	private final int rewBits; 
+	private Worldmodel model; 
+	private int timeCycle; 
+	private int totalReward; 
+	private boolean lastUpdatePercept; 
+										
 
-	// TODO redesign to avoid violations of the command & query separation principle.
+	
 	
 
 	/**
@@ -139,7 +139,7 @@ public class Agent {
 	 */
 	public int genPerceptAndUpdate() {
 		
-		// TODO problem if there was no update
+		
 		
 		assert (!lastUpdatePercept);
 		int numBits = obsBits + rewBits;
@@ -161,7 +161,7 @@ public class Agent {
 	public void modelUpdate(int observation, int reward) {
 		assert (!lastUpdatePercept);
 		model.update(encodePercept(observation, reward));
-		// Update other properties
+		
 		totalReward += reward;
 		lastUpdatePercept = true;
 	}
@@ -175,7 +175,7 @@ public class Agent {
 		assert (action < actions);
 		assert (lastUpdatePercept);
 
-		// Update internal model
+		
 		model.updateHistory(encodeAction(action));
 
 		timeCycle++;
@@ -201,23 +201,23 @@ public class Agent {
 	 * @return
 	 */
 	public boolean modelRevert(ModelUndo mu) {
-		// Revert as long we are not in the state defined by 'mu'
+		
 		while (mu.age() != timeCycle
 				|| mu.isLastUpdatePercept() != lastUpdatePercept) {
 
 			if (lastUpdatePercept) {
-				// Undo a percept-update
+				
 				model.revert(obsBits + rewBits);
 				lastUpdatePercept = false;
 			} else {
-				// Undo a action-update
+				
 				model.revertHistory(model.historySize() - actionBits);
 				timeCycle--;
 				lastUpdatePercept = true;
 			}
 		}
 
-		// Make sure we correctly reverted the agent.
+		
 		assert (mu.getHistorySize() == historySize());
 		assert (lastUpdatePercept == mu.isLastUpdatePercept());
 
@@ -298,7 +298,7 @@ public class Agent {
 		int s = perception.size();
 		int decodedReward = Util.decode(
 				perception, s-rewBits, s
-				//perception.subList(s - rewBits, s)
+				
 		);
 		assert (isRewardOk(decodedReward));
 		return decodedReward;
@@ -313,12 +313,12 @@ public class Agent {
 	 */
 	public int decodeObservation(BooleanArrayList symlist) {
 		return Util.decode(
-				//symlist.subList(0, obsBits));
+				
 				symlist, 0, obsBits
 		);
 	}
 
-	// Returns the most recent perception
+	
 	public int getLastPercept() {
 		int percept_bits = obsBits + rewBits;
 		int i, end;
@@ -336,7 +336,7 @@ public class Agent {
 		return Util.decode(list);
 	}
 
-	// Returns the most recent action
+	
 	public int getLastAction() {
 		int percept_bits = obsBits + rewBits;
 		int i, end;
@@ -374,7 +374,7 @@ public class Agent {
 		return obsBits + rewBits;
 	}
 
-	// Returns a string representation of the agent's model of the world
+	
 	public String toString() {
 		return model.toString();
 	}

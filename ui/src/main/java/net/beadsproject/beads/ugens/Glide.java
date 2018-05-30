@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -17,7 +17,7 @@ public class Glide extends UGen {
     private float currentValue;
     private float previousValue;
     private float targetValue;
-    private int glideTime; //in samples
+    private int glideTime; 
     private int countSinceGlide;
     private boolean gliding;
     private boolean nothingChanged;

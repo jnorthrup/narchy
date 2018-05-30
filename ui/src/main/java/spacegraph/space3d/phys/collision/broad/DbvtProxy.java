@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -21,7 +21,7 @@
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-// Dbvt implementation by Nathanael Presson
+
 
 package spacegraph.space3d.phys.collision.broad;
 

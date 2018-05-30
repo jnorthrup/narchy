@@ -27,9 +27,9 @@ public class SoftException extends RuntimeException {
     @Override
     public final synchronized Throwable fillInStackTrace() {
         if (!Param.DEBUG)
-            return this; //omit stacktrace if not in debug mode for efficiency
+            return this; 
         else {
-            //return super.fillInStackTrace();
+            
             stack = StackWalker.getInstance().walk(
                 s -> s.skip(5).limit(depth).toArray(StackWalker.StackFrame[]::new)
             );

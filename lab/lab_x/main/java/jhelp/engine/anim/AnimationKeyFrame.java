@@ -116,7 +116,7 @@ public abstract class AnimationKeyFrame<ObjectType, Value>
          throw new IllegalArgumentException("The key must be >=0 not " + key);
       }
 
-      // If the key already exists, overwrite the old one
+      
       index = this.keys.getIndex(key);
       if(index >= 0)
       {
@@ -124,14 +124,14 @@ public abstract class AnimationKeyFrame<ObjectType, Value>
          return;
       }
 
-      // Compute where insert the frame
+      
       size = this.keys.getSize();
       for(index = 0; (index < size) && (this.keys.getInteger(index) < key); index++)
       {
          ;
       }
 
-      // If the insertion is not the end, insert it
+      
       if(index < size)
       {
          this.keys.insert(key, index);
@@ -139,7 +139,7 @@ public abstract class AnimationKeyFrame<ObjectType, Value>
          return;
       }
 
-      // If the insertion is the end, add it at end
+      
       this.keys.add(key);
       this.values.add(value);
    }
@@ -166,24 +166,24 @@ public abstract class AnimationKeyFrame<ObjectType, Value>
       Value before;
       Value after;
 
-      // If there are no frame, nothing to do
+      
       size = this.keys.getSize();
       if(size < 1)
       {
          return false;
       }
 
-      // Compute reference frames
+      
       firstFrame = this.keys.getInteger(0);
       lastFrame = this.keys.getInteger(size - 1);
       actualFrame = absoluteFrame - this.startAbsoluteFrame;
 
-      // If we are before the first frame (It is possible to start at a frame
-      // >0, the effect is an interpolation from the actual value, to the first
-      // frame)
+      
+      
+      
       if(actualFrame < firstFrame)
       {
-         // Interpolate actual position to first frame
+         
          if(this.startValue == null)
          {
             this.startValue = this.obtainValue(this.object);
@@ -200,37 +200,37 @@ public abstract class AnimationKeyFrame<ObjectType, Value>
 
       this.startValue = null;
 
-      // If we are after the last frame, just position in the last frame and the
-      // animation is done
+      
+      
       if(actualFrame >= lastFrame)
       {
          this.setValue(this.object, this.values.get(size - 1));
          return false;
       }
 
-      // Compute the nearest frame index from the actual frame
+      
       for(frame = 0; (frame < size) && (this.keys.getInteger(frame) < actualFrame); frame++)
       {
          ;
       }
 
-      // If it is the first frame, just locate to the first and the animation
-      // continue
+      
+      
       if(frame == 0)
       {
          this.setValue(this.object, this.values.get(0));
          return true;
       }
 
-      // If it is after the last frame, locate at last and the animation is
-      // finish
+      
+      
       if(frame >= size)
       {
          this.setValue(this.object, this.values.get(size - 1));
          return false;
       }
 
-      // Interpolate the value and animation continue
+      
       before = this.values.get(frame - 1);
       after = this.values.get(frame);
       percent = (actualFrame - this.keys.getInteger(frame - 1)) / (this.keys.getInteger(frame) - this.keys.getInteger(frame - 1));

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -48,9 +48,9 @@ public class BulletGlobals {
 	public static final float SIMD_DEGS_PER_RAD = 360f / SIMD_2_PI;
 	public static final float SIMD_INFINITY =
 			Float.POSITIVE_INFINITY;
-			//Float.MAX_VALUE;
+			
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static final ThreadLocal<BulletGlobals> the = ThreadLocal.withInitial(BulletGlobals::new);
 
@@ -59,7 +59,7 @@ public class BulletGlobals {
 	private ContactProcessedCallback gContactProcessedCallback;
 
 	protected float contactBreakingThreshold = 0.02f;
-	// RigidBody
+	
 	private float deactivationTime = 2f;
 	private boolean disableDeactivation;
 
@@ -87,7 +87,7 @@ public class BulletGlobals {
 		gContactProcessedCallback = callback;
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public float getContactBreakingThreshold() {
 		return contactBreakingThreshold;
@@ -113,14 +113,14 @@ public class BulletGlobals {
 		disableDeactivation = disable;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	/**
 	 * Cleans all current thread specific settings and caches.
 	 */
-//	public static void cleanCurrentThread() {
-//		threadLocal.remove();
-//		ArrayPool.cleanCurrentThread();
-//	}
+
+
+
+
 
 }

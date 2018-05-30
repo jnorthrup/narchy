@@ -15,8 +15,8 @@ public class Spatialization<T> {
 
     public final Split<T> split;
     public final Function<T, HyperRegion> bounds;
-    public final short max;       // max entries per node
-    public final short min;       // least number of entries per node
+    public final short max;       
+    public final short min;       
 
     public Spatialization(@Deprecated final Function<T, HyperRegion> bounds, final Split<T> split, final int min, final int max) {
         if (min<2)
@@ -49,9 +49,9 @@ public class Spatialization<T> {
         return split.split(t, leaf, this);
     }
 
-//    public double perimeter(T c) {
-//        return bounds(c).perimeter();
-//    }
+
+
+
 
     /** called when add encounters an equivalent (but different) instance */
     protected void merge(T existing, T incoming) {

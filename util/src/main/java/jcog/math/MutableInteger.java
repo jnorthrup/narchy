@@ -13,7 +13,7 @@ package jcog.math;
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -60,7 +60,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
         this.value = value.intValue();
     }
 
-    // -----------------------------------------------------------------------
+    
 
     /**
      * Gets the value as a Double instance.
@@ -101,8 +101,8 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
         set(Math.round(value.floatValue()));
     }
 
-    // -----------------------------------------------------------------------
-    // shortValue and bytValue rely on Number implementation
+    
+    
 
     /**
      * Returns the value of this MutableDouble as a int.
@@ -171,7 +171,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
         return false;
     }
 
-    // -----------------------------------------------------------------------
+    
 
     /**
      * Gets this mutable as an instance of Double.
@@ -182,7 +182,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
         return doubleValue();
     }
 
-    // -----------------------------------------------------------------------
+    
 
     /**
      * Increments the value.
@@ -202,7 +202,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
         value--;
     }
 
-    // -----------------------------------------------------------------------
+    
 
     /**
      * Adds a value.
@@ -246,7 +246,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
         value -= operand.doubleValue();
     }
 
-    // -----------------------------------------------------------------------
+    
 
     /**
      * Compares this object against the specified object. The result is
@@ -325,19 +325,19 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
         return p;
     }
 
-//  protected int compare(Object o1, Object o2) {
-//
-//    if (o1 == null) {
-//      if (o2 == null) {
-//        return 0;
-//      } else {
-//        return -((Comparable) o2).compareTo(o1);
-//      }
-//    } else {
-//      return ((Comparable) o1).compareTo(o2);
-//    }
-//
-//  }
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 /*
@@ -348,7 +348,7 @@ public class MutableInteger extends Number implements Comparable, Mutable,IntSup
  * "License"); you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT

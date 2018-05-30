@@ -81,8 +81,8 @@ public class PrologRepl extends Automaton implements OutputListener, SpyListener
         	Solution info = prolog.solve(goal);
    
             /*Castagna 06/2011*/        	
-        	//if (engine.isHalted())
-        	//	System.exit(0);
+        	
+        	
             /**/
             if (!info.isSuccess()) {
             	/*Castagna 06/2011*/        		

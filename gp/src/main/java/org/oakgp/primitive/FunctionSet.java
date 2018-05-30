@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ public final class FunctionSet {
      * Constructs a function set containing the specified functions.
      */
     public FunctionSet(Function... functions) {
-        // TODO validate display names using NodeReader.isValidDisplayName
+        
         this.functionsByType = groupBy(functions, f -> f.sig().returnType());
         this.functionsBySignature = groupBy(functions, Function::sig);
     }
@@ -48,7 +48,7 @@ public final class FunctionSet {
      * in this set
      */
     public List<Function> getByType(Type type) {
-        // TODO should this return an empty list, rather than null, if no match found?
+        
         return functionsByType.get(type);
     }
 
@@ -60,7 +60,7 @@ public final class FunctionSet {
      * this set
      */
     public List<Function> getBySignature(Signature signature) {
-        // TODO should this return an empty list, rather than null, if no match found?
+        
         return functionsBySignature.get(signature);
     }
 }

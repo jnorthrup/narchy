@@ -50,7 +50,7 @@ public class FileCache {
 
         File cached = new File(tempDir, baseName + suffix);
         if (cached.exists()) {
-            //try read
+            
             try {
 
                 FileInputStream ff = new FileInputStream(cached);
@@ -65,11 +65,11 @@ public class FileCache {
                 return buffer.stream();
             } catch (Exception e) {
                 logger.warn("{}, regenerating..", e);
-                //continue below
+                
             }
         }
 
-        //save
+        
         buffer.clear();
 
         Stream<X> instanced = o.get();
@@ -92,7 +92,7 @@ public class FileCache {
 
         File cached = new File(tempDir, baseName);
         if (cached.exists()) {
-            //try read
+            
             try {
 
                 InputStream ff = new FileInputStream(cached);
@@ -103,7 +103,7 @@ public class FileCache {
 
             } catch (Exception e) {
                 logger.warn("{}, regenerating..", e);
-                //continue below
+                
             }
         }
 

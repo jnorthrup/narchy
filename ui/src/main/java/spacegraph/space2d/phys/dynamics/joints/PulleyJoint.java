@@ -53,14 +53,14 @@ public class PulleyJoint extends Joint {
     private final float m_lengthA;
     private final float m_lengthB;
 
-    // Solver shared
+    
     private final Tuple2f m_localAnchorA = new v2();
     private final Tuple2f m_localAnchorB = new v2();
     private final float m_constant;
     private final float m_ratio;
     private float m_impulse;
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_uA = new v2();
@@ -208,7 +208,7 @@ public class PulleyJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective masses.
+        
         Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), m_rA);
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
 
@@ -230,7 +230,7 @@ public class PulleyJoint extends Joint {
             m_uB.setZero();
         }
 
-        // Compute effective mass.
+        
         float ruA = Tuple2f.cross(m_rA, m_uA);
         float ruB = Tuple2f.cross(m_rB, m_uB);
 
@@ -245,10 +245,10 @@ public class PulleyJoint extends Joint {
 
         if (data.step.warmStarting) {
 
-            // Scale impulses to support variable time steps.
+            
             m_impulse *= data.step.dtRatio;
 
-            // Warm starting.
+            
             final Tuple2f PA = pool.popVec2();
             final Tuple2f PB = pool.popVec2();
 
@@ -266,9 +266,9 @@ public class PulleyJoint extends Joint {
         } else {
             m_impulse = 0.0f;
         }
-//    data.velocities[m_indexA].v.set(vA);
+
         data.velocities[m_indexA].w = wA;
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(1);
@@ -305,9 +305,9 @@ public class PulleyJoint extends Joint {
         vB.y += m_invMassB * PB.y;
         wB += m_invIB * Tuple2f.cross(m_rB, PB);
 
-//    data.velocities[m_indexA].v.set(vA);
+
         data.velocities[m_indexA].w = wA;
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(4);
@@ -354,7 +354,7 @@ public class PulleyJoint extends Joint {
             uB.setZero();
         }
 
-        // Compute effective mass.
+        
         float ruA = Tuple2f.cross(rA, uA);
         float ruB = Tuple2f.cross(rB, uB);
 
@@ -382,9 +382,9 @@ public class PulleyJoint extends Joint {
         cB.y += m_invMassB * PB.y;
         aB += m_invIB * Tuple2f.cross(rB, PB);
 
-//    data.positions[m_indexA].c.set(cA);
+
         data.positions[m_indexA].a = aA;
-//    data.positions[m_indexB].c.set(cB);
+
         data.positions[m_indexB].a = aB;
 
         pool.pushRot(2);

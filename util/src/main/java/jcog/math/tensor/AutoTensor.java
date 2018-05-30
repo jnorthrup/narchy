@@ -25,9 +25,9 @@ public class AutoTensor extends ArrayTensor {
 
     @Override
     public float[] get() {
-        //learn next
+        
         float[] ii = in.get();
-        //System.out.println(n4(ii));
+        
 
         double[] dii = Util.toDouble(ii);
 
@@ -41,7 +41,7 @@ public class AutoTensor extends ArrayTensor {
                 max = Math.max((float) v, max);
                 min = Math.min((float) v, min);
             }
-            //normalize
+            
             if (max!=min) {
                 for (int i = 0; i < data.length; i++) {
                     data[i] = (data[i] - min) / (max - min);

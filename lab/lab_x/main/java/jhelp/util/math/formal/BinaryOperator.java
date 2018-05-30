@@ -85,13 +85,13 @@ public abstract class BinaryOperator
          final Function func2 = Function.parse(secondParameter);
          switch(index)
          {
-            case 0: // Addition
+            case 0: 
                return new Addition(func1, func2);
-            case 1: // Substraction
+            case 1: 
                return new Subtraction(func1, func2);
-            case 2: // Multiplication
+            case 2: 
                return new Multiplication(func1, func2);
-            case 3: // Division
+            case 3: 
                return new Division(func1, func2);
          }
       }

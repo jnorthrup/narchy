@@ -55,13 +55,13 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
             }
         }
 
-        // TODO: consider extracting processing until deadline for test purposes
+        
         Queue<TimedFuture<?>> q = wheel[c];
         final int n = q.size();
         switch (n) {
-            case 0: break; //shoudlnt happen really
+            case 0: break; 
             case 1: {
-                //simple case
+                
                 TimedFuture<?> r = q.peek();
                 switch (r.state()) {
                     case CANCELLED:
@@ -72,12 +72,12 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                         r.execute(timer);
                         break;
                     case PENDING:
-                        break; //keep
+                        break; 
                 }
                 break;
             }
             default: {
-                //use an iterator
+                
                 Iterator<TimedFuture<?>> i = q.iterator();
 
                 int remain = n;
@@ -94,7 +94,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                             r.execute(timer);
                             break;
                         case PENDING:
-                            break; //keep
+                            break; 
                     }
 
                 }

@@ -55,50 +55,50 @@ public class BagLab {
     public Surface surface() {
         return row(
                 col(inputSliders),
-                //new GridSurface(VERTICAL,
+                
                 col(
                         NARui.pane("Bag Selection Distribution (0..1)", new HistogramChart(
                                 () -> selectionHistogram, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
                         NARui.pane("Bag Content Distribution (0..1)", new HistogramChart(
                                 () -> bag.histogram(new float[10]), new Color3f(0f, 0.25f, 0.5f), new Color3f(0.1f, 0.5f, 1f)))
                 )
-                //,hijackVis((HijackBag)bag)
+                
         );
     }
 
-//    private static Surface hijackVis(HijackBag bag) {
-//        int c = bag.capacity();
-//        int w = (int) Math.ceil(Math.sqrt(1 + c));
-//        int h = c / w;
-//        return new MatrixView(w, h, (x, y, gl) -> {
-//            try {
-//                Object m = bag.map;
-//                float p = -1;
-//                if (m != null) {
-//                    int i = y * w + x;
-//                    if (i < c) {
-//
-//                        Object val = ((AtomicReferenceArray) m).get(i);
-//                        if (val != null)
-//                            p = bag.priElse(val, 0);
-//                    }
-//                }
-//                Draw.colorBipolar(gl, p);
-//            } catch (RuntimeException e) {
-//
-//            }
-//            return 0;
-//        });
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public static void main(String[] arg) {
 
         BagLab bagLab = new BagLab(
                 new CurveBag(plus, new HashMap(), 256)
-                //new DefaultHijackBag<>(PriMerge.plus, 1024, 8)
-                //new BloomBag<>(32, (i) -> Shorts.toByteArray(i.shortValue()))
+                
+                
         );
 
 
@@ -106,12 +106,12 @@ public class BagLab {
                 bagLab.surface(), 1200, 800);
 
         long delayMS = 30;
-        //new Thread(()->{
+        
         while (true) {
             bagLab.update();
             Util.sleep(delayMS);
         }
-        //}).start();
+        
     }
 
 
@@ -124,7 +124,7 @@ public class BagLab {
             for (int i = 0; i < n; i++) {
                 if (Math.random() < inputSliders.get(i).value()) {
                     float p = (i + (float) Math.random()) / (n - 1);
-                    //float q = (float)Math.random(); //random quality
+                    
                     bag.put(new PLink<>((int) Math.floor(Math.random() * uniques), p));
                 }
             }
@@ -140,7 +140,7 @@ public class BagLab {
         if (iteration++ % histogramResetPeriod == 0)
             Arrays.fill(selectionHistogram, 0);
 
-        //System.out.println(bag.size());
+        
 
         XorShift128PlusRandom rng = new XorShift128PlusRandom(1);
 
@@ -148,10 +148,10 @@ public class BagLab {
         for (int i = 0; i < (int) sampleBatches; i++) {
             sampled.clear();
 
-            //System.out.println(h + " " + v);
+            
             bag.sample(rng, batchSize, (Consumer<PriReference<Integer>>) sampled::add);
 
-            //BLink<Integer> sample = bag.sample();
+            
             for (PriReference<Integer> sample : sampled) {
                 if (sample != null) {
                     float p = sample.priElseZero();

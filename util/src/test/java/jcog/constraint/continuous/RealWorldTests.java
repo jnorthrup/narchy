@@ -135,9 +135,9 @@ public class RealWorldTests {
                         } else if (BOTTOM.equals(variableName)) {
                             solver.add(C.equals(variable, C.add(getVariableFromNode(node, TOP), getVariableFromNode(node, HEIGHT))));
                         } else if (CENTERX.equals(variableName)) {
-                           // solver.addConstraint(Symbolics.equals(variable, Symbolics.add(Symbolics.divide(getVariableFromNode(node, WIDTH), 2), getVariableFromNode(node, LEFT)));
+                           
                         } else if (CENTERY.equals(variableName)) {
-                           // solver.addConstraint(Symbolics.equals(variable, Symbolics.add(new Expression(Symbolics.divide(getVariableFromNode(node, HEIGHT), 2)), getVariableFromNode(node, TOP));
+                           
                         }
                         return variable;
                     }

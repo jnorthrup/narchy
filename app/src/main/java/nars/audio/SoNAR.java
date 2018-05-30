@@ -35,7 +35,7 @@ public class SoNAR extends TimerTask {
 
     private final NAR nar;
     public final Audio audio;
-    //final static Timer real = new Timer("Audio");
+    
     private long now;
 
     public static class SampleDirectory {
@@ -58,7 +58,7 @@ public class SoNAR extends TimerTask {
          * gets a random sample from what is loaded
          */
         public SoundSample sample(int hash) {
-            List<SoundSample> l = samples.values().stream().collect(Collectors.toList());         //HACK
+            List<SoundSample> l = samples.values().stream().collect(Collectors.toList());         
             if (l != null && !l.isEmpty()) {
                 SoundSample s;
                 do {
@@ -70,12 +70,12 @@ public class SoNAR extends TimerTask {
         }
 
         public SoundProducer byHash(Object x) {
-//            return new SamplePlayer(
-//                sample(term.hashCode()), 1f
-//            );
-//            return new Granulize(
-//                    sample(x.hashCode()), 0.1f, 0.5f, random
-//            );
+
+
+
+
+
+
             return new SineWave((float) (Math.random() * 1000 + 200));
         }
     }
@@ -103,17 +103,17 @@ public class SoNAR extends TimerTask {
                 return true;
             }
         };
-        //real.schedule(this, 0, updatePeriodMS);
+        
 
-//        Granulize ts =
-//                new Granulize(sample("/tmp/awake.wav"), 0.25f, 0.9f)
-//                        .setStretchFactor(0.25f);
 
-        //audio.play(ts, SoundListener.zero, 1, 1);
 
-        //audio.play(new SamplePlayer(smp, 0.5f), SoundListener.zero, 1, 1);
 
-        //n.onCycle(this::update);
+
+        
+
+        
+
+        
 
     }
 
@@ -137,17 +137,17 @@ public class SoNAR extends TimerTask {
             );
         });
     }
-//    protected void _listen(Term k, Function<? super Term, ? extends Sound> p) {
-//
-//        Sound a = termSounds.computeIfAbsent(k, p);
-//
-////        kk -> {
-////            Granulize g = new Granulize(sampleRandom(), 0.25f, 1.5f);
-////
-////            return audio.play(g, 0.25f, 0.5f, (float) (Math.random() - 0.5f));
-////        });
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void run() {
@@ -158,14 +158,14 @@ public class SoNAR extends TimerTask {
     private boolean update(@NotNull Concept c, Sound s) {
 
 
-        //float p = nar.pri(k);
-        //if (p == p && p > 0) {
+        
+        
 
-        //v.setAmplitude(0.1f * p);
+        
 
         Truth b = nar.goalTruth(c, now);
 
-        //System.out.println(c + " "+ b + " " + nar.time() + " " + nar.dur());
+        
 
         float thresh = 0.55f;
         if (b != null && b.freq() > thresh) {
@@ -177,29 +177,29 @@ public class SoNAR extends TimerTask {
                 ((Granulize) s.producer).setStretchFactor(stretchFactor);
             }
             if (s.producer instanceof SoundProducer.Amplifiable) {
-                //v.setAmplitude(1f);
+                
                 ((SoundProducer.Amplifiable) s.producer).setAmplitude(2f * (b.freq() - 0.5f));
             }
-            //v.setAmplitude(b.expectation());
-            //v.play();
+            
+            
             return true;
         } else {
             if (s.producer instanceof SoundProducer.Amplifiable) {
                 ((SoundProducer.Amplifiable) s.producer).setAmplitude(0f);
             }
             return false;
-            //v.stop();
-            //v.setStretchFactor(1f);
+            
+            
         }
 
-        //
-        //v.setStretchFactor();
-        //v.pitchFactor.setValue(1f / Math.log(c.volume()));
-        //g.setStretchFactor(1f/(1f+kk.volume()/4f));
-        //}
+        
+        
+        
+        
+        
 
-        //v.stop();
-        //return false;
+        
+        
     }
 
     public void join() throws InterruptedException {
@@ -209,7 +209,7 @@ public class SoNAR extends TimerTask {
     public static void main(String[] args) throws InterruptedException, Narsese.NarseseException {
         NAR n = new NARS().get();
 
-        //n.log();
+        
         n.input("a:b. :|: (--,b:c). c:d. d:e. (--,e:f). f:g. b:f. a:g?");
         n.startPeriodMS(16);
         SoNAR s = new SoNAR(n);

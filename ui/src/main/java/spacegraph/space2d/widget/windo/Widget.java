@@ -51,13 +51,13 @@ public class Widget extends MutableContainer {
         super();
 
         content(content);
-//        states(
-//            ()-> content,
-//            ()->{
-//                //meta
-//                return new MetaFrame(this);
-//            }
-//        );
+
+
+
+
+
+
+
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Widget extends MutableContainer {
         if (super.prePaint(r)) {
 
             int dtMS = r.dtMS;
-            //hover glow
+            
             if (dtMS > 0) {
                 if (touchedBy != null) {
                     temperature = Math.min(1f, temperature + dtMS / 100f);
@@ -96,15 +96,15 @@ public class Widget extends MutableContainer {
 
             float t = this.temperature;
             if (t >= 0) {
-                //fire palette TODO improve
-                //            r += t / 2f;
-                //            g += t / 4f;
+                
+                
+                
 
                 r += t / 4f;
                 g += t / 4f;
                 b += t / 4f;
             } else {
-                //ice palette TODO improve
+                
                 b += -t / 2f;
                 g += -t / 4f;
             }
@@ -115,9 +115,9 @@ public class Widget extends MutableContainer {
         }
 
 
-        //rainbow backgrounds
-        //Draw.colorHash(gl, this.hashCode(), 0.8f, 0.2f, 0.25f);
-        //Draw.rect(gl, 0, 0, 1, 1);
+        
+        
+        
     }
 
     @Override
@@ -129,7 +129,7 @@ public class Widget extends MutableContainer {
     protected void paintAbove(GL2 gl, SurfaceRender r) {
         if (touchedBy != null) {
             Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
-            //gl.glColor3f(1f, 1f, 0f);
+            
             gl.glLineWidth(6 + dz * 6);
             Draw.rectStroke(gl, x(), y(), w(), h());
         }
@@ -143,14 +143,14 @@ public class Widget extends MutableContainer {
 
     }
 
-//    public final Widget add(Surface x) {
-//        content.add(x);
-//        return this;
-//    }
-//    public final Widget remove(Surface x) {
-//        content.remove(x);
-//        return this;
-//    }
+
+
+
+
+
+
+
+
 
     @Override
     public boolean tangible() {
@@ -162,41 +162,41 @@ public class Widget extends MutableContainer {
         touchedBy = finger;
         if (finger != null) {
 
-            if (finger.clickedNow(1, this)) { //released middle button
+            if (finger.clickedNow(1, this)) { 
 
-//                int curState = switched;
-//                int nextState = nextState(curState);
-//                state(nextState); //toggle
+
+
+
 
             } else if (finger.releasedNow(2 /*right button*/, this)) {
-//                /** hold to zoom */
-//                finger.tryFingering(new FingerDragging(2) {
-//
-//                    SurfaceRoot r = root();
-//
-//                    @Override
-//                    public void start(Finger f) {
-//
-//                    }
-//
-//                    @Override
-//                    protected boolean drag(Finger f) {
-//                        ((Ortho)r).zoom(bounds, 0.5f);
-//                        return true;
-//                    }
-//                });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 /** auto-zoom */
                 SurfaceRoot r = root();
                 if (r != null) {
-//                    switch (curState) {
-//                        case STATE_META:
+
+
                     r.zoom(this);
-//                            break;
-//                        case STATE_ZOOM:
-//                            r.unzoom();
-//                            break;
-//                    }
+
+
+
+
+
                 }
 
             }
@@ -207,7 +207,7 @@ public class Widget extends MutableContainer {
     @Override
     protected void doLayout(int dtMS) {
         RectFloat2D r = bounds;
-        float b; //how much to subtract from width, height
+        float b; 
         if (r.w >= r.h) {
             b = border * r.h;
         } else {

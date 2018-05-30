@@ -1,7 +1,7 @@
 /** This code is copyright Articulate Software (c) 2003.  Some
 portions copyright Teknowledge (c) 2003 and reused under the termsof the GNU
 license.  This software is released under the GNU Public License
-<http://www.gnu.org/copyleft/gpl.html>.  Users of this code also consent,
+<http:
 by use of this code, to credit Articulate Software and Teknowledge in any
 writings, briefings, publications, presentations, or other representations
 of any software which incorporates, builds on, or uses this code.  Please
@@ -10,7 +10,7 @@ cite the following article in any publication with references:
 Pease, A., (2003). The Sigma Ontology Development Environment, in Working
 Notes of the IJCAI-2003 Workshop on Ontology and Distributed Systems,
 August 9, Acapulco, Mexico. see also
-http://sigmakee.sourceforge.net
+http:
 
 Note that this class, and therefore, Sigma, depends upon several terms
 being present in the ontology in order to function as intended.  They are:
@@ -43,16 +43,16 @@ public class KBcache implements Serializable {
 
     public static boolean debug = false;
 
-    // The String constant that is the suffix for files of cached assertions.
+    
     public static final String _cacheFileSuffix = "_Cache.kif";
 
-    // all the relations in the kb
+    
     public HashSet<String> relations = new HashSet<String>();
 
-    // all the transitive relations in the kb
+    
     public HashSet<String> transRels = new HashSet<String>();
 
-    // all the transitive relations between instances in the kb
+    
     public HashSet<String> instTransRels = new HashSet<String>();
 
     /** All the cached "parent" relations of all transitive relations
@@ -99,7 +99,7 @@ public class KBcache implements Serializable {
     public HashMap<String, ArrayList<String>> signatures =
             new HashMap<String, ArrayList<String>>();
 
-    // The number of arguments to each relation.  Variable arity is -1
+    
     public HashMap<String, Integer> valences = new HashMap<String, Integer>();
 
     /** Disjoint relations which were explicitly defined in "partition", "disjoint",
@@ -443,8 +443,8 @@ public class KBcache implements Serializable {
      */
     public void buildTransInstOf() {
     
-        Iterator<String> titer = insts.iterator();     // Iterate through the temporary list of instances built 
-                                                       // during creation of the @see children map
+        Iterator<String> titer = insts.iterator();     
+                                                       
         while (titer.hasNext()) {
             String child = titer.next();
             ArrayList<Formula> forms = kb.ask("arg",1,child);
@@ -454,7 +454,7 @@ public class KBcache implements Serializable {
                 if (instTransRels.contains(rel) && !rel.equals("subclass")) {
                     HashMap<String,HashSet<String>> prentList = parents.get(rel);
                     if (prentList != null) {
-                        HashSet<String> prents = prentList.get(f.getArgument(1));  // include all parents of the child 
+                        HashSet<String> prents = prentList.get(f.getArgument(1));  
                         if (prents != null) {
                             Iterator<String> it = prents.iterator();
                             while (it.hasNext()) {
@@ -763,13 +763,13 @@ public class KBcache implements Serializable {
             System.out.println("Error in KBcache.breadthFirstBuildParents(): no relation " + rel);
             return;
         }
-        int threshold = 10;      // maximum time that a term can be traversed in breadthFirstBuildParents()
-        HashMap<String, Integer> appearanceCount = new HashMap<>();  // for each term, we count how many times it has been traversed
+        int threshold = 10;      
+        HashMap<String, Integer> appearanceCount = new HashMap<>();  
         ArrayDeque<String> Q = new ArrayDeque<String>();
         Q.add(root);
         while (!Q.isEmpty()) {
             String t = Q.remove();
-            //System.out.println("visiting " + t);
+            
             ArrayList<Formula> forms = kb.askWithRestriction(0,rel,2,t);
             if (forms != null) {
                 HashSet<String> relSubs = collectArgFromFormulas(1,forms);
@@ -938,7 +938,7 @@ public class KBcache implements Serializable {
             if (forms != null) {
                 for (int i = 0; i < forms.size(); i++) {
                     Formula form = forms.get(i);
-                    //System.out.println("INFO in KBcache.collectDomains(): form " + form);
+                    
                     int arg = Integer.valueOf(form.getArgument(2));
                     String type = form.getArgument(3); 
                     domainArray[arg] = type; 
@@ -981,7 +981,7 @@ public class KBcache implements Serializable {
                 }
             }
 
-            fillArray("Entity",domainArray,1,maxIndex); // set default arg type of Entity in case user forgets
+            fillArray("Entity",domainArray,1,maxIndex); 
             ArrayList<String> domains = new ArrayList<String>();
             for (int i = 0; i <= maxIndex; i++)
                 domains.add(domainArray[i]);
@@ -1028,8 +1028,8 @@ public class KBcache implements Serializable {
                     for (int i = 1; i < valences.get(t); i++) {
                         String childArgType = newDomains.get(i);
                         String parentArgType = tdomains.get(i);
-                        // If child-relation does not have definition of argument-type, we use parent-relation's argument-type
-                        // TODO: if parent-relation does not have definition of argument-type, we continue to find its parent until we find the definition of argument-type
+                        
+                        
                         if (kb.askWithTwoRestrictions(0, "domain", 1, newTerm, 3, childArgType).isEmpty()) {
                             arrayListReplace(newDomains,i,parentArgType);
                         }
@@ -1097,8 +1097,8 @@ public class KBcache implements Serializable {
             }
             kb.constituents.remove(filename);
             kb.addConstituent(filename);
-            //kb.addConstituent(filename, false, false, false);
-            //KBmanager.getMgr().writeConfiguration();
+            
+            
         }                   
         catch (Exception ex) {
             ex.printStackTrace();
@@ -1163,11 +1163,11 @@ public class KBcache implements Serializable {
         buildRelationsSet();
         buildTransitiveRelationsSet();
         buildParents();
-        buildChildren(); // note that buildTransInstOf() depends on this
-        collectDomains();  // note that buildInstTransRels() depends on this
+        buildChildren(); 
+        collectDomains();  
         buildInstTransRels();
         buildDirectInstances();
-        buildDisjointRelationsMap(); // find relations under partition definition
+        buildDisjointRelationsMap(); 
         writeCacheFile();
         System.out.println("INFO in KBcache.buildCaches(): size: " + instances.keySet().size());
     }
@@ -1194,14 +1194,14 @@ public class KBcache implements Serializable {
         while (it.hasNext())
             System.out.print(it.next() + " ");
         System.out.println();
-        //nkbc.buildTransitiveRelationsSet();
+        
         System.out.println("-------------- transitives ----------------");
         it = this.transRels.iterator();
         while (it.hasNext())
             System.out.print(it.next() + " ");
         System.out.println();
         System.out.println("-------------- parents ----------------");
-        //nkbc.buildParents();
+        
         it = this.parents.keySet().iterator();
         while (it.hasNext()) {
             String rel = it.next();
@@ -1216,7 +1216,7 @@ public class KBcache implements Serializable {
         }
         System.out.println();
         System.out.println("-------------- children ----------------");
-        //nkbc.buildChildren();
+        
         it = this.children.keySet().iterator();
         while (it.hasNext()) {
             String rel = it.next();
@@ -1231,7 +1231,7 @@ public class KBcache implements Serializable {
         }
         System.out.println();
         System.out.println("-------------- domains ----------------");
-        //nkbc.collectDomains();
+        
         Iterator<String> it3 = this.relations.iterator();
         while (it3.hasNext()) {
             String rel = it3.next();

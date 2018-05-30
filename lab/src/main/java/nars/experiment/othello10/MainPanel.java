@@ -13,60 +13,60 @@ import java.awt.event.MouseListener;
  *  
  */
 public class MainPanel extends JPanel implements MouseListener {
-    // �}�X�̃T�C�Y�iGRID SIZE�j
+    
     private static final int GS = 32;
-    // �}�X�̐��B�I�Z����8�~8�}�X�iAI�N���X�Ŏg���̂�public�j
+    
     public static final int MASU = 8;
-    // �Ֆʂ̑傫�������C���p�l���̑傫���Ɠ���
+    
     private static final int WIDTH = GS * MASU;
     private static final int HEIGHT = WIDTH;
-    // ��
+    
     private static final int BLANK = 0;
-    // ����
+    
     private static final int BLACK_STONE = 1;
-    // ����
+    
     private static final int WHITE_STONE = -1;
-    // ���x�~�̎���
+    
     private static final int SLEEP_TIME = 500;
-    // �I�����̐΂̐��i�I�Z����8x8-4=60��ŏI������j
+    
     private static final int END_NUMBER = 60;
-    // �Q�[�����
+    
     private static final int START = 0;
     private static final int PLAY = 1;
     private static final int YOU_WIN = 2;
     private static final int YOU_LOSE = 3;
     private static final int DRAW = 4;
 
-    // �Ֆ�
+    
     private final int[][] board = new int[MASU][MASU];
-    // ���̔Ԃ�
+    
     private boolean flagForWhite;
-    // �ł��ꂽ�΂̐�
+    
     private int putNumber;
-    // �΂�ł�
-    //private AudioClip kachi;
-    // �Q�[�����
+    
+    
+    
     private int gameState;
-    // AI
+    
     private final AI ai;
 
-    // ���p�l���ւ̎Q��
+    
     private final InfoPanel infoPanel;
 
     public MainPanel(InfoPanel infoPanel) {
-        // Othello��pack()����Ƃ��ɕK�v
+        
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         this.infoPanel = infoPanel;
 
-        // �Ֆʂ�����������
+        
         initBoard();
-        // �T�E���h�����[�h����
-        //kachi = Applet.newAudioClip(getClass().getResource("kachi.wav"));
-        // AI���쐬
+        
+        
+        
         ai = new AI(this);
-        // �}�E�X������󂯕t����悤�ɂ���
+        
         addMouseListener(this);
-        // START��ԁi�^�C�g���\���j
+        
         gameState = START;
     }
 
@@ -74,18 +74,18 @@ public class MainPanel extends JPanel implements MouseListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // �Ֆʂ�`��
+        
         drawBoard(g);
         switch (gameState) {
             case START :
                 drawTextCentering(g, "OTHELLO");
                 break;
             case PLAY :
-                // �΂�`��
+                
                 drawStone(g);
-                // �Ֆʂ̐΂̐��𐔂���
+                
                 Counter counter = countStone();
-                // ���x���ɕ\��
+                
                 infoPanel.setBlackLabel(counter.blackCount);
                 infoPanel.setWhiteLabel(counter.whiteCount);
                 break;
@@ -112,33 +112,33 @@ public class MainPanel extends JPanel implements MouseListener {
     public void mouseClicked(MouseEvent e) {
         switch (gameState) {
             case START :
-                // START��ʂŃN���b�N���ꂽ��Q�[���J�n
+                
                 gameState = PLAY;
                 break;
             case PLAY :
-                // �ǂ��̃}�X���𒲂ׂ�
+                
                 int x = e.getX() / GS;
                 int y = e.getY() / GS;
 
-                // (x, y)�ɐ΂��łĂ�ꍇ�����ł�
+                
                 if (canPutDown(x, y)) {
-                    // �߂���悤�ɋL�^���Ă���
+                    
                     Undo undo = new Undo(x, y);
-                    // ���̏ꏊ�ɐ΂�ł�
+                    
                     putDownStone(x, y, false);
-                    // �Ђ�����Ԃ�
+                    
                     reverse(undo, false);
-                    // �I�����������ׂ�
+                    
                     endGame();
-                    // ��Ԃ�ς���
+                    
                     nextTurn();
-                    // AI���p�X�̏ꍇ�͂������
+                    
                     if (countCanPutDownStone() == 0) {
                         System.out.println("AI PASS!");
                         nextTurn();
                         return;
                     } else {
-                        // �p�X�łȂ�������AI���΂�ł�
+                        
                         ai.compute();
                     }
                 }
@@ -146,14 +146,14 @@ public class MainPanel extends JPanel implements MouseListener {
             case YOU_WIN :
             case YOU_LOSE :
             case DRAW :
-                // �Q�[���I�����ɃN���b�N���ꂽ��X�^�[�Ƃ֖߂�
+                
                 gameState = START;
-                // �Ֆʏ�����
+                
                 initBoard();
                 break;
         }
 
-        // �ĕ`�悷��
+        
         repaint();
     }
 
@@ -167,11 +167,11 @@ public class MainPanel extends JPanel implements MouseListener {
                 board[y][x] = BLANK;
             }
         }
-        // �����z�u
+        
         board[3][3] = board[4][4] = WHITE_STONE;
         board[3][4] = board[4][3] = BLACK_STONE;
 
-        // ���Ԃ���n�߂�
+        
         flagForWhite = false;
         putNumber = 0;
     }
@@ -182,12 +182,12 @@ public class MainPanel extends JPanel implements MouseListener {
      * @param g �`��I�u�W�F�N�g�B
      */
     private void drawBoard(Graphics g) {
-        // �}�X��h��Ԃ�
+        
         g.setColor(new Color(0, 128, 128));
         g.fillRect(0, 0, WIDTH, HEIGHT);
         for (int y = 0; y < MASU; y++) {
             for (int x = 0; x < MASU; x++) {
-                // �}�X�g��`�悷��
+                
                 g.setColor(Color.BLACK);
                 g.drawRect(x * GS, y * GS, GS, GS);
             }
@@ -224,22 +224,22 @@ public class MainPanel extends JPanel implements MouseListener {
     public void putDownStone(int x, int y, boolean tryAndError) {
         int stone;
 
-        // �ǂ����̎�Ԃ����ׂĐ΂̐F�����߂�
+        
         if (flagForWhite) {
             stone = WHITE_STONE;
         } else {
             stone = BLACK_STONE;
         }
-        // �΂�ł�
+        
         board[y][x] = stone;
-        // �R���s���[�^�̎v�l���łȂ���Ύ��ۂɑł��čĕ`�悷��
+        
         if (!tryAndError) {
             putNumber++;
-            // �J�`�b
-            //kachi.play();
-            // �Ֆʂ��X�V���ꂽ�̂ōĕ`��
+            
+            
+            
             update(getGraphics());
-            // ���x�~������i����Ȃ��Ƃ����ɂЂ�����Ԃ����n�܂��Ă��܂��j
+            
             sleep();
         }
     }
@@ -253,31 +253,31 @@ public class MainPanel extends JPanel implements MouseListener {
      *  
      */
     public boolean canPutDown(int x, int y) {
-        // (x,y)���Ֆʂ̊O��������łĂȂ�
+        
         if (x >= MASU || y >= MASU)
             return false;
-        // (x,y)�ɂ��łɐ΂��ł���Ă���łĂȂ�
+        
         if (board[y][x] != BLANK)
             return false;
-        // 8�����̂�����ӏ��ł��Ђ�����Ԃ���΂��̏ꏊ�ɑłĂ�
-        // �Ђ�����Ԃ��邩�ǂ����͂���1��canPutDown�Œ��ׂ�
+        
+        
         if (canPutDown(x, y, 1, 0))
-            return true; // �E
+            return true; 
         if (canPutDown(x, y, 0, 1))
-            return true; // ��
+            return true; 
         if (canPutDown(x, y, -1, 0))
-            return true; // ��
+            return true; 
         if (canPutDown(x, y, 0, -1))
-            return true; // ��
+            return true; 
         if (canPutDown(x, y, 1, 1))
-            return true; // �E��
+            return true; 
         if (canPutDown(x, y, -1, -1))
-            return true; // ����
+            return true; 
         if (canPutDown(x, y, 1, -1))
-            return true; // �E��
+            return true; 
         return canPutDown(x, y, -1, 1);
 
-        // �ǂ̕��������߂ȏꍇ�͂����ɂ͑łĂȂ�
+        
     }
 
     /**
@@ -293,42 +293,42 @@ public class MainPanel extends JPanel implements MouseListener {
     private boolean canPutDown(int x, int y, int vecX, int vecY) {
         int putStone;
 
-        // �ł΂͂ǂꂩ
+        
         if (flagForWhite) {
             putStone = WHITE_STONE;
         } else {
             putStone = BLACK_STONE;
         }
 
-        // �ׂ̏ꏊ�ցB�ǂׂ̗���(vecX, vecY)�����߂�B
+        
         x += vecX;
         y += vecY;
-        // �ՖʊO��������łĂȂ�
+        
         if (x < 0 || x >= MASU || y < 0 || y >= MASU)
             return false;
-        // �ׂ������̐΂̏ꍇ�͑łĂȂ�
+        
         if (board[y][x] == putStone)
             return false;
-        // �ׂ��󔒂̏ꍇ�͑łĂȂ�
+        
         if (board[y][x] == BLANK)
             return false;
 
-        // ����ɗׂ𒲂ׂĂ���
+        
         x += vecX;
         y += vecY;
-        // �ƂȂ�ɐ΂�����ԃ��[�v���܂��
+        
         while (x >= 0 && x < MASU && y >= 0 && y < MASU) {
-            // �󔒂�����������łĂȂ��i�͂��߂Ȃ�����j
+            
             if (board[y][x] == BLANK)
                 return false;
-            // �����̐΂�����΂͂��߂�̂őłĂ�
+            
             if (board[y][x] == putStone) {
                 return true;
             }
             x += vecX;
             y += vecY;
         }
-        // ����̐΂����Ȃ��ꍇ�͂�����Ֆʂ̊O�ɂłĂ��܂��̂ł���false
+        
         return false;
     }
 
@@ -340,7 +340,7 @@ public class MainPanel extends JPanel implements MouseListener {
      * @param tryAndError �R���s���[�^�̎v�l���������ǂ����B�v�l���͐΂�`�悵�Ȃ��B
      */
     public void reverse(Undo undo, boolean tryAndError) {
-        // �Ђ�����Ԃ���΂���������͂��ׂĂЂ�����Ԃ�
+        
         if (canPutDown(undo.x, undo.y, 1, 0))
             reverse(undo, 1, 0, tryAndError);
         if (canPutDown(undo.x, undo.y, 0, 1))
@@ -379,21 +379,21 @@ public class MainPanel extends JPanel implements MouseListener {
             putStone = BLACK_STONE;
         }
 
-        // ����̐΂�����ԂЂ�����Ԃ�������
-        // (x,y)�ɑłĂ�̂͊m�F�ς݂Ȃ̂ő���̐΂͕K������
+        
+        
         x += vecX;
         y += vecY;
         while (board[y][x] != putStone) {
-            // �Ђ�����Ԃ�
+            
             board[y][x] = putStone;
-            // �Ђ�����Ԃ����ꏊ���L�^���Ă���
+            
             undo.pos[undo.count++] = new Point(x, y);
             if (!tryAndError) {
-                // �J�`�b
-                //kachi.play();
-                // �Ֆʂ��X�V���ꂽ�̂ōĕ`��
+                
+                
+                
                 update(getGraphics());
-                // ���x�~������i����Ȃ��ƕ����̐΂���ĂɂЂ�����Ԃ���Ă��܂��j
+                
                 sleep();
             }
             x += vecX;
@@ -410,17 +410,17 @@ public class MainPanel extends JPanel implements MouseListener {
         int c = 0;
 
         while (undo.pos[c] != null) {
-            // �Ђ�����Ԃ����ʒu���擾
+            
             int x = undo.pos[c].x;
             int y = undo.pos[c].y;
-            // ���ɖ߂��ɂ�-1��������΂悢
-            // ��(1)�͔�(-1)�ɔ��͍��ɂȂ�
+            
+            
             board[y][x] *= -1;
             c++;
         }
-        // �΂�łO�ɖ߂�
+        
         board[undo.y][undo.x] = BLANK;
-        // ��Ԃ����ɖ߂�
+        
         nextTurn();
     }
 
@@ -429,7 +429,7 @@ public class MainPanel extends JPanel implements MouseListener {
      *  
      */
     public void nextTurn() {
-        // ��Ԃ�ς���
+        
         flagForWhite = !flagForWhite;
     }
 
@@ -483,14 +483,14 @@ public class MainPanel extends JPanel implements MouseListener {
      *  
      */
     public boolean endGame() {
-        // �ł��ꂽ�΂̐���60�i�S�����܂�����ԁj�ȊO�͉������Ȃ�
+        
         if (putNumber == END_NUMBER) {
-            // ���������̐΂𐔂���
+            
             Counter counter;
             counter = countStone();
-            // �����ߔ����i64/2=32�j������Ă����珟��
-            // �ߔ����ȉ��Ȃ畉��
-            // �������Ȃ��������
+            
+            
+            
             if (counter.blackCount > 32) {
                 gameState = YOU_WIN;
             } else if (counter.blackCount < 32) {

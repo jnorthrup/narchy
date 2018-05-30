@@ -50,14 +50,14 @@ public class ControlFlowGraph {
         InsnList instructions = method.instructions;
         graph.mNodeMap = Maps.newHashMapWithExpectedSize(instructions.size());
 
-        // Create a flow control graph using ASM4's analyzer. According to the ASM 4 guide
-        // (download.forge.objectweb.org/asm/asm4-guide.pdf) there are faster ways to construct
-        // it, but those require a lot more code.
+        
+        
+        
         Analyzer analyzer = new Analyzer(new BasicInterpreter()) {
             @Override
             protected void newControlFlowEdge(int insn, int successor) {
-                // Update the information as of whether the this object has been
-                // initialized at the given instruction.
+                
+                
                 AbstractInsnNode from = instructions.get(insn);
                 AbstractInsnNode to = instructions.get(successor);
                 graph.add(from, to);
@@ -131,11 +131,11 @@ public class ControlFlowGraph {
             sb.append(getId(instruction));
             sb.append(':');
 
-            //noinspection IfStatementWithTooManyBranches
+            
             if (instruction instanceof LabelNode) {
-                //LabelNode l = (LabelNode) instruction;
-                //sb.append('L' + l.getLabel().getOffset() + ":");
-                //sb.append('L' + l.getLabel().info + ":");
+                
+                
+                
                 sb.append("LABEL");
             } else if (instruction instanceof LineNumberNode) {
                 sb.append("LINENUMBER " + ((LineNumberNode) instruction).line);
@@ -143,10 +143,10 @@ public class ControlFlowGraph {
                 sb.append("FRAME");
             } else {
                 int opcode = instruction.getOpcode();
-                // AbstractVisitor isn't available unless debug/util is included,
+                
                 boolean printed = false;
                 try {
-                    Class<?> c = Class.forName("org.objectweb.asm.util"); //$NON-NLS-1$
+                    Class<?> c = Class.forName("org.objectweb.asm.util"); 
                     Field field = c.getField("OPCODES");
                     String[] OPCODES = (String[]) field.get(null);
                     printed = true;
@@ -157,7 +157,7 @@ public class ControlFlowGraph {
                         }
                     }
                 } catch (Throwable t) {
-                    // debug not installed: just do toString() on the instructions
+                    
                 }
                 if (!printed) {
                     sb.append(instruction);
@@ -194,25 +194,25 @@ public class ControlFlowGraph {
 
     /** Adds an exception flow to this graph */
     protected void exception( AbstractInsnNode from,  AbstractInsnNode to) {
-        // For now, these edges appear useless; we also get more specific
-        // information via the TryCatchBlockNode which we use instead.
-        //getNode(from).addExceptionPath(getNode(to));
+        
+        
+        
     }
 
     /** Adds an exception try block node to this graph */
     protected void exception( AbstractInsnNode from,  TryCatchBlockNode tcb) {
-        // Add tcb's to all instructions in the range
+        
         LabelNode start = tcb.start;
-        LabelNode end = tcb.end; // exclusive
+        LabelNode end = tcb.end; 
 
-        // Add exception edges for all method calls in the range
+        
         AbstractInsnNode curr = start;
         Node handlerNode = getNode(tcb.handler);
         while (curr != end && curr != null) {
             if (curr.getType() == AbstractInsnNode.METHOD_INSN) {
-                // Method call; add exception edge to handler
+                
                 if (tcb.type == null) {
-                    // finally block: not an exception path
+                    
                     getNode(curr).addSuccessor(handlerNode);
                 } else {
                     getNode(curr).addExceptionPath(handlerNode);
@@ -281,13 +281,13 @@ public class ControlFlowGraph {
         return toString(null);
     }
 
-    // ---- For debugging only ----
+    
 
     private static Map<Object, String> sIds;
     private static int sNextId = 1;
     private static String getId(Object object) {
         if (sIds == null) {
-            sIds = Global.newHashMap(1000);// Maps.newHashMap();
+            sIds = Global.newHashMap(1000);
         }
         String id = sIds.get(object);
         if (id == null) {

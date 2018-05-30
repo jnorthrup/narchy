@@ -97,7 +97,7 @@ public abstract class TerminalEmulator {
         }
         buflen--;
 
-        //    System.out.println("getChar: "+new Character((char)buf[bufs])+"["+Integer.toHexString(buf[bufs]&0xff)+"]");
+        
 
         return buf[bufs++];
     }
@@ -120,13 +120,13 @@ public abstract class TerminalEmulator {
     }
 
     void pushChar(byte foo) {
-        //System.out.println("pushChar: "+new Character((char)foo)+"["+Integer.toHexString(foo&0xff)+"]");
+        
         buflen++;
         buf[--bufs] = foo;
     }
 
     int getASCII(int len) throws IOException {
-        //System.out.println("bufs="+bufs+", buflen="+buflen+", len="+len);
+        
         if (buflen == 0) {
             fillBuf();
         }
@@ -144,11 +144,11 @@ public abstract class TerminalEmulator {
             bufs--;
             break;
         }
-        //System.out.println(" return "+(foo-len));
+        
         return foo - len;
     }
 
-    // Reverse scroll
+    
     protected void scroll_reverse() {
         term.draw_cursor();
         term.scroll_area(0, (region_y1 - 1) * char_height, term_width * char_width,
@@ -156,11 +156,11 @@ public abstract class TerminalEmulator {
         term.clear_area(x, y - char_height, term_width * char_width, y);
         term.redraw(0, 0, term_width * char_width, term_height * char_height
                 - char_height);
-        //term.setCursor(x, y);
+        
         term.draw_cursor();
     }
 
-    // Normal scroll one line
+    
     protected void scroll_forward() {
         term.draw_cursor();
         term.scroll_area(0, (region_y1 - 1) * char_height, term_width * char_width,
@@ -173,36 +173,36 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
     }
 
-    // Save cursor position
+    
     protected void save_cursor() {
-        // TODO
-        //System.out.println("save current cursor position");
+        
+        
     }
 
-    // Enable alternate character set
+    
     protected void ena_acs() {
-        // TODO
-        //System.out.println("enable alterate char set");
+        
+        
     }
 
     protected void exit_alt_charset_mode() {
-        // TODO
-        //System.out.println("end alternate character set (P)");
+        
+        
     }
 
     protected void enter_alt_charset_mode() {
-        // TODO
-        //System.out.println("start alternate character set (P)");
+        
+        
     }
 
     protected void reset_2string() {
-        // TODO
-        // rs2(reset string)
+        
+        
     }
 
     protected void exit_attribute_mode() {
-        // TODO
-        //System.out.println("turn off all attributes");
+        
+        
         term.resetAllAttributes();
     }
 
@@ -211,7 +211,7 @@ public abstract class TerminalEmulator {
     }
 
     protected void exit_underline_mode() {
-        // TODO
+        
     }
 
     protected void enter_bold_mode() {
@@ -235,7 +235,7 @@ public abstract class TerminalEmulator {
         term.draw_cursor();
         x = (c - 1) * char_width;
         y = r * char_height;
-        //System.out.println("setCourosr: "+x+" "+y);
+        
         term.setCursor(x, y);
         term.draw_cursor();
     }
@@ -286,8 +286,8 @@ public abstract class TerminalEmulator {
 
     protected void parm_up_cursor(int lines) {
         term.draw_cursor();
-        //	  x=0;
-        //	  y-=char_height;
+        
+        
         y -= (lines) * char_height;
         term.setCursor(x, y);
         term.draw_cursor();
@@ -349,7 +349,7 @@ public abstract class TerminalEmulator {
 
         byte b = getChar();
         term.draw_cursor();
-        //System.out.print(new Character((char)b)+"["+Integer.toHexString(b&0xff)+"]");
+        
         if ((b & 0x80) != 0) {
             term.clear_area(x, y - char_height, x + char_width * 2, y);
             b2[0] = b;
@@ -363,8 +363,8 @@ public abstract class TerminalEmulator {
             pushChar(b);
             int foo = getASCII(term_width - (x / char_width));
             if (foo != 0) {
-                //System.out.println("foo="+foo+" "+x+", "+(y-char_height)+" "+(x+foo*char_width)+" "+y+" "+buf+" "+bufs+" "+b+" "+buf[bufs-foo]);
-                //System.out.println("foo="+foo+" ["+new String(buf, bufs-foo, foo));
+                
+                
                 term.clear_area(x, y - char_height, x + foo * char_width, y);
                 term.drawBytes(buf, bufs - foo, foo, x, y);
             } else {
@@ -372,7 +372,7 @@ public abstract class TerminalEmulator {
                 term.clear_area(x, y - char_height, x + foo * char_width, y);
                 b1[0] = getChar();
                 term.drawBytes(b1, 0, foo, x, y);
-                //System.out.print("["+Integer.toHexString(bar[0]&0xff)+"]");
+                
             }
             x += (char_width * foo);
             w = char_width * foo;
@@ -385,10 +385,10 @@ public abstract class TerminalEmulator {
 
     private void check_region() {
         if (x >= term_width * char_width) {
-            //System.out.println("!! "+new Character((char)b)+"["+Integer.toHexString(b&0xff)+"]");
+            
             x = 0;
             y += char_height;
-            //System.out.println("@1: ry="+ry);
+            
         }
 
         if (y > region_y2 * char_height) {

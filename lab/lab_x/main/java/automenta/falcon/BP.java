@@ -28,7 +28,7 @@ public class BP extends AGENT {
     public static final int N = 18;
     public static final int H = 36;
     public static final int M = 1;
-    final int numSpace = 4; // 0-State 1-Action 2-Reward 3-New State
+    final int numSpace = 4; 
     final int numSonarInput = 5;
     final int numAVSonarInput = 0;
     final int numBearingInput = 8;
@@ -48,7 +48,7 @@ public class BP extends AGENT {
     double[] action;
     LAYER[] Layer;         /* - layers of this net                 */
 
-//    public static boolean INTERFLAG=false;
+
 
 	/* A bpn_xor */
     double Alpha = 0.5;       /* - momentum factor                    */
@@ -218,7 +218,7 @@ public class BP extends AGENT {
         int SARSA = 1;
         double return_Q = 0.0;
 
-        if (method == QLEARNING) {                   //q learning
+        if (method == QLEARNING) {                   
             for (int i = 0; i < numAction; i++) {
                 setAction(i);
                 double tmp_Q = doSearchQValue(PERFORM, 0);
@@ -226,9 +226,9 @@ public class BP extends AGENT {
                 if (tmp_Q > return_Q)
                     return_Q = tmp_Q;
             }
-        } else {                               //sarsa
+        } else {                               
             int next_a = act(train, env);
-            setAction(next_a);  // set action
+            setAction(next_a);  
             return_Q = doSearchQValue(PERFORM, 0);
         }
 
@@ -252,7 +252,7 @@ public class BP extends AGENT {
         int except_action = -1;
         int k;
 
-        //get qValues for all available actions
+        
 
         int[] validActions = new int[qValues.length];
         int maxVA = 0;
@@ -271,9 +271,9 @@ public class BP extends AGENT {
         if (maxVA == 0)
             return (-1);
 
-        // Explore
+        
         if (Math.random() < QEpsilon && train == true) {
-            // Select random action if all qValues == 0 or exploring.
+            
             if (Trace)
                 System.out.println("random action selected!");
             int randomIndex = (int) (Math.random() * maxVA);
@@ -317,8 +317,8 @@ public class BP extends AGENT {
         int except_action;
         int k;
 
-//        except_action = get_except_action();
-        //get qValues for all available actions
+
+        
         for (int i = 0; i < numAction; i++) {
             setAction(i);
             qValues[i] = doSearchQValue(PERFORM, 0);
@@ -328,7 +328,7 @@ public class BP extends AGENT {
         int[] doubleValues = new int[qValues.length];
         int maxDV = 0;
 
-        // Explore
+        
         if (Math.random() < QEpsilon && train == true) {
             selectedAction = -1;
         } else {
@@ -349,7 +349,7 @@ public class BP extends AGENT {
                 selectedAction = doubleValues[randomIndex];
             }
         }
-        // Select random action if all qValues == 0 or exploring.
+        
         if (selectedAction == -1) {
             if (Trace)
                 System.out.println("random action selected!");
@@ -621,7 +621,7 @@ public class BP extends AGENT {
             Sum = 0;
             for (j = 0; j <= Layer[Lower].Units; j++)
                 Sum += Layer[Upper].Weight[i][j] * Layer[Lower].Output[j];
-            if (Upper >= 1)  // was Upper==2
+            if (Upper >= 1)  
                 Layer[Upper].Output[i] = 1 / (1 + Math.exp(-this.Gain * Sum));
             else
                 Layer[Upper].Output[i] = Sum;
@@ -646,7 +646,7 @@ public class BP extends AGENT {
         }
     }
 
-    // dummy methods required by abstract AGENT class
+    
 
     public void doLearnACN() {
     }

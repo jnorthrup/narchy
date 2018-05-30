@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -43,7 +43,7 @@ import spacegraph.util.math.v3;
  */
 class ConvexTriangleCallback extends TriangleCallback {
 
-	//protected final BulletStack stack = BulletStack.get();
+	
 	
 	private final Collidable convexBody;
 	private final Collidable triBody;
@@ -67,9 +67,9 @@ class ConvexTriangleCallback extends TriangleCallback {
 		convexBody = isSwapped ? body1 : body0;
 		triBody = isSwapped ? body0 : body1;
 
-		//
-		// create the manifold from the dispatcher 'manifold pool'
-		//
+		
+		
+		
 		manifoldPtr = intersecter.getNewManifold(convexBody, triBody);
 
 		clearCache();
@@ -85,7 +85,7 @@ class ConvexTriangleCallback extends TriangleCallback {
 		this.collisionMarginTriangle = collisionMarginTriangle;
 		this.resultOut = resultOut;
 
-		// recalc aabbs
+		
 		Transform convexInTriangleSpace = new Transform();
 
 		triBody.getWorldTransform(convexInTriangleSpace);
@@ -93,7 +93,7 @@ class ConvexTriangleCallback extends TriangleCallback {
 		convexInTriangleSpace.mul(convexBody.getWorldTransform(new Transform()));
 
 		CollisionShape convexShape = convexBody.shape();
-		//CollisionShape* triangleShape = static_cast<btCollisionShape*>(triBody->m_collisionShape);
+		
 		convexShape.getAabb(convexInTriangleSpace, aabbMin, aabbMax);
 		float extraMargin = collisionMarginTriangle;
 		v3 extra = new v3();
@@ -108,44 +108,44 @@ class ConvexTriangleCallback extends TriangleCallback {
 	
 	@Override
 	public void processTriangle(v3[] triangle, int partId, int triangleIndex) {
-		// just for debugging purposes
-		//printf("triangle %d",m_triangleCount++);
+		
+		
 
-		// aabb filter is already applied!	
+		
 
 		ci.intersecter1 = intersecter;
 
 		Collidable ob = triBody;
 
-//		// debug drawing of the overlapping triangles
-//		if (dispatchInfoPtr != null && dispatchInfoPtr.debugDraw != null && dispatchInfoPtr.debugDraw.getDebugMode() > 0) {
-//			Vector3f color = new Vector3f();
-//			color.set(255, 255, 0);
-//			Transform tr = ob.getWorldTransform(new Transform());
-//
-//			Vector3f tmp1 = new Vector3f();
-//			Vector3f tmp2 = new Vector3f();
-//
-//			tmp1.set(triangle[0]); tr.transform(tmp1);
-//			tmp2.set(triangle[1]); tr.transform(tmp2);
-//			dispatchInfoPtr.debugDraw.drawLine(tmp1, tmp2, color);
-//
-//			tmp1.set(triangle[1]); tr.transform(tmp1);
-//			tmp2.set(triangle[2]); tr.transform(tmp2);
-//			dispatchInfoPtr.debugDraw.drawLine(tmp1, tmp2, color);
-//
-//			tmp1.set(triangle[2]); tr.transform(tmp1);
-//			tmp2.set(triangle[0]); tr.transform(tmp2);
-//			dispatchInfoPtr.debugDraw.drawLine(tmp1, tmp2, color);
-//
-//			//btVector3 center = triangle[0] + triangle[1]+triangle[2];
-//			//center *= btScalar(0.333333);
-//			//m_dispatchInfoPtr->m_debugDraw->drawLine(tr(triangle[0]),tr(center),color);
-//			//m_dispatchInfoPtr->m_debugDraw->drawLine(tr(triangle[1]),tr(center),color);
-//			//m_dispatchInfoPtr->m_debugDraw->drawLine(tr(triangle[2]),tr(center),color);
-//		}
 
-		//btCollisionObject* colObj = static_cast<btCollisionObject*>(m_convexProxy->m_clientObject);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		
 
 		if (convexBody.shape().isConvex()) {
 			tm.init(triangle[0], triangle[1], triangle[2]);
@@ -155,14 +155,14 @@ class ConvexTriangleCallback extends TriangleCallback {
 			ob.internalSetTemporaryCollisionShape(tm);
 
 			CollisionAlgorithm colAlgo = ci.intersecter1.findAlgorithm(convexBody, triBody, manifoldPtr);
-			// this should use the btDispatcher, so the actual registered algorithm is used
-			//		btConvexConvexAlgorithm cvxcvxalgo(m_manifoldPtr,ci,m_convexBody,m_triBody);
+			
+			
 
 			resultOut.setShapeIdentifiers(-1, -1, partId, triangleIndex);
-			//cvxcvxalgo.setShapeIdentifiers(-1,-1,partId,triangleIndex);
-			//cvxcvxalgo.processCollision(m_convexBody,m_triBody,*m_dispatchInfoPtr,m_resultOut);
+			
+			
 			colAlgo.processCollision(convexBody, triBody, dispatchInfoPtr, resultOut);
-			//colAlgo.destroy();
+			
 			Intersecter.freeCollisionAlgorithm(colAlgo);
 			ob.internalSetTemporaryCollisionShape(tmpShape);
 		}

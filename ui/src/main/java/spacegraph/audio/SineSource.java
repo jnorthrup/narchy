@@ -16,7 +16,7 @@ public class SineSource implements WaveSource {
 
     public SineSource(double freq) {
         this.freq = freq;
-        //nyquist:
+        
         samples = Util.largestPowerOf2NoGreaterThan((int) Math.ceil(freq * 2));
     }
 

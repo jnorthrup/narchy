@@ -5,8 +5,8 @@ package net.propero.rdp.crypto;
  * data. It is not intended directly for use by application programmers.
  * <p>
  * <b>Copyright</b> &copy; 1995-1997 <a
- * href="http://www.systemics.com/">Systemics Ltd</a> on behalf of the <a
- * href="http://www.systemics.com/docs/cryptix/">Cryptix Development Team</a>.
+ * href="http:
+ * href="http:
  * <br>
  * All rights reserved.
  * <p>
@@ -114,11 +114,11 @@ public abstract class BlockMessageDigest {
         return engineDigest(buffer, buffered);
     }
 
-    //
-    // Override int engineDigest(byte[] buf, int offset, int len)
-    // from Java 1.2 preview docs? For the time being no - it should work
-    // anyway.
-    //
+    
+    
+    
+    
+    
 
     /**
      * <b>SPI</b> (for BlockMessageDigests only): Calculates the final digest.

@@ -21,7 +21,7 @@ public class ServicesTable extends Gridding implements GridModel, ScrollGrid.Gri
     private On updater;
     private ScrollGrid grid;
 
-    //final List keys = new FasterList();
+    
     final List<Service> services = new CopyOnWriteArrayList();
 
     public ServicesTable(Services<?,?> s) {

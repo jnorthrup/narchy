@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -66,7 +66,7 @@ public class BroadphasePair {
 		if (a == b)
 			return 0;
 
-        // JAVA TODO:
+        
         Broadphasing a0 = a.pProxy0;
         Broadphasing b0 = b.pProxy0;
         Broadphasing a1 = a.pProxy1;

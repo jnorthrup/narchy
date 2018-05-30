@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -135,7 +135,7 @@ public interface Node<L, V> extends Nodelike<L> {
 
 
 
-//    void intersectingNodes(HyperRegion rect, Predicate<Node<L, ?>> t, Spatialization<L> model);
+
 
     /**
      * Recurses over index collecting stats
@@ -155,22 +155,22 @@ public interface Node<L, V> extends Nodelike<L> {
 
 
 
-//    default FasterList<V> childMinList(FloatFunction<V> rank, int limit) {
-//        return new FasterList(streamNodes().sorted(new FloatFunctionComparator(rank)).limit(limit).toArray());
-//    }
-//    default V childMin(FloatFunction<V> rank) {
-//        V min = null;
-//        double minVal = Double.POSITIVE_INFINITY;
-//        int size = size();
-//        for (int i = 0; i < size; i++) {
-//            V c = get(i);
-//            double val = rank.floatValueOf(c);
-//            if (val < minVal) {
-//                min = c;
-//                minVal = val;
-//            }
-//        }
-//        return min;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

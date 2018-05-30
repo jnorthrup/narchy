@@ -21,13 +21,13 @@ public abstract class SpriteStore {
 	 * @return The single instance of this class
 	 */
 	public static SpriteStore get() {
-//		if (single == null) {
-//			if (GraphicsHandler.awtMode) {
-//				single = ;
-//			} else {
-//				// android!
-//			}
-//		}
+
+
+
+
+
+
+
 		return single;
 	}
 
@@ -35,37 +35,37 @@ public abstract class SpriteStore {
 
 		@Override
 		public Sprite loadSprite(String ref) {
-			// otherwise, go away and grab the sprite from the resource
-			// loader
+			
+			
 			BufferedImage sourceImage = null;
 
 			try {
-				// The ClassLoader.getResource() ensures we get the sprite
-				// from the appropriate place, this helps with deploying the game
-				// with things like webstart. You could equally do a file look
-				// up here.
+				
+				
+				
+				
 				URL url = this.getClass().getResource(ref);
 
 				if (url == null) {
 					fail("Can't find ref: " + ref);
 				}
 
-				// use ImageIO to read the image in
+				
 				sourceImage = ImageIO.read(url);
 			} catch (IOException ignored) {
 				fail("Failed to load: " + ref);
 			}
 
-			// create an accelerated image of the right size to store our sprite in
+			
 			GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment()
 					.getDefaultScreenDevice().getDefaultConfiguration();
 			Image image = gc.createCompatibleImage(sourceImage.getWidth(), sourceImage.getHeight(),
 					Transparency.BITMASK);
 
-			// draw our source image into the accelerated image
+			
 			image.getGraphics().drawImage(sourceImage, 0, 0, null);
 
-			// create a sprite, add it the cache then return it
+			
 			Sprite sprite = new AwtSprite(image, ref);
 			return sprite;
 		}
@@ -77,8 +77,8 @@ public abstract class SpriteStore {
 		 *            The message to display on failure
 		 */
 		private static void fail(String message) {
-			// we're pretty dramatic here, if a resource isn't available
-			// we dump the message and exit the game
+			
+			
 			System.err.println(message);
 			System.exit(1);
 		}
@@ -100,7 +100,7 @@ public abstract class SpriteStore {
 		transient public Image image;
 		public String ref;
 
-		// for serialization loading
+		
 		public AwtSprite() {
 			AwtSprite s = (AwtSprite) SpriteStore.get().getSprite(ref);
 			this.image = s.image;
@@ -174,8 +174,8 @@ public abstract class SpriteStore {
 		@Override
 		public void readObject(ObjectInputStream aInputStream) throws ClassNotFoundException,
 				IOException {
-			// always perform the default de-serialization first
-			// aInputStream.defaultReadObject();
+			
+			
 			ref = (String) aInputStream.readObject();
 			this.image = ((AwtSprite) SpriteStore.get().getSprite(ref)).image;
 		}
@@ -186,7 +186,7 @@ public abstract class SpriteStore {
 		 */
 		@Override
 		public void writeObject(ObjectOutputStream aOutputStream) throws IOException {
-			// perform the default serialization for all non-transient, non-static fields
+			
 			aOutputStream.writeObject(ref);
 			aOutputStream.defaultWriteObject();
 		}
@@ -203,13 +203,13 @@ public abstract class SpriteStore {
 	 * @return A sprite instance containing an accelerate image of the request reference
 	 */
 	public Sprite getSprite(String ref) {
-		// if we've already got the sprite in the cache
-		// then just return the existing version
+		
+		
 		if (sprites.get(ref) != null) {
 			return sprites.get(ref);
 		}
 		
-		// create a sprite, add it the cache then return it
+		
 		Sprite sprite = loadSprite(ref);
 		sprites.put(ref, sprite);
 		

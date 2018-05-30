@@ -63,30 +63,30 @@ public class M extends GamePanel {
 		"develop advanced weapons",
 		"develop long-range scanners",
 		"builder transcendence device"
-		//"get max income",
-		//"smartinvade",
-		//"upgrade planets if needed"
+		
+		
+		
 	};
 
 	int[] ai = {
-		15, // transcend
+		15, 
 
-		10, // terraform
-		12, // adv econ
-		13, // adv weap
-		9,  // adv fuels
-		11, // cloak
-		14, // scanners
+		10, 
+		12, 
+		13, 
+		9,  
+		11, 
+		14, 
 
-		24, // defences
-		0,  // explore
-		17, // smart invade
-		2,  // colonise
-		8,  // warship
-		1,  // outpost
+		24, 
+		0,  
+		17, 
+		2,  
+		8,  
+		1,  
 
-		16, // income
-		-1  // guard
+		16, 
+		-1  
 	};
 
 	int[] a_shortcuts = {
@@ -106,30 +106,30 @@ public class M extends GamePanel {
 			e_msg_fromto[selE][selE] = "";
 			e_money[selE] += value(a);
 			goback: while(true) { switch (a) {
-				// Skip turn
+				
 				case -1: break;
-				// Explore
+				
 				case 0:
 					p_explored[selP][selE] = true;
 					e_msg_fromto[selE][selE] = "You explore " + n(selP) +
 							" (" + s_names[p_special[selP]] + ", " + e_names[p_owner[selP]] + ")";
 					break;
-				// Outpost
+				
 				case 1:
 					p_owner[selP] = selE;
 					p_out[selP] = true;
 					p_defence[selP] = 1;
 					break;
-				// Colony
+				
 				case 2:
 					p_owner[selP] = selE;
 					p_out[selP] = false;
 					if (p_special[selP] == 5) {
-						// Warships
+						
 						e_ships[selE]++;
 					}
 					if (p_special[selP] == 6) {
-						// Defensible
+						
 						p_defence[selP] += 2;
 					}
 					if (p_special[selP] == 4) {
@@ -137,41 +137,41 @@ public class M extends GamePanel {
 						int option = r.nextInt(6);
 						opts: for (int o = option; o < option + 6; o++) { switch (o % 6) {
 							case 0:
-							// Advanced Fuels
+							
 							if (e_range[selE] == 5) {
 								e_range[selE] = 10;
 								what = " advanced fuel technology";
 								break opts;
 							}
 							case 1:
-							// Terraforming
+							
 							if (!e_terraform[selE]) {
 								e_terraform[selE] = true;
 								what = " terraforming technology";
 								break opts;
 							}
 							case 2:
-							// Cloak
+							
 							if (!e_cloak[selE]) {
 								e_cloak[selE] = true;
 								what = " cloaking technology";
 								break opts;
 							}
 							case 3:
-							// Economics
+							
 							if (e_econBonus[selE] == 0) {
 								e_econBonus[selE] = 1;
 								what = " advanced economics textbooks";
 								break opts;
 							}
 							case 4:
-							// Weapons
+							
 							if (e_gunBonus[selE] == 0) {
 								e_gunBonus[selE] = 1;
 								what = " advanced weapons technology";
 								break opts;
 							}
-							// Scanners
+							
 							case 5:
 							if (!e_scanner[selE]) {
 								e_scanner[selE] = true;
@@ -183,23 +183,23 @@ public class M extends GamePanel {
 						e_msg_fromto[selE][selE] = "You discover" + what + " on " + n(selP);
 					}
 					break;
-				// Raid
+				
 				case 6:
 					e_msg_fromto[selE][p_owner[selP]] = e_names[selE] + " raids " + n(selP) +
 							" for $" + p_money[selP];
-				// Tax, Raid
+				
 				case 3:
 					p_money[selP] = 0; break;
-				// Improve Defences
+				
 				default: case 4: p_defence[selP] += 4; break;
-				// Trade
+				
 				case 5:
 					e_money[p_owner[selP]] += p_money[selP];
 					e_msg_fromto[selE][p_owner[selP]] = e_names[selE] + " trades with you for $" +
 							p_money[selP];
 					p_money[selP] = 0;
 					break;
-				// Invade
+				
 				case 17: case 7:
 					int victim = p_owner[selP];
 					e_msg_fromto[selE][victim] = n(selP) + " is invaded by " + e_names[selE]
@@ -209,7 +209,7 @@ public class M extends GamePanel {
 						def += e_ships[victim];
 						e_ships[victim] = e_ships[victim] / 2;
 						p_owner[selP] = selE;
-						// Find a haven for them.
+						
 						for (int p = 0; p < 24; p++) {
 							if (p_owner[p] == victim) {
 								e_f_pos[victim] = p;
@@ -232,35 +232,35 @@ public class M extends GamePanel {
 					}
 					e_f_pos[selE] = selP;
 					break;
-				// Build Warship
+				
 				case 8: e_ships[selE]++; break;
-				// Advanced Fuels
+				
 				case 9: e_range[selE] = 10; break;
-				// Terraforming
+				
 				case 10: e_terraform[selE] = true; break;
-				// Cloak
+				
 				case 11: e_cloak[selE] = true; break;
-				// Economics
+				
 				case 12: e_econBonus[selE]++; break;
-				// Weapons
+				
 				case 13: e_gunBonus[selE]++; break;
-				// Scanners
+				
 				case 14:
 					e_scanner[selE] = true;
 					for (int p = 0; p < 24; p++) { p_explored[p][selE] = true; }
 					break;
-				// Transcend
+				
 				case 15: e_transcend[selE] = true; break;
-				// Max money
+				
 				case 16:
 					if (p_owner[selP] == selE) {
-						a = 3; // tax
+						a = 3; 
 					} else {
-						a = e_cloak[selE] ? 6 : 5; // Raid if possible, otherwise trade
+						a = e_cloak[selE] ? 6 : 5; 
 					}
-					continue goback; // GOTO! WHEEE!
-			} break; } // This essentially implements goto. Yes, cry. Cry now.
-			// HAVE THEY WON OR LOST?
+					continue goback; 
+			} break; } 
+			
 			for (int e = 1; e < 5; e++) {
 				e_lost[e] = true;
 				for (int p = 0; p < 24; p++) {
@@ -278,14 +278,14 @@ public class M extends GamePanel {
 			}
 
 			if (!e_won[selE]) {
-				// END TURN
+				
 				for (int p = 0; p < 24; p++) {
 					if (p_owner[p] != 0 && !p_out[p]) {
 						int money = 2;
 						switch (p_special[p]) {
-							// Rich
+							
 							case 2: money = 3; break;
-							// Poor
+							
 							case 3: money = 1;
 						}
 						p_money[p] += (money + e_econBonus[p_owner[p]]);
@@ -295,13 +295,13 @@ public class M extends GamePanel {
 				selE++;
 				if (selE == 5) { selE = 1; }
 				selP = e_p_sel[selE];
-				// Clear outbox
+				
 				for (int i = 0; i < 5; i++) {
 					e_msg_fromto[selE][i] = selE == i ? e_msg_fromto[selE][i] : "";
 				}
 				antechamber = needAntechamber();
-				// Stipend!
-				//if (!e_human[selE]) { e_money[selE] += 50; }
+				
+				
 			}
 			return true;
 		}
@@ -310,46 +310,46 @@ public class M extends GamePanel {
 
 	boolean allowed(int a) {
 		switch (a) {
-			// Skip
+			
 			case -1: return true;
-			// Explore
+			
 			case 0: return inRange() && !p_explored[selP][selE];
-			// Outpost
+			
 			case 1: return inRange() && p_explored[selP][selE] && p_owner[selP] == 0;
-			// Colony
+			
 			case 2:
 				return 
 					inRange() &&
 					p_explored[selP][selE] &&
 					(p_owner[selP] == 0 || (p_owner[selP] == selE && p_out[selP])) &&
 					(p_special[selP] != 0 || e_terraform[selE]);
-			// Tax, Improve Defences
+			
 			case 3: case 4: return p_owner[selP] == selE;
-			// Raid
-			case 6: if (!e_cloak[selE] || e_ships[selE] == 0) { return false; } // NO BREAK
-			// Trade
-			case 5: if (p_out[selP]) { return false; } // NO BREAK
-			// Invade
+			
+			case 6: if (!e_cloak[selE] || e_ships[selE] == 0) { return false; } 
+			
+			case 5: if (p_out[selP]) { return false; } 
+			
 			case 7: return inRange() &&
 					p_explored[selP][selE] &&
 					p_owner[selP] != selE &&
 					p_owner[selP] != 0 &&
 					(a != 7 || e_ships[selE] > 0);
-			// Advanced Fuels
+			
 			case 9: return e_range[selE] == 5;
-			// Terraforming
+			
 			case 10: return !e_terraform[selE];
-			// Cloak
+			
 			case 11: return !e_cloak[selE];
-			// Economics
+			
 			case 12: return e_econBonus[selE] < 3;
-			// Weapons
+			
 			case 13: return e_gunBonus[selE] < 3;
-			// Scanners
+			
 			case 14: return !e_scanner[selE];
-			// Transcend, Build Warship, Get Max Income
+			
 			case 8: case 15: case 16: return true;
-			// Smart invade
+			
 			case 17:
 				/*int p2 = selP;
 				int best = -1;
@@ -377,7 +377,7 @@ public class M extends GamePanel {
 					int enFleet = e_f_pos[p_owner[selP]] == selP ? e_ships[p_owner[selP]] / 2 : e_ships[p_owner[selP]];
 					if (losses > 0) { v -= losses * 80; newFleet -= losses; }
 					if (e_f_pos[p_owner[selP]] == selP) { v += e_ships[p_owner[selP]] * 40; }
-					// Will it blend / can we hold it?
+					
 					if (newFleet + p_defence[selP] / 2 <= enFleet * 4 / 3) {
 						v = 0;
 					}
@@ -394,7 +394,7 @@ public class M extends GamePanel {
 				selP = p2;
 
 				return false;
-			// Upgrade planetary defences if needed
+			
 			default:
 				int maxShips = 0;
 				for (int e = 1; e < 5; e++) {
@@ -428,24 +428,24 @@ public class M extends GamePanel {
 	}
 
 	int value(int a) {
-		if (a > 19) { a = 4; } // All 20x are improve defences
+		if (a > 19) { a = 4; } 
 		switch (a) {
-			// Skip turn
+			
 			case -1: return 0;
-			// Explore
+			
 			case 0: return -10;
-			// Outpost
+			
 			case 1: return -30;
-			// Colony
+			
 			case 2: return (e_terraform[selE] || p_special[selP] == 1) ? -70 : -140;
-			// Get Max Income: This actually selects the correct planet as a side-effect
+			
 			case 16:
 				int pp = selP;
 				int best = -1;
 				for (selP = 0; selP < 24; selP++) {
 					if (inRange() &&
 							(best == -1 ||
-							// Prefer raid > tax > trade
+							
 							(p_owner[selP] == selE ? 3 : e_cloak[selE] ? 5 : 2) * p_money[selP]
 							>
 							(p_owner[best] == selE ? 3 : e_cloak[selE] ? 5 : 2) * p_money[best]) &&
@@ -459,11 +459,11 @@ public class M extends GamePanel {
 					return 0;
 				}
 				selP = best;
-			// Tax, trade, raid
+			
 			case 3: case 5: case 6: return p_money[selP];
-			// Improve Defences
+			
 			case 4: return -60 - 10 * p_defence[selP];
-			// Invade
+			
 			case 17: case 7: return -50 - Math.max(0,
 					(
 					p_defence[selP] * 2
@@ -471,15 +471,15 @@ public class M extends GamePanel {
 					- (e_ships[selE] * (2 + e_gunBonus[selE]))
 					)
 					* 50);
-			// Build Warship
+			
 			case 8: return -60;
-			// Tech: Econ
+			
 			case 12: return new int[] { -400, -1600, -4800, -1 }[e_econBonus[selE]];
-			// Tech: Guns
+			
 			case 13: return new int[] { -400, -1200, -3600, -1 }[e_gunBonus[selE]];
-			// Transcendence Device
+			
 			case 15: return -32000;
-			// Tech
+			
 			default: return -400;
 		}
 	}
@@ -502,10 +502,10 @@ public class M extends GamePanel {
 		"Green"
 	};
 
-	// Empires have an e prefix
+	
 	Color[] e_color = { Color.LIGHT_GRAY, new Color(100, 75, 10), new Color(91, 0, 0), new Color(0, 0, 200), new Color(0, 63, 0) };
 
-	// Planets have a p prefix
+	
 	int[] p_x       = new int[24];
 	int[] p_y       = new int[24];
 	int[] p_special = new int[24];
@@ -515,11 +515,11 @@ public class M extends GamePanel {
 	int[] p_money   = new int[24];
 	int[] p_defence = new int[24];
 
-	// Game state
+	
 	int selE = 1;
 	int selP = 1;
 
-	// Empires
+	
 	int[] e_range = { -1, 5, 5, 5, 5 };
 	int[] e_ships = { -1, 0, 0, 0, 0 };
 	int[] e_money = { -1, 0, 0, 0, 0 };
@@ -647,7 +647,7 @@ public class M extends GamePanel {
 				continue;
 			}
 			if (!e_won[selE]) {
-				// User input
+				
 				if (antechamber) {
 					if (click != null) {
 						antechamber = false;
@@ -687,7 +687,7 @@ public class M extends GamePanel {
 			}
 			click = null;
 
-			// Drawing
+			
 			g.setColor(e_color[selE]);
 			g.fillRect(0, 0, 712, 600);
 			g.setColor(Color.WHITE);
@@ -750,7 +750,7 @@ public class M extends GamePanel {
 					5, 520);
 			g.drawString(e_money[selE] + "$, " + e_ships[selE] + " warships at " + n(e_f_pos[selE]), 5, 532);
 
-			// Messagiplex
+			
 			for (int i = 1; i < 5; i++) {
 				g.setColor(e_color[i]);
 				g.fillRect(12, 528 + i * 13, 492, 13);
@@ -760,7 +760,7 @@ public class M extends GamePanel {
 
 			g.setColor(e_color[selE]);
 			g.fillRect(512, 0, 200, 600);
-			// Buttons
+			
 			for (int a = 0; a < 16; a++) {
 				if (allowed(a)) {
 					g.setColor(Color.DARK_GRAY);

@@ -22,7 +22,7 @@ public class AccelerateLinearlyFromDistanceConstraints extends AbstractChangeSpe
 			float dx = b.x - a.x;
 			float distance = (float)Math.sqrt(dx*dx+dy*dy);
 			if(distance == 0) continue;
-			float wantToAddToDistance = ld.targetDistance-distance; //positive or negative
+			float wantToAddToDistance = ld.targetDistance-distance; 
 			float normDy = dy/distance, normDx = dx/distance;
 			float addToEachSpeed = wantToAddToDistance*mult;
 			float addToSpeedY = normDy*addToEachSpeed;

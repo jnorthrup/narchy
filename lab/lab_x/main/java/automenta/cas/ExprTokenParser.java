@@ -25,7 +25,7 @@ public class ExprTokenParser extends TokenParser {
         if ("piWord".equals(tokenValue) || "pi".equals(tokenValue)) {
             return new Token<>(new Pi(), origString, begin, end);
         }
-        //noinspection IfStatementWithTooManyBranches
+        
         if ("e".equals(tokenValue)) {
             return new Token<>(new E(), origString, begin, end);
         }
@@ -36,7 +36,7 @@ public class ExprTokenParser extends TokenParser {
             throw new ParseException("d is lonely", begin);
         }
         if ("i".equals(tokenValue)) {
-            // if (debug) System.err.println("i am not yet supported");
+            
             throw new ParseException("i am not yet supported", begin);
         }
         if ("var".equals(tokenValue)) {

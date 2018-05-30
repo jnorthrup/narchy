@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -40,15 +40,15 @@ import spacegraph.util.math.v3;
  */
 public class SubsimplexConvexCast extends ConvexCast {
 
-	//protected final BulletStack stack = BulletStack.get();
 	
-	// Typically the conservative advancement reaches solution in a few iterations, clip it to 32 for degenerate cases.
-	// See discussion about this here http://www.bulletphysics.com/phpBB2/viewtopic.php?t=565
-	//#ifdef BT_USE_DOUBLE_PRECISION
-	//#define MAX_ITERATIONS 64
-	//#else
-	//#define MAX_ITERATIONS 32
-	//#endif
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	private static final int MAX_ITERATIONS = 32;
 	
@@ -78,7 +78,7 @@ public class SubsimplexConvexCast extends ConvexCast {
 		Transform interpolatedTransA = new Transform(fromA);
 		Transform interpolatedTransB = new Transform(fromB);
 
-		// take relative motion
+		
 		v3 r = new v3();
 		r.sub(linVelA, linVelB);
 		
@@ -105,11 +105,11 @@ public class SubsimplexConvexCast extends ConvexCast {
 		float lastLambda = lambda;
 
 		float dist2 = v.lengthSquared();
-		//#ifdef BT_USE_DOUBLE_PRECISION
-		//	btScalar epsilon = btScalar(0.0001);
-		//#else
+		
+		
+		
 		float epsilon = 0.0001f;
-		//#endif
+		
 		v3 w = new v3(), p = new v3();
 		float VdotR;
 
@@ -140,12 +140,12 @@ public class SubsimplexConvexCast extends ConvexCast {
 				else {
 					lambda = lambda - VdotW / VdotR;
 					
-					// interpolate to next lambda
-					//	x = s + lambda * r;
+					
+					
 					VectorUtil.setInterpolate3(interpolatedTransA, fromA, toA, lambda);
 					VectorUtil.setInterpolate3(interpolatedTransB, fromB, toB, lambda);
-					//m_simplexSolver->reset();
-					// check next line
+					
+					
 					w.sub(supVertexA, supVertexB);
 					lastLambda = lambda;
 					n.set(v);
@@ -156,21 +156,21 @@ public class SubsimplexConvexCast extends ConvexCast {
 			if (simplexSolver.closest(v)) {
 				dist2 = v.lengthSquared();
 				hasResult = true;
-				// todo: check this normal for validity
-				//n.set(v);
-				//printf("V=%f , %f, %f\n",v[0],v[1],v[2]);
-				//printf("DIST2=%f\n",dist2);
-				//printf("numverts = %i\n",m_simplexSolver->numVertices());
+				
+				
+				
+				
+				
 			}
 			else {
 				dist2 = 0f;
 			}
 		}
 
-		//int numiter = MAX_ITERATIONS - maxIter;
-		//	printf("number of iterations: %d", numiter);
+		
+		
 	
-		// don't report a time of impact when moving 'away' from the hitnormal
+		
 		
 		result.fraction = lambda;
 		if (n.lengthSquared() >= BulletGlobals.SIMD_EPSILON * BulletGlobals.SIMD_EPSILON) {
@@ -180,7 +180,7 @@ public class SubsimplexConvexCast extends ConvexCast {
 			result.normal.set(0f, 0f, 0f);
 		}
 
-		// don't report time of impact for motion away from the contact normal (or causes minor penetration)
+		
 		if (result.normal.dot(r) >= -result.allowedPenetration)
 			return false;
 

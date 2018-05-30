@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ final class CommonRegion {
      * Private constructor as all methods are static.
      */
     private CommonRegion() {
-        // do nothing
+        
     }
 
     static Node crossoverAt(Node n1, Node n2, int crossOverPoint) {
@@ -72,7 +72,7 @@ final class CommonRegion {
         } else if (areTerminals(n1, n2)) {
             return sameType(n1, n2) ? 1 : 0;
         } else {
-            // terminal node does not match with a function node
+            
             return 0;
         }
     }

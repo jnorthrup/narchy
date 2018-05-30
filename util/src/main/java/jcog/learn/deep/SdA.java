@@ -27,7 +27,7 @@ public class SdA {
         if(rng == null)	this.rng = new Random(1234);
         else this.rng = rng;
 
-        // construct multi-layer
+        
         for(int i=0; i<this.n_layers; i++) {
             if(i == 0) {
                 ins = this.n_ins;
@@ -35,14 +35,14 @@ public class SdA {
                 ins = this.hidden_layer_sizes[i-1];
             }
 
-            // construct sigmoid_layer
+            
             this.sigmoid_layers[i] = new HiddenLayer(ins, this.hidden_layer_sizes[i], null, null, rng, null);
 
-            // construct dA_layer
+            
             this.dA_layers[i] = new dA(ins, this.hidden_layer_sizes[i], this.sigmoid_layers[i].W, this.sigmoid_layers[i].b, null, rng);
         }
 
-        // layer for output using Logistic Regression
+        
         this.log_layer = new LogisticRegression(this.hidden_layer_sizes[this.n_layers-1], this.outs);
     }
 
@@ -58,10 +58,10 @@ public class SdA {
         double[] prev_layer_input;
                 int N = train_X.length;
 
-        for(int i=0; i<n_layers; i++) {  // layer-wise
-            for(int epoch=0; epoch<epochs; epoch++) {  // training epochs
-                for(int n = 0; n< N; n++) {  // input x1...xN
-                    // layer input
+        for(int i=0; i<n_layers; i++) {  
+            for(int epoch=0; epoch<epochs; epoch++) {  
+                for(int n = 0; n< N; n++) {  
+                    
                     for(int l=0; l<=i; l++) {
 
                         if(l == 0) {
@@ -78,7 +78,7 @@ public class SdA {
 
                             sigmoid_layers[l-1].
                                     forward(prev_layer_input, layer_input);
-                                    //sample_h_given_v(prev_layer_input, layer_input);
+                                    
                         }
                     }
 
@@ -91,14 +91,14 @@ public class SdA {
 
     public void finetune(double[][] train_X, double[][] train_Y, double lr, int epochs) {
         double[] layer_input = new double[0];
-        // int prev_layer_input_size;
+        
         double[] prev_layer_input = new double[0];
 
         for(int epoch=0; epoch<epochs; epoch++) {
             int N = train_X.length;
             for(int n = 0; n< N; n++) {
 
-                // layer input
+                
                 for(int i=0; i<n_layers; i++) {
                     if(i == 0) {
                         prev_layer_input = new double[n_ins];
@@ -111,25 +111,25 @@ public class SdA {
                     layer_input = new double[hidden_layer_sizes[i]];
                     sigmoid_layers[i].
                             forward(prev_layer_input, layer_input);
-                            //sample_h_given_v(prev_layer_input, layer_input);
+                            
                 }
 
                 log_layer.train(layer_input, train_Y[n], lr/N);
             }
-            // lr *= 0.95;
+            
         }
     }
 
     public void predict(double[] x, double[] y) {
         double[] layer_input = new double[0];
-        // int prev_layer_input_size;
+        
         double[] prev_layer_input = new double[n_ins];
         System.arraycopy(x, 0, prev_layer_input, 0, n_ins);
 
         double linear_output;
 
 
-        // layer activation
+        
         for(int i=0; i<n_layers; i++) {
             layer_input = new double[sigmoid_layers[i].n_out];
 
@@ -176,7 +176,7 @@ public class SdA {
         int[] hidden_layer_sizes = {15, 15};
 
 
-        // training data
+        
         double[][] train_X = {
                 {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                 {0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -203,17 +203,17 @@ public class SdA {
                 {0, 1}
         };
 
-        // construct SdA
+        
         SdA sda = new SdA(n_ins, hidden_layer_sizes, n_outs, rng);
 
-        // pretrain
+        
         sda.pretrain(train_X, pretrain_lr, corruption_level, pretraining_epochs);
 
-        // finetune
+        
         sda.finetune(train_X, train_Y, finetune_lr, finetune_epochs);
 
 
-        // test data
+        
         double[][] test_X = {
                 {1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
                 {1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -223,7 +223,7 @@ public class SdA {
 
         double[][] test_Y = new double[test_N][n_outs];
 
-        // test
+        
         for(int i=0; i<test_N; i++) {
             sda.predict(test_X[i], test_Y[i]);
             for(int j=0; j<n_outs; j++) {
@@ -236,10 +236,10 @@ public class SdA {
     /** encode */
     public double[] put(double[] x, double learnRate) {
         return pretrain(x, learnRate, 0, 1);
-//
-//        double[] output = new double[outs];
-//        predict(x, output);
-//        return output;
+
+
+
+
     }
 
 

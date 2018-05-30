@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 
 /**
  * experiments for dynamic lambda mutation
- * https://stackoverflow.com/questions/23861619/how-to-read-lambda-expression-bytecode-using-asm
+ * https:
  */
 public class LambdaEdit {
     static SerializedLambda getSerializedLambda(Serializable lambda) throws Exception {
@@ -23,7 +23,7 @@ public class LambdaEdit {
     }
 
     static byte[] classByteCode(Class<?> c) {
-        //in the following - c.getResourceAsStream will return null..
+        
         String n = c.getName();
         return classByteCode(n);
     }
@@ -65,9 +65,9 @@ public class LambdaEdit {
             byte[] bc1 = classByteCode(sl.getImplMethodName());
             byte[] bc2 = classByteCode(sl.getImplClass());
 
-            byte[] bytecode = classByteCode(MY_LAMBDA.getClass()); //this is the method that we need to create.
-            //ClassReader reader = new ClassReader(bytecode);
-            //System.out.println(reader);
+            byte[] bytecode = classByteCode(MY_LAMBDA.getClass()); 
+            
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -75,33 +75,33 @@ public class LambdaEdit {
     public static void main(String[] args) throws Exception {
 
         new LambdaEdit();
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-//        ObjectOutputStream o = new ObjectOutputStream(baos);
-//        o.writeObject(sl);
-//        o.close();
-//        byte[] cl = baos.toByteArray();
+
+
+
+
+
 
     }
 
-//    private static final Instrumentation instrumentation = new ByteBuddyAgent...;
-//
-//    byte[] getByteCodeOf(Class<?> c) throws IOException {
-//        ClassFileLocator locator = ClassFileLocator.AgentBased.of(instrumentation, c);
-//        TypeDescription.ForLoadedType desc = new TypeDescription.ForLoadedType(c);
-//        ClassFileLocator.Resolution resolution = locator.locate(desc.getName());
-//        return resolution.resolve();
-//    }
 
-//    public static class Sample {
-//        public static void main(String... args) {
-//            SerializableRunnable oneWay = () -> System.out.println("I am a serializable lambda");
-//
-//            Runnable anotherWay = (Serializable & Runnable) () -> System.out.println("I am a serializable lambda too!");
-//        }
-//
-//        interface SerializableRunnable extends Runnable, Serializable {
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static Method getLambdaMethod(SerializedLambda lambda) {
         try {

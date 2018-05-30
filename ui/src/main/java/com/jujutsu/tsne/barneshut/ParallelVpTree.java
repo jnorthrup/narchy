@@ -84,17 +84,17 @@ public class ParallelVpTree<StorageType> extends VpTree<StorageType> {
 				PriorityQueue<HeapItem> heap = new PriorityQueue<>(k, (o1, o2) -> -1 * o1.compareTo(o2));
 
 				double tau = Double.MAX_VALUE;
-				// Perform the search
+				
 				node.search(node, target, k, heap, tau);
 
-				// Gather final results
+				
 				while(!heap.isEmpty()) {
 					HeapItem h = heap.remove();
 					indices.add(items[h.index]);
 					distances.add(h.dist);
 				}
 				
-				// Results are in reverse order 
+				
 				Collections.reverse(indices);
 				Collections.reverse(distances);
 

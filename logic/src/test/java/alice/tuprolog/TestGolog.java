@@ -15,7 +15,7 @@ public class TestGolog {
         p.setSpy(true);
         p.addExceptionListener(System.out::println);
         p.addOutputListener(System.out::println);
-        //p.addQueryListener(e -> System.out.println(e));
+        
 
 
         p.addLibrary("alice.tuprolog.lib.EDCGLibrary");

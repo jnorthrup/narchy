@@ -42,11 +42,11 @@ public class CheckBox extends ToggleButton {
         on((button, value) -> b.set(value));
     }
 
-//    public CheckBox(String text, MutableBoolean b) {
-//        this(text);
-//        set(b.booleanValue());
-//        on((button, value) -> b.setValue(value));
-//    }
+
+
+
+
+
 
 
     @Override

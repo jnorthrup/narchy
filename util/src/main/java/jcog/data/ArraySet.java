@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at:
  * 
- * http://opensource.org/licenses/BSD-3-Clause
+ * http:
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,7 +51,7 @@ import java.util.Set;
  * @author braz
  *
  * @param <X> the type of the elements.
- * from: https://github.com/aic-sri-international/aic-util/blob/master/src/main/java/com/sri/ai/util/collect/ArraySet.java
+ * from: https:
  */
 public interface ArraySet<X> extends Set<X> {
 
@@ -61,7 +61,7 @@ public interface ArraySet<X> extends Set<X> {
 
 	X get(int index);
 
-//	void set(int index, E element);
+
 
 	default X first() {
 		return isEmpty() ? null : get(0);

@@ -25,10 +25,10 @@ public class MatchConstraintTest {
                 c.invalid($.$("X"), (Term)$.$("Y"))
         );
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("f(X,Y)")) //allow since a product separates
+                c.invalid($.$("X"), (Term)$.$("f(X,Y)")) 
         );
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("(X && Y)")) //allow since a product separates
+                c.invalid($.$("X"), (Term)$.$("(X && Y)")) 
         );
         assertTrue(
                 c.invalid($.$("X"), (Term)$.$("(X|Y)"))

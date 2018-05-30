@@ -29,7 +29,7 @@ import spacegraph.space2d.phys.dynamics.World;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-// modified by ptrman/SquareOfTwo
+
 
 public class JoglPanel extends JoglAbstractPanel {
     public JoglPanel(final World world, DebugDraw debugDraw, final PhysicsController controller, GLCapabilitiesImmutable config) {

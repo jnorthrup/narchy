@@ -20,7 +20,7 @@ public class RBMTest {
         int n_visible = 6;
         int n_hidden = 3;
 
-        // training data
+        
         double[][] train_X = {
                 {1, 1, 1, 0, 0, 0},
                 {1, 0, 1, 0, 0, 0},
@@ -36,18 +36,18 @@ public class RBMTest {
             @Override
             public double activate(double a) {
                 return Util.sigmoidBipolar((float) a, 5);
-                //return super.activate(a);
+                
             }
         };
 
-        // train
+        
         for(int epoch=0; epoch<training_epochs; epoch++) {
             for(int i=0; i<train_N; i++) {
                 rbm.contrastive_divergence(train_X[i], learning_rate, k);
             }
         }
 
-        // test data
+        
         double[][] test_X = {
                 {1, 1, 0, 0, 0, 0},
                 {0, 0, 0, 1, 1, 0}

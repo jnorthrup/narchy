@@ -40,7 +40,7 @@ public abstract class LazyIterator<T> implements Iterator<T> {
     }
 
     boolean tryToComputeNext() {
-        state = State.FAILED; // temporary pessimism
+        state = State.FAILED; 
         next = computeNext();
         if (state != State.DONE) {
             state = State.READY;

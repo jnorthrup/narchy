@@ -17,13 +17,13 @@ public class AStarGoalFind<F extends Solution> {
 
 
 
-    // Amount of debug output 0,1,2
-//    private int verbose;
+    
+
     public Solution bestNodeAfterSearch;
-    // The maximum number of completed nodes. After that number the algorithm returns null.
-    // If negative, the search will run until the goal node is found.
+    
+    
     private int maxSteps = -1;
-    //number of search steps the AStar will perform before null is returned
+    
     private int iteration;
 
     /**
@@ -84,21 +84,21 @@ public class AStarGoalFind<F extends Solution> {
         this.iteration = 0;
 
         while (openSet.size() > 0 && (maxSteps < 0 || this.iteration < maxSteps)) {
-            //get element with the least sum of costs from the initial node
-            //and heuristic costs to the goal
+            
+            
             F currentNode = openSet.poll();
 
-//            //debug output according to verbose
-//            System.out.println((verbose > 1 ? "Open set: " + openSet + "\n" : "")
-//                    + (verbose > 0 ? "Current node: " + currentNode + "\n" : "")
-//                    + (verbose > 1 ? "Closed set: " + closedSet : ""));
+
+
+
+
 
             if (goalNode.goalOf(currentNode)) {
-                //we know the shortest path to the goal node, done
+                
                 this.bestNodeAfterSearch = currentNode;
                 return currentNode;
             }
-            //get successor nodes
+            
             Iterable<F> successorNodes = problem.next(currentNode);
             for (F successorNode : successorNodes) {
                 boolean inOpenSet;
@@ -115,15 +115,15 @@ public class AStarGoalFind<F extends Solution> {
                 } else {
                     inOpenSet = false;
                 }
-                //compute tentativeG
+                
                 double tentativeG = currentNode.g() + problem.cost(currentNode,successorNode);
-                //node was already discovered and this path is worse than the last one
+                
                 if (inOpenSet && tentativeG >= successorNode.g())
                     continue;
                 successorNode.setParent(currentNode);
                 if (inOpenSet) {
-                    // if successorNode is already in data structure it has to be inserted again to
-                    // regain the order
+                    
+                    
                     openSet.remove(successorNode);
                     successorNode.setG(tentativeG);
                     openSet.add(successorNode);

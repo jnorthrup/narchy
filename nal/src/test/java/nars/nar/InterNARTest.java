@@ -22,11 +22,11 @@ public class InterNARTest {
     static synchronized void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
 
         final int MAX_CONNECT_INTERVALS = 20;
-        final int CONNECT_INTERVAL_MS = 200; //ms
+        final int CONNECT_INTERVAL_MS = 200; 
 
         final float NET_FPS = 10f;
         final float REASONER_FPS = 20f;
-        final int INTERACT_TIME = 1500; //ms
+        final int INTERACT_TIME = 1500; 
 
         int preCycles = 1;
         int postCycles = 100;
@@ -78,13 +78,13 @@ public class InterNARTest {
 
         afterConnect.accept(a, b);
 
-        //run reasoner
+        
         a.startFPS(REASONER_FPS);
         b.startFPS(REASONER_FPS);
 
         Util.sleep(INTERACT_TIME);
 
-        //pause reasoner
+        
         a.pause();
         b.pause();
 
@@ -144,20 +144,20 @@ public class InterNARTest {
 
         testAB((a, b) -> {
 
-//            a.onTask(at -> {
-//                System.out.println(a + ": " + at);
-//            });
+
+
+
 
             b.onTask(bt -> {
-//                System.out.println(b + ": " + bt);
+
                 if (bt.isBelief() && bt.toString().contains("(a-->d)"))
                     recv.set(true);
             });
 
         }, (a, b) -> {
 
-            //Term bIsAC = Op.INH.the($.the("b"), $.the("c"));
-            //-->(b,c)
+            
+            
             a.believe($$("(b --> c)"));
 
             b.believe($$("(a --> b)"));

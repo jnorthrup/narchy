@@ -51,7 +51,7 @@ import java.awt.*;
  */
 public class Color3b extends Tuple3b {
 
-    // Compatible with 1.1
+    
     static final long serialVersionUID = 6632576088353444794L;
 
     /**

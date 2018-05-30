@@ -46,7 +46,7 @@ public class TextureShader implements Shader
     @Override
     public ColorEx shade(Intersection intersection)
     {
-        // Farbwert der Textur zur�ckgeben:
+        
         return Texture.getTextureColor(texture,
                 intersection.shape.getTextureCoords(intersection.getPoint()));
     }

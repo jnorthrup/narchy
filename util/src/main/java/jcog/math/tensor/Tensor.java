@@ -128,15 +128,15 @@ public interface Tensor extends Supplier<float[]> {
 
     float[] snapshot();
 
-    //void copyTo(float[] target, int targetOffset, int... subset);
+    
 
     int[] shape();
 
-//    //TODO
-//    default Tensor noised(float noiseFactor, Random rng) {
-//        return new
-//    }
-//    ..etc
+
+
+
+
+
 
     /**
      * hypervolume, ie total # cells
@@ -274,8 +274,8 @@ public interface Tensor extends Supplier<float[]> {
         int upperIndex = Math.min(v, Math.round(posInBuf + 0.5f));
         float offset = posInBuf - lowerIndex;
         float l = get(lowerIndex);
-//        if (upperIndex == lowerIndex)
-//            return l;
+
+
 
         float u = get(upperIndex);
         return (1 - offset) * l + offset * u;
@@ -293,11 +293,11 @@ public interface Tensor extends Supplier<float[]> {
     }
 
 
-//    int[] coord(int index, int[] coord);
 
-//    default void forEachWithCoordinate(FloatObjectProcedure<int[]> coord ) {
-//
-//    }
+
+
+
+
 
 
 }

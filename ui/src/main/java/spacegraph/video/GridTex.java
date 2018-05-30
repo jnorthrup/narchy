@@ -5,7 +5,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.SurfaceRender;
 
 /**
- * from: http://www.howtobuildsoftware.com/index.php/how-do/bQ9/opengl-glsl-how-can-i-render-an-infinite-2d-grid-in-glsl
+ * from: http:
  */
 public class GridTex extends Surface {
 

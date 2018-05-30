@@ -57,7 +57,7 @@ public class YesNoMaybe<X> extends Flip<Twin<LongBitsetBloomFilter>> {
 
         int c;
         {
-            //another thread has begun clear. busy wait for count to return to normal
+            
             do {
                 c = this.count.get();
                 Thread.onSpinWait();
@@ -78,7 +78,7 @@ public class YesNoMaybe<X> extends Flip<Twin<LongBitsetBloomFilter>> {
         }
 
         if (this.count.incrementAndGet() == capacity && this.count.compareAndSet(capacity, -1)) {
-            //responsiblity of this thread to clear, then set the value to normal
+            
             Twin<LongBitsetBloomFilter> pw = write();
             pw.getOne().clear();
             pw.getTwo().clear();
@@ -94,7 +94,7 @@ public class YesNoMaybe<X> extends Flip<Twin<LongBitsetBloomFilter>> {
 
         boolean actual = test.test(x);
 
-        (actual ? nn : ny).add(b); //remember it is reversed, so true result gets added to 'not no' and false result gets added to 'not yes'
+        (actual ? nn : ny).add(b); 
         return actual;
     }
 

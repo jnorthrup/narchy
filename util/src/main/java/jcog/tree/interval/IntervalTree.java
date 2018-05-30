@@ -145,7 +145,7 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 	}
 
 	public void put(K at, V value) {
-		//TODO: put(new At<>(low, high),value);
+		
 		put(at, at, value);
 	}
 
@@ -166,7 +166,7 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 	@NotNull
 	public Set<Between<K>> keySet() {
 		if(root != null){
-			Set<Between<K>> s = new HashSet(1); //ArrayUnenforcedSet?
+			Set<Between<K>> s = new HashSet(1); 
 			root.keySet(s);
 			return s;
 		} else {
@@ -229,7 +229,7 @@ public class IntervalTree<K extends Comparable<? super K>, V> {
 			return 0.0;
 		}
 
-		//TODO use IntArrayList
+		
 		Collection<Integer> c = new LinkedList<>();
 		root.averageHeight(c, 0);
 		int count = 0;

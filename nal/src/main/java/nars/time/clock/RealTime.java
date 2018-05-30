@@ -24,7 +24,7 @@ public abstract class RealTime extends Time {
     /*volatile */ long t;
     private long start;
 
-    final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000; //???
+    final long seed = Math.abs(UUID.randomUUID().getLeastSignificantBits() ) & 0xffff0000; 
 
     final AtomicLong nextStamp = new AtomicLong(seed);
 
@@ -137,7 +137,7 @@ public abstract class RealTime extends Time {
         if (fps > Float.MIN_NORMAL)
             return durSeconds() * fps;
         else
-            return 1; //?
+            return 1; 
     }
     /** set real-time frames per duration */
     public void durRatio(Loop l, float ratio) {
@@ -244,50 +244,50 @@ public abstract class RealTime extends Time {
 }
 
 
-//package nars.clock;
-//
-///**
-// * hard realtime does not cache the value and will always update when time()
-// * is called
-// */
-//public class HardRealtimeClock extends RealtimeClock {
-//
-//    private final boolean msOrNano;
-//
-//    public HardRealtimeClock(boolean msOrNano) {
-//        super(false);
-//        this.msOrNano = msOrNano;
-//    }
-//
-//    /** default: ms resolution */
-//    public HardRealtimeClock() {
-//        this(true);
-//    }
-//
-//
-//    @Override
-//    protected long getRealTime() {
-//        if (msOrNano) {
-//            return System.currentTimeMillis();
-//        }
-//        else {
-//            return System.nanoTime();
-//        }
-//    }
-//
-//    @Override
-//    protected float unitsToSeconds(long l) {
-//        if (msOrNano) {
-//            return (l / 1000f);
-//        }
-//        else {
-//            return (l / 1e9f);
-//        }
-//    }
-//
-//    @Override
-//    public long time() {
-//        return getRealTime();
-//    }
-//
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

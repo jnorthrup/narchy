@@ -28,7 +28,7 @@ public class EyeLightShader implements Shader
 	@Override
     public ColorEx shade(Intersection intersection)
     {
-        // Farbe bestimmen:
+        
         float ratio = (float)(Math.abs(intersection.ray.dir.dot(intersection.getNormal()))/
                 (intersection.ray.dir.length()*intersection.getNormal().length()));
         

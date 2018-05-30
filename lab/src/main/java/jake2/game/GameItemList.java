@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2005 by RST.
-// $Id: GameItemList.java,v 1.2 2006-01-21 21:53:32 salomo Exp $
+
+
 
 package jake2.game;
 
@@ -29,18 +29,18 @@ import jake2.Defines;
 
 public class GameItemList {
 
-	// RST: this was separated in the java conversion from the g_item.c 
-	// because all adapters have to be created in the other 
-	// classes before this class can be loaded.
+	
+	
+	
 
 	public static final gitem_t[] itemlist = {
-	//leave index 0 alone
+	
 	new gitem_t(null, null, null, null, null, null, null, 0, null,
 	        null, null, 0, 0, null, 0, 0, null, 0, null),
 	
-	//
-	// ARMOR
-	//
+	
+	
+	
 	new gitem_t(
 			
 	/**
@@ -139,9 +139,9 @@ public class GameItemList {
 	        /* precache */
 	        "misc/power2.wav misc/power1.wav"),
 	
-	//
-	// WEAPONS
-	//
+	
+	
+	
 	
 	/*
 	 * weapon_blaster (.3 .3 1) (-16 -16 -16) (16 16 16) always owned,
@@ -400,9 +400,9 @@ public class GameItemList {
 	        /* precache */
 	        "sprites/s_bfg1.sp2 sprites/s_bfg2.sp2 sprites/s_bfg3.sp2 weapons/bfg__f1y.wav weapons/bfg__l1a.wav weapons/bfg__x1b.wav weapons/bfg_hum.wav"),
 	
-	//
-	// AMMO ITEMS
-	//
+	
+	
+	
 	
 	/*
 	 * QUAKED ammo_shells (.3 .3 1) (-16 -16 -16) (16 16 16)
@@ -480,9 +480,9 @@ public class GameItemList {
 	        /* precache */
 	        ""),
 	
-	//
-	// POWERUP ITEMS
-	//
+	
+	
+	
 	/*
 	 * QUAKED item_quad (.3 .3 1) (-16 -16 -16) (16 16 16)
 	 */
@@ -623,9 +623,9 @@ public class GameItemList {
 	        /* precache */
 	        ""),
 	
-	//
-	// KEYS
-	//
+	
+	
+	
 	/*
 	 * QUAKED key_data_cd (0 .5 .8) (-16 -16 -16) (16 16 16) key for
 	 * computer centers
@@ -755,6 +755,6 @@ public class GameItemList {
 	        /* precache */
 	        "items/s_health.wav items/n_health.wav items/l_health.wav items/m_health.wav"),
 	
-	// end of list marker
+	
 	null };
 }

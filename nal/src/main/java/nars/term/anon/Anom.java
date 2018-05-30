@@ -45,7 +45,7 @@ public final class Anom extends Int implements AnonID {
 
     @Override
     public short anonID() {
-        return (short) id; //since ATOM_MASK is zero, it is just the lowest 8 bits of the 'id' int
+        return (short) id; 
     }
 
     @Override
@@ -58,7 +58,7 @@ public final class Anom extends Int implements AnonID {
         return this == obj;
     }
 
-    //optimized compareTo for frequent Anom->Anom cases
+    
     @Override
     public int compareTo(Termed yy) {
         if (this == yy) return 0;
@@ -75,12 +75,12 @@ public final class Anom extends Int implements AnonID {
             assert (oc != 0);
             return oc;
         }
-        //return super.compareTo(yy);
+        
     }
 
     static final Anom[] the = Util.map(0, MAX_ANOM, (i) -> new Anom((byte) i), Anom[]::new);
     static {
-        the[0] = null; //start at one and dont use 0th Anom, for negation symmetry
+        the[0] = null; 
     }
 
     public static Anom the(int i) {

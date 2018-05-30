@@ -17,7 +17,7 @@ public class PriForget<P extends Priority> implements Consumer<P> {
 
     public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
 
-    //public final float priRemoved;
+    
     public final float priMult;
 
     public PriForget(float priRemovedPct) {
@@ -43,16 +43,16 @@ public class PriForget<P extends Priority> implements Consumer<P> {
         if ((s > 0) && (pressure > 0) && (c > 0) && (mass > 0) && temperature > 0) {
 
             float eachMustForgetPct =
-                    temperature * //global rate
-                    pressure / (pressure + mass) //total fraction, by mass, to depressurize
-                    // * (((float)s) / c); //emptiness deduction
-                    //* (((float)s) / c)*(1f-(mass/s)) //emptiness deduction corrected in proportion to average pri
+                    temperature * 
+                    pressure / (pressure + mass) 
+                    
+                    
             ;
 
-//            float eachMustForgetPct =
-//                      (temperature * pressure)
-//                    / (pressure + mass)
-//                    * (((float)s) / c);
+
+
+
+
 
             if (eachMustForgetPct > Prioritized.EPSILON) {
                 return f.valueOf(eachMustForgetPct);
@@ -78,25 +78,25 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     @Override
     public void accept(P b) {
 
-        //average constant removed, not fair to low priority items
-        //b.priSub(priRemoved);
+        
+        
 
         b.priMult(priMult);
 
-        //proportional removal, tax rate proportional to priority
-//        float p = b.pri();
-//        if (p==p) {
-//            //b.priSet( p * (1-(p * priRemoved)) );
-//            b.priSet( p * (1-priRemoved) );
-//        }
+        
 
 
 
-//        b.priSub(avgToBeRemoved
-//            ,0.5f //50% retained
-////            //,(1f - b.priElseZero())  //retained inversely proportional to existing pri, so higher burden on higher priority
-////            //,0.5f * (1f - b.priElseZero())  //retained inversely proportional to existing pri, so higher burden on higher priority
-//        );
+
+
+
+
+
+
+
+
+
+
     }
 
 }

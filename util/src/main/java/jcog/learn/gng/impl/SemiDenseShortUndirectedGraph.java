@@ -10,11 +10,11 @@ import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
 
-    protected final int V; //# of vertices
-    protected final MyShortIntHashMap[] adj;  //Array of adjacency lists
+    protected final int V; 
+    protected final MyShortIntHashMap[] adj;  
 
 
-    //Constructor with a pre-supplied number of vertices
+    
     public SemiDenseShortUndirectedGraph(short V) {
         this.V = V;
         
@@ -40,17 +40,17 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
             a.clear();
     }
 
-    //Number of vertices
+    
     public int V() {
         return V;
     }
 
-//    //Number of edges
-//    public int E() {
-//        return E;
-//    }
 
-    //Connect two vertices (first to second)
+
+
+
+
+    
     @Override
     public void setEdge(short first, short second, int value) {
         MyShortIntHashMap[] e = this.adj;
@@ -64,7 +64,7 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
 
     @Override
     public void addToEdges(short i, int d) {
-        adj[i].addToValues(d); //age by one iteration
+        adj[i].addToValues(d); 
     }
 
     public void addToEdge(short first, short second, int deltaValue) {
@@ -108,41 +108,41 @@ public class SemiDenseShortUndirectedGraph implements ShortUndirectedGraph {
         adj[vertex].forEachKey(eachKey);
     }
 
-//    public String toString() {
-//        String s = V + " vertices, " + E + " edges\n";
-//
-//        for (int v = 0; v < V; v++) {
-//            s += v + ": ";
-////            this.edgesOf(v, e -> {
-////                s += e + " ";
-////            });
-//            s += "\n";
-//        }
-//        return s;
-//    }
 
 
-    //Computer the degree of vertex V
+
+
+
+
+
+
+
+
+
+
+
+
+    
     public int degree(int v) {
         return adj[v].size();
     }
 
 
-//    //Find the vertex with the largest degree
-//    public static int maxDegree(Graph G) {
-//        int max = 0;
-//        for (int v = 0; v < G.V(); v++) {
-//            int temp = degree(G, v);
-//            if (temp > max) {
-//                max = temp;
-//            }
-//        }
-//        return max;
-//    }
-//
-//    //Compute the average degree
-//    public static double averageDegree(Graph G) {
-//        return (2.0 * G.E() / G.V());
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

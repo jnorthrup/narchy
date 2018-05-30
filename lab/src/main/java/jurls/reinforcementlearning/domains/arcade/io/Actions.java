@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.io;
 
@@ -68,7 +68,7 @@ public class Actions {
         "reset",
         "undefined",
         "random",
-        // MGB v0.2 actions
+        
         "save_state",
         "load_state",
         "system_reset"
@@ -92,7 +92,7 @@ public class Actions {
             int v;
 
             if (i < numPlayerActions * 2) v = i;
-            // Special actions (not player-related) start at 40
+            
             else {
                 v = i + 4;
             }

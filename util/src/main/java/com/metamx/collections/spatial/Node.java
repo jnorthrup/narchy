@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -154,7 +154,7 @@ public class Node {
     public int byteSize() {
         return ImmutableNode.HEADER_NUM_BYTES
                 + 2 * dim() * Floats.BYTES
-                + Ints.BYTES // size of the set
+                + Ints.BYTES 
                 + bmp.getSizeInBytes()
                 + children.size() * Ints.BYTES;
     }
@@ -202,7 +202,7 @@ public class Node {
                         if (((Point)r).bitmap.get(entry)) {
                             children.remove(i);
                             childrenSize--;
-                            //enclose();
+                            
                         }
                     }
                 }

@@ -53,7 +53,7 @@ public class StateRuleSelection extends State {
         if (alternative == null) {
             /* from normal evaluation */
             fromBacktracking = false;
-            //List varsList = new LinkedList();
+            
 
             List<Var> varsList = new FasterList<>();
             e.currentContext.trailingVars = new OneWayList<>(varsList, e.currentContext.trailingVars);
@@ -80,13 +80,13 @@ public class StateRuleSelection extends State {
         ExecutionContext curCtx = e.currentContext;
         ec.clause = clause.clause;
 
-        //head and body with refresh variables (clause copied)
+        
         clause.copyTo(ec.getId(), ec);
 
 
-        // The following block encodes cut functionalities, and hardcodes the
-        // special treatment that ISO Standard reserves for goal disjunction:
-        // section 7.8.6.1 prescribes that ;/2 must be transparent to cut.
+        
+        
+        
         ec.choicePointAfterCut = e.choicePointSelector.getPointer();
         if (alternative != null) {
             ChoicePointContext choicePoint = alternative;
@@ -117,17 +117,17 @@ public class StateRuleSelection extends State {
         
         ec.haveAlternatives = clauseStore.haveAlternatives();
         
-        //creazione cpc
+        
         if (ec.haveAlternatives && !fromBacktracking) {
             ChoicePointContext cpc = new ChoicePointContext();
             cpc.compatibleGoals = clauseStore;
-//            c.saveLastTheoryStatus();
+
             cpc.executionContext = curCtx;
             cpc.indexSubGoal = curCtx.goalsToEval.getCurrentGoalId();
             cpc.varsToDeunify = e.currentContext.trailingVars;
             e.choicePointSelector.add(cpc);
         }
-        //distruzione cpc
+        
         if (!ec.haveAlternatives && fromBacktracking) {            
                     e.choicePointSelector.removeUnusedChoicePoints();
                 }

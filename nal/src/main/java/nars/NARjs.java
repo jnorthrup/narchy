@@ -35,12 +35,12 @@ public class NARjs {
 			throw new RuntimeException(e);
 		}
 
-//		js.eval("importPackage('nars.nal')");
-//		js.eval("importPackage('nars.nal.nal7')");
-//		js.eval("importPackage('nars.builder')");
-//		js.eval("importPackage('nars.io')");
-//		js.eval("importPackage('nars.gui')");
-//		js.eval("function newDefaultNAR() { var x = new DefaultNARBuilder().builder(); new TextOutput(x, System.out); return x; }");
+
+
+
+
+
+
 	}
 
 	public Object eval(String s) throws ScriptException {

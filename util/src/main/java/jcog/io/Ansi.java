@@ -5,7 +5,7 @@
  * not use this file except in compliance with the License. You may obtain
  * a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
@@ -22,7 +22,7 @@ import java.io.PrintStream;
 import java.util.Collections;
 
 /** Encapsulates the specifics of writing to a particular kind of terminal.
- *  https://github.com/facebook/buck/blob/master/src/com/facebook/buck/util/Ansi.java
+ *  https:
  * */
 public final class Ansi {
 
@@ -210,12 +210,12 @@ public final class Ansi {
       return text;
     }
 
-    // If there are not tabs at the start return a simple concatenation
+    
     if (text.charAt(0) != '\t') {
       return color + text + RESET;
     }
 
-    // Skip tabs, because they don't like being prefixed with color.
+    
     int firstNonTab = indexOfFirstNonTab(text);
     if (firstNonTab == -1) {
       return color + text + RESET;

@@ -8,9 +8,9 @@ public class MyNAL1MultistepTest implements FloatSupplier {
     @Override
     public float asFloat() {
         try {
-//                Class c = Thread.currentThread().getContextClassLoader().loadClass("nars.nal.nal1.NAL1MultistepTest");
-//                Object n0 = c.newInstance();
-            //n.getClass().getMethod
+
+
+            
 
             NAL1MultistepTest n = new NAL1MultistepTest();
 

@@ -54,14 +54,14 @@ public class SubArrayIterator<E> implements ListIterator<E> {
 
     @Override
     public void remove() {
-        // This operation is not so easy to do but we will fake it.
-        // The issue is that the backing list could be completely
-        // different than the one this iterator is a snapshot of.
-        // We'll just remove(element) which in most cases will be
-        // correct.  If the list had earlier .equals() equivalent
-        // elements then we'll remove one of those instead.  Either
-        // way, none of those changes are reflected in this iterator.
-        //DirectCopyOnWriteArrayList.this.remove(array[lastReturned]);
+        
+        
+        
+        
+        
+        
+        
+        
         throw new UnsupportedOperationException();
     }
 

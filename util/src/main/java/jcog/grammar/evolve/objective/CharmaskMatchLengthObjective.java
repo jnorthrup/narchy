@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.objective;
 
@@ -71,22 +71,22 @@ public class CharmaskMatchLengthObjective implements Objective {
             return fitness;
         }
 
-        //Calculates the true positive and false positive matches:
         
-        //match stats makes sense only for tp e fp values... we cannot use instance statistic formulas other than precision
+        
+        
         BasicStats statsOverall = new BasicStats();
 
-        //char stats can be managed as ususal
+        
         BasicStats statsCharsOverall = new BasicStats();
 
         int i = 0;
         for (Bounds[] result : evaluate) {
             BasicStats stats = new BasicStats();
             BasicStats statsChars = new BasicStats();
-            //Characted extracted in the right place (match)
+            
             Example example = dataSetView.getExample(i);
             if (example == null)
-                continue; //skip
+                continue; 
 
             List<Bounds> expectedMatchMask = example.getMatch();
             List<Bounds> expectedUnmatchMask = example.getUnmatch();
@@ -107,13 +107,13 @@ public class CharmaskMatchLengthObjective implements Objective {
         statsCharsOverall.fn = dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
 
         fitness[0] = (statsCharsOverall.fpr() + statsCharsOverall.fnr()) * 100.0;
-        fitness[1] = Math.abs(statsOverall.fp + statsOverall.tp - dataSetView.getNumberMatches()); // ABS((TP+FP) - (TP+FN)) alias ABS(Number_Extractions - Number_Matches))
+        fitness[1] = Math.abs(statsOverall.fp + statsOverall.tp - dataSetView.getNumberMatches()); 
         fitness[2] = fitnessLenght;
 
         return fitness;
     }
 
-    //number of chars of this extracted rages which falls into expected ranges
+    
     private int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
          
@@ -127,7 +127,7 @@ public class CharmaskMatchLengthObjective implements Objective {
         return overallNumChars;
     }
 
-    //number of idential intervals
+    
     private int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
          

@@ -148,7 +148,7 @@ public class Equation3D
             y = (float) this.fonctionY.replace(varT, t).simplifyMaximum().obtainRealValueNumber();
             z = (float) this.fonctionZ.replace(varT, t).simplifyMaximum().obtainRealValueNumber();
 
-            //
+            
 
             dx2 = (float) deriveX.replace(varT, t + this.tStep).simplifyMaximum().obtainRealValueNumber();
             dy2 = (float) deriveY.replace(varT, t + this.tStep).simplifyMaximum().obtainRealValueNumber();
@@ -173,47 +173,47 @@ public class Equation3D
             {
                line = lines.get(lig);
 
-               // Start
+               
                xStart = line.pointStart.getX();
                yStart = line.pointStart.getY();
 
                point = new Vec3f(xStart, yStart, 0);
                point = rot.rotateVector(point);
 
-               vertex00 = new Vertex(point.x() + x, point.y() + y, point.z() + z,//
-                     (xStart - minU) * multU, (yStart - minV) * multV,//
+               vertex00 = new Vertex(point.x() + x, point.y() + y, point.z() + z,
+                     (xStart - minU) * multU, (yStart - minV) * multV,
                      -point.x(), -point.y(), -point.z());
 
-               // End
+               
                xEnd = line.pointEnd.getX();
                yEnd = line.pointEnd.getY();
 
                point = new Vec3f(xEnd, yEnd, 0);
                point = rot.rotateVector(point);
 
-               vertex01 = new Vertex(point.x() + x, point.y() + y, point.z() + z,//
-                     (xEnd - minU) * multU, (yEnd - minV) * multV,//
+               vertex01 = new Vertex(point.x() + x, point.y() + y, point.z() + z,
+                     (xEnd - minU) * multU, (yEnd - minV) * multV,
                      -point.x(), -point.y(), -point.z());
 
-               // ---*---
+               
 
-               // Start
+               
                point = new Vec3f(xStart, yStart, 0);
                point = rot2.rotateVector(point);
 
-               vertex10 = new Vertex(point.x() + x2, point.y() + y2, point.z() + z2,//
-                     (xStart - minU) * multU, (yStart - minV) * multV,//
+               vertex10 = new Vertex(point.x() + x2, point.y() + y2, point.z() + z2,
+                     (xStart - minU) * multU, (yStart - minV) * multV,
                      -point.x(), -point.y(), -point.z());
 
-               // End
+               
                point = new Vec3f(xEnd, yEnd, 0);
                point = rot2.rotateVector(point);
 
-               vertex11 = new Vertex(point.x() + x2, point.y() + y2, point.z() + z2,//
-                     (xEnd - minU) * multU, (yEnd - minV) * multV,//
+               vertex11 = new Vertex(point.x() + x2, point.y() + y2, point.z() + z2,
+                     (xEnd - minU) * multU, (yEnd - minV) * multV,
                      -point.x(), -point.y(), -point.z());
 
-               // ---*---
+               
 
                Equation3D.this.mesh.addVertexToTheActualFace(vertex10);
                Equation3D.this.mesh.addVertexToTheActualFace(vertex11);

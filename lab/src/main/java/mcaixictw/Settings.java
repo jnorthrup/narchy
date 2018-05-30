@@ -108,18 +108,18 @@ public abstract class Settings implements Cloneable {
 
 	public abstract String toString();
 
-	// public String toString() {
-	// String s = "Agent Settings\n==============\n";
-	// s += "ctDepth: " + ctDepth + "\n";
-	// s += "horizon: " + horizon + "\n";
-	// s += "exploration: " + exploration + "\n";
-	// s += "exploreDecay: " + exploreDecay + "\n";
-	// s += "mcSimulations: " + mcSimulations + "\n";
-	// s += "terminationAge: " + terminationAge + "\n";
-	// s += "recycleUCT: " + recycleUCT + "\n";
-	// s += "factorialTree: " + factorialTree + "\n";
-	// s += "updateCTinMC: " + updateCTinMC + "\n";
-	// return s;
-	// }
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

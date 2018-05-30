@@ -392,12 +392,12 @@ public class Node
          }
          return;
       }
-      //
+      
       if(over == false)
       {
          return;
       }
-      //
+      
       if(leftButton || rightButton)
       {
          this.fireMouseClick(leftButton, rightButton);

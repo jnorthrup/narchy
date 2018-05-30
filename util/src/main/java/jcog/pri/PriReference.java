@@ -19,9 +19,9 @@ public interface PriReference<X> extends Priority, Supplier<X>, FloatSupplier {
 
         pp.forEach(y -> {
             if (y == null)
-                return; // ?
+                return; 
             float p = y.priElseZero();
-            if (p > 1f) p = 1f; //just to be safe
+            if (p > 1f) p = 1f; 
             int b = Util.bin(p, bins);
             x[b]++;
             total[0]++;
@@ -43,8 +43,8 @@ public interface PriReference<X> extends Priority, Supplier<X>, FloatSupplier {
 
         pp.forEach(y -> {
             each.accept(y, d);
-            //float p = y.priElseZero();
-            //x[Util.bin(p, bins - 1)]++;
+            
+            
         });
 
         for (double[] e : d) {

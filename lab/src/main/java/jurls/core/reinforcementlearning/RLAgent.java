@@ -23,7 +23,7 @@ public class RLAgent extends LearnerAndActor {
     private final double[][] s = new double[2][];
     private final int[] a = new int[2];
     private final int numActions;
-    //private final Random random = new Random();
+    
     private final RLParameters rLParameters;
     private final ApproxParameters approxParameters;
     private final UpdateProcedure.Context context = new UpdateProcedure.Context();
@@ -77,7 +77,7 @@ public class RLAgent extends LearnerAndActor {
 
     @Override
     public int learnAndAction(double[] state, double reward, double[] previousState, int previousAction) {
-        final double U = 0.01; //prevents divison by zero
+        final double U = 0.01; 
 
         for (int i = 0; i < state.length; ++i) {
             if (state[i] > stateMax[i]) {
@@ -162,16 +162,16 @@ public class RLAgent extends LearnerAndActor {
         ActionValuePair[] actionProbabilityPairs = getActionProbabilities(state);
         Arrays.sort(actionProbabilityPairs, (ActionValuePair o1, ActionValuePair o2) -> (int) Math.signum(o1.getV() - o2.getV()));
 
-        //System.out.println(Arrays.toString(actionProbabilityPairs));
-        int i = actionProbabilityPairs.length-1; //highest value
+        
+        int i = actionProbabilityPairs.length-1; 
 
-//        double x = Math.random();
-        //int i = -1;
-//
-//        while (x > 0) {
-//            ++i;
-//            x -= actionProbabilityPairs[i].getV();
-//        }
+
+        
+
+
+
+
+
 
         return actionProbabilityPairs[i].getA();
     }

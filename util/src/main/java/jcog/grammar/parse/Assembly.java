@@ -46,7 +46,7 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 
 	/**
 	 * stack size when matching starts
-	 * //TODO use IntStack, make final
+	 * 
 	 */
 	private Stack<Integer> stackSizesBeforeMatch = new Stack<>();
 	{
@@ -69,7 +69,7 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 			}
 			return a;
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}
@@ -79,12 +79,12 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 	}
 
 	public void announceMatchingStart() {
-		//System.out.println("announce start: " + this + " " + getStackSizesBeforeMatch());
+		
 		this.stackSizesBeforeMatch.push(stack.size());
 	}
 
 	void announceMatchingEnd() {
-		//System.out.println("announce end: " + this + " " + getStackSizesBeforeMatch());
+		
 		this.stackSizesBeforeMatch.pop();
 	}
 
@@ -243,14 +243,14 @@ public abstract class Assembly implements Iterator<Object>, PubliclyCloneable<As
 		return stack + "(" + (stack.size() - stackSizesBeforeMatch.peek()) + ") : " + consumed(delimiter) + '^' + remainder(delimiter);
 	}
 
-//	/**
-//	 * Put back n objects
-//	 *
-//	 */
-//	public void unget(int n) {
-//		index -= n;
-//		if (index < 0) {
-//			index = 0;
-//		}
-//	}
+
+
+
+
+
+
+
+
+
+
 }

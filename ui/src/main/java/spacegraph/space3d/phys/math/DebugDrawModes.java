@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -43,7 +43,7 @@ public class DebugDrawModes {
 	public static final int DISABLE_BULLET_LCP    = 512;
 	public static final int ENABLE_CCD            = 1024;
 
-        // PORT_ISSUE: added these modes here, but not yet supported
+        
         public static final int DrawConstraints = (1 << 11);
         public static final int DrawConstraintLimits = (1 << 12);
 

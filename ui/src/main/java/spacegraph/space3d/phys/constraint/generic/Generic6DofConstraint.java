@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -25,7 +25,7 @@
 2007-09-09
 btGeneric6DofConstraint Refactored by Francisco Le�n
 email: projectileman@yahoo.com
-http://gimpact.sf.net
+http:
 */
 
 package spacegraph.space3d.phys.constraint.generic;
@@ -40,7 +40,7 @@ import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.v3;
 
-///
+
 /*!
 
 */
@@ -88,10 +88,10 @@ import spacegraph.util.math.v3;
  */
 public class Generic6DofConstraint extends TypedConstraint {
 
-    protected final Transform frameInA = new Transform(); //!< the constraint space w.r.t body A
-    protected final Transform frameInB = new Transform(); //!< the constraint space w.r.t body B
-    protected final JacobianEntry[] jacLinear/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()}; //!< 3 orthogonal linear constraints
-    protected final JacobianEntry[] jacAng/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()}; //!< 3 orthogonal angular constraints
+    protected final Transform frameInA = new Transform(); 
+    protected final Transform frameInB = new Transform(); 
+    protected final JacobianEntry[] jacLinear/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()}; 
+    protected final JacobianEntry[] jacAng/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()}; 
     protected final TranslationalLimitMotor linearLimits = new TranslationalLimitMotor();
     protected final RotationalLimitMotor[] angularLimits/*[3]*/ = {new RotationalLimitMotor(), new RotationalLimitMotor(), new RotationalLimitMotor()};
     protected float timeStep;
@@ -99,7 +99,7 @@ public class Generic6DofConstraint extends TypedConstraint {
     protected final Transform calculatedTransformB = new Transform();
     protected final v3 calculatedAxisAngleDiff = new v3();
     protected final v3[] calculatedAxis/*[3]*/ = {new v3(), new v3(), new v3()};
-    protected final v3 anchorPos = new v3(); // point betwen pivots of bodies A and B to solve linear axes
+    protected final v3 anchorPos = new v3(); 
     protected final v3 calculatedLinearDiff = new v3();
     protected boolean useLinearReferenceFrameA;
 
@@ -114,10 +114,10 @@ public class Generic6DofConstraint extends TypedConstraint {
             this.frameInB.set(frameInB);
             this.useLinearReferenceFrameA = useLinearReferenceFrameB;
 
-            ///not providing rigidbody A means implicitly using worldspace for body A
+            
             rbB.getCenterOfMassTransform(frameInA);
             frameInA.mul(frameInB);
-            // m_frameInA = rbB.getCenterOfMassTransform() * m_frameInB;
+            
         }
 
 	public Generic6DofConstraint(Body3D rbA, Body3D rbB, Transform frameInA, Transform frameInB, boolean useLinearReferenceFrameA) {
@@ -138,13 +138,13 @@ public class Generic6DofConstraint extends TypedConstraint {
 	}
 
 	/**
-	 * MatrixToEulerXYZ from http://www.geometrictools.com/LibFoundation/Mathematics/Wm4Matrix3.inl.html
+	 * MatrixToEulerXYZ from http:
 	 */
 	private static boolean matrixToEulerXYZ(Matrix3f mat, v3 xyz) {
-		//	// rot =  cy*cz          -cy*sz           sy
-		//	//        cz*sx*sy+cx*sz  cx*cz-sx*sy*sz -cy*sx
-		//	//       -cx*cz*sy+sx*sz  cz*sx+cx*sy*sz  cx*cy
-		//
+		
+		
+		
+		
 
 		if (getMatrixElem(mat, 2) < 1.0f) {
 			if (getMatrixElem(mat, 2) > -1.0f) {
@@ -154,14 +154,14 @@ public class Generic6DofConstraint extends TypedConstraint {
 				return true;
 			}
 			else {
-				// WARNING.  Not unique.  XA - ZA = -atan2(r10,r11)
+				
 				xyz.x = -(float) Math.atan2(getMatrixElem(mat, 3), getMatrixElem(mat, 4));
 				xyz.y = -BulletGlobals.SIMD_HALF_PI;
 				xyz.z = 0.0f;
 				return false;
 			}
 		}
-		// WARNING.  Not unique.  XAngle + ZAngle = atan2(r10,r11)
+		
 		xyz.x = (float) Math.atan2(getMatrixElem(mat, 3), getMatrixElem(mat, 4));
 		xyz.y = BulletGlobals.SIMD_HALF_PI;
 		xyz.z = 0.0f;
@@ -178,7 +178,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 
             Matrix3f basisInv = new Matrix3f();
             basisInv.invert(calculatedTransformA.basis);
-            basisInv.transform(calculatedLinearDiff);    // t = this*t      (t is the param)
+            basisInv.transform(calculatedLinearDiff);    
 
             linearLimits.currentLinearDiff.set(calculatedLinearDiff);
             for(int i = 0; i < 3; i++)
@@ -201,20 +201,20 @@ public class Generic6DofConstraint extends TypedConstraint {
 
 		matrixToEulerXYZ(relative_frame, calculatedAxisAngleDiff);
 
-		// in euler angle mode we do not actually constrain the angular velocity
-		// along the axes axis[0] and axis[2] (although we do use axis[1]) :
-		//
-		//    to get			constrain w2-w1 along		...not
-		//    ------			---------------------		------
-		//    d(angle[0])/dt = 0	ax[1] x ax[2]			ax[0]
-		//    d(angle[1])/dt = 0	ax[1]
-		//    d(angle[2])/dt = 0	ax[0] x ax[1]			ax[2]
-		//
-		// constraining w2-w1 along an axis 'a' means that a'*(w2-w1)=0.
-		// to prove the result for angle[0], write the expression for angle[0] from
-		// GetInfo1 then take the derivative. to prove this for angle[2] it is
-		// easier to take the euler rate expression for d(angle[2])/dt with respect
-		// to the components of w and set that to 0.
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 		v3 axis0 = new v3();
 		calculatedTransformB.basis.getColumn(0, axis0);
@@ -226,16 +226,16 @@ public class Generic6DofConstraint extends TypedConstraint {
 		calculatedAxis[0].cross(calculatedAxis[1], axis2);
 		calculatedAxis[2].cross(axis0, calculatedAxis[1]);
 
-		//    if(m_debugDrawer)
-		//    {
-		//
-		//    	char buff[300];
-		//		sprintf(buff,"\n X: %.2f ; Y: %.2f ; Z: %.2f ",
-		//		m_calculatedAxisAngleDiff[0],
-		//		m_calculatedAxisAngleDiff[1],
-		//		m_calculatedAxisAngleDiff[2]);
-		//    	m_debugDrawer->reportErrorWarning(buff);
-		//    }
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 
 	/**
@@ -305,7 +305,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	public boolean testAngularLimitMotor(int axis_index) {
 		float angle = VectorUtil.coord(calculatedAxisAngleDiff, axis_index);
 
-		// test limits
+		
 		angularLimits[axis_index].testLimitValue(angle);
 		return angularLimits[axis_index].needApplyTorques();
 	}
@@ -318,7 +318,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 	public boolean testLinearLimitMotor(int axis_index) {
 		float diff = VectorUtil.coord(calculatedLinearDiff, axis_index);
 
-		// test limits
+		
 		linearLimits.testLimitValue(axis_index, diff); 
 		return linearLimits.needApplyForces(axis_index);
 	}
@@ -326,29 +326,29 @@ public class Generic6DofConstraint extends TypedConstraint {
 
         @Override
 	public void buildJacobian() {
-		// Clear accumulated impulses for the next simulation step
+		
 		linearLimits.accumulatedImpulse.set(0f, 0f, 0f);
 		for (int i=0; i<3; i++) {
 			angularLimits[i].accumulatedImpulse = 0f;
 		}
 		
-		// calculates transform
+		
 		calculateTransforms();
 		
 		v3 tmpVec = new v3();
 
-		//  const btVector3& pivotAInW = m_calculatedTransformA.getOrigin();
-		//  const btVector3& pivotBInW = m_calculatedTransformB.getOrigin();
+		
+		
 		calcAnchorPos();
 		v3 pivotAInW = new v3(anchorPos);
 		v3 pivotBInW = new v3(anchorPos);
 		
-		// not used here
-		//    btVector3 rel_pos1 = pivotAInW - m_rbA.getCenterOfMassPosition();
-		//    btVector3 rel_pos2 = pivotBInW - m_rbB.getCenterOfMassPosition();
+		
+		
+		
 
 		v3 normalWorld = new v3();
-		// linear part
+		
 		for (int i=0; i<3; i++) {
 			if ( testLinearLimitMotor(i))
                         {
@@ -366,12 +366,12 @@ public class Generic6DofConstraint extends TypedConstraint {
 			}
 		}
 
-		// angular part
+		
 		for (int i=0; i<3; i++) {
-			// calculates error angle
-			if (testAngularLimitMotor(i)) {   // test, and true if need to apply force at limit or due to motor
+			
+			if (testAngularLimitMotor(i)) {   
 				this.getAxis(i, normalWorld);
-				// Create angular atom
+				
 				buildAngularJacobian(/*jacAng[i]*/i, normalWorld);
 			}
 		}
@@ -381,11 +381,11 @@ public class Generic6DofConstraint extends TypedConstraint {
 	public void solveConstraint(float timeStep) {
 		this.timeStep = timeStep;
 
-		//calculateTransforms();
+		
 
 		int i;
 
-		// linear
+		
 
 		v3 pointInA = new v3(calculatedTransformA);
 		v3 pointInB = new v3(calculatedTransformB);
@@ -413,12 +413,12 @@ public class Generic6DofConstraint extends TypedConstraint {
 			}
 		}
 
-		// angular
+		
 		v3 angular_axis = new v3();
 		float angularJacDiagABInv;
 		for (i = 0; i < 3; i++) {
-			if (angularLimits[i].needApplyTorques()) { // true if need to apply force at limit or due to motor
-				// get axis
+			if (angularLimits[i].needApplyTorques()) { 
+				
 				getAxis(i, angular_axis);
 
 				angularJacDiagABInv = 1f / jacAng[i].Adiag;
@@ -544,7 +544,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 		return angularLimits[limitIndex - 3].isLimited();
 	}
 	
-	// overridable
+	
 	public void calcAnchorPos() {
 		float imA = rbA.getInvMass();
 		float imB = rbB.getInvMass();

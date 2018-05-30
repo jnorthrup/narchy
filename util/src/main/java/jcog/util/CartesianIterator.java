@@ -10,7 +10,7 @@ import java.util.function.IntFunction;
  * @author jacek.p.kolodziejczyk@gmail.com
  * @created 01-08-2010
  *
- * https://dzone.com/articles/java-cartesian-iterator-array
+ * https:
  */
 public class CartesianIterator<X> implements Iterator<X[]> {
 	private final Iterable<X>[] iterables;
@@ -29,10 +29,10 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 
 		boolean empty = false;
 
-		// Initialize iterators
+		
 		for (int i = 0; i < size; i++) {
 			Iterator<X> ii = iterables[i].iterator();
-			// If one of the iterators is empty then the whole Cartesian product is empty
+			
 			if (!ii.hasNext()) {
 				empty = true;
 				break;
@@ -41,7 +41,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 		}
 		this.iterators = iterators;
 
-		// Initialize the tuple of the iteration values except the last one
+		
 		if (!empty) {
 			values = arrayBuilder.apply(size);
 			for (int i = 0; i < size-1; i++) setNextValue(i);
@@ -63,15 +63,15 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 
 	@Override
 	public X[] next() {
-		// Find first in reverse order iterator the has a next element
+		
 		int cursor;
 		int size = iterables.length;
 		for (cursor = size-1; cursor >= 0; cursor--)
 			if (iterators[cursor].hasNext()) break;
-		// Initialize iterators next from the current one  
+		
 		for (int i = cursor+1; i < size; i++) iterators[i] = iterables[i].iterator();
 		
-		// Get the next value from the current iterator and all the next ones  
+		
 		for (int i = cursor; i < size; i++) setNextValue(i);
 		return values.clone();
 	}

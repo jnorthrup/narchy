@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -89,7 +89,7 @@ public class TriangleShapeEx extends TriangleShape {
 		Vector4f plane1 = new Vector4f();
 		other.buildTriPlane(plane1);
 
-		// classify points on other triangle
+		
 		float dis0 = ClipPolygon.distance_point_plane(plane0, other.vertices1[0]) - total_margin;
 
 		float dis1 = ClipPolygon.distance_point_plane(plane0, other.vertices1[1]) - total_margin;
@@ -97,7 +97,7 @@ public class TriangleShapeEx extends TriangleShape {
 		float dis2 = ClipPolygon.distance_point_plane(plane0, other.vertices1[2]) - total_margin;
 
 		if (dis0 > 0.0f && dis1 > 0.0f && dis2 > 0.0f) {
-			return false; // classify points on this triangle
+			return false; 
 		}
 		dis0 = ClipPolygon.distance_point_plane(plane1, vertices1[0]) - total_margin;
 

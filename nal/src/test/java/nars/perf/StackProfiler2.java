@@ -81,45 +81,45 @@ public class StackProfiler2 implements InternalProfiler {
     private final Trie<String, Boolean> excludePackageNames;
 
     public StackProfiler2() throws ProfilerException {
-//        OptionParser parser = new OptionParser();
-//        //parser.formatHelpWith(new ProfilerOptionFormatter(org.openjdk.jmh.profile.StackProfiler.class.getCanonicalName()));
 
-//        OptionSpec<Integer> optStackLines = parser.accepts("lines", "Number of stack lines to save in each stack trace. " +
-//                "Larger values provide more insight into who is calling the top stack method, as the expense " +
-//                "of more stack trace shapes to collect.")
-//                .withRequiredArg().withValuesConvertedBy(IntegerValueConverter.POSITIVE).describedAs("int").defaultsTo(1);
-//
-//        OptionSpec<Integer> optTopStacks = parser.accepts("top", "Number of top stacks to show in the profiling results. " +
-//                "Larger values may catch some stack traces that linger in the distribution tail.")
-//                .withRequiredArg().withValuesConvertedBy(IntegerValueConverter.POSITIVE).describedAs("int").defaultsTo(10);
-//
-//        OptionSpec<Integer> optSamplePeriod = parser.accepts("period", "Sampling period, in milliseconds. " +
-//                "Smaller values improve accuracy, at the expense of more profiling overhead.")
-//                .withRequiredArg().withValuesConvertedBy(IntegerValueConverter.POSITIVE).describedAs("int").defaultsTo(10);
-//
-//        OptionSpec<Boolean> optDetailLine = parser.accepts("detailLine", "Record detailed source line info. " +
-//                "This adds the line numbers to the recorded stack traces.")
-//                .withRequiredArg().ofType(Boolean.class).describedAs("bool").defaultsTo(false);
-//
-//        OptionSpec<Boolean> optExclude = parser.accepts("excludePackages", "Enable package filtering. " +
-//                "Use excludePackages option to control what packages are filtered")
-//                .withRequiredArg().ofType(Boolean.class).describedAs("bool").defaultsTo(false);
-//
-//        OptionSpec<String> optExcludeClasses = parser.accepts("excludePackageNames", "Filter there packages. " +
-//                "This is expected to be a comma-separated list\n" +
-//                "of the fully qualified package names to be excluded. Every stack line that starts with the provided\n" +
-//                "patterns will be excluded.")
-//                .withRequiredArg().withValuesSeparatedBy(",").ofType(String.class).describedAs("package+")
-//                .defaultsTo("java.", "javax.", "sun.", "sunw.", "com.sun.", "org.openjdk.jmh.");
-//
-//         //
-//        //Map<String, AbstractOptionSpec<?>> m;
-//        OptionSet set = parseInitLine(initLine, parser);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         try {
 
-            //boolean excludePackages = true; //set.valueOf(optExclude);
+            
             MutableSet<String> exc = Sets.mutable.of("java.", "jdk.", "javax.", "sun.",
                     "sunw.", "com.sun.", "org.openjdk.jmh.", "com.intellij.rt.");
 
@@ -181,7 +181,7 @@ public class StackProfiler2 implements InternalProfiler {
             info:
             for (ThreadInfo info : infos) {
 
-                // filter out ignored threads TODO is lowercase compare necessary?
+                
                 switch (info.getThreadName()) {
                     case "Finalizer":
                     case "Signal Dispatcher":
@@ -189,13 +189,13 @@ public class StackProfiler2 implements InternalProfiler {
                     case "main":
                     case "Sampling Thread":
                     case "Attach Listener":
-                        continue info; //ignore
+                        continue info; 
 
                 }
 
 
-                //   - Discard everything that matches excluded patterns from the top of the stack
-                //   - Get the remaining number of stack lines and builder the stack record
+                
+                
 
 
                 StackRecord lines = new StackRecord(stackLines);
@@ -205,26 +205,26 @@ public class StackProfiler2 implements InternalProfiler {
                         .forEach(lines::add)
                 ;
 
-//                StackRecord lines = StackWalker.getInstance().walk(s->{
-//                    StackRecord ll = new StackRecord();
-//                    s.dropWhile(x->ll.size()<stackLines)
-//                        .filter(f -> !exclude(f.getClassName())).
-//                        forEach(ll::add);
-//                    return ll;
-//                });
 
-//                    for (StackTraceElement l : stack) {
-//                        String className = l.getClassName();
-//                        if (!isExcluded(className)) { //TODO use a trie
-//
-//                            lines.add(className + '.' + l.getMethodName()
-//                                    + (sampleLine ? ":" + l.getLineNumber() : ""));
-//
-//                            if (lines.size() >= stackLines) {
-//                                break;
-//                            }
-//                        }
-//                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 if (!lines.isEmpty()) {
                     lines.commit();
@@ -350,7 +350,7 @@ public class StackProfiler2 implements InternalProfiler {
         public String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
 
             int top = 32;
-//
+
             StringBuilder sb = new StringBuilder(16*1024);
 
             stacks.entrySet().forEach(e -> {
@@ -369,67 +369,67 @@ public class StackProfiler2 implements InternalProfiler {
 
             return sb.toString();
 
-//            List<Thread.State> sortedStates = new ArrayList<>(stacks.keySet());
-//            Collections.sort(sortedStates, new Comparator<Thread.State>() {
-//
-//                private long stateSize(Thread.State state) {
-//                    HashBag<StackRecord> set = stacks.get(state);
-//                    return (set == null) ? 0 : set.size();
-//                }
-//
-//                @Override
-//                public int compare(Thread.State s1, Thread.State s2) {
-//                    return Long.valueOf(stateSize(s2)).compareTo(stateSize(s1));
-//                }
-//
-//            });
-//
-//            long totalSize = getTotalSize(stacks);
-//
-//            StringBuilder builder = new StringBuilder();
-//            builder.append("Stack profiler:\n\n");
-//
-//            builder.append(dottedLine("Thread state distributions"));
-//            for (Thread.State state : sortedStates) {
-//                if (isSignificant(stacks.get(state).size(), totalSize)) {
-//                    builder.append(String.format("%5.1f%% %7s %s%n", stacks.get(state).size() * 100.0 / totalSize, "", state));
-//                }
-//            }
-//            builder.append("\n");
-//
-//            for (Thread.State state : sortedStates) {
-//                HashBag<StackRecord> stateStacks = stacks.get(state);
-//                if (isSignificant(stateStacks.size(), totalSize)) {
-//                    builder.append(dottedLine("Thread state: " + state.toString()));
-//
-//                    int totalDisplayed = 0;
-//                    for (StackRecord s : HashBags.countHighest(stateStacks, topStacks)) {
-//                        List<String> lines = s.lines;
-//                        if (!lines.isEmpty()) {
-//                            totalDisplayed += stateStacks.count(s);
-//                            builder.append(String.format("%5.1f%% %5.1f%% %s%n",
-//                                    stateStacks.count(s) * 100.0 / totalSize,
-//                                    stateStacks.count(s) * 100.0 / stateStacks.size(),
-//                                    lines.get(0)));
-//                            if (lines.size() > 1) {
-//                                for (int i = 1; i < lines.size(); i++) {
-//                                    builder.append(String.format("%13s %s%n", "", lines.get(i)));
-//                                }
-//                                builder.append("\n");
-//                            }
-//                        }
-//                    }
-//                    if (isSignificant((stateStacks.size() - totalDisplayed), stateStacks.size())) {
-//                        builder.append(String.format("%5.1f%% %5.1f%% %s%n",
-//                                (stateStacks.size() - totalDisplayed) * 100.0 / totalSize,
-//                                (stateStacks.size() - totalDisplayed) * 100.0 / stateStacks.size(),
-//                                "<other>"));
-//                    }
-//
-//                    builder.append("\n");
-//                }
-//            }
-//            return builder.toString();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
         private String toString(HashBag<Pair<String, IntObjectPair<String>>> calleeSum) {

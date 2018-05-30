@@ -120,8 +120,8 @@ public final class Scene {
         }
     }
 
-    // Check a ray against all the entities in the world and return the closest collision.
-    // Returns null if the ray collides with nothing.
+    
+    
     public Collision castRay(Ray3 ray) {
         Collision closestCollision = null;
         double closestCollisionDistanceSquared = Double.POSITIVE_INFINITY;
@@ -145,16 +145,16 @@ public final class Scene {
         do {
             collision = castRay(ray);
             if (collision == null) {
-                // If the ray didn't collide with anything, return black.
+                
                 return 0x000000;
             }
             if (collision.entity.surface == Entity.Surface.Transparent) {
-                // Calculates deflection of a ray due to refraction if the entity is transparent.
-                // Currently the index of refraction is hard-coded at 1.5 (glass).
-                // The effect doesn't actually look that cool, probably it doesn't look much like
-                // glass since I still need to implement an added glassy reflection on the surface
-                // of transparent objects. Nevertheless, surfaces of entities in the world definition
-                // file can be specified to be "transparent".
+                
+                
+                
+                
+                
+                
                 Vector3 tangent = collision.normal.direction.cross(collision.normal.direction.cross(ray.direction)).normalize();
                 double nProj = -ray.direction.dot(collision.normal.direction);
                 ray.direction = ray.direction.scale(1 / nProj);
@@ -176,30 +176,30 @@ public final class Scene {
                 continue;
             }
             if (collision.entity.surface == Entity.Surface.Diffuse) {
-                // If the collision is a diffuse surface, then there are no further reflections, and the
-                // final color can be calculated from the point on the surface of the diffuse entity
-                // where the collision took place, and the locations of the lights in the scene.
+                
+                
+                
                 break;
             }
             if (collision.entity.surface == Entity.Surface.Specular) {
-                // If the collision is a specular surface, calculate the new ray to be from
-                // the point of collision and with a direction that is a bounce off the surface.
+                
+                
                 ray = new Ray3(
                     collision.normal.position,
                     ray.direction.minus(collision.normal.direction.scale(2 * ray.direction.dot(collision.normal.direction)))
                 );
             } else {
-                // Surface type isn't accounted for. Just return black.
+                
                 return 0x000000;
             }
-            // Loop while total reflections is less than maximum reflections.
+            
         } while (++reflections < MAX_REFLECTIONS);
         return getDiffuseColor(collision);
     }
 
-    // Calculates the color of a collision point on a diffuse surface based on the distances and
-    // locations of lights in the scene. A light is not added to the color if it is obstructed by an entity
-    // which thereby implements shadows.
+    
+    
+    
     private int getDiffuseColor(Collision collision) {
         double intensityR = 0;
         double intensityG = 0;
@@ -215,18 +215,18 @@ public final class Scene {
                 intensityB += (double)(light.color & 0xff) / 255 * intensity;
             }
         }
-        // Intensity multiplier chosen to make the brightness level of the scene found in world.txt look good.
+        
         double m = 10;
         intensityR *= m;
         intensityG *= m;
         intensityB *= m;
-        // Add an ambient light factor.
+        
         intensityR += 0.05;
         intensityG += 0.05;
         intensityB += 0.05;
         if (collision.entity.texture != null && collision.entity.surface == Entity.Surface.Diffuse) {
-            // If the entity has a texture and is diffuse, calculate the texture color at the point
-            // of collision and incorporate it into the light intensities.
+            
+            
             int textureColor = -1;
             if (collision.entity instanceof Entity.Cube) {
                 Entity.Cube cube = (Entity.Cube)collision.entity;
@@ -281,9 +281,9 @@ public final class Scene {
         return (r << 16) + (g << 8) + b;
     }
 
-    // Describes a collision in the world of a ray against an entity.
-    // The normal is a vector perpendicular to the surface at the point
-    // of collision, and should be normalized.
+    
+    
+    
     static final class Collision {
         public final Entity entity;
         public final Ray3 normal;

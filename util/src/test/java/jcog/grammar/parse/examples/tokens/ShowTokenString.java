@@ -30,7 +30,7 @@ public class ShowTokenString {
 	 */
 	public static void main(String args[]) {
 
-		// a parser that counts words
+		
 
 		Parser w = new Word().ok();
 		w.put(new IAssembler() {
@@ -44,17 +44,17 @@ public class ShowTokenString {
 			}
 		});
 
-		// a repetition of the word counter
+		
 
 		Parser p = new Repetition(w);
 
-		// consume token strings separated by semicolons
+		
 
 		String s = "I came; I saw; I left in peace;";
 		ITokenizer t = new Tokenizer(s);
 		TokenStringSource tss = new TokenStringSource(t, ";");
 
-		// count the words in each token string
+		
 
 		while (tss.hasMoreTokenStrings()) {
 			TokenString ts = tss.nextTokenString();

@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,7 +72,7 @@ public class MutableFloat extends Number implements FloatSupplier {
         this.value = Float.parseFloat(value);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Gets the value as a Float instance.
      *
@@ -101,7 +101,7 @@ public class MutableFloat extends Number implements FloatSupplier {
         set(value.floatValue());
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Checks whether the float value is the special NaN value.
      *
@@ -120,7 +120,7 @@ public class MutableFloat extends Number implements FloatSupplier {
         return Float.isInfinite(value);
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Increments the value.
      *
@@ -189,7 +189,7 @@ public class MutableFloat extends Number implements FloatSupplier {
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Adds a value to the value of this instance.
      *
@@ -288,8 +288,8 @@ public class MutableFloat extends Number implements FloatSupplier {
         return last;
     }
 
-    //-----------------------------------------------------------------------
-    // shortValue and byteValue rely on Number implementation
+    
+    
     /**
      * Returns the value of this MutableFloat as an int.
      *
@@ -330,7 +330,7 @@ public class MutableFloat extends Number implements FloatSupplier {
         return value;
     }
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Compares this object against some other object. The result is <code>true</code> if and only if the argument is
      * not <code>null</code> and is a <code>Float</code> object that represents a <code>float</code> that has the
@@ -379,7 +379,7 @@ public class MutableFloat extends Number implements FloatSupplier {
     }
 
 
-    //-----------------------------------------------------------------------
+    
     /**
      * Returns the String value of this mutable.
      *
@@ -408,7 +408,7 @@ public class MutableFloat extends Number implements FloatSupplier {
             value -= x;
             return x;
         } else {
-            //the remainder
+            
             set(0f);
             return v;
         }

@@ -46,9 +46,9 @@ public class NALSchemaTest {
         ARFF dataset = new ARFF(arffData, data) {
             @Override
             public boolean add(Object... point) {
-                //HACK
+                
                 if (arffData == irisARFF) {
-                    //convert centimeters to millimeters so the values are integer
+                    
                     for (int i = 0, pointLength = point.length; i < pointLength; i++) {
                         Object x = point[i];
                         if (x instanceof Number) {
@@ -83,8 +83,8 @@ public class NALSchemaTest {
         assertEquals(originalDataSetSize, validationPoints.size() + data.size());
 
         NAR n = NARS.tmp();
-        //n.beliefPriDefault.set(0.01f);
-        //n.questionPriDefault.set(0.99f);
+        
+        
 
         LongHashSet questions = new LongHashSet();
         n.onTask(t->{
@@ -95,12 +95,12 @@ public class NALSchemaTest {
             }
         });
 
-        //n.log();
+        
 
         NALSchema.believe(n, dataset, NALSchema.predictsLast);
 
-        //Schema.ask
-        //Schema.typed(Schema.predictsLast, dataset)
+        
+        
         Task[] questions1 = NALSchema.data(n, validation, QUESTION, NALSchema.predictsLast).toArray(Task[]::new);
         new DialogTask(n, questions1) {
             @Override

@@ -20,7 +20,7 @@ public class Professor implements PubliclyCloneable<Professor> {
 		try {
 			return (Professor) super.clone();
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

@@ -44,9 +44,9 @@ package jhelp.math;
 public class Rotf {
   private static float EPSILON = 1.0e-7f;
 
-  // Representation is a quaternion. Element 0 is the scalar part (=
-  // cos(theta/2)), elements 1..3 the imaginary/"vector" part (=
-  // sin(theta/2) * axis).
+  
+  
+  
   private float q0;
   private float q1;
   private float q2;
@@ -131,9 +131,9 @@ public class Rotf {
   /** Returns angle (in radians) and mutates the given vector to be
       the axis. */
   public float get(Vec3f axis) {
-    // FIXME: Is this numerically stable? Is there a better way to
-    // extract the angle from a quaternion?
-    // NOTE: remove (float) to illustrate compiler bug
+    
+    
+    
     float retval = (float) (2.0f * Math.acos(q0));
     axis.set(q1, q2, q3);
     float len = axis.length();
@@ -215,21 +215,21 @@ public class Rotf {
     float q11 = q1 * q1;
     float q22 = q2 * q2;
     float q33 = q3 * q3;
-    // Diagonal elements
+    
     mat.set(0, 0, q00 + q11 - q22 - q33);
     mat.set(1, 1, q00 - q11 + q22 - q33);
     mat.set(2, 2, q00 - q11 - q22 + q33);
-    // 0,1 and 1,0 elements
+    
     float q03 = q0 * q3;
     float q12 = q1 * q2;
     mat.set(0, 1, 2.0f * (q12 - q03));
     mat.set(1, 0, 2.0f * (q03 + q12));
-    // 0,2 and 2,0 elements
+    
     float q02 = q0 * q2;
     float q13 = q1 * q3;
     mat.set(0, 2, 2.0f * (q02 + q13));
     mat.set(2, 0, 2.0f * (q13 - q02));
-    // 1,2 and 2,1 elements
+    
     float q01 = q0 * q1;
     float q23 = q2 * q3;
     mat.set(1, 2, 2.0f * (q23 - q01));
@@ -241,9 +241,9 @@ public class Rotf {
       Rendering Techniques</u>.
       @see Mat4f#getRotation */
   public void fromMatrix(Mat4f mat) {
-    // FIXME: Should reimplement to follow Horn's advice of using
-    // eigenvector decomposition to handle roundoff error in given
-    // matrix.
+    
+    
+    
     
     float tr, s;
     int i, j, k;

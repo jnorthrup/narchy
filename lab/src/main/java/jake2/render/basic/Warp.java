@@ -40,7 +40,7 @@ import jake2.util.Math3D;
  */
 public abstract class Warp extends Model {
 
-    // warpsin.h
+    
     public static final float[] SIN = { 0f, 0.19633f, 0.392541f, 0.588517f,
             0.784137f, 0.979285f, 1.17384f, 1.3677f, 1.56072f, 1.75281f,
             1.94384f, 2.1337f, 2.32228f, 2.50945f, 2.69512f, 2.87916f,
@@ -86,8 +86,8 @@ public abstract class Warp extends Model {
             -1.3677f, -1.17384f, -0.979285f, -0.784137f, -0.588517f,
             -0.392541f, -0.19633f };
 
-    // gl_warp.c -- sky and water polygons
-    //extern model_t *loadmodel; // Model.java
+    
+    
 
     String skyname;
 
@@ -139,7 +139,7 @@ public abstract class Warp extends Model {
 
         BoundPoly(numverts, verts, mins, maxs);
 
-        // x,y und z
+        
         for (i = 0; i < 3; i++) {
             m = (mins[i] + maxs[i]) * 0.5f;
             m = SUBDIVIDE_SIZE * (float) Math.floor(m / SUBDIVIDE_SIZE + 0.5f);
@@ -148,12 +148,12 @@ public abstract class Warp extends Model {
             if (m - mins[i] < 8)
                 continue;
 
-            // cut it
+            
             for (j = 0; j < numverts; j++) {
                 dist[j] = verts[j][i] - m;
             }
 
-            // wrap cases
+            
             dist[j] = dist[0];
 
             Math3D.VectorCopy(verts[0], verts[numverts]);
@@ -173,7 +173,7 @@ public abstract class Warp extends Model {
                     continue;
 
                 if ((dist[j] > 0) != (dist[j + 1] > 0)) {
-                    // clip point
+                    
                     frac = dist[j] / (dist[j] - dist[j + 1]);
                     for (k = 0; k < 3; k++)
                         front[f][k] = back[b][k] = v[k] + frac
@@ -189,13 +189,13 @@ public abstract class Warp extends Model {
             return;
         }
 
-        // add a point in the center to help keep warp valid
+        
 
-        // wird im Konstruktor erschlagen
-        // poly = Hunk_Alloc (sizeof(glpoly_t) + ((numverts-4)+2) *
-        // VERTEXSIZE*sizeof(float));
+        
+        
+        
 
-        // init polys
+        
         glpoly_t poly = Polygon.create(numverts + 2);
 
         poly.next = warpface.polys;
@@ -247,9 +247,9 @@ public abstract class Warp extends Model {
         float[][] verts = tmpVerts;
         float[] vec;
         warpface = fa;
-        //
-        // convert edges back to a normal polygon
-        //
+        
+        
+        
         int numverts = 0;
         for (int i = 0; i < fa.numedges; i++) {
             int lindex = loadmodel.surfedges[fa.firstedge + i];
@@ -264,13 +264,13 @@ public abstract class Warp extends Model {
         SubdividePolygon(numverts, verts);
     }
 
-    //	  =========================================================
+    
 
-    //// speed up sin calculations - Ed
-    //	float r_turbsin[] =
-    //	{
-    //		#include "warpsin.h"
-    //	};
+    
+    
+    
+    
+    
     static final float TURBSCALE = (float) (256.0f / (2 * Math.PI));
 
     /*
@@ -317,20 +317,20 @@ public abstract class Warp extends Model {
         }
     }
 
-    //	  ===================================================================
+    
 
     final float[][] skyclip = { { 1, 1, 0 }, { 1, -1, 0 }, { 0, -1, 1 }, { 0, 1, 1 },
             { 1, 0, 1 }, { -1, 0, 1 } };
 
     int c_sky;
 
-    // 1 = s, 2 = t, 3 = 2048
+    
     final int[][] st_to_vec = { { 3, -1, 2 }, { -3, 1, 2 },
 
     { 1, 3, 2 }, { -1, -3, 2 },
 
-    { -2, -1, 3 }, // 0 degrees yaw, look straight up
-            { 2, -1, -3 } // look straight down
+    { -2, -1, 3 }, 
+            { 2, -1, -3 } 
 
     };
 
@@ -356,7 +356,7 @@ public abstract class Warp extends Model {
         int axis;
         
         c_sky++;
-        // decide which face it maps to
+        
         Math3D.VectorCopy(Globals.vec3_origin, v);
         for (i = 0; i < nump; i++) {
             Math3D.VectorAdd(vecs[i], v, v);
@@ -381,7 +381,7 @@ public abstract class Warp extends Model {
                 axis = 4;
         }
 
-        // project new texture coords
+        
         for (i = 0; i < nump; i++) {
             j = vec_to_st[axis][2];
             if (j > 0)
@@ -389,7 +389,7 @@ public abstract class Warp extends Model {
             else
                 dv = -vecs[i][-j - 1];
             if (dv < 0.001f)
-                continue; // don't divide by zero
+                continue; 
             j = vec_to_st[axis][0];
             if (j < 0)
                 s = -vecs[i][-j - 1] / dv;
@@ -412,7 +412,7 @@ public abstract class Warp extends Model {
         }
     }
 
-    static final float ON_EPSILON = 0.1f; // point on plane side epsilon
+    static final float ON_EPSILON = 0.1f; 
 
     static final int MAX_CLIP_VERTS = 64;
 
@@ -438,7 +438,7 @@ public abstract class Warp extends Model {
 
         if (nump > MAX_CLIP_VERTS - 2)
             Com.Error(Defines.ERR_DROP, "ClipSkyPolygon: MAX_CLIP_VERTS");
-        if (stage == 6) { // fully clipped, so draw it
+        if (stage == 6) { 
             DrawSkyPolygon(nump, vecs);
             return;
         }
@@ -458,12 +458,12 @@ public abstract class Warp extends Model {
             dists[i] = d;
         }
 
-        if (!front || !back) { // not clipped
+        if (!front || !back) { 
             ClipSkyPolygon(nump, vecs, stage + 1);
             return;
         }
 
-        // clip it
+        
         sides[i] = sides[0];
         dists[i] = dists[0];
         Math3D.VectorCopy(vecs[0], vecs[i]);
@@ -502,7 +502,7 @@ public abstract class Warp extends Model {
             newc[1]++;
         }
 
-        // continue
+        
         ClipSkyPolygon(newc[0], newv[stage][0], stage + 1);
         ClipSkyPolygon(newc[1], newv[stage][1], stage + 1);
     }
@@ -514,7 +514,7 @@ public abstract class Warp extends Model {
      */
     @Override
     void R_AddSkySurface(msurface_t fa) {
-        // calculate vertex values for sky box
+        
         for (glpoly_t p = fa.polys; p != null; p = p.next) {
             for (int i = 0; i < p.numverts; i++) {
                 verts[i][0] = p.x(i) - r_origin[0];
@@ -555,7 +555,7 @@ public abstract class Warp extends Model {
                 v[j] = b[k - 1];
         }
 
-        // avoid bilerp seam
+        
         s = (s + 1) * 0.5f;
         t = (t + 1) * 0.5f;
 
@@ -582,13 +582,13 @@ public abstract class Warp extends Model {
     void R_DrawSkyBox() {
         int i;
 
-        if (skyrotate != 0) { // check for no sky at all
+        if (skyrotate != 0) { 
             for (i = 0; i < 6; i++)
                 if (skymins[0][i] < skymaxs[0][i]
                         && skymins[1][i] < skymaxs[1][i])
                     break;
             if (i == 6)
-                return; // nothing visible
+                return; 
         }
 
         gl.glPushMatrix();
@@ -597,7 +597,7 @@ public abstract class Warp extends Model {
                 skyaxis[2]);
 
         for (i = 0; i < 6; i++) {
-            if (skyrotate != 0) { // hack, forces full sky to draw when rotating
+            if (skyrotate != 0) { 
                 skymins[0][i] = -1;
                 skymins[1][i] = -1;
                 skymaxs[0][i] = 1;
@@ -623,7 +623,7 @@ public abstract class Warp extends Model {
     /*
      * ============ R_SetSky ============
      */
-    // 3dstudio environment map names
+    
     final String[] suf = { "rt", "bk", "lf", "ft", "up", "dn" };
 
     @Override
@@ -632,24 +632,24 @@ public abstract class Warp extends Model {
         int i;
         String pathname;
 
-        //		strncpy (skyname, name, sizeof(skyname)-1);
+        
         skyname = name;
 
         skyrotate = rotate;
         Math3D.VectorCopy(axis, skyaxis);
 
         for (i = 0; i < 6; i++) {
-            // chop down rotating skies for less memory
+            
             if (gl_skymip.value != 0 || skyrotate != 0)
                 gl_picmip.value++;
 
             if (qglColorTableEXT && gl_ext_palettedtexture.value != 0) {
-                //	Com_sprintf (pathname, sizeof(pathname), "env/%s%s.pcx",
-                // skyname, suf[i]);
+                
+                
                 pathname = "env/" + skyname + suf[i] + ".pcx";
             } else {
-                // Com_sprintf (pathname, sizeof(pathname), "env/%s%s.tga",
-                // skyname, suf[i]);
+                
+                
                 pathname = "env/" + skyname + suf[i] + ".tga";
             }
 
@@ -658,7 +658,7 @@ public abstract class Warp extends Model {
             if (sky_images[i] == null)
                 sky_images[i] = r_notexture;
 
-            if (gl_skymip.value != 0 || skyrotate != 0) { // take less memory
+            if (gl_skymip.value != 0 || skyrotate != 0) { 
                 gl_picmip.value--;
                 sky_min = 1.0f / 256;
                 sky_max = 255.0f / 256;

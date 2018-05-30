@@ -20,7 +20,7 @@ public abstract class CuriousPlayerPerception extends Perception {
 	public double getReward() {
 		this.novelty = curiosity.getAvgError();
 		double wundtCurve = wundtCurve(this.novelty);
-		//System.out.println(wundtCurve);
+		
 		return wundtCurve;
 	}
 
@@ -72,7 +72,7 @@ public abstract class CuriousPlayerPerception extends Perception {
 
 	public void setForeseePerc(Perception foreseePerc) {
 		this.foreseePerc = foreseePerc;
-		//this.foreseePerc.setInputPerception(this);
+		
 	}
 
 	public static double getPMax() {

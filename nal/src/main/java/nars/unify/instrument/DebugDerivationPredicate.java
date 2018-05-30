@@ -37,12 +37,12 @@ public class DebugDerivationPredicate extends InstrumentedDerivationPredicate {
                     .a(' ')
                     .a(d.toString())
                     .a(' ')
-                    //.a(p.getClass().getSimpleName())                    .a(' ')
+                    
                     .fg(fg).a(p.toString()).fg(Ansi.Color.DEFAULT)
                     .a(' ')
                     .a((thrown != null ? (" "+thrown) : ' '))
                     .fg(returnValue ? Ansi.Color.GREEN : Ansi.Color.RED)
-                    //.bg( thrown!=null ? Ansi.Color.YELLOW : Ansi.Color.BLACK )
+                    
                     .a(returnValue ? "TRUE" : "FALS").fg(Ansi.Color.DEFAULT).newline().toString();
 
             System.out.print(pAnsi);

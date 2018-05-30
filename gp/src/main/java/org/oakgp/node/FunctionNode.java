@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,16 +49,16 @@ public final class FunctionNode implements Node {
      */
     public FunctionNode(Function function, Arguments arguments) {
         if (function.argsSorted()) {
-//            if (arguments.length() > 1 && !(arguments instanceof Arguments.SortedArguments)) {
-//                System.err.println("could have been pre-sorted");
-//            }
+
+
+
             arguments = arguments.sorted();
         }
 
         this.function = function;
         this.arguments = arguments;
         this.nodeCount = calculateNodeCount(arguments);
-        //this.hashCode = (function.getClass().getName().hashCode() * 31) * createHashCode(arguments, nodeCount);
+        
         this.hash = Util.hashCombine(function.getClass().hashCode(), arguments.hashCode());
     }
 
@@ -119,7 +119,7 @@ public final class FunctionNode implements Node {
             return false;
         } else if (o instanceof FunctionNode) {
             FunctionNode fn = (FunctionNode) o;
-            // NOTE if we often return false here then that indicates hashCode() could be improved
+            
             return this.function == fn.function && this.arguments.equals(fn.arguments);
         } else {
             return false;

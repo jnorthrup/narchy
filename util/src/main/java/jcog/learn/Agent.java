@@ -15,9 +15,9 @@ public abstract class Agent {
         this.actions = actions;
     }
 
-    //default int act(float reward, TensorF input) {
-        //TODO
-    //}
+    
+        
+    
 
     public abstract int act(float reward, float[] nextObservation);
 
@@ -27,11 +27,11 @@ public abstract class Agent {
         throw new TODO();
     }
 
-//    default int act(double reward, double... nextObservation) {
-//        float[] f = Util.toFloat(nextObservation);
-//
-//        return act((float)reward, f);
-//    }
+
+
+
+
+
 
     @Override
     public String toString() {

@@ -38,7 +38,7 @@ public class DigitizedScalar extends DemultiplexedScalar {
     public final List<Scalar> sensors;
 
 
-//    float conf;
+
 
 
     @Override
@@ -111,7 +111,7 @@ public class DigitizedScalar extends DemultiplexedScalar {
      */
     public final static ScalarEncoder FuzzyBinary = (v, i, indices) -> {
 
-        //float nearness[] = new float[n];
+        
 
         float b = v;
         float dv = 1f;
@@ -120,7 +120,7 @@ public class DigitizedScalar extends DemultiplexedScalar {
             b = Math.max(0, b - dv);
         }
 
-        //System.out.println(v + " " + b + "/" + dv + " = " + (b/dv));
+        
 
         return b / (dv);
     };
@@ -149,7 +149,7 @@ public class DigitizedScalar extends DemultiplexedScalar {
                 /*,$.quote(Util.toString(input))*/, $.the(freqer.getClass().getSimpleName())
         ), nar);
 
-//        this.conf = nar.confDefault(BELIEF);
+
 
 
         assert (states.length > 1);
@@ -173,94 +173,93 @@ public class DigitizedScalar extends DemultiplexedScalar {
 
 
 
-    //		private Truth biangular(float v) {
-//			if (v < 0.5f) return t(0, conf);
-//			else {
-//				//return t(1f, conf * Math.min(1f,(v-0.5f)*2f));
-//				return t(v, conf);
-//			}
-//		}
-//
-//		private Truth triangular(float v) {
-//			float f, c;
-//			if (v < 0.66f && v > 0.33f) {
-//				f = 0.5f;
-//				c = (0.33f-Math.abs(v-0.5f)) * 3f;
-//			} else {
-//				f = (v > 0.5f) ? 1 : 0;
-//				if (v > 0.5f) {
-//					c = Math.abs(v - 0.66f) * 3f;
-//				} else {
-//					c = Math.abs(v - 0.33f) * 3f;
-//				}
-//			}
-//			c = Util.clamp(c);
-//
-//			return t(f, c * conf);
-//		}
-
-//    @NotNull
-//    public FuzzyScalar pri(float p) {
-//        for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
-//            sensors.get(i).pri(p);
-//        }
-//        return this;
-//    }
-
-//    @NotNull
-//    public DigitizedScalar conf(float c) {
-//        this.conf = c;
-//        return this;
-//    }
+    
 
 
-//    @NotNull
-//    public String summary() {
-//        return Joiner.on("\t").join(Iterators.transform(
-//                sensors.iterator(), s -> {
-//                    if (s == null)
-//                        return "?";
-//                    else {
-//                        long when = nar.time();
-//                        return s.term() + " " + s.beliefs().truth(when, nar);
-//                    }
-//                }
-//        ));
-//    }
 
-//    /** clear all sensor's belief state */
-//    public void clear() {
-//        sensors.forEach(s -> s.beliefs().clear());
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
-///**
-// * SensorConcept which wraps a MutableFloat value
-// */
-//public class FloatConcept extends SensorConcept {
-//
-//
-//    @NotNull
-//    private final MutableFloat value;
-//
-//    public FloatConcept(@NotNull String compoundTermString, @NotNull NAR n) throws Narsese.NarseseException {
-//        this(compoundTermString, n, Float.NaN);
-//    }
-//
-//    public FloatConcept(@NotNull String compoundTermString, @NotNull NAR n, float initialValue) throws Narsese.NarseseException {
-//        this(compoundTermString, n, new MutableFloat(initialValue));
-//    }
-//
-//    public FloatConcept(@NotNull String compoundTermString, @NotNull NAR n, @NotNull MutableFloat v) throws Narsese.NarseseException {
-//        super(compoundTermString, n, v::floatValue,
-//                (vv) -> new DefaultTruth(vv, n.confidenceDefault(Symbols.BELIEF) )
-//        );
-//        this.value = v;
-//    }
-//
-//    public float set(float v) {
-//        value.setValue(v);
-//        return v;
-//    }
-//
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

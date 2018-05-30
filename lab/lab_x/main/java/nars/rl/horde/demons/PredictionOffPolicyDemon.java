@@ -55,8 +55,8 @@ public class PredictionOffPolicyDemon<A> implements Demon<A> {
         return gtd;
     }
 
-//  @Override
-//  public String label() {
-//    return "offpolicyDemon" + Labels.label(rewardFunction);
-//  }
+
+
+
+
 }

@@ -37,7 +37,7 @@ public abstract class NativeTask implements ITask, Priority {
 
     @Override
     public float priSet(float p) {
-        return 1f; //does nothing
+        return 1f; 
     }
 
     public abstract ITask next(NAR n);
@@ -118,49 +118,49 @@ public abstract class NativeTask implements ITask, Priority {
                 return t;
             }
 
-//            Object aa = what;
-//            Object bb = that.what;
-//            if (aa == bb) return 0;
 
-            //as a last resort, compare their system ID
-            //return Integer.compare(System.identityHashCode(aa), System.identityHashCode(bb)); //maintains uniqueness in case they occupy the same time
 
-            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that)); //maintains uniqueness in case they occupy the same time
+
+
+            
+            
+
+            return Integer.compare(System.identityHashCode(this), System.identityHashCode(that)); 
         }
     }
 
-//    public static class SleepTask extends NativeTask {
-//
-//        private final AtomicInteger ms;
-//        final int toSleep;
-//
-//        public SleepTask(int ms, int divisor) {
-//            this.ms = new AtomicInteger(ms);
-//            this.toSleep = Math.max(1,ms/divisor);
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "sleep(" + ms + "ms)";
-//        }
-//
-//        @Override
-//        public @Nullable Iterable<? extends ITask> run(NAR n) {
-//            /** min executor load to allow sleeping */
-//
-//            if (n.exe.load() >= 1f-1f/(1+n.exe.concurrency())) //<-TODO estimate this without seeing the sleep or maybe this is just a hack and a different throttle system will work better
-//                return null;
-//
-//            if (ms.addAndGet(-toSleep) >= toSleep) {
-//                n.exe.add(this); //re-input for another thread to continue sleeping
-//            }
-//
-//            Util.pause(toSleep);
-//
-//            return null;
-//        }
-//    }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static class NARTask extends NativeTask {
 

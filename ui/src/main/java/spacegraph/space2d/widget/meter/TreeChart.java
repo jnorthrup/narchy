@@ -27,7 +27,7 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
 public class TreeChart<X> extends Surface {
 
 
-//    private final boolean sort = false;
+
     private double heightLeft, widthLeft;
 
     @Deprecated private float top = 0, left = 0;
@@ -66,9 +66,9 @@ public class TreeChart<X> extends Surface {
         }
     }
 
-//    public void update(Collection<? extends X> children, BiConsumer<X, ItemVis<X>> update) {
-//        update(children, update, cached(i -> new ItemVis<>(i, i.toString())));
-//    }
+
+
+
 
     public static <X> Function<X, ItemVis<X>> cached() {
         return cached(i -> new ItemVis<>(i, i.toString()));
@@ -78,8 +78,8 @@ public class TreeChart<X> extends Surface {
         return new Function<>() {
             final Map<X, ItemVis<X>> cache
                     = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 256);
-//            final Cache<X, ItemVis<X>> cache
-//                    Caffeine.newBuilder().maximumSize(1024).build(); //TODO just use LRUHashMap or something
+
+
 
             @Override
             public ItemVis<X> apply(X x) {
@@ -95,19 +95,19 @@ public class TreeChart<X> extends Surface {
         top = 0;
 
         CircularArrayList<ItemVis<X>> display = phase.commit();
-//        int cs = display.capacity();
-//        if (cs < ns) {
-//            display.clear(ns);
-//        } else if (cs > ns*2) {
-//            display.clear(ns); //shrink if more than 2x as large
-//        } else {
-            display.clear(); //just fine
-        //}
+
+
+
+
+
+
+            display.clear(); 
+        
 
         final float[] weight = {0};
         next.forEach(item -> {
             if (item == null)
-                return; //TODO return false to stop the iteration
+                return; 
 
             ItemVis<X> e = vis.apply(item);
             if (e != null) {
@@ -132,7 +132,7 @@ public class TreeChart<X> extends Surface {
             float areaNormalization = (width * height) / weight[0];
             display.forEach(c -> {
                 c.area = c.requestedArea() * areaNormalization;
-                //assert (c.area > Pri.EPSILON);
+                
             });
 
             squarify(display, new CircularArrayList(size), minimumSide());
@@ -202,18 +202,18 @@ public class TreeChart<X> extends Surface {
         for (ItemVis item : row) {
             totalArea += item.area;
         }
-//        assert(totalArea > 0);
+
 
         if (layoutOrient == LayoutOrient.VERTICAL) {
 
 
             double rowWidth = totalArea / w;
-            //assert(rowWidth > 0);
+            
             double topItem = 0;
 
             for (ItemVis item : row) {
                 float area = item.area;
-                //assert(area > 0);
+                
 
                 item.top = (float) (top + topItem);
                 item.left = left;
@@ -224,7 +224,7 @@ public class TreeChart<X> extends Surface {
                 topItem += h;
             }
             widthLeft -= rowWidth;
-            //this.heightLeft -= w;
+            
             left += rowWidth;
             double minimumSide = minimumSide();
             if (!Util.equals(minimumSide, heightLeft, Spatialization.EPSILONf)) {
@@ -233,7 +233,7 @@ public class TreeChart<X> extends Surface {
         } else {
 
             float rowHeight = (float) (totalArea / w);
-            //assert(rowHeight > 0);
+            
             float rowLeft = 0;
 
             for (ItemVis item : row) {
@@ -247,7 +247,7 @@ public class TreeChart<X> extends Surface {
 
                 rowLeft += wi;
             }
-            //this.widthLeft -= rowHeight;
+            
             heightLeft -= rowHeight;
             top += rowHeight;
 
@@ -268,56 +268,56 @@ public class TreeChart<X> extends Surface {
     }
 
 
-//    public static class WeightedString {
-//        public final String label;
-//        public final float weight;
-//
-//        public WeightedString(String label, float weight) {
-//            this.label = label;
-//            this.weight = weight;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return label;
-//        }
-//
-//        public static WeightedString w(String s, float w) {
-//            return new WeightedString(s, w);
-//        }
-//    }
 
-//	// private final ColorBucket colorBucket = ColorBucket.createBucket();
-//	public final Item root;
-//
-//	public final DoubleProperty width = new SimpleDoubleProperty(640.0);
-//	public final DoubleProperty height = new SimpleDoubleProperty(280.0);
-//
-//	private final TreemapLayout treemapLayouter;
-//
-//	public TreemapChart(Item root) {
-//        this.root = root;
-//        SortedSet<Item> items = root.content();
-//        treemapLayouter = elementFactory.createTreemapLayout(width.doubleValue(), height.doubleValue(), items);
-//        ChangeListener<Number> changeListener = (observableValue, number, number2) -> treemapLayouter.update(width.doubleValue(), height.doubleValue(), items);
-//        width.addListener(changeListener);
-//        height.addListener(changeListener);
-//        getChildren().add(treemapLayouter);
-//
-//    }
-//	public void update() {
-//		treemapLayouter.update(width.doubleValue(), height.doubleValue(),
-//				root.content());
-//		autosize();
-//	}
-//
-//	public DoubleProperty getWidth() {
-//		return width;
-//	}
-//
-//	public DoubleProperty getHeight() {
-//		return height;
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * @author Tadas Subonis <tadas.subonis@gmail.com>
@@ -342,7 +342,7 @@ public class TreeChart<X> extends Surface {
             this.id = serial.incrementAndGet();
             this.item = item;
             this.label = label;
-            this.weight = 1; //default
+            this.weight = 1; 
             r = g = b = 0.5f;
         }
 
@@ -372,21 +372,21 @@ public class TreeChart<X> extends Surface {
         public boolean equals(Object o) {
             return this == o;
 
-            //if (o == null || getClass() != o.getClass()) return false;
+            
 
-            //        ItemVis that = (ItemVis) o;
-            //
-            //        if (item != null ? !item.equals(that.item) : that.item != null) return false;
-            //        return !(label != null ? !label.equals(that.label) : that.label != null);
+            
+            
+            
+            
 
         }
 
         @Override
         public int hashCode() {
             throw new UnsupportedOperationException();
-            //        int result = label != null ? label.hashCode() : 0;
-            //        result = 31 * result + (item != null ? item.hashCode() : 0);
-            //        return result;
+            
+            
+            
         }
 
         public void paint(GL2 gl, float percent) {
@@ -399,14 +399,14 @@ public class TreeChart<X> extends Surface {
             }
 
 
-            //float z = 0;
+            
 
 
             gl.glColor3f(r, g, b);
-            float m = 0.0f; //margin, space between cells
+            float m = 0.0f; 
             Draw.rect(gl, left + m / 2, top + m / 2, width - m, height - m);
 
-            float labelSize = 1f / (1 + label.length()); //Math.min(16, (float) (height * percent * 20f ) ); /// 4f * Math.min(0.5f,percent));
+            float labelSize = 1f / (1 + label.length()); 
 
             /*if (area > 16f*label.length())*/ {
 
@@ -414,9 +414,9 @@ public class TreeChart<X> extends Surface {
                 gl.glColor3f(1, 1, 1);
 
                 Draw.text(gl, label,
-                        labelSize * Math.min(width, height), //label size
+                        labelSize * Math.min(width, height), 
                         left + width / 2, top + height / 2, 0f);
-                //(float) (left + width / 2f), (float) (top + height / 2f), 0);
+                
 
             }
 
@@ -438,22 +438,22 @@ public class TreeChart<X> extends Surface {
         }
     }
 
-//	public static void main(String[] args) {
-//		SpaceGraph<VirtualTerminal> s = new SpaceGraph<>();
-//		s.show(800, 800);
-//		TreeChart<WeightedString> tc = new TreeChart<>(500, 400,
-//				(w, v) -> {
-//					v.update(w.weight);
-//				},
-//				w("z", 0.25f),
-//				w("x", 1f),
-//				w("y", 0.5f),
-//				w("a", 0.1f),
-//				w("b", 0.08f),
-//				w("c", 0.07f)
-//		);
-//		System.out.println(tc.children);
-//		s.add(new Ortho(tc));
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

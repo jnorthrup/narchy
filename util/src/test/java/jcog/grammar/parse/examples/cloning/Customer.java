@@ -38,7 +38,7 @@ public class Customer implements Cloneable {
 		try {
 			return super.clone();
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

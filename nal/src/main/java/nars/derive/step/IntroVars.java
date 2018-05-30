@@ -32,7 +32,7 @@ public final class IntroVars extends AbstractPred<Derivation> {
 
         if (!y.unneg().op().conceptualizable ||
             y.equals(x) || /* keep only if it differs */
-            //!y.hasAny(Op.ConstantAtomics) ||  //entirely variablized
+            
             !Task.validTaskTerm(y, d.concPunc, true)
         )
             return false;
@@ -42,8 +42,8 @@ public final class IntroVars extends AbstractPred<Derivation> {
         changes.forEach((cx,cy)->d.untransform.put(cy, cx));
         d.derivedTerm = y;
 
-//            //reduce evidence by a factor proportional to the number of variables introduced
-//            p.concEviFactor *= (((float)(1+y.complexity()))/(1+x.complexity()));
+
+
 
         return true;
     }

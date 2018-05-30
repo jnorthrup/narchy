@@ -44,7 +44,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
         this.term = id;
 
         this.last = nar.time();
-        this.input = input; //input==null ? ((FloatSupplier)this) : input;
+        this.input = input; 
         this.in = nar.newChannel(id);
         this.truther = (prev,next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null;
     }
@@ -60,7 +60,7 @@ abstract public class DemultiplexedScalar extends NARService implements Iterable
         synchronized (this) {
             long now = n.time();
 
-            //update(now-dur/2, now+dur/2, n.dur(), n);
+            
             update(last, now, Math.max((int) (now - last), 1), n);
 
             this.last = now;

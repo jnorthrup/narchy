@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 27.11.2003 by RST.
-// $Id: frame_t.java,v 1.3 2004-07-09 06:50:50 hzi Exp $
+
+
 
 package jake2.client;
 
@@ -31,14 +31,14 @@ public class frame_t {
 		
 	public static final int MAX_MAP_AREAS = 256; 
 		
-	boolean		valid;			// cleared if delta parsing was invalid
+	boolean		valid;			
 	int				serverframe;
-	public int servertime;		// server time the message is valid for (in msec)
+	public int servertime;		
 	int				deltaframe;
-	final byte[]			areabits = new byte [MAX_MAP_AREAS/8];		// portalarea visibility bits
-	public final player_state_t playerstate = new player_state_t(); // mem
+	final byte[]			areabits = new byte [MAX_MAP_AREAS/8];		
+	public final player_state_t playerstate = new player_state_t(); 
 	public int				num_entities;
-	public int				parse_entities;	// non-masked index into cl_parse_entities array
+	public int				parse_entities;	
 		
 	public void set(frame_t from) {
 		valid = from.valid;

@@ -14,7 +14,7 @@ import java.util.WeakHashMap;
  * GC lets me keep. Whenever objects fall off the MRU they go to the
  * LRU for as long as the GC will have them.
  *
- * http://stackoverflow.com/a/11731495
+ * http:
  */
 public class RUCache<K, V> {
     final Map<K, V> mru;

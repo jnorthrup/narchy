@@ -64,13 +64,13 @@ public class MetafilepictHandler extends TypeHandler {
         String thingy = "";
         OutputStream out = null;
 
-        // System.out.print("Metafile mapping mode = ");
+        
         int mm = data.getLittleEndian32();
-        // System.out.print(mapping_modes[mm]);
+        
         int width = data.getLittleEndian32();
-        // System.out.print(", width = " + width);
+        
         int height = data.getLittleEndian32();
-        // System.out.println(", height = " + height);
+        
 
         try {
             out = new FileOutputStream("test.wmf");
@@ -80,7 +80,7 @@ public class MetafilepictHandler extends TypeHandler {
                 out.write(aByte);
                 thingy += Integer.toHexString(aByte & 0xFF) + ' ';
             }
-            // System.out.println(thingy);
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -116,13 +116,13 @@ public class MetafilepictHandler extends TypeHandler {
         String thingy = "";
         OutputStream out = null;
 
-        // System.out.print("Metafile mapping mode = ");
+        
         int mm = data.getLittleEndian32();
-        // System.out.print(mapping_modes[mm]);
+        
         int width = data.getLittleEndian32();
-        // System.out.print(", width = " + width);
+        
         int height = data.getLittleEndian32();
-        // System.out.println(", height = " + height);
+        
 
         try {
             out = new FileOutputStream("test.wmf");
@@ -132,7 +132,7 @@ public class MetafilepictHandler extends TypeHandler {
                 out.write(aByte);
                 thingy += Integer.toHexString(aByte & 0xFF) + ' ';
             }
-            // System.out.println(thingy);
+            
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -44,9 +44,9 @@ public class DistributorTest {
             p += pd;
 
             probabilityActiveAdjusted.add(p);
-            //System.out.println((i / ((double) levels)) + "\t" + p);
+            
         }
-        //System.out.println(probabilityActiveAdjusted);
+        
         DoubleArrayList a = new DoubleArrayList(probabilityActiveAdjusted.size());
         probabilityActiveAdjusted.forEach(a::add);
         double[] aa = a.toArray();

@@ -17,7 +17,7 @@ public class Head
     private final Unit _gama;
     private final int width;
 
-    //M
+    
     public Unit[] getKeyVector() {
         return _keyVector;
     }

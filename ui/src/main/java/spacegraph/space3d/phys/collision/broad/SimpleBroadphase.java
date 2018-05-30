@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -38,7 +38,7 @@ import spacegraph.util.math.v3;
 public class SimpleBroadphase extends Broadphase {
 
     private final OArrayList<SimpleBroadphasing> handles = new OArrayList<>();
-    //private int maxHandles;						// max number of handles
+    
     private final OverlappingPairCache pairCache;
     private boolean ownsPairCache;
 
@@ -128,10 +128,10 @@ public class SimpleBroadphase extends Broadphase {
     @Override
     public void update(Intersecter intersecter) {
         for (int i = 0; i < handles.size(); i++) {
-            //return array[index];
+            
             SimpleBroadphasing proxy0 = handles.get(i);
             for (int j = 0; j < handles.size(); j++) {
-                //return array[index];
+                
                 SimpleBroadphasing proxy1 = handles.get(j);
                 if (proxy0 == proxy1) continue;
 
@@ -140,7 +140,7 @@ public class SimpleBroadphase extends Broadphase {
                         pairCache.addOverlappingPair(proxy0, proxy1);
                     }
                 } else {
-                    // JAVA NOTE: pairCache.hasDeferredRemoval() = true is not implemented
+                    
 
                     if (!pairCache.hasDeferredRemoval()) {
                         if (pairCache.findPair(proxy0, proxy1) != null) {
@@ -165,8 +165,8 @@ public class SimpleBroadphase extends Broadphase {
 
     @Override
     public void printStats() {
-//		System.out.printf("btSimpleBroadphase.h\n");
-//		System.out.printf("numHandles = %d, maxHandles = %d\n", /*numHandles*/ handles.size(), maxHandles);
+
+
     }
 
 }

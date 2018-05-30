@@ -44,8 +44,8 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
         if (e == null || d.equals(e))
             return d;
 
-        //return Revision.revise(d, e); //<- this is optimistic that the truths dont overlap
-        return Truth.stronger(d, e); //<- this is conservative disallowing any overlap
+        
+        return Truth.stronger(d, e); 
     }
 
     /**
@@ -54,54 +54,54 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     @Nullable
     protected abstract Truth truthDynamic(long start, long end, Term template, NAR nar);
 
-//    @Override
-//    public boolean add(final Task input, TaskConcept concept, NAR nar) {
-//
-////        if (Param.FILTER_DYNAMIC_MATCHES) {
-////            if (!input.isInput()) {
-////
-////                long start, end;
-////
-////                Term inputTerm = input.term();
-////                long[] inputStamp = input.stamp();
-//////                boolean[] foundEqual = new boolean[1];
-////                Task matched = match(start = input.start(), end = input.end(), inputTerm, nar, (m) ->
-//////                        (foundEqual[0] |= (m.equals(input)))
-//////                                    ||
-////                                (
-////                        //one stamp is entirely contained within the other
-//////                        (inputStamp.length >= m.stamp().length && Stamp.overlapFraction(m.stamp(), inputStamp) >= 1f)
-//////                            &&
-////                        m.term().equals(inputTerm) &&
-////                        m.start() <= start &&
-////                        m.end() >= end
-////                );
-////
-////                if (matched == input)
-////                    return true; //duplicate
-////
-////                //must be _during_ the same time and same term, same stamp, then compare Truth
-////                if (matched != null) {
-////
-////                    float inputPri = input.priElseZero();
-////
-////                    if (matched instanceof DynTruth.DynamicTruthTask &&
-////                            PredictionFeedback.absorb(matched, input, start, end, nar.dur(), nar.freqResolution.floatValue(), nar)) {
-////                        Tasklinks.linkTask(matched, inputPri, concept, nar);
-////                        return false;
-////                    } else if (input.equals(matched)) {
-////                        Tasklinks.linkTask(matched, inputPri, concept, nar);
-////                        return true;
-////                    }
-////
-////                    //otherwise it is unique (ex: frequency or conf)
-////
-////                }
-////            }
-////        }
-//
-//        return super.add(input, concept, nar);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public final byte punc() {
         return beliefOrGoal ? Op.BELIEF : Op.GOAL;
@@ -139,9 +139,9 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
             if (!dynOnly)
                 temporal.match(m, nar, ss::add);
 
-            //combine results from sensor series and from the temporal table
+            
             if (ss.size()==1) {
-                target.accept(ss.a); //simple case
+                target.accept(ss.a); 
             } else {
                 if (m.limit() > 1)
                     throw new TODO();
@@ -163,7 +163,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
     public Task match(long start, long end, Term template, Predicate<Task> filter, NAR nar) {
 
         if (template.op().atomic)
-            template = null; //HACK when accessed via AliasConcept
+            template = null; 
 
         Task y = taskDynamic(start, end, template, nar);
 

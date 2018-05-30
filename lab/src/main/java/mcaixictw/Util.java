@@ -76,7 +76,7 @@ public class Util {
 	 */
 	public static int decreaseResolution(double val, int bits) {
 		assert (val <= 1.0 && val >= 0.0);
-		// maximal possible value, all bits set to 1.
+		
 		int max = (1 << bits) - 1;
 		return (int) Math.round(val * max);
 	}

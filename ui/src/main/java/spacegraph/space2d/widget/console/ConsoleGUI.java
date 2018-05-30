@@ -46,20 +46,20 @@ public class ConsoleGUI extends ConsoleTerminal {
 
     static final Theme DARK = SimpleTheme.makeTheme(
             true,
-            TextColor.ANSI.WHITE, //baseForeground,
-            new TextColor.RGB(40,40,40), //baseBackground,
-            TextColor.ANSI.WHITE, // editableForeground,
-            TextColor.ANSI.BLUE, //editableBackground,
-            TextColor.ANSI.WHITE, //selectedForeground,
-            new TextColor.RGB(25,25,25), //selectedBackground,
+            TextColor.ANSI.WHITE, 
+            new TextColor.RGB(40,40,40), 
+            TextColor.ANSI.WHITE, 
+            TextColor.ANSI.BLUE, 
+            TextColor.ANSI.WHITE, 
+            new TextColor.RGB(25,25,25), 
             new TextColor.RGB(15,15,15));
 
     @Override
     public boolean start(@Nullable SurfaceBase parent) {
         if (super.start(parent)) {
-//                thr = new Thread(this);
-//                thr.setDaemon(true);
-//                thr.start();
+
+
+
             try {
 
                 screen = new TerminalScreen(term);
@@ -72,7 +72,7 @@ public class ConsoleGUI extends ConsoleTerminal {
 
 
 
-                //TODO try to avoid wrapping it in Window
+                
 
                 window = new BasicWindow();
                 window.setPosition(new TerminalPosition(0, 0));

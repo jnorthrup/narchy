@@ -7,7 +7,7 @@ public class FloatAveragedAsync implements FloatSupplier {
     private final FloatSupplier src;
     public int history;
 
-    //TODO use a primitive deque
+    
     final FloatArrayList data;
 
     public static FloatSupplier averaged(FloatSupplier src, int history) {

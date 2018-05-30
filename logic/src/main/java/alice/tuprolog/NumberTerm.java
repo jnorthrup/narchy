@@ -61,14 +61,14 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
     /** is this term a prolog real term? */
     public abstract boolean isReal();
     
-    //
+    
 
-//    public static Number createNumber(String s) {
-//        Term t = Term.createTerm(s);
-//        if (t instanceof Number)
-//            return (Number) t;
-//        throw new InvalidTermException("Term " + t + " is not a number.");
-//    }
+
+
+
+
+
+
     
     /**
      * Gets the actual term referred by this Term.
@@ -78,14 +78,14 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
         return this;
     }
     
-    // checking type and properties of the Term
+    
 
     @Override
     final public boolean isEmptyList() {
         return false;
     }
     
-    //
+    
     
     /** is this term a constant prolog term? */
     @Override
@@ -118,7 +118,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
     }
     
     
-    //
+    
     
     /**
      * gets a copy of this term.
@@ -239,12 +239,12 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
         @Override
         public boolean isGreaterRelink(Term t, ArrayList<String> vorder) {
             return isGreater(t);
-    //        t = t.getTerm();
-    //        if (t instanceof Number) {
-    //            return value > ( (Number) t ).longValue();
-    //        } else if (t instanceof Struct) {
-    //            return false;
-    //        } else return t instanceof Var;
+    
+    
+    
+    
+    
+    
         }
 
         /**
@@ -668,16 +668,16 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
             return java.lang.Double.toString(value);
         }
 
-    //    public int resolveVariables(int count) {
-    //        return count;
-    //    }
+    
+    
+    
 
         /**
          * @author Paolo Contessi
          */
         @Override
         public final int compareTo(NumberTerm o) {
-            return java.lang.Double.compare(value, o.doubleValue()); //(new java.lang.Double(value)).compareTo(o.doubleValue());
+            return java.lang.Double.compare(value, o.doubleValue()); 
         }
 
     }

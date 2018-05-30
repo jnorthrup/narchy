@@ -1363,10 +1363,10 @@ public class Texture
     * @param height
     *           Height
     */
-   private void fillRectWithMix(final int redTopLeft, final int greenTopLeft, final int blueTopLeft, final int alphaTopLeft,//
-         final int redTopRight, final int greenTopRight, final int blueTopRight, final int alphaTopRight,//
-         final int redBottomLeft, final int greenBottomLeft, final int blueBottomLeft, final int alphaBottomLeft,//
-         final int redBottomRight, final int greenBottomRight, final int blueBottomRight, final int alphaBottomRight, //
+   private void fillRectWithMix(final int redTopLeft, final int greenTopLeft, final int blueTopLeft, final int alphaTopLeft,
+         final int redTopRight, final int greenTopRight, final int blueTopRight, final int alphaTopRight,
+         final int redBottomLeft, final int greenBottomLeft, final int blueBottomLeft, final int alphaBottomLeft,
+         final int redBottomRight, final int greenBottomRight, final int blueBottomRight, final int alphaBottomRight, 
          final int x, final int y, final int width, final int height)
    {
       int line = (x + (y * this.width)) << 2;
@@ -1490,10 +1490,10 @@ public class Texture
     * @param height
     *           Height
     */
-   private void fillRectWithoutMix(final int redTopLeft, final int greenTopLeft, final int blueTopLeft, final int alphaTopLeft,//
-         final int redTopRight, final int greenTopRight, final int blueTopRight, final int alphaTopRight,//
-         final int redBottomLeft, final int greenBottomLeft, final int blueBottomLeft, final int alphaBottomLeft,//
-         final int redBottomRight, final int greenBottomRight, final int blueBottomRight, final int alphaBottomRight, //
+   private void fillRectWithoutMix(final int redTopLeft, final int greenTopLeft, final int blueTopLeft, final int alphaTopLeft,
+         final int redTopRight, final int greenTopRight, final int blueTopRight, final int alphaTopRight,
+         final int redBottomLeft, final int greenBottomLeft, final int blueBottomLeft, final int alphaBottomLeft,
+         final int redBottomRight, final int greenBottomRight, final int blueBottomRight, final int alphaBottomRight, 
          final int x, final int y, final int width, final int height)
    {
       int line = (x + (y * this.width)) << 2;
@@ -1804,7 +1804,7 @@ public class Texture
     */
    public void bind(final GL gl)
    {
-      // If no video memory ID, create it
+      
       if(this.videoMemoryId < 0)
       {
          BufferUtils.TEMPORARY_INT_BUFFER.rewind();
@@ -1814,10 +1814,10 @@ public class Texture
          BufferUtils.TEMPORARY_INT_BUFFER.rewind();
          this.videoMemoryId = BufferUtils.TEMPORARY_INT_BUFFER.get();
       }
-      // If the texture need to be refresh
+      
       if(this.needToRefresh == true)
       {
-         // Push pixels in video memory
+         
          gl.glBindTexture(GL.GL_TEXTURE_2D, this.videoMemoryId);
          gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
          gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
@@ -1825,7 +1825,7 @@ public class Texture
          gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
          gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, this.width, this.height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, BufferUtils.transferByte(this.pixels));
       }
-      // Draw the texture
+      
       gl.glBindTexture(GL.GL_TEXTURE_2D, this.videoMemoryId);
 
       this.needToRefresh = false;
@@ -1875,17 +1875,17 @@ public class Texture
          r = this.pixels[i] & 0xFF;
          g = this.pixels[i + 1] & 0xFF;
          b = this.pixels[i + 2] & 0xFF;
-         //
+         
          y = (r * 0.299) + (g * 0.587) + (b * 0.114);
          u = ((-0.169 * r) - (0.331 * g)) + (0.500 * b) + 128.0;
          v = ((0.500 * r) - (0.419 * g) - (0.081 * b)) + 128.0;
-         //
+         
          y *= factor;
-         //
+         
          r = ColorsUtil.limite0_255((y - (0.0009267 * (u - 128))) + (1.4016868 * (v - 128)));
          g = ColorsUtil.limite0_255(y - (0.3436954 * (u - 128)) - (0.7141690 * (v - 128)));
          b = ColorsUtil.limite0_255(y + (1.7721604 * (u - 128)) + (0.0009902 * (v - 128)));
-         //
+         
          this.pixels[i] = (byte) r;
          this.pixels[i + 1] = (byte) g;
          this.pixels[i + 2] = (byte) b;
@@ -2357,7 +2357,7 @@ public class Texture
     */
    public void drawString(final int x, final int y, final String text, final Color color, final Font font, final boolean mix, final int precision)
    {
-      this.draw(font.createGlyphVector(Texture.CONTEXT, text),//
+      this.draw(font.createGlyphVector(Texture.CONTEXT, text),
             x, (int) (y + font.getLineMetrics(text, Texture.CONTEXT).getAscent()), color, mix, precision);
    }
 
@@ -2737,7 +2737,7 @@ public class Texture
     */
    public void fillString(final int x, final int y, final String text, final Color color, final Font font, final boolean mix)
    {
-      this.fill(font.createGlyphVector(Texture.CONTEXT, text), x, //
+      this.fill(font.createGlyphVector(Texture.CONTEXT, text), x, 
             (int) (y + font.getLineMetrics(text, Texture.CONTEXT).getAscent()), color, mix);
    }
 
@@ -3360,11 +3360,11 @@ public class Texture
          r = this.pixels[i] & 0xFF;
          g = this.pixels[i + 1] & 0xFF;
          b = this.pixels[i + 2] & 0xFF;
-         //
+         
          y = (r * 0.299) + (g * 0.587) + (b * 0.114);
-         //
+         
          c = (byte) ColorsUtil.limite0_255(y);
-         //
+         
          this.pixels[i] = c;
          this.pixels[i + 1] = c;
          this.pixels[i + 2] = c;
@@ -3392,11 +3392,11 @@ public class Texture
          r = this.pixels[i] & 0xFF;
          g = this.pixels[i + 1] & 0xFF;
          b = this.pixels[i + 2] & 0xFF;
-         //
+         
          y = (r * 0.299) + (g * 0.587) + (b * 0.114);
-         //
+         
          c = (byte) (255 - ColorsUtil.limite0_255(y));
-         //
+         
          this.pixels[i] = c;
          this.pixels[i + 1] = c;
          this.pixels[i + 2] = c;

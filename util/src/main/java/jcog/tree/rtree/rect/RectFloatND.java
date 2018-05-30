@@ -10,7 +10,7 @@ package jcog.tree.rtree.rect;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -87,27 +87,27 @@ public class RectFloatND implements HyperRegion<FloatND>, Serializable, Comparab
         return new RectFloatND(FloatND.fill(i, NEGATIVE_INFINITY), FloatND.fill(i, POSITIVE_INFINITY));
     }
 
-//    @Override
-//    public boolean contains(final HyperRegion _inner) {
-//        final RectFloatND x = (RectFloatND) _inner;
-//        int dim = dim();
-//        for (int i = 0; i < dim; i++) {
-//            if (!(min.coord[i] <= x.min.coord[i] && max.coord[i] >= x.max.coord[i]))
-//                return false;
-//        }
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean intersects(final HyperRegion r) {
-//        final RectFloatND x = (RectFloatND) r;
-//        int dim = dim();
-//        for (int i = 0; i < dim; i++) {
-//            if (min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i])
-//                return false;
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public double cost() {

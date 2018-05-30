@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IntervalTreeTest {
 
     @Test public void testIntersectionAdjacent() {
-        //two adjacent but non-overlapping intervals create a zero
+        
         Longerval x = Longerval.intersect(1, 2, 2, 3);
         assertNotNull(x);
         assertEquals(1,x.range());
@@ -67,12 +67,7 @@ public class IntervalTreeTest {
             t.put(10, 20, "10-20");
             t.put(15, 25, "15-25");
             t.put(20, 30, "20-30");
-		/*Random r = new Random();
-		for(int i=0;i<500;i++){
-			t.put(r.nextInt(100000)+50,r.nextInt(100000) + 100050,"Desu");
-			System.out.println("Size: " + t.size() + "\t Height: " + t.height() + "\t Average Height: " + t.averageHeight());
-		}
-		System.exit(-1);//*/
+
             return t;
         }
 

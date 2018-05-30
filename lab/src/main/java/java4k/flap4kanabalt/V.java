@@ -87,15 +87,15 @@ public class V extends Applet implements Runnable {
 		BufferedImage iBackground = new BufferedImage(320, 205, BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics2D g = iBackground.createGraphics();
 		try {
-			//			g.drawImage(ImageIO.read(V.class.getResource("a.png")), 0, 0, 320, 205, 0, 0, 120, 77, null);
+			
 
-			//			g.drawImage(ImageIO.read(new ByteArrayInputStream(DatatypeConverter.parseBase64Binary(
-			//					"R0lGODlheABNAPEAAIaGlrCwv2RqfQAAACwAAAAAeABNAEEC/4yPqct94KKcNIILFd670uwtEBga5MSlale2yJpgMfesNsMJthoIwV3bCXe6odEmSCqXyo2OCW1Gl4Bk9Ym9aq3cbHd7RKam5LDKqjWrnbliUU2OM9dsN/3ejg/l/D4RjOfUN0hYaPi2goYmNHd2+AhJGPZ0gSgYiZlZ6MKpcfEzEgo6+lkaynL62SmCt6rh+hOLIkR6EkTHmXIbyMvbZBSFASXcGPjbm8g3Jnd5jPz3XNksiecVjbSoDJx5NbznZnlNfcmoySxmh2y+vs4IuMweL49ZCa44j48Ju2rroNrSD5aMBjD2dYhmAtTAfSZaMZTF758FIB8cGgzoicUDiP8ThzTEYfHitZEk/1HcVTIlnJUqgbXspkfYFi80y3y5SXOmzpsqs02BV6ZeMJI/n4UzBLSoUGctw/n6dchYFWkvqS5dZEaTMXBVk8bERk/pHy49B8GkAjYf0zpWq6l9qy1ZPaNw63pL9I4IWq9287lMl6evYD/b5joajLgRFXs2l15NbPehC4ySOVa+PKurRsz+MOuSlSF0QtAKD9KQvHn0SYECJZamPDkka1cjMvPwEAg1a9goT78Aeeeha3+pF3bcUQM4Ls7Ki3P83NBMczXMWd3eCKLgayPTpaPWDN5jbI3he0r3cX3GSKfi4rb1iL48m6bup07C+rjpS8KPIUPBon/ONEOdtddUb1AizYH2GSiTggB2cRcx/j2izmH8SRgUgWvRVWAvRxXCVzEEasaeWxCCWE1e+uG1xjBIpUhWV4iImBU3bhlW1YEZbkNPigzud0+A5fR4hzXlXZjWfzemQZRWeoU1IDQIljROhCHOg86UJk6oFjY4PsUlPmL86GGYWGa5IJhmsqPXl0kmsyabY2r5poVxEommU3dCVhiTge1Zl0xzpikgoF3+RSeGhooJ05+LsbeoYGdpKChakcZTAAA7"
-			//					))), 0, 0, 320, 205, 0, 0, 120, 77, null);
+			
+			
+			
 
-			//			g.drawImage(ImageIO.read(new ByteArrayInputStream((new BASE64Decoder()).decodeBuffer(
-			//					"R0lGODlheABNAPEAAIaGlrCwv2RqfQAAACwAAAAAeABNAEEC/4yPqct94KKcNIILFd670uwtEBga5MSlale2yJpgMfesNsMJthoIwV3bCXe6odEmSCqXyo2OCW1Gl4Bk9Ym9aq3cbHd7RKam5LDKqjWrnbliUU2OM9dsN/3ejg/l/D4RjOfUN0hYaPi2goYmNHd2+AhJGPZ0gSgYiZlZ6MKpcfEzEgo6+lkaynL62SmCt6rh+hOLIkR6EkTHmXIbyMvbZBSFASXcGPjbm8g3Jnd5jPz3XNksiecVjbSoDJx5NbznZnlNfcmoySxmh2y+vs4IuMweL49ZCa44j48Ju2rroNrSD5aMBjD2dYhmAtTAfSZaMZTF758FIB8cGgzoicUDiP8ThzTEYfHitZEk/1HcVTIlnJUqgbXspkfYFi80y3y5SXOmzpsqs02BV6ZeMJI/n4UzBLSoUGctw/n6dchYFWkvqS5dZEaTMXBVk8bERk/pHy49B8GkAjYf0zpWq6l9qy1ZPaNw63pL9I4IWq9287lMl6evYD/b5joajLgRFXs2l15NbPehC4ySOVa+PKurRsz+MOuSlSF0QtAKD9KQvHn0SYECJZamPDkka1cjMvPwEAg1a9goT78Aeeeha3+pF3bcUQM4Ls7Ki3P83NBMczXMWd3eCKLgayPTpaPWDN5jbI3he0r3cX3GSKfi4rb1iL48m6bup07C+rjpS8KPIUPBon/ONEOdtddUb1AizYH2GSiTggB2cRcx/j2izmH8SRgUgWvRVWAvRxXCVzEEasaeWxCCWE1e+uG1xjBIpUhWV4iImBU3bhlW1YEZbkNPigzud0+A5fR4hzXlXZjWfzemQZRWeoU1IDQIljROhCHOg86UJk6oFjY4PsUlPmL86GGYWGa5IJhmsqPXl0kmsyabY2r5poVxEommU3dCVhiTge1Zl0xzpikgoF3+RSeGhooJ05+LsbeoYGdpKChakcZTAAA7"
-			//					))), 0, 0, 320, 205, 0, 0, 120, 77, null);
+			
+			
+			
 
 			g.drawImage(
 					ImageIO.read(new ByteArrayInputStream(
@@ -104,13 +104,13 @@ public class V extends Applet implements Runnable {
 		} catch (Exception e1) {
 		}
 
-		// Graphische Grundlagen für das Double Buffering
+		
 		BufferedImage screen = new BufferedImage(320, 480, BufferedImage.TYPE_INT_RGB);
 		g = screen.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		Graphics2D appletGraphics = (Graphics2D) getGraphics();
 
-		// Variablen zum Zeitmessen und genau Timen wann geupdatet werden soll
+		
 		long lastTime = System.nanoTime();
 		long think = 10000000L;
 
@@ -141,14 +141,14 @@ public class V extends Applet implements Runnable {
 		int[] level = new int[4];
 		level[0] = level[1] = 400;
 
-		// Game loop.
+		
 		while (true) {
 			long now = System.nanoTime();
 			long delta = now - lastTime;
 			think += delta;
 
-			// Update / think
-			// Wenn 10 ms vergangen sind, dann denke nach
+			
+			
 			while (think >= 10000000L) {
 				think -= 10000000L;
 
@@ -243,7 +243,7 @@ public class V extends Applet implements Runnable {
 						}
 					}
 
-					// do action
+					
 					if ((this.down) && (!bCurDown)) {
 						bCurDown = true;
 						curVecY = -2.45f;
@@ -257,8 +257,8 @@ public class V extends Applet implements Runnable {
 
 			lastTime = now;
 
-			// Renderabschnitt
-			// Hintergrund malen
+			
+			
 			g.setColor(windowColor);
 			g.fillRect(0, 0, 320, 140);
 			g.setColor(downColor);
@@ -367,7 +367,7 @@ public class V extends Applet implements Runnable {
 				}
 			}
 
-			// Render das Ganze auf den Bildschirm
+			
 			appletGraphics.drawImage(screen, 0, 0, null);
 
 			try {

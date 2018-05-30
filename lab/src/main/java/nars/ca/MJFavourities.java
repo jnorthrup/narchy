@@ -1,14 +1,14 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Favourite patterns list
+package nars.ca;
+
+
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
-//import java.io.*;
+
 
 public class MJFavourities extends Dialog implements ActionListener {
 	private final Button btnLoad;
@@ -17,8 +17,8 @@ public class MJFavourities extends Dialog implements ActionListener {
 	private final List LstFiles = new List(10, false);
 	private final MJCellUI mjUI;
 
-	// ----------------------------------------------------------------
-	// Constructor
+	
+	
 	MJFavourities(Frame frame, MJCellUI mjui) {
 		super(frame, "Favourite patterns", false);
 		mjUI = mjui;
@@ -43,15 +43,15 @@ public class MJFavourities extends Dialog implements ActionListener {
 		pack();
 	}
 
-	// ----------------------------------------------------------------
-	// Fill the list with patterns from the current rule
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitList() {
 		MJTools mjT;
 		Vector vLines;
 		int i, iGame;
 
-		LstFiles.clear(); // no items
+		LstFiles.clear(); 
 
 		vLines = new Vector();
 		mjT = new MJTools();
@@ -63,8 +63,8 @@ public class MJFavourities extends Dialog implements ActionListener {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Load the currently selected pattern
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void LoadCurrentPattern() {
 		String sGameName = "";
@@ -75,13 +75,13 @@ public class MJFavourities extends Dialog implements ActionListener {
 			String sItem = LstFiles.getSelectedItem();
 			int whereSlash = sItem.lastIndexOf('/');
 			if (whereSlash > 0) {
-				sPattName = sItem.substring(whereSlash + 1); // part after '/'
+				sPattName = sItem.substring(whereSlash + 1); 
 
-				sItem = sItem.substring(0, whereSlash); // part before '/'
+				sItem = sItem.substring(0, whereSlash); 
 				int whereSep = sItem.lastIndexOf('|');
 				if (whereSep > 0) {
-					sGameName = sItem.substring(0, whereSep); // part before '|'
-					sRuleName = sItem.substring(whereSep + 1); // part after '|'
+					sGameName = sItem.substring(0, whereSep); 
+					sRuleName = sItem.substring(whereSep + 1); 
 
 					sGameName = mjUI.mjr.GetGameName(mjUI.mjr
 							.GetGameIndex(sGameName));
@@ -103,7 +103,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 		}
 	}
 
-	// ----------------------------------------------------------------
+	
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if (ae.getSource() == btnLoad) {
@@ -113,7 +113,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 		}
 	}
 
-	// ----------------------------------------------------------------
+	
 	@Override
 	public boolean action(Event evt, Object arg) {
 		if (evt.target.equals(LstFiles)) {
@@ -123,7 +123,7 @@ public class MJFavourities extends Dialog implements ActionListener {
 		return true;
 	}
 
-	// ----------------------------------------------------------------
+	
 	@Override
 	public boolean handleEvent(Event evt) {
 		if (evt.id == Event.WINDOW_DESTROY)
@@ -132,6 +132,6 @@ public class MJFavourities extends Dialog implements ActionListener {
 			return super.handleEvent(evt);
 		return true;
 	}
-	// ----------------------------------------------------------------
+	
 
 }

@@ -34,7 +34,7 @@ public class SubtermsTest {
             } else if (bCompound && !aCompound) {
                 return b.contains(a);
             } else {
-                //neither are compounds
+                
                 return a.equals(b);
             }
         }
@@ -120,8 +120,8 @@ public class SubtermsTest {
 
 
 
-//    @Test public void testSubtermsExcept() {
-//        //TODO
-//    }
+
+
+
 
 }

@@ -68,14 +68,14 @@ public enum Util {
     public static final int PRIME3 = 524287;
     public static final int PRIME2 = 92821;
     public static final int PRIME1 = 31;
-    public static final float[] EmptyFloatArray = new float[0]; //TODO find what class this is elsewhere something like ArrayUtils
+    public static final float[] EmptyFloatArray = new float[0]; 
 
     public static final int MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors();
 
 
     /**
      * It is basically the same as a lookup table with 2048 entries and linear interpolation between the entries, but all this with IEEE floating point tricks.
-     * http://stackoverflow.com/questions/412019/math-optimization-in-c-sharp#412988
+     * http:
      */
     public static double expFast(double val) {
         long tmp = (long) (1512775 * val + (1072693248 - 60801));
@@ -83,21 +83,21 @@ public enum Util {
     }
 
 
-//    /**
-//     * Fetch the Unsafe.  Use With Caution.
-//     */
-//    public static Unsafe getUnsafe() {
-//        // Not on bootclasspath
-//        if (Util.class.getClassLoader() == null)
-//            return Unsafe.getUnsafe();
-//        try {
-//            Field fld = Unsafe.class.getDeclaredField("theUnsafe");
-//            fld.setAccessible(true);
-//            return (Unsafe) fld.get(Util.class);
-//        } catch (Exception e) {
-//            throw new RuntimeException("Could not obtain access to Unsafe", e);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static String UUIDbase64() {
         long low = UUID.randomUUID().getLeastSignificantBits();
@@ -111,8 +111,8 @@ public enum Util {
     }
 
     public static int hash(byte[] bytes) {
-        //return Arrays.hashCode(bytes);
-        //92821
+        
+        
         return hash(bytes, 0, bytes.length);
     }
 
@@ -121,9 +121,9 @@ public enum Util {
     }
 
     private static int hashFNV(byte[] bytes, int from, int to) {
-        //https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
-        //https://softwareengineering.stackexchange.com/a/49599
-        //https://forum.powerbasic.com/forum/user-to-user-discussions/source-code/24260-fnv-fowler-noll-vo-32-bit-hash
+        
+        
+        
 
         int h = 0x811c9dc5;
         for(int i = from; i < to; i++)
@@ -138,27 +138,27 @@ public enum Util {
     public static long hash64(byte[] bytes, int from, int to) {
         return Util.hashELF(bytes, 1, from, to);
     }
-//    public static int hash(int a, int b) {
-//        return PRIME2 * (PRIME2 + a) + b;
-//    }
-//
-//    public static int hash(int a, int b, int c) {
-//        return PRIME2 * (PRIME2 * (PRIME2 + a) + b) + c;
-//    }
-
-//    public final static int hash(int a, int b, int c, int d) {
-//        return PRIME2 * (PRIME2 * (PRIME2 * (PRIME2 + a) + b) + c) + d;
-//    }
-
-//    public final static int hash(int a, int b, int c, int d, long e) {
-//        long x = PRIME2 * (PRIME2 * (PRIME2 * (PRIME2 * (PRIME2 + a) + b) + c) + d) + e;
-//        return (int)x;
-//    }
 
 
-//    public final static int hash(Object a, Object b, Object c, Object d) {
-//        return hash(a.hashCode(), b.hashCode(), c.hashCode(), d.hashCode());
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static void assertNotNull(Object test, String varName) {
         if (test == null) {
@@ -203,9 +203,9 @@ public enum Util {
     public static int fastCompare(float f1, float f2) {
 
         if (f1 < f2)
-            return -1;           // Neither val is NaN, thisVal is smaller
+            return -1;           
         if (f1 > f2)
-            return 1;            // Neither val is NaN, thisVal is larger
+            return 1;            
 
         return 0;
     }
@@ -237,7 +237,7 @@ public enum Util {
         line = line.trim();
         int strLen = line.length();
         StringBuilder sb = new StringBuilder(strLen);
-        // Remove beginning and ending * globs because they're useless
+        
         if (line.length() > 0 && line.charAt(0) == '*') {
             line = line.substring(1);
             strLen--;
@@ -327,14 +327,14 @@ public enum Util {
      *          General Purpose Hash Function Algorithms Library              *
      *                                                                        *
      * Author: Arash Partow - 2002                                            *
-     * URL: http://www.partow.net                                             *
-     * URL: http://www.partow.net/programming/hashfunctions/index.html        *
+     * URL: http:
+     * URL: http:
      *                                                                        *
      * Copyright notice:                                                      *
      * Free use of the General Purpose Hash Function Algorithms Library is    *
      * permitted under the guidelines and in accordance with the most current *
      * version of the Common Public License.                                  *
-     * http://www.opensource.org/licenses/cpl1.0.php                          *
+     * http:
      *                                                                        *
      **************************************************************************
      */
@@ -383,8 +383,8 @@ public enum Util {
      * from: ConcurrentReferenceHashMap.java found in Hazelcast
      */
     public static int hashWangJenkins(int h) {
-        // Spread bits to regularize both segment and index locations,
-        // using variant of single-word Wang/Jenkins hash.
+        
+        
         h += (h << 15) ^ 0xffffcd7d;
         h ^= (h >>> 10);
         h += (h << 3);
@@ -421,32 +421,32 @@ public enum Util {
 
     public static int hashCombine(int a, int b, int c) {
 
-        return hashCombine(hashCombine(a, b), c); //TODO decide if this is efficient and hashes well
+        return hashCombine(hashCombine(a, b), c); 
 
-        //https://gist.github.com/badboy/6267743
-//        a=a-b;  a=a-c;  a=a^(c >>> 13);
-//        b=b-c;  b=b-a;  b=b^(a << 8);
-//        c=c-a;  c=c-b;  c=c^(b >>> 13);
-//        a=a-b;  a=a-c;  a=a^(c >>> 12);
-//        b=b-c;  b=b-a;  b=b^(a << 16);
-//        c=c-a;  c=c-b;  c=c^(b >>> 5);
-//        a=a-b;  a=a-c;  a=a^(c >>> 3);
-//        b=b-c;  b=b-a;  b=b^(a << 10);
-//        c=c-a;  c=c-b;  c=c^(b >>> 15);
-//        return c;
+        
+
+
+
+
+
+
+
+
+
+
     }
 
-//    public static int hashNonZeroELF(byte[] str, int seed) {
-//        int i = (int) hashELF(str, seed);
-//        if (i == 0) i = 1;
-//        return i;
-//    }
+
+
+
+
+
 
     public static long hashELF(byte[] str, long seed) {
 
         long hash = seed;
 
-        //int len = str.length;
+        
 
         for (byte aStr : str) {
             hash = (hash << 4) + aStr;
@@ -480,7 +480,7 @@ public enum Util {
 
 
     /**
-     * http://www.eternallyconfuzzled.com/tuts/algorithms/jsw_tut_hashing.aspx
+     * http:
      */
     public static int hashROT(Object... x) {
         long h = 2166136261L;
@@ -521,7 +521,7 @@ public enum Util {
     }
 
     /**
-     * http://www.java-gaming.org/index.php?topic=24194.0
+     * http:
      */
     public static int floorInt(float x) {
         return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
@@ -567,22 +567,22 @@ public enum Util {
         Float.NaN is considered by this method to be equal to itself and greater than all other float values (including Float.POSITIVE_INFINITY).
         0.0f is considered by this method to be greater than -0.0f.
         This ensures that the natural ordering of Float objects imposed by this method is consistent with equals. */
-        //   if (a != a) {
-        //            return a;
-        //        } else if (a == 0.0F && b == 0.0F && (long)Float.floatToRawIntBits(a) == negativeZeroFloatBits) {
-        //            return b;
-        //        } else {
-        //            return a >= b ? a : b;
-        //        }
-//        assert (a == a);
-//        assert (b == b);
+        
+        
+        
+        
+        
+        
+        
+
+
         return (a >= b) ? a : b;
     }
 
 
     public static float min(float a, float b) {
-//        assert (a == a);
-//        assert (b == b);
+
+
         return (a <= b) ? a : b;
     }
 
@@ -598,38 +598,38 @@ public enum Util {
         return (a + b) / 2;
     }
 
-//
-//    public static short f2s(float conf) {
-//        return (short) (conf * Short.MAX_VALUE);
-//    }
-//
-//    public static byte f2b(float conf) {
-//        return (byte) (conf * Byte.MAX_VALUE);
-//    }
 
-//    /**
-//     * removal rates are approximately monotonically increasing function;
-//     * tests first, mid and last for this  ordering
-//     * first items are highest, so it is actually descending order
-//     * TODO improve accuracy
-//     */
-//    public static boolean isSemiMonotonicallyDec(double[] count) {
-//
-//
-//        int cl = count.length;
-//        return
-//                (count[0] >= count[cl - 1]) &&
-//                        (count[cl / 2] >= count[cl - 1]);
-//    }
 
-//    /* TODO improve accuracy */
-//    public static boolean isSemiMonotonicallyInc(int[] count) {
-//
-//        int cl = count.length;
-//        return
-//                (count[0] <= count[cl - 1]) &&
-//                        (count[cl / 2] <= count[cl - 1]);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Generic utility method for running a list of tasks in current thread
@@ -644,30 +644,30 @@ public enum Util {
         }
     }
 
-//    /**
-//     * Generic utility method for running a list of tasks in current thread (concurrency == 1) or in multiple threads (> 1, in which case it will block until they finish)
-//     */
-//    public static void run(Deque<Runnable> tasks, int maxTasksToRun, int threads) {
-//
-//        //int concurrency = Math.min(threads, maxTasksToRun);
-//        //if (concurrency == 1) {
-//            tasks.forEach(Runnable::run);
-////            return;
-//  //      }
-////
-////        ConcurrentContext ctx = ConcurrentContext.enter();
-////        ctx.setConcurrency(concurrency);
-////
-////        try {
-////            run(tasks, maxTasksToRun, ctx::execute);
-////        } finally {
-////            // Waits for all concurrent executions to complete.
-////            // Re-exports any exception raised during concurrent executions.
-////            if (ctx != null)
-////                ctx.exit();
-////        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -709,11 +709,11 @@ public enum Util {
         return x;
     }
 
-//    public static float notNaNOrNeg(float x) throws NumberException {
-//        if (notNaN(x) < 0)
-//            throw new NumberException("Negative");
-//        return x;
-//    }
+
+
+
+
+
 
 
     /**
@@ -731,7 +731,7 @@ public enum Util {
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
      */
     public static float round(float value, float epsilon) {
-        if (epsilon == 0) return value; //unchanged
+        if (epsilon == 0) return value; 
         else return Math.round(value / epsilon) * epsilon;
     }
     public static double round(double value, double epsilon) {
@@ -754,9 +754,9 @@ public enum Util {
         return (float) (Math.floor(value / epsilon) * epsilon);
     }
 
-//    public static float clampround(float value, float epsilon) {
-//        return unitize(round(value, epsilon));
-//    }
+
+
+
 
     public static int floatToInt(float f, int discretness) {
         return Math.round(f * discretness);
@@ -780,8 +780,8 @@ public enum Util {
     public static boolean equals(float a, float b, float epsilon) {
         assert(a==a);
         return  (Math.abs(a - b) < epsilon)
-                //||
-                //((a!=a) && (b!=b)) //NaN
+                
+                
         ;
     }
 
@@ -789,7 +789,7 @@ public enum Util {
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(double a, double b, double epsilon) {
-        return  ((a!=a) && (b!=b)) //NaN
+        return  ((a!=a) && (b!=b)) 
                 ||
                 (a == b)
                 ||
@@ -807,38 +807,38 @@ public enum Util {
     }
 
 
-//
-//    private final static Object waitLock = new Object();
-//
-//    public static long pauseWaitUntil(long untilTargetTimeMS) {
-//        long now = System.currentTimeMillis();
-//        long dt = untilTargetTimeMS - now;
-//        if (dt > 0) {
-//            synchronized (waitLock) {
-//                try {
-//                    waitLock.wait(dt);
-//                } catch (InterruptedException e) {
-//                }
-//            }
-//
-//            now = System.currentTimeMillis();
-//        }
-//        return now;
-//    }
 
-//    /** from: http://stackoverflow.com/a/1205300 */
-//    public static long pauseLockUntil(long untilTargetTime) {
-//
-//    // Wait until the desired next time arrives using nanosecond
-//    // accuracy timer (wait(time) isn't accurate enough on most platforms)
-//        long now = System.currentTimeMillis();
-//        long dt = (untilTargetTime-now) * 1000000;
-//        if (dt > 0) {
-//            LockSupport.parkNanos(dt);
-//            now = System.currentTimeMillis();
-//        }
-//        return now;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * applies a quick, non-lexicographic ordering compare
@@ -857,10 +857,10 @@ public enum Util {
             for (int i = 0; i < xlen; i++) {
                 int c = Long.compare(x[i], y[i]);
                 if (c != 0)
-                    return c; //first different chra
+                    return c; 
             }
 
-            return 0; //equal
+            return 0; 
         }
     }
 
@@ -878,19 +878,19 @@ public enum Util {
         }
 
 
-//        int digits = (index >= 256 ? 3 : ((index >= 16) ? 2 : 1));
-//        StringBuilder cb  = new StringBuilder(1 + digits).append(type);
-//        do {
-//            cb.append(  Character.forDigit(index % 16, 16) ); index /= 16;
-//        } while (index != 0);
-//        return cb.toString();
+
+
+
+
+
+
 
     }
 
     public static int bin(float x, int bins) {
         int b = (int) Math.floor((x + (0.5f / bins)) * bins);
         if (b >= bins)
-            b = bins - 1; //???
+            b = bins - 1; 
         return b;
     }
 
@@ -930,7 +930,7 @@ public enum Util {
         try {
             return MethodHandles
                     .lookup()
-                    //.publicLookup(
+                    
                     .unreflect(stream(type.getMethods()).filter(m -> m.getName().equals(name)).findFirst().get());
         } catch (IllegalAccessException e) {
             throw new Error(e);
@@ -1015,20 +1015,20 @@ public enum Util {
         return s;
     }
 
-//    /**
-//     * modifies the input array
-//     */
-//    public static <X> X[] reverse(X[] array) {
-//        if (array != null) {
-//            reverse(array, 0, array.length);
-//        }
-//        return array;
-//    }
+
+
+
+
+
+
+
+
+
 
     public static int[] reverse(IntArrayList l) {
         switch (l.size()) {
             case 0:
-                throw new UnsupportedOperationException(); //should never happen
+                throw new UnsupportedOperationException(); 
             case 1:
                 return new int[]{l.get(0)};
             case 2:
@@ -1036,9 +1036,9 @@ public enum Util {
             case 3:
                 return new int[]{l.get(2), l.get(1), l.get(0)};
             default:
-                //reverse the array since it has been constructed in reverse
-                //TODO use more efficient array reversal
-                return l.asReversed().toArray();//toReversed().toArray();
+                
+                
+                return l.asReversed().toArray();
         }
     }
 
@@ -1113,17 +1113,17 @@ public enum Util {
         return (x - min) / (max - min);
     }
 
-//    public static int lastNonNull(Object... x) {
-//        int j = -1;
-//        if (x != null) {
-//            int k = x.length;
-//            for (int i = 0; i < k; i++) {
-//                if (x[i] != null)
-//                    j = i;
-//            }
-//        }
-//        return j;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     public static float variance(float[] population) {
         float average = 0.0f;
@@ -1203,11 +1203,11 @@ public enum Util {
     }
 
     public static float[] minmax(float[] x) {
-        //float sum = 0;
+        
         float min = Float.POSITIVE_INFINITY;
         float max = Float.NEGATIVE_INFINITY;
         for (float y : x) {
-            //sum += y;
+            
             if (y < min) min = y;
             if (y > max) max = y;
         }
@@ -1226,11 +1226,11 @@ public enum Util {
     }
 
     public static double[] minmax(double[] x) {
-        //double sum = 0;
+        
         double min = Double.POSITIVE_INFINITY;
         double max = Double.NEGATIVE_INFINITY;
         for (double y : x) {
-            //sum += y;
+            
             if (y < min) min = y;
             if (y > max) max = y;
         }
@@ -1248,34 +1248,34 @@ public enum Util {
         return end - start;
     }
 
-//    public static File resourceAsFile(String resourcePath) {
-//        try {
-//            long modified = ClassLoader.getSystemClassLoader().getResource(resourcePath).openConnection().getLastModified();
-//
-//            InputStream in = ClassLoader.getSystemClassLoader().getResourceAsStream(resourcePath);
-//            if (in == null) {
-//                return null;
-//            }
-//
-//            File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
-//            tempFile.deleteOnExit();
-//
-//            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-//                //copy stream
-//                byte[] buffer = new byte[1024];
-//                int bytesRead;
-//                while ((bytesRead = in.read(buffer)) != -1) {
-//                    out.write(buffer, 0, bytesRead);
-//                }
-//            }
-//            tempFile.setLastModified(modified);
-//
-//            return tempFile;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static String tempDir() {
         return System.getProperty("java.io.tmpdir");
@@ -1443,11 +1443,11 @@ public enum Util {
         return result;
     }
 
-    // Implementing Fisher–Yates shuffle
+    
     public static void shuffle(Object[] ar, Random rnd) {
         for (int i = ar.length - 1; i > 0; i--) {
             int index = rnd.nextInt(i + 1);
-            // Simple swap
+            
             Object a = ar[index];
             ar[index] = ar[i];
             ar[i] = a;
@@ -1645,123 +1645,123 @@ public enum Util {
     }
 
 
-//    /**
-//     * semi-busy wait loop
-//     */
-//    public static void stall(int delayMS) {
-//        stall(System.currentTimeMillis(), delayMS);
-//    }
-//
-//    public static void stall(long start, int delayMS) {
-//        long end = start + delayMS;
-//        int pauseCount = 0;
-//        do {
-//            pauseNext(pauseCount++);
-//        } while (System.currentTimeMillis() < end);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * adaptive spinlock behavior
-     * see: https://github.com/conversant/disruptor/blob/master/src/main/java/com/conversantmedia/util/concurrent/Condition.java#L51
+     * see: https:
      */
     public static void pauseNext(int previousContiguousPauses) {
         if (previousContiguousPauses < 512) {
             onSpinWait();
         } else if (previousContiguousPauses < 1024) {
 
-            // "randomly" yield 1:8
+            
             if((previousContiguousPauses & 0x7) == 0) {
-                //long PARK_TIMEOUT = 50L; //50ns
-                 //LockSupport.parkNanos(PARK_TIMEOUT);
+                
+                 
                 Thread.yield();
 
             } else {
                 onSpinWait();
             }
         } else if (previousContiguousPauses < 2048) {
-            // "randomly" yield 1:4
+            
             if((previousContiguousPauses & 0x3) == 0) {
                 Thread.yield();
             } else {
                 onSpinWait();
             }
         } else {
-            //Util.sleep(0);
+            
             Thread.yield();
         }
     }
 
-//* http://www.qat.com/using-waitnotify-instead-thread-sleep-java/
-//        if (milli <= 0) return;
-//
-//        final Thread t = Thread.currentThread();
-//        long start = System.currentTimeMillis();
-//        long now = start;
-//        while (now - start < milli) {
-//            long ignore = milli - (now - start);
-//            if (ignore > 0L) {
-//                try {
-//                    synchronized (t) {
-//                        t.wait(ignore);
-//                    }
-//                } catch (InterruptedException var9) {
-//                }
-//            }
-//            now = System.currentTimeMillis();
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public static boolean sleep(long periodMS) {
         return sleepNS(periodMS * 1000000);
 
-//        if (periodMS <= 0) {
-//            Thread.yield();
-//        } else {
-////            long start = System.nanoTime();
-//
-//            if (periodMS > 20) {
-//                try {
-//                    Thread.sleep(periodMS);
-//                } catch (InterruptedException e) {
-//                    Thread.currentThread().interrupt();
-//                    return false;
-//                }
-//            } else {
-//                LockSupport.parkNanos(periodMS * 1000000);
-//            }
-//
-////            long end = System.nanoTime();
-////            if (end - start < periodMS * 1000000) {
-////                System.out.println("too short sleep");
-////            }
-//        }
-//        return true;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public static boolean sleepNS(long periodNS) {
         if (periodNS <= 0) return false;
-//        if (periodNS <= 10000 /** 10uS = 0.01ms */ ) {
-//            long start = System.nanoTime();
-//            long end = start + periodNS;
-//            do {
-//                Thread.onSpinWait();
-//            } while (System.nanoTime() < end);
-//        } else if (periodNS <= 500000 /** 100uS = 0.5ms */ ) {
-//            long start = System.nanoTime();
-//            long end = start + periodNS;
-//            do {
-//                Thread.yield();
-//            } while (System.nanoTime() < end);
-//        } else {
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             LockSupport.parkNanos(periodNS);
 
-//            try {
-//                TimeUnit.NANOSECONDS.sleep(periodNS);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
+
+
+
+
+
+
         return true;
     }
 
@@ -1790,69 +1790,69 @@ public enum Util {
         }
     }
 
-//    public static void shallowCopy(Object source, Object dest, final boolean publicOnly) {
-//        if (!source.getClass().isInstance(dest))
-//            throw new IllegalArgumentException();
-//
-//        for (Field f : Util.getAllDeclaredFields(source, publicOnly)) {
-//            try {
-//
-//                final int mods = f.getModifiers();
-//                if (Modifier.isStatic(mods) || Modifier.isFinal(mods))
-//                    continue;
-//
-//                f.setAccessible(true);
-//
-//                Object sourceValue = f.get(source);
-//                f.set(dest, sourceValue);
-//            } catch (IllegalArgumentException | IllegalAccessException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
 
-//    /**
-//     * 'publicOnly' just gets public fields (Class.getFields vs. Class.getDeclaredFields) so we can work with reduced
-//     * functionality in a sandboxed environment (ie. applets)
-//     */
-//    public static Map<String, Reflect> getAllDeclaredFields(Object object, final boolean publicOnly) {
-//
-////        Set<Field> result = new HashSet<Field>();
-//
-//        Class<?> clazz = object.getClass();
-//        return Reflect.on(clazz).fields(true, true, !publicOnly);
-//
-////        while (clazz != null) {
-////            Field[] fields;
-////            if (publicOnly)
-////                fields = clazz.getFields();
-////            else
-////                fields = clazz.getDeclaredFields();
-////
-////            Collections.addAll(result, fields);
-////
-////            clazz = clazz.getSuperclass();
-////        }
-////
-////        return result;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
-     * http://www.java-gaming.org/topics/utils-essentials/22144/30/view.html
+     * http:
      * calculate height on a uniform grid, by splitting a quad into two triangles:
      */
     public static final float lerp2d(float x, float z, float nw, float ne, float se, float sw) {
-        // n -= n % dim -> n = 0..dim (local offset)
+        
         x = x - (int) x;
         z = z - (int) z;
 
-        // Which triangle of quad (left | right)
+        
         if (x > z)
             sw = nw + se - ne;
         else
             ne = se + nw - sw;
 
-        // calculate interpolation of selected triangle
+        
         float n = lerp(x, ne, nw);
         float s = lerp(x, se, sw);
         return lerp(z, s, n);
@@ -1913,13 +1913,13 @@ public enum Util {
      * @param arr The inputs, each in [0, 1]
      * @return The output that is no smaller than each input
      */
-//    public static float or(@NotNull float... arr) {
-//        float product = 1;
-//        for (float f : arr) {
-//            product *= (1 - f);
-//        }
-//        return 1.0f - product;
-//    }
+
+
+
+
+
+
+
 
     /**
      * a and b should be in 0..1.0 unit domain; output will also
@@ -1956,9 +1956,9 @@ public enum Util {
         return false;
     }
 
-//    public static <X> boolean or(Predicate<X> p, X... xx) {
-//        return or(p, xx);
-//    }
+
+
+
 
     /**
      * a and b should be in 0..1.0 unit domain; output will also
@@ -1992,7 +1992,7 @@ public enum Util {
                     .enable(MapperFeature.AUTO_DETECT_GETTERS)
                     .enable(MapperFeature.AUTO_DETECT_IS_GETTERS)
                     .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
-            //.disable(SerializationFeature.FAIL_ON_SELF_REFERENCES)
+            
             ;
 
     /**
@@ -2005,9 +2005,9 @@ public enum Util {
         return msgPackMapper.writerFor(cl).writeValueAsBytes(x);
     }
 
-//    public static byte[] pack(Object x, Class c) throws JsonProcessingException {
-//        return msgPackMapper./*writerFor(c).*/writeValueAsBytes(x);
-//    }
+
+
+
 
     /**
      * msgpack deserialization
@@ -2020,7 +2020,7 @@ public enum Util {
         return msgPackMapper/*.reader(type)*/.readValue(msgPacked, 0, len, type);
     }
 
-    //static final Logger jsonLogger = LoggerFactory.getLogger(JsonNode.class);
+    
 
     public static JsonNode jsonNode(Object x) {
         if (x instanceof String) {
@@ -2028,7 +2028,7 @@ public enum Util {
                 return msgPackMapper.readTree(x.toString());
             } catch (IOException e) {
                 e.printStackTrace();
-                //jsonLogger.error(" {}", e);
+                
             }
         }
 
@@ -2037,7 +2037,7 @@ public enum Util {
 
     /**
      * x in -1..+1, y in -1..+1.   typical value for sharpen will be ~ >5
-     * http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIoMS8oMStleHAoLTUqeCkpLTAuNSkqMiIsImNvbG9yIjoiIzAwMDAwMCJ9LHsidHlwZSI6MTAwMCwid2luZG93IjpbIi0xIiwiMSIsIi0xIiwiMSJdfV0-
+     * http:
      */
     public static float sigmoidBipolar(float x, float sharpen) {
         return (float) ((1.0 / (1 + Math.exp(-sharpen * x)) - 0.5) * 2);
@@ -2114,16 +2114,16 @@ public enum Util {
             Arrays.fill(w, 0.5f);
         } else {
 
-            //TODO combine these into one normalize() by calculating an equivalent effective minmax range
+            
             Util.normalize(w, minmax[0], minmax[1]);
             Util.normalize(w, 0 - lower, 1 + upper);
         }
         return w;
     }
-//
-//    public static float[] softmax(int num, IntToFloatFunction build, float temperature) {
-//        return Util.map(num, i -> softmax(build.valueOf(i), temperature) );
-//    }
+
+
+
+
 
     public static float softmax(float x, float temp) {
         float f = (float) Math.exp(x/temp);
@@ -2157,13 +2157,13 @@ public enum Util {
      */
     public static float memoryUsed() {
         Runtime runtime = Runtime.getRuntime();
-        long total = runtime.totalMemory(); // current heap allocated to the VM process
-        long free = runtime.freeMemory(); // out of the current heap, how much is free
-        long max = runtime.maxMemory(); // Max heap VM can use e.g. Xmx setting
-        long usedMemory = total - free; // how much of the current heap the VM is using
-        long availableMemory = max - usedMemory; // available memory i.e. Maximum heap size minus the current amount used
+        long total = runtime.totalMemory(); 
+        long free = runtime.freeMemory(); 
+        long max = runtime.maxMemory(); 
+        long usedMemory = total - free; 
+        long availableMemory = max - usedMemory; 
         float ratio = 1f - ((float) availableMemory) / max;
-        //logger.warn("max={}k, used={}k {}%, free={}k", max/1024, total/1024, Texts.n2(100f * ratio), free/1024);
+        
         return ratio;
     }
 
@@ -2200,9 +2200,9 @@ public enum Util {
 
     /**
      * pretty close
-     * http://www.musicdsp.org/showone.php?id=238
-     * https://en.wikipedia.org/wiki/Pad%C3%A9_approximant
-     * http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiJ4KigyNyt4KngpLygyNys5KngqeCkiLCJjb2xvciI6IiMxQjM3QTgifSx7InR5cGUiOjAsImVxIjoidGFuaCh4KSIsImNvbG9yIjoiIzVBQzIzQSJ9LHsidHlwZSI6MTAwMCwid2luZG93IjpbIi0xLjczMzE5OTc5MDA3OTk5NjIiLCIwLjAxMTYzMDY3MzkyMDAwMDI3OCIsIi0xLjA2MTExNDM0NzUxOTk5OCIsIjAuMDEyNjI3NDc2NDgwMDAwNjc3Il19XQ--
+     * http:
+     * https:
+     * http:
      */
     public static float tanhFast(float x) {
         if (x <= -3) return -1f;
@@ -2217,9 +2217,9 @@ public enum Util {
     public static BlockingQueue blockingQueue(int capacity) {
         try {
             return new DisruptorBlockingQueue<>(capacity);
-            //return new MultithreadConcurrentQueue(capacity);
+            
         } catch (Throwable e) {
-            //for JDK which doesnt support what Disruptor requires
+            
             return new ArrayBlockingQueue<>(capacity);
         }
     }
@@ -2267,7 +2267,7 @@ public enum Util {
             case 6:
                 return ByteLists.immutable.of(x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a++), x.get(a++));
             default:
-                byte[] xx = x.toArray(); //TODO i want the array zero-copy
+                byte[] xx = x.toArray(); 
                 return ByteLists.immutable.of(ArrayUtils.subarray(xx, a, b));
         }
     }
@@ -2335,7 +2335,7 @@ public enum Util {
      */
     @Nullable
     public static URL locate(ClassLoader loader, String className) {
-        // determine class loader
+        
 
         if (loader == null) {
             loader = ClassLoader.getSystemClassLoader();
@@ -2343,26 +2343,26 @@ public enum Util {
                 loader = loader.getParent();
             }
         }
-        // try finding resource by name
+        
         if (loader != null) {
 
-            //className = className.replace(".", "/") + ".class";
+            
             try {
                 return (loader.getResource(className));
             } catch (Throwable ignore) {
                 /* ignore */
             }
         }
-//        // try protection domain
-//        try {
-//            CodeSource codeSource = c.getProtectionDomain().getCodeSource();
-//            if (codeSource != null) {
-//                return (codeSource.getLocation());
-//            }
-//        }
-//        catch (SecurityException ignore) {
-//            /* ignore */
-//        }
+
+
+
+
+
+
+
+
+
+
         return null;
     }
 
@@ -2463,12 +2463,12 @@ public enum Util {
         return (float) pow(product, 1.00 / arr.length);
     }
 
-    //may be more efficient than the for-loop version above, for 2 params
+    
     public static float aveGeo(float a, float b) {
-//        float inner = (a*b);
-//        if (inner < Float.MIN_NORMAL) //early test to avoid sqrt()
-//            return 0;
-//        else
+
+
+
+
         return (float)sqrt(a*b);
     }
 
@@ -2496,10 +2496,10 @@ public enum Util {
     }
 
 
-//    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
-//        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,
-//                                   (left, right) -> { left.addAll(right); return left; },
-//                                   CH_ID);
-//    }
+
+
+
+
+
 
 }

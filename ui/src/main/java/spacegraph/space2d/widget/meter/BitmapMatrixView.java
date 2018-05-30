@@ -55,7 +55,7 @@ public class BitmapMatrixView extends Surface {
         touchPos = finger.relativePos(this).scaled(w, h);
 
         touchPixel = new Point2i((int) Math.floor(touchPos.x),
-                (int) Math.floor(touchPos.y)); //wtf
+                (int) Math.floor(touchPos.y)); 
 
 
     }
@@ -105,21 +105,21 @@ public class BitmapMatrixView extends Surface {
         };
     }
 
-//    public static ViewFunction2D arrayRenderer(float[] w) {
-//        return (x, y) -> {
-//            float v = w[y];
-//            Draw.colorBipolar(gl, v);
-//            return 0;
-//        };
-//    }
-//
-//    public static ViewFunction2D arrayRenderer(double[] w) {
-//        return (x, y) -> {
-//            float v = (float) w[y];
-//            Draw.colorBipolar(gl, v);
-//            return 0;
-//        };
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public interface ViewFunction1D {
         /**
@@ -148,9 +148,9 @@ public class BitmapMatrixView extends Surface {
     }
 
 
-//    public BitmapMatrixView(float[][] w) {
-//        this(w.length, w[0].length, BitmapMatrixView.arrayRenderer(w));
-//    }
+
+
+
 
     public BitmapMatrixView(int w, int h, ViewFunction2D view) {
         this.w = w;
@@ -167,18 +167,18 @@ public class BitmapMatrixView extends Surface {
         this(f.length, f[0].length, arrayRenderer(f));
     }
 
-//    public static final ViewFunction1D bipolar1 = (x, gl) -> {
-//        Draw.colorBipolar(gl, x);
-//        return 0;
-//    };
-//    static final ViewFunction1D unipolar1 = (x, gl) -> {
-//        Draw.colorGrays(gl, x);
-//        return 0;
-//    };
-//
-//    public BitmapMatrixView(float[] d, boolean bipolar) {
-//        this(d, 1, bipolar ? bipolar1 : unipolar1);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public BitmapMatrixView(float[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
@@ -207,11 +207,11 @@ public class BitmapMatrixView extends Surface {
             return i < d.length ? view.update(d[i].asFloat()) : 0;
         });
     }
-//    public BitmapMatrixView(Tensor t, int stride, ViewFunction1D view) {
-//        this((int) Math.floor(((float) t.volume()) / stride), stride, (x, y) ->
-//            view.update(t.get(x * stride + y), gl)
-//        );
-//    }
+
+
+
+
+
 
     public static BitmapMatrixView get(ArrayTensor t, int stride, ViewFunction1D view) {
         float[] d = t.data;
@@ -255,40 +255,40 @@ public class BitmapMatrixView extends Surface {
     }
 
 
-    //    @Override
-//    protected void paintComponent(GL2 gl) {
-//
-//        float h = this.h;
-//        float w = this.w;
-//
-//        if ((w == 0) || (h == 0))
-//            return;
-//
-//
-//        float dw = 1f / w;
-//        float dh = 1f / h;
-//
-//
-//        for (int y = 0; y < h; y++) {
-//            for (int x = 0; x < w; x++) {
-//
-//                //try {
-//                float dz = view.update(x, y);
-//                if (dz == dz)
-//                    Draw.rect(gl, x * dw, 1f - (y + 1) * dh, dw, dh, dz);
-//                /*} catch (Exception e) {
-//                    logger.error(" {}",e);
-//                    return;
-//                }*/
-//
-//            }
-//        }
-//
-////            //border
-////            gl.glColor4f(1f, 1f, 1f, 1f);
-////            Draw.strokeRect(gl, 0, 0, tw + dw, th + dh);
-//
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

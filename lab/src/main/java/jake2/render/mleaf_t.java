@@ -18,31 +18,31 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: mleaf_t.java,v 1.1 2004-07-07 19:59:35 hzi Exp $
+
+
 
 package jake2.render;
 
 public class mleaf_t extends mnode_t {
 
-	//	common with node
+	
 	/*
-	public int contents; // wil be a negative contents number
-	public int visframe; // node needs to be traversed if current
+	public int contents; 
+	public int visframe; 
 
-	public float minmaxs[] = new float[6]; // for bounding box culling
+	public float minmaxs[] = new float[6]; 
 
 	public mnode_t parent;
 	*/
 
-	//	leaf specific
+	
 	public int cluster;
 	public int area;
 
-	//public msurface_t firstmarksurface;
+	
 	public int nummarksurfaces;
 	
-	// added by cwei
+	
 	int markIndex;
 	msurface_t[] markSurfaces;
 	
@@ -53,7 +53,7 @@ public class mleaf_t extends mnode_t {
 
 	public msurface_t getMarkSurface(int index) {
 		assert (index >= 0 && index <= nummarksurfaces) : "mleaf: markSurface bug (index = " + index +"; num = " + nummarksurfaces + ')';
-		// TODO code in Surf.R_RecursiveWorldNode aendern (der Pointer wird wie in C zu weit gezaehlt)
+		
 		return (index < nummarksurfaces) ? markSurfaces[markIndex + index] : null;
 	}
 

@@ -16,10 +16,10 @@ public abstract class DequePool<X> implements Pool<X> {
 
     public DequePool(int initialCapacity, int preallocate) {
         data = new ArrayDeque(initialCapacity);
-        //data = new ConcurrentLinkedDeque<>();
+        
 
         setCapacity(initialCapacity);
-        //data = new CircularArrayList<>(initialCapacity);
+        
 
         for (int i = 0; i < preallocate; i++)
             take(create());
@@ -42,16 +42,16 @@ public abstract class DequePool<X> implements Pool<X> {
 
     @Override
     public final X get() {
-        //synchronized (data) {
+        
 
         Deque<X> d = data;
 
         if (d.isEmpty()) {
-            //System.err.println(this + " emptied, initialize larger or plug leaks");
+            
             return create();
         }
         return d.poll();
-        //}
+        
     }
 
     public boolean isEnabled() {

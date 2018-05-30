@@ -190,12 +190,12 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         return this;
     }
 
-//    TODO
-//    public final boolean setIfUnique(Tuple2f t1) {
-//        if (Util.equals())
-//        this.x = t1.x;
-//        this.y = t1.y;
-//    }
+
+
+
+
+
+
 
 
     /**
@@ -660,24 +660,24 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
 
     }
 
-//    /**
-//     * Creates a new object of the same class as this object.
-//     *
-//     * @return a clone of this instance.
-//     * @throws OutOfMemoryError if there is not enough memory.
-//     * @see java.lang.Cloneable
-//     * @since vecmath 1.3
-//     */
-//    @Override
-//    public Object clone() {
-//        // Since there are no arrays we can just use Object.clone()
-//        try {
-//            return super.clone();
-//        } catch (CloneNotSupportedException e) {
-//            // this shouldn't happen, since we are Cloneable
-//            throw new InternalError();
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public v2 clone() {
         return new v2(x, y);

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve;
 
@@ -34,8 +34,8 @@ import java.util.logging.Logger;
  * @author MaleLabTs
  */
 public class SimpleConfig {
-    //Maximum unmatch_chars/match_chars ratio
-    //and sets the maximum unmatch_chars/match_chars ratio; this value defines the margin size around the matches 
+    
+    
     transient private final double STRIPING_DEFAULT_MARGIN_SIZE = 5;
     public int numberThreads = 4;
     public int numberOfJobs = 1;
@@ -69,7 +69,7 @@ public class SimpleConfig {
     public Configuration buildConfiguration(){
         assert !(isFlagging&&isStriped);
         
-        //
+        
         Configuration configuration = new Configuration();
         configuration.setConfigName("Console config");
         configuration.getEvolutionParameters().setGenerations(generations);
@@ -86,7 +86,7 @@ public class SimpleConfig {
             configuration.getStrategyParameters().put("terminationCriteria","true");
         }
         configuration.getStrategyParameters().put("terminationCriteriaGenerations", String.valueOf(terminationGenerations));
-        //Added terminationCriteria for the second strategy
+        
         configuration.getStrategyParameters().put("terminationCriteria2","false");
         
         if(dataset == null){
@@ -95,39 +95,39 @@ public class SimpleConfig {
         dataset.populateUnmatchesFromMatches();
         DatasetContainer datasetContainer = new DatasetContainer(dataset);
         datasetContainer.createDefaultRanges((int) configuration.getInitialSeed());
-        //checks if striping is needed
+        
         dataset.updateStats();
         if(isStriped){
             Logger.getLogger(this.getClass().getName()).info("Enabled striping.");
             datasetContainer.setDataSetsStriped(true);
             datasetContainer.setDatasetStripeMarginSize(STRIPING_DEFAULT_MARGIN_SIZE);
-            datasetContainer.setProposedNormalDatasetInterval(100);//terminationGenerations+50);
+            datasetContainer.setProposedNormalDatasetInterval(100);
         }
-        configuration.setDatasetContainer(datasetContainer); //remind that after setting the DataSetContainer.. we need to update configuration in order to invoke datacontainer update methods
+        configuration.setDatasetContainer(datasetContainer); 
         
-        //FLagging configuration
-        //is an alternative configuration, experimental, that requires changes into the configuration defaults (extractor configuration)
-        //Changes: bestSelector, fitness, terminalset builder configuration mod, population builders(?)
+        
+        
+        
         configuration.setIsFlagging(isFlagging);
         if(this.isFlagging){
             configuration.setStrategy(new MultithreadStrategy());
             configuration.setBestSelector(new BasicFlaggingLearningBestSelector());
             configuration.setObjective(new FlaggingAccuracyPrecisionLengthObjective());
-            configuration.setPopulationBuilder(new FlaggingNaivePopulationBuilder()); //disable context generation
-            configuration.setTerminalSetBuilder(new FlaggingNgramsTerminalSetBuilder()); //disable context generation 
-            //TODO change terminalSet to a more naive version?
-            configuration.getTerminalSetBuilderParameters().put("discardWtokens", "false");//Takes significant chars too
-            configuration.getStrategyParameters().put("isFlagging", "true"); //Enable strategy flagging
+            configuration.setPopulationBuilder(new FlaggingNaivePopulationBuilder()); 
+            configuration.setTerminalSetBuilder(new FlaggingNgramsTerminalSetBuilder()); 
+            
+            configuration.getTerminalSetBuilderParameters().put("discardWtokens", "false");
+            configuration.getStrategyParameters().put("isFlagging", "true"); 
 
-//            //Remove lookarounds
-//            configuration.getOperators().removeAll(
-//                    Arrays.asList("jcog.grammar.evolve.tree.operator.PositiveLookbehind","jcog.grammar.evolve.tree.operator.NegativeLookbehind",
-//                            "jcog.grammar.evolve.tree.operator.PositiveLookahead", "jcog.grammar.evolve.tree.operator.NegativeLookahead"));
+
+
+
+
         }
         
         
         
-        configuration.setup(); //initializes datasetcontainer, populationbuilder and terminalsetbuilder
+        configuration.setup(); 
         
         return configuration;
     }

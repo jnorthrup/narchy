@@ -11,7 +11,7 @@ abstract class TemporalStabilityTest {
 
     boolean unstable;
 
-    //private final boolean stopOnFirstError = true;
+    
 
     public void test(int cycles, @NotNull NAR n) {
 
@@ -20,24 +20,24 @@ abstract class TemporalStabilityTest {
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
 
-        //n.log();
+        
         n.onTask(this::validate);
-//        n.onCycle(f -> {
-//
-//            TimeMap m = new TimeMap(n);
-//
-//            //Set<Between<Long>> times = m.keySetSorted();
-//            /*if (times.size() < 3)
-//                continue; //wait until the initial temporal model is fully constructed*/
-//
-//            //m.print();
-//            m.forEach(tt -> {
-//
-//                validate(tt);
-//            });
-//
-//
-//        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         input(n);
 
@@ -65,12 +65,12 @@ abstract class TemporalStabilityTest {
                 System.err.println("  OOB: " + "\n" + t.proof() + "\n");
                 unstable = true;
             } else if (!validOccurrence(ts) || !validOccurrence(te) || refersToOOBEvents(t)) {
-                //if (irregular.add(t)) { //already detected?
+                
                 System.err.println("  instability: " + "\n" + t.proof() + "\n");
                 unstable = true;
-                //                if (stopOnFirstError)
-                //                    n.stop();
-                //}
+                
+                
+                
             }
         }
     }
@@ -83,11 +83,11 @@ abstract class TemporalStabilityTest {
 
             return !validOccurrence(s + r);
 
-            //cant be determined unless analyzing the relative time only
-//            if (xt.op()==IMPL && xt.dt()!=DTERNAL) {
-//                if (!validOccurrence(s + xt.sub(0).dtRange() + x.getTwo() + xt.dt()))
-//                    return true;
-//            }
+            
+
+
+
+
         }, 0);
     }
 
@@ -97,27 +97,27 @@ abstract class TemporalStabilityTest {
 
             n.run(cycles);
 
-            //evaluate(n);
+            
         }
     }
 
-//    public void evaluate(@NotNull NAR n) {
-//
-//        if (!irregular.isEmpty()) {
-//
-////            TimeMap m = new TimeMap(n);
-//
-//            irregular.forEach(i -> {
-//
-//                System.err.println(i.proof());
-//            });
-//
-//            //m.print();
-//
-//            assertTrue(false);
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     abstract public boolean validOccurrence(long o);

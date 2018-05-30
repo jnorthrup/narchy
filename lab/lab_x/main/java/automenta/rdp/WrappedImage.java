@@ -56,9 +56,9 @@ public class WrappedImage {
 	}
 
 	protected void resize(int arg0, int arg1, int typeIntRgb) {
-		bi = new BufferedImage(arg0, arg1, typeIntRgb); // super(arg0,
-		// arg1,
-		// BufferedImage.TYPE_INT_RGB);
+		bi = new BufferedImage(arg0, arg1, typeIntRgb); 
+		
+		
 	}
 
 	public int getWidth() {
@@ -166,11 +166,11 @@ public class WrappedImage {
 		for (int y = startY; y < startY+h; y++, yoff+=scansize) {
 			off = yoff;
 			for (int x = startX; x < startX+w; x++) {
-				//pixel = (int[]) colorModel.getDataElements(rgbArray[off++], pixel);
+				
 				final int p = pixel[0] = rgbArray[off++];
 
 				if (!different) {
-					//detect change
+					
 					raster.getDataElements(x, y, exists);
 					if (exists[0] != p) {
 						different = true;

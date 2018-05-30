@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.generations;
 
@@ -74,20 +74,20 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     private List<Node> setup(Context context, Configuration configuration, DataSet usedTrainingDataset) {
 
 
-        //Change to striped dataset when striped version is initialized
-        //IMPORTANT in case of striped dataset, the striped version is always used. This is coherent with the 
-        //population builder behavior
+        
+        
+        
         if (usedTrainingDataset.getStripedDataset()!=null){
             usedTrainingDataset = usedTrainingDataset.getStripedDataset();
         }
         
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
-        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
+        boolean DISCARD_W_TOKENS = true; 
         boolean ADD_NO_CONTEXT_INDIVIDUALS = true;
         Double TOKEN_UNMATCH_THREASHOLD = 80.0;
         Double TOKEN_THREASHOLD = 80.0;
         if(parameters!=null){
-            //add parameters if needed
+            
             if(parameters.containsKey("tokenThreashold")){
                 TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
             }
@@ -104,13 +104,13 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
          
         List<Node> newPopulation = new LinkedList<>();
         
-        //Providing the striped dataset is not an error, a striped dataset has not a striped son :-) usually; so, the provided dataset is used
+        
         this.winnerMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerMatchTokens(usedTrainingDataset, TOKEN_THREASHOLD, DISCARD_W_TOKENS);
         this.winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(usedTrainingDataset, TOKEN_UNMATCH_THREASHOLD, DISCARD_W_TOKENS);
         
         for(Example example : usedTrainingDataset.getExamples()){
             if(example.getMatch().isEmpty()){
-                //jump Negative examples
+                
                 continue;
             }
             newPopulation.addAll(createIndividualsFromExample(example, true, winnerMatchTokens,winnerUnMatchTokens));
@@ -118,7 +118,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             
         }
         
-        //add individual based on the old tokenization (match based only)
+        
         if(ADD_NO_CONTEXT_INDIVIDUALS){
             TokenizedPopulationBuilder tokenizedPopulationBuilder = new TokenizedPopulationBuilder();
             if(context == null){
@@ -145,7 +145,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         Set<String> unmatchSet = new HashSet<>(example.getUnmatchedStrings());
         List<String> orderedAnnotatedStrings = example.getOrderedAnnotatedStrings();
          
-        //Context is for now ONLY unmatched portions
+        
         String pre=null,match=null,post=null;
         for (int i = 0; i < orderedAnnotatedStrings.size(); i++) {
             if(matchSet.contains(orderedAnnotatedStrings.get(i))){
@@ -168,7 +168,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
 
     
     
-    //Create individual with lookbehind and ahead, and match.
+    
     private Node createIndividualFromStrings(String preUnmatchString, String matchString, String postUnmatchString, boolean compact, 
                                                                     Map<String,Double> winnerMatchTokens, Map<String,Double> winnerUnmatchTokens) {
         
@@ -185,7 +185,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         }
         Node postUnmatchNode = null;
         if(postUnmatchString != null){
-            List<String> postUnmatchStringTokens = tokenizer.tokenize(postUnmatchString);        //winner tokens are added with no modifications(only escaped), other parts are converted to classes or escaped
+            List<String> postUnmatchStringTokens = tokenizer.tokenize(postUnmatchString);        
             postUnmatchNode = createIndividualFromTokenizedString(postUnmatchStringTokens, winnerUnmatchTokens, compact, false);
         }
         
@@ -212,7 +212,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     static final String w = "\\w";
     static final String d = "\\d";
     
-    //Create a simple individual from a tokenized (splitted) version (list of strings). Only winnerTokens are preserved.
+    
     private Node createIndividualFromTokenizedString(List<String> tokenizedString, Map<String,Double> winnerTokens, boolean compact, boolean useMinMaxQuantifier){
          
         Deque<Node> nodes = new LinkedList<>();
@@ -238,11 +238,11 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             }
         }
         
-        //when two adiacent nodes are equal, symbols or tokens, a quantifier is used to compact.
-        // /w/w/w is converted to /w++
+        
+        
         if(compact){
             Deque<Node> newNodes = new LinkedList<>();
-            //do compact
+            
             
             while (nodes.size()>0) {
                 Node node = nodes.pollFirst();
@@ -256,10 +256,10 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
                     if(nodeValue.equals(nextValue)){
                         repetitions++;
                         isRepeat = true;
-                        //Consume and drop the repetition
+                        
                         nodes.pollFirst();
                     } else {
-                        //They are different, get out
+                        
                         break;
                     } 
                 }    
@@ -280,8 +280,8 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
             nodes = newNodes;
         }
 
-        //Build the concatenation of given nodes
-        //This code is the same as in NaivePopulationBulder and has been "cloned" from older code
+        
+        
        
         while (nodes.size() > 1) {
 

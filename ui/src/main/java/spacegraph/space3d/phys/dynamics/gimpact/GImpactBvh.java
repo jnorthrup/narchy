@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -67,7 +67,7 @@ public class GImpactBvh {
 		return primitive_manager;
 	}
 
-	// stackless refit
+	
 	protected void refit() {
 		BoxCollision.AABB leafbox = new BoxCollision.AABB();
 		BoxCollision.AABB bound = new BoxCollision.AABB();
@@ -80,8 +80,8 @@ public class GImpactBvh {
 				setNodeBound(nodecount, leafbox);
 			}
 			else {
-				//const BT_BVH_TREE_NODE * nodepointer = get_node_pointer(nodecount);
-				//get left bound
+				
+				
 				bound.invalidate();
 
 				int child_node = getLeftNode(nodecount);
@@ -113,14 +113,14 @@ public class GImpactBvh {
 	 * This rebuild the entire set.
 	 */
 	public void buildSet() {
-		// obtain primitive boxes
+		
 		BvhDataArray primitive_boxes = new BvhDataArray();
 		primitive_boxes.resize(primitive_manager.get_primitive_count());
 
 		BoxCollision.AABB tmpAABB = new BoxCollision.AABB();
 
 		for (int i = 0; i < primitive_boxes.size(); i++) {
-			//primitive_manager.get_primitive_box(i,primitive_boxes[i].bound);
+			
 			primitive_manager.get_primitive_box(i, tmpAABB);
 			primitive_boxes.setBound(i, tmpAABB);
 
@@ -142,7 +142,7 @@ public class GImpactBvh {
 		while (curIndex < numNodes) {
 			getNodeBound(curIndex, bound);
 
-			// catch bugs in tree data
+			
 
 			boolean aabbOverlap = bound.has_collision(box);
 			boolean isleafnode = isLeafNode(curIndex);
@@ -152,11 +152,11 @@ public class GImpactBvh {
 			}
 
 			if (aabbOverlap || isleafnode) {
-				// next subnode
+				
 				curIndex++;
 			}
 			else {
-				// skip node
+				
 				curIndex += getEscapeNodeIndex(curIndex);
 			}
 		}
@@ -184,7 +184,7 @@ public class GImpactBvh {
 		while (curIndex < numNodes) {
 			getNodeBound(curIndex, bound);
 
-			// catch bugs in tree data
+			
 
 			boolean aabbOverlap = bound.collide_ray(ray_origin, ray_dir);
 			boolean isleafnode = isLeafNode(curIndex);
@@ -194,11 +194,11 @@ public class GImpactBvh {
 			}
 
 			if (aabbOverlap || isleafnode) {
-				// next subnode
+				
 				curIndex++;
 			}
 			else {
-				// skip node
+				
 				curIndex += getEscapeNodeIndex(curIndex);
 			}
 		}
@@ -269,8 +269,8 @@ public class GImpactBvh {
 		boxset1.getNodeBound(node1, box1);
 
 		return box0.overlapping_trans_cache(box1, trans_cache_1to0, complete_primitive_tests);
-		//box1.appy_transform_trans_cache(trans_cache_1to0);
-		//return box0.has_collision(box1);
+		
+		
 	}
 
 	/**
@@ -280,21 +280,21 @@ public class GImpactBvh {
 		if (!_node_collision(
 				boxset0, boxset1, trans_cache_1to0,
 				node0, node1, complete_primitive_tests)) {
-			return;//avoid colliding internal nodes
+			return;
 		}
 		if (boxset0.isLeafNode(node0)) {
 			if (boxset1.isLeafNode(node1)) {
-				// collision result
+				
 				collision_pairs.push_pair(boxset0.getNodeData(node0), boxset1.getNodeData(node1));
 			}
 			else {
-				// collide left recursive
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
 						node0, GImpactBvh.getLeftNode(node1), false);
 
-				// collide right recursive
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
@@ -303,49 +303,49 @@ public class GImpactBvh {
 		}
 		else {
 			if (boxset1.isLeafNode(node1)) {
-				// collide left recursive
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
 						GImpactBvh.getLeftNode(node0), node1, false);
 
 
-				// collide right recursive
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
 						boxset0.getRightNode(node0), node1, false);
 			}
 			else {
-				// collide left0 left1
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
 						GImpactBvh.getLeftNode(node0), GImpactBvh.getLeftNode(node1), false);
 
-				// collide left0 right1
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
 						GImpactBvh.getLeftNode(node0), boxset1.getRightNode(node1), false);
 
-				// collide right0 left1
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
 						boxset0.getRightNode(node0), GImpactBvh.getLeftNode(node1), false);
 
-				// collide right0 right1
+				
 				_find_collision_pairs_recursive(
 						boxset0, boxset1,
 						collision_pairs, trans_cache_1to0,
 						boxset0.getRightNode(node0), boxset1.getRightNode(node1), false);
 
-			} // else if node1 is not a leaf
-		} // else if node0 is not a leaf
+			} 
+		} 
 	}
 
-	//public static float getAverageTreeCollisionTime();
+	
 
 	public static void find_collision(GImpactBvh boxset0, Transform trans0, GImpactBvh boxset1, Transform trans1, PairSet collision_pairs) {
 		if (boxset0.getNodeCount() == 0 || boxset1.getNodeCount() == 0) {
@@ -355,17 +355,17 @@ public class GImpactBvh {
 
 		trans_cache_1to0.calc_from_homogenic(trans0, trans1);
 
-		//#ifdef TRI_COLLISION_PROFILING
-		//bt_begin_gim02_tree_time();
-		//#endif //TRI_COLLISION_PROFILING
+		
+		
+		
 
 		_find_collision_pairs_recursive(
 				boxset0, boxset1,
 				collision_pairs, trans_cache_1to0, 0, 0, true);
 
-		//#ifdef TRI_COLLISION_PROFILING
-		//bt_end_gim02_tree_time();
-		//#endif //TRI_COLLISION_PROFILING
+		
+		
+		
 	}
 	
 }

@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -59,7 +59,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     @Override
     public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
 
-        if (!this.bounds.contains(b)) //do pre-test if >2
+        if (!this.bounds.contains(b)) 
             return false;
 
         int s = size;
@@ -121,41 +121,41 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         Node[] child = this.data;
 
         if (bounds.contains(tRect)) {
-            //MERGE STAGE:
+            
             for (int i = 0; i < size; i++) {
                 Node ci = child[i];
                 if (ci.bounds().contains(tRect)) {
-                    //check for existing item
-                    //                if (ci.contains(t, model))
-                    //                    return this; // duplicate detected (subtree not changed)
+                    
+                    
+                    
 
                     Node m = ci.add(t, null, model, null);
                     if (m == null) {
-                        return null; //merged
+                        return null; 
                     }
 
 
-                    //                if (reportNextSizeDelta(parent)) {
-                    //                    child[i] = m;
-                    //                    grow(m); //subtree was changed
-                    //                    return this;
-                    //                }
+                    
+                    
+                    
+                    
+                    
                 }
             }
             if (parent == null)
-                return this; //done for this stage
+                return this; 
         }
 
         if (added == null)
-            return this; //merge stage only
+            return this; 
 
         assert (!added[0]);
 
-        //INSERTION STAGE:
+        
 
         if (size < child.length) {
 
-            // no overlapping node - grow
+            
             grow(addChild(model.newLeaf().add(t, parent, model, added)));
             assert (added[0]);
 
@@ -173,25 +173,25 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
 
             grow(nextBest);
 
-            // optimize on split to remove the extra created branch when there
-            // is space for the children here
+            
+            
             if (size < child.length && nextBest.size() == 2 && !nextBest.isLeaf()) {
                 Node[] bc = ((Branch<T>) nextBest).data;
                 child[bestLeaf] = bc[0];
                 child[size++] = bc[1];
             }
 
-//            } else {
-//                //? duplicate was found in sub-tree but we checked for duplicates above
-//
-//
-//                if (nextBest.contains(t, model))
-//                    return null;
-//
-//                assert (false) : "what to do with: " + t + " in " + parent;
-//                //probably ok, just merged with a subbranch?
-//                //return null;
-//            }
+
+
+
+
+
+
+
+
+
+
+
 
             return this;
         }
@@ -220,13 +220,13 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                     if (data[i].size() == 0) {
                         System.arraycopy(data, i + 1, data, i, size - i - 1);
                         data[--size] = null;
-                        //if (size > 0) i--;
+                        
                     }
 
                     if (size > 0) {
 
                         if (size == 1) {
-                            // unsplit branch
+                            
                             return data[0];
                         }
 
@@ -251,7 +251,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     public Node<T, ?> replace(final T OLD, final T NEW, Spatialization<T> model) {
         final HyperRegion tRect = model.bounds(OLD);
 
-        //TODO may be able to avoid recomputing bounds if the old was not found
+        
         boolean found = false;
         Node[] cc = this.data;
         HyperRegion region = null;
@@ -275,7 +275,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         Node<T, ?>[] cc = this.data;
         if (size > 0) {
             int bestNode = -1;
-            //double tCost = Double.POSITIVE_INFINITY;
+            
             double leastEnlargement = Double.POSITIVE_INFINITY;
             double leastPerimeter = Double.POSITIVE_INFINITY;
 
@@ -285,9 +285,9 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                 HyperRegion childMbr = tRect.mbr(cir);
                 final double nodeEnlargement =
                         (cir!=childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
-                //assert(nodeEnlargement==nodeEnlargement && nodeEnlargement >= 0); //doesnt apply when infinites are involved
+                
                 int dc = Double.compare(nodeEnlargement, leastEnlargement);
-                if (dc == -1) { //(nodeEnlargement < leastEnlargement) {
+                if (dc == -1) { 
                     leastEnlargement = nodeEnlargement;
                     leastPerimeter = childMbr.perimeter();
                     bestNode = i;
@@ -298,18 +298,18 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                         leastPerimeter = perimeter;
                         bestNode = i;
                     }
-                } // else its not the least
+                } 
 
             }
             if (bestNode == -1) {
                 throw new RuntimeException("rtree fault");
             }
-            //assert(bestNode != -1);
+            
             return bestNode;
         } else {
-//            final Node<T, ?> n = model.newLeaf();
-//            cc[size++] = n;
-//            return size - 1;
+
+
+
             throw new RuntimeException("shouldnt happen");
         }
     }
@@ -321,7 +321,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         short s = this.size;
         for (int i = 0; i < s; i++) {
             Node<T, ?> x = cc[i];
-            if (x!=null) //for concurrent optimistic reads
+            if (x!=null) 
                 x.forEach(consumer);
         }
     }
@@ -338,15 +338,15 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         return true;
     }
 
-//    private boolean nodeAND(Predicate<Node<T, ?>> p) {
-//        Node<T, ?>[] c = this.data;
-//        int s = size;
-//        for (int i = 0; i < s; i++) {
-//            if (!p.test(c[i]))
-//                return false;
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public boolean OR(Predicate<T> p) {
@@ -368,7 +368,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
                 if (d == null)
-                    continue; //null in optimistic read case
+                    continue; 
                 else if (!d.containing(rect, t, model))
                     return false;
             }
@@ -384,8 +384,8 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
                 if (d == null)
-                    continue; //null in optimistic read case
-                else if (!d.intersecting(rect, t, model)) //np check for use under readOptimistic
+                    continue; 
+                else if (!d.intersecting(rect, t, model)) 
                     return false;
             }
         }
@@ -422,15 +422,15 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     }
 
 
-//    @Override
-//    public double perimeter(Spatialization<T> model) {
-//        double maxVolume = 0;
-//        for (int i = 0; i < size; i++) {
-//            Node<T, ?> c = child[i];
-//            double vol = c.perimeter(model);
-//            if (vol > maxVolume)
-//                maxVolume = vol;
-//        }
-//        return maxVolume;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 }

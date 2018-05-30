@@ -10,16 +10,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CartesianIteratorTest {
 
-//    @Test
-//    public void test_empty() throws Exception {
-//        CartesianIterator it = new CartesianIterator();
-//
-//        assertFalse(it.hasNext());
-//        try {
-//            assertEquals("", Joiner.on("").join(it.next()));
-//            fail("Should throw NoSuchElementException");
-//        } catch (Exception e) { /* Ignore exception */ }
-//    }
+
+
+
+
+
+
+
+
+
+
 
     @Test public void test_0() throws Exception {
         CartesianIterator<String> it = new CartesianIterator(String[]::new,

@@ -161,7 +161,7 @@ public class OffObject extends SceneObject
     private void loadOffFile(String fileName)
     throws InvalidFormatException
     {
-        // Datei �ffnen:
+        
         Scanner scanner = new Scanner(getClass().getClassLoader().getResourceAsStream(fileName));
         scanner.useLocale(Locale.US);
 
@@ -169,16 +169,16 @@ public class OffObject extends SceneObject
 
         try
         {
-            // OFF-Format Kennung pr�fen:
+            
             if (!scanner.hasNext() || !scanner.next().equals("OFF"))
                 throw new InvalidFormatException();
             
-            // Anzahl der Punkte, Fl�chen und Kanten bestimmen:
+            
             int vertexCount = scanner.nextInt();
             int faceCount = scanner.nextInt();
             scanner.nextInt();
             
-            // Punkte auslesen:
+            
             int i;
             for (i = 0; i < vertexCount; i++)
             {
@@ -188,18 +188,18 @@ public class OffObject extends SceneObject
                 vertices.add(new Vector3d(x, y, z));
             }
             
-            // Fl�chen auslesen und trianguliert zu diesem Objekt hinzuf�gen:
+            
             for (i = 0; i < faceCount; i++)
             {
                 int count = scanner.nextInt();
                 if (count < 3)
                     throw new InvalidFormatException();
                 
-                // Ersten beiden Punkte ermitteln:
+                
                 Vector3d first = vertices.get(scanner.nextInt());
                 Vector3d previous = vertices.get(scanner.nextInt());
 
-                // Aus den restlichen Punkten der Fl�che Dreiecke erzeugen:
+                
                 count -= 2;
                 do
                 {
@@ -212,8 +212,8 @@ public class OffObject extends SceneObject
                     }
                     catch (LinearlyDependentException e)
                     {
-                        // Falls bei den Koordinaten lineare Abh�ngigkeit besteht,
-                        // verwerfe deises Dreieck.
+                        
+                        
                     }
                     previous = v;
                 }

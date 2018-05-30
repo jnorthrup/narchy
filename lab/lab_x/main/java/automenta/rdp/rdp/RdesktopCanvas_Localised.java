@@ -38,7 +38,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-// Created on 03-Sep-2003
+
 
 public class RdesktopCanvas_Localised extends RdesktopCanvas {
 
@@ -67,9 +67,9 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
 		Graphics g = img.getGraphics();
 		g.drawImage(image, 0, 0, null);
 
-		// Write generated image to a file
+		
 		try {
-			// Save as JPEG
+			
 			File file = new File("./testimages/" + Options.imgCount + ".jpg");
 			Options.imgCount++;
 			ImageIO.write(img, "jpg", file);
@@ -108,12 +108,12 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
 
 	public void update(Graphics g) {
 
-		//super.paintComponent(g);
+		
 
 
 
-//
-//
+
+
 
 
 		if (!isShowing())
@@ -130,8 +130,8 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
 		if (r.y + rh > bh)
 			rh = bh - r.y;
 
-//		g.drawImage(backstore.getSubimage(r.x, r.y, rw, rh), r.x,
-//				r.y, null);
+
+
 
 		/*public abstract boolean drawImage(Image img,
 		int dx1, int dy1, int dx2, int dy2,
@@ -140,26 +140,26 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
 
 
 
-////		//draw only updated region:
+
 		final int rxw = r.x + rw;
 		final int ryh = r.y + rh;
 		g.drawImage(backstore.getImage(), r.x, r.y, rxw, ryh,
 				r.x, r.y, rxw, ryh,
 				null);
 
-//		g.setClip(0,0,bw, bh);
-//
-//		//draw everything
-//		g.drawImage(backstore.getImage(), 0, 0, null);
 
 
 
-//		if (Options.save_graphics) {
-//			RdesktopCanvas_Localised.saveToFile(backstore.getSubimage(r.x, r.y,
-//					r.width, r.height));
-//		}
 
-		// }
+
+
+
+
+
+
+
+
+		
 
 	}
 

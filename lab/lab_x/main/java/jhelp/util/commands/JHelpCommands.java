@@ -91,7 +91,7 @@ public class JHelpCommands
 
          try
          {
-            processBuilder.start();// JHelpCommands.showLog(processBuilder);
+            processBuilder.start();
          }
          catch(final IOException exception)
          {
@@ -289,7 +289,7 @@ public class JHelpCommands
       }
       catch(final IOException exception)
       {
-         // {@todo} TODO Check if print exception is enough
+         
          Debug.printTodo("Check if print exception is enough");
          Debug.printException(exception);
       }
@@ -338,7 +338,7 @@ public class JHelpCommands
       }
       catch(final IOException exception)
       {
-         // {@todo} TODO Check if print exception is enough
+         
          Debug.printTodo("Check if print exception is enough");
          Debug.printException(exception);
       }
@@ -370,7 +370,7 @@ public class JHelpCommands
 
       try
       {
-         processBuilder.start();// JHelpCommands.showLog(processBuilder);
+         processBuilder.start();
       }
       catch(final IOException exception)
       {

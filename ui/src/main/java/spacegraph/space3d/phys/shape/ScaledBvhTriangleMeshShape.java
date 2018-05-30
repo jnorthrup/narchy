@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -30,7 +30,7 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.v3;
 
-// JAVA NOTE: ScaledBvhTriangleMeshShape from 2.73 SP1
+
 
 /**
  * The ScaledBvhTriangleMeshShape allows to instance a scaled version of an existing
@@ -63,7 +63,7 @@ public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 		v3 scaledAabbMin = new v3();
 		v3 scaledAabbMax = new v3();
 
-		// support negative scaling
+		
 		scaledAabbMin.x = (localScaling.x >= 0f ? aabbMin.x : aabbMax.x) * invLocalScaling.x;
 		scaledAabbMin.y = (localScaling.y >= 0f ? aabbMin.y : aabbMax.y) * invLocalScaling.y;
 		scaledAabbMin.z = (localScaling.z >= 0f ? aabbMin.z : aabbMax.z) * invLocalScaling.z;
@@ -149,7 +149,7 @@ public class ScaledBvhTriangleMeshShape extends ConcaveShape {
 		return "SCALEDBVHTRIANGLEMESH";
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	private static class ScaledTriangleCallback extends TriangleCallback {
 		private final TriangleCallback originalCallback;

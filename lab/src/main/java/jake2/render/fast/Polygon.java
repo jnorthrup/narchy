@@ -42,7 +42,7 @@ public final class Polygon extends glpoly_t {
 
     private final static int MAX_BUFFER_VERTICES = 120000;
 
-    // backup for s1 scrolling
+    
     private static final float[] s1_old = new float[MAX_VERTICES];
 
     private static final FloatBuffer buffer = Lib.newFloatBuffer(MAX_BUFFER_VERTICES
@@ -88,10 +88,10 @@ public final class Polygon extends glpoly_t {
         flags = 0;
     }
 
-    // the interleaved buffer has the format:
-    // textureCoord0 (index 0, 1)
-    // vertex (index 2, 3, 4)
-    // textureCoord1 (index 5, 6)
+    
+    
+    
+    
 
     @Override
     public final float s1(int index) {

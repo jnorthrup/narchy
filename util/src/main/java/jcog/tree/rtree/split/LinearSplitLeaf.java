@@ -10,7 +10,7 @@ package jcog.tree.rtree.split;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,16 +44,16 @@ public final class LinearSplitLeaf<T> implements Split<T> {
         T[] data = leaf.data;
         final int nD = model.bounds(data[0]).dim();
         final int[][][] rIndex = new int[nD][NRANGE][NRANGE];
-        // separation between min and max extremes
+        
         final double[] separation = new double[nD];
 
         short size = leaf.size;
         for (int d = 0; d < nD; d++) {
 
-//            rIndex[d][MIN][MIN] = 0;
-//            rIndex[d][MIN][MAX] = 0;
-//            rIndex[d][MAX][MIN] = 0;
-//            rIndex[d][MAX][MAX] = 0;
+
+
+
+
 
 
             for (int j = 1; j < size; j++) {
@@ -61,11 +61,11 @@ public final class LinearSplitLeaf<T> implements Split<T> {
 
                 HyperRegion rj = model.bounds(data[j]);
                 double rjMin = rj.coord(false, d);
-                if (model.bounds(data[rd[MIN][MIN]]).coord(false, d) > rjMin) { //TODO comparison order
+                if (model.bounds(data[rd[MIN][MIN]]).coord(false, d) > rjMin) { 
                     rd[MIN][MIN] = j;
                 }
 
-                if (model.bounds(data[rd[MIN][MAX]]).coord(false, d) < rjMin) { //TODO comparison order (opposite previous)
+                if (model.bounds(data[rd[MIN][MAX]]).coord(false, d) < rjMin) { 
                     rd[MIN][MAX] = j;
                 }
 
@@ -79,18 +79,18 @@ public final class LinearSplitLeaf<T> implements Split<T> {
                 }
             }
 
-//                        // highest max less lowest min
-//            final double width = model.bounds(data[rIndex[d][MAX][MAX]]).max().distance(model.bounds(data[rIndex[d][MIN][MIN]]).min(), d);
-//
-//            // lowest max less highest min (normalized)
-//            separation[d] = model.bounds(data[rIndex[d][MAX][MIN]]).max().distance(model.bounds(data[rIndex[d][MIN][MAX]]).min(), d) / width;
 
-            // highest max less lowest min
+
+
+
+
+
+            
             final double width = model.bounds(data[rIndex[d][MAX][MAX]]).
                     distance(model.bounds(data[rIndex[d][MIN][MIN]]), d, true, false);
 
 
-            // lowest max less highest min (normalized)
+            
             separation[d] = model.bounds(data[rIndex[d][MAX][MIN]]).distance(model.bounds(data[rIndex[d][MIN][MAX]]), d, true, false) / width;
         }
 
@@ -105,18 +105,18 @@ public final class LinearSplitLeaf<T> implements Split<T> {
         }
 
         if (r1Ext == r2Ext) {
-            // they are not separated - arbitrarily choose the first and the last
+            
             r1Ext = 0;
             r2Ext = size - 1;
         }
 
-        // two seeds
+        
         l1Node.add(data[r1Ext], leaf, model, dummy);
         l2Node.add(data[r2Ext], leaf, model, dummy);
 
         for (int i = 0; i < size; i++) {
             if ((i != r1Ext) && (i != r2Ext)) {
-                // classify with respect to nodes
+                
                 leaf.transfer(l1Node, l2Node, data[i], model);
             }
         }

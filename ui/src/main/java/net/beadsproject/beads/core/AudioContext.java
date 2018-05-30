@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  * CREDIT: This class uses portions of code taken from JASS. See readme/CREDITS.txt.
  *
  */
@@ -98,8 +98,8 @@ public class AudioContext {
 
     @NotNull
     private Queue newQueue() {
-        //return new ArrayBlockingQueue(128);
-        return new ConcurrentLinkedQueue(); //doesnt lock like ArrayBlockingQueue
+        
+        return new ConcurrentLinkedQueue(); 
     }
 
     private final Queue<Auvent> afterFrameQueue = newQueue();
@@ -108,22 +108,22 @@ public class AudioContext {
 
 
 	/*
-	//package net.beadsproject.beads.core.io;
-//
-//import net.beadsproject.beads.core.AudioContext;
-//import net.beadsproject.beads.ugens.Noise;
-//
-//public class JSTest {
-//
-//	public static void main(String[] args) {
-//		//test
-//		AudioContext ac = new AudioContext(new UGenOutput());
-//		Noise n = new Noise(ac);
-//		ac.out.addInput(n);
-//		ac.start();
-//	}
-//
-//}
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	 */
 
@@ -140,33 +140,33 @@ public class AudioContext {
         UGenOutput ioSystem = new UGenOutput();
         Audio audio = Audio.the();
 
-        //attempt to find the default (JavaSound) AudioIO by reflection
-//		AudioIO ioSystem = null;
-//		try {
-//			Class javaSoundAudioIOClass = Class.forName("net.beadsproject.beads.core.io.UGenOutput");		//alt choice is org.jaudiolibs.beads.AudioServerIO$JavaSound.
-//			Constructor noArgsConstructor = javaSoundAudioIOClass.getConstructor();
-//			ioSystem = (AudioIO)noArgsConstructor.newInstance();
-//			System.out.println("AudioContext : no AudioIO specified, using default => " + javaSoundAudioIOClass.getName() + ".");
-//		} catch (Exception e) {
-//			//if fail, print warning and revert to NonrealtimeIO.
-//			System.out.println("AudioContext : warning : unable to find default (JavaSound) AudioIO.");
-//			System.out.println("AudioContext : warning : reverting to NonrealtimeIO. You can still process audio but don't expect to hear anything.");
-//			ioSystem = new NonrealtimeIO();
-//			}
-//		//default audio format
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
         IOAudioFormat audioFormat = defaultAudioFormat(2, 2);
-        // bind to AudioIO
+        
         this.audioIO = ioSystem;
         this.audioIO.context = this;
-        // set audio format
+        
         this.audioFormat = audioFormat;
-        // set buffer size
+        
         setBufferSize(audio.bufferSizeInFrames());
-        // set up basic stuff
+        
         logTime = false;
         maxReserveBufs = 50;
         stopped = true;
-        // set up the default root UGen
+        
         out = new Gain(this, audioFormat.outputs);
         AudioIO.prepare();
 
@@ -186,49 +186,49 @@ public class AudioContext {
      *                           number of channels, signedness and byte order.
      */
     public AudioContext(AudioIO ioSystem, int bufferSizeInFrames, IOAudioFormat audioFormat) {
-        // bind to AudioIO
+        
         this.audioIO = ioSystem;
         this.audioIO.context = this;
-        // set audio format
+        
         this.audioFormat = audioFormat;
-        // set buffer size
+        
         setBufferSize(bufferSizeInFrames);
-        // set up basic stuff
+        
         logTime = false;
         maxReserveBufs = 50;
         stopped = true;
-        // set up the default root UGen
+        
         out = new Gain(this, audioFormat.outputs);
         AudioIO.prepare();
     }
 
-//	/**
-//	 * Returns a UGen which can be used to grab audio from the audio input, as
-//	 * specified by the AudioIO.
-//	 *
-//	 * @param channels
-//	 *            an array of ints indicating which channels are required.
-//	 * @return a UGen which can be used to access audio input.
-//	 */
-//	public UGen getAudioInput(int[] channels) {
-//		return audioIO.getAudioInput(channels);
-//	}
-//
-//	/**
-//	 * Returns a UGen which can be used to grab audio from the audio input, as
-//	 * specified by the AudioIO. This method returns a UGen with one out for
-//	 * each input channel of the audio input device. For access to specific channels
-//	 * see {@link #getAudioInput(int[])}.
-//	 *
-//	 * @return a UGen which can be used to access audio input.
-//	 */
-//	public UGen getAudioInput() {
-//		int[] chans = new int[audioFormat.inputs];
-//		for(int i = 0; i < chans.length; i++) {
-//			chans[i] = i + 1;
-//		}
-//		return audioIO.getAudioInput(chans);
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Sets up the reserve of buffers.
@@ -249,7 +249,7 @@ public class AudioContext {
             bufStoreIndex = 0;
             Arrays.fill(zeroBuf, 0f);
             sendBeforeFrameMessages();
-            out.update(); // this will propagate all of the updates
+            out.update(); 
             sendAfterFrameMessages();
             timeStep++;
             if (Thread.interrupted()) {
@@ -342,7 +342,7 @@ public class AudioContext {
      * @param n number of milliseconds.
      */
     public void runForNMillisecondsNonRealTime(double n) {
-        // time the playback to n seconds
+        
         DelayTrigger dt = new DelayTrigger(this, n,
                 new AudioContextStopTrigger(this));
         out.dependsOn(dt);
@@ -544,13 +544,13 @@ public class AudioContext {
      */
     public void start() {
         if (stopped) {
-            // calibration test stuff
+            
             nanoLeap = (long) (1000000000 * (bufferSizeInFrames / audioFormat.sampleRate));
             lastFrameGood = true;
-            // reset time step
+            
             reset();
             stopped = false;
-            // the AudioIO is where the thread actually runs.
+            
             audioIO.start();
         }
     }

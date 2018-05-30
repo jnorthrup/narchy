@@ -13,28 +13,28 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Started by I330347 on 8/25/2016.
- * https://github.com/JasonChen86899/ThreadPool/blob/master/src/main/java/HPThreadPool.java
+ * https:
  * TODO make # of worker threads growable/shrinkable dynamically
  */
 public abstract class BusyPool extends AbstractExecutorService {
 
     protected final ConcurrentQueue  q;
     public List<Thread> workers = new FasterList<>();
-//    final WorkLoop anonymous;
+
     static final Logger logger = LoggerFactory.getLogger(BusyPool.class);
 
     /** for safety, q should be a BlockingQueue implementation but if not, ordinary Queue can be used */
     public BusyPool(int threads, ConcurrentQueue<Runnable> q) {
         this.q = q;
-//        anonymous = newWorkLoop(q);
+
 
         for (int i = 0; i < threads; i++) {
             Thread newthread = new Thread(newWorkLoop(q));
 
-            //ProxyProduce proxyProduce = new ProxyProduce(newthread,recycleRunable);
-            //Thread proxyThread =(Thread)proxyProduce.bind();
+            
+            
             workers.add(newthread);
-            //proxyThread.start();
+            
             newthread.start();
         }
 
@@ -48,7 +48,7 @@ public abstract class BusyPool extends AbstractExecutorService {
         boolean waiting = true;
         retry:
         while (waiting) {
-            //自旋的方式
+            
             waiting = false;
             for (Thread worker : workers) {
                 if (worker.getState() != Thread.State.WAITING) {
@@ -69,7 +69,7 @@ public abstract class BusyPool extends AbstractExecutorService {
             Object x = null;
             while ((x = q.poll())!=null) {
                 Object xx = x;
-                interrupted.add(()->{ execute((Runnable)xx); }); //TODO see if xx is sometimes not a Runnable and needs run(x)
+                interrupted.add(()->{ execute((Runnable)xx); }); 
             }
 
             return interrupted;
@@ -101,7 +101,7 @@ public abstract class BusyPool extends AbstractExecutorService {
     public void queue(Object x) {
         if (!q.offer(x)) {
             if (q instanceof BlockingQueue) {
-                logger.warn("{} lagged queuing {}", Thread.currentThread(), x); //TODO statistics
+                logger.warn("{} lagged queuing {}", Thread.currentThread(), x); 
                 try {
                     ((BlockingQueue) q).put(x);
                 } catch (InterruptedException e) {
@@ -113,10 +113,10 @@ public abstract class BusyPool extends AbstractExecutorService {
             }
         }
 
-//        while (!q.offer(x)) {
-//            logger.error("lag"); //TODO statistics
-//            anonymous.pollNext();
-//        }
+
+
+
+
     }
 
     protected void queueOverflow(Object x) {
@@ -126,66 +126,66 @@ public abstract class BusyPool extends AbstractExecutorService {
     public abstract static class WorkLoop implements Runnable {
 
         protected final ConcurrentQueue q;
-//        final Queue localQ = new ArrayDeque();
+
 
         protected WorkLoop(ConcurrentQueue q) {
             this.q = q;
         }
 
-//        protected void run(Object next) {
-//            ((Runnable) next).run();
-//        }
-
-//        public void runSafe(Object next) {
-//            try {
-//                run(next);
-//            } catch (Throwable t) {
-//                logger.error("{} {}", next, t);
-//            }
-//        }
-//
-//        protected Object pollNext() {
-//            return q.poll();
-//        }
 
 
 
-//        protected void drain() {
-//            int drained = ((DisruptorBlockingQueue) q).drainTo(localQ);
-//            if (drained > 0) {
-//                localQ.forEach(this::runSafe);
-//                localQ.clear();
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     }
 
-//
-//    public void printInfo() {
-//        Iterator<Thread> iterator = workers.iterator();
-//        while (iterator.hasNext()) {
-//            Thread thread = iterator.next();
-//            System.out.println(thread.toString() + thread.getState().name());
-//        }
-//        System.out.println(q.size());
-//    }
 
-//    private static class ProxyProduce implements InvocationHandler{
-//        private Runnable runnable;
-//        private Object target;
-//        public ProxyProduce(Object target,Runnable r){
-//            this.target = target;
-//            this.runnable = r;
-//        }
-//        public Object bind(){
-//            return Proxy.newProxyInstance(target.getClass().getClassLoader(),target.getClass().getInterfaces(),this);
-//        }
-//        @Override
-//        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-//            Object result = method.invoke(target,args);
-//            runnable.run();
-//            return result;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

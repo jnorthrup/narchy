@@ -34,7 +34,7 @@ public class IntTest {
         NAR n = NARS.shell();
         n.log();
         n.input(" ((3,x) ==>+1 (4,y)).");
-        // ((3,x) ==>+1 (add(3,1),y)).
+        
 
         n.run(10);
     }
@@ -53,16 +53,16 @@ public class IntTest {
 
     @Test public void testDifferRangeInt() {
         assertEquals(range(1,2), differenceSafe(range(0,2), the(0)));
-        assertEquals(range(0,2), differenceSafe(range(0,2), the(3))); //unchanged
+        assertEquals(range(0,2), differenceSafe(range(0,2), the(3))); 
         assertEquals("(0&2)", differenceSafe(range(0,2), the(1)).toString());
     }
 
     @Test
     public void testIntIntersectionReduction() {
-        //(P --> M), (S --> M), task("."), notSet(S), notSet(P), neqRCom(S,P) |- ((S | P) --> M), (Belief:Intersection)
-        //(P --> M), (S --> M), task("."), notSet(S), notSet(P), neqRCom(S,P) |- ((S & P) --> M), (Belief:Union)
+        
+        
 
-        //simple scalar agglomeration
+        
         assertEquals(
                 range(0, 1),
                 Op.SECTi.the(the(0), the(1))
@@ -76,18 +76,18 @@ public class IntTest {
 
 
 
-//    @Test
-//    public void testIntersectionAndSim() throws Narsese.NarseseException {
-//        assertEquals("((18..19,16)<->zlj)", $.$("(((18,16)&(19,16))<->zlj)").toString());
-//    }
+
+
+
+
 
     @Test
     public void testIntInProductIntersectionReduction() {
 
-        //simple scalar agglomeration
+        
         assertEquals(
-                //$.p(range(0,1), range(0, 2)),
-                //"(|,(0,0..2),(0..1,1),(0..1,0..2))",
+                
+                
                 "(0..1,0..2)",
                 Op.SECTi.the($.p(0, 1), $.p(the(1), range(0,2))).toString()
         );
@@ -115,7 +115,7 @@ public class IntTest {
     @Test public void testRecursiveUnroll() {
         assertEquals("TODO",
                 unroll(
-                    //$("(0..1,c,0,(2,b,1..2,(0..1,a,0)))")
+                    
                     $.p(Int.range(0,1), $.the("c"), Int.the(0),
                             $.p(Int.the(2), $.the("b"), Int.range(1,2),
                                     $.p(Int.range(0,1), $.the("a"), Int.the(0))))
@@ -125,7 +125,7 @@ public class IntTest {
     @Disabled @Test
     public void testRangeUnification() {
         TestNAR n = new TestNAR(NARS.tmp());
-        //Tense.Present so that Temporal Induction links the two unrelated Statements
+        
         n.nar.believe(
                 $.inh(range(0, 2), $.the("x")),
                 Tense.Present
@@ -202,165 +202,165 @@ public class IntTest {
     public void testIntersectionRange() {
         assertEquals("(8|4..5)", Op.SECTi.the(Int.the(4), Int.the(8), Int.range(4, 5)).toString());
         assertEquals("(8&4..5)", Op.SECTe.the(Int.the(4), Int.the(8), Int.range(4, 5)).toString());
-        //TODO for Set's
+        
     }
 
 }
 
-///**
-// * Created by me on 8/5/16.
-// */
-//@Disabled
-//public class ArithmeticInductionTest {
-//
-//    @Test
-//    public void testIntRangeCompression() {
-//
-//
-//        assertEquals( //simple range of raw ints
-//                "`1<=?<=2`",
-//                conj(the(1), the(2)).toString()
-//        );
-//        assertEquals( //simple range of raw ints
-//                "`1<=?<=3`",
-//                conj(the(1), the(2), the(3)).toString()
-//        );
-//
-//        assertEquals( //range can not be formed
-//                "(1&&3)",
-//                conj(the(1), the(3)).toString()
-//        );
-//
-//        assertEquals( //simple range of embedded ints
-//                "(x,`1<=?<=2`)",
-//                conj(p(Atomic.the("x"), the(1)), p(Atomic.the("x"), the(2))).toString()
-//        );
-//    }
-//
-//    @Test
-//    public void testIntRangeCompressionInvalid1() {
-//        assertEquals(
-//                "((x,1)&&(y,2))",
-//                conj(p(Atomic.the("x"), the(1)), p(Atomic.the("y"), the(2))).toString()
-//        );
-//    }
-//    @Test
-//    public void testIntRangeCompressionInvalid2() {
-//        assertEquals(
-//                "((x,`1<=?<=2`)&&(y,2))",
-//                conj(p(Atomic.the("x"), the(1)), p(Atomic.the("x"), the(2)), p(Atomic.the("y"), the(2))).toString()
-//        );
-//    }
-//    @Test public void testInvalidDueToDT() {
-//        assertEquals(
-//                "((x,1) &&+1 (x,2))",
-//                seq(p(Atomic.the("x"), the(1)), 1, p(Atomic.the("x"), the(2))).toString()
-//        );
-//    }
-//
-//    @Test public void testNegationNotCombined() {
-//        assertEquals(
-//                "((--,(x,2))&&(x,1))",
-//                conj(p(Atomic.the("x"), the(1)), $.neg(p(Atomic.the("x"), the(2)))).toString()
-//        );
-//    }
-//
-//    @Test
-//    public void testIntRangeCompressionPartial() {
-//        assertEquals( //partially covered range of embedded ints
-//                "((x,4)&&(x,`1<=?<=2`))",
-//                conj(p(Atomic.the("x"), the(1)), p(Atomic.the("x"), the(2)), p(Atomic.the("x"), the(4))).toString()
-//        );
-//    }
-//
-//    @Test
-//    public void testIntRangeCombination() {
-//        assertEquals( //partially covered range of embedded ints
-//                "(x,`1<=?<=4`)",
-//                conj(
-//                    p(Atomic.the("x"), new Termject.IntInterval(1,2)),
-//                    p(Atomic.the("x"), new Termject.IntInterval(2,4)))
-//                .toString()
-//        );
-//    }
-//
-//    @Test public void testIntRangeDual() {
-//        //This requires the recursive arithmetic induction
-//
-//        //two separate intervals
-//        assertEquals(
-//                "((x,`1<=?<=2`)&&(`2<=?<=3`,y))",
-//                conj(
-//                        p(Atomic.the("x"), the(1)),
-//                        p(Atomic.the("x"), the(2)),
-//                        p(the(2), Atomic.the("y")),
-//                        p(the(3), Atomic.the("y"))
-//                ).toString()
-//        );
-//    }
-//
-//    @Test public void testIntRangeMultiple() {
-//        //This requires the recursive arithmetic induction
-//        //two separate intervals
-//        assertEquals(
-//                "(&&,(x,8),(x,`1<=?<=2`),(x,`4<=?<=6`))",
-//                conj(
-//                        p(Atomic.the("x"), the(1)),
-//                        p(Atomic.the("x"), the(2)),
-//                        p(Atomic.the("x"), the(4)),
-//                        p(Atomic.the("x"), the(5)),
-//                        p(Atomic.the("x"), the(6)),
-//                        p(Atomic.the("x"), the(8))
-//                )
-//                        .toString()
-//        );
-//    }
-//
-//    @Test public void testIntRangeMultipleNegation() {
-//        //two separate intervals
-//        assertEquals(
-//                "(&&,(--,(x,`4<=?<=6`)),(x,8),(x,`1<=?<=2`))",
-//                conj(
-//                        p(Atomic.the("x"), the(1)),
-//                        p(Atomic.the("x"), the(2)),
-//                        $.neg(p(Atomic.the("x"), the(4))),
-//                        $.neg(p(Atomic.the("x"), the(5))),
-//                        $.neg(p(Atomic.the("x"), the(6))),
-//                        p(Atomic.the("x"), the(8))
-//                )
-//                        .toString()
-//        );
-//    }
-//    @Test public void testIntRangeDual2() {
-//        //two separate intervals
-//        assertEquals(
-//                "(`2<=?<=3`,`1<=?<=2`)",
-//                conj(
-//                        p(the(3), the(1)),
-//                        p(the(2), the(2))
-//                ).toString()
-//        );
-//    }
-//
-//    @Test public void testGroupOfThree() {
-//        //(`11`,`9`), (`17`,`2`), (`18`,`2`)
-//        assertEquals(
-//                "((11,9)&&(`17<=?<=18`,2))",
-//                conj(
-//                        p(the(11), the(9)),
-//                        p(the(18), the(2)),
-//                        p(the(17), the(2))
-//                ).toString()
-//        );
-//
-//    }
-//
-////        System.out.println(
-////                //n.normalize((Compound)
-////                    parallel(p(p(0,1), the(1)), p(p(0,1), the(3)), p(p(0,1), the(5)))
-////
-////        );
-//        //n.next();
-//
-//
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -39,12 +39,12 @@ public abstract class ConvexShape extends CollisionShape {
 	
 	public abstract v3 localGetSupportingVertex(v3 vec, v3 out);
 
-	//#ifndef __SPU__
+	
 	public abstract v3 localGetSupportingVertexWithoutMargin(v3 vec, v3 out);
 
-	//notice that the vectors should be unit length
+	
 	public abstract void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors);
-	//#endif
+	
 	
 	public abstract void getAabbSlow(Transform t, v3 aabbMin, v3 aabbMax);
 

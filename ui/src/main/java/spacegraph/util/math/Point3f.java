@@ -39,7 +39,7 @@ package spacegraph.util.math;
 public class Point3f extends Tuple3f {
 
 
-    // Compatible with 1.1
+    
     static final long serialVersionUID = -8689337816398030143L;
 
     /**
@@ -74,14 +74,14 @@ public class Point3f extends Tuple3f {
     }
 
 
-//    /**
-//     * Constructs and initializes a Point3f from the specified Point3d.
-//     * @param p1 the Point3d containing the initialization x y z data
-//     */
-//    public Point3f(Point3d p1)
-//    {
-//       super(p1);
-//    }
+
+
+
+
+
+
+
+
 
 
     /**
@@ -94,14 +94,14 @@ public class Point3f extends Tuple3f {
     }
 
 
-//    /**
-//     * Constructs and initializes a Point3f from the specified Tuple3d.
-//     * @param t1 the Tuple3d containing the initialization x y z data
-//     */
-//    public Point3f(Tuple3d t1)
-//    {
-//       super(t1);
-//    }
+
+
+
+
+
+
+
+
 
 
     /**

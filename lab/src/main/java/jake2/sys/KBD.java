@@ -31,7 +31,7 @@ package jake2.sys;
  */
 abstract public class KBD {
 	
-	// motion values
+	
 	public static int mx;
 	public static int my;
 	
@@ -44,6 +44,6 @@ abstract public class KBD {
 
 	abstract public void installGrabs();
 	abstract public void uninstallGrabs();
-	//abstract public void centerMouse();
+	
 }
 

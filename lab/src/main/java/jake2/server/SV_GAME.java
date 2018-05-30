@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 14.01.2004 by RST.
-// $Id: SV_GAME.java,v 1.10 2006-01-21 21:53:32 salomo Exp $
+
+
 package jake2.server;
 
 import jake2.Defines;
@@ -109,7 +109,7 @@ public class SV_GAME {
 
         n = ent.index;
         if (n < 1 || n > SV_MAIN.maxclients.value)
-            return; // Com_Error (ERR_DROP, "centerprintf to a non-client");
+            return; 
 
         MSG.WriteByte(SV_INIT.sv.multicast, Defines.svc_centerprint);
         MSG.WriteString(SV_INIT.sv.multicast, fmt);
@@ -145,7 +145,7 @@ public class SV_GAME {
 
         ent.s.modelindex = i;
 
-        // if it is an inline model, get the size information for it
+        
         if (name.startsWith("*")) {
             mod = CM.InlineModel(name);
             Math3D.VectorCopy(mod.mins, ent.mins);
@@ -165,11 +165,11 @@ public class SV_GAME {
         if (val == null)
             val = "";
 
-        // change the string in sv
+        
         SV_INIT.sv.configstrings[index] = val;
 
-        if (SV_INIT.sv.state != Defines.ss_loading) { // send the update to
-                                                      // everyone
+        if (SV_INIT.sv.state != Defines.ss_loading) { 
+                                                      
             SZ.Clear(SV_INIT.sv.multicast);
             MSG.WriteChar(SV_INIT.sv.multicast, Defines.svc_configstring);
             MSG.WriteShort(SV_INIT.sv.multicast, index);
@@ -235,7 +235,7 @@ public class SV_GAME {
         cluster = CM.CM_LeafCluster(leafnum);
         area2 = CM.CM_LeafArea(leafnum);
 
-        // quake2 bugfix
+        
         if (cluster == -1)
             return false;
         if (mask != null && (0 == (mask[cluster >>> 3] & (1 << (cluster & 7)))))
@@ -265,11 +265,11 @@ public class SV_GAME {
         cluster = CM.CM_LeafCluster(leafnum);
         area2 = CM.CM_LeafArea(leafnum);
 
-        // quake2 bugfix
+        
         if (cluster == -1)
             return false;
         if (mask != null && (0 == (mask[cluster >> 3] & (1 << (cluster & 7)))))
-            return false; // more than one bounce away
+            return false; 
         return CM.CM_AreasConnected(area1, area2);
 
     }
@@ -303,12 +303,12 @@ public class SV_GAME {
 
     public static void SV_InitGameProgs() {
 
-        // unload anything we have now
+        
         SV_ShutdownGameProgs();
 
         game_import_t gimport = new game_import_t();
 
-        // all functions set in game_export_t (rst)
+        
         GameBase.GetGameApi(gimport);
 
         GameSave.InitGame();

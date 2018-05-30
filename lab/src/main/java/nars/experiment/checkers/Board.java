@@ -35,7 +35,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 		int WIDTH = game.WIDTH;
 		int HEIGHT = game.HEIGHT;
 
-		// set players
+		
 		this.player1 = player1;
 		this.player1.setBoard(this);
 		this.player1.addListener(this);
@@ -43,14 +43,14 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 		this.player2.setBoard(this);
 		this.player2.addListener(this);
 		
-		// by default disable the mouse listener
+		
 		disableMouseListener();
 
-		// please take care of the gap
+		
 		((FlowLayout)getLayout()).setHgap(0);
 		((FlowLayout)getLayout()).setVgap(0);
 
-		// set preferred size for the board
+		
 		setPreferredSize(new Dimension(WIDTH * SQUARE_WIDTH, HEIGHT * SQUARE_HEIGHT));
 
                 squares = (Square[][]) Array.newInstance(Square.class, WIDTH, HEIGHT);
@@ -58,13 +58,13 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 		{
 			for(int j = 0; j < HEIGHT; j++)
 			{
-				// decide weather to create a black or white square
+				
 				squares[i][j] = new Square(i % 2 == j % 2 ? new Color(50, 50, 50) : new Color(200, 200, 200), i, j);
 
-				// set preferred size per square
+				
 				squares[i][j].setPreferredSize(new Dimension(SQUARE_WIDTH, SQUARE_HEIGHT));
 
-				// add the mouselistener
+				
                 squares[i][j].addMouseListener(this);
 			}
 		}
@@ -72,14 +72,14 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 
 		setLayout(new GridLayout(WIDTH, HEIGHT));
 
-		// add the squares to the panel in the right order
+		
 		for(int i = HEIGHT - 1; i >= 0; i--)
 		{
 			for(int j = 0; j < WIDTH; j++)
 				add(squares[j][i]);
 		}
 
-		// finally set the board's initial context
+		
 		setContext(game);
 	}
 
@@ -154,7 +154,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 		{
 			if(source == null)
 			{
-				// no source has been set yet
+				
 				source = (Square) e.getSource();
 
 				if(source.getCoordinateX() % 2 == source.getCoordinateY() % 2)
@@ -170,7 +170,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 			}
 			else if(source.equals(e.getSource()))
 			{
-				// selection equals previous set source, deselect
+				
 				ArrayList<int[]> targets = game.pieceCouldMoveToFrom(source.getCoordinateX(), source.getCoordinateY());
 				for(int[] target : targets)
 					squares[target[0]][target[1]].detarget();
@@ -180,7 +180,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 			}
 			else
 			{
-				// source has been set, this time destination has been selected
+				
 				Square destination = (Square) e.getSource();
 
 				if(game.move(source.getCoordinateX(), source.getCoordinateY(), destination.getCoordinateX(), destination.getCoordinateY()))
@@ -189,7 +189,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 					source.deselect();
 					source = null;
 
-					// context changed but make sure we visualise the changes
+					
 					setPieces();
 					repaint();
 				}
@@ -246,7 +246,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 
 	public static void main(String[] args) {
 		Board b = new Board(new HumanPlayer("Human1"), new HumanPlayer("Human2"), 8, 8);
-                //Board b = new Board(new MinimaxPlayer("CPU1"), new MinimaxPlayer("CPU1"), 16, 16);
+                
 
 		JFrame frame = new JFrame("Checkers");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -263,30 +263,30 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 		b.play();
 	}
 
-	// as for right now functions below are completely useless, but required
+	
 
 	@Override
     public void mousePressed(MouseEvent e)
 	{
-		// nothing, nada, zip ..
+		
     }
 
 	@Override
     public void mouseReleased(MouseEvent e)
 	{
-        // nothing, nada, zip ..
+        
     }
 
 	@Override
     public void mouseEntered(MouseEvent e)
 	{
-        // nothing, nada, zip ..
+        
     }
 
 	@Override
     public void mouseExited(MouseEvent e)
 	{
-        // nothing, nada, zip ..
+        
     }
 
 	@Override
@@ -294,7 +294,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 	{
 		if((p.equals(player1) && !player2.hasTurn()) || (p.equals(player2) && !player1.hasTurn()))
 		{
-			disableMouseListener(); // player will reactivate it if necessary
+			disableMouseListener(); 
 
 			if(p.equals(player1))
 				player2.takeTurn();
@@ -308,7 +308,7 @@ public class Board extends JPanel implements MouseListener, PlayerListener
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		JPanel boardPane = new JPanel(new BorderLayout());
-		//((FlowLayout)boardPane.getLayout()).setAlignment();
+		
 		boardPane.add(this, BorderLayout.CENTER);
 
 		frame.getContentPane().setLayout(new BorderLayout());

@@ -26,8 +26,8 @@ public final class InvalidTaskException extends SoftException {
         String m = super.getMessage();
         return ((m!=null) ? m + ": " : "") + (task!=null ? task.toString() : "");
 
-//        return super.getMessage() + ": " +
-//                ((task instanceof Task) ? ((Task) task).proof() : task.toString());
+
+
     }
 
 }

@@ -88,11 +88,11 @@ public class BeliefPredict {
             believe(now, p);
         }
 
-        //delete all prediction tasks from the past cycle
+        
         currentPredictions.forEach(ITask::delete);
         currentPredictions.clear();
 
-        currentPredictions.addAll(predict.buffer); //save them because after commit predict.buffer will be empty
+        currentPredictions.addAll(predict.buffer); 
 
         predict.commit();
 
@@ -112,7 +112,7 @@ public class BeliefPredict {
 
             PreciseTruth t = Truth.theDithered(f, evi, nar);
             if (t == null)
-                continue; //??
+                continue; 
 
             Task p = new SignalTask(predicted[i].term(), BELIEF,
                     t,
@@ -134,7 +134,7 @@ public class BeliefPredict {
             if (t == null)
                 return
                         0.5f;
-                        //nar.random().nextFloat(); //HACK
+                        
             else
                 return t.freq();
         };

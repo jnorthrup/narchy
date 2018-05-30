@@ -17,9 +17,9 @@ public class CA extends JFrame implements Runnable {
     protected long MaxSteps;
     protected int SpaceSizeX;
     protected int SpaceSizeY;
-    protected int SpaceSizeZ; // not used on this level.
+    protected int SpaceSizeZ; 
     protected int SpaceSize;
-    protected final int Offset = 10; // min=1 for frame
+    protected final int Offset = 10; 
 
     protected int CASpace[][];
     protected int CASpaceOld[][];
@@ -38,8 +38,8 @@ public class CA extends JFrame implements Runnable {
     protected boolean bInitedNew;
 
 
-    final static Color foreground = Color.WHITE; //getColorParameter("foreground");
-    final static Color background = Color.BLACK; //getColorParameter("background");
+    final static Color foreground = Color.WHITE; 
+    final static Color background = Color.BLACK; 
     private final boolean running;
 
     public CA() {
@@ -66,38 +66,38 @@ public class CA extends JFrame implements Runnable {
 
         setIgnoreRepaint(true);
 
-        // determine the AnimationStepDelay
+        
         setBackground(background);
         setForeground(foreground);
-        // Init the CA
+        
         InitCA();
         bInitedNew = true;
-        repaint(); //Display CA
+        repaint(); 
     }
 
 
-//    public void stop() {
-//        //System.out.println("stopping... ");
-//    }
-//
-//    public void destroy() {
-//        //System.out.println("preparing for unloading...");
-//    }
+
+
+
+
+
+
+
 
     @Override
     public void run() {
-        //System.out.println("running...");
-        // Lower this thread's priority,
-        // so it can't interfere with other processing going on.
-        //Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        // Remember the starting time.
+        
+        
+        
+        
+        
         long startTime = System.currentTimeMillis();
-        // Remember which thread we are.
-//        Thread currentThread = Thread.currentThread();
-        // This is the animation loop.
+        
+
+        
         while (running) {
-            repaint(); // Step and Display CA.
-            // Delay depending on how far we are behind.
+            repaint(); 
+            
             if (!NoStepDelay) {
                 startTime += stepDelayMS;
                 Util.sleep(Math.max(0, startTime - System.currentTimeMillis()));
@@ -112,11 +112,11 @@ public class CA extends JFrame implements Runnable {
 
     @Override
     public void update(Graphics g) {
-        // To how the init configuration don't step the first time.
-//        if (!bInitedNew)
+        
+
          StepCA();
-//        else bInitedNew = false;
-        // Create the offscreen graphics context, if not exists.
+
+        
         Dimension d = size();
         if ((offGraphics == null)
                 || (d.width != offDimension.width)
@@ -126,21 +126,21 @@ public class CA extends JFrame implements Runnable {
             offImage.setAccelerationPriority(1f);
             offGraphics = offImage.getGraphics();
         }
-        // Erase the previous image.
+        
         if (CLRGraphicsAfterStep || bFirstStart) {
             offGraphics.setColor(getBackground());
             offGraphics.fillRect(0, 0, d.width, d.height);
-        } else { // clear CountCAStps.
+        } else { 
             offGraphics.setColor(getBackground());
             offGraphics.fillRect(Offset, Offset + (SpaceSizeY + 1) * CellSizeY,
                     d.width, d.height);
         }
-        // Draw the new stuff.
+        
         DrawCA(offGraphics);
         offGraphics.setColor(getForeground());
         offGraphics.drawString("CA-Step: " + CountCAStps,
                 Offset, Offset + 10 + (SpaceSizeY + 1) * CellSizeY);
-        // Paint the image onto the screen.
+        
         g.drawImage(offImage, 0, 0, this);
     }
 
@@ -150,7 +150,7 @@ public class CA extends JFrame implements Runnable {
             for (int ii = 0; ii < SpaceSizeY; ii++) {
                 CASpace[i][ii] = (random.nextInt() % 2) * (random.nextInt() % 2);
             }
-        // copy to CASpaceOld
+        
 
         for (int ix = 0; ix < SpaceSizeX; ix++)
             System.arraycopy(CASpace[ix], 0, CASpaceOld[ix], 0, SpaceSizeY);
@@ -159,8 +159,8 @@ public class CA extends JFrame implements Runnable {
 
     protected void StepCA() {
         CountCAStps++;
-        // We wrap the borders.
-        // Brian's brain (0=ready, 1=activ, 2,4,8,..=recover)
+        
+        
         long CountZeroCells = 0;
         int[][] c = CASpaceOld;
         for (int i = 0; i < SpaceSizeX; i++) {
@@ -193,36 +193,36 @@ public class CA extends JFrame implements Runnable {
         if ((CountZeroCells == SpaceSize) || (CountCAStps > MaxSteps))
             InitCA();
 
-        // copy to CASpaceOld
+        
         for (int ix = 0; ix < SpaceSizeX; ix++)
             System.arraycopy(CASpace[ix], 0, c[ix], 0, SpaceSizeY);
 
     }
 
     protected void DrawCAFrame(Graphics g) {
-//        g.setColor(getForeground());
-//        g.drawLine(Offset - 1, Offset - 1, Offset - 1, Offset + CAFrameSizeY);
-//        g.drawLine(Offset - 1, Offset - 1, Offset + CAFrameSizeX, Offset - 1);
-//        g.drawLine(Offset + CAFrameSizeX, Offset - 1,
-//                Offset + CAFrameSizeX, Offset + CAFrameSizeY);
-//        g.drawLine(Offset - 1, Offset + CAFrameSizeY,
-//                Offset + CAFrameSizeX, Offset + CAFrameSizeY);
+
+
+
+
+
+
+
     }
 
     protected void DrawCA(Graphics g) {
         DrawCAFrame(g);
-        // plot CA-Space
+        
         int PosX = Offset - CellSizeX;
         for (int i = 0; i < SpaceSizeX; i++) {
             PosX += CellSizeX;
             int PosY = Offset - CellSizeY;
             for (int ii = 0; ii < SpaceSizeY; ii++) {
                 PosY += CellSizeY;
-                // drawPoint does not exist
+                
                 if (CASpace[i][ii] > 0) {
                     Color c;
                     switch (CASpace[i][ii]) {
-                        //case 0: g.setColor(Color.white);  break;
+                        
                         case 1:
                             c = (Color.black);
                             break;
@@ -230,10 +230,10 @@ public class CA extends JFrame implements Runnable {
                             c = (Color.blue);
                             break;
                         case 4:
-                            c = (Color.CYAN); //getColor("00000F"));
+                            c = (Color.CYAN); 
                             break;
                         case 8:
-                            //g.setColor(Color.getColor("000010"));
+                            
                             c = Color.MAGENTA;
                             break;
                         default:

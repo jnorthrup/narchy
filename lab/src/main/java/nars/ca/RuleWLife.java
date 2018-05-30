@@ -1,35 +1,35 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Weighted Life
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class RuleWLife {
 	public static final int IMAXWLIFEVAL = 256;
 	public static final int IMAXWLIFERUL = 8 * IMAXWLIFEVAL;
-	public int iClo; // count of states
-	public final int[] wgtAry = new int[10]; // weights of neighbours
-	public final boolean[] rulesS = new boolean[IMAXWLIFERUL + 1]; // rules for
-																	// surviving
-	public final boolean[] rulesB = new boolean[IMAXWLIFERUL + 1]; // rules for
-																	// birth
-	public boolean isHist; // with history?
+	public int iClo; 
+	public final int[] wgtAry = new int[10]; 
+	public final boolean[] rulesS = new boolean[IMAXWLIFERUL + 1]; 
+																	
+	public final boolean[] rulesB = new boolean[IMAXWLIFERUL + 1]; 
+																	
+	public boolean isHist; 
 
-	// ----------------------------------------------------------------
+	
 	public RuleWLife() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
 		int i;
 
 		for (i = 1; i <= 9; i++)
 			wgtAry[i] = 1;
-		wgtAry[5] = 0; // me
-		isHist = true; // with history?
+		wgtAry[5] = 0; 
+		isHist = true; 
 
 		for (i = 0; i < IMAXWLIFERUL; i++) {
 			rulesS[i] = false;
@@ -37,11 +37,11 @@ public class RuleWLife {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
-	// Example: #RULE NW0,NN1,NE0,WW1,ME0,EE1,SW0,SS1,SE0,HI7,RS2,RB1,RB2,RB3
+	
+	
+	
 	public void InitFromString(String sStr) {
-		// noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		int i;
@@ -50,8 +50,8 @@ public class RuleWLife {
 		st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
-			// System.out.println(sTok);
-			// noinspection IfStatementWithTooManyBranches
+			
+			
 			if (sTok.startsWith("NW"))
 				wgtAry[1] = Integer.valueOf(sTok.substring(2));
 			else if (sTok.startsWith("NN"))
@@ -76,16 +76,16 @@ public class RuleWLife {
 			else if (sTok.startsWith("HI")) {
 				i = Integer.valueOf(sTok.substring(2));
 				if (i >= 3) {
-					isHist = true; // history, get the states count
+					isHist = true; 
 					iClo = i;
 				} else
-					isHist = false; // states count is meaningless
-			} else if (sTok.startsWith("RS")) // survival
+					isHist = false; 
+			} else if (sTok.startsWith("RS")) 
 			{
 				i = Integer.valueOf(sTok.substring(2));
 				if ((i >= 0) && (i <= IMAXWLIFERUL))
 					rulesS[i] = true;
-			} else if (sTok.startsWith("RB")) // birth
+			} else if (sTok.startsWith("RB")) 
 			{
 				i = Integer.valueOf(sTok.substring(2));
 				if ((i > 0) && (i <= IMAXWLIFERUL))
@@ -93,16 +93,16 @@ public class RuleWLife {
 			}
 		}
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the Rules table string
+	
+	
 	public String GetAsString() {
 		String sBff = "";
 		int i, ih;
 
-		// correct parameters first
+		
 		Validate();
 
 		ih = isHist ? iClo : 0;
@@ -123,9 +123,9 @@ public class RuleWLife {
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the Rules table parameters, correct
-	// them if necessary.
+	
+	
+	
 	public void Validate() {
 		if (iClo < 2)
 			iClo = 2;
@@ -133,30 +133,30 @@ public class RuleWLife {
 			iClo = MJBoard.MAX_CLO;
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, j, iCnt;
-		int[] lurd = new int[4]; // 0-left, 1-up, 2-right, 3-down
+		int[] lurd = new int[4]; 
 
 		for (i = 0; i < sizX; ++i) {
-			// determine left and right cells
+			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
 			for (j = 0; j < sizY; ++j) {
-				// determine up and down cells
+				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
 				bOldVal = crrState[i][j];
-				bNewVal = bOldVal; // default - no change
+				bNewVal = bOldVal; 
 
-				iCnt = 0; // count of neighbours
-				if (isHist) // with history
+				iCnt = 0; 
+				if (isHist) 
 				{
-					if (bOldVal <= 1) // can survive or born
+					if (bOldVal <= 1) 
 					{
 						if (crrState[lurd[0]][lurd[1]] == 1)
 							iCnt += wgtAry[1];
@@ -177,32 +177,32 @@ public class RuleWLife {
 						if (crrState[lurd[2]][lurd[3]] == 1)
 							iCnt += wgtAry[9];
 						if (iCnt < 0)
-							iCnt = 0; // safety check
+							iCnt = 0; 
 
-						// determine the cell status
-						if (bOldVal == 0) // was dead
+						
+						if (bOldVal == 0) 
 						{
-							if (rulesB[iCnt]) // rules for birth
-								bNewVal = 1; // birth
-						} else // was 1 - alive
+							if (rulesB[iCnt]) 
+								bNewVal = 1; 
+						} else 
 						{
-							if (rulesS[iCnt]) // in rules for surviving
+							if (rulesS[iCnt]) 
 							{
 								bNewVal = 1;
-							} else // isolation or overpopulation
+							} else 
 							{
 								bNewVal = bOldVal < (iClo - 1)
 										? (short) (bOldVal + 1)
 										: 0;
 							}
 						}
-					} else // was older than 1
+					} else 
 					{
 						bNewVal = bOldVal < (iClo - 1)
 								? (short) (bOldVal + 1)
 								: 0;
 					}
-				} else // no history
+				} else 
 				{
 					if (crrState[lurd[0]][lurd[1]] != 0)
 						iCnt += wgtAry[1];
@@ -223,39 +223,39 @@ public class RuleWLife {
 					if (crrState[lurd[2]][lurd[3]] != 0)
 						iCnt += wgtAry[9];
 					if (iCnt < 0)
-						iCnt = 0; // safety check
+						iCnt = 0; 
 
-					// determine the cell status
-					if (bOldVal == 0) // was dead
+					
+					if (bOldVal == 0) 
 					{
-						if (rulesB[iCnt]) // rules for birth
+						if (rulesB[iCnt]) 
 							bNewVal = ColoringMethod == 1
 									? 1
 									: (short) (mjb.Cycle
 											% (mjb.StatesCount - 1) + 1);
-					} else // was alive
+					} else 
 					{
-						if (rulesS[iCnt]) // rules for surviving
+						if (rulesS[iCnt]) 
 						{
-							if (ColoringMethod == 1) // standard
+							if (ColoringMethod == 1) 
 							{
 								bNewVal = (short) (bOldVal < mjb.StatesCount - 1 ? bOldVal + 1 : mjb.StatesCount - 1);
 							} else {
-								// alternate coloring - cells remain not changed
+								
 							}
 						} else
-							bNewVal = 0; // isolation or overpopulation
+							bNewVal = 0; 
 					}
 				}
 
 				tmpState[i][j] = bNewVal;
 				if (bNewVal != bOldVal) {
-					modCnt++; // one more modified cell
+					modCnt++; 
 				}
-			} // closes the main for j loop
-		} // closes the main for i loop
+			} 
+		} 
 
 		return modCnt;
 	}
-	// ----------------------------------------------------------------
+	
 }

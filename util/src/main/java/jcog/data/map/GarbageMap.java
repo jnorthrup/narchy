@@ -78,7 +78,7 @@ public class GarbageMap<K, V> {
                         ref = (GarbageReference) referenceQueue.remove();
                     }
                 } catch (InterruptedException e) {
-                    //ignore
+                    
                 }
             }
         }

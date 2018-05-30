@@ -28,14 +28,14 @@ import java.util.List;
  */
 public class Engine {
 
-	//PrintStream log;
+	
 	State  nextState;
 	final Term   query;
 	Struct startGoal;
 	Collection<Var> goalVars;
 	int    nDemoSteps;
 	ExecutionContext currentContext; 
-	//ClauseStore clauseSelector;
+	
 	ChoicePointContext currentAlternative;
 	ChoicePointStore choicePointSelector;
 	boolean mustStop;
@@ -112,7 +112,7 @@ public class Engine {
 		return l;
 	}
 
-//	public ChoicePointStore getChoicePointStore() {	return choicePointSelector;	}
+
 
 	void prepareGoal() {
 		LinkedHashMap<Var,Var> goalVars = new LinkedHashMap<>();
@@ -120,9 +120,9 @@ public class Engine {
 		this.goalVars = goalVars.values();
 	}
 
-	//    void cut() {
-		//        choicePointSelector.cut(currentContext.depth -1);
-		//    }
+	
+		
+		
 
 	void initialize(ExecutionContext eCtx) {
 		currentContext = eCtx;

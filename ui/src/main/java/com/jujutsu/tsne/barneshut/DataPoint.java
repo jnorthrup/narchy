@@ -34,28 +34,28 @@ public class DataPoint extends ArrayRealVector {
 	int dimensionality() { return _D; }
 	double x(int d) { return getEntry(d); }
 	
-//	public double euclidean_distance( DataPoint t1 ) {
-//		return euclidean_distance(this, t1);
-////	    double dd = .0;
-////	    double [] x1 = t1.getDataRef();
-////	    double [] x2 = getDataRef();
-////	    double diff;
-////	    for(int d = 0; d < t1._D; d++) {
-////	        diff = (x1[d] - x2[d]);
-////	        dd += diff * diff;
-////	    }
-////	    return sqrt(dd);
-//	}
-//
-//	public static double euclidean_distance( DataPoint t1, DataPoint t2 ) {
-//	    double dd = .0;
-//	    double [] x1 = t1.getDataRef();
-//	    double [] x2 = t2.getDataRef();
-//	    double diff;
-//	    for(int d = 0; d < t1._D; d++) {
-//	        diff = (x1[d] - x2[d]);
-//	        dd += diff * diff;
-//	    }
-//	    return sqrt(dd);
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

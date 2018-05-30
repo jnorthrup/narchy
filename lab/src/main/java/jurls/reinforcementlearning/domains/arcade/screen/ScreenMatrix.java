@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.screen;
 
@@ -48,10 +48,10 @@ public class ScreenMatrix implements Cloneable {
      * @param filename
      */
     public ScreenMatrix(String filename) throws IOException {
-        // Create a BufferedReader to read in the data
+        
         BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
 
-        // Obtain the width and height
+        
         String line = in.readLine();
         String[] tokens = line.split(",");
 
@@ -62,9 +62,9 @@ public class ScreenMatrix implements Cloneable {
 
         int rowIndex = 0;
 
-        // Read in the screen row-by-row, each separated by a newline
+        
         while ((line = in.readLine()) != null) {
-            // A row is a comma-separated list of integer values
+            
             tokens = line.split(",");
             assert (tokens.length == width);
 
@@ -85,12 +85,12 @@ public class ScreenMatrix implements Cloneable {
     public void saveData(String filename) throws IOException {
         PrintStream out = new PrintStream(new FileOutputStream(filename));
 
-        // Width,height\n
+        
         out.println(width+","+height);
 
-        // Print the matrix, one row per line
+        
         for (int y = 0; y < height; y++) {
-            // Data is comma separated
+            
             for (int x = 0; x < width; x++) {
                 out.print(matrix[x][y]);
                 if (x < width - 1) out.print(",");
@@ -109,7 +109,7 @@ public class ScreenMatrix implements Cloneable {
         try {
             ScreenMatrix img = (ScreenMatrix)super.clone();
 
-            // Create a new matrix which we will fill with the proper data
+            
             img.matrix = new int[this.width][this.height];
         
             for (int x = 0; x < this.width; x++) {

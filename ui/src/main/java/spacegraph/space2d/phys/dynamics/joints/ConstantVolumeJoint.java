@@ -84,8 +84,8 @@ public class ConstantVolumeJoint extends Joint {
             distanceJoints = new DistanceJoint[bodies.length];
             for (int i = 0; i < targetLengths.length; ++i) {
                 final int next = (i == targetLengths.length - 1) ? 0 : i + 1;
-                djd.frequencyHz = def.frequencyHz;// 20.0f;
-                djd.dampingRatio = def.dampingRatio;// 50.0f;
+                djd.frequencyHz = def.frequencyHz;
+                djd.dampingRatio = def.dampingRatio;
                 djd.collideConnected = def.collideConnected;
                 djd.initialize(bodies[i], bodies[next], bodies[i].getWorldCenter(),
                         bodies[next].getWorldCenter());
@@ -150,14 +150,14 @@ public class ConstantVolumeJoint extends Joint {
         final Tuple2f delta = pool.popVec2();
 
         float deltaArea = targetVolume - getSolverArea(positions);
-        float toExtrude = 0.5f * deltaArea / perimeter; // *relaxationFactor
-        // float sumdeltax = 0.0f;
+        float toExtrude = 0.5f * deltaArea / perimeter; 
+        
         boolean done = true;
         for (int i = 0; i < bodies.length; ++i) {
             final int next = (i == bodies.length - 1) ? 0 : i + 1;
             delta.set(toExtrude * (normals[i].x + normals[next].x), toExtrude
                     * (normals[i].y + normals[next].y));
-            // sumdeltax += dx;
+            
             float normSqrd = delta.lengthSquared();
             if (normSqrd > Settings.maxLinearCorrection * Settings.maxLinearCorrection) {
                 delta.scaled(Settings.maxLinearCorrection / (float) Math.sqrt(normSqrd));
@@ -167,12 +167,12 @@ public class ConstantVolumeJoint extends Joint {
             }
             positions[bodies[next].island].x += delta.x;
             positions[bodies[next].island].y += delta.y;
-            // bodies[next].m_linearVelocity.x += delta.x * step.inv_dt;
-            // bodies[next].m_linearVelocity.y += delta.y * step.inv_dt;
+            
+            
         }
 
         pool.pushVec2(1);
-        // System.out.println(sumdeltax);
+        
         return done;
     }
 
@@ -191,11 +191,11 @@ public class ConstantVolumeJoint extends Joint {
 
         if (step.step.warmStarting) {
             m_impulse *= step.step.dtRatio;
-            // float lambda = -2.0f * crossMassSum / dotMassSum;
-            // System.out.println(crossMassSum + " " +dotMassSum);
-            // lambda = MathUtils.clamp(lambda, -Settings.maxLinearCorrection,
-            // Settings.maxLinearCorrection);
-            // m_impulse = lambda;
+            
+            
+            
+            
+            
             for (int i = 0; i < bodies.length; ++i) {
                 velocities[bodies[i].island].x += bodies[i].m_invMass * d[i].y * .5f * m_impulse;
                 velocities[bodies[i].island].y += bodies[i].m_invMass * -d[i].x * .5f * m_impulse;
@@ -228,11 +228,11 @@ public class ConstantVolumeJoint extends Joint {
             crossMassSum += Tuple2f.cross(velocities[bodies[i].island], d[i]);
         }
         float lambda = -2.0f * crossMassSum / dotMassSum;
-        // System.out.println(crossMassSum + " " +dotMassSum);
-        // lambda = MathUtils.clamp(lambda, -Settings.maxLinearCorrection,
-        // Settings.maxLinearCorrection);
+        
+        
+        
         m_impulse += lambda;
-        // System.out.println(m_impulse);
+        
         for (int i = 0; i < bodies.length; ++i) {
             velocities[bodies[i].island].x += bodies[i].m_invMass * d[i].y * .5f * lambda;
             velocities[bodies[i].island].y += bodies[i].m_invMass * -d[i].x * .5f * lambda;

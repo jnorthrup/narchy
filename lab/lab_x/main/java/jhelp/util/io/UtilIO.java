@@ -874,7 +874,7 @@ public final class UtilIO
          index = path.indexOf(".jar!");
 
          int start = 0;
-         if(path.startsWith("file://") == true)
+         if(path.startsWith("file:
          {
             start = 7;
          }
@@ -1872,7 +1872,7 @@ public final class UtilIO
    {
       ZipEntry zipEntry;
       final ZipOutputStream zipOutputStream = new ZipOutputStream(outputStreamZip);
-      // For the best compression
+      
       zipOutputStream.setLevel(9);
 
       Pair<String, File> pair = new Pair<String, File>(source.getName(), source);
@@ -1896,7 +1896,7 @@ public final class UtilIO
             else
             {
                zipEntry = new ZipEntry(pair.element1);
-               // For the best compression
+               
                zipEntry.setMethod(ZipEntry.DEFLATED);
 
                zipOutputStream.putNextEntry(zipEntry);

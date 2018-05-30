@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 13.01.2004 by RST.
+
 
 package jake2.server;
 
@@ -28,9 +28,9 @@ import jake2.game.player_state_t;
 public class client_frame_t {
 
 	int					areabytes;
-	final byte[]				areabits = new byte[Defines.MAX_MAP_AREAS/8];		// portalarea visibility bits
+	final byte[]				areabits = new byte[Defines.MAX_MAP_AREAS/8];		
 	final player_state_t		ps = new player_state_t();
 	int					num_entities;
-	int					first_entity;		// into the circular sv_packet_entities[]
-	int					senttime;			// for ping calculations
+	int					first_entity;		
+	int					senttime;			
 }

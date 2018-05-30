@@ -64,15 +64,15 @@ public class DefaultBeliefTable implements BeliefTable {
         eternal.clear();
     }
 
-//    @NotNull
-//    @Override
-//    @Deprecated
-//    public final Iterator<Task> iterator() {
-//        return Iterators.concat(
-//                eternal.iterator(),
-//                temporal.iterator()
-//        );
-//    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
@@ -82,10 +82,10 @@ public class DefaultBeliefTable implements BeliefTable {
         temporal.whileEach(minT, maxT, (t)-> { x.accept(t); return true; });
     }
 
-//    @Override
-//    public void forEach(Consumer<? super Task> action) {
-//        forEachTask(action);
-//    }
+
+
+
+
 
     @Override
     public void forEachTask(Consumer<? super Task> action) {
@@ -110,7 +110,7 @@ public class DefaultBeliefTable implements BeliefTable {
     @Override
     @Deprecated
     public int capacity() {
-        //throw new UnsupportedOperationException("doesnt make sense to call this");
+        
         return eternal.capacity() + temporal.capacity();
     }
 
@@ -123,7 +123,7 @@ public class DefaultBeliefTable implements BeliefTable {
     @Override
     public Task sample(long start, long end, Term template, NAR nar) {
         Task ete = eternal.sample(start, end, template, nar);
-        Task tmp = temporal.sample(start, end, template, nar); //invokes local sample method
+        Task tmp = temporal.sample(start, end, template, nar); 
         if (ete == null) return tmp;
         if (tmp == null) return ete;
         float e = Revision.eviInteg(ete,start,end,1);

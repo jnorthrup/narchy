@@ -39,7 +39,7 @@ package spacegraph.util.math;
  */
 public class Point3i extends Tuple3i {
 
-    // Compatible with 1.2
+    
     static final long serialVersionUID = 6149289077348153921L;
 
     /**

@@ -83,7 +83,7 @@ public class StampTest {
                 zipReverse(new long[] { 0, 1,2,3 }, new long[] { 4 }, 4)
         );
 
-        //no duplicates
+        
         assertArrayEquals(
             new long[] { 0, 1, 2, 3 },
                 zipReverse(new long[] { 0, 1,2 }, new long[] { 2, 3, 4 }, 4)
@@ -91,7 +91,7 @@ public class StampTest {
     }
 
     @Test public void directionInvariance() {
-        //this one should behave the same regardless of the direction (since there is enough space)
+        
         final boolean[] both = { false, true };
         for (boolean dir : both) {
             assertArrayEquals(
@@ -164,7 +164,7 @@ public class StampTest {
         );
         assertEquals(
                 Arrays.toString(new long[] { 2, 8, 12, 13 }),
-                Arrays.toString(zipForward(a,b, 0.95f, 4)) //same as 0.75, at minimum includes 1 (not 0) from either
+                Arrays.toString(zipForward(a,b, 0.95f, 4)) 
         );
         assertEquals(
                 Arrays.toString(new long[] { 4, 7, 12, 13 }),
@@ -201,7 +201,7 @@ public class StampTest {
     }
     @Test public void testStampZipForwardWeighted3() {
 
-        //imbalanced
+        
         long[] a = {0, 2};
         long[] b = {1, 3, 5, 7};
 
@@ -210,7 +210,7 @@ public class StampTest {
                 Arrays.toString(zipForward(a,b, 0.5f, 5))
         );
         assertEquals(
-                Arrays.toString(new long[] { 0, 2, 3, 5, 7 }), //same as before
+                Arrays.toString(new long[] { 0, 2, 3, 5, 7 }), 
                 Arrays.toString(zipForward(a,b, 0.8f, 5))
         );
         assertEquals(
@@ -230,13 +230,13 @@ public class StampTest {
         assertEquals(1f, Stamp.overlapFraction(a(1, 2), a(1, 2, 3)), 0.01f);
     }
     @Test public void testOverlapFraction3() {
-        //12345
-        //------
-        //123345
+        
+        
+        
         assertEquals(1/3f, Stamp.overlapFraction(a(1,2,3), a(3,4,5)), 0.01f);
         assertEquals(2/3f, Stamp.overlapFraction(a(1,2,3,4), a(3,4,5)), 0.01f);
 
-        //one is completely subsumed in another
+        
         assertEquals(1f, Stamp.overlapFraction(a(1,2), a(2)), 0.01f);
         assertEquals(1f, Stamp.overlapFraction(a(1,2,3,4), a(2,3,4)), 0.01f);
     }

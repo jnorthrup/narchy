@@ -82,7 +82,7 @@ public class EdgeShape extends Shape {
         return false;
     }
 
-    // for pooling
+    
     private final v2 normal = new Vec2();
 
     @Override
@@ -123,10 +123,10 @@ public class EdgeShape extends Shape {
         return d1;
     }
 
-    // p = p1 + t * d
-    // v = v1 + s * e
-    // p1 + t * d = v1 + s * e
-    // s * e - t * d = p1 - v1
+    
+    
+    
+    
     @Override
     public boolean raycast(RayCastOutput output, RayCastInput input, Transform xf, int childIndex) {
 
@@ -136,9 +136,9 @@ public class EdgeShape extends Shape {
         final Rot xfq = xf;
         final Tuple2f xfp = xf.pos;
 
-        // Put the ray into the edge's frame of reference.
-        // b2Vec2 p1 = b2MulT(xf.q, input.p1 - xf.p);
-        // b2Vec2 p2 = b2MulT(xf.q, input.p2 - xf.p);
+        
+        
+        
         tempx = input.p1.x - xfp.x;
         tempy = input.p1.y - xfp.y;
         final float p1x = xfq.c * tempx + xfq.s * tempy;
@@ -152,17 +152,17 @@ public class EdgeShape extends Shape {
         final float dx = p2x - p1x;
         final float dy = p2y - p1y;
 
-        // final Vec2 normal = pool2.set(v2).subLocal(v1);
-        // normal.set(normal.y, -normal.x);
+        
+        
         normal.x = v2.y - v1.y;
         normal.y = v1.x - v2.x;
         normal.normalize();
         final float normalx = normal.x;
         final float normaly = normal.y;
 
-        // q = p1 + t * d
-        // dot(normal, q - v1) = 0
-        // dot(normal, p1 - v1) + t * dot(normal, d) = 0
+        
+        
+        
         tempx = v1.x - p1x;
         tempy = v1.y - p1y;
         float numerator = normalx * tempx + normaly * tempy;
@@ -177,13 +177,13 @@ public class EdgeShape extends Shape {
             return false;
         }
 
-        // Vec2 q = p1 + t * d;
+        
         final float qx = p1x + t * dx;
         final float qy = p1y + t * dy;
 
-        // q = v1 + s * r
-        // s = dot(q - v1, r) / dot(r, r)
-        // Vec2 r = v2 - v1;
+        
+        
+        
         final float rx = v2.x - v1.x;
         final float ry = v2.y - v1.y;
         final float rr = rx * rx + ry * ry;
@@ -192,7 +192,7 @@ public class EdgeShape extends Shape {
         }
         tempx = qx - v1.x;
         tempy = qy - v1.y;
-        // float s = Vec2.dot(pool5, r) / rr;
+        
         float s = (tempx * rx + tempy * ry) / rr;
         if (s < 0.0f || 1.0f < s) {
             return false;
@@ -200,11 +200,11 @@ public class EdgeShape extends Shape {
 
         output.fraction = t;
         if (numerator > 0.0f) {
-            // output.normal = -b2Mul(xf.q, normal);
+            
             output.normal.x = -xfq.c * normal.x + xfq.s * normal.y;
             output.normal.y = -xfq.s * normal.x - xfq.c * normal.y;
         } else {
-            // output->normal = b2Mul(xf.q, normal);
+            
             output.normal.x = xfq.c * normal.x - xfq.s * normal.y;
             output.normal.y = xfq.s * normal.x + xfq.c * normal.y;
         }

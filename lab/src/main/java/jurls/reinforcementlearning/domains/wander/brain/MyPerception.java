@@ -6,17 +6,17 @@ import org.apache.commons.math3.util.MathUtils;
 public class MyPerception  {
 
     public static final int RADAR_ANGLES = 8;
-    public static final int RADAR_DISTS = 2; //rows
+    public static final int RADAR_DISTS = 2; 
     private static final long serialVersionUID = 1L;
-    public static final double RADAR_R = Math.PI*2.0 / RADAR_ANGLES; //0.6 = mostly front
+    public static final double RADAR_R = Math.PI*2.0 / RADAR_ANGLES; 
     public static final double RADAR_D = 25;
     public static final int RADAR_D0 = 1;
     private final Player player;
 
     public MyPerception(Player player) {
         this.player = player;
-		// we omit the prediction of the farthest radar input
-        //this.setForeseePerc(new MyForeseePerc());
+		
+        
     }
 
     public double[] updateInputValues(double[] input) {
@@ -26,7 +26,7 @@ public class MyPerception  {
         int j = 0;
 
 
-        //input[j++] = (player.angle % (Math.PI*2) / (Math.PI*2) - 0.5);
+        
 
         input[j++] = 0.8f * (MathUtils.normalizeAngle(player.angle,0)/(Math.PI) - 1.0);
 

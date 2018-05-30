@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -39,7 +39,7 @@ import static spacegraph.space3d.phys.BulletGlobals.SIMD_EPSILON;
  */
 public class TriangleContact {
 	
-	//private final ArrayPool<int[]> intArrays = ArrayPool.get(int.class);
+	
 	
 	public static final int MAX_TRI_CLIPPING = 16;
 
@@ -84,7 +84,7 @@ public class TriangleContact {
 		final float penetratinDepthMinusEpsilon = penetration_depth - SIMD_EPSILON;
 
 		for (short _k = 0; _k < pointsPending; _k++) {
-            //return array[index];
+            
             float _dist = -ClipPolygon.distance_point_plane(plane, points.get(_k)) + margin;
 
 			if (_dist >= 0.0f) {
@@ -104,11 +104,11 @@ public class TriangleContact {
 		}
 
 		for (int _k = 0; _k < this.point_count; _k++) {
-            //return array[index];
+            
             this.points[_k].set(points.get(point_indices[_k]));
 		}
 		
-		//intArrays.release(point_indices);
+		
 	}
 
 }

@@ -37,33 +37,33 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 
 public class ImageSelection implements Transferable {
-    // the Image object which will be housed by the ImageSelection
+    
     private final Image image;
 
     public ImageSelection(Image image) {
         this.image = image;
     }
 
-    // Returns the supported flavors of our implementation
+    
     @Override
     public DataFlavor[] getTransferDataFlavors() {
         return new DataFlavor[]{Utilities_Localised.imageFlavor};
     }
 
-    // Returns true if flavor is supported
+    
     @Override
     public boolean isDataFlavorSupported(DataFlavor flavor) {
         return Utilities_Localised.imageFlavor.equals(flavor);
     }
 
-    // Returns Image object housed by Transferable object
+    
     @Override
     public Object getTransferData(DataFlavor flavor)
             throws UnsupportedFlavorException {
         if (!Utilities_Localised.imageFlavor.equals(flavor)) {
             throw new UnsupportedFlavorException(flavor);
         }
-        // else return the payload
+        
         return image;
     }
 }

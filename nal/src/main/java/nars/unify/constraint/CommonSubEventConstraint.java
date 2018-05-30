@@ -24,13 +24,13 @@ public class CommonSubEventConstraint extends RelationConstraint {
         if (xx.op()!=CONJ || yy.op()!=CONJ)
             return true;
 
-        //pre-filter
+        
         int xxs = xx.subterms().structure();
         int yys = yy.subterms().structure();
         if (!(Op.hasAll(xxs, yys) || Op.hasAll(yys, xxs)))
             return true;
 
-        //construct the set with the smaller of the two
+        
         return !haveCommonEvents(xx, yy);
     }
 
@@ -52,9 +52,9 @@ public class CommonSubEventConstraint extends RelationConstraint {
         LongObjectPredicate<Term> remover = (when, what) -> {
             if (xe.remove(PrimitiveTuples.pair(when, what))) {
                 common[0] = true;
-                return false; //found at least 1, done
+                return false; 
             }
-            return true; //continue
+            return true; 
         };
 
         scanCommonEvents(yy, remover);

@@ -212,7 +212,7 @@ public class PlyObject extends SceneObject
     private void loadPlyFile(String fileName, boolean smoothNormals)
     throws InvalidFormatException
     {
-        // Datei �ffnen:
+        
         Scanner scanner = new Scanner(new BufferedInputStream(getClass().getClassLoader().getResourceAsStream(fileName)));
         scanner.useLocale(Locale.US);
             
@@ -224,12 +224,12 @@ public class PlyObject extends SceneObject
         
         try
         {
-            // PLY-Kennung pr�fen:
+            
             if (tokenizer.token() != Tokenizer.TOKEN_PLY)
                 throw new InvalidFormatException();
             tokenizer.next();
             
-            // Format-Kennung pr�fen:
+            
             if (tokenizer.token() != Tokenizer.TOKEN_FORMAT)
                 throw new InvalidFormatException();
             tokenizer.next();
@@ -242,7 +242,7 @@ public class PlyObject extends SceneObject
                 throw new InvalidFormatException();
             tokenizer.next();
             
-            // Header-Informationen der PLY-Datei auslesen:
+            
             Property property = null;
             Element currentElement = null;
             loop:
@@ -258,11 +258,11 @@ public class PlyObject extends SceneObject
                 case Tokenizer.TOKEN_ELEMENT:
                     tokenizer.next();
                     
-                    // Neues Element erstellen:
+                    
                     currentElement = new Element();
                     elements.add(currentElement);
                     
-                    // Eigenschaften des Elements lesen:
+                    
                     if (tokenizer.token() != Tokenizer.TOKEN_NAME)
                         throw new InvalidFormatException();
                     currentElement.name = tokenizer.stringValue();
@@ -278,11 +278,11 @@ public class PlyObject extends SceneObject
                         throw new InvalidFormatException();
                     tokenizer.next();
                     
-                    // Neue Eigenschaft erstellen:
+                    
                     property = new Property();
                     currentElement.properties.add(property);
                     
-                    // Eigenschaften der Eigenschaft lesen:
+                    
                     if (!Tokenizer.isType(tokenizer.token()))
                         throw new InvalidFormatException();
                     property.type = tokenizer.token();
@@ -318,7 +318,7 @@ public class PlyObject extends SceneObject
             Vector<Vector2d> textures = new Vector<Vector2d>();
             Vector<Integer> faces = new Vector<Integer>();
             
-            // Daten auslesen und verarbeiten:
+            
             for (Element element : elements) {
                 currentElement = element;
 
@@ -335,7 +335,7 @@ public class PlyObject extends SceneObject
                 }
             }
             
-            // Fl�chen der PLY-Datei triangulieren und Dreiecke daraus erzeugen:
+            
             Iterator<Integer> itFaces = faces.iterator();
             while (itFaces.hasNext())
             {
@@ -343,11 +343,11 @@ public class PlyObject extends SceneObject
                 if (count < 3)
                     throw new InvalidFormatException();
                 
-                // Ersten beiden Punkte ermitteln:
+                
                 int firstId = itFaces.next();
                 int previousId = itFaces.next();
 
-                // Aus den restlichen Punkten der Fl�che Dreiecke erzeugen:
+                
                 count -= 2;
                 do
                 {
@@ -357,7 +357,7 @@ public class PlyObject extends SceneObject
                         Triangle triangle = new Triangle(vertices.get(firstId), vertices.get(previousId), vertices.get(currentId), shader);
                         triangle.setNormalEffect(normalEffect);
                         
-                        // Normalenvektoren setzen:
+                        
                         if (smoothNormals)
                         {
                             Vector3d normalA = normals.get(firstId);
@@ -367,7 +367,7 @@ public class PlyObject extends SceneObject
                                 triangle.setNormals(normalA, normalB, normalC);
                         }
                         
-                        // Texturkoordinaten setzen:
+                        
                         Vector2d textureA = textures.get(firstId);
                         Vector2d textureB = textures.get(previousId);
                         Vector2d textureC = textures.get(currentId);
@@ -378,8 +378,8 @@ public class PlyObject extends SceneObject
                     }
                     catch (LinearlyDependentException e)
                     {
-                        // Falls bei den Koordinaten lineare Abh�ngigkeit besteht,
-                        // verwerfe deises Dreieck.
+                        
+                        
                     }
                     previousId = currentId;
                 }
@@ -397,7 +397,7 @@ public class PlyObject extends SceneObject
                                      Vector<Vector2d> textures)
     {
 
-        // Alle Datens�tze dieses Elements auslesen:
+        
         for (int i = 0; i < element.count; i++)
         {
             Vector3d vertex = new Vector3d();
@@ -411,7 +411,7 @@ public class PlyObject extends SceneObject
 
                 if (Tokenizer.isTypeList(property.type))
                 {
-                    // Alle Elemente der Liste �berspringen:
+                    
                     int count = scanner.nextInt();
                     for (int j = 0; j < count; j++)
                         scanner.next();
@@ -449,15 +449,15 @@ public class PlyObject extends SceneObject
                 }
             }
             
-            // Normalenvektor hinzuf�gen:
+            
             normals.add(((normal.x == 0.0) && (normal.y == 0.0) && (normal.z == 0.0)) ?
                     null : new Vector3d(normal));
                 
-            // Texturkoordinate hinzuf�gen:
+            
             textures.add(((texture.x == 0.0) && (texture.y == 0.0)) ?
                     null : new Vector2d(texture));
             
-            // Daten hinzuf�gen:
+            
             vertices.add(vertex);
         }
     }
@@ -466,7 +466,7 @@ public class PlyObject extends SceneObject
                                   Vector<Integer> faces)
     {
 
-        // Alle Datens�tze dieses Elements auslesen:
+        
         for (int i = 0; i < element.count; i++)
         {
             Iterator<Property> it = element.properties.iterator();
@@ -476,17 +476,17 @@ public class PlyObject extends SceneObject
 
                 if (Tokenizer.isTypeList(property.type))
                 {
-                    // Alle Punkte der Fl�che hinzuf�gen:
+                    
                     int count = scanner.nextInt();
-                    //System.out.print(count + " ");
+                    
                     faces.add(-count);
                     for (int j = 0; j < count; j++)
                     {
                         int data = scanner.nextInt();
-                        //System.out.print(data + " ");
+                        
                         faces.add(data);
                     }
-                    //System.out.println();
+                    
                 }
                 else
                     scanner.next();
@@ -497,7 +497,7 @@ public class PlyObject extends SceneObject
     private static void readElement(Scanner scanner, Element element)
     {
 
-        // Alle Datens�tze dieses Elements auslesen:
+        
         for (int i = 0; i < element.count; i++)
         {
             Iterator<Property> it = element.properties.iterator();
@@ -507,7 +507,7 @@ public class PlyObject extends SceneObject
 
                 if (Tokenizer.isTypeList(property.type))
                 {
-                    // Alle Elemente der Liste �berspringen:
+                    
                     int count = scanner.nextInt();
                     for (int j = 0; j < count; j++)
                         scanner.next();
@@ -587,7 +587,7 @@ public class PlyObject extends SceneObject
         
         public void next()
         {
-            // N�chsten String einlesen:
+            
             try
             {
                 tokenValue = scanner.next();
@@ -691,7 +691,7 @@ public class PlyObject extends SceneObject
         
         public void endLine()
         {
-            // Bis zum Ende der Zeile lesen:
+            
             scanner.nextLine();
         }
         

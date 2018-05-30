@@ -12,12 +12,12 @@ public class UGenOutput extends AudioIO implements SoundProducer {
      * The default system buffer size.
      */
 
-//	/** The mixer. */
-//	private Mixer mixer;
-//
-//	/** The source data line. */
-//	private SourceDataLine sourceDataLine;
-//
+
+
+
+
+
+
     /**
      * The system buffer size in frames.
      */
@@ -33,76 +33,76 @@ public class UGenOutput extends AudioIO implements SoundProducer {
     }
 
 
-//	/**
-//	 * Gets the JavaSound mixer being used by this AudioContext.
-//	 *
-//	 * @return the requested mixer.
-//	 */
-//	private void getDefaultMixerIfNotAlreadyChosen() {
-//		if(mixer == null) {
-//			selectMixer(0);
-//		}
-//	}
-//
-//	/**
-//	 * Presents a choice of mixers on the commandline.
-//	 */
-//	public void chooseMixerCommandLine() {
-//		System.out.println("Choose a mixer...");
-//		printMixerInfo();
-//		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-//		try {
-//			selectMixer(Integer.parseInt(br.readLine()) - 1);
-//		} catch(Exception e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	/**
-//	 * Select a mixer by index.
-//	 *
-//	 * @param i the index of the selected mixer.
-//	 */
-//	public void selectMixer(int i) {
-//		Mixer.Info[] mixerinfo = AudioSystem.getMixerInfo();
-//		mixer = AudioSystem.getMixer(mixerinfo[i]);
-//		if(mixer != null) {
-//			System.out.print("JavaSoundAudioIO: Chosen mixer is ");
-//			System.out.println(mixer.getMixerInfo().getName() + ".");
-//		} else {
-//			System.out.println("JavaSoundAudioIO: Failed to get mixer.");
-//		}
-//	}
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Starts the audio system running.
      */
     @Override
     protected boolean start() {
-        //AudioContext context = getContext();
+        
         IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
         AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.outputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
 
         this.channels = audioFormat.getChannels();
-//		getDefaultMixerIfNotAlreadyChosen();
-//		if (mixer == null) {
-//			return false;
-//		}
-//		DataLine.Info info = new DataLine.Info(SourceDataLine.class,
-//				audioFormat);
-//		try {
-//			sourceDataLine = (SourceDataLine) mixer.getLine(info);
-//			if (systemBufferSizeInFrames < 0)
-//				sourceDataLine.open(audioFormat);
-//			else
-//				sourceDataLine.open(audioFormat, systemBufferSizeInFrames
-//						* audioFormat.getFrameSize());
-//		} catch (LineUnavailableException ex) {
-//			System.out
-//					.println(getClass().getName() + " : Error getting line\n");
-//		}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         return true;
     }
@@ -110,7 +110,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
 
     @Override
     protected UGen getAudioInput(int[] channels) {
-        //TODO not properly implemented, this does not respond to channels arg.
+        
         IOAudioFormat ioAudioFormat = getContext().getAudioFormat();
         AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.inputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
@@ -123,11 +123,11 @@ public class UGenOutput extends AudioIO implements SoundProducer {
         int samples = buf.length;
         context.setBufferSize(samples);
 
-        update(); // this propagates update call to context
+        update(); 
 
         int c = 0;
         for (int i = 0; i < samples; i++) {
-            //for (int j = 0; j < channels; j++)
+            
             int j = 0;
             float vi = context.out.getValue(j, i);
             buf[c++] = vi;
@@ -135,9 +135,9 @@ public class UGenOutput extends AudioIO implements SoundProducer {
 
         return 1f;
 
-//        AudioUtils.floatToByte(bbuf, interleavedOutput,
-//                audioFormat.isBigEndian());
-//        sourceDataLine.write(bbuf, 0, bbuf.length);
+
+
+
     }
 
     @Override

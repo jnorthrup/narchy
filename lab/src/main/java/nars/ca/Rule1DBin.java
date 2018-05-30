@@ -1,35 +1,35 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// 1D binary rules
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class Rule1DBin {
 	public static final int MAX_RANGE = 4;
 
-	public final byte[] iAry = new byte[512]; // the rule
-	public String sHex; // Wolfram's code
-	public int iRng; // range, 1..4
+	public final byte[] iAry = new byte[512]; 
+	public String sHex; 
+	public int iRng; 
 
-	// ----------------------------------------------------------------
+	
 	public Rule1DBin() {
 		ResetToDefaults();
-		SetArray(); // prepare the rule array
+		SetArray(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
 		iRng = 1;
 		sHex = "6E";
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
-	// Example: "R2,W23AC2"
+	
+	
+	
 	public void InitFromString(String sStr) {
-		// noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		int iTmp;
@@ -38,49 +38,49 @@ public class Rule1DBin {
 		st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
-			// System.out.println(sTok);
-			if (sTok.length() > 0 && sTok.charAt(0) == 'R') // range
+			
+			if (sTok.length() > 0 && sTok.charAt(0) == 'R') 
 			{
 				iRng = Integer.valueOf(sTok.substring(1));
-			} else if (sTok.length() > 0 && sTok.charAt(0) == 'W') // Wolfram's
-																	// code
+			} else if (sTok.length() > 0 && sTok.charAt(0) == 'W') 
+																	
 			{
 				sHex = sTok.substring(1);
 			}
 		}
-		// done
-		SetArray(); // prepare the rule array
+		
+		SetArray(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Initialize from separate parameters
+	
+	
 	public void InitFromPrm(int i_Rng, String sBinStr) {
 		iRng = i_Rng;
 		sHex = CvtBinStr2HexStr(sBinStr);
-		SetArray(); // prepare the rule array
+		SetArray(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the rule string
-	// Example: "R2,W23AC2"
+	
+	
+	
 	public String GetAsString() {
 		String sBff;
 		int i, ih;
 
-		// correct parameters first
+		
 		Validate();
-		// range
+		
 		sBff = 'R' + String.valueOf(iRng);
 
-		// rule
+		
 		sBff = sBff + ",R" + sHex;
 
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the Cyclic CA parameters, correct
-	// them if necessary.
+	
+	
+	
 	public void Validate() {
 		if (iRng < 1)
 			iRng = 1;
@@ -89,32 +89,32 @@ public class Rule1DBin {
 
 		sHex.toUpperCase();
 		if ((!sHex.isEmpty()) && (sHex.charAt(0) == 'W'))
-			sHex = sHex.substring(1); // skip 'W' prefix
+			sHex = sHex.substring(1); 
 	}
 
-	// ----------------------------------------------------------------
-	// Prepare the rule array
+	
+	
 	private void SetArray() {
 		String sBinStr;
 		int i, iCnt;
 
-		Validate(); // first correct parameters
+		Validate(); 
 
 		sBinStr = CvtHexStr2BinStr(sHex);
 		iCnt = 1;
 
-		// fill with '0' to the full length
+		
 		for (i = 1; i <= 2 * iRng + 1; i++)
 			iCnt = iCnt * 2;
 		sBinStr = LPad(sBinStr, iCnt, '0');
 
-		// set the rule array
+		
 		for (i = 0; i < iCnt; i++)
 			iAry[iCnt - i - 1] = (byte) (sBinStr.charAt(i) == '1' ? 1 : 0);
 	}
 
-	// ----------------------------------------------------------------
-	// If 'sStr' is shorter than 'num', pad it left with the 'chPad'
+	
+	
 	private String LPad(String sStr, int num, char chPad) {
 		int i, iLen;
 		iLen = sStr.length();
@@ -125,8 +125,8 @@ public class Rule1DBin {
 		return sStr;
 	}
 
-	// ----------------------------------------------------------------
-	// Convert the binary string to hex string
+	
+	
 	private String CvtBinStr2HexStr(String sBin) {
 		int i, iVal;
 		String sTok, sHexStr;
@@ -155,8 +155,8 @@ public class Rule1DBin {
 		return sHexStr;
 	}
 
-	// ----------------------------------------------------------------
-	// Convert the binary string to hex string
+	
+	
 	private String CvtHexStr2BinStr(String sHex) {
 		String sBinBff;
 		int i;
@@ -219,8 +219,8 @@ public class Rule1DBin {
 		return sBinBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Remove all leading characters 'cChar' from the string
+	
+	
 	private String DelLedChr(String sStr, char cChar) {
 		while ((!sStr.isEmpty()) && (sStr.charAt(0) == cChar))
 			sStr = sStr.substring(1);
@@ -228,8 +228,8 @@ public class Rule1DBin {
 		return sStr;
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		short bOldVal, bNewVal;
@@ -237,22 +237,22 @@ public class Rule1DBin {
 		int i;
 		short[] OneRow;
 		int[] xVector;
-		int ary1DOfs; // margins, used for wrapping
+		int ary1DOfs; 
 		int ic, iPow, iIdx;
 		int iClo = mjb.StatesCount;
 
 		ary1DOfs = iRng;
 		OneRow = new short[sizX + 1 + 2 * ary1DOfs];
-		xVector = new int[21]; // 0..9, 10, 11..20
+		xVector = new int[21]; 
 
-		int i1DNextRow; // next row
+		int i1DNextRow; 
 		i1DNextRow = mjb.i1DLastRow + 1;
 		if (i1DNextRow >= sizY)
 			i1DNextRow = 0;
 
 		for (ic = 0; ic < sizX; ic++)
-			OneRow[ic + ary1DOfs] = crrState[ic][mjb.i1DLastRow]; // original
-																	// row
+			OneRow[ic + ary1DOfs] = crrState[ic][mjb.i1DLastRow]; 
+																	
 		if (isWrap) {
 			for (ic = 1; ic <= ary1DOfs; ic++) {
 				OneRow[ary1DOfs - ic] = OneRow[sizX - 1 - ic + 1];
@@ -260,30 +260,30 @@ public class Rule1DBin {
 			}
 		}
 
-		for (ic = 0; ic < sizX; ic++) // for the whole row
+		for (ic = 0; ic < sizX; ic++) 
 		{
 			bOldVal = OneRow[ic + ary1DOfs];
 
 			iPow = 1;
 			iIdx = 0;
-			for (i = iRng; i >= -iRng; i--) // neighbours
+			for (i = iRng; i >= -iRng; i--) 
 			{
-				if (OneRow[ic + i + ary1DOfs] > 0) // alive cell
+				if (OneRow[ic + i + ary1DOfs] > 0) 
 					iIdx = iIdx + iPow;
 				iPow = iPow * 2;
 			}
 
-			// determine the cell status
-			bNewVal = iAry[iIdx]; // default - no change
+			
+			bNewVal = iAry[iIdx]; 
 			if (bNewVal > 0)
-				if (ColoringMethod == 2) // alternate
-					bNewVal = (short) (mjb.Cycle % (iClo - 1) + 1); // birth
+				if (ColoringMethod == 2) 
+					bNewVal = (short) (mjb.Cycle % (iClo - 1) + 1); 
 
 			tmpState[ic][i1DNextRow] = bNewVal;
-		} // for
+		} 
 
-		modCnt = 1; // run forever
-		mjb.i1DLastRow = i1DNextRow; // Done. Advance the last generated row
+		modCnt = 1; 
+		mjb.i1DLastRow = i1DNextRow; 
 
 		return modCnt;
 	}

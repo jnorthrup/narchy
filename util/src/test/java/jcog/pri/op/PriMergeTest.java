@@ -20,17 +20,17 @@ public class PriMergeTest {
     public void testPlusDQBlend() {
         PriMerge m = PriMerge.plus;
 
-        testMerge(z(), a, m,  1f, 0 /*overflow*/);  //adding to zero equals the incoming
-        testMerge(a, z(),  m, a.pri());  //merging with zero should hae no effect
+        testMerge(z(), a, m,  1f, 0 /*overflow*/);  
+        testMerge(a, z(),  m, a.pri());  
 
-        testMerge(b, c,  m,0.75f); //test correct affect of components
-
-
-        testMerge(a, c, m,  1,  //priority saturation behavior
-                0.25f); //with overflow
+        testMerge(b, c,  m,0.75f); 
 
 
-        testMerge(a, a,  m, a.pri()); //no change since saturated with the same incoming values
+        testMerge(a, c, m,  1,  
+                0.25f); 
+
+
+        testMerge(a, a,  m, a.pri()); 
 
     }
 
@@ -38,20 +38,20 @@ public class PriMergeTest {
     public void testAvg() {
         PriMerge AVG = PriMerge.avg;
 
-        //z,a - averaging with zero results in half of the incoming
+        
         testMerge(z(), a,  AVG, 0.5f * a.pri());
-        //z,a(scale=0.5)
-        //a,z - should be identical to z,a being that AVG is commutive:
+        
+        
         testMerge(a, z(),  AVG, 0.5f * a.pri());
 
-        //average with itself should have no effect regardless of the applied scale factor
-        testMerge(b, b,  AVG, b.pri()); //scale of one also should have no effect with itself
+        
+        testMerge(b, b,  AVG, b.pri()); 
 
-        testMerge(b, c,  AVG, 0.375f); //test correct affect of components; values closer to b since it is dominant
-        testMerge(c, b, AVG, 0.375f); //test correct affect of components; values closer to b since it is dominant
+        testMerge(b, c,  AVG, 0.375f); 
+        testMerge(c, b, AVG, 0.375f); 
 
 
-        testMerge(a, c,  AVG, 0.625f); //priority decrease but less than the previous test which involves a weaker existing quality
+        testMerge(a, c,  AVG, 0.625f); 
 
     }
 
@@ -59,21 +59,21 @@ public class PriMergeTest {
         return new UnitPri(0);
     }
 
-//    @NotNull
-//    private static RawBudget testMerge(float scale, @NotNull BudgetMerge m,
-//                                       float exPri, float exDur, float exQua, //start value
-//                                       float inPri, float inQua, //incoming merge
-//                                       float ouPri, float ouQua  //expected result
-//    )    {
-//        RawBudget x = new RawBudget(exPri, exQua);
-//        testMerge(m, x, inPri, inQua, scale, ouPri, ouQua);
-//        return x;
-//    }
-//
-//    private static Budget testMerge(@NotNull BudgetMerge m, Budget x, float inPri, float inQua, float scale, float ouPri, float ouQua) {
-//        RawBudget y = new RawBudget(inPri, inQua);
-//        return testMerge(x, y, scale, m, ouPri, ouQua);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     private static Prioritized testMerge(Priority x, Prioritized y, @NotNull PriMerge m, float ouPri) {
         return testMerge(x, y, m, ouPri, -1f);
     }

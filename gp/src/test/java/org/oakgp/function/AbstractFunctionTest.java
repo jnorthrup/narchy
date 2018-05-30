@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ public abstract class AbstractFunctionTest {
     /**
      * Observable allows other objects to be notified of the tests that are run.
      * <p>
-     * This is used to support the automatic creation of http://www.oakgp.org/functions
+     * This is used to support the automatic creation of http:
      */
     private final Observable observable = new Observable() {
         @Override
@@ -148,7 +148,7 @@ public abstract class AbstractFunctionTest {
             Type[] variableTypes = toVariableTypes(assignedValues);
             FunctionNode functionNode = readFunctionNode(input, variableTypes);
             Assignments assignments = toAssignments(assignedValues);
-            // assert evaluate consistently returns the expected result
+            
             assertEquals(expectedResult, functionNode.eval(assignments));
             assertEquals(expectedResult, functionNode.eval(assignments));
             observable.notifyObservers(new Notification(functionNode, assignedValues, expectedResult));
@@ -193,13 +193,13 @@ public abstract class AbstractFunctionTest {
             inputNode = readFunctionNode(input, variableSet);
             simplifiedNode = NodeSimplifier.simplify(inputNode);
 
-            // assert actual matched expected
+            
             assertEquals(expectedNode, simplifiedNode);
             assertSame(inputNode.returnType(), simplifiedNode.returnType());
 
             if (isFunction(simplifiedNode)) {
-                // assert that signature of function matches the
-                // return type and argument types of the function node the function belongs to
+                
+                
                 FunctionNode fn = (FunctionNode) simplifiedNode;
                 Arguments fnArguments = fn.args();
                 Signature fnSignature = fn.func().sig();
@@ -208,7 +208,7 @@ public abstract class AbstractFunctionTest {
                 assertSameArgumentTypes(fnArguments, fnSignature);
             }
 
-            // assert multiple calls to simplify with the same argument produces results that are equal
+            
             assertEquals(NodeSimplifier.simplify(inputNode), NodeSimplifier.simplify(inputNode));
 
             return this;

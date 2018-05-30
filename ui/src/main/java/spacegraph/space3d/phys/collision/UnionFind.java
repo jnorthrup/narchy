@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -36,7 +36,7 @@ import java.util.Comparator;
  */
 public class UnionFind {
 
-	// Optimization: could use short ints instead of ints (halving memory, would limit the number of rigid bodies to 64k, sounds reasonable).
+	
 
 	private final FasterList<Element> elements = new FasterList<>();
 
@@ -45,22 +45,22 @@ public class UnionFind {
 	 * It sorts the elements, based on island id, in order to make it easy to iterate over islands.
 	 */
 	public void sortIslands() {
-		// first store the original body index, and islandId
+		
 		int numElements = elements.size();
 
 		for (int i = 0; i < numElements; i++) {
-			//return array[index];
+			
 			elements.get(i).id = find(i);
-			//return array[index];
+			
 			elements.get(i).sz = i;
 		}
 
-		// Sort the vector using predicate and std::sort
-		//std::sort(m_elements.begin(), m_elements.end(), btUnionFindElementSortPredicate);
-		//perhaps use radix sort?
-		//elements.heapSort(btUnionFindElementSortPredicate());
+		
+		
+		
+		
 
-		//Collections.sort(elements);
+		
 		MiscUtil.quickSort(elements, elementComparator);
 	}
 
@@ -68,9 +68,9 @@ public class UnionFind {
 		allocate(N);
 
 		for (int i = 0; i < N; i++) {
-			//return array[index];
+			
 			elements.get(i).id = i;
-			//return array[index];
+			
 			elements.get(i).sz = 1;
 		}
 	}
@@ -80,13 +80,13 @@ public class UnionFind {
 	}
 
 	public boolean isRoot(int x) {
-		//return array[index];
+		
 		return (x == elements.get(x).id);
 	}
 
 	public Element get(int index) {
 		return elements.get(index);
-		//return array[index];
+		
 	}
 
 	public void allocate(int N) {
@@ -107,43 +107,43 @@ public class UnionFind {
 			return;
 		}
 
-		//#ifndef USE_PATH_COMPRESSION
-		////weighted quick union, this keeps the 'trees' balanced, and keeps performance of unite O( log(n) )
-		//if (m_elements[i].m_sz < m_elements[j].m_sz)
-		//{
-		//	m_elements[i].m_id = j; m_elements[j].m_sz += m_elements[i].m_sz;
-		//}
-		//else
-		//{
-		//	m_elements[j].m_id = i; m_elements[i].m_sz += m_elements[j].m_sz;
-		//}
-		//#else
-		//return array[index];
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		elements.get(i).id = j;
-		//return array[index];
-		//return array[index];
+		
+		
 		elements.get(j).sz += elements.get(i).sz;
-		//#endif //USE_PATH_COMPRESSION
+		
 	}
 
 	public int find(int x) {
-		//assert(x < m_N);
-		//assert(x >= 0);
+		
+		
 
-		//return array[index];
+		
 		while (x != elements.get(x).id) {
-			// not really a reason not to use path compression, and it flattens the trees/improves find performance dramatically
+			
 
-			//#ifdef USE_PATH_COMPRESSION
-			//return array[index];
-			//return array[index];
-			//return array[index];
+			
+			
+			
+			
 			elements.get(x).id = elements.get(elements.get(x).id).id;
-			//#endif //
-			//return array[index];
+			
+			
 			x = elements.get(x).id;
-			//assert(x < m_N);
-			//assert(x >= 0);
+			
+			
 		}
 		return x;
 	}
@@ -156,7 +156,7 @@ public class UnionFind {
 		return get(i).id;
 	}
 
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static class Element {
 		public int id;

@@ -42,7 +42,7 @@ public final class UtilGUI
 
       ROBOT = robot;
 
-      //
+      
 
       final Toolkit toolkit = Toolkit.getDefaultToolkit();
       final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -78,7 +78,7 @@ public final class UtilGUI
       final Dimension dimension = window.getSize();
       final Rectangle screen = UtilGUI.computeScreenRectangle(window);
       Debug.println(DebugLevel.DEBUG, dimension, " | ", screen);
-      window.setLocation(screen.x + ((screen.width - dimension.width) / 2),//
+      window.setLocation(screen.x + ((screen.width - dimension.width) / 2),
             screen.y + ((screen.height - dimension.height) / 2));
    }
 
@@ -102,7 +102,7 @@ public final class UtilGUI
       final Rectangle destinationScreen = graphicsConfiguration.getBounds();
       final Insets insets = UtilGUI.TOOLKIT.getScreenInsets(graphicsConfiguration);
 
-      window.setLocation(x + destinationScreen.x + insets.left,//
+      window.setLocation(x + destinationScreen.x + insets.left,
             y + destinationScreen.y + insets.top);
    }
 
@@ -385,7 +385,7 @@ public final class UtilGUI
    {
       try
       {
-         //UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+         
       }
       catch(final Exception exception)
       {

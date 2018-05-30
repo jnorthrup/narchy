@@ -17,7 +17,7 @@ package java4k.gradius4k;
          * GNU Lesser General Public License for more details.
          *
          * You should have received a copy of the GNU Lesser General Public License
-         * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+         * along with this program.  If not, see <http:
          *
          */
 
@@ -34,7 +34,7 @@ import java.util.Random;
 
 public class Gradius4K extends GamePanel {
 
-    // keys
+    
     public boolean[] keys = new boolean[32768];
     public long updateMS = 40;
     public BufferedImage image;
@@ -49,7 +49,7 @@ public class Gradius4K extends GamePanel {
     public float cameraX;
     public float[] player = new float[256];
 
-    public int DIE_TIME = 60; //how long player remains dead
+    public int DIE_TIME = 60; 
 
     public static final int OBJ_X = 0;
     public static final int OBJ_Y = 1;
@@ -146,16 +146,16 @@ public class Gradius4K extends GamePanel {
 
         final String S = "\uff00\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u0000\u0100\u0000\u0000\u0100\u0000\u0000\u0100\u01ff\uf000\u0c00\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00f0\u001c\u00f0\uf000\ufc00\u0000\uf000\ue000\u0000\u0000\u0000\u0000\u0000\u0000\u0300\u00ff\u003c\u0fc0\u00ff\u003c\u3ff0\u0100\u8000\u8000\u0100\u8000\u8000\u0100\u8000\u0080\u8001\u0080\u0080\u8001\u0080\u8080\u8001\u0080\u8080\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u00fe\u0000\u0000\u008c\u0000\u00e0\u0000\u0000\u00f8\u0000\u003f\u00fe\u00fc\u803f\u00ff\u00fe\ue03f\u00ff\u000f\u00ff\uf000\u0003\u003c\uc000\u0000\u0000\u00ff\u0000\u0000\u00ff\u0003\u003c\uc000\u000f\u00ff\uf000\uc3c3\u00c3\u7c00\u8181\u0081\u3000\u0000\u0000\u0000\u0000\u0000\u001f\u8181\u0081\u301f\uc3c3\u00c3\u7c1f\u0d01\u0205\uba1b\ub6b7\u1776\u0a1a\u0202\u0101\u130e\u2322\u9062\u8689\u4464\u4952\u087e\u0304\u3f08\u8050\u888f\u22f7\uf722\u8f88\u5585\u0a3f\u807f\u4443\u142b\u2b28\u2c2b\u2b17\u4344\u7f80\u150e\u6412\u8c84\uc9fa\u8889\u244f\u1514\u0f0c\u0a07\u3912\u603c\u9292\uc2a2\u1122\u2010\u3f40\u1b06\u5b2a\uc7a2\u54be\ube54\ua2c7\u2a5b\u061b\u1807\u403e\u807e\ufe81\u7142\ua2cb\u4e92\u1e2e\u0407\u4538\u5458\u5762\ucacc\u9ce9\u93ba\u2b55\u990f\uf191\u322e\u4120\u4442\u526d\ud52d\ua4a6\u1c07\u6330\ucf47\u9c9e\u9e9c\u47cf\u3063\u0718\u0505\u790f\u8949\u9191\u84e5\ud584\ubfb5\u2191\u0101\u8202\uee92\uaae9\u8a8c\u8acb\ua1a5\u0820";
 
-        // create orbs and sprites
+        
         int[] background = new int[65536];
         int[][][][][][] orbs = new int[3][3][16][16][16][16];
-        for (s = 0; s < 14; s++) { // sprite index (0 is orb)
-            for (i = 0; i < 3; i++) { // background intensity
-                for (j = 0; j < 3; j++) { // foreground intensity
-                    for (k = 0; k < 16; k++) { // background color
-                        for (z = 0; z < 16; z++) { // foreground color
+        for (s = 0; s < 14; s++) { 
+            for (i = 0; i < 3; i++) { 
+                for (j = 0; j < 3; j++) { 
+                    for (k = 0; k < 16; k++) { 
+                        for (z = 0; z < 16; z++) { 
 
-                            // rainbow of colors
+                            
                             dx = 0.393f * k;
                             dy = 0.393f * z;
 
@@ -168,7 +168,7 @@ public class Gradius4K extends GamePanel {
                             int blue1 = 127 + (int) (127 * Math.sin(dx + 2.09f));
                             int blue2 = 127 + (int) (127 * Math.sin(dy + 2.09f));
 
-                            // dark intensity
+                            
                             if (i == 1) {
                                 red1 >>= 1;
                                 green1 >>= 1;
@@ -180,7 +180,7 @@ public class Gradius4K extends GamePanel {
                                 blue2 >>= 1;
                             }
 
-                            // light intensity
+                            
                             if (i == 2) {
                                 red1 = (red1 + 255) >> 1;
                                 green1 = (green1 + 255) >> 1;
@@ -195,7 +195,7 @@ public class Gradius4K extends GamePanel {
                             sprites[(s << 12) | (i << 10) | (j << 8) | (k << 4) | z] = new BufferedImage(16, 16, 2);
                             if (s == 0) {
 
-                                // generate orb
+                                
                                 for (y = 0; y < 16; y++) {
                                     for (x = 0; x < 16; x++) {
                                         dx = 7.5f - x;
@@ -213,7 +213,7 @@ public class Gradius4K extends GamePanel {
                                 }
                             } else {
 
-                                // decompress sprite
+                                
                                 for (y = 0; y < 16; y++) {
                                     v = S.charAt(144 + (y >> 1) + ((s - 1) << 3));
                                     if ((y & 1) == 0) {
@@ -234,7 +234,7 @@ public class Gradius4K extends GamePanel {
                 }
             }
         }
-        // create half-pipe mapping
+        
         int[][][] halfPipe = new int[256][256][2];
         for (y = 0; y < 256; y++) {
             for (x = 0; x < 256; x++) {
@@ -251,7 +251,7 @@ public class Gradius4K extends GamePanel {
         }
         float halfPipeOffset = 0;
 
-        // create background image and tile
+        
         int[] backgroundImage = new int[65536];
         for (k = 0; k < 4096; k++) {
             i = random.nextInt(512) & 0xFF;
@@ -277,11 +277,11 @@ public class Gradius4K extends GamePanel {
             }
 
 
-            // -- update starts ----------------------------------------------------
+            
 
             if (playerDead > 0 && --playerDead == 0) {
 
-                // reset level
+                
                 queue.clear();
                 cameraX = 0;
                 cameraVx = level == 3 ? 8 : 0.5f;
@@ -289,12 +289,12 @@ public class Gradius4K extends GamePanel {
                 halfPipeOffset = 0;
 
                 if (fireworks < 0) {
-                    // player continues onto next level
+                    
                     fireworks = 0;
                     queue.add(player);
                     player[OBJ_X] -= 2304;
                 } else {
-                    // create player
+                    
                     player = new float[256];
                     queue.add(player);
                     player[OBJ_TYPE] = TYPE_PLAYER;
@@ -306,7 +306,7 @@ public class Gradius4K extends GamePanel {
                     playerGun = 1;
                 }
 
-                // create level map
+                
                 levelMap = new int[8][256];
                 for (x = 24; x < 72; x++) {
                     levelMap[0][x] = 1;
@@ -323,7 +323,7 @@ public class Gradius4K extends GamePanel {
                 }
 
                 if (level == 2) {
-                    // create force fields
+                    
                     for (x = 0; x < 6; x++) {
                         float[] enemy = new float[256];
                         queue.add(enemy);
@@ -341,7 +341,7 @@ public class Gradius4K extends GamePanel {
 
                 if (level == 3) {
                     for (x = 0; x < 5; x++) {
-                        // create power up
+                        
                         float[] powerUp = new float[256];
                         queue.add(powerUp);
                         powerUp[OBJ_TYPE] = TYPE_POWER_UP;
@@ -355,7 +355,7 @@ public class Gradius4K extends GamePanel {
 
                 if (level == 4) {
                     for (i = 0; i < 32; i++) {
-                        // create shrinker
+                        
                         float[] shrinker = new float[256];
                         queue.add(shrinker);
                         shrinker[OBJ_TYPE] = TYPE_ENEMY;
@@ -377,7 +377,7 @@ public class Gradius4K extends GamePanel {
                             dy = (float) Math.sin(mag);
                             dx = (float) Math.cos(mag);
                             for (i = 0; i < 7; i++) {
-                                // create fan blade
+                                
                                 float[] blade = new float[256];
                                 queue.add(blade);
                                 blade[OBJ_TYPE] = TYPE_ENEMY;
@@ -408,7 +408,7 @@ public class Gradius4K extends GamePanel {
                 if (!bossMode) {
                     bossMode = true;
 
-                    // create boss
+                    
                     float[] boss = new float[256];
                     queue.add(boss);
                     boss[OBJ_TYPE] = TYPE_ENEMY;
@@ -478,7 +478,7 @@ public class Gradius4K extends GamePanel {
                     if (!(level == 1 || level == 7) || cameraX < 384 || (level == 7 && cameraX > 1408)) {
                         if (random.nextBoolean()) {
                             for (i = 0; i < 5; i++) {
-                                // create wave enemy
+                                
                                 float[] enemy = new float[256];
                                 queue.add(enemy);
                                 enemy[OBJ_TYPE] = TYPE_ENEMY;
@@ -495,7 +495,7 @@ public class Gradius4K extends GamePanel {
                             }
                         } else if (level == 6) {
                             for (i = 0; i < 3; i++) {
-                                // create attractor enemy
+                                
                                 dx = 6.28f * random.nextFloat();
                                 float[] enemy = new float[256];
                                 queue.add(enemy);
@@ -512,7 +512,7 @@ public class Gradius4K extends GamePanel {
                                 enemy[OBJ_ATTRACTOR] = 1;
                             }
                         } else {
-                            // create triplet enemy
+                            
                             for (i = 0; i < 3; i++) {
                                 float[] enemy = new float[256];
                                 queue.add(enemy);
@@ -528,7 +528,7 @@ public class Gradius4K extends GamePanel {
                             }
                         }
                     } else if (level == 1 && cameraX > 512) {
-                        // create bubble enemy
+                        
                         float[] enemy = new float[256];
                         queue.add(enemy);
                         enemy[OBJ_TYPE] = TYPE_ENEMY;
@@ -560,10 +560,10 @@ public class Gradius4K extends GamePanel {
                 switch ((int) object[OBJ_TYPE]) {
                     case TYPE_PLAYER:
 
-                        // moves automatically with the camera
+                        
                         object[OBJ_X] += cameraVx;
 
-                        // update player position based on user input
+                        
                         if (keys[VK_UP]) {
                             if (object[OBJ_Y] > 11) {
                                 object[OBJ_Y] -= SPEED;
@@ -584,14 +584,14 @@ public class Gradius4K extends GamePanel {
                         }
 
                         if (playerShootDelay > 0) {
-                            playerShootDelay--; // prevent player from shooting continuously
+                            playerShootDelay--; 
                         } else if (keys[VK_SHOOT]) {
                             playerShootDelay = 5;
 
-                            // player shoots
+                            
                             for (k = 0; k < 2; k++) {
                                 for (j = 0; j < playerGun; j++) {
-                                    // create player lazers
+                                    
                                     float[] bullet = new float[256];
                                     queue.add(bullet);
                                     bullet[OBJ_TYPE] = TYPE_BULLET;
@@ -605,26 +605,26 @@ public class Gradius4K extends GamePanel {
                             }
                         }
 
-                        // test if player hits enemy
+                        
                         for (j = queue.size() - 1; j >= 0; j--) {
                             float[] enemy = queue.get(j);
                             if ((enemy[OBJ_TYPE] == TYPE_ENEMY || enemy[OBJ_TYPE] == TYPE_POWER_UP) && object[OBJ_X] - 12 < enemy[OBJ_X] + 8 * enemy[OBJ_SCALE_X]
                                     && object[OBJ_X] + 12 > enemy[OBJ_X] - 8 * enemy[OBJ_SCALE_X] && object[OBJ_Y] - 8 < enemy[OBJ_Y] + 8 * enemy[OBJ_SCALE_Y]
                                     && object[OBJ_Y] + 8 > enemy[OBJ_Y] - 8 * enemy[OBJ_SCALE_Y]) {
                                 if (enemy[OBJ_TYPE] == TYPE_POWER_UP) {
-                                    // collect power up
+                                    
                                     enemy[OBJ_REMOVE] = 1;
                                     if (playerGun < 5) {
                                         playerGun++;
                                     }
                                 } else if (enemy[OBJ_DISABLED] == 0) {
-                                    // player collided with enemy
+                                    
                                     playerExploded = true;
                                 }
                             }
                         }
 
-                        // test if player hits wall
+                        
                         if (levelMap[((((int) object[OBJ_Y]) - 5) >> 5) & 7][((((int) object[OBJ_X])) >> 5) & 0xFF] == 1
                                 || levelMap[((((int) object[OBJ_Y]) + 5) >> 5) & 7][((((int) object[OBJ_X])) >> 5) & 0xFF] == 1
                                 || levelMap[((((int) object[OBJ_Y])) >> 5) & 7][((((int) object[OBJ_X]) - 7) >> 5) & 0xFF] == 1
@@ -645,7 +645,7 @@ public class Gradius4K extends GamePanel {
                     case TYPE_EXPLOSION_SEED:
                         object[OBJ_REMOVE] = 1;
                         for (j = (object[OBJ_WALL_EXPLOSION] == 1) ? 16 : 128; j >= 0; j--) {
-                            // create explosion from seed
+                            
                             float[] explosion = new float[256];
                             queue.add(explosion);
                             explosion[OBJ_TYPE] = TYPE_EXPLOSION;
@@ -661,7 +661,7 @@ public class Gradius4K extends GamePanel {
                             explosion[OBJ_SCALE_Y] = 4;
                         }
                         if (object[OBJ_MAKE_POWER_UP] == 1) {
-                            // create power up
+                            
                             float[] powerUp = new float[256];
                             queue.add(powerUp);
                             powerUp[OBJ_TYPE] = TYPE_POWER_UP;
@@ -676,10 +676,10 @@ public class Gradius4K extends GamePanel {
                         object[OBJ_X] += object[OBJ_VX];
                         object[OBJ_Y] += object[OBJ_VY];
                         if (object[OBJ_X] < cameraX - 32 || object[OBJ_X] > cameraX + 287 || object[OBJ_Y] < -32 || object[OBJ_Y] > 287) {
-                            // bullet flew off screen, remove it
+                            
                             object[OBJ_REMOVE] = 1;
                         } else if (levelMap[((int) object[OBJ_Y] >> 5) & 7][((int) object[OBJ_X] >> 5) & 0xFF] == 1) {
-                            // bullet hit wall, create small explosion
+                            
                             object[OBJ_REMOVE] = 1;
                             if (object[OBJ_ENEMY_BULLET] == 0) {
                                 float[] explosionSeed = new float[256];
@@ -692,14 +692,14 @@ public class Gradius4K extends GamePanel {
                             }
                         } else if (object[OBJ_ENEMY_BULLET] == 1) {
                             if (fireworks > 0) {
-                                // remove enemy bullets if player beat the boss
+                                
                                 object[OBJ_REMOVE] = 1;
-                            } else if (playerDead == 0 // test if bullet hits player
+                            } else if (playerDead == 0 
                                     && object[OBJ_X] >= player[OBJ_X] - 8 && object[OBJ_Y] >= player[OBJ_Y] - 8 && object[OBJ_X] <= player[OBJ_X] + 8 && object[OBJ_Y] <= player[OBJ_Y] + 8) {
                                 playerExploded = true;
                             }
                         } else {
-                            // test if bullet hits enemy
+                            
                             for (j = queue.size() - 1; j >= 0; j--) {
                                 float[] enemy = queue.get(j);
                                 if (enemy[OBJ_TYPE] == TYPE_ENEMY && enemy[OBJ_DISABLED] == 0 && object[OBJ_X] >= enemy[OBJ_X] - 8 * enemy[OBJ_SCALE_X]
@@ -716,15 +716,15 @@ public class Gradius4K extends GamePanel {
                                     if (--enemy[OBJ_HITS] == 0) {
 
                                         if (enemy[OBJ_BOSS] == 1) {
-                                            // start fireworks if beat boss
+                                            
                                             fireworks = 512;
                                         }
 
-                                        // enemy ran out of hit points and is killed
+                                        
                                         enemy[OBJ_REMOVE] = 1;
                                         if (enemy[OBJ_BUBBLE] == 1 && enemy[OBJ_SCALE_X] > 1) {
                                             for (k = 0; k < 2; k++) {
-                                                // create bubble enemy
+                                                
                                                 float[] bubble = new float[256];
                                                 queue.add(bubble);
                                                 bubble[OBJ_TYPE] = TYPE_ENEMY;
@@ -747,7 +747,7 @@ public class Gradius4K extends GamePanel {
                                             explosionSeed[OBJ_MAKE_POWER_UP] = random.nextInt(13) == 0 ? 1 : 0;
                                         }
                                     } else {
-                                        // enemy lost a hit point, create small explosion
+                                        
                                         explosionSeed[OBJ_X] = object[OBJ_X];
                                         explosionSeed[OBJ_Y] = object[OBJ_Y];
                                         explosionSeed[OBJ_WALL_EXPLOSION] = 1;
@@ -767,7 +767,7 @@ public class Gradius4K extends GamePanel {
                         break;
                     case TYPE_ENEMY:
                         if (fireworks > 0) {
-                            // remove enemy if player beat boss
+                            
                             object[OBJ_REMOVE] = 1;
                         }
                         if (object[OBJ_FAN_BLADE] == 1) {
@@ -819,10 +819,10 @@ public class Gradius4K extends GamePanel {
                             object[OBJ_TIMER] = object[OBJ_SHOOT_DELAY];
 
                             if (object[OBJ_FORCE_FIELD] == 1) {
-                                // toggle force field enabled
+                                
                                 object[OBJ_DISABLED] = object[OBJ_DISABLED] == 1 ? 0 : 1;
                             } else {
-                                // enemy shoots
+                                
                                 float[] bullet = new float[256];
                                 queue.add(bullet);
                                 bullet[OBJ_X] = object[OBJ_X];
@@ -870,19 +870,19 @@ public class Gradius4K extends GamePanel {
                 this.playerDead = DIE_TIME;
             }
 
-            // -- update ends ------------------------------------------------------
+            
 
-            // -- render starts ------------------------------------------------------
+            
 
-//			// render half-pipe
-//			for (y = 0; y < 256; y++) {
-//				for (x = 0; x < 256; x++) {
-//					background[(y << 8) + x] = backgroundImage[(((halfPipe[y][x][1] + (int) halfPipeOffset) & 0xFF) << 8) + (((int) (halfPipe[y][x][0] + cameraX)) & 0xFF)];
-//				}
-//			}
+
+
+
+
+
+
             image.setRGB(0, 0, 256, 256, background, 0, 256);
 
-            // render sprites
+            
             for (i = queue.size() - 1; i >= 0; i--) {
                 float[] object = queue.get(i);
                 if (object[OBJ_NONRENDERABLE] == 0 && object[OBJ_DISABLED] == 0) {
@@ -893,7 +893,7 @@ public class Gradius4K extends GamePanel {
                 }
             }
 
-            // render level map
+            
             z = ((int) cameraX) & 31;
             for (y = 0; y < 8; y++) {
                 for (x = 0; x < 9; x++) {
@@ -903,7 +903,7 @@ public class Gradius4K extends GamePanel {
                 }
             }
 
-            // show the hidden buffer
+            
             if (g2 == null) {
                 g2 = (Graphics2D) getGraphics();
                 requestFocus();
@@ -911,12 +911,12 @@ public class Gradius4K extends GamePanel {
                 g2.drawImage(image, 0, 0, 512, 512, null);
 
 
-                // -- render ends --------------------------------------------------------
+                
 
-//			// burn off extra cycles
-//			while (nextFrameStartTime - System.nanoTime() > 0) {
-//				Thread.yield();
-//			}
+
+
+
+
                 Util.sleep(updateMS);
             }
         }
@@ -949,7 +949,7 @@ public class Gradius4K extends GamePanel {
         }
     }
 
-    // to run in window, uncomment below
+    
     /*public static void main(String[] args) throws Throwable {
       javax.swing.JFrame frame = new javax.swing.JFrame("Gradius 4K");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

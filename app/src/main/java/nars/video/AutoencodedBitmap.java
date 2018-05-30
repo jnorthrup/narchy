@@ -45,7 +45,7 @@ public class AutoencodedBitmap implements Bitmap2D {
     public void update() {
         source.update();
 
-        //image = ConvertBufferedImage.convertFrom(source.get(), image);
+        
         int w = source.width();
         int h = source.height();
 

@@ -35,10 +35,10 @@ public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart
         return new ItemVis<>(i, label(i, 50));
     }
 
-    //TODO
-//    public BagChart(@NotNull Bag<X> b) {
-//        this(b, -1);
-//    }
+    
+
+
+
 
 
 
@@ -54,22 +54,22 @@ public class BagChart<X> extends TreeChart<X> implements BiConsumer<X, TreeChart
 
     }
 
-//    @Override
-//    protected void paint(GL2 gl) {
-//        if (busy.compareAndSet(false,true)) {
-//            try {
-//                super.paint(gl);
-//            } finally {
-//                busy.set(false);
-//            }
-//        }
-//    }
 
 
 
-//    @Override
-//    public void accept(X x, ItemVis<X> y) {
-//        float p = x.priElseZero();
-//        y.update(p, p, 0, 1f);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

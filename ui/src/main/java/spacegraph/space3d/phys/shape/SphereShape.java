@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -49,15 +49,15 @@ public class SphereShape extends ConvexInternalShape {
 		collisionMargin = radius;
 	}
 
-// TODO
-//	public void setSize(float x, float y, float z) {
-//		float radius = Util.max(x, y, z);
-//		implicitShapeDimensions.x = x;
-//		//setLocalScaling(x, y, z);
-//		implicitShapeDimensions.y = y;
-//		implicitShapeDimensions.z = z;
-//		collisionMargin = radius;
-//	}
+
+
+
+
+
+
+
+
+
 	@Override
 	public void setLocalScaling(float x, float y, float z) {
 		super.setLocalScaling(x, y, z);
@@ -71,7 +71,7 @@ public class SphereShape extends ConvexInternalShape {
 
 	@Override
 	public float getBoundingRadius() {
-		//return implicitShapeDimensions.x;
+		
 		return getRadius();
 	}
 
@@ -120,8 +120,8 @@ public class SphereShape extends ConvexInternalShape {
 
 	@Override
 	public float getMargin() {
-		// to improve gjk behaviour, use radius+margin as the full margin, so never get into the penetration case
-		// this means, non-uniform scaling is not supported anymore
+		
+		
 		return getRadius();
 	}
 	

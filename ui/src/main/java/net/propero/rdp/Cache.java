@@ -37,7 +37,7 @@ import java.awt.image.IndexColorModel;
 
 public class Cache {
 
-    private static final int RDPCACHE_COLOURMAPSIZE = 0x06; // unified patch
+    private static final int RDPCACHE_COLOURMAPSIZE = 0x06; 
     protected static Logger logger = LoggerFactory.getLogger(Cache.class);
     private final Bitmap[][] bitmapcache = new Bitmap[3][600];
 
@@ -159,7 +159,7 @@ public class Cache {
     public void putBitmap(int cache_id, int cache_idx, Bitmap bitmap, int stamp)
             throws RdesktopException {
 
-        // Bitmap old;
+        
 
         if ((cache_id < bitmapcache.length)
                 && (cache_idx < bitmapcache[0].length)) {

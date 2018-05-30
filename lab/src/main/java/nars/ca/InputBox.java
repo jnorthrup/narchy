@@ -1,7 +1,7 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// General-purpose single line input box
+package nars.ca;
+
+
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -17,7 +17,7 @@ public class InputBox extends Dialog implements ActionListener {
 		super(frame, sTitle, true);
 		setLayout(new BorderLayout());
 		txtFld = new TextField(sDeafult);
-		add("West", new Panel()); // some margins
+		add("West", new Panel()); 
 		add("East", new Panel());
 		add("North", new Label(sPrompt));
 		add("Center", txtFld);

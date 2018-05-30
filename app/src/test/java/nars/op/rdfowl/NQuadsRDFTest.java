@@ -23,7 +23,7 @@ public class NQuadsRDFTest {
     public void test1() throws Exception {
         final NAR n = NARS.tmp();
         n.log();
-        NQuadsRDF.input(n, "<http://example.org/#spiderman> <http://xmlns.com/foaf/0.1/name> \"Человек-паук\"@ru .");
+        NQuadsRDF.input(n, "<http:
         n.run(1);
         assertTrue(n.concepts.size() > 2);
     }
@@ -37,34 +37,34 @@ public class NQuadsRDFTest {
 
         n.input(
                 NQuadsRDF.stream(n, new File(
-                        //"/tmp/all-layers.nq"
+                        
                         "/home/me/Downloads/nquad"
                 )).peek(t -> {
                     pout.println(t.term().toString() + t.punc());
-                    //t.budget(0, 0.5f);
+                    
                 })
         );
 
         pout.close();
 
-//        n.forEachActiveConcept(c -> {
-//            c.print();
-//        });
+
+
+
 
         n.run(1);
-        //n.focus.active.clear();
+        
         n.log();
         n.input("$0.9$ (Bacteria <-> Pharmacy)?");
 
 
-        //
+        
 
 
         n.run(128);
 
-//        n.index.forEach(c -> {
-//            System.out.println(c);
-//        });
+
+
+
     }
 
     @Disabled
@@ -86,16 +86,16 @@ public class NQuadsRDFTest {
                 pout.println(t + ".");
             }).forEach(x -> {
                 n.input(x);
-                n.run(1); //allow process
+                n.run(1); 
             });
 
             pout.close();
         }
 
-//        n.forEachActiveConcept(c -> {
-//            c.print();
-//        });
-//        n.run(512);
+
+
+
+
 
         /*n.concepts().forEach(Concept::print);
         n.concept($.the("Buyer")).print();*/

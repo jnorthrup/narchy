@@ -41,7 +41,7 @@ public class RelativeMotion extends AbstractChangeSpeedLZ{
 		float moveHowMuchSpeed = Math.min(ddRadius/2, maxSpeedToMove);
 		float mult = moveHowMuchSpeed/ddRadius;
 		float moveY = ddy*mult, moveX = ddx*mult;
-		//System.out.println("moveY="+moveY+" moveX="+moveX);
+		
 		b.speedY -= moveY;
 		a.speedY += moveY;
 		b.speedX -= moveX;

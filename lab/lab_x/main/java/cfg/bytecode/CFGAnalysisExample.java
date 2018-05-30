@@ -107,9 +107,9 @@ public class CFGAnalysisExample implements Opcodes {
                 new SourceInterpreter());
         Frame<SourceValue>[] frames = a.analyze(c.name, m);
 
-        // for each xLOAD instruction, we find the xSTORE instructions that can
-        // produce the value loaded by this instruction, and we put them in
-        // 'stores'
+        
+        
+        
         Set<AbstractInsnNode> stores = new HashSet<>();
         for (int i = 0; i < m.instructions.size(); ++i) {
             AbstractInsnNode insn = m.instructions.get(i);
@@ -130,7 +130,7 @@ public class CFGAnalysisExample implements Opcodes {
             }
         }
 
-        // we then find all the xSTORE instructions that are not in 'stores'
+        
         boolean ok = true;
         for (int i = 0; i < m.instructions.size(); ++i) {
             AbstractInsnNode insn = m.instructions.get(i);
@@ -149,20 +149,20 @@ public class CFGAnalysisExample implements Opcodes {
 	 * Test for the above method, with three useless xSTORE instructions.
 	 */
 	public int test(int i, int j) {
-		i = i + 1; // ok, because i can be read after this point
+		i = i + 1; 
 
 		if (j == 0) {
-			j = 1; // useless
+			j = 1; 
 		} else {
 			try {
-				j = j - 1; // ok, because j can be accessed in the catch
+				j = j - 1; 
 				int k = 0;
 				if (i > 0) {
 					k = i - 1;
 				}
 				return k;
-			} catch (Exception e) { // useless ASTORE (e is never used)
-				j = j + 1; // useless
+			} catch (Exception e) { 
+				j = j + 1; 
 			}
 		}
 

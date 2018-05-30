@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 17.12.2003 by RST.
+
 
 package jake2.game;
 
@@ -30,10 +30,10 @@ import jake2.util.Math3D;
 
 public class Monster {
 
-    // FIXME monsters should call these with a totally accurate direction
-    //	and we can mess it up based on skill. Spread should be for normal
-    //	and we can tighten or loosen based on skill. We could muck with
-    //	the damages too, but I'm not sure that's such a good idea.
+    
+    
+    
+    
     public static void monster_fire_bullet(edict_t self, float[] start,
             float[] dir, int damage, int kick, int hspread, int vspread,
             int flashtype) {
@@ -141,7 +141,7 @@ public class Monster {
         GameUtil.G_UseTargets(self, self.enemy);
     }
 
-    // ============================================================================
+    
     public static boolean monster_start(edict_t self) {
         if (GameBase.deathmatch.value != 0) {
             GameUtil.G_FreeEdict(self);
@@ -152,8 +152,8 @@ public class Monster {
                 && 0 == (self.monsterinfo.aiflags & Defines.AI_GOOD_GUY)) {
             self.spawnflags &= ~4;
             self.spawnflags |= 1;
-            //		 gi.dprintf("fixed spawnflags on %s at %s\n", self.classname,
-            // vtos(self.s.origin));
+            
+            
         }
 
         if (0 == (self.monsterinfo.aiflags & Defines.AI_GOOD_GUY))
@@ -184,7 +184,7 @@ public class Monster {
                         + GameBase.st.item + '\n');
         }
 
-        // randomize what frame they start on
+        
         if (self.monsterinfo.currentmove != null)
             self.s.frame = self.monsterinfo.currentmove.firstframe
                     + (Lib.rand() % (self.monsterinfo.currentmove.lastframe
@@ -200,7 +200,7 @@ public class Monster {
         if (self.health <= 0)
             return;
 
-        // check for target to combat_point and change to combattarget
+        
         if (self.target != null) {
             boolean notcombat;
             boolean fixup;
@@ -240,7 +240,7 @@ public class Monster {
                 self.target = null;
         }
 
-        // validate combattarget
+        
         if (self.combattarget != null) {
             edict_t target = null;
 
@@ -336,8 +336,8 @@ public class Monster {
         }
     };
 
-    //	we have a one frame delay here so we don't telefrag the guy who activated
-    // us
+    
+    
     public static final EntUseAdapter monster_triggered_spawn_use = new EntUseAdapter() {
         @Override
         public String getID() { return "monster_trigger_spawn_use";}

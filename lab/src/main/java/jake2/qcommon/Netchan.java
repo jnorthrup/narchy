@@ -95,7 +95,7 @@ public final class Netchan extends SV_MAIN {
 
     public static cvar_t qport;
 
-    //public static netadr_t net_from = new netadr_t();
+    
     public static sizebuf_t net_message = new sizebuf_t();
 
     public static byte net_message_buffer[] = new byte[Defines.MAX_MSGLEN];
@@ -107,7 +107,7 @@ public final class Netchan extends SV_MAIN {
     public static void Netchan_Init() {
         long port;
 
-        // pick a port value that should be nice and random
+        
         port = Timer.Milliseconds() & 0xffff;
 
         showpackets = Cvar.Get("showpackets", "0", 0);
@@ -124,13 +124,13 @@ public final class Netchan extends SV_MAIN {
     public static void Netchan_OutOfBand(int net_socket, netadr_t adr,
             int length, byte data[]) {
 
-        // write the packet header
+        
         SZ.Init(send, send_buf, Defines.MAX_MSGLEN);
 
-        MSG.WriteInt(send, -1); // -1 sequence means out of band
+        MSG.WriteInt(send, -1); 
         SZ.Write(send, data, length);
 
-        // send the datagram
+        
         NET.SendPacket(net_socket, send.cursize, send.data, adr);
     }
 
@@ -165,13 +165,13 @@ public final class Netchan extends SV_MAIN {
     public static boolean Netchan_NeedReliable(netchan_t chan) {
         boolean send_reliable;
 
-        // if the remote side dropped the last reliable message, resend it
+        
 
         send_reliable = chan.incoming_acknowledged > chan.last_reliable_sequence
                 && chan.incoming_reliable_acknowledged != chan.reliable_sequence;
 
-        // if the reliable transmit buffer is empty, copy the current message
-        // out
+        
+        
         if (0 == chan.reliable_length && chan.message.cursize != 0) {
             send_reliable = true;
         }
@@ -190,7 +190,7 @@ public final class Netchan extends SV_MAIN {
         int send_reliable;
         int w1, w2;
 
-        // check for message overflow
+        
         if (chan.message.overflowed) {
             chan.fatal_error = true;
             Com.Printf(NET.AdrToString(chan.remote_address)
@@ -208,7 +208,7 @@ public final class Netchan extends SV_MAIN {
             chan.reliable_sequence ^= 1;
         }
 
-        // write the packet header
+        
         SZ.Init(send, send_buf, send_buf.length);
 
         w1 = (chan.outgoing_sequence & ~(1 << 31)) | (send_reliable << 31);
@@ -221,23 +221,23 @@ public final class Netchan extends SV_MAIN {
         MSG.WriteInt(send, w1);
         MSG.WriteInt(send, w2);
 
-        // send the qport if we are a client
+        
         if (chan.sock == Defines.NS_CLIENT)
             MSG.WriteShort(send, (int) qport.value);
 
-        // copy the reliable message to the packet first
+        
         if (send_reliable != 0) {
             SZ.Write(send, chan.reliable_buf, chan.reliable_length);
             chan.last_reliable_sequence = chan.outgoing_sequence;
         }
 
-        // add the unreliable part if space is available
+        
         if (send.maxsize - send.cursize >= length)
             SZ.Write(send, data, length);
         else
             Com.Printf("Netchan_Transmit: dumped unreliable\n");
 
-        // send the datagram
+        
         NET.SendPacket(chan.sock, send.cursize, send.data, chan.remote_address);
 
         if (showpackets.value != 0) {
@@ -262,16 +262,16 @@ public final class Netchan extends SV_MAIN {
      * net_message so that it points to the packet payload.
      */
     public static boolean Process(netchan_t chan, sizebuf_t msg) {
-        // get sequence numbers
+        
         MSG.BeginReading(msg);
         int sequence = MSG.ReadLong(msg);
         int sequence_ack = MSG.ReadLong(msg);
 
-        // read the qport if we are a server
+        
         if (chan.sock == Defines.NS_SERVER)
             MSG.ReadShort(msg);
 
-        // achtung unsigned int
+        
         int reliable_message = sequence >>> 31;
         int reliable_ack = sequence_ack >>> 31;
 
@@ -292,9 +292,9 @@ public final class Netchan extends SV_MAIN {
                                 + sequence_ack + " rack=" + reliable_ack + '\n');
         }
 
-        //
-        // discard stale or duplicated packets
-        //
+        
+        
+        
         if (sequence <= chan.incoming_sequence) {
             if (showdrop.value != 0)
                 Com.Printf(NET.AdrToString(chan.remote_address)
@@ -303,9 +303,9 @@ public final class Netchan extends SV_MAIN {
             return false;
         }
 
-        //
-        // dropped packets don't keep the message from being used
-        //
+        
+        
+        
         chan.dropped = sequence - (chan.incoming_sequence + 1);
         if (chan.dropped > 0) {
             if (showdrop.value != 0)
@@ -313,17 +313,17 @@ public final class Netchan extends SV_MAIN {
                         + chan.dropped + " packets at " + sequence + '\n');
         }
 
-        //
-        // if the current outgoing reliable message has been acknowledged
-        // clear the buffer to make way for the next
-        //
+        
+        
+        
+        
         if (reliable_ack == chan.reliable_sequence)
-            chan.reliable_length = 0; // it has been received
+            chan.reliable_length = 0; 
 
-        //
-        // if this message contains a reliable message, bump
-        // incoming_reliable_sequence
-        //
+        
+        
+        
+        
         chan.incoming_sequence = sequence;
         chan.incoming_acknowledged = sequence_ack;
         chan.incoming_reliable_acknowledged = reliable_ack;
@@ -331,9 +331,9 @@ public final class Netchan extends SV_MAIN {
             chan.incoming_reliable_sequence ^= 1;
         }
 
-        //
-        // the message can now be read from the current message pointer
-        //
+        
+        
+        
         chan.last_received = Globals.curtime;
 
         return true;

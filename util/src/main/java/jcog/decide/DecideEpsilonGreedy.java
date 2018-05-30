@@ -15,7 +15,7 @@ public class DecideEpsilonGreedy implements Deciding {
     public static final Deciding ArgMax = new DecideEpsilonGreedy(0, new XorShift128PlusRandom());
 
     private final Random random;
-    float epsilonRandom; //0.01f;
+    float epsilonRandom; 
 
     /*
     TODO - decaying epsilon:
@@ -60,11 +60,11 @@ public class DecideEpsilonGreedy implements Deciding {
                 nextMotivation = m;
             }
             if (equalToPreviousAction && j > 0 && !Util.equals(m, vector[motivationOrder[j - 1]])) {
-                equalToPreviousAction = false; //there is some variation
+                equalToPreviousAction = false; 
             }
 
         }
-        //all equal?
+        
         int a = equalToPreviousAction ? -1 : nextAction;
         if (a < 0)
             return random.nextInt(actions);

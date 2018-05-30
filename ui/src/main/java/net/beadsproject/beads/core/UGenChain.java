@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.core;
 
@@ -20,8 +20,8 @@ public class UGenChain extends UGen {
     public UGenChain(AudioContext context, int ins, int outs) {
         super(context, ins, outs);
 
-        // This grabs the inputs from this Chain instance, so they can be used
-        // by UGens in the chain.
+        
+        
         chainIn = new UGen(context, 0, ins) {
             @Override
             public void gen() {
@@ -30,8 +30,8 @@ public class UGenChain extends UGen {
         chainIn.bufOut = bufIn;
         chainIn.outputInitializationRegime = OutputInitializationRegime.RETAIN;
 
-        // This collects the output of the chain and lets this Chain instance
-        // grab the data.
+        
+        
         chainOut = new UGen(context, outs, 0) {
             @Override
             public void gen() {

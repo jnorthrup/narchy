@@ -39,7 +39,7 @@ public abstract class LevelObject implements Comparator<LevelObject> {
 	public Point p;
 	
 	/** The object properties */
-	//public ObjectProperties properties = new ObjectProperties();
+	
 	
 
 	public LevelObject() {

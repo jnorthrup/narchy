@@ -39,7 +39,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         jTextField1.setText(dir);
     }
 
-    private void initComponents() {//GEN-BEGIN:initComponents
+    private void initComponents() {
         JComponent.setDefaultLocale(Locale.US);
 
         java.awt.GridBagConstraints gridBagConstraints;
@@ -177,7 +177,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         }
     }
 
-    private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeButtonActionPerformed
+    private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setDialogType(JFileChooser.CUSTOM_DIALOG);
@@ -193,14 +193,14 @@ public class Q2DataDialog extends javax.swing.JDialog {
         if (dir != null) jTextField1.setText(dir);
         else dir = jTextField1.getText();
 
-    }//GEN-LAST:event_changeButtonActionPerformed
+    }
 
-    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {
 
         System.exit(1);
 
-        //dispose();
-    }//GEN-LAST:event_formWindowClosing
+        
+    }
 
     private javax.swing.JPanel choosePanel;
     private JPanel statusPanel;
@@ -209,7 +209,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
     private NotFoundPanel notFoundPanel;
     private JLabel status;
     javax.swing.JTextField jTextField1;
-    // End of variables declaration//GEN-END:variables
+    
 
     private String dir;
 
@@ -384,18 +384,18 @@ public class Q2DataDialog extends javax.swing.JDialog {
             constraints.anchor = GridBagConstraints.SOUTHWEST;
             exit = new JButton("Exit");
             exit.addActionListener(e -> {
-                //if (!Globals.appletMode) {
+                
                 System.exit(0);
             });
-//			add(exit, constraints);
-//
-//			constraints.gridx = 2;
-//			constraints.gridy = 3;
-//			constraints.gridwidth = 1;
-//			constraints.anchor = GridBagConstraints.SOUTHEAST;
-//			ok = new JButton("OK");
-//			ok.addActionListener(e -> ok());
-//			add(ok, constraints);
+
+
+
+
+
+
+
+
+
             }
 
 
@@ -544,9 +544,9 @@ public class Q2DataDialog extends javax.swing.JDialog {
         }
 
         private static void exit() {
-            //if (!Globals.appletMode) {
+            
             System.exit(0);
-            //}
+            
         }
 
         private void choose() {

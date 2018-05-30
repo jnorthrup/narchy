@@ -59,7 +59,7 @@ public class Grid1DRelative implements World {
         
         this.action = action;
         
-        //# At random intervals, jump to a random position in the world
+        
         if (Math.random() < JUMP_FRACTION) {
             focusPosition = size * Math.random();
         }
@@ -67,7 +67,7 @@ public class Grid1DRelative implements World {
             focusPosition += focusVelocity;
         }
         
-        //# Ensure that the world state falls between 0 and 9
+        
         if (focusPosition > size) focusPosition = 0;
         if (focusPosition < 0) focusPosition = size-1;
         
@@ -76,7 +76,7 @@ public class Grid1DRelative implements World {
         # Represent the presence or absence of the current position in the bin.
         */
 
-        //blur the action
+        
         /*if (action2 == null) action2 = new double[action.length];
         for (int i = 0; i < action2.length; i++) {
             action2[i] = action[i];
@@ -86,7 +86,7 @@ public class Grid1DRelative implements World {
             
         
         /*if (action[0] > 0.5) {
-            //nothing
+            
         }*/
         if ((action[0] > 0.5) && !(action[1] > 0.5)) {
             position--;
@@ -114,7 +114,7 @@ public class Grid1DRelative implements World {
         
         double min=0, max=0;
         for (int i = 0; i < size; i++) {
-            final double exp = 2.0; //sharpen
+            final double exp = 2.0; 
             sensor[i] = Math.pow(1.0 / (1.0 + Math.abs( ((double)i)-focusPosition)),exp) + (Math.random()*noise);
             if (sensor[i] < 0.2)
                 sensor[i] = 0;
@@ -126,7 +126,7 @@ public class Grid1DRelative implements World {
                 if (sensor[i] > max) max = sensor[i];
             }
          
-            //show agent's own location
+            
             sensor[i+size] = (i == position) ? 1.0 : 0.0;
         }
   
@@ -137,7 +137,7 @@ public class Grid1DRelative implements World {
     
     public static void main(String[] args) throws Exception {
         Class<? extends Agent> a = RandomAgent.class;
-        //Class<? extends Agent> a = QLAgent.class;
+        
         
         new Simulation(a, new Grid1DRelative(8, 11990000, 0.05, 0.01));
         

@@ -73,9 +73,9 @@ public class ImageTexture extends Tex {
 
     final String u;
 
-//    public ImageTexture(File f) throws MalformedURLException {
-//        this(f.toURL());
-//    }
+
+
+
 
     public ImageTexture(URL path) {
         this(path.toString());
@@ -83,7 +83,7 @@ public class ImageTexture extends Tex {
 
     public ImageTexture(String path) {
         this.u = path;
-        inverted = true; //??
+        inverted = true; 
     }
 
     /** http://fontawesome.com/icons?d=gallery&m=free */
@@ -98,7 +98,7 @@ public class ImageTexture extends Tex {
 
             texture = textureCache.apply(pair(gl.getContext().getHandle(), u));
             if (texture == null) {
-                //TODO missing texture
+                
                 throw new NullPointerException();
             }
 
@@ -106,20 +106,20 @@ public class ImageTexture extends Tex {
         super.paint(gl, bounds, repeatScale, alpha);
     }
 
-//    public static void main(String[] args) throws MalformedURLException {
-//        //pngquant 2 wrench.png --speed 1 --quality 0 --nofs
-//
-//        String file = "/home/me/Font-Awesome-SVG-PNG/white/png/x128/wrench-fs8.png";
-//        SpaceGraph.window(
-//                new Gridding(
-////                    new ImageTexture(new File(file)).view(),
-//                        new ImageTexture("fontawesome://wrench").view(),
-//                        new ImageTexture("fontawesome://feed").view(),
-//                        new ImageTexture("fontawesome://space-shuttle").view(),
-//                        new ImageTexture("fontawesome://youtube").view(),
-//                        new ImageTexture(new File(file)).view()
-//                ),
-//                500, 500);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

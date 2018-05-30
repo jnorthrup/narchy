@@ -9,7 +9,7 @@ package jurls.core.approximation;
  *
  * @author thorsten
  */
-//TODO make 2 subclasses of Scalar like I had it originally; one for raw double value and another for index within a parameter array
+
 public class Scalar implements DiffableFunctionSource {
 
     private double upperBound = Double.POSITIVE_INFINITY;

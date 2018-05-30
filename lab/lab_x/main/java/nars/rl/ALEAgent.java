@@ -18,7 +18,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * https://github.com/mgbellemare/Arcade-Learning-Environment/tree/master/src/games/supported
+ * https:
  */
 public class ALEAgent extends AbstractAgent implements RLEnvironment {
 
@@ -39,26 +39,26 @@ public class ALEAgent extends AbstractAgent implements RLEnvironment {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         new ALEAgent(
-                //"space_invaders"
-                //"seaquest"
-                //"chopper_command"
-                //"enduro"
-                //"berzerk"
+                
+                
+                
+                
+                
                 "assault"
-                //"asteroids"
-                //"alien"
-                //"atlantis"
-                //"battle_zone"
-                //"kung_fu_master"
-                //"montezuma_revenge"
-                //"pitfall"
-                //"video_pinball"
-                //"zaxxon"
-                //"yars_revenge"
-                //"wizard_of_wor"
-                //"air_raid"
-                //"star_gunner"
-                //"river_raid"
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
 
 
         );
@@ -112,12 +112,12 @@ public class ALEAgent extends AbstractAgent implements RLEnvironment {
                 return buffer;
             }
         }));*/
-        //agent.add(new AEPerception("AE", 0.25f, 64).setLearningRate(0.1));
-        //agent.add(new ALEFeaturePerception(0.75f));
+        
+        
         agent.add(new AEALEFeaturePerception(0.75f));
 
         Video.themeInvert();
-        //NARSwing s = new NARSwing(nar);
+        
 
     }
 
@@ -134,12 +134,12 @@ public class ALEAgent extends AbstractAgent implements RLEnvironment {
     }
 
     public BufferedImage convert(ScreenMatrix m, BufferedImage img) {
-        // Create a new image, of the same width and height as the screen matrix
+        
         if ((img == null) || (img.getWidth()!=m.width) || (img.getHeight()!=m.height)) {
             img = new BufferedImage(m.width, m.height, BufferedImage.TYPE_INT_RGB);
         }
 
-        // Map each pixel
+        
         for (int x = 0; x < m.width; x++)
             for (int y = 0; y < m.height; y++) {
                 int index = m.matrix[x][y];
@@ -261,7 +261,7 @@ public class ALEAgent extends AbstractAgent implements RLEnvironment {
         public Iterable<Task> perceive(NAR nar, double[] input, double t) {
             h.addFrame(currentFrame);
             double[] vvf = m.getFeatures(h);
-            //System.out.println(vvf.length);
+            
             return super.perceive(nar, vvf, t);
         }
 

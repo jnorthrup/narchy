@@ -21,7 +21,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
     /*@NotNull*/
     final Combinations comb;
-    //private final Term[] yFree;
+    
     /*@NotNull*/
     private final Term[] x;
     /*@NotNull*/
@@ -83,7 +83,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
             byte c0 = (byte) c[0];
             byte c1 = (byte) c[1];
-            ArrayUtils.reverse(c); //swap to try the reverse next iteration
+            ArrayUtils.reverse(c); 
 
             Term y1 = yy.sub(c0);
 

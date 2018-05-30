@@ -9,7 +9,7 @@ import spacegraph.util.math.v3;
  * Created by me on 7/22/16.
  */
 public class ClosestRay extends Collisions.RayResultCallback {
-    public final v3 rayFromWorld = new v3(); //used to calculate hitPointWorld from hitFraction
+    public final v3 rayFromWorld = new v3(); 
     public final v3 rayToWorld = new v3();
 
     public final v3 hitNormalWorld = new v3();
@@ -35,7 +35,7 @@ public class ClosestRay extends Collisions.RayResultCallback {
 
     @Override
     public float addSingleResult(Collisions.LocalRayResult rayResult, boolean normalInWorldSpace) {
-        // note: caller already does the filter on the closestHitFraction
+        
         float f = rayResult.hitFraction;
         if ((f > closestHitFraction))
             throw new RuntimeException();
@@ -45,7 +45,7 @@ public class ClosestRay extends Collisions.RayResultCallback {
 
         hitNormalWorld.set(rayResult.hitNormal);
         if (!normalInWorldSpace) {
-            // need to transform normal into worldspace
+            
             collidable.getWorldTransform(new Transform()).transform(hitNormalWorld);
         }
 

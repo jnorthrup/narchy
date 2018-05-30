@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,17 +33,17 @@ final class Board {
     private static final EnumSet<Move> SIDES = of(TOP_CENTRE, MIDDLE_RIGHT, BOTTOM_CENTRE, BOTTOM_LEFT);
 
     static {
-        // horizontal
+        
         LINES.add(of(TOP_LEFT, TOP_CENTRE, TOP_RIGHT));
         LINES.add(of(MIDDLE_LEFT, CENTRE, MIDDLE_RIGHT));
         LINES.add(of(BOTTOM_LEFT, BOTTOM_CENTRE, BOTTOM_RIGHT));
 
-        // vertical
+        
         LINES.add(of(TOP_LEFT, MIDDLE_LEFT, BOTTOM_LEFT));
         LINES.add(of(TOP_CENTRE, CENTRE, BOTTOM_CENTRE));
         LINES.add(of(TOP_RIGHT, MIDDLE_RIGHT, BOTTOM_RIGHT));
 
-        // diagonal
+        
         LINES.add(of(TOP_LEFT, CENTRE, BOTTOM_RIGHT));
         LINES.add(of(TOP_RIGHT, CENTRE, BOTTOM_LEFT));
     }

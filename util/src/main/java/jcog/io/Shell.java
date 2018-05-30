@@ -18,7 +18,7 @@ public class Shell {
     public final Process proc;
     public final PrintWriter writer;
     private final StreamGobbler reader;
-    //private final StreamGobbler errReader;
+    
     public long lastOutput;
 
 
@@ -32,10 +32,10 @@ public class Shell {
 
 
 
-//        this.errReader = new StreamGobbler(proc.getErrorStream(), (e) -> {
-//            logger.info(e);
-//        });
-//        errReader.setName("errr");
+
+
+
+
 
 
         this.reader = new StreamGobbler(proc.getInputStream(), s -> {
@@ -45,7 +45,7 @@ public class Shell {
         reader.setName("read");
 
 
-        //errReader.start();
+        
         reader.start();
 
         logger.info("started"/*, proc.getPid()*/);
@@ -81,22 +81,22 @@ public class Shell {
 
     }
 
-//    public static void exec(String command) {
-//        Shell.get().println(command);
-//    }
-//
-//    public static Shell get() {
-//        if (Shell.rootShell == null) {
-//            while (Shell.rootShell == null) {
-//                try {
-//                    Shell.rootShell = new Shell("su"); //Open with Root Privileges
-//                } catch (IOException e) {
-//                }
-//            }
-//        }
-//        return Shell.rootShell;
-//    }
-    //private static Shell rootShell = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
     static class StreamGobbler extends Thread {
         private final Consumer<String> eachLine;
@@ -114,7 +114,7 @@ public class Shell {
                 String line = null;
                 while ((line = br.readLine()) != null) {
                     eachLine.accept(line);
-                    //System.out.println(type + "> " + line);
+                    
                 }
             } catch (IOException ioe) {
                 ioe.printStackTrace();

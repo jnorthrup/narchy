@@ -89,7 +89,7 @@ public final class Com
 
 	static String msg= "";
 
-	// helper class to replace the pointer-pointer
+	
 	public static class ParseHelp
 	{
 		public ParseHelp(String in)
@@ -130,7 +130,7 @@ public final class Com
 
 		public char nextchar()
 		{
-			// faster than if
+			
 		    index++;
 		    if (index < length) {
 		        return data[index];
@@ -183,7 +183,7 @@ public final class Com
 
 	public static final char[] com_token= new char[Defines.MAX_TOKEN_CHARS];
 
-	// See GameSpanw.ED_ParseEdict() to see how to use it now.
+	
 	public static String Parse(ParseHelp hlp) {
 		int c;
 		int len = 0;
@@ -193,18 +193,18 @@ public final class Com
 		}
 
 		while (true) {
-			//	   skip whitespace
+			
 			hlp.skipwhites();
 			if (hlp.isEof()) {
 			    hlp.data = null;
 			    return "";
 			}
 
-			//	   skip // comments
+			
 			if (hlp.getchar() == '/') {
 				if (hlp.nextchar() == '/') {
 					hlp.skiptoeol();
-					// goto skip whitespace
+					
 					continue;
 				} else {
 					hlp.prevchar();
@@ -214,7 +214,7 @@ public final class Com
 				break;
 		}
 
-		//	   handle quoted strings specially
+		
 		if (hlp.getchar() == '\"') {
 			hlp.nextchar();
 			while (true) {
@@ -230,7 +230,7 @@ public final class Com
 			}
 		}
 
-		//	   parse a regular word
+		
 		c = hlp.getchar();
 		do {
 			if (len < Defines.MAX_TOKEN_CHARS) {
@@ -264,8 +264,8 @@ public final class Com
 
 	public static void Error(int code, String fmt, Vargs vargs) throws longjmpException
 	{
-		// va_list argptr;
-		// static char msg[MAXPRINTMSG];
+		
+		
 
 		if (recursive)
 		{
@@ -340,7 +340,7 @@ public final class Com
 	public static void DPrintf(String fmt, Vargs vargs)
 	{
 		if (Globals.developer == null || Globals.developer.value == 0)
-			return; // don't confuse non-developers with techie stuff...
+			return; 
 		_debugContext = debugContext;
 		Printf(fmt, vargs);
 		_debugContext="";
@@ -363,10 +363,10 @@ public final class Com
 
 		Console.Print(msg);
 
-		// also echo to debugging console
+		
 		Sys.ConsoleOutput(msg);
 
-		// logfile
+		
 		if (Globals.logfile_active != null && Globals.logfile_active.value != 0)
 		{
 			String name;
@@ -382,7 +382,7 @@ public final class Com
 					}
 					catch (Exception e)
 					{
-						// TODO: do quake2 error handling!
+						
 						e.printStackTrace();
 					}
 				else
@@ -392,7 +392,7 @@ public final class Com
 					}
 					catch (FileNotFoundException e1)
 					{
-						// TODO: do quake2 error handling!
+						
 						e1.printStackTrace();
 					}
 			}
@@ -403,11 +403,11 @@ public final class Com
 				}
 				catch (IOException e)
 				{
-					// TODO: do quake2 error handling!
+					
 					e.printStackTrace();
 				}
-			if (Globals.logfile_active.value > 1); // do nothing
-			// fflush (logfile);		// force it to save every time
+			if (Globals.logfile_active.value > 1); 
+			
 		}
 	}
 
@@ -696,10 +696,10 @@ public final class Com
 		if (sequence < 0)
 			Sys.Error("sequence < 0, this shouldn't happen\n");
 
-		//p_ndx = (sequence % (sizeof(chktbl) - 4));
+		
 		int p_ndx = (sequence % (1024 - 4));
 		
-		//memcpy(chkb, base, length);
+		
 		length = Math.min(60, length);
 		System.arraycopy(base, offset , chkb, 0, length);
 		
@@ -710,7 +710,7 @@ public final class Com
 		
 		length += 4;
 
-		// unsigned short
+		
 		int crc = CRC.CRC_Block(chkb, length);
 
 		int x = 0;

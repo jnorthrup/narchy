@@ -168,7 +168,7 @@ public class GUI2D
          }
       }
 
-      // search over first
+      
       Object2D object2D = this.detectOver3D(x, y);
       if(object2D != null)
       {
@@ -177,7 +177,7 @@ public class GUI2D
 
       synchronized(this.lock)
       {
-         // Search under
+         
          final int nb = this.arrayListObject2DUnder3D.size();
          for(int i = nb - 1; i >= 0; i--)
          {

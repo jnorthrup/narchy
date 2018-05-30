@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Stan Melax Convex Hull Computation
- * Copyright (c) 2008 Stan Melax http://www.melax.com/
+ * Copyright (c) 2008 Stan Melax http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from

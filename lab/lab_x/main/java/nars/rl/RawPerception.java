@@ -62,7 +62,7 @@ public class RawPerception implements Perception {
     public Iterable<Task> perceive(NAR nar, double[] input, double t) {
         List<Task> tasks = new ArrayList(input.length);
 
-        //simple binary +/- 0 discretization
+        
         for (int i = 0; i < input.length; i++) {
 
             float f = getFrequency(input[i]);
@@ -82,7 +82,7 @@ public class RawPerception implements Perception {
     }
 
     public String getStateTerm(int s) {
-        //return getStateTermRadix(s, 2);
+        
         return getStateTermOrdinal(s);
     }
 
@@ -109,7 +109,7 @@ public class RawPerception implements Perception {
     }
 
     public Compound newState(NAR nar, int i) {
-        //return (Compound) nar.term("<" + getStateTerm(i) + " {-> " + id + ">");
+        
         return Instance.make(Atom.the(getStateTerm(i)), idTerm);
     }
 
@@ -131,12 +131,12 @@ public class RawPerception implements Perception {
                 }
             }
             return false;
-//            String s = t.toString();
-//            if (s.startsWith("<" + id + " --> [") && s.endsWith("]>")) {
-//                //System.out.println(s + " " + t.getComplexity());
-//            //if (s.startsWith("<{" + id) && s.endsWith("} --> state>")) {
-//                return true;
-//            }
+
+
+
+
+
+
         }
         return false;
     }

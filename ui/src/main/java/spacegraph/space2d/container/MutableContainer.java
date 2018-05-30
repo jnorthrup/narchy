@@ -92,7 +92,7 @@ public class MutableContainer extends AbstractMutableContainer {
         }
     }
 
-    //TODO: addIfNotPresent(x) that tests for existence first
+    
 
     public void addAll(Surface... s) {
         if (s.length == 0) return;
@@ -100,14 +100,14 @@ public class MutableContainer extends AbstractMutableContainer {
         for (Surface x : s)
             _add(x);
 
-        if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+        if (!(children instanceof BufferedCoWList)) 
             layout();
     }
 
     public void add(Surface s) {
         _add(s);
 
-        if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+        if (!(children instanceof BufferedCoWList)) 
             layout();
     }
 
@@ -118,14 +118,14 @@ public class MutableContainer extends AbstractMutableContainer {
                 s.start(this);
             }
         }
-        children.add(s); //assume it was added to the list
+        children.add(s); 
     }
 
     public boolean remove(Surface s) {
         boolean removed = children.remove(s);
         if (removed) {
             if (s.stop()) {
-                if (!(children instanceof BufferedCoWList)) //defer buffering until the commit
+                if (!(children instanceof BufferedCoWList)) 
                     layout();
                 return true;
             }
@@ -145,7 +145,7 @@ public class MutableContainer extends AbstractMutableContainer {
                 int numExisting = size();
                 if (numExisting == 0) {
 
-                    //currently empty, just add all
+                    
                     addAll(next);
 
                 } else if (next.length == 0) {
@@ -153,7 +153,7 @@ public class MutableContainer extends AbstractMutableContainer {
                     clear();
 
                 } else {
-                    //possibly some remaining, so use Set intersection to invoke start/stop only as necessary
+                    
 
                     Sets.SetView unchanged = Sets.intersection(
                             Set.of(children.copy), Set.of(next)
@@ -231,101 +231,101 @@ public class MutableContainer extends AbstractMutableContainer {
         add(replacement);
     }
 
-//    private class Children extends FastCoWList<Surface> {
-//
-//        public Children(int capacity) {
-//            super(capacity, NEW_SURFACE_ARRAY);
-//        }
-//
-//        @Override
-//        public boolean add(Surface surface) {
-//            synchronized (this) {
-//                if (!super.add(surface)) {
-//                    return false;
-//                }
-//                if (parent != null) {
-//                    layout();
-//                }
-//            }
-//            return true;
-//        }
-//
-//        @Override
-//        public Surface set(int index, Surface neww) {
-//            Surface old;
-//            synchronized (this) {
-//                while (size() <= index) {
-//                    add(null);
-//                }
-//                old = super.set(index, neww);
-//                if (old == neww)
-//                    return neww;
-//                else {
-//                    if (old != null) {
-//                        old.stop();
-//                    }
-//                    if (neww != null && parent != null) {
-//                        neww.start(MutableContainer.this);
-//                    }
-//                }
-//            }
-//            layout();
-//            return old;
-//        }
-//
-//        @Override
-//        public boolean addAll(Collection<? extends Surface> c) {
-//            synchronized (this) {
-//                for (Surface s : c)
-//                    add(s);
-//            }
-//            layout();
-//            return true;
-//        }
-//
-//        @Override
-//        public Surface remove(int index) {
-//            Surface x;
-//            synchronized (this) {
-//                x = super.remove(index);
-//                if (x == null)
-//                    return null;
-//                x.stop();
-//            }
-//            layout();
-//            return x;
-//        }
-//
-//        @Override
-//        public boolean remove(Object o) {
-//            synchronized (this) {
-//                if (!super.remove(o))
-//                    return false;
-//                ((Surface) o).stop();
-//            }
-//            layout();
-//            return true;
-//        }
-//
-//
-//        @Override
-//        public void add(int index, Surface element) {
-//            synchronized (this) {
-//                super.add(index, element);
-//            }
-//            layout();
-//        }
-//
-//        @Override
-//        public void clear() {
-//            synchronized (this) {
-//                this.removeIf(x -> {
-//                    x.stop();
-//                    return true;
-//                });
-//            }
-//            layout();
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

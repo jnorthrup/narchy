@@ -14,7 +14,7 @@ public class ShowTwoStructureQuery {
 	 * Show a two-structure query.
 	 */
 	public static void main(String[] args) {
-		Program p = ShowProgram.altitudes(); // from above
+		Program p = ShowProgram.altitudes(); 
 
 		Variable name = new Variable("Name");
 		Variable alt = new Variable("Alt");

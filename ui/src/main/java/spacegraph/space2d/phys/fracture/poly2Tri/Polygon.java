@@ -26,7 +26,7 @@ public class Polygon {
     protected int _ncontours = 0;
 
     /**
-     * vector<unsigned int>    _nVertices;   //
+     * vector<unsigned int>    _nVertices;   
      */
     protected int[] _nVertices = null;
 
@@ -119,7 +119,7 @@ public class Polygon {
     /**
      * If _debug == true, file with this name will be used to log the messages.
      */
-    //private String _debugFileName = "polygon_triangulation_log.txt";
+    
 
     public IntObjectHashMap points() {
         return _points;
@@ -180,9 +180,9 @@ public class Polygon {
      * Other contures must be INNER -> vertices must be CLOCKWISE!
      * Example:
      * numContures = 1 (1 OUTER CONTURE, 1 INNER CONTURE)
-     * numVerticesInContures = { 3, 3 } // triangle with inner triangle as a hol
-     * vertices = { {0, 0}, {7, 0}, {4, 4}, // outer conture, counter clockwise order
-     * {2, 2}, {2, 3}, {3, 3}  // inner conture, clockwise order
+     * numVerticesInContures = { 3, 3 } 
+     * vertices = { {0, 0}, {7, 0}, {4, 4}, 
+     * {2, 2}, {2, 3}, {3, 3}  
      * }
      *
      * @param numContures           number of contures of polygon (1 OUTER + n INNER)
@@ -285,17 +285,17 @@ public class Polygon {
         for (int _pointsKey : _pointsKeys) (getPoint(_pointsKey)).rotate(theta);
     }
 
-//    private static int[] getSorted(IntSet s) {
-//
-//        Object[] temp = s.toArray();
-//        int[] result = new int[temp.length];
-//        for (int i = 0; i < temp.length; ++i) {
-//            assert (temp[i] instanceof Integer) : temp[i] + " is " + temp[i].getClass();
-//            result[i] = (Integer) temp[i];
-//        }
-//        Arrays.sort(result);
-//        return result;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     private void initializePointsKeys() {
         _pointsKeys = _points.keySet().toSortedArray();
@@ -322,7 +322,7 @@ public class Polygon {
         initializePointsKeys();
 
         int id, idp, idn;
-        Pointbase p, pnext, pprev; // was Pointbase p, pnext, pprev; ... COPY CONTRUCTOR whenever =
+        Pointbase p, pnext, pprev; 
         double area;
 
         for (int _pointsKey : _pointsKeys) {
@@ -349,8 +349,8 @@ public class Polygon {
                     p.type = (area > 0) ? Poly2TriUtils.START : Poly2TriUtils.SPLIT;
             }
 
-            // C++ code: _qpoints.push(*(it.second));
-            // must use copy constructor!
+            
+            
             _qpoints.add(new Pointbase(p));
 
             getSetFromStartAdjEdgeMap(id).add(id);
@@ -375,7 +375,7 @@ public class Polygon {
 
         _diagonals.put(diag.id(), diag);
 
-        //writeToLog("Add Diagonal from " + i + " to " + j + '\n');
+        
     }
 
     /**
@@ -388,7 +388,7 @@ public class Polygon {
 
         double y = ((Pointbase) _points.get(i)).y;
 
-        _edgebst.inOrder(updateKey, y); // ya ... some special things happens ... see Linebase.setKeyValue()
+        _edgebst.inOrder(updateKey, y); 
 
         Linebase edge = getEdge(i);
         if (edge != null) {
@@ -399,9 +399,9 @@ public class Polygon {
         }
 
         if (_debug) {
-            //writeToLog("set e" + i + " helper to " + i + '\n');
-            //writeToLog("Insert e" + i + " to splay tree\n");
-            //writeToLog("key:" + edge.keyValue() + '\n');
+            
+            
+            
         }
     }
 
@@ -426,8 +426,8 @@ public class Polygon {
             _edgebst.delete(edge.keyValue());
 
             if (_debug) {
-                //writeToLog("Remove e" + previ + " from splay tree\n");
-                //writeToLog("key:" + edge.keyValue() + '\n');
+                
+                
             }
         }
     }
@@ -451,12 +451,12 @@ public class Polygon {
             addDiagonal(i, helper);
 
             if (_debug) {
-                //writeToLog("Search key:" + x + " edge key:" + leftedge.keyValue() + '\n');
-                //writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
-                //writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
-                //writeToLog("set e" + i + " helper to " + i + '\n');
-                //writeToLog("Insert e" + i + " to splay tree\n");
-                //writeToLog("Insert key:" + getEdge(i).keyValue() + '\n');
+                
+                
+                
+                
+                
+                
             }
 
             leftedge.setHelper(i);
@@ -492,8 +492,8 @@ public class Polygon {
             _edgebst.delete(previEdge.keyValue());
 
             if (_debug) {
-                //writeToLog("e" + previ + " helper is " + helper + '\n');
-                //writeToLog("Remove e" + previ + " from splay tree.\n");
+                
+                
             }
 
             BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
@@ -507,9 +507,9 @@ public class Polygon {
             leftedge.setHelper(i);
 
             if (_debug) {
-                //writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
-                //writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
-                //writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+                
+                
+                
             }
         }
     }
@@ -546,11 +546,11 @@ public class Polygon {
             _edgebst.insert(edge);
 
             if (_debug) {
-                //writeToLog("e" + previ + " helper is " + helper + '\n');
-                //writeToLog("Remove e" + previ + " from splay tree.\n");
-                //writeToLog("Set e" + i + " helper to " + i + '\n');
-                //writeToLog("Insert e" + i + " to splay tree\n");
-                //writeToLog("Insert key:" + edge.keyValue() + '\n');
+                
+                
+                
+                
+                
             }
         }
     }
@@ -578,9 +578,9 @@ public class Polygon {
             leftedge.setHelper(i);
 
             if (_debug) {
-                //writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
-                //writeToLog("e" + leftedge.id() + " is directly left to v" + i + " and its helper is:" + helper + '\n');
-                //writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+                
+                
+                
             }
 
         }
@@ -632,7 +632,7 @@ public class Polygon {
                         System.out.println("No duplicated points please! poly2tri stopped\n");
                         return false;
                 }
-                //writeToLog("\n\nHandle vertex:" + vertex.id + " type:" + stype + '\n');
+                
             }
 
             switch (vertex.type) {
@@ -708,10 +708,10 @@ public class Polygon {
         if (numEdges == 1)
             nexte = (edges.intIterator().next());
         else {
-            //int[] edgesKeys = edges.toSortedArray();
+            
 
             int nexte_ccw = 0, nexte_cw = 0;
-            double max = -2.0, min = 2.0; // max min of cos(alfa)
+            double max = -2.0, min = 2.0; 
             Linebase iEdge;
 
             IntIterator iter = edges.toSortedList().intIterator();
@@ -773,7 +773,7 @@ public class Polygon {
 
         while (edges.size() > _diagonals.size()) {
             loop++;
-            // typedef list<unsigned int> Monopoly;
+            
             poly = new ArrayList();
 
             edgesKeys = edges.keySet().toSortedArray();
@@ -781,15 +781,15 @@ public class Polygon {
             it = edgesKeys[0];
             itEdge = edges.get(it);
 
-            // Pointbase* startp=startp=it.second.endPoint(0); // ??? startp=startp :-O
+            
             startp = itEdge.endPoint(0);
             next = itEdge;
 
             poly.add(startp.id);
 
             if (_debug) {
-                //writeToLog("Searching for loops:" + loop + '\n');
-                //writeToLog("vertex index:" + startp.id + ' ');
+                
+                
             }
 
             for (; ; ) {
@@ -803,7 +803,7 @@ public class Polygon {
                 if (endp == startp) break;
                 poly.add(endp.id);
 
-                //writeToLog(endp.id + " ");
+                
 
                 nexte = selectNextEdge(next);
 
@@ -818,7 +818,7 @@ public class Polygon {
                 if (!(next.endPoint(0).equals(endp))) next.reverse();
             }
 
-            //writeToLog("\nloop closed!\n\n");
+            
 
             _mpolys.add(poly);
         }
@@ -832,11 +832,11 @@ public class Polygon {
      */
     private void triangulateMonotone(ArrayList mpoly) {
         PriorityQueue qvertex = new PriorityQueue(30, new PointbaseComparatorCoordinatesReverse());
-        // is it realy ID?
+        
 
         int i, it, itnext;
-        Pointbase point;     // C++ code: Pointbase point;     -> must do copy contructor!
-        Pointbase pointnext; // C++ code: Pointbase pointnext; -> must do copy contructor!
+        Pointbase point;     
+        Pointbase pointnext; 
         for (it = 0; it < mpoly.size(); it++) {
             itnext = it + 1;
             if (itnext == mpoly.size()) itnext = 0;
@@ -850,20 +850,20 @@ public class Polygon {
 
         for (i = 0; i < 2; i++) spoint.push(qvertex.poll());
 
-        Pointbase topQueuePoint; // C++ code: Pontbase topQueuePoint; -> must do copy constructor!
-        Pointbase topStackPoint; // C++ code: Pontbase topStackPoint; -> must do copy constructor!
-        Pointbase p1, p2;          // again copy constructor !
-        Pointbase stack1Point, stack2Point; // again copy ...
+        Pointbase topQueuePoint; 
+        Pointbase topStackPoint; 
+        Pointbase p1, p2;          
+        Pointbase stack1Point, stack2Point; 
 
         double[] pa = {0, 0}, pb = {0, 0}, pc = {0, 0};
         double area;
         boolean left;
-        int[] v; // typedef vector<unsigned int> Triangle;
+        int[] v; 
 
-        // TODO -> doesn't seem that copy constructors are needed here
-        //		    nothing is changing ... we're wasting time here!
-        //			YES ... if you look through the code, there's no need
-        //				    to create new instances, changed
+        
+        
+        
+        
         while (qvertex.size() > 1) {
 
             topQueuePoint = (Pointbase) qvertex.peek();
@@ -877,14 +877,14 @@ public class Polygon {
                     spoint.pop();
                     p2 = (Pointbase) spoint.peek();
 
-                    // typedef vector<unsigned int> Triangle;
+                    
                     v = new int[]{
                             (topQueuePoint.id - 1),
                             (p1.id - 1),
                             (p2.id - 1)};
                     _triangles.add(v);
 
-                    ////writeToLog("Add triangle:" + ((Integer) v[0] + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
+                    
 
                 }
                 spoint.pop();
@@ -907,11 +907,11 @@ public class Polygon {
                     pc[0] = stack1Point.x;
                     pc[1] = stack1Point.y;
 
-//                    if (_debug) {
-//                        //writeToLog("current top queue vertex index=" + topQueuePoint.id + '\n');
-//                        //writeToLog("Current top stack vertex index=" + stack1Point.id + '\n');
-//                        //writeToLog("Second stack vertex index=" + stack2Point.id + '\n');
-//                    }
+
+
+
+
+
 
                     area = Poly2TriUtils.orient2d(pa, pb, pc);
                     left = stack1Point.left;
@@ -922,7 +922,7 @@ public class Polygon {
                                 (stack2Point.id - 1),
                                 (stack1Point.id - 1)};
                         _triangles.add(v);
-                        ////writeToLog("Add triangle:" + ((Integer) v[0] + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
+                        
                         spoint.pop();
                     } else
                         break;
@@ -933,7 +933,7 @@ public class Polygon {
         }
 
         Pointbase lastQueuePoint = (Pointbase) qvertex.peek();
-        Pointbase topPoint, top2Point; // C++ code ... copy construtors
+        Pointbase topPoint, top2Point; 
         while (spoint.size() != 1) {
             topPoint = (Pointbase) spoint.peek();
             spoint.pop();
@@ -941,7 +941,7 @@ public class Polygon {
 
             _triangles.add(v = new int[]{lastQueuePoint.id - 1, topPoint.id - 1, top2Point.id - 1});
 
-            ////writeToLog("Add triangle:" + ((Integer) v[0] + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
+            
         }
     }
 
@@ -959,7 +959,7 @@ public class Polygon {
             triangulateMonotone((ArrayList) _mpoly);
         }
 
-        setDebugOption(false); // possibly closing the log file
+        setDebugOption(false); 
 
         return true;
     }
@@ -976,7 +976,7 @@ public class Polygon {
      */
     public void setDebugOption(boolean debug) {
         if (debug == _debug) return;
-//        if (_debug) {
+
             try {
                 _logfile.close();
             } catch (IOException e) {
@@ -984,19 +984,19 @@ public class Polygon {
                 e.printStackTrace();
                 System.out.println("Continueing the work");
             }
-//        } else {
-//            try {
-//                _logfile = new FileWriter(_debugFileName);
-//            } catch (IOException e) {
-//                System.out.println("Error creating file polygon_triangulation_log.txt, switchin debug off, continuing.");
-//                e.printStackTrace();
-//                _debug = false;
-//            }
-//        }
+
+
+
+
+
+
+
+
+
         _debug = debug;
     }
 
-//    public void setDebugFile(String debugFileName) {
-//        _debugFileName = debugFileName;
-//    }
+
+
+
 }

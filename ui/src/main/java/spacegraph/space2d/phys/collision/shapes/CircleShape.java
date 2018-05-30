@@ -105,11 +105,11 @@ public class CircleShape extends Shape {
 
     @Override
     public final boolean testPoint(final Transform transform, final Tuple2f p) {
-        // Rot.mulToOutUnsafe(transform.q, m_p, center);
-        // center.addLocal(transform.p);
-        //
-        // final Vec2 d = center.subLocal(p).negateLocal();
-        // return Vec2.dot(d, d) <= m_radius * m_radius;
+        
+        
+        
+        
+        
         final Rot q = transform;
         final Tuple2f tp = transform.pos;
         float centerx = -(q.c * center.x - q.s * center.y + tp.x - p.x);
@@ -131,10 +131,10 @@ public class CircleShape extends Shape {
         return d1 - radius;
     }
 
-    // Collision Detection in Interactive 3D Environments by Gino van den Bergen
-    // From Section 3.1.2
-    // x = s + a * r
-    // norm(x) = radius
+    
+    
+    
+    
     @Override
     public final boolean raycast(RayCastOutput output, RayCastInput input, Transform transform,
                                  int childIndex) {
@@ -144,34 +144,34 @@ public class CircleShape extends Shape {
         final Rot tq = transform;
         final Tuple2f tp = transform.pos;
 
-        // Rot.mulToOutUnsafe(transform.q, m_p, position);
-        // position.addLocal(transform.p);
+        
+        
         final float positionx = tq.c * center.x - tq.s * center.y + tp.x;
         final float positiony = tq.s * center.x + tq.c * center.y + tp.y;
 
         final float sx = inputp1.x - positionx;
         final float sy = inputp1.y - positiony;
-        // final float b = Vec2.dot(s, s) - m_radius * m_radius;
+        
         final float b = sx * sx + sy * sy - radius * radius;
 
-        // Solve quadratic equation.
+        
         final float rx = inputp2.x - inputp1.x;
         final float ry = inputp2.y - inputp1.y;
-        // final float c = Vec2.dot(s, r);
-        // final float rr = Vec2.dot(r, r);
+        
+        
         final float c = sx * rx + sy * ry;
         final float rr = rx * rx + ry * ry;
         final float sigma = c * c - rr * b;
 
-        // Check for negative discriminant and short segment.
+        
         if (sigma < 0.0f || rr < Settings.EPSILON) {
             return false;
         }
 
-        // Find the point of intersection of the line with the circle.
+        
         float a = -(c + (float) Math.sqrt(sigma));
 
-        // Is the intersection point on the segment?
+        
         if (0.0f <= a && a <= input.maxFraction * rr) {
             a /= rr;
             output.fraction = a;
@@ -203,8 +203,8 @@ public class CircleShape extends Shape {
         massData.center.x = center.x;
         massData.center.y = center.y;
 
-        // inertia about the local origin
-        // massData.I = massData.mass * (0.5f * m_radius * m_radius + Vec2.dot(m_p, m_p));
+        
+        
         massData.I = massData.mass * (0.5f * radius * radius + (center.x * center.x + center.y * center.y));
     }
 }

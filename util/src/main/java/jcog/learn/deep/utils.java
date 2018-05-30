@@ -25,7 +25,7 @@ public class utils {
 
     public static double sigmoid(double x) {
         return Util.sigmoid(x);
-        //return 1. / (1. + Math.pow(Math.E, -x));
+        
     }
 
     public static double dsigmoid(double x) {

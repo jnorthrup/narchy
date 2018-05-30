@@ -21,24 +21,24 @@ public class ShowRegularParser {
 	 */
 	public static void main(String args[]) throws RegularExpressionException {
 
-		// a*
+		
 		Parser aStar = RegularParser.value("a*");
 		showMatch(aStar, "");
 		showMatch(aStar, "a");
 		showMatch(aStar, "aa");
 		showMatch(aStar, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 
-		// (a|b)*
+		
 		Parser abStar = RegularParser.value("(a|b)*");
 		showMatch(abStar, "aabbaabaabba");
 		showMatch(abStar, "aabbaabaabbaZ");
 
-		// a few other examples
+		
 		showMatch(RegularParser.value("a*a*"), "aaaa");
 		showMatch(RegularParser.value("a|bc"), "bc");
 		showMatch(RegularParser.value("a|bc|d"), "bc");
 
-		// four letters
+		
 		Parser L = new Letter();
 		Parser L4 = new Seq("LLLL").get(L).get(L).get(L).get(L);
 		showMatch(L4, "java");

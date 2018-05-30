@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,8 +41,8 @@ class ArtificialAntFitnessFunction implements FitnessFunction {
         while (movesTaken < MAX_MOVES && isRemainingFood(state)) {
             candidate.eval(assignments);
 
-            // if last call to evaluate did not result in the state being updated
-            // then exit now to avoid getting stuck in loop when evaluating candidates that do not do anything
+            
+            
             if (movesTaken == state.getMovesTaken()) {
                 return;
             }

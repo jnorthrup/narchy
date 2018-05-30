@@ -19,11 +19,11 @@ public class CuriousBrain extends QBrain {
 
         @Override
 	public void count() {
-		getPerception().perceive(); // perc(t)
+		getPerception().perceive(); 
 		curiosity.learn();
-		super.count(); // act(t)
-		curiosity.countExpectations(); //perceive, propagate
-		//executeAction();
+		super.count(); 
+		curiosity.countExpectations(); 
+		
 	}
 
 

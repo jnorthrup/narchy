@@ -27,10 +27,10 @@ public enum SampleLoader
      */
     public static SoundSample load(InputStream isis) throws UnsupportedAudioFileException, IOException
     {
-        // Hack to prevent "mark/reset not supported" on some systems 
+        
         byte[] d = rip(isis);
         AudioInputStream ais = AudioSystem.getAudioInputStream(new ByteArrayInputStream(d));
-        //System.out.println(ais.getFormat());
+        
         return buildSample(rip(ais), ais.getFormat());
     }
 
@@ -49,17 +49,17 @@ public enum SampleLoader
      */
     private static byte[] rip(InputStream in) throws IOException {
         return in.readAllBytes();
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        byte[] b = new byte[BUFFER_SIZE];
-//
-//        int read = 0;
-//        while ((read = in.read(b)) > 0)
-//        {
-//            bos.write(b, 0, read);
-//        }
-//
-//        bos.close();
-//        return bos.toByteArray();
+
+
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -67,24 +67,24 @@ public enum SampleLoader
      */
     private static SoundSample buildSample(byte[] b, AudioFormat af) throws UnsupportedAudioFileException
     {
-        // Rip audioformat data
+        
         int channels = af.getChannels();
         int sampleSize = af.getSampleSizeInBits();
         float rate = af.getFrameRate();
         boolean signed = af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED;
 
-        // Sanity checking
+        
         if (channels != 1) throw new UnsupportedAudioFileException("Only mono samples are supported");
         if (!(sampleSize == 8 || sampleSize == 16 || sampleSize == 32)) throw new UnsupportedAudioFileException("Unsupported sample size");
         if (!(af.getEncoding() == AudioFormat.Encoding.PCM_UNSIGNED || af.getEncoding() == AudioFormat.Encoding.PCM_SIGNED)) throw new UnsupportedAudioFileException("Unsupported encoding");
 
-        // Wrap the data into a bytebuffer, and set up the byte order
+        
         ByteBuffer bb = ByteBuffer.wrap(b);
         bb.order(af.isBigEndian() ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 
         int s = b.length / (sampleSize / 8);
         float[] buf = new float[s];
-        // Six different cases for reordering the data. Can this be improved without slowing it down?
+        
         switch (sampleSize) {
             case 8:
                 if (signed) {
@@ -109,14 +109,14 @@ public enum SampleLoader
                     for (int i = 0; i < s; i++)
                         buf[i] = bb.getInt() / (float) 0x80000000;
                 } else {
-                    // Nasty.. check this.
+                    
                     for (int i = 0; i < s; i++)
                         buf[i] = ((bb.getInt() & 0xFFFFFFFFL) - 0x80000000L) / (float) 0x80000000;
                 }
                 break;
         }
         
-        // Return the completed sample
+        
         return new SoundSample(buf, rate);
     }
 

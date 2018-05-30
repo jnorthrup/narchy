@@ -33,7 +33,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -367,27 +367,27 @@ public enum LongArrays {
      */
     public static void quickSort(long[] x, int from, int to, LongComparator comp) {
         int len = to - from;
-        // Insertion sort on smallest arrays
+        
         if (len < SMALL) {
             for (int i = from; i < to; i++)
                 for (int j = i; j > from && comp.compare(x[j - 1], x[j]) > 0; j--) swap(x, j, j - 1);
             return;
         }
-        // Choose a partition element, v
-        int m = from + len / 2; // Small arrays, middle element
+        
+        int m = from + len / 2; 
         if (len > SMALL) {
             int l = from;
             int n = to - 1;
-            if (len > MEDIUM) { // Big arrays, pseudomedian of 9
+            if (len > MEDIUM) { 
                 int s = len / 8;
                 l = med3(x, l, l + s, l + 2 * s, comp);
                 m = med3(x, m - s, m, m + s, comp);
                 n = med3(x, n - 2 * s, n - s, n, comp);
             }
-            m = med3(x, l, m, n, comp); // Mid-size, med of 3
+            m = med3(x, l, m, n, comp); 
         }
         long v = x[m];
-        // Establish Invariant: v* (<v)* (>v)* v*
+        
         int a = from, b = a, c = to - 1, d = c;
         while (true) {
             int comparison;
@@ -402,13 +402,13 @@ public enum LongArrays {
             if (b > c) break;
             swap(x, b++, c--);
         }
-        // Swap partition elements back to middle
+        
         int s, n = to;
         s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);
-        // Recursively sort non-partition-elements
+        
         if ((s = b - a) > 1) quickSort(x, from, from + s, comp);
         if ((s = d - c) > 1) quickSort(x, n - s, n, comp);
     }
@@ -452,27 +452,27 @@ public enum LongArrays {
     @SuppressWarnings("unchecked")
     public static void quickSort(long[] x, int from, int to) {
         int len = to - from;
-        // Insertion sort on smallest arrays
+        
         if (len < SMALL) {
             for (int i = from; i < to; i++)
                 for (int j = i; j > from && ((x[j]) < (x[j - 1])); j--) swap(x, j, j - 1);
             return;
         }
-        // Choose a partition element, v
-        int m = from + len / 2; // Small arrays, middle element
+        
+        int m = from + len / 2; 
         if (len > SMALL) {
             int l = from;
             int n = to - 1;
-            if (len > MEDIUM) { // Big arrays, pseudomedian of 9
+            if (len > MEDIUM) { 
                 int s = len / 8;
                 l = med3(x, l, l + s, l + 2 * s);
                 m = med3(x, m - s, m, m + s);
                 n = med3(x, n - 2 * s, n - s, n);
             }
-            m = med3(x, l, m, n); // Mid-size, med of 3
+            m = med3(x, l, m, n); 
         }
         long v = x[m];
-        // Establish Invariant: v* (<v)* (>v)* v*
+        
         int a = from, b = a, c = to - 1, d = c;
         while (true) {
             int comparison;
@@ -487,13 +487,13 @@ public enum LongArrays {
             if (b > c) break;
             swap(x, b++, c--);
         }
-        // Swap partition elements back to middle
+        
         int s, n = to;
         s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);
-        // Recursively sort non-partition-elements
+        
         if ((s = b - a) > 1) quickSort(x, from, from + s);
         if ((s = d - c) > 1) quickSort(x, n - s, n);
     }
@@ -525,24 +525,24 @@ public enum LongArrays {
     @SuppressWarnings("unchecked")
     public static void mergeSort(long[] a, int from, int to, long[] supp) {
         int len = to - from;
-        // Insertion sort on smallest arrays
+        
         if (len < SMALL) {
             for (int i = from; i < to; i++)
                 for (int j = i; j > from && ((a[j]) < (a[j - 1])); j--)
                     swap(a, j, j - 1);
             return;
         }
-        // Recursively sort halves of a into supp
+        
         int mid = (from + to) >>> 1;
         mergeSort(supp, from, mid, a);
         mergeSort(supp, mid, to, a);
-        // If list is already sorted, just copy from supp to a.  This is an
-        // optimization that results in faster sorts for nearly ordered lists.
+        
+        
         if (((supp[mid - 1]) <= (supp[mid]))) {
             System.arraycopy(supp, from, a, from, len);
             return;
         }
-        // Merge sorted halves (now in supp) into a
+        
         for (int i = from, p = from, q = mid; i < to; i++) {
             a[i] = supp[q >= to || p < mid && supp[p] <= supp[q] ? p++ : q++];
         }
@@ -590,24 +590,24 @@ public enum LongArrays {
     @SuppressWarnings("unchecked")
     public static void mergeSort(long[] a, int from, int to, LongComparator comp, long[] supp) {
         int len = to - from;
-        // Insertion sort on smallest arrays
+        
         if (len < SMALL) {
             for (int i = from; i < to; i++)
                 for (int j = i; j > from && comp.compare(a[j - 1], a[j]) > 0; j--)
                     swap(a, j, j - 1);
             return;
         }
-        // Recursively sort halves of a into supp
+        
         int mid = (from + to) >>> 1;
         mergeSort(supp, from, mid, comp, a);
         mergeSort(supp, mid, to, comp, a);
-        // If list is already sorted, just copy from supp to a.  This is an
-        // optimization that results in faster sorts for nearly ordered lists.
+        
+        
         if (comp.compare(supp[mid - 1], supp[mid]) <= 0) {
             System.arraycopy(supp, from, a, from, len);
             return;
         }
-        // Merge sorted halves (now in supp) into a
+        
         for (int i = from, p = from, q = mid; i < to; i++) {
             a[i] = supp[q >= to || p < mid && comp.compare(supp[p], supp[q]) <= 0 ? p++ : q++];
         }
@@ -727,7 +727,7 @@ public enum LongArrays {
             int cmp = c.compare(midVal, key);
             if (cmp < 0) from = mid + 1;
             else if (cmp > 0) to = mid - 1;
-            else return mid; // key found
+            else return mid; 
         }
         return -(from + 1);
     }
@@ -755,28 +755,28 @@ public enum LongArrays {
         return binarySearch(a, 0, a.length, key, c);
     }
 
-//    /**
-//     * A type-specific content-based hash strategy for arrays.
-//     */
-//    private static final class ArrayHashStrategy implements Hash.Strategy<long[]>, java.io.Serializable {
-//        public static final long serialVersionUID = -7046029254386353129L;
-//
-//        public int hashCode(final long[] o) {
-//            return java.util.Arrays.hashCode(o);
-//        }
-//
-//        public boolean equals(final long[] a, final long[] b) {
-//            return LongArrays.equals(a, b);
-//        }
-//    }
-//
-//    /**
-//     * A type-specific content-based hash strategy for arrays.
-//     * <p>
-//     * <P>This hash strategy may be used in custom hash collections whenever keys are
-//     * arrays, and they must be considered equal by content. This strategy
-//     * will handle <code>null</code> correctly, and it is serializable.
-//     */
-//    @SuppressWarnings({"unchecked", "rawtypes"})
-//    public final static Hash.Strategy HASH_STRATEGY = new ArrayHashStrategy();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

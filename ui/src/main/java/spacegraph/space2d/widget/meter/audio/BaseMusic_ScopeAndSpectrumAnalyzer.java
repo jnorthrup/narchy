@@ -2,18 +2,18 @@ package spacegraph.space2d.widget.meter.audio;
 
 /**
  **   __ __|_  ___________________________________________________________________________  ___|__ __
- **  //    /\                                           _                                  /\    \\  
- ** //____/  \__     __ _____ _____ _____ _____ _____  | |     __ _____ _____ __        __/  \____\\ 
+ **  
+ ** 
  **  \    \  / /  __|  |     |   __|  _  |     |  _  | | |  __|  |     |   __|  |      /\ \  /    /  
  **   \____\/_/  |  |  |  |  |  |  |     | | | |   __| | | |  |  |  |  |  |  |  |__   "  \_\/____/   
  **  /\    \     |_____|_____|_____|__|__|_|_|_|__|    | | |_____|_____|_____|_____|  _  /    /\     
- ** /  \____\                       http://jogamp.org  |_|                              /____/  \    
+ ** /  \____\                       http:
  ** \  /   "' _________________________________________________________________________ `"   \  /    
  **  \/____.                                                                             .____\/     
  **
  ** Used to display a realtime scope, spectrum analyser, or volume meter. Slightly adapted, 
  ** stripped down and modified ripoff from KJ-DSS project by Kristofer Fudalewski.
- ** Web: http://sirk.sytes.net - Original author email: sirk_sytes@hotmail.com 
+ ** Web: http:
  **
  **/
 
@@ -47,13 +47,13 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
     private static final Font SMALL_FONT = new Font( "fixed", Font.PLAIN, 9 );
     private BufferedImage mBufferedImage_RenderBuffer;
-//---//private Color   scopeColor      = DEFAULT_SCOPE_COLOR; 
+
     private final Color[] colorScaleTable = getDefaultColorScale();
 
-    //scope ...
+    
     private final int     scopeDetailLevel = DEFAULT_SCOPE_DETAIL_LEVEL;
 
-    //spectrum analyzer ...
+    
     private float saColorScale;
     private int saFFTSampleSize;
     private float saFFTSampleRate;
@@ -69,10 +69,10 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
     private BaseMusic_FastFourierTransform mBaseMusic_FastFourierTransform; 
     private float[] mCurrentFFTData;
 
-    //vu meter
-    //private float[] oldVolume;
-    //private float vuDecay = DEFAULT_VU_METER_DECAY; 
-    //private float vuColorScale;   
+    
+    
+    
+    
 
     public BaseMusic_ScopeAndSpectrumAnalyzer() {
         initialize();
@@ -86,24 +86,24 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         return mBufferedImage_RenderBuffer;
     }
 
-    //computes a color scale value for both the spectrum analyzers and volume meter bars.
+    
     private void computeColorScale() {
         saColorScale = ( (float)colorScaleTable.length / ( DEFAULT_HEIGHT - 32 ) ) * 2.0f;
-        //vuColorScale = ( (float)colorScaleTable.length / ( DEFAULT_WIDTH - 32 ) ) * 2.0f;
+        
     }
 
-    //Computes and stores a band distribution and gain tables for the spectrum analyzer. This is 
-    //performed using the current band distribution and gain instances. 
-    //See setSpectrumAnalyzerBandDistribution() or setSpectrumAnalyserBandGain() methods.
+    
+    
+    
     private void computeBandTables() {	
         if (mSpectrumAnalyzer_BandCount > 0 && saFFTSampleSize > 0 & mBaseMusic_FastFourierTransform != null) {
-            //create band table.
+            
             mSpectrumAnalyser_BandDistributionTable = mSpectrumAnalizer_BandDistribution.create( mSpectrumAnalyzer_BandCount, mBaseMusic_FastFourierTransform, saFFTSampleRate );
             mSpectrumAnalyzer_BandCount   = mSpectrumAnalyser_BandDistributionTable.length;
             updateSpectrumAnalyserBandWidth();
-            //resolve band descriptions.
+            
             resolveBandDescriptions(mSpectrumAnalyser_BandDistributionTable);	
-            //create gain table.
+            
             sabgTable = saBandGain.create( mBaseMusic_FastFourierTransform, saFFTSampleRate );
         }
     }
@@ -112,7 +112,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         drawScope(pGrp, channelMerge( pChannels ), pFrrh);
     }
 
-    //Draws a scope of the audio data across the entire width and height of this component.
+    
     private void drawScope(Graphics pGrp, float[] pSample, float pFrrh) {
         pGrp.setColor(Color.WHITE);
         int wLas = (int) (pSample[0] * (float) (DEFAULT_HEIGHT >> 1)) + (DEFAULT_HEIGHT >> 1);
@@ -127,14 +127,14 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         drawSpectrumAnalyser(pGrp, channelMerge(pChannels), pFrrh);
     }
 
-    //Draws a spectrum analyzer across the entire width and height if this component.
+    
     protected void drawSpectrumAnalyser(Graphics inGraphics, float[] pSample,float pFrrh) {
         float c = 16;
         float wSadfrr = (saDecay * pFrrh);
         int b, bd, i, li = 0, mi;
         float fs, m;
         int wBm = 1;
-        //preparation used for rendering band frequencies.
+        
         if (saShowFrequencies) {
             inGraphics.setFont(SMALL_FONT);
             wBm = Math.round(32.0f / saBandWidth);
@@ -142,15 +142,15 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
                 wBm = 1;
             }
         }
-        //FFT processing ...
+        
         float[] wFFT = mBaseMusic_FastFourierTransform.calculate(pSample);
-        //group up available bands using band distribution table.
+        
         for (bd = 0; bd < mSpectrumAnalyzer_BandCount; bd++) {
-            //get band distribution entry.
+            
             i = mSpectrumAnalyser_BandDistributionTable[bd].distribution;
             m = 0;
             mi = 0;
-            //find loudest band in group. (Group is from 'li' to 'i')
+            
             for (b = li; b < i; b++) {
                 float lf = wFFT[b];
                 if (lf > m) {
@@ -159,13 +159,13 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
                 }
             }
             li = i;
-            //calculate gain using log, then static gain.
+            
             fs = (m * sabgTable[mi]) * saGain;
-            //limit over-saturation.
+            
             if (fs > 1.0f) {
                 fs = 1.0f;
             }
-            //compute decay.
+            
             if (fs >= (mCurrentFFTData[bd] - wSadfrr)) {
                 mCurrentFFTData[bd] = fs;
             } else {
@@ -175,7 +175,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
                 }
                 fs = mCurrentFFTData[bd];
             }
-            //draw band
+            
             drawSpectrumAnalyserBand(inGraphics, Math.round(c),
                     DEFAULT_HEIGHT - 16, Math.round(c + saBandWidth) - Math.round(c) - 1,
                     (int) (fs * (DEFAULT_HEIGHT - 32)),
@@ -212,7 +212,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
     }
     */
 
-    //Draws a single spectrum analyzer band on this component and the specified coordinates.
+    
     private void drawSpectrumAnalyserBand(Graphics pGraphics, int pX, int pY, int pWidth, int pHeight, Band pBandInfo, boolean pRenderFrequency) {
         float c = 0;
         for (int a = pY; a >= pY - pHeight; a -= 2) {
@@ -231,7 +231,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
     }
 
     /*
-    // Draws a volume meter bar on this component at the specified coordinates.
+    
     private void drawVolumeMeterBar(Graphics pGraphics, int pX, int pY, int pWidth, int pHeight) {
         float c = 0;
         for (int a = pX; a <= pX + pWidth; a += 2) {
@@ -253,7 +253,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         return mBufferedImage_RenderBuffer;
     }
 
-    // Creates a color array containing the default color spread of the spectrum analyzer and vu meter.
+    
     private Color[] getDefaultColorScale() {
         Color[] wColors = new Color[256];
         for (int a = 0; a < 128; a++) {
@@ -274,18 +274,18 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
     public void initialize(int pSampleSize, AudioFormat format) {
         setSpectrumAnalyserSampleSizeAndRate(pSampleSize, format.getSampleRate());
-        //oldVolume = new float[pSourceDataLine.getFormat().getChannels()];
+        
     }
 
 
-    // entry point for synchronizer ...
+    
     public void process(BaseMusic_DigitalSignalSynchronizer.Context pDssContext) {
         float[][] wChannels = pDssContext.getDataNormalized();
         Image wDb = getRenderBuffer();
         Graphics wGrp = wDb.getGraphics();
         wGrp.setColor(Color.BLACK);
         wGrp.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        //drawVolumeMeter( wGrp, wChannels, pDssContext.getFrameRatioHint() );
+        
         drawScope(wGrp, wChannels, pDssContext.getFrameRatioHint());
         drawSpectrumAnalyser(wGrp, wChannels, pDssContext.getFrameRatioHint());
     }
@@ -301,14 +301,14 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         }
     }
 
-    //sets the numbers of bands rendered by the spectrum analyser.
+    
     public void setSpectrumAnalyserBandCount(int pCount) {
         mSpectrumAnalyzer_BandCount = pCount;
         computeBandTables();
     }
 
-    //Sets the FFT sample size and rate to be just for calculating the spectrum
-    //analyser values.
+    
+    
     private synchronized void setSpectrumAnalyserSampleSizeAndRate(int pSize,float pRate) {
         saFFTSampleSize = pSize;
         saFFTSampleRate = pRate;
@@ -317,7 +317,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         computeBandTables();
     }
 
-    //Merges two audio channels into one.
+    
     private float[] channelMerge(float[][] pChannels) {
         for (int a = 0; a < pChannels[0].length; a++) {
             float wMcd = 0;
@@ -333,7 +333,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         saBandWidth = (float)( DEFAULT_WIDTH - 32 ) / (float)mSpectrumAnalyzer_BandCount;
     }
 
-//---
+
 
     /**
      * Interface for band distribution types. Band distribution refers to
@@ -357,21 +357,21 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
     }
 
-//---
 
-    // Linear based band distribution class
+
+    
     public static class LinearBandDistribution implements BandDistribution {
         public Band[] create(int pBandCount,BaseMusic_FastFourierTransform pFFT, float pFFTSampleRate) {
-            //We actually only use half of the available data because the higher bands are not audible by humans.
+            
             int wOss = pFFT.getOutputSampleSize();
             int r = (int) ((double) wOss / (double) pBandCount);
-            //create a frequency table.
+            
             float[] wFqt = pFFT.calculateFrequencyTable(pFFTSampleRate);
             float wLfq = 0.0f;
             Band[] wSabdTable = new Band[pBandCount];
             int wBand = 0;
             for (double a = r; a <= wOss && wBand < pBandCount; a += r) {
-                //build band instance with distribution, frequency range, and gain info.
+                
                 wSabdTable[wBand] = new Band((int) a, wLfq, wFqt[(int) a - r]);
                 wLfq = wFqt[(int) a - r];
                 wBand++;
@@ -380,9 +380,9 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         }
     }
 
-//---
 
-    // Log based band distribution class.
+
+    
     public static class LogBandDistribution implements BandDistribution {
 
         private final double lso;
@@ -406,20 +406,20 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         }
 
         public Band[] create(int pBandCount, BaseMusic_FastFourierTransform pFFT, float pFFTSampleRate) {
-            //check the output size from the FFT instance to build the band table.
+            
             int wHss = pFFT.getOutputSampleSize() - sso;
             double o = Math.log(lso);
             double r = (double) (pBandCount - 1) / (Math.log(wHss + lso) - o);
-            //create a frequency table.
+            
             float[] wFqt = pFFT.calculateFrequencyTable(pFFTSampleRate);
             float wLfq = wFqt[sso];
             int wLcb = 1;
             List<Band> wBands = new ArrayList<Band>();
-            //subsonic bands group.
+            
             wBands.add(new Band(sso, 0, wLfq));
-            //divid reset of bands using log.
+            
             for (int b = 0; b < wHss; b++) {
-                //calculate current band.
+                
                 double wCb = ((Math.log((double) b + lso) - o) * r) + 1.0;
                 if (Math.round(wCb) != wLcb) {
                     wBands.add(new Band(b + sso, wLfq, wFqt[b + sso]));
@@ -427,7 +427,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
                     wLcb = (int) Math.round(wCb);
                 }
             }
-            //fill in last entry if necessary.
+            
             if (wBands.size() < pBandCount) {
                 wBands.add(new Band((wHss - 1) + sso, wLfq, wFqt[(wHss - 1) + sso]));
             }
@@ -435,7 +435,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
         }
     }
 
-//---	
+
 
     public static class Band {
 
@@ -454,7 +454,7 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
     }
 
-//---	
+
 
     /**
      * Interface for band gain types. Band gain refers to gain applied to each
@@ -482,9 +482,9 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
     }
 
-//---
 
-    //Flat band gain. No extra gain is applied to bands extra for the master gain.
+
+    
     public static class FlatBandGain implements BandGain {
 
         private final float gain;
@@ -504,21 +504,21 @@ public class BaseMusic_ScopeAndSpectrumAnalyzer implements BaseMusic_DigitalSign
 
     }
 
-//---
 
-    //frequency based band gain. More gain is applied as the band frequency increases.
+
+    
     public static class FrequencyBandGain implements BandGain {
 
         private final float bias;
 
         public FrequencyBandGain(float pBias) {
-            //A level of bias to flaten out the gain curve. The high the number the less gain is applied to high frequencies.
+            
             bias = pBias;
         }
 
         public float[] create(BaseMusic_FastFourierTransform pFFT, float pFFTSampleRate) {
             int wOss = pFFT.getOutputSampleSize();
-            //create a frequency table.
+            
             float[] wFqt = pFFT.calculateFrequencyTable(pFFTSampleRate);
             float[] wSabgTable = new float[wOss];
             for (int i = 0; i < wOss; i++) {

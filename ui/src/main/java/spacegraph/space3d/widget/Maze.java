@@ -38,14 +38,14 @@ public class Maze extends CompoundSpatial {
 
 
                     Body3D b = Dynamics3D.newBody(
-                            1f, //mass
+                            1f, 
                             new BoxShape(0.9f, 0.9f, 0.9f), new Transform(x, y, 0),
-                            +1, //group
-                            -1//collidesWithOthersLikeThis ? -1 : -1 & ~(+1) //exclude collisions with self
+                            +1, 
+                            -1
                     );
                     b.setData(this);
 
-                    //b.setLinearFactor(1,1,0); //restricts movement to a 2D plane
+                    
 
 
                     b.setDamping(0.9f, 0.5f);
@@ -71,18 +71,18 @@ public class Maze extends CompoundSpatial {
         /*ConvexShape blobShape = new BvhTriangleMeshShape(
                 new TriangleIndexVertexArray(), true
         );*/
-        //ConvexShape blobShape =new TetrahedronShapeEx(v(-10,0,0), v(10, 0, 10), v(10, -10, 10), v(-10, -10, 10));
-        //CollisionShape blobShape = terrain(5, 0.25f, 1, v(5,5,5));
+        
+        
 
 
-//        ConvexHullShape blobShape = hull();
-//        Dynamic blob = Dynamics.newBody(4f, blobShape, new Motion(), +1, -1);
-//        blob.setCenterOfMassTransform(new Transform(0, 0, 15f));
-//        l.add(blob);
 
 
-//
-//        Collections.addAll( l,  new RagDoll().builder(world, v(0,0,20), 3f) );
+
+
+
+
+
+
     }
 
 
@@ -148,7 +148,7 @@ public class Maze extends CompoundSpatial {
     }
 
     private static float noise(float a, float b) {
-        //TODO perlin noise
+        
         return (float)Math.random();
     }
 
@@ -169,7 +169,7 @@ public class Maze extends CompoundSpatial {
 
             int sx = x1 + 2 * irand(rw);
             int sy = y1 + 2 * irand(rh);
-            cells[sx][sy] = false; //start point
+            cells[sx][sy] = false; 
 
             int finishedCount = 0;
             for (int i = 1; (i < (rw * rh * 1000)) && (finishedCount < (rw * rh)); i++) {

@@ -11,9 +11,9 @@ import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
 import java.util.regex.Pattern;
 
-//import alice.tuprolog.MalformedGoalException;
-//import alice.tuprolog.NoSolutionException;
-//import alice.tuprolog.SolveInfo;
+
+
+
 
 /**
  * 
@@ -26,12 +26,12 @@ import java.util.regex.Pattern;
 public class SocketLibrary extends Library {
 	private static final long serialVersionUID = 1L;
 	private final String addrRegex;
-	private final LinkedList<ThreadReader> readers;			// Active readers
-	private LinkedList<ServerSocket> serverSockets;		// Opened ServerSockets
-	private LinkedList<Socket> clientSockets;			// Opened Sockets
+	private final LinkedList<ThreadReader> readers;			
+	private LinkedList<ServerSocket> serverSockets;		
+	private LinkedList<Socket> clientSockets;			
 
 	public SocketLibrary() {
-		addrRegex = "[\\. :]";	// Address:Port parsed using regex
+		addrRegex = "[\\. :]";	
 		readers = new LinkedList<>();
 		serverSockets= new LinkedList<>();
 		clientSockets= new LinkedList<>();
@@ -41,16 +41,16 @@ public class SocketLibrary extends Library {
 
 	/* SocketLib UDP extension by Adelina Benedetti */
 	
-	// Open an udp socket
+	
 
 	
 	public boolean udp_socket_open_2(Struct Address, Term Socket) throws PrologError
 	{
-		if (!(Socket.term() instanceof alice.tuprolog.Var)) { // Socket has to be a variable
+		if (!(Socket.term() instanceof alice.tuprolog.Var)) { 
 			throw PrologError.instantiation_error(engine.engine, 1);
 		}
 
-		// Transform IP:Port to byte[] array and port number
+		
 		Pattern p = Pattern.compile(addrRegex);
 		String[] split = p.split(Address.name());
 		if (split.length != 5)
@@ -73,16 +73,16 @@ public class SocketLibrary extends Library {
 		return true;
 	}
 	
-	// send an udp data
+	
 	
 	
 	public boolean udp_send_3(Term Socket, Term Data, Struct AddressTo) throws PrologError
 	{
-		if (!(Socket.term() instanceof alice.tuprolog.Var)) { // Socket has to be a variable
+		if (!(Socket.term() instanceof alice.tuprolog.Var)) { 
 			throw PrologError.instantiation_error(engine.engine, 1);
 		}
 
-		// Transform IP:Port to byte[] array and port number
+		
 		Pattern p = Pattern.compile(addrRegex);
 		String[] split = p.split(AddressTo.name());
 		if (split.length != 5)
@@ -103,7 +103,7 @@ public class SocketLibrary extends Library {
              s.send(packet);
 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
         }
 
@@ -111,7 +111,7 @@ public class SocketLibrary extends Library {
 		return true;
 }
 
-// udp socket close
+
 
 public boolean udp_socket_close_1(Term Socket) throws PrologError {
 	if (Socket.term() instanceof alice.tuprolog.Var) {
@@ -125,7 +125,7 @@ public boolean udp_socket_close_1(Term Socket) throws PrologError {
 	return true;
 }
 
-//udp receive data
+
 
 public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 		Struct Options) throws PrologError {
@@ -133,7 +133,7 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
 
-	// Transform IP:Port to byte[] array and port number
+	
 	Pattern p = Pattern.compile(addrRegex);
 	String[] split = p.split(AddressFrom.name());
 	if (split.length != 5)
@@ -150,12 +150,12 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 		
 		s.receive(packet);
 	} catch (IOException e) {
-		// TODO Auto-generated catch block
+		
 		e.printStackTrace();
 	}
 	LinkedList<Term> list = StructToList(Options);
-	for (Term t : list) { // Explore options list
-		if (((Struct) t).name().equals("timeout")) { // If a timeout has been specified
+	for (Term t : list) { 
+		if (((Struct) t).name().equals("timeout")) { 
 			int time = Integer.parseInt(((Struct) t).sub(0).toString());
 			try {
 				s.setSoTimeout(time);
@@ -164,7 +164,7 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 				
 			}
 		}
-		if(((Struct) t).name().equals("size")){//if a datagram size has been specified
+		if(((Struct) t).name().equals("size")){
 			int size=Integer.parseInt(((Struct) t).sub(0).toString());
 			packet.setLength(size);
 		}
@@ -183,11 +183,11 @@ public boolean udp_receive(Term Socket, Term Data, Struct AddressFrom,
 
 public boolean tcp_socket_server_open_3(Struct Address, Term Socket, Struct Options) throws PrologError {
 
-	if (!(Socket.term() instanceof alice.tuprolog.Var)) { // Socket has to be a variable
+	if (!(Socket.term() instanceof alice.tuprolog.Var)) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
 
-	// Transform IP:Port to byte[] array and port number
+	
 	Pattern p = Pattern.compile(addrRegex);
 	String[] split = p.split(Address.name());
 	if (split.length != 5)
@@ -199,15 +199,15 @@ public boolean tcp_socket_server_open_3(Struct Address, Term Socket, Struct Opti
 	int port = Integer.parseInt(split[split.length - 1]);
 
 
-	LinkedList<Term> list = StructToList(Options); 			// Convert Options Struct to a LinkedList
+	LinkedList<Term> list = StructToList(Options); 			
 	int backlog = 0;
-	for (Term t : list) { 									// Explore Options list
-		if (((Struct) t).name().equals("backlog")) { 	// If a backlog has been specified
+	for (Term t : list) { 									
+		if (((Struct) t).name().equals("backlog")) { 	
 			backlog = Integer.parseInt(((Struct) t).sub(0).toString());
 		}
 	}
 
-	// Create a server socket.
+	
 	try {
 		ServerSocket s=new ServerSocket(port, backlog, InetAddress.getByAddress(address));
 		addServerSocket(s);
@@ -220,8 +220,8 @@ public boolean tcp_socket_server_open_3(Struct Address, Term Socket, Struct Opti
 	return true;
 }
 
-// Add a newly created ServerSocket to the list serverSockets, so they can be closed when the engine 
-// has solved a goal or is halted.
+
+
 private void addServerSocket(ServerSocket s){
 	for(ServerSocket sock: serverSockets){
 		if(sock.equals(s))return;
@@ -229,8 +229,8 @@ private void addServerSocket(ServerSocket s){
 	serverSockets.add(s);
 }
 
-// Add a newly created ClientSocket to the list clientSockets, so they can be closed when the engine 
-// has solved a goal or is halted.
+
+
 private void addClientSocket(Socket s){
 	for(Socket sock: clientSockets){
 		if(sock.equals(s))return;
@@ -248,12 +248,12 @@ private void addClientSocket(Socket s){
 
 public boolean tcp_socket_server_accept_3(Term ServerSock, Term Client_Addr, Term Client_Slave_Socket) throws PrologError {
 
-	if (ServerSock.term() instanceof alice.tuprolog.Var) { 	// ServerSock has to be bound
+	if (ServerSock.term() instanceof alice.tuprolog.Var) { 	
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
 
 	AbstractSocket as= (AbstractSocket)ServerSock.term();
-	if(!as.isServerSocket()){									// ServerSock has to be a Server_Socket
+	if(!as.isServerSocket()){									
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
 
@@ -264,7 +264,7 @@ public boolean tcp_socket_server_accept_3(Term ServerSock, Term Client_Addr, Ter
 		Client_Slave_Socket.unify(engine, new Client_Socket(client));
 		addClientSocket(client);
 	} catch (IOException e) {
-		//e.printStackTrace();
+		
 		return false;
 	}
 	return true;
@@ -276,11 +276,11 @@ public boolean tcp_socket_server_accept_3(Term ServerSock, Term Client_Addr, Ter
  */
 
 public boolean tcp_socket_client_open_2(Struct Address, Term SocketTerm) throws PrologError {
-	if (!(SocketTerm.term() instanceof alice.tuprolog.Var)) { // Socket has to be a variable
+	if (!(SocketTerm.term() instanceof alice.tuprolog.Var)) { 
 		throw PrologError.instantiation_error(engine.engine, 2);
 	}
 
-	// IP:Port --> IP in byte[] array and port number
+	
 	Pattern p = Pattern.compile(addrRegex);
 	String[] split = p.split(Address.name());
 	if (split.length != 5)
@@ -308,16 +308,16 @@ public boolean tcp_socket_client_open_2(Struct Address, Term SocketTerm) throws 
  */
 
 public synchronized boolean tcp_socket_server_close_1(Term serverSocket) throws PrologError {
-	if (serverSocket.term() instanceof alice.tuprolog.Var) { 			// serverSocket has to be bound
+	if (serverSocket.term() instanceof alice.tuprolog.Var) { 			
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
-	if (!(((Server_Socket) serverSocket.term()).isServerSocket())) {		// serverSocket has to be a Server_Socket
+	if (!(((Server_Socket) serverSocket.term()).isServerSocket())) {		
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
 	try {
 		ServerSocket s=((Server_Socket) serverSocket.term()).getSocket();
 		s.close();
-		// Remove closed ServerSocket from serverSockets list
+		
 		for(int i=0;i<serverSockets.size();i++){
 			if(serverSockets.get(i).equals(s)){
 				serverSockets.remove(i);
@@ -337,22 +337,22 @@ public synchronized boolean tcp_socket_server_close_1(Term serverSocket) throws 
  */
 
 public boolean write_to_socket_2(Term Socket, Term Msg) throws PrologError {
-	if (Socket.term() instanceof alice.tuprolog.Var) { // Socket has to be bound
+	if (Socket.term() instanceof alice.tuprolog.Var) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
-	if (((AbstractSocket) Socket.term()).isServerSocket()) { // Only Client_Sockets can send data
+	if (((AbstractSocket) Socket.term()).isServerSocket()) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
-	if (Msg.term() instanceof alice.tuprolog.Var) { // Record has to be bound
+	if (Msg.term() instanceof alice.tuprolog.Var) { 
 		throw PrologError.instantiation_error(engine.engine, 2);
 
 	} else {
 		Socket sock = ((Client_Socket) Socket.term()).getSocket();
 		try {
 			ObjectOutputStream out = new ObjectOutputStream(sock.getOutputStream());
-			out.writeObject(Msg);		// Write message in OutputStream
+			out.writeObject(Msg);		
 		} catch (IOException e) {
-			//e.printStackTrace();
+			
 			return false;
 		}
 
@@ -368,31 +368,31 @@ public boolean write_to_socket_2(Term Socket, Term Msg) throws PrologError {
  */
 
 public boolean read_from_socket_3(Term Socket, Term Msg, Struct Options) throws PrologError {
-	if (Socket.term() instanceof alice.tuprolog.Var) { // Socket has to be bound
+	if (Socket.term() instanceof alice.tuprolog.Var) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
-	if (!(Msg.term() instanceof alice.tuprolog.Var)) { // Message has to be a variable
+	if (!(Msg.term() instanceof alice.tuprolog.Var)) { 
 		throw PrologError.instantiation_error(engine.engine, 2);
 	}
-	if (!((AbstractSocket) Socket.term()).isClientSocket()) { // Only Client_Sockets can receive data
+	if (!((AbstractSocket) Socket.term()).isClientSocket()) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	} else {
 		Socket sock = ((Client_Socket) Socket.term()).getSocket();
 
-		// Check if a Reader associated to the Socket passed already exists
+		
 		ThreadReader r = readerExist(sock);
-		// If a thread is already waiting for data on the same socket return false
+		
 		if (r != null) {
 			if (r.started())
 				return false;
 		}
 
-		LinkedList<Term> list = StructToList(Options); // Convert Options Struct to a LinkedList
-		for (Term t : list) { // Explore options list
-			if (((Struct) t).name().equals("timeout")) { // If a timeout has been specified
+		LinkedList<Term> list = StructToList(Options); 
+		for (Term t : list) { 
+			if (((Struct) t).name().equals("timeout")) { 
 				int time = Integer.parseInt(((Struct) t).sub(0).toString());
 				try {
-					sock.setSoTimeout(time); // Set socket timeout
+					sock.setSoTimeout(time); 
 				} catch (SocketException e) {
 					e.printStackTrace();
 					return false;
@@ -433,17 +433,17 @@ public boolean read_from_socket_3(Term Socket, Term Msg, Struct Options) throws 
  */
 
 public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologError {
-	if (Socket.term() instanceof alice.tuprolog.Var) { // Socket has to be bound
+	if (Socket.term() instanceof alice.tuprolog.Var) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
-	if (!((AbstractSocket) Socket.term()).isClientSocket()) { // Only Client_Sockets can receive data
+	if (!((AbstractSocket) Socket.term()).isClientSocket()) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	} else {
-		// Retrieve socket from the term Socket passed to this method
+		
 		Socket sock = ((Client_Socket) Socket.term()).getSocket();
 
-		// Find reader associated with the socket if already exists,
-		// otherwise create a new reader
+		
+		
 		ThreadReader r = readerExist(sock);
 		if (r == null) {
 			synchronized (this) {
@@ -452,29 +452,29 @@ public boolean aread_from_socket_2(Term Socket, Struct Options) throws PrologErr
 			}
 		}
 
-		// If reader already reading return true, otherwise start reading
+		
 		if (r.started())
 			return true;
 
 		try {
-			sock.setSoTimeout(0); // Set socket timeout to infinite
+			sock.setSoTimeout(0); 
 		} catch (SocketException e1) {
 			e1.printStackTrace();
 		}
 
-		LinkedList<Term> list = StructToList(Options); // Convert Options Struct to a LinkedList
-		for (Term t : list) { // Explore options list
-			if (((Struct) t).name().equals("timeout")) { // If a timeout has been specified
+		LinkedList<Term> list = StructToList(Options); 
+		for (Term t : list) { 
+			if (((Struct) t).name().equals("timeout")) { 
 				int time = Integer.parseInt(((Struct) t).sub(0).toString());
 				try {
-					sock.setSoTimeout(time); // Set socket timeout
+					sock.setSoTimeout(time); 
 				} catch (SocketException e) {
 					e.printStackTrace();
 					return false;
 				}
 			}
-			// If assertZ is specified what is read is written in the theory
-			// with assertZ instead of assertA
+			
+			
 			if (((Struct) t).name().equals("assertZ")) {
 				r.assertZ();
 			}
@@ -550,7 +550,7 @@ public void onSolveHalt(){
 }
 
 public boolean getAddress_2(Term sock, Term addr) throws PrologError {
-	if (sock.term() instanceof alice.tuprolog.Var) { // Socket has to be bound
+	if (sock.term() instanceof alice.tuprolog.Var) { 
 		throw PrologError.instantiation_error(engine.engine, 1);
 	}
 	AbstractSocket abs = (AbstractSocket) sock.term();
@@ -579,22 +579,22 @@ public boolean getAddress_2(Term sock, Term addr) throws PrologError {
  * Definition of thread Reader. It waits until a message is received and assert it.
  */
 private static class ThreadReader extends Thread {
-	private final Socket socket;				// Socket associated to the Reader
+	private final Socket socket;				
 	private final Prolog mainEngine;
-	private boolean assertA;			// Should it use assertA or assertZ?
-	private volatile boolean started;	// True if the thread is already waiting on a socket
+	private boolean assertA;			
+	private volatile boolean started;	
 	private final Semaphore sem;
 
 	protected ThreadReader(Socket socket, Prolog mainEngine) {
 		this.socket = socket;
 		this.mainEngine = mainEngine;
-		assertA = true;					// assertA by default
+		assertA = true;					
 		started = false;
 		sem = new Semaphore(0);
 		this.start();
 	}
 
-	// Set the boolean variable started and release the semaphore where the thread is waiting
+	
 	protected synchronized void startRead() {
 		if(started)return;
 		started = true;
@@ -605,8 +605,8 @@ private static class ThreadReader extends Thread {
 		return started;
 	}
 
-	// Close the socket (to stop the thread if it is waiting on the read method) 
-	// and interrupt the thread (if it is waiting on the semaphore)
+	
+	
 	protected synchronized void stopRead(){
 		this.interrupt();
 		try {
@@ -632,7 +632,7 @@ private static class ThreadReader extends Thread {
 					sem.acquire();
 					if(this.isInterrupted())return;
 				} catch (InterruptedException e1) {
-					//e1.printStackTrace();
+					
 					return;
 				}
 			}
@@ -646,10 +646,10 @@ private static class ThreadReader extends Thread {
 					mainEngine.theories.assertA(s, true, "", false);
 				else
 					mainEngine.theories.assertZ(s, true, "", false);
-				assertA = true; // By default use assertA!
+				assertA = true; 
 				started = false;
 			} catch (IOException e) {
-				//e.printStackTrace();
+				
 				started = false;
 				return;
 			} catch (ClassNotFoundException e) {

@@ -10,7 +10,7 @@ public final class Allocator<T extends Cursor> {
 	private static final AllocationHandler NO_LISTENER = new NullAllocationHandler();
 	
 	private final TypeInspector inspector;
-    //private final Class<T> implementation;
+    
 	private final Constructor<T> constructor;
 
 	private final AllocationListener listener;

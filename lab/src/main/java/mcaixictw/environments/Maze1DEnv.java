@@ -25,13 +25,13 @@ public class Maze1DEnv extends Environment {
 	public Maze1DEnv(int size) {
 		this.size = size;
 		reward = 0;
-		// observation is is always the same.
+		
 		observation = 0;
 		startAtNewPosition();
 	}
 
 	private void startAtNewPosition() {
-		// Start at a random position except for the reward position
+		
 		do {
 			position = Util.randRange(size);
 		} while (position == REWARD_POSITION);
@@ -41,19 +41,19 @@ public class Maze1DEnv extends Environment {
 	public void performAction(int action) {
 		reward = 0;
 		if (action == 0) {
-			// Go left until we hit the wall
+			
 			if (position > 0) {
 				position--;
 			}
 		} else {
-			// Go right until we hit the wall
+			
 			if (position < 3) {
 				position++;
 			}
 		}
 
-		// If the agent is at the REWARD_POSITION give him a reward and restart
-		// the game
+		
+		
 		if (position == REWARD_POSITION) {
 			reward = 1;
 			startAtNewPosition();

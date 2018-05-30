@@ -97,7 +97,7 @@ public class VChannels {
         if (!cl.isArray())
             return null;
         int length = Array.getLength(a);
-        int newLength = length + amount; // 50% more
+        int newLength = length + amount; 
 
         Class componentType = a.getClass().getComponentType();
         Object newArray = Array.newInstance(componentType, newLength);
@@ -218,10 +218,10 @@ public class VChannels {
 
         if (((flags & CHANNEL_FLAG_FIRST) != 0)
                 && ((flags & CHANNEL_FLAG_LAST) != 0)) {
-            // single fragment - pass straight up
+            
             channel.process(data);
         } else {
-            // append to the defragmentation buffer
+            
             byte[] content = new byte[data.getEnd() - data.getPosition()];
             data
                     .copyToByteArray(content, 0, data.getPosition(),
@@ -233,7 +233,7 @@ public class VChannels {
                         fragment_buffer.length);
                 fullpacket.copyFromByteArray(fragment_buffer, 0, 0,
                         fragment_buffer.length);
-                // process the entire reconstructed packet
+                
                 channel.process(fullpacket);
                 fragment_buffer = null;
             }

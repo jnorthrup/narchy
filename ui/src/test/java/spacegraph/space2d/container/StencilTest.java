@@ -21,8 +21,8 @@ public class StencilTest extends Surface {
         Draw.rect(gl, bounds);
 
         Draw.stencilMask(gl, true, (g)-> {
-            //"Drawing" the objects only ends up writing 1's to the stencil buffer no matter what color or depth they are
-            //drawAllObjectsThatNeedAnOutline();
+            
+            
             gl.glColor3f(0,0,1);
             Draw.rect(gl, bounds.scale(0.75f).move(0.5f, 0.5f));
         }, (g)->{
@@ -30,8 +30,8 @@ public class StencilTest extends Surface {
             Draw.rect(gl, bounds.scale(0.75f).move(Math.random()*w(), Math.random()*h()));
         });
 
-        //Draw everything, including objects that need an outline (because we haven't really "drawn" them yet)
-        //drawEverything();
+        
+        
         gl.glColor4f(0,1,0, 0.2f);
         Draw.rect(gl, bounds.scale(0.75f).move(Math.random()*w(), Math.random()*h()));
 

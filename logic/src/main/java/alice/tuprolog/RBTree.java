@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 /* Copyright (c) 2010 the authors listed at the following URL, and/or
 the authors of referenced articles or incorporated external code:
-http://en.literateprograms.org/Red-black_tree_(Java)?action=history&offset=20100112141306
+http:
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-Retrieved from: http://en.literateprograms.org/Red-black_tree_(Java)?oldid=16622
+Retrieved from: http:
 */
 
 enum Color {RED, BLACK}
@@ -34,7 +34,7 @@ enum Color {RED, BLACK}
  * Implements a Red Black Tree's node.
  * <p>
  * Introduced by Paolo Contessi,
- * retrieved from: http://en.literateprograms.org/Red-black_tree_(Java)?oldid=16622
+ * retrieved from: http:
  *
  * @param <K> It's the type of the key used to recall values
  * @param <V> It's the type of the values stored in the tree
@@ -60,20 +60,20 @@ final class Node<K extends Comparable<? super K>, V> {
     }
 
     public Node<K, V> grandparent() {
-        assert parent != null; // Not the root node
-        assert parent.parent != null; // Not child of root
+        assert parent != null; 
+        assert parent.parent != null; 
         return parent.parent;
     }
 
     public Node<K, V> sibling() {
         Node<K, V> p = this.parent;
-        assert p != null; // Root node has no sibling
+        assert p != null; 
         return this == p.left ? p.right : p.left;
     }
 
     public Node<K, V> uncle() {
-        assert parent != null; // Root node has no uncle
-        assert parent.parent != null; // Children of root have no uncle
+        assert parent != null; 
+        assert parent.parent != null; 
         return parent.sibling();
     }
 
@@ -83,7 +83,7 @@ final class Node<K extends Comparable<? super K>, V> {
  * Implements a Red Black Tree
  * <p>
  * Introduced by Paolo Contessi,
- * retrieved from: http://en.literateprograms.org/Red-black_tree_(Java)?oldid=16622
+ * retrieved from: http:
  *
  * @param <K> It's the type of the key used to recall values
  * @param <V> It's the type of the values stored in the tree
@@ -96,13 +96,13 @@ public class RBTree<K extends Comparable<? super K>, V> {
 
     public RBTree() {
         root = null;
-        //verifyProperties();
+        
     }
 
     public void verifyProperties() {
         verifyProperty1(root);
         verifyProperty2(root);
-        // Property 3 is implicit
+        
         verifyProperty4(root);
         verifyProperty5(root);
     }
@@ -163,7 +163,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
             } else if (compResult < 0) {
                 n = n.left;
             } else {
-                //assert compResult > 0;
+                
                 n = n.right;
             }
         }
@@ -251,7 +251,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
             insertedNode.parent = n;
         }
         insertCase1(insertedNode);
-        //verifyProperties();
+        
     }
 
     protected void insertCase1(Node<K, V> n) {
@@ -304,7 +304,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
 
         Node<K, V> n = lookupNode(key);
         if (n == null)
-            return;  // Key not found, do nothing
+            return;  
 
         /*must be check if node is a list of clause*/
         @SuppressWarnings("unchecked")
@@ -314,7 +314,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
         } else {
             if (n.left != null && n.right != null) {
 
-                // Copy key/value from predecessor and then delete it instead
+                
                 Node<K, V> pred = maximumNode(n.left);
                 n.key = pred.key;
                 n.value = pred.value;
@@ -334,7 +334,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
                 root.color = Color.BLACK;
             }
 
-            //verifyProperties();
+            
         }
     }
 
@@ -446,36 +446,36 @@ public class RBTree<K extends Comparable<? super K>, V> {
         }
     }
 
-//    public static void main(String[] args) {
-//        RBTree<String,ClauseInfo> r;
-//        RBTree<Number,ClauseInfo> r2;
-//
-//        RBTree<Integer,Integer> t = new RBTree<Integer,Integer>();
-//        t.print();
-//
-//        java.util.Random gen = new java.util.Random();
-//
-//        for (int i = 0; i < 5000; i++) {
-//            int x = gen.nextInt(10000);
-//            int y = gen.nextInt(10000);
-//
-//            t.print();
-//            System.out.println("Inserting " + x + " -> " + y);
-//            System.out.println();
-//
-//            t.insert(x, y);
-//            assert t.lookup(x).equals(y);
-//        }
-//        for (int i = 0; i < 60000; i++) {
-//            int x = gen.nextInt(10000);
-//
-//            t.print();
-//            System.out.println("Deleting key " + x);
-//            System.out.println();
-//
-//            t.delete(x);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

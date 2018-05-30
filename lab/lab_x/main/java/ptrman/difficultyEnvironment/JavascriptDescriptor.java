@@ -10,7 +10,7 @@ import ptrman.difficultyEnvironment.scriptAccessors.HelperScriptingAccessor;
 public class JavascriptDescriptor {
     public JavascriptEngine engine;
 
-    // accessors
+    
     public EnvironmentScriptingAccessor environmentScriptingAccessor;
     public HelperScriptingAccessor helperScriptingAccessor;
     public ComponentManipulationScriptingAccessor componentManipulationScriptingAccessor;

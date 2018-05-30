@@ -12,7 +12,7 @@ public class HanningWindow implements GrainWindow {
 	@Override
 	public final float getFactor(int offset) {
 		int index = offset;
-		if (offset < 0) { // Fade in
+		if (offset < 0) { 
 			index = -offset;
 		}
 		return index < factors.length ? factors[index] : 0.0F;

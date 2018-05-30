@@ -21,7 +21,7 @@ public class DynamicEntity extends Entity {
 	/** Body that's in the Physics world */
 	public Body body;
 	
-	// these are all used for initialization
+	
 	private BodyDef bodyDef;
 	private ArrayList<FixtureDef> fixtureDefs;
 	private Shape shape;
@@ -69,27 +69,27 @@ public class DynamicEntity extends Entity {
 	
 	/** Initialize this DynamicEntity and add it to the Physics world */
 	public void init(World world){
-		// only initialize if not intiialized
+		
 		if(!this.isInitialized){
-			// create a body using the given body def
+			
 			body = world.createBody(bodyDef);
 			
-			// set a pointer back to this object
+			
 			body.setUserData(this);
 			
-			// if we're given fixture defs, use them to create body
+			
 			if(fixtureDefs != null){
 				for(FixtureDef def : fixtureDefs){
 					body.createFixture(def);
-					//def.shape.dispose();
+					
 				}
 				fixtureDefs.clear();
 				fixtureDefs = null;
 				
-			// else we're given a single shape as the body
+			
 			} else if(shape != null){
 				body.createFixture(shape, density);
-				//shape.dispose();
+				
 				shape = null;
 			} else{
 				System.err.println("DynamicEntity not given enough parameters to initialize physics info!");
@@ -104,7 +104,7 @@ public class DynamicEntity extends Entity {
 	
 	@Override
 	public void update(float timeStep){
-		// update the location and angle variables
+		
 		if(this.isInitialized && body.isAwake()){
 			this.location.set(body.getPosition());
 			this.angle = body.getAngle();
@@ -139,13 +139,13 @@ public class DynamicEntity extends Entity {
 	public void read(Kryo kryo, Input input) {
 		super.read(kryo, input);
 		
-		// read in body def
+		
 		BodyDef bodyDef = kryo.readObject(input, BodyDef.class);
 		
-		// read in number of fixtures
+		
 		int numFixtures = input.readInt();
 		
-		// read in each fixture
+		
 		ArrayList<FixtureDef> fixtureDefs = new ArrayList<FixtureDef>(numFixtures);
 		for(int i = 0; i < numFixtures; i++){
 			FixtureDef fixDef = kryo.readObject(input, FixtureDef.class);
@@ -160,15 +160,15 @@ public class DynamicEntity extends Entity {
 	public void write(Kryo kryo, Output output) {
 		super.write(kryo, output);
 		
-		// write out the body def
+		
 		kryo.writeObject(output, PhysicsHelper.getBodyDef(body));
 		
 		ArrayList<Fixture> fixtures = body.getFixtureList();
 		
-		// write out number of fixtures
+		
 		output.writeInt(fixtures.size());
 		
-		// write out each fixture
+		
 		for(Fixture f : fixtures)
 			kryo.writeObject(output, PhysicsHelper.getFixtureDef(f));
 	}

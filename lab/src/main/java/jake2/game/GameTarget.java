@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 28.12.2003 by RST.
-// $Id: GameTarget.java,v 1.8 2006-01-21 21:53:31 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -34,7 +34,7 @@ public class GameTarget {
     }
 
     public static void SP_target_speaker(edict_t ent) {
-        //char buffer[MAX_QPATH];
+        
         String buffer;
 
         if (GameBase.st.noise == null) {
@@ -54,17 +54,17 @@ public class GameTarget {
 
         if (ent.attenuation == 0)
             ent.attenuation = 1.0f;
-        else if (ent.attenuation == -1) // use -1 so 0 defaults to 1
+        else if (ent.attenuation == -1) 
             ent.attenuation = 0;
 
-        // check for prestarted looping sound
+        
         if ((ent.spawnflags & 1) != 0)
             ent.s.sound = ent.noise_index;
 
         ent.use = Use_Target_Speaker;
 
-        // must link the entity so we get areas and clusters so
-        // the server can determine who to send updates to
+        
+        
         game_import_t.linkentity(ent);
     }
 
@@ -74,7 +74,7 @@ public class GameTarget {
      * message light will be set on all clients status bars.
      */
     public static void SP_target_help(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { // auto-remove for deathmatch
+        if (GameBase.deathmatch.value != 0) { 
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -89,7 +89,7 @@ public class GameTarget {
     }
 
     public static void SP_target_secret(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { // auto-remove for deathmatch
+        if (GameBase.deathmatch.value != 0) { 
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -100,7 +100,7 @@ public class GameTarget {
         ent.noise_index = game_import_t.soundindex(GameBase.st.noise);
         ent.svflags = Defines.SVF_NOCLIENT;
         GameBase.level.total_secrets++;
-        // map bug hack
+        
         if (0 == Lib.Q_stricmp(GameBase.level.mapname, "mine3")
                 && ent.s.origin[0] == 280 && ent.s.origin[1] == -2048
                 && ent.s.origin[2] == -624)
@@ -108,7 +108,7 @@ public class GameTarget {
     }
 
     public static void SP_target_goal(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { // auto-remove for deathmatch
+        if (GameBase.deathmatch.value != 0) { 
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -134,7 +134,7 @@ public class GameTarget {
             return;
         }
 
-        // ugly hack because *SOMEBODY* screwed up their map
+        
         if ((Lib.Q_stricmp(GameBase.level.mapname, "fact1") == 0)
                 && (Lib.Q_stricmp(ent.map, "fact3") == 0))
             ent.map = "fact3$secret1";
@@ -204,7 +204,7 @@ public class GameTarget {
     }
 
     public static void SP_target_laser(edict_t self) {
-        // let everything else get spawned before we start firing
+        
         self.think = target_laser_start;
         self.nextthink = GameBase.level.time + 1;
     }
@@ -296,18 +296,18 @@ public class GameTarget {
         public void use(edict_t ent, edict_t other, edict_t activator) {
             int chan;
 
-            if ((ent.spawnflags & 3) != 0) { // looping sound toggles
+            if ((ent.spawnflags & 3) != 0) { 
                 if (ent.s.sound != 0)
-                    ent.s.sound = 0; // turn it off
+                    ent.s.sound = 0; 
                 else
-                    ent.s.sound = ent.noise_index; // start it
-            } else { // normal sound
+                    ent.s.sound = ent.noise_index; 
+            } else { 
                 if ((ent.spawnflags & 4) != 0)
                     chan = Defines.CHAN_VOICE | Defines.CHAN_RELIABLE;
                 else
                     chan = Defines.CHAN_VOICE;
-                // use a positioned_sound, because this entity won't normally be
-                // sent to any clients because it is invisible
+                
+                
                 game_import_t.positioned_sound(ent.s.origin, ent, chan,
                         ent.noise_index, ent.volume, ent.attenuation, 0);
             }
@@ -431,14 +431,14 @@ public class GameTarget {
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
             if (GameBase.level.intermissiontime != 0)
-                return; // already activated
+                return; 
 
             if (0 == GameBase.deathmatch.value && 0 == GameBase.coop.value) {
                 if (GameBase.g_edicts[1].health <= 0)
                     return;
             }
 
-            // if noexit, do a ton of damage to other
+            
             if (GameBase.deathmatch.value != 0
                     && 0 == ((int) GameBase.dmflags.value & Defines.DF_ALLOW_EXIT)
                     && other != GameBase.g_edicts[0] /* world */
@@ -449,7 +449,7 @@ public class GameTarget {
                 return;
             }
 
-            // if multiplayer, let everyone know who hit the exit
+            
             if (GameBase.deathmatch.value != 0) {
                 if (activator != null && activator.client != null)
                     game_import_t.bprintf(Defines.PRINT_HIGH,
@@ -457,7 +457,7 @@ public class GameTarget {
                                     + " exited the level.\n");
             }
 
-            // if going to a new unit, clear cross triggers
+            
             if (self.map.indexOf('*') > -1)
                 GameBase.game.serverflags &= ~(Defines.SFL_CROSS_TRIGGER_MASK);
 
@@ -640,7 +640,7 @@ public class GameTarget {
                 if (tr.ent == null)
                     break;
 
-                // hurt it if we can
+                
                 if ((tr.ent.takedamage != 0)
                         && 0 == (tr.ent.flags & Defines.FL_IMMUNE_LASER))
                     GameCombat.T_Damage(tr.ent, self, self.activator,
@@ -648,8 +648,8 @@ public class GameTarget {
                             self.dmg, 1, Defines.DAMAGE_ENERGY,
                             Defines.MOD_TARGET_LASER);
 
-                // if we hit something that's not a monster or player or is
-                // immune to lasers, we're done
+                
+                
                 if (0 == (tr.ent.svflags & Defines.SVF_MONSTER)
                         && (null == tr.ent.client)) {
                     if ((self.spawnflags & 0x80000000) != 0) {
@@ -699,15 +699,15 @@ public class GameTarget {
             self.movetype = Defines.MOVETYPE_NONE;
             self.solid = Defines.SOLID_NOT;
             self.s.renderfx |= Defines.RF_BEAM | Defines.RF_TRANSLUCENT;
-            self.s.modelindex = 1; // must be non-zero
+            self.s.modelindex = 1; 
 
-            // set the beam diameter
+            
             if ((self.spawnflags & 64) != 0)
                 self.s.frame = 16;
             else
                 self.s.frame = 4;
 
-            // set the color
+            
             if ((self.spawnflags & 2) != 0)
                 self.s.skinnum = 0xf2f2f0f0;
             else if ((self.spawnflags & 4) != 0)
@@ -791,7 +791,7 @@ public class GameTarget {
             if (self.enemy == null) {
                 edict_t e;
 
-                // check all the targets
+                
                 e = null;
                 EdictIterator es = null;
 

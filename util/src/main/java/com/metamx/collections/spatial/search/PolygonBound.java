@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -82,8 +82,8 @@ public class PolygonBound extends RectangularBound {
             @JsonProperty("ordinate") float[] ordinate,
             @JsonProperty("limit") int limit
     ) {
-        Preconditions.checkArgument(abscissa.length == ordinate.length); //abscissa and ordinate should be the same length
-        Preconditions.checkArgument(abscissa.length > 2); //a polygon should have more than 2 corners
+        Preconditions.checkArgument(abscissa.length == ordinate.length); 
+        Preconditions.checkArgument(abscissa.length > 2); 
         return new PolygonBound(abscissa, ordinate, limit);
     }
 

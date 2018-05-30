@@ -119,7 +119,7 @@ public class EmptyClassLoader
     */
    private void appendContent(final boolean internal, final String decal, final String name, final StringBuilder stringBuilder, final Class<?> classInJar, final String simpleName) throws ClassNotFoundException
    {
-      // write header
+      
       stringBuilder.append(decal);
       int or = 0;
       if(classInJar.isEnum() == true)
@@ -204,7 +204,7 @@ public class EmptyClassLoader
          String nameTemp;
          boolean asEmpty = false;
 
-         // Fields
+         
          for(final Field field : classInJar.getDeclaredFields())
          {
             if(Modifier.isPublic(field.getModifiers()) == true)
@@ -271,7 +271,7 @@ public class EmptyClassLoader
             }
          }
 
-         // Constructors
+         
          for(final Constructor<?> constructor : classInJar.getDeclaredConstructors())
          {
             if(Modifier.isPublic(constructor.getModifiers()) == true)
@@ -314,7 +314,7 @@ public class EmptyClassLoader
                stringBuilder.append(")");
                stringBuilder.append(decal);
 
-               // Call super constructor, if need
+               
                final Class<?> parent = classInJar.getSuperclass();
                if(parent != null)
                {
@@ -429,7 +429,7 @@ public class EmptyClassLoader
                   }
                   stringBuilder.append(");");
                }
-               //
+               
 
                stringBuilder.append(decal);
                stringBuilder.append("\t}");
@@ -444,7 +444,7 @@ public class EmptyClassLoader
             stringBuilder.append("()");
             stringBuilder.append(decal);
 
-            // Call super constructor, if need
+            
             final Class<?> parent = classInJar.getSuperclass();
             if(parent != null)
             {
@@ -562,7 +562,7 @@ public class EmptyClassLoader
                stringBuilder.append(decal);
                stringBuilder.append("\t}");
             }
-            //
+            
          }
 
          Class<?> ret;
@@ -571,7 +571,7 @@ public class EmptyClassLoader
          final HashSet<String> already = new HashSet<String>();
          StringBuilder end;
 
-         // Methods
+         
          for(final Method method : classInJar.getDeclaredMethods())
          {
             if(Modifier.isPublic(method.getModifiers()) == true)
@@ -778,11 +778,11 @@ public class EmptyClassLoader
          stringBuilder.append(pack);
          stringBuilder.append(";\n");
 
-         // Import collection
+         
          final HashSet<String> imports = new HashSet<String>();
          this.fillImports(name, name, imports, classInJar);
 
-         // Write imports
+         
          for(final String imp : imports)
          {
             if((this.onCreation.contains(imp) == false) && (this.classes.containsKey(imp) == false))

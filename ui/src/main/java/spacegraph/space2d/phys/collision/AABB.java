@@ -57,9 +57,9 @@ public class AABB {
      *
      * @param copy the object to copy from
      */
-//  public AABB(final AABB copy) {
-//    this(copy.lowerBound, copy.upperBound);
-//  }
+
+
+
 
     /**
      * Creates an AABB object using the given bounding vertices.
@@ -69,7 +69,7 @@ public class AABB {
      */
     public AABB(final Tuple2f lowerVertex, final Tuple2f upperVertex, boolean clone) {
         if (clone) {
-            this.lowerBound = new v2(lowerVertex); // clone to be safe
+            this.lowerBound = new v2(lowerVertex); 
             this.upperBound = new v2(upperVertex);
         } else {
             this.lowerBound = lowerVertex;
@@ -137,7 +137,7 @@ public class AABB {
 
     public final void getExtentsToOut(final Tuple2f out) {
         out.x = (upperBound.x - lowerBound.x) * .5f;
-        out.y = (upperBound.y - lowerBound.y) * .5f; // thanks FDN1
+        out.y = (upperBound.y - lowerBound.y) * .5f; 
     }
 
     public final void getVertices(Tuple2f[] argRay) {
@@ -194,8 +194,8 @@ public class AABB {
          * && lowerBound.y <= aabb.lowerBound.y; result = result && aabb.upperBound.x <= upperBound.x;
          * result = result && aabb.upperBound.y <= upperBound.y; return result;
          */
-        // djm: faster putting all of them together, as if one is false we leave the logic
-        // early
+        
+        
         return lowerBound.x <= aabb.lowerBound.x && lowerBound.y <= aabb.lowerBound.y
                 && aabb.upperBound.x <= upperBound.x && aabb.upperBound.y <= upperBound.y;
     }
@@ -231,9 +231,9 @@ public class AABB {
         d.set(input.p2).subbed(input.p1);
         Tuple2f.absToOut(d, absD);
 
-        // x then y
+        
         if (absD.x < Settings.EPSILON) {
-            // Parallel.
+            
             if (p.x < lowerBound.x || upperBound.x < p.x) {
                 argPool.pushVec2(4);
                 return false;
@@ -243,7 +243,7 @@ public class AABB {
             float t1 = (lowerBound.x - p.x) * inv_d;
             float t2 = (upperBound.x - p.x) * inv_d;
 
-            // Sign of the normal vector.
+            
             float s = -1.0f;
 
             if (t1 > t2) {
@@ -253,14 +253,14 @@ public class AABB {
                 s = 1.0f;
             }
 
-            // Push the min up
+            
             if (t1 > tmin) {
                 normal.setZero();
                 normal.x = s;
                 tmin = t1;
             }
 
-            // Pull the max down
+            
             tmax = MathUtils.min(tmax, t2);
 
             if (tmin > tmax) {
@@ -270,7 +270,7 @@ public class AABB {
         }
 
         if (absD.y < Settings.EPSILON) {
-            // Parallel.
+            
             if (p.y < lowerBound.y || upperBound.y < p.y) {
                 argPool.pushVec2(4);
                 return false;
@@ -280,7 +280,7 @@ public class AABB {
             float t1 = (lowerBound.y - p.y) * inv_d;
             float t2 = (upperBound.y - p.y) * inv_d;
 
-            // Sign of the normal vector.
+            
             float s = -1.0f;
 
             if (t1 > t2) {
@@ -290,14 +290,14 @@ public class AABB {
                 s = 1.0f;
             }
 
-            // Push the min up
+            
             if (t1 > tmin) {
                 normal.setZero();
                 normal.y = s;
                 tmin = t1;
             }
 
-            // Pull the max down
+            
             tmax = MathUtils.min(tmax, t2);
 
             if (tmin > tmax) {
@@ -306,14 +306,14 @@ public class AABB {
             }
         }
 
-        // Does the ray start inside the box?
-        // Does the ray intersect beyond the max fraction?
+        
+        
         if (tmin < 0.0f || input.maxFraction < tmin) {
             argPool.pushVec2(4);
             return false;
         }
 
-        // Intersection.
+        
         output.fraction = tmin;
         output.normal.x = normal.x;
         output.normal.y = normal.y;

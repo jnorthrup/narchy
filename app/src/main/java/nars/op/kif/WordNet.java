@@ -2,7 +2,7 @@
  * This code is copyright Articulate Software (c) 2003-2007. Some portions
  * copyright Teknowledge (c) 2003 and reused under the terms of the GNU license.
  * This software is released under the GNU Public License
- * <http://www.gnu.org/copyleft/gpl.html>. Users of this code also consent, by
+ * <http:
  * use of this code, to credit Articulate Software and Teknowledge in any
  * writings, briefings, publications, presentations, or other representations of
  * any software which incorporates, builds on, or uses this code. Please cite
@@ -10,7 +10,7 @@
  *
  * Pease, A., (2003). The Sigma Ontology Development Environment, in Working
  * Notes of the IJCAI-2003 Workshop on Ontology and Distributed Systems, August
- * 9, Acapulco, Mexico. See also http://sigmakee.sourceforge.net
+ * 9, Acapulco, Mexico. See also http:
  */
 package nars.op.kif;
 
@@ -108,57 +108,57 @@ public class WordNet {
     @SuppressWarnings("HardcodedFileSeparator")
     private static final String[] regexPatternStrings
             = {
-                // 0: WordNet.processPointers()
+                
                 "^\\s*\\d\\d\\s\\S\\s\\d\\S\\s",
-                // 1: WordNet.processPointers()
+                
                 "^([a-zA-Z0-9'._\\-]\\S*)\\s([0-9a-f])\\s",
-                // 2: WordNet.processPointers()
+                
                 "^...\\s",
-                // 3: WordNet.processPointers()
+                
                 "^(\\S\\S?)\\s([0-9]{8})\\s(.)\\s([0-9a-f]{4})\\s?",
-                // 4: WordNet.processPointers()
+                
                 "^..\\s",
-                // 5: WordNet.processPointers()
+                
                 "^\\+\\s(\\d\\d)\\s(\\d\\d)\\s?",
-                // 6: WordNet.readNouns()
+                
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
-                // 7: WordNet.readNouns()
+                
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$",
-                // 8: WordNet.readNouns()
+                
                 "(\\S+)\\s+(\\S+)",
-                // 9: WordNet.readNouns()
+                
                 "(\\S+)\\s+(\\S+)\\s+(\\S+)",
-                // 10: WordNet.readVerbs()
+                
                 "^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
-                // 11: WordNet.readVerbs()
+                
                 "^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+)$",
-                // 12: WordNet.readVerbs()
+                
                 "(\\S+)\\s+(\\S+)",
-                // 13: WordNet.readAdjectives()
+                
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
-                // 14: WordNet.readAdjectives()
+                
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$",
-                // 15: WordNet.readAdverbs()
+                
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
-                // 16: WordNet.readAdverbs()
+                
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$",
-                // 17: WordNet.readWordFrequencies()
+                
                 "^Word: ([^ ]+) Values: (.*)",
-                // 18: WordNet.readSenseIndex()
+                
                 "([^%]+)%([^:]*):[^:]*:[^:]*:[^:]*:[^ ]* ([^ ]+) ([^ ]+) .*",
-                // 19: WordNet.removePunctuation()
+                
                 "(\\w)\\'re",
-                // 20: WordNet.removePunctuation()
+                
                 "(\\w)\\'m",
-                // 21: WordNet.removePunctuation()
+                
                 "(\\w)n\\'t",
-                // 22: WordNet.removePunctuation()
+                
                 "(\\w)\\'ll",
-                // 23: WordNet.removePunctuation()
+                
                 "(\\w)\\'s",
-                // 24: WordNet.removePunctuation()
+                
                 "(\\w)\\'d",
-                // 25: WordNet.removePunctuation()
+                
                 "(\\w)\\'ve"
             };
 
@@ -186,18 +186,18 @@ public class WordNet {
         }
     }
 
-    private final Hashtable nounSynsetHash = new Hashtable();   // Words in root form are String keys, 
-    private final Hashtable verbSynsetHash = new Hashtable();   // String values are synset lists.    
+    private final Hashtable nounSynsetHash = new Hashtable();   
+    private final Hashtable verbSynsetHash = new Hashtable();   
     private final Hashtable adjectiveSynsetHash = new Hashtable();
     private final Hashtable adverbSynsetHash = new Hashtable();
 
-    private final Hashtable verbDocumentationHash = new Hashtable();       // Keys are synset Strings, values 
-    private final Hashtable adjectiveDocumentationHash = new Hashtable();  // are documentation strings.    
+    private final Hashtable verbDocumentationHash = new Hashtable();       
+    private final Hashtable adjectiveDocumentationHash = new Hashtable();  
     private final Hashtable adverbDocumentationHash = new Hashtable();
     private final Hashtable nounDocumentationHash = new Hashtable();
 
-    public Hashtable nounSUMOHash = new Hashtable();   // Keys are synset Strings, values are SUMO 
-    public Hashtable verbSUMOHash = new Hashtable();   // terms with the &% prefix and =, +, @ or [ suffix.    
+    public Hashtable nounSUMOHash = new Hashtable();   
+    public Hashtable verbSUMOHash = new Hashtable();   
     public Hashtable adjectiveSUMOHash = new Hashtable();
     public Hashtable adverbSUMOHash = new Hashtable();
 
@@ -214,16 +214,16 @@ public class WordNet {
      */
     public Hashtable synsetsToWords = new Hashtable();
 
-    private final Hashtable exceptionNounHash = new Hashtable();  // list of irregular plural forms where the key is the plural, singular is the value.
-    private final Hashtable exceptionVerbHash = new Hashtable();  // key is past tense, value is infinitive (without "to")
+    private final Hashtable exceptionNounHash = new Hashtable();  
+    private final Hashtable exceptionVerbHash = new Hashtable();  
 
-    private final Hashtable exceptionNounPluralHash = new Hashtable();    // The reverse index of the above 
+    private final Hashtable exceptionNounPluralHash = new Hashtable();    
     private final Hashtable exceptionVerbPastHash = new Hashtable();
 
     /**
      * Keys are POS-prefixed synsets, values are ArrayList(s) of AVPair(s) in
      * which the attribute is a pointer type according to
-     * http://wordnet.princeton.edu/man/wninput.5WN.html#sect3 and the value is
+     * http:
      * a POS-prefixed synset
      */
     public Hashtable relations = new Hashtable();
@@ -278,8 +278,8 @@ public class WordNet {
      */
     private void addSUMOHash(String term, String synset) {
 
-        //System.out.println("INFO in WordNet.addSUMOHash(): SUMO term: " + key);
-        //System.out.println("INFO in WordNet.addSUMOHash(): synset: " + value);
+        
+        
         term = term.substring(2, term.length() - 1);
         ArrayList synsets = (ArrayList) SUMOHash.get(term);
         if (synsets == null) {
@@ -373,21 +373,21 @@ public class WordNet {
     /**
      * ***************************************************************
      * Process some of the fields in a WordNet .DAT file as described at
-     * http://wordnet.princeton.edu/man/wndb.5WN . synset must include the
+     * http:
      * POS-prefix. Input should be of the form lex_filenum ss_type w_cnt word
      * lex_id [word lex_id...] p_cnt [ptr...] [frames...]
      */
     private void processPointers(String synset, String pointers) {
 
-        //System.out.println("INFO in WordNet.processPointers(): " + pointers);
-        // 0: p = Pattern.compile("^\\s*\\d\\d\\s\\S\\s\\d\\S\\s");
+        
+        
         m = regexPatterns[0].matcher(pointers);
         pointers = m.replaceFirst("");
-        //System.out.println("INFO in WordNet.processPointers(): removed prefix: " + pointers);
+        
 
-        // Should be left with:
-        // word  lex_id  [word  lex_id...]  p_cnt  [ptr...]  [frames...] 
-        // 1: p = Pattern.compile("^([a-zA-Z0-9'._\\-]\\S*)\\s([0-9a-f])\\s");
+        
+        
+        
         m = regexPatterns[1].matcher(pointers);
         while (m.lookingAt()) {
             String word = m.group(1);
@@ -403,19 +403,19 @@ public class WordNet {
             pointers = m.replaceFirst("");
             m = regexPatterns[1].matcher(pointers);
         }
-        //System.out.println("INFO in WordNet.processPointers(): removed words: " + pointers);
+        
 
-        // Should be left with:
-        // p_cnt  [ptr...]  [frames...] 
-        // 2: p = Pattern.compile("^...\\s");
+        
+        
+        
         m = regexPatterns[2].matcher(pointers);
         pointers = m.replaceFirst("");
 
-        // Should be left with:
-        // [ptr...]  [frames...] 
-        // where ptr is
-        // pointer_symbol  synset_offset  pos  source/target 
-        // 3: p = Pattern.compile("^(\\S\\S?)\\s([0-9]{8})\\s(.)\\s([0-9a-f]{4})\\s?");
+        
+        
+        
+        
+        
         m = regexPatterns[3].matcher(pointers);
         while (m.lookingAt()) {
             String ptr = m.group(1);
@@ -435,18 +435,18 @@ public class WordNet {
             } else {
                 relations.put(synset, al);
             }
-            //System.out.println("INFO in WordNet.processPointers(): (" + avp.attribute + 
-            //                   " " + synset + " " + avp.value);
+            
+            
             al.add(avp);
         }
         if (!pointers.isEmpty() && !" ".equals(pointers)) {
-            // Only for verbs may we have the following leftover
-            // f_cnt + f_num  w_num  [ +  f_num  w_num...] 
+            
+            
             if (synset.charAt(0) == '2') {
-                // 4: p = Pattern.compile("^..\\s");
+                
                 m = regexPatterns[4].matcher(pointers);
                 pointers = m.replaceFirst("");
-                // 5: p = Pattern.compile("^\\+\\s(\\d\\d)\\s(\\d\\d)\\s?");
+                
                 m = regexPatterns[5].matcher(pointers);
                 while (m.lookingAt()) {
                     String frameNum = m.group(1);
@@ -543,7 +543,7 @@ public class WordNet {
 
         try {
 
-            // synset_offset  lex_filenum  ss_type  w_cnt  word  lex_id  [word  lex_id...]  p_cnt  [ptr...]  [frames...]  |   gloss 
+            
             String line;
             File nounFile = getWnFile("noun_mappings");
             if (nounFile == null) {
@@ -553,14 +553,14 @@ public class WordNet {
             }
             long t1 = System.currentTimeMillis();
             FileReader r = new FileReader(nounFile);
-            // System.out.println( "INFO in WordNet.readNouns(): Reading file " + nounFile.getCanonicalPath() );
+            
             LineNumberReader lr = new LineNumberReader(r);
             while ((line = lr.readLine()) != null) {
                 if (lr.getLineNumber() % 1000 == 0) {
                     System.out.print('.');
                 }
                 line = line.trim();
-                // 6: p = Pattern.compile("^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$");
+                
                 m = regexPatterns[6].matcher(line);
                 boolean anyAreNull = false;
                 if (m.matches()) {
@@ -572,17 +572,17 @@ public class WordNet {
                     }
                     if (!anyAreNull) {
                         addSUMOMapping(m.group(4), '1' + m.group(1));
-                        nounDocumentationHash.put(m.group(1), m.group(3)); // 1-synset, 2-pointers, 3-docu, 4-SUMO term
+                        nounDocumentationHash.put(m.group(1), m.group(3)); 
                         processPointers('1' + m.group(1), m.group(2));
                     }
                 } else {
-                    // 7: p = Pattern.compile("^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$");  // no SUMO mapping
+                    
                     m = regexPatterns[7].matcher(line);
                     if (m.matches()) {
                         nounDocumentationHash.put(m.group(1), m.group(3));
                         processPointers('1' + m.group(1), m.group(2));
                     } else {
-                        //System.out.println("line: " + line);
+                        
                         if (!line.isEmpty() && line.charAt(0) != ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readNouns(): No match in "
@@ -599,7 +599,7 @@ public class WordNet {
                     + " seconds to process "
                     + nounFile.getCanonicalPath());
 
-            // System.out.println("INFO in WordNet.readNouns(): Reading WordNet noun exceptions");
+            
             nounFile = getWnFile("noun_exceptions");
             if (nounFile == null) {
                 System.out.println("INFO in WordNet.readNouns(): "
@@ -610,16 +610,16 @@ public class WordNet {
             r = new FileReader(nounFile);
             lr = new LineNumberReader(r);
             while ((line = lr.readLine()) != null) {
-                // 8: p = Pattern.compile("(\\S+)\\s+(\\S+)");
+                
                 m = regexPatterns[8].matcher(line);
                 if (m.matches()) {
-                    exceptionNounHash.put(m.group(1), m.group(2));      // 1-plural, 2-singular  
+                    exceptionNounHash.put(m.group(1), m.group(2));      
                     exceptionNounPluralHash.put(m.group(2), m.group(1));
                 } else {
-                    // 9: p = Pattern.compile("(\\S+)\\s+(\\S+)\\s+(\\S+)");
+                    
                     m = regexPatterns[9].matcher(line);
                     if (m.matches()) {
-                        exceptionNounHash.put(m.group(1), m.group(2));      // 1-plural, 2-singular 3-alternate singular 
+                        exceptionNounHash.put(m.group(1), m.group(2));      
                         exceptionNounPluralHash.put(m.group(2), m.group(1));
                         exceptionNounPluralHash.put(m.group(3), m.group(1));
                     } else if (!line.isEmpty() && line.charAt(0) != ';') {
@@ -666,20 +666,20 @@ public class WordNet {
                     System.out.print('.');
                 }
                 line = line.trim();
-                // 10: p = Pattern.compile("^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$");
+                
                 m = regexPatterns[10].matcher(line);
                 if (m.matches()) {
                     verbDocumentationHash.put(m.group(1), m.group(3));
                     addSUMOMapping(m.group(4), '2' + m.group(1));
                     processPointers('2' + m.group(1), m.group(2));
                 } else {
-                    // 11: p = Pattern.compile("^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+)$");   // no SUMO mapping
+                    
                     m = regexPatterns[11].matcher(line);
                     if (m.matches()) {
                         verbDocumentationHash.put(m.group(1), m.group(3));
                         processPointers('2' + m.group(1), m.group(2));
                     } else {
-                        //System.out.println("line: " + line);
+                        
                         if (!line.isEmpty() && line.charAt(0) != ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readVerbs(): No match in "
@@ -696,7 +696,7 @@ public class WordNet {
                     + " seconds to process "
                     + verbFile.getCanonicalPath());
 
-            // System.out.println("INFO in WordNet.readVerbs(): Reading WordNet verb exceptions");
+            
             verbFile = getWnFile("verb_exceptions");
             if (verbFile == null) {
                 System.out.println("INFO in WordNet.readVerbs(): "
@@ -707,10 +707,10 @@ public class WordNet {
             r = new FileReader(verbFile);
             lr = new LineNumberReader(r);
             while ((line = lr.readLine()) != null) {
-                // 12: p = Pattern.compile("(\\S+)\\s+(\\S+)");
+                
                 m = regexPatterns[12].matcher(line);
                 if (m.matches()) {
-                    exceptionVerbHash.put(m.group(1), m.group(2));          // 1-past, 2-infinitive
+                    exceptionVerbHash.put(m.group(1), m.group(2));          
                     exceptionVerbPastHash.put(m.group(2), m.group(1));
                 } else if (!line.isEmpty() && line.charAt(0) != ';') {
                     System.out.println("Error in WordNet.readVerbs(): No match in "
@@ -755,20 +755,20 @@ public class WordNet {
                     System.out.print('.');
                 }
                 line = line.trim();
-                // 13: p = Pattern.compile("^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$");
+                
                 m = regexPatterns[13].matcher(line);
                 if (m.matches()) {
                     adjectiveDocumentationHash.put(m.group(1), m.group(3));
                     addSUMOMapping(m.group(4), '3' + m.group(1));
                     processPointers('3' + m.group(1), m.group(2));
                 } else {
-                    // 14: p = Pattern.compile("^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$");     // no SUMO mapping
+                    
                     m = regexPatterns[14].matcher(line);
                     if (m.matches()) {
                         adjectiveDocumentationHash.put(m.group(1), m.group(3));
                         processPointers('3' + m.group(1), m.group(2));
                     } else {
-                        //System.out.println("line: " + line);
+                        
                         if (!line.isEmpty() && line.charAt(0) != ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readAdjectives(): No match in "
@@ -816,20 +816,20 @@ public class WordNet {
                     System.out.print('.');
                 }
                 line = line.trim();
-                // 15: p = Pattern.compile("^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$");
+                
                 m = regexPatterns[15].matcher(line);
                 if (m.matches()) {
                     adverbDocumentationHash.put(m.group(1), m.group(3));
                     addSUMOMapping(m.group(4), '4' + m.group(1));
                     processPointers('4' + m.group(1), m.group(2));
                 } else {
-                    // 16: p = Pattern.compile("^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$");   // no SUMO mapping
+                    
                     m = regexPatterns[16].matcher(line);
                     if (m.matches()) {
                         adverbDocumentationHash.put(m.group(1), m.group(3));
                         processPointers('4' + m.group(1), m.group(2));
                     } else {
-                        //System.out.println("line: " + line);
+                        
                         if (!line.isEmpty() && line.charAt(0) != ';') {
                             System.out.println();
                             System.out.println("Error in WordNet.readAdverbs(): No match in "
@@ -885,7 +885,7 @@ public class WordNet {
             String line;
             while ((line = lr.readLine()) != null) {
                 line = line.trim();
-                // 17: Pattern p = Pattern.compile("^Word: ([^ ]+) Values: (.*)");
+                
                 m = regexPatterns[17].matcher(line);
                 if (m.matches()) {
                     key = m.group(1);
@@ -897,8 +897,8 @@ public class WordNet {
                             i = words.length;
                         } else {
                             if (words[i].indexOf('_') == -1) {
-                                //System.out.println("INFO in WordNet.readWordFrequencies().  word: " + words[i]);
-                                //System.out.println("INFO in WordNet.readWordFrequencies().  line: " + line);
+                                
+                                
                             } else {
                                 word = words[i].substring(0, words[i].indexOf('_'));
                                 freq = words[i].substring(words[i].lastIndexOf('_') + 1, words[i].length());
@@ -986,7 +986,7 @@ public class WordNet {
             long t1 = System.currentTimeMillis();
             FileReader r = new FileReader(siFile);
             LineNumberReader lr = new LineNumberReader(r);
-            //System.out.println("INFO in WordNet.readSenseIndex().  Opened file.");
+            
             Matcher m;
             String word;
             String pos;
@@ -997,7 +997,7 @@ public class WordNet {
             ArrayList al;
             String line;
             while ((line = lr.readLine()) != null) {
-                // 18: Pattern p = Pattern.compile("([^%]+)%([^:]*):[^:]*:[^:]*:[^:]*:[^ ]* ([^ ]+) ([^ ]+) .*");
+                
                 m = regexPatterns[18].matcher(line);
                 if (m.matches()) {
                     word = m.group(1);
@@ -1016,8 +1016,8 @@ public class WordNet {
                     senseIndex.put(key, synset);
                     counter++;
                     if (counter == 1000) {
-                        //System.out.println("INFO in WordNet.readSenseIndex().  Read word sense: " + key);
-                        //System.out.println(word + " " + pos  + " " + synset  + " "  + sensenum);
+                        
+                        
                         System.out.print('.');
                         counter = 0;
                     }
@@ -1049,10 +1049,10 @@ public class WordNet {
 
         String SUMOterm = null;
 
-        //System.out.println("WordNet.findWordSense(): for word " + word + " and part of speech " + POS);
+        
         ArrayList senses = (ArrayList) wordsToSenses.get(word.intern());
         if (senses == null) {
-            //System.out.println("Error in WordNet.findWordSense(): Word " + word + " not in lexicon.");
+            
             return new ArrayList();
         }
         int firstSense = -1;
@@ -1061,7 +1061,7 @@ public class WordNet {
         for (int i = 0; i < senses.size(); i++) {
             String sense = (String) senses.get(i);
             if (WordNetUtilities.sensePOS(sense) == POS) {
-                //System.out.println("WordNet.findWordSense(): Examining sense: " + sense);
+                
                 if (firstSense == -1) {
                     firstSense = i;
                 }
@@ -1078,23 +1078,23 @@ public class WordNet {
                         bestTotal = total;
                         bestSense = i;
                     }
-                    //System.out.print("WordNet.findWordSense(): Total: ");
-                    //System.out.println(total + " " + bestTotal + " " + bestSense);
+                    
+                    
                 }
             }
         }
-        if (bestSense == -1) {             // if no word cooccurrances have been found
-            if (firstSense == -1) {        // if there were no words of the right part of speech
-                //System.out.println("Error in WordNet.findWordSense(): Word " + word + 
-                //                   " and part of speech " + POS + " has no matching SUMO term.");
+        if (bestSense == -1) {             
+            if (firstSense == -1) {        
+                
+                
                 return new ArrayList();
             }
             bestSense = firstSense;
         }
         String senseValue = (String) senses.get(bestSense);
-        //System.out.println("WordNet.findWordSense(): senseValue: " + senseValue);
+        
         String synset = (String) senseIndex.get(senseValue.intern());
-        //System.out.println("WordNet.findWordSense(): synset: " + synset);
+        
         switch (POS) {
             case NOUN:
                 SUMOterm = (String) nounSUMOHash.get(synset.intern());
@@ -1109,8 +1109,8 @@ public class WordNet {
                 SUMOterm = (String) adverbSUMOHash.get(synset.intern());
                 break;
         }
-        //System.out.println("WordNet.findWordSense(): SUMO term: " + SUMOterm);
-        if (SUMOterm != null) {                                                // Remove SUMO-WordNet mapping characters
+        
+        if (SUMOterm != null) {                                                
             SUMOterm = SUMOterm.replaceAll("&%", "");
             SUMOterm = SUMOterm.replaceAll("[+=@]", "");
         }
@@ -1155,7 +1155,7 @@ public class WordNet {
             }
             ArrayList al = findSUMOWordSenseArray(word, words, i);
             if (al != null && !al.isEmpty()) {
-                String synset = (String) al.get(0); // 9-digit
+                String synset = (String) al.get(0); 
                 String SUMOterm = (String) al.get(1);
                 String bestTotal = (String) al.get(2);
                 int total = Integer.valueOf(bestTotal);
@@ -1177,58 +1177,58 @@ public class WordNet {
 
         Matcher m;
 
-        // 19: Matcher m = Pattern.compile("(\\w)\\'re").matcher(sentence);
+        
         m = regexPatterns[19].matcher(sentence);
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        // 20: m = Pattern.compile("(\\w)\\'m").matcher(sentence);
+        
         m = regexPatterns[20].matcher(sentence);
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        // 21: m = Pattern.compile("(\\w)n\\'t").matcher(sentence);
+        
         m = regexPatterns[21].matcher(sentence);
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        // 22: m = Pattern.compile("(\\w)\\'ll").matcher(sentence);
+        
         m = regexPatterns[22].matcher(sentence);
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        // 23: m = Pattern.compile("(\\w)\\'s").matcher(sentence);
+        
         m = regexPatterns[23].matcher(sentence);
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        // 24: m = Pattern.compile("(\\w)\\'d").matcher(sentence);
+        
         m = regexPatterns[24].matcher(sentence);
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        // 25: m = Pattern.compile("(\\w)\\'ve").matcher(sentence);
+        
         m = regexPatterns[25].matcher(sentence);
         while (m.find()) {
-            //System.out.println("matches");
+            
             String group = m.group(1);
             sentence = m.replaceFirst(group);
             m.reset(sentence);
@@ -1297,17 +1297,17 @@ public class WordNet {
     public String collectSUMOWordSenses(String sentence) {
 
         String result = "";
-        //System.out.println("INFO in collectSUMOWordSenses(): unprocessed sentence: " + sentence);
+        
         String newSentence = removePunctuation(sentence);
         newSentence = removeStopWords(newSentence);
-        //System.out.println("INFO in collectSUMOWordSenses(): processed sentence: " + newSentence);
+        
         ArrayList al = splitToArrayList(newSentence);
         for (int i = 0; i < al.size(); i++) {
             String word = (String) al.get(i);
             String SUMO = findSUMOWordSense(word, al);
             if (SUMO != null && !SUMO.isEmpty()) {
                 result = result != null && result.isEmpty() ? SUMO : result + ' ' + SUMO;
-            } else {                                    // assume it's a noun
+            } else {                                    
                 SUMO = getBestDefaultSense(word);
                 if (SUMO != null && !SUMO.isEmpty()) {
                     result = result != null && result.isEmpty() ? SUMO : result + ' ' + SUMO;
@@ -1341,7 +1341,7 @@ public class WordNet {
                 wn.readVerbs();
                 wn.readAdjectives();
                 wn.readAdverbs();
-                // wn.readWordFrequencies();
+                
                 wn.readStopWords();
                 wn.readSenseIndex();
                 initNeeded = false;
@@ -1390,7 +1390,7 @@ public class WordNet {
         result.append("<i>According to WordNet, the ").append(type).append('"').append(word).append("\" has ");
         result.append(listLength).append(" sense(s).</i><P>\n\n");
 
-        for (int i = 0; i < listLength; i++) {         // Split apart the SUMO concepts, and store them as an associative array.
+        for (int i = 0; i < listLength; i++) {         
             synset = synsetList[i];
             synset = synset.trim();
             if (synset.equals(synsetNum)) {
@@ -1429,7 +1429,7 @@ public class WordNet {
             if (sumoEquivalent == null) {
                 result.append("<P><ul><li>").append(word).append(" not yet mapped to SUMO</ul><P>");
             } else {
-                //result.append(HTMLformatter.termMappingsList(sumoEquivalent,"<a href=\"Browse.jsp?kb=" + sumokbname + "&term="));
+                
                 result.append(sumoEquivalent).append(' ').append(sumokbname);
             }
         }
@@ -1448,12 +1448,12 @@ public class WordNet {
 
         String result = null;
 
-        //System.out.println("INFO in WordNet.nounRootForm: Checking word : " + mixedCase + " and " + input);
+        
         if ((exceptionNounHash.containsKey(mixedCase))
                 || (exceptionNounHash.containsKey(input))) {
             result = (String) exceptionNounHash.get(exceptionNounHash.containsKey(mixedCase) ? mixedCase : input);
         } else {
-            // Test all regular plural forms, and correct to singular.
+            
             if (WordNetUtilities.substTest(input, "s$", "", nounSynsetHash)) {
                 result = WordNetUtilities.subst(input, "s$", "");
             } else {
@@ -1527,7 +1527,7 @@ public class WordNet {
                 || (exceptionVerbHash.containsKey(input))) {
             result = (String) exceptionVerbHash.get(exceptionVerbHash.containsKey(mixedCase) ? mixedCase : input);
         } else {
-            // Test all regular forms and convert to present tense singular.
+            
             if (WordNetUtilities.substTest(input, "s$", "", verbSynsetHash)) {
                 result = WordNetUtilities.subst(input, "s$", "");
             } else {
@@ -1639,7 +1639,7 @@ public class WordNet {
         ArrayList senses = (ArrayList) wordsToSenses.get(verbRoot);
         if (senses != null) {
             for (Object sense1 : senses) {
-                String sense = (String) sense1;                // returns a word_POS_num
+                String sense = (String) sense1;                
                 String POS = WordNetUtilities.getPOSfromKey(sense);
                 String synset = WordNetUtilities.posLettersToNumber(POS) + senseIndex.get(sense);
                 ArrayList words = (ArrayList) synsetsToWords.get(synset);
@@ -1657,7 +1657,7 @@ public class WordNet {
         senses = (ArrayList) wordsToSenses.get(nounRoot);
         if (senses != null) {
             for (Object sense1 : senses) {
-                String sense = (String) sense1;                // returns a word_POS_num
+                String sense = (String) sense1;                
                 String POS = WordNetUtilities.getPOSfromKey(sense);
                 String synset = WordNetUtilities.posLettersToNumber(POS) + senseIndex.get(sense);
                 ArrayList words = (ArrayList) synsetsToWords.get(synset);
@@ -1713,9 +1713,9 @@ public class WordNet {
         if (word == null || word.isEmpty()) {
             return null;
         }
-        String synsetBlock = null;  // A String of synsets, which are 8 digit numbers, separated by spaces.
+        String synsetBlock = null;  
 
-        //System.out.println("INFO in WordNet.getSUMOterm: Checking word : " + word);
+        
         if (pos == NOUN) {
             synsetBlock = (String) nounSynsetHash.get(word);
         }
@@ -1738,7 +1738,7 @@ public class WordNet {
         String term = null;
 
         if (synsetList != null) {
-            synset = synsetList[0];   // Just get the first synset.  This needs to be changed to a word sense disambiguation algorithm.
+            synset = synsetList[0];   
             synset = synset.trim();
             if (pos == NOUN) {
                 term = (String) nounSUMOHash.get(synset);
@@ -1861,7 +1861,7 @@ public class WordNet {
         buf.append("<b>").append(POSstring).append(" Synset:</b> ").append(synset);
 
         if (SUMOterm != null && !SUMOterm.isEmpty()) {
-            //buf.append(HTMLformatter.termMappingsList(SUMOterm,"<a href=\"Browse.jsp?kb=" + sumokbname + "&term="));      
+            
             buf.append(SUMOterm).append("  ").append(sumokbname);
         }
 
@@ -1913,7 +1913,7 @@ public class WordNet {
      */
     private static boolean arrayContains(int[] ar, int value) {
 
-        //System.out.println("INFO in WordNet.arrayContains: value: " + value);
+        
         for (int anAr : ar) {
             if (anAr == value) {
                 return true;
@@ -1929,7 +1929,7 @@ public class WordNet {
      */
     private String getTransitivity(String synset, String word) {
 
-        //System.out.println("INFO in WordNet.getTransitivity: synset, word: " + synset + " " + word);
+        
         int[] intrans = {1, 2, 3, 4, 7, 23, 35};
         int[] ditrans = {15, 16, 17, 18, 19};
         String intransitive = "no";
@@ -2287,7 +2287,7 @@ public class WordNet {
         while (result.indexOf('\'', start) > -1) {
             int i;
             i = result.indexOf('\'', start);
-            //System.out.println("INFO in WordNet.processPrologString(): index: " + i + " string: " + doc);
+            
             result = i == 0 ? "''" + result.substring(i + 1) : result.substring(0, i) + "\\'" + result.substring(i + 1);
             start = i + 2;
         }
@@ -2323,7 +2323,7 @@ public class WordNet {
                 }
                 while (it2.hasNext()) {
                     String senseKey = (String) it2.next();
-                    //System.out.println("INFO in WordNet.writeWordNetS(): Sense key: " + senseKey);              
+                    
                     String POS = senseKeyPOS(senseKey);
                     String senseNum = senseKeySenseNum(senseKey);
                     if (POS != null && POS.isEmpty() || senseNum != null && senseNum.isEmpty()) {
@@ -2371,7 +2371,7 @@ public class WordNet {
             }
             for (Object o : relations.keySet()) {
                 String synset = (String) o;
-                //System.out.println("INFO in WordNet.writeWordNetHyp(): synset: " + synset);              
+                
 
                 ArrayList rels = (ArrayList) relations.get(synset);
                 if (rels == null || rels.size() < 1) {
@@ -2413,7 +2413,7 @@ public class WordNet {
         while (doc.indexOf('\'', start) > -1) {
             int i;
             i = doc.indexOf('\'', start);
-            //System.out.println("INFO in WordNet.processPrologString(): index: " + i + " string: " + doc);
+            
             doc = i == 0 ? "''" + doc.substring(i + 1) : doc.substring(0, i) + "''" + doc.substring(i + 1);
             start = i + 2;
         }
@@ -2530,22 +2530,22 @@ public class WordNet {
     public static void main(String[] args) {
 
         try {
-            // KBmanager.getMgr().initializeOnce();
+            
             WordNet.initOnce();
-            //String sent = "Bob's cat ran to the river and drank deeply of the clear water to slake its thirst.  It'll oftern say it's thirsty, but then not drink.";
+            
 
-            //System.out.println("Before: " + sent);
-            //String result = WordNet.wn.removeStopWords(sent);
-            //WordNet wn = new WordNet();
-            //System.out.println("Result: " + wn.removePunctuation(sent));
+            
+            
+            
+            
             computeSentenceTerms();
         } catch (Exception e) {
             System.out.println("Error in WordNet.main():" + e.getMessage());
         }
 
-        //String sent = "I'm a guy who didn't go there.";
-        //WordNet wn = new WordNet();
-        //System.out.println("Result: " + wn.removePunctuation(sent));
+        
+        
+        
     }
 
 }

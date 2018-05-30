@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import org.oakgp.util.Utils;
  * it.
  * </p>
  *
- * @see <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.49.5419&rep=rep1&type=pdf">Genetic Programming with One-Point Crossover and Point
+ * @see <a href="http:
  * Mutation</a>
  */
 public final class OnePointCrossover implements GeneticOperator {

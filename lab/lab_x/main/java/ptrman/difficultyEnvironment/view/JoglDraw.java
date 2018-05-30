@@ -23,7 +23,7 @@ package ptrman.difficultyEnvironment.view;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
-// changed by ptrman/SquareOfTwo
+
 
 import nars.rover.physics.PhysicsCamera;
 import nars.rover.physics.gl.JoglAbstractDraw;

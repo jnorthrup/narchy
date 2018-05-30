@@ -29,7 +29,7 @@ public class Tex {
 
     public boolean mipmap;
 
-    //TODO use a PPM uncompressed format for transferring from CPU to GPU
+    
 
 
     final AtomicBoolean textureUpdated = new AtomicBoolean(false);
@@ -62,7 +62,7 @@ public class Tex {
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, nextData);
             } else if (nextData != null) {
-                //TODO compute 'd' outside of rendering paint in the update method
+                
                 texture.updateImage(gl, nextData);
             }
 
@@ -145,24 +145,24 @@ public class Tex {
         if (b == null || b.getWidth()!=x.width || b.getHeight()!=x.height)
             b = new BufferedImage(x.width, x.height, BufferedImage.TYPE_INT_ARGB);
 
-        //HACK
+        
         update(
             ConvertBufferedImage.convertTo(x, b)
         );
 
         return b;
 
-//        ByteBuffer buffer = ByteBuffer.wrap(x.data);
-//        nextData = new TextureData(profile, GL_RGB,
-//                x.width, x.height,
-//                0 /* border */,
-//                GL_BGRA,
-//                GL_UNSIGNED_BYTE,
-//                mipmap,
-//                false,
-//                false,
-//                buffer, null
-//        );
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -178,11 +178,11 @@ public class Tex {
             try {
                 tex.paint(gl, bounds);
             } catch (NullPointerException e) {
-//                SurfaceBase p = this.parent;
-//                if (p instanceof MutableContainer) {
-//                    ((MutableContainer) p).remove(this);
-//                }
-//                e.printStackTrace();
+
+
+
+
+
             }
         }
     }

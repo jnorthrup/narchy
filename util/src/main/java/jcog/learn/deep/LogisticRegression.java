@@ -93,18 +93,18 @@ public class LogisticRegression {
                 {0, 1}
         };
 
-        // construct
+        
         LogisticRegression classifier = new LogisticRegression(n_in, n_out);
 
-        // train
+        
         for(int epoch=0; epoch<n_epochs; epoch++) {
             for(int i=0; i<train_N; i++) {
                 classifier.train(train_X[i], train_Y[i], learning_rate);
             }
-            //learning_rate *= 0.95;
+            
         }
 
-        // test data
+        
         double[][] test_X = {
                 {1., 0., 1., 0., 0., 0.},
                 {0., 0., 1., 1., 1., 0.}
@@ -113,7 +113,7 @@ public class LogisticRegression {
         double[][] test_Y = new double[test_N][n_out];
 
 
-        // test
+        
         for(int i=0; i<test_N; i++) {
             classifier.predict(test_X[i], test_Y[i]);
             for(int j=0; j<n_out; j++) {

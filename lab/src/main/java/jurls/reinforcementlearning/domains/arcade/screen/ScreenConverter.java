@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.screen;
 
@@ -42,10 +42,10 @@ public class ScreenConverter {
      * @return
      */
     public BufferedImage convert(ScreenMatrix m) {
-        // Create a new image, of the same width and height as the screen matrix
+        
         BufferedImage img = new BufferedImage(m.width, m.height, BufferedImage.TYPE_INT_RGB);
 
-        // Map each pixel
+        
         for (int x = 0; x < m.width; x++)
             for (int y = 0; y < m.height; y++) {
                 int index = m.matrix[x][y];

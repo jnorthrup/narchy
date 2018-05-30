@@ -88,7 +88,7 @@ abstract public class MetalBitSet {
                 if (next) {
                     d[i] |= j;
                 } else {
-                    //clear
+                    
                     d[i] &= ~j;
                 }
             }
@@ -143,17 +143,17 @@ abstract public class MetalBitSet {
                 throw new TODO();
             return Long.numberOfLeadingZeros(~data[0]);
 
-            //        int u = 0;
-            //
-            //        long word = ~words[u] & (WORD_MASK << fromIndex);
-            //
-            //        while (true) {
-            //            if (word != 0)
-            //                return (u * BITS_PER_WORD) + Long.numberOfTrailingZeros(word);
-            //            if (++u == wordsInUse)
-            //                return wordsInUse * BITS_PER_WORD;
-            //            word = ~words[u];
-            //        }
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
         }
 

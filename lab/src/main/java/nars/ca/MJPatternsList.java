@@ -1,8 +1,8 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Patterns list
-// Patterns names are read from the resource file 'pat.txt'.
+package nars.ca;
+
+
+
+
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,8 +19,8 @@ public class MJPatternsList extends Dialog implements ActionListener {
 	private String sGameName;
 	private final Vector[] vPatterns = new Vector[MJRules.GAME_LAST + 1];
 
-	// ----------------------------------------------------------------
-	// Constructor
+	
+	
 	MJPatternsList(Frame frame, MJCellUI mjui) {
 		super(frame, "CA patterns", false);
 		mjUI = mjui;
@@ -48,8 +48,8 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		InitList();
 	}
 
-	// ----------------------------------------------------------------
-	// Fill the vector with all available patterns
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void AddPatterns() {
 		MJTools mjT;
@@ -78,8 +78,8 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Fill the list with patterns only from the current rule
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitList() {
 		int i, iGame;
@@ -96,8 +96,8 @@ public class MJPatternsList extends Dialog implements ActionListener {
 							.substring(sRuleName.length() + 1));
 	}
 
-	// ----------------------------------------------------------------
-	// Load the currently selected pattern
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void LoadCurrentPattern() {
 		if (LstFiles.getSelectedIndex() >= 0) {
@@ -112,7 +112,7 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		}
 	}
 
-	// ----------------------------------------------------------------
+	
 	@Override
 	public void actionPerformed(ActionEvent ae) {
 		if (ae.getSource() == btnLoad) {
@@ -122,7 +122,7 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		}
 	}
 
-	// ----------------------------------------------------------------
+	
 	@Override
 	public boolean action(Event evt, Object arg) {
 		if (evt.target.equals(LstFiles)) {
@@ -132,7 +132,7 @@ public class MJPatternsList extends Dialog implements ActionListener {
 		return true;
 	}
 
-	// ----------------------------------------------------------------
+	
 	@Override
 	public boolean handleEvent(Event evt) {
 		if (evt.id == Event.WINDOW_DESTROY)
@@ -141,6 +141,6 @@ public class MJPatternsList extends Dialog implements ActionListener {
 			return super.handleEvent(evt);
 		return true;
 	}
-	// ----------------------------------------------------------------
+	
 
 }

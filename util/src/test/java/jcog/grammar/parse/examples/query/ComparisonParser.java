@@ -51,7 +51,7 @@ public class ComparisonParser {
 	 */
 	public Parser arg() {
 
-		// arg = expression | QuotedString;
+		
 
 		Alternation a = new Alternation();
 		a.get(expression());
@@ -93,11 +93,11 @@ public class ComparisonParser {
 		 */
 		if (expression == null) {
 
-			// expression = term ('+' term | '-' term)*;
+			
 			expression = new Seq("expression");
 			expression.get(term());
 
-			// second part
+			
 			Alternation a = new Alternation();
 			a.get(plusTerm());
 			a.get(minusTerm());
@@ -111,17 +111,17 @@ public class ComparisonParser {
 	 * variable.
 	 */
 	protected Parser factor() {
-		// factor = '(' expression ')' | Num | variable;
+		
 		Alternation factor = new Alternation("factor");
 
-		//  '(' expression ')'
+		
 		Seq s = new Seq();
 		s.get(new Symbol('(').ok());
 		s.get(expression());
 		s.get(new Symbol(')').ok());
 		factor.get(s);
 
-		// Num | variable
+		
 		factor.get(new Num().put(new AtomAssembler()));
 		factor.get(variable());
 
@@ -168,13 +168,13 @@ public class ComparisonParser {
 	 * Recognize a "term", per the language definition.
 	 */
 	protected Parser term() {
-		// term = factor ('*' factor | '/' factor)*;
+		
 		Seq term = new Seq("term");
 
-		// first part
+		
 		term.get(factor());
 
-		// second part
+		
 		Alternation a = new Alternation();
 		a.get(timesFactor());
 		a.get(divideFactor());

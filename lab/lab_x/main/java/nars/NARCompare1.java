@@ -12,7 +12,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package nars.timeline;
 
@@ -55,14 +55,14 @@ public class NARCompare1 extends TimelineExample {
             new LineChart(at.getCharts("task.novel.add", "task.immediate_processed")).height(3),
             new LineChart(at.getCharts("task.goal.process", "task.question.process", "task.judgment.process")).height(3),
             new LineChart(at.getCharts("concept.priority.mean")).height(2),                
-            //new StackedPercentageChart(at.getCharts("concept.priority.hist.0", "concept.priority.hist.1", "concept.priority.hist.2", "concept.priority.hist.3")).height(2),
-            //new BarChart(new FirstOrderDifferenceTimeSeries("d(concepts)", at.metrics.get("concept.count"))),
+            
+            
                 
             new LineChart(bt.getCharts("task.novel.add", "task.immediate_processed")).height(3),
             new LineChart(bt.getCharts("task.goal.process", "task.question.process", "task.judgment.process")).height(3),
             new LineChart(bt.getCharts("concept.priority.mean")).height(2)
-            //new StackedPercentageChart(bt.getCharts("concept.priority.hist.0", "concept.priority.hist.1", "concept.priority.hist.2", "concept.priority.hist.3")).height(2)
-            //new BarChart(new FirstOrderDifferenceTimeSeries("d(concepts)", bt.metrics.get("concept.count")))
+            
+            
         ))).show(900, 800, true);
     }
     

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -46,14 +46,14 @@ public class QuaternionUtil {
 		q.set(axis.x * s, axis.y * s, axis.z * s, (float) Math.cos(angle * 0.5f));
 	}
 	
-	// Game Programming Gems 2.10. make sure v0,v1 are normalized
+	
 	public static Quat4f shortestArcQuat(v3 v0, v3 v1, Quat4f out) {
 		v3 c = new v3();
 		c.cross(v0, v1);
 		float d = v0.dot(v1);
 
 		if (d < -1.0 + BulletGlobals.FLT_EPSILON) {
-			// just pick any vector
+			
 			out.set(0.0f, 1.0f, 0.0f, 0.0f);
 			return out;
 		}

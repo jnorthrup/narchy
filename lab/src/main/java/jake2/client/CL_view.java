@@ -54,23 +54,23 @@ public class CL_view {
         float[] axis = new float[3];
 
         if ((i = Globals.cl.configstrings[Defines.CS_MODELS + 1].length()) == 0)
-            return; // no map loaded
+            return; 
 
         SCR.AddDirtyPoint(0, 0);
         SCR.AddDirtyPoint(Globals.viddef.getWidth() - 1, Globals.viddef.getHeight() - 1);
 
-        // let the render dll load the map
+        
         mapname = Globals.cl.configstrings[Defines.CS_MODELS + 1].substring(5,
-                i - 4); // skip "maps/"
-        // cut off ".bsp"
+                i - 4); 
+        
 
-        // register models, pics, and skins
+        
         Com.Printf("Map: " + mapname + '\r');
         SCR.UpdateScreen();
         Globals.re.BeginRegistration(mapname);
         Com.Printf("                                     \r");
 
-        // precache status bar pics
+        
         Com.Printf("pics\r");
         SCR.UpdateScreen();
         SCR.TouchPics();
@@ -91,9 +91,9 @@ public class CL_view {
                 Com.Printf(name + '\r');
 
             SCR.UpdateScreen();
-            Sys.SendKeyEvents(); // pump message loop
+            Sys.SendKeyEvents(); 
             if (name.charAt(0) == '#') {
-                // special player weapon model
+                
                 if (num_cl_weaponmodels < Defines.MAX_CLIENTWEAPONMODELS) {
                     cl_weaponmodels[num_cl_weaponmodels] = Globals.cl.configstrings[Defines.CS_MODELS
                             + i].substring(1);
@@ -120,7 +120,7 @@ public class CL_view {
                 && Globals.cl.configstrings[Defines.CS_IMAGES + i].length() > 0; i++) {
             Globals.cl.image_precache[i] = Globals.re
                     .RegisterPic(Globals.cl.configstrings[Defines.CS_IMAGES + i]);
-            Sys.SendKeyEvents(); // pump message loop
+            Sys.SendKeyEvents(); 
         }
 
         Com.Printf("                                     \r");
@@ -129,7 +129,7 @@ public class CL_view {
                 continue;
             Com.Printf("client " + i + '\r');
             SCR.UpdateScreen();
-            Sys.SendKeyEvents(); // pump message loop
+            Sys.SendKeyEvents(); 
             CL_parse.ParseClientinfo(i);
             Com.Printf("                                     \r");
         }
@@ -137,7 +137,7 @@ public class CL_view {
         CL_parse.LoadClientinfo(Globals.cl.baseclientinfo,
                 "unnamed\\male/grunt");
 
-        // set sky textures and speed
+        
         Com.Printf("sky\r");
         SCR.UpdateScreen();
         rotate = Float
@@ -151,15 +151,15 @@ public class CL_view {
                 axis);
         Com.Printf("                                     \r");
 
-        // the renderer can now free unneeded stuff
+        
         Globals.re.EndRegistration();
 
-        // clear any lines of console text
+        
         Console.ClearNotify();
 
         SCR.UpdateScreen();
         Globals.cl.refresh_prepped = true;
-        Globals.cl.force_refdef = true; // make sure we have a valid refdef
+        Globals.cl.force_refdef = true; 
     }
 
     public static void AddNetgraph() {
@@ -167,8 +167,8 @@ public class CL_view {
         int in;
         int ping;
 
-        // if using the debuggraph for something else, don't
-        // add the net lines
+        
+        
         if (SCR.scr_debuggraph.value == 0.0f || SCR.scr_timegraph.value == 0.0f)
             return;
 
@@ -178,7 +178,7 @@ public class CL_view {
         for (i = 0; i < Globals.cl.surpressCount; i++)
             SCR.DebugGraph(30, 0xdf);
 
-        // see what the latency was on this packet
+        
         in = Globals.cls.netchan.incoming_acknowledged
                 & (Defines.CMD_BACKUP - 1);
         ping = Globals.cls.realtime - Globals.cl.cmd_time[in];

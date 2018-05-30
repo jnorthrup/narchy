@@ -22,9 +22,9 @@ public class NLPGenTest {
     @Test
     public void testSimple1() throws Narsese.NarseseException {
         assertEquals("a a b", g.toString(Narsese.the().task("(a --> b).", n)));
-        //assertEquals("a notA b", g.toString(n.task("(--,(a --> b)).")));
+        
         assertEquals("(a) and (bbb)", g.toString(Narsese.the().task("(&&, (a), (bbb)).", n)));
-        //assertEquals("(a) or (bbb)", g.toString(n.task("(||, (a), (bbb)).")));
+        
     }
 
     @Test
@@ -32,10 +32,10 @@ public class NLPGenTest {
         assertEquals("a same b", g.toString(Narsese.the().task("(a <-> b).", n)));
     }
 
-//    @Test
-//    public void testSimple3() {
-//        assertEquals("a isn't b.", g.toString(n.task("(--,(a --> b)).")));
-//        assertEquals("(a is b) and (c is d).", g.toString(n.task("((a --> b) && (c --> d)).")));
-//    }
+
+
+
+
+
 
 }

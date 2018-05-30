@@ -17,7 +17,7 @@ public abstract class QController extends AbstractController {
     private double[] s;
     boolean active = true;
 
-    //even when not active, vectorize inputs because it may affect sensor readings that determine reward, which we may want to evaluate
+    
     public QController(NAR nar, int updatePeriod) {
         super(nar, updatePeriod);
 
@@ -54,7 +54,7 @@ public abstract class QController extends AbstractController {
     @Override
     public void setParameters() {
         int i = 0;
-        //even when not active, vectorize inputs because it may affect sensor readings that determine reward, which we may want to evaluate
+        
         s = q.getSensor();
         for (ControlSensor cs : inputs) {
             i += cs.vectorize(s, i);

@@ -327,7 +327,7 @@ public class Path
          precision = 2;
       }
 
-      // Initialization
+      
       final ArrayList<Line2D> arrayListLines = new ArrayList<Line2D>();
       Line2D line2D;
       Point2D point1, point2;
@@ -336,14 +336,14 @@ public class Path
       int index;
       Point3D[] points;
 
-      // For each element
+      
       for(final PathElement pathElement : this.path)
       {
-         // Get element points
+         
          points = pathElement.points;
          switch(pathElement.pathType)
          {
-         // If the element is a line, add just this line
+         
             case LINE:
                point1 = new Point2D(points[0].getX(), points[0].getY());
                value1 = points[0].getZ();
@@ -354,9 +354,9 @@ public class Path
                arrayListLines.add(line2D);
             break;
 
-            // If the element is quadric, interpolate it
+            
             case QUAD:
-               // Get values
+               
                x1 = points[0].getX();
                y1 = points[0].getY();
                value1 = points[0].getZ();
@@ -366,11 +366,11 @@ public class Path
                x3 = points[2].getX();
                y3 = points[2].getY();
                value3 = points[2].getZ();
-               // Interpolate values
+               
                x = Texture.PQuadriques(x1, x2, x3, precision);
                y = Texture.PQuadriques(y1, y2, y3, precision);
                val = Texture.PQuadriques(value1, value2, value3, precision);
-               // Add interpolated lines
+               
                for(index = 1; index < precision; index++)
                {
                   point1 = new Point2D((float) x[index - 1], (float) y[index - 1]);
@@ -383,9 +383,9 @@ public class Path
                }
             break;
 
-            // If the element is cubic, interpolate it
+            
             case CUBIC:
-               // Get values
+               
                x1 = points[0].getX();
                y1 = points[0].getY();
                value1 = points[0].getZ();
@@ -398,11 +398,11 @@ public class Path
                x4 = points[3].getX();
                y4 = points[3].getY();
                value4 = points[3].getZ();
-               // Interpolate values
+               
                x = Texture.PCubiques(x1, x2, x3, x4, precision);
                y = Texture.PCubiques(y1, y2, y3, y4, precision);
                val = Texture.PCubiques(value1, value2, value3, value4, precision);
-               // Add interpolated lines
+               
                for(index = 1; index < precision; index++)
                {
                   point1 = new Point2D((float) x[index - 1], (float) y[index - 1]);
@@ -467,21 +467,21 @@ public class Path
     */
    public float computePathSize()
    {
-      // If the size is already compute, no need to compute again
+      
       if(this.size >= 0f)
       {
          return this.size;
       }
 
-      // Start computing
+      
       this.size = 0;
 
-      // For each element, add its size
+      
       Point3D old = null;
       for(final PathElement pathElement : this.path)
       {
-         // An element's size is suppose be the sum of size between each points
-         // compose the element
+         
+         
          final Point3D[] points = pathElement.points;
          final int length = points.length;
          if(old != null)

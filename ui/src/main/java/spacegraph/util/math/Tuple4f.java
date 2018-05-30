@@ -120,10 +120,10 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
    * Constructs and initializes a Tuple4f to (0,0,0,0).
    */
   protected Tuple4f()   {
-//    this.x = 0.0f;
-//    this.y = 0.0f;
-//    this.z = 0.0f;
-//    this.w = 0.0f;
+
+
+
+
   }
 
 
@@ -656,11 +656,11 @@ public abstract class Tuple4f implements java.io.Serializable, Cloneable {
      */
     @Override
     public Object clone() {
-	// Since there are no arrays we can just use Object.clone()
+	
 	try {
 	    return super.clone();
 	} catch (CloneNotSupportedException e) {
-	    // this shouldn't happen, since we are Cloneable
+	    
 	    throw new InternalError();
 	}
     }

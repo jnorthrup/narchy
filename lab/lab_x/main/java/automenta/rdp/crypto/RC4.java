@@ -18,9 +18,9 @@ package automenta.rdp.crypto;
  * edition</cite>, John Wiley &amp; Sons, 1996.
  * </ol>
  * <p>
- * <b>Copyright</b> &copy; 1997 <a href="http://www.systemics.com/">Systemics
+ * <b>Copyright</b> &copy; 1997 <a href="http:
  * Ltd</a> on behalf of the <a
- * href="http://www.systemics.com/docs/cryptix/">Cryptix Development Team</a>.
+ * href="http:
  * <br>
  * All rights reserved.
  * <p>
@@ -30,10 +30,10 @@ package automenta.rdp.crypto;
  * @author David Hopwood
  * @since Cryptix 2.2.2
  */
-public final class RC4 { // must be final for security reasons
+public final class RC4 { 
 
-	// RC4 constants and variables
-	// ............................................................................
+	
+	
 
 	/**
 	 * The state of the cipher object when it is uninitialized, that is, the
@@ -73,12 +73,12 @@ public final class RC4 { // must be final for security reasons
 	 */
 	private static final int BLOCK_SIZE = 1;
 
-	private int state; // defaults to UNINITIALIZED = 0
+	private int state; 
 
 	private String cipherName = "RC4";
 
-	// Constructor, finalizer, and clone()
-	// ............................................................................
+	
+	
 
 	/**
 	 * Constructs an RC4 cipher object, in the UNINITIALIZED state. This calls
@@ -86,7 +86,7 @@ public final class RC4 { // must be final for security reasons
 	 * false and the provider set to "Cryptix".
 	 */
 	public RC4() {
-		// super(false, false, "Cryptix");
+		
 	}
 
 	/**
@@ -97,8 +97,8 @@ public final class RC4 { // must be final for security reasons
 		throw new CloneNotSupportedException();
 	}
 
-	// Implementation of JCE methods
-	// ............................................................................
+	
+	
 
 	/**
 	 * <b>SPI</b>: Returns the length of an input block, in bytes.
@@ -161,7 +161,7 @@ public final class RC4 { // must be final for security reasons
 		if (inLen < 0)
 			throw new IllegalArgumentException("inLen < 0");
 
-		// Avoid overlapping input and output regions.
+		
 		if (in == out
 				&& (outOffset >= inOffset && outOffset < inOffset + inLen || inOffset >= outOffset
 						&& inOffset < outOffset + inLen)) {
@@ -176,8 +176,8 @@ public final class RC4 { // must be final for security reasons
 		return inLen;
 	}
 
-	// Own methods
-	// ............................................................................
+	
+	
 
 	/**
 	 * RC4 encryption/decryption. The input and output regions are assumed not

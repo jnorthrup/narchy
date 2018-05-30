@@ -9,25 +9,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TheoryManagerTestCase {
 
-//	@Test public void testUnknownDirective() throws InvalidTheoryException {
-//		String theory = ":- unidentified_directive(unknown_argument).";
-//		Prolog engine = new Prolog();
-//		TestWarningListener warningListener = new TestWarningListener();
-//		engine.addWarningListener(warningListener);
-//		engine.setTheory(new Theory(theory));
-//		assertTrue(warningListener.warning.indexOf("unidentified_directive/1") > 0);
-//		assertTrue(warningListener.warning.indexOf("is unknown") > 0);
-//	}
-//
-//	@Test public void testFailedDirective() throws InvalidTheoryException {
-//		String theory = ":- load_library('UnknownLibrary').";
-//		Prolog engine = new Prolog();
-//		TestWarningListener warningListener = new TestWarningListener();
-//		engine.addWarningListener(warningListener);
-//		engine.setTheory(new Theory(theory));
-//		assertTrue(warningListener.warning.indexOf("load_library/1") > 0);
-//		assertTrue(warningListener.warning.indexOf("InvalidLibraryException") > 0);
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	@Test
 	public void testAssertNotBacktrackable() throws PrologException {
@@ -47,8 +47,8 @@ public class TheoryManagerTestCase {
 		assertEquals(1, testClauses.size());
 		manager.abolish(new Struct("/", new Struct("test"), new NumberTerm.Int(2)));
 		testClauses = manager.find(testTerm);
-		// The predicate should also disappear completely from the clause
-		// database, i.e. ClauseDatabase#get(f/a) should return null
+		
+		
 		assertEquals(0, testClauses.size());
 	}
 
@@ -63,7 +63,7 @@ public class TheoryManagerTestCase {
 		assertFalse(info.isSuccess());
 	}
 	
-	// Based on the bugs 65 and 66 on sourceforge
+	
 	@Test public void testRetractall() throws Exception {
 		Prolog engine = new Prolog();
 		Solution info = engine.solve("assert(takes(s1,c2)), assert(takes(s1,c3)).");
@@ -83,12 +83,12 @@ public class TheoryManagerTestCase {
 		assertTrue(info.isSuccess());
 		if (info.hasOpenAlternatives())
 			System.err.println(engine.solveNext());
-//		assertFalse(info.hasOpenAlternatives());
+
 		assertEquals("c2", info.getVarValue("N").toString());
 	}
 
-	// TODO test retractall: ClauseDatabase#get(f/a) should return an
-	// empty list
+	
+	
 	
 	@Test public void testRetract() throws InvalidTheoryException, MalformedGoalException {
 		Prolog engine = new Prolog();

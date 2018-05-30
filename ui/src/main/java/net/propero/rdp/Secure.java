@@ -96,9 +96,9 @@ public class Secure {
 
     private final RC4 rc4_update;
 
-//	private BlockMessageDigest sha1 = null;
-//
-//	private BlockMessageDigest md5 = null;
+
+
+
     private final Object digestLock = new Object();
     private final byte[] sec_sign_key;
     private final byte[] sec_decrypt_update_key;
@@ -106,8 +106,8 @@ public class Secure {
     private final byte[] client_random = new byte[SEC_RANDOM_SIZE];
     private final VChannels channels;
     boolean readCert;
-    // private String hostname=null;
-    // private String username=null;
+    
+    
     boolean licenceIssued;
     private MessageDigest sha1;
     private MessageDigest md5;
@@ -134,8 +134,8 @@ public class Secure {
         rc4_dec = new RC4();
         rc4_enc = new RC4();
         rc4_update = new RC4();
-//		sha1 = new SHA1();
-//		md5 = new MD5();
+
+
 
         try {
             sha1 = MessageDigest.getInstance("SHA-1");
@@ -144,13 +144,13 @@ public class Secure {
             e.printStackTrace();
         }
 
-        sec_sign_key = new byte[16]; // changed from 8 - rdesktop 1.2.0
+        sec_sign_key = new byte[16]; 
         sec_decrypt_key = new byte[16];
         sec_encrypt_key = new byte[16];
-        sec_decrypt_update_key = new byte[16]; // changed from 8 - rdesktop
-        // 1.2.0
-        sec_encrypt_update_key = new byte[16]; // changed from 8 - rdesktop
-        // 1.2.0
+        sec_decrypt_update_key = new byte[16]; 
+        
+        sec_encrypt_update_key = new byte[16]; 
+        
         sec_crypted_random = new byte[64];
 
     }
@@ -161,8 +161,8 @@ public class Secure {
      * @param mcs_data Packet to read
      */
     private static void processSrvInfo(RdpPacket_Localised mcs_data) {
-        Options.server_rdp_version = mcs_data.getLittleEndian16(); // in_uint16_le(s,
-        // g_server_rdp_version);
+        Options.server_rdp_version = mcs_data.getLittleEndian16(); 
+        
         logger.debug(("Server RDP version is " + Options.server_rdp_version));
         if (1 == Options.server_rdp_version)
             Options.use_rdp5 = false;
@@ -301,20 +301,20 @@ public class Secure {
         buffer.set8(0x7c);
         buffer.setBigEndian16(1);
 
-        buffer.setBigEndian16(length | 0x8000); // remaining length
+        buffer.setBigEndian16(length | 0x8000); 
 
-        buffer.setBigEndian16(8); // length?
+        buffer.setBigEndian16(8); 
         buffer.setBigEndian16(16);
         buffer.set8(0);
         buffer.setLittleEndian16(0xc001);
         buffer.set8(0);
 
-        buffer.setLittleEndian32(0x61637544); // "Duca" ?!
-        buffer.setBigEndian16(length - 14 | 0x8000); // remaining length
+        buffer.setLittleEndian32(0x61637544); 
+        buffer.setBigEndian16(length - 14 | 0x8000); 
 
-        // Client information
+        
         buffer.setLittleEndian16(SEC_TAG_CLI_INFO);
-        buffer.setLittleEndian16(216); // length
+        buffer.setLittleEndian16(216); 
         buffer.setLittleEndian16(Options.use_rdp5 ? 4 : 1);
         buffer.setLittleEndian16(8);
         buffer.setLittleEndian16(Options.width);
@@ -322,12 +322,12 @@ public class Secure {
         buffer.setLittleEndian16(0xca01);
         buffer.setLittleEndian16(0xaa03);
         buffer.setLittleEndian32(Options.keylayout);
-        buffer.setLittleEndian32(2600); // or 0ece
-        // // client
-        // build? we
-        // are 2600
-        // compatible
-        // :-)
+        buffer.setLittleEndian32(2600); 
+        
+        
+        
+        
+        
 
         /* Unicode name of client, padded to 32 bytes */
         buffer.outUnicodeString(Options.hostname, hostlen);
@@ -338,19 +338,19 @@ public class Secure {
         buffer.setLittleEndian32(12);
         buffer.incrementPosition(64); /* reserved? 4 + 12 doublewords */
 
-        buffer.setLittleEndian16(0xca01); // out_uint16_le(s, 0xca01);
+        buffer.setLittleEndian16(0xca01); 
         buffer.setLittleEndian16(1);
 
-        buffer.setLittleEndian32(0); // out_uint32(s, 0);
-        buffer.set8(Options.server_bpp); // out_uint8(s, g_server_bpp);
-        buffer.setLittleEndian16(0x0700); // out_uint16_le(s, 0x0700);
-        buffer.set8(0); // out_uint8(s, 0);
-        buffer.setLittleEndian32(1); // out_uint32_le(s, 1);
+        buffer.setLittleEndian32(0); 
+        buffer.set8(Options.server_bpp); 
+        buffer.setLittleEndian16(0x0700); 
+        buffer.set8(0); 
+        buffer.setLittleEndian32(1); 
         buffer.incrementPosition(64);
-        buffer.setLittleEndian32(0);//selected_protocol /* End of client info */
+        buffer.setLittleEndian32(0);
 
-        buffer.setLittleEndian16(SEC_TAG_CLI_4); // out_uint16_le(s, SEC_TAG_CLI_4);
-        buffer.setLittleEndian16(12); // out_uint16_le(s, 12);
+        buffer.setLittleEndian16(SEC_TAG_CLI_4); 
+        buffer.setLittleEndian16(12); 
 
         int cluster_flags = 0;
         cluster_flags |= SEC_CC_REDIRECTION_SUPPORTED;
@@ -358,33 +358,33 @@ public class Secure {
         if (Options.console_session) {
             cluster_flags |= SEC_CC_REDIRECT_SESSIONID_FIELD_VALID;
         }
-        buffer.setLittleEndian32(cluster_flags); // out_uint32_le(s,
-        buffer.setLittleEndian32(0); // redirect session id?
+        buffer.setLittleEndian32(cluster_flags); 
+        buffer.setLittleEndian32(0); 
 
-        // Client encryption settings //
+        
         buffer.setLittleEndian16(SEC_TAG_CLI_CRYPT);
-        buffer.setLittleEndian16(12); // length
+        buffer.setLittleEndian16(12); 
         buffer.setLittleEndian32(Options.encryption ? 0x3 : 0);
-        buffer.setLittleEndian32(0); // unknown
+        buffer.setLittleEndian32(0); 
 
         if (Options.use_rdp5 && (channels.num_channels() > 0)) {
             logger.debug(("num_channels is " + channels.num_channels()));
-            buffer.setLittleEndian16(SEC_TAG_CLI_CHANNELS); // out_uint16_le(s,
-            // SEC_TAG_CLI_CHANNELS);
-            buffer.setLittleEndian16(channels.num_channels() * 12 + 8); // out_uint16_le(s,
-            buffer.setLittleEndian32(channels.num_channels()); // out_uint32_le(s,
-            // g_num_channels);
-            // // number of
-            // virtual
-            // channels
+            buffer.setLittleEndian16(SEC_TAG_CLI_CHANNELS); 
+            
+            buffer.setLittleEndian16(channels.num_channels() * 12 + 8); 
+            buffer.setLittleEndian32(channels.num_channels()); 
+            
+            
+            
+            
             for (int i = 0; i < channels.num_channels(); i++) {
                 logger.debug(("Requesting channel " + channels.channel(i)
                         .name()));
-                buffer.out_uint8p(channels.channel(i).name(), 8); // out_uint8a(s,
-                // g_channels[i].name,
-                // 8);
-                buffer.setBigEndian32(channels.channel(i).flags()); // out_uint32_be(s,
-                // g_channels[i].flags);
+                buffer.out_uint8p(channels.channel(i).name(), 8); 
+                
+                
+                buffer.setBigEndian32(channels.channel(i).flags()); 
+                
             }
         }
 
@@ -403,7 +403,7 @@ public class Secure {
         logger.debug("Secure.processMcsData");
         int tag = 0, len = 0, length = 0, nexttag = 0;
 
-        mcs_data.incrementPosition(21); // header (T.124 stuff, probably)
+        mcs_data.incrementPosition(21); 
         len = mcs_data.get8();
 
         if ((len & 0x00000080) != 0) {
@@ -447,7 +447,7 @@ public class Secure {
         RdpPacket_Localised buffer;
         int flags = SEC_CLIENT_RANDOM;
         if (readCert) {
-            // RDP5-style encryption, use old code for now
+            
             int length = SEC_MODULUS_SIZE + SEC_PADDING_SIZE;
             buffer = this.init(flags, 76);
 
@@ -479,17 +479,17 @@ public class Secure {
             return;
         }
 
-        // this.client_random = this.generateRandom(SEC_RANDOM_SIZE);
+        
         logger.debug("readCert = {}", readCert);
         if (readCert) { /*
          * Which means we should use RDP5-style encryption
          */
 
-            // *** reverse the client random
-            // this.reverse(this.client_random);
+            
+            
 
-            // *** load the server public key into the stored data for
-            // encryption
+            
+            
             /*
              * this.exponent =
              * this.server_public_key.getPublicExponent().toByteArray();
@@ -500,13 +500,13 @@ public class Secure {
              * System.out.println("Modulus: " + server_public_key.getModulus());
              */
 
-            // *** perform encryption
-            // this.sec_crypted_random = RSA_public_encrypt(this.client_random,
-            // this.server_public_key);
-            // this.RSAEncrypt(SEC_RANDOM_SIZE);
-            // this.RSAEncrypt(SEC_RANDOM_SIZE);
-            // *** reverse the random data back
-            // this.reverse(this.sec_crypted_random);
+            
+            
+            
+            
+            
+            
+            
         } else {
             this.generateRandom();
             this.RSAEncrypt(SEC_RANDOM_SIZE, server_public_key_len);
@@ -533,9 +533,9 @@ public class Secure {
 
         buffer = MCS.init(length + headerlength);
         buffer.pushLayer(RdpPacket.SECURE_HEADER, headerlength);
-        // buffer.setHeader(RdpPacket_Localised.SECURE_HEADER);
-        // buffer.incrementPosition(headerlength);
-        // buffer.setStart(buffer.getPosition());
+        
+        
+        
         return buffer;
     }
 
@@ -601,7 +601,7 @@ public class Secure {
                     datalength);
 
         }
-        // McsLayer.send(sec_data);
+        
         McsLayer.send_to_channel(sec_data, channel);
     }
 
@@ -618,8 +618,8 @@ public class Secure {
      */
     public byte[] sign(byte[] session_key, int length, int keylen, byte[] data,
                        int datalength) {
-        byte[] shasig;// = new byte[20];
-        byte[] md5sig;// = new byte[16];
+        byte[] shasig;
+        byte[] md5sig;
         byte[] lenhdr = new byte[4];
         byte[] signature = new byte[length];
 
@@ -663,10 +663,10 @@ public class Secure {
                 byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_encrypt_key, 0, key, 0, this.keylength);
                 this.rc4_enc.engineInitEncrypt(key);
-                // logger.debug("Packet enc_count="+enc_count);
+                
                 this.enc_count = 0;
             }
-            // this.rc4.engineInitEncrypt(this.rc4_encrypt_key);
+            
             buffer = this.rc4_enc.crypt(data, 0, length);
             this.enc_count++;
             return buffer;
@@ -689,10 +689,10 @@ public class Secure {
                 byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_encrypt_key, 0, key, 0, this.keylength);
                 this.rc4_enc.engineInitEncrypt(key);
-                // logger.debug("Packet enc_count="+enc_count);
+                
                 this.enc_count = 0;
             }
-            // this.rc4.engineInitEncrypt(this.rc4_encrypt_key);
+            
 
             buffer = this.rc4_enc.crypt(data);
             this.enc_count++;
@@ -717,10 +717,10 @@ public class Secure {
                 byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_decrypt_key, 0, key, 0, this.keylength);
                 this.rc4_dec.engineInitDecrypt(key);
-                // logger.debug("Packet dec_count="+dec_count);
+                
                 this.dec_count = 0;
             }
-            // this.rc4.engineInitDecrypt(this.rc4_decrypt_key);
+            
             buffer = this.rc4_dec.crypt(data, 0, length);
             this.dec_count++;
             return buffer;
@@ -743,10 +743,10 @@ public class Secure {
                 byte[] key = new byte[this.keylength];
                 System.arraycopy(this.sec_decrypt_key, 0, key, 0, this.keylength);
                 this.rc4_dec.engineInitDecrypt(key);
-                // logger.debug("Packet dec_count="+dec_count);
+                
                 this.dec_count = 0;
             }
-            // this.rc4.engineInitDecrypt(this.rc4_decrypt_key);
+            
 
             buffer = this.rc4_dec.crypt(data);
             this.dec_count++;
@@ -770,10 +770,10 @@ public class Secure {
         int next_tag = 0, end = 0;
         int rc4_key_size = 0;
 
-        rc4_key_size = data.getLittleEndian32(); // 1 = 40-Bit 2 = 128 Bit
-        encryption_level = data.getLittleEndian32(); // 1 = low, 2 = medium,
-        // 3 = high
-        if (encryption_level == 0) { // no encryption
+        rc4_key_size = data.getLittleEndian32(); 
+        encryption_level = data.getLittleEndian32(); 
+        
+        if (encryption_level == 0) { 
             return 0;
         }
         random_length = data.getLittleEndian32();
@@ -795,14 +795,14 @@ public class Secure {
             return 0;
         }
 
-        // data.incrementPosition(12); // unknown bytes
-        int flags = data.getLittleEndian32(); // in_uint32_le(s, flags); // 1
-        // = RDP4-style, 0x80000002 =
-        // X.509
+        
+        int flags = data.getLittleEndian32(); 
+        
+        
         logger.debug("Flags = 0x{}", Integer.toHexString(flags));
         if ((flags & 1) != 0) {
             logger.debug(("We're going for the RDP4-style encryption"));
-            data.incrementPosition(8); // in_uint8s(s, 8); // unknown
+            data.incrementPosition(8); 
 
             while (data.getPosition() < data.getEnd()) {
                 tag = data.getLittleEndian16();
@@ -820,7 +820,7 @@ public class Secure {
 
                         break;
                     case (Secure.SEC_TAG_KEYSIG):
-                        // Microsoft issued a key but we don't care
+                        
                         break;
 
                     default:
@@ -839,7 +839,7 @@ public class Secure {
 
         } else {
             logger.debug(("We're going for the RDP5-style encryption"));
-            // data.incrementPosition(4); // number of certificates
+            
             int num_certs = data.getLittleEndian32();
 
             int cacert_len = data.getLittleEndian32();
@@ -867,7 +867,7 @@ public class Secure {
      * cert = null; CertificateFactory cf = null; try { cf =
      * CertificateFactory.getInstance("X.509"); cert =
      * (X509Certificate)cf.generateCertificate(bIn); } catch
-     * (CertificateException e) { // TODO Auto-generated catch block
+     * (CertificateException e) { 
      * e.printStackTrace(); }
      *
      * bIn.reset(); return cert; }
@@ -887,7 +887,7 @@ public class Secure {
     public void RSAEncrypt(int length, int modulus_size)
             throws RdesktopException {
         byte[] inr = new byte[length];
-        // int outlength = 0;
+        
         BigInteger mod = null;
         BigInteger exp = null;
         BigInteger x = null;
@@ -975,7 +975,7 @@ public class Secure {
                     + (modulus_length * 8) + " bites)");
         }
 
-        data.incrementPosition(8); // unknown modulus bits
+        data.incrementPosition(8); 
         this.exponent = new byte[SEC_EXPONENT_SIZE];
         data.copyToByteArray(this.exponent, 0, data.getPosition(),
                 SEC_EXPONENT_SIZE);
@@ -1037,22 +1037,22 @@ public class Secure {
      */
     public byte[] update(byte[] key, byte[] update_key) throws CryptoException {
         byte[] shasig = new byte[20];
-        byte[] update = new byte[this.keylength]; // changed from 8 - rdesktop
-        // 1.2.0
+        byte[] update = new byte[this.keylength]; 
+        
         byte[] thekey = new byte[key.length];
 
         synchronized (digestLock) {
             sha1.reset();
             sha1.update(update_key, 0, keylength);
             sha1.update(pad_54, 0, 40);
-            sha1.update(key, 0, keylength); // changed from 8 - rdesktop
-            // 1.2.0
+            sha1.update(key, 0, keylength); 
+            
             shasig = sha1.digest();
             sha1.reset();
 
             md5.reset();
-            md5.update(update_key, 0, keylength); // changed from 8 - rdesktop
-            // 1.2.0
+            md5.update(update_key, 0, keylength); 
+            
             md5.update(pad_92, 0, 48);
             md5.update(shasig, 0, 20);
             thekey = md5.digest();
@@ -1060,7 +1060,7 @@ public class Secure {
 
             System.arraycopy(thekey, 0, update, 0, this.keylength);
             rc4_update.engineInitDecrypt(update);
-            // added
+            
             thekey = rc4_update.crypt(thekey, 0, this.keylength);
 
             if (this.keylength == 8) {
@@ -1100,7 +1100,7 @@ public class Secure {
                     continue;
                 }
                 if ((sec_flags & SEC_ENCRYPT) != 0) {
-                    buffer.incrementPosition(8); // signature
+                    buffer.incrementPosition(8); 
                     byte[] data = new byte[buffer.size() - buffer.getPosition()];
                     buffer.copyToByteArray(data, 0, buffer.getPosition(),
                             data.length);
@@ -1109,8 +1109,8 @@ public class Secure {
                     buffer.copyFromByteArray(packet, 0, buffer.getPosition(),
                             packet.length);
 
-                    // buffer.setStart(buffer.getPosition());
-                    // return buffer;
+                    
+                    
                 }
             }
 
@@ -1145,7 +1145,7 @@ public class Secure {
                 this.server_random, 88);
 
         System.arraycopy(session_key, 0, this.sec_sign_key, 0, 16);
-        // changed from 8 - rdesktop 1.2.0
+        
 
         this.sec_decrypt_key = this.hash16(session_key, this.client_random,
                 this.server_random, 16);
@@ -1164,9 +1164,9 @@ public class Secure {
         }
 
         System.arraycopy(this.sec_decrypt_key, 0, this.sec_decrypt_update_key,
-                0, 16); // changed from 8 - rdesktop 1.2.0
+                0, 16); 
         System.arraycopy(this.sec_encrypt_key, 0, this.sec_encrypt_update_key,
-                0, 16); // changed from 8 - rdesktop 1.2.0
+                0, 16); 
 
         byte[] key = new byte[this.keylength];
         System.arraycopy(this.sec_encrypt_key, 0, key, 0, this.keylength);

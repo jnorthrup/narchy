@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 28.12.2003 by RST.
+
 
 package jake2.game;
 
@@ -211,7 +211,7 @@ public class GameTurret {
             if (self.move_angles[Defines.PITCH] > 180)
                 self.move_angles[Defines.PITCH] -= 360;
 
-            // clamp angles to mins & maxs
+            
             if (self.move_angles[Defines.PITCH] > self.pos1[Defines.PITCH])
                 self.move_angles[Defines.PITCH] = self.pos1[Defines.PITCH];
             else if (self.move_angles[Defines.PITCH] < self.pos2[Defines.PITCH])
@@ -266,7 +266,7 @@ public class GameTurret {
             for (ent = self.teammaster; ent != null; ent = ent.teamchain)
                 ent.avelocity[1] = self.avelocity[1];
 
-            // if we have adriver, adjust his velocities
+            
             if (self.owner != null) {
                 float angle;
                 float target_z;
@@ -274,11 +274,11 @@ public class GameTurret {
                 float[] target = { 0, 0, 0 };
                 float[] dir = { 0, 0, 0 };
 
-                // angular is easy, just copy ours
+                
                 self.owner.avelocity[0] = self.avelocity[0];
                 self.owner.avelocity[1] = self.avelocity[1];
 
-                // x & y
+                
                 angle = self.s.angles[1] + self.owner.move_origin[1];
                 angle *= (Math.PI * 2 / 360);
                 target[0] = GameTurret.SnapToEights((float) (self.s.origin[0] + 
@@ -291,7 +291,7 @@ public class GameTurret {
                 self.owner.velocity[0] = dir[0] * 1.0f / Defines.FRAMETIME;
                 self.owner.velocity[1] = dir[1] * 1.0f / Defines.FRAMETIME;
 
-                // z
+                
                 angle = self.s.angles[Defines.PITCH] * (float) (Math.PI * 2f / 360f);
                 target_z = GameTurret.SnapToEights((float) (self.s.origin[2]
                                 + self.owner.move_origin[0] * Math.tan(angle) + self.owner.move_origin[2]));
@@ -314,7 +314,7 @@ public class GameTurret {
         @Override
         public boolean think(edict_t self) {
 
-            // get and save info for muzzle location
+            
             if (self.target == null) {
                 game_import_t.dprintf(self.classname + " at "
                         + Lib.vtos(self.s.origin) + " needs a target\n");
@@ -346,10 +346,10 @@ public class GameTurret {
 
             edict_t ent;
 
-            // level the gun
+            
             self.target_ent.move_angles[0] = 0;
 
-            // remove the driver from the end of them team chain
+            
             for (ent = self.target_ent.teammaster; ent.teamchain != self; ent = ent.teamchain)
                 ;
             ent.teamchain = null;
@@ -396,13 +396,13 @@ public class GameTurret {
                 }
             }
 
-            // let the turret know where we want it to aim
+            
             Math3D.VectorCopy(self.enemy.s.origin, target);
             target[2] += self.enemy.viewheight;
             Math3D.VectorSubtract(target, self.target_ent.s.origin, dir);
             Math3D.vectoangles(dir, self.target_ent.move_angles);
 
-            // decide if we should shoot
+            
             if (GameBase.level.time < self.monsterinfo.attack_finished)
                 return true;
 
@@ -412,7 +412,7 @@ public class GameTurret {
 
             self.monsterinfo.attack_finished = GameBase.level.time
                     + reaction_time + 1.0f;
-            //FIXME how do we really want to pass this along?
+            
             self.target_ent.spawnflags |= 65536;
             return true;
         }
@@ -447,7 +447,7 @@ public class GameTurret {
             self.move_origin[1] = vec[1];
             self.move_origin[2] = self.s.origin[2] - self.target_ent.s.origin[2];
 
-            // add the driver to the end of them team chain
+            
             for (ent = self.target_ent.teammaster; ent.teamchain != null; ent = ent.teamchain)
                 ;
             ent.teamchain = self;

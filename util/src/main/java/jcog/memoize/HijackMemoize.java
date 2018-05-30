@@ -28,7 +28,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     protected float DEFAULT_VALUE;
     private final boolean soft;
 
-    //private final Random rng = new XoRoShiRo128PlusRandom(1);
+    
 
     public interface Computation<X, Y> extends Priority, Supplier<Y> {
         /**
@@ -131,13 +131,13 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         @Override
         public float pri() {
             return pri;
-//            float p = pri;
-//            if (p == p) {
-//                Y x = get();
-//                if (x != null)
-//                    return pri;
-//            }
-//            return Float.NaN;
+
+
+
+
+
+
+
         }
 
         @Override
@@ -149,18 +149,18 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     float CACHE_HIT_BOOST;
-    //float CACHE_DENY_DAMAGE; //damage taken by a cell in rejecting an attempted hijack
+    
 
     final Function<X, Y> func;
 
     final AtomicLong
-            hit = new AtomicLong(),  //existing item retrieved
-            miss = new AtomicLong(),  //a new item inserted that has not existed
-            reject = new AtomicLong(), //item prevented from insertion by existing items
-            evict = new AtomicLong(); //removal of existing item on insertion of new item
+            hit = new AtomicLong(),  
+            miss = new AtomicLong(),  
+            reject = new AtomicLong(), 
+            evict = new AtomicLong(); 
 
 
-    //hit + miss + reject = total insertions
+    
 
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
@@ -177,20 +177,20 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     @Override
     protected Computation<X, Y> merge(Computation<X, Y> existing, Computation<X, Y> incoming, @Nullable MutableFloat overflowing) {
         if (existing.isDeleted())
-            return incoming; //check if the existing has been collected
+            return incoming; 
         return super.merge(existing, incoming, overflowing);
     }
 
     @Override
     protected void resize(int newSpace) {
         if (space() > newSpace)
-            return; //dont shrink
+            return; 
 
         super.resize(newSpace);
     }
 
     public float statReset(ObjectLongProcedure<String> eachStat) {
-        //eachStat.accept("S" /* size */, size() );
+        
         long H, M, R, E;
         eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
         eachStat.accept("M" /* miss */, M = miss.getAndSet(0));
@@ -206,7 +206,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
      */
     public float value(X x) {
         return DEFAULT_VALUE;
-        //return reprobes * 2 * CACHE_HIT_BOOST;
+        
     }
 
     @Override
@@ -217,21 +217,21 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
                 (float) (1f / Math.sqrt(capacity()))
                 : 0;
 
-        //note: cut should probably be some factor less than 1/reprobes
-        // for example, 1/(N*reprobes)
-        // to ammortize additional attempts where the cut was not necessary
-        //TODO make this a momentum parameter
+        
+        
+        
+        
         float cut = boost / (reprobes / 2f);
 
         assert (cut > Prioritized.EPSILON);
 
         this.CACHE_HIT_BOOST = boost;
 
-        //reprobes / (float)Math.sqrt(i) : 0;
+        
 
-        //return true;
+        
 
-        //return false;
+        
     }
 
     @Override
@@ -241,17 +241,17 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
     @Override
     public void pressurize(float f) {
-        //pressurize disabled
+        
     }
 
-//    @Override
-//    public void commitIfPressured() {
-//        //disabled
-//    }
+
+
+
+
 
     @Override
     public float depressurize() {
-        return 0f; //disabled
+        return 0f; 
     }
 
     @Override
@@ -315,14 +315,14 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
                 new StrongPair<>(x, y, vx);
     }
 
-//    @Override
-//    protected boolean replace(float incomingPower, Computation<X, Y> existing) {
-//        if (!super.replace(incomingPower, existing)) {
-//            existing.priSub(CACHE_DENY_DAMAGE);
-//            return false;
-//        }
-//        return true;
-//    }
+
+
+
+
+
+
+
+
 
     @Override
     public X key(Computation<X, Y> value) {
@@ -356,7 +356,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         float rate = statReset((k, v) -> {
             sb.append(k).append('=').append(v).append(' ');
         });
-        sb.setLength(sb.length() - 1); //remove last ' '
+        sb.setLength(sb.length() - 1); 
         sb.append(" D=").append(Texts.n2percent(density()));
         sb.insert(0, Texts.n2percent(rate));
         return sb.toString();

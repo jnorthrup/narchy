@@ -38,7 +38,7 @@ package spacegraph.util.math;
  */
 public class TexCoord2f extends Tuple2f {
 
-    // Combatible with 1.1
+    
     static final long serialVersionUID = 7998248474800032487L;
 
     /**

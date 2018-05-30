@@ -14,9 +14,9 @@ public class ByteShuffler {
     public byte[] shuffle(Random rng, int len, boolean copy) {
         assert(len >= 2 && len < 127);
         for (byte i = 0; i < ((byte)len); i++)
-            order[i] = i; //caution: there could be numbers remaining beyond the set range here
+            order[i] = i; 
 
-        long rndInt = 0; //generate one 64 bit random long every 8 cycles
+        long rndInt = 0; 
         int generate = 0;
         for (int i=0; i < len; i++) {
             if ((generate++ & 8) == 0)
@@ -38,7 +38,7 @@ public class ByteShuffler {
         int len = to - from;
 
         if (len == 2) {
-            //special fast case
+            
             if (rng.nextBoolean()) {
                 to--;
                 Object x = a[from];
@@ -50,7 +50,7 @@ public class ByteShuffler {
 
         assert(len >= 2 && len < 127);
 
-        long rndInt = 0; //generate one 64 bit random long every 8 cycles
+        long rndInt = 0; 
         int generate = 0;
         for (int i=from; i < to; i++) {
             if ((generate++ & 8) == 0)

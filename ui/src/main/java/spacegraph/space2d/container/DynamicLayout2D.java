@@ -54,15 +54,15 @@ public abstract class DynamicLayout2D<X, M extends MovingRectFloat2D> implements
         recenterX = ox + g.bounds.w / 2;
         recenterY = oy + g.bounds.h / 2;
         tx = ty = 0;
-        //tx = -recenterX;
-        //ty = -recenterY;
+        
+        
 
         g.forEachValue(v -> {
             if (v.visible() && !v.pinned()) {
                 nodes.add(v);
                 M m = boundsPool.get();
                 m.set(v.bounds);
-                m.move(-recenterX, -recenterY, 1f); //shift to relative coordinates
+                m.move(-recenterX, -recenterY, 1f); 
                 bounds.add(m);
             }
         });

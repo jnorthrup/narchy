@@ -35,19 +35,19 @@ import spacegraph.space2d.phys.pooling.IWorldPool;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-//Point-to-point constraint
-//C = p2 - p1
-//Cdot = v2 - v1
-//   = v2 + cross(w2, r2) - v1 - cross(w1, r1)
-//J = [-I -r1_skew I r2_skew ]
-//Identity used:
-//w k % (rx i + ry j) = w * (-ry i + rx j)
 
-//Angle constraint
-//C = angle2 - angle1 - referenceAngle
-//Cdot = w2 - w1
-//J = [0 0 -1 0 0 1]
-//K = invI1 + invI2
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * A weld joint essentially glues two bodies together. A weld joint may distort somewhat because the
@@ -61,7 +61,7 @@ public class WeldJoint extends Joint {
     private float m_dampingRatio;
     private float m_bias;
 
-    // Solver shared
+    
     private final Tuple2f m_localAnchorA;
     private final Tuple2f m_localAnchorB;
     private final float m_referenceAngle;
@@ -69,7 +69,7 @@ public class WeldJoint extends Joint {
     private final Vec3 m_impulse;
 
 
-    // Solver temp
+    
     private int m_indexA;
     private int m_indexB;
     private final Tuple2f m_rA = new v2();
@@ -158,12 +158,12 @@ public class WeldJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        // Vec2 cA = data.positions[m_indexA].c;
+        
         float aA = data.positions[m_indexA].a;
         Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        // Vec2 cB = data.positions[m_indexB].c;
+        
         float aB = data.positions[m_indexB].a;
         Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
@@ -175,18 +175,18 @@ public class WeldJoint extends Joint {
         qA.set(aA);
         qB.set(aB);
 
-        // Compute the effective masses.
+        
         Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), m_rA);
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
 
-        // J = [-I -r1_skew I r2_skew]
-        // [ 0 -1 0 1]
-        // r_skew = [-ry; rx]
+        
+        
+        
 
-        // Matlab
-        // K = [ mA+r1y^2*iA+mB+r2y^2*iB, -r1y*iA*r1x-r2y*iB*r2x, -r1y*iA-r2y*iB]
-        // [ -r1y*iA*r1x-r2y*iB*r2x, mA+r1x^2*iA+mB+r2x^2*iB, r1x*iA+r2x*iB]
-        // [ -r1y*iA-r2y*iB, r1x*iA+r2x*iB, iA+iB]
+        
+        
+        
+        
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;
@@ -211,16 +211,16 @@ public class WeldJoint extends Joint {
 
             float C = aB - aA - m_referenceAngle;
 
-            // Frequency
+            
             float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
-            // Damping coefficient
+            
             float d = 2.0f * m * m_dampingRatio * omega;
 
-            // Spring stiffness
+            
             float k = m * omega * omega;
 
-            // magic formulas
+            
             float h = data.step.dt;
             m_gamma = h * (d + h * k);
             m_gamma = m_gamma != 0.0f ? 1.0f / m_gamma : 0.0f;
@@ -236,7 +236,7 @@ public class WeldJoint extends Joint {
 
         if (data.step.warmStarting) {
             final Tuple2f P = pool.popVec2();
-            // Scale impulses to support a variable time step.
+            
             m_impulse.mulLocal(data.step.dtRatio);
 
             P.set(m_impulse.x, m_impulse.y);
@@ -253,9 +253,9 @@ public class WeldJoint extends Joint {
             m_impulse.setZero();
         }
 
-//    data.velocities[m_indexA].v.set(vA);
+
         data.velocities[m_indexA].w = wA;
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(1);
@@ -330,9 +330,9 @@ public class WeldJoint extends Joint {
             pool.pushVec3(2);
         }
 
-//    data.velocities[m_indexA].v.set(vA);
+
         data.velocities[m_indexA].w = wA;
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(3);
@@ -414,9 +414,9 @@ public class WeldJoint extends Joint {
             pool.pushVec3(2);
         }
 
-//    data.positions[m_indexA].c.set(cA);
+
         data.positions[m_indexA].a = aA;
-//    data.positions[m_indexB].c.set(cB);
+
         data.positions[m_indexB].a = aB;
 
         pool.pushVec2(5);

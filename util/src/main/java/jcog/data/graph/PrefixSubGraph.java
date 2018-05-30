@@ -32,8 +32,8 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 public class PrefixSubGraph implements Graph {
 
 
-// ====================== private fileds ========================
-// ==============================================================
+
+
 
 
     private final Graph g;
@@ -44,8 +44,8 @@ public class PrefixSubGraph implements Graph {
     private int prefSize;
 
 
-// ====================== public constructors ===================
-// ==============================================================
+
+
 
 
     /**
@@ -59,8 +59,8 @@ public class PrefixSubGraph implements Graph {
     }
 
 
-// ======================= Graph implementations ================
-// ==============================================================
+
+
 
 
     @Override
@@ -71,7 +71,7 @@ public class PrefixSubGraph implements Graph {
         return g.isEdge(i, j);
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public IntHashSet neighborsOut(int i) {
@@ -86,7 +86,7 @@ public class PrefixSubGraph implements Graph {
         return result;
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public Object vertex(int v) {
@@ -95,7 +95,7 @@ public class PrefixSubGraph implements Graph {
         return g.vertex(v);
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * Returns the edge in the original graph if both i and j are smaller than
@@ -108,21 +108,21 @@ public class PrefixSubGraph implements Graph {
         return null;
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public int size() {
         return prefSize;
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean directed() {
         return g.directed();
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * not supported
@@ -133,7 +133,7 @@ public class PrefixSubGraph implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * not supported
@@ -144,7 +144,7 @@ public class PrefixSubGraph implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public int degree(int i) {
@@ -154,8 +154,8 @@ public class PrefixSubGraph implements Graph {
     }
 
 
-// ================= public functions =================================
-// ====================================================================
+
+
 
 
     /**

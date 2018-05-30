@@ -44,7 +44,7 @@ public class TermIOTest {
     }
 
     static byte[] assertEqualSerialize(@NotNull Object orig) throws IOException {
-        //final IO.DefaultCodec codec = new IO.DefaultCodec(nar.index);
+        
 
 
         byte barray[];
@@ -69,40 +69,40 @@ public class TermIOTest {
         else
             throw new RuntimeException("");
 
-        //if (copy instanceof Task) {
-        //((MutableTask)copy).invalidate();
-        //((Task)copy).normalize(nar);
-        //out.println("\t\t" +((Task)orig).explanation());
-        //out.println("\t\t" +((Task)copy).explanation());
-        //}
+        
+        
+        
+        
+        
+        
 
-        //Terms.printRecursive(System.out, (Task)orig, 10);
+        
 
-        //System.out.println("\tbytes: " + Arrays.toString(barray));
+        
         out.println("\t" + (copy == orig ? "same" : "copy") + ": " + copy);
 
-        //Terms.printRecursive(System.out, (Term)copy, 10);
+        
 
-        //assertTrue(copy != orig);
+        
         assertEquals(orig, copy);
         assertEquals(copy, orig);
         assertEquals(orig.toString(), copy.toString());
         assertEquals(orig.hashCode(), copy.hashCode());
-        //assertEquals(0, orig.compareTo(copy));
+        
 
-        //assertEquals(copy.getClass(), orig.getClass());
+        
         return barray;
     }
 
 
-    //    /* https://github.com/RuedigerMoeller/fast-serialization/wiki/Serialization*/
+    
     @Test
     public void testTermSerialization() throws Narsese.NarseseException, IOException {
 
         assertEqualSerialize("<a-->b>" /* term, not the concept */);
         assertEqualSerialize("<aa-->b>" /* term, not the concept */);
         assertEqualSerialize("<aa--><b<->c>>" /* term, not the concept */);
-        //assertEqualSerialize(("(/, x, _, y)") /* term, not the concept */);
+        
         assertEqualSerialize("exe(a,b)" /* term, not the concept */);
     }
 
@@ -110,7 +110,7 @@ public class TermIOTest {
     public void testNegationSerialization() throws Narsese.NarseseException, IOException {
         assertEqualSerialize("--x");
 
-        //neg op serializes one byte less than a similar PROD compound
+        
         assertEquals(1,
                 IO.termToBytes($$("(x)")).length -
                 IO.termToBytes($$("(--,x)")).length);
@@ -166,13 +166,13 @@ public class TermIOTest {
             a.printRecursive();
             byte[] b = assertEqualSerialize(a);
 
-            //special length requirement tests
+            
             if (a instanceof Anom) {
-                assertEquals(2, b.length); //byte op + anom id
+                assertEquals(2, b.length); 
             } else if (a.op() == INT) {
-                assertEquals(5, b.length); //byte op + 4x8bits
+                assertEquals(5, b.length); 
             } else if (a instanceof Atom) {
-                assertEquals(4, b.length); //byte op + short len + UTF-8 bytes
+                assertEquals(4, b.length); 
             }
         }
 
@@ -194,7 +194,7 @@ public class TermIOTest {
 
     @Test
     public void testTermSerialization3_2() throws Narsese.NarseseException, IOException {
-        //multiple variables
+        
 
         Variable q = $.varQuery(1);
         Compound twoB = $.inh($.varDep(2), Atomic.the("b"));
@@ -264,12 +264,12 @@ public class TermIOTest {
 
         final AtomicInteger count = new AtomicInteger();
 
-//
+
 
         Set<Task> written = new HashSet();
 
         NAR a = NARS.tmp()
-//                .log()
+
                 .input(new String[] { input });
         a
                 .run(16);
@@ -283,7 +283,7 @@ public class TermIOTest {
                     count.incrementAndGet();
                     return true;
                 })
-                //.stop()
+                
         ;
 
         byte[] x = baos.toByteArray();
@@ -291,38 +291,38 @@ public class TermIOTest {
 
         NAR b = NARS.shell()
                 .inputBinary(new ByteArrayInputStream(x));
-                //.next()
-                //.forEachConceptTask(true,true,true,true, out::println)
-                //.forEachConcept(System.out::println)
-        //b.synch();
+                
+                
+                
+        
 
-        //dump all tasks to a set of sorted strings and compare their equality:
-//        Set<String> ab = new TreeSet();
+        
+
         Set<Task> aHas = new HashSet();
 
-        a.tasks().forEach((Task t) -> aHas.add(t) ); // ab.add(t.toStringWithoutBudget()); });
+        a.tasks().forEach((Task t) -> aHas.add(t) ); 
 
         assertEquals(count.get(), aHas.size());
 
         assertEquals(written, aHas);
 
         Set<Task> bRead = new HashSet();
-//        Set<String> bb = new TreeSet();
+
         b.tasks().forEach(t -> bRead.add(t));
 
         assertEquals(aHas, bRead);
-//
-//        assertEquals(ab, bb,
-//                ()->"difference: " + Sets.symmetricDifference(ab, bb));
-        //assertEquals(count.get(), bb.size());
 
-//        //measure with budgets but allow only a certain one budget difference, due to rounding issues
-//        Set<String> abB = new HashSet();
-//        Set<String> bbB = new HashSet();
-//        a.forEachConceptTask(t->abB.add(t.toString()), true,true,true,true);
-//        b.forEachConceptTask(t->bbB.add(t.toString()), true,true,true,true);
-//        Sets.SetView<String> diff = Sets.symmetricDifference(abB, bbB);
-//        assertTrue("diff: " + diff.toString() + "\n\t" + abB + "\n\t" + bbB, 2 >= diff.size());
+
+
+        
+
+
+
+
+
+
+
+
     }
 
     @Test
@@ -363,20 +363,20 @@ public class TermIOTest {
         StringBuilder sb = new StringBuilder();
         IO.mapSubTerms(xb, (o, depth, i) -> {
             String msg = "(" + depth + "," + i + ")=" + o + " ";
-            //System.out.println(msg);
+            
             sb.append(msg);
         });
         return sb.toString();
     }
 
 
-//    @Test public void testJacksonCompound() throws Narsese.NarseseException, IOException {
-//        Compound c = $.$("(a-->b)");
-//        byte[] b = Util.toBytes(c);
-//        System.out.println(b.length + " " + Arrays.toString(b));
-//        Compound c2 = Util.fromBytes(b, c.getClass() /*Compound.class*/);
-//        System.out.println(c2);
-//        assertEquals(c, c2);
-//    }
+
+
+
+
+
+
+
+
 }
 

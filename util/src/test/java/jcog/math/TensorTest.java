@@ -17,8 +17,8 @@ public class TensorTest {
         t.set(0.1f, 0);
         t.set(0.2f, 1);
         assertEquals(0, t.index(0));
-//        assertEquals(0, t.coord(0, new int[1])[0]);
-//        assertEquals(1, t.coord(1, new int[1])[0]);
+
+
         assertEquals("[2]<0.1000\t0.2000>", t.toString());
     }
 
@@ -37,18 +37,18 @@ public class TensorTest {
         t.forEach((i,v)-> s[0] +=v+ " ");
         assertEquals("[0.5 0.25 0.0 0.5 ]", Arrays.toString(s));
 
-//        assertEquals(0, t.coord(0, new int[2])[0]);
-//        assertEquals(0, t.coord(0, new int[2])[1]);
-//
-//        assertEquals("",Arrays.toString(t.coord(1, new int[2])));
-//        assertEquals(1, t.coord(1, new int[2])[0]);
-//        assertEquals(0, t.coord(1, new int[2])[1]);
-//
-//        assertEquals(1, t.coord(2, new int[2])[0]);
-//        assertEquals(0, t.coord(2, new int[2])[1]);
-//
-//        assertEquals(1, t.coord(3, new int[2])[0]);
-//        assertEquals(1, t.coord(3, new int[2])[1]);
+
+
+
+
+
+
+
+
+
+
+
+
 
         assertEquals(0.25f, t.get(1, 0), 0.005f);
         assertEquals("[2, 2]<0.5000\t0.2500\t0.0000\t0.5000>", t.toString());

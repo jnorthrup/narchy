@@ -79,7 +79,7 @@ public class BomberBomb extends Thread {
     public synchronized void run() {
         while (alive) {
             /** draw the bomb */
-            //paint();
+            
             map.paintImmediately(x, y, BomberMain.size, BomberMain.size);
             /** rotate frame */
             frame = (frame + 1) % 2;

@@ -48,8 +48,8 @@ public class PrologMetaField {
             throw new UnsupportedOperationException(e);
         }
     }
-    //getThis(X):-this(Z), Z.list <- get(X).
-    //setThis(V):-this(Z), Z.list <- set(V).
+    
+    
     private void initTheory() {
         String fname = _theField.getName();
         String pname =_annotation.predicate();

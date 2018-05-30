@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -149,12 +149,12 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
                 TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis)));
 
 
-        //let's store the current generatin best(fitness) individual performances on validation. remind performances indexes != fintesses 
+        
         Ranking bestRanking = new Ranking(best, fitness);
         FinalSolution generationBestSolution = new FinalSolution(bestRanking);
          
  
-        //Only  the learning performance i needed by the checkBestCandidate
+        
         Objective learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
 
         Ranking best2 = population.iterator().next();
@@ -162,7 +162,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         double[] learningPerformance = learningObjective.fitness(best2.getNode());
 
         PerformacesObjective.populatePerformancesMap(learningPerformance, generationBestSolution.getLearningPerformances(), isFlagging);
-        //update best for visualization sake; uses the same algorithm as in BasicExecutionListener
+        
         this.updateBest(generationBestSolution);
         
         
@@ -182,7 +182,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         int jobId = strategy.getConfiguration().getJobId();
         long executionTime = System.currentTimeMillis() - this.jobStartTimes.remove(jobId);
 
-        //Strategies can stop first than the maximum number of generations; we consider jumped generations like succesfully executed(useful for ETA):
+        
         int jumpedGenerations = strategy.getConfiguration().getEvolutionParameters().getGenerations() - generation;
         overallDone+=jumpedGenerations;
         
@@ -212,7 +212,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         int i = 0;
         for (Ranking individual : population) {
             FinalSolution finalSolution = new FinalSolution(individual);
-            //performance is calculated only for first individual
+            
             if(i++==0){
                 double[] trainingPerformace = trainingObjective.fitness(individual.getNode());
                 double[] validationPerformance = validationObjective.fitness(individual.getNode());
@@ -254,7 +254,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
 
     @Override
     public void register(ExecutionStrategy strategy) {
-        //NO OP
+        
     }
 
     @Override
@@ -310,13 +310,13 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
             if(value < f){
                 return;
             }
-            //values are equal, go ahead with the next one
+            
 
         }
     }
    
     @Override
     public void evolutionStopped() {
-        //let's do nothing, there is no status here
+        
     }
 }

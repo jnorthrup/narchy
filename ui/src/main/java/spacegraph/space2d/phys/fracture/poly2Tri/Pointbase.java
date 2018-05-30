@@ -15,7 +15,7 @@ public class Pointbase implements Comparable {
     /**
      * type of points;
      */
-    //Type            type;            
+    
     public int type = Poly2TriUtils.UNKNOWN;
 
     /**
@@ -60,7 +60,7 @@ public class Pointbase implements Comparable {
         type = ttype;
     }
 
-    //rotate a point by angle theta, not used;
+    
     public void rotate(double theta) {
         double cosa = Math.cos(theta), sina = Math.sin(theta),
                 newx, newy;
@@ -70,8 +70,8 @@ public class Pointbase implements Comparable {
         y = newy;
     }
 
-    //operator overloading
-    //friend  bool operator==(const Pointbase&, const Pointbase&);
+    
+    
     public boolean equals(Object o) {
         if (!(o instanceof Pointbase)) return false;
         return equals((Pointbase) o);
@@ -86,13 +86,13 @@ public class Pointbase implements Comparable {
         return (this.x == pb.x) && (this.y == pb.y);
     }
 
-    //friend  bool operator>(const Pointbase&, const Pointbase&);
-    //friend  bool operator<(const Pointbase&, const Pointbase&);    
+    
+    
     public int compareTo(Object o) {
-        // operator>
-        // return( (pa.y > pb.y) || ( (pa.y==pb.y) && (pa.x < pb.x)) );
-        // operator<
-        // return( (pa.y < pb.y) || ( (pa.y==pb.y) && (pa.x > pb.x)) );
+        
+        
+        
+        
         if (!(o instanceof Pointbase)) return -1;
         Pointbase pb = (Pointbase) o;
         if (this.equals(pb)) return 0;
@@ -102,10 +102,10 @@ public class Pointbase implements Comparable {
         else return -1;
     }
 
-    //friend  bool operator!=(const Pointbase&, const Pointbase&);
-    //substitute with !equals(pointbase)
+    
+    
 
-    //friend  ostream &operator<<(ostream &os, const Pointbase& point);
+    
     public String toString() {
         return "Pointbase([" + x + ", " + y + "], ID = " + id + ", " + Poly2TriUtils.typeToString(type) + ')';
     }

@@ -25,10 +25,10 @@ class HttpSelector implements ConnectionStateChangeListener {
     private final ByteBuffer buf = ByteBuffer.allocateDirect(HttpServer.BUFFER_SIZE);
     private final ConcurrentLinkedQueue<SocketChannel> newChannels = new ConcurrentLinkedQueue<>();
     private final HttpModel model;
-    //private volatile boolean running = false;
-    //private volatile boolean ready = false;
+    
+    
     private Selector selector;
-    //private long lastTimeoutCheck = System.nanoTime();
+    
 
     HttpSelector(HttpModel model, WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler) {
         this.model = model;
@@ -53,7 +53,7 @@ class HttpSelector implements ConnectionStateChangeListener {
 
             if (conn.websocket && upgradeWebSocketHandler != null) {
                 ByteBuffer rawHead = conn.rawHead;
-                conn.rawHead = null; // make sure nothing is able to interfere
+                conn.rawHead = null; 
                 rawHead.flip();
                 upgradeWebSocketHandler.upgradeWebSocketHandler(conn.channel, rawHead);
             } else {
@@ -79,7 +79,7 @@ class HttpSelector implements ConnectionStateChangeListener {
     public void next() throws IOException {
 
         try {
-            selector.selectNow(); //(SELECTION_PERIOD);
+            selector.selectNow(); 
         } catch (ClosedSelectorException | IOException ex) {
             return;
         }
@@ -98,8 +98,8 @@ class HttpSelector implements ConnectionStateChangeListener {
 
 
         {
-//        if (now - lastTimeoutCheck > TIMEOUT_CHECK_PERIOD_ms * 1_000_000) {
-//            lastTimeoutCheck = now;
+
+
             it = selector.keys().iterator();
 
             while (it.hasNext()) {
@@ -126,7 +126,7 @@ class HttpSelector implements ConnectionStateChangeListener {
             it.remove();
 
             if (conn == null) {
-                // was just removed by a timeout
+                
                 continue;
             }
 
@@ -173,7 +173,7 @@ class HttpSelector implements ConnectionStateChangeListener {
     private boolean readable(HttpConnection conn) throws IOException {
         buf.clear();
 
-        // start reading at LINEBUFFER_SIZE so that the previous line can be prepended
+        
         buf.limit(buf.capacity());
         buf.position(HttpServer.LINEBUFFER_SIZE);
         buf.mark();
@@ -210,7 +210,7 @@ class HttpSelector implements ConnectionStateChangeListener {
         try {
             selector.wakeup();
         } catch (IllegalStateException | NullPointerException ex) {
-            // Thread has not started yet, or it just stopped
+            
             assert false;
         }
     }

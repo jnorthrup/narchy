@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 25.01.2004 by RST.
+
 
 package jake2.qcommon;
 
@@ -71,7 +71,7 @@ public class CRC
 		while (count-- > 0)
 			crc= (short) ((crc << 8) ^ crctable[0xff & ((crc >> 8) ^ start[ndx++])]);
 
-		// unsigned short
+		
 		return crc & 0xFFFF;
 	}
 

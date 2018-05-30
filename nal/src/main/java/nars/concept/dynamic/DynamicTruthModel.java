@@ -41,21 +41,21 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 concept = concept.unneg();
 
             Concept subConcept =
-                    //n.concept(it);
-                    n.conceptualize(concept); //force creation of concept, which if dynamic, could provide data for use here
+                    
+                    n.conceptualize(concept); 
 
             @Nullable Task bt;
             if (!(subConcept instanceof TaskConcept)) {
-//                if (Param.DEBUG) {
-//                    if (!(subConcept == null || !(subConcept instanceof NodeConcept)))
-//                        throw new RuntimeException(it + " does not reference a TaskConcept: " + subConcept);
-//                }
+
+
+
+
                 return false;
             } else {
 
                 BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
 
-                //TODO if ETERNAL , intersects test isnt necessary
+                
                 bt = table.match(subStart, subEnd, concept, x->
                     /* x.intersects(subStart, subEnd) && */ d.doesntOverlap(x), n
                 );
@@ -65,7 +65,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                     bt = Task.project(true, bt, subStart, subEnd, n, negated);
 
                 } else {
-                    //bt = null; //missing truth, but yet still may be able to conclude a result
+                    
                     return false;
                 }
 
@@ -105,7 +105,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         @Override
         public Truth apply(DynTruth l, NAR nar) {
 
-            //compute the lazy computed truth, if possible
+            
             int n = l.size();
             int avail = 0;
             for (int i = 0; i < n; i++) {
@@ -133,7 +133,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 if (ii == null)
                     continue;
 
-                Truth x = ((Task)ii).truth(); //either the default truth, or the cached proxied/projected truth
+                Truth x = ((Task)ii).truth(); 
                 considered++;
 
                 if (negateFreq())
@@ -151,11 +151,11 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
             if (considered != n) {
                 return null;
-//                if (f >= freqRes)
-//                    return null; //missing components without having reached blackhole asymptote f=0
-//                else {
-//                    l.removeNulls(); //remove nulls and continue with only the components necessary
-//                }
+
+
+
+
+
             }
 
             return y.negIf(negateFreq());
@@ -177,7 +177,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         @Override
         public Term construct(Term superterm, List<TaskRegion> components) {
-            //SECT's
+            
             int n = components.size();
             if (n == 1) {
                 return components.get(0).task().term();
@@ -229,13 +229,13 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         @Override
         public Term construct(Term superterm, List<TaskRegion> components) {
             Conj c = new Conj();
-            //long estVolume = ((FasterList<TaskRegion>)components).sumOfInt(xt -> ((Task)xt).term().volume());
-            //TODO heuristic for range sampling parameters
+            
+            
             for (TaskRegion t : components) {
                 if (!c.add(((Task)t).term(), t.start(), t.end(), 1, 1))
-                    break; //TODO maybe try with less aggressive sampling, if sampling was used
+                    break; 
             }
-            return c.term(); //null, false, true...
+            return c.term(); 
         }
 
         @Override
@@ -245,19 +245,19 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             boolean dternal = superDT ==DTERNAL;
             LongObjectPredicate<Term> sub;
             if (xternal || dternal) {
-                //the entire range
+                
                 sub = (whenIgnored, event) -> each.accept(event, start, end);
             } else {
-                //specific sub-range
+                
                 long range = start!=ETERNAL ? end-start : 0;
                 sub = (when, event) -> each.accept(event, when, when+range);
             }
 
             return superterm.eventsWhile((when,event)->{
-                if (event!=superterm) //prevent fatal loop
+                if (event!=superterm) 
                     return sub.accept(when, event);
                 else
-                    return false; //fail
+                    return false; 
                 }, start, !xternal && !dternal, dternal, xternal, 0);
         }
     }
@@ -267,9 +267,9 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         public Difference(Term[] xy) {
 
-//            assert (!(xy[0] instanceof Bool) && !(xy[1] instanceof Bool));
-//            assert (!(xy[0] instanceof Variable) && !(xy[1] instanceof Variable)) :
-//                    xy[0] + " or " + xy[1] + " is a variable";
+
+
+
 
             this.comp = xy;
         }
@@ -295,7 +295,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             if (superterm.op() == INH) {
                 return inhConstruct2(superterm, DIFFe.bit | DIFFi.bit, a, b);
             } else if (superterm.op() == DIFFe) {
-                //raw difference
+                
                 return Op.DIFFe.compound(DTERNAL, new Term[]{a, b});
             }
 

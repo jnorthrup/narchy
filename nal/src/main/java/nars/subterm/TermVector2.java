@@ -37,7 +37,7 @@ public final class TermVector2 extends TermVector {
             case 0: return x;
             case 1: return y;
             default:
-                return Null; //throw new ArrayIndexOutOfBoundsException();
+                return Null; 
         }
     }
 
@@ -95,9 +95,9 @@ public final class TermVector2 extends TermVector {
     }
 
 
-//    @Override
-//    public boolean isDynamic() {
-//        return x.isDynamic() || y.isDynamic();
-//    }
+
+
+
+
 
 }

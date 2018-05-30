@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -41,7 +41,7 @@ import spacegraph.util.math.v3;
  */
 public abstract class IDebugDraw {
 	
-	//protected final BulletStack stack = BulletStack.get();
+	
 
 	public abstract void drawLine(v3 from, v3 to, v3 color);
 	

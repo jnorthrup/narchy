@@ -113,16 +113,16 @@ public class Sircle extends LevelObject {
 		@Override
         public void dragged(int dx, int dy) {
 			radius += dx;
-	    	//radius = (int) p.distance(pos);
+	    	
 		}		
 		
-//		/**
-//		 * Gets the level object the hangle controlls. Can be null.
-//		 * @return the level object
-//		 */
-//		@Override
-//        public LevelObject getLevelObject() {
-//			return null;
-//		}
+
+
+
+
+
+
+
+
 	}
 }

@@ -23,28 +23,28 @@ public class NARSpeak {
         this.nar = nar;
 
 
-//        nar.onOp("say", sayer = new AtomicExec((t, n) -> {
-//            @Nullable Subterms args = Operator.args(t);
-//            if (args.AND(x -> !x.op().var)) {
-//                String text = Joiner.on(", ").join(args);
-//                if (text.isEmpty())
-//                    return;
-//
-////                    Term tokens = $.conj(Twokenize.twokenize(text).stream()
-////                            .map(x -> $.func("say", $.the(x.toString())))
-////                            .toArray(Term[]::new));
-//
-//                spoken.emitAsync(text, nar.exe);
-//
-//                //System.err.println(text);
-//                //MaryTTSpeech.speak(text);
-//
-//                n.believe(t, Tense.Present);
-//
-//                Atomic qt = $.quote(text);
-//                NARHear.hearText(n, $.unquote(qt), n.self().toString(), 200, this.nar.priDefault(BELIEF));
-//            }
-//        }, 0.51f));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         this.op = new Opjects(nar);
@@ -63,11 +63,11 @@ public class NARSpeak {
 
             spoken.emitAsync(text, nar.exe);
 
-            //System.err.println(text);
-            //MaryTTSpeech.speak(text);
+            
+            
 
-            //Atomic qt = $.quote(text);
-            //NARHear.hearText(n, $.unquote(qt), n.self().toString(), 200, this.nar.priDefault(BELIEF));
+            
+            
         }
 
         public void quiet() {
@@ -83,17 +83,17 @@ public class NARSpeak {
         }
     }
 
-    //MaryTTSpeech.speak(""); //forces load of TTS so it will be ready ASAP and not load on the first use
+    
 
-//            try {
-//                //nar.believe($.$("(hear:$1 ==>+1 say:$1)"), Tense.Eternal);
-//                //nar.believe($.$("(say:$1 ==>+1 hear:$1)"), Tense.Eternal);
-//                nar.goal($.$("say(#1)"), Tense.Eternal, 1f);
-//                nar.goal($.$("(hear:#1 &&+1 say:#1)"), Tense.Eternal, 1f);
-//                nar.goal($.$("((hear(#1) &&+1 hear(#2)) &&+1 say(#1,#2))"), Tense.Eternal, 1f);
-//            } catch (Narsese.NarseseException e) {
-//                e.printStackTrace();
-//            }
+
+
+
+
+
+
+
+
+
 
 
     public static class VocalCommentary {
@@ -124,7 +124,7 @@ public class NARSpeak {
         NARSpeak speak = new NARSpeak(n);
         speak.spoken.on(new NativeSpeechDispatcher()::speak);
 
-        //new NARSpeak.VocalCommentary(tc);
+        
         n.startFPS(2f);
 
         n.log();

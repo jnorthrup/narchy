@@ -71,7 +71,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     private int y = 0;
     private int char_width;
     private int char_height;
-    //private int line_space=0;
+    
     private int line_space = -2;
     private int compression = 0;
     private boolean antialiasing = true;
@@ -94,7 +94,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         enableInputMethods(true);
 
         setFocusTraversalKeysEnabled(false);
-        //  setOpaque(true);
+        
     }
 
     static Color toColor(Object o) {
@@ -213,7 +213,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     }
 
     public void paintComponent(Graphics g) {
-        //super.paintComponent(g);
+        
         if (img != null) {
             g.drawImage(img, 0, 0, term_area);
         }
@@ -221,7 +221,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
 
     public void processKeyEvent(KeyEvent e) {
-        //System.out.println(e);
+        
         int id = e.getID();
         if (id == KeyEvent.KEY_PRESSED) {
             keyPressed(e);
@@ -230,7 +230,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
         } else if (id == KeyEvent.KEY_TYPED) {
             keyTyped(e);/*keyTyped(e);*/
         }
-        e.consume(); // ??
+        e.consume(); 
     }
 
     public void keyPressed(KeyEvent e) {
@@ -355,7 +355,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     }
 
     public void setCursor(int x, int y) {
-        //System.out.println("setCursor: "+x+","+y);
+        
         this.x = x;
         this.y = y;
     }
@@ -370,25 +370,25 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     }
 
     public void clear_area(int x1, int y1, int x2, int y2) {
-        //System.out.println("clear_area: "+x1+" "+y1+" "+x2+" "+y2);
+        
         graphics.setColor(getBackGround());
         graphics.fillRect(x1, y1, x2 - x1, y2 - y1);
         graphics.setColor(getForeGround());
     }
 
-    //  public void keyPressed(KeyEvent event){}
+    
 
     public void scroll_area(int x, int y, int w, int h, int dx, int dy) {
-        //System.out.println("scroll_area: "+x+" "+y+" "+w+" "+h+" "+dx+" "+dy);
+        
         graphics.copyArea(x, y, w, h, dx, dy);
         redraw(x + dx, y + dy, w, h);
     }
 
     public void drawBytes(byte[] buf, int s, int len, int x, int y) {
-        //    clear_area(x, y, x+len*char_width, y+char_height);
-        //    graphics.setColor(getForeGround());
+        
+        
 
-        //System.out.println("drawString: "+x+","+y+" "+len+" "+new String(buf, s, len));
+        
 
         graphics.drawBytes(buf, s, len, x, y - descent);
         if (bold)
@@ -401,8 +401,8 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     }
 
     public void drawString(String str, int x, int y) {
-        //    clear_area(x, y, x+str.length()*char_width, y+char_height);
-        //    graphics.setColor(getForeGround());
+        
+        
         graphics.drawString(str, x, y - descent);
         if (bold)
             graphics.drawString(str, x + 1, y - descent);

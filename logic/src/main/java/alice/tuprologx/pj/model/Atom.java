@@ -22,7 +22,7 @@ public class Atom extends Term<Atom> {
 	
 	@Override
     public <Z> Z toJava() {
-		//return (Z)_theAtom;
+		
 		return uncheckedCast(_theAtom);
 	}
 

@@ -41,17 +41,17 @@ import java.awt.image.BufferedImage;
 import java.awt.image.IndexColorModel;
 import java.awt.image.MemoryImageSource;
 
-// import org.apache.log4j.NDC;
+
 
 public abstract class RdesktopCanvas extends Canvas {
     public static final int ROP2_COPY = 0xc;
     static final Logger logger = LoggerFactory.getLogger(RdesktopCanvas.class);
     private static final int ROP2_XOR = 0x6;
 
-    // Graphics backstore_graphics;
+    
     private static final int ROP2_AND = 0x8;
 
-    // unsetBusyCursor
+    
     private static final int ROP2_NXOR = 0x9;
     private static final int ROP2_OR = 0xe;
     private static final int MIX_TRANSPARENT = 0;
@@ -68,12 +68,12 @@ public abstract class RdesktopCanvas extends Canvas {
     protected IndexColorModel colormap;
     public WrappedImage backstore;
 
-    // private int[] colors = null; // needed for integer backstore
-    private Cursor previous_cursor; // for setBusyCursor and
+    
+    private Cursor previous_cursor; 
     private Input input;
     private Cache cache;
-    // protected int[] backstore_int = null;
-    // Clip region
+    
+    
     private int top;
 
     private int left;
@@ -93,14 +93,14 @@ public abstract class RdesktopCanvas extends Canvas {
         rop = new RasterOp();
         this.width = width;
         this.height = height;
-        this.right = width - 1; // changed
-        this.bottom = height - 1; // changed
+        this.right = width - 1; 
+        this.bottom = height - 1; 
         setSize(width, height);
 
         backstore =  new WrappedImage(width, height, BufferedImage.TYPE_INT_RGB);
         setIgnoreRepaint(true);
 
-        // now do input listeners in registerCommLayer() / registerKeyboard()
+        
     }
 
     /**
@@ -165,7 +165,7 @@ public abstract class RdesktopCanvas extends Canvas {
     public void registerKeyboard(KeyCode_FileBased keys) {
         this.fbKeys = keys;
         if (rdp != null) {
-            // rdp and keys have been registered...
+            
             input = new Input_Localised(this, rdp, keys);
         }
     }
@@ -216,9 +216,9 @@ public abstract class RdesktopCanvas extends Canvas {
         Graphics g = backstore.getGraphics();
         g.drawImage(img, x, y, null);
         /* ********* Useful test for identifying image boundaries ************ */
-        // g.setColor(Color.RED);
-        // g.drawRect(x,y,data.getWidth(null),data.getHeight(null));
-//        g.dispose();
+        
+        
+
 
     }
 
@@ -241,11 +241,11 @@ public abstract class RdesktopCanvas extends Canvas {
         backstore.setRGB(x, y, cx, cy, data, 0, w);
 
         /* ********* Useful test for identifying image boundaries ************ */
-        // Graphics g = backstore.getGraphics();
-        // g.drawImage(data,x,y,null);
-        // g.setColor(Color.RED);
-        // g.drawRect(x,y,cx,cy);
-        // g.dispose();
+        
+        
+        
+        
+        
     }
 
     /**
@@ -261,9 +261,9 @@ public abstract class RdesktopCanvas extends Canvas {
 
         int[] data = new int[cx * cy];
 
-        data = backstore.getRGB(x, y, cx, cy, null, // no existing image data to
-                // add to
-                0, // retrieving as complete image, no offset needed
+        data = backstore.getRGB(x, y, cx, cy, null, 
+                
+                0, 
                 cx);
 
         return data;
@@ -282,9 +282,9 @@ public abstract class RdesktopCanvas extends Canvas {
      */
     public void putImage(int x, int y, int cx, int cy, int[] data) {
 
-        backstore.setRGBNoConversion(x, y, cx, cy, data, 0, // drawing entire
-                // image, no
-                // offset needed
+        backstore.setRGBNoConversion(x, y, cx, cy, data, 0, 
+                
+                
                 cx);
 
         this.repaint(x, y, cx, cy);
@@ -299,8 +299,8 @@ public abstract class RdesktopCanvas extends Canvas {
         g.setClip(bounds.x, bounds.y, bounds.width, bounds.height);
         this.top = 0;
         this.left = 0;
-        this.right = this.width - 1; // changed
-        this.bottom = this.height - 1; // changed
+        this.right = this.width - 1; 
+        this.bottom = this.height - 1; 
     }
 
     /**
@@ -325,7 +325,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param y y coordinate for mouse move
      */
     public void movePointer(int x, int y) {
-        // need Java 1.3+ to move mouse with Robot
+        
     }
 
     /**
@@ -338,21 +338,21 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param color Colour of rectangle
      */
     public void fillRectangle(int x, int y, int cx, int cy, int color) {
-        // clip here instead
+        
         if (x > this.right || y > this.bottom)
-            return; // off screen
+            return; 
 
         int Bpp = Options.Bpp;
 
-        // convert to 24-bit colour
+        
         color = Bitmap.convertTo24(color);
 
-        // correction for 24-bit colour
+        
         if (Bpp == 3)
             color = ((color & 0xFF) << 16) | (color & 0xFF00)
                     | ((color & 0xFF0000) >> 16);
 
-        // Perform standard clipping checks, x-axis
+        
         int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
@@ -360,7 +360,7 @@ public abstract class RdesktopCanvas extends Canvas {
             x = this.left;
         cx = clipright - x + 1;
 
-        // Perform standard clipping checks, y-axis
+        
         int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
@@ -368,17 +368,17 @@ public abstract class RdesktopCanvas extends Canvas {
             y = this.top;
         cy = clipbottom - y + 1;
 
-        // construct rectangle as integer array, filled with color
+        
         int[] rect = new int[cx * cy];
         for (int i = 0; i < rect.length; i++)
             rect[i] = color;
-        // draw rectangle to backstore
+        
         backstore.setRGB(x, y, cx, cy, rect, 0, cx);
 
-        // if(logger.isInfoEnabled()) logger.info("rect
-        // \t(\t"+x+",\t"+y+"),(\t"+(x+cx-1)+",\t"+(y+cy-1)+")");
-        this.repaint(x, y, cx, cy); // seems to be faster than Graphics.fillRect
-        // according to JProbe
+        
+        
+        this.repaint(x, y, cx, cy); 
+        
     }
 
     /**
@@ -393,7 +393,7 @@ public abstract class RdesktopCanvas extends Canvas {
      *               the line
      */
     public void drawLine(int x1, int y1, int x2, int y2, int color, int opcode) {
-        // convert to 24-bit colour
+        
         color = Bitmap.convertTo24(color);
 
         if (x1 == x2 || y1 == y2) {
@@ -401,56 +401,56 @@ public abstract class RdesktopCanvas extends Canvas {
             return;
         }
 
-        int deltax = Math.abs(x2 - x1); // The difference between the x's
-        int deltay = Math.abs(y2 - y1); // The difference between the y's
-        int x = x1; // Start x off at the first pixel
-        int y = y1; // Start y off at the first pixel
+        int deltax = Math.abs(x2 - x1); 
+        int deltay = Math.abs(y2 - y1); 
+        int x = x1; 
+        int y = y1; 
         int xinc1, xinc2, yinc1, yinc2;
         int num, den, numadd, numpixels;
 
-        if (x2 >= x1) { // The x-values are increasing
+        if (x2 >= x1) { 
             xinc1 = 1;
             xinc2 = 1;
-        } else { // The x-values are decreasing
+        } else { 
             xinc1 = -1;
             xinc2 = -1;
         }
 
-        if (y2 >= y1) { // The y-values are increasing
+        if (y2 >= y1) { 
             yinc1 = 1;
             yinc2 = 1;
-        } else { // The y-values are decreasing
+        } else { 
             yinc1 = -1;
             yinc2 = -1;
         }
 
-        if (deltax >= deltay) { // There is at least one x-value for every
-            // y-value
-            xinc1 = 0; // Don't change the x when numerator >= denominator
-            yinc2 = 0; // Don't change the y for every iteration
+        if (deltax >= deltay) { 
+            
+            xinc1 = 0; 
+            yinc2 = 0; 
             den = deltax;
             num = deltax / 2;
             numadd = deltay;
-            numpixels = deltax; // There are more x-values than y-values
-        } else { // There is at least one y-value for every x-value
-            xinc2 = 0; // Don't change the x for every iteration
-            yinc1 = 0; // Don't change the y when numerator >= denominator
+            numpixels = deltax; 
+        } else { 
+            xinc2 = 0; 
+            yinc1 = 0; 
             den = deltay;
             num = deltay / 2;
             numadd = deltax;
-            numpixels = deltay; // There are more y-values than x-values
+            numpixels = deltay; 
         }
 
         for (int curpixel = 0; curpixel <= numpixels; curpixel++) {
-            setPixel(opcode, x, y, color); // Draw the current pixel
-            num += numadd; // Increase the numerator by the top of the fraction
-            if (num >= den) { // Check if numerator >= denominator
-                num -= den; // Calculate the new numerator value
-                x += xinc1; // Change the x as appropriate
-                y += yinc1; // Change the y as appropriate
+            setPixel(opcode, x, y, color); 
+            num += numadd; 
+            if (num >= den) { 
+                num -= den; 
+                x += xinc1; 
+                y += yinc1; 
             }
-            x += xinc2; // Change the x as appropriate
-            y += yinc2; // Change the y as appropriate
+            x += xinc2; 
+            y += yinc2; 
         }
 
         int x_min = x1 < x2 ? x1 : x2;
@@ -477,10 +477,10 @@ public abstract class RdesktopCanvas extends Canvas {
                                            int color, int opcode) {
         int pbackstore;
         int i;
-        // only vertical or horizontal lines
-        if (y1 == y2) { // HORIZONTAL
-            if (y1 >= this.top && y1 <= this.bottom) { // visible
-                if (x2 > x1) { // x inc, y1=y2
+        
+        if (y1 == y2) { 
+            if (y1 >= this.top && y1 <= this.bottom) { 
+                if (x2 > x1) { 
                     if (x1 < this.left)
                         x1 = this.left;
                     if (x2 > this.right)
@@ -491,7 +491,7 @@ public abstract class RdesktopCanvas extends Canvas {
                         pbackstore++;
                     }
                     repaint(x1, y1, x2 - x1 + 1, 1);
-                } else { // x dec, y1=y2
+                } else { 
                     if (x2 < this.left)
                         x2 = this.left;
                     if (x1 > this.right)
@@ -504,9 +504,9 @@ public abstract class RdesktopCanvas extends Canvas {
                     repaint(x2, y1, x1 - x2 + 1, 1);
                 }
             }
-        } else { // x1==x2 VERTICAL
-            if (x1 >= this.left && x1 <= this.right) { // visible
-                if (y2 > y1) { // x1=x2, y inc
+        } else { 
+            if (x1 >= this.left && x1 <= this.right) { 
+                if (y2 > y1) { 
                     if (y1 < this.top)
                         y1 = this.top;
                     if (y2 > this.bottom)
@@ -517,7 +517,7 @@ public abstract class RdesktopCanvas extends Canvas {
                         pbackstore += this.width;
                     }
                     repaint(x1, y1, 1, y2 - y1 + 1);
-                } else { // x1=x2, y dec
+                } else { 
                     if (y2 < this.top)
                         y2 = this.top;
                     if (y1 > this.bottom)
@@ -531,8 +531,8 @@ public abstract class RdesktopCanvas extends Canvas {
                 }
             }
         }
-        // if(logger.isInfoEnabled()) logger.info("line
-        // \t(\t"+x1+",\t"+y1+"),(\t"+x2+",\t"+y2+")");
+        
+        
     }
 
     /**
@@ -562,7 +562,7 @@ public abstract class RdesktopCanvas extends Canvas {
         int y = destblt.getY();
 
         if (x > this.right || y > this.bottom)
-            return; // off screen
+            return; 
 
         int cx = destblt.getCX();
         int cy = destblt.getCY();
@@ -597,7 +597,7 @@ public abstract class RdesktopCanvas extends Canvas {
         int y = screenblt.getY();
 
         if (x > this.right || y > this.bottom)
-            return; // off screen
+            return; 
 
         int cx = screenblt.getCX();
         int cy = screenblt.getCY();
@@ -637,14 +637,14 @@ public abstract class RdesktopCanvas extends Canvas {
         int y = memblt.getY();
 
         if (x > this.right || y > this.bottom)
-            return; // off screen
+            return; 
 
         int cx = memblt.getCX();
         int cy = memblt.getCY();
         int srcx = memblt.getSrcX();
         int srcy = memblt.getSrcY();
 
-        // Perform standard clipping checks, x-axis
+        
         int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
@@ -652,7 +652,7 @@ public abstract class RdesktopCanvas extends Canvas {
             x = this.left;
         cx = clipright - x + 1;
 
-        // Perform standard clipping checks, y-axis
+        
         int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
@@ -668,8 +668,8 @@ public abstract class RdesktopCanvas extends Canvas {
         try {
             Bitmap bitmap = cache.getBitmap(memblt.getCacheID(), memblt
                     .getCacheIDX());
-            // IndexColorModel cm = cache.get_colourmap(memblt.getColorTable());
-            // should use the colormap, but requires high color backstore...
+            
+            
             RasterOp.do_array(memblt.getOpcode(), backstore, this.width, x, y, cx,
                     cy, bitmap.getBitmapData(), bitmap.getWidth(), srcx, srcy);
 
@@ -693,11 +693,11 @@ public abstract class RdesktopCanvas extends Canvas {
     public void patBltOrder(int opcode, int x, int y, int cx, int cy,
                             int fgcolor, int bgcolor, Brush brush) {
 
-        // convert to 24-bit colour
+        
         fgcolor = Bitmap.convertTo24(fgcolor);
         bgcolor = Bitmap.convertTo24(bgcolor);
 
-        // Perform standard clipping checks, x-axis
+        
         int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
@@ -705,7 +705,7 @@ public abstract class RdesktopCanvas extends Canvas {
             x = this.left;
         cx = clipright - x + 1;
 
-        // Perform standard clipping checks, y-axis
+        
         int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
@@ -716,9 +716,9 @@ public abstract class RdesktopCanvas extends Canvas {
         int i;
         int[] src = null;
         switch (brush.getStyle()) {
-            case 0: // solid
-                // make efficient version of rop later with int fgcolor and boolean
-                // usearray set to false for single colour
+            case 0: 
+                
+                
                 src = new int[cx * cy];
                 for (i = 0; i < src.length; i++)
                     src[i] = fgcolor;
@@ -728,18 +728,18 @@ public abstract class RdesktopCanvas extends Canvas {
 
                 break;
 
-            case 2: // hatch
+            case 2: 
                 System.out.println("hatch");
                 break;
 
-            case 3: // pattern
+            case 3: 
                 int brushx = brush.getXOrigin();
                 int brushy = brush.getYOrigin();
                 byte[] pattern = brush.getPattern();
                 byte[] ipattern = pattern;
 
                 /*
-                 * // not sure if this inversion is needed byte[] ipattern = new
+                 * 
                  * byte[8]; for(i=0;i<ipattern.length;i++) {
                  * ipattern[ipattern.length-1-i] = pattern[i]; }
                  */
@@ -775,7 +775,7 @@ public abstract class RdesktopCanvas extends Canvas {
         int y = patblt.getY();
 
         if (x > this.right || y > this.bottom)
-            return; // off screen
+            return; 
 
         int cx = patblt.getCX();
         int cy = patblt.getCY();
@@ -796,7 +796,7 @@ public abstract class RdesktopCanvas extends Canvas {
         int y = triblt.getY();
 
         if (x > this.right || y > this.bottom)
-            return; // off screen
+            return; 
 
         int cx = triblt.getCX();
         int cy = triblt.getCY();
@@ -806,11 +806,11 @@ public abstract class RdesktopCanvas extends Canvas {
         int bgcolor = triblt.getBackgroundColor();
         Brush brush = triblt.getBrush();
 
-        // convert to 24-bit colour
+        
         fgcolor = Bitmap.convertTo24(fgcolor);
         bgcolor = Bitmap.convertTo24(bgcolor);
 
-        // Perform standard clipping checks, x-axis
+        
         int clipright = x + cx - 1;
         if (clipright > this.right)
             clipright = this.right;
@@ -818,7 +818,7 @@ public abstract class RdesktopCanvas extends Canvas {
             x = this.left;
         cx = clipright - x + 1;
 
-        // Perform standard clipping checks, y-axis
+        
         int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
@@ -830,18 +830,18 @@ public abstract class RdesktopCanvas extends Canvas {
             Bitmap bitmap = cache.getBitmap(triblt.getCacheID(), triblt
                     .getCacheIDX());
             switch (triblt.getOpcode()) {
-                case 0x69: // PDSxxn
+                case 0x69: 
                     RasterOp.do_array(ROP2_XOR, backstore, this.width, x, y, cx, cy,
                             bitmap.getBitmapData(), bitmap.getWidth(), srcx, srcy);
                     patBltOrder(ROP2_NXOR, x, y, cx, cy, fgcolor, bgcolor, brush);
                     break;
-                case 0xb8: // PSDPxax
+                case 0xb8: 
                     patBltOrder(ROP2_XOR, x, y, cx, cy, fgcolor, bgcolor, brush);
                     RasterOp.do_array(ROP2_AND, backstore, this.width, x, y, cx, cy,
                             bitmap.getBitmapData(), bitmap.getWidth(), srcx, srcy);
                     patBltOrder(ROP2_XOR, x, y, cx, cy, fgcolor, bgcolor, brush);
                     break;
-                case 0xc0: // PSa
+                case 0xc0: 
                     RasterOp.do_array(ROP2_COPY, backstore, this.width, x, y, cx, cy,
                             bitmap.getBitmapData(), bitmap.getWidth(), srcx, srcy);
                     patBltOrder(ROP2_AND, x, y, cx, cy, fgcolor, bgcolor, brush);
@@ -870,12 +870,12 @@ public abstract class RdesktopCanvas extends Canvas {
         byte[] databytes = polyline.getData();
         int lines = polyline.getLines();
 
-        // convert to 24-bit colour
+        
         fgcolor = Bitmap.convertTo24(fgcolor);
 
-        // hack - data as single element byte array so can pass by ref to
-        // parse_delta
-        // see http://www.rgagnon.com/javadetails/java-0035.html
+        
+        
+        
 
         int[] data = new int[1];
         data[0] = ((lines - 1) / 4) + 1;
@@ -899,8 +899,8 @@ public abstract class RdesktopCanvas extends Canvas {
 
             if ((flags & 0x80) != 0)
                 y += parse_delta(databytes, data);
-            // logger.info("polyline
-            // "+line+","+xfrom+","+yfrom+","+x+","+y+","+fgcolor+","+opcode);
+            
+            
 
             drawLine(xfrom, yfrom, x, y, fgcolor, opcode);
             flags <<= 2;
@@ -913,7 +913,7 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param rect RectangleOrder defining the rectangle to be drawn
      */
     public void drawRectangleOrder(RectangleOrder rect) {
-        // if(logger.isInfoEnabled()) logger.info("RectangleOrder!");
+        
         fillRectangle(rect.getX(), rect.getY(), rect.getCX(), rect.getCY(),
                 rect.getColor());
     }
@@ -929,13 +929,13 @@ public abstract class RdesktopCanvas extends Canvas {
     public void setPixel(int opcode, int x, int y, int color) {
         int Bpp = Options.Bpp;
 
-        // correction for 24-bit colour
+        
         if (Bpp == 3)
             color = ((color & 0xFF) << 16) | (color & 0xFF00)
                     | ((color & 0xFF0000) >> 16);
 
         if ((x < this.left) || (x > this.right) || (y < this.top)
-                || (y > this.bottom)) { // Clip
+                || (y > this.bottom)) { 
         } else {
             RasterOp.do_pixel(opcode, backstore, x, y, color);
         }
@@ -965,11 +965,11 @@ public abstract class RdesktopCanvas extends Canvas {
 
         int Bpp = Options.Bpp;
 
-        // convert to 24-bit colour
+        
         fgcolor = Bitmap.convertTo24(fgcolor);
         bgcolor = Bitmap.convertTo24(bgcolor);
 
-        // correction for 24-bit colour
+        
         if (Bpp == 3) {
             fgcolor = ((fgcolor & 0xFF) << 16) | (fgcolor & 0xFF00)
                     | ((fgcolor & 0xFF0000) >> 16);
@@ -977,10 +977,10 @@ public abstract class RdesktopCanvas extends Canvas {
                     | ((bgcolor & 0xFF0000) >> 16);
         }
 
-        // clip here instead
+        
 
         if (x > this.right || y > this.bottom)
-            return; // off screen
+            return; 
 
         int clipright = x + cx - 1;
         if (clipright > this.right)
@@ -989,33 +989,33 @@ public abstract class RdesktopCanvas extends Canvas {
             newx = this.left;
         else
             newx = x;
-        newcx = clipright - x + 1; // not clipright - newx - 1
+        newcx = clipright - x + 1; 
 
         int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
             clipbottom = this.bottom;
         int top = this.top;
-//		if (y < this.top)
-//			newy = this.top;
-//		else
+
+
+
         newy = y;
 
         newcy = clipbottom - newy + 1;
 
         int pbackstore = (newy * this.width) + x;
-        pdata = bytes_per_row * (newy - y); // offset y, but not x
+        pdata = bytes_per_row * (newy - y); 
 
-        if (mixmode == MIX_TRANSPARENT) { // FillStippled
+        if (mixmode == MIX_TRANSPARENT) { 
             for (int i = 0; i < newcy; i++) {
                 for (int j = 0; j < newcx; j++) {
-                    if (index == 0) { // next row
+                    if (index == 0) { 
                         pdata++;
                         index = 0x80;
                     }
 
                     if ((data[pdata] & index) != 0) {
                         if ((x + j >= newx) && (newx + j > 0) && (newy + i > 0) && (y + i >= top))
-                            // since haven't offset x
+                            
                             backstore.setRGB(x + j, newy + i, fgcolor);
                     }
                     index >>= 1;
@@ -1027,10 +1027,10 @@ public abstract class RdesktopCanvas extends Canvas {
                     pdata = 0;
                 }
             }
-        } else { // FillOpaqueStippled
+        } else { 
             for (int i = 0; i < newcy; i++) {
                 for (int j = 0; j < newcx; j++) {
-                    if (index == 0) { // next row
+                    if (index == 0) { 
                         pdata++;
                         index = 0x80;
                     }
@@ -1054,8 +1054,8 @@ public abstract class RdesktopCanvas extends Canvas {
             }
         }
 
-        // if(logger.isInfoEnabled()) logger.info("glyph
-        // \t(\t"+x+",\t"+y+"),(\t"+(x+cx-1)+",\t"+(y+cy-1)+")");
+        
+        
         this.repaint(newx, newy, newcx, newcy);
     }
 
@@ -1097,7 +1097,7 @@ public abstract class RdesktopCanvas extends Canvas {
             pmask = offset;
             for (j = 0; j < scanline; j++) {
                 for (int nextbit = 0x80; nextbit != 0; nextbit >>= 1) {
-                    //-----
+                    
                     int rv = 0;
                     int pxormask = 0;
                     int s8 = 0;
@@ -1116,9 +1116,9 @@ public abstract class RdesktopCanvas extends Canvas {
                             break;
                         case 15: {
                             int temp = (xormask[k] << 8) | xormask[k + 1];
-                            int red = (((temp >> 7) & 0xf8) | ((temp >> 12) & 0x7)); //r
-                            int green = (((temp >> 2) & 0xf8) | ((temp >> 8) & 0x7)); //g
-                            int blue = (((temp << 3) & 0xf8) | ((temp >> 2) & 0x7)); //b
+                            int red = (((temp >> 7) & 0xf8) | ((temp >> 12) & 0x7)); 
+                            int green = (((temp >> 2) & 0xf8) | ((temp >> 8) & 0x7)); 
+                            int blue = (((temp << 3) & 0xf8) | ((temp >> 2) & 0x7)); 
                             rv = (red << 16) | (green << 8) | blue;
                             k += 1;
                         }
@@ -1152,7 +1152,7 @@ public abstract class RdesktopCanvas extends Canvas {
                         cursor[pcursor] |= ((andmask[pandmask]) & nextbit);
                         mask[pmask] |= (~(andmask[pandmask]) & nextbit);
                     }
-                    //-----
+                    
 
                 }
                 pandmask++;

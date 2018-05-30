@@ -15,22 +15,22 @@ public class TitleMenu extends Menu {
 
 	@Override
     public void tick() {
-//		if (input.up.clicked) selected--;
-//		if (input.down.clicked) selected++;
-//
-//		int len = options.length;
-//		if (selected < 0) selected += len;
-//		if (selected >= len) selected -= len;
-//
-//		if (input.attack.clicked || input.menu.clicked) {
-//			if (selected == 0) {
+
+
+
+
+
+
+
+
+
 				Sound.test.play();
 				game.resetGame();
 				game.setMenu(null);
-//			}
-//			if (selected == 1) game.setMenu(new InstructionsMenu(this));
-//			if (selected == 2) game.setMenu(new AboutMenu(this));
-//		}
+
+
+
+
 	}
 
 	@Override

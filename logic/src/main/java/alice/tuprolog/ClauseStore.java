@@ -27,14 +27,14 @@ public class ClauseStore {
     }
 
 
-//    /**
-//     * Carica una famiglia di clausole
-//     * <p>
-//     * Reviewed by Paolo Contessi:
-//     * OneWayList.transform(List) -> OneWayList.transform2(List)
-//     *
-//     * @param familyClauses
-//     */
+
+
+
+
+
+
+
+
     public static ClauseStore build(Term goal, List<Var> vars, Deque<ClauseInfo> familyClauses) {
         ClauseStore clauseStore = new ClauseStore(goal, vars);
         return (clauseStore.clauses = OneWayList.get(familyClauses)) == null ||
@@ -88,8 +88,8 @@ public class ClauseStore {
      */
     private static List<Term> deunify(List<Var> varsToDeunify, @Nullable List<Term> saveUnifications) {
 
-        //List saveUnifications = new LinkedList();
-        //deunifico le variabili termporaneamente
+        
+        
         for (int i = 0, varsToDeunifySize = varsToDeunify.size(); i < varsToDeunifySize; i++) {
             Var v = varsToDeunify.get(i);
             if (saveUnifications != null)
@@ -110,10 +110,10 @@ public class ClauseStore {
         int size = varsToReunify.size();
         ListIterator<Var> it1 = varsToReunify.listIterator(size);
         ListIterator<Term> it2 = saveUnifications.listIterator(size);
-        // Only the first occurrence of a variable gets its binding saved;
-        // following occurrences get a null instead. So, to avoid clashes
-        // between those values, and avoid random variable deunification,
-        // the reunification is made starting from the end of the list.
+        
+        
+        
+        
         while (it1.hasPrevious()) {
             it1.previous().setLink(it2.previous());
         }
@@ -151,23 +151,23 @@ public class ClauseStore {
      * Methods for spyListeners
      */
 
-//    public List<ClauseInfo> getClauses() {
-//        ArrayList<ClauseInfo> l = new ArrayList<>();
-//        OneWayList<ClauseInfo> t = clauses;
-//        while (t != null) {
-//            l.add(t.getHead());
-//            t = t.getTail();
-//        }
-//        return l;
-//    }
-//
-//    public Term getMatchGoal() {
-//        return goal;
-//    }
-//
-//    public List<Var> getVarsForMatch() {
-//        return vars;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

@@ -24,7 +24,7 @@ import static nars.truth.TruthFunctions.w2c;
 public class HijackConceptIndex extends MaplikeConceptIndex {
 
     private final PLinkHijackBag<Termed> table;
-    //private final Map<Term,Termed> permanent = new ConcurrentHashMap<>(1024);
+    
 
     int forgetEveryDurs = 16;
     float forgetTemperature = 0.5f;
@@ -34,11 +34,11 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
      */
     private final float initial = 0.5f;
     private final float getBoost = 0.02f;
-    //private final float forget = 0.05f;
+    
     private long now;
     private int dur;
     private DurService onDur;
-    //private DurService onDur;
+    
 
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
@@ -46,7 +46,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         this.table = new PLinkHijackBag<>(capacity, reprobes) {
 
             {
-                resize(capacity); //immediately expand to full capacity
+                resize(capacity); 
             }
 
 
@@ -71,22 +71,22 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
                 boolean existingPermanent = existing.id instanceof PermanentConcept;
 
                 if (existingPermanent) {
-//                    if (incomingPermanent) {
-//                        //throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + incoming.get() + " , " + existing.get());
-//                        return false;
-//                    }
-                    return incomingPower; //automatic lose but no damage
+
+
+
+
+                    return incomingPower; 
                 }
-//                boolean incomingPermanent = incoming.get() instanceof PermanentConcept;
-//                if (incomingPermanent)
-//                    return true;
+
+
+
                 return super.replace(incomingPower, existing);
             }
-//
-//            @Override
-//            public void onRemoved(  PLink<Termed> value) {
-//                assert(!(value.get() instanceof PermanentConcept));
-//            }
+
+
+
+
+
         };
 
     }
@@ -107,20 +107,20 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         table.commit(table.forget(forgetTemperature));
     }
 
-//    @Override
-//    public void commit(Concept c) {
-//        get(c.term(), false); //get boost
-//    }
+
+
+
+
 
     @Override
     public @Nullable Termed get( Term key, boolean createIfMissing) {
         @Nullable PLink<Termed> x = table.get(key);
         if (x != null) {
-            //Termed y = x.id;
-            //if (y != null) {
+            
+            
             boost(x, getBoost);
-            return x.id; //cache hit
-            //}
+            return x.id; 
+            
         }
 
         if (createIfMissing) {
@@ -129,11 +129,11 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
                 PLink<Termed> inserted = table.put(new PLinkHashCached<>(kc, initial));
                 if (inserted != null) {
                     return kc;
-//                        Termed ig = inserted.get();
-//                        if (ig.term().equals(kc.term()))
-//                            return ig;
+
+
+
                 } else {
-                    table.put(new PLinkHashCached<>(kc, initial)); //HACK temporary for debug
+                    table.put(new PLinkHashCached<>(kc, initial)); 
                     return null;
                 }
             }
@@ -164,9 +164,9 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public void forEach( Consumer<? super Termed> c) {
-        //TODO make sure this doesnt visit a term twice appearing in both tables but its ok for now
+        
         table.forEachKey(c);
-        //permanent.values().forEach(c);
+        
     }
 
     @Override
@@ -176,13 +176,13 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public  String summary() {
-        return table.size() + " concepts"; // (" + permanent.size() + " permanent)";
+        return table.size() + " concepts"; 
     }
 
     @Override
     public void remove( Term entry) {
         table.remove(entry);
-        //permanent.remove(entry);
+        
     }
     @Override
     public Stream<? extends Termed> stream() {
@@ -199,7 +199,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     protected void forget(PLink<Termed> x, Concept c, float amount) {
-        //shrink link bag capacity in proportion to the forget amount
+        
         c.tasklinks().setCapacity(Math.round(c.tasklinks().capacity() * (1f - amount)));
         c.termlinks().setCapacity(Math.round(c.termlinks().capacity() * (1f - amount)));
 
@@ -207,58 +207,58 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
 
-//    /**
-//     * performs an iteration update
-//     */
-//    private void update(NAR nar) {
-//
-//        AtomicReferenceArray<PLink<Termed>> tt = table.map;
-//
-//        int c = tt.length();
-//
-//        now = nar.time();
-//        dur = nar.dur();
-//
-//        int visit = this.visit;
-//        try {
-//            int n = (int) Math.floor(updateRate * c);
-//
-//            for (int i = 0; i < n; i++, visit++) {
-//
-//                if (visit >= c) visit = 0;
-//
-//                PLink<Termed> x = tt.get(visit);
-//                if (x != null)
-//                    update(x);
-//            }
-//        } finally {
-//            this.visit = visit;
-////            Util.decode(conceptScores, "", 200, (x, v) -> {
-////                System.out.println(x + "\t" + v);
-////            });
-//            conceptScores.reset();
-//        }
-//
-//    }
-//
-//    protected void update(PLink<Termed> x) {
-//
-//        //TODO better update function based on Concept features
-//        Termed tc = x.get();
-//        if (tc instanceof PermanentConcept)
-//            return; //dont touch
-//
-//        Concept c = (Concept) tc;
-//        int score = (int) (score(c) * 1000f);
-//
-//        float cutoff = 0.25f;
-//        if (conceptScores.getTotalCount() > this.table.capacity() / 2) {
-//            float percentile = (float) conceptScores.getPercentileAtOrBelowValue(score) / 100f;
-//            if (percentile < cutoff)
-//                forget(x, c, cutoff * (1 - percentile));
-//        }
-//
-//        conceptScores.recordValue(score);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -17,9 +17,9 @@ public class Tweak<X,Y> {
     public final Function<X,Y> get;
     public final String id;
 
-//    @Deprecated public Tweak(String id, BiFunction<X,Y,Y> set) {
-//        this(id, null, set);
-//    }
+
+
+
 
     /** transduces a generic floating point value to a change in a property of the experiment subject */
     public Tweak(String id, Function<X,Y> get, BiFunction<X,Y,Y> set) {
@@ -59,7 +59,7 @@ public class Tweak<X,Y> {
 
     /** add this tweak to a schema that will collect its values */
     public void defineIn(Schema data) {
-        //HACK default functionality for numeric types only
+        
         data.defineNumeric(id);
     }
 }

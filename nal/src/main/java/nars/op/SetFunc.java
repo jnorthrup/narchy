@@ -43,7 +43,7 @@ public class SetFunc {
 
         @Override
         public boolean validOp(Op o) {
-            return o.commutative;// || o == INT;
+            return o.commutative;
         }
 
         @Override
@@ -63,16 +63,16 @@ public class SetFunc {
 
         @Override
         public Term apply(Term a, Term b) {
-    //        Op aop = a.op();
-    //        if (b.op() == aop)
+    
+    
 
             if (a instanceof Int.IntRange && b.op()==INT) {
                return ((Int.IntRange)a).intersect(b);
             }
 
             return intersect(a.op(), a.subterms(), b.subterms());
-    //        else
-    //            return null;
+    
+    
         }
 
     };
@@ -108,8 +108,8 @@ public class SetFunc {
             int bs = b.subs();
             int maxSize = Math.max(as, bs);
             if (t.size() == maxSize) {
-                //the smaller is contained by the larger other
-                //so return an input value rather than constructing a duplicate
+                
+                
                 return (Term) (as > bs ? a : b);
             }
         }
@@ -128,19 +128,19 @@ public class SetFunc {
             protected Term compute(Term x, Term param) {
                 int n = x.subs();
                 if (n < 2)
-                    return Null; //invalid
+                    return Null; 
 
                 if (x.hasAny(Op.varBits))
-                    return null; //incomputable
+                    return null; 
 
                 FasterList<Term> l = new FasterList<>(n);
                 l.addingAll(x.subterms().arrayShared());
                 Comparator<Term> cmp;
                 if (param instanceof Atomic && !param.hasVars()) {
-                    //TODO cache intermediate results if n >> 2
+                    
                     cmp = Comparator.comparing((Term t) -> eval(t, (Atomic) param)).thenComparing((Term t) -> t);
                 } else
-                    return Null; //TODO support other comparator patterns, ex: x(a,#1)
+                    return Null; 
 
                 l.sort(cmp);
                 return $.pFast(l);
@@ -153,9 +153,9 @@ public class SetFunc {
 
             @Override
             protected Term uncompute(Term x, Term param, Term y) {
-                //deduce specific terms present in 'y' but not 'x'
+                
 
-                //HACK simple case of 1
+                
                 if (!y.hasVars() && x.vars() == 1) {
                     Subterms xx = x.subterms();
                     Subterms yy = y.subterms();
@@ -174,7 +174,7 @@ public class SetFunc {
                     }
                 }
 
-                //TODO if y.subs()==1 then there is only one solution
+                
 
                 return null;
             }

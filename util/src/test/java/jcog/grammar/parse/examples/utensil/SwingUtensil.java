@@ -123,12 +123,12 @@ public class SwingUtensil {
 	 */
 	public static JPanel textPanel(String title, JTextArea ta, Dimension pref, Dimension min) {
 
-		// scroll pane around text area
+		
 		JScrollPane s1 = new JScrollPane(ta);
 		s1.setPreferredSize(pref);
 		s1.setMinimumSize(min);
 
-		// titled panel that contains scrolling text area
+		
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
 		p.setBorder(SwingUtensil.ideTitledBorder(title));

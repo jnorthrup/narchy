@@ -32,7 +32,7 @@ public class HttpConnection {
 
     private final ConnectionStateChangeListener stateChangeListener;
 
-    private final Deque<HttpResponse> responses = new ArrayDeque<>(4); // responses that still have to be sent out
+    private final Deque<HttpResponse> responses = new ArrayDeque<>(4); 
     protected final Map<String, String> request = new HashMap<>();
 
     private final HttpModel model;
@@ -40,17 +40,17 @@ public class HttpConnection {
     long lastReceivedNS;
     boolean websocket = false;
 
-    protected ByteBuffer rawHead; // The bytes of the entire head (request-line and headers)
+    protected ByteBuffer rawHead; 
     private ByteBuffer lineBuffer;
 
 
-    private HttpResponse currentResponse; // the response that is currently being sent;
+    private HttpResponse currentResponse; 
 
     private boolean keepAlive;
-    // Data about the current state (remember that multiple request may be made per connection):
+    
     private STATE state;
     private METHOD method;
-    private int clientHttpMinor; // The minor http version of the request. Aka 123 in HTTP/1.123
+    private int clientHttpMinor; 
     private URI requestUri;
 
     HttpConnection(ConnectionStateChangeListener stateChangeListener, HttpModel model, SelectionKey key, SocketChannel sChannel) {
@@ -70,12 +70,12 @@ public class HttpConnection {
         }
     }
 
-    // https://www.rfc-editor.org/rfc/rfc2616.txt
+    
     @SuppressWarnings("unchecked")
     public void read(ByteBuffer buf) {
         lastReceivedNS = System.nanoTime();
 
-        //logger.info(buf.position() + ":" + buf.limit() + ":{};", dumpBuffer(buf, false));
+        
 
         if (state == STATE.CLOSED || state == STATE.BAD_REQUEST || state == STATE.UPGRADE) {
             return;
@@ -104,7 +104,7 @@ public class HttpConnection {
                     respondNull();
                 }
 
-                // this clears our current header info, etc
+                
                 setState(this.keepAlive ? STATE.WAIT_FOR_REQUEST_LINE : STATE.CLOSED);
             }
 
@@ -126,15 +126,15 @@ public class HttpConnection {
     }
 
     public void respond(File file) {
-//        try {
-            //file = getRoute(file.getPath());
+
+            
             respond(new HttpResponse(method,
                     /*(Map<String, String>) headers.clone()*/ 200, "", !this.keepAlive, file));
-//        } catch (NoSuchFileException ex) {
-//            logger.info("No such file: ", ex.getMessage());
-//        } catch (IOException e) {
-//            logger.info("IO Exception: ", e.getMessage());
-//        }
+
+
+
+
+
     }
 
     public void respondNull() {
@@ -142,73 +142,73 @@ public class HttpConnection {
                 /*(Map<String, String>) headers.clone()*/ 404, "", !this.keepAlive, null));
     }
 
-//    @Deprecated private File getRoute(String requestPath) throws IOException {
-//        return null;
-//        if (requestPath == null || requestPath.isEmpty()) {
-//            return null;
-//        }
-//
-//
-//        int start = 0;
-//        int rpl = requestPath.length();
-//        while (start < rpl && requestPath.charAt(start) == '/') {
-//            ++start;
-//        }
-//
-//        int len = rpl;
-//        while (len >= start && requestPath.charAt(len - 1) == '/') {
-//            --len;
-//        }
-//
-//        if (start == len) {
-//            return null;
-//        }
-//
-//
-//        while (len >= start) {
-//            // /a/b/c/d/e.txt
-//            // first try "/a/b/c/d/e.txt"
-//            // then try "/a/b/c/d"
-//            // then try "/a/b/c" etc
-//
-//            File routeFile = routes.get(requestPath.substring(start, len));
-//
-//            if (routeFile == null) {
-//                len = requestPath.lastIndexOf('/', len - 1);
-//                continue;
-//            }
-//
-//            String remainingPath = requestPath.substring(len);
-//
-//            File file = !remainingPath.isEmpty()
-//                    ? new File(routeFile.getPath() + File.separator + remainingPath)
-//                    : routeFile;
-//
-//            file = file.getCanonicalFile();
-//            if (!file.getPath().startsWith(routeFile.getPath())) {
-//                logger.warn("Attempt to access file outside of the route directory");
-//                throw new NoSuchFileException(file.getPath());
-//            }
-//
-//            return file;
-//
-//        }
-//
-//
-//        if (defaultRoute == null) {
-//            throw new NoSuchFileException("defaultRoute not set");
-//        }
-//
-//        File file = new File(defaultRoute.getPath() + File.separator + requestPath);
-//        file = file.getCanonicalFile();
-//
-//        if (!file.getPath().startsWith(defaultRoute.getPath())) {
-//            logger.warn("Attempt to access file outside of the route directory");
-//            throw new NoSuchFileException(file.getPath());
-//        }
-//
-//        return file;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void respond(HttpResponse resp) {
         responses.add(resp);
@@ -238,13 +238,13 @@ public class HttpConnection {
             buf.position(pos);
         }
 
-        //logger.info(buf.position() + ":" + buf.limit() + ":{};", dumpBuffer(buf, false));
+        
 
         if (state == STATE.WAIT_FOR_REQUEST_LINE) {
             readRequestLine(buf);
         }
 
-        // not "else"!
+        
         if (state == STATE.READING_HEADERS) {
 
 
@@ -265,17 +265,17 @@ public class HttpConnection {
 
 
             if (request.containsKey("content-length")) {
-                // POST, OPTIONS, etc is not supported
+                
                 throw new HttpException(400, true, "Request body is not allowed for this method");
             }
 
-            //logger.error("Remaining in buffer:{}", dumpBuffer(buf, true));
+            
 
 
             return true;
         }
 
-        // Some line that spans multiple socket reads()
+        
         if (buf.hasRemaining()) {
             if (state == STATE.WAIT_FOR_REQUEST_LINE || state == STATE.READING_HEADERS) {
                 if (lineBuffer == null) {
@@ -296,7 +296,7 @@ public class HttpConnection {
 
     private void ensureRawHeadHasRemaining(int remaining) {
         if (rawHead == null) {
-            // ensure the buffer is a multiple of RAWHEAD_SIZE
+            
             rawHead = ByteBuffer.allocate((remaining / RAWHEAD_SIZE + 1) * RAWHEAD_SIZE);
         } else if (remaining > rawHead.remaining()) {
             int newCap = rawHead.capacity();
@@ -318,16 +318,16 @@ public class HttpConnection {
         int position = buf.position();
         int limit = buf.limit();
 
-        // set the buffer to the line that was just read
+        
         buf.position(beforeLinePosition);
         buf.limit(position);
 
         ensureRawHeadHasRemaining(buf.remaining());
 
-        // add it to rawHead
+        
         rawHead.put(buf);
 
-        // reset buf to what it was before
+        
         buf.position(position);
         buf.limit(limit);
     }
@@ -351,16 +351,16 @@ public class HttpConnection {
                 rawHead_putToPos(buf, beforeLinePosition);
 
                 if (line.length() == 0) {
-                    // ignore empty line before request line
+                    
                     continue;
                 }
 
-                //System.out.print("*********** ");
-                //System.out.print(line);
-                //System.out.println(" ***********;");
+                
+                
+                
 
-                //  HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
-                // Also see https://tools.ietf.org/html/rfc2145
+                
+                
 
                 if (line.length() > 300) {
                     throw new HttpException(414, true, "Request-Line Too Long");
@@ -410,14 +410,14 @@ public class HttpConnection {
 
                 rawHead_putToPos(buf, beforeLinePosition);
 
-                //System.out.println(">" + line);
+                
 
 
                 Matcher headerLine = HttpUtil.headerLine.matcher(line.subSequence(0, line.length()));
                 if (headerLine.matches()) {
                     String name = headerLine.group(1);
                     String value = headerLine.group(2);
-                    // todo: multiple headers with the same name
+                    
                     request.put(name.toLowerCase(), value.trim());
                     if (request.size() > 50) {
                         throw new HttpException(400, true, "Too many headers");
@@ -427,12 +427,12 @@ public class HttpConnection {
                 }
 
                 if (buf.remaining() >= 2) {
-                    // \r\n\r\n
+                    
                     if (HttpUtil.isCR(buf.get(buf.position()))
                             && HttpUtil.isLF(buf.get(buf.position() + 1))) {
                         ensureRawHeadHasRemaining(2);
 
-                        // .get() also moves the position
+                        
                         rawHead.put(buf.get());
                         rawHead.put(buf.get());
 
@@ -457,7 +457,7 @@ public class HttpConnection {
         if (newState == STATE.DONE_READING) {
             if (this.clientHttpMinor > 0) {
                 this.keepAlive = "keep-alive".equals(request.get("connection"));
-                //logger.info("Keep-alive enabled");
+                
             } else {
                 this.keepAlive = false;
             }
@@ -465,8 +465,8 @@ public class HttpConnection {
 
         stateChangeListener.connectionStateChange(this, oldState, newState);
 
-        // clear state variables
-        // do not clear when the new state is UPGRADE!
+        
+        
         if (newState == STATE.WAIT_FOR_REQUEST_LINE || newState == STATE.CLOSED || newState == STATE.BAD_REQUEST) {
             this.requestUri = null;
             this.clientHttpMinor = 0;
@@ -485,7 +485,7 @@ public class HttpConnection {
         }
     }
 
-    // channel is ready to write more
+    
     public void writeable() throws IOException {
         while (!responses.isEmpty() || currentResponse != null) {
             if (currentResponse == null) {
@@ -496,19 +496,19 @@ public class HttpConnection {
             if (currentResponse.write(channel)) {
                 if (currentResponse.close) {
                     setState(STATE.CLOSED);
-                    channel.close(); // TODO: does this immediately clear the outgoing buffer?
+                    channel.close(); 
                     logger.info("closed {}", this.keepAlive);
                 }
 
-                // the response is done writing
+                
                 currentResponse = null;
             } else {
-                return; // the outgoing buffer is full
+                return; 
             }
 
         }
 
-        // nothing more to write
+        
         key.interestOps(SelectionKey.OP_READ);
     }
 
@@ -519,13 +519,13 @@ public class HttpConnection {
 
 
     enum STATE {
-        WAIT_FOR_REQUEST_LINE, // Just accepted the connection, waiting for http reponse
-        READING_HEADERS, // read the http version, reading the headers
+        WAIT_FOR_REQUEST_LINE, 
+        READING_HEADERS, 
 
-        // Data for this request is sent during/after these states:
+        
         DONE_READING,
-        UPGRADE, // This connection is being upgraded to a websocket, no further parsing by this object
-        BAD_REQUEST, // Client sent a bad request. Ignore everything the client sends. The connection is closing.
+        UPGRADE, 
+        BAD_REQUEST, 
         CLOSED
     }
 

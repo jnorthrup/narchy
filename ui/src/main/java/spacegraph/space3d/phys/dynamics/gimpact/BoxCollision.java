@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -60,7 +60,7 @@ public class BoxCollision {
 		float pmin = VectorUtil.coord(pointa, i_comp_0) * dir0 + VectorUtil.coord(pointa, i_comp_1) * dir1;
 		float pmax = VectorUtil.coord(pointb, i_comp_0) * dir0 + VectorUtil.coord(pointb, i_comp_1) * dir1;
 		if (pmin > pmax) {
-			//BT_SWAP_NUMBERS(pmin,pmax);
+			
 			pmin = pmin + pmax;
 			pmax = pmin - pmax;
 			pmin = pmin - pmax;
@@ -90,29 +90,29 @@ public class BoxCollision {
 		return vec3.x*mat.get(0, colindex) + vec3.y*mat.get(1, colindex) + vec3.z*mat.get(2, colindex);
 	}
 
-//	/**
-//	 * Compairison of transformation objects.
-//	 */
-//	public static boolean compareTransformsEqual(Transform t1, Transform t2) {
-//		return t1.equals(t2);
-//	}
+
+
+
+
+
+
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	public static class BoxBoxTransformCache {
-		public final v3 T1to0 = new v3(); // Transforms translation of model1 to model 0
-		public final Matrix3f R1to0 = new Matrix3f(); // Transforms Rotation of model1 to model 0, equal  to R0' * R1
-		public final Matrix3f AR = new Matrix3f();    // Absolute value of m_R1to0
+		public final v3 T1to0 = new v3(); 
+		public final Matrix3f R1to0 = new Matrix3f(); 
+		public final Matrix3f AR = new Matrix3f();    
 		
 		public static void set(BoxBoxTransformCache cache) {
 			throw new UnsupportedOperationException();
 		}
 		
 		public void calc_absolute_matrix() {
-			//static const btVector3 vepsi(1e-6f,1e-6f,1e-6f);
-			//m_AR[0] = vepsi + m_R1to0[0].absolute();
-			//m_AR[1] = vepsi + m_R1to0[1].absolute();
-			//m_AR[2] = vepsi + m_R1to0[2].absolute();
+			
+			
+			
+			
 
 			for (int i=0; i<3; i++) {
 				for (int j=0; j<3; j++) {
@@ -169,7 +169,7 @@ public class BoxCollision {
 		}
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	public static class AABB {
 		public final v3 min = new v3();
@@ -266,7 +266,7 @@ public class BoxCollision {
 			v3 extends_ = new v3();
 			extends_.sub(max, center);
 
-			// Compute new center
+			
 			trans.transform(center);
 
 			v3 textends = new v3();
@@ -300,7 +300,7 @@ public class BoxCollision {
 			v3 extends_ = new v3();
 			extends_.sub(max, center);
 
-			// Compute new center
+			
 			trans.transform(center, center);
 
 			v3 textends = new v3();
@@ -431,14 +431,14 @@ public class BoxCollision {
 			projection_interval(tmp, _fmin, _fmax);
 
 			if (plane.w > _fmax[0] + BOX_PLANE_EPSILON) {
-				return PlaneIntersectionType.BACK_PLANE; // 0
+				return PlaneIntersectionType.BACK_PLANE; 
 			}
 
 			if (plane.w + BOX_PLANE_EPSILON >= _fmin[0]) {
-				return PlaneIntersectionType.COLLIDE_PLANE; //1
+				return PlaneIntersectionType.COLLIDE_PLANE; 
 			}
 			
-			return PlaneIntersectionType.FRONT_PLANE; //2
+			return PlaneIntersectionType.FRONT_PLANE; 
 		}
 		
 		public boolean overlapping_trans_conservative(AABB box, Transform trans1_to_0) {
@@ -459,16 +459,16 @@ public class BoxCollision {
 		public boolean overlapping_trans_cache(AABB box, BoxBoxTransformCache transcache, boolean fulltest) {
 			v3 tmp = new v3();
 
-			// Taken from OPCODE
-			v3 ea = new v3(), eb = new v3(); //extends
-			v3 ca = new v3(), cb = new v3(); //extends
+			
+			v3 ea = new v3(), eb = new v3(); 
+			v3 ca = new v3(), cb = new v3(); 
 			get_center_extend(ca, ea);
 			box.get_center_extend(cb, eb);
 
 			v3 T = new v3();
 			float t, t2;
 
-			// Class I : A's basis vectors
+			
 			for (int i=0; i<3; i++) {
 				transcache.R1to0.getRow(i, tmp);
 				VectorUtil.setCoord(T, i, tmp.dot(cb) + VectorUtil.coord(transcache.T1to0, i) - VectorUtil.coord(ca, i));
@@ -479,7 +479,7 @@ public class BoxCollision {
 					return false;
 				}
 			}
-			// Class II : B's basis vectors
+			
 			for (int i=0; i<3; i++) {
 				t = bt_mat3_dot_col(transcache.R1to0, T, i);
 				t2 = bt_mat3_dot_col(transcache.AR, ea, i) + VectorUtil.coord(eb, i);
@@ -487,7 +487,7 @@ public class BoxCollision {
 					return false;
 				}
 			}
-			// Class III : 9 cross products
+			
 			if (fulltest) {
 				int m, n, o, p, q, r;
 				for (int i = 0; i < 3; i++) {
@@ -535,37 +535,37 @@ public class BoxCollision {
 			v3 v3 = new v3();
 			v3.sub(p3, center);
 
-			// First axis
+			
 			spacegraph.util.math.v3 diff = new v3();
 			diff.sub(v2, v1);
 			spacegraph.util.math.v3 abs_diff = new v3();
 			abs_diff.absolute(diff);
 
-			// Test With X axis
+			
 			TEST_CROSS_EDGE_BOX_X_AXIS_MCR(diff, abs_diff, v1, v3, extends_);
-			// Test With Y axis
+			
 			TEST_CROSS_EDGE_BOX_Y_AXIS_MCR(diff, abs_diff, v1, v3, extends_);
-			// Test With Z axis
+			
 			TEST_CROSS_EDGE_BOX_Z_AXIS_MCR(diff, abs_diff, v1, v3, extends_);
 
 			diff.sub(v3, v2);
 			abs_diff.absolute(diff);
 
-			// Test With X axis
+			
 			TEST_CROSS_EDGE_BOX_X_AXIS_MCR(diff, abs_diff, v2, v1, extends_);
-			// Test With Y axis
+			
 			TEST_CROSS_EDGE_BOX_Y_AXIS_MCR(diff, abs_diff, v2, v1, extends_);
-			// Test With Z axis
+			
 			TEST_CROSS_EDGE_BOX_Z_AXIS_MCR(diff, abs_diff, v2, v1, extends_);
 
 			diff.sub(v1, v3);
 			abs_diff.absolute(diff);
 
-			// Test With X axis
+			
 			TEST_CROSS_EDGE_BOX_X_AXIS_MCR(diff, abs_diff, v3, v2, extends_);
-			// Test With Y axis
+			
 			TEST_CROSS_EDGE_BOX_Y_AXIS_MCR(diff, abs_diff, v3, v2, extends_);
-			// Test With Z axis
+			
 			TEST_CROSS_EDGE_BOX_Z_AXIS_MCR(diff, abs_diff, v3, v2, extends_);
 
 			return true;

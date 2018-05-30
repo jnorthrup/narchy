@@ -54,7 +54,7 @@ public class CompoundLight implements Compound {
     @Override
     public Term the() {
         return op().compound(DTERNAL, arrayShared());
-//        /throw new UnsupportedOperationException();
+
     }
 
     @Override
@@ -62,8 +62,8 @@ public class CompoundLight implements Compound {
         return DTERNAL;
     }
 
-    //    @Override
-//    public Term dt(int nextDT) {
-//        //TODO totally light version of this, including any new Base that needs constructed
-//    }
+    
+
+
+
 }

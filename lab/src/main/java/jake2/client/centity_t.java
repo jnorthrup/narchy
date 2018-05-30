@@ -18,22 +18,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 27.11.2003 by RST.
-// $Id: centity_t.java,v 1.2 2004-07-08 20:56:50 hzi Exp $
+
+
 
 package jake2.client;
 
 import jake2.game.entity_state_t;
 
 public class centity_t {
-	final entity_state_t baseline= new entity_state_t(null); // delta from this if not from a previous frame
+	final entity_state_t baseline= new entity_state_t(null); 
 	public final entity_state_t current= new entity_state_t(null);
-	final entity_state_t prev= new entity_state_t(null); // will always be valid, but might just be a copy of current
+	final entity_state_t prev= new entity_state_t(null); 
 
-	int serverframe; // if not current, this ent isn't in the frame
+	int serverframe; 
 
-	int trailcount; // for diminishing grenade trails
-	final float[] lerp_origin = { 0, 0, 0 }; // for trails (variable hz)
+	int trailcount; 
+	final float[] lerp_origin = { 0, 0, 0 }; 
 
 	int fly_stoptime;
 }

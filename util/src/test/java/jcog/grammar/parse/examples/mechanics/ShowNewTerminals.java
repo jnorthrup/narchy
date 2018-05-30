@@ -26,7 +26,7 @@ public class ShowNewTerminals {
 
 		Parser term = new Alternation().get(variable).get(known);
 
-		// anonymous Assembler subclasses note element type
+		
 
 		variable.put(new IAssembler() {
 			public void accept(Assembly a) {
@@ -42,7 +42,7 @@ public class ShowNewTerminals {
 			}
 		});
 
-		// term* matching against knowns and variables:
+		
 
 		System.out.println(new Repetition(term).bestMatch(new TokenAssembly("member X republican democrat")));
 	}

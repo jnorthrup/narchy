@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Supplier;
 
 /**
- * from: https://stackoverflow.com/a/15654081
+ * from: https:
  * Class extends ThreadLocal to enable user to iterate over all objects
  * held by the ThreadLocal instance.  Note that this is inherently not
  * thread-safe, and violates both the contract of ThreadLocal and much

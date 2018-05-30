@@ -8,7 +8,7 @@ public class Bullet extends VectorSprite
     public Bullet(double x, double y, double a, int bulletType)
     {
         
-        // Draws different types of bullets based on which weapon is being used by the ship
+        
         
         if (bulletType == 1)
         {

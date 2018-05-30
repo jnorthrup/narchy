@@ -15,7 +15,7 @@ public final class JoglGL2 implements QGL {
     private GL2 gl;
     
     JoglGL2() {
-        // singleton
+        
     }
     
     void setGL(GL2 gl) {

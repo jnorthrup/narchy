@@ -43,9 +43,9 @@ public class Gasolinear implements Discretize1D {
             @NotNull
             @Override
             public Gasolinear.Sorted1DCentroid newCentroid(int i, int dims) {
-//                Sorted1DCentroid s = new Sorted1DCentroid(i);
-//                s.setEntry(0, (i+1)/((float)nodes) * (max-min) + min); //TODO halfway points correct
-//                return s;
+
+
+
                 return (Sorted1DCentroid) new Sorted1DCentroid(i).randomizeUniform(min, max);
             }
         };

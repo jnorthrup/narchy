@@ -6,7 +6,7 @@ import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
 /**
- * https://en.wikipedia.org/wiki/STRIPS
+ * https:
  */
 public class STRIPSTest {
 
@@ -28,23 +28,23 @@ public class STRIPSTest {
                 /* Goal state:    Eat(bananas) */
                 "Eat(bananas)!",
 
-                //_Move(X, Y)_
+                
                 "((At($X) &&+0 Level(low)) ==>+1 (--At($X) &&+0 At(#Y))).",
 
-                // _ClimbUp(Location)_ climb up the box
+                
                 "(((At(#Location) &&+0 BoxAt(#Location)) &&+0 Level(low)) ==>+1 (Level(high) &&+0 --Level(low))).",
 
-                // _ClimbDown(Location)_ climb down from the box
+                
                 "(((At(#Location) &&+0 BoxAt(#Location)) &&+0 Level(high)) ==>+1 (Level(low), --Level(high))).",
 
 
-                // _MoveBox(X, Y)_ move monkey and box from X to Y
+                
                /* Preconditions:  At(X), BoxAt(X), Level(low)
                Postconditions: BoxAt(Y), not BoxAt(X), At(Y), not At(X) */
                 "(((At($X) &&+0 BoxAt($X)) &&+0 Level(low)) ==>+1 ((((At(#Y) &&+0 BoxAt(#Y)) &&+0 --BoxAt($X)) &&+0 --At($X)))).",
 
 
-                // _TakeBananas(Location)_ take the bananas
+                
                /* Preconditions:  At(Location), BananasAt(Location), Level(high)
                Postconditions: Eat(bananas) */
                 "(((At(#Location) &&+0 BananasAt(#Location)) &&+0 Level(high)) ==>+1 Eat(bananas))."

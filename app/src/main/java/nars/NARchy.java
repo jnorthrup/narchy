@@ -20,12 +20,12 @@ public class NARchy extends NARS {
 
     public static NAR core() {
 
-        //u.forEach(System.out::println);
-//        u.put("boot", new Date().toString());
-//        Util.pause(100);
-//        u.get("boot", (b)->{
-//            System.out.println(b);
-//        });
+        
+
+
+
+
+
 
 
         NAR nar = new DefaultNAR(8, true)
@@ -33,23 +33,23 @@ public class NARchy extends NARS {
                 .index(new CaffeineIndex(1000 * 128 * 1024))
 
                 .exe(new MixMultiExec(128, 1))
-//                .exe(new WorkerMultiExec(
-//                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-//                        1, 128, 1024))
 
-//                .exe(new PoolMultiExec /*WorkerMultiExec*/(
-//                        2, 256,
-//                    new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))))
-////                        //        , 64, 512))
-////                ))
-//                .exe(new AbstractExec(64) {
-//                    @Override
-//                    public boolean concurrent() {
-//                        return true;
-//                    }
-//                })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 .time(new RealTime.MS(false ).durFPS(10f))
-                //.memory("/tmp/nal")
+                
                 .get();
 
 
@@ -65,7 +65,7 @@ public class NARchy extends NARS {
                 t -> !t.isInput()
                 , 16, 64);
 
-        //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
+        
 
         new ArithmeticIntroduction(32, nar);
 
@@ -75,24 +75,24 @@ public class NARchy extends NARS {
     public static NAR ui() {
         /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
         NAR nar = core();
-        //auxiliary modules, load in background thread
+        
         nar.runLater(()->{
 
             User u = User.the();
 
-//            new NARAudio(nar);
-//
-//            new NARVideo(nar);
+
+
+
 
             NARHear.readURL(nar);
 
             {
                 NARSpeak s = new NARSpeak(nar);
                 s.spoken.on(new NativeSpeechDispatcher()::speak);
-                //new NativeSpeechDispatcher(s);
+                
             }
 
-//            //new NoteFS("/tmp/nal", nar);
+
 
 
 

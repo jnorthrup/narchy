@@ -12,7 +12,7 @@ subrange, and concat) take log time and memory.
 */
 public class AvlBitstring implements Bits{
 	
-	//TODO pre and suf funcs should use Fast0To16Bits when the returned piece is at most 16 bits.
+	
 
 	public final Bits first, second;
 	
@@ -40,12 +40,12 @@ public class AvlBitstring implements Bits{
 		siz = first.siz() + second.siz();
 		ones = first.ones() + second.ones();
 		int firstHeight = first.height(), secondHeight = second.height();
-		// if(Math.abs(firstHeight-secondHeight) > 1) throw new
-		// IllegalArgumentException(
-		// "Heights of 2 child trees differ by more than 1");
+		
+		
+		
 		height = 1 + Math.max(firstHeight, secondHeight);
-		// TODO Get rid of maxHeightDiff vars and func in Bits, and do tree
-		// balancing in concat func
+		
+		
 		int newMaxheightDiff = second.height() - first.height();
 		if(newMaxheightDiff < 0) newMaxheightDiff = -newMaxheightDiff;
 		if(newMaxheightDiff < first.maxHeightDiff()) newMaxheightDiff = first.maxHeightDiff();
@@ -113,19 +113,19 @@ public class AvlBitstring implements Bits{
 		long firstSize = first.siz();
 		if (start < firstSize){
 			long maxBitsFromFirst = firstSize - start;
-			if (getHowManyBits <= maxBitsFromFirst){ // all from first
+			if (getHowManyBits <= maxBitsFromFirst){ 
 				return first.bits(start, getHowManyBits);
-			}else{ // concat some from first and second
+			}else{ 
 				byte maxBitsFromFirstB = (byte) maxBitsFromFirst;
 				byte howManyBitsFromSecond = (byte) (getHowManyBits - maxBitsFromFirstB);
 				int firstBits = first.bits(start, maxBitsFromFirstB);
 				long remainingStart = start+maxBitsFromFirstB;
 				int secondBits = second.bits(remainingStart-firstSize, howManyBitsFromSecond);
 				
-				//Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are.
+				
 				return (firstBits << howManyBitsFromSecond) | secondBits;
-				//OLD: default for this software is littleEndian, so firstBits are lowest
-				//return (secondBits << maxBitsFromFirstB) | firstBits;
+				
+				
 			}
 		}
 		return second.bits(start-firstSize, getHowManyBits);
@@ -133,13 +133,13 @@ public class AvlBitstring implements Bits{
 	
 	public long bitsJ(long start, byte howManyBits){
 		if(32 < howManyBits){
-			//Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are.
+			
 			int highBits = bits(start, (byte)(howManyBits-32));
 			int lowBits = intAt(start+32);
 			return (((long)highBits)<<32)|lowBits;
 			
 			/*OLD
-			//littleEndian is standard for bits in this software
+			
 			int lowBits = intAt(start);
 			int highBits = bits(start+32, (byte)(howManyBits-32));
 			return (((long)highBits)<<32)|lowBits;
@@ -167,8 +167,8 @@ public class AvlBitstring implements Bits{
 	public int efficientBlockSize(){ return 1; }
 
 	public Bits sub(long start, long endExclusive){
-		// return pre(endExclusive).suf(start);
-		// For debugging, putting each step on separate line
+		
+		
 		Bits pre = pre(endExclusive);
 		Bits preSuf = pre.suf(start);
 		return preSuf;
@@ -181,7 +181,7 @@ public class AvlBitstring implements Bits{
 		 * firstSize) return first.pre(endExclusive); return
 		 * first.cat(second.pre(endExclusive-firstSize));
 		 */
-		// For debugging, putting each step on separate line
+		
 		if (endExclusive == siz)
 			return this;
 		long firstSize = first.siz();
@@ -200,19 +200,19 @@ public class AvlBitstring implements Bits{
 	public Bits suf(long start){
 		/*
 		 * if(start == 0) return this; long firstSize = first.siz(); if(start ==
-		 * firstSize) return second; //ERROR if(start < firstSize) return
+		 * firstSize) return second; 
 		 * first.suf(firstSize).cat(second); if(start < firstSize) return
 		 * first.suf(start).cat(second); return second.suf(start-firstSize);
 		 */
-		// For debugging, putting each step on separate line
+		
 		if (start == 0)
 			return this;
 		long firstSize = first.siz();
 		if (start == firstSize)
 			return second;
 		if (start < firstSize){
-			// ERROR Bits firstSuf = first.suf(firstSize); (remember this when
-			// going back to commented code, update it there)
+			
+			
 			Bits firstSuf = first.suf(start);
 			Bits firstSufCatSecond = firstSuf.cat(second);
 			return firstSufCatSecond;
@@ -258,7 +258,7 @@ public class AvlBitstring implements Bits{
 	/*
 	 * public void storeAllDataLocally(){ if(size() > Integer.MAX_VALUE) throw
 	 * new RuntimeException("Too large bit array to create: "+size());
-	 * //if((size()&7)==0){ // //}else{ // //} //TODO byte array. Consider speed
+	 * 
 	 * vs memory. booleans take 1 byte each in memory. boolean data[] = new
 	 * boolean[(int)size()]; for(int i=0; i<data.length; i++){ data[i] =
 	 * bitAt(i); } return new BitArray(data); }
@@ -283,19 +283,19 @@ public class AvlBitstring implements Bits{
 		Bits newSecond = second.maxHeightDiff() <= 1
 			? second
 			: balanceAVLTree(second);
-		// newLeft and newRight are AVL balanced
-		// int testLeftLoop = 0, testRightLoop = 0, testLeftRotate = 0,
-		// testRightRotate = 0;
+		
+		
+		
 		while (newFirst.height() + 1 < newSecond.height()){
-			// testRightLoop++;
-			// newLeft needs to be deeper or newRight shallower.
-			// newRight is not a leaf so this always works.
+			
+			
+			
 			if (newSecond.firstOrNull().height() > newSecond.secondOrNull()
 					.height()){
-				// testRightRotate++;
-				// Right-rotate newRight so newRight.firstOrNull.height <=
-				// newRight.secondOrNull().height.
-				// newRight.firstOrNull is not a leaf.
+				
+				
+				
+				
 				newSecond = new AvlBitstring(
 					newSecond.firstOrNull().firstOrNull(),
 					new AvlBitstring(
@@ -304,23 +304,23 @@ public class AvlBitstring implements Bits{
 					)
 				);
 			}
-			// Move newRight.firstOrNull to newLeft.
+			
 			newFirst = balanceAVLTree(new AvlBitstring(newFirst,
 					newSecond.firstOrNull()));
 			newSecond = newSecond.secondOrNull();
 		}
-		// only 1 of the while loops will execute
+		
 		while (newFirst.height() > newSecond.height() + 1){
-			// TODO: verify these comments are accurate. this loop was generated
-			// by changing all left to right and right to left in the text.
-			// testLeftLoop++;
-			// newRight needs to be deeper or newLeft shallower.
-			// newLeft is not a leaf so this always works.
+			
+			
+			
+			
+			
 			if (newFirst.secondOrNull().height() > newFirst.firstOrNull().height()){
-				// testLeftRotate++;
-				// Left-rotate newLeft so newLeft.secondOrNull().height <=
-				// newLeft.firstOrNull.height.
-				// newLeft.secondOrNull() is not a leaf.
+				
+				
+				
+				
 				newFirst = new AvlBitstring(
 					new AvlBitstring(
 						newFirst.firstOrNull(),
@@ -329,15 +329,15 @@ public class AvlBitstring implements Bits{
 					newFirst.secondOrNull().secondOrNull()
 				);
 			}
-			// Move newLeft.secondOrNull() to newRight.
+			
 			newSecond = balanceAVLTree(new AvlBitstring(newFirst.secondOrNull(), newSecond));
 			newFirst = newFirst.firstOrNull();
 		}
-		// if(testLeftLoop>0 && testRightLoop>0){ //TODO: remove these test vars
-		// throw new
-		// RuntimeException("testLeftLoop="+testLeftLoop+" testRightLoop="+testRightLoop
-		// +" testLeftRotate="+testLeftRotate+" testRightRotate="+testRightRotate);
-		// }
+		
+		
+		
+		
+		
 		return new AvlBitstring(newFirst, newSecond);
 	}
 
@@ -353,7 +353,7 @@ public class AvlBitstring implements Bits{
 		Bits b = Fast0To16Bits.EMPTY;
 		for(int i=0; i<data.length; i++){
 			data[i] = repeatablePseudorandom.nextBoolean();
-			//TODO cat in random order
+			
 			b = b.cat(Fast0To16Bits.get(data[i]));
 			String s = "";
 			for(long g=0; g<b.siz(); g++) s += b.bitAt(g)?"1":"0";
@@ -381,7 +381,7 @@ public class AvlBitstring implements Bits{
 		for(byte howManyBits=1; howManyBits<=32; howManyBits++){
 			System.out.println("START: Testing bits func with howManyBits="+howManyBits);
 			for(int start=0; start<data.length-howManyBits; start++){
-				//compare subrange of array to subrange using bits func
+				
 				int observedBitsI = b.bits(start, howManyBits);
 				boolean observedBits[] = bitsOfInt(observedBitsI, howManyBits);
 				int howManyBitsNotMatch = 0;
@@ -420,8 +420,8 @@ public class AvlBitstring implements Bits{
 		if(howManyBits < 0 || howManyBits > 32) throw new RuntimeException("howManyBits="+howManyBits);
 		boolean b[] = new boolean[howManyBits];
 		for(int j=0; j<howManyBits; j++){
-			//b[j] = (i&1)!=0; //littleEndian
-			b[howManyBits-1-j] = (i&1)!=0; //bigEndian
+			
+			b[howManyBits-1-j] = (i&1)!=0; 
 			i >>>= 1;
 		}
 		return b;

@@ -15,7 +15,7 @@ public class HopfieldMap<X> {
     private final FloatFunction<X> in;
     private final FloatObjectProcedure<X> out;
 
-    //TODO use Bag for this
+    
     private final AdjGraph<X, Float> weight = new AdjGraph(false);
 
     private final Random rng = new Random();
@@ -77,7 +77,7 @@ public class HopfieldMap<X> {
     }
 
     /**
-     * https://en.wikipedia.org/wiki/Hopfield_network#Hebbian_learning_rule_for_Hopfield_networks
+     * https:
      */
     public void learn() {
         int p = randomIndex();
@@ -94,7 +94,7 @@ public class HopfieldMap<X> {
 
                 aOut[0] += bIn * w;
 
-                return Util.tanhFast(w + (alpha * aOut[0] * bIn)); //weight update
+                return Util.tanhFast(w + (alpha * aOut[0] * bIn)); 
             });
 
             this.out.value(out(aOut[0]), a);
@@ -121,9 +121,9 @@ public class HopfieldMap<X> {
     }
 
     protected float out(float v) {
-        //return v >= 0.5f ? 1 : 0; //default: binary threshold
+        
         return v >= 0 ? 1 : -1;
-        //return v;
+        
     }
 
     public HopfieldMap<X> set(float... v) {

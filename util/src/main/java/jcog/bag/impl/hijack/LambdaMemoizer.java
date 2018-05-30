@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 /**
- * https://stackoverflow.com/questions/27549864/java-memoization-method
- * h ttps://pastebin.com/ZgcXnRtG
+ * https:
+ * h ttps:
  */
 public class LambdaMemoizer {
 

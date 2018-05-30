@@ -1,12 +1,12 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.UGen;
 
-//import net.beadsproject.beads.ugens.Delta;
+
 
 /**
  * Outputs 1 if the input signal is increasing; -1 if it is decreasing; 0 if it

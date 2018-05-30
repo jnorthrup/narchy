@@ -23,14 +23,14 @@ public class ContextTreeTest {
         settings.setFacContextTree(false);
         settings.setDepth(2);
         ct = Worldmodel.getInstance("ContextTreeTestModel", settings);
-        // BooleanArrayList  list = new ArrayBooleanArrayList ();
-        // for (int i = 0; i < 1000; i++) {
-        // list.add(Util.randSym());
-        // }
-        // ct.update(list);
+        
+        
+        
+        
+        
     }
 
-    double eps = 1E-8; // tolerance
+    double eps = 1E-8; 
     Worldmodel ct;
 
     @AfterEach
@@ -51,8 +51,8 @@ public class ContextTreeTest {
 
     @Test
     public final void testFromFAISlides() {
-        // http://www.hutter1.net/ethz/slides-ctw.pdf
-        // page 14
+        
+        
 
         WorldModelSettings settings = new WorldModelSettings();
         settings.setFacContextTree(false);
@@ -64,7 +64,7 @@ public class ContextTreeTest {
         BooleanArrayList past;
         BooleanArrayList context;
 
-        // 110
+        
         past = new BooleanArrayList();
         past.add(true);
         past.add(true);
@@ -73,7 +73,7 @@ public class ContextTreeTest {
         ct.updateHistory(past);
         sumUpTo1(ct);
 
-        // 0100110
+        
         ct.update(new BooleanArrayList(false));
         sumUpTo1(ct);
         ct.update(new BooleanArrayList(true));
@@ -91,11 +91,11 @@ public class ContextTreeTest {
 
         System.out.println(ct);
 
-        // root
+        
         Assertions.assertTrue(equals(Math.exp(ct.getRoot().getLogProbWeighted()),
                 7.0 / 2048.0));
 
-        // first level
+        
         context = new BooleanArrayList();
         context.add(true);
         Assertions.assertTrue(equals(Math.exp(ct.getNode(context).getLogProbWeighted()),
@@ -106,7 +106,7 @@ public class ContextTreeTest {
         Assertions.assertTrue(equals(Math.exp(ct.getNode(context).getLogProbWeighted()),
                 9.0 / 128.0));
 
-        // second level
+        
         context = new BooleanArrayList();
         context.add(true);
         context.add(true);
@@ -131,7 +131,7 @@ public class ContextTreeTest {
         Assertions.assertTrue(equals(Math.exp(ct.getNode(context).getLogProbWeighted()),
                 3.0 / 8.0));
 
-        // third level
+        
         context = new BooleanArrayList();
         context.add(true);
         context.add(true);
@@ -189,12 +189,12 @@ public class ContextTreeTest {
         boolean b = true;
         symbols.add(b);
         symbols.add(!b);
-        // symbols.add(b);
-        // symbols.add(b);
-        // symbols.add(b);
-        // symbols.add(!b);
-        // symbols.add(b);
-        // symbols.add(!b);
+        
+        
+        
+        
+        
+        
 
         ct.update(symbols);
         System.out.println("updated");
@@ -210,18 +210,18 @@ public class ContextTreeTest {
 
         System.out.println(ct);
 
-        // for (int i = 0; i < 2; i++) {
-        //
-        // ct.update(sym1);
-        // System.out.println("updated");
-        //
-        // double p1, p0;
-        //
-        // p1 = ct.predict(sym1);
-        // p0 = ct.predict(sym0);
-        //
-        // System.out.println("p_1: " + p1 + " p_0: " + p0);
-        // }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
 
     }
 
@@ -257,8 +257,8 @@ public class ContextTreeTest {
         ContextTree ct = (ContextTree) Worldmodel.getInstance(
                 "ContextTreeTestModel", settings);
 
-        // if there isn't a history of length = depth, the predictions of the
-        // context tree won't sum up to 1.
+        
+        
 
 
         ct.updateHistory(Util.rand(depth));
@@ -478,7 +478,7 @@ public class ContextTreeTest {
         double p = ct.predict(list);
 
         for (int i = 0; i < 100; i++) {
-            // test whether it always returns the same probability.
+            
             Assertions.assertTrue(ct.predict(list) - p < eps);
         }
 

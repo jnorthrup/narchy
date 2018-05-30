@@ -65,8 +65,8 @@ public class FirstCamera extends AsyncCamera
         ray.dir.y = offsetY+((double) resY -y)*factor;
         ray.dir.z = 1.0;
         
-        // Farbwert zur�ckgeben. Darauf achten, dass er den G�ltigkeitsbereich
-        // nicht �berschreitet:
+        
+        
         ColorEx color = scene.trace(ray);
         return color;
     }

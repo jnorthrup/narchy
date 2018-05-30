@@ -27,7 +27,7 @@
  * (See gpl.txt for details of the GNU General Public License.)
  *
  */
-// Created on 07-Jul-2003
+
 package net.propero.rdp;
 
 import java.awt.*;
@@ -57,12 +57,12 @@ public class RdesktopFrame_Localised extends RdesktopFrame {
         this.setLocation(0, 0);
         this.setUndecorated(true);
         this.setVisible(true);
-        // setExtendedState (Frame.MAXIMIZED_BOTH);
-        // GraphicsEnvironment env =
-        // GraphicsEnvironment.getLocalGraphicsEnvironment();
-        // GraphicsDevice myDevice = env.getDefaultScreenDevice();
-        // if (myDevice.isFullScreenSupported())
-        // myDevice.setFullScreenWindow(this);
+        
+        
+        
+        
+        
+        
 
         this.pack();
     }
@@ -86,7 +86,7 @@ public class RdesktopFrame_Localised extends RdesktopFrame {
         this.setLocation(10, 10);
         this.setUndecorated(false);
         this.setVisible(true);
-        // setExtendedState (Frame.NORMAL);
+        
         this.pack();
     }
 }

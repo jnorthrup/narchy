@@ -38,7 +38,7 @@ public class PlaySound {
     
 	final static int MAX_PLAYSOUNDS = 128;
 	
-	// list with sentinel
+	
 	private static final PlaySound freeList;
 	private static final PlaySound playableList;
 	
@@ -47,14 +47,14 @@ public class PlaySound {
 	    for (int i = 0; i < backbuffer.length; i++) {
 	        backbuffer[i] = new PlaySound();
         }
-	    // init the sentinels
+	    
 	    freeList = new PlaySound();
 	    playableList = new PlaySound();
-	    // reset the lists
+	    
 	    reset();
 	}
 	
-    // sound attributes
+    
     int type;
 	int entnum;
 	int entchannel;
@@ -63,10 +63,10 @@ public class PlaySound {
     float attenuation;
     final float[] origin = {0,0,0};
 
-    // begin time in ms
+    
     private long beginTime;
 
-    // for linked list
+    
     private PlaySound prev, next;
 
     private PlaySound() {
@@ -76,17 +76,17 @@ public class PlaySound {
     
     private void clear() {
 		type = bufferId = entnum = entchannel = -1;
-        // volume = attenuation = beginTime = 0;
+        
         attenuation = beginTime = 0;
-        // Math3D.VectorClear(origin);
+        
     }
 
     static void reset() {
-        // init the sentinels
+        
         freeList.next = freeList.prev = freeList;
         playableList.next = playableList.prev = playableList;
         
-        // concat the the freeList
+        
         PlaySound ps;
 	    for (int i = 0; i < backbuffer.length; i++) {
 	        ps = backbuffer[i];
@@ -100,13 +100,13 @@ public class PlaySound {
     
     static PlaySound nextPlayableSound() {
         PlaySound ps = null;
-        //while (true) {
+        
             ps = playableList.next;
             if (ps == playableList || ps.beginTime > Globals.cl.time)
                 return null;
             PlaySound.release(ps);
             return ps;
-        //}
+        
     }
     
     private static PlaySound get() {
@@ -133,7 +133,7 @@ public class PlaySound {
     private static void release(PlaySound ps) {
         ps.prev.next = ps.next;
         ps.next.prev = ps.prev;
-        // add to free list
+        
         ps.next = freeList.next;
         freeList.next.prev = ps;
         ps.prev = freeList;
@@ -146,7 +146,7 @@ public class PlaySound {
         PlaySound ps = PlaySound.get();
 
         if (ps != null) {
-            // find the right sound type
+            
             if (entnum == Globals.cl.playernum + 1) {
                 ps.type = Channel.LISTENER;
             } else if (origin != null) {

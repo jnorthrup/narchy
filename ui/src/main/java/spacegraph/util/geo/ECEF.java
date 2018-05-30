@@ -10,14 +10,14 @@ public class ECEF {
      *  LLA - Lat Lon Alt
      *
      *  ported from matlab code at
-     *  https://gist.github.com/1536054
+     *  https:
      *     and
-     *  https://gist.github.com/1536056
+     *  https:
      */
 
-    // WGS84 ellipsoid constants
-    private static final double a = 6378137; // radius
-    private static final double e = 8.1819190842622e-2;  // eccentricity
+    
+    private static final double a = 6378137; 
+    private static final double e = 8.1819190842622e-2;  
 
     private static final double asq = Math.pow(a, 2);
     private static final double esq = Math.pow(e, 2);
@@ -38,10 +38,10 @@ public class ECEF {
         double N = a / (Math.sqrt(1 - esq * Util.sqr(Math.sin(lat))));
         double alt = p / Math.cos(lat) - N;
 
-        // mod lat to 0-2pi
+        
         lon = lon % (2 * Math.PI);
 
-        // correction for altitude near poles left out.
+        
 
         double[] ret = {lat, lon, alt};
 

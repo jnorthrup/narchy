@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.console;
 
@@ -52,15 +52,15 @@ public class ConsoleRegexTurtle {
     public static void main(String[] args) throws IOException {
         SimpleConfig simpleConfiguration = new SimpleConfig();
 
-        //Set defaults for commandline parameters
-        simpleConfiguration.datasetName = "./dataset.json"; // -d
-        simpleConfiguration.outputFolder = "."; // -o
-        //load simpleconfig defaults
-        simpleConfiguration.numberOfJobs = 32; // -j
-        simpleConfiguration.generations = 1000; // -g
-        simpleConfiguration.numberThreads = 4; // -t
-        simpleConfiguration.populationSize = 500; //-p
-        simpleConfiguration.termination = 20; //-e
+        
+        simpleConfiguration.datasetName = "./dataset.json"; 
+        simpleConfiguration.outputFolder = "."; 
+        
+        simpleConfiguration.numberOfJobs = 32; 
+        simpleConfiguration.generations = 1000; 
+        simpleConfiguration.numberThreads = 4; 
+        simpleConfiguration.populationSize = 500; 
+        simpleConfiguration.termination = 20; 
         simpleConfiguration.populateOptionalFields = false;
         simpleConfiguration.isStriped = false;
 
@@ -73,7 +73,7 @@ public class ConsoleRegexTurtle {
             Logger.getLogger(EvolveGrammar.class.getName()).log(Level.SEVERE, null, ex);
             System.exit(1);
         }
-        //Output warning about learning size
+        
         int numberPositiveExamples = 0;
         for (Example example : simpleConfiguration.dataset.getExamples()) {
             if (example.getNumberMatches() > 0) {
@@ -85,7 +85,7 @@ public class ConsoleRegexTurtle {
             message = WARNING_MESSAGE;
         }
         Configuration config = simpleConfiguration.buildConfiguration();
-        //change defaults for console usage
+        
         config.setPostProcessor(new JsonPostProcessor());
         config.getPostprocessorParameters().put(BasicPostprocessor.PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS, Boolean.toString(simpleConfiguration.populateOptionalFields));
         config.setOutputFolderName(simpleConfiguration.outputFolder);
@@ -93,7 +93,7 @@ public class ConsoleRegexTurtle {
         Results results = new Results(config);
         results.setComment(simpleConfiguration.comment);
         try {
-            //This is an optional information
+            
             results.setMachineHardwareSpecifications(Utils.cpuInfo());
         } catch (IOException ex) {
             Logger.getLogger(ConsoleRegexTurtle.class.getName()).log(Level.SEVERE, null, ex);
@@ -132,9 +132,9 @@ public class ConsoleRegexTurtle {
 
     private static DataSet loadDatasetJson(String jsonDataset) {
         return DataSet.json(jsonDataset);
-//        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-//        DataSet dataset = gson.fromJson(jsonDataset, DataSet.class);
-//        return dataset;
+
+
+
     }
 
     private static void writeBestPerformances(FinalSolution solution, boolean isFlagging) {
@@ -255,7 +255,7 @@ public class ConsoleRegexTurtle {
                         break;
                     case "-f":
                         simpleConfig.isFlagging = true;
-                        i -= 1; //Do not use parameter
+                        i -= 1; 
                         break;
                 }
             }

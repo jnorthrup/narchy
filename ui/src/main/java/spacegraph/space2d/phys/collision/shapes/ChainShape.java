@@ -194,7 +194,7 @@ public class ChainShape extends Shape {
         for (int i = 1; i < count; i++) {
             Tuple2f v1 = vertices[i - 1];
             Tuple2f v2 = vertices[i];
-            // If the code crashes here, it means your vertices are too close together.
+            
             if (MathUtils.distanceSquared(v1, v2) < Settings.linearSlop * Settings.linearSlop) {
                 throw new RuntimeException("Vertices of chain shape are too close together");
             }
@@ -223,7 +223,7 @@ public class ChainShape extends Shape {
         for (int i = 1; i < m_count; i++) {
             Tuple2f v1 = vertices[i - 1];
             Tuple2f v2 = vertices[i];
-            // If the code crashes here, it means your vertices are too close together.
+            
             if (MathUtils.distanceSquared(v1, v2) < Settings.linearSlop * Settings.linearSlop) {
                 throw new RuntimeException("Vertices of chain shape are too close together");
             }

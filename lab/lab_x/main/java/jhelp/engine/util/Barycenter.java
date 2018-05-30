@@ -39,7 +39,7 @@ public class Barycenter
          this.count = 1;
          return;
       }
-      //
+      
       this.barycenter = ((this.count * this.barycenter) + value) / (this.count + 1d);
       this.count++;
    }

@@ -10,7 +10,7 @@ package jcog.tree.rtree.split;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,11 +48,11 @@ public final class AxialSplitLeaf<T> implements Split<T> {
 
         final int nD = r.dim();
 
-        // choose axis to split
+        
         int axis = 0;
         double rangeD = r.range(0);
         for (int d = 1; d < nD; d++) {
-            // split along the greatest range extent
+            
             final double dr = r.rangeIfFinite(d, 0);
             if (dr > rangeD) {
                 axis = d;
@@ -60,7 +60,7 @@ public final class AxialSplitLeaf<T> implements Split<T> {
             }
         }
 
-        // sort along split dimension
+        
         final int splitDimension = axis;
 
         short size = leaf.size;
@@ -72,7 +72,7 @@ public final class AxialSplitLeaf<T> implements Split<T> {
             sorted[i] = pair(i, -span /* negative since the ArrayUtils.sort below is descending */);
             if (lastSpan==lastSpan) {
                 if (span < lastSpan) {
-                    lastSpan = Double.NaN; //set unsorted
+                    lastSpan = Double.NaN; 
                 } else {
                     lastSpan = span;
                 }
@@ -83,28 +83,28 @@ public final class AxialSplitLeaf<T> implements Split<T> {
                 ArrayUtils.sort(sorted, IntDoublePair::getTwo);
             } else {
                 assert(size==2);
-                //just swap entries
+                
                 IntDoublePair x = sorted[0];
                 sorted[0] = sorted[1];
                 sorted[1] = x;
             }
         }
 
-//        final HyperRegion[] sortedMbr = HyperRegion.toArray(leaf.data, size, model.bounds);
-//        Arrays.sort(sortedMbr, Comparator.comparingDouble(o -> o.center(splitDimension)));
 
-        // divide sorted leafs
+
+
+        
         final Leaf<T> l1Node = model.transfer(leaf, sorted, 0, size/2);
         final Leaf<T> l2Node = model.transfer(leaf, sorted, size / 2, size);
 
-//        if ((l1Node.size()+l2Node.size() != size))
-//            throw new RuntimeException("fix: leaf.contains(t)=" + leaf.contains(t, model.bounds(t), model));
+
+
         assert (l1Node.size()+l2Node.size() == size);
 
         leaf.transfer(l1Node, l2Node, t, model);
 
-//        if ((l1Node.size()+l2Node.size() != size+1))
-//            throw new RuntimeException("fix");
+
+
         assert (l1Node.size()+l2Node.size() == size+1);
 
         return model.newBranch(l1Node, l2Node);

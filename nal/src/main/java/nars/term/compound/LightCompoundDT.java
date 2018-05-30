@@ -33,7 +33,7 @@ public class LightCompoundDT implements Compound {
 
         Op op = base.op();
 
-        //assert(base.dt()==DTERNAL && ((op.temporal && dt!=DTERNAL) || this instanceof PremisePatternIndex.PremisePatternCompound));
+        
 
         Subterms s = base.subterms();
 
@@ -60,12 +60,12 @@ public class LightCompoundDT implements Compound {
 
 
         if (dt != DTERNAL && dt < 0 && op == CONJ && s.subs() == 2) {
-            //make sure it's always positive so there is only one form of the commutive equivalent
+            
             if (s.sub(0).equals(s.sub(1)))
-                dt = -dt; //Math.abs(dt);
+                dt = -dt; 
         }
 
-        //assert dt != DTERNAL || this instanceof PremisePatternIndex.PremisePatternCompound : "use GenericCompound if dt==DTERNAL";
+        
 
         assert dt == DTERNAL || dt == XTERNAL || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
 
@@ -96,18 +96,18 @@ public class LightCompoundDT implements Compound {
     }
 
 
-//    @Override
-//    public Term root() {
-//        Term supr = Compound.super.root();
-//        Term rref = ref.root();
-//        if (!supr.equals(rref)) {
-//            System.err.println("differ root than the ref");
-//            //happens if:
-//            //      (x==>x)
-//            //      ((--,x)==>x)
-//        }
-//        return supr;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public boolean contains(Term t) {
@@ -151,29 +151,29 @@ public class LightCompoundDT implements Compound {
         return Compound.toString(this);
     }
 
-//    @Override
-//    public Term sub(int i, Term ifOutOfBounds) {
-//        return ref.sub(i, ifOutOfBounds);
-//    }
-
-//    @Override
-//    public final int hashCodeSubTerms() {
-//        return ref.hashCodeSubTerms();
-//    }
-
-//    @Override
-//    public Term conceptual() {
-//        return Compound.super.conceptual();
-//        //return ref.conceptual();
-//    }
 
 
-//    @Override
-//    @Nullable
-//    public final Term root() {
-//        return Compound.super.root();
-//        //return ref.root();
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -187,19 +187,19 @@ public class LightCompoundDT implements Compound {
             Compound thatRef = cthat.ref;
             Compound myRef = this.ref;
 
-            //try sharing ref, even if the equality is false
+            
             if (myRef != thatRef) {
                 if (!myRef.equals(thatRef))
                     return false;
 
-//                if (myRef instanceof CachedCompound && thatRef instanceof CachedCompound) {
-//                    //prefer the earlier instance for sharing
-//                    if ((((CachedCompound) myRef).serial) < (((CachedCompound) thatRef).serial)) {
-//                        cthat.ref = myRef;
-//                    } else {
-//                        this.ref = thatRef;
-//                    }
-//                }
+
+
+
+
+
+
+
+
             }
 
             return (dt == cthat.dt);
@@ -211,52 +211,52 @@ public class LightCompoundDT implements Compound {
     }
 
 
-    //    @Override
-//    public boolean equals(Object obj) {
-//        if (this == obj) return true;
-//
-//        if (obj instanceof GenericCompoundDT) {
-//
-//            GenericCompoundDT d = (GenericCompoundDT) obj;
-//
-//            Compound ref = this.ref;
-//            Compound dref = d.ref;
-//
-//            if (!Param.CompoundDT_TermSharing) {
-//
-//                //compares hash and dt first, but doesnt share
-//                return (hashDT == d.hashDT && dt == d.dt && ref.equals(d.ref));
-//
-//            } else {
-//
-//                if (ref == dref) {
-//                    //ok
-//                } else if (ref.equals(dref)) {
-//                    //share equivalent instance, prefer to maintain a normalized term as it is likely used elsewhere (ie. in task content)
-//                    if (ref.isNormalized()) {
-//                        d.ref.setNormalized(); //though we will overwrite this next, in case it's shared elsewhere it will now also be known normalized
-//                        d.ref = ref;
-//                    } else if (d.ref.isNormalized()) {
-//                        ref.setNormalized();  //though we will overwrite this next, in case it's shared elsewhere it will now also be known normalized
-//                        this.ref = d.ref;
-//                    } else {
-//                        d.ref = ref;
-//                    }
-//
-//
-//                } else {
-//                    return false;
-//                }
-//
-//                return (hashDT == d.hashDT && dt == d.dt);
-//            }
-//
-//        } else if (obj instanceof ProxyCompound) {
-//            return equals(((ProxyCompound) obj).ref);
-//        }
-//
-//        return false;
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public final Subterms subterms() {
@@ -289,41 +289,41 @@ public class LightCompoundDT implements Compound {
     }
 
 
-    //    @Override
-//    public Compound dt(int nextDT) {
-//        if (nextDT == this.dt)
-//            return this;
-//
-//        return compoundOrNull($.the(op(), nextDT, toArray()));
-//
-////        if (o.commutative && !Op.concurrent(this.dt) && Op.concurrent(nextDT)) {
-////            //HACK reconstruct with sorted subterms. construct directly, bypassing ordinary TermBuilder
-////            TermContainer ms = subterms();
-////            //@NotNull TermContainer st = ms;
-//////            if (!st.isSorted()) {
-//////                Term[] ts = Terms.sorted(ms.toArray());
-//////                if (ts.length == 1) {
-//////                    if (o == CONJ)
-//////                        return compoundOrNull(ts[0]);
-//////                    return null;
-//////                }
-//////
-//////                TermContainer tv;
-//////                if (ms.equalTerms(ts))
-//////                    tv = ms; //share
-//////                else
-//////                    tv = TermVector.the(ts);
-//////
-////                /*GenericCompound g =*/ return compoundOrNull($.the(o, nextDT, ms.toArray())); //new GenericCompound(o, tv);
-//////                if (nextDT != DTERNAL)
-//////                    return new GenericCompoundDT(g, nextDT);
-//////                else
-//////                    return g;
-//////            }
-////
-////        }
-////        return ref.dt(nextDT);
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

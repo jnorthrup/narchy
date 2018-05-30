@@ -31,8 +31,8 @@ public class AnonTest {
     @Test
     public void testAtoms() throws Narsese.NarseseException {
         assertAnon("_1", "a");
-        assertAnon("#1", $.varDep(1)); //unchanged
-        assertAnon("_1", $.the(2)); //int remaps to internal int
+        assertAnon("#1", $.varDep(1)); 
+        assertAnon("_1", $.the(2)); 
 
         assertNotEquals(Anom.the(0), $.the(0));
         assertNotEquals(Anom.the(2), $.the(2));
@@ -111,7 +111,7 @@ public class AnonTest {
         assertTrue(av.containsRecursively(twoNeg.neg()), () -> av + " containsRecursively " + twoNeg.neg());
 
 
-        //assertTrue(The.subterms(x) instanceof AnonVector );
+        
     }
 
     @Test

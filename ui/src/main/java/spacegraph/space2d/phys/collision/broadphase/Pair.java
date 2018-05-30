@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.collision.broadphase;
 
-// updated to rev 100
+
 
 /**
  * Java note: at the "creation" of each node, a random key is given to that node, and that's what we

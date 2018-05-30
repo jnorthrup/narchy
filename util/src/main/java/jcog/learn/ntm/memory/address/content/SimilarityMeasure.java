@@ -2,7 +2,7 @@ package jcog.learn.ntm.memory.address.content;
 
 import jcog.learn.ntm.control.Unit;
 
-//TODO combine with SimilarityFunction
+
 public class SimilarityMeasure   
 {
     private final ISimilarityFunction _similarityFunction;

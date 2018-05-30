@@ -56,7 +56,7 @@ public class ArrayBytes implements AbstractBytes, Serializable, Comparable<Array
             return new OneByteSeq(at(start));
 
         if (start == 0 && end == length())
-            return this; //no change
+            return this; 
 
         return new WindowBytes(bytes, start, end);
     }

@@ -31,7 +31,7 @@ package spacegraph.space2d.phys.callbacks;
 import spacegraph.space2d.phys.dynamics.Filter;
 import spacegraph.space2d.phys.dynamics.Fixture;
 
-// updated to rev 100
+
 
 /**
  * Implement this class to provide collision filtering. In other words, you can implement

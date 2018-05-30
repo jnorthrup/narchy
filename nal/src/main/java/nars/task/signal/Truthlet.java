@@ -37,7 +37,7 @@ abstract public class Truthlet implements Truth {
             }
         }
 
-        //fallback:
+        
         return freq(mid());
     }
     @Deprecated @Override public final float evi() {
@@ -49,7 +49,7 @@ abstract public class Truthlet implements Truth {
             }
         }
 
-        //fallback:
+        
         return evi(mid());
     }
 
@@ -61,7 +61,7 @@ abstract public class Truthlet implements Truth {
         if (start == end) {
             return fStart;
         } else {
-            //TODO use the N-point approximation, and weight by the evidence because it may not be constant
+            
 
             float fEnd = freq(end);
             if (fEnd != fEnd)
@@ -69,14 +69,14 @@ abstract public class Truthlet implements Truth {
 
 
             if (end - start > 1) {
-                //interpolate using 3 points:
+                
                 float fMid = freq((start+end)/2L);
                 if (fMid==fMid) {
                     return Util.mean(fStart, fMid, fEnd);
                 }
             }
 
-            //interpolate using 2 points:
+            
             return Util.mean(fStart, fEnd);
 
         }

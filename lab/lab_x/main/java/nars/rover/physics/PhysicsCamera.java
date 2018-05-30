@@ -61,8 +61,8 @@ public class PhysicsCamera {
     transform.setCamera(initPosition.x, initPosition.y, initScale);
     targetTransform.setCamera(initPosition.x, initPosition.y, initScale);
         
-    //this.initPosition.set(initPosition);
-    //this.initScale = initScale;
+    
+    
     upScale = Mat22.createScaleTransform(1 + zoomScaleDiff);
     downScale = Mat22.createScaleTransform(1 - zoomScaleDiff);
   }
@@ -71,7 +71,7 @@ public class PhysicsCamera {
    * Resets the camera to the initial position
    */
   public void reset() {
-    //setCamera(initPosition, initScale);
+    
   }
 
   /**
@@ -82,10 +82,10 @@ public class PhysicsCamera {
   }
   
   public void update(float dt) {
-      float m = 0.8f; //center momentum
+      float m = 0.8f; 
       float n = 1.0f - m;
       
-      float ms = 0.99f; //scale momentum
+      float ms = 0.99f; 
       float ns = 1.0f - ms;
       
       float x = transform.getCenter().x;
@@ -112,15 +112,15 @@ public class PhysicsCamera {
    * Zooms the camera to a point on the screen. The zoom amount is given on camera initialization.
    */
   public void zoomToPoint(Vec2 screenPosition, ZoomType zoomType) {
-    //Mat22 zoom;
+    
     float scaleRate = 1f;
     switch (zoomType) {
       case ZOOM_IN:
-        //zoom = upScale;
+        
         targetScale += scaleRate;
         break;
       case ZOOM_OUT:
-        //zoom = downScale;
+        
         targetScale -= scaleRate;
         break;
       default:
@@ -128,21 +128,21 @@ public class PhysicsCamera {
         return;
     }
 
-    //System.out.println(zoom + " "+ transform.getExtents() + " bef " + targetTransform.getExtents());
+    
 
-//    targetTransform.getScreenToWorld(screenPosition, oldCenter);
-//    targetTransform.mulByTransform(zoom);
-//    targetTransform.getScreenToWorld(screenPosition, newCenter);
-//
-//
-//    Vec2 transformedMove = oldCenter.subLocal(newCenter);
-//    // set, just in case bad impl by someone
-//    if (!targetTransform.isYFlip()) {
-//      transformedMove.y = -transformedMove.y;
-//    }
-    //targetTransform.setCenter(targetTransform.getCenter().addLocal(transformedMove));
 
-    //targetTransform.setCamera(newCenter.x, newCenter.y, 1.5f);
+
+
+
+
+
+
+
+
+
+    
+
+    
     
   }
 

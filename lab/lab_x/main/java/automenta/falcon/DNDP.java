@@ -22,7 +22,7 @@ import jurls.reinforcementlearning.domains.RLEnvironment;
 import java.text.NumberFormat;
 
 public abstract class DNDP extends AGENT {
-    final int numSpace = 4; // 0-State 1-Action 2-Reward 3-New State
+    final int numSpace = 4; 
     final int numSonarInput = 5;
     final int numAVSonarInput = 0;
     final int numBearingInput = 8;
@@ -35,7 +35,7 @@ public abstract class DNDP extends AGENT {
     private final int M = 1;
     private final double[] Input;
 
-    private final double alpha = 0.95; //.95;
+    private final double alpha = 0.95; 
     private final boolean NONLINEAR = true;
     private final boolean explore = false;
 
@@ -82,7 +82,7 @@ public abstract class DNDP extends AGENT {
     private int currentBearing;
     private int[][] path;
 
-    //For overriding unuse methods in the abstract class
+    
     private int[] current;
 
     public DNDP(int av_num) {
@@ -141,7 +141,7 @@ public abstract class DNDP extends AGENT {
         rateCN = initRateCN;
 
         System.out.println("ACN created");
-        //current = new int[2];
+        
     }
 
     public void decay() {
@@ -201,7 +201,7 @@ public abstract class DNDP extends AGENT {
     public double sigmoid(double x) {
         double a = 1.0;
         return ((2.0 / (1.0 + Math.exp(-x / a))) - 1.0);
-//		return ((1.0-Math.exp(-x/a))/(1.0+Math.exp(-x/a)));
+
     }
 
     public double random(double Low, double High) {
@@ -241,8 +241,8 @@ public abstract class DNDP extends AGENT {
 
     public double errCN() {
         return (J - (r + alpha * NextJ));
-//		return ((r + alpha*NextJ)-J);    this is wrong
-//		return (r + alpha*J - prev_J);
+
+
     }
 
     public void propagateCN() {
@@ -273,7 +273,7 @@ public abstract class DNDP extends AGENT {
                 wCN[0][i][j] -= rateCN * alpha * eCN * wCN[1][0][i] * 0.5 * (1 - p[i] * p[i]) * y[j];
     }
 
-    public double[] getErrTermCN() {   // gradJu
+    public double[] getErrTermCN() {   
 
         for (int k = 0; k < A; k++) {
             errTermCN[k] = 0.0;
@@ -293,15 +293,15 @@ public abstract class DNDP extends AGENT {
 
     public double errAN() {
         return (J - rs);
-//		return (J - (rs/(double)(1.0-alpha)));
+
     }
 
-    public void setx(double[] Input, int N) {                            // for AN
+    public void setx(double[] Input, int N) {                            
         for (int i = 0; i < N; i++)
             x[i] = Input[i];
     }
 
-    public void sety(double[] Input, int N, double[] action) {        // for CN
+    public void sety(double[] Input, int N, double[] action) {        
         for (int i = 0; i < N; i++)
             y[i] = Input[i];
         for (int k = 0; k < A; k++)
@@ -328,7 +328,7 @@ public abstract class DNDP extends AGENT {
 
                 u[k] = sigmoid(v[k]);
             }
-        } else {   // LINEAR
+        } else {   
 
             for (int k = 0; k < A; k++) {
                 v[k] = 0.0;
@@ -344,7 +344,7 @@ public abstract class DNDP extends AGENT {
 
         double[] errTerm = new double[A];
         for (int k = 0; k < A; k++)
-            errTerm[k] = eAN * errTermCN[k] * 0.5 * (1 - u[k] * u[k]);   // estimated error for each action node
+            errTerm[k] = eAN * errTermCN[k] * 0.5 * (1 - u[k] * u[k]);   
 
         if (NONLINEAR) {
 
@@ -353,14 +353,14 @@ public abstract class DNDP extends AGENT {
                     double eT = 0.0;
                     for (int k = 0; k < A; k++)
                         eT += errTerm[k] * wAN[1][k][i];
-                    wAN[0][i][j] -= rateAN * eT * 0.5 * (1 - g[i] * g[i]) * x[j];  // not sure
+                    wAN[0][i][j] -= rateAN * eT * 0.5 * (1 - g[i] * g[i]) * x[j];  
                 }
 
             for (int k = 0; k < A; k++)
                 for (int i = 0; i < H; i++)
                     wAN[1][k][i] -= rateAN * errTerm[k] * g[i];
 
-        } else { // LINEAR
+        } else { 
 
             for (int j = 0; j < N; j++)
                 for (int k = 0; k < A; k++)
@@ -604,7 +604,7 @@ public abstract class DNDP extends AGENT {
 
             if (validAction(action, env)) {
                 if (Trace) System.out.println("Chosen Action= " + action + " u=" + u[0]);
-            } else {       // if chosen action is not valid, select a random action
+            } else {       
                 int randomIndex = (int) (Math.random() * maxVA);
                 action = validActions[randomIndex];
 
@@ -620,7 +620,7 @@ public abstract class DNDP extends AGENT {
 
             action = findMax(u, A, env);
 
-            if (!validAction(action, env)) {       // if chosen action is not valid, select a random action
+            if (!validAction(action, env)) {       
                 int randomIndex = (int) (Math.random() * maxVA);
                 action = validActions[randomIndex];
             }
@@ -633,7 +633,7 @@ public abstract class DNDP extends AGENT {
         if (explore) {
 
             if (Math.random() < QEpsilon || !validAction(action, env)) {
-                // Select random action if exploring or invalid action.
+                
                 if (Trace)
                     System.out.println("random action selected!");
                 int randomIndex = (int) (Math.random() * maxVA);
@@ -672,7 +672,7 @@ public abstract class DNDP extends AGENT {
         int maxNC = 10, maxNA = 20;
 
         sety(Input, N, u);
-        propagateCN();   // calculate new J
+        propagateCN();   
 
         eCN = errCN();
         ErrorCN = 0.5 * eCN * eCN;
@@ -683,7 +683,7 @@ public abstract class DNDP extends AGENT {
         while (ErrorCN > tCN && i < maxNC) {
 
             errorBPCN();
-            propagateCN();   // recalculate J
+            propagateCN();   
 
             eCN = errCN();
             ErrorCN = 0.5 * eCN * eCN;
@@ -693,14 +693,14 @@ public abstract class DNDP extends AGENT {
         }
         if (Trace && i % 10 != 0) displayCNStatus(i);
 
-//        normalizeCN ();
+
 
         i = 0;
 
         setx(Input, N);
         propagateAN();
         sety(Input, N, u);
-        propagateCN();   // calculate new J
+        propagateCN();   
 
         eAN = errAN();
         ErrorAN = 0.5 * eAN * eAN;
@@ -712,9 +712,9 @@ public abstract class DNDP extends AGENT {
             errTermCN = getErrTermCN();
             errorBPAN();
 
-            propagateAN();   // recalculate u
+            propagateAN();   
             sety(Input, N, u);
-            propagateCN();   // recalculate J
+            propagateCN();   
 
             eAN = errAN();
             ErrorAN = 0.5 * eAN * eAN;
@@ -736,7 +736,7 @@ public abstract class DNDP extends AGENT {
                 " NextJ=" + df.format(NextJ) +
                 " r=" + df.format(r));
 
-//		displayVector ("errTermCN", errTermCN, A);
+
     }
 
     public void displayCNStatus(int i) {
@@ -759,7 +759,7 @@ public abstract class DNDP extends AGENT {
         return (H);
     }
 
-    // useless codes added by students
+    
 
     public void turn(int d) {
         currentBearing = (currentBearing + d + 8) % 8;

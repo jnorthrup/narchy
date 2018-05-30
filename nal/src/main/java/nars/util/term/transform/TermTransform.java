@@ -51,7 +51,7 @@ public interface TermTransform extends Evaluation.TermContext {
 
         Subterms yy = xx.transformSubs(this);
         if (yy == null)
-            return Null; //return null;
+            return Null; 
 
         return transformedCompound(x, op, dt, xx, yy);
     }
@@ -72,8 +72,8 @@ public interface TermTransform extends Evaluation.TermContext {
      * constructs a new term for a result
      */
     default Term the(Op op, int dt, TermList t) {
-        //return op.a(
-        //optimized impl for TermList (FasterList)
+        
+        
         return op.compound(dt, t.arrayShared());
     }
 
@@ -98,15 +98,15 @@ public interface TermTransform extends Evaluation.TermContext {
     }
 
 
-//    TermTransform anyVarToQueryVar = new TermTransform() {
-//        @Override
-//        public Term transformAtomic(Term atomic) {
-//            Op a = atomic.op();
-//            return (a.var && a!= VAR_QUERY) ?
-//                    $.varQuery((((NormalizedVariable) atomic).anonNum())) :
-//                    atomic;
-//        }
-//    };
+
+
+
+
+
+
+
+
+
     /**
      * operates transparently through negation subterms
      */
@@ -123,9 +123,9 @@ public interface TermTransform extends Evaluation.TermContext {
                     return null;
                 Term yy = y.term();
                 if (yy.equals(xx))
-                    return x; //no change
+                    return x; 
                 else {
-                    Term y2 = yy.neg(); //negate the transformed subterm
+                    Term y2 = yy.neg(); 
                     if (y2.equals(x))
                         return x;
                     else

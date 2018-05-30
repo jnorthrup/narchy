@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *     
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ public abstract class IntVarTest {
 
   public abstract IntVar intVar(DiscreteConstraintSolver solver, int[] values);
 
-  // Returns true if the variable contains all the values.
+  
   private boolean containsAll(IntVar x, int... values) {
     for (int i = 0; i < values.length; i++) {
       if (!x.contains(values[i])) {
@@ -38,7 +38,7 @@ public abstract class IntVarTest {
     return true;
   }
 
-  // All values should be contained in the initial domain
+  
   @Test
   public void test1() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -47,7 +47,7 @@ public abstract class IntVarTest {
     assertTrue(containsAll(x, 5, 6, 7, 8, 9, 10));
   }
 
-  // All values should be contained in the initial domain (sparse)
+  
   @Test
   public void test1a() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -57,7 +57,7 @@ public abstract class IntVarTest {
     assertTrue(containsAll(x, values));
   }
 
-  // Contains should return true if value is in the domain
+  
   @Test
   public void test2() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -67,7 +67,7 @@ public abstract class IntVarTest {
     assertTrue(x.contains(15));
   }
 
-  // Contains should return false if value is not in the domain
+  
   @Test
   public void test3() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -80,7 +80,7 @@ public abstract class IntVarTest {
     assertFalse(x.contains(1000));
   }
 
-  // UpdateMin should remove all values lesser than min
+  
   @Test
   public void test4() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -92,8 +92,8 @@ public abstract class IntVarTest {
     assertTrue(containsAll(x, 10, 11, 12, 13, 14, 15));
   }
 
-  // UpdateMin with a lesser or equal value than min should not impact the
-  // domain
+  
+  
   @Test
   public void test5() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -108,7 +108,7 @@ public abstract class IntVarTest {
     assertEquals(x.max(), 15);
   }
 
-  // UpdateMin to max should assign max
+  
   @Test
   public void test6() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -119,7 +119,7 @@ public abstract class IntVarTest {
     assertTrue(x.contains(15));
   }
 
-  // UpdateMin greater than max should fail
+  
   @Test
   public void test7() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -127,7 +127,7 @@ public abstract class IntVarTest {
     assertFalse(x.updateMin(20));
   }
 
-  // UpdateMax should adjust the maximum value and the size
+  
   @Test
   public void test8() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -139,8 +139,8 @@ public abstract class IntVarTest {
     assertTrue(containsAll(x, 5, 6, 7, 8, 9, 10));
   }
 
-  // UpdateMax with a greater or equal value than max should not impact the
-  // domain
+  
+  
   @Test
   public void test9() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -155,7 +155,7 @@ public abstract class IntVarTest {
     assertEquals(x.max(), 15);
   }
 
-  // UpdateMax to min should assign min
+  
   @Test
   public void test10() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -166,7 +166,7 @@ public abstract class IntVarTest {
     assertTrue(x.contains(5));
   }
 
-  // UpdateMax lesser than min should fail
+  
   @Test
   public void test11() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -174,7 +174,7 @@ public abstract class IntVarTest {
     assertFalse(x.updateMax(0));
   }
 
-  // Bounds should be restored when a backtrack occurs
+  
   @Test
   public void test13() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -211,7 +211,7 @@ public abstract class IntVarTest {
     assertTrue(containsAll(x, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
   }
 
-  // Assign should make min equal to max
+  
   @Test
   public void test14() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -222,7 +222,7 @@ public abstract class IntVarTest {
     assertEquals(x.max(), 10);
   }
 
-  // Assign should reduce the size to 1
+  
   @Test
   public void test15() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -231,7 +231,7 @@ public abstract class IntVarTest {
     assertEquals(x.size(), 1);
   }
 
-  // Assign an out of bounds value should fail
+  
   @Test
   public void test16() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -239,7 +239,7 @@ public abstract class IntVarTest {
     assertFalse(x.assign(20));
   }
 
-  // Removed values should not be contained in the domain anymore
+  
   @Test
   public void test17() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -252,7 +252,7 @@ public abstract class IntVarTest {
     assertFalse(x.contains(8));
   }
 
-  // Remove a value should reduce the size
+  
   @Test
   public void test18() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -266,7 +266,7 @@ public abstract class IntVarTest {
     assertEquals(x.size(), size - 2);
   }
 
-  // Remove a removed value should not impact the domain
+  
   @Test
   public void test19() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -278,7 +278,7 @@ public abstract class IntVarTest {
     assertEquals(x.size(), size);
   }
 
-  // Remove the minimal value should change the minimum value
+  
   @Test
   public void test20() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -292,7 +292,7 @@ public abstract class IntVarTest {
     assertEquals(x.min(), 8);
   }
 
-  // Remove all but one value should assign that value
+  
   @Test
   public void test21() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -310,7 +310,7 @@ public abstract class IntVarTest {
     assertTrue(x.isAssigned());
   }
 
-  // Removed values should be restored when a backtrack occurs
+  
   @Test
   public void test22() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -352,7 +352,7 @@ public abstract class IntVarTest {
     assertTrue(x.contains(10));
   }
 
-  // Remove the assigned value should fail
+  
   @Test
   public void test23() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -360,7 +360,7 @@ public abstract class IntVarTest {
     assertFalse(x.remove(10));
   }
 
-  // UpdateMin should adjust the minimum value and the size (sparse)
+  
   @Test
   public void test24() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -371,7 +371,7 @@ public abstract class IntVarTest {
     assertEquals(x.min(), 15);
   }
 
-  // UpdateMin should remove all values lesser than min (sparse)
+  
   @Test
   public void test25() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -383,7 +383,7 @@ public abstract class IntVarTest {
     assertFalse(x.contains(15));
   }
 
-  // UpdateMax should adjust the maximum value and the size (sparse)
+  
   @Test
   public void test26() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -394,7 +394,7 @@ public abstract class IntVarTest {
     assertEquals(x.max(), 17);
   }
 
-  // UpdateMax should remove all values greater than max (sparse)
+  
   @Test
   public void test27() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();
@@ -406,7 +406,7 @@ public abstract class IntVarTest {
     assertFalse(x.contains(25));
   }
 
-  // Copy domain and to Array
+  
   @Test
   public void test28() {
     DiscreteConstraintSolver solver = new DiscreteConstraintSolver();

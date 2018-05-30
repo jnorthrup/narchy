@@ -42,34 +42,34 @@ public class JHelpImage
    /** Palette to use */
    private static final int[]     PALETTE      =
                                                {
-         0xFFFFFFFF, 0xFFFFFFC0, 0xFFFFFF80, 0xFFFFFF40, 0xFFFFFF00,//
-         0xFFFFC0FF, 0xFFFFC0C0, 0xFFFC0F80, 0xFFFFC040, 0xFFFFC000, //
-         0xFFFF80FF, 0xFFFF80C0, 0xFFFF8080, 0xFFFF8040, 0xFFFF8000, //
-         0xFFFF40FF, 0xFFFF40C0, 0xFFFF4080, 0xFFFF4040, 0xFFFF4000, //
-         0xFFFF00FF, 0xFFFF00C0, 0xFFFF0080, 0xFFFF0040, 0xFFFF0000, //
-         //
-         0xFFC0FFFF, 0xFFC0FFC0, 0xFFC0FF80, 0xFFC0FF40, 0xFFC0FF00,//
-         0xFFC0C0FF, 0xFFC0C0C0, 0xFFFC0F80, 0xFFC0C040, 0xFFC0C000, //
-         0xFFC080FF, 0xFFC080C0, 0xFFC08080, 0xFFC08040, 0xFFC08000, //
-         0xFFC040FF, 0xFFC040C0, 0xFFC04080, 0xFFC04040, 0xFFC04000, //
-         0xFFC000FF, 0xFFC000C0, 0xFFC00080, 0xFFC00040, 0xFFC00000, //
-         //
-         0xFF80FFFF, 0xFF80FFC0, 0xFF80FF80, 0xFF80FF40, 0xFF80FF00,//
-         0xFF80C0FF, 0xFF80C0C0, 0xFFFC0F80, 0xFF80C040, 0xFF80C000, //
-         0xFF8080FF, 0xFF8080C0, 0xFF808080, 0xFF808040, 0xFF808000, //
-         0xFF8040FF, 0xFF8040C0, 0xFF804080, 0xFF804040, 0xFF804000, //
-         0xFF8000FF, 0xFF8000C0, 0xFF800080, 0xFF800040, 0xFF800000, //
-         //
-         0xFF40FFFF, 0xFF40FFC0, 0xFF40FF80, 0xFF40FF40, 0xFF40FF00,//
-         0xFF40C0FF, 0xFF40C0C0, 0xFFFC0F80, 0xFF40C040, 0xFF40C000, //
-         0xFF4080FF, 0xFF4080C0, 0xFF408080, 0xFF408040, 0xFF408000, //
-         0xFF4040FF, 0xFF4040C0, 0xFF404080, 0xFF404040, 0xFF404000, //
-         0xFF4000FF, 0xFF4000C0, 0xFF400080, 0xFF400040, 0xFF400000, //
-         //
-         0xFF00FFFF, 0xFF00FFC0, 0xFF00FF80, 0xFF00FF40, 0xFF00FF00,//
-         0xFF00C0FF, 0xFF00C0C0, 0xFFFC0F80, 0xFF00C040, 0xFF00C000, //
-         0xFF0080FF, 0xFF0080C0, 0xFF008080, 0xFF008040, 0xFF008000, //
-         0xFF0040FF, 0xFF0040C0, 0xFF004080, 0xFF004040, 0xFF004000, //
+         0xFFFFFFFF, 0xFFFFFFC0, 0xFFFFFF80, 0xFFFFFF40, 0xFFFFFF00,
+         0xFFFFC0FF, 0xFFFFC0C0, 0xFFFC0F80, 0xFFFFC040, 0xFFFFC000, 
+         0xFFFF80FF, 0xFFFF80C0, 0xFFFF8080, 0xFFFF8040, 0xFFFF8000, 
+         0xFFFF40FF, 0xFFFF40C0, 0xFFFF4080, 0xFFFF4040, 0xFFFF4000, 
+         0xFFFF00FF, 0xFFFF00C0, 0xFFFF0080, 0xFFFF0040, 0xFFFF0000, 
+         
+         0xFFC0FFFF, 0xFFC0FFC0, 0xFFC0FF80, 0xFFC0FF40, 0xFFC0FF00,
+         0xFFC0C0FF, 0xFFC0C0C0, 0xFFFC0F80, 0xFFC0C040, 0xFFC0C000, 
+         0xFFC080FF, 0xFFC080C0, 0xFFC08080, 0xFFC08040, 0xFFC08000, 
+         0xFFC040FF, 0xFFC040C0, 0xFFC04080, 0xFFC04040, 0xFFC04000, 
+         0xFFC000FF, 0xFFC000C0, 0xFFC00080, 0xFFC00040, 0xFFC00000, 
+         
+         0xFF80FFFF, 0xFF80FFC0, 0xFF80FF80, 0xFF80FF40, 0xFF80FF00,
+         0xFF80C0FF, 0xFF80C0C0, 0xFFFC0F80, 0xFF80C040, 0xFF80C000, 
+         0xFF8080FF, 0xFF8080C0, 0xFF808080, 0xFF808040, 0xFF808000, 
+         0xFF8040FF, 0xFF8040C0, 0xFF804080, 0xFF804040, 0xFF804000, 
+         0xFF8000FF, 0xFF8000C0, 0xFF800080, 0xFF800040, 0xFF800000, 
+         
+         0xFF40FFFF, 0xFF40FFC0, 0xFF40FF80, 0xFF40FF40, 0xFF40FF00,
+         0xFF40C0FF, 0xFF40C0C0, 0xFFFC0F80, 0xFF40C040, 0xFF40C000, 
+         0xFF4080FF, 0xFF4080C0, 0xFF408080, 0xFF408040, 0xFF408000, 
+         0xFF4040FF, 0xFF4040C0, 0xFF404080, 0xFF404040, 0xFF404000, 
+         0xFF4000FF, 0xFF4000C0, 0xFF400080, 0xFF400040, 0xFF400000, 
+         
+         0xFF00FFFF, 0xFF00FFC0, 0xFF00FF80, 0xFF00FF40, 0xFF00FF00,
+         0xFF00C0FF, 0xFF00C0C0, 0xFFFC0F80, 0xFF00C040, 0xFF00C000, 
+         0xFF0080FF, 0xFF0080C0, 0xFF008080, 0xFF008040, 0xFF008000, 
+         0xFF0040FF, 0xFF0040C0, 0xFF004080, 0xFF004040, 0xFF004000, 
          0xFF0000FF, 0xFF0000C0, 0xFF000080, 0xFF000040, 0xFF000000
                                                };
    /** Dummy image 1x1 */
@@ -1303,9 +1303,9 @@ public class JHelpImage
 
                colorThis = this.pixels[pixThis];
 
-               this.pixels[pixThis] = (Math.min(255, alpha + ((colorThis >> 24) & 0xFF)) << 24) | //
-                     ((((((colorImage >> 16) & 0xFF) * alpha) + (((colorThis >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((colorImage >> 8) & 0xFF) * alpha) + (((colorThis >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pixThis] = (Math.min(255, alpha + ((colorThis >> 24) & 0xFF)) << 24) | 
+                     ((((((colorImage >> 16) & 0xFF) * alpha) + (((colorThis >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((colorImage >> 8) & 0xFF) * alpha) + (((colorThis >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((colorImage & 0xFF) * alpha) + ((colorThis & 0xFF) * ahpla)) >> 8);
             }
 
@@ -1410,9 +1410,9 @@ public class JHelpImage
 
             colorThis = this.pixels[pixThis];
 
-            this.pixels[pixThis] = (Math.min(255, alpha + ((colorThis >> 24) & 0xFF)) << 24) | //
-                  ((((((colorImage >> 16) & 0xFF) * alpha) + (((colorThis >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                  ((((((colorImage >> 8) & 0xFF) * alpha) + (((colorThis >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+            this.pixels[pixThis] = (Math.min(255, alpha + ((colorThis >> 24) & 0xFF)) << 24) | 
+                  ((((((colorImage >> 16) & 0xFF) * alpha) + (((colorThis >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                  ((((((colorImage >> 8) & 0xFF) * alpha) + (((colorThis >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                   ((((colorImage & 0xFF) * alpha) + ((colorThis & 0xFF) * ahpla)) >> 8);
 
             pixThis++;
@@ -1572,9 +1572,9 @@ public class JHelpImage
          colorThis = this.pixels[pix];
          colorImage = image.pixels[pix];
 
-         this.pixels[pix] = (colorThis & 0xFF000000) | //
-               (UtilMath.limit0_255(((colorThis >> 16) & 0xFF) + ((colorImage >> 16) & 0xFF)) << 16) | //
-               (UtilMath.limit0_255(((colorThis >> 8) & 0xFF) + ((colorImage >> 8) & 0xFF)) << 8) | //
+         this.pixels[pix] = (colorThis & 0xFF000000) | 
+               (UtilMath.limit0_255(((colorThis >> 16) & 0xFF) + ((colorImage >> 16) & 0xFF)) << 16) | 
+               (UtilMath.limit0_255(((colorThis >> 8) & 0xFF) + ((colorImage >> 8) & 0xFF)) << 8) | 
                UtilMath.limit0_255((colorThis & 0xFF) + (colorImage & 0xFF));
       }
    }
@@ -1657,21 +1657,21 @@ public class JHelpImage
             c22 = pix[p22];
 
             this.pixels[p] =
-            // Alpha
-            (((((c00 >> 24) & 0xFF) + (((c10 >> 24) & 0xFF) << 1) + ((c20 >> 24) & 0xFF) + //
-                  (((c01 >> 24) & 0xFF) << 1) + (((c11 >> 24) & 0xFF) << 2) + (((c21 >> 24) & 0xFF) << 1) + //
-                  ((c02 >> 24) & 0xFF) + (((c12 >> 24) & 0xFF) << 1) + ((c22 >> 24) & 0xFF)) >> 4) << 24) | //
-                  // Red
-                  (((((c00 >> 16) & 0xFF) + (((c10 >> 16) & 0xFF) << 1) + ((c20 >> 16) & 0xFF) + //
-                        (((c01 >> 16) & 0xFF) << 1) + (((c11 >> 16) & 0xFF) << 2) + (((c21 >> 16) & 0xFF) << 1) + //
-                        ((c02 >> 16) & 0xFF) + (((c12 >> 16) & 0xFF) << 1) + ((c22 >> 16) & 0xFF)) >> 4) << 16) | //
-                  // Green
-                  (((((c00 >> 8) & 0xFF) + (((c10 >> 8) & 0xFF) << 1) + ((c20 >> 8) & 0xFF) + //
-                        (((c01 >> 8) & 0xFF) << 1) + (((c11 >> 8) & 0xFF) << 2) + (((c21 >> 8) & 0xFF) << 1) + //
-                        ((c02 >> 8) & 0xFF) + (((c12 >> 8) & 0xFF) << 1) + ((c22 >> 8) & 0xFF)) >> 4) << 8) | //
-                  // Blue
-                  (((c00 & 0xFF) + ((c10 & 0xFF) << 1) + (c20 & 0xFF) + //
-                        ((c01 & 0xFF) << 1) + ((c11 & 0xFF) << 2) + ((c21 & 0xFF) << 1) + //
+            
+            (((((c00 >> 24) & 0xFF) + (((c10 >> 24) & 0xFF) << 1) + ((c20 >> 24) & 0xFF) + 
+                  (((c01 >> 24) & 0xFF) << 1) + (((c11 >> 24) & 0xFF) << 2) + (((c21 >> 24) & 0xFF) << 1) + 
+                  ((c02 >> 24) & 0xFF) + (((c12 >> 24) & 0xFF) << 1) + ((c22 >> 24) & 0xFF)) >> 4) << 24) | 
+                  
+                  (((((c00 >> 16) & 0xFF) + (((c10 >> 16) & 0xFF) << 1) + ((c20 >> 16) & 0xFF) + 
+                        (((c01 >> 16) & 0xFF) << 1) + (((c11 >> 16) & 0xFF) << 2) + (((c21 >> 16) & 0xFF) << 1) + 
+                        ((c02 >> 16) & 0xFF) + (((c12 >> 16) & 0xFF) << 1) + ((c22 >> 16) & 0xFF)) >> 4) << 16) | 
+                  
+                  (((((c00 >> 8) & 0xFF) + (((c10 >> 8) & 0xFF) << 1) + ((c20 >> 8) & 0xFF) + 
+                        (((c01 >> 8) & 0xFF) << 1) + (((c11 >> 8) & 0xFF) << 2) + (((c21 >> 8) & 0xFF) << 1) + 
+                        ((c02 >> 8) & 0xFF) + (((c12 >> 8) & 0xFF) << 1) + ((c22 >> 8) & 0xFF)) >> 4) << 8) | 
+                  
+                  (((c00 & 0xFF) + ((c10 & 0xFF) << 1) + (c20 & 0xFF) + 
+                        ((c01 & 0xFF) << 1) + ((c11 & 0xFF) << 2) + ((c21 & 0xFF) << 1) + 
                         (c02 & 0xFF) + ((c12 & 0xFF) << 1) + (c22 & 0xFF)) >> 4);
 
             c00 = c10;
@@ -1755,9 +1755,9 @@ public class JHelpImage
       {
          color = this.pixels[pix];
 
-         this.pixels[pix] = (color & 0xFF000000) | //
-               (UtilMath.limit0_255(((color >> 16) & 0xFF) + factor) << 16) | //
-               (UtilMath.limit0_255(((color >> 8) & 0xFF) + factor) << 8) | //
+         this.pixels[pix] = (color & 0xFF000000) | 
+               (UtilMath.limit0_255(((color >> 16) & 0xFF) + factor) << 16) | 
+               (UtilMath.limit0_255(((color >> 8) & 0xFF) + factor) << 8) | 
                UtilMath.limit0_255((color & 0xFF) + factor);
       }
    }
@@ -1792,9 +1792,9 @@ public class JHelpImage
          u = JHelpImage.computeU(red, green, blue);
          v = JHelpImage.computeV(red, green, blue);
 
-         this.pixels[pix] = (color & 0xFF000000) | //
-               (JHelpImage.computeRed(y, u, v) << 16) | //
-               (JHelpImage.computeGreen(y, u, v) << 8) | //
+         this.pixels[pix] = (color & 0xFF000000) | 
+               (JHelpImage.computeRed(y, u, v) << 16) | 
+               (JHelpImage.computeGreen(y, u, v) << 8) | 
                JHelpImage.computeBlue(y, u, v);
       }
    }
@@ -1944,7 +1944,7 @@ public class JHelpImage
 
       final int size = this.pixels.length;
       final int[] result = new int[size];
-      int indexPalette = 0xFF000000;// 0;
+      int indexPalette = 0xFF000000;
       int color, reference, red, green, blue;
       int p;
       final Stack<Point> stack = new Stack<Point>();
@@ -1956,8 +1956,8 @@ public class JHelpImage
       {
          if(result[pix] == 0)
          {
-            color = indexPalette;// JHelpImage.PALETTE[indexPalette];
-            indexPalette++;// = (indexPalette + 1) % JHelpImage.PALETTE_SIZE;
+            color = indexPalette;
+            indexPalette++;
 
             reference = this.pixels[pix];
             red = (reference >> 16) & 0xFF;
@@ -2271,9 +2271,9 @@ public class JHelpImage
       {
          color = this.pixels[pix];
 
-         this.pixels[pix] = (color & 0xFF000000) | //
-               (UtilMath.limit0_255(((color >> 16) & 0xFF) - factor) << 16) | //
-               (UtilMath.limit0_255(((color >> 8) & 0xFF) - factor) << 8) | //
+         this.pixels[pix] = (color & 0xFF000000) | 
+               (UtilMath.limit0_255(((color >> 16) & 0xFF) - factor) << 16) | 
+               (UtilMath.limit0_255(((color >> 8) & 0xFF) - factor) << 8) | 
                UtilMath.limit0_255((color & 0xFF) - factor);
       }
    }
@@ -2301,9 +2301,9 @@ public class JHelpImage
          colorThis = this.pixels[pix];
          colorImage = image.pixels[pix];
 
-         this.pixels[pix] = (colorThis & 0xFF000000) | //
-               ((((((colorThis >> 16) & 0xFF) * 256) / (((colorImage >> 16) & 0xFF) + 1))) << 16) | //
-               ((((((colorThis >> 8) & 0xFF) * 256) / (((colorImage >> 8) & 0xFF) + 1))) << 8) | //
+         this.pixels[pix] = (colorThis & 0xFF000000) | 
+               ((((((colorThis >> 16) & 0xFF) * 256) / (((colorImage >> 16) & 0xFF) + 1))) << 16) | 
+               ((((((colorThis >> 8) & 0xFF) * 256) / (((colorImage >> 8) & 0xFF) + 1))) << 8) | 
                (((colorThis & 0xFF) * 256) / ((colorImage & 0xFF) + 1));
       }
    }
@@ -2439,9 +2439,9 @@ public class JHelpImage
       {
          col = this.pixels[pix];
 
-         this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-               (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-               (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+         this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+               (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+               (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                ((blue + ((col & 0xFF) * ahpla)) >> 8);
       }
    }
@@ -2762,9 +2762,9 @@ public class JHelpImage
          {
             col = this.pixels[pix];
 
-            this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                  (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                  (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+            this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                  (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                  (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                   ((blue + ((col & 0xFF) * ahpla)) >> 8);
 
             pix += sx;
@@ -2786,9 +2786,9 @@ public class JHelpImage
          {
             col = this.pixels[pix];
 
-            this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                  (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                  (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+            this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                  (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                  (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                   ((blue + ((col & 0xFF) * ahpla)) >> 8);
 
             pix += moreY;
@@ -3231,7 +3231,7 @@ public class JHelpImage
 
       if(font.isUnderline() == true)
       {
-         this.drawHorizontalLine(x - (bounds.width >> 1), x + (bounds.width >> 1), //
+         this.drawHorizontalLine(x - (bounds.width >> 1), x + (bounds.width >> 1), 
                font.underlinePosition(string, y - (bounds.height >> 1)), color, doAlphaMix);
       }
    }
@@ -3316,9 +3316,9 @@ public class JHelpImage
       {
          col = this.pixels[pix];
 
-         this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-               (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-               (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+         this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+               (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+               (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                ((blue + ((col & 0xFF) * ahpla)) >> 8);
       }
    }
@@ -3489,9 +3489,9 @@ public class JHelpImage
 
          pix = point.x + (point.y * this.width);
          col = this.pixels[pix];
-         this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-               (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-               (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+         this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+               (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+               (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                ((blue + ((col & 0xFF) * ahpla)) >> 8);
 
          if((point.x > 0) && (JHelpImage.distanceColor(start, this.pixels[(point.x - 1) + (point.y * this.width)]) <= precision))
@@ -3728,7 +3728,7 @@ public class JHelpImage
          return;
       }
 
-      final Polygon polygon = new Polygon(Arrays.copyOfRange(xs, offsetX, offsetX + length),//
+      final Polygon polygon = new Polygon(Arrays.copyOfRange(xs, offsetX, offsetX + length),
             Arrays.copyOfRange(ys, offsetY, offsetY + length), length);
 
       this.fillShape(polygon, color, doAlphaMix);
@@ -3805,7 +3805,7 @@ public class JHelpImage
          return;
       }
 
-      final Polygon polygon = new Polygon(Arrays.copyOfRange(xs, offsetX, offsetX + length),//
+      final Polygon polygon = new Polygon(Arrays.copyOfRange(xs, offsetX, offsetX + length),
             Arrays.copyOfRange(ys, offsetY, offsetY + length), length);
 
       this.fillShape(polygon, texture, doAlphaMix);
@@ -3880,7 +3880,7 @@ public class JHelpImage
          return;
       }
 
-      final Polygon polygon = new Polygon(Arrays.copyOfRange(xs, offsetX, offsetX + length),//
+      final Polygon polygon = new Polygon(Arrays.copyOfRange(xs, offsetX, offsetX + length),
             Arrays.copyOfRange(ys, offsetY, offsetY + length), length);
 
       this.fillShape(polygon, paint, doAlphaMix);
@@ -4112,9 +4112,9 @@ public class JHelpImage
          {
             col = this.pixels[pix];
 
-            this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                  (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                  (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+            this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                  (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                  (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                   ((blue + ((col & 0xFF) * ahpla)) >> 8);
 
             pix++;
@@ -4219,9 +4219,9 @@ public class JHelpImage
 
                color = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | //
-                     ((((((colorTexture >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((colorTexture >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | 
+                     ((((((colorTexture >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((colorTexture >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((colorTexture & 0xFF) * alpha) + ((color & 0xFF) * ahpla)) >> 8);
             }
 
@@ -4328,9 +4328,9 @@ public class JHelpImage
 
                color = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | //
-                     ((((((colorPaint >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((colorPaint >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | 
+                     ((((((colorPaint >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((colorPaint >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((colorPaint & 0xFF) * alpha) + ((color & 0xFF) * ahpla)) >> 8);
             }
 
@@ -4441,9 +4441,9 @@ public class JHelpImage
 
                color = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | //
-                     ((((((colorTexture >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((colorTexture >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | 
+                     ((((((colorTexture >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((colorTexture >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((colorTexture & 0xFF) * alpha) + ((color & 0xFF) * ahpla)) >> 8);
             }
 
@@ -4806,9 +4806,9 @@ public class JHelpImage
             {
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((blue + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -4911,9 +4911,9 @@ public class JHelpImage
 
                   color = this.pixels[pix];
 
-                  this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | //
-                        ((((((colorTexture >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                        ((((((colorTexture >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+                  this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | 
+                        ((((((colorTexture >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                        ((((((colorTexture >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                         ((((colorTexture & 0xFF) * alpha) + ((color & 0xFF) * ahpla)) >> 8);
                }
             }
@@ -5018,9 +5018,9 @@ public class JHelpImage
 
                   color = this.pixels[pix];
 
-                  this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | //
-                        ((((((colorPaint >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                        ((((((colorPaint >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+                  this.pixels[pix] = (Math.min(255, alpha + ((color >> 24) & 0xFF)) << 24) | 
+                        ((((((colorPaint >> 16) & 0xFF) * alpha) + (((color >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                        ((((((colorPaint >> 8) & 0xFF) * alpha) + (((color >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                         ((((colorPaint & 0xFF) * alpha) + ((color & 0xFF) * ahpla)) >> 8);
                }
             }
@@ -5735,9 +5735,9 @@ public class JHelpImage
       {
          color = this.pixels[i];
 
-         this.pixels[i] = (color & 0xFF000000) | //
-               ((255 - ((color >> 16) & 0xFF)) << 16) | //
-               ((255 - ((color >> 8) & 0xFF)) << 8) | //
+         this.pixels[i] = (color & 0xFF000000) | 
+               ((255 - ((color >> 16) & 0xFF)) << 16) | 
+               ((255 - ((color >> 8) & 0xFF)) << 8) | 
                (255 - (color & 0xFF));
       }
    }
@@ -5809,9 +5809,9 @@ public class JHelpImage
          colorThis = this.pixels[pix];
          colorImage = image.pixels[pix];
 
-         this.pixels[pix] = (colorThis & 0xFF000000) | //
-               (Math.max((colorThis >> 16) & 0xFF, (colorImage >> 16) & 0xFF) << 16) | //
-               (Math.max((colorThis >> 8) & 0xFF, (colorImage >> 8) & 0xFF) << 8) | //
+         this.pixels[pix] = (colorThis & 0xFF000000) | 
+               (Math.max((colorThis >> 16) & 0xFF, (colorImage >> 16) & 0xFF) << 16) | 
+               (Math.max((colorThis >> 8) & 0xFF, (colorImage >> 8) & 0xFF) << 8) | 
                Math.max(colorThis & 0xFF, colorImage & 0xFF);
       }
    }
@@ -5844,9 +5844,9 @@ public class JHelpImage
          colorThis = this.pixels[pix];
          colorImage = image.pixels[pix];
 
-         this.pixels[pix] = (colorThis & 0xFF000000) | //
-               (((((colorThis >> 16) & 0xFF) + ((colorImage >> 16) & 0xFF)) >> 1) << 16) | //
-               (((((colorThis >> 8) & 0xFF) + ((colorImage >> 8) & 0xFF)) >> 1) << 8) | //
+         this.pixels[pix] = (colorThis & 0xFF000000) | 
+               (((((colorThis >> 16) & 0xFF) + ((colorImage >> 16) & 0xFF)) >> 1) << 16) | 
+               (((((colorThis >> 8) & 0xFF) + ((colorImage >> 8) & 0xFF)) >> 1) << 8) | 
                (((colorThis & 0xFF) + (colorImage & 0xFF)) >> 1);
       }
    }
@@ -5879,9 +5879,9 @@ public class JHelpImage
          colorThis = this.pixels[pix];
          colorImage = image.pixels[pix];
 
-         this.pixels[pix] = (colorThis & 0xFF000000) | //
-               (Math.min((colorThis >> 16) & 0xFF, (colorImage >> 16) & 0xFF) << 16) | //
-               (Math.min((colorThis >> 8) & 0xFF, (colorImage >> 8) & 0xFF) << 8) | //
+         this.pixels[pix] = (colorThis & 0xFF000000) | 
+               (Math.min((colorThis >> 16) & 0xFF, (colorImage >> 16) & 0xFF) << 16) | 
+               (Math.min((colorThis >> 8) & 0xFF, (colorImage >> 8) & 0xFF) << 8) | 
                Math.min(colorThis & 0xFF, colorImage & 0xFF);
       }
    }
@@ -5914,9 +5914,9 @@ public class JHelpImage
          colorThis = this.pixels[pix];
          colorImage = image.pixels[pix];
 
-         this.pixels[pix] = (colorThis & 0xFF000000) | //
-               (((((colorThis >> 16) & 0xFF) * ((colorImage >> 16) & 0xFF)) / 255) << 16) | //
-               (((((colorThis >> 8) & 0xFF) * ((colorImage >> 8) & 0xFF)) / 255) << 8) | //
+         this.pixels[pix] = (colorThis & 0xFF000000) | 
+               (((((colorThis >> 16) & 0xFF) * ((colorImage >> 16) & 0xFF)) / 255) << 16) | 
+               (((((colorThis >> 8) & 0xFF) * ((colorImage >> 8) & 0xFF)) / 255) << 8) | 
                (((colorThis & 0xFF) * (colorImage & 0xFF)) / 255);
       }
    }
@@ -6016,9 +6016,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     (((red + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     (((green + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((blue + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6123,9 +6123,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6213,9 +6213,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6320,9 +6320,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6450,9 +6450,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6562,9 +6562,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6651,9 +6651,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6759,9 +6759,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -6849,9 +6849,9 @@ public class JHelpImage
                ahpla = 256 - alpha;
                col = this.pixels[pix];
 
-               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | //
-                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | //
-                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | //
+               this.pixels[pix] = (Math.min(255, alpha + ((col >> 24) & 0xFF)) << 24) | 
+                     ((((((color >> 16) & 0xFF) * alpha) + (((col >> 16) & 0xFF) * ahpla)) >> 8) << 16) | 
+                     ((((((color >> 8) & 0xFF) * alpha) + (((col >> 8) & 0xFF) * ahpla)) >> 8) << 8) | 
                      ((((color & 0xFF) * alpha) + ((col & 0xFF) * ahpla)) >> 8);
             }
 
@@ -7389,9 +7389,9 @@ public class JHelpImage
          colorThis = this.pixels[pix];
          colorImage = image.pixels[pix];
 
-         this.pixels[pix] = (colorThis & 0xFF000000) | //
-               (UtilMath.limit0_255(((colorThis >> 16) & 0xFF) - ((colorImage >> 16) & 0xFF)) << 16) | //
-               (UtilMath.limit0_255(((colorThis >> 8) & 0xFF) - ((colorImage >> 8) & 0xFF)) << 8) | //
+         this.pixels[pix] = (colorThis & 0xFF000000) | 
+               (UtilMath.limit0_255(((colorThis >> 16) & 0xFF) - ((colorImage >> 16) & 0xFF)) << 16) | 
+               (UtilMath.limit0_255(((colorThis >> 8) & 0xFF) - ((colorImage >> 8) & 0xFF)) << 8) | 
                UtilMath.limit0_255((colorThis & 0xFF) - (colorImage & 0xFF));
       }
    }

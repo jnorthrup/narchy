@@ -7,7 +7,7 @@
  * </p>
  * <p>
  * The game is described in the O'Reilly book "Programming Collective Intelligence" by Tony Segaran (ISBN 978-0-596-52932-1). <a
- * href="https://www.safaribooksonline.com/library/view/programming-collective-intelligence/9780596529321/ch11s08.html">View extract.</a>
+ * href="https:
  * </p>
  */
 package org.oakgp.examples.gridwar;

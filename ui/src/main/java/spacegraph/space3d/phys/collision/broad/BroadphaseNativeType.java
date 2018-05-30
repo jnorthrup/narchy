@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -33,14 +33,14 @@ package spacegraph.space3d.phys.collision.broad;
  */
 public enum BroadphaseNativeType {
 	
-	// polyhedral convex shapes:
+	
 	BOX_SHAPE_PROXYTYPE,
 	TRIANGLE_SHAPE_PROXYTYPE,
 	TETRAHEDRAL_SHAPE_PROXYTYPE,
 	CONVEX_TRIANGLEMESH_SHAPE_PROXYTYPE,
 	CONVEX_HULL_SHAPE_PROXYTYPE,
 	
-	// implicit convex shapes:
+	
 	IMPLICIT_CONVEX_SHAPES_START_HERE,
 	SPHERE_SHAPE_PROXYTYPE,
 	MULTI_SPHERE_SHAPE_PROXYTYPE,
@@ -52,23 +52,23 @@ public enum BroadphaseNativeType {
 	MINKOWSKI_SUM_SHAPE_PROXYTYPE,
 	MINKOWSKI_DIFFERENCE_SHAPE_PROXYTYPE,
 	
-	// concave shapes:
+	
 	CONCAVE_SHAPES_START_HERE,
 
-	// keep all the convex shapetype below here, for the check IsConvexShape in broadphase proxy!
+	
 	TRIANGLE_MESH_SHAPE_PROXYTYPE,
 	SCALED_TRIANGLE_MESH_SHAPE_PROXYTYPE,
 
-	// used for demo integration FAST/Swift collision library and Bullet:
+	
 	FAST_CONCAVE_MESH_PROXYTYPE,
 	
-	// terrain:
+	
 	TERRAIN_SHAPE_PROXYTYPE,
 	
-	// used for GIMPACT Trimesh integration:
+	
 	GIMPACT_SHAPE_PROXYTYPE,
 	
-	// multimaterial mesh:
+	
 	MULTIMATERIAL_TRIANGLE_MESH_PROXYTYPE,
 	
 	EMPTY_SHAPE_PROXYTYPE,

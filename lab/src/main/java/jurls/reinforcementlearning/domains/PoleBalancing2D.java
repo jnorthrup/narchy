@@ -47,17 +47,17 @@ public class PoleBalancing2D implements RLEnvironment {
     public double[] observe() {
         double[] o = new double[]{
             (agentPoint.x)/(maxX),
-            //agentPoint.y/600.0,
+            
             (pendulumPoint.x)/(maxX),
             (pendulumPoint.y - agentPoint.y)/(poleLength*1.1),
             Math.atan2(pendulumPoint.y, pendulumPoint.x),
 
-                //Math.atan2(pendulumPoint.vy, pendulumPoint.vx),
-                //Math.signum(pendulumPoint.vx),
-            //pendulumPoint.vx*dt,
-            //pendulumPoint.vy*dt
+                
+                
+            
+            
         };
-        //System.out.println(Arrays.toString(o));
+        
         return o;
     }
 
@@ -73,10 +73,10 @@ public class PoleBalancing2D implements RLEnvironment {
         return true;
     }
 
-//    public void takeAction2(int action) {
-//        agentPoint.vx += speed * 2 * (action - 0.5);
-//        System.out.println(agentPoint.vx + " " + agentPoint.x);
-//    }
+
+
+
+
 
     /* -1, 0, +1 */
     double dvx = 0;
@@ -86,7 +86,7 @@ public class PoleBalancing2D implements RLEnvironment {
 
         dvx += speed * (action);
 
-        //System.out.println(agentPoint.vx + " " + agentPoint.x);
+        
     }
 
     @Override
@@ -104,12 +104,12 @@ public class PoleBalancing2D implements RLEnvironment {
         if (agentPoint.x < minAgentX) {
             agentPoint.x = minAgentX;
             agentPoint.vx = 0;
-            //agentPoint.vx = -agentPoint.vx; //bounce
+            
         }
         if (agentPoint.x > maxAgentX) {
             agentPoint.x = maxAgentX;
             agentPoint.vx = 0;
-            //agentPoint.vx = -agentPoint.vx; //bounce
+            
         }
 
     }

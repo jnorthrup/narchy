@@ -65,7 +65,7 @@ public abstract class KeyCode_FileBased {
      * @param keyMapFile File containing keymap data
      */
     public KeyCode_FileBased(String keyMapFile) throws KeyMapException {
-        // logger.info("String called keycode reader");
+        
 
         FileInputStream fstream;
         try {
@@ -105,9 +105,9 @@ public abstract class KeyCode_FileBased {
      * @throws KeyMapException
      */
     public void readMapFile(InputStream fstream) throws KeyMapException {
-        // logger.info("Stream-based keycode reader");
-        int lineNum = 0; // current line number being parsed
-        String line = ""; // contents of line being parsed
+        
+        int lineNum = 0; 
+        String line = ""; 
 
         if (fstream == null)
             throw new KeyMapException("Could not find specified keymap file");
@@ -128,11 +128,11 @@ public abstract class KeyCode_FileBased {
                 if ((line != null) && (!line.isEmpty()))
                     fc = line.charAt(0);
 
-                // ignore blank and commented lines
+                
                 if ((line != null) && (!line.isEmpty()) && (fc != '#')
                         && (fc != 'c')) {
-                    keyMap.add(new MapDef(line)); // parse line into a MapDef
-                    // object and add to list
+                    keyMap.add(new MapDef(line)); 
+                    
 
                 } else if (fc == 'c') {
                     StringTokenizer st = new StringTokenizer(line);
@@ -144,8 +144,8 @@ public abstract class KeyCode_FileBased {
                 }
             }
 
-            // Add a set of mappings for alphabet characters with ctrl and alt
-            // pressed
+            
+            
 
             Vector newMap = new Vector();
 
@@ -165,7 +165,7 @@ public abstract class KeyCode_FileBased {
                     }
                 }
             }
-            // Commit added mapping definitions
+            
             keyMap.addAll(newMap);
 
             in.close();

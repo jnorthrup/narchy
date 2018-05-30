@@ -15,7 +15,7 @@ public class PredicateFeature<L> implements Predicate<Function<String,L>> {
     /**
      * Data column used by feature.
      */
-    private final String column; // TODO multiple columns per feature
+    private final String column; 
 
     /**
      * Predicate used for splitting.
@@ -69,7 +69,7 @@ public class PredicateFeature<L> implements Predicate<Function<String,L>> {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean test(Function<String,L> x) { // TODO implement other splits (in different type of feature)
+    public boolean test(Function<String,L> x) { 
         L y = x.apply(column);
         return y!=null && predicate.test(y);
     }

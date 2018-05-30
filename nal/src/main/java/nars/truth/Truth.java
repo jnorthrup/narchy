@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Open-NARS.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Open-NARS.  If not, see <http:
  */
 package nars.truth;
 
@@ -69,12 +69,12 @@ public interface Truth extends Truthed {
         if (!(Float.isFinite(freq) && (freq >= 0) && (freq <= 1)))
             throw new RuntimeException("invalid freq: " + freq);
 
-        int freqHash = floatToInt(freq, discreteness);// & 0x0000ffff;
+        int freqHash = floatToInt(freq, discreteness);
 
         if (!(Float.isFinite(conf) && conf >= 0))
             throw new RuntimeException("invalid conf: " + conf);
 
-        int confHash = floatToInt(Math.min(Param.TRUTH_MAX_CONF, conf), discreteness);// & 0x0000ffff;
+        int confHash = floatToInt(Math.min(Param.TRUTH_MAX_CONF, conf), discreteness);
 
         return (freqHash << 16) | confHash;
     }
@@ -91,7 +91,7 @@ public interface Truth extends Truthed {
         return intToFloat(h & 0xffff, hashDiscretenessEpsilon);
     }
 
-//    float EVI_MIN = c2w(Param.TRUTH_EPSILON);
+
 
     @Override
     float freq();
@@ -100,24 +100,24 @@ public interface Truth extends Truthed {
     float evi();
 
 
-//    Term Truth_TRUE = $.the("TRUE");
-//    Term Truth_FALSE = $.the("FALSE");
-//    Term Truth_UNSURE = $.the("UNSURE"); //only really valid for describing expectation, not frequency by itself
-//    Term Truth_MAYBE = $.the("MAYBE");
-//    Term Truth_CERTAIN = $.the("CERTAIN");
-//    Term Truth_UNCERTAIN = $.the("UNCERTAIN");
-//
-//    Comparator<Truthed> compareConfidence = (o1, o2) -> {
-//        if (o1.equals(o2))
-//            return 0;
-//
-//        float b = o2.conf();
-//        float a = o1.conf();
-//        if (b < a)
-//            return -1;
-//        else
-//            return +1;
-//    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -169,40 +169,40 @@ public interface Truth extends Truthed {
 
 
     default String _toString() {
-        //return DELIMITER + frequency.toString() + SEPARATOR + confidence.toString() + DELIMITER;
-        //1 + 6 + 1 + 6 + 1
+        
+        
         return appendString(new StringBuilder(7)).toString();
     }
 
     static int compare(Truth a, Truth b) {
         if (a == b) return 0;
 
-        //see how Truth hash() is calculated to know why this works
+        
         return Integer.compare(b.hashCode(), a.hashCode());
 
-//        tc = Float.compare(truth.getFrequency(), otruth.getFrequency());
-//        if (tc!=0) return tc;
-//        tc = Float.compare(truth.getConfidence(), otruth.getConfidence());
-//        if (tc!=0) return tc;
-//
-//        return 0;
+
+
+
+
+
+
     }
 
 
-//    @NotNull
-//    default Truth interpolate(Truthed y) {
-//        float xc = confWeight();
-//        float yc = y.confWeight();
-//
-//        return new DefaultTruth(
-//                //lerp by proportion of confidence contributed
-//                lerp(freq(), y.freq(), xc / (xc+yc)),
-//
-//                //difference in freq means closer to the AND conf, otherwise if they are the same then closer to max
-//                lerp(and(xc, yc), max(xc, yc), Math.abs(freq()-y.freq()))
-//
-//        );
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /** the negated (1 - freq) of this truth value */
     default Truth neg() {
@@ -228,13 +228,13 @@ public interface Truth extends Truthed {
         return negate ? neg() : this;
     }
 
-//    default float eternalizedConf() {
-//        return TruthFunctions.eternalize(conf());
-//    }
-//    default float eternalizedConfWeight() {
-//        //TODO does this simplify?
-//        return c2w(TruthFunctions.eternalize(conf()));
-//    }
+
+
+
+
+
+
+
 
     @Nullable
     static Truth stronger(@Nullable Truth a, @Nullable Truth b) {
@@ -251,7 +251,7 @@ public interface Truth extends Truthed {
 
     static float freq(float f, float epsilon) {
         assert(f==f): "invalid freq: " + f;
-        //return unitize(round(f, epsilon));
+        
         Util.assertUnitized(f);
         return Util.unitize(round(f, epsilon));
     }
@@ -267,12 +267,12 @@ public interface Truth extends Truthed {
 
     static float confSafe(float c, float epsilon) {
         if (epsilon == 0)
-            return c; //unchanged
+            return c; 
 
         return clamp(
-                //ceil(c, epsilon), //optimistic
-                round(c, epsilon), //semi-optimistic: adds evidence when rounding up, loses evidence when rounding down
-                //floor(c, epsilon), //conservative
+                
+                round(c, epsilon), 
+                
                 0, 1f - epsilon);
     }
 
@@ -352,40 +352,40 @@ public interface Truth extends Truthed {
 
 
 
-//    default Truth eternalized() {
-//        return $.t(freq(), eternalizedConf());
-//    }
 
 
-//    static <T extends Truthed> T minConf(T a, T b) {
-//        return a.conf() <= b.conf() ? a : b;
-//    }
 
 
-//    enum TruthComponent {
-//        Frequency, Confidence, Expectation
-//    }
-//
-//    default float component(TruthComponent c) {
-//        switch (c) {
-//            case Frequency: return freq();
-//            case Confidence: return conf();
-//            case Expectation: return expectation();
-//        }
-//        return Float.NaN;
-//    }
-//
-//    /** provides a statistics summary (mean, min, max, variance, etc..) of a particular TruthValue component across a given list of Truthables (sentences, TruthValue's, etc..).  null values in the iteration are ignored */
-//    @NotNull
-//    static DescriptiveStatistics statistics(Iterable<? extends Truthed> t, TruthComponent component) {
-//        DescriptiveStatistics d = new DescriptiveStatistics();
-//        for (Truthed x : t) {
-//            Truth v = x.truth();
-//            if (v!=null)
-//                d.addValue(v.component(component));
-//        }
-//        return d;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

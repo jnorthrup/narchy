@@ -28,24 +28,24 @@ public class NAgentTest {
         n.confResolution.set(0.01f);
         n.time.dur(1);
 
-        //n.emotion.deriveFailTemporal.why.on(new Meter.ReasonCollector());
-        //n.emotion.deriveFailEval.why.on(new Meter.ReasonCollector());
+        
+        
 
         n.emotion.want(MetaGoal.Perceive, -0.1f);
         n.emotion.want(MetaGoal.Desire, +0.1f);
 
-//        n.logWhen(System.out, false, true, true);
 
-        //n.freqResolution.set(0.1f);
 
-//
-//        if (Param.DEBUG) {
-//            n.onTask(t -> {
-//                if (t instanceof DerivedTask && t.isGoal()) {
-//                    System.out.println(t.proof());
-//                }
-//            });
-//        }
+        
+
+
+
+
+
+
+
+
+
         return n;
     }
 
@@ -54,22 +54,22 @@ public class NAgentTest {
     public void testSame(String x) {
 
         boolean posOrNeg = x.charAt(0) == 't';
-//        boolean toggleOrPush = x.charAt(1) == 't';
 
-        System.out.println((posOrNeg ? "positive" : " negative"));// + " and " + (toggleOrPush ? "toggle" : " push"));
+
+        System.out.println((posOrNeg ? "positive" : " negative"));
         MiniTest a = new ToggleSame(nar(), $.the("t"),
-                //$.$safe("t:y"),
+                
                 $.$$("(t,y)"),
                 posOrNeg);
 
-//        a.curiosity.set(0.5f);
-//
-//        //a.nar.log();
-//        a.nar.onTask(t -> {
-//            if (!t.isInput() & t.isGoal()) {
-//                System.out.println(t.proof());
-//            }
-//        });
+
+
+
+
+
+
+
+
 
         a.runSynch(1000);
 
@@ -97,19 +97,19 @@ public class NAgentTest {
 
     static void assertOscillatesAction(NAR n, Consumer<NAgent> init) {
 
-//        System.out.println((toggleOrPush ? "toggle" : " push"));
+
 
         MiniTest a = new ToggleOscillate(n, $.the("t"),
                 $.$$("t:y"),
-                //$.$safe("(t,y)"),
+                
                 true);
-                //toggleOrPush);
+                
 
         init.accept(a);
 
         a.runSynch(500);
 
-        assertTrue(-(-1-a.avgReward()) > 0.2f); //oscillation density
+        assertTrue(-(-1-a.avgReward()) > 0.2f); 
         assertTrue(a.dex.getMean() > 0.1f);
     }
 
@@ -166,23 +166,23 @@ public class NAgentTest {
             reward = 0;
 
             BooleanProcedure pushed = (v) -> {
-                //System.err.println(n.time() + ": " + v);
+                
                 if (posOrNeg) {
                     this.reward = v ? 1 : 0;
                 } else {
                     this.reward = v ? -1 : 1;
                 }
             };
-//            if (toggleOrPush)
-//                actionToggle(action, pushed);
-//            else
+
+
+
                 actionPushButton(action, pushed);
         }
 
         @Override
         float reward() {
             float r = reward;
-            reward = 0; //reset
+            reward = 0; 
             return r;
         }
 
@@ -199,7 +199,7 @@ public class NAgentTest {
             y = 0;
 
             BooleanProcedure pushed = (v) -> {
-                //System.err.println(n.time() + ": " + v);
+                
                 this.y = v ? 1 : -1;
             };
             if (toggleOrPush)
@@ -212,69 +212,69 @@ public class NAgentTest {
         float reward() {
             float r = y == prev ? -1 : 1;
             prev = y;
-            y = 0; //reset
-            //System.out.println(nar.time() + " " + r);
+            y = 0; 
+            
             return r;
         }
 
     }
 
-//        n.onTask(t->{
-//            if (t.isGoal()) {
-//                if (t.term().equals(action))
-//                    System.out.println(t.start() + ".." + t.end() + "\t" + t.proof());
-//            }
-//        });
 
-//    @Test public void testSameCheat() {
-//
-//
-//
-//        NAR n = new NARS().get();
-//
-//        Term action = $.$$("(t,y)");
-//
-//        Deriver d = new MatrixDeriver(n.exe::fire, (Collection<Task> x)->{
-//
-//            //HACK TODO this is more efficiently done by filtering the rules rather than the results!
-//            Collection<Task> filtered = Collections2.filter(x, Task::isGoal);
-//            if (!filtered.isEmpty()) {
-//                //System.out.println(filtered);
-//                Collection<Task> filterAction = Collections2.filter(filtered, (t) -> t.term().equals(action));
-//
-//                filterAction.forEach(t->{
-//                    System.out.println(t.proof());
-//                    System.out.println();
-//                });
-//            }
-//            n.input(filtered);
-//
-//        }, Derivers.nal(1, 8, n), n);
-//
-//        new STMLinkage(n, 1, false);
-//        d.conceptsPerIteration.set(2);
-//
-////        n.log();
-//
-//
-//
-//        MiniTest a = new ToggleSame(n, $.the("t"),
-//                //$.$safe("t:y"),
-//                action,
-//                true);
-//
-////        n.onCycle(a::run);
-////        n.run(100);
-//
-//        //n.goal("(t,y)", Tense.Present, 1f);
-//        n.synch();
-//
-//        Term ax = IMPL.the(action, 0, a.happy.filter[0].term);
-//        n.believe(ax, Tense.Present);
-//
-//        a.runSynch(1500);
-//
-//        assertTrue(a.avgReward() > 0.1f);
-//        assertTrue(a.dex.getMean() > 0f);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

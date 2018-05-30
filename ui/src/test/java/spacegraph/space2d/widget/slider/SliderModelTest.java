@@ -22,14 +22,14 @@ class SliderModelTest {
                 , 800, 800);
     }
 
-    //    public static void main(String[] args) {
-//        new GraphSpace<Surface>(
-//
-//                (Surface vt) -> new SurfaceMount(null, vt),
-//
-//                new XYPadSurface()
-//
-//        ).show(800,800);
-//    }
+    
+
+
+
+
+
+
+
+
 
 }

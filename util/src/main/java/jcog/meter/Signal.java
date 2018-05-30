@@ -67,13 +67,13 @@ public class Signal implements Comparable<Signal> {
         max = Double.NEGATIVE_INFINITY;
     }
 
-//        void invalidateBounds() {
-//            min = max = Double.NaN;
-//        }
-//
-//        boolean isInvalidatedBounds() {
-//            return (Double.isNaN(min));
-//        }
-//    
+
+
+
+
+
+
+
+
 
 }

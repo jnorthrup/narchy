@@ -98,14 +98,14 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
 
-//    protected World2D getWorld() {
-//        return model != null ? model.getCurrTest().getWorld() : world;
-//    }
+
+
+
 
     static GLWindow window(GLCapabilitiesImmutable config) {
         GLWindow w = GLWindow.create(config);
 
-        //w.setSharedContext(sharedDrawable.getContext());
+        
 
         return w;
     }
@@ -115,29 +115,29 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         GLCapabilities config = new GLCapabilities(
 
-                //GLProfile.getMinimum(true)
+                
                 GLProfile.get(GLProfile.GL2)
-                //GLProfile.getMaximum(true)
+                
 
         );
 
 
-//        config.setBackgroundOpaque(false);
-//        config.setTransparentRedValue(-1);
-//        config.setTransparentGreenValue(-1);
-//        config.setTransparentBlueValue(-1);
-//        config.setTransparentAlphaValue(-1);
 
 
-//        config.setHardwareAccelerated(true);
+
+
+
+
+
+
 
 
         config.setStencilBits(1);
-//        config.setAlphaBits(8);
-//        config.setAccumAlphaBits(8);
-//        config.setAccumRedBits(8);
-//        config.setAccumGreenBits(8);
-//        config.setAccumBlueBits(8);
+
+
+
+
+
         return config;
     }
 
@@ -154,8 +154,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     abstract protected void init(GL2 gl);
 
     public void printHardware() {
-        //System.err.print("GL Profile: ");
-        //System.err.println(GLProfile.getProfile());
+        
+        
         System.err.print("GL:");
         System.err.println(gl);
         System.err.print("GL_VERSION=");
@@ -193,9 +193,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowMoved(WindowEvent windowEvent) {
-        //GLWindow w = this.window;
-        //nx = w.getX();
-        //ny = w.getY();
+        
+        
+        
     }
 
     @Override
@@ -207,7 +207,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public void windowDestroyed(WindowEvent windowEvent) {
         windows.remove(this);
-        //window = null;
+        
     }
 
     @Override
@@ -252,7 +252,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     @Override
     public final void display(GLAutoDrawable drawable) {
         if (gl == null)
-            gl = drawable.getGL().getGL2(); //HACK this is due to the async window opening stuff
+            gl = drawable.getGL().getGL2(); 
 
         rendering.set(true);
         try {
@@ -275,7 +275,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         Exe.invokeLater(() -> {
 
             if (window != null) {
-                //TODO apply w,h,x,y to the existing window
+                
                 return;
             }
 
@@ -302,7 +302,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         if (!async) {
             Thread.yield();
 
-            //HACK block until GL initialized
+            
             while (gl == null) {
                 Util.sleep(10);
             }
@@ -316,7 +316,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         else {
             int nw = this.nw, nh = this.nh;
             if (nw == 0 || nh == 0) {
-                nw = nh = 100; //?
+                nw = nh = 100; 
             }
             setSize(nw, nh);
         }
@@ -332,7 +332,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     public void setPositionAndSize(int x, int y, int w, int h) {
 
-        if (window == null) return; //WTF
+        if (window == null) return; 
 
         boolean change = false;
         if (change |= (window.getX() != x))
@@ -355,13 +355,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         GL2 gl = drawable.getGL().getGL2();
 
         if (gl.getGLProfile().isHardwareRasterizer()) {
-            //gl.setSwapInterval(0); //0=disable vsync
-            gl.setSwapInterval(1); //enabled vsync
+            
+            gl.setSwapInterval(1); 
         } else {
-            gl.setSwapInterval(4); //reduce CPU strain
+            gl.setSwapInterval(4); 
         }
 
-        //printHardware();
+        
 
         renderer.add(window);
 
@@ -376,7 +376,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void setFPS(float render, float update) {
-        //synchronized (this) {
+        
         logger.info("fps render={} update={}", render, update);
         renderFPS = render;
         updateFPS = update;
@@ -384,7 +384,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             renderer.loop.runFPS(renderFPS);
             updater.runFPS(updateFPS);
         }
-        //}
+        
     }
 
     public void show(String title, int w, int h, boolean async) {
@@ -407,9 +407,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         window.addKeyListener(m);
     }
 
-//    public GL2 gl() {
-//        return gl;
-//    }
+
+
+
 
     public On onUpdate(Consumer<JoglWindow> c) {
         return onUpdate.on(c);
@@ -430,7 +430,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     /* from: Jake2's */
     class GameAnimatorControl extends AnimatorBase {
-        //        final FPSCounterImpl fpsCounter;
+        
         public final Loop loop;
         private volatile boolean paused = true;
 
@@ -441,11 +441,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             setPrintExceptions(false);
 
 
-            //setExclusiveContext(true);
+            
 
-//            fpsCounter = new FPSCounterImpl();
-//            final boolean isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
-//            fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4 * 60, System.err);
+
+
+
             this.loop = new Loop() {
 
                 @Override
@@ -472,17 +472,17 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                         if (!paused) {
                             try {
-//                            //for debug
-//                            if (window.isSurfaceLockedByOtherThread()) {
-//                                Thread surfaceLockOwner = window.getSurfaceLockOwner();
-//                                System.err.println(
-//                                   "surface locked by: " + surfaceLockOwner + "\n" +
-//                                   Joiner.on('\n').join(surfaceLockOwner.getStackTrace())
-//                                );
-//                            }
 
-//                                if (!window.isSurfaceLockedByOtherThread())
-//                                impl.display(drawables, ignoreExceptions, printExceptions);
+
+
+
+
+
+
+
+
+
+
 
                                 if (!window.isSurfaceLockedByOtherThread()) {
                                     animThread = Thread.currentThread();
@@ -490,37 +490,37 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                                 }
 
                             } catch (final UncaughtAnimatorException dre) {
-                                //quitIssued = true;
+                                
                                 dre.printStackTrace();
                             }
 
-                    /*else if (pauseIssued && !quitIssued) { // PAUSE
-//                        if (DEBUG) {
-//                            System.err.println("FPSAnimator pausing: " + alreadyPaused + ", " + Thread.currentThread() + ": " + toString());
-//                        }
-                        //this.cancel();
+                    /*else if (pauseIssued && !quitIssued) { 
 
-//                        if (!alreadyPaused) { // PAUSE
-//                            alreadyPaused = true;
+
+
+                        
+
+
+
                         if (exclusiveContext && !drawablesEmpty) {
                             setDrawablesExclCtxState(false);
                             try {
-                                display(); // propagate exclusive context -> off!
+                                display(); 
                             } catch (final UncaughtAnimatorException dre) {
                                 dre.printStackTrace();
-                                //quitIssued = true;
-//                                    stopIssued = true;
+                                
+
                             }
                         }
-//                        if (null == caughtException) {
-//                            synchronized (GameAnimatorControl.this) {
-//                                if (DEBUG) {
-//                                    System.err.println("FPSAnimator pause " + Thread.currentThread() + ": " + toString());
-//                                }
-//                                isAnimating = false;
-//                                GameAnimatorControl.this.notifyAll();
-//                            }
-//                        }
+
+
+
+
+
+
+
+
+
                     }*/
                         }
                     }
@@ -530,60 +530,60 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             };
 
 
-//                    if (stopIssued) { // STOP incl. immediate exception handling of 'displayCaught'
-//                        if (DEBUG) {
-//                            System.err.println("FPSAnimator stopping: " + alreadyStopped + ", " + Thread.currentThread() + ": " + toString());
-//                        }
-//                        this.cancel();
-//
-//                        if (!alreadyStopped) {
-//                            alreadyStopped = true;
-//                            if (exclusiveContext && !drawablesEmpty) {
-//                                setDrawablesExclCtxState(false);
-//                                try {
-//                                    display(); // propagate exclusive context -> off!
-//                                } catch (final UncaughtAnimatorException dre) {
-//                                    if (null == caughtException) {
-//                                        caughtException = dre;
-//                                    } else {
-//                                        System.err.println("FPSAnimator.setExclusiveContextThread: caught: " + dre.getMessage());
-//                                        dre.printStackTrace();
-//                                    }
-//                                }
-//                            }
-//                            boolean flushGLRunnables = false;
-//                            boolean throwCaughtException = false;
-//                            synchronized (FPSAnimator.this) {
-//                                if (DEBUG) {
-//                                    System.err.println("FPSAnimator stop " + Thread.currentThread() + ": " + toString());
-//                                    if (null != caughtException) {
-//                                        System.err.println("Animator caught: " + caughtException.getMessage());
-//                                        caughtException.printStackTrace();
-//                                    }
-//                                }
-//                                isAnimating = false;
-//                                if (null != caughtException) {
-//                                    flushGLRunnables = true;
-//                                    throwCaughtException = !handleUncaughtException(caughtException);
-//                                }
-//                                animThread = null;
-//                                GameAnimatorControl.this.notifyAll();
-//                            }
-//                            if (flushGLRunnables) {
-//                                flushGLRunnables();
-//                            }
-//                            if (throwCaughtException) {
-//                                throw caughtException;
-//                            }
-//                        }
-//
-//                        //if (impl!=null && !drawablesEmpty)
-//                        //  display();
-//                        return true;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             loop.runFPS(renderFPS);
 
-            //setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
+            
         }
 
         @Override
@@ -599,7 +599,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         @Override
         public final boolean stop() {
-            //quitIssued = true;
+            
             pause();
             loop.stop();
             return true;
@@ -608,10 +608,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
         @Override
         public final boolean pause() {
-//            if( DEBUG ) {
-//                System.err.println("GLCtx Pause Anim: "+Thread.currentThread().getName());
-//                Thread.dumpStack();
-//            }
+
+
+
+
             paused = true;
             return true;
         }
@@ -640,111 +640,111 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     }
 
-//
-//    public void reshape2D(GLAutoDrawable arg0, int arg1, int arg2, int arg3, int arg4) {
-//        float width = getWidth();
-//        float height = getHeight();
-//
-//        GL2 gl2 = arg0.getGL().getGL2();
-//
-//        gl2.glMatrixMode(GL_PROJECTION);
-//        gl2.glLoadIdentity();
-//
-//        // coordinate system origin at lower left with width and height same as the window
-//        GLU glu = new GLU();
-//        glu.gluOrtho2D(0.0f, width, 0.0f, height);
-//
-//
-//        gl2.glMatrixMode(GL_MODELVIEW);
-//        gl2.glLoadIdentity();
-//
-//        gl2.glViewport(0, 0, getWidth(), getHeight());
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
-//    private static class MyFPSAnimator extends FPSAnimator {
-//
-//        int idealFPS, minFPS;
-//        float lagTolerancePercentFPS = 0.05f;
-//
-//        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
-//            super(idealFPS);
-//
-//            setIgnoreExceptions(true);
-//            setPrintExceptions(false);
-//
-//            this.idealFPS = idealFPS;
-//            this.minFPS = minFPS;
-//
-//            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
-//
-//                @Override
-//                public void write(int b) {
-//                }
-//
-//                long lastUpdate;
-//
-//                @Override
-//                public void flush() {
-//                    long l = getLastFPSUpdateTime();
-//                    if (lastUpdate == l)
-//                        return;
-//                    updateFPS();
-//                    lastUpdate = l;
-//                }
-//
-//            }, true));
-//
-//        }
-//
-//
-//        protected void updateFPS() {
-//            //logger.info("{}", MyFPSAnimator.this);
-//
-//            int currentFPS = getFPS();
-//            float lastFPS = getLastFPS();
-//            float lag = currentFPS - lastFPS;
-//
-//            float error = lag / currentFPS;
-//
-//            float nextFPS = Float.NaN;
-//
-//            if (error > lagTolerancePercentFPS) {
-//                if (currentFPS > minFPS) {
-//                    //decrease fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
-//                }
-//            } else {
-//                if (currentFPS < idealFPS) {
-//                    //increase fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
-//                }
-//            }
-//
-//            int inextFPS = Math.max(1, Math.round(nextFPS));
-//            if (nextFPS == nextFPS && inextFPS != currentFPS) {
-//                //stop();
-//                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
-//
-//                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
-//                animThread = null;
-//
-//                setFPS(inextFPS);
-//                animThread = x;
-//
-//                //start();
-//            }
-//
-////            if (logger.isDebugEnabled()) {
-////                if (!meters.isEmpty()) {
-////                    meters.forEach((m, x) -> {
-////                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
-////                    });
-////                }
-////            }
-//        }
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

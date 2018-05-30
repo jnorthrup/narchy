@@ -32,7 +32,7 @@ public class ChangedTextInput {
 			last = s;
 			return true;
 		}
-		// TODO option to, when else, add with lower budget ?
+		
 		return false;
 	}
 

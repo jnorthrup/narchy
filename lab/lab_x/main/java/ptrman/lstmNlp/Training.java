@@ -2,12 +2,12 @@ package ptrman.lstmNlp;
 
 import nars.rl.lstm.AbstractTraining;
 
-// Comingling of consciousness and computer technology is a prevalent dream.
-// + of + and + + is + + +.
+
+
 
 public class Training extends AbstractTraining {
     private static class NalCodebooks {
-        //private List<String> book = new ArrayList<>();
+        
 
         private Map<String, Integer> bookHas = new HashMap<>();
 
@@ -27,7 +27,7 @@ public class Training extends AbstractTraining {
             final int codeInteger = getIndexOf(nal);
 
             final String codebookRaw = "abcdefghijklmnoprst";
-            // we use this encoding to save some neurons (hopefully)
+            
             final String codebook = codebookRaw.substring(0, 5);
 
             final List<Integer> convertedToBase = getNumberAsFixedLengthBase(codeInteger, codebook.length(), 6);
@@ -56,21 +56,21 @@ public class Training extends AbstractTraining {
 
 
     public void generateTemplates() {
-        // a : a
-        // b : is
-        // c : an
-        // d : the
-        // e : this
-        // f : and
+        
+        
+        
+        
+        
+        
 
         templateTrainingTuples = new ArrayList<>();
 
-        // check if something is broken
-        // input and output codes don't overlap
-        //templateTrainingTuples.add(new TrainingTuple("b?", "a?"));
+        
+        
+        
 
 
-         //still valid
+         
 
         templateTrainingTuples.add(new TrainingTuple("ba+a+?", "ba+a+?"));
         templateTrainingTuples.add(new TrainingTuple("bd+a+?", "bd+a+?"));
@@ -81,15 +81,15 @@ public class Training extends AbstractTraining {
         templateTrainingTuples.add(new TrainingTuple("ba+c+?", "ba+c+?"));
            */
 
-        //templateTrainingTuples.add(new TrainingTuple("ba++?", "ba++?"));
+        
 
 
 /*
         templateTrainingTuples.add(new TrainingTuple("a+b+.", "a+b+."));
 
-        // is the duck red?
-        // is an duck red?
-        // is a duck blue?
+        
+        
+        
         templateTrainingTuples.add(new TrainingTuple("bd++?", "bd++?"));
         templateTrainingTuples.add(new TrainingTuple("bc++?", "bc++?"));
         templateTrainingTuples.add(new TrainingTuple("ba++?", "ba++?"));
@@ -109,9 +109,9 @@ public class Training extends AbstractTraining {
 
 
         /*
-        // is the duck red?
-        // is an duck red?
-        // is a duck blue?
+        
+        
+        
         templateTrainingTuples.add(new TrainingTuple("is the++?", "?" + nalCodebooks.getCodeOf("<(*,\"the\",+,+)-->is-1-2-3>") + "."));
         templateTrainingTuples.add(new TrainingTuple("is an++?", "?" + nalCodebooks.getCodeOf("<(*,\"an\",+,+)-->is-1-2-3") + "."));
         templateTrainingTuples.add(new TrainingTuple("is a++?", "?" + nalCodebooks.getCodeOf("<(*,\"a\",+,+)-->is-1-2-3") + "."));
@@ -119,12 +119,12 @@ public class Training extends AbstractTraining {
         templateTrainingTuples.add(new TrainingTuple("an+is a+.", "!" + nalCodebooks.getCodeOf("<(*,\"an\",+,\"a\",+)-->1-2-is-3-4") + "."));
         */
 
-        //trainingTuples.add(new TrainingTuple("is an °b °c?"
+        
 
-        //templateTrainingTuples.add(new TrainingTuple("an + is a + and a + is a +.", "!" + nalCodebooks.getCodeOf("<(*,\"an\",+,\"a\",+)-->1-2-is-3-4") + "," + nalCodebooks.getCodeOf("<(*,\"a\",+,\"a\",+)-->1-2-is-3-4") + "."));
-        //templateTrainingTuples.add(new TrainingTuple("a + is an + and a + is a +.", "!" + nalCodebooks.getCodeOf("<(*,\"a\",+,\"an\",+)-->1-2-is-3-4") + "," + nalCodebooks.getCodeOf("<(*,\"a\",+,\"a\",+)-->1-2-is-3-4") + "."));
+        
+        
 
-        // we enumerate all variations
+        
         for( int comma = 0; comma < 2; comma++ ) {
             for( int i = 0; i < 256/* 10 256*/; i++ ) {
                 TupleOfNaturalAndNlp naturalAndNlp = generate_var1_word_is_var1_word__manyParts(i, comma == 0, nalCodebooks);
@@ -149,7 +149,7 @@ public class Training extends AbstractTraining {
         public final String nal;
     }
 
-    // index from 0 to 255
+    
     private static TupleOfNaturalAndNlp generate_var1_word_is_var1_word__manyParts(int index, boolean comma, NalCodebooks nalCodebooks) {
         final int part1Index = index / (4*4);
         final int part2Index = index % (4*4);
@@ -175,9 +175,9 @@ public class Training extends AbstractTraining {
         return new TupleOfNaturalAndNlp(natural, nal);
     }
 
-    // "an + is a +"
-    // "the + is an +"
-    // and so on
+    
+    
+    
     private static TupleOfNaturalAndNlp generate_var1_word_is_var1_word(int var1, int var2, NalCodebooks nalCodebooks) {
         final String[] VARS = {"a", "c", "d", "e"};
 
@@ -236,8 +236,8 @@ public class Training extends AbstractTraining {
         /*
         trainingTuples.add(new TrainingTuple("is a °b °c?", "is a °b °c?"));
 
-        //trainingTuples.add(new TrainingTuple("a °b is °c.", "#b!"));
-        //trainingTuples.add(new TrainingTuple("is the °c °b?", "#c?"));
+        
+        
 
 
 
@@ -249,25 +249,25 @@ public class Training extends AbstractTraining {
         trainingTuples.add(new TrainingTuple("an°b is a°c and a°d is a°e.", "<#b,°b,°c#g#h<#b,°d,°e#i"));
 
 
-        // "a"  "an"  "the"  "this"
-        // seperated by ", " and "the"
+        
+        
         trainingTuples.add(new TrainingTuple("an °b is a °c and an °d is a °e.", "<#b,°b,°c#g#h<#b,°d,°e#i"));
         trainingTuples.add(new TrainingTuple("a °b is a °c and an °d is a °e.", "<#b,°b,°c#g#h<#b,°d,°e#i"));
         trainingTuples.add(new TrainingTuple("a °b is a °c and the °d is a °e.", "<#b,°b,°c#g#h<#b,°d,°e#i"));
         trainingTuples.add(new TrainingTuple("a °b is a °c, the °d is a °e.", "<#b,°b,°c#g#h<#b,°d,°e#i"));
 
-        // marray had a little lambd
-        // "had" "has" "have"
-        // "a" "an" "the"
-        // TODO< generator >
+        
+        
+        
+        
 
-        // an andromeda council atack on an underground US govt / reptilian base
-        // (he/it/ ) (was/were/ ) (an/a) °b °c °d on (an/the/a) °e °f °g
-        // (he/it/ ) (was/were/ ) (an/a) °b °c °d on (an/the/a) °e °f °g / °h °i
+        
+        
+        
 
-        // °b had a °c °d
-        // °b had an °c °d
-        // (the/ ) °b had (a/an) °c °d
+        
+        
+        
 
 
 
@@ -289,7 +289,7 @@ public class Training extends AbstractTraining {
 */
         trainingTuples = templateTrainingTuples;
 
-        //templateTrainingTuples = trainingTuples;
+        
 
         this.tests = trainingTuples.size();
 
@@ -297,7 +297,7 @@ public class Training extends AbstractTraining {
 
         List<Interaction> result = new ArrayList<>();
         for (int test = 0; test < tests; test++) {
-            //sampleSource++;
+            
             sampleSource %= 2;
 
             String sampleNaturalText;
@@ -317,13 +317,13 @@ public class Training extends AbstractTraining {
                 sampleNaturalText = trainingTuple.naturalText;
                 sampleNal = trainingTuple.nalText;
 
-                //System.out.println(sampleNal);
+                
             }
 
 
             int[] inputSequence = convertInputToVector(sampleNaturalText, 0);
 
-            // try to improve result by repeating the answer
+            
 
             int[] resultSequence = convertInputToVector(sampleNal, observation_dimension);
 
@@ -338,7 +338,7 @@ public class Training extends AbstractTraining {
                 result.add(inter);
             }
 
-            // stop symbol
+            
             /*
             double[] input1 = new double[observation_dimension];
             input1[256+1 - 1] = 1.0;
@@ -348,7 +348,7 @@ public class Training extends AbstractTraining {
             inter1.target_output = target_output1;
             result.add(inter1);*/
 
-            // result
+            
             for (int t = 0; t < resultSequence.length; t++) {
                 double[] input = new double[observation_dimension];
                 double[] target_output2 = new double[action_dimension];
@@ -425,7 +425,7 @@ public class Training extends AbstractTraining {
     }
 
     public final static String CODEBOOK = "abcdef+?! .,";
-    //public final static String CODEBOOK = "abcdefghijklmopqrstuvwxyz+?! .,°#";
+    
 
     static final int observation_dimension = CODEBOOK.length();
     static final int action_dimension = CODEBOOK.length()*2;

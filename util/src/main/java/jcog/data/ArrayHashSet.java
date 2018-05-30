@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at:
  *
- * http://opensource.org/licenses/BSD-3-Clause
+ * http:
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,7 +51,7 @@ import java.util.function.Consumer;
  *
  * @param <X> the type of the elements
  *            <p>
- *            from: https://github.com/aic-sri-international/aic-util/blob/master/src/main/java/com/sri/ai/util/collect/ArrayHashSet.java
+ *            from: https:
  * @author braz
  */
 public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
@@ -96,18 +96,18 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     public final FasterList<X> list;
     private Set<X> set = Set.of();
 
-//	final static List EMPTY_LIST = Collections.emptyList();
+
 
     public ArrayHashSet() {
         this(4);
     }
 
     public ArrayHashSet(int capacity) {
-//		this.set  =
-//				new HashSet<>(capacity, 0.9f);
-//				//new UnifiedSet<>(capacity);
+
+
+
         this.list =
-                //EMPTY_LIST; //new ArrayList<E>(capacity);
+                
                 new FasterList<>(capacity);
     }
 
@@ -116,7 +116,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         collection.forEach(this::add);
     }
 
-    // ArraySet methods
+    
 
     public static <X> ArrayHashSet<X> of(X... x) {
         ArrayHashSet a = new ArrayHashSet(x.length);
@@ -147,16 +147,16 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         return list.allSatisfy(test);
     }
 
-//	@Override
-//	public void set(int index, X element) {
-//		ArrayHashSet<X>.ArrayHashSetIterator listIterator = listIterator(index);
-//		listIterator.next();
-//		listIterator.set(element);
-//	}
 
-    // end of ArraySet methods
 
-    // required implementations
+
+
+
+
+
+    
+
+    
 
     @Override
     public X get(int index) {
@@ -166,14 +166,14 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public boolean add(X element) {
         switch (list.size()) {
-            case 0: //upgrade from immutable empty to small set
+            case 0: 
                 set = new UnifiedSet(1);
                 set.add(element);
                 list.add(element);
                 return true;
         }
 
-        //default:
+        
         if (set.add(element)) {
             list.add(element);
             return true;
@@ -186,9 +186,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         return new ArrayHashSetIterator();
     }
 
-    // end of required implementations
+    
 
-    // methods not required to be implemented, but more efficient
+    
 
     @Override
     public int size() {
@@ -219,27 +219,27 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
             switch (size()) {
                 case 0:
                     set = Set.of();
-                    break; //downgrade to immutable empty set
+                    break; 
             }
         }
 
         return removed;
     }
 
-//	@Override
-//	public boolean isEmpty() {
-//		return list== EMPTY_LIST;
-//	}
+
+
+
+
 
     @Override
     public void clear() {
-//		if (list != EMPTY_LIST) {
-//			list = EMPTY_LIST;
+
+
         if (list.clearIfChanged()) {
-            //set.clear();
+            
             set = Set.of();
         }
-//		}
+
     }
 
 
@@ -260,7 +260,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
 
-    // end of methods not required to be implemented, but more efficient
+    
 
     private class ArrayHashSetIterator implements ListIterator<X> {
 
@@ -321,17 +321,17 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
             arrayListIterator.remove();
 
-//			if (list.isEmpty())
-//				list = EMPTY_LIST;
+
+
         }
 
         @Override
         public void set(X element) {
             if (element.equals(lastElementProvided)) {
-                // no need to do anything
+                
             } else {
                 if (set.contains(element)) {
-                    // cannot add because element would appear more than once
+                    
                     throw new IllegalArgumentException("Cannot set already-present element in a different position in ArrayHashSet.");
                 } else {
                     arrayListIterator.set(element);

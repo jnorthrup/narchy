@@ -29,10 +29,10 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
     private final long capacity;
 
 
-//    @NotNull
-//    public final Cache<Termed, Termed> atomics;
-//    @NotNull
-//    private final Map<Termed,Termed> atomics;
+
+
+
+
 
 
     /**
@@ -42,27 +42,27 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
     public Cache<Subterms, TermContainerToOpMap<Termed>> vectors;
 
 
-//    private static final Weigher<Term, Termed> weigher = (k, v) -> {
-//
-//        if (v instanceof PermanentConcept) {
-//            return 0; //special concept implementation: dont allow removal
-//        }
-//
-//        //        float beliefCost = (v instanceof CompoundConcept) ?
-////                    (1f - maxConfidence((CompoundConcept)v)) : //discount factor for belief/goal confidence
-////                    0;
-//
-//        //return v.complexity();
-//        return v.volume();
-//
-//        //return Math.round( 1f + 100 * c * beliefCost);
-//        //return Math.round( 1f + 10 * (c*c) * (0.5f + 0.5f * beliefCost));
-//    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     final static Weigher<Subterms, TermContainerToOpMap> w = (k, v) -> {
-        //return k.volume();
+        
         return (k.complexity() + k.volume())/2;
     };
 
@@ -73,7 +73,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
     public CaffeineIndex2(long capacity) {
         super();
 
-        //long maxSubtermWeight = maxWeight * 3; //estimate considering re-use of subterms in compounds and also caching of non-compound subterms
+        
 
         this.capacity = capacity;
 
@@ -83,7 +83,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
     public void init(NAR nar) {
         Caffeine builder = Caffeine.newBuilder().removalListener(this);
         if (capacity > 0) {
-            //builder.maximumSize(capacity);
+            
             builder.maximumWeight(capacity * 4);
             builder.weigher(w);
         } else
@@ -105,51 +105,51 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
         return vectors.asMap().values().stream().flatMap(x -> IntStream.range(0, x.length()).mapToObj(x::get).filter(Objects::nonNull));
     }
 
-    //    @Override
-//    public void start(NAR nar) {
-//        super.start(nar);
-//        //nar.onCycle(this::cleanUp);
-//    }
+    
 
-//private static final long cleanPeriod = 16 /* cycles */;
-//    protected void cleanUp() {
-//        if (nar.time() % cleanPeriod == 0) {
-//            concepts.cleanUp();
-//            if (subterms != null)
-//                subterms.cleanUp();
-//        }
-//    }
 
-//    @NotNull
-//    @Override
-//    public final TermContainer intern(@NotNull Term[] a) {
-//
-//        TermContainer v = super.intern(a);
-//
-//        if (subterms!=null) {
-//            int len = a.length;
-//            if (len < 1)
-//                return v; //dont intern small or empty containers
-//
-//            //        //HACK
-//            //        if (x instanceof EllipsisTransform || y instanceof EllipsisTransform)
-//            //            return new TermVector2(x, y);
-//
-//            //        DynByteSeq d = new DynByteSeq(4 * len /* estimate */);
-//            //        try {
-//            //            IO.writeTermContainer(d, a);
-//            //        } catch (IOException e) {
-//            //            throw new RuntimeException(e);
-//            //        }
-//
-//            return subterms.get(v, vv -> vv);
-//        } else {
-//            return v;
-//        }
-//
-//
-//        //return subterms!=null ? subterms.get(s, (ss) -> ss) :s;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void remove(@NotNull Term x) {
@@ -158,11 +158,11 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
         if (v != null) {
             v.set(x.op().id, null);
 
-//            if (v.getAndSet(x.op().id, null) != null) {
-//                if (v.isEmpty()) {
-//                    vectors.invalidate(v);
-//                }
-//            }
+
+
+
+
+
         }
 
     }
@@ -170,12 +170,12 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
     static Subterms vector(Term x) {
         Subterms xs = x.subterms();
         if (xs.subs() == 0) {
-            //atomic
-            return Op.terms.newSubterms(x, True); //to distinguish from: (x)
+            
+            return Op.terms.newSubterms(x, True); 
         } else {
             return xs;
         }
-        //return TermVector.the(ArrayUtils.add(xs.theArray() /* SAFE COPY */, x));
+        
     }
 
     @Override
@@ -204,7 +204,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
     public Termed get(Term x, boolean createIfMissing) {
 
         if (x.volume() > nar.termVolumeMax.intValue())
-            return null; //quick check to avoid creating a vector for a term that will be invalid anyway
+            return null; 
 
         assert (!(x instanceof Variable)) : "variables should not be stored in index";
 
@@ -219,7 +219,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
 
                 if (p != null)
                     t.compareAndSet(op.id, null, p);
-                //else: ?
+                
 
                 return t;
             });
@@ -231,33 +231,33 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
 
     }
 
-//    @Override
-//    public void commit(Concept c) {
-//        //concepts.getIfPresent(c.term());
-//    }
 
-    //    protected Termed theCompoundCreated(@NotNull Compound x) {
-//
-//        if (x.hasTemporal()) {
-//            return internCompoundSubterms(x.subterms(), x.op(), x.relation(), x.dt());
-//        }
-//
-//        Termed yyy = data.get(x, xx -> {
-//            Compound y = (Compound)xx;
-//            Termed yy = internCompoundSubterms(y.subterms(), y.op(), y.relation(), y.dt());
-//            return internCompound(yy);
-//        });
-//        return yyy;
-//
-//    }
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public @NotNull String summary() {
-        //CacheStats s = cache.stats();
+        
         return (vectors.estimatedSize() + " TermVectors, ") + ' ' +
                 (Param.DEBUG ? (" " + vectors.stats()) : "");
-        //(" + n2(s.hitRate()) + " hitrate, " +
-        //s.requestCount() + " reqs)";
+        
+        
 
     }
 

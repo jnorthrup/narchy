@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -495,12 +495,12 @@ public class CombFilter extends IIRFilter {
     }
 
     /*
-     * public static void main(String[] args) { // Ollie - I'm interested in
-     * comparing the speed of this ParamUpdater // with Static AudioContext ac =
+     * public static void main(String[] args) { 
+     * comparing the speed of this ParamUpdater 
      * new AudioContext(); for (int i = 0; i < 1000; i++) { CombFilter c = new
      * CombFilter(ac, 1000);
      *
-     * // compare these two lines... // c.setA(1f); c.setA(new Static(ac, 1f));
+     * 
      *
      * ac.out.addInput(c); } ac.start(); }
      */

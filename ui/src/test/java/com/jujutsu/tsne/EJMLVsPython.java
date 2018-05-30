@@ -313,8 +313,8 @@ public class EJMLVsPython {
 	public void testSign() throws IOException {
 		double [][] X = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		MatrixOps.assignAllLessThan(X,3,-1);
-		//System.out.println("TSne.sign(TSne.assignAllLessThan(X,3,-1)) = \n" 
-		//+ ArrayString.printDoubleArray(tsne.sign(X)));
+		
+		
 	}
 	
 	@Test
@@ -339,12 +339,12 @@ public class EJMLVsPython {
 	@Test
 	public void testMMean() throws IOException {
 		double [][] X = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
-		//System.out.println("TSne.mean(X,0) = \n" + ArrayString.printDoubleArray(tsne.mean(X,0)));
+		
 		double [] pymean0 = { 4.28571429,  4.28571429,  5.42857143,  6.,          4.57142857};
 		double [][] mean0 = MatrixOps.mean(X,0);
 		assertArrayEquals(mean0[0], mean0[0], epsilon);
 		double [] pymean1 = {3.,   7.,   3.8,  5.2,  6.,   3.6,  5.8};
-		//System.out.println("TSne.mean(X,1) = \n" + ArrayString.printDoubleArray(tsne.mean(X,1)));
+		
 		double [][] mean1mtrx = MatrixOps.mean(X,1);
 		double [] mean1 = new double [mean1mtrx.length];
 		for (int i = 0; i < mean1mtrx.length; i++) {
@@ -364,13 +364,13 @@ public class EJMLVsPython {
 
 	@Test
 	public void testElementWiseDivide() throws IOException {
-		//new StringReader(s)
+		
 		double [][] X = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		double [][] Y = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		Y = MatrixOps.scalarDivide(Y, 2);
-		//System.out.println("Y=\n" + ArrayString.printDoubleArray(Y));
-		//System.out.println(" X / (X/2) =" 
-		//+ ArrayString.printDoubleArray(tsne.scalarDivide(X, Y)));
+		
+		
+		
 		double [][] pydiv = 
 			{{ 2.,  2.,  2.,  2.,  2.},
 			 { 2.,  2.,  2.,  2.,  2.},
@@ -388,7 +388,7 @@ public class EJMLVsPython {
 	public void testSqrt() throws IOException {
 		double [][] X = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
 		double [] pysqrt = { 2.64575131,  1.73205081,  2.44948974,  2.64575131,  1.73205081};
-		//System.out.println("sqrt(X[3,:]) =\n" + ArrayString.printDoubleArray(tsne.sqrt(X[3])));
+		
 		double[] v2 = MatrixOps.sqrt(X[3]);
 		assertArrayEquals(v2, v2, epsilon);
 	}
@@ -396,7 +396,7 @@ public class EJMLVsPython {
 	@Test
 	public void testExp() throws IOException {
 		double [][] X = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
-		//System.out.println(" exp(X) =" + ArrayString.printDoubleArray(tsne.exp(X)));
+		
 		double [][] pyexp = 
 				{{  2.71828183e+00,   7.38905610e+00,   2.00855369e+01,   5.45981500e+01,	    1.48413159e+02},
 				 {  4.03428793e+02,   1.09663316e+03,   2.98095799e+03,   8.10308393e+03,	    1.48413159e+02},
@@ -412,7 +412,7 @@ public class EJMLVsPython {
 	@Test
 	public void testLog() throws IOException {
 		double [][] X = MatrixUtils.simpleRead2DMatrix(new StringReader(s), " ");
-		//System.out.println(" log(X) =" + ArrayString.printDoubleArray(tsne.log(X)));
+		
 		double [][] pylog = 
 				{{ 0.,          0.69314718,  1.09861229,  1.38629436,  1.60943791},
 				 { 1.79175947,  1.94591015,  2.07944154,  2.19722458,  1.60943791},
@@ -430,8 +430,8 @@ public class EJMLVsPython {
 	public void testConcatenate() {
 		int [] v1 = {1,2,3,4};
 		int [] v2 = {3,4,5,6};
-		//System.out.println(ArrayString.printIntArray(v1) + " + " +  ArrayString.printIntArray(v2) + " = "
-		//		+ ArrayString.printIntArray(tsne.concatenate(v1, v2)));
+		
+		
 		int [] v3 = MatrixOps.concatenate(v1, v2);
 		int [] expct = {1,2,3,4,3,4,5,6};
 		assertArrayEquals(expct, v3);

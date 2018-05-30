@@ -39,72 +39,72 @@ public class Sim extends PhysicsModel {
 
 
 
-//        //new NARPrologMirror(nar,0.75f, true).temporal(true, true);
-//        //ItemCounter removedConcepts = new ItemCounter(nar, Events.ConceptForget.class);
-//        // RoverWorld.world= new RoverWorld(rv, 48, 48);
-//        new NARPhysics<Rover2>(1.0f / framesPerSecond, theRover ) {
-//
-//            @Override
-//            public void init() {
-//                super.init();
-//
-//
-//            }
-//
-//            @Override
-//            public void frame() {
-//                super.frame();
-//
-//
-//
-//            }
-//
-//
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//
-////                if (e.getKeyChar() == 'm') {
-////                    theRover.mission = (theRover.mission + 1) % 2;
-////                    System.out.println("Mission: " + theRover.mission);
-////                } else if (e.getKeyChar() == 'g') {
-////                    System.out.println(nar.memory.cycle);
-////                    //removedConcepts.report(System.out);
-////                }
-//
-////                if (e.getKeyCode() == KeyEvent.VK_UP) {
-////                    if(!Rover2.allow_imitate) {
-////                        nar.addInput("motor(linear,1). :|:");
-////                    } else {
-////                        nar.addInput("motor(linear,1)!");
-////                    }
-////                }
-////                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-////                    if(!Rover2.allow_imitate) {
-////                        nar.addInput("motor(linear,-1). :|:");
-////                    } else {
-////                        nar.addInput("motor(linear,-1)!");
-////                    }
-////                }
-////                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-////                    if(!Rover2.allow_imitate) {
-////                        nar.addInput("motor(turn,-1). :|:");
-////                    } else {
-////                        nar.addInput("motor(turn,-1)!");
-////                    }
-////                }
-////                if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-////                    if(!Rover2.allow_imitate) {
-////                        nar.addInput("motor(turn,1). :|:");
-////                    } else {
-////                        nar.addInput("motor(turn,1)!");
-////                    }
-////                }
-//            }
-//
-//
-//
-//
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public void setFPS(float f) {
@@ -166,36 +166,36 @@ public class Sim extends PhysicsModel {
         String t;
         final int ha = angleResolution;
 
-//        if (i == 0) {
-//            t = "forward";
-//        } else if (i == angleResolution / 4) {
-//            t = "left";
-//        } else if (i == -angleResolution / 4) {
-//            t = "right";
-//        } else if ((i == (angleResolution / 2 - 1)) || (i == -(angleResolution / 2 - 1))) {
-//            t = "reverse";
-//        } else {
+
+
+
+
+
+
+
+
+
 
 
             if (angleTerms[i] == null) {
-                //angleTerms[i] = "(angle," + i + ")";
+                
 
                 angleTerms[i] = "a" + i;
 
-//
-//                String s;
-//
-//                if (i == 0) s = "(forward, 0)"; //center is special
-//                else {
-//                    if (i > angleResolution/2) i = -(angleResolution/2 - i);
-//                    s = "(" + ((i < 0) ? "left" : "right") + ',' + Math.abs(i) + ")";
-//                }
-//
-//                angleTerms[i+ha] = s;
+
+
+
+
+
+
+
+
+
+
             }
 
             t = angleTerms[i];
-        //}
+        
 
         return t;
     }
@@ -234,7 +234,7 @@ public class Sim extends PhysicsModel {
     public static String f(double p) {
         if (p < 0) {
             throw new RuntimeException("Invalid value for: " + p);
-            //p = 0;
+            
         }
         if (p > 0.99f) {
             p = 0.99f;
@@ -327,43 +327,43 @@ public class Sim extends PhysicsModel {
 
     }
 
-//    public class RoverPanel extends JPanel {
-//
-//        public class InputButton extends JButton implements ActionListener {
-//
-//            private final String command;
-//
-//            public InputButton(String label, String command) {
-//                super(label);
-//                addActionListener(this);
-//                //this.addKeyListener(this);
-//                this.command = command;
-//            }
-//
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                nar.input(command);
-//            }
-//
-//        }
-//
-//        public RoverPanel(RoverModel rover) {
-//            super(new BorderLayout());
-//
-//            {
-//                JPanel motorPanel = new JPanel(new GridLayout(0, 2));
-//
-////                motorPanel.add(new InputButton("Stop", "motor(stop). :|:"));
-////                motorPanel.add(new InputButton("Forward", "motor(forward). :|:"));
-////                motorPanel.add(new InputButton("TurnLeft", "motor(turn,left). :|:"));
-////                motorPanel.add(new InputButton("TurnRight", "motor(turn,right). :|:"));
-////                motorPanel.add(new InputButton("Backward", "motor(backward). :|:"));
-//                add(motorPanel, BorderLayout.SOUTH);
-//            }
-//        }
-//
-//    }
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public RoverWorld world;
 

@@ -58,11 +58,11 @@ public class SND_MIX extends SND_JAVA {
 
         int entchannel;
 
-        boolean fixed_origin; // use origin field instead of entnum's origin
+        boolean fixed_origin; 
 
         final float[] origin = { 0, 0, 0 };
 
-        long begin; // begin on this sample
+        long begin; 
 
         public void clear() {
             prev = next = null;
@@ -74,31 +74,31 @@ public class SND_MIX extends SND_JAVA {
     }
 
     static class channel_t {
-        sfx_t sfx; // sfx number
+        sfx_t sfx; 
 
-        int leftvol; // 0-255 volume
+        int leftvol; 
 
-        int rightvol; // 0-255 volume
+        int rightvol; 
 
-        int end; // end time in global paintsamples
+        int end; 
 
-        int pos; // sample position in sfx
+        int pos; 
 
-        int looping; // where to loop, -1 = no looping OBSOLETE?
+        int looping; 
 
-        int entnum; // to allow overriding a specific sound
+        int entnum; 
 
-        int entchannel; //
+        int entchannel; 
 
-        final float[] origin = { 0, 0, 0 }; // only use if fixed_origin is set
+        final float[] origin = { 0, 0, 0 }; 
 
-        float dist_mult; // distance multiplier (attenuation/clipK)
+        float dist_mult; 
 
-        int master_vol; // 0-255 master volume
+        int master_vol; 
 
-        boolean fixed_origin; // use origin instead of fetching entnum's origin
+        boolean fixed_origin; 
 
-        boolean autosound; // from an entity->sound, cleared each frame
+        boolean autosound; 
 
         void clear() {
             sfx = null;
@@ -118,21 +118,21 @@ public class SND_MIX extends SND_JAVA {
 
     static int s_rawend;
 
-    //// snd_mix.c -- portable code to mix sounds for snd_dma.c
-    //
-    //	#include "client.h"
-    //	#include "snd_loc.h"
-    //
+    
+    
+    
+    
+    
     static final int PAINTBUFFER_SIZE = 2048;
 
-    //static portable_samplepair_t[] paintbuffer = new
-    // portable_samplepair_t[PAINTBUFFER_SIZE];
+    
+    
     static final IntBuffer paintbuffer = IntBuffer.allocate(PAINTBUFFER_SIZE * 2);
 
     static final int[][] snd_scaletable = new int[32][256];
 
-    //	int *snd_p, snd_linear_count, snd_vol;
-    //	short *snd_out;
+    
+    
     static IntBuffer snd_p;
 
     static ShortBuffer snd_out;
@@ -141,12 +141,12 @@ public class SND_MIX extends SND_JAVA {
 
     static int snd_vol;
 
-    static int paintedtime; // sample PAIRS
+    static int paintedtime; 
 
     static final playsound_t s_pendingplays = new playsound_t();
 
-    //static portable_samplepair_t[] s_rawsamples = new
-    // portable_samplepair_t[MAX_RAW_SAMPLES];
+    
+    
     static final IntBuffer s_rawsamples = IntBuffer.allocate(MAX_RAW_SAMPLES * 2);
 
     static final channel_t[] channels = new channel_t[MAX_CHANNELS];
@@ -186,10 +186,10 @@ public class SND_MIX extends SND_JAVA {
         lpaintedtime = paintedtime;
 
         while (lpaintedtime < endtime) {
-            // handle recirculating buffer issues
+            
             lpos = lpaintedtime & ((dma.samples >> 1) - 1);
 
-            //			snd_out = (short *) pbuf + (lpos<<1);
+            
             snd_out = pbuf.asShortBuffer();
             snd_out.position(lpos << 1);
             snd_out = snd_out.slice();
@@ -200,10 +200,10 @@ public class SND_MIX extends SND_JAVA {
 
             snd_linear_count <<= 1;
 
-            // write a linear blast of samples
+            
             WriteLinearBlastStereo16();
 
-            //snd_p += snd_linear_count;
+            
             paintbuffer.position(snd_linear_count);
             snd_p = paintbuffer.slice();
 
@@ -223,7 +223,7 @@ public class SND_MIX extends SND_JAVA {
         int p;
         int step;
         int val;
-        //unsigned long *pbuf;
+        
 
         ByteBuffer pbuf = ByteBuffer.wrap(dma.buffer);
         pbuf.order(ByteOrder.LITTLE_ENDIAN);
@@ -232,7 +232,7 @@ public class SND_MIX extends SND_JAVA {
             int i;
             int count2;
 
-            // write a fixed sine wave
+            
             count2 = (endtime - paintedtime) * 2;
             int v;
             for (i = 0; i < count2; i += 2) {
@@ -242,9 +242,9 @@ public class SND_MIX extends SND_JAVA {
             }
         }
 
-        if (dma.samplebits == 16 && dma.channels == 2) { // optimized case
+        if (dma.samplebits == 16 && dma.channels == 2) { 
             TransferStereo16(pbuf, endtime);
-        } else { // general case
+        } else { 
             p = 0;
             count = (endtime - paintedtime) * dma.channels;
             out_mask = dma.samples - 1;
@@ -252,7 +252,7 @@ public class SND_MIX extends SND_JAVA {
             step = 3 - dma.channels;
 
             if (dma.samplebits == 16) {
-                //				short *out = (short *) pbuf;
+                
                 ShortBuffer out = pbuf.asShortBuffer();
                 while (count-- > 0) {
                     val = paintbuffer.get(p) >> 8;
@@ -262,11 +262,11 @@ public class SND_MIX extends SND_JAVA {
                     else if (val < (short) 0x8000)
                         val = (short) 0x8000;
                     out.put(out_idx, (short) val);
-                    //System.out.println(out_idx + " " + val);
+                    
                     out_idx = (out_idx + 1) & out_mask;
                 }
             } else if (dma.samplebits == 8) {
-                //				unsigned char *out = (unsigned char *) pbuf;
+                
                 while (count-- > 0) {
                     val = paintbuffer.get(p) >> 8;
                     p += step;
@@ -298,37 +298,37 @@ public class SND_MIX extends SND_JAVA {
 
         snd_vol = (int) (s_volume.value * 256);
 
-        //	  Com_Printf ("%i to %i\n", paintedtime, endtime);
+        
         while (paintedtime < endtime) {
-            // if paintbuffer is smaller than DMA buffer
+            
             end = endtime;
             if (endtime - paintedtime > PAINTBUFFER_SIZE)
                 end = paintedtime + PAINTBUFFER_SIZE;
 
-            // start any playsounds
+            
             while (true) {
                 ps = s_pendingplays.next;
                 if (ps == s_pendingplays)
-                    break; // no more pending sounds
+                    break; 
                 if (ps.begin <= paintedtime) {
                     SND_DMA.IssuePlaysound(ps);
                     continue;
                 }
 
                 if (ps.begin < end)
-                    end = (int) ps.begin; // stop here
+                    end = (int) ps.begin; 
                 break;
             }
 
-            // clear the paint buffer
+            
             if (s_rawend < paintedtime) {
-                //				Com_Printf ("clear\n");
+                
                 for (i = 0; i < (end - paintedtime) * 2; i++) {
                     paintbuffer.put(i, 0);
                 }
-                //memset(paintbuffer, 0, (end - paintedtime) *
-                // sizeof(portable_samplepair_t));
-            } else { // copy from the streaming sound source
+                
+                
+            } else { 
                 int s;
                 int stop;
 
@@ -336,26 +336,26 @@ public class SND_MIX extends SND_JAVA {
 
                 for (i = paintedtime; i < stop; i++) {
                     s = i & (MAX_RAW_SAMPLES - 1);
-                    //paintbuffer[i-paintedtime] = s_rawsamples[s];
+                    
                     paintbuffer.put((i - paintedtime) * 2, s_rawsamples
                             .get(2 * s));
                     paintbuffer.put((i - paintedtime) * 2 + 1, s_rawsamples
                             .get(2 * s) + 1);
                 }
-                //			if (i != end)
-                //				Com_Printf ("partial stream\n");
-                //			else
-                //				Com_Printf ("full stream\n");
+                
+                
+                
+                
                 for (; i < end; i++) {
-                    //paintbuffer[i-paintedtime].left =
-                    //paintbuffer[i-paintedtime].right = 0;
+                    
+                    
                     paintbuffer.put((i - paintedtime) * 2, 0);
                     paintbuffer.put((i - paintedtime) * 2 + 1, 0);
                 }
             }
 
-            // paint in the channels.
-            //ch = channels;
+            
+            
             for (i = 0; i < MAX_CHANNELS; i++) {
                 ch = channels[i];
                 ltime = paintedtime;
@@ -364,10 +364,10 @@ public class SND_MIX extends SND_JAVA {
                     if (ch.sfx == null || (ch.leftvol == 0 && ch.rightvol == 0))
                         break;
 
-                    // max painting is to the end of the buffer
+                    
                     count = end - ltime;
 
-                    // might be stopped by running out of data
+                    
                     if (ch.end - ltime < count)
                         count = ch.end - ltime;
 
@@ -376,7 +376,7 @@ public class SND_MIX extends SND_JAVA {
                         break;
 
                     if (count > 0 && ch.sfx != null) {
-                        if (sc.width == 1)// FIXME; 8 bit asm is wrong now
+                        if (sc.width == 1)
                             PaintChannelFrom8(ch, sc, count, ltime
                                     - paintedtime);
                         else
@@ -386,16 +386,16 @@ public class SND_MIX extends SND_JAVA {
                         ltime += count;
                     }
 
-                    // if at end of loop, restart
+                    
                     if (ltime >= ch.end) {
-                        if (ch.autosound) { // autolooping sounds always go back
-                                            // to start
+                        if (ch.autosound) { 
+                                            
                             ch.pos = 0;
                             ch.end = ltime + sc.length;
                         } else if (sc.loopstart >= 0) {
                             ch.pos = sc.loopstart;
                             ch.end = ltime + sc.length - ch.pos;
-                        } else { // channel just stopped
+                        } else { 
                             ch.sfx = null;
                         }
                     }
@@ -403,7 +403,7 @@ public class SND_MIX extends SND_JAVA {
 
             }
 
-            // transfer out according to DMA format
+            
             TransferPaintBuffer(end);
             paintedtime = end;
         }
@@ -435,13 +435,13 @@ public class SND_MIX extends SND_JAVA {
         if (ch.rightvol > 255)
             ch.rightvol = 255;
 
-        //ZOID-- >>11 has been changed to >>3, >>11 didn't make much sense
-        //as it would always be zero.
+        
+        
         lscale = snd_scaletable[ch.leftvol >> 3];
         rscale = snd_scaletable[ch.rightvol >> 3];
         sfx = ch.pos;
 
-        //samp = paintbuffer[offset];
+        
 
         for (i = 0; i < count; i++, offset++) {
             int left = paintbuffer.get(offset * 2);
@@ -474,7 +474,7 @@ public class SND_MIX extends SND_JAVA {
         ShortBuffer sb = bb.asShortBuffer();
         sfx = ch.pos;
 
-        //samp = paintbuffer[offset];
+        
         for (i = 0; i < count; i++, offset++) {
             left = paintbuffer.get(offset * 2);
             right = paintbuffer.get(offset * 2 + 1);

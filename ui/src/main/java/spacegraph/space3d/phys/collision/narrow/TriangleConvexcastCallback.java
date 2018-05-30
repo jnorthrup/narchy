@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -59,29 +59,29 @@ public abstract class TriangleConvexcastCallback extends TriangleCallback {
 		VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
 		GjkEpaPenetrationDepthSolver gjkEpaPenetrationSolver = new GjkEpaPenetrationDepthSolver();
 
-		//#define  USE_SUBSIMPLEX_CONVEX_CAST 1
-		//if you reenable USE_SUBSIMPLEX_CONVEX_CAST see commented out code below
-		//#ifdef USE_SUBSIMPLEX_CONVEX_CAST
-		// TODO: implement ContinuousConvexCollision
+		
+		
+		
+		
 		SubsimplexConvexCast convexCaster = new SubsimplexConvexCast(convexShape, triangleShape, simplexSolver);
-		//#else
-		// //btGjkConvexCast	convexCaster(m_convexShape,&triangleShape,&simplexSolver);
-		//btContinuousConvexCollision convexCaster(m_convexShape,&triangleShape,&simplexSolver,&gjkEpaPenetrationSolver);
-		//#endif //#USE_SUBSIMPLEX_CONVEX_CAST
+		
+		
+		
+		
 
 		ConvexCast.CastResult castResult = new ConvexCast.CastResult();
 		castResult.fraction = 1f;
 		if (convexCaster.calcTimeOfImpact(convexShapeFrom, convexShapeTo, triangleToWorld, triangleToWorld, castResult)) {
-			// add hit
+			
 			if (castResult.normal.lengthSquared() > 0.0001f) {
 				if (castResult.fraction < hitFraction) {
 
 					/* btContinuousConvexCast's normal is already in world space */
 					/*
-					//#ifdef USE_SUBSIMPLEX_CONVEX_CAST
-					// rotate normal into worldspace
+					
+					
 					convexShapeFrom.basis.transform(castResult.normal);
-					//#endif //USE_SUBSIMPLEX_CONVEX_CAST
+					
 					*/
 					castResult.normal.normalize();
 

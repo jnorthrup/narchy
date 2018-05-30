@@ -38,16 +38,16 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 public class ConstUndirGraph implements Graph {
 
 
-// ====================== private fileds ========================
-// ==============================================================
+
+
 
 
     protected final Graph g;
 
     protected final IntArrayList[] in;
 
-// ====================== public constructors ===================
-// ==============================================================
+
+
 
     /**
      * Initialization based on given graph. Stores the graph and if necessary
@@ -63,7 +63,7 @@ public class ConstUndirGraph implements Graph {
         initGraph();
     }
 
-// --------------------------------------------------------------
+
 
     /**
      * Finds and stores incoming edges
@@ -81,8 +81,8 @@ public class ConstUndirGraph implements Graph {
     }
 
 
-// ======================= Graph implementations ================
-// ==============================================================
+
+
 
 
     @Override
@@ -91,7 +91,7 @@ public class ConstUndirGraph implements Graph {
         return g.isEdge(i, j) || g.isEdge(j, i);
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * Uses sets as collection so does not support multiple edges now, even if
@@ -106,7 +106,7 @@ public class ConstUndirGraph implements Graph {
         return result;
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * Returns the node from the underlying graph
@@ -116,7 +116,7 @@ public class ConstUndirGraph implements Graph {
         return g.vertex(v);
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * If there is an (i,j) edge, returns that, otherwise if there is a (j,i)
@@ -130,21 +130,21 @@ public class ConstUndirGraph implements Graph {
         return null;
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public int size() {
         return g.size();
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean directed() {
         return false;
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * not supported
@@ -155,7 +155,7 @@ public class ConstUndirGraph implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * not supported
@@ -166,14 +166,14 @@ public class ConstUndirGraph implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public int degree(int i) {
         return g.degree(i) + (in == null ? 0 : in[i].size());
     }
 
-// ---------------------------------------------------------------
+
 /*
 public static void main( String[] args ) {
 

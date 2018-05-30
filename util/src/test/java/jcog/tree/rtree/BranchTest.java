@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,24 +42,24 @@ public class BranchTest {
             RectDouble2D[] rects = RTree2DTest.generateRandomRects(80);
 
             int i = 0;
-            // cause no splits, fill up leaf
+            
             while (i < 8) {
                 rTree.add(rects[i++]);
             }
             assertEquals(0, rTree.stats().getBranchCount(), "[" + type + "] Expected 0 branches at this time");
 
-            // leaf was full, first split
+            
             rTree.add(rects[i++]);
             assertEquals(1, rTree.stats().getBranchCount(), "[" + type + "] Expected 1 branch at this time");
 
-            // cause another split, extra branches get optimized out
+            
             while (i < 10) {
                 rTree.add(rects[i++]);
                 assertEquals(i, rTree.size());
             }
             assertEquals(1, rTree.stats().getBranchCount(), "[" + type + "] Expected 1 branch at this time:\n" + rTree.stats());
 
-            // cause enough additional splits to force new branch creation
+            
             while (i < 80) {
                 rTree.add(rects[i++]);
                 assertEquals(i, rTree.size());

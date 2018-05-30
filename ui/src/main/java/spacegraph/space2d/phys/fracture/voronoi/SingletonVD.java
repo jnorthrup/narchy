@@ -30,7 +30,7 @@ public class SingletonVD {
      * Body voronoi diagramu. Rozmedzie platnych bodov: (0, pCount - 1).
      * Nenastavovat hodnotam null value.
      */
-    public final Tuple2f[] points = new Tuple2f[0x404]; //max pocet bodov polygonu je pocet trojuholnikov (3x) + pocet boundaries (1x) + rohy (4)
+    public final Tuple2f[] points = new Tuple2f[0x404]; 
 
     /**
      * Pocet bodov voronoi diagramu.
@@ -77,13 +77,13 @@ public class SingletonVD {
     private final double RND() { return rng.nextDouble() + 0.5; }
 
 
-    private final Edge[] edges = new Edge[0x10000]; //2D pole hran
+    private final Edge[] edges = new Edge[0x10000]; 
     private final int[] boundaries = new int[0x200];
     private int boundariesCount = 0;
     private float maxX, minX, minY, maxY;
-    private final double[] comparer = new double[0x302]; //6 kb
-    private final boolean[] validCorners = new boolean[4]; //true znamena, ze je platny roh, false, ze je neplatny... neplatny roh je vtedy, ked boundaries vypocita bod s rovnakymi suradnicami (nepravdepodobne, ale mozne)
-    private int[] polygon; //pomocna premenna
+    private final double[] comparer = new double[0x302]; 
+    private final boolean[] validCorners = new boolean[4]; 
+    private int[] polygon; 
 
     /**
      * Inicializuje Factory. Samotny geometricky vypocet je potom osetreny
@@ -91,10 +91,10 @@ public class SingletonVD {
      */
     public SingletonVD() {
         for (int i = 0; i < triangles.length; ++i) {
-            triangles[i] = new Triangle(i); //to robi asi 40kB
+            triangles[i] = new Triangle(i); 
         }
         for (int i = 0; i < points.length; ++i) {
-            points[i] = new Vec2(); //to robi asi 40kB
+            points[i] = new Vec2(); 
         }
         for (int i = 0; i < 0x100; ++i) {
             for (int j = i + 1; j < 0x100; ++j) {
@@ -150,7 +150,7 @@ public class SingletonVD {
                 double x = triangle.dX;
                 double y = triangle.dY;
 
-                if (x <= maxX && x >= minX && y <= maxY && y >= minY) { //tu osetrim, ci je bod voronoi diagramu v obdlzniku
+                if (x <= maxX && x >= minX && y <= maxY && y >= minY) { 
                     int ti = triangle.i;
                     int tj = triangle.j;
                     int tk = triangle.k;
@@ -163,7 +163,7 @@ public class SingletonVD {
             Hull left = hull;
             do {
                 Hull right = left.prev;
-                addBoundary(left.i, right.i, null); //rekurzivna funkcia
+                addBoundary(left.i, right.i, null); 
                 left = right;
             } while (left != hull);
 
@@ -174,14 +174,14 @@ public class SingletonVD {
                 Tuple2f r = ar[ri];
 
                 float sy = l.x > r.x ? minY : maxY;
-                float y = sy; //ak ==, je to za jedno, x bude +-Infinity a vykona sa podmienka
+                float y = sy; 
                 float x = (float) x(l, r, y);
 
-                if (x >= maxX || x <= minX) { //vypocitane hodnoty niesu korektne, treba prehodit suradnice, ak ==, je to v poriadku, netreba upravovat
+                if (x >= maxX || x <= minX) { 
                     x = l.y > r.y ? maxX : minX;
                     y = (float) y(l, r, x);
 
-                    if (y == sy) { //nastane velmi nepravdepodobne, je to mozne
+                    if (y == sy) { 
                         for (int j = 0; j != 4; ++j) {
                             Tuple2f c = points[j];
                             if (c.x == x && c.y == y) {
@@ -200,7 +200,7 @@ public class SingletonVD {
 
             for (int i = 0; i != 4; ++i) {
                 if (validCorners[i]) {
-                    Tuple2f corner = points[i]; //suradnice rohu
+                    Tuple2f corner = points[i]; 
 
                     double x = corner.x;
                     double y = corner.y;
@@ -245,7 +245,7 @@ public class SingletonVD {
 
     private void quicksortPoly(final int low, final int high) {
         int i = low, j = high;
-        double pivot = comparer[low + ((high - low) >> 1)]; // Get the pivot element from the middle of the list
+        double pivot = comparer[low + ((high - low) >> 1)]; 
         while (i <= j) {
             while (comparer[i] < pivot) {
                 i++;
@@ -279,7 +279,7 @@ public class SingletonVD {
      */
     private void quicksort(final int low, final int high) {
         int i = low, j = high;
-        double pivot = comparer[low + ((high - low) >> 1)]; // Get the pivot element from the middle of the list
+        double pivot = comparer[low + ((high - low) >> 1)]; 
         while (i <= j) {
             while (comparer[i] < pivot) {
                 i++;
@@ -329,9 +329,9 @@ public class SingletonVD {
             Tuple2f v = this.ar[i];
             comparer[i] = SIN * v.x + COS * v.y;
         }
-        quicksort(0, size - 1); //zotriedi body podla transformacie (transformacia osetruje specialne nepravdepodobne pripady)
+        quicksort(0, size - 1); 
         
-        /* //pre bakalarku ukazka fungovania osetrenia sialenych vstupov (mozno to tam ani pisat nebudes, lebo tazko zistit preco to robi)
+        /* 
         Arrays.sort(f, new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -357,7 +357,7 @@ public class SingletonVD {
             Edge left = edges[Edge.index(l.i, v)];
             left.init();
 
-            //ten hull zachadza za roh, to je nejaka kktina
+            
             for (Hull k = l; k != r; k = k.prev) {
                 int lp = k.i;
                 int rp = k.prev.i;
@@ -366,7 +366,7 @@ public class SingletonVD {
                 addTriangle(left, right, edges[Edge.index(lp, rp)], lp, rp, v);
                 left = right;
             }
-            if (r == l && hull.prev != hull) { //duplicitna linia v uvodu pri prazdnej triangulacii - vsetky body su na jednej priamke
+            if (r == l && hull.prev != hull) { 
                 Hull duplicitny = new Hull(hull.i);
                 Hull novy = new Hull(v, duplicitny, hull);
                 duplicitny.next = hull.next;
@@ -389,18 +389,18 @@ public class SingletonVD {
         Triangle opposite = edges[Edge.index(a, b)].get(t);
         Tuple2f va = ar[a];
         Tuple2f vb = ar[b];
-        boolean bx = va.x > vb.x; //na rovnosti nezalezi - ak nastane rovnost, kontroluje sa len 1 rozmer (x) a ten sa vzdy trafi do stredu, takze obe podmienky ohranicujuce budu false
-        boolean by = va.y > vb.y; //na rovnosti nezalezi - ak nastane rovnost, kontroluje sa len 1 rozmer (y)
+        boolean bx = va.x > vb.x; 
+        boolean by = va.y > vb.y; 
         if (opposite != null) {
             float x = (float) opposite.dX;
             float y = (float) opposite.dY;
-            if (bx && y <= minY || !bx && y >= maxY || by && x >= maxX || !by && x <= minX) { //vlozim rovnost - to mi zaruci, ze pri spracovani boundaries nemusim riesit duplicity
+            if (bx && y <= minY || !bx && y >= maxY || by && x >= maxX || !by && x <= minX) { 
                 int center = opposite.get(a, b);
                 addBoundary(a, center, opposite);
                 addBoundary(center, b, opposite);
                 return;
             }
-            //ak sa nachadzaju na hrane, tak je to v poriadku - voronoi osetri duplicity
+            
         }
         boundaries[boundariesCount++] = b;
     }
@@ -423,7 +423,7 @@ public class SingletonVD {
     ) {
         Triangle triangle = centerEdge.get();
         if (triangle == null || !triangle.inside(ar[v])) {
-            //efektivne aplokuje triangle (pouziva stare referencie)
+            
             Triangle newTriangle = triangles[triangC++];
             newTriangle.init(l, r, v, ar, triangle);
             leftEdge.add(newTriangle);
@@ -437,12 +437,12 @@ public class SingletonVD {
             center2.remove(triangle);
             centerEdge.init();
 
-            //pretoci hranu (staru poziciu netreba nulovat), taktiez redukcia alokacie objektu Edges neovplivnuje vykon nijakym sposobom
+            
             Edge newCenterEdge = edges[Edge.index(c, v)];
             newCenterEdge.init();
 
-            //vymaze triangle - robi to efektivnym sposobom, ktory minimalizuje (uplne z dlhodobeho hladiska uplne eliminuje alokaciu pamate)
-            //vymaze triangle na indexi i - vymeni ho s poslednym trianglom
+            
+            
             int i = triangle.index;
             Triangle deleted = triangles[i];
             Triangle t = triangles[i] = triangles[--triangC];
@@ -450,9 +450,9 @@ public class SingletonVD {
             deleted.index = triangC;
             t.index = i;
 
-            //rekurzivne volanie na novovzniknute trojuholniky
-            addTriangle(leftEdge, newCenterEdge, center1, l, c, v); //hrana medzi novymi trojuholnikmi
-            addTriangle(newCenterEdge, rightEdge, center2, c, r, v); //rekurzivne volanie
+            
+            addTriangle(leftEdge, newCenterEdge, center1, l, c, v); 
+            addTriangle(newCenterEdge, rightEdge, center2, c, r, v); 
         }
     }
 
@@ -485,7 +485,7 @@ public class SingletonVD {
         double vx = b.x - a.x;
         double vy = b.y - a.y;
         double x = vx * vx;
-        double cos = x / (x + vy * vy); //neni to linearne vzhladom na uzol - kvoli optimalizacii sa odstranila odmocnina, ale to nevadi
+        double cos = x / (x + vy * vy); 
         return vx > 0 ? vy > 0 ? 3 + cos : 1 - cos : vy > 0 ? 3 - cos : 1 + cos;
     }
 

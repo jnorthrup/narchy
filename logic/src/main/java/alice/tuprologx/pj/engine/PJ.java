@@ -87,7 +87,7 @@ public class PJ implements MethodHandler {
     @Override
     public Object invoke(Object receiver, Method method, Method proceed, Object[] args) throws IllegalAccessException, IllegalArgumentException, java.lang.reflect.InvocationTargetException, ClassNotFoundException, alice.tuprolog.InvalidTheoryException {
         if (method.getDeclaringClass().equals(PrologObject.class)) {
-            return invokeInternal(receiver, method, args); //dispatch PrologObject interface calls!
+            return invokeInternal(receiver, method, args); 
         }
         if (method.getAnnotation(PrologMethod.class) == null) {
             return proceed.invoke(receiver, args);
@@ -101,12 +101,12 @@ public class PJ implements MethodHandler {
         Object result = null;
         try {
 
-        //some useful objects for dispatching the method call
+        
         PrologObject po = (PrologObject)receiver;
         PrologMetaClass metaClass = getMetaClass(receiver);
-        Theory class_t = metaClass.getTheory();//classTheory(receiver.getClass());            
+        Theory class_t = metaClass.getTheory();
         
-        //PrologMetaField[] metaFields = metaClass.getPrologFields();
+        
         PrologInvocationContext ctx = new PrologInvocationContext(method, args);        
         /* theory = class_theory + method_theory + fields_theories */
         WithTermifiable withTermifiable = metaClass.getJavaClass().getAnnotation(WithTermifiable.class);
@@ -142,12 +142,12 @@ public class PJ implements MethodHandler {
         if (t != null)
             engine().addTheory(t);
         
-        //System.out.println(engine.getTheory().marshal());
-        //dispatch the Proog method call to a suitable PrologInvocationContext object
+        
+        
         result = ctx.dispatch(engine(),args);
     }
     finally {
-        //FIXME: should remove engine when not needed!
+        
     }
         return result;
     }
@@ -201,7 +201,7 @@ public class PJ implements MethodHandler {
     }
     
     public static alice.tuprolog.Struct registerJavaObject(Object o) {
-        //return engine.registerJavaObject(o);        
+        
         try {
             return engine().getPJLibrary().register(o);
         }
@@ -211,7 +211,7 @@ public class PJ implements MethodHandler {
     }
     
     public static Object getRegisteredJavaObject(alice.tuprolog.Struct t) {
-        //return engine.getJavaObject(t); 
+        
         try {
             Object obj = engine().getPJLibrary().getRegisteredObject(t);
             return obj == null ? engine().getPJLibrary().getRegisteredDynamicObject(t) : obj;

@@ -76,58 +76,58 @@ public interface NAct {
         });
     }
 
-//    /**
-//     * latches to either one of 2 states until it shifts to the other one. suitable for representing
-//     * push-buttons like keyboard keys. by default with no desire the state is off.  the 'on' and 'off'
-//     * procedures will be called only as necessary (when state changes).  the off procedure will not be called immediately.
-//     * its initial state will remain indetermined until the first feedback is generated.
-//     */
-//    default void actionToggleBi(@NotNull Term t, @NotNull Runnable on, @NotNull Runnable off) {
-//        //float THRESH = 0.5f;
-////        GoalActionConcept m = new GoalActionConcept(s, this, (b, d) -> {
-////            boolean next = d != null && d.freq() > THRESH;
-////            return toggle(d, on, off, next);
-////        });
-//
-//        //m.resolution(0.5f);
-//        float deadZoneFreqRadius = 1f / 6;
-//
-//        final boolean[] last = {false};
-//        actionBipolar(t, (float f) -> {
-//
-//            //radius of center dead zone; diameter = 2x this
-//
-//            if (f > deadZoneFreqRadius) {
-//                on.run();
-//                last[0] = true;
-//                return 1f;
-//            } else if (f < -deadZoneFreqRadius) {
-//                off.run();
-//                last[0] = false;
-//                return -1f;
-//            } else {
-//                return last[0] ? 1f : -1f;
-//            }
-//        });
-//        //m.resolution(1f);
-//        //return addAction(m);
-//    }
 
-//    /** softmax-like signal corruption that emulates PWM (pulse-width modulation) modulated by desire frequency */
-//    @Nullable default ActionConcept actionTogglePWM(@NotNull Compound s, @NotNull Runnable on, @NotNull Runnable off) {
-//        ActionConcept m = new GoalActionConcept(s, this, (b, d) -> {
-//            float df = d != null ? d.freq() : 0.5f;
-//            boolean corrupt = nar().random().nextFloat() > Math.abs(df - 0.5f) * 2f;
-//
-//            boolean next = df > 0.5f;
-//            if (corrupt) next = !next;
-//
-//            return toggle(on, off, next);
-//        });
-//
-//        actions().add(m);
-//        return m;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Nullable
     default Truth toggle(@Nullable Truth d, @NotNull Runnable on, @NotNull Runnable off, boolean next) {
@@ -141,7 +141,7 @@ public interface NAct {
         }
 
         return $.t(freq,
-                //d!=null ? d.conf() : nar().confMin.floatValue());
+                
                 nar().confDefault(BELIEF) /*d.conf()*/);
     }
 
@@ -161,16 +161,16 @@ public interface NAct {
      * initial state is neutral.
      */
     default GoalActionAsyncConcept[] actionTriState(@NotNull Term cc, @NotNull IntPredicate i) {
-        //final int[] state = {0};
-        //new GoalActionConcept(cc, this, (b, d) -> {
+        
+        
         GoalActionAsyncConcept[] g = actionBipolar(cc, true, (float f) -> {
 
             f = f / 2f + 0.5f;
 
-            //radius of center dead zone; diameter = 2x this
+            
             float deadZoneFreqRadius =
                     1 / 6f;
-            //1/4f;
+            
             int s;
             if (f > 0.5f + deadZoneFreqRadius)
                 s = +1;
@@ -181,11 +181,11 @@ public interface NAct {
 
             if (i.test(s)) {
 
-                //            int curState = state[0];
-                //            state[0] = Math.min(Math.max(curState + deltaState, -1), +1);
-                //
-                //            //float f = curState != state[0] ? (deltaState > 0 ? 1f : 0f) : 0.5f /* had no effect */;
-                switch (s) { //state[0]) {
+                
+                
+                
+                
+                switch (s) { 
                     case -1:
                         return -1f;
                     case 0:
@@ -199,9 +199,9 @@ public interface NAct {
             }
 
             return 0f;
-            //return Float.NaN;
+            
         });
-        float res = 0.5f; //0.0, 0.5, 1.0
+        float res = 0.5f; 
         g[0].resolution.set(res);
         g[1].resolution.set(res);
         return g;
@@ -218,9 +218,9 @@ public interface NAct {
     default GoalActionConcept actionTriStateContinuous(@NotNull Term s, @NotNull IntPredicate i) {
 
         GoalActionConcept m = new GoalActionConcept(s, this, (b, d) -> {
-            //radius of center dead zone; diameter = 2x this
-            // 1f/4;
-            //1f/3f;
+            
+            
+            
 
 
             int ii;
@@ -239,7 +239,7 @@ public interface NAct {
 
             boolean accepted = i.test(ii);
             if (!accepted)
-                ii = 0; //HACK
+                ii = 0; 
 
             float f;
             switch (ii) {
@@ -258,7 +258,7 @@ public interface NAct {
 
             return $.t(f, nar().confDefault(BELIEF));
         });
-        //m.resolution.setValue(0.5f);
+        
 
         return addAction(m);
     }
@@ -303,12 +303,12 @@ public interface NAct {
             }
 
             return
-                    //d!=null ?
+                    
                     $.t(f,
-                            //d.conf()
+                            
                             nar().confDefault(BELIEF)
                     )
-                    //: null
+                    
                     ;
         });
         return addAction(m);
@@ -332,13 +332,13 @@ public interface NAct {
     }
 
     default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
-        //SUSPECT
-//        float thresh =
-//                //0.5f + Param.TRUTH_EPSILON;
-//                0.55f;
-//                //0.75f;
-//
-//        actionToggle(s, thresh, Float.NaN, 0f, () -> onChange.value(true), () -> onChange.value(false));
+        
+
+
+
+
+
+
 
         actionPushButton(s, onChange);
 
@@ -346,7 +346,7 @@ public interface NAct {
 
     default void actionPushReleaseButton(@NotNull Term t, @NotNull BooleanProcedure on) {
 
-        float thresh = 0.1f; // + nar().freqResolution.get()
+        float thresh = 0.1f; 
         action(t, (b, g) -> {
             float G = g != null ? g.expectation() : 0.0f;
             boolean positive;
@@ -401,7 +401,7 @@ public interface NAct {
     }
     default void actionPushButton(@NotNull Term t, FloatSupplier thresh, @NotNull BooleanToBooleanFunction on) {
 
-        //0.5f;
+        
 
         GoalActionConcept b = actionUnipolar(t, true, (x) -> 0, (f) -> {
             boolean posOrNeg = f >= thresh.asFloat();
@@ -409,76 +409,76 @@ public interface NAct {
         });
         b.resolution.set(1f);
 
-//        float thresh =
-//                //0.5f + Param.TRUTH_EPSILON;
-//                0.6f;
-//                //0.75f;
-//                //0.6f;
-//        actionToggle(s, thresh, 0, 0f, () -> onChange.value(true), () -> onChange.value(false));
+
+
+
+
+
+
     }
-//
-//    @Nullable
-//    default ActionConcept actionToggleRapid(@NotNull Compound s, @NotNull BooleanProcedure onChange, int minPeriod) {
-//        return actionToggleRapid(s, () -> onChange.value(true), () -> onChange.value(false), minPeriod);
-//    }
-//
-//    /**
-//     * rapid-fire pushbutton with a minPeriod after which it is reset to off, allowing
-//     * re-triggering to ON while the true state remains enabled
-//     * <p>
-//     * TODO generalize to actionPWM (pulse width modulation) with controllable reset period (ex: by frequency, or conf etc)
-//     */
-//    @Nullable
-//    default ActionConcept actionToggleRapid(@NotNull Compound term, @NotNull Runnable on, @NotNull Runnable off, int minPeriod) {
-//
-//        if (minPeriod < 1)
-//            throw new UnsupportedOperationException();
-//
-//        final long[] reset = {Tense.ETERNAL}; //last enable time
-//        final int[] state = {0}; // 0: unknown, -1: false, +1: true
-//
-//        ActionConcept m = new GoalActionConcept(term, this, (b, d) -> {
-//
-//            boolean next = d != null && d.freq() >= 0.5f;
-//
-//            float alpha = nar().confDefault(BELIEF);
-//            int v;
-//            int s;
-//            if (!next) {
-//                reset[0] = Tense.ETERNAL;
-//                s = -1;
-//                v = 0;
-//            } else {
-//
-//                long lastReset = reset[0];
-//                long now = nar().time();
-//                if (lastReset == Tense.ETERNAL) {
-//                    reset[0] = now;
-//                    s = -1;
-//                } else {
-//                    if ((now - lastReset) % minPeriod == 0) {
-//                        s = -1;
-//                    } else {
-//                        s = +1;
-//                    }
-//                }
-//                v = 1;
-//            }
-//
-//            if (state[0] != s) {
-//                if (s < 0)
-//                    off.run();
-//                else
-//                    on.run();
-//                state[0] = s;
-//            }
-//
-//            return $.t(v, alpha);
-//        });
-//
-//        actions().add(m);
-//        return m;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * the supplied value will be in the range -1..+1. if the predicate returns false, then
@@ -507,10 +507,10 @@ public interface NAct {
 
     default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
         return actionBipolarFrequencyDifferential(s, fair, false, update);
-        //actionBipolarExpectation(s, update);
-        //actionBipolarExpectationNormalized(s, update);
-        //actionBipolarGreedy(s, update);
-        //actionBipolarMutex3(s, update);
+        
+        
+        
+        
     }
 
     default void actionBipolarSteering(@NotNull Term s, FloatConsumer act) {
@@ -528,32 +528,32 @@ public interface NAct {
             return !Util.equals(a, b, Float.MIN_NORMAL);
         });
 
-//        actionUnipolar($.p($.the("\"*\""), s), (u)->{
-//            amp[0] =
-//                    u;
-//                    //Math.max(u-0.5f, 0);
-//            return u;
-//        });
-//        actionBipolar($.p($.the("\"+-\""), s), (xy)->{
-//            act.accept(xy * amp[0]);
-//            return xy;
-//        });
+
+
+
+
+
+
+
+
+
+
     }
 
     default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, boolean latchPreviousIfUndecided, @NotNull FloatToFloatFunction update) {
 
         Term pt =
-                //$.p(s, PLUS);
+                
                 $.inh(s, PLUS);
-        //$.prop(s,PLUS);
-        //$.p(s, ZeroProduct);
-        //$.p(s,$.the("\"+\""));
+        
+        
+        
         Term nt =
-                //$.p(s, NEG);
+                
                 $.inh(s, NEG);
-        //$.prop(s, NEG);
-        //$.p(ZeroProduct, s);
-        //$.p(s,$.the("\"-\""));
+        
+        
+        
 
         final float g[] = new float[2];
         final float e[] = new float[2];
@@ -562,29 +562,29 @@ public interface NAct {
 
         final float[] lastX = {0};
 
-        GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2]; //hack
+        GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2]; 
 
         @NotNull BiConsumer<GoalActionAsyncConcept, Truth> u = (action, gg) -> {
 
 
             NAR n = nar();
             long now = n.time();
-//            long prevUpdate = lastUpdate[0];
+
             if (now != lastUpdate[0]) {
                 lastUpdate[0] = now;
-                CC[0] = CC[1] = null; //reset
+                CC[0] = CC[1] = null; 
             }
 
 
-//            float freqEps = n.freqResolution.floatValue();
+
             float confMin = n.confMin.floatValue();
-//            float eviMin = c2wSafe(confMin);
+
             float feedbackConf =
                     n.confDefault(BELIEF);
-            //w2c(c2w(n.confDefault(BELIEF))/2f); //fairly shared to sum to default
-            // n.confDefault(BELIEF);
-            // n.confDefault(GOAL);
-            //confMin * ...;
+            
+            
+            
+            
 
 
             boolean p = action.term().equals(pt);
@@ -592,18 +592,18 @@ public interface NAct {
             CC[ip] = action;
             g[ip] = gg != null ?
                     gg.freq()
-                    //gg.expectation()
+                    
                     :
-                    //0f;
+                    
                     Float.NaN;
             e[ip] = gg != null ?
                     gg.evi()
-                    //gg.conf()
+                    
                     :
                     0f;
 
 
-            float x; //-1..+1
+            float x; 
 
             boolean curious;
             if (CC[0] != null && CC[1] != null /* both ready */) {
@@ -624,10 +624,10 @@ public interface NAct {
                 float cur = curiosity().floatValue();
                 if (cur > 0 && rng.nextFloat() <= cur) {
                     x = (rng.nextFloat() - 0.5f) * 2f;
-//                    float curiEvi =
-//                            //c2w(n.confDefault(BELIEF));
-//                            //eviMin*2;
-//                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Util.mean(c[0], c[1])); //match desire conf, min=2*minConf
+
+
+
+
 
                     e[0] = e[1] = feedbackConf;
                     coherence = 1f;
@@ -645,32 +645,32 @@ public interface NAct {
                     } else {
 
 
-//                        //expectation
-//                        float g0 = g[0]-0.5f;
-//                        float g1 = g[1]-0.5f;
-//                        df = 2f * ((g0) - (g1));
-//                            // /Math.max(Math.abs(g0), Math.abs(g1));
-
-                        //frequency -======================
-
-                        //A. subtraction
-                        x = ((g[0] - g[1])); //subtract
-
-                        //B. difference, like the truth func
-                        //df =  g[0] >= g[1] ?  (g[0] * (1f-g[1])) : -(g[1] * (1f-g[0]));
 
 
-                        //experimental: lessen by a factor of how equally confident each goal is
+
+
+
+
+                        
+
+                        
+                        x = ((g[0] - g[1])); 
+
+                        
+                        
+
+
+                        
                         if (fair) {
-                            //fully fair
+                            
                             x *= coherence;
-                            //x *= Math.sqrt(coherence); //less sharp than linear
-                            //semi-fair
-                            //df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
+                            
+                            
+                            
                         }
-                        //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
-                        //df *= Util.sqr(eMin / eMax); //more cautious
-                        //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);
+                        
+                        
+                        
                     }
 
 
@@ -680,15 +680,15 @@ public interface NAct {
 
                 lastX[0] = x;
 
-                float y = update.valueOf(x); //-1..+1
-                //System.out.println(x + " " + y);
+                float y = update.valueOf(x); 
+                
 
 
-                //w2c(Math.abs(y) * c2w(restConf));
+                
                 PreciseTruth Nb, Ng, Pb, Pg;
 
                 if (y == y) {
-                    //y: (-1..+1)
+                    
                     float yp, yn;
                     if (Math.abs(y) >= n.freqResolution.floatValue()) {
                         yp = 0.5f + y / 2f;
@@ -697,79 +697,79 @@ public interface NAct {
                         yp = yn = 0.5f;
                     }
 
-//                    float yp = 0.5f + y/2f;
-//                    float yn = 1f - yp;
+
+
                     float pbf = yp;
                     float nbf = yn;
                     Pb = $.t(pbf, feedbackConf);
                     Nb = $.t(nbf, feedbackConf);
-//                    float goalEvi =
-//                            eviMin;
-//                    //max(eviMin, max(e[0], e[1]));
-//                    Pg = curious || e[0] == 0 ? new PreciseTruth(yp, goalEvi, false) : null;
-//                    Ng = curious || e[1] == 0 ? new PreciseTruth(yn, goalEvi, false) : null;
 
 
-//                    float confBase = confMin*4; //~ alpha, learning rate
-//                    float fThresh = Float.MIN_NORMAL;
-//                    float yp = y > +fThresh ? Util.lerp(+y, confBase, feedbackConf) : confBase;
-//                    float yn = y < -fThresh ? Util.lerp(-y, confBase, feedbackConf) : confBase;
-//                    Pb = $.t(y > +fThresh ? 1 : 0, y > +fThresh ? yp : feedbackConf - yp);
-//                    Nb = $.t(y < -fThresh ? 1 : 0, y < -fThresh ? yn : feedbackConf - yn);
-//                    //Pg = curious || e[0] == 0 ? new PreciseTruth(1, Util.lerp(+y, confMin2, feedbackConf)) : null;
-//                    Pg = null;
-//                    //Ng = curious || e[1] == 0 ? new PreciseTruth(1, Util.lerp(-y, confMin2, feedbackConf)) : null;
-//                    Ng = null;
 
 
-//                    float fThresh = nar().freqResolution.floatValue();
-//                    int sign = (y > fThresh ? +1 : (y < -fThresh ? -1 : 0));
-//
-//                    float feedConf =
-//                            w2cSafe(c2wSafe(goalConf)/2f); //half/half
-//                            //goalConf;
-//                            //Math.max(confMin, goalConf * coherence);
-//                    switch (sign) {
-//                        case +1:
-//                            //Pb = $.t(1f, Util.lerp(+y, confBase, feedbackConf));
-//                            Pb = $.t(y/2f + 0.5f, feedConf);
-//                            Nb =
-//                                    //null;
-//                                    $.t(0, feedConf);
-//                            break;
-//                        case -1:
-//                            Pb =
-//                                    //null;
-//                                    $.t(0, feedConf);
-//
-//                            Nb = $.t(-y/2f + 0.5f, feedConf);
-//                            break;
-//                        case 0:
-//                            //Pb = Nb = null; //no signal
-//                            Pb = Nb = $.t(0, feedConf);
-//                                    //Math.max(confMin, feedConf);
-//                                    //w2cSafe(c2wSafe(feedConf)/2f))); //zero
-//                            break;
-//                        default:
-//                            throw new UnsupportedOperationException();
-//                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     Pg = null;
                     Ng = null;
 
 
-//                    if (curious) {
-//                        e[0] = e[1] = 0; //reset to get full evidence override
-//                    }
-//                    float g0 = eviMax - e[0];
-//                    Pg = g0 >= eviMin ? new PreciseTruth(yp, g0, false) : null;
-//                    float g1 = eviMax - e[1];
-//                    Ng = g1 >= eviMin ? new PreciseTruth(yn, g1, false) : null;
+
+
+
+
+
+
+
                 } else {
                     Pb = Nb = Pg = Ng = null;
                 }
 
 
-                //System.out.println(Pb + "," + Nb + " <- " + g[0] + ";" + c[0] + ", " + g[1] + ';' + c[1]);
+                
 
                 long lastFb = lastFeedback[0];
                 lastFeedback[0] = now;
@@ -786,7 +786,7 @@ public interface NAct {
 
         addAction(p);
         addAction(n);
-        //nar().believe($.inh(s, SECTe.the(PLUS, NEG)).neg(), Tense.Eternal);
+        
         CC[0] = p;
         CC[1] = n;
         return CC;
@@ -814,8 +814,8 @@ public interface NAct {
             if (bFreq == bFreq) {
                 float confFeedback =
                         nar().confDefault(BELIEF);
-                //d!=null ? d.conf() : ..
-                //nar().confMin.floatValue() * 2;
+                
+                
 
                 return $.t(bFreq, confFeedback);
             } else
@@ -830,19 +830,19 @@ public interface NAct {
     @NotNull
     default GoalActionConcept actionExpUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
         final float[] x = {0f}, xPrev = {0f};
-        //final FloatNormalized y = new FloatNormalized(()->x[0]);
+        
         return action(s, (b, d) -> {
             float o = (d != null) ?
-                    //d.freq()
+                    
                     d.expectation() - 0.5f
-                    : xPrev[0]; //0.5f /*Float.NaN*/;
+                    : xPrev[0]; 
             float ff;
             if (o >= 0f) {
-                //y.relax(0.9f);
-                //x[0] = o;
+                
+                
                 float fb = update.valueOf(o /*y.asFloat()*/);
                 if (fb != fb) {
-                    //f = returxPrev[0];
+                    
                     return null;
                 } else {
                     xPrev[0] = fb;

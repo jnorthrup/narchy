@@ -47,7 +47,7 @@ public class TruthAccumulator extends AtomicReference<double[]> {
     public void add(@Nullable Truth t) {
         double fe, e;
         if (t == null) {
-            e = fe = 0; //just record a zero
+            e = fe = 0; 
         } else {
             double f = t.freq();
             e = t.evi();

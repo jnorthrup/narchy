@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,10 +25,10 @@ import java.util.HashMap;
 
 public class Views {
 
-    // Contain all the opposite views.
+    
     private static final HashMap<IntVar, IntVar> oppositeViews = new HashMap<>();
 
-    // Contain all the offset views.
+    
     private static final HashMap<Pair<IntVar, Integer>, IntVar> offsetViews = new HashMap<>();
 
     public static IntVar opposite(IntVar x) {

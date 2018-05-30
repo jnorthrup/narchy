@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 11.11.2003 by RST.
+
 
 package jake2.game;
 
@@ -40,7 +40,7 @@ public class mmove_t {
 
 	public int firstframe;
 	public int lastframe;
-	public mframe_t frame[]; //ptr
+	public mframe_t frame[]; 
 	public EntThinkAdapter endfunc;
 	
 

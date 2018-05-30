@@ -8,7 +8,7 @@ import static java.lang.Math.min;
 /** An immutable inclusive longerval a..b implementation of LongInterval */
 public class Longerval implements LongInterval {
 
-	//public static final Interval INVALID = new Interval(-1,-2);
+	
 
 	public final long a;
 	public final long b;
@@ -73,7 +73,7 @@ public class Longerval implements LongInterval {
 
 	/** Does this start after other? NonDisjoint */
 	public boolean startsAfterNonDisjoint(Longerval other) {
-		return this.a>other.a && this.a<=other.b; // this.b>=other.b implied
+		return this.a>other.a && this.a<=other.b; 
 	}
 
 	/** Are both ranges disjoint? I.e., no overlap? */
@@ -114,13 +114,13 @@ public class Longerval implements LongInterval {
 	 */
 	public Longerval differenceNotProperlyContained(Longerval other) {
 		Longerval diff = null;
-		// other.a to left of this.a (or same)
+		
 		if ( other.startsBeforeNonDisjoint(this) ) {
 			diff = new Longerval(max(this.a, other.b + 1),
 							   this.b);
 		}
 
-		// other.a to right of this.a
+		
 		else if ( other.startsAfterNonDisjoint(this) ) {
 			diff = new Longerval(this.a, other.a - 1);
 		}
@@ -154,7 +154,7 @@ public class Longerval implements LongInterval {
 	}
 
 	public static long unionLength(long x1, long x2, long y1, long y2) {
-		//return new Interval(x1, x2).union(new Interval(y1, y2)).length();
+		
 		return max(x2, y2) - min(x1, y1);
 	}
 

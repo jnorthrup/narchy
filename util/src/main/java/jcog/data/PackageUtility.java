@@ -18,7 +18,7 @@ public enum PackageUtility {
 
     public static List<Class> getClasses(String pkgName, boolean innerClasses) throws ClassNotFoundException {
         List<Class> classes = new ArrayList<>();
-        // Get a File object for the package
+        
         File directory = null;
         String pkgPath;
         try {
@@ -34,7 +34,7 @@ public enum PackageUtility {
                     + ") does not appear to be a valid package");
         }
         if (directory.exists()) {
-            // Get the list of the files contained in the package
+            
             String[] files = directory.list();
             
             for (String file : files) {
@@ -43,7 +43,7 @@ public enum PackageUtility {
                     continue;
                 if (file.endsWith(".class")) {
                     
-                        // removes the .class extension 
+                        
                         classes.add(Class.forName(pkgName + '.'
                                 + file.substring(0, file.length() - 6)));
                     }
@@ -52,12 +52,12 @@ public enum PackageUtility {
                 }
             }
         }
-        //else {
+        
         if (!directory.exists()) {
-            // first clean it up in case wer on *nix system
+            
             String jarPath = directory.toString().replace("!/" + pkgPath, "")
                     .replace("file:", "");
-            // now clean up for windows
+            
             jarPath = jarPath.replace("!\\" + pkgPath.replace("/", "\\"), "")
                     .replace("file:", "");
             try {

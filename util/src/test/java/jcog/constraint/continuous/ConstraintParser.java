@@ -156,7 +156,7 @@ public class ConstraintParser {
                     tokenList.add(Character.toString(c));
                     break;
                 case ' ':
-                    // ignore space
+                    
                     break;
                 default:
                     stringBuilder.append(c);

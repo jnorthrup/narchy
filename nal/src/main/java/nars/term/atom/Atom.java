@@ -52,7 +52,7 @@ public class Atom extends AtomicConst implements The {
                 throw new RuntimeException("invalid " + Atom.class + " name \"" + id + "\": leading character imitates another operation type");
         }
 
-        //return id.intern();
+        
         return id;
     }
 
@@ -60,7 +60,7 @@ public class Atom extends AtomicConst implements The {
 
     public static boolean isValidAtomChar(char x) {
 
-        //TODO replace these with Symbols. constants
+        
         switch (x) {
             case ' ':
             case ARGUMENT_SEPARATOR:

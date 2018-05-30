@@ -47,20 +47,20 @@ public final class NoCommonSubtermConstraint extends RelationConstraint {
         int av = a.volume();
         int bv = b.volume();
         if (av == bv) {
-//            boolean invalid = recurse ?
-//                    a.containsRecursively(b, true, limit) ||
-//                            b.containsRecursively(a, true, limit) :
-//
-//                    a.containsRoot(b) || b.containsRoot(a);
-//            if (invalid)
-//                throw new RuntimeException("wtf");
-//            return invalid;
-            return false; //impossible for either to contain the other
+
+
+
+
+
+
+
+
+            return false; 
         } else {
-            //if one volume is smaller than the other we only need to test containment unidirectionally
+            
 
             if (av < bv) {
-                //swap
+                
                 Term c = a;
                 a = b;
                 b = c;
@@ -71,8 +71,8 @@ public final class NoCommonSubtermConstraint extends RelationConstraint {
                     a.containsRoot(b);
         }
     }
-    //commonSubtermsRecurse((Compound) B, C, true, new HashSet())
-    //commonSubterms((Compound) B, C, true, scratch.get())
+    
+    
 
 
 }

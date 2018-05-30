@@ -47,7 +47,7 @@ public class TensorMerge extends BatchArrayTensor {
     @Override
     public void update() {
         commit();
-        from.writeTo(func, data);//trigger any updates but using the iterator HACK, not:
+        from.writeTo(func, data);
     }
 
 

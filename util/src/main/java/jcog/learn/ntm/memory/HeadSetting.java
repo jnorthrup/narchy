@@ -34,7 +34,7 @@ public class HeadSetting
 
         addressingVector = new UVector(cellCount);
 
-        //focus by location - RESTRICTION IS THAT IT HAS TO BE > 1
+        
 
         final double[] addr = addressingVector.value;
 
@@ -44,9 +44,9 @@ public class HeadSetting
             sum +=
                     (addr[i] = Math.pow(sv[i].value, gammaIndex));
         }
-        //if (sum!=0) {
+        
             addressingVector.valueMultiplySelf(1.0/sum);
-        //}
+        
     }
 
     public HeadSetting(Unit gamma, int memoryColumnsN, ContentAddressing contentAddressing) {
@@ -97,7 +97,7 @@ public class HeadSetting
             }
             gradient = ((gradient * gammaIndex) / weightValue) * addrValue[i];
             weight.grad += gradient;
-            //******************************************************************
+            
             lns[i] = Math.log(weightValue);
             temps[i] = Math.pow(weightValue, gammaIndex);
         });

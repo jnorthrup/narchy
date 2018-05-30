@@ -61,7 +61,7 @@ public class DIBHandler extends TypeHandler implements ImageObserver {
 	}
 
 	public void handleData(AbstractRdpPacket data, int length, ClipInterface c) {
-		// System.out.println("DIBHandler.handleData");
+		
 		BMPToImageThread t = new BMPToImageThread(data, length, c);
 		t.start();
 	}

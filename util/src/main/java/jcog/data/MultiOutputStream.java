@@ -10,7 +10,7 @@ import java.io.OutputStream;
 
 /**
      * @author
-     * http://stackoverflow.com/questions/7987395/how-to-write-data-to-two-java-io-outputstream-objects-at-once
+     * http:
      */
 
 public class MultiOutputStream extends OutputStream {

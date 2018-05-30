@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 31.10.2003 by RST.
-// $Id: moveinfo_t.java,v 1.2 2004-08-20 21:29:58 salomo Exp $
+
+
 
 package jake2.game;
 
@@ -28,7 +28,7 @@ import jake2.util.QuakeFile;
 import java.io.IOException;
 
 public class moveinfo_t {
-	// fixed data
+	
 	float[] start_origin= { 0, 0, 0 };
 	float[] start_angles= { 0, 0, 0 };
 	float[] end_origin= { 0, 0, 0 };
@@ -45,7 +45,7 @@ public class moveinfo_t {
 
 	float wait;
 
-	// state data
+	
 	int state;
 	float[] dir= { 0, 0, 0 };
 

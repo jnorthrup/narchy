@@ -19,7 +19,7 @@ public class FilteredScalar extends DemultiplexedScalar {
 
     public FilteredScalar(FloatSupplier input, NAR nar, Pair<Term,FloatToFloatFunction>... filters) {
         super(input,
-                //$.disj
+                
                 CONJ.the
                     (Util.map(Pair::getOne, Term[]::new, filters)), nar);
 
@@ -36,16 +36,16 @@ public class FilteredScalar extends DemultiplexedScalar {
         nar.on(this);
     }
 
-//    public static FilteredScalar filter(@Nullable Term id,
-//                                       FloatSupplier input,
-//                                       NAR nar,
-//
-//                                       IntFunction<Term> filterTerm,
-//                                       FloatToFloatFunction... filters) {
-//        return new FilteredScalar(id, input, filters.length,
-//                (f) -> new Filter(f == 0 ? id : filterTerm.applyAsInt(f),
-//                input, filters[f], nar), nar);
-//    }
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public Iterator<Scalar> iterator() {
@@ -54,9 +54,9 @@ public class FilteredScalar extends DemultiplexedScalar {
 
     public static class Filter extends Scalar {
 
-        //TODO
-        //public float belief; //relative priority of generated beliefs
-        //public float goal; //relative priority of generated goals
+        
+        
+        
 
         Filter(Term id, FloatSupplier input, FloatToFloatFunction f, NAR nar) {
             super(id,

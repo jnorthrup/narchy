@@ -19,7 +19,7 @@ package jcog.grammar.parse.examples.engine;
  * 
  * <pre>
  * marriage(001, balthasar, grimelda, 14560512, 14880711);
- * // ... 
+ * 
  * marriage(257, kevin, karla, 19790623, present);
  * </pre>
  * 
@@ -40,7 +40,7 @@ package jcog.grammar.parse.examples.engine;
  * 
  * <pre>
  *     husband(Id, Hub) :- 
- *         marriage(Id, Hub, Anon, Anon, Anon); // wrong
+ *         marriage(Id, Hub, Anon, Anon, Anon); 
  * </pre>
  * 
  * </blockquote> This approach, while tempting, will not work because the

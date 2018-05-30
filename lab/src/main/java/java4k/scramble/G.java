@@ -5,9 +5,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-//import java.awt.RenderingHints;
 
-public class G extends Applet implements Runnable //Frame
+
+public class G extends Applet implements Runnable 
 {
     @Override
     public void start()
@@ -16,10 +16,10 @@ public class G extends Applet implements Runnable //Frame
     }
 
     @Override
-    public void run()// throws Exception
+    public void run()
     {
         try {
-        enableEvents( -1 ); // enable all events
+        enableEvents( -1 ); 
 
         BufferedImage screen = new BufferedImage(224, 256, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2 = (Graphics2D)screen.getGraphics();
@@ -29,7 +29,7 @@ public class G extends Applet implements Runnable //Frame
 
         final String[] s_levelData =
         {
-            // level 1 bottom
+            
             "\002\002\002\002\002\002\002\002\002\002\002\002\004\003\003\003" + 
             "\011\001\003\002\011\001\001\001\011\001\001\001\011\001\011\001" + 
             "\011\001\005\005\041\001\005\002\002\002\002\003\003\003\003\003" + 
@@ -52,10 +52,10 @@ public class G extends Applet implements Runnable //Frame
             "\004\002\031\001\011\001\001\001\003\003\003\005\031\001\002\002" + 
             "\002\004\002\002\002\005\002\004\003\003\003\003\003\003\003\003",
 
-            // level 1 top
+            
             "",
 
-            // level 2 bottom
+            
             "\003\001\001\003\031\001\003\001\001\002\002\002\002\002\001\005" + 
             "\004\003\005\004\003\003\001\003\003\002\002\002\002\003\003\002" + 
             "\003\003\002\003\002\004\002\002\002\002\003\002\001\003\003\002" + 
@@ -71,7 +71,7 @@ public class G extends Applet implements Runnable //Frame
             "\002\002\002\004\003\003\003\003\003\004\011\001\031\001\002\004" + 
             "\003\001\011\001\011\001\011\001\001\004\041\001\001\002\002\002",
 
-            // level 2 top
+            
             "\003\001\001\003\001\001\003\001\001\003\003\002\003\003\001\003" + 
             "\001\002\002\002\003\003\002\003\003\002\003\002\002\002\003\002" + 
             "\002\002\003\003\003\002\002\002\003\003\002\002\002\003\003\002" + 
@@ -87,7 +87,7 @@ public class G extends Applet implements Runnable //Frame
             "\002\002\002\002\001\001\001\001\001\001\001\001\001\001\001\001" + 
             "\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\002",
 
-            // level 3 bottom
+            
             "\001\003\003\003\011\001\002\002\005\002\002\002\003\003\003\003" + 
             "\003\001\011\001\031\001\011\001\002\002\003\003\002\002\004\003" + 
             "\031\001\002\002\002\002\003\002\003\003\003\003\011\001\001\003" + 
@@ -103,10 +103,10 @@ public class G extends Applet implements Runnable //Frame
             "\002\002\003\003\002\002\004\003\031\001\002\002\002\002\003\002" + 
             "\003\003\003\003\001\001\001\003\031\001\041\001\001\002\002\002",
 
-            // level 3 top
+            
             "",
 
-            // level 4 bottom
+            
             "\001\211\001\001\001\001\001\001\001\171\011\211\011\001\001\161" + 
             "\011\211\011\241\001\221\011\241\001\221\011\001\001\201\011\001" + 
             "\031\161\011\001\011\141\001\001\031\121\011\001\001\131\001\001" + 
@@ -130,10 +130,10 @@ public class G extends Applet implements Runnable //Frame
             "\011\251\001\211\011\251\001\231\011\211\001\001\001\001\001\001" + 
             "\001\001",
 
-            // level 4 top
+            
             "",
 
-            // level 5 bottom
+            
             "\001\211\031\001\031\001\001\001\001\001\001\231\031\001\001\211" + 
             "\001\001\001\001\001\001\001\001\001\001\031\001\031\001\031\001" + 
             "\031\001\001\001\001\251\001\001\001\001\001\001\001\001\001\111" + 
@@ -150,7 +150,7 @@ public class G extends Applet implements Runnable //Frame
             "\001\001\001\001\001\001\001\001\001\231\001\211\001\001\001\001" + 
             "\001\041",
 
-            // level 5 top
+            
             "\001\251\001\001\001\271\001\001\001\001\001\001\001\001\001\001" + 
             "\001\001\001\001\001\251\001\001\001\001\001\001\001\001\001\301" + 
             "\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001" + 
@@ -167,13 +167,13 @@ public class G extends Applet implements Runnable //Frame
             "\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001\001" + 
             "\001\311",
 
-            // level 6 bottom
+            
             "\001\001\001\131\001\231\001\131\001\041\001\001\001\121\001\001" + 
             "\001\001\001\041\001\241\001\001\001\001\001\041\001\121\001\001" + 
             "\001\001\001\041\001\001\001\001\051\001\001\001\001\001\001\171" + 
             "\001\001\001\041\001\001\001\001",
 
-            // level 6 top
+            
             "",
         };
 
@@ -184,7 +184,7 @@ public class G extends Applet implements Runnable //Frame
         }
 
         int[] colorTable = new int[6];
-        //colorTable[0] = 0x00000000;
+        
         colorTable[1] = 0xffffffff;
         colorTable[2] = 0xffff0000;
         colorTable[3] = 0xff00def7;
@@ -391,36 +391,36 @@ public class G extends Applet implements Runnable //Frame
         int[] sibb = new int[N_IMG];
 
         String siData =
-            "\15\40\23\13\10" + // ship
+            "\15\40\23\13\10" + 
 
-            "\04\04\01\01\04" + // shot
+            "\04\04\01\01\04" + 
 
-            "\07\45\06\03\06" + // bomb h
-            "\03\45\04\04\06" + // bomb d
-            "\00\45\03\06\06" + // bomb v
+            "\07\45\06\03\06" + 
+            "\03\45\04\04\06" + 
+            "\00\45\03\06\06" + 
 
-            "\00\40\15\05\10" + // ship flame
-            "\40\22\16\17\10" + // explode
+            "\00\40\15\05\10" + 
+            "\40\22\16\17\10" + 
 
-            "\00\00\07\20\10" + // rocket
-            "\07\00\07\20\10" + // rocket flying
+            "\00\00\07\20\10" + 
+            "\07\00\07\20\10" + 
 
-            "\16\00\20\20\10" + // fuel
-            "\00\20\20\20\10" + // mystery
-            "\20\20\20\20\10" + // base
+            "\16\00\20\20\10" + 
+            "\00\20\20\20\10" + 
+            "\20\20\20\20\10" + 
 
-            "\36\00\14\07\10" + // saucer
-            "\40\42\16\11\10" + // meteor
+            "\36\00\14\07\10" + 
+            "\40\42\16\11\10" + 
 
-            "\56\40\10\10\10" + // g flat
-            "\56\20\10\10\10" + // g up
-            "\56\30\10\10\10" + // g down
-            "\56\00\10\10\10" + // g peak
-            "\56\10\10\10\10" + // g hole
+            "\56\40\10\10\10" + 
+            "\56\20\10\10\10" + 
+            "\56\30\10\10\10" + 
+            "\56\00\10\10\10" + 
+            "\56\10\10\10\10" + 
 
-            "\56\42\10\10\10" + // gt flat
-            "\46\10\10\10\10" + // gt up
-            "\36\10\10\10\10";  // gt down
+            "\56\42\10\10\10" + 
+            "\46\10\10\10\10" + 
+            "\36\10\10\10\10";  
 
         int idx = 0;
         for( int i = 1; i < N_IMG; i++ )
@@ -430,7 +430,7 @@ public class G extends Applet implements Runnable //Frame
             int w = siData.charAt(idx++);
             int h = siData.charAt(idx++);
             int b = siData.charAt(idx++) - 6;
-            //System.out.println("x=" + x + " y=" + y + " w=" + w + " h=" + h );
+            
 
             siox[i] = -w / 2;
             sioy[i] = -h / 2;
@@ -482,7 +482,7 @@ public class G extends Applet implements Runnable //Frame
         int     bombCount = 0;
         boolean hitBase = false;
 
-//      long    start   = System.currentTimeMillis();
+
         long    start   = System.nanoTime();
         int     count = 0;
         for(;;)
@@ -565,7 +565,7 @@ public class G extends Applet implements Runnable //Frame
                     int c = x / 8;
                     if( c >= levelBotData.length() )
                     {
-                        // next level.
+                        
                         if( level < 5 )
                             level++;
                         levelBotData += s_levelData[level * 2];
@@ -578,7 +578,7 @@ public class G extends Applet implements Runnable //Frame
                     int sceneryB = (bch & 7) - 1 + G_FLAT;
                     int sceneryT = (tch & 7) - 1 + GT_FLAT;
 
-                    //System.out.println( "tch=" + tch + " sT=" + sceneryT );
+                    
 
                     int X = x + 28 * 8;
                     int YB = VIEW_BOT - sceneryBH * 8;
@@ -603,7 +603,7 @@ public class G extends Applet implements Runnable //Frame
                         addSprite( st, sx, sy, sd, sceneryB, X + 4, YB - 4 );
                     else
                         addSprite( st, sx, sy, sd, sceneryB, X + 4, YB + 4 );
-//                  System.out.println( "sTH=" + sceneryTH + " sT=" + sceneryT );
+
                     if( sceneryT == GT_DOWN )
                         addSprite( st, sx, sy, sd, GT_DOWN, X + 4, YT + 12 );
                     else
@@ -621,13 +621,13 @@ public class G extends Applet implements Runnable //Frame
     
                 if( level == 1 && x % 50 == 0 )
                 {
-                    addSprite( st, sx, sy, sd, SAUCER, x + 224, VIEW_MID );//125 );
+                    addSprite( st, sx, sy, sd, SAUCER, x + 224, VIEW_MID );
                 }
     
                 if( level == 2 && x % 15 == 0 )
                 {
                     addSprite( st, sx, sy, sd, METEOR, x + 224, (int)(VIEW_TOP + Math.random() * 135) );
-//                  addSprite( st, sx, sy, sd, METEOR, x + 224, VIEW_TOP + 135 );
+
                 }
 
                 x++;
@@ -637,11 +637,11 @@ public class G extends Applet implements Runnable //Frame
                     shipy++;
             }
     
-//          Graphics2D  g2 = (Graphics2D)bs.getDrawGraphics();
 
-            //g2.scale( 3, 3 );
 
-//          g2.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+            
+
+
 
             g2.setColor( new Color(1f, 1f, 0f) );
             g2.drawString( "SCORE " + String.valueOf(score) , 30, 10 );
@@ -659,7 +659,7 @@ public class G extends Applet implements Runnable //Frame
 
 /*
             g2.setColor( new Color(1f, 0f, 0f) );
-            //for( int i = 0; i < 29; i++ )
+            
             {
                 int c = x / 8 + i;
                 char ch = level1Data.charAt(c);
@@ -689,7 +689,7 @@ public class G extends Applet implements Runnable //Frame
             for( int i = st.length - 1; i >= 0; i-- )
             {
                 int t = st[i];
-                //System.out.println( "t[" + i + "]=" + t );
+                
                 if( t != 0 )
                 {
                     for( int j = 0; j < st.length; j++ )
@@ -698,14 +698,14 @@ public class G extends Applet implements Runnable //Frame
                         if( i == j || tj == 0 || t >= EXPLODE || tj <= EXPLODE )
                             continue;
 
-                        // hit test.
+                        
                         if( sx[i] + sibl[t]  > sx[j] + sibr[tj] ||
                             sx[j] + sibl[tj] > sx[i] + sibr[t]  ||
                             sy[i] + sibt[t]  > sy[j] + sibb[tj] ||
                             sy[j] + sibt[tj] > sy[i] + sibb[t] )
                             continue;
 
-                        // collision.
+                        
                         st[i] = t == SHOT ? 0 : EXPLODE;
                         sd[i] = 0;
 
@@ -817,7 +817,7 @@ public class G extends Applet implements Runnable //Frame
                         g2.drawImage( sii[SHIP_FLAME], shipx - 22, shipy - 2, null );
                     }
 
-                    //System.out.println( "t=" + t );
+                    
                     g2.drawImage( sii[t], sx[i] - x + siox[t], sy[i] + sioy[t], null );
 
                     if( t >= G_FLAT )
@@ -828,7 +828,7 @@ public class G extends Applet implements Runnable //Frame
                             g2.fillRect( sx[i] - x - 4, VIEW_TOP, 8, sy[i] - 4 - VIEW_TOP);
                     }
 
-                    if( sx[i] < x - 8 || sx[i] > x + 240 || sy[i] < VIEW_TOP )//|| sy[i] > VIEW_BOT )
+                    if( sx[i] < x - 8 || sx[i] > x + 240 || sy[i] < VIEW_TOP )
                         st[i] = 0;
                 }
             }
@@ -851,21 +851,21 @@ public class G extends Applet implements Runnable //Frame
                 g2.drawImage( sii[SHIP], i * 20 - 16, VIEW_BOT + 13, null );
             }
 
-            //g2.drawImage( sii[SHIP], shipx, shipy, null );
+            
 
-//          try { Thread.sleep( 10 ); } catch( Exception e ) {}
 
-//          final int FRAME_PERIOD  = 16;       // ms (~60 fps)
-            final int FRAME_PERIOD  = 16666667; // ns (~60 fps)
-//          final int FRAME_PERIOD  = 30000000; // ns (~60 fps)
-//          long    now = System.currentTimeMillis();
+
+
+            final int FRAME_PERIOD  = 16666667; 
+
+
             long    now = System.nanoTime();
             long elapsed = now - start;
             if( elapsed < -FRAME_PERIOD )
                 start = now;
             else
             {
-//              Thread.sleep( Math.max(0, FRAME_PERIOD - elapsed) );
+
                 try {
                     Thread.sleep( Math.max(0, (FRAME_PERIOD - elapsed) / 1000000) );
                 } catch( Exception e ) {}
@@ -884,8 +884,8 @@ public class G extends Applet implements Runnable //Frame
             if( !isActive() )
                 return;
 
-            //int[] f = null;
-            //int j = f[0];
+            
+            
 
             count++;
         }
@@ -931,11 +931,11 @@ public class G extends Applet implements Runnable //Frame
         if( e.getID() >= MouseEvent.MOUSE_FIRST &&
             e.getID() <= MouseEvent.MOUSE_LAST )
         {
-//          System.out.printf( "Mouse %s\n", e );
+
             m_mouseEvent = (MouseEvent)e;
         }*/
     }
 
     private final boolean[]           m_keysDown = new boolean[1024];
-    //private volatile MouseEvent m_mouseEvent;
+    
 }

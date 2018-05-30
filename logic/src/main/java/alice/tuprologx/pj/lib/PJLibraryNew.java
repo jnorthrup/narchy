@@ -58,19 +58,19 @@ public class PJLibraryNew extends OOLibrary {
 	@Override
     public String getTheory() {
 		return
-		//
-		// operators defined by the JavaLibrary theory
-		//
+		
+		
+		
 		":- op(800,xfx,'<-').\n" +
         ":- op(800,xfx,':=').\n" +
         ":- op(850,fy,'returns').\n" +
         ":- op(200,xfx,'as').\n" +
 		":- op(600,xfx,'.'). \n" +
-		//
-		// flags defined by the JavaLibrary theory
-		//
-		//":- flag(java_object_backtrackable,[true,false],false,true).\n" +
-		//
+		
+		
+		
+		
+		
 		"java_object_bt(ClassName,Args,Id):- java_object(ClassName,Args,Id).\n" +
 		"java_object_bt(ClassName,Args,Id):- destroy_object(Id).\n" +
         "new_object(ClassName,Args,Id):- prolog_class(ClassName), java_object_prolog(ClassName, Args, Id).\n" +
@@ -103,7 +103,7 @@ public class PJLibraryNew extends OOLibrary {
 		"java_object_string(Object,String):-    Object <- toString returns String.    \n";
 	}
 	
-	//----------------------------------------------------------------------------
+	
 
     public static boolean prolog_class_1(Term classname) {
         if (!classname.isAtomic())
@@ -376,7 +376,7 @@ public class PJLibraryNew extends OOLibrary {
 	 * set the field value of an object
 	 */
 	public boolean java_set_3(Term objId, Term fieldTerm, Term what) {
-		//System.out.println("SET "+objId+" "+fieldTerm+" "+what);
+		
 		what = what.term();
 		if (!fieldTerm.isAtomic() || what instanceof Var)
 			return false;
@@ -407,7 +407,7 @@ public class PJLibraryNew extends OOLibrary {
 				}
 			}
 			
-			// first check for primitive data field
+			
 			Field field = cl.getField(fieldName);
 			if (what instanceof NumberTerm) {
 				NumberTerm wn = (NumberTerm) what;
@@ -428,7 +428,7 @@ public class PJLibraryNew extends OOLibrary {
                     if (obj2 != null) {
                         field.set(obj, obj2);
                     } else {
-                        // consider value as a simple string
+                        
                         field.set(obj, what.toString());
                     }
                 }
@@ -501,7 +501,7 @@ public class PJLibraryNew extends OOLibrary {
 	 * get the value of the field
 	 */
 	public boolean java_get_3(Term objId, Term fieldTerm, Term what) {
-		//System.out.println("GET "+objId+" "+fieldTerm+" "+what);
+		
 		if (!fieldTerm.isAtomic()) {
 			return false;
 		}
@@ -534,10 +534,10 @@ public class PJLibraryNew extends OOLibrary {
 			
 			Field field = cl.getField(fieldName);
 			Class<?> fc = field.getType();
-			// work only with JDK 1.2
+			
 			field.setAccessible(true);
 			
-			// first check for primitive types
+			
 			if (fc.equals(Integer.TYPE) || fc.equals(Byte.TYPE)) {
 				int value = field.getInt(obj);
 				return unify(what, new NumberTerm.Int(value));
@@ -551,20 +551,20 @@ public class PJLibraryNew extends OOLibrary {
 				double value = field.getDouble(obj);
 				return unify(what, new NumberTerm.Double(value));
 			} else {
-				// the field value is an object
+				
 				Object res = field.get(obj);
 				return bindDynamicObject(what, res);
 			}
-			//} catch (ClassNotFoundException ex){
-			//    getEngine().warn("object of unknown class "+objId);
-			//ex.printStackTrace();
-			//    return false;
+			
+			
+			
+			
 		} catch (NoSuchFieldException ex) {
 			Prolog.warn("Field " + fieldName + " not found in class " + objId);
 			return false;
 		} catch (Exception ex) {
 			Prolog.warn("Generic error in accessing the field");
-			//ex.printStackTrace();
+			
 			return false;
 		}
 	}	
@@ -630,7 +630,7 @@ public class PJLibraryNew extends OOLibrary {
 					types[i] = java.lang.Float.TYPE;
 				}
 			} else if (term instanceof Struct) {
-				// argument descriptors
+				
 				Struct tc = (Struct) term;
 				if (tc.name().equals("as")) {
 					return parse_as(values, types, i, tc.subResolve(0), tc.subResolve(1));
@@ -657,7 +657,7 @@ public class PJLibraryNew extends OOLibrary {
 	 */
 	private boolean parseResult(Term id, Object obj) {
 		if (obj == null) {
-			//return unify(id,Term.TRUE);
+			
 			return unify(id, new Var());
 		}
 		try {
@@ -693,7 +693,7 @@ public class PJLibraryNew extends OOLibrary {
 			if (!(castWhat instanceof NumberTerm)) {
 				String castTo_name = alice.util.Tools.removeApostrophes(((Struct) castTo).name());
 				String castWhat_name = alice.util.Tools.removeApostrophes(castWhat.term().toString());
-				//System.out.println(castWhat_name+" "+castTo_name);
+				
 				if (castTo_name.equals("java.lang.String") &&
 						castWhat_name.equals("true")){
 					values[i]="true";
@@ -751,7 +751,7 @@ public class PJLibraryNew extends OOLibrary {
                             }
 							types[i] = Boolean.TYPE;
 						} else {
-							// conversion to array
+							
 							return false;
 						}
 					} else {

@@ -52,11 +52,11 @@ abstract public class Exec implements Executor {
                 ((ITask) t).run(nar);
             else if (t instanceof Runnable)
                 ((Runnable) t).run();
-            else //if (t instanceof Consumer)
+            else 
                 ((Consumer) t).accept(nar);
-//            else {
-//                throw new UnsupportedOperationException(t + " unexecutable");
-//            }
+
+
+
         } catch (Throwable e) {
             logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
         }
@@ -73,7 +73,7 @@ abstract public class Exec implements Executor {
         Activate[] pl = new Activate[1];
         fire(x -> {
             pl[0] = x;
-            return false; //just one
+            return false; 
         });
         return pl[0];
     }
@@ -121,7 +121,7 @@ abstract public class Exec implements Executor {
         /**
          * goal and goalSummary instances correspond to the possible MetaGoal's enum
          */
-        //void update(long time, int dur, FasterList<Cause> causes, float[] goal);
+        
 
         void update(NAR nar);
 

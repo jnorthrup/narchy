@@ -137,7 +137,7 @@ public class RdpApplet extends Applet {
             System.out.println("Stop-notifyAll");
         }
 
-        //notify();
+        
     }
 
     private boolean isSet(String parameter) {
@@ -162,7 +162,7 @@ public class RdpApplet extends Applet {
     private int genArgS(String name, String parameter, String[] args, int i) {
         String s = this.getParameter(parameter);
         if (s != null) {
-            //System.out.println("<PARAM name=\"" + parameter + "\" value=\"" + s + "\"> NAME=\"" + name + "\"");
+            
             if (!name.isEmpty()) {
                 args[i] = name;
                 i++;
@@ -221,10 +221,10 @@ class RdpThread extends Thread {
                 parentApplet.getAppletContext().showDocument(u);
             }
         } catch (RdesktopException e) {
-            // TODO Auto-generated catch block
+            
             e.printStackTrace();
         } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
+            
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             e.printStackTrace();
         }

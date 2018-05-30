@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 28.11.2003 by RST.
-// $Id: cmodel_t.java,v 1.2 2004-07-08 15:58:44 hzi Exp $
+
+
 
 package jake2.game;
 
@@ -27,6 +27,6 @@ public class cmodel_t
 {
 	public final float[] mins = { 0, 0, 0 };
 	public final float[] maxs = { 0, 0, 0 };
-	public final float[] origin = { 0, 0, 0 }; // for sounds or lights
+	public final float[] origin = { 0, 0, 0 }; 
 	public int headnode;
 }

@@ -25,19 +25,19 @@ import java.util.function.Consumer;
 import static spacegraph.util.math.v3.v;
 
 /**
- * https://en.wikipedia.org/wiki/Cuboid
+ * https:
  * Serves as a mount for an attached (forward-facing) 2D surface (embeds a surface in 3D space)
  */
 public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     @Nullable
     public Surface front;
-    static final float zOffset = 0.1f; //relative to scale
+    static final float zOffset = 0.1f; 
 
     @Nullable
     public Finger finger;
     private v3 mousePick;
-    //private float padding;
+    
 
     public Cuboid(X x, float w, float h) {
         this(x, null, w, h);
@@ -68,7 +68,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     public void setFront(Surface front) {
         synchronized (this) {
             this.front = front;
-            this.finger = null; //new Finger(this);
+            this.finger = null; 
             if (front != null) {
                 front.start(this);
             }
@@ -89,33 +89,33 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
         if (body != null) {
 
-            //rotate to match camera's orientation (billboarding)
+            
             Object d = body.data();
             if (d instanceof SimpleSpatial) {
-                //SimpleSpatial sd = (SimpleSpatial)d;
-                //Quat4f target = Quat4f.angle(-space.camFwd.x, -space.camFwd.y, -space.camFwd.z, 0);
-                //Quat4f target = new Quat4f();
+                
+                
+                
 
-                //sd.rotate( -space.camFwd.x, -space.camFwd.y, -space.camFwd.z, 0, 0.2f);
-
-//                com.jogamp.common.util.SyncedRingbuffer
-//                Transform bt = body.worldTransform;
-//                // TODO somehow use the object's local transformation ? sd.transform().getRotation(...);
-//                target.setAngle(
-//                        space.camFwd.x-bt.x,
-//                        space.camFwd.y - bt.y,
-//                        space.camFwd.z -bt.z,
-//                        (float) Math.PI
-//                );
-//
-//                target.normalize();
-//
+                
 
 
-//                sd.rotate(target, 0.2f); //new Quat4f());
-//                //System.out.println("  : " + sd.transform().getRotation(new Quat4f()));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             }
-//
+
             Surface s0 = super.onTouch(finger, body, r, buttons, space);
             if (s0 != null)
                 return s0;
@@ -131,12 +131,12 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
                 float frontZ = shape.z() / 2;
                 float zTolerance = frontZ / 4f;
 
-                if (Util.equals(localPoint.z, frontZ, zTolerance)) { //top surface only, ignore sides and back
+                if (Util.equals(localPoint.z, frontZ, zTolerance)) { 
 
                     this.mousePick = r.hitPointWorld;
 
                     this.finger = finger;
-                    //System.out.println(localPoint + " " + thick);
+                    
 
                     finger.pos.set(
                         localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
@@ -144,7 +144,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
                     Surface f = this.finger.on(front);
                     finger.update(buttons);
                     return f;
-                    //return mouseFront.update(null, localPoint.x, localPoint.y, buttons);
+                    
                 }
             } else {
 
@@ -167,25 +167,25 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
         if (front != null) {
 
-            //float p = this.padding;
+            
 
-            //gl.glPushMatrix();
+            
 
-            //float pp = 1f - (p / 2f);
-            //float pp = 1f;
+            
+            
 
             gl.glTranslatef(-0.5f, -0.5f, 0.5f + (shape instanceof SphereShape ? 5 : 0)+zOffset);
-            //gl.glScalef(pp, pp, 1f);
+            
 
-            //Transform t = transform();
-            //float tw = t.x;
-            //float th = t.y;
-            //gl.glDepthMask(false);
+            
+            
+            
+            
             float pixelScale = 1;
             front.render(gl, pixelScale, pixelScale, dtMS);
-            //gl.glDepthMask(true);
+            
 
-            //gl.glPopMatrix();
+            
         }
     }
 
@@ -193,16 +193,16 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     public void renderAbsolute(GL2 gl, int dtMS) {
         super.renderAbsolute(gl, dtMS);
 
-        //display pick location (debugging)
+        
         if (mousePick != null) {
             gl.glPushMatrix();
             gl.glTranslatef(mousePick.x, mousePick.y, mousePick.z);
             gl.glScalef(0.25f, 0.25f, 0.25f);
             gl.glColor4f(1f, 1f, 1f, 0.5f);
             gl.glRotated(Math.random() * 360.0, Math.random() - 0.5f, Math.random() - 0.5f, Math.random() - 0.5f);
-            //gl.glDepthMask(false);
+            
             Draw.rect(gl, -0.5f, -0.5f, 1, 1);
-            //gl.glDepthMask(true);
+            
             gl.glPopMatrix();
         }
     }
@@ -210,12 +210,12 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     @Override
     public void the(String key, @Nullable Object added, @Nullable Runnable onRemove) {
-        //TODO ignored
+        
     }
 
     @Override
     public Object the(String key) {
-        //TODO ignored
+        
         return null;
     }
 

@@ -24,6 +24,6 @@ public class CannotCloneWithoutCloneable {
 	public static void main(String args[]) throws Exception {
 		CannotCloneWithoutCloneable ccwc = new CannotCloneWithoutCloneable();
 
-		ccwc.clone(); // will throw an exception at run time
+		ccwc.clone(); 
 	}
 }

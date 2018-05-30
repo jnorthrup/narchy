@@ -95,15 +95,15 @@ public class GIF
       this.delays = new ArrayInt();
       this.totalTime = 0;
 
-      // Get stream to read the image
+      
       ImageInputStream imageInputStream = ImageIO.createImageInputStream(inputStream);
-      // Given the stream to the reader
+      
       GIF.GIFReader.setInput(imageInputStream, true, false);
 
-      // Read parameters
+      
       ImageReadParam imageReadParam = GIF.GIFReader.getDefaultReadParam();
 
-      // Initialization
+      
       ArrayList<JHelpImage> images = new ArrayList<JHelpImage>();
       JHelpImage cumulateImage = null;
       JHelpImage readImage;
@@ -114,21 +114,21 @@ public class GIF
       GIFImageMetadata imageMetadata;
       int disposalMethod = GIF.DISPOSE_METHOD_NONE;
 
-      // While there are one image to extract
+      
       while(oneMore == true)
       {
          try
          {
-            // Read actual image
+            
             readImage = JHelpImage.createImage(GIF.GIFReader.read(index, imageReadParam));
-            // Read actual informations
+            
             imageMetadata = (GIFImageMetadata) GIF.GIFReader.getImageMetadata(index);
 
-            // Get image position in the total image
+            
             x = imageMetadata.imageLeftPosition;
             y = imageMetadata.imageTopPosition;
 
-            // If this is first image, prepare the cumulative image
+            
             if(cumulateImage == null)
             {
                this.width = readImage.getWidth();
@@ -139,11 +139,11 @@ public class GIF
             readImage.getWidth();
             readImage.getHeight();
 
-            // Switch the method to do with the previous
+            
             switch(disposalMethod)
             {
-            // Over write the parcel on the cumulative image (over write also
-            // alpha)
+            
+            
                case GIF.DISPOSE_METHOD_RESTORE_BACKGROUND:
                case GIF.DISPOSE_METHOD_RESTORE_PREVIOUS:
                   cumulateImage.startDrawMode();
@@ -151,7 +151,7 @@ public class GIF
                   cumulateImage.endDrawMode();
                break;
 
-               // Just draw the image on the cumulative (alpha processing)
+               
                case GIF.DISPOSE_METHOD_NOT_DISPOSE:
                case GIF.DISPOSE_METHOD_NONE:
                default:
@@ -161,42 +161,42 @@ public class GIF
                break;
             }
 
-            // Get method to use for next image
+            
             disposalMethod = imageMetadata.disposalMethod;
 
-            // Create the final actual image
+            
             newImage = new JHelpImage(this.width, this.height);
             newImage.startDrawMode();
             newImage.drawImage(0, 0, cumulateImage, false);
             newImage.endDrawMode();
 
-            // Add the image
+            
             images.add(newImage);
             time = Math.max(1, imageMetadata.delayTime);
             this.delays.add(time);
             this.totalTime += time;
 
-            // Go to next image
+            
             index++;
          }
          catch(final Exception exception)
          {
-            // On problem, we have no more image
+            
             oneMore = false;
          }
       }
 
-      // Free memory
+      
       imageMetadata = null;
       cumulateImage = null;
       readImage = null;
       newImage = null;
 
-      // Get extracted images
+      
       this.images = new JHelpImage[images.size()];
       this.images = images.toArray(this.images);
 
-      // Free memory
+      
       images.clear();
       images = null;
       imageReadParam = null;

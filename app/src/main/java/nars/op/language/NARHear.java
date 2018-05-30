@@ -33,8 +33,8 @@ public class NARHear extends Loop {
     final static Atomic START = Atomic.the("start");
 
     private final NAR nar;
-    //private final Term[] context;
-    //private final Term[] contextAnonymous;
+    
+    
     private final List<Term> tokens;
     public final On onReset;
     private final Term context;
@@ -76,11 +76,11 @@ public class NARHear extends Loop {
         try {
             Narsese.the().tasks(msg, parsed, nar);
         } catch (Narsese.NarseseException ignored) {
-            //ignore and continue below
+            
         }
 
         if (!parsed.isEmpty() && errors.isEmpty()) {
-            //logger.debug("narsese: {}", parsed);
+            
             nar.input(parsed);
             return null;
         } else {
@@ -94,13 +94,13 @@ public class NARHear extends Loop {
 
         onReset = nar.eventClear.onWeak(this::onReset);
         tokens = msg;
-        context = null; //TODO //who.isEmpty() ? null : $.the(who);
+        context = null; 
 
-        //contextAnonymous = new Term[]{$.the("hear"), $.varDep(1), Op.Imdex};
+        
         if (wordDelayMS > 0) {
             setPeriodMS(wordDelayMS);
         } else {
-            //input all immediately
+            
             Term prev = null;
             for (Term x : msg) {
                 hear(prev, x);
@@ -127,11 +127,11 @@ public class NARHear extends Loop {
             return true;
         }
 
-//        if (token > 0) {
-//            hear(tokens.get(token-1), 0.5f); //word OFF
-//        }
 
-        hear(token > 0 ? tokens.get(token - 1) : START, tokens.get(token++)); //word ON
+
+
+
+        hear(token > 0 ? tokens.get(token - 1) : START, tokens.get(token++)); 
         return true;
     }
 
@@ -145,7 +145,7 @@ public class NARHear extends Loop {
         long now = nar.time();
         nar.input(
             new TruthletTask(
-                term, //1 word
+                term, 
                 BELIEF,
                 Truthlet.impulse(
                         now, now+1 /* TODO use realtime to translate wordDelayMS to cycles */, 1f, 0f,
@@ -161,14 +161,14 @@ public class NARHear extends Loop {
 
             Term[] args = Operator.args(t).arrayClone();
             try {
-//                String base = "simple.wikipedia.org";
-//                //"en.wikipedia.org";
-//                Wiki enWiki = new Wiki(base);
+
+
+
 
                 String url = $.unquote(args[0]);
-                //remove quotes
-                //String page = enWiki.normalize(url.replace("\"", ""));
-                //System.out.println(page);
+                
+                
+                
 
 
                 String html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
@@ -176,7 +176,7 @@ public class NARHear extends Loop {
                 html = StringEscapeUtils.unescapeHtml4(html);
                 String strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
 
-                //System.out.println(strippedText);
+                
 
                 NARHear.hear(n, strippedText, url, 250, 0.1f);
 

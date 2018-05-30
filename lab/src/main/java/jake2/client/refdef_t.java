@@ -18,23 +18,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: refdef_t.java,v 1.2 2004-07-09 06:50:50 hzi Exp $
+
+
 
 package jake2.client;
 
 public class refdef_t {
-	public int		x, y, width, height;// in virtual screen coordinates
+	public int		x, y, width, height;
 	public float		fov_x, fov_y;
 	public float		vieworg[] ={0,0,0};
 	public float		viewangles[]={0,0,0};
-	public float		blend[]={0,0,0,0};			// rgba 0-1 full screen blend
-	public float		time;				// time is uesed to auto animate
-	public int		rdflags;			// RDF_UNDERWATER, etc
+	public float		blend[]={0,0,0,0};			
+	public float		time;				
+	public int		rdflags;			
 
-	public byte		areabits[];			// if not NULL, only areas with set bits will be drawn
+	public byte		areabits[];			
 
-	public lightstyle_t	lightstyles[];	// [MAX_LIGHTSTYLES]
+	public lightstyle_t	lightstyles[];	
 
 	public int		num_entities;
 	public entity_t	entities[];
@@ -43,5 +43,5 @@ public class refdef_t {
 	public dlight_t	dlights[];
 
 	public int		num_particles;
-	//public particle_t	particles[];
+	
 }

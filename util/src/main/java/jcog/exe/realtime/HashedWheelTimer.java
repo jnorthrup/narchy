@@ -14,10 +14,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Hash Wheel Timer, as per the paper:
  * <p>
  * Hashed and hierarchical timing wheels:
- * http://www.cs.columbia.edu/~nahum/w6998/papers/ton97-timing-wheels.pdf
+ * http:
  * <p>
  * More comprehensive slides, explaining the paper can be found here:
- * http://www.cse.wustl.edu/~cdgill/courses/cs6874/TimingWheels.ppt
+ * http:
  * <p>
  * Hash Wheel timer is an approximated timer that allows performant execution of
  * larger amount of tasks with better performance compared to traditional scheduling.
@@ -64,7 +64,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             if (offset>-1 || r.isPeriodic()) {
                 reschedule(idx(c + offset + 1), r);
             } else {
-                timer.execute(r); //immediately
+                timer.execute(r); 
             }
         }
 
@@ -79,7 +79,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     public final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
 
-//    private static final String DEFAULT_TIMER_NAME = HashedWheelTimer.class.getSimpleName();
+
 
 
     /** how many epochs can pass while empty before the thread attempts to end (going into a re-activatable sleep mode) */
@@ -143,11 +143,11 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             return null;
         };
     }
-//
-//    public HashedWheelTimer daemon(boolean daemon) {
-//        this.daemon = daemon;
-//        return this;
-//    }
+
+
+
+
+
 
     static final int SHUTDOWN = Integer.MIN_VALUE;
 
@@ -162,7 +162,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         long nextEpoch = deadline;
 
         long tolerableLagPerEpochNS =
-                //resolution;
+                
                 epochTime / 2;
 
         int c, empties;
@@ -174,7 +174,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             while ((c = cursor.getAndUpdate(cc -> cc >= 0 ? (cc + 1) % wheels : SHUTDOWN)) >= 0) {
 
                 if (c == 0) {
-                    //synch deadline
+                    
                     long now = System.nanoTime();
 
                     long lag = now - nextEpoch;
@@ -190,7 +190,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
                 if (model.run(c, this) == 0) {
                     if (empties++ >= wheels * SLEEP_EPOCHS) {
-                        break; //turn off the wheel for now
+                        break; 
                     }
                 } else
                     empties = 0;
@@ -309,7 +309,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     @Override
     public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-        return //this.loop.awaitTermination(timeout, unit) &&
+        return 
                 (!(executor instanceof ExecutorService) || ((ExecutorService) this.executor).awaitTermination(timeout, unit));
     }
 
@@ -356,7 +356,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @Deprecated private <V> TimedFuture<V> scheduleOneShot(long firstDelay, Callable<V> callable) {
 
         if (firstDelay < resolution) {
-            // round up to resolution
+            
             firstDelay = resolution;
         }
 
@@ -364,12 +364,12 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         int firstFireRounds = Math.round(((float)firstDelay) / (resolution * wheels));
 
         TimedFuture<V> r = new OneTimedFuture<>(firstFireOffset+1, firstFireRounds, callable);
-        // We always add +1 because we'd like to keep to the right boundary of event on execution, not to the left:
-        //
-        // For example:
-        //    |          now          |
-        // res start               next tick
-        // The earliest time we can tick is aligned to the right. Think of it a bit as a `ceil` function.
+        
+        
+        
+        
+        
+        
         return schedule(r);
     }
 
@@ -402,8 +402,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         isTrue(recurringTimeout >= resolution,
                 "Cannot schedule tasks for amount of time less than timer precision.");
 
-//        int offset = (int) (recurringTimeout / resolution);
-//        int rounds = offset / numWheels;
+
+
 
         FixedDelayTimedFuture<V> r = new FixedDelayTimedFuture<>(0,
                 callable,
@@ -426,7 +426,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     void assertRunning() {
         if (cursor.compareAndSet(-1, 0)) {
             this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() +"_" + hashCode());
-            this.loop.setDaemon(daemon); //true = dont stop JVM from shutdown
+            this.loop.setDaemon(daemon); 
             this.loop.start();
         }
     }
@@ -434,15 +434,15 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     @FunctionalInterface
     public interface WaitStrategy {
 
-//        WaitStrategy AdaptiveWait = (deadline) -> {
-//            int spins = 0;
-//            Thread t = null;
-//            while (deadline >= System.nanoTime()) {
-//                Util.pauseNext(spins++);
-//                if ((t == null ? (t = Thread.currentThread()) : t).isInterrupted())
-//                    throw new InterruptedException();
-//            }
-//        };
+
+
+
+
+
+
+
+
+
 
         /**
          * Yielding wait strategy.

@@ -17,7 +17,7 @@ public class TestEinsteinRiddle {
 
         final boolean[] finished = {false};
 
-        //The answer is the German owns the fish.
+        
         new Prolog()
             .input(resource("einsteinsRiddle.pl"))
             .solve("einstein(_,X), write(X).", o -> {

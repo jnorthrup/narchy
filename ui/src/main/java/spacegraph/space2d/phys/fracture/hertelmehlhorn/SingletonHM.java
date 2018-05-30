@@ -23,7 +23,7 @@ public class SingletonHM {
     private int maxVerticesCount;
 
     private EdgeTable table;
-    private NodeHM[] polygons; //polygony su reprezentovane spojakom
+    private NodeHM[] polygons; 
     private int count;
     private int[] polygonsVCount;
 
@@ -52,7 +52,7 @@ public class SingletonHM {
         this.maxVerticesCount = maxVerticesCount;
         this.vertices = vertices;
 
-        for (int[] ar : list) { //upravim trojuholniky tak, aby vsetky boli v spravnom smere
+        for (int[] ar : list) { 
             Tuple2f a = vertices[ar[0]];
             Tuple2f b = vertices[ar[1]];
             Tuple2f c = vertices[ar[2]];
@@ -115,7 +115,7 @@ public class SingletonHM {
             c.next = a;
             c.prev = b;
 
-            polygons[i] = a; //pridam prvy prvok spojaku
+            polygons[i] = a; 
         }
 
         Diagonal[] edges = table.toArray(new Diagonal[table.size()]);
@@ -133,7 +133,7 @@ public class SingletonHM {
      * tvori povodny utvar.
      */
     private void run() {
-        //spusti hertelMehlhornov algoritmus
+        
         for (int i = 0; i < polygons.length; ++i) {
             NodeHM n1 = polygons[i];
             if (n1 != null) {
@@ -144,7 +144,7 @@ public class SingletonHM {
                 rekursion(n3, n1, i);
             }
         }
-        //tu hertelMehlhornov algoritmus konci
+        
 
         dekomposition = new Polygon[count];
 
@@ -171,8 +171,8 @@ public class SingletonHM {
         int i1 = n1.index;
         int i2 = n2.index;
 
-        Diagonal e = table.get(i1, i2); //dalo by sa to optimalizovat tak, ze sa tato referencia bude prenasat parametrom, ale nebudem to komplikovat
-        if (e != null) { //hrana je vnutorna
+        Diagonal e = table.get(i1, i2); 
+        if (e != null) { 
             if (polygonsVCount[triangle] < maxVerticesCount) {
                 NodeHM opposite = (e.i1 == triangle ? e.n22 : e.n12).next;
                 int i3 = opposite.index;
@@ -181,7 +181,7 @@ public class SingletonHM {
                         PlatformMathUtils.siteDef(vertices[i3], vertices[i2], vertices[n2.next.index]) < 1 &&
                                 PlatformMathUtils.siteDef(vertices[i3], vertices[i1], vertices[n1.prev.index]) > -1
                         ) {
-                    //priplnam do polygonu - rozsiruje sa
+                    
                     int oppositeTriangleIndex = e.i1 == triangle ? e.i2 : e.i1;
                     polygons[oppositeTriangleIndex] = null;
                     count--;
@@ -216,7 +216,7 @@ public class SingletonHM {
                 }
             }
 
-            table.remove(e); //bez ohladu na to, ci sa polygony spoja, alebo nie, hrana sa maze
+            table.remove(e); 
         }
     }
 }

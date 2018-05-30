@@ -38,7 +38,7 @@ package spacegraph.util.math;
  */
 public class TexCoord3f extends Tuple3f {
 
-    // Combatible with 1.1
+    
     static final long serialVersionUID = -3517736544731446513L;
 
     /**
@@ -84,14 +84,14 @@ public class TexCoord3f extends Tuple3f {
     }
 
 
-//    /**
-//     * Constructs and initializes a TexCoord3f from the specified Tuple3d.
-//     * @param t1 the Tuple3d containing the initialization x y z data
-//     */
-//    public TexCoord3f(Tuple3d t1)
-//    {
-//       super(t1);
-//    }
+
+
+
+
+
+
+
+
 
 
     /**

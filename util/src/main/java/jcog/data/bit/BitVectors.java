@@ -16,7 +16,7 @@ package jcog.data.bit;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  *
  */
 
@@ -158,18 +158,18 @@ public enum BitVectors {
 		return bv;
 	}
 
-//	private static class BitVectorOfflineSerializer implements OfflineIterable.Serializer<BitVector,LongArrayBitVector> {
-//		public void write( BitVector bv, DataOutput dos ) throws IOException {
-//			writeFast( bv, dos );
-//		}
-//
-//		public void read( DataInput dis, LongArrayBitVector bv ) throws IOException {
-//			readFast( dis, bv );
-//		}
-//	}
+
+
+
+
+
+
+
+
+
 
 	/** A serializer for {@link LongArrayBitVector} instances that can be used with {@link it.unimi.dsi.io.OfflineIterable}. It can serialize
 	 * any implementation of {@link BitVector}, and requires at construction time an instance of {@link LongArrayBitVector} that
 	 * will be used to return deserialized elements. */
-//	public static BitVectorOfflineSerializer OFFLINE_SERIALIZER = new BitVectorOfflineSerializer();
+
 }

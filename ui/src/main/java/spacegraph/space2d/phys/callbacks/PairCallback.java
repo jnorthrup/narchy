@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.callbacks;
 
-// updated to rev 100
+
 public interface PairCallback {
     void addPair(Object userDataA, Object userDataB);
 }

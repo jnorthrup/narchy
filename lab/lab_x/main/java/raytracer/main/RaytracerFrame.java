@@ -37,14 +37,14 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
     private static final long serialVersionUID = 1L;
     
     /** Horizontale Aufl�sung der Kamera. */
-    protected int resX = 640;//256;
+    protected int resX = 640;
     /** Vertikale Aufl�sung der Kamera. */
-    protected int resY = 480;//180;
+    protected int resY = 480;
 
     /** ID der aktuellen Szene. */
-    protected int sceneId = 0;//15;
+    protected int sceneId = 0;
     /** ID der aktuellen Kamera. */
-    protected int cameraId = 0;//13;
+    protected int cameraId = 0;
     
     
     private final static String TITLE = "Vorschau";
@@ -93,17 +93,17 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
 
     private void init()
     {
-        // Fenster initialisieren:
+        
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         setSize(WIDTH, HEIGHT);
         
-        // Ereignisbehandlung initialisieren:
+        
         addWindowListener(this);
 
-        // Men�leiste initialisieren:
+        
         initMenu();
         
-        // Komponenten initialisieren:
+        
         initComponents();
     }
     
@@ -114,26 +114,26 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         
         if (camera != null)
         {
-            // Ereignisbehandlung initialisieren:
+            
             camera.addRendererListener(this);
 
-            // Starzeit ermitteln:
+            
             startTime = System.currentTimeMillis();
             
-            // Szene rendern:
+            
             camera.render();
         }
         
-        // Bild zur�cksetzen:
-        //renderedImage = null;
         
-        // Titel aktualisieren:
+        
+        
+        
         SwingUtilities.invokeLater(this::updateTitle);
     }
     
     private void stopCamera()
     {
-        // Rendervorgang abbrechen:
+        
         if (camera != null)
             camera.stop();
 
@@ -144,16 +144,16 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
     {
         JMenuBar menuBar = new JMenuBar();
         
-        // Menu "Datei" hinzuf�gen:
+        
         menuBar.add(createFileMenu());
         
-        // Menu "Szene" hinzuf�gen:
+        
         menuBar.add(createSceneMenu());
         
-        // Menu "Kamera" hinzuf�gen:
+        
         menuBar.add(createCameraMenu());
         
-        // Menu "Ansicht" hinzuf�gen:
+        
         menuBar.add(createViewMenu());
        
         setJMenuBar(menuBar);
@@ -194,7 +194,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
 
                     SwingUtilities.invokeLater(RaytracerFrame.this::restartCamera);
 
-                    //camera.fpsRotate(e.getX() - dragStartX, e.getY() - dragStartY);
+                    
                 }
 
             }
@@ -753,11 +753,11 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         switch (view)
         {
         case VIEW_ZOOM:
-            // Scrollleisten aktivieren:
+            
             scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
             
-            // Bildgr��e ermitteln:
+            
             preview.setMinimumSize(scroller.getViewport().getWidth(), scroller.getViewport().getHeight());
             width = Math.round(zoomFactor* (float) imageWidth);
             height = Math.round(zoomFactor* (float) imageHeight);
@@ -765,7 +765,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         
         default:
         case VIEW_ZOOM_WINDOW:
-            // Scrollleisten deaktivieren:
+            
             scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
@@ -773,7 +773,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             width = scroller.getWidth()-insets.left-insets.right;
             height = scroller.getHeight()-insets.top-insets.bottom;
             
-            // Bildgr��e ermitteln:
+            
             preview.setMinimumSize(width, height);
             if (height*imageWidth < width*imageHeight)
                 width = height*imageWidth/imageHeight;
@@ -782,7 +782,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             break;
         }
         
-        // Bild setzen:
+        
         if ((width <= 0) || (height <= 0))
             return;
         if ((width == imageWidth) && (height == imageHeight))
@@ -817,7 +817,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
     @Override
     public void windowOpened(WindowEvent e)
     {
-        // Kamera initialisieren:
+        
         windowStartet = true;
         startCamera();
 
@@ -826,7 +826,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
     @Override
     public void windowClosed(WindowEvent e)
     {
-        // Kamera stoppen:
+        
         stopCamera();
     }
     
@@ -844,7 +844,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         String command = event.getActionCommand();
         String split[] = command.split(":");
         
-        // Aktionen des Men�s: "Datei"
+        
         if (command.equals("Resolution"))
             changeResolution();
         else if (split[0].equals("Resolution"))
@@ -854,15 +854,15 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         else if (command.equals("Exit"))
             fileExit();
         
-        // Aktionen des Men�s: "Szene"
+        
         else if (split[0].equals("Scene"))
             changeScene(Integer.parseInt(split[1]));
         
-        // Aktionen des Men�s: "Szene"
+        
         else if (split[0].equals("Camera"))
             changeCamera(Integer.parseInt(split[1]));
         
-        // Aktionen des Men�s: "Ansicht"
+        
         else if (split[0].equals("ViewZoom"))
             viewZoom(Float.parseFloat(split[1]));
         else if (command.equals("ViewZoomWindow"))
@@ -887,15 +887,15 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         
         for (;;)
         {
-            // Dateiauswahl-Dialog anzeigen:
+            
             if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
             return;
 
-            // Pr�fen, ob gew�hlte Datei bereits existiert:
+            
             if (chooser.getSelectedFile().exists())
             {
-                // Die Datei existiert bereits. 
-                // Benutzer fragen, ob sie �berschrieben werden soll:
+                
+                
                 if (JOptionPane.showConfirmDialog(this, "Die gew�hlte Datei existiert bereits.\n" +
                     "Soll die Datei �berschrieben werden?", "Datei existiert",
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE) != JOptionPane.YES_OPTION)
@@ -904,7 +904,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             break;
         }
 
-        // Bild speichern:
+        
         try
         {
             if (!ImageIO.write(renderedImage, imageType, chooser.getSelectedFile()))
@@ -912,8 +912,8 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         }
         catch (Exception e)
         {
-            // Das Thumbnail konnte nicht gespeichert werden.
-            // Fehlerdialog anzeigen:
+            
+            
             JOptionPane.showMessageDialog(this, "Das Thumbnail konnte nicht gespeichert werden.",
                 "Fehler beim Speichern", JOptionPane.ERROR_MESSAGE);
         }
@@ -937,7 +937,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
 
         for (;;)
         {
-            // Benutzer nach der neuen Bildgr��e fragen:
+            
             String input = JOptionPane.showInputDialog(this, "Neue Gr��e des gerenderten Bildes:\n(Beispiel: \"640 x 480\")",
                     "Bildgr��e �ndern", JOptionPane.QUESTION_MESSAGE);
             if (input == null)
@@ -945,19 +945,19 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
 
             try
             {
-                // Eingabe in Zahlen Umwandeln:
+                
                 String[] inputs = input.split("[^0-9]+", 2);
                 width = Integer.parseInt(inputs[0]);
                 height = Integer.parseInt(inputs[1]);
                 
-                // Pr�fen, ob die Dimensionen g�ltig sind:
+                
                 if ((width <= 0) || (height <= 0))
                     throw new InvalidFormatException();
             }
             catch (Exception e)
             {
-                // Die eingegebenen Dimensionen werden nicht akzeptiert.
-                // Fehlermeldung anzeigen:
+                
+                
                 JOptionPane.showMessageDialog(this, "Die eingegebene Bildgr��e wird nicht akzeptiert.",
                     "Fehlerhafte Eingabe", JOptionPane.ERROR_MESSAGE);
                 continue;
@@ -965,7 +965,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             break;
         }
 
-        // Bild auf die gew�nschten Dimensionen vergr��ern:
+        
         changeResolution(width, height);
     }
     
@@ -993,7 +993,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
 
         switch (sceneId)
         {
-        case 0:     // FlatShader
+        case 0:     
             final Sphere s = new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new ColorShader(ColorEx.RED));
             scene = new EfficientScene() {
 
@@ -1001,14 +1001,14 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
 
                 @Override
                 public boolean update(double t) {
-                    //doesnt work yet:
+                    
                     /*
                     double c = (t - start) / 1000.0 ;
                     s.getCenter().set( 10*Math.sin(c), 10*Math.cos(c), 0.5f);
                     s.setShader(new ColorShader(new ColorEx(Color.getHSBColor((float)Math.random(), 0.5f, 0.5f))));
                     */
-                    //remove(s);
-                    //add(s);
+                    
+                    
                     return false;
                 }
             };
@@ -1016,10 +1016,10 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new ColorShader(ColorEx.GREEN)));
             scene.add(new Sphere(new Vector3d(3.0, 0.8, 2.0), 2.0, new ColorShader(ColorEx.BLUE)));
             scene.add(new InfinitePlane(new Vector3d(0.0, -1.0, 0.0), new Vector3d(0.0, 1.0, 0.0), new ColorShader(ColorEx.YELLOW)));
-            //scene.add(new InfinitePlane(new Vector3d(0.0, -1.0, 0.0), new Vector3d(0.0, 1.0, 0.0), new WallShader(ColorEx.WHITE)));
+            
             break;
             
-        case 1:     // EyeLightShader
+        case 1:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new EyeLightShader(new ColorShader(ColorEx.RED))));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new EyeLightShader(new ColorShader(ColorEx.GREEN))));
@@ -1027,7 +1027,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new InfinitePlane(new Vector3d(0.0, -1.0, 0.0), new Vector3d(0.0, 1.0, 0.0), new EyeLightShader(new ColorShader(ColorEx.YELLOW))));
             break;
             
-        case 2:     // FirstPhongShader
+        case 2:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.5f, 0.0f, 0.0f), new Vector3f(0.7f, 0.0f, 0.0f), new Vector3f(0.5f, 0.2f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f))));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.0f, 0.9f, 0.0f), new Vector3f(0.0f, 0.4f, 0.2f), new Vector3f(0.05f, 0.05f, 0.05f))));
@@ -1035,7 +1035,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new InfinitePlane(new Vector3d(0.0, -1.0, 0.0), new Vector3d(0.0, 1.0, 0.0), new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.9f, 0.9f, 0.0f), new Vector3f(0.9f, 0.9f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f))));
             break;
             
-        case 3:     // Dreiecke
+        case 3:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.5f, 0.0f, 0.0f), new Vector3f(0.7f, 0.0f, 0.0f), new Vector3f(0.5f, 0.2f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f))));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.0f, 0.9f, 0.0f), new Vector3f(0.0f, 0.4f, 0.2f), new Vector3f(0.05f, 0.05f, 0.05f))));
@@ -1044,7 +1044,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new Triangle(new Vector3d(7.0, -1.0, -7.0), new Vector3d(7.0, -1.0, 7.0), new Vector3d(-7.0, -1.0, 7.0), new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.9f, 0.9f, 0.0f), new Vector3f(0.9f, 0.9f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f))));
             break;
             
-        case 4:     // DirectionalLight
+        case 4:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.5f, 0.0f, 0.0f), new Vector3f(0.7f, 0.0f, 0.0f), new Vector3f(0.5f, 0.2f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f))));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.0f, 0.9f, 0.0f), new Vector3f(0.0f, 0.4f, 0.2f), new Vector3f(0.05f, 0.05f, 0.05f))));
@@ -1056,7 +1056,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new DirectionalLight(new Vector3d(1.0, -1.0, 0.0), new ColorEx(0.8f, 0.8f, 0.8f)));
             break;
             
-        case 5:     // PointLight
+        case 5:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.5f, 0.0f, 0.0f), new Vector3f(0.7f, 0.0f, 0.0f), new Vector3f(0.5f, 0.2f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f))));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.0f, 0.9f, 0.0f), new Vector3f(0.0f, 0.4f, 0.2f), new Vector3f(0.05f, 0.05f, 0.05f))));
@@ -1068,7 +1068,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new PointLight(new Vector3d(-7.0, 4.0, -7.0), new ColorEx(20.0f, 20.0f, 20.0f)));
             break;
             
-        case 6:     // Shadow
+        case 6:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.5f, 0.0f, 0.0f), new Vector3f(0.7f, 0.0f, 0.0f), new Vector3f(0.5f, 0.2f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f))));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.0f, 0.9f, 0.0f), new Vector3f(0.0f, 0.4f, 0.2f), new Vector3f(0.05f, 0.05f, 0.05f))));
@@ -1081,7 +1081,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new PointLight(new Vector3d(-7.0, 4.0, -7.0), new ColorEx(20.0f, 20.0f, 20.0f)));
             break;
             
-        case 7:     // MirrorShader
+        case 7:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new MirrorShader()));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.0f, 0.9f, 0.0f), new Vector3f(0.0f, 0.4f, 0.2f), new Vector3f(0.05f, 0.05f, 0.05f))));
@@ -1094,7 +1094,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new PointLight(new Vector3d(-7.0, 4.0, -7.0), new ColorEx(20.0f, 20.0f, 20.0f)));
             break;
             
-        case 8:     // ReflectiveShader
+        case 8:     
             scene = new EfficientScene();
             scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new ReflectiveShader(0.2f, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.5f, 0.0f, 0.0f), new Vector3f(0.7f, 0.0f, 0.0f), new Vector3f(0.5f, 0.2f, 0.0f), new Vector3f(0.05f, 0.05f, 0.05f)))));
             scene.add(new Sphere(new Vector3d(1.0, -1.0, -1.0), 2.2, new ReflectiveShader(0.2f, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.0f, 0.9f, 0.0f), new Vector3f(0.0f, 0.4f, 0.2f), new Vector3f(0.05f, 0.05f, 0.05f)))));
@@ -1107,7 +1107,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             scene.add(new PointLight(new Vector3d(-7.0, 4.0, -7.0), new ColorEx(20.0f, 20.0f, 20.0f)));
             break;
             
-        case 9:     // Diamant (FirstPhongShader)
+        case 9:     
             try
             {
                 Transformation t = new Transformation();
@@ -1130,7 +1130,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             }
             break;
             
-        case 10:     // Diamant
+        case 10:     
             try
             {
                 Transformation t = new Transformation();
@@ -1157,7 +1157,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             }
             break;
             
-        case 11:     // Venus
+        case 11:     
             try
             {
                 Transformation t = new Transformation();
@@ -1185,7 +1185,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             }
             break;
             
-        case 12:     // Hase
+        case 12:     
             try
             {
                 Transformation t = new Transformation();
@@ -1217,7 +1217,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 scene.add(t2);
 
                 scene.setAmbientLight(new ColorEx(0.2f, 0.2f, 0.2f));
-                //scene.add(new DirectionalLight(new Vector3d(1.0, -1.0, 0.0), new ColorEx(0.8f, 0.8f, 0.8f)));
+                
                 scene.add(new PointLight(new Vector3d(-7.0, 4.0, -7.0), new ColorEx(10.0f, 10.0f, 10.0f)));
                 scene.add(new PointLight(new Vector3d(-7.0, 4.0, 7.0), new ColorEx(6.0f, 6.0f, 6.0f)));
                 scene.add(new PointLight(new Vector3d(7.0, 4.0, 7.0), new ColorEx(8.0f, 8.0f, 8.0f)));
@@ -1229,33 +1229,33 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             }
             break;
             
-        case 13:     // Soft-Shadows 
+        case 13:     
             try 
             { 
                 Transformation t = new Transformation();
                 t.scale(0.9, 0.9, 0.9); 
                 t.move(1.0, 1.0, -3.0); 
                  
-                //OffObject off = new OffObject("off/cube.off", new ConcatShader(new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(1.0f, 1.0f, 1.0f)), 1.0f, new RefractionShader(RefractionShader.INDEX_DIAMOND, new ColorEx(ColorEx.WHITE)))); 
+                
                 OffObject off = new OffObject("off/cube.off", new ConcatShader(new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.3f, 0.7f, 0.4f), new Vector3f(0.4f, 0.4f, 0.4f), new Vector3f(0.0f, 0.0f, 0.0f), 5.0F), 0.0f, new RefractionShader(RefractionShader.INDEX_DIAMOND, new ColorEx(ColorEx.WHITE))));
-                //OffObject off = new OffObject("off/dodecahedron.off", new ConcatShader(new FirstPhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.3f, 0.0f), new Vector3f(0.3f, 0.7f, 0.4f), new Vector3f(0.4f, 1.0f, 0.5f), new Vector3f(0.0f, 0.0f, 0.0f)), 0.7f, new RefractionShader(RefractionShader.SOL_DIAMOND, new ColorEx(0.85f, 0.99f, 0.85f)))); 
+                
                 off.transform(t);
                 
                 scene = new EfficientScene();
-                //scene.add(off);
+                
                 scene.add(new Sphere(new Vector3d(-2.0, 1.7, 0.0), 2.0, new ReflectionShader(new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.5f, 0.0f, 0.0f), new Vector3f(0.7f, 0.0f, 0.0f), new Vector3f(0.7f, 0.7f, 0.7f), new Vector3f(0.05f, 0.05f, 0.05f), 10.0F))));
                 scene.add(new Sphere(new Vector3d(3.0, 0.8, 2.0), 2.0, new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.0f, 0.3f), new Vector3f(0.0f, 0.0f, 0.5f), new Vector3f(0.7f, 0.7f, 0.7f), new Vector3f(0.05f, 0.05f, 0.05f), 10.0F)));
                 scene.add(new Triangle(new Vector3d(-7.0, -1.0, 7.0), new Vector3d(-7.0, -1.0, -7.0), new Vector3d(7.0, -1.0, -7.0), new ReflectionShader(new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.9f, 0.9f, 0.0f), new Vector3f(0.4f, 0.4f, 0.4f), new Vector3f(0.05f, 0.05f, 0.05f), 5.0F))));
                 scene.add(new Triangle(new Vector3d(7.0, -1.0, -7.0), new Vector3d(7.0, -1.0, 7.0), new Vector3d(-7.0, -1.0, 7.0), new ReflectionShader(new PhongShader(new ColorShader(ColorEx.WHITE), new Vector3f(0.0f, 0.0f, 0.0f), new Vector3f(0.9f, 0.9f, 0.0f), new Vector3f(0.4f, 0.4f, 0.4f), new Vector3f(0.05f, 0.05f, 0.05f), 5.0F))));
      
                 scene.setAmbientLight(new ColorEx(0.2f, 0.2f, 0.2f));
-                // scene.add(new DirectionalLight(new Vector3d(1.0,-1.0,0.0), new ColorEx(0.1f, 0.1f, 0.1f))); 
-                // scene.add(new PointLight(new Vector3d(-7.0,4.0,-7.0), new ColorEx(10.0f, 10.0f, 10.0f))); 
-                // scene.add(new AreaLight(new Vector3d(0.0,8.0,0.0),new Vector3d(1.5,0.0,0.0),new Vector3d(0.0,0.0,1.5), new ColorEx(0.8f, 0.8f, 0.8f))); 
-                // scene.add(new Sphere(new Vector3d(1.0,2.0,0.0), 0.25 , new LightSourceShader(new ColorEx(1.0f, 1.0f, 1.0f))));
                 
                 
-                //scene.add(new AreaLight(new Vector3d(1.0, 3.0, 0.0), new Vector3d(0.5, 0.0, 0.0), new Vector3d(0.0, 0.0, 3.0), new ColorEx(12.0f, 12.0f, 12.0f)));
+                
+                
+                
+                
+                
                 
                 scene.add(new SphereLight(new Vector3d(1.0, 3.0, 0.0), 0.7,  new ColorEx(12.0f, 12.0f, 12.0f)));
             } 
@@ -1265,7 +1265,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             }
             break;
             
-        case 14:     // Lichtbrechungs-Test
+        case 14:     
             try
             {
                 scene = new EfficientScene();
@@ -1275,35 +1275,35 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 Shader wallGray = new PhongShader(new ColorShader(ColorEx.GRAY), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(1.0f, 1.0f, 1.0f), new Vector3f(0.7f, 0.7f, 0.7f));
                 
                 
-                // Linke Wand:
+                
                 scene.add(new Triangle(new Vector3d(-1.0, -1.0, 1.0), new Vector3d(-1.0, -1.0, -1.0), new Vector3d(-1.0, 1.0, 1.0), wallRed));
                 scene.add(new Triangle(new Vector3d(-1.0, 1.0, 1.0), new Vector3d(-1.0, -1.0, -1.0), new Vector3d(-1.0, 1.0, -1.0), wallRed));
                 
-                // Rechte Wand:
+                
                 scene.add(new Triangle(new Vector3d(1.0, -1.0, -1.0), new Vector3d(1.0, -1.0, 1.0), new Vector3d(1.0, 1.0, 1.0), wallBlue));
                 scene.add(new Triangle(new Vector3d(1.0, 1.0, 1.0), new Vector3d(1.0, 1.0, -1.0), new Vector3d(1.0, -1.0, -1.0), wallBlue));
 
-                // Hintere Wand:
+                
                 scene.add(new Triangle(new Vector3d(-1.0, -1.0, -1.0), new Vector3d(1.0, -1.0, -1.0), new Vector3d(-1.0, 1.0, -1.0), wallGray));
                 scene.add(new Triangle(new Vector3d(-1.0, 1.0, -1.0), new Vector3d(1.0, -1.0, -1.0), new Vector3d(1.0, 1.0, -1.0), wallGray));
 
-                // Obere Wand:
+                
                 scene.add(new Triangle(new Vector3d(-1.0, 1.0, 1.0), new Vector3d(-1.0, 1.0, -1.0), new Vector3d(1.0, 1.0, 1.0), wallGray));
                 scene.add(new Triangle(new Vector3d(1.0, 1.0, 1.0), new Vector3d(-1.0, 1.0, -1.0), new Vector3d(1.0, 1.0, -1.0), wallGray));
 
-                // Untere Wand:
+                
                 scene.add(new Triangle(new Vector3d(-1.0, -1.0, 1.0), new Vector3d(1.0, -1.0, 1.0), new Vector3d(-1.0, -1.0, -1.0), wallGray));
                 scene.add(new Triangle(new Vector3d(-1.0, -1.0, -1.0), new Vector3d(1.0, -1.0, 1.0), new Vector3d(1.0, -1.0, -1.0), wallGray));
 
-                // Licht:
+                
                 scene.add(new AreaLight(new Vector3d(0.0, 0.999999, 0.0), new Vector3d(0.2, 0.0, 0.0), new Vector3d(0.0, 0.0, 0.2), new ColorEx(3.0f, 3.0f, 3.0f)));
                 
-                // Kugel mit Spiegelung:
+                
                 Sphere rs = new Sphere(new Vector3d(-0.5, -0.65, -0.5), 0.35, new MirrorShader());
                 rs.setNormalEffect(new RoughNormalEffect(0.03f));
                 scene.add(rs);
                 
-                // Kugel mit Lichtbrechung:
+                
                 rs = new Sphere(new Vector3d(0.5, -0.65, 0.0), 0.35, new RefractionShader(RefractionShader.INDEX_GLASS, new ColorEx(0.9f, 0.9f, 0.9f)));
                 rs.setNormalEffect(new RoughNormalEffect(0.1f));
                 scene.add(rs);
@@ -1315,11 +1315,11 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             }
             break;
             
-        case 15:     // Bowling-Szene
+        case 15:     
             scene = new BowlingScene();
             break;
             
-        case 16:     // Bowling-Kugel
+        case 16:     
             try
             {
                 Transformation t = new Transformation();
@@ -1334,7 +1334,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 scene.add(ply);
 
                 scene.setAmbientLight(new ColorEx(0.2f, 0.2f, 0.2f));
-                //scene.add(new DirectionalLight(new Vector3d(1.0, -1.0, 0.0), new ColorEx(0.8f, 0.8f, 0.8f)));
+                
                 scene.add(new PointLight(new Vector3d(-7.0, 1.0, -7.0), new ColorEx(5.0f, 5.0f, 5.0f)));
                 scene.add(new PointLight(new Vector3d(-7.0, 1.0, 7.0), new ColorEx(3.0f, 3.0f, 3.0f)));
                 scene.add(new PointLight(new Vector3d(7.0, 1.0, 7.0), new ColorEx(4.0f, 4.0f, 4.0f)));
@@ -1350,7 +1350,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             throw new IllegalArgumentException();
         }
         
-        // Szene setzen:
+        
         setCameraScene(this.camera, scene);
         this.sceneId = sceneId;
     }
@@ -1366,11 +1366,11 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
 
         switch (cameraId)
         {
-        case 0:     // FirstCamera
+        case 0:     
             camera = new FirstCamera(resX, resY);
             break;
             
-        case 1:     // PerspectiveCamera - 1
+        case 1:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(0.0, 0.0, -10.0),
                     new Vector3d(0.0, 0.0, 1.0),
@@ -1378,7 +1378,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 2:     // PerspectiveCamera - 2
+        case 2:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(-8.0, 3.0, -8.0),
                     new Vector3d(1.0, -0.1, 1.0),
@@ -1386,7 +1386,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 3:     // PerspectiveCamera - 3
+        case 3:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(-8.0, 3.0, -8.0),
                     new Vector3d(1.0, -0.1, 1.0),
@@ -1394,7 +1394,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 4:     // Ansicht von Oben
+        case 4:     
             camera = new PerspectiveCamera(resX, resY, 10.0, 30.0,
                     new Vector3d(0.0, 10.0, 0.0),
                     new Vector3d(0.0, -1.0, 0.0),
@@ -1402,7 +1402,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 5:     // Kompass: Nach N
+        case 5:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(0.0, 3.0, 11.0),
                     new Vector3d(0.0, -0.1, -1.0),
@@ -1410,7 +1410,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 6:     // Kompass: Nach S
+        case 6:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(0.0, 3.0, -11.0),
                     new Vector3d(0.0, -0.1, 1.0),
@@ -1418,7 +1418,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 7:     // Kompass: Nach O
+        case 7:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(-11.0, 3.0, 0.0),
                     new Vector3d(1.0, -0.1, 0.0),
@@ -1426,7 +1426,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 8:     // Kompass: Nach W
+        case 8:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(11.0, 3.0, 0.0),
                     new Vector3d(-1.0, -0.1, 0.0),
@@ -1434,7 +1434,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 9:     // Kompass: Nach NO
+        case 9:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(-8.0, 3.0, 8.0),
                     new Vector3d(1.0, -0.1, -1.0),
@@ -1442,7 +1442,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 10:     // Kompass: Nach NW
+        case 10:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(8.0, 3.0, 8.0),
                     new Vector3d(-1.0, -0.1, -1.0),
@@ -1450,7 +1450,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 11:     // Kompass: Nach SO
+        case 11:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(-8.0, 3.0, -8.0),
                     new Vector3d(1.0, -0.1, 1.0),
@@ -1458,7 +1458,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 12:     // Kompass: Nach SW
+        case 12:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(8.0, 3.0, -8.0),
                     new Vector3d(-1.0, -0.1, 1.0),
@@ -1466,7 +1466,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 13:     // Kamera f�r Lichtbrechungs-Test
+        case 13:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(0.0, 0.0, 2.3),
                     new Vector3d(0.0, 0.0, -1.0),
@@ -1474,7 +1474,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
                 );
             break;
             
-        case 14:     // Bowlingbahn Cam 1
+        case 14:     
         	camera = new PerspectiveCamera(resX, resY, 48.0,
 			new Vector3d(6.5, -3.0, 5.0),
 			new Vector3d(-1.0, -0.4, -1.0),
@@ -1482,7 +1482,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
         	break;
             
-        case 15:     // Bowlingbahn Cam 2
+        case 15:     
         	camera = new PerspectiveCamera(resX, resY, 48.0,
         			new Vector3d(6.5, -3.0, 5.0),
         			new Vector3d(-1.0, -0.4, 0.0),
@@ -1490,7 +1490,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         	);
         	break;
             
-        case 16:     // Bowlingbahn Cam 3 
+        case 16:     
             camera = new PerspectiveCamera(resX, resY, 48.0, 
                       new Vector3d(-3.0, -5.0, -1.0),
                       new Vector3d(1.0, 0.3, 1.0), 
@@ -1498,7 +1498,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             ); 
         	break;
             
-        case 17:     // Bowlingbahn Cam 4 
+        case 17:     
             camera = new PerspectiveCamera(resX, resY, 48.0, 
                       new Vector3d(0.0, -3.0, 4.0),
                       new Vector3d(0.0, -0.3, -1.0), 
@@ -1506,7 +1506,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             ); 
             break;
             
-        case 18:     // Bowlingbahn Cam 5 
+        case 18:     
         	camera = new PerspectiveCamera(resX, resY, 48.0,
         			new Vector3d(-1.7, -4.5, -1.5),
         			new Vector3d(0.0, -0.2, -1.0),
@@ -1514,7 +1514,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         	);
         	break;
         	
-        case 19:     // Bowlingbahn Cam 6
+        case 19:     
             camera = new PerspectiveCamera(resX, resY, 48.0, 
                       new Vector3d(-1.7, -3.0, 5.0),
                       new Vector3d(0.4, -0.3, -1.0), 
@@ -1522,7 +1522,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             ); 
         	break;
             
-        case 20:     // Bowlingbahn Cam 7 
+        case 20:     
             camera = new PerspectiveCamera(resX, resY, 48.0,
                 new Vector3d(6.5, -5.0, 5.0),
                 new Vector3d(-1.0, 0.0, -1.0),
@@ -1530,7 +1530,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 21:     // Bowlingbahn: T�r
+        case 21:     
             camera = new PerspectiveCamera(resX, resY, 48.0,
                     new Vector3d(5.5, -4.45, 3.0),
                     new Vector3d(0.0, 0.0, 1.0),
@@ -1538,7 +1538,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
             
-        case 22:     // Bowlingbahn: Gesamtsicht - Links
+        case 22:     
             camera = new PerspectiveCamera(resX, resY, 90.0,
                     new Vector3d(0.48407353831851324, -3.018759713273284, 7.824136399028278),
                     new Vector3d(0.2806038610573204, -0.06880636875619817, -0.9573542483210515),
@@ -1546,7 +1546,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 23:     // Bowlingbahn: Gesamtsicht - Rechts
+        case 23:     
             camera = new PerspectiveCamera(resX, resY, 90.0,
                     new Vector3d(3.3415185643027585, -2.491147420136292, 7.76233135809683),
                     new Vector3d(-0.1613922052704986, -0.1435433723086555, -0.9763953381414523),
@@ -1554,7 +1554,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 24:     // Aktive Bahnen
+        case 24:     
             camera = new PerspectiveCamera(resX, resY, 40.0,
                     new Vector3d(1.5413462747371491, -2.991910952084204, 7.467307261538312),
                     new Vector3d(-0.14682095498853334, -0.35785700613144567, -0.9221615749633957),
@@ -1562,7 +1562,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 25:     // Kegelh�hle 1
+        case 25:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(2.287794290473877, -4.961842907704207, -4.983976265535724),
                     new Vector3d(-0.06992685270634139, -0.091858046747063, 0.9933138147224554),
@@ -1570,7 +1570,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 26:     // Kegelh�hle 2
+        case 26:     
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(2.2108868356139415, -5.17254733310003, -4.555834092500915),
                     new Vector3d(0.042023092823442486, -0.08196841148673485, 0.9957485823178154),
@@ -1578,7 +1578,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 27:     // Kegelh�hle 3
+        case 27:     
             camera = new PerspectiveCamera(resX, resY, 100.0,
                     new Vector3d(-1.7373856956200784, -4.404969797366187, -3.8345626302168077),
                     new Vector3d(0.022946872129845395, -0.9226012335361213, 0.38507194774124304),
@@ -1586,7 +1586,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 28:    // R�cklaufbahn
+        case 28:    
             camera = new PerspectiveCamera(resX, resY, 60.0,
                     new Vector3d(-0.017770551068791232, -4.6357380415993505, -2.6108089048414507),
                     new Vector3d(0.2074487052869382, 0.003854990788496639, 0.9782383010907354),
@@ -1594,7 +1594,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 29:    // Blich nach Innen
+        case 29:    
             camera = new PerspectiveCamera(resX, resY, 50.0,
                     new Vector3d(6.358395206522472, -4.060900500976465, 10.30033525354931),
                     new Vector3d(-0.2654053758067943, -0.12922957803579257, -0.9554369171503306),
@@ -1602,7 +1602,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
 
-        case 30:    // Kugel auf Kegel
+        case 30:    
             camera = new PerspectiveCamera(resX, resY, 30.0,
                     new Vector3d(-1.1000401672362226, -5.087014697874249, -1.7290776544906388),
                     new Vector3d(-0.24468540658034604, -0.04019086411753281, -0.9687691914218264),
@@ -1610,7 +1610,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             );
             break;
             
-        case 31:    // Blick auf die T�r
+        case 31:    
             camera = new PerspectiveCamera(resX, resY, 70.0,
                     new Vector3d(-0.3332293474357643, -3.298876452112479, 2.2210001610458563),
                     new Vector3d(0.49936848376860654, -0.26712210351156884, 0.8241825642624807),
@@ -1622,7 +1622,7 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
             throw new IllegalArgumentException();
         }
         
-        // Kamera setzen:
+        
         setCameraScene(camera, (this.camera == null) ? null : this.camera.getScene());
         this.cameraId = cameraId;
     }
@@ -1699,11 +1699,11 @@ implements RendererListener, WindowListener, ComponentListener, ActionListener
         @Override
         public boolean accept(File file)
         {
-            // Verzeichnisse immer anzeigen:
+            
             if (file.isDirectory())
                 return true;
             
-            // Nur Dateien mit der erw�nschten Erweiterung anzeigen:
+            
             String fileName = file.getName();
             int index = fileName.lastIndexOf('.');
             if ((index < 0) || (index >= fileName.length()))

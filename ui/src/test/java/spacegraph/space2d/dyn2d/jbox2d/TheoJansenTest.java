@@ -24,40 +24,40 @@ public class TheoJansenTest implements ICase {
     float m_motorSpeed;
     private Dynamics2D w;
 
-//    @Override
-//    public Long getTag(Body2D argBody) {
-//        if (argBody2D == m_chassis) {
-//            return CHASSIS_TAG;
-//        } else if (argBody2D == m_wheel) {
-//            return WHEEL_TAG;
-//        }
-//        return null;
-//    }
-//
-//    @Override
-//    public Long getTag(Joint argJoint) {
-//        if (argJoint == m_motorJoint) {
-//            return MOTOR_TAG;
-//        }
-//        return null;
-//    }
 
-//    @Override
-//    public void processBody(Body2D argBody, Long argTag) {
-//        if (argTag == CHASSIS_TAG) {
-//            m_chassis = argBody;
-//        } else if (argTag == WHEEL_TAG) {
-//            m_wheel = argBody;
-//        }
-//    }
-//
-//    @Override
-//    public void processJoint(Joint argJoint, Long argTag) {
-//        if (argTag == MOTOR_TAG) {
-//            m_motorJoint = (RevoluteJoint) argJoint;
-//            m_motorOn = m_motorJoint.isMotorEnabled();
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -71,7 +71,7 @@ public class TheoJansenTest implements ICase {
         m_motorOn = true;
         v2 pivot = new v2(0.0f, 0.8f);
 
-        // Ground
+        
         {
             BodyDef bd = new BodyDef();
             Body2D ground = w.addBody(bd);
@@ -87,7 +87,7 @@ public class TheoJansenTest implements ICase {
             ground.addFixture(shape, 0.0f);
         }
 
-        // Balls
+        
         for (int i = 0; i < 40; ++i) {
             CircleShape shape = new CircleShape();
             shape.radius = 0.25f;
@@ -100,7 +100,7 @@ public class TheoJansenTest implements ICase {
             body.addFixture(shape, 1.0f);
         }
 
-        // Chassis
+        
         {
             PolygonShape shape = new PolygonShape();
             shape.setAsBox(2.5f, 1.0f);
@@ -222,9 +222,9 @@ public class TheoJansenTest implements ICase {
 
         DistanceJointDef djd = new DistanceJointDef();
 
-        // Using a soft distance constraint can reduce some jitter.
-        // It also makes the structure seem a bit more fluid by
-        // acting like a suspension system.
+        
+        
+        
         djd.dampingRatio = 0.5f;
         djd.frequencyHz = 10.0f;
 
@@ -246,25 +246,25 @@ public class TheoJansenTest implements ICase {
         w.addJoint(rjd);
     }
 
-//    @Override
-//    public void keyPressed(char key, int argKeyCode) {
-//        switch (key) {
-//            case 'a':
-//                m_motorJoint.setMotorSpeed(-m_motorSpeed);
-//                break;
-//
-//            case 's':
-//                m_motorJoint.setMotorSpeed(0.0f);
-//                break;
-//
-//            case 'd':
-//                m_motorJoint.setMotorSpeed(m_motorSpeed);
-//                break;
-//
-//            case 'm':
-//                m_motorJoint.enableMotor(!m_motorJoint.isMotorEnabled());
-//                break;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

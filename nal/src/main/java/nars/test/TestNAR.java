@@ -57,11 +57,11 @@ public class TestNAR {
      * holds mustNot (negative) conditions which are tested at the end
      */
     public final List<NARCondition> failsIfAny = $.newArrayList();
-    //TODO initialize this once in constructor
+    
 
     
     private Topic<Tasked>[] outputEvents;
-    //public final List<ExplainableTask> explanations = new ArrayList();
+    
 
 
     boolean finished;
@@ -82,16 +82,16 @@ public class TestNAR {
 
     public void set(NAR nar) {
         this.outputEvents = new Topic[]{
-                //nar.memory.eventDerived,
-                //nar.memory.eventInput,
+                
+                
                 nar.eventTask,
-                //nar.eventTaskRemoved,
-                //nar.memory.eventRevision,
+                
+                
         };
 
         this.nar = nar;
 
-        //eventMeters = new EventCount(nar).eventMeters;
+        
     }
 
     public TestNAR confTolerance(float t) {
@@ -99,26 +99,26 @@ public class TestNAR {
         return this;
     }
 
-    //    /** returns the "cost", which can be considered the inverse of a "score".
-//     * it is proportional to the effort (ex: # of cycles) expended by
-//     * this reasoner in attempts to satisfy success conditions.
-//     * If the conditions are not successful, the result will be INFINITE,
-//     * though this can be normalized to a finite value in comparing multiple tests
-//     * by replacing the INFINITE result with a maximum # of cycles limit,
-//     * which will be smaller in cases where the success conditions are
-//     * completed prior to the limit.
-//     * */
-//    public double getCost() {
-//        return EternalTaskCondition.cost(requires);
-//    }
+    
 
 
-//    /** asserts that (a snapshot of) the termlink graph is fully connected */
-//    public TestNAR assertTermLinkGraphConnectivity() {
-//        TermLinkGraph g = new TermLinkGraph(nar);
-//        assert("termlinks form a fully connected graph:\n" + g.toString(), g.isConnected());
-//        return this;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public TestNAR run(long finalCycle  /* for use with JUnit */) {
 
@@ -128,7 +128,7 @@ public class TestNAR {
             assertTrue(!succeedsIfAll.isEmpty() || !failsIfAny.isEmpty(), "no conditions tested");
 
 
-        //TODO cache requires & logger, it wont change often
+        
         String id = succeedsIfAll.toString();
 
         for (NARCondition oc : succeedsIfAll) {
@@ -182,24 +182,24 @@ public class TestNAR {
         int runtime = (int)(time - startTime);
 
         this.score = success ?
-                //(+1/(+1f+runtime))
+                
                 (+1f / (1f + ((1f+runtime)/(1f+finalCycle-startTime))))
                 :
                 0;
 
         {
 
-            //if (requires.isEmpty())
-            //return this;
+            
+            
 
 
-            //assertTrue("No cycles elapsed", tester.nar.memory().time/*SinceLastCycle*/() > 0);
+            
 
 
 
-            //Task[] inputs = n.inputs.toArray(new Task[n.inputs.size()]);
-//            Collection<HitMeter> var = eventMeters.values();
-//            HitMeter[] eventMeters1 = var.toArray(new HitMeter[var.size()]);
+            
+
+
 
 
             if (!quiet && reportStats) {
@@ -220,8 +220,8 @@ public class TestNAR {
                     logger.trace("{}", trace.getBuffer());
             }
 
-//            System.out.flush();
-//            System.err.flush();
+
+
 
 
 
@@ -247,21 +247,21 @@ public class TestNAR {
     
     public TestNAR runUntil(long finalCycle) {
 
-        //result = null;
-
-//        if (showOutput)
-//            nar.trace();
+        
 
 
-        //preinit
+
+
+
+        
         nar.synch();
 
-        //try {
+        
         int frames = Math.max(0,(int) (finalCycle - time()));
         while (frames-- > 0 && !finished)
             nar.run();
 
-        //finish anything pending
+        
         nar.synch();
 
         /*}
@@ -349,7 +349,7 @@ public class TestNAR {
     
     public TestNAR mustNotOutputAnything() {
         exitOnAllSuccess = false;
-        requireConditions = false; //this is the condition
+        requireConditions = false; 
         nar.onTask(c -> {
             if (!c.isInput())
                 fail(c + " output, but must not output anything");
@@ -391,10 +391,10 @@ public class TestNAR {
         }
     }
 
-//
-//    public TestNAR mustEmit( Topic<Tasked>[] c, long cycleStart, long cycleEnd,  String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax) {
-//        return mustEmit(c, cycleStart, cycleEnd, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, ETERNAL, ETERNAL);
-//    }
+
+
+
+
 
     TestNAR mustEmit( Topic<Tasked>[] c, long cyclesAhead,  String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) {
         try {
@@ -439,17 +439,17 @@ public class TestNAR {
         if (must) {
             succeedsIfAll.add(tc);
         } else {
-            exitOnAllSuccess = false; //require entire execution, not just finish early
+            exitOnAllSuccess = false; 
             failsIfAny.add(tc);
         }
 
         return this;
-//
-//        ExplainableTask et = new ExplainableTask(tc);
-//        if (showExplanations) {
-//            explanations.add(et);
-//        }
-//        return et;
+
+
+
+
+
+
     }
 
     public final long time() {
@@ -459,7 +459,7 @@ public class TestNAR {
     
     private TestNAR mustEmit( Topic<Tasked>[] c, long cyclesAhead,  String task) throws Narsese.NarseseException {
         Task t = Narsese.the().task(task, nar);
-        //TODO avoid reparsing term from string
+        
 
 
         String termString = t.term().toString();
@@ -500,15 +500,15 @@ public class TestNAR {
      */
     
     public TestNAR mustNotOutput(long cyclesAhead,  String term, byte punc, long occ) {
-        //assertTrue("no occurrence times specified", occs.length > 0);
-        //LongHashSet badTimes = new LongHashSet(occs);
+        
+        
         mustNotOutput(cyclesAhead, term, punc, 0f, 1f, 0f, 1f, occ);
         return this;
     }
     
     public TestNAR mustNotOutput(long cyclesAhead,  String term, byte punc,  LongPredicate occ) {
-        //assertTrue("no occurrence times specified", occs.length > 0);
-        //LongHashSet badTimes = new LongHashSet(occs);
+        
+        
         mustNotOutput(cyclesAhead, term, punc, 0f, 1f, 0f, 1f, occ);
         return this;
     }
@@ -641,41 +641,41 @@ public class TestNAR {
 
 
 
-    //    public static final class Report implements Serializable {
-//
-//        public final long time;
-//        
-//        public final HitMeter[] eventMeters;
-//        //@Nullable
-//        protected final Serializable error;
-//        protected final Task[] inputs;
-//        private final TestNAR test;
-    //final transient int stackElements = 4;
+    
 
 
-//
-//        public boolean isSuccess() {
-//            return true;
-//        }
 
-//        public void toString( PrintStream out) {
-//
-//            if (error!=null) {
-//                out.print(error);
-//            }
-//
-//            out.print("@" + time + ' ');
-//            out.print(Arrays.toString(eventMeters) + '\n');
-//
-//            for (Task t : inputs) {
-//                out.println("IN " + t);
-//            }
-//
-//            cond.forEach(c ->
-//                c.toString(out)
-//            );
-//        }
-//    }
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public TestNAR test(/* for use with JUnit */) {
@@ -689,7 +689,7 @@ public class TestNAR {
 
     final class EarlyExit implements Consumer<NAR> {
 
-        final int checkResolution; //every # cycles to check for completion
+        final int checkResolution; 
         int cycle;
 
         public EarlyExit(int checkResolution) {
@@ -721,126 +721,126 @@ public class TestNAR {
     }
 
 
-//    
-//    public TestNAR run(long extraCycles) {
-//        return runUntil(time() + extraCycles);
-//    }
-//
-//    
-//    public TestNAR runUntil(long finalCycle) {
-//
-//        result = null;
-//
-//        if (showOutput)
-//            nar.trace();
-//
-//
-//        //try {
-//        int frames = (int) (finalCycle - time());
-//        while (frames-- > 0 && !finished)
-//            nar.cycle();
-//
-//        /*}
-//        catch (Exception e) {
-//            error = e;
-//        }*/
-//
-//        return this;
-//    }
 
 
-//    /** returns null if there is no error, or a non-null String containing report if error */
-//    @Deprecated public String evaluate() {
-//        //TODO use report(..)
-//
-//        int conditions = requires.size();
-//        int failures = getError()!=null ? 1 : 0;
-//
-//        for (TaskCondition tc : requires) {
-//            if (!tc.isTrue()) {
-//                failures++;
-//            }
-//        }
-//
-//        int successes = conditions - failures;
-//
-//
-//        if (error!=null || failures > 0) {
-//            String result = "";
-//
-//            if (error!=null) {
-//                result += error.toString() + " ";
-//            }
-//
-//            if (failures > 0) {
-//                result += successes + "/ " + conditions + " conditions passed";
-//            }
-//
-//            return result;
-//        }
-//
-//        return null;
-//
-//    }
 
-//    public void report(PrintStream out, boolean showFail, boolean showSuccess, boolean showExplanations) {
-//
-//        boolean output = false;
-//
-//        if (showFail || showSuccess) {
-//
-//            for (TaskCondition tc : requires) {
-//
-//                if (!tc.isTrue()) {
-//                    if (showFail) {
-//                        out.println(tc.getFalseReason());
-//                        output = true;
-//                    }
-//                } else {
-//                    if (showSuccess) {
-//                        out.println(tc.getTrueReasons());
-//                        output = true;
-//                    }
-//                }
-//            }
-//
-//        }
-//
-//        if (error!=null) {
-//            error.printStackTrace();
-//            output = true;
-//        }
-//
-//        if (showExplanations) {
-//            for (ExplainableTask x : explanations ) {
-//                x.printMeaning(out);
-//                output = true;
-//            }
-//        }
-//
-//        if (output)
-//            out.println();
-//    }
-//
-//
-//    public void inputTest(String script) {
-//
-//        if (script == null)
-//            throw new RuntimeException("null input");
-//
-//        nar.input( new TestInput(script) );
-//
-//    }
 
-//    class TestInput extends TextInput {
-//        public TestInput(String script) {
-//            super(nar, script);
-//        }
-//
-//        @Override
-//        public void accept(Task task) {
-//            super.accept(task);
-//            inputs.add(task);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

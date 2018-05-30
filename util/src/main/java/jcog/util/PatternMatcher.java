@@ -6,7 +6,7 @@ import java.util.Arrays;
  * A simple pattern matcher, which is safe to use on untrusted data: it does
  * not provide full reg-exp support, only simple globbing that can not be
  * used maliciously.
- * https://android.googlesource.com/platform/frameworks/base.git/+/master/core/java/android/os/PatternMatcher.java
+ * https:
  */
 public class PatternMatcher {
     /**
@@ -42,15 +42,15 @@ public class PatternMatcher {
      * real time with no backtracking support.
      */
     public static final int PATTERN_ADVANCED_GLOB = 3;
-    // token types for advanced matching
+    
     private static final int TOKEN_TYPE_LITERAL = 0;
     private static final int TOKEN_TYPE_ANY = 1;
     private static final int TOKEN_TYPE_SET = 2;
     private static final int TOKEN_TYPE_INVERSE_SET = 3;
-    // Return for no match
+    
     private static final int NO_MATCH = -1;
     private static final String TAG = "PatternMatcher";
-    // Parsed placeholders for advanced patterns
+    
     private static final int PARSED_TOKEN_CHAR_SET_START = -1;
     private static final int PARSED_TOKEN_CHAR_SET_INVERSE_START = -2;
     private static final int PARSED_TOKEN_CHAR_SET_STOP = -3;
@@ -63,7 +63,7 @@ public class PatternMatcher {
     private final int mType;
     private final int[] mParsedPattern;
     private static final int MAX_PATTERN_STORAGE = 2048;
-    // workspace to use for building a parsed advanced pattern;
+    
     private static final int[] sParsedPatternScratch = new int[MAX_PATTERN_STORAGE];
     public PatternMatcher(String pattern, int type) {
         mPattern = pattern;
@@ -140,14 +140,14 @@ public class PatternMatcher {
             if (nextChar == '*') {
                 if (!escaped && c == '.') {
                     if (ip >= (NP-1)) {
-                        // at the end with a pattern match, so
-                        // all is good without checking!
+                        
+                        
                         return true;
                     }
                     ip++;
                     nextChar = pattern.charAt(ip);
-                    // Consume everything until the next character in the
-                    // pattern is found.
+                    
+                    
                     if (nextChar == '\\') {
                         ip++;
                         nextChar = ip < NP ? pattern.charAt(ip) : 0;
@@ -159,15 +159,15 @@ public class PatternMatcher {
                         im++;
                     } while (im < NM);
                     if (im == NM) {
-                        // Whoops, the next character in the pattern didn't
-                        // exist in the match.
+                        
+                        
                         return false;
                     }
                     ip++;
                     nextChar = ip < NP ? pattern.charAt(ip) : 0;
                     im++;
                 } else {
-                    // Consume only characters matching the one before '*'.
+                    
                     do {
                         if (match.charAt(im) != c) {
                             break;
@@ -184,13 +184,13 @@ public class PatternMatcher {
         }
         
         if (ip >= NP && im >= NM) {
-            // Reached the end of both strings, all is good!
+            
             return true;
         }
         
-        // One last check: we may have finished the match string, but still
-        // have a '.*' at the end of the pattern, which should still count
-        // as a match.
+        
+        
+        
         return ip == NP - 2 && pattern.charAt(ip) == '.'
                 && pattern.charAt(ip + 1) == '*';
 
@@ -217,22 +217,22 @@ public class PatternMatcher {
             switch (c) {
                 case '[':
                     if (inSet) {
-                        addToParsedPattern = true; // treat as literal or char class in set
+                        addToParsedPattern = true; 
                     } else {
                         if (pattern.charAt(ip + 1) == '^') {
                             sParsedPatternScratch[it++] = PARSED_TOKEN_CHAR_SET_INVERSE_START;
-                            ip++; // skip over the '^'
+                            ip++; 
                         } else {
                             sParsedPatternScratch[it++] = PARSED_TOKEN_CHAR_SET_START;
                         }
-                        ip++; // move to the next pattern char
+                        ip++; 
                         inSet = true;
                         continue;
                     }
                     break;
                 case ']':
                     if (!inSet) {
-                        addToParsedPattern = true; // treat as literal outside of set
+                        addToParsedPattern = true; 
                     } else {
                         int parsedToken = sParsedPatternScratch[it - 1];
                         if (parsedToken == PARSED_TOKEN_CHAR_SET_START ||
@@ -256,7 +256,7 @@ public class PatternMatcher {
                     }
                     break;
                 case '}':
-                    if (inRange) { // only terminate the range if we're currently in one
+                    if (inRange) { 
                         sParsedPatternScratch[it++] = PARSED_MODIFIER_RANGE_STOP;
                         inRange = false;
                     }
@@ -282,7 +282,7 @@ public class PatternMatcher {
                         sParsedPatternScratch[it++] = PARSED_TOKEN_CHAR_ANY;
                     }
                     break;
-                case '\\': // escape
+                case '\\': 
                     if (ip + 1 >= LP) {
                         throw new IllegalArgumentException("Escape found at end of pattern!");
                     }
@@ -298,16 +298,16 @@ public class PatternMatcher {
                     sParsedPatternScratch[it++] = c;
                     inCharClass = false;
                 } else {
-                    // look forward for character class
+                    
                     if (ip + 2 < LP
                             && pattern.charAt(ip + 1) == '-'
                             && pattern.charAt(ip + 2) != ']') {
                         inCharClass = true;
-                        sParsedPatternScratch[it++] = c; // set first token as lower end of range
-                        ip++; // advance past dash
-                    } else { // literal
-                        sParsedPatternScratch[it++] = c; // set first token as literal
-                        sParsedPatternScratch[it++] = c; // set second set as literal
+                        sParsedPatternScratch[it++] = c; 
+                        ip++; 
+                    } else { 
+                        sParsedPatternScratch[it++] = c; 
+                        sParsedPatternScratch[it++] = c; 
                     }
                 }
             } else if (inRange) {
@@ -325,7 +325,7 @@ public class PatternMatcher {
                         rangeMin = rangeMax = parsedRange;
                     } else {
                         rangeMin = Integer.parseInt(rangeString.substring(0, commaIndex));
-                        if (commaIndex == rangeString.length() - 1) { // e.g. {n,} (n or more)
+                        if (commaIndex == rangeString.length() - 1) { 
                             rangeMax = Integer.MAX_VALUE;
                         } else {
                             rangeMax = Integer.parseInt(rangeString.substring(commaIndex + 1));
@@ -341,7 +341,7 @@ public class PatternMatcher {
                     throw new IllegalArgumentException("Range number format incorrect", e);
                 }
                 ip = endOfSet;
-                continue; // don't increment ip
+                continue; 
             } else if (addToParsedPattern) {
                 sParsedPatternScratch[it++] = c;
             }
@@ -359,17 +359,17 @@ public class PatternMatcher {
                 parsedChar == PARSED_MODIFIER_RANGE_START;
     }
     static boolean matchAdvancedPattern(int[] parsedPattern, String match) {
-        // create indexes
+        
         int ip = 0, im = 0;
-        // one-time length check
+        
         final int LP = parsedPattern.length, LM = match.length();
-        // The current character being analyzed in the pattern
+        
         int patternChar;
         int tokenType;
         int charSetStart = 0, charSetEnd = 0;
-        while (ip < LP) { // we still have content in the pattern
+        while (ip < LP) { 
             patternChar = parsedPattern[ip];
-            // get the match type of the next verb
+            
             switch (patternChar) {
                 case PARSED_TOKEN_CHAR_ANY:
                     tokenType = TOKEN_TYPE_ANY;
@@ -380,10 +380,10 @@ public class PatternMatcher {
                     tokenType = patternChar == PARSED_TOKEN_CHAR_SET_START
                             ? TOKEN_TYPE_SET
                             : TOKEN_TYPE_INVERSE_SET;
-                    charSetStart = ip + 1; // start from the char after the set start
+                    charSetStart = ip + 1; 
                     while (++ip < LP && parsedPattern[ip] != PARSED_TOKEN_CHAR_SET_STOP);
-                    charSetEnd = ip - 1; // we're on the set stop, end is the previous
-                    ip++; // move the pointer to the next pattern entry
+                    charSetEnd = ip - 1; 
+                    ip++; 
                     break;
                 default:
                     charSetStart = ip;
@@ -393,7 +393,7 @@ public class PatternMatcher {
             }
             final int minRepetition;
             final int maxRepetition;
-            // look for a match length modifier
+            
             if (ip >= LP) {
                 minRepetition = maxRepetition = 1;
             } else {
@@ -412,27 +412,27 @@ public class PatternMatcher {
                     case PARSED_MODIFIER_RANGE_START:
                         minRepetition = parsedPattern[++ip];
                         maxRepetition = parsedPattern[++ip];
-                        ip += 2; // step over PARSED_MODIFIER_RANGE_STOP and on to the next token
+                        ip += 2; 
                         break;
                     default:
-                        minRepetition = maxRepetition = 1; // implied literal
+                        minRepetition = maxRepetition = 1; 
                         break;
                 }
             }
             if (minRepetition > maxRepetition) {
                 return false;
             }
-            // attempt to match as many characters as possible
+            
             int matched = matchChars(match, im, LM, tokenType, minRepetition, maxRepetition,
                     parsedPattern, charSetStart, charSetEnd);
-            // if we found a conflict, return false immediately
+            
             if (matched == NO_MATCH) {
                 return false;
             }
-            // move the match pointer the number of characters matched
+            
             im += matched;
         }
-        return ip >= LP && im >= LM; // have parsed entire string and regex
+        return ip >= LP && im >= LM; 
     }
     private static int matchChars(String match, int im, final int lm, int tokenType,
             int minRepetition, int maxRepetition, int[] parsedPattern,
@@ -447,7 +447,7 @@ public class PatternMatcher {
     }
     private static boolean matchChar(String match, int im, final int lm, int tokenType,
             int[] parsedPattern, int tokenStart, int tokenEnd) {
-        if (im >= lm) { // we've overrun the string, no match
+        if (im >= lm) { 
             return false;
         }
         switch (tokenType) {

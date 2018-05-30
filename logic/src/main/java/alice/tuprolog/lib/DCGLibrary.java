@@ -53,7 +53,7 @@ public class DCGLibrary extends Library {
                 + "dcg_connect([W | Ws], [W | Xs] \\ Ys) :- dcg_connect(Ws, Xs \\ Ys). \n";
     }
 
-    // Java guards for Prolog predicates
+    
 
     public boolean phrase_guard_2(Term arg0, Term arg1) throws PrologError {
         arg0 = arg0.term();

@@ -88,7 +88,7 @@ import java.util.ResourceBundle;
  * <p>
  * <pre>
  * Getopt g = new Getopt("testprog", argv, "ab:c::d");
- * //
+ * 
  * int c;
  * String arg;
  * while ((c = g.getopt()) != -1)
@@ -99,7 +99,7 @@ import java.util.ResourceBundle;
  *          case 'd':
  *            System.out.print("You picked " + (char)c + "\n");
  *            break;
- *            //
+ *            
  *          case 'b':
  *          case 'c':
  *            arg = g.getOptarg();
@@ -107,10 +107,10 @@ import java.util.ResourceBundle;
  *                             " with an argument of " +
  *                             ((arg != null) ? arg : "null") + "\n");
  *            break;
- *            //
+ *            
  *          case '?':
- *            break; // getopt() already printed an error
- *            //
+ *            break; 
+ *            
  *          default:
  *            System.out.print("getopt() returned " + c + "\n");
  *       }
@@ -265,15 +265,15 @@ import java.util.ResourceBundle;
  * int c;
  * String arg;
  * LongOpt[] longopts = new LongOpt[3];
- * //
+ * 
  * StringBuffer sb = new StringBuffer();
  * longopts[0] = new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h');
  * longopts[1] = new LongOpt("outputdir", LongOpt.REQUIRED_ARGUMENT, sb, 'o');
  * longopts[2] = new LongOpt("maximum", LongOpt.OPTIONAL_ARGUMENT, null, 2);
- * //
+ * 
  * Getopt g = new Getopt("testprog", argv, "-:bc::d:hW;", longopts);
- * g.setOpterr(false); // We'll do our own error handling
- * //
+ * g.setOpterr(false); 
+ * 
  * while ((c = g.getopt()) != -1)
  *   switch (c)
  *     {
@@ -284,13 +284,13 @@ import java.util.ResourceBundle;
  *                             + "' with argument " +
  *                             ((arg != null) ? arg : "null"));
  *          break;
- *          //
+ *          
  *        case 1:
  *          System.out.println("I see you have return in order set and that " +
  *                             "a non-option argv element was just found " +
  *                             "with the value '" + g.getOptarg() + "'");
  *          break;
- *          //
+ *          
  *        case 2:
  *          arg = g.getOptarg();
  *          System.out.println("I know this, but pretend I didn't");
@@ -299,11 +299,11 @@ import java.util.ResourceBundle;
  *                           " with value " +
  *                           ((arg != null) ? arg : "null"));
  *          break;
- *          //
+ *          
  *        case 'b':
  *          System.out.println("You picked plain old option " + (char)c);
  *          break;
- *          //
+ *          
  *        case 'c':
  *        case 'd':
  *          arg = g.getOptarg();
@@ -311,31 +311,31 @@ import java.util.ResourceBundle;
  *                             "' with argument " +
  *                             ((arg != null) ? arg : "null"));
  *          break;
- *          //
+ *          
  *        case 'h':
  *          System.out.println("I see you asked for help");
  *          break;
- *          //
+ *          
  *        case 'W':
  *          System.out.println("Hmmm. You tried a -W with an incorrect long " +
  *                             "option name");
  *          break;
- *          //
+ *          
  *        case ':':
  *          System.out.println("Doh! You need an argument for option " +
  *                             (char)g.getOptopt());
  *          break;
- *          //
+ *          
  *        case '?':
  *          System.out.println("The option '" + (char)g.getOptopt() +
  *                           "' is not valid");
  *          break;
- *          //
+ *          
  *        default:
  *          System.out.println("getopt() returned " + c);
  *          break;
  *     }
- * //
+ * 
  * for (int i = g.getOptind(); i < argv.length ; i++)
  *   System.out.println("Non option argv element: " + argv[i] + "\n");
  * </pre>
@@ -597,16 +597,16 @@ public class Getopt  {
         if (optstring.isEmpty())
             optstring = " ";
 
-        // This function is essentially _getopt_initialize from GNU getopt
+        
         this.progname = progname;
         this.argv = argv;
         this.optstring = optstring;
         this.long_options = long_options;
         this.long_only = long_only;
 
-        // Check for property "gnu.posixly_correct" to determine whether to
-        // strictly follow the POSIX standard.  This replaces the "POSIXLY_CORRECT"
-        // environment variable in the C version
+        
+        
+        
         if (System.getProperty("gnu.posixly_correct", null) == null)
             posixly_correct = false;
         else {
@@ -615,7 +615,7 @@ public class Getopt  {
                     Locale.US);
         }
 
-        // Determine how to handle the ordering of options and non-options
+        
         if (optstring.charAt(0) == '-') {
             ordering = RETURN_IN_ORDER;
             if (optstring.length() > 1)
@@ -627,7 +627,7 @@ public class Getopt  {
         } else if (posixly_correct) {
             ordering = REQUIRE_ORDER;
         } else {
-            ordering = PERMUTE; // The normal default case
+            ordering = PERMUTE; 
         }
     }
 
@@ -771,33 +771,33 @@ public class Getopt  {
         while (top > middle && middle > bottom) {
             String tem;
             if (top - middle > middle - bottom) {
-                // Bottom segment is the short one.
+                
                 int len = middle - bottom;
 
-                // Swap it with the top part of the top segment.
+                
                 for (int i = 0; i < len; i++) {
                     tem = argv[bottom + i];
                     argv[bottom + i] = argv[top - (middle - bottom) + i];
                     argv[top - (middle - bottom) + i] = tem;
                 }
-                // Exclude the moved bottom segment from further swapping.
+                
                 top -= len;
             } else {
-                // Top segment is the short one.
+                
                 int len = top - middle;
 
-                // Swap it with the bottom part of the bottom segment.
+                
                 for (int i = 0; i < len; i++) {
                     tem = argv[bottom + i];
                     argv[bottom + i] = argv[middle + i];
                     argv[middle + i] = tem;
                 }
-                // Exclude the moved top segment from further swapping.
+                
                 bottom += len;
             }
         }
 
-        // Update records for the slots the non-options now occupy.
+        
 
         first_nonopt += (optind - last_nonopt);
         last_nonopt = optind;
@@ -825,28 +825,28 @@ public class Getopt  {
         if (nameend == -1)
             nameend = nextchar.length();
 
-        // Test all lnog options for either exact match or abbreviated matches
+        
         LongOpt pfound = null;
         for (int i = 0; i < long_options.length; i++) {
             if (long_options[i].getName().startsWith(nextchar.substring(0, nameend))) {
                 if (long_options[i].getName().equals(nextchar.substring(0, nameend))) {
-                    // Exact match found
+                    
                     pfound = long_options[i];
                     longind = i;
                     exact = true;
                     break;
                 } else if (pfound == null) {
-                    // First nonexact match found
+                    
                     pfound = long_options[i];
                     longind = i;
                 } else {
-                    // Second or later nonexact match found
+                    
                     ambig = true;
                 }
             }
-        } // for
+        } 
 
-        // Print out an error if the option specified was ambiguous
+        
         if (ambig && !exact) {
             if (opterr) {
                 Object[] msgArgs = {progname, argv[optind]};
@@ -870,14 +870,14 @@ public class Getopt  {
                     optarg = nextchar.substring(nameend).length() > 1 ? nextchar.substring(nameend + 1) : "";
                 } else {
                     if (opterr) {
-                        // -- option
+                        
                         if (argv[optind - 1].startsWith("--")) {
                             Object[] msgArgs = {progname, pfound.name};
                             System.err.println(MessageFormat.format(
                                     _messages.getString("getopt.arguments1"),
                                     msgArgs));
                         }
-                        // +option or -option
+                        
                         else {
                             Object[] msgArgs = {progname, Character.toString(argv[optind - 1].charAt(0)),
                                     pfound.name};
@@ -892,7 +892,7 @@ public class Getopt  {
 
                     return ('?');
                 }
-            } // if (nameend)
+            } 
             else if (pfound.has_arg == LongOpt.REQUIRED_ARGUMENT) {
                 if (optind < argv.length) {
                     optarg = argv[optind];
@@ -909,7 +909,7 @@ public class Getopt  {
                     optopt = pfound.val;
                     return optstring.charAt(0) == ':' ? ':' : '?';
                 }
-            } // else if (pfound)
+            } 
 
             nextchar = "";
 
@@ -921,7 +921,7 @@ public class Getopt  {
             }
 
             return (pfound.val);
-        } // if (pfound != null)
+        } 
 
         longopt_handled = false;
 
@@ -952,23 +952,23 @@ public class Getopt  {
             return (-1);
 
         if ((nextchar == null) || (nextchar.isEmpty())) {
-            // If we have just processed some options following some non-options,
-            //  exchange them so that the options come first.
+            
+            
             if (last_nonopt > optind)
                 last_nonopt = optind;
             if (first_nonopt > optind)
                 first_nonopt = optind;
 
             if (ordering == PERMUTE) {
-                // If we have just processed some options following some non-options,
-                // exchange them so that the options come first.
+                
+                
                 if ((first_nonopt != last_nonopt) && (last_nonopt != optind))
                     exchange(argv);
                 else if (last_nonopt != optind)
                     first_nonopt = optind;
 
-                // Skip any additional non-options
-                // and extend the range of non-options previously skipped.
+                
+                
                 while ((optind < argv.length) && (argv[optind].isEmpty() ||
                         (argv[optind].charAt(0) != '-') || argv[optind].equals("-"))) {
                     optind++;
@@ -977,10 +977,10 @@ public class Getopt  {
                 last_nonopt = optind;
             }
 
-            // The special ARGV-element `--' means premature end of options.
-            // Skip it like a null option,
-            // then exchange with previous non-options as if it were an option,
-            // then skip everything else like a non-option.
+            
+            
+            
+            
             if ((optind != argv.length) && argv[optind].equals("--")) {
                 optind++;
 
@@ -994,19 +994,19 @@ public class Getopt  {
                 optind = argv.length;
             }
 
-            // If we have done all the ARGV-elements, stop the scan
-            // and back over any non-options that we skipped and permuted.
+            
+            
             if (optind == argv.length) {
-                // Set the next-arg-index to point at the non-options
-                // that we previously skipped, so the caller will digest them.
+                
+                
                 if (first_nonopt != last_nonopt)
                     optind = first_nonopt;
 
                 return (-1);
             }
 
-            // If we have come to a non-option and did not permute it,
-            // either stop the scan or describe it to the caller and pass it by.
+            
+            
             if (argv[optind].isEmpty() || (argv[optind].charAt(0) != '-') ||
                     argv[optind].equals("-")) {
                 if (ordering == REQUIRE_ORDER)
@@ -1016,12 +1016,12 @@ public class Getopt  {
                 return (1);
             }
 
-            // We have found another option-ARGV-element.
-            // Skip the initial punctuation.
+            
+            
             nextchar = argv[optind].substring(argv[optind].startsWith("--") ? 2 : 1);
         }
 
-        // Decode the current option-ARGV-element.
+        
 
   /* Check whether the ARGV-element is a long option.
 
@@ -1043,10 +1043,10 @@ public class Getopt  {
             if (longopt_handled)
                 return (c);
 
-            // Can't find it as a long option.  If this is not getopt_long_only,
-            // or the option starts with '--' or is not a valid short
-            // option, then it's an error.
-            // Otherwise interpret it as a short option.
+            
+            
+            
+            
             if (!long_only || argv[optind].startsWith("--")
                     || (optstring.indexOf(nextchar.charAt(0)) == -1)) {
                 if (opterr) {
@@ -1070,10 +1070,10 @@ public class Getopt  {
 
                 return ('?');
             }
-        } // if (longopts)
+        } 
 
-        // Look at and handle the next short option-character */
-        int c = nextchar.charAt(0); //**** Do we need to check for empty str?
+        
+        int c = nextchar.charAt(0); 
         nextchar = nextchar.length() > 1 ? nextchar.substring(1) : "";
 
         String temp = null;
@@ -1086,7 +1086,7 @@ public class Getopt  {
         if ((temp == null) || (c == ':')) {
             if (opterr) {
                 if (posixly_correct) {
-                    // 1003.2 specifies the format of this message
+                    
                     Object[] msgArgs = {progname, Character.toString((char) c)};
                     System.err.println(MessageFormat.format(
                             _messages.getString("getopt.illegal"), msgArgs));
@@ -1102,15 +1102,15 @@ public class Getopt  {
             return ('?');
         }
 
-        // Convenience. Treat POSIX -W foo same as long option --foo
+        
         if ((temp.charAt(0) == 'W') && (temp.length() > 1) && (temp.charAt(1) == ';')) {
             if (!nextchar.isEmpty()) {
                 optarg = nextchar;
             }
-            // No further cars in this argv element and no more argv elements
+            
             else if (optind == argv.length) {
                 if (opterr) {
-                    // 1003.2 specifies the format of this message.
+                    
                     Object[] msgArgs = {progname, Character.toString((char) c)};
                     System.err.println(MessageFormat.format(
                             _messages.getString("getopt.requires2"), msgArgs));
@@ -1119,8 +1119,8 @@ public class Getopt  {
                 optopt = c;
                 return optstring.charAt(0) == ':' ? ':' : '?';
             } else {
-                // We already incremented `optind' once;
-                // increment it again when taking next ARGV-elt as argument.
+                
+                
                 nextchar = argv[optind];
                 optarg = argv[optind];
             }
@@ -1130,7 +1130,7 @@ public class Getopt  {
             if (longopt_handled)
                 return (c);
             else
-            // Let the application handle it
+            
             {
                 nextchar = null;
                 ++optind;
@@ -1140,7 +1140,7 @@ public class Getopt  {
 
         if ((temp.length() > 1) && (temp.charAt(1) == ':')) {
             if ((temp.length() > 2) && (temp.charAt(2) == ':'))
-            // This is an option that accepts and argument optionally
+            
             {
                 if (!nextchar.isEmpty()) {
                     optarg = nextchar;
@@ -1156,7 +1156,7 @@ public class Getopt  {
                     ++optind;
                 } else if (optind == argv.length) {
                     if (opterr) {
-                        // 1003.2 specifies the format of this message
+                        
                         Object[] msgArgs = {progname, Character.toString((char) c)};
                         System.err.println(MessageFormat.format(
                                 _messages.getString("getopt.requires2"), msgArgs));
@@ -1169,15 +1169,15 @@ public class Getopt  {
                     optarg = argv[optind];
                     ++optind;
 
-                    // Ok, here's an obscure Posix case.  If we have o:, and
-                    // we get -o -- foo, then we're supposed to skip the --,
-                    // end parsing of options, and make foo an operand to -o.
-                    // Only do this in Posix mode.
+                    
+                    
+                    
+                    
                     if ((posixly_correct) && optarg.equals("--")) {
-                        // If end of argv, error out
+                        
                         if (optind == argv.length) {
                             if (opterr) {
-                                // 1003.2 specifies the format of this message
+                                
                                 Object[] msgArgs = {progname, Character.toString((char) c)};
                                 System.err.println(MessageFormat.format(
                                         _messages.getString("getopt.requires2"), msgArgs));
@@ -1188,9 +1188,9 @@ public class Getopt  {
                             return optstring.charAt(0) == ':' ? ':' : '?';
                         }
 
-                        // Set new optarg and set to end
-                        // Don't permute as we do on -- up above since we
-                        // know we aren't in permute mode because of Posix.
+                        
+                        
+                        
                         optarg = argv[optind];
                         ++optind;
                         first_nonopt = optind;
@@ -1206,6 +1206,6 @@ public class Getopt  {
         return (c);
     }
 
-} // Class Getopt
+} 
 
 

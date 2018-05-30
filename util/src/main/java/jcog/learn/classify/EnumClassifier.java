@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
 
 public class EnumClassifier<X> extends AbstractClassifier<X> {
 
-    //private final String[] labels;
+    
     private final ToIntFunction<X> which;
     private final int dim;
     private final String[] names;

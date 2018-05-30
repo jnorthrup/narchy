@@ -102,8 +102,8 @@ public class CellLayout
          cellLayoutConstraints = (CellLayoutConstraints) layoutElement.getConstraints();
 
          component.refreshPreferredSize();
-         component.setBounds(cellWidth * cellLayoutConstraints.x,//
-               cellHeight * cellLayoutConstraints.y,//
+         component.setBounds(cellWidth * cellLayoutConstraints.x,
+               cellHeight * cellLayoutConstraints.y,
                cellWidth * cellLayoutConstraints.width, cellHeight * cellLayoutConstraints.height);
       }
    }

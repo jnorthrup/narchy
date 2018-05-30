@@ -68,44 +68,44 @@ public class Art
             endScene = cutImage(gc, "endscene.gif", 96, 96);
             gameOver = cutImage(gc, "gameovergost.gif", 96, 64);
 
-//            //if (sound != null)
-//            {
-//                samples[SAMPLE_BREAK_BLOCK] = SampleLoader.load("snd/breakblock.wav");
-//                samples[SAMPLE_GET_COIN] = SampleLoader.load("snd/coin.wav");
-//                samples[SAMPLE_MARIO_JUMP] = SampleLoader.load("snd/jump.wav");
-//                samples[SAMPLE_MARIO_STOMP] = SampleLoader.load("snd/stomp.wav");
-//                samples[SAMPLE_MARIO_KICK] = SampleLoader.load("snd/kick.wav");
-//                samples[SAMPLE_MARIO_POWER_UP] = SampleLoader.load("snd/powerup.wav");
-//                samples[SAMPLE_MARIO_POWER_DOWN] = SampleLoader.load("snd/powerdown.wav");
-//                samples[SAMPLE_MARIO_DEATH] = SampleLoader.load("snd/death.wav");
-//                samples[SAMPLE_ITEM_SPROUT] = SampleLoader.load("snd/sprout.wav");
-//                samples[SAMPLE_CANNON_FIRE] = SampleLoader.load("snd/cannon.wav");
-//                samples[SAMPLE_SHELL_BUMP] = SampleLoader.load("snd/bump.wav");
-//                samples[SAMPLE_LEVEL_EXIT] = SampleLoader.load("snd/exit.wav");
-//                samples[SAMPLE_MARIO_1UP] = SampleLoader.load("snd/1-up.wav");
-//                samples[SAMPLE_MARIO_FIREBALL] = SampleLoader.load("snd/fireball.wav");
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
         catch (Exception e)
         {
             e.printStackTrace();
         }
-//
-//        try
-//        {
-//            sequencer = MidiSystem.getSequencer();
-//            sequencer.open();
-//            songs[0] = MidiSystem.getSequence(Art.class.getResourceAsStream("mus/smb3map1.mid"));
-//            songs[1] = MidiSystem.getSequence(Art.class.getResourceAsStream("mus/smwovr1.mid"));
-//            songs[2] = MidiSystem.getSequence(Art.class.getResourceAsStream("mus/smb3undr.mid"));
-//            songs[3] = MidiSystem.getSequence(Art.class.getResourceAsStream("mus/smwfortress.mid"));
-//            songs[4] = MidiSystem.getSequence(Art.class.getResourceAsStream("mus/smwtitle.mid"));
-//        }
-//        catch (Exception e)
-//        {
-//            sequencer = null;
-//            e.printStackTrace();
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     private static Image getImage(GraphicsConfiguration gc, String imageName) throws IOException
@@ -142,20 +142,20 @@ public class Art
     public static void startMusic(int song)
     {
         stopMusic();
-//        if (sequencer != null)
-//        {
-//            try
-//            {
-//                sequencer.open();
-//                sequencer.setSequence((Sequence)null);
-//                sequencer.setSequence(songs[song]);
-//                sequencer.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
-//                sequencer.start();
-//            }
-//            catch (Exception e)
-//            {
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public static void stopMusic()

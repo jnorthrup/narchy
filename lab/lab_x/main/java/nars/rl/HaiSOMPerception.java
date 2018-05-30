@@ -43,33 +43,33 @@ public class HaiSOMPerception implements Perception {
     public Iterable<Task> perceive(NAR nar, double[] input, double t) {
 
         som.learn(input);
-        //int s = som.winnerx * env.inputDimension() + som.winnery;
-        //System.out.println(Arrays.toString(input) + " " + reward );
-        //System.out.println(som.winnerx + " " + som.winnery + " -> " + s);
+        
+        
+        
 
-        //System.out.println(Arrays.deepToString(q));
-        // agent.learn(s, reward);
+        
+        
 
         int x = som.winnerx;
         int y = som.winnery;
 
         return Collections.singleton(
-                //TODO avoid String parsing
-                //nar.task("<state --> [(*," + id + x + "," + id + y + ")]>. :|: %1.00;" + confidence + '%')
+                
+                
                 nar.task("<{(*,s" + x + ",s" + y + ")} --> " + id + ">. :|: %1.00;" + confidence + '%')
         );
     }
 
     @Override
     public boolean isState(Term t) {
-        //TODO better pattern recognizer
+        
         String s = t.toString();
         int complexity = t.complexity();
 
-        //allow complxity to increase to a certain amount to include aggregate states
+        
         if ((t instanceof Inheritance) && (complexity >= 6) && (complexity <= 9)) {
             if (((Inheritance)t).getPredicate().equals(idTerm)) {
-                //System.out.println(t + " " + t.getComplexity());
+                
                 return true;
             }
         }

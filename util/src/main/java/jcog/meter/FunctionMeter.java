@@ -75,9 +75,9 @@ public abstract class FunctionMeter<M> implements Signals<M>, Serializable {
         M[] vector = this.vector;
 
         if (vector == null) {
-            //the following wont work because firstValue may be null
-            //M firstValue = getValue(key, 0);            
-            //vector = (M[]) Array.newInstance(firstValue.getClass(), signals.size());
+            
+            
+            
             vector = this.vector = (M[]) new Object[signals.size()];
 
         }

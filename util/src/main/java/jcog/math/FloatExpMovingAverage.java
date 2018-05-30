@@ -32,7 +32,7 @@ public class FloatExpMovingAverage implements FloatToFloatFunction {
 
         synchronized (this) {
             if (x != x)
-                x = this.prev; //HACK
+                x = this.prev; 
 
             if (x!=x)
                 return Float.NaN;

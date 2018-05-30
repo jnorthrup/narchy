@@ -1,30 +1,30 @@
 
-//
-// (c) 2000 Sun Microsystems, Inc.
-// ALL RIGHTS RESERVED
-// 
-// License Grant-
-// 
-// 
-// Permission to use, copy, modify, and distribute this Software and its 
-// documentation for NON-COMMERCIAL or COMMERCIAL purposes and without fee is 
-// hereby granted.  
-// 
-// This Software is provided "AS IS".  All express warranties, including any 
-// implied warranty of merchantability, satisfactory quality, fitness for a 
-// particular purpose, or non-infringement, are disclaimed, except to the extent 
-// that such disclaimers are held to be legally invalid.
-// 
-// You acknowledge that Software is not designed, licensed or intended for use in 
-// the design, construction, operation or maintenance of any nuclear facility 
-// ("High Risk Activities").  Sun disclaims any express or implied warranty of 
-// fitness for such uses.  
-//
-// Please refer to the file http://www.sun.com/policies/trademarks/ for further 
-// important trademark information and to 
-// http://java.sun.com/nav/business/index.html for further important licensing 
-// information for the Java Technology.
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 package jake2.util;
 
 import java.text.DecimalFormatSymbols;
@@ -1141,7 +1141,7 @@ public class PrintfFormat {
 		 * with trailing 0s.
 		 */
 		private char[] fFormatDigits(double x) {
-			// int defaultDigits=6;
+			
 			String sx, sxOut;
 			int i, j, k;
 			int n1In, n2In;
@@ -1312,7 +1312,7 @@ public class PrintfFormat {
 				if (ca5[dp] == '.')
 					break;
 			int nThousands = (dp - lead) / 3;
-			// Localize the decimal point.
+			
 			if (dp < ca5.length)
 				ca5[dp] = dfs.getDecimalSeparator();
 			char[] ca6 = ca5;
@@ -1321,7 +1321,7 @@ public class PrintfFormat {
 				ca6[0] = ca5[0];
 				for (i = lead, k = lead; i < dp; i++) {
 					if (i > 0 && (dp - i) % 3 == 0) {
-						// ca6[k]=',';
+						
 						ca6[k] = dfs.getGroupingSeparator();
 						ca6[k + 1] = ca5[i];
 						k += 2;
@@ -1404,7 +1404,7 @@ public class PrintfFormat {
 		 */
 		private char[] eFormatDigits(double x, char eChar) {
 			char[] ca1, ca2, ca3;
-			// int defaultDigits=6;
+			
 			String sx, sxOut;
 			int i, j, k, p;
 			int n1In, n2In;
@@ -1679,7 +1679,7 @@ public class PrintfFormat {
 				if (ca3[dp] == '.')
 					break;
 			int nThousands = dp / 3;
-			// Localize the decimal point.
+			
 			if (dp < ca3.length)
 				ca3[dp] = dfs.getDecimalSeparator();
 			char[] ca4 = ca3;
@@ -1688,7 +1688,7 @@ public class PrintfFormat {
 				ca4[0] = ca3[0];
 				for (i = lead, k = lead; i < dp; i++) {
 					if (i > 0 && (dp - i) % 3 == 0) {
-						// ca4[k]=',';
+						
 						ca4[k] = dfs.getGroupingSeparator();
 						ca4[k + 1] = ca3[i];
 						k += 2;
@@ -1976,9 +1976,9 @@ public class PrintfFormat {
 					if (i < sx.length())
 						expon = Integer.parseInt(sx.substring(i));
 				}
-				// Trim trailing zeros.
-				// If the radix character is not followed by
-				// a digit, trim it, too.
+				
+				
+				
 				if (!alternateForm) {
 					if (expon >= -4 && expon < precision)
 						sy = fFormatString(x).trim();
@@ -2006,14 +2006,14 @@ public class PrintfFormat {
 					else
 						ret = sx;
 				}
-				// leading space was trimmed off during
-				// construction
+				
+				
 				if (leadingSpace)
 					if (x >= 0)
 						ret = ' ' + ret;
 				ca4 = ret.toCharArray();
 			}
-			// Pad with blanks or zeros.
+			
 			ca5 = applyFloatPadding(ca4, false);
 			precision = savePrecision;
 			return new String(ca5);

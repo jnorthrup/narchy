@@ -73,7 +73,7 @@ public class WaveFactory{
 	/** Repeatedly create parents of the trees until there is only 1 left. Does not modify the array. */
 	private static WaveTree1 createRoot(WaveTree1 w[]){
 		while(w.length > 1){
-			//TODO: use 1 array and int count var
+			
 			WaveTree1 wNew[] = new WaveTree1[(w.length+1)/2];
 			int wNewCount = 0;
 			if((w.length&1) == 1) wNew[wNewCount++] = w[0];
@@ -102,23 +102,23 @@ public class WaveFactory{
 	}
 
 	public static void test(PrintStream logStream) throws RuntimeException{
-		//TODO: run this in a loop and change the contents and sizes of the arrays
-		double sizeA[] =      {7.7,7.7,7.7,7.7,7.7}; //use equalSizes function
+		
+		double sizeA[] =      {7.7,7.7,7.7,7.7,7.7}; 
 		double sizeB[] =      {5.5,6.5,7.5,8.5,0.1,0.1,0.1,4.4,0.1,6.7};
 		double sizeC[] =      {9.9,4.2,5.3,6.7};
 		double sizeD[] = new double[49999];
-		//double sizeD[] = new double[53];
+		
 		for(int i=0; i<sizeD.length; i++){
-			sizeD[i] = thisPlusEpsilon(Math.pow(rand.nextDouble(),10),10)*1e1; //FIXME: increase the exponent here. need to prove more accuracy
+			sizeD[i] = thisPlusEpsilon(Math.pow(rand.nextDouble(),10),10)*1e1; 
 		}
 		double sizeE[] =      {3.3,1.4,1.5,6.6,1.7,8.8,9.9,6.6,190,143,234,3.4,6.7,3.3,1.7,110,1.1};
 		double amplitudeA[] = {9.4,3.3,7.3,3.7,2.4};
 		double amplitudeB[] = {5.5,8.8,-.2,6.6,4.4,9.6,9.9,9.9,9.9,8.8};
 		double amplitudeC[] = {7.6,4.4,3.2,1.2};
 		double amplitudeD[] = new double[49999];
-		//double amplitudeD[] = new double[53];
+		
 		for(int i=0; i<amplitudeD.length; i++){
-			amplitudeD[i] = Math.pow(rand.nextDouble(),10)*1e1; //FIXME: increase the exponent here. need to prove more accuracy
+			amplitudeD[i] = Math.pow(rand.nextDouble(),10)*1e1; 
 			if(rand.nextBoolean()) amplitudeD[i] *= -1;
 		}
 		double amplitudeE[] = {1.5,2.2,3.3,-.4,-.5,6.6,-.7,8.8,9.9,6.6,-90,-43,234,3.4,6.7,3.3,1.7};
@@ -132,7 +132,7 @@ public class WaveFactory{
 		double amplitudeA[], double amplitudeB[], double amplitudeC[], double amplitudeD[], double amplitudeE[]
 	)throws RuntimeException{
 		logStream.println("Testing "+WaveFactory.class+" with 1 audio channel.");
-		Arrays.fill(sizeA, sizeA[0]); //array A must be all the same size, but can have different values
+		Arrays.fill(sizeA, sizeA[0]); 
 		int maxBitsOfRoundoff = 10;
 		double totalSizeA = sum(sizeA);
 		double totalSizeB = sum(sizeB);
@@ -161,7 +161,7 @@ public class WaveFactory{
 		t("waveE ave amp", waveE.aveAmp(), aveE);
 		Wave waveB_reversed = waveB.reverse();
 		verifyReversed("waveB and waveB_reversed", waveB, waveB_reversed);
-		Wave waveB_balanced = waveB.balanceTree(); //B should have started balanced. This checks if balance destroys that.
+		Wave waveB_balanced = waveB.balanceTree(); 
 		t("waveB_balanced ave amp", waveB_balanced.aveAmp(), aveB);
 		t("waveB_balanced len", waveB_balanced.len(), totalSizeB);
 		t("waveB_balanced position 0", waveB_balanced.amp(0.), amplitudeB[0]);
@@ -185,17 +185,17 @@ public class WaveFactory{
 		Wave waveBC_balanced = waveBC.balanceTree();
 		t("waveBC_balanced ave amp", waveBC_balanced.aveAmp(), (aveB*totalSizeB+aveC*totalSizeC)/(totalSizeB+totalSizeC));
 		t("waveBC_balanced len", waveBC_balanced.len(), totalSizeB+totalSizeC);
-		verify2WavesApproxEqual(100, 50, //FIXME: use bigger first parameter
+		verify2WavesApproxEqual(100, 50, 
 			"comparing waveBC to itself to test the verify2WavesApproxEqual function.",
 			waveBC, waveBC, 1e-8);
 		Wave epsilonWaveForBC = WaveFactory.ampSizle(0.,waveBC.len()/1e9);
 		Wave waveBC_aLittleBigger = epsilonWaveForBC.concat(waveBC).concat(epsilonWaveForBC);
 		t("waveBC_aLittleBigger len",
 			waveBC.len()+2*epsilonWaveForBC.len(), waveBC_aLittleBigger.len(), 1e-14);
-		verify2WavesApproxEqual(100, 50, //FIXME: use bigger first parameter
+		verify2WavesApproxEqual(100, 50, 
 			"comparing waveBC to itself between 2 very small waves to test the verify2WavesApproxEqual function on slightly different waves.",
 			waveBC, waveBC_aLittleBigger, 1e-8);
-		verify2WavesApproxEqual(100, 50, "comparing waveBC to waveBC_balanced.", //FIXME: use bigger first parameter
+		verify2WavesApproxEqual(100, 50, "comparing waveBC to waveBC_balanced.", 
 			waveBC, waveBC_balanced, 1e-8);
 		t("waveBC_balanced position 0", waveBC_balanced.amp(0.), amplitudeB[0]);
 		t("waveBC_balanced position just before end",
@@ -245,7 +245,7 @@ public class WaveFactory{
 			waveCD_BCDEx5_DE_balanced_forwardBackwardForward.balanceTree();
 		verifyForwardConcatBackwardConcatForward("waveCD_BCDEx5_DE_balanced_forwardBackwardForward_balanced",
 				waveCD_BCDEx5_DE_balanced_forwardBackwardForward_balanced);
-		//FIXME: more tests. use waveA
+		
 		logStream.println("Done testing "+WaveFactory.class+" with 1 audio channel. All tests pass.");
 	}
 
@@ -275,8 +275,8 @@ public class WaveFactory{
 
 	/** maxRelativeDiff is relative to 1.0, not the value of the doubles */
 	private static boolean areClose(double a, double b, double maxRelativeDiff){
-		if(a == 0 && b == 0) return true; //TODO: doesnt handle all errors
-		if(a == 0 || b == 0) return false; //TODO: doesnt handle all errors
+		if(a == 0 && b == 0) return true; 
+		if(a == 0 || b == 0) return false; 
 		double d = a/b;
 		return 1-maxRelativeDiff < d && d < 1+maxRelativeDiff;
 	}
@@ -285,7 +285,7 @@ public class WaveFactory{
 	allowedBitsOfRoundoffError comes out of the 52.
 	*/
 	private static double thisMinusEpsilon(double d, int allowedBitsOfRoundoffError){
-		//TODO: verify allowedBitsOfRoundoffError is not off by 1
+		
 		return d * (1 - 1./(1L << 52-allowedBitsOfRoundoffError));
 	}
 
@@ -295,7 +295,7 @@ public class WaveFactory{
 
 	private static void verifyReversed(String varNameBeingTested, Wave wave, Wave waveReversed){
 		String prefix = "verifyReversed "+varNameBeingTested+" ";
-		//test many floating point pseudorandom positions
+		
 		if(!areClose(wave.len(),waveReversed.len(),1e-8)) throw new RuntimeException(
 			"wave len "+wave.len()+" is not close to "+waveReversed.len());
 		double s = wave.len(), inc = s/(345*Math.PI), incSine = 3.1334, circle = .123;
@@ -321,7 +321,7 @@ public class WaveFactory{
 
 	private static void verifyForwardConcatBackwardConcatForward(String varNameBeingTested, Wave wave){
 		String prefix = "verifyForwardConcatBackwardConcatForward "+varNameBeingTested+" ";
-		//test many floating point pseudorandom positions
+		
 		double s = wave.len()/3, inc = s/(345*Math.PI), incSine = 3.1334, circle = .123;
 		int pointsTried = 0;
 		for(double p=0; p<s; p+=inc*(.2+Math.sin(circle+=incSine))){
@@ -351,15 +351,15 @@ public class WaveFactory{
 		if(includeStart) d[0] = start;
 		if(includeEnd) d[d.length-1] = end;
 		Arrays.sort(d);
-		while(!includeStart && d[0]==start){ //rare
+		while(!includeStart && d[0]==start){ 
 			d[0] = start+rand.nextDouble()*len;
 			Arrays.sort(d);
 		}
-		while(!includeEnd && d[d.length-1]==end){ //rare
+		while(!includeEnd && d[d.length-1]==end){ 
 			d[d.length-1] = start+rand.nextDouble()*len;
 			Arrays.sort(d);
 		}
-		//FIXME: dont let any 2 adjacent values be areClose(double,double)
+		
 		return d;
 	}
 
@@ -390,7 +390,7 @@ public class WaveFactory{
 		Arrays.sort(valuesA);
 		double valuesB[] = valuesAtPositionsInWave(posB, waveB);
 		Arrays.sort(valuesB);
-		//TODO: optimize this. It could be bigO(len) instead of bigO(len^2)
+		
 		for(int a=0; a<len; a++){
 			for(int b=0; b<len; b++){
 				if(areClose(valuesA[a],valuesB[b],maxRelativeDiff)) return;
@@ -417,7 +417,7 @@ public class WaveFactory{
 		if(innerPositionQuantity < 6) throw new RuntimeException(
 			"innerPositionQuantity is "+innerPositionQuantity+" but must be at least 6");
 		double len = Math.min(waveA.len(),waveB.len());
-		//FIXME: modify getSortedPseudorandomIndexsInThisRange function to have extra parameter that specifies minimum difference between adjacent values in the returned array
+		
 		double outerPos[] = getSortedPseudorandomIndexsInThisRange(true,0.,outerPositionQuantity+1,len,true);
 		for(int outer=0; outer<outerPositionQuantity; outer++){
 			String err = "outer position range number "+outer

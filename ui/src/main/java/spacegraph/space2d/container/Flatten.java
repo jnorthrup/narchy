@@ -36,9 +36,9 @@ public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
 
         if (ss instanceof SimpleSpatial) {
             SimpleSpatial s = (SimpleSpatial) ss;
-            //v3 f = v();
-            //locate(s, f);
-            //s.move(f, rate);
+            
+            
+            
 
             Body3D b = s.body;
             if (b == null)
@@ -46,28 +46,28 @@ public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
 
             float tz = b.transform.z;
             if (Math.abs(tz) > zTolerance) {
-//                b.velAdd(v( 0, 0,
-//                        -(tz > 0 ? (tz - zTolerance) : (tz + zTolerance)) * zSpeed));
+
+
                 b.linearVelocity.z *= zSpeed;
                 b.transform.z *= zSpeed;
             } else {
-                //dont affect
+                
             }
 
             s.rotate(up, rotateRate, new Quaternion());
 
 
 
-            //dampening: keep upright and eliminate z-component of linear velocity
-//            b.linearVelocity.scale(
-//                    1f, 1f, 0.9f
-//            );
-            //b.angularVelocity.scale(1f-rotateRate);
-            //b.angularVelocity.zero();
+            
+
+
+
+            
+            
         }
     }
 
-    //TODO abstract this
+    
     protected static void locate(SimpleSpatial s, v3 f) {
         f.set(s.x(), s.y(), 0f);
     }

@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 31.10.2003 by RST.
+
 
 package jake2.game;
 
@@ -31,7 +31,7 @@ public class cplane_t
 	/** This is for fast side tests, 0=xplane, 1=yplane, 2=zplane and 3=arbitrary. */
 	public byte type;
 	/** This represents signx + (signy<<1) + (signz << 1). */
-	public byte signbits; // signx + (signy<<1) + (signz<<1)
+	public byte signbits; 
 	public final byte[] pad = { 0, 0 };
 	
 	public void set(cplane_t c) {

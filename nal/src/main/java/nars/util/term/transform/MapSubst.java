@@ -16,8 +16,8 @@ public final class MapSubst implements Subst {
                 return null;
             case 1:
                 throw new UnsupportedOperationException("use replace(X,Y)");
-                //return new MapSubst1(m.entrySet().iterator().next());
-            //case 2: apply first item then second, elides map lookup on each term?
+                
+            
             default:
                 return new MapSubst(m);
         }
@@ -29,10 +29,10 @@ public final class MapSubst implements Subst {
         this.xy = xy;
     }
 
-//    @Override
-//    public void cache(@NotNull Term x, @NotNull Term y) {
-//        //ignored
-//    }
+
+
+
+
 
     @Override
     public void clear() {
@@ -55,15 +55,15 @@ public final class MapSubst implements Subst {
         return xy.get(t);
     }
 
-//    public void forEach(@NotNull BiConsumer<? super Term, ? super Term> each) {
-//        if (xy.isEmpty()) return;
-//        xy.forEach(each);
-//    }
-//
-//    @Override
-//    public boolean put(@NotNull Unify copied) {
-//        throw new UnsupportedOperationException("TODO");
-//    }
+
+
+
+
+
+
+
+
+
 
     @NotNull
     @Override
@@ -90,7 +90,7 @@ public final class MapSubst implements Subst {
          * creates a substitution of one variable; more efficient than supplying a Map
          */
         public MapSubst1(/*@NotNull*/ Term from, /*@NotNull*/ Term to) {
-            //assert(!from.equals(to)): "pointless substitution";
+            
             if (from.equals(to))
                 throw new RuntimeException("pointless substitution");
 
@@ -122,9 +122,9 @@ public final class MapSubst implements Subst {
             throw new UnsupportedOperationException();
         }
 
-    //    @Override
-    //    public boolean put(/*@NotNull*/ Unify copied) {
-    //        throw new UnsupportedOperationException();
-    //    }
+    
+    
+    
+    
     }
 }

@@ -26,80 +26,80 @@ class MyCMAESOptimizerTest {
     static final int DIM = 13;
     static final int LAMBDA = 4 + (int)(3.* FastMath.log(DIM));
 
-//    @Test(thro= NumberIsTooLargeException.class)
-//
-//    public void testInitOutofbounds1() {
-//        double[] startPoint = point(DIM,3);
-//        double[] insigma = point(DIM, 0.3);
-//        double[][] boundaries = boundaries(DIM,-1,2);
-//        PointValuePair expected =
-//                new PointValuePair(point(DIM,1.0),0.0);
-//        doTest(new Rosen(), startPoint, insigma, boundaries,
-//                GoalType.MINIMIZE, LAMBDA, true, 0, 1e-13,
-//                1e-13, 1e-6, 100000, expected);
-//    }
-//    @Test(expected = NumberIsTooSmallException.class)
-//    public void testInitOutofbounds2() {
-//        double[] startPoint = point(DIM, -2);
-//        double[] insigma = point(DIM, 0.3);
-//        double[][] boundaries = boundaries(DIM,-1,2);
-//        PointValuePair expected =
-//                new PointValuePair(point(DIM,1.0),0.0);
-//        doTest(new Rosen(), startPoint, insigma, boundaries,
-//                GoalType.MINIMIZE, LAMBDA, true, 0, 1e-13,
-//                1e-13, 1e-6, 100000, expected);
-//    }
-//
-//    @Test(expected = DimensionMismatchException.class)
-//    public void testBoundariesDimensionMismatch() {
-//        double[] startPoint = point(DIM,0.5);
-//        double[] insigma = point(DIM, 0.3);
-//        double[][] boundaries = boundaries(DIM+1,-1,2);
-//        PointValuePair expected =
-//                new PointValuePair(point(DIM,1.0),0.0);
-//        doTest(new Rosen(), startPoint, insigma, boundaries,
-//                GoalType.MINIMIZE, LAMBDA, true, 0, 1e-13,
-//                1e-13, 1e-6, 100000, expected);
-//    }
-//
-//    @Test(expected = NotPositiveException.class)
-//    public void testInputSigmaNegative() {
-//        double[] startPoint = point(DIM,0.5);
-//        double[] insigma = point(DIM,-0.5);
-//        double[][] boundaries = null;
-//        PointValuePair expected =
-//                new PointValuePair(point(DIM,1.0),0.0);
-//        doTest(new Rosen(), startPoint, insigma, boundaries,
-//                GoalType.MINIMIZE, LAMBDA, true, 0, 1e-13,
-//                1e-13, 1e-6, 100000, expected);
-//    }
-//
-//    @Test(expected = OutOfRangeException.class)
-//    public void testInputSigmaOutOfRange() {
-//        double[] startPoint = point(DIM,0.5);
-//        double[] insigma = point(DIM, 1.1);
-//        double[][] boundaries = boundaries(DIM,-0.5,0.5);
-//        PointValuePair expected =
-//                new PointValuePair(point(DIM,1.0),0.0);
-//        doTest(new Rosen(), startPoint, insigma, boundaries,
-//                GoalType.MINIMIZE, LAMBDA, true, 0, 1e-13,
-//                1e-13, 1e-6, 100000, expected);
-//    }
-//
-//    @Test(expected = DimensionMismatchException.class)
-//    public void testInputSigmaDimensionMismatch() {
-//        double[] startPoint = point(DIM,0.5);
-//        double[] insigma = point(DIM + 1, 0.5);
-//        double[][] boundaries = null;
-//        PointValuePair expected =
-//                new PointValuePair(point(DIM,1.0),0.0);
-//        doTest(new Rosen(), startPoint, insigma, boundaries,
-//                GoalType.MINIMIZE, LAMBDA, true, 0, 1e-13,
-//                1e-13, 1e-6, 100000, expected);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
-    ////@Retry(3)
+    
     public void testRosen() {
         double[] startPoint = point(DIM,0.1);
         double[] insigma = point(DIM,0.1);
@@ -115,7 +115,7 @@ class MyCMAESOptimizerTest {
     }
 
     @Test
-    //@Retry(3)
+    
     public void testMaximize() {
         double[] startPoint = point(DIM,1.0);
         double[] insigma = point(DIM,0.1);
@@ -390,7 +390,7 @@ class MyCMAESOptimizerTest {
 
         final double[] start = { 1 };
 
-        // No bounds.
+        
         PointValuePair result = optimizer.optimize(new MaxEval(100000),
                 new ObjectiveFunction(fitnessFunction),
                 GoalType.MINIMIZE,
@@ -398,7 +398,7 @@ class MyCMAESOptimizerTest {
                 new InitialGuess(start));
         final double resNoBound = result.getPoint()[0];
 
-        // Optimum is near the lower bound.
+        
         final double[] lower = { -20 };
         final double[] upper = { 5e16 };
         final double[] sigma2 = { 10 };
@@ -413,7 +413,7 @@ class MyCMAESOptimizerTest {
                 new SimpleBounds(lower, upper));
         final double resNearLo = result.getPoint()[0];
 
-        // Optimum is near the upper bound.
+        
         lower[0] = -5e16;
         upper[0] = 20;
         result = optimizer.optimize(new MaxEval(100000),
@@ -423,12 +423,12 @@ class MyCMAESOptimizerTest {
                 new SimpleBounds(lower, upper));
         final double resNearHi = result.getPoint()[0];
 
-        // System.out.println("resNoBound=" + resNoBound +
-        //                    " resNearLo=" + resNearLo +
-        //                    " resNearHi=" + resNearHi);
+        
+        
+        
 
-        // The two values currently differ by a substantial amount, indicating that
-        // the bounds definition can prevent reaching the optimum.
+        
+        
         assertEquals(resNoBound, resNearLo, 1e-3);
         assertEquals(resNoBound, resNearHi, 1e-3);
     }
@@ -462,7 +462,7 @@ class MyCMAESOptimizerTest {
                         int maxEvaluations,
                         PointValuePair expected) {
         int dim = startPoint.length;
-        // test diagonalOnly = 0 - slow but normally fewer feval#
+        
         MyCMAESOptimizer optim = new MyCMAESOptimizer(30000, stopValue, isActive, diagonalOnly,
                 0, rng(), false, null, lambda, inSigma);
         PointValuePair result = boundaries == null ?
@@ -478,7 +478,7 @@ class MyCMAESOptimizerTest {
                                 boundaries[1]),
                         new InitialGuess(startPoint));
 
-        // System.out.println("sol=" + Arrays.toString(result.getPoint()));
+        
         assertEquals(expected.getValue(), result.getValue(), fTol);
         for (int i = 0; i < dim; i++) {
             assertEquals(expected.getPoint()[i], result.getPoint()[i], pointTol);
@@ -755,7 +755,7 @@ class MyCMAESOptimizerTest {
 
     private static class Basis {
         double[][] basis;
-        Random rand = new Random(2); // use not always the same basis
+        Random rand = new Random(2); 
 
         double[] Rotate(double[] x) {
             GenBasis(x.length);

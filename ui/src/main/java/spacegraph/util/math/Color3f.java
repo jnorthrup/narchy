@@ -46,7 +46,7 @@ import java.awt.*;
  */
 public class Color3f extends Tuple3f {
 
-    // Compatible with 1.1
+    
     static final long serialVersionUID = -1861792981817493659L;
 
     /**
@@ -87,13 +87,13 @@ public class Color3f extends Tuple3f {
     }
 
 
-//    /**
-//     * Constructs and initializes a Color3f from the specified Tuple3d.
-//     * @param t1 the Tuple3d containing the initialization x y z data
-//     */
-//    public Color3f(Tuple3d t1) {
-//	super(t1);
-//    }
+
+
+
+
+
+
+
 
 
     /**

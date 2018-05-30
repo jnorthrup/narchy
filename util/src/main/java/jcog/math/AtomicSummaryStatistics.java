@@ -24,14 +24,14 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
      */
     final DoubleAccumulator update = new DoubleAccumulator((ss, v) -> {
         if (v == v) {
-            //sumWithCompensation(value);
+            
 
             sum += v;
             if (min > v) min = v;
             if (max < v) max = v;
 
-            //http://stackoverflow.com/a/36590815
-            //"waldorf method"
+            
+            
             double tmpMean = mean;
 
             double delta = v - tmpMean;
@@ -74,27 +74,27 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
         update.accumulate(Double.NaN);
     }
 
-//    public final void clear(float percentToClear) {
-//          TODO impl
-//    }
+
+
+
 
     @Override
     public final void accept(double value) {
         if (value != value)
-            return; //filter any NaN coming from outside
+            return; 
         update.accumulate(value);
     }
 
-//    /**
-//     * Incorporate a new float value using Kahan summation /
-//     * compensated summation.
-//     */
-//    private final void sumWithCompensation(float value) {
-//        float tmp = value - sumCompensation;
-//        float velvel = sum + tmp; // Little wolf of rounding error
-//        sumCompensation = (velvel - sum) - tmp;
-//        sum = velvel;
-//    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Returns the sum of values recorded, or zero if no values have been
@@ -122,16 +122,16 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
     public final double getSum() {
         return sum;
 
-//        // Better error bounds to add both terms as the final sum
-//        float tmp =  sum + sumCompensation;
-//        if (float.isNaN(tmp) && float.isInfinite(simpleSum))
-//            // If the compensated sum is spuriously NaN from
-//            // accumulating one or more same-signed infinite values,
-//            // return the correctly-signed infinity stored in
-//            // simpleSum.
-//            return simpleSum;
-//        else
-//            return tmp;
+
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -234,12 +234,12 @@ public class AtomicSummaryStatistics implements FloatProcedure, DoubleProcedure,
         return i;
     }
 
-//    public float sumThenClear(float percentToClear) {
-//        float f = (float) sum;
-//        if (percentToClear>0)
-//            clear(percentToClear);
-//        return f;
-//    }
+
+
+
+
+
+
 
     public float sumThenClear() {
         float f = (float) sum;

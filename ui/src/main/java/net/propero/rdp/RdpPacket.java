@@ -29,7 +29,7 @@
  * (See gpl.txt for details of the GNU General Public License.)
  *
  */
-// Created on 03-Sep-2003
+
 package net.propero.rdp;
 
 
@@ -338,7 +338,7 @@ public abstract class RdpPacket {
     public void pushLayer(int header, int increment) throws RdesktopException {
         this.setHeader(header);
         this.incrementPosition(increment);
-        // this.setStart(this.getPosition());
+        
     }
 
     /**
@@ -421,7 +421,7 @@ public abstract class RdpPacket {
                 this.setLittleEndian16((short) name[j++]);
                 i += 2;
             }
-            this.setLittleEndian16(0); // Terminating Null Character
+            this.setLittleEndian16(0); 
         } else {
             this.setLittleEndian16(0);
         }

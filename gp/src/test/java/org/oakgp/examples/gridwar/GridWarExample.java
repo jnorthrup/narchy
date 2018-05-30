@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,7 @@ public class GridWarExample {
         ConstantNode[] constants = Utils.intConsts(0, 4);
         Type[] variables = intArrayType(NUM_VARIABLES);
         GPRandom random = new StdRandom();
-        // wrap a GridWar object in a FirstPlayerAdvantageGame to avoid bias
+        
         TwoPlayerGame game = new FirstPlayerAdvantageGame(new GridWar(random));
 
         Candidates output = new Evolution().returns(integerType()).constants(constants).variables(variables).functions(functions)

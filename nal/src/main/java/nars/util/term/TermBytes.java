@@ -23,8 +23,8 @@ import static nars.IO.writeEvidence;
  */
 public class TermBytes extends HashCachedBytes {
 
-    //public final static ThreadLocal<Lz4Compressor> compressor = ThreadLocal.withInitial(Lz4Compressor::new);
-    //final static Lz4Decompressor decompressor = new Lz4Decompressor();
+    
+    
 
     private static final boolean COMPRESS = false;
 
@@ -35,20 +35,20 @@ public class TermBytes extends HashCachedBytes {
         TermBytes y = new TermBytes(x.volume() * 4 + 64 /* ESTIMATE */);
         try {
 
-            //volume byte: pre-sorts everything by complexity or volume from the root, so that items of certain sizes can
-            //be selected
+            
+            
             int c = x.volume();
             y.writeByte(c);
 
             writeTermSeq(y, x, false);
 
-            //int before = length();
-//            if (COMPRESS && c > 1 && y.compress(1)!=-1) {
-//                //int after = length();
-//                //System.out.println(conceptualizable + "\t" + before + " -> " + after + "\t" + new String(array()));
-//            }
+            
 
-            //this.writeByte(0); //null terminator, signifying end-of-term
+
+
+
+
+            
             y.compact();
             return y;
         } catch (IOException e) {
@@ -107,8 +107,8 @@ public class TermBytes extends HashCachedBytes {
             if (IO.isSpecial(term)) {
                 out.writeByte(SPECIAL_OP);
             }
-            //out.writeUTF(term.toString());
-            //IO.writeUTFWithoutLength(out, term.toString());
+            
+            
 
             writeStringBytes(out, term);
 
@@ -120,16 +120,16 @@ public class TermBytes extends HashCachedBytes {
     static final Charset utf8 = Charsets.UTF_8;
 
     public static byte[] bytes(String s) {
-        return s.getBytes(utf8); //SAFE access:
+        return s.getBytes(utf8); 
     }
 
     static void writeStringBytes(DataOutput out, Object o) throws IOException {
         out.write(bytes(o.toString()));
     }
 
-//    static void writeStringBytes(DataOutput out, String s) throws IOException {
-//        out.write(bytes(s));
-//    }
+
+
+
 
 
     static void writeCompoundSeq(DataOutput out, Compound c, boolean includeTemporal) throws IOException {
@@ -139,7 +139,7 @@ public class TermBytes extends HashCachedBytes {
         out.writeByte(')');
 
         /*@NotNull*/ Op o = c.op();
-        out.writeByte(o.id); //put operator last
+        out.writeByte(o.id); 
         if (includeTemporal && o.temporal) {
             out.writeInt(c.dt());
         }

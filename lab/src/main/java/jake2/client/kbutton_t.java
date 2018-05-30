@@ -29,8 +29,8 @@ package jake2.client;
  * kbutton_t
  */
 public class kbutton_t {
-	final int[] down = new int[2];	// key nums holding it down
-	long downtime;				// msec timestamp
-	long msec;					// msec down this frame
+	final int[] down = new int[2];	
+	long downtime;				
+	long msec;					
 	public int state;
 }

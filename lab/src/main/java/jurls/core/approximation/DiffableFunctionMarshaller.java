@@ -133,7 +133,7 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
     @Override
     public void learn(double[] xs, double y) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet."); 
     }
     public double getParameter(int i) {
         return inputValues[i];

@@ -38,7 +38,7 @@ public class A extends Applet implements Runnable {
 	}
 
 	public void l() {
-		setSize(480, 480); //delete
+		setSize(480, 480); 
 
 		Random rndLvl = new Random(23), rndItemStar = new Random(1337);
 
@@ -46,34 +46,34 @@ public class A extends Applet implements Runnable {
 		Graphics g = screen.getGraphics();
 		Graphics appletGraphics = getGraphics();
 
-		//Variables
-		//---------
+		
+		
 
 		int playerX = 225, playerY = 400, shotY = -30, playerSpeed = 1, lastShot = -1380, lives = 3, lastDeath = -120, score = 0, multiplier = 1, nextEnemy = 0, nextEnemyDiff = 180, i, j, stari;
 		double t1, t2;
 
-		//x - y - state - shootdelay
+		
 		int[][] enemy = new int[enemynum][4];
 		int[] enemyStack = new int[enemynum];
 		int enemyStacki = enemynum;
 
 		double[][] enemyB = new double[enemynum][9];
 
-		//bullet: x - y - angle1 - speed1 - delay1 - homing/angle2 - speed2 - delay2
+		
 		double[][] bullet = new double[bulletnum][8];
-		//state - smooth - grazed
+		
 		int[][] ibullet = new int[bulletnum][3];
 		int[] bulletStack = new int[bulletnum];
 		int bulletStacki = bulletnum;
 
-		//x - y - xspeed - yspeed - xacc - yacc
+		
 		double[][] item = new double[itemnum][6];
 		int itemStack[] = new int[itemnum];
 		int itemStacki = itemnum;
 
 		int item2[] = { 0, 490, 600, 1 };
 
-		//x - y - xspeed - yspeed - state
+		
 		double[][] graze = new double[grazenum][5];
 		int[] grazeStack = new int[grazenum];
 		int grazeStacki = grazenum;
@@ -97,8 +97,8 @@ public class A extends Applet implements Runnable {
 			itemStack[i] = i;
 		}
 
-		//Graphics
-		//--------
+		
+		
 
 		Graphics g2;
 		BufferedImage gplayer = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
@@ -109,7 +109,7 @@ public class A extends Applet implements Runnable {
 
 		Color bgCol[] = { new Color(64, 20, 64), new Color(160, 60, 160), new Color(112, 112, 140) };
 
-		//Player and Enemy
+		
 		long playerG = 35466898305473L, enemyG = 562949815469064L;
 		for (i = 6; i >= 0; --i)
 			for (j = 6; j >= 0; --j) {
@@ -129,19 +129,19 @@ public class A extends Applet implements Runnable {
 				enemyG /= 2;
 			}
 
-		//Items
+		
 		g2 = gitem.getGraphics();
 		g2.setColor(Color.blue);
 		g2.fillRect(0, 0, 10, 10);
 
-		//Bullet
+		
 		g2 = gbullet.getGraphics();
 		for (i = 0; i < 10; i++) {
 			g2.setColor(Color.getHSBColor(0f, 0.625f - i / 20f, 0.75f + i / 40f));
 			g2.fillOval(i, i, 20 - 2 * i, 20 - 2 * i);
 		}
 
-		//Stars
+		
 		for (i = 0; i < 75; ++i) {
 			star[i][0] = rndItemStar.nextInt(480);
 			star[i][1] = rndItemStar.nextInt(480);
@@ -172,7 +172,7 @@ public class A extends Applet implements Runnable {
 			j = i + rndItemStar.nextInt(d) - d / 2;
 			g2.setColor(bgCol[rndItemStar.nextInt(2)]);
 			if (rndItemStar.nextInt(2) == 0)
-				g2.setColor(Color.getHSBColor(0.8f, 0.2f, d / 200f)); //200 = 180 + something
+				g2.setColor(Color.getHSBColor(0.8f, 0.2f, d / 200f)); 
 			g2.fillRect(i + 50, j + 50, 1, 1);
 
 			if (rndItemStar.nextInt(3) == 0) {
@@ -187,20 +187,20 @@ public class A extends Applet implements Runnable {
 			i = rndItemStar.nextInt(100);
 			j = rndItemStar.nextInt(100);
 			int d = (i - 50) * (i - 50) + (j - 50) * (j - 50);
-			g2.setColor(Color.getHSBColor(0.8f, 0.2f, 1 - d / 6000f)); //6000 = 5000 + something
+			g2.setColor(Color.getHSBColor(0.8f, 0.2f, 1 - d / 6000f)); 
 			g2.fillRect(i + 140, j + 130, 1, 1);
 			g2.fillRect(rndItemStar.nextInt(480), rndItemStar.nextInt(480), 1, 1);
 		}
 
-		//Main Loop
-		//---------
+		
+		
 
 		int fps = 0, fpsout = 0, frame = 0;
 		long lastfpst, lastfpsoutt = System.nanoTime();
 		while (lives >= 0) {
 			lastfpst = System.nanoTime();
 
-			//Control
+			
 
 			playerSpeed = 2;
 			if (keys[KeyEvent.VK_Y] || keys[KeyEvent.VK_Z])
@@ -219,7 +219,7 @@ public class A extends Applet implements Runnable {
 			if (keys[KeyEvent.VK_RIGHT] && playerX < 448)
 				playerX += playerSpeed;
 
-			//Shoot
+			
 			if ((keys[KeyEvent.VK_X] || keys[KeyEvent.VK_SPACE]) && frame - lastShot >= 1380) {
 				lastShot = frame;
 				shotY = playerY;
@@ -229,7 +229,7 @@ public class A extends Applet implements Runnable {
 			if (shotY > -30)
 				shotY -= 4;
 
-			//Items
+			
 			for (i = 0; i < itemnum; ++i) {
 				if (item[i][1] > -1) {
 					item[i][0] += item[i][2];
@@ -252,7 +252,7 @@ public class A extends Applet implements Runnable {
 				}
 			}
 
-			//Item2
+			
 			if (item2[1] <= 480) {
 				item2[1]++;
 				if (item2[1] > 480)
@@ -270,7 +270,7 @@ public class A extends Applet implements Runnable {
 				item2[1] = 490;
 			}
 
-			//Level Generator
+			
 			if (frame >= nextEnemy) {
 				if (enemyStacki > 0)
 					enemyStacki--;
@@ -303,7 +303,7 @@ public class A extends Applet implements Runnable {
 				}
 			}
 
-			//Enemies
+			
 			for (i = 0; i < enemynum; ++i) {
 				if (enemy[i][2] > 0) {
 					if (enemy[i][1] > shotY && enemy[i][1] < shotY + 20 && shotY > -30) {
@@ -327,7 +327,7 @@ public class A extends Applet implements Runnable {
 						}
 					}
 
-					//Movement
+					
 					if (enemy[i][2] == 1) {
 						enemy[i][1]++;
 						if (enemy[i][1] > enemyB[i][0]) {
@@ -336,7 +336,7 @@ public class A extends Applet implements Runnable {
 						}
 					}
 
-					//Bullet firing
+					
 					if (enemy[i][2] == 2 && --enemy[i][3] <= 0) {
 						enemy[i][3] = 500;
 						for (j = 0; j < enemyB[i][2]; ++j) {
@@ -355,7 +355,7 @@ public class A extends Applet implements Runnable {
 
 							stari = (int) (enemyB[i][2] / enemyB[i][3]);
 
-							//PI*0.04 = 2*PI*0.02
+							
 							if (enemyB[i][1] == 0 || enemyB[i][1] == 4 || enemyB[i][1] == 5) {
 								bullet[bi][2] = j * 2 * PI * (enemyB[i][3] / enemyB[i][2]);
 								bullet[bi][4] = enemyB[i][5] * (j / stari);
@@ -389,7 +389,7 @@ public class A extends Applet implements Runnable {
 				}
 			}
 
-			//Bullet movement
+			
 			for (i = 0; i < bulletnum; ++i) {
 				if (ibullet[i][0] > 0) {
 					if (bullet[i][1] > shotY && bullet[i][1] < shotY + 20) {
@@ -409,7 +409,7 @@ public class A extends Applet implements Runnable {
 						if (bullet[i][5] == 1) {
 							t1 = playerX - bullet[i][0] + 5;
 							t2 = playerY - bullet[i][1] + 5;
-							bullet[i][5] = Math.acos(t1 / Math.sqrt(t1 * t1 + t2 * t2)); //dot = t1*1 + t2*0
+							bullet[i][5] = Math.acos(t1 / Math.sqrt(t1 * t1 + t2 * t2)); 
 							if (t2 > 0)
 								bullet[i][5] *= -1;
 						} else
@@ -454,7 +454,7 @@ public class A extends Applet implements Runnable {
 				}
 			}
 
-			//Graze
+			
 			for (i = 0; i < grazenum; ++i)
 				if (graze[i][4] > 0) {
 					graze[i][0] += graze[i][2];
@@ -463,11 +463,11 @@ public class A extends Applet implements Runnable {
 						grazeStack[grazeStacki++] = i;
 				}
 
-			//Blitting
+			
 
 			g.drawImage(gbg, 0, 0, null);
 
-			//Stars
+			
 			for (i = 1, stari = 0; i <= 5; ++i)
 				for (j = 0; j < i * 5; ++j, ++stari) {
 					star[stari][1] += (26 - i * i) * 0.01;

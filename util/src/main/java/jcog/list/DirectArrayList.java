@@ -40,7 +40,7 @@ public class DirectArrayList<E> extends ArrayList<E> {
         }
     }
 
-    //data may need updated with update() after call because it has ben
+    
     public boolean fastAdd(E e) {
         return super.add(e);
     }
@@ -57,7 +57,7 @@ public class DirectArrayList<E> extends ArrayList<E> {
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        boolean b = super.addAll(c); //To change body of generated methods, choose Tools | Templates.
+        boolean b = super.addAll(c); 
         if (autoupdateData) {
             updateData();
         }
@@ -66,19 +66,19 @@ public class DirectArrayList<E> extends ArrayList<E> {
 
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
-        boolean b = super.addAll(index, c); //To change body of generated methods, choose Tools | Templates.
+        boolean b = super.addAll(index, c); 
         if (autoupdateData) {
             updateData();
         }
         return b;
     }
 
-//    public static void main(String[] args) {
-//        DirectArrayList a = new DirectArrayList();
-//        System.out.println(Arrays.asList(a.data));
-//        a.add("x");
-//        System.out.println(Arrays.asList(a.data));
-//        System.out.println(a.data[0]);
-//    }
+
+
+
+
+
+
+
 
 }

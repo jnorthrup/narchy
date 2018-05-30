@@ -11,12 +11,12 @@ public class MovingAverage implements Serializable {
     protected double movingAverage = 0.0;
 
     static public double discountToTimeSteps(double discount) {
-        //assert discount >= 0 && discount < 1.0;
+        
         return 1 / (1 - discount);
     }
 
     static public double timeStepsToDiscount(int timeSteps) {
-        //assert timeSteps > 0;
+        
         return 1.0 - 1.0 / timeSteps;
     }
 

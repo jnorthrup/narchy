@@ -27,7 +27,7 @@ public class SetFuncTest {
 
     @Test
     public void testSortApply() {
-        //complexity(a)==complexity(b) so must in which case it will sort to the natural order
+        
         assertEquals(
                 Set.of($$("(a,b,(c,d))")),
                 Evaluation.solveAll($$("sort(((c,d),b,a),complexity)"), n));

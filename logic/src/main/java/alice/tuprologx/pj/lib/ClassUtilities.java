@@ -179,7 +179,7 @@ final class ClassUtilities {
      *         until a method is found. Returns null if there is no such method.
      */
     public static Method getAccessibleMethodFrom(final Class<?> aClass, final String methodName, final Class<?>... parameterTypes) {
-        // Look for overridden method in the superclass.
+        
         Class<?> superclass = aClass.getSuperclass();
         Method overriddenMethod = null;
         if (superclass != null && classIsAccessible(superclass)) {
@@ -188,8 +188,8 @@ final class ClassUtilities {
                 return overriddenMethod;
             }
         }
-        // If here, then aClass represents Object, or an interface, or
-        // the superclass did not have an override. Check implemented interfaces.
+        
+        
         Class<?>[] interfaces = aClass.getInterfaces();
         for (int i = 0; i < interfaces.length; ++i) {
             overriddenMethod = null;
@@ -201,21 +201,21 @@ final class ClassUtilities {
             }
         }
         overriddenMethod = null;
-        // Try superclass's superclass and implemented interfaces.
+        
         if (superclass != null) {
             overriddenMethod = getAccessibleMethodFrom(superclass, methodName, parameterTypes);
             if (overriddenMethod != null) {
                 return overriddenMethod;
             }
         }
-        // Try implemented interfaces' extended interfaces...
+        
         for (int i = 0; i < interfaces.length; ++i) {
             overriddenMethod = getAccessibleMethodFrom(interfaces[i], methodName, parameterTypes);
             if (overriddenMethod != null) {
                 return overriddenMethod;
             }
         }
-        // Give up.
+        
         return null;
     }
 

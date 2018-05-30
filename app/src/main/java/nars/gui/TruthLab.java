@@ -71,7 +71,7 @@ public class TruthLab extends Gridding {
 
         public String label = "?";
 
-        //sample: occ, freq, conf
+        
         final float[] data;
         final int samples;
 
@@ -95,8 +95,8 @@ public class TruthLab extends Gridding {
 
                 data[i++] = c;
 
-                //float p = b.pri(occ);
-                //etc..
+                
+                
 
                 samples++;
             }
@@ -109,7 +109,7 @@ public class TruthLab extends Gridding {
             float sw = 0.9f * timeScale;
             float sh = 0.9f;
 
-            //HACK
+            
             push(gl);
             gl.glScalef(0.1f, 2f, 1f);
             gl.glColor4fv(labelColor, 0);
@@ -205,7 +205,7 @@ public class TruthLab extends Gridding {
 
 
     public static void main(String[] args) throws Narsese.NarseseException {
-        //this.activeTasks = activeTasks;
+        
         NAR n = new NARS().get();
 
         SpaceGraph.window(
@@ -214,8 +214,8 @@ public class TruthLab extends Gridding {
                         $("((x) &&+0 (y))"),
                         $("((x) &&+5 (y))"),
                         $("((x) &&+10 (y))"),
-                        //$("((x) && --(y))"),
-                        //$("(--(x) && (y))"),
+                        
+                        
                         $("(--(x) && --(y))"),
                         $("(--(x) &&+10 --(y))")
                 ),

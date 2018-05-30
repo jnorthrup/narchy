@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -37,7 +37,7 @@ import spacegraph.util.math.v3;
 class Quantization {
 
 	public static void bt_calc_quantization_parameters(v3 outMinBound, v3 outMaxBound, v3 bvhQuantization, v3 srcMinBound, v3 srcMaxBound, float quantizationMargin) {
-		// enlarge the AABB to avoid division by zero when initializing the quantization values
+		
 		v3 clampValue = new v3();
 		clampValue.set(quantizationMargin, quantizationMargin, quantizationMargin);
 		outMinBound.sub(srcMinBound, clampValue);

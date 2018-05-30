@@ -2,10 +2,10 @@ package nars.experiment.invaders;
 
 import java.util.ArrayList;
 public class Disassembler {
-//	public static void main(String [] args){
-//		CPU cpu = new CPU();
-//		System.out.println(Integer.toOctalString(cpu.a));
-//	}
+
+
+
+
 	
 	public int getCode(ArrayList<String> codebuffer, int pc){
 		String code = "0x" + codebuffer.get(pc);

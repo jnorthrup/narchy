@@ -4,9 +4,9 @@ import java.util.*;
 
 /**
  * A simple HashSet, save 25% memory.
- * http://www.liaohuqiu.net/posts/simple-hashset/
+ * http:
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  *
  * @author srain@php.net
  */
@@ -23,7 +23,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
 
     public SimpleHashSet() {
         mTable = EMPTY_TABLE;
-        // Forces first put invocation to replace EMPTY_TABLE
+        
         threshold = -1;
     }
 
@@ -35,7 +35,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         if (capacity == 0) {
             SimpleHashSetEntry<T>[] tab = EMPTY_TABLE;
             mTable = tab;
-            threshold = -1; // Forces first put() to replace EMPTY_TABLE
+            threshold = -1; 
             return;
         }
 
@@ -55,10 +55,10 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
     }
 
     public static int roundUpToPowerOfTwo(int i) {
-        // If input is a power of two, shift its high-order bit right.
+        
         i--;
 
-        // "Smear" the high-order bit all the way to the right.
+        
         i |= i >>> 1;
         i |= i >>> 2;
         i |= i >>> 4;
@@ -133,7 +133,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
             }
         }
 
-        // No entry for (non-null) key is present; create one
+        
         if (mSize++ > threshold) {
             tab = doubleCapacity();
             index = hash & (tab.length - 1);
@@ -151,7 +151,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         @SuppressWarnings("unchecked")
         SimpleHashSetEntry<T>[] newTable = (SimpleHashSetEntry<T>[]) new SimpleHashSetEntry[newCapacity];
         mTable = newTable;
-        threshold = (newCapacity >> 1) + (newCapacity >> 2); // 3/4 capacity
+        threshold = (newCapacity >> 1) + (newCapacity >> 2); 
         return newTable;
     }
 
@@ -241,7 +241,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
             throw new AssertionError(e);
         }
 
-        // Restore clone to empty state, retaining our capacity and threshold
+        
         result.mEntryForNull = null;
         result.makeTable(mTable.length);
         result.mSize = 0;

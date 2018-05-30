@@ -28,7 +28,7 @@ public class And extends Operation {
     }
     
     public Expr simplify() {
-        // no conditions check
+        
         
         while (exprs.remove(yep())) {}
         if (exprs.isEmpty()) return yep();

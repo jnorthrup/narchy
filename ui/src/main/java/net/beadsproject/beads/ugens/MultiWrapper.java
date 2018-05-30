@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -62,7 +62,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
         ugens = new UGen[channels];
 
         for (int i = 0; i < channels; i++) {
-            // get our new UGen for channel i
+            
             ugens[i] = buildUGens(i);
         }
         setupUGens();
@@ -96,16 +96,16 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
 
         for (int i = 0; i < channels; i++) {
 
-            // hook the ins of the channel UGen to the appropriate output of
-            // mwIn
+            
+            
             for (int j = 0; j < insPerChannel; j++) {
                 if (j < ugens[i].getIns()) {
                     this.drawFromChainInput(i * insPerChannel + j, ugens[i], j);
                 }
             }
 
-            // hook the outs of the channel UGen to the appropriate input
-            // of mwOut
+            
+            
             for (int j = 0; j < outsPerChannel; j++) {
                 if (j < ugens[i].getOuts()) {
                     this.addToChainOutput(i * outsPerChannel + j, ugens[i], j);
@@ -126,9 +126,9 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
      * @return The new channel UGen.
      */
     public UGen buildUGens(int channelIndex) {
-        // Make a harmless, empty UGen that does nothing by default. That way
-        // if the user doesn't override the method, it won't explode - it'll
-        // just do nothing.
+        
+        
+        
         return new UGen(context, 1, 0) {
             @Override
             public void gen() {
@@ -168,7 +168,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
                 ((DataBeadReceiver) ugens[i]).sendData(db);
             } else {
                 ugens[i].accept(db);
-                //Ollie - TODO - should we use db.configureObject(ugens[i]) here?
+                
             }
         }
         return this;

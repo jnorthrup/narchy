@@ -36,7 +36,7 @@ import java.util.Vector;
  *
  * @author Benjamin 'BePo' Poppinga
  *
- * https://github.com/SokeOner/GestureRecognize
+ * https:
  *
  */
 
@@ -79,21 +79,21 @@ public class PreciseHMM {
 	private void reset() {
 		int jumplimit = 2;
 		
-		// set startup probability
+		
 		pi[0] = 1.0;
 		for(int i=1; i<numStates; i++) {
 			pi[i] = 0;
 		}
 		
-		// set state change probabilities in the left-to-right version
-		// NOTE: i now that this is dirty and very static. :)
+		
+		
 		for(int i=0; i<numStates; i++) {
 			for(int j=0; j<numStates; j++) {
-				if(i==numStates-1 && j==numStates-1) { // last row
+				if(i==numStates-1 && j==numStates-1) { 
 					a[i][j] = 1.0;
-				} else if(i==numStates-2 && j==numStates-2) { // next to last row
+				} else if(i==numStates-2 && j==numStates-2) { 
 					a[i][j] = 0.5;
-				} else if(i==numStates-2 && j==numStates-1) { // next to last row
+				} else if(i==numStates-2 && j==numStates-1) { 
 					a[i][j] = 0.5;
 				} else if(i<=j && i>j-jumplimit-1) {
 					a[i][j] = 1.0/(jumplimit+1);
@@ -103,7 +103,7 @@ public class PreciseHMM {
 			}
 		}
 		
-		// emission probability
+		
 		for(int i=0; i<numStates; i++) {
 			for(int j=0; j<sigmaSize; j++) {
 				b[i][j] = 1.0/(double)sigmaSize;
@@ -129,14 +129,14 @@ public class PreciseHMM {
 
 		double[][] a_new = new double[a.length][a.length];
 		double[][] b_new = new double[b.length][b[0].length];
-		// re calculate state change probability a
+		
 		for(int i=0; i<a.length; i++) {
 			for(int j=0; j<a[i].length; j++) {	
 				double zaehler=0;
 				double nenner=0;
 			
 				for(int k=0; k<trainsequence.size(); k++) {
-					//this.reset();
+					
 					int[] sequence = trainsequence.elementAt(k);
 					
 					double[] sf = this.calculateScalingFactor(sequence);
@@ -152,20 +152,20 @@ public class PreciseHMM {
 					}
 					zaehler+=zaehler_innersum;
 					nenner+=nenner_innersum;
-				} // k
+				} 
 				
 				a_new[i][j] = zaehler/nenner;
-			} // j
-		} // i			
+			} 
+		} 
 		
-		// re calculate emission probability b
-		for(int i=0; i<b.length; i++) { // zustaende
-			for(int j=0; j<b[i].length; j++) {	// symbole
+		
+		for(int i=0; i<b.length; i++) { 
+			for(int j=0; j<b[i].length; j++) {	
 				double zaehler=0;
 				double nenner=0;
 			
 				for(int k=0; k<trainsequence.size(); k++) {
-					//this.reset();
+					
 					int[] sequence = trainsequence.elementAt(k);
 					
 					double[] sf = this.calculateScalingFactor(sequence);
@@ -183,11 +183,11 @@ public class PreciseHMM {
 					}
 					zaehler+=zaehler_innersum;
 					nenner+=nenner_innersum;
-				} // k
+				} 
 		
 				b_new[i][j] = zaehler/nenner;
-			} // j
-		} // i	
+			} 
+		} 
 		
 		this.a=a_new;
 		this.b=b_new;
@@ -195,20 +195,20 @@ public class PreciseHMM {
 	
 	
 	private double[] calculateScalingFactor(int[] sequence) {
-		// for all indexing: [state][time]
-		double[][] fwd = this.forwardProc(sequence); // normal
+		
+		double[][] fwd = this.forwardProc(sequence); 
 		double[][] help = new double[fwd.length][fwd[0].length];
 		double[][] scaled = new double[fwd.length][fwd[0].length];
 		double[] sf = new double[sequence.length];
 		
-		// ************** BASIS *************
-		// Basis, fixed t=0
-		// setup, because needed for further calculations
+		
+		
+		
 		for(int i=0; i<help.length; i++) {
 			help[i][0] = fwd[i][0];
 		}
 		
-		// setup initial scaled array
+		
 		double sum0 = 0;
 		for(int i=0; i<help.length; i++) {
 			sum0+=help[i][0];
@@ -218,15 +218,15 @@ public class PreciseHMM {
 			scaled[i][0] = help[i][0] / sum0;
 		}
 		
-		// calculate scaling factor
+		
 		sf[0] = 1/sum0;
 		
-		// **************** INDUCTION ***************
-		// end of fixed t = 0
-		// starting with t>1 to sequence.length
-		// induction, further calculations
+		
+		
+		
+		
 		for(int t=1; t<sequence.length; t++) {
-			// calculate help
+			
 			for(int i=0; i<help.length; i++) {
 				for(int j=0; j<this.numStates; j++) {
 					help[i][t]+=scaled[j][t-1]*a[j][i]*b[i][sequence[t]];
@@ -242,13 +242,13 @@ public class PreciseHMM {
 				scaled[i][t] = help[i][t] / sum;
 			}
 
-			// calculate scaling factor
+			
 			sf[t] = 1 / sum;
 			
-		} // t
+		} 
 		
 		return sf;
-	}  // calculateScalingFactor
+	}  
 
 	/***
 	 * Returns the scaled Forward variable.
@@ -295,11 +295,11 @@ public class PreciseHMM {
 	 */
 	public double getProbability(int[] o) {
 		return scaledViterbi(o);
-		//return sProbability(o);
+		
 		/*double prob = 0.0;
 		double[][] forward = this.forwardProc(o);
-		//	add probabilities
-		for (int i = 0; i < forward.length; i++) { // for every state
+		
+		for (int i = 0; i < forward.length; i++) { 
 			prob += forward[i][forward[i].length - 1];
 		}
 		return prob;*/
@@ -320,12 +320,12 @@ public class PreciseHMM {
 	}
 	
 	public double scaledViterbi(int[] o) {
-		double[][] phi = new double[this.numStates][o.length]; //phi[states][oseq]
-		// init
+		double[][] phi = new double[this.numStates][o.length]; 
+		
 		for(int i=0; i<this.numStates; i++) {
 			phi[i][0] = Math.log(pi[i]) + Math.log(b[i][o[0]]);
 		}
-		// induction
+		
 		for(int t=1; t<o.length; t++) {
 			for(int j=0; j<this.numStates; j++) {
 				double max = Double.NEGATIVE_INFINITY;
@@ -339,7 +339,7 @@ public class PreciseHMM {
 				phi[j][t] = max + Math.log(this.b[j][o[t]]);
 			}
 		}
-		// conclusion
+		
 		double lp = Double.NEGATIVE_INFINITY;
 		for(int i=0; i<this.numStates; i++) {
 			if(phi[i][o.length-1]>lp) {
@@ -347,12 +347,12 @@ public class PreciseHMM {
 			}
 		}
 		
-		//System.out.println("log p = "+lp);
-		//return lp;
-		// we now have log10(p) calculated, transform to p.
+		
+		
+		
 		System.out.println("prob = "+Math.exp(lp));
 		return Math.exp(lp);
-		//return Math.pow(10, lp);
+		
 	}
 	
 	/**

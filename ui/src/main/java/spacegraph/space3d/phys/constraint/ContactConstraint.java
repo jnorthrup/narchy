@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -83,7 +83,7 @@ public class ContactConstraint {
 		v3 rel_pos2 = new v3();
 		rel_pos2.sub(pos2, body2.getCenterOfMassPosition(tmp));
 
-		//this jacobian entry could be re-used for all iterations
+		
 
 		v3 vel1 = new v3();
 		body1.getVelocityInLocalPoint(rel_pos1, vel1);
@@ -127,16 +127,16 @@ public class ContactConstraint {
 
 		rel_vel = normal.dot(vel);
 
-		// todo: move this into proper structure
+		
 		float contactDamping = 0.2f;
 
-		//#ifdef ONLY_USE_LINEAR_MASS
-		//	btScalar massTerm = btScalar(1.) / (body1.getInvMass() + body2.getInvMass());
-		//	impulse = - contactDamping * rel_vel * massTerm;
-		//#else
+		
+		
+		
+		
 		float velocityImpulse = -contactDamping * rel_vel * jacDiagABInv;
 		impulse[0] = velocityImpulse;
-		//#endif
+		
 	}
 
 	/**
@@ -154,7 +154,7 @@ public class ContactConstraint {
 		v3 pos2_ = contactPoint.getPositionWorldOnB(new v3());
 		v3 normal = contactPoint.normalWorldOnB;
 
-		// constant over all iterations
+		
 		v3 rel_pos1 = new v3();
 		rel_pos1.sub(pos1_, body1.getCenterOfMassPosition(tmpVec));
 
@@ -171,7 +171,7 @@ public class ContactConstraint {
 
 		float Kfps = 1f / solverInfo.timeStep;
 
-		// btScalar damping = solverInfo.m_damping ;
+		
 		float Kerp = solverInfo.erp;
 		float Kcor = Kerp * Kfps;
 
@@ -179,7 +179,7 @@ public class ContactConstraint {
 		assert (cpd != null);
 		float distance = cpd.penetration;
 		float positionalError = Kcor * -distance;
-		float velocityError = cpd.restitution - rel_vel; // * damping;
+		float velocityError = cpd.restitution - rel_vel; 
 
 		float penetrationImpulse = positionalError * cpd.jacDiagABInv;
 
@@ -187,14 +187,14 @@ public class ContactConstraint {
 
 		float normalImpulse = penetrationImpulse + velocityImpulse;
 
-		// See Erin Catto's GDC 2006 paper: Clamp the accumulated impulse
+		
 		float oldNormalImpulse = cpd.appliedImpulse;
 		float sum = oldNormalImpulse + normalImpulse;
 		cpd.appliedImpulse = 0f > sum ? 0f : sum;
 
 		normalImpulse = cpd.appliedImpulse - oldNormalImpulse;
 
-		//#ifdef USE_INTERNAL_APPLY_IMPULSE
+		
 		v3 tmp = new v3();
 		if (body1.getInvMass() != 0f) {
 			tmp.scale(body1.getInvMass(), contactPoint.normalWorldOnB);
@@ -204,10 +204,10 @@ public class ContactConstraint {
 			tmp.scale(body2.getInvMass(), contactPoint.normalWorldOnB);
 			body2.internalApplyImpulse(tmp, cpd.angularComponentB, -normalImpulse);
 		}
-		//#else //USE_INTERNAL_APPLY_IMPULSE
-		//	body1.applyImpulse(normal*(normalImpulse), rel_pos1);
-		//	body2.applyImpulse(-normal*(normalImpulse), rel_pos2);
-		//#endif //USE_INTERNAL_APPLY_IMPULSE
+		
+		
+		
+		
 
 		return normalImpulse;
 	}
@@ -236,11 +236,11 @@ public class ContactConstraint {
 
 		float limit = cpd.appliedImpulse * combinedFriction;
 
-		if (cpd.appliedImpulse > 0f) //friction
+		if (cpd.appliedImpulse > 0f) 
 		{
-			//apply friction in the 2 tangential directions
+			
 
-			// 1st tangent
+			
 			v3 vel1 = new v3();
 			body1.getVelocityInLocalPoint(rel_pos1, vel1);
 
@@ -255,7 +255,7 @@ public class ContactConstraint {
 			{
 				float vrel = cpd.frictionWorldTangential0.dot(vel);
 
-				// calculate j that moves us to zero relative velocity
+				
 				j1 = -vrel * cpd.jacDiagABInvTangent0;
 				float oldTangentImpulse = cpd.accumulatedTangentImpulse0;
 				cpd.accumulatedTangentImpulse0 = oldTangentImpulse + j1;
@@ -264,11 +264,11 @@ public class ContactConstraint {
 				cpd.accumulatedTangentImpulse0 = Math.max(cpd.accumulatedTangentImpulse0, -limit);
 				j1 = cpd.accumulatedTangentImpulse0 - oldTangentImpulse;
 			}
-            // 2nd tangent
+            
 
             float vrel = cpd.frictionWorldTangential1.dot(vel);
 
-            // calculate j that moves us to zero relative velocity
+            
             j2 = -vrel * cpd.jacDiagABInvTangent1;
             float oldTangentImpulse = cpd.accumulatedTangentImpulse1;
             cpd.accumulatedTangentImpulse1 = oldTangentImpulse + j2;
@@ -277,7 +277,7 @@ public class ContactConstraint {
             cpd.accumulatedTangentImpulse1 = Math.max(cpd.accumulatedTangentImpulse1, -limit);
             j2 = cpd.accumulatedTangentImpulse1 - oldTangentImpulse;
 
-            //#ifdef USE_INTERNAL_APPLY_IMPULSE
+            
 			v3 tmp = new v3();
 
 			if (body1.getInvMass() != 0f) {
@@ -294,10 +294,10 @@ public class ContactConstraint {
 				tmp.scale(body2.getInvMass(), cpd.frictionWorldTangential1);
 				body2.internalApplyImpulse(tmp, cpd.frictionAngularComponent1B, -j2);
 			}
-			//#else //USE_INTERNAL_APPLY_IMPULSE
-			//	body1.applyImpulse((j1 * cpd->m_frictionWorldTangential0)+(j2 * cpd->m_frictionWorldTangential1), rel_pos1);
-			//	body2.applyImpulse((j1 * -cpd->m_frictionWorldTangential0)+(j2 * -cpd->m_frictionWorldTangential1), rel_pos2);
-			//#endif //USE_INTERNAL_APPLY_IMPULSE
+			
+			
+			
+			
 		}
 		return cpd.appliedImpulse;
 	}
@@ -334,7 +334,7 @@ public class ContactConstraint {
 
 		float Kfps = 1f / solverInfo.timeStep;
 
-		//btScalar damping = solverInfo.m_damping ;
+		
 		float Kerp = solverInfo.erp;
 		float Kcor = Kerp * Kfps;
 
@@ -342,7 +342,7 @@ public class ContactConstraint {
 		assert (cpd != null);
 		float distance = cpd.penetration;
 		float positionalError = Kcor * -distance;
-		float velocityError = cpd.restitution - rel_vel;// * damping;
+		float velocityError = cpd.restitution - rel_vel;
 
 		float penetrationImpulse = positionalError * cpd.jacDiagABInv;
 
@@ -350,7 +350,7 @@ public class ContactConstraint {
 
 		float normalImpulse = penetrationImpulse + velocityImpulse;
 
-		// See Erin Catto's GDC 2006 paper: Clamp the accumulated impulse
+		
 		float oldNormalImpulse = cpd.appliedImpulse;
 		float sum = oldNormalImpulse + normalImpulse;
 		cpd.appliedImpulse = 0f > sum ? 0f : sum;
@@ -358,7 +358,7 @@ public class ContactConstraint {
 		normalImpulse = cpd.appliedImpulse - oldNormalImpulse;
 
 
-		//#ifdef USE_INTERNAL_APPLY_IMPULSE
+		
 		v3 tmp = new v3();
 		if (body1.getInvMass() != 0f) {
 			tmp.scale(body1.getInvMass(), contactPoint.normalWorldOnB);
@@ -368,12 +368,12 @@ public class ContactConstraint {
 			tmp.scale(body2.getInvMass(), contactPoint.normalWorldOnB);
 			body2.internalApplyImpulse(tmp, cpd.angularComponentB, -normalImpulse);
 		}
-		//#else //USE_INTERNAL_APPLY_IMPULSE
-		//	body1.applyImpulse(normal*(normalImpulse), rel_pos1);
-		//	body2.applyImpulse(-normal*(normalImpulse), rel_pos2);
-		//#endif //USE_INTERNAL_APPLY_IMPULSE
+		
+		
+		
+		
 
-        //friction
+        
         body1.getVelocityInLocalPoint(rel_pos1, vel1);
         body2.getVelocityInLocalPoint(rel_pos2, vel2);
         vel.sub(vel1, vel2);

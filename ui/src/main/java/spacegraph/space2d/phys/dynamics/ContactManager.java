@@ -93,12 +93,12 @@ public class ContactManager implements PairCallback {
         FixtureProxy proxyA = (FixtureProxy) proxyUserDataA;
         Fixture fixtureA = proxyA.fixture;
         if (fixtureA == null)
-            return; //uncreated or threading issue
+            return; 
 
         FixtureProxy proxyB = (FixtureProxy) proxyUserDataB;
         Fixture fixtureB = proxyB.fixture;
         if (fixtureB == null)
-            return; //uncreated or threading issue
+            return; 
 
         int indexA = proxyA.childIndex;
         int indexB = proxyB.childIndex;
@@ -106,14 +106,14 @@ public class ContactManager implements PairCallback {
         Body2D bodyA = fixtureA.getBody();
         Body2D bodyB = fixtureB.getBody();
 
-        // Are the fixtures on the same body?
+        
         if (bodyA == bodyB) {
             return;
         }
 
-        // TODO_ERIN use a hash table to remove a potential bottleneck when both
-        // bodies have a lot of contacts.
-        // Does a contact already exist?
+        
+        
+        
         ContactEdge edge = bodyB.contacts();
         while (edge != null) {
             if (edge.other == bodyA) {
@@ -124,12 +124,12 @@ public class ContactManager implements PairCallback {
                 int iB = ec.bIndex;
 
                 if (fA == fixtureA && iA == indexA && fB == fixtureB && iB == indexB) {
-                    // A contact already exists.
+                    
                     return;
                 }
 
                 if (fA == fixtureB && iA == indexB && fB == fixtureA && iB == indexA) {
-                    // A contact already exists.
+                    
                     return;
                 }
             }
@@ -137,31 +137,31 @@ public class ContactManager implements PairCallback {
             edge = edge.next;
         }
 
-        // Does a joint override collision? is at least one body dynamic?
+        
         if (!bodyB.shouldCollide(bodyA)) {
             return;
         }
 
-        // Check user filtering.
+        
         if (m_contactFilter != null && !ContactFilter.shouldCollide(fixtureA, fixtureB)) {
             return;
         }
 
-        // Call the factory.
+        
         Contact c = popContact(fixtureA, indexA, fixtureB, indexB);
         if (c == null) {
             return;
         }
 
-        // Contact creation may swap fixtures.
+        
         fixtureA = c.aFixture;
         fixtureB = c.bFixture;
-//        indexA = c.aIndex;
-//        indexB = c.bIndex;
+
+
         bodyA = fixtureA.getBody();
         bodyB = fixtureB.getBody();
 
-        // Insert into the world.
+        
         c.m_prev = null;
         c.m_next = m_contactList;
         if (m_contactList != null) {
@@ -169,9 +169,9 @@ public class ContactManager implements PairCallback {
         }
         m_contactList = c;
 
-        // Connect to island graph.
+        
 
-        // Connect to body A
+        
         c.m_nodeA.contact = c;
         c.m_nodeA.other = bodyB;
 
@@ -182,7 +182,7 @@ public class ContactManager implements PairCallback {
         }
         bodyA.contacts = c.m_nodeA;
 
-        // Connect to body B
+        
         c.m_nodeB.contact = c;
         c.m_nodeB.other = bodyA;
 
@@ -193,7 +193,7 @@ public class ContactManager implements PairCallback {
         }
         bodyB.contacts = c.m_nodeB;
 
-        // wake up the bodies
+        
         if (!fixtureA.isSensor() && !fixtureB.isSensor()) {
             bodyA.setAwake(true);
             bodyB.setAwake(true);
@@ -216,7 +216,7 @@ public class ContactManager implements PairCallback {
             contactListener.endContact(c);
         }
 
-        // Remove from the world.
+        
         if (c.m_prev != null) {
             c.m_prev.m_next = c.m_next;
         }
@@ -229,7 +229,7 @@ public class ContactManager implements PairCallback {
             m_contactList = c.m_next;
         }
 
-        // Remove from body 1
+        
         if (c.m_nodeA.prev != null) {
             c.m_nodeA.prev.next = c.m_nodeA.next;
         }
@@ -242,7 +242,7 @@ public class ContactManager implements PairCallback {
             aa.contacts = c.m_nodeA.next;
         }
 
-        // Remove from body 2
+        
         if (c.m_nodeB.prev != null) {
             c.m_nodeB.prev.next = c.m_nodeB.next;
         }
@@ -260,7 +260,7 @@ public class ContactManager implements PairCallback {
             bb.setAwake(true);
         }
 
-        //call the factory
+        
         contactStacks[a.type().ordinal()][b.type().ordinal()].creator.push(c);
 
         --m_contactCount;
@@ -271,7 +271,7 @@ public class ContactManager implements PairCallback {
      * processed for the world contact list.
      */
     public void collide() {
-        // Update awake contacts.
+        
         Contact c = m_contactList;
         while (c != null) {
             Fixture fixtureA = c.aFixture;
@@ -281,9 +281,9 @@ public class ContactManager implements PairCallback {
             Body2D bodyA = fixtureA.getBody();
             Body2D bodyB = fixtureB.getBody();
 
-            // is this contact flagged for filtering?
+            
             if ((c.m_flags & Contact.FILTER_FLAG) == Contact.FILTER_FLAG) {
-                // Should these bodies collide?
+                
                 if (!bodyB.shouldCollide(bodyA)) {
                     Contact cNuke = c;
                     c = cNuke.next();
@@ -291,7 +291,7 @@ public class ContactManager implements PairCallback {
                     continue;
                 }
 
-                // Check user filtering.
+                
                 if (m_contactFilter != null && !ContactFilter.shouldCollide(fixtureA, fixtureB)) {
                     Contact cNuke = c;
                     c = cNuke.next();
@@ -299,13 +299,13 @@ public class ContactManager implements PairCallback {
                     continue;
                 }
 
-                // Clear the filtering flag.
+                
                 c.m_flags &= ~Contact.FILTER_FLAG;
             }
 
 
 
-            // At least one body must be awake and it must be dynamic or kinematic.
+            
             if (!(bodyA.isAwake() && bodyA.type != BodyType.STATIC) &&
                 !(bodyB.isAwake() && bodyB.type != BodyType.STATIC)) {
                 c = c.next();
@@ -316,7 +316,7 @@ public class ContactManager implements PairCallback {
             int proxyIdB = fixtureB.proxies[indexB].id;
             boolean overlap = broadPhase.testOverlap(proxyIdA, proxyIdB);
 
-            // Here we destroy contacts that cease to overlap in the broad-phase.
+            
             if (!overlap) {
                 Contact cNuke = c;
                 c = cNuke.next();
@@ -324,7 +324,7 @@ public class ContactManager implements PairCallback {
                 continue;
             }
 
-            // The contact persists.
+            
             c.update(contactListener);
             c = c.next();
         }

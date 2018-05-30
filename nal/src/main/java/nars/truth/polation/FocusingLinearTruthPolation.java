@@ -20,8 +20,8 @@ public class FocusingLinearTruthPolation extends TruthPolation {
     static final boolean durShrink = true;
 
     private final static int minDur =
-            0; //<- anything besides what matches the specified interval is ignored
-            //1; //<- allows some temporal bleed-through during interpolation when an exact match is present
+            0; 
+            
 
     public FocusingLinearTruthPolation(long start, long end, int dur) {
         super(start, end, dur);
@@ -54,8 +54,8 @@ public class FocusingLinearTruthPolation extends TruthPolation {
         if (nar!=null) {
             eviFactor *= intermpolate(nar);
             if (eviFactor < Param.TRUTH_MIN_EVI)
-                return null; //intermpolate failure
-        } //ELSE: maybe fail if all the tasks dont share the exact same term
+                return null; 
+        } 
 
 
         int s = size();
@@ -63,10 +63,10 @@ public class FocusingLinearTruthPolation extends TruthPolation {
         switch (s) {
             case 0: return null;
             case 1: {
-                //accelerated single case
+                
                 TaskComponent x = update(0);
                 if (x == null)
-                    return null; //could have been pre-filtered
+                    return null; 
                 eAvg = x.evi;
                 if (eAvg < Param.TRUTH_MIN_EVI)
                     return null;
@@ -80,20 +80,20 @@ public class FocusingLinearTruthPolation extends TruthPolation {
                 for (int i = 0; i < s; i++) {
                     TaskComponent x = update(i);
                     if (x == null)
-                        continue;  //could have been pre-filtered
+                        continue;  
 
                     float ee = x.evi;
 
                     eAvg += ee;
-//                        float ce = w2cSafe(ee);
-//                        confSum += ce;
-                    //wFreqSum += ce * x.freq;
+
+
+                    
                     wFreqSum += ee * x.freq;
                 }
                 if (eAvg < Param.TRUTH_MIN_EVI)
                     return null;
 
-                //f = (wFreqSum / confSum);
+                
                 f = (wFreqSum / eAvg);
                 break;
             }

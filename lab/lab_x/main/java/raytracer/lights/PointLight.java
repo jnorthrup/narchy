@@ -66,7 +66,7 @@ public class PointLight extends Light
     @Override
     public boolean isIlluminated(Vector3d point)
 	{
-        // Jeder Punkt wird beleuchtet:
+        
 		return true;
 	}
 
@@ -74,7 +74,7 @@ public class PointLight extends Light
     @Override
     public void startRay(Vector3d point)
     {
-        // Punkt festlegen, f�r den Strahlen zum Licht generiert werden:
+        
         this.point.set(point);
         rayToSend = true;
     }
@@ -88,7 +88,7 @@ public class PointLight extends Light
     @Override
     public Ray genRay()
     {
-        // F�r jeden Punkt genau einen Strahl setzen:
+        
         if (!rayToSend)
             return null;
         rayToSend = false;
@@ -108,7 +108,7 @@ public class PointLight extends Light
         v.sub(lightPoint, point);
         float length = (float)v.length();
 
-        // Lichtabschw�chung berechnen:
+        
         ColorEx color = new ColorEx(lightColor);
         color.scale(1.0f /(RaytracerConstants.LIGHT_ATTENUATION_CONSTANT +
                 RaytracerConstants.LIGHT_ATTENUATION_LINEAR*length +

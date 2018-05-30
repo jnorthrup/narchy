@@ -1,7 +1,7 @@
 /**
  * This code is copyright Articulate Software (c) 2003.  Some portions
  * copyright Teknowledge (c) 2003 and reused under the terms of the GNU license.
- * This software is released under the GNU Public License <http://www.gnu.org/copyleft/gpl.html>.
+ * This software is released under the GNU Public License <http:
  * Users of this code also consent, by use of this code, to credit Articulate Software
  * and Teknowledge in any writings, briefings, publications, presentations, or
  * other representations of any software which incorporates, builds on, or uses this
@@ -9,7 +9,7 @@
  * <p>
  * Pease, A., (2003). The Sigma Ontology Development Environment,
  * in Working Notes of the IJCAI-2003 Workshop on Ontology and Distributed Systems,
- * August 9, Acapulco, Mexico.  See also http://sigmakee.sourceforget.net
+ * August 9, Acapulco, Mexico.  See also http:
  *
  * Authors:
  * Adam Pease
@@ -24,7 +24,7 @@ import java.util.*;
 
 /******************************************************************
  * A class designed to read a file in SUO-KIF format into memory. See
- * <http://sigmakee.cvs.sourceforge.net/viewvc/sigmakee/sigma/suo-kif.pdf> for a
+ * <http:
  * language specification. readFile() and writeFile() are the primary entry
  * points and parse() does all the real work.
  *
@@ -108,19 +108,19 @@ public class KIF {
     public static void setupStreamTokenizer(StreamTokenizer_s st) {
 
         st.whitespaceChars(0, 32);
-        st.ordinaryChars(33, 44); // !"#$%&'()*+,
-        st.wordChars(45, 46); // -.
-        st.ordinaryChar(47); // /
-        st.wordChars(48, 58); // 0-9:
-        st.ordinaryChar(59); // ;
-        st.wordChars(60, 64); // <=>?@
-        st.wordChars(65, 90); // A-Z
-        st.ordinaryChars(91, 94); // [\]^
-        st.wordChars(95, 95); // _
-        st.ordinaryChar(96); // `
-        st.wordChars(97, 122); // a-z
-        st.ordinaryChars(123, 255); // {|}~
-        // st.parseNumbers();
+        st.ordinaryChars(33, 44); 
+        st.wordChars(45, 46); 
+        st.ordinaryChar(47); 
+        st.wordChars(48, 58); 
+        st.ordinaryChar(59); 
+        st.wordChars(60, 64); 
+        st.wordChars(65, 90); 
+        st.ordinaryChars(91, 94); 
+        st.wordChars(95, 95); 
+        st.ordinaryChar(96); 
+        st.wordChars(97, 122); 
+        st.ordinaryChars(123, 255); 
+        
         st.quoteChar('"');
         st.commentChar(';');
         st.eolIsSignificant(true);
@@ -188,18 +188,18 @@ public class KIF {
             boolean inAntecedent = false;
             boolean inConsequent = false;
             HashSet<String> keySet = new HashSet<String>();
-            // int lineStart = 0;
+            
             boolean isEOL = false;
             do {
                 lastVal = st.ttype;
                 st.nextToken();
-                // check the situation when multiple KIF statements read as one
-                // This relies on extra blank line to separate KIF statements
+                
+                
                 if (st.ttype == StreamTokenizer.TT_EOL) {
                     if (isEOL) {
-                        // Two line separators in a row shows a new KIF
-                        // statement is to start. Check if a new statement
-                        // has already been generated, otherwise report error
+                        
+                        
+                        
                         if (f.startLine != 0 && (!keySet.isEmpty() || (expression.length() > 0))) {
                             errStr = (errStart + " possible missed closing parenthesis near start line " + f.startLine
                                     + " end line " + f.endLine + " for formula " + expression + "\n and key "
@@ -210,16 +210,16 @@ public class KIF {
                         }
                         continue;
                     }
-                    else { // Found a first end of line character.
-                        isEOL = true; // Turn on flag, to watch for a second consecutive one.
+                    else { 
+                        isEOL = true; 
                         continue;
                     }
                 }
                 else if (isEOL)
-                    isEOL = false; // Turn off isEOL if a non-space token encountered
-                if (st.ttype == 40) { // Open paren
+                    isEOL = false; 
+                if (st.ttype == 40) { 
                     if (parenLevel == 0) {
-                        // lineStart = st.lineno();
+                        
                         f = new Formula();
                         f.startLine = st.lineno() + totalLinesForComments;
                         f.sourceFile = filename;
@@ -234,13 +234,13 @@ public class KIF {
                         }
                     }
                     if ((parenLevel != 0) && (lastVal != 40) && (expression.length() > 0))
-                        expression.append(" "); // add back whitespace that ST removes
+                        expression.append(" "); 
                     expression.append("(");
                 }
-                else if (st.ttype == 41) { // ) - close paren
+                else if (st.ttype == 41) { 
                     parenLevel--;
                     expression.append(")");
-                    if (parenLevel == 0) { // The end of the statement...
+                    if (parenLevel == 0) { 
                         String fstr = StringUtil.normalizeSpaceChars(expression.toString());
                         f.theFormula = fstr.intern();
                         if (formulaMap.keySet().contains(f.theFormula)) {
@@ -250,10 +250,10 @@ public class KIF {
                             System.out.println(warning);
                             duplicateCount++;
                         }
-                        if (mode == NORMAL_PARSE_MODE) { // Check arg validity ONLY in NORMAL_PARSE_MODE
+                        if (mode == NORMAL_PARSE_MODE) { 
                             String validArgs = "";
-//                                f.validArgs((file != null ? file.getName() : null),
-//                                    (file != null ? Integer.valueOf(f.startLine) : null));
+
+
                             if (StringUtil.emptyString(validArgs))
                                 validArgs = f.badQuantification();
                             if (StringUtil.isNonEmptyString(validArgs)) {
@@ -263,14 +263,14 @@ public class KIF {
                                 throw new ParseException(errStr, f.startLine);
                             }
                         }
-                        keySet.add(f.theFormula); // Make the formula itself a key
+                        keySet.add(f.theFormula); 
                         keySet.add(f.createID());
                         f.endLine = st.lineno() + totalLinesForComments;
                         Iterator<String> it = keySet.iterator();
-                        while (it.hasNext()) { // Add the expression but ...
+                        while (it.hasNext()) { 
                             String fkey = it.next();
                             if (formulas.containsKey(fkey)) {
-                                if (!formulaMap.keySet().contains(f.theFormula)) { // don't add keys if formula is already present
+                                if (!formulaMap.keySet().contains(f.theFormula)) { 
                                     ArrayList<String> list = formulas.get(fkey);
                                     if (StringUtil.emptyString(f.theFormula)) {
                                         System.out.println("Error in KIF.parse(): Storing empty formula from line: "
@@ -306,35 +306,35 @@ public class KIF {
                         throw new ParseException(errStr, f.startLine);
                     }
                 }
-                else if (st.ttype == 34) { // " - it's a string
+                else if (st.ttype == 34) { 
                     st.sval = StringUtil.escapeQuoteChars(st.sval);
-                    if (lastVal != 40) // add back whitespace that ST removes
+                    if (lastVal != 40) 
                         expression.append(" ");
                     expression.append("\"");
                     String com = st.sval;
                     totalLinesForComments += countChar(com, (char) 0X0A);
                     expression.append(com);
                     expression.append("\"");
-                    if (parenLevel < 2) // Don't care if parenLevel > 1
+                    if (parenLevel < 2) 
                         argumentNum = argumentNum + 1;
                 }
-                else if ((st.ttype == StreamTokenizer.TT_NUMBER) || // number
+                else if ((st.ttype == StreamTokenizer.TT_NUMBER) || 
                         (st.sval != null && (Character.isDigit(st.sval.charAt(0))))) {
-                    if (lastVal != 40) // add back whitespace that ST removes
+                    if (lastVal != 40) 
                         expression.append(" ");
                     if (st.nval == 0)
                         expression.append(st.sval);
                     else
                         expression.append(Double.toString(st.nval));
-                    if (parenLevel < 2) // Don't care if parenLevel > 1
+                    if (parenLevel < 2) 
                         argumentNum = argumentNum + 1;
                 }
-                else if (st.ttype == StreamTokenizer.TT_WORD) { // a token
+                else if (st.ttype == StreamTokenizer.TT_WORD) { 
                     if ((st.sval.equals("=>") || st.sval.equals("<=>")) && parenLevel == 1)
-                        inRule = true; // implications in statements aren't rules
-                    if (parenLevel < 2) // Don't care if parenLevel > 1
+                        inRule = true; 
+                    if (parenLevel < 2) 
                         argumentNum = argumentNum + 1;
-                    if (lastVal != 40) // add back whitespace that ST removes
+                    if (lastVal != 40) 
                         expression.append(" ");
                     expression.append(String.valueOf(st.sval));
                     if (expression.length() > 64000) {
@@ -342,9 +342,9 @@ public class KIF {
                         errorSet.add(errStr);
                         throw new ParseException(errStr, f.startLine);
                     }
-                    // Build the terms list and special keys ONLY if in NORMAL_PARSE_MODE
-                    if ((mode == NORMAL_PARSE_MODE) && (st.sval.charAt(0) != '?') && (st.sval.charAt(0) != '@')) { // Variables are not terms
-                        terms.add(st.sval); // collect all terms
+                    
+                    if ((mode == NORMAL_PARSE_MODE) && (st.sval.charAt(0) != '?') && (st.sval.charAt(0) != '@')) { 
+                        terms.add(st.sval); 
 
                         if (!termFrequency.containsKey(st.sval)) {
                             termFrequency.put(st.sval, 0);
@@ -352,10 +352,10 @@ public class KIF {
                         termFrequency.put(st.sval, termFrequency.get(st.sval) + 1);
 
                         String key = createKey(st.sval, inAntecedent, inConsequent, argumentNum, parenLevel);
-                        keySet.add(key); // Collect all the keys until the end of the statement is reached.
+                        keySet.add(key); 
                     }
                 }
-                else if ((mode == RELAXED_PARSE_MODE) && (st.ttype == 96)) // allow '`' in relaxed parse mode
+                else if ((mode == RELAXED_PARSE_MODE) && (st.ttype == 96)) 
                     expression.append(" `");
                 else if (st.ttype != StreamTokenizer.TT_EOF) {
                     errStr = (errStart + ": Illegal character near line " + f.startLine);
@@ -371,7 +371,7 @@ public class KIF {
             }
         }
         catch (Exception ex) {
-            String message = ex.getMessage().replaceAll(":", "&58;"); // HTMLformatter.formatErrors depends on :
+            String message = ex.getMessage().replaceAll(":", "&58;"); 
             warningSet.add("Warning in KIF.parse() " + message);
             ex.printStackTrace();
         }
@@ -461,9 +461,9 @@ public class KIF {
             parse(fr);
         } catch (Exception ex) {
             throw new RuntimeException(ex);
-//            exThr = ex;
-//            KBmanager.getMgr()
-//                .setError(KBmanager.getMgr().getError() + "\n<br/>" + ex.getMessage() + " in file " + fname + "\n<br/>");
+
+
+
         }
         if (exThr != null)
             throw exThr;
@@ -523,63 +523,63 @@ public class KIF {
         return null;
     }
 
-//    /*****************************************************************
-//     * Writes the TPTP output to a file.
-//     */
-//    public static void tptpOutputTest(String filename) throws IOException {
-//
-//        KIF kifp = new KIF();
-//        int axiomCount = 0;
-//        try {
-//            kifp.readFile(filename);
-//        }
-//        catch (Exception e1) {
-//            String msg = e1.getMessage();
-//            if (e1 instanceof ParseException)
-//                msg = msg + (" in statement starting at line " + ((ParseException) e1).getErrorOffset());
-//        }
-//        FileWriter fw = null;
-//        PrintWriter pw = null;
-//        File outfile = new File(filename + ".tptp");
-//        try {
-//            fw = new FileWriter(outfile);
-//            pw = new PrintWriter(fw);
-//            Iterator<String> it = kifp.formulaMap.keySet().iterator();
-//            while (it.hasNext()) {
-//                axiomCount++;
-//                String form = it.next();
-//                form = SUMOformulaToTPTPformula.tptpParseSUOKIFString(form, false); // not
-//                // a
-//                // query
-//                form = "fof(axiom" + axiomCount + ",axiom,(" + form + ")).";
-//                if (form.indexOf('"') < 0 && form.indexOf('\'') < 0)
-//                    pw.println(form + '\n');
-//            }
-//        }
-//        catch (Exception ex) {
-//            System.out.println("Error writing " + outfile.getCanonicalPath() + ": " + ex.getMessage());
-//            ex.printStackTrace();
-//        }
-//        finally {
-//            try {
-//                if (pw != null)
-//                    pw.close();
-//                if (fw != null)
-//                    fw.close();
-//            }
-//            catch (IOException ioe) {
-//                ioe.printStackTrace();
-//                System.out.println(ioe.getMessage());
-//            }
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*****************************************************************
      * Test method for this class.
      */
     public static void main(String[] args) {
 
-        // tptpOutputTest(args[0]);
+        
         String exp = "(documentation foo \"(written by John Smith).\")";
         System.out.println(exp);
         KIF kif = new KIF();

@@ -29,22 +29,22 @@ public class Dropout {
 
         if (activation == null) activation = "ReLU";
 
-        // construct multi-layer
+        
         int input_size;
         for(int i=0; i<this.n_layers; i++) {
-            // layer_size
+            
             if(i == 0) {
                 input_size = n_in;
             } else {
                 input_size = hidden_layer_sizes[i-1];
             }
 
-            // construct hiddenLayer
+            
             this.hiddenLayers[i] = new HiddenLayer(input_size, hidden_layer_sizes[i], null, null, rng, activation);
 
         }
 
-        // construct logisticLayer
+        
         this.logisticLayer = new LogisticRegression(hidden_layer_sizes[this.n_layers-1], n_out);
 
     }
@@ -60,9 +60,9 @@ public class Dropout {
             for(int n=0; n<N; n++) {
 
                 dropout_masks = new ArrayList<>(n_layers);
-                layer_inputs = new ArrayList<>(n_layers+1);  // +1 for logistic layer
+                layer_inputs = new ArrayList<>(n_layers+1);  
 
-                // forward hiddenLayers
+                
                 for(int i=0; i<n_layers; i++) {
 
                     if(i == 0) layer_input = train_X[n];
@@ -84,12 +84,12 @@ public class Dropout {
                 }
 
 
-                // forward & backward logisticLayer
-                double[] logistic_layer_dy; // = new double[n_out];
-                logistic_layer_dy = logisticLayer.train(layer_output, train_Y[n], lr); //, logistic_layer_dy);
+                
+                double[] logistic_layer_dy; 
+                logistic_layer_dy = logisticLayer.train(layer_output, train_Y[n], lr); 
                 layer_inputs.add(layer_output.clone());
 
-                // backward hiddenLayers
+                
                 double[] prev_dy = logistic_layer_dy;
                 double[][] prev_W;
                 double[] dy = new double[0];
@@ -187,17 +187,17 @@ public class Dropout {
                 {0, 1},
         };
 
-        // construct Dropout
+        
         Dropout classifier = new Dropout(train_N, n_in, hidden_layer_sizes, n_out, rng, "ReLU");
 
-        // train
+        
         classifier.train(n_epochs, train_X, train_Y, dropout, p_dropout, learning_rate);
 
-        // pretest
+        
         if(dropout) classifier.pretest(p_dropout);
 
 
-        // test data
+        
         double[][] test_X = {
                 {0., 0.},
                 {0., 1.},
@@ -207,7 +207,7 @@ public class Dropout {
 
         double[][] test_Y = new double[test_N][n_out];
 
-        // test
+        
         for(int i=0; i<test_N; i++) {
             classifier.predict(test_X[i], test_Y[i]);
             for(int j=0; j<n_out; j++) {

@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -17,9 +17,9 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
  */
 public abstract class FuncGen extends UGen implements FloatFunction<float[]> {
 
-    // TODO curious challenge:
-    //can we get Function to not bother updating if its inputs are not updating?
-    //could UGen have a method 'hasChanged()'?
+    
+    
+    
 
     /**
      * An array representing the current values from the array of input UGens.

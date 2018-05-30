@@ -63,13 +63,13 @@ public class GameEventPerformanceTest {
 	@Test
 	public void runPerformanceTest() {
 		try {
-			//1. warmup
+			
 			for (int i = 0; i < 2; i ++) {
 				touchAllObjects(Accessor.POJO, false);
 				touchAllObjects(Accessor.SLAB, false);
 			}
 
-			//2. measure
+			
 			long pojoTime = 0, slabTime = 0;
 			System.gc();
 			for (int i = 0; i < 2; i++) {
@@ -94,7 +94,7 @@ public class GameEventPerformanceTest {
 
         final long[] lives = { 5000, 4000, 3000, 2000, 1000 };
 
-        // Create objects
+        
         for (int i = 0; i < OBJECTS_ALLOCATED; i++) {
 			GameEvent event = values.get(i);
 			event.setId(i);
@@ -104,7 +104,7 @@ public class GameEventPerformanceTest {
 
         final long middle = System.nanoTime();
 
-        // Use objects
+        
         for (int i = 0; i < OBJECTS_ALLOCATED; i++) {
 			GameEvent event = values.get(i);
 			int target = event.getTarget();

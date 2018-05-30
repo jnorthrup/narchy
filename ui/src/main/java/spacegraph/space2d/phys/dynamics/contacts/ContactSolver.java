@@ -71,7 +71,7 @@ public class ContactSolver {
     }
 
     public final void init(ContactSolverDef def) {
-        // System.out.println("Initializing contact solver");
+        
         m_step = def.step;
         m_count = def.count;
 
@@ -98,7 +98,7 @@ public class ContactSolver {
         m_contacts = def.contacts;
 
         for (int i = 0; i < m_count; ++i) {
-            // System.out.println("contacts: " + m_count);
+            
             final Contact contact = m_contacts[i];
 
             final Fixture fixtureA = contact.aFixture;
@@ -145,14 +145,14 @@ public class ContactSolver {
             pc.radiusB = radiusB;
             pc.type = manifold.type;
 
-            // System.out.println("contact point count: " + pointCount);
+            
             for (int j = 0; j < pointCount; j++) {
                 ManifoldPoint cp = manifold.points[j];
                 VelocityConstraintPoint vcp = vc.points[j];
 
                 if (m_step.warmStarting) {
-                    // assert(cp.normalImpulse == 0);
-                    // System.out.println("contact normal impulse: " + cp.normalImpulse);
+                    
+                    
                     vcp.normalImpulse = m_step.dtRatio * cp.normalImpulse;
                     vcp.tangentImpulse = m_step.dtRatio * cp.tangentImpulse;
                 } else {
@@ -172,7 +172,7 @@ public class ContactSolver {
     }
 
     public void warmStart() {
-        // Warm start.
+        
         for (int i = 0; i < m_count; ++i) {
             final ContactVelocityConstraint vc = m_velocityConstraints[i];
 
@@ -210,14 +210,14 @@ public class ContactSolver {
         }
     }
 
-    // djm pooling, and from above
+    
     private final Transform xfA = new Transform();
     private final Transform xfB = new Transform();
     private final WorldManifold worldManifold = new WorldManifold();
 
     public final void initializeVelocityConstraints() {
 
-        // Warm start.
+        
         for (int i = 0; i < m_count; ++i) {
             ContactVelocityConstraint vc = m_velocityConstraints[i];
             ContactPositionConstraint pc = m_positionConstraints[i];
@@ -291,7 +291,7 @@ public class ContactSolver {
 
                 vcp.tangentMass = kTangent > 0.0f ? 1.0f / kTangent : 0.0f;
 
-                // Setup a velocity bias for restitution.
+                
                 vcp.velocityBias = 0.0f;
                 float tempx = vB.x + -wB * vcprB.y - vA.x - (-wA * vcprA.y);
                 float tempy = vB.y + wB * vcprB.x - vA.y - (wA * vcprA.x);
@@ -301,7 +301,7 @@ public class ContactSolver {
                 }
             }
 
-            // If we have two points, then prepare the block solver.
+            
             if (vc.pointCount == 2) {
                 VelocityConstraintPoint vcp1 = vc.points[0];
                 VelocityConstraintPoint vcp2 = vc.points[1];
@@ -314,15 +314,15 @@ public class ContactSolver {
                 float k22 = mA + mB + iA * rn2A * rn2A + iB * rn2B * rn2B;
                 float k12 = mA + mB + iA * rn1A * rn2A + iB * rn1B * rn2B;
                 if (k11 * k11 < k_maxConditionNumber * (k11 * k22 - k12 * k12)) {
-                    // K is safe to invert.
+                    
                     vc.K.ex.x = k11;
                     vc.K.ex.y = k12;
                     vc.K.ey.x = k12;
                     vc.K.ey.y = k22;
                     vc.K.invertToOut(vc.normalMass);
                 } else {
-                    // The constraints are redundant, just use one.
-                    // TODO_ERIN use deepest?
+                    
+                    
                     vc.pointCount = 1;
                 }
             }
@@ -357,113 +357,113 @@ public class ContactSolver {
 
             assert (pointCount == 1 || pointCount == 2);
 
-            // Solve tangent constraints
+            
             for (int j = 0; j < pointCount; ++j) {
                 final VelocityConstraintPoint vcp = vc.points[j];
                 final Tuple2f a = vcp.rA;
                 float dvx = -wB * vcp.rB.y + vB.x - vA.x + wA * a.y;
                 float dvy = wB * vcp.rB.x + vB.y - vA.y - wA * a.x;
 
-                // Compute tangent force
+                
                 final float vt = dvx * tangentx + dvy * tangenty - vc.tangentSpeed;
                 float lambda = vcp.tangentMass * (-vt);
 
-                // Clamp the accumulated force
+                
                 final float maxFriction = friction * vcp.normalImpulse;
                 final float newImpulse =
                         MathUtils.clamp(vcp.tangentImpulse + lambda, -maxFriction, maxFriction);
                 lambda = newImpulse - vcp.tangentImpulse;
                 vcp.tangentImpulse = newImpulse;
 
-                // Apply contact impulse
-                // Vec2 P = lambda * tangent;
+                
+                
 
                 final float Px = tangentx * lambda;
                 final float Py = tangenty * lambda;
 
-                // vA -= invMassA * P;
+                
                 vA.x -= Px * mA;
                 vA.y -= Py * mA;
                 wA -= iA * (vcp.rA.x * Py - vcp.rA.y * Px);
 
-                // vB += invMassB * P;
+                
                 vB.x += Px * mB;
                 vB.y += Py * mB;
                 wB += iB * (vcp.rB.x * Py - vcp.rB.y * Px);
             }
 
-            // Solve normal constraints
+            
             if (vc.pointCount == 1) {
                 final VelocityConstraintPoint vcp = vc.points[0];
 
-                // Relative velocity at contact
-                // Vec2 dv = vB + Cross(wB, vcp.rB) - vA - Cross(wA, vcp.rA);
+                
+                
 
                 float dvx = -wB * vcp.rB.y + vB.x - vA.x + wA * vcp.rA.y;
                 float dvy = wB * vcp.rB.x + vB.y - vA.y - wA * vcp.rA.x;
 
-                // Compute normal impulse
+                
                 final float vn = dvx * normalx + dvy * normaly;
                 float lambda = -vcp.normalMass * (vn - vcp.velocityBias);
 
-                // Clamp the accumulated impulse
+                
                 float a = vcp.normalImpulse + lambda;
                 final float newImpulse = (a > 0.0f ? a : 0.0f);
                 lambda = newImpulse - vcp.normalImpulse;
                 vcp.normalImpulse = newImpulse;
 
-                // Apply contact impulse
+                
                 float Px = normalx * lambda;
                 float Py = normaly * lambda;
 
-                // vA -= invMassA * P;
+                
                 vA.x -= Px * mA;
                 vA.y -= Py * mA;
                 wA -= iA * (vcp.rA.x * Py - vcp.rA.y * Px);
 
-                // vB += invMassB * P;
+                
                 vB.x += Px * mB;
                 vB.y += Py * mB;
                 wB += iB * (vcp.rB.x * Py - vcp.rB.y * Px);
             } else {
-                // Block solver developed in collaboration with Dirk Gregorius (back in 01/07 on
-                // Box2D_Lite).
-                // Build the mini LCP for this contact patch
-                //
-                // vn = A * x + b, vn >= 0, , vn >= 0, x >= 0 and vn_i * x_i = 0 with i = 1..2
-                //
-                // A = J * W * JT and J = ( -n, -r1 x n, n, r2 x n )
-                // b = vn_0 - velocityBias
-                //
-                // The system is solved using the "Total enumeration method" (s. Murty). The complementary
-                // constraint vn_i * x_i
-                // implies that we must have in any solution either vn_i = 0 or x_i = 0. So for the 2D
-                // contact problem the cases
-                // vn1 = 0 and vn2 = 0, x1 = 0 and x2 = 0, x1 = 0 and vn2 = 0, x2 = 0 and vn1 = 0 need to be
-                // tested. The first valid
-                // solution that satisfies the problem is chosen.
-                //
-                // In order to account of the accumulated impulse 'a' (because of the iterative nature of
-                // the solver which only requires
-                // that the accumulated impulse is clamped and not the incremental impulse) we change the
-                // impulse variable (x_i).
-                //
-                // Substitute:
-                //
-                // x = a + d
-                //
-                // a := old total impulse
-                // x := new total impulse
-                // d := incremental impulse
-                //
-                // For the current iteration we extend the formula for the incremental impulse
-                // to compute the new total impulse:
-                //
-                // vn = A * d + b
-                // = A * (x - a) + b
-                // = A * x + b - A * a
-                // = A * x + b'
-                // b' = b - A * a;
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
 
                 final VelocityConstraintPoint cp1 = vc.points[0];
                 final VelocityConstraintPoint cp2 = vc.points[1];
@@ -475,40 +475,40 @@ public class ContactSolver {
                 float ay = cp2.normalImpulse;
 
                 assert (ax >= 0.0f && ay >= 0.0f);
-                // Relative velocity at contact
-                // Vec2 dv1 = vB + Cross(wB, cp1.rB) - vA - Cross(wA, cp1.rA);
+                
+                
                 float dv1x = -wB * cp1rB.y + vB.x - vA.x + wA * cp1rA.y;
                 float dv1y = wB * cp1rB.x + vB.y - vA.y - wA * cp1rA.x;
 
-                // Vec2 dv2 = vB + Cross(wB, cp2.rB) - vA - Cross(wA, cp2.rA);
+                
                 float dv2x = -wB * cp2rB.y + vB.x - vA.x + wA * cp2rA.y;
                 float dv2y = wB * cp2rB.x + vB.y - vA.y - wA * cp2rA.x;
 
-                // Compute normal velocity
+                
                 float vn1 = dv1x * normalx + dv1y * normaly;
                 float vn2 = dv2x * normalx + dv2y * normaly;
 
                 float bx = vn1 - cp1.velocityBias;
                 float by = vn2 - cp2.velocityBias;
 
-                // Compute b'
+                
                 Mat22 R = vc.K;
                 bx -= R.ex.x * ax + R.ey.x * ay;
                 by -= R.ex.y * ax + R.ey.y * ay;
 
-                // final float k_errorTol = 1e-3f;
-                // B2_NOT_USED(k_errorTol);
+                
+                
                 for (; ; ) {
-                    //
-                    // Case 1: vn = 0
-                    //
-                    // 0 = A * x' + b'
-                    //
-                    // Solve for x':
-                    //
-                    // x' = - inv(A) * b'
-                    //
-                    // Vec2 x = - Mul(c.normalMass, b);
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                     Mat22 R1 = vc.normalMass;
                     float xx = R1.ex.x * bx + R1.ey.x * by;
                     float xy = R1.ex.y * bx + R1.ey.y * by;
@@ -516,14 +516,14 @@ public class ContactSolver {
                     xy *= -1;
 
                     if (xx >= 0.0f && xy >= 0.0f) {
-                        // Get the incremental impulse
-                        // Vec2 d = x - a;
+                        
+                        
                         float dx = xx - ax;
                         float dy = xy - ay;
 
-                        // Apply incremental impulse
-                        // Vec2 P1 = d.x * normal;
-                        // Vec2 P2 = d.y * normal;
+                        
+                        
+                        
                         float P1x = dx * normalx;
                         float P1y = dx * normaly;
                         float P2x = dy * normalx;
@@ -543,24 +543,24 @@ public class ContactSolver {
                         wA -= iA * (cp1rA.x * P1y - cp1rA.y * P1x + (cp2rA.x * P2y - cp2rA.y * P2x));
                         wB += iB * (cp1rB.x * P1y - cp1rB.y * P1x + (cp2rB.x * P2y - cp2rB.y * P2x));
 
-                        // Accumulate
+                        
                         cp1.normalImpulse = xx;
                         cp2.normalImpulse = xy;
 
                         /*
-                         * #if B2_DEBUG_SOLVER == 1 // Postconditions dv1 = vB + Cross(wB, cp1.rB) - vA -
+                         * #if B2_DEBUG_SOLVER == 1 
                          * Cross(wA, cp1.rA); dv2 = vB + Cross(wB, cp2.rB) - vA - Cross(wA, cp2.rA);
                          *
-                         * // Compute normal velocity vn1 = Dot(dv1, normal); vn2 = Dot(dv2, normal);
+                         * 
                          *
                          * assert(Abs(vn1 - cp1.velocityBias) < k_errorTol); assert(Abs(vn2 - cp2.velocityBias)
                          * < k_errorTol); #endif
                          */
                         if (DEBUG_SOLVER) {
-                            // Postconditions
+                            
                             Tuple2f dv1 = vB.add(Tuple2f.cross(wB, cp1rB).subbed(vA).subbed(Tuple2f.cross(wA, cp1rA)));
                             Tuple2f dv2 = vB.add(Tuple2f.cross(wB, cp2rB).subbed(vA).subbed(Tuple2f.cross(wA, cp2rA)));
-                            // Compute normal velocity
+                            
                             vn1 = Tuple2f.dot(dv1, normal);
                             vn2 = Tuple2f.dot(dv2, normal);
 
@@ -570,25 +570,25 @@ public class ContactSolver {
                         break;
                     }
 
-                    //
-                    // Case 2: vn1 = 0 and x2 = 0
-                    //
-                    // 0 = a11 * x1' + a12 * 0 + b1'
-                    // vn2 = a21 * x1' + a22 * 0 + '
-                    //
+                    
+                    
+                    
+                    
+                    
+                    
                     xx = -cp1.normalMass * bx;
                     xy = 0.0f;
                     vn1 = 0.0f;
                     vn2 = vc.K.ex.y * xx + by;
 
                     if (xx >= 0.0f && vn2 >= 0.0f) {
-                        // Get the incremental impulse
+                        
                         float dx = xx - ax;
                         float dy = xy - ay;
 
-                        // Apply incremental impulse
-                        // Vec2 P1 = d.x * normal;
-                        // Vec2 P2 = d.y * normal;
+                        
+                        
+                        
                         float P1x = normalx * dx;
                         float P1y = normaly * dx;
                         float P2x = normalx * dy;
@@ -609,22 +609,22 @@ public class ContactSolver {
                         wA -= iA * (cp1rA.x * P1y - cp1rA.y * P1x + (cp2rA.x * P2y - cp2rA.y * P2x));
                         wB += iB * (cp1rB.x * P1y - cp1rB.y * P1x + (cp2rB.x * P2y - cp2rB.y * P2x));
 
-                        // Accumulate
+                        
                         cp1.normalImpulse = xx;
                         cp2.normalImpulse = xy;
 
                         /*
-                         * #if B2_DEBUG_SOLVER == 1 // Postconditions dv1 = vB + Cross(wB, cp1.rB) - vA -
+                         * #if B2_DEBUG_SOLVER == 1 
                          * Cross(wA, cp1.rA);
                          *
-                         * // Compute normal velocity vn1 = Dot(dv1, normal);
+                         * 
                          *
                          * assert(Abs(vn1 - cp1.velocityBias) < k_errorTol); #endif
                          */
                         if (DEBUG_SOLVER) {
-                            // Postconditions
+                            
                             Tuple2f dv1 = vB.add(Tuple2f.cross(wB, cp1rB).subbed(vA).subbed(Tuple2f.cross(wA, cp1rA)));
-                            // Compute normal velocity
+                            
                             vn1 = Tuple2f.dot(dv1, normal);
 
                             assert (Math.abs(vn1 - cp1.velocityBias) < k_errorTol);
@@ -632,23 +632,23 @@ public class ContactSolver {
                         break;
                     }
 
-                    //
-                    // Case 3: wB = 0 and x1 = 0
-                    //
-                    // vn1 = a11 * 0 + a12 * x2' + b1'
-                    // 0 = a21 * 0 + a22 * x2' + '
-                    //
+                    
+                    
+                    
+                    
+                    
+                    
                     xx = 0.0f;
                     xy = -cp2.normalMass * by;
                     vn1 = vc.K.ey.x * xy + bx;
                     vn2 = 0.0f;
 
                     if (xy >= 0.0f && vn1 >= 0.0f) {
-                        // Resubstitute for the incremental impulse
+                        
                         float dx = xx - ax;
                         float dy = xy - ay;
 
-                        // Apply incremental impulse
+                        
                         /*
                          * Vec2 P1 = d.x * normal; Vec2 P2 = d.y * normal; vA -= invMassA * (P1 + P2); wA -=
                          * invIA * (Cross(cp1.rA, P1) + Cross(cp2.rA, P2));
@@ -669,22 +669,22 @@ public class ContactSolver {
                         wA -= iA * (cp1rA.x * P1y - cp1rA.y * P1x + (cp2rA.x * P2y - cp2rA.y * P2x));
                         wB += iB * (cp1rB.x * P1y - cp1rB.y * P1x + (cp2rB.x * P2y - cp2rB.y * P2x));
 
-                        // Accumulate
+                        
                         cp1.normalImpulse = xx;
                         cp2.normalImpulse = xy;
 
                         /*
-                         * #if B2_DEBUG_SOLVER == 1 // Postconditions dv2 = vB + Cross(wB, cp2.rB) - vA -
+                         * #if B2_DEBUG_SOLVER == 1 
                          * Cross(wA, cp2.rA);
                          *
-                         * // Compute normal velocity vn2 = Dot(dv2, normal);
+                         * 
                          *
                          * assert(Abs(vn2 - cp2.velocityBias) < k_errorTol); #endif
                          */
                         if (DEBUG_SOLVER) {
-                            // Postconditions
+                            
                             Tuple2f dv2 = vB.add(Tuple2f.cross(wB, cp2rB).subbed(vA).subbed(Tuple2f.cross(wA, cp2rA)));
-                            // Compute normal velocity
+                            
                             vn2 = Tuple2f.dot(dv2, normal);
 
                             assert (Math.abs(vn2 - cp2.velocityBias) < k_errorTol);
@@ -692,22 +692,22 @@ public class ContactSolver {
                         break;
                     }
 
-                    //
-                    // Case 4: x1 = 0 and x2 = 0
-                    //
-                    // vn1 = b1
-                    // vn2 = ;
+                    
+                    
+                    
+                    
+                    
                     xx = 0.0f;
                     xy = 0.0f;
                     vn1 = bx;
                     vn2 = by;
 
                     if (vn1 >= 0.0f && vn2 >= 0.0f) {
-                        // Resubstitute for the incremental impulse
+                        
                         float dx = xx - ax;
                         float dy = xy - ay;
 
-                        // Apply incremental impulse
+                        
                         /*
                          * Vec2 P1 = d.x * normal; Vec2 P2 = d.y * normal; vA -= invMassA * (P1 + P2); wA -=
                          * invIA * (Cross(cp1.rA, P1) + Cross(cp2.rA, P2));
@@ -728,21 +728,21 @@ public class ContactSolver {
                         wA -= iA * (cp1rA.x * P1y - cp1rA.y * P1x + (cp2rA.x * P2y - cp2rA.y * P2x));
                         wB += iB * (cp1rB.x * P1y - cp1rB.y * P1x + (cp2rB.x * P2y - cp2rB.y * P2x));
 
-                        // Accumulate
+                        
                         cp1.normalImpulse = xx;
                         cp2.normalImpulse = xy;
 
                         break;
                     }
 
-                    // No solution, give up. This is hit sometimes, but it doesn't seem to matter.
+                    
                     break;
                 }
             }
 
-            // m_velocities[indexA].v.set(vA);
+            
             m_velocities[indexA].w = wA;
-            // m_velocities[indexB].v.set(vB);
+            
             m_velocities[indexB].w = wB;
         }
     }
@@ -760,7 +760,7 @@ public class ContactSolver {
     }
 
     /*
-     * #if 0 // Sequential solver. bool ContactSolver::SolvePositionConstraints(float baumgarte) {
+     * #if 0 
      * float minSeparation = 0.0f;
      *
      * for (int i = 0; i < m_constraintCount; ++i) { ContactConstraint* c = m_constraints + i; Body*
@@ -770,7 +770,7 @@ public class ContactSolver {
      *
      * Vec2 normal = c.normal;
      *
-     * // Solve normal constraints for (int j = 0; j < c.pointCount; ++j) { ContactConstraintPoint*
+     * 
      * ccp = c.points + j;
      *
      * Vec2 r1 = Mul(bodyA.GetXForm().R, ccp.localAnchorA - bodyA.GetLocalCenter()); Vec2 r2 =
@@ -778,14 +778,14 @@ public class ContactSolver {
      *
      * Vec2 p1 = bodyA.m_sweep.c + r1; Vec2 p2 = bodyB.m_sweep.c + r2; Vec2 dp = p2 - p1;
      *
-     * // Approximate the current separation. float separation = Dot(dp, normal) + ccp.separation;
+     * 
      *
-     * // Track max constraint error. minSeparation = Min(minSeparation, separation);
+     * 
      *
-     * // Prevent large corrections and allow slop. float C = Clamp(baumgarte * (separation +
+     * 
      * _linearSlop), -_maxLinearCorrection, 0.0f);
      *
-     * // Compute normal impulse float impulse = -ccp.equalizedMass * C;
+     * 
      *
      * Vec2 P = impulse * normal;
      *
@@ -795,7 +795,7 @@ public class ContactSolver {
      * bodyB.m_sweep.c += invMassB * P; bodyB.m_sweep.a += invIB * Cross(r2, P);
      * bodyB.SynchronizeTransform(); } }
      *
-     * // We can't expect minSpeparation >= -_linearSlop because we don't // push the separation above
+     * 
      * -_linearSlop. return minSeparation >= -1.5f * _linearSlop; }
      */
 
@@ -830,7 +830,7 @@ public class ContactSolver {
             Tuple2f cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
 
-            // Solve normal constraints
+            
             for (int j = 0; j < pointCount; ++j) {
                 final Rot xfAq = xfA;
                 final Rot xfBq = xfB;
@@ -852,20 +852,20 @@ public class ContactSolver {
                 float rBx = point.x - cB.x;
                 float rBy = point.y - cB.y;
 
-                // Track max constraint error.
+                
                 minSeparation = MathUtils.min(minSeparation, separation);
 
-                // Prevent large corrections and allow slop.
+                
                 final float C =
                         MathUtils.clamp(Settings.baumgarte * (separation + Settings.linearSlop),
                                 -Settings.maxLinearCorrection, 0.0f);
 
-                // Compute the effective mass.
+                
                 final float rnA = rAx * normal.y - rAy * normal.x;
                 final float rnB = rBx * normal.y - rBy * normal.x;
                 final float K = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
 
-                // Compute normal impulse
+                
                 final float impulse = K > 0.0f ? -C / K : 0.0f;
 
                 float Px = normal.x * impulse;
@@ -880,19 +880,19 @@ public class ContactSolver {
                 aB += iB * (rBx * Py - rBy * Px);
             }
 
-            // m_positions[indexA].c.set(cA);
+            
             m_positions[indexA].a = aA;
 
-            // m_positions[indexB].c.set(cB);
+            
             m_positions[indexB].a = aB;
         }
 
-        // We can't expect minSpeparation >= -linearSlop because we don't
-        // push the separation above -linearSlop.
+        
+        
         return minSeparation >= -3.0f * Settings.linearSlop;
     }
 
-    // Sequential position solver for position constraints.
+    
     public boolean solveTOIPositionConstraints(int toiIndexA, int toiIndexB) {
         float minSeparation = 0.0f;
 
@@ -929,7 +929,7 @@ public class ContactSolver {
             Tuple2f cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
 
-            // Solve normal constraints
+            
             for (int j = 0; j < pointCount; ++j) {
                 final Rot xfAq = xfA;
                 final Rot xfBq = xfB;
@@ -952,20 +952,20 @@ public class ContactSolver {
                 float rBx = point.x - cB.x;
                 float rBy = point.y - cB.y;
 
-                // Track max constraint error.
+                
                 minSeparation = MathUtils.min(minSeparation, separation);
 
-                // Prevent large corrections and allow slop.
+                
                 float C =
                         MathUtils.clamp(Settings.toiBaugarte * (separation + Settings.linearSlop),
                                 -Settings.maxLinearCorrection, 0.0f);
 
-                // Compute the effective mass.
+                
                 float rnA = rAx * normal.y - rAy * normal.x;
                 float rnB = rBx * normal.y - rBy * normal.x;
                 float K = mA + mB + iA * rnA * rnA + iB * rnB * rnB;
 
-                // Compute normal impulse
+                
                 float impulse = K > 0.0f ? -C / K : 0.0f;
 
                 float Px = normal.x * impulse;
@@ -980,15 +980,15 @@ public class ContactSolver {
                 aB += iB * (rBx * Py - rBy * Px);
             }
 
-            // m_positions[indexA].c.set(cA);
+            
             m_positions[indexA].a = aA;
 
-            // m_positions[indexB].c.set(cB);
+            
             m_positions[indexB].a = aB;
         }
 
-        // We can't expect minSpeparation >= -_linearSlop because we don't
-        // push the separation above -_linearSlop.
+        
+        
         return minSeparation >= -1.5f * Settings.linearSlop;
     }
 
@@ -1016,14 +1016,14 @@ class PositionSolverManifold {
         final Tuple2f pcLocalPointsI = pc.localPoints[index];
         switch (pc.type) {
             case CIRCLES: {
-                // Transform.mulToOutUnsafe(xfA, pc.localPoint, pointA);
-                // Transform.mulToOutUnsafe(xfB, pc.localPoints[0], pointB);
-                // normal.set(pointB).subLocal(pointA);
-                // normal.normalize();
-                //
-                // point.set(pointA).addLocal(pointB).mulLocal(.5f);
-                // temp.set(pointB).subLocal(pointA);
-                // separation = Vec2.dot(temp, normal) - pc.radiusA - pc.radiusB;
+                
+                
+                
+                
+                
+                
+                
+                
                 final Tuple2f plocalPoint = pc.localPoint;
                 final Tuple2f pLocalPoints0 = pc.localPoints[0];
                 final float pointAx = (xfAq.c * plocalPoint.x - xfAq.s * plocalPoint.y) + xfA.pos.x;
@@ -1043,13 +1043,13 @@ class PositionSolverManifold {
             }
 
             case FACE_A: {
-                // Rot.mulToOutUnsafe(xfAq, pc.localNormal, normal);
-                // Transform.mulToOutUnsafe(xfA, pc.localPoint, planePoint);
-                //
-                // Transform.mulToOutUnsafe(xfB, pc.localPoints[index], clipPoint);
-                // temp.set(clipPoint).subLocal(planePoint);
-                // separation = Vec2.dot(temp, normal) - pc.radiusA - pc.radiusB;
-                // point.set(clipPoint);
+                
+                
+                
+                
+                
+                
+                
                 final Tuple2f pcLocalNormal = pc.localNormal;
                 final Tuple2f pcLocalPoint = pc.localPoint;
                 normal.x = xfAq.c * pcLocalNormal.x - xfAq.s * pcLocalNormal.y;
@@ -1068,16 +1068,16 @@ class PositionSolverManifold {
             }
 
             case FACE_B: {
-                // Rot.mulToOutUnsafe(xfBq, pc.localNormal, normal);
-                // Transform.mulToOutUnsafe(xfB, pc.localPoint, planePoint);
-                //
-                // Transform.mulToOutUnsafe(xfA, pcLocalPointsI, clipPoint);
-                // temp.set(clipPoint).subLocal(planePoint);
-                // separation = Vec2.dot(temp, normal) - pc.radiusA - pc.radiusB;
-                // point.set(clipPoint);
-                //
-                // // Ensure normal points from A to B
-                // normal.negateLocal();
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 final Tuple2f pcLocalNormal = pc.localNormal;
                 final Tuple2f pcLocalPoint = pc.localPoint;
                 normal.x = xfBq.c * pcLocalNormal.x - xfBq.s * pcLocalNormal.y;

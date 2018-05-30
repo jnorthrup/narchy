@@ -65,7 +65,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
                                 return Stream.of(x);
                         }).peek(x -> {
                             if ((x instanceof AndCondition))
-                                needsFlat[0] = true;//does this need to be recursed
+                                needsFlat[0] = true;
                         }).toArray(PrediTerm[]::new);
                     }
                 } while (needsFlat[0]);

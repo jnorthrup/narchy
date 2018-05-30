@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
-// $Id: particle_t.java,v 1.3 2004-12-14 12:48:51 cawe Exp $
+
+
 
 package jake2.client;
 
@@ -33,7 +33,7 @@ import java.nio.IntBuffer;
 
 public class particle_t {
 	
-	// lwjgl renderer needs a ByteBuffer
+	
 	private static final ByteBuffer colorByteArray = Lib.newByteBuffer(Defines.MAX_PARTICLES * Lib.SIZEOF_INT, ByteOrder.LITTLE_ENDIAN);
 
 	public static final FloatBuffer vertexArray = Lib.newFloatBuffer(Defines.MAX_PARTICLES * 3);

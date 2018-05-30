@@ -24,12 +24,12 @@ public class Between<K extends Comparable<? super K>> implements Comparable<Betw
 		return low;
 	}
 
-//    void setHigh(K high) {
-//        this.high = high;
-//    }
-//	void setLow(K low) {
-//		this.low = low;
-//	}
+
+
+
+
+
+
 
     final boolean contains(@NotNull K p){
 		return low.compareTo(p) <= 0 && high.compareTo(p) > 0;

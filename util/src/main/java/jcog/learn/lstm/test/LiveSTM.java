@@ -63,14 +63,14 @@ abstract public class LiveSTM extends AbstractTraining {
             else
                 predicted = agent.learn(inter.actual, inter.expected, learningRate);
 
-//                max_fit++;
-//
-//                if (util.argmax(predicted) == util.argmax(inter.expected))
-//                    fit++;
+
+
+
+
 
             inter.predicted = predicted;
 
-            dist = MathArrays.distance1(inter.expected, predicted); //manhattan / hamming distance
+            dist = MathArrays.distance1(inter.expected, predicted); 
 
         }
 

@@ -10,10 +10,10 @@ import mcaixictw.BooleanArrayList;
  */
 public abstract class Worldmodel {
 
-	// @Deprecated
-	// public Worldmodel() {
-	// // JPA
-	// }
+	
+	
+	
+	
 
 	protected Worldmodel(String name) {
 		this.name = name;
@@ -31,7 +31,7 @@ public abstract class Worldmodel {
 
 	public abstract String toString();
 
-	// public abstract void clear();
+	
 
 	public abstract void update(BooleanArrayList symlist);
 

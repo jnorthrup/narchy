@@ -84,7 +84,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
             }
         }
 
-        //TODO stamp matching acceptance condition
+        
     }
 
     private static class MySubUnify extends Unify {
@@ -98,9 +98,9 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
 
         @Override
         public void tryMatch() {
-            //accept(x, xy);
+            
             this.match = true;
-            stop(); //accept only one
+            stop(); 
         }
 
     }
@@ -138,7 +138,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     }
 
     protected Task onAnswer(Task answer) {
-        //answer = super.onAnswered(answer, nar);
+        
         answers.putAsync(new PLink<>(answer, answer.priElseZero()));
         return answer;
     }

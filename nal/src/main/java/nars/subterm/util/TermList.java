@@ -12,9 +12,9 @@ import java.util.List;
 public class TermList extends FasterList<Term> implements Subterms {
 
 
-//    public TermList() {
-//        this(4);
-//    }
+
+
+
 
     public TermList(int initialCapacity) {
         super(0, new Term[initialCapacity]);
@@ -71,7 +71,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        //use hash if available
+        
         if ((obj instanceof TermList)) {
             return fastListEquals(((TermList)obj));
         } else {
@@ -81,17 +81,17 @@ public class TermList extends FasterList<Term> implements Subterms {
         }
     }
 
-//    public TermList added(Term... x) {
-//        ensureCapacity(size + x.length);
-//        for (Term xx : x)
-//            addWithoutResizeCheck(xx);
-//        return this;
-//    }
 
-//    public TermList added(Iterable<? extends Term> x) {
-//        addAllIterable(x);
-//        return this;
-//    }
+
+
+
+
+
+
+
+
+
+
 
     public void addAll(Subterms x, int xStart, int xEnd) {
         ensureCapacity(xEnd-xStart);

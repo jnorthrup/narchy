@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.data;
 
@@ -23,7 +23,7 @@ public interface DataBeadReceiver {
      * <code>public DataBeadReceiver sendData(DataBead db) {<br>
      * &nbsp;&nbsp;&nbsp;someParameter = db.getFloat("someparameter", defaultValue);<br>
      * &nbsp;&nbsp;&nbsp;someOtherParameter = db.getUGen("otherparameter");<br>
-     * &nbsp;&nbsp;&nbsp;// etc...<br>
+     * &nbsp;&nbsp;&nbsp;
      * &nbsp;&nbsp;&nbsp;return this;
      * }</code>
      *

@@ -16,7 +16,7 @@ public class BitmapLabel extends ConsoleGUI {
         super(text.length(), 1);
         this.label = new Label(text);
 
-        //default: white on black
+        
         colorText(1f,1f,1f);
         colorBackground(0f,0f,0f);
     }

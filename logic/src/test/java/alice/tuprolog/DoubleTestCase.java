@@ -41,7 +41,7 @@ public class DoubleTestCase {
 	}
 	
 	@Test public void testEqualsToFloat() {
-		// TODO Test Double numbers for equality with Float numbers
+		
 	}
 	
 	@Test public void testEqualsToInt() {
@@ -51,7 +51,7 @@ public class DoubleTestCase {
 	}
 	
 	@Test public void testEqualsToLong() {
-		// TODO Test Double numbers for equality with Long numbers
+		
 	}
 
 }

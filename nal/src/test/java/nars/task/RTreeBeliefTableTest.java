@@ -39,16 +39,16 @@ public class RTreeBeliefTableTest {
 
         Term term = $.p("x");
 
-        //1. populate
+        
 
-        //n.log();
+        
 
         TaskConcept c = (TaskConcept) n.conceptualize(term);
         @NotNull BeliefTable cb = true ? c.beliefs() : c.goals();
         cb.setCapacity(0, cap);
 
 
-        //int numTasks = 0;
+        
         System.out.println("points:");
         long time;
         long start = n.time();
@@ -60,7 +60,7 @@ public class RTreeBeliefTableTest {
             c.beliefs().print();
             System.out.println();
 
-            //numTasks++;
+            
         }
         System.out.println();
         System.out.println();
@@ -69,7 +69,7 @@ public class RTreeBeliefTableTest {
         MultiStatistics<Task> m = new MultiStatistics<Task>()
                 .classify("input", (t) -> t.isInput())
                 .classify("derived", (t) -> t instanceof DerivedTask)
-//            .classify("revised", (t) -> t instanceof AnswerTask)
+
                 .value("pri", (t) -> t.pri())
                 .value2D("truth", (t) -> new float[]{t.freq(), t.conf()})
                 .value("freqErr", (t) -> Math.abs(((t.freq() - 0.5f) * 2f) - func.valueOf(t.mid())))
@@ -81,7 +81,7 @@ public class RTreeBeliefTableTest {
 
         c.beliefs().print();
 
-        //2. validate and calculate error
+        
         CSVOutput csv = new CSVOutput(System.out, "time", "actual", "approx");
 
         double errSum = 0;
@@ -101,7 +101,7 @@ public class RTreeBeliefTableTest {
             errSum += err;
 
             csv.out(i, actual, approx);
-            //System.out.println(n2(i) + "\t" + /*n2(err) + "\t" + */ n2(expected) + "\t" + n2(actual));
+            
         }
         double avgErr = errSum / (end - start + 1);
         System.out.println();
@@ -131,9 +131,9 @@ public class RTreeBeliefTableTest {
 
         r.add(a, X, n);
         r.print(System.out);
-        assertEquals(1, r.size()); //no change for inserted duplicate
+        assertEquals(1, r.size()); 
 
-        Task b = add(r, x, 0f, 0.5f, 1, 1, n); //WEAKer
+        Task b = add(r, x, 0f, 0.5f, 1, 1, n); 
         assertEquals(2, r.size());
 
         Task c = add(r, x, 0.1f, 0.9f, 2, 2, n);
@@ -145,14 +145,14 @@ public class RTreeBeliefTableTest {
         System.out.println("at capacity");
         r.print(System.out);
 
-        //try capacity limit
+        
         Task e = add(r, x, 0.3f, 0.9f, 3, 4, n);
 
         System.out.println("\nat capacity?");
         r.print(System.out);
         r.forEachTask(System.out::println);
 
-        assertEquals(4, r.size()); //capacity limit unaffected
+        assertEquals(4, r.size()); 
 
         System.out.println("after capacity compress inserting " + e.toString(true));
         r.print(System.out);
@@ -185,7 +185,7 @@ public class RTreeBeliefTableTest {
     @Test
     public void testAccuracyFlat() {
 
-        testAccuracy(1, 1, 20, 8, (t) -> 0.5f); //flat
+        testAccuracy(1, 1, 20, 8, (t) -> 0.5f); 
     }
 
     @Test
@@ -206,7 +206,7 @@ public class RTreeBeliefTableTest {
 
     @Test
     public void testAccuracySawtoothWave() {
-        //this step function when sampled poorly will appear as a triangle sawtooth
+        
         testAccuracy(1, 3, 15, 5, stepFunction);
     }
 

@@ -159,7 +159,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                     conf.addDestination(destination);
                     JCTermSwing.getCR().save(conf);
                 } catch (Exception e) {
-                    //System.out.println(e);
+                    
                     break;
                 }
 
@@ -223,7 +223,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 term.requestFocus();
                 term.start(connection);
             } catch (Exception e) {
-                //e.printStackTrace();
+                
             }
             break;
         }
@@ -334,9 +334,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         }
     }
 
-//    public void setLineSpace(int foo) {
-//        term.setLineSpace(foo);
-//    }
+
+
+
 
     public boolean getAntiAliasing() {
         return term.getAntiAliasing();
@@ -346,15 +346,15 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         term.setAntiAliasing(foo);
     }
 
-//    public void setUserHost(String userhost) {
-//        try {
-//            String _user = userhost.substring(0, userhost.indexOf('@'));
-//            String _host = userhost.substring(userhost.indexOf('@') + 1);
-//            this.user = _user;
-//            this.host = _host;
-//        } catch (Exception e) {
-//        }
-//    }
+
+
+
+
+
+
+
+
+
 
     public void openSession() {
         this.thread = new Thread(this);
@@ -706,7 +706,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             jb.addItem(destinations[i]);
         }
 
-//    JPanel panel=new JPanel();
+
         jb.requestFocusInWindow();
         JOptionPane pane = new JOptionPane(jb,
                 JOptionPane.QUESTION_MESSAGE,
@@ -850,7 +850,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                 }
                 return response;
             } else {
-                return null; // cancel
+                return null; 
             }
         }
     }

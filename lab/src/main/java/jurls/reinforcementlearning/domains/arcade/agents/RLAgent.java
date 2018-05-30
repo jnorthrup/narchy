@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.agents;
 
@@ -62,10 +62,10 @@ public class RLAgent extends AbstractAgent {
     public RLAgent(boolean useGUI, String pipesBasename) {
         super(useGUI, pipesBasename);
         featureMap = new FeatureMap();
-        // Create a new learner
+        
         learner = new SarsaLearner(featureMap.numFeatures(), numActions);
 
-        // Normalize the learning rate by the total number of features
+        
         learner.setAlpha(0.01 / featureMap.numFeatures());
         
         int requiredHistoryLength = featureMap.historyLength();
@@ -77,7 +77,7 @@ public class RLAgent extends AbstractAgent {
     }
 
     public boolean shouldTerminate() {
-        // Terminate when we are told to do so by the outside world
+        
         return (io.wantsTerminate() || episodeNumber > maxNumEpisodes);
     }
 
@@ -88,21 +88,21 @@ public class RLAgent extends AbstractAgent {
 
     @Override
     public int selectAction() {
-        // If reset is requested, send it
+        
         if (requestReset) {
             firstStep = true;
             requestReset = false;
             return Actions.map("system_reset");
         }
 
-        // Otherwise send back the action taken by the learner (see rlStep())
+        
         else
             return learnerAction;
     }
 
     @Override
     public void observe(ScreenMatrix image, ConsoleRAM ram, RLData rlData) {
-        // Convert the image history to a feature vector
+        
         history.addFrame(image);
         
         rlStep(image, ram, rlData);
@@ -116,11 +116,11 @@ public class RLAgent extends AbstractAgent {
      * @param features
      */
     public void rlStep(ScreenMatrix image, ConsoleRAM ram, RLData rlData) {
-        // Obtain the feature vector for this image
+        
         double[] features = featureMap.getFeatures(history);
 
         if (firstStep) {
-            // On the first step, no reward is computed
+            
             learnerAction = learner.agent_start(features);
 
             firstStep = false;
@@ -129,11 +129,11 @@ public class RLAgent extends AbstractAgent {
             boolean terminal = rlData.isTerminal;
             double reward = rlData.reward;
 
-            // Regular RL step
+            
             if (!terminal)
                 learnerAction = learner.agent_step(reward, features);
-            // When we receive the terminal signal, we disregard the screen data
-            //  and instead transit to the 'null state'
+            
+            
             else
                 episodeEnd(reward);
         }
@@ -142,13 +142,13 @@ public class RLAgent extends AbstractAgent {
     /** Perform an end-of-episode learning step */
     protected void episodeEnd(double reward) {
         learner.agent_end(reward);
-        // As a sanity check we set learnerAction; this is overriden by the reset
+        
         learnerAction = Actions.map("player_a_noop");
 
-        // We will want to reset, since we have reached the end of the episode
+        
         requestReset = true;
 
-        // Print the episode number
+        
         System.err.println ("Episode "+episodeNumber);
         episodeNumber++;
 
@@ -173,36 +173,36 @@ public class RLAgent extends AbstractAgent {
      * @param args
      */
     public static void main(String[] args) {
-        // Parameters; default values
+        
         boolean useGUI = true;
         String namedPipesName = null;
 
-        // Parse arguments
+        
         int argIndex = 0;
 
         boolean doneParsing = (args.length == 0);
 
-        // Loop through the list of arguments
+        
         while (!doneParsing) {
-            // -nogui: do not display the Java GUI
+            
             if (args[argIndex].equals("-nogui")) {
                 useGUI = false;
                 argIndex++;
             }
-            // -named_pipes <basename>: use to communicate with ALE via named pipes
-            //  (instead of stdin/out)
+            
+            
             else if (args[argIndex].equals("-named_pipes") && (argIndex + 1) < args.length) {
                 namedPipesName = args[argIndex+1];
 
                 argIndex += 2;
             }
-            // If the argument is unrecognized, exit
+            
             else {
                 printUsage();
                 System.exit(-1);
             }
 
-            // Once we have parsed all arguments, stop
+            
             if (argIndex >= args.length)
                 doneParsing = true;
         }

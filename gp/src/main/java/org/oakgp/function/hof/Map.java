@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import static org.oakgp.Type.functionType;
  * Returns a new collection that exists of the result of applying the function (specified by the first argument) to each element of the collection (specified by
  * the second argument).
  *
- * @see <a href="http://en.wikipedia.org/wiki/Map_(higher-order_function)">Wikipedia</a>
+ * @see <a href="http:
  */
 public final class Map implements Function {
     private final Signature signature;

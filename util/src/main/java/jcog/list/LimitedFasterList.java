@@ -9,7 +9,7 @@ public class LimitedFasterList<X> extends FasterList<X> {
     final int max;
 
     public LimitedFasterList(int max) {
-        super(0); //start empty
+        super(0); 
         this.max = max;
     }
 

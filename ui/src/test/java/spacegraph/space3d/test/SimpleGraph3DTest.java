@@ -24,7 +24,7 @@ public class SimpleGraph3DTest {
         h.addEdge(("w"), ("wy"), ("y"));
 
         SimpleGraph3D sg = new SimpleGraph3D();
-        //sg.commit(g);
+        
         sg.commit(h);
         sg.show(800, 600, false);
 

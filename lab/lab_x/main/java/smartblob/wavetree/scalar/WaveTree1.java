@@ -52,12 +52,12 @@ public final class WaveTree1{
 
 	/** not a leaf. left and right must both be nonnull. */
 	public WaveTree1(WaveTree1 left, WaveTree1 right){
-		//instanceCount++;
+		
 		this.left = left;
 		this.right = right;
 		len = left.len + right.len;
-		//FIXME: what if len is 0? value1 becomes NaN
-		//value1 = (left.len*left.value1 + right.len*right.value1)/len;
+		
+		
 		value1 = len>0 ? (left.len*left.value1 + right.len*right.value1)/len : left.value1;
 		height = (byte)(left.height<right.height ? right.height+1 : left.height+1);
 		byte newMaxheightDiff = (byte)(right.height-left.height);
@@ -65,27 +65,27 @@ public final class WaveTree1{
 		if(newMaxheightDiff < left.maxheightDiff) newMaxheightDiff = left.maxheightDiff;
 		if(newMaxheightDiff < right.maxheightDiff) newMaxheightDiff = right.maxheightDiff;
 		maxheightDiff = newMaxheightDiff;
-		if(maxHeight < height) maxHeight = height; //FIXME: remove this testing line
+		if(maxHeight < height) maxHeight = height; 
 	}
 
 	/** leaf */
 	public WaveTree1(double value, double len){
-		//instanceCount++;
+		
 		left = right = null;
 		this.value1 = value;
 		this.len = len;
-		//if(len <= 0) throw new NonpositiveWaveLen(len); //FIXME: is there any way to avoid this expensive compare? I could set value1 to left.value1 if len is 0.
+		
 		height = maxheightDiff = 0;
 	}
 
-	//TODO: instead of using java.util.Map and hashCode(), use a SortedSet of SortedSet of WeakReference to WaveTree1
-	//Sort one SortedSet by WaveTree1.len, which returns a SortedSet containing all WaveTree1Ops of that len sorted by WaveTree1.value1,
-	//and so on for the other attributes.
-	//Probably faster to use 1 SortedSet that uses a Comparator that compares all those attributes,
-	//and goes to the next attribute only if a tie occurs.
+	
+	
+	
+	
+	
 
 	public int hashCode(){
-		//TODO: use secure hash algorithm or use an object to do the hashing
+		
 		if(hash == 0){
 			double d = len*value1;
 			if(d==0){

@@ -21,14 +21,14 @@ public class NumericRange {
 		set(center);
 	}
 
-	// first input
-	// System.out.println(this + "autorange update min: " + value + " -> " +
-	// min);
-	// System.out.println(this + "autorange update max: " + value + " -> " +
-	// min);
-	// hard limit to range
-	// d = Math.min(d, 1.0);
-	// System.out.println(v + " " + pp + " " + d);
+	
+	
+	
+	
+	
+	
+	
+	
 	public NumericRange(double center, double radius) {
 		min = center - radius;
 		max = center + radius;
@@ -50,18 +50,18 @@ public class NumericRange {
 		this.value = value;
 		if (autoRange) {
 			if ((Double.isNaN(min)) && !(Double.isNaN(value))) {
-				// first input
+				
 				min = value;
 				max = value;
 			} else {
 				if (value < min) {
-					// System.out.println(this + "autorange update min: " +
-					// value + " -> " + min);
+					
+					
 					min = value;
 				}
 				if (value > max) {
-					// System.out.println(this + "autorange update max: " +
-					// value + " -> " + min);
+					
+					
 					max = value;
 				}
 			}
@@ -106,7 +106,7 @@ public class NumericRange {
 	 */
 	public int proportionDiscrete(double v, int steps) {
 		double p = proportion(v);
-		// hard limit to range
+		
 		p = Math.min(Math.max(p, 0), 1.0);
 		return (int) (Math.round(p * (steps - 1)));
 	}
@@ -134,8 +134,8 @@ public class NumericRange {
 			double pp = (p) * stepScale;
 			double d = 1.0 - Math.abs(pp - v) / stepScale;
 			d = Math.max(d, 0);
-			// d = Math.min(d, 1.0);
-			// System.out.println(v + " " + pp + " " + d);
+			
+			
 			target[index + p] = d;
 		}
 	}
@@ -157,13 +157,13 @@ public class NumericRange {
 	 * result
 	 */
 	public void adaptiveContrast(double rate, double target) {
-		double range = (max - min) * rate; // rate used here is in a slightly
-											// different context than below; we
-											// may want two different
-											// parameters. this is the amount to
-											// shrink the range window around
-											// the target, and the below rate is
-											// how quickly the window changes.
+		double range = (max - min) * rate; 
+											
+											
+											
+											
+											
+											
 
 		double targetMin = target - range / 2.0;
 		double targetMax = target + range / 2.0;

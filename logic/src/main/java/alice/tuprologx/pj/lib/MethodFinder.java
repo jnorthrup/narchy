@@ -8,9 +8,9 @@ package alice.tuprologx.pj.lib;
 /*
  * This file is part of Domingo
  * an Open Source Java-API to Lotus Notes/Domino
- * hosted at http://domingo.sourceforge.net
+ * hosted at http:
  *
- * Copyright (c) 2003-2007 Beck et al. projects GmbH Munich, Germany (http://www.bea.de)
+ * Copyright (c) 2003-2007 Beck et al. projects GmbH Munich, Germany (http:
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,9 +28,9 @@ package alice.tuprologx.pj.lib;
  */
 
 /* Origin:
- * From <http://www.adtmag.com/java/article.aspx?id=4276>
+ * From <http:
  * Original license- public domain? code published in article
- * with changes by Ronny Brandt, see: <http://sourceforge.net/projects/dresden-ocl>
+ * with changes by Ronny Brandt, see: <http:
  * dresden-ocl is licensed GNU LGPL 2.1 or any later version
  */
 
@@ -182,14 +182,14 @@ public final class MethodFinder {
         for (Member member: memberList) {
 
             if (mostSpecificMembers.isEmpty()) {
-                // First guy in is the most specific so far.
+                
                 mostSpecificMembers.add(member);
             } else {
                 boolean moreSpecific = true;
                 boolean lessSpecific = false;
 
-                // Is member more specific than everyone in the most-specific
-                // set?
+                
+                
                 for (Member moreSpecificMember: mostSpecificMembers) {
 
                     if (!memberIsMoreSpecific(member, moreSpecificMember)) {
@@ -210,11 +210,11 @@ public final class MethodFinder {
                 }
 
                 if (moreSpecific) {
-                    // Member is the most specific now.
+                    
                     mostSpecificMembers.clear();
                     mostSpecificMembers.add(member);
                 } else if (!lessSpecific) {
-                    // Add to ambiguity set if mutually unspecific.
+                    
                     mostSpecificMembers.add(member);
                 }
             }
@@ -319,7 +319,7 @@ public final class MethodFinder {
      * Loads up the data structures for my target class's methods.
      */
     private void loadMethods() {
-        // Method[] methods = clazz.getMethods();
+        
         List<Member> allMethods = getAllMethods();
         Method[] methods = allMethods.toArray(new Method[allMethods.size()]);
         for (int i = 0; i < methods.length; ++i) {

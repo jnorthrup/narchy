@@ -114,7 +114,7 @@ class EditSolver extends ContinuousConstraintSolver {
     protected Symbol getDualEnteringSymbol(Row row) {
         Symbol entering = null;
         double ratio = Double.MAX_VALUE;
-        //TODO use entrySet
+        
         for (Symbol s : row.cells.keySet()) {
             if (s.type != Symbol.Type.DUMMY) {
                 double currentCell = row.cells.get(s);

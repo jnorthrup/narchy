@@ -1,6 +1,6 @@
 package jcog.learn.ntm.control;
 
-//TODO replace these with UVector, UMatrix, and UCube which use arrays, not Unit instances
+
 public class UnitFactory {
 
 
@@ -12,14 +12,14 @@ public class UnitFactory {
         return vector;
     }
 
-//    public static UMatrix getMatrix(int x, int y) {
-//        return new UMatrix(x, y);
-//    }
+
+
+
 
 
     @Deprecated public static Unit[][] getTensor2(int x, int y) {
         Unit[][] tensor = new Unit[x][y];
-        // ASK< needed? >
+        
         for (int i = 0;i < x;i++) {
             tensor[i] = getVector(y);
         }
@@ -28,7 +28,7 @@ public class UnitFactory {
 
     public static Unit[][][] getTensor3(int x, int y, int z) {
         Unit[][][] tensor = new Unit[x][y][z];
-        // ASK< needed? >
+        
         for (int i = 0;i < x;i++) {
             tensor[i] = getTensor2(y,z);
         }

@@ -14,7 +14,7 @@ import java.util.function.DoubleSupplier;
 public class DoubleMeter extends SourceFunctionMeter<Double> implements DoubleConsumer {
     
     boolean autoReset;
-    //final AtomicDouble val = new AtomicDouble();
+    
     double val;
     private final String name;
     

@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 20.11.2003 by RST.
+
 package jake2.game;
 
 public class gitem_t {
@@ -63,7 +63,7 @@ public class gitem_t {
         this.index = id++;
     }
 
-    String classname; // spawning name
+    String classname; 
 
     EntInteractAdapter pickup;
 
@@ -81,27 +81,27 @@ public class gitem_t {
 
     String view_model;
 
-    // client side info
+    
     String icon;
 
-    String pickup_name; // for printing on pickup
+    String pickup_name; 
 
-    int count_width; // number of digits to display by icon
+    int count_width; 
 
-    int quantity; // for ammo how much, for weapons how much is used per shot
+    int quantity; 
 
-    String ammo; // for weapons
+    String ammo; 
 
-    int flags; // IT_* flags
+    int flags; 
 
-    int weapmodel; // weapon model index (for weapons)
+    int weapmodel; 
 
     gitem_armor_t info;
 
     int tag;
 
-    String precaches; // string of all models, sounds, and images this item will
-                      // use
+    String precaches; 
+                      
 
     public int index;
 }

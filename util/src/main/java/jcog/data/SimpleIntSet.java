@@ -11,8 +11,8 @@ import java.util.*;
  * TAOCP page 528.
  *
  * @author Edward Raff
- * https://raw.githubusercontent.com/EdwardRaff/jLZJD/master/src/main/java/com/edwardraff/jlzjd/IntSetNoRemove.java
- * https://github.com/EdwardRaff/JSAT/blob/master/JSAT/src/jsat/utils/ClosedHashingUtil.java
+ * https:
+ * https:
  */
 public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
@@ -88,7 +88,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * and the position that the key is in or the first EMPTY position found
      */
     private int index(int key) {
-        //D1 
+        
         final int hash = key & 0x7fffffff;
 
         int[] k = this.keys;
@@ -96,21 +96,21 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
         int i = hash % len;
 
-        //D2
+        
         MetalBitSet s = this.status;
         if (!s.get(i) || k[i] == key)
             return i;
 
-        //D3
+        
         final int c = 1 + (hash % (len - 2));
 
-        while (true)//this loop will terminate
+        while (true)
         {
-            //D4
+            
             i -= c;
             if (i < 0)
                 i += len;
-            //D5
+            
             if (!s.get(i) || k[i] == key)
                 return i;
         }
@@ -120,11 +120,11 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
         if (size+1 < keys.length * loadFactor)
             return;
 
-        //enlarge
+        
         final MetalBitSet oldSatus = status;
         final int[] oldKeys = keys;
 
-        int newSize = getNextPow2TwinPrime(keys.length * 3 / 2);//it will actually end up doubling in size since we have twin primes spaced that was
+        int newSize = getNextPow2TwinPrime(keys.length * 3 / 2);
         alloc(newSize);
 
         size = 0;
@@ -151,17 +151,17 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     public boolean add(int e) {
         final int key = e;
         int pair_index = index(key);
-//        int deletedIndex = (int) (pair_index >>> 32);
-//        int valOrFreeIndex = (int) (pair_index & INT_MASK);
+
+
         int valOrFreeIndex = pair_index;
 
-        if (status.get(valOrFreeIndex))//easy case
-            return false;//we already had this item in the set!
+        if (status.get(valOrFreeIndex))
+            return false;
 
-        //else, not present
+        
         int i = valOrFreeIndex;
-//        if(deletedIndex >= 0)//use occupied spot instead
-//            i = deletedIndex;
+
+
 
         status.set(i);
         keys[i] = key;
@@ -169,11 +169,11 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
         enlargeIfNeeded();
 
-        return true;//item was not in the set previously
+        return true;
     }
 
     public boolean contains(int o) {
-        return status.get(index(o));//would be FREE if we didn't have the key
+        return status.get(index(o));
     }
 
 
@@ -186,22 +186,22 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     }
 
 
-//    public IntIterator intIterator() {
-//                //find the first starting inded
-//        int START = 0;
-//        while (START < keys.length && !status.get(START))
-//            START++;
-//        if (START == keys.length)
-//            return IntIterator.emptyIterator();
-//
-//        final int startPos = START;
-//
-//        return new IntegerIterator(startPos);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public Iterator<Integer> iterator() {
-        //find the first starting inded
+        
         int START = 0;
         while (START < keys.length && !status.get(START))
             START++;
@@ -242,36 +242,36 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      */
     static final int[] twinPrimesP2 =
             {
-                    7, //2^2 , twin with 5
-                    13, //2^3 , twin with 11
-                    19, //2^4 , twin with 17
-                    43, //2^5 , twin with 41
-                    73, //2^6 , twin with 71
-                    139, //2^7 , twin with 137
-                    271, //2^8 , twin with 269
-                    523, //2^9 , twin with 632
-                    1033, //2^10 , twin with 1031
-                    2083, //2^11 , twin with 2081
-                    4129, //2^12 , twin with 4127
-                    8221, //2^13 , twin with 8219
-                    16453, //2^14 , twin with 16451
-                    32803, //2^15 , twin with 32801
-                    65539, //2^16 , twin with 65537
-                    131113, //2^17 , twin with 131111
-                    262153, //2^18 , twin with 262151
-                    524353, //2^19 , twin with 524351
-                    1048891, //2^20 , twin with 1048889
-                    2097259, //2^21 , twin with 2097257
-                    4194583, //2^22 , twin with 4194581
-                    8388619, //2^23 , twin with 8388617
-                    16777291, //2^24 , twin with 16777289
-                    33554503, //2^25 , twin with 33554501
-                    67109323, //2^26 , twin with 67109321
-                    134217781, //2^27 , twin with 134217779
-                    268435579, //2^28 , twin with 268435577
-                    536871019, //2^29 , twin with 536871017
-                    1073741833, //2^30 , twin with 1073741831
-                    2147482951, //first twin under 2^31, twin with 2147482949
+                    7, 
+                    13, 
+                    19, 
+                    43, 
+                    73, 
+                    139, 
+                    271, 
+                    523, 
+                    1033, 
+                    2083, 
+                    4129, 
+                    8221, 
+                    16453, 
+                    32803, 
+                    65539, 
+                    131113, 
+                    262153, 
+                    524353, 
+                    1048891, 
+                    2097259, 
+                    4194583, 
+                    8388619, 
+                    16777291, 
+                    33554503, 
+                    67109323, 
+                    134217781, 
+                    268435579, 
+                    536871019, 
+                    1073741833, 
+                    2147482951, 
             };
 
 
@@ -293,16 +293,16 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
         @Override
         public Integer next() {
-            //final int make so that object remains good after we call next again
+            
             final int oldPos = prevPos = pos++;
-            //find next
+            
             int pos = this.pos;
             MetalBitSet s = SimpleIntSet.this.status;
             int[] k = SimpleIntSet.this.keys;
             while (pos < k.length && !s.get(pos))
                 pos++;
             this.pos = pos;
-            //and return new object
+            
             return k[oldPos];
         }
 

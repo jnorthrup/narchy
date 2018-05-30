@@ -138,7 +138,7 @@ public class JaqlParser {
 	 * expression.
 	 */
 	protected Parser selectTerm() {
-		// wrap expression so we can add an assembler
+		
 		Seq s = new Seq("selectTerm");
 		s.get(comparisonParser().expression());
 		s.put(new SelectTermAssembler());

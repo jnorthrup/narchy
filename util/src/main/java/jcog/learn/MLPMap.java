@@ -3,9 +3,9 @@ package jcog.learn;
 import java.util.Random;
 
 /**
- * http://stackoverflow.com/a/12653770
+ * http:
  *
- * Notes ( http://ml.informatik.uni-freiburg.de/_media/publications/12riedmillertricks.pdf ):
+ * Notes ( http:
  * Surprisingly, the same robustness is observed for the choice of the neural
  network size and structure. In our experience, a multilayer perceptron with 2
  hidden layers and 20 neurons per layer works well over a wide range of applications.
@@ -118,7 +118,7 @@ public class MLPMap {
         float[] calcOut = get(input);
         float[] error = new float[calcOut.length];
         for (int i = 0; i < error.length; i++) {
-            error[i] = targetOutput[i] - calcOut[i]; // negative error
+            error[i] = targetOutput[i] - calcOut[i]; 
         }
         for (int i = layers.length - 1; i >= 0; i--) {
             error = layers[i].train(error, learningRate, momentum);

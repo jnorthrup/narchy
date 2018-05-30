@@ -32,8 +32,8 @@ public class Variable
       @Override
       public Function simplify()
       {
-         // Here we test if the variable is a defined function
-         // If its a defined constant we replace the variable by its value
+         
+         
          if(Function.references.isConstantDefine(Variable.this.name))
          {
             return new Constant(Function.references.obtainConstantValue(Variable.this.name));

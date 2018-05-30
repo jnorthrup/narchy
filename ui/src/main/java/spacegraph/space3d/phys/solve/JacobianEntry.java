@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -28,10 +28,10 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.v3;
 
-//notes:
-// Another memory optimization would be to store m_1MinvJt in the remaining 3 w components
-// which makes the btJacobianEntry memory layout 16 bytes
-// if you only are interested in angular part, just feed massInvA and massInvB zero
+
+
+
+
 
 /**
  * Jacobian entry is an abstraction that allows to describe constraints.
@@ -42,14 +42,14 @@ import spacegraph.util.math.v3;
  */
 public class JacobianEntry {
 	
-	//protected final BulletStack stack = BulletStack.get();
+	
 	
 	public final v3 linearJointAxis = new v3();
 	public final v3 aJ = new v3();
 	public final v3 bJ = new v3();
 	public final v3 m_0MinvJt = new v3();
 	public final v3 m_1MinvJt = new v3();
-	// Optimization: can be stored in the w/last component of one of the vectors
+	
 	public float Adiag;
 
 	public JacobianEntry() {

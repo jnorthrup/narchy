@@ -37,7 +37,7 @@ public class ArrayTermVector extends TermVector {
 
     @Override public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         for (Term t : terms)
-            v = t.intifyRecurse(reduce, v); //recurse
+            v = t.intifyRecurse(reduce, v); 
         return v;
     }
 
@@ -52,7 +52,7 @@ public class ArrayTermVector extends TermVector {
             return false;
 
         if (obj instanceof ArrayTermVector) {
-            //special case for ArrayTermVector fast compare and sharing
+            
             ArrayTermVector v = (ArrayTermVector) obj;
             if (!Arrays.equals(terms, v.terms))
                 return false;
@@ -80,7 +80,7 @@ public class ArrayTermVector extends TermVector {
     @Override
     /*@NotNull*/ public final Term sub(int i) {
         return terms[i];
-        //return terms.length > i ? terms[i] : Null;
+        
     }
 
     @Override public final Term[] arrayClone() {

@@ -8,7 +8,7 @@ import static jurls.reinforcementlearning.domains.wander.Obstacle.d;
 
 public class Player {
 
-    public static final double TURNING_ANGLE = MyPerception.RADAR_R/16f; //velocity actually
+    public static final double TURNING_ANGLE = MyPerception.RADAR_R/16f; 
     public static final double STEP_SIZE = MyPerception.RADAR_D/4d;
     double acceleration = 0.05;
     private static final int MOVE_FORWARD = 0;
@@ -49,21 +49,21 @@ public class Player {
         };
         actions[NOP] = new Nop();
         perception = new MyPerception(this);
-//        perception.setAddRandomInput(true);
-//        brain = new CuriousBrain(perception, actionArray, new int[]{10}, new int[]{200, 100, 100});
-//        brain.setAlpha(0.9);
-//        brain.setGamma(0.9);
-//        brain.setLambda(0.5);
-//        brain.setRandActions(5);
-//        ErrorBackpropagationNN predictionNN = brain.getCuriosity().getNn();
-//        predictionNN.setAlpha(0.5);
-//        predictionNN.setMomentum(0.2);
-//        //CuriousPlayerPerception.setRMin(0.005);
+
+
+
+
+
+
+
+
+
+
     }
 
-//    public void count() {
-//        brain.count();
-//    }
+
+
+
     
     public void act(int action) {
         currentAction = action;
@@ -114,26 +114,26 @@ public class Player {
 
     public double speed() {
         return Math.sqrt((vx*vx) + (vy*vy));
-        //return (currentAction == MOVE_FORWARD) && !world.isCollision();
+        
     }
 
     public boolean collides() {
         return (currentAction == MOVE_FORWARD) && world.isCollision();
     }
-//
+
     public MyPerception getPerception() {
         return perception;
     }
 
-//    public Brain getBrain() {
-//        return brain;
-//    }
-//
-//    public double getNovelty() {
-//        return perception.getNovelty();
-//    }
-//
-//    public double getReward() {
-//        return perception.getReward();
-//    }
+
+
+
+
+
+
+
+
+
+
+
 }

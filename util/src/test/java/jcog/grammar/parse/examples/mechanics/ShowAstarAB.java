@@ -27,9 +27,9 @@ public class ShowAstarAB {
 
 		Parser aStar = new Repetition(new SpecificChar('a'));
 
-		Parser ab = new Seq().get(new SpecificChar('a')).get(new SpecificChar('b')); // ab
+		Parser ab = new Seq().get(new SpecificChar('a')).get(new SpecificChar('b')); 
 
-		Parser aStarAB = new Seq().get(aStar).get(ab); // a*ab
+		Parser aStarAB = new Seq().get(aStar).get(ab); 
 
 		Set<Assembly> v = new HashSet<Assembly>();
 		v.add(new CharacterAssembly("aaaab"));

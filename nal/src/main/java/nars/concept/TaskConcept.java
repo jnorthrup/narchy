@@ -132,31 +132,31 @@ public class TaskConcept extends NodeConcept implements Concept {
         }
 
 
-        //return Emotivation.preferConfidentAndRelevant(t, activation, when, n);
-        //positive value based on the conf but also multiplied by the activation in case it already was known
-        //return valueIfProcessedAt(t, activation, n.time(), n);
+        
+        
+        
 
-//            @Override
-//    public float value(@NotNull Task t, NAR n) {
-//        byte p = t.punc();
-//        if (p == BELIEF || p == GOAL) {// isGoal()) {
-//            //example value function
-//            long s = t.end();
-//
-//            if (s!=ETERNAL) {
-//                long now = n.time();
-//                long relevantTime = p == GOAL ?
-//                        now - n.dur() : //present or future goal
-//                        now; //future belief prediction
-//
-//                if (s > relevantTime) //present or future TODO irrelevance discount for far future
-//                    return (float) (0.1f + Math.pow(t.conf(), 0.25f));
-//            }
-//        }
-//
-//        //return super.value(t, activation, n);
-//        return 0;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
@@ -190,7 +190,7 @@ public class TaskConcept extends NodeConcept implements Concept {
         if (includeQuestions) s[j++] = (questions().streamTasks());
         if (includeQuests) s[j++] = (quests().streamTasks());
 
-        //HACK
+        
         return (j == 1 ? s[0] : Stream.of(s).flatMap(x -> x))
                 .filter(Objects::nonNull);
     }
@@ -208,163 +208,163 @@ public class TaskConcept extends NodeConcept implements Concept {
 }
 
 
-//    /**
-//     * apply derivation feedback and update NAR emotion state
-//     */
-//    protected void feedback(@NotNull Task input, @NotNull TruthDelta delta, @NotNull CompoundConcept concept, @NotNull NAR nar) {
-//
-//        //update emotion happy/sad
-//        Truth before = delta.before;
-//        Truth after = delta.after;
-//
-//        float deltaSatisfaction, deltaConf, deltaFreq;
-//
-//
-//        if (before != null && after != null) {
-//
-//            deltaFreq = after.freq() - before.freq();
-//            deltaConf = after.conf() - before.conf();
-//
-//        } else {
-//            if (before == null && after != null) {
-//                deltaConf = after.conf();
-//                deltaFreq = after.freq();
-//            } else if (before!=null) {
-//                deltaConf = -before.conf();
-//                deltaFreq = -before.freq();
-//            } else {
-//                deltaConf = 0;
-//                deltaFreq = 0;
-//            }
-//        }
-//
-//        Truth other;
-//        int polarity = 0;
-//
-//        Time time = nar.time;
-//        int dur = time.dur();
-//        long now = time.time();
-//        if (input.isBelief()) {
-//            //compare against the current goal state
-//            other = concept.goals().truth(now, dur);
-//            if (other != null)
-//                polarity = +1;
-//        } else if (input.isGoal()) {
-//            //compare against the current belief state
-//            other = concept.beliefs().truth(now, dur);
-//            if (other != null)
-//                polarity = -1;
-//        } else {
-//            other = null;
-//        }
-//
-//
-//        if (other != null) {
-//
-//            float otherFreq = other.freq();
-//
-//            if (polarity==0) {
-//
-//                //ambivalence: no change
-//                deltaSatisfaction = 0;
-//
-//            } else {
-//
-////                if (otherFreq > 0.5f) {
-////                    //measure how much the freq increased since goal is positive
-////                    deltaSatisfaction = +polarity * deltaFreq / (2f * (otherFreq - 0.5f));
-////                } else {
-////                    //measure how much the freq decreased since goal is negative
-////                    deltaSatisfaction = -polarity * deltaFreq / (2f * (0.5f - otherFreq));
-////                }
-//
-//                if (after!=null) {
-//                    deltaSatisfaction = /*Math.abs(deltaFreq) * */ (2f * (1f - Math.abs(after.freq() - otherFreq)) - 1f);
-//
-//                    deltaSatisfaction *= (after.conf() * other.conf());
-//
-//                    nar.emotion.happy(deltaSatisfaction);
-//                } else {
-//                    deltaSatisfaction = 0;
-//                }
-//            }
-//
-//
-//        } else {
-//            deltaSatisfaction = 0;
-//        }
-//
-//        feedback(input, delta, nar, deltaSatisfaction, deltaConf);
-//
-//    }
-//
-//    protected void feedback(@NotNull Task input, @NotNull TruthDelta delta, @NotNull NAR nar, float deltaSatisfaction, float deltaConf) {
-//        if (!Util.equals(deltaConf, 0f, TRUTH_EPSILON))
-//            nar.emotion.confident(deltaConf, input.term());
-//
-//        input.feedback(delta, deltaConf, deltaSatisfaction, nar);
-//    }
 
-//    private void checkConsistency() {
-//        synchronized (tasks) {
-//            int mapSize = tasks.size();
-//            int tableSize = beliefs().size() + goals().size() + questions().size() + quests().size();
-//
-//            int THRESHOLD = 50; //to catch when the table explodes and not just an off-by-one inconsistency that will correct itself in the next cycle
-//            if (Math.abs(mapSize - tableSize) > THRESHOLD) {
-//                //List<Task> mapTasks = new ArrayList(tasks.keySet());
-//                Set<Task> mapTasks = tasks.keySet();
-//                ArrayList<Task> tableTasks = Lists.newArrayList(
-//                        Iterables.concat(beliefs(), goals(), questions(), quests())
-//                );
-//                //Collections.sort(mapTasks);
-//                //Collections.sort(tableTasks);
-//
-//                System.err.println(mapSize + " vs " + tableSize + "\t\t" + mapTasks.size() + " vs " + tableTasks.size());
-//                System.err.println(Joiner.on('\n').join(mapTasks));
-//                System.err.println("----");
-//                System.err.println(Joiner.on('\n').join(tableTasks));
-//                System.err.println("----");
-//            }
-//        }
-//    }
 
-//    public long minTime() {
-//        ageFactor();
-//        return min;
-//    }
-//
-//    public long maxTime() {
-//        ageFactor();
-//        return max;
-//    }
-//
-//    public float ageFactor() {
-//
-//        if (min == ETERNAL) {
-//            //invalidated, recalc:
-//            long t[] = new long[] { Long.MAX_VALUE, Long.MIN_VALUE };
-//
-//            beliefs.range(t);
-//            goals.range(t);
-//
-//            if (t[0] == Long.MAX_VALUE) {
-//                min = max= 0;
-//            } else {
-//                min = t[0];
-//                max = t[1];
-//            }
-//
-//        }
-//
-//        //return 1f;
-//        long range = max - min;
-//        /* history factor:
-//           higher means it is easier to hold beliefs further away from current time at the expense of accuracy
-//           lower means more accuracy at the expense of shorter memory span
-//     */
-//        float historyFactor = Param.TEMPORAL_DURATION;
-//        return (range == 0) ? 1 :
-//                ((1f) / (range * historyFactor));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

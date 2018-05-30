@@ -41,7 +41,7 @@ import java.net.Socket;
 public class ISO_Localised extends ISO {
 
     /*
-     * protected Socket negotiateSSL(Socket sock) throws Exception { // The
+     * protected Socket negotiateSSL(Socket sock) throws Exception { 
      * default host/port to connect to String host="localhost"; int port=4433;
      * String keyfile="client.pem"; String rootfile="root.pem"; String
      * randomfile="random.pem"; String password="password"; LongOpt
@@ -85,7 +85,7 @@ public class ISO_Localised extends ISO {
     @Override
     protected void doSocketConnect(InetAddress host, int port)
             throws IOException {
-        int timeout_ms = 3000; // timeout in milliseconds
+        int timeout_ms = 3000; 
 
         rdpsock = new Socket();
         rdpsock.connect(new InetSocketAddress(host, port), timeout_ms);

@@ -41,7 +41,7 @@ import java.nio.FloatBuffer;
  */
 public abstract class Mesh extends Light {
 
-    // g_mesh.c: triangle model functions
+    
 
     /*
      * =============================================================
@@ -61,7 +61,7 @@ public abstract class Mesh extends Light {
 
     final float[] shadelight = { 0, 0, 0 };
 
-    // precalculated dot products for quantized angles
+    
     static final int SHADEDOT_QUANT = 16;
 
     final float[][] r_avertexnormal_dots = Anorms.VERTEXNORMAL_DOTS;
@@ -73,7 +73,7 @@ public abstract class Mesh extends Light {
 
 	int ovv, vv;
 
-        //PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
+        
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
@@ -112,7 +112,7 @@ public abstract class Mesh extends Light {
 	int ovv, vv;
         FloatBuffer lerp = vertexArrayBuf;
 
-        //PMM -- added RF_SHELL_DOUBLE, RF_SHELL_HALF_DAM
+        
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
@@ -173,17 +173,17 @@ public abstract class Mesh extends Light {
         float frontlerp;
         float alpha;
 
-        float[] move = { 0, 0, 0 }; // vec3_t
-        float[][] vectors = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } // 3 mal
-                                                                    // vec3_t
+        float[] move = { 0, 0, 0 }; 
+        float[][] vectors = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } 
+                                                                    
         };
 
-        float[] frontv = { 0, 0, 0 }; // vec3_t
-        float[] backv = { 0, 0, 0 }; // vec3_t
+        float[] frontv = { 0, 0, 0 }; 
+        float[] backv = { 0, 0, 0 }; 
 
         int i;
         int index_xyz;
-        //float[][] lerp;
+        
 
         frame = paliashdr.aliasFrames[currententity.frame];
 
@@ -200,7 +200,7 @@ public abstract class Mesh extends Light {
         else
             alpha = 1.0f;
 
-        // PMM - added double shell
+        
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
@@ -208,15 +208,15 @@ public abstract class Mesh extends Light {
 
         frontlerp = 1.0f - backlerp;
 
-        // move should be the delta back to the previous frame * backlerp
+        
         Math3D.VectorSubtract(currententity.oldorigin, currententity.origin,
                 frontv);
         Math3D.AngleVectors(currententity.angles, vectors[0], vectors[1],
                 vectors[2]);
 
-        move[0] = Math3D.DotProduct(frontv, vectors[0]); // forward
-        move[1] = -Math3D.DotProduct(frontv, vectors[1]); // left
-        move[2] = Math3D.DotProduct(frontv, vectors[2]); // up
+        move[0] = Math3D.DotProduct(frontv, vectors[0]); 
+        move[1] = -Math3D.DotProduct(frontv, vectors[1]); 
+        move[2] = Math3D.DotProduct(frontv, vectors[2]); 
 
         Math3D.VectorAdd(move, oldframe.translate, move);
 
@@ -232,7 +232,7 @@ public abstract class Mesh extends Light {
             gl.glEnableClientState(GL_VERTEX_ARRAY);
             gl.glVertexPointer(3, 0, vertexArrayBuf);
 
-            // PMM - added double damage shell
+            
             if ((currententity.flags & (Defines.RF_SHELL_RED
                     | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                     | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
@@ -243,13 +243,13 @@ public abstract class Mesh extends Light {
                 gl.glEnableClientState(GL_COLOR_ARRAY);
                 gl.glColorPointer(4, 0, colorArrayBuf);
 
-                //
-                // pre light everything
-                //
+                
+                
+                
                 FloatBuffer color = colorArrayBuf;
                 int j = 0;
                 for (i = 0; i < paliashdr.num_xyz; i++) {
-                    // light normal index
+                    
                     l = shadedots[(v[i] >>> 24) & 0xFF];
                     color.put(j++, l * shadelight[0]);
                     color.put(j++, l * shadelight[1]);
@@ -262,10 +262,10 @@ public abstract class Mesh extends Light {
                 gl.glLockArraysEXT(0, paliashdr.num_xyz);
 
             while (true) {
-                // get the vertex count and primitive type
+                
                 count = order[orderIndex++];
                 if (count == 0)
-                    break; // done
+                    break; 
                 if (count < 0) {
                     count = -count;
                     gl.glBegin(GL_TRIANGLE_FAN);
@@ -273,7 +273,7 @@ public abstract class Mesh extends Light {
                     gl.glBegin(GL_TRIANGLE_STRIP);
                 }
 
-                // PMM - added double damage shell
+                
                 if ((currententity.flags & (Defines.RF_SHELL_RED
                         | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                         | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0) {
@@ -289,7 +289,7 @@ public abstract class Mesh extends Light {
                     } while (--count != 0);
                 } else {
                     do {
-                        // texture coordinates come from the draw list
+                        
                         gl.glTexCoord2f(Float
                                 .intBitsToFloat(order[orderIndex + 0]), Float
                                 .intBitsToFloat(order[orderIndex + 1]));
@@ -297,7 +297,7 @@ public abstract class Mesh extends Light {
                         index_xyz = order[orderIndex + 2];
                         orderIndex += 3;
 
-                        // normals and vertexes come from the frame list
+                        
                         gl.glArrayElement(index_xyz);
 
                     } while (--count != 0);
@@ -314,10 +314,10 @@ public abstract class Mesh extends Light {
             float[] tmp;
 
             while (true) {
-                // get the vertex count and primitive type
+                
                 count = order[orderIndex++];
                 if (count == 0)
-                    break; // done
+                    break; 
                 if (count < 0) {
                     count = -count;
                     gl.glBegin(GL_TRIANGLE_FAN);
@@ -339,9 +339,9 @@ public abstract class Mesh extends Light {
                     } while (--count != 0);
                 } else {
                     do {
-                        // texture coordinates come from the draw list
-                        // gl.glTexCoord2f (((float *)order)[0], ((float
-                        // *)order)[1]);
+                        
+                        
+                        
 
                         gl.glTexCoord2f(Float
                                 .intBitsToFloat(order[orderIndex + 0]), Float
@@ -349,7 +349,7 @@ public abstract class Mesh extends Light {
                         index_xyz = order[orderIndex + 2];
                         orderIndex += 3;
 
-                        // normals and vertexes come from the frame list
+                        
                         l = shadedots[(v[index_xyz] >>> 24) & 0xFF];
 
                         gl.glColor4f(l * shadelight[0], l * shadelight[1], l
@@ -362,7 +362,7 @@ public abstract class Mesh extends Light {
             }
         }
 
-        // PMM - added double damage shell
+        
         if ((currententity.flags & (Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_BLUE
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
@@ -385,10 +385,10 @@ public abstract class Mesh extends Light {
         int index = 0;
 
         while (true) {
-            // get the vertex count and primitive type
+            
             count = order[orderIndex++];
             if (count == 0)
-                break; // done
+                break; 
             if (count < 0) {
                 count = -count;
                 gl.glBegin(GL_TRIANGLE_FAN);
@@ -396,7 +396,7 @@ public abstract class Mesh extends Light {
                 gl.glBegin(GL_TRIANGLE_STRIP);
 
             do {
-                // normals and vertexes come from the frame list
+                
                 /*
                  * point[0] = verts[order[2]].v[0] * frame.scale[0] +
                  * frame.translate[0]; point[1] = verts[order[2]].v[1] *
@@ -534,7 +534,7 @@ public abstract class Mesh extends Light {
         }
 
         int p, f;
-        int aggregatemask = ~0; // 0xFFFFFFFF
+        int aggregatemask = ~0; 
 
         for (p = 0; p < 8; p++) {
             int mask = 0;
@@ -565,7 +565,7 @@ public abstract class Mesh extends Light {
         qfiles.dmdl_t paliashdr;
         float an;
 
-        // bounding box
+        
         float[][] bbox = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
                 { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
         image_t skin;
@@ -582,13 +582,13 @@ public abstract class Mesh extends Light {
 
         paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
 
-        //
-        // get lighting information
-        //
-        // PMM - rewrote, reordered to handle new shells & mixing
-        // PMM - 3.20 code .. replaced with original way of doing it to keep mod
-        // authors happy
-        //
+        
+        
+        
+        
+        
+        
+        
         if ((currententity.flags & (Defines.RF_SHELL_HALF_DAM
                 | Defines.RF_SHELL_GREEN | Defines.RF_SHELL_RED
                 | Defines.RF_SHELL_BLUE | Defines.RF_SHELL_DOUBLE)) != 0) {
@@ -616,11 +616,11 @@ public abstract class Mesh extends Light {
         } else {
             R_LightPoint(currententity.origin, shadelight);
 
-            // player lighting hack for communication back to server
-            // big hack!
+            
+            
             if ((currententity.flags & Defines.RF_WEAPONMODEL) != 0) {
-                // pick the greatest component, which should be the same
-                // as the mono value returned by software
+                
+                
                 if (shadelight[0] > shadelight[1]) {
                     if (shadelight[0] > shadelight[2])
                         r_lightlevel.value = 150 * shadelight[0];
@@ -659,8 +659,8 @@ public abstract class Mesh extends Light {
             }
         }
 
-        if ((currententity.flags & Defines.RF_GLOW) != 0) { // bonus items will
-                                                            // pulse with time
+        if ((currententity.flags & Defines.RF_GLOW) != 0) { 
+                                                            
             float scale;
             float min;
 
@@ -673,16 +673,16 @@ public abstract class Mesh extends Light {
             }
         }
 
-        // =================
-        // PGM ir goggles color override
+        
+        
         if ((r_newrefdef.rdflags & Defines.RDF_IRGOGGLES) != 0
                 && (currententity.flags & Defines.RF_IR_VISIBLE) != 0) {
             shadelight[0] = 1.0f;
             shadelight[1] = 0.0f;
             shadelight[2] = 0.0f;
         }
-        // PGM
-        // =================
+        
+        
 
         shadedots = r_avertexnormal_dots[((int) (currententity.angles[1] * (SHADEDOT_QUANT / 360.0)))
                 & (SHADEDOT_QUANT - 1)];
@@ -693,17 +693,17 @@ public abstract class Mesh extends Light {
         shadevector[2] = 1;
         Math3D.VectorNormalize(shadevector);
 
-        //
-        // locate the proper data
-        //
+        
+        
+        
 
         c_alias_polys += paliashdr.num_tris;
 
-        //
-        // draw all the triangles
-        //
+        
+        
+        
         if ((currententity.flags & Defines.RF_DEPTHHACK) != 0)
-            // hack the depth range to prevent view model from poking into walls
+            
             gl.glDepthRange(gldepthmin, gldepthmin + 0.3
                     * (gldepthmax - gldepthmin));
 
@@ -721,13 +721,13 @@ public abstract class Mesh extends Light {
         }
 
         gl.glPushMatrix();
-        e.angles[PITCH] = -e.angles[PITCH]; // sigh.
+        e.angles[PITCH] = -e.angles[PITCH]; 
         R_RotateForEntity(e);
-        e.angles[PITCH] = -e.angles[PITCH]; // sigh.
+        e.angles[PITCH] = -e.angles[PITCH]; 
 
-        // select skin
+        
         if (currententity.skin != null)
-            skin = currententity.skin; // custom player skin
+            skin = currententity.skin; 
         else {
             if (currententity.skinnum >= qfiles.MAX_MD2SKINS)
                 skin = currentmodel.skins[0];
@@ -738,10 +738,10 @@ public abstract class Mesh extends Light {
             }
         }
         if (skin == null)
-            skin = r_notexture; // fallback...
+            skin = r_notexture; 
         GL_Bind(skin.texnum);
 
-        // draw it
+        
 
         gl.glShadeModel(GL_SMOOTH);
 

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -34,12 +34,12 @@ public final class CompoundShapeChild {
 	
 	public final Transform transform = new Transform();
 	public final CollisionShape childShape;
-	//public final BroadphaseNativeType childShapeType;
-	//public float childMargin;
+	
+	
 
 	public CompoundShapeChild(CollisionShape childShape) {
 		this.childShape = childShape;
-		//this.childShapeType = childShapeType;
+		
 	}
 
 	@Override
@@ -48,9 +48,9 @@ public final class CompoundShapeChild {
 		CompoundShapeChild child = (CompoundShapeChild)obj;
 		return transform.equals(child.transform) &&
 		       childShape == child.childShape
-				//&&
-		       //childShape.getShapeType() == child.childShape.getShapeType()  &&
-		       //childMargin == child.childMargin
+				
+		       
+		       
 		;
 	}
 

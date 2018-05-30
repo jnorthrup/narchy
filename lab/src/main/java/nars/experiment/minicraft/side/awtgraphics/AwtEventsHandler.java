@@ -10,15 +10,15 @@ public class AwtEventsHandler {
 	
 	public AwtEventsHandler(SideScrollMinicraft game) {
 		this.game = game;
-		// add a key input system (defined below) to our canvas
-		// so we can respond to key pressed
-//		canvas.addKeyListener(new KeyInputHandler());
-//		canvas.addMouseListener(new MouseInputHander());
-//		canvas.addMouseWheelListener(new MouseWheelInputHander());
-//		canvas.addMouseMotionListener(new MouseMoveInputHander());
 		
-		// TODO: A lot of this should be calling a nicer function in Game to handle
-		// mouse+keyboard/touch input
+		
+
+
+
+
+		
+		
+		
 	}
 	
 	private class MouseWheelInputHander implements MouseWheelListener {
@@ -55,7 +55,7 @@ public class AwtEventsHandler {
 			case MouseEvent.BUTTON1:
 				game.leftClick = true;
 				break;
-			case MouseEvent.BUTTON2: // fall through
+			case MouseEvent.BUTTON2: 
 			case MouseEvent.BUTTON3:
 				game.rightClick = true;
 				break;
@@ -68,7 +68,7 @@ public class AwtEventsHandler {
 			case MouseEvent.BUTTON1:
 				game.leftClick = false;
 				break;
-			case MouseEvent.BUTTON2: // fall through
+			case MouseEvent.BUTTON2: 
 			case MouseEvent.BUTTON3:
 				game.rightClick = false;
 				break;
@@ -134,7 +134,7 @@ public class AwtEventsHandler {
 		public void keyTyped(KeyEvent e) {
 			switch (e.getKeyChar()) {
 			case '1':
-			case '2': // these all fall through to 9
+			case '2': 
 			case '3':
 			case '4':
 			case '5':
@@ -156,9 +156,9 @@ public class AwtEventsHandler {
 			case 'p':
 				game.paused = !game.paused;
 				break;
-//			case 'm':
-//				game.musicPlayer.toggleSound();
-//				break;
+
+
+
 			case 'o':
 				game.zoom(0);
 				break;

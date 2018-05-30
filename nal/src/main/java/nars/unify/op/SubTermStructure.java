@@ -24,7 +24,7 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
 
     public static List<SubTermStructure> get(int subterm, int bits) {
 
-        //ensure pattern var isnt sought
+        
         bits &= ~VAR_PATTERN.bit;
 
         int numBits = Integer.bitCount(bits);
@@ -37,7 +37,7 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
 
 
                 int b = o.bit;
-                if ((bits & b) != 0) { //HACK
+                if ((bits & b) != 0) { 
                     components.add(new SubTermStructure(subterm, b));
                 }
             }
@@ -51,11 +51,11 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
 
     private SubTermStructure(/*@NotNull*/ Op matchingType, int subterm, int bits) {
         super($.func("subTermStruct", $.the(subterm), $.the(bits)));
-//                ((Integer.bitCount(bits) == 1) ?
-//                        ("onBit_" + Integer.numberOfTrailingZeros(bits)) //shorthand for n'th bit
-//                            :
-//                        ("onAll_" + Integer.toBinaryString(bits))
-//                ) + ')');
+
+
+
+
+
         this.subterm = subterm;
 
 
@@ -71,7 +71,7 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
                 TaskBeliefOp t = (TaskBeliefOp)x;
                 if (t.isOrIsNot && ((subterm == 0 && t.task) || (subterm == 1 && t.belief)) &&
                     (t.structure == bits)) {
-                    return false; //the TaskBeliefOp test is equivalent to this, being more specific
+                    return false; 
                 }
             }
         }
@@ -80,16 +80,16 @@ public final class SubTermStructure extends AbstractPred<PreDerivation> {
 
     @Override
     public boolean test(PreDerivation ff) {
-        //if the OR produces a different result compared to subterms,
-        // it means there is some component of the other term which is not found
-        //return ((possibleSubtermStructure | existingStructure) != existingStructure);
+        
+        
+        
         return Op.hasAll((subterm == 0 ? ff._taskStruct : ff._beliefStruct), bits);
     }
 
     static int filter(/*@NotNull*/ Op matchingType, int bits) {
         bits &= (~matchingType.bit);
 
-        //bits &= (~Op.NEG.bit); //filter based on negation
+        
 
         return bits;
     }

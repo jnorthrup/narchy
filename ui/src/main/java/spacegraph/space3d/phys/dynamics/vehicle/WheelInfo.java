@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -34,22 +34,22 @@ import spacegraph.util.math.v3;
  */
 public class WheelInfo {
 
-	//protected final BulletStack stack = BulletStack.get();
+	
 	
 	public final RaycastInfo raycastInfo = new RaycastInfo();
 
 	public final Transform worldTransform = new Transform();
 	
-	public final v3 chassisConnectionPointCS = new v3(); // const
-	public final v3 wheelDirectionCS = new v3(); // const
-	public final v3 wheelAxleCS = new v3(); // const or modified by steering
-	public float suspensionRestLength1; // const
+	public final v3 chassisConnectionPointCS = new v3(); 
+	public final v3 wheelDirectionCS = new v3(); 
+	public final v3 wheelAxleCS = new v3(); 
+	public float suspensionRestLength1; 
 	public float maxSuspensionTravelCm;
 	public float maxSuspensionForce;
-	public float wheelsRadius; // const
-	public float suspensionStiffness; // const
-	public float wheelsDampingCompression; // const
-	public float wheelsDampingRelaxation; // const
+	public float wheelsRadius; 
+	public float suspensionStiffness; 
+	public float wheelsDampingCompression; 
+	public float wheelsDampingRelaxation; 
 	public float frictionSlip;
 	public float steering;
 	public float rotation;
@@ -62,11 +62,11 @@ public class WheelInfo {
 	
 	public boolean bIsFrontWheel;
 	
-	public Object clientInfo; // can be used to store pointer to sync transforms...
+	public Object clientInfo; 
 
 	public float clippedInvContactDotSuspension;
 	public float suspensionRelativeVelocity;
-	// calculated by suspension
+	
 	public float wheelsSuspensionForce;
 	public float skidInfo;
 	
@@ -115,7 +115,7 @@ public class WheelInfo {
 			}
 		}
 		else {
-			// Not in contact : position wheel in a nice (rest length) position
+			
             raycastInfo.suspensionLength = suspensionRestLength1;
 			suspensionRelativeVelocity = 0f;
 			raycastInfo.contactNormalWS.negate(raycastInfo.wheelDirectionWS);
@@ -123,18 +123,18 @@ public class WheelInfo {
 		}
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	public static class RaycastInfo {
-		// set by raycaster
-		public final v3 contactNormalWS = new v3(); // contactnormal
-		public final v3 contactPointWS = new v3(); // raycast hitpoint
+		
+		public final v3 contactNormalWS = new v3(); 
+		public final v3 contactPointWS = new v3(); 
 		public float suspensionLength;
-		public final v3 hardPointWS = new v3(); // raycast starting point
-		public final v3 wheelDirectionWS = new v3(); // direction in worldspace
-		public final v3 wheelAxleWS = new v3(); // axle in worldspace
+		public final v3 hardPointWS = new v3(); 
+		public final v3 wheelDirectionWS = new v3(); 
+		public final v3 wheelAxleWS = new v3(); 
 		public boolean isInContact;
-		public Object groundObject; // could be general void* ptr
+		public Object groundObject; 
 	}
 	
 }

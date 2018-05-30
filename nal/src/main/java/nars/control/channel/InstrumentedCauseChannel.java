@@ -6,7 +6,7 @@ package nars.control.channel;
  */
 public class InstrumentedCauseChannel {
 
-    //    /** in-bound traffic statistics */
-    //    public final AtomicSummaryStatistics traffic = new AtomicSummaryStatistics();
+    
+    
 
 }

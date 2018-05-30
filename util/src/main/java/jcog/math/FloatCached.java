@@ -15,7 +15,7 @@ public class FloatCached implements FloatSupplier {
     public FloatCached(FloatSupplier in, LongSupplier clock) {
         this.in = in;
         this.clock = clock;
-        this.lastTime = clock.getAsLong()-1; //forces update on first
+        this.lastTime = clock.getAsLong()-1; 
         asFloat();
     }
 

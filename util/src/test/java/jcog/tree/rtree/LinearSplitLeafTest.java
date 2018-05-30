@@ -10,7 +10,7 @@ package jcog.tree.rtree;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,7 +52,7 @@ public class LinearSplitLeafTest {
         rTree.add(new RectDouble2D(5, 5, 6, 6));
         rTree.add(new RectDouble2D(6, 6, 7, 7));
         rTree.add(new RectDouble2D(7, 7, 8, 8));
-        // 9 entries guarantees a split
+        
         rTree.add(new RectDouble2D(8, 8, 9, 9));
 
         Stats stats = rTree.stats();
@@ -70,7 +70,7 @@ public class LinearSplitLeafTest {
         rTree.add(new RectDouble2D(1, 1, 2, 2));
         rTree.add(new RectDouble2D(2, 2, 4, 4));
         rTree.add(new RectDouble2D(4, 0, 5, 1));
-        // 5 entrees guarantees a split
+        
         rTree.add(new RectDouble2D(0, 2, 1, 4));
 
         Branch root = (Branch) rTree.root();
@@ -125,7 +125,7 @@ public class LinearSplitLeafTest {
         rTree.add(new RectDouble2D(0, 1, 4.1, 4));
         rTree.add(new RectDouble2D(0, 1, 5, 5));
 
-        // 17 entries guarantees *at least* 2 splits when max leaf size is 8
+        
         final int expectedEntryCount = 17;
 
         final Stats stats = rTree.stats();

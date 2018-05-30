@@ -20,42 +20,42 @@ public class ParserMatchedAssemblerTest {
 
 	@BeforeEach
 	public void Init() {
-		//matchedRule = mock(BiConsumer.class);
+		
 		assembler = new ParserMatchedAssembler(matchedRule);
 		assembly = new TokenAssembly("");
 	}
-//
-//	@Test
-//	public void emptyMatch() {
-//		assembler.workOn(assembly);
-//		verify(matchedRule).accept(Collections.emptyList(), new Stack<Object>());
-//	}
-//
-//	@Test
-//	public void oneElementMatch() {
-//		assembly.push(new Token("hello"));
-//		assembler.workOn(assembly);
-//		List<Object> expectedMatches = new ArrayList<Object>();
-//		expectedMatches.add(new Token("hello"));
-//		verify(matchedRule).accept(expectedMatches, new Stack<Object>());
-//	}
-//
-//	@Test
-//	public void severalElementsMatch() {
-//		assembly.push("a result");
-//		assembly.announceMatchingStart();
-//		assembly.push(new Token("b"));
-//		assembly.push(new Token("c"));
-//
-//		assembler.workOn(assembly);
-//
-//		List<Object> expectedMatches = new ArrayList<Object>();
-//		expectedMatches.add(new Token("b"));
-//		expectedMatches.add(new Token("c"));
-//		Stack<Object> expectedStack = new Stack<Object>();
-//		expectedStack.add("a result");
-//		verify(matchedRule).accept(expectedMatches, expectedStack);
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	@Test
 	public void matchedRuleCanManipulateStack() {

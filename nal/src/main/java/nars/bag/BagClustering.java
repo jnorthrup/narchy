@@ -58,7 +58,7 @@ public class BagClustering<X> {
      */
     protected /*Flip<*/ FasterList<VLink<X>> sorted =
             new FasterList<>();
-    //new Flip(FasterList::new);
+    
     AtomicBoolean bagBusy = new AtomicBoolean(false);
 
 
@@ -79,23 +79,23 @@ public class BagClustering<X> {
 
         };
 
-//        this.bag = new HijackBag<>(initialCap, 4) {
-//            @Override
-//            protected VLink<X> merge(VLink<X> existing, VLink<X> incoming, @Nullable MutableFloat overflowing) {
-//                existing.priMax(incoming.priElseZero());
-//                return existing;
-//            }
-//
-//            @Override
-//            public float pri(VLink<X> key) {
-//                return key.pri();
-//            }
-//
-//            @Override
-//            public X key(VLink<X> value) {
-//                return value.get();
-//            }
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public void print() {
@@ -115,18 +115,18 @@ public class BagClustering<X> {
     }
 
 
-//    protected class MyForget extends PriForget<VLink<X>> {
-//
-//        public MyForget(float priFactor) {
-//            super(priFactor);
-//        }
-//
-//        @Override
-//        public void accept(VLink<X> b) {
-//            super.accept(b);
-//            learn(b);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void forEachCluster(Consumer<Centroid> c) {
         for (Centroid b : net.centroids) {
@@ -163,23 +163,23 @@ public class BagClustering<X> {
 
         if (bagBusy.compareAndSet(false, true)) {
 
-            //only one thread at a time can update the bag or learn clusters
+            
 
             try {
 
-                //int generatedExpectation = work * bag.net.centroids.length;
-                //float forgetRate = 1f - Util.unitize(((float)generatedExpectation)/bag.bag.capacity());
+                
+                
                 bag.commit(t -> {
                     X tt = t.get();
                     if ((tt instanceof Prioritized) && ((Prioritized)tt).isDeleted())
                         t.delete();
-                    //else
-                    //t.priMult(forgetRate);
+                    
+                    
                 });
-                bag.commit(bag.forget(forgetRate)); //first, apply bag forgetting
+                bag.commit(bag.forget(forgetRate)); 
 
-                //                net.compact();
-                //int cc = bag.capacity();
+                
+                
 
                 for (int i = 0; i < iterations; i++)
                     bag.forEach(this::learn);
@@ -195,20 +195,20 @@ public class BagClustering<X> {
 
         for (int sortRetry = 0; sortRetry < maxSortRetries; sortRetry++) {
 
-            //Collections.sort(x, Comparator.comparingInt(v->v.centroid));
+            
             try {
                 x.sortThisByInt(xx -> xx.centroid);
                 break;
             } catch (IllegalArgumentException e) {
-                //sort fail, this will happen unless centroid are copied
-                // because they could be modified in another thread
+                
+                
 
-                //but ultimately, its still somewhat acceptable if it doesnt get 100% consistent sort
+                
             }
         }
 
-        //x.sortThis(Comparator.comparingInt(v->v.centroid));
-        //Arrays.sort(x.array(), )
+        
+        
         takeSortedClusters.accept(x);
 
     }
@@ -230,7 +230,7 @@ public class BagClustering<X> {
     }
 
     public void put(X x, float pri) {
-        bag.putAsync(new VLink<>(x, pri, model.dims)); //TODO defer vectorization until after accepted
+        bag.putAsync(new VLink<>(x, pri, model.dims)); 
     }
 
     public void remove(X x) {
@@ -265,7 +265,7 @@ public class BagClustering<X> {
             int centroid = link.centroid;
             if (centroid >= 0) {
                 Centroid[] nodes = net.centroids;
-                if (centroid < nodes.length) //in case of resize
+                if (centroid < nodes.length) 
                     return stream(centroid)
                             .filter(y -> !y.equals(x))
                             ;

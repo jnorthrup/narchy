@@ -51,15 +51,15 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         assert (s > 0);
 
         if (s > 1 /* and all differ, because if they are equal then the average will be regardless of their relative rank */) {
-            if (anySatisfy(t->t.start()==ETERNAL)) //HACK if any are eternal, calculate simply
-                return meanValue(DynTruth::pri); //average value
+            if (anySatisfy(t->t.start()==ETERNAL)) 
+                return meanValue(DynTruth::pri); 
 
             double total = 0;
             double totalEvi = 0;
-            //sum weighted by evidence (integral?)
+            
             for (TaskRegion d : this) {
                 float p = DynTruth.pri(d);
-                float e = ((Task)d).conf() /*evi()*/ * d.range(); //Revision.eeviInteg( ((Task)d), s,e, dur );
+                float e = ((Task)d).conf() /*evi()*/ * d.range(); 
                 total += p * e;
                 totalEvi += e;
             }
@@ -74,7 +74,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (x instanceof Prioritized)
             return ((Prioritized) x).priElseZero();
 
-        //TODO ??
+        
 
         return 0;
     }
@@ -112,12 +112,12 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (evi < eviMin)
             return null;
 
-//        //TODO compute max valid overlap to terminate the zip early
-//        ObjectFloatPair<long[]> ss = Stamp.zip((List) this, Param.STAMP_CAPACITY);
 
-//        evi = evi * Param.overlapFactor(ss.getTwo());
-//        if (evi < eviMin)
-//            return null;
+
+
+
+
+
 
         float freq = t.freq();
 
@@ -145,34 +145,34 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                         start = end = ETERNAL;
                     } else {
                         assert (min != TIMELESS);
-//                    if (min == Long.MAX_VALUE)
-//                        start = end = ETERNAL; //all eternal
-//                    else {
+
+
+
                         start = min;
                         end = (min + minRange);
                     }
-//                    }
+
 
                 } else {
                     long[] u = Tense.union(this.array());
                     start = u[0]; end = u[1];
                 }
             } else {
-                //only one task
+                
                 LongInterval only = get(0);
                 start = only.start();
                 end = only.end();
             }
 
             if (superterm.op() == NEG) {
-                superterm = superterm.unneg(); //unneg if constructing a task, but dont if just returning the truth
+                superterm = superterm.unneg(); 
                 f = 1f - freq;
             } else {
                 f = freq;
             }
 
         } else {
-            start = end = XTERNAL; //not used
+            start = end = XTERNAL; 
             f = freq;
         }
 
@@ -180,17 +180,17 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (!taskOrJustTruth)
             return Truth.theDithered(f, freqRes, evi, confRes, w2cSafe(eviMin));
 
-        //undithered until final step for max precision
+        
 
-        // then if the term is valid, see if it is valid for a task
+        
         Term content = truthModel instanceof DynamicTruthModel ?
                 ((DynamicTruthModel) truthModel).construct(superterm, this) :
                 superterm;
 
 
         @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
-                //if dynamic truth model, construct the appropriate term
-                //otherwise consider the superterm argument as the task content
+                
+                
                 content,
                 beliefOrGoal ? BELIEF : GOAL, !Param.DEBUG_EXTRA);
         if (r == null)
@@ -201,7 +201,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 Truth.theDithered(r.getTwo() ? (1-f) : f, freqRes, evi, confRes, w2cSafe(eviMin)),
                 nar, start, end,
                 this.evi.toArray());
-        //if (ss.getTwo() > 0) dyn.setCyclic(true);
+        
 
         dyn.cause = cause();
 
@@ -241,7 +241,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 evi = new LongHashSet(stamp.length * 2 /* estimate */);
 
             evi.addAll(stamp);
-            //evi.compact(); //because it may be compared against frequently
+            
         }
 
         return true;
@@ -253,7 +253,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             long[] s = task.stamp();
             for (long x : s) {
                 if (evi.contains(x))
-                    return false; //overlap
+                    return false; 
             }
         }
         return true;
@@ -275,11 +275,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
         }
 
-//        @Override
-//        public DynamicTruthTask pri(float p) {
-//            super.pri(p);
-//            return this;
-//        }
+
+
+
+
+
 
 
         @Override

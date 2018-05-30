@@ -34,11 +34,11 @@ abstract public class SequenceLearner {
         Arrays.fill(errors, 1.0);
 
 
-        //TODO remove rand
-//        final int memoryWidth = 32;
-//        final int memoryHeight = 96;
-//        final int numHeads = 1;
-//        final int controllerSize = 128;
+        
+
+
+
+
 
         machine = new NTM(
                 vectorSize,
@@ -49,7 +49,7 @@ abstract public class SequenceLearner {
                 memoryWidth,
                 new RandomWeightInitializer(rand));
 
-        //TODO extract weight count calculation
+        
         int headUnitSize = Head.getUnitSize(memoryWidth);
 
         final int outputSize = machine.outputSize();
@@ -58,11 +58,11 @@ abstract public class SequenceLearner {
         int weightsCount = (numHeads * memoryHeight) + (memoryHeight * memoryWidth) + (controllerSize * numHeads * memoryWidth) + (controllerSize * inputSize) + (controllerSize)+(outputSize * (controllerSize + 1)) + (numHeads * headUnitSize * (controllerSize + 1));
         System.out.println("# Weights: "  + weightsCount);
 
-        //public RMSPropWeightUpdater(int weightsCount,
-        // double gradientMomentum,
-        // double deltaMomentum,
-        // double changeMultiplier,
-        // double changeAddConstant) {
+        
+        
+        
+        
+        
         teacher = new BPTTTeacher(machine,
                 new RMSPropWeightUpdater(weightsCount, 0.05, 0.05, 0.02, 0.001));
 
@@ -78,7 +78,7 @@ abstract public class SequenceLearner {
         NTM[] output = teacher.train(sequence.input, sequence.ideal);
         long trainTimeNS = System.nanoTime() - timeBefore;
 
-        //double error = calculateAbsoluteError(sequence.getValue1(), output);
+        
         double error = calculateLogLoss(sequence.ideal, output);
         double averageError = error / (
                 sequence.ideal.length * sequence.ideal[0].length);
@@ -138,7 +138,7 @@ abstract public class SequenceLearner {
             final double[] ideal = knownOutput[t];
             final double[] actual = machines[t].getOutput();
 
-            //System.out.println(t + ": " + Arrays.toString(ideal) + " =?= " + Arrays.toString(actual));
+            
 
             double rowLoss = 0;
             for (int i = 0;i < ideal.length;i++) {
@@ -166,7 +166,7 @@ abstract public class SequenceLearner {
             final double[] knownOutputT = knownOutput[t];
             final double[] actual = machines[t].getOutput();
 
-            //System.out.println(t + ": " + Arrays.toString(knownOutputT) + " =?= " + Arrays.toString(actual));
+            
 
             double rowLoss = 0;
             for (int i = 0;i < knownOutputT.length;i++) {

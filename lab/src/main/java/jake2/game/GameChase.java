@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 16.11.2005 by RST.
+
 
 package jake2.game;
 
@@ -40,7 +40,7 @@ public class GameChase {
         float[] oldgoal = { 0, 0, 0 };
         float[] angles = { 0, 0, 0 };
     
-        // is our chase target gone?
+        
         if (!ent.client.chase_target.inuse
                 || ent.client.chase_target.client.resp.spectator) {
             edict_t old = ent.client.chase_target;
@@ -69,7 +69,7 @@ public class GameChase {
         if (o[2] < targ.s.origin[2] + 20)
             o[2] = targ.s.origin[2] + 20;
     
-        // jump animation lifts
+        
         if (targ.groundentity == null)
             o[2] += 16;
     
@@ -80,7 +80,7 @@ public class GameChase {
     
         Math3D.VectorMA(goal, 2, forward, goal);
     
-        // pad for floors and ceilings
+        
         Math3D.VectorCopy(goal, o);
         o[2] += 6;
         trace = game_import_t.trace(goal, Globals.vec3_origin,

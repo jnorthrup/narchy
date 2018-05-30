@@ -50,7 +50,7 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
 
 
     public void forEach(int max, @NotNull Consumer<? super Y> action) {
-        throw new UnsupportedOperationException(); //typing issue, TODO
+        throw new UnsupportedOperationException(); 
     }
 
     @Override

@@ -231,11 +231,11 @@ public class Quaternion
     */
    public Quaternion multiply(final Quaternion quaternion)
    {
-      return new Quaternion(//
-            (this.w * quaternion.w) - (this.x * quaternion.x) - (this.y * quaternion.y) - (this.z * quaternion.z), //
-            ((this.w * quaternion.x) + (this.x * quaternion.w) + (this.y * quaternion.z)) - (this.z * quaternion.y), //
-            ((this.w * quaternion.y) + (this.y * quaternion.w) + (this.x * quaternion.z)) - (this.z * quaternion.x), //
-            ((this.w * quaternion.z) + (this.z * quaternion.w) + (this.x * quaternion.y)) - (this.y * quaternion.x//
+      return new Quaternion(
+            (this.w * quaternion.w) - (this.x * quaternion.x) - (this.y * quaternion.y) - (this.z * quaternion.z), 
+            ((this.w * quaternion.x) + (this.x * quaternion.w) + (this.y * quaternion.z)) - (this.z * quaternion.y), 
+            ((this.w * quaternion.y) + (this.y * quaternion.w) + (this.x * quaternion.z)) - (this.z * quaternion.x), 
+            ((this.w * quaternion.z) + (this.z * quaternion.w) + (this.x * quaternion.y)) - (this.y * quaternion.x
                   ));
    }
 

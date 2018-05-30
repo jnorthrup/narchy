@@ -72,12 +72,12 @@ public class W extends GamePanel {
 
 	public W() {
 		super(true);
-		// Graphische Grundlagen f�r das Double Buffering
+		
 		offscreenImage = new BufferedImage(440, 600, BufferedImage.TYPE_INT_RGB);
 		offscreenGraphics = offscreenImage.createGraphics();
 		offscreenGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		// Variablen zum Zeitmessen und genau Timen wann geupdatet werden soll
+		
 		lastTime = System.nanoTime();
 		think = 10000000L;
 
@@ -123,14 +123,14 @@ public class W extends GamePanel {
 
 	@Override
 	public void paintComponent(Graphics appletGraphics) {
-		//		setSize(400, 400); // f�r den AppletViewer
+		
 
 		long now = System.nanoTime();
 		long delta = now - lastTime;
 		think += delta;
 
-		// Update / think
-		// Wenn 10 ms vergangen sind, dann denke nach
+		
+		
 		while (think >= 10000000L) {
 			think -= 10000000L;
 
@@ -166,27 +166,27 @@ public class W extends GamePanel {
 					}
 				}
 
-				// wall time
+				
 				for (int i = 1; i < colors.length; i += 2) {
 					if (colors[i] > 0) {
 						colors[i] -= 10;
 					}
 				}
 
-				//player time
+				
 				for (int i = 2; i < 6; i += 3) {
 					playerspaddle[i] -= 10;
 					if (playerspaddle[i] < 0) {
 						playerspaddle[i] = 0;
 					}
 				}
-				// paddle time
+				
 				paddleVec[4] -= 10;
 				if (paddleVec[4] < 0) {
 					paddleVec[4] = 3000;
 				}
 
-				// check intersection with paddle
+				
 				for (int i = 0; i < 4; i += 3) {
 					double angle = 0.0d;
 					double angle1 = 0.0d;
@@ -275,7 +275,7 @@ public class W extends GamePanel {
 					}
 				}
 
-				// move paddle
+				
 				float speed = paddleVec[3] * 10 * 30;
 				double alpha = paddleVec[2];
 				if (alpha > 360) {
@@ -306,7 +306,7 @@ public class W extends GamePanel {
 							p[10] = 0;
 						}
 					} else if (paddleVec[3] != 0) {
-						// check intersects with walls
+						
 						float los = paddleVec[2];
 						for (int i = 0; i < WALLS.length; i += 4) {
 							if (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30)) {
@@ -350,7 +350,7 @@ public class W extends GamePanel {
 									}
 								}
 								if (bPaddle) {
-									// don't touch the wall lovely paddle
+									
 									int count = 0;
 									while ((count < 30) && (new Rectangle2D.Float(WALLS[i], WALLS[i + 1], WALLS[i + 2], WALLS[i + 3]).intersects(paddleVec[0], paddleVec[1], 30, 30))) {
 										float radiusOne = 0.5f;
@@ -430,8 +430,8 @@ public class W extends GamePanel {
 
 		lastTime = now;
 
-		// Renderabschnitt
-		// Hintergrund malen
+		
+		
 		offscreenGraphics.setColor(new Color(2, 0, 45));
 		offscreenGraphics.fillRect(0, 0, 440, 600);
 		offscreenGraphics.setColor(new Color(255, 255, 255, 100));
@@ -472,7 +472,7 @@ public class W extends GamePanel {
 		}
 
 		Color c = Color.BLUE;
-		//			int wi = 60;
+		
 		for (int i = 0; i < 6; i += 3) {
 			if (i == 3)
 				c = Color.RED;
@@ -496,7 +496,7 @@ public class W extends GamePanel {
 
 		offscreenGraphics.setStroke(new BasicStroke(1));
 		c = COLOR_ORDER[(int) (paddleVec[5])];
-		//			wi = 30;
+		
 		width = (int) (10 - Math.abs(1500 - paddleVec[4]) / 150 + 14);
 		for (int w = 0; w < width / 2 - 2; w++) {
 			float add = 200f / (width / 2f - 2f);
@@ -543,7 +543,7 @@ public class W extends GamePanel {
 			}
 		}
 
-		// Render das Ganze auf den Bildschirm
+		
 		appletGraphics.drawImage(offscreenImage, 0, 0, null);
 
 	}
@@ -557,12 +557,12 @@ public class W extends GamePanel {
 			}
 			break;
 		case Event.MOUSE_DOWN:
-			// mouse button pressed
+			
 			p[4] = 1;
 			p[5] = 0;
 			break;
 		case Event.MOUSE_UP:
-			// mouse button released
+			
 			p[4] = 0;
 			p[5] = 1;
 			break;

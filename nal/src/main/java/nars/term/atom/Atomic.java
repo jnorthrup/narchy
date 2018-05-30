@@ -46,10 +46,10 @@ public interface Atomic extends Term {
     }
 
 
-//    @Override
-//    default boolean isDynamic() {
-//        return false;
-//    }
+
+
+
+
 
     @Override
     default boolean isTemporal() {
@@ -108,19 +108,19 @@ public interface Atomic extends Term {
 
     @Override
     default Term replace(Map<? extends Term, Term> m) {
-        Term y = m.get(this); //atom substitutions
+        Term y = m.get(this); 
         return y != null ? y : this;
     }
 
     @Override
     default Term replace(Term from, Term to) {
-        return equals(from) ? to : this; //atom substitution
+        return equals(from) ? to : this; 
     }
 
 
     @Override
     default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return v; //nothing to test
+        return v; 
     }
 
 
@@ -129,7 +129,7 @@ public interface Atomic extends Term {
         int l = id.length();
         assert (l > 0) : "attempted zero-length Atomic id";
 
-        //special cases
+        
         if (l == 1) {
             char c = id.charAt(0);
             switch (c) {
@@ -168,12 +168,12 @@ public interface Atomic extends Term {
             }
         }
 
-        //TODO handle negative ints prefixed with '-'
+        
         if (l > 1 /* already handled single digit cases in the above switch */ && Character.isDigit(id.charAt(0))) {
-            //try to parse int
+            
             int i = Texts.i(id, MIN_VALUE);
             if (i != MIN_VALUE)
-                return Int.the(i); //parsed as integer, so
+                return Int.the(i); 
         }
 
         if (isQuoteNecessary(id))
@@ -276,7 +276,7 @@ public interface Atomic extends Term {
 
     @Override
     default Term sub(int i, Term ifOutOfBounds) {
-        //no superterms to select
+        
         return ifOutOfBounds;
     }
 
@@ -297,7 +297,7 @@ public interface Atomic extends Term {
         int len = t.length();
 
         if (len > 1 && (t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
-            return false; //already quoted
+            return false; 
 
 
         for (int i = 0; i < len; i++) {

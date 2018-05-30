@@ -32,11 +32,11 @@ public class ShowAmbiguity {
 	 */
 	public static void main(String[] args) {
 
-		// volume = "cups" | "gallon" | "liter";
+		
 
 		Parser volume = new Alternation().get(new Literal("cups")).get(new Literal("gallon")).get(new Literal("liter"));
 
-		// an anonymous Assembler subclass notes volume matches
+		
 
 		volume.put(new IAssembler() {
 			public void accept(Assembly a) {
@@ -45,7 +45,7 @@ public class ShowAmbiguity {
 			}
 		});
 
-		// query = (Word | volume)* '?';
+		
 
 		Parser wordOrVolume = new Alternation().get(new Word()).get(volume);
 

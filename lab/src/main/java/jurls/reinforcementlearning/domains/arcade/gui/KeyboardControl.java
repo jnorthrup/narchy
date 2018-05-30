@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.gui;
 
@@ -44,7 +44,7 @@ public class KeyboardControl implements KeyListener {
      * 
      */
     public KeyboardControl() {
-        // Initially all keys are assumed not pressed
+        
         up = down = left = right = fire = false;
         reset = false;
         quit = false;
@@ -54,7 +54,7 @@ public class KeyboardControl implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        // Parse different key presses by setting the relevant boolean flags
+        
         switch (e.getKeyCode()) {
           case KeyEvent.VK_UP:
           case KeyEvent.VK_W:
@@ -85,7 +85,7 @@ public class KeyboardControl implements KeyListener {
     }
 
     public void keyReleased(KeyEvent e) {
-        // Opposite of keyPressed; sets the relevant boolean flag to false
+        
         switch (e.getKeyCode()) {
           case KeyEvent.VK_UP:
           case KeyEvent.VK_W:
@@ -133,10 +133,10 @@ public class KeyboardControl implements KeyListener {
     public int toALEAction() {
         int bitfield = 0;
 
-        // Reset overrides everything
+        
         if (reset) return Actions.map("system_reset");
 
-        // Cancel out left/right, up/down; obtain the corresponding bit representation
+        
         if (left == right) bitfield |= 0;
         else if (left) bitfield |= 0x08;
         else if (right) bitfield |= 0x04;
@@ -147,7 +147,7 @@ public class KeyboardControl implements KeyListener {
 
         if (fire) bitfield |= 0x01;
 
-        // Map the bits to an ALE action
+        
         return bitKeysMap[bitfield];
     }
 

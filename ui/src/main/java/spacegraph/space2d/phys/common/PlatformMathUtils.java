@@ -33,7 +33,7 @@ public class PlatformMathUtils {
 
     private static final float SHIFT23 = 1 << 23;
     private static final float INV_SHIFT23 = 1.0f / SHIFT23;
-    private static final double DEFICIT = 0.0001; //odchylka, v rozmedzi ktorej sa rataju 3 body ako leziace na 1 linii
+    private static final double DEFICIT = 0.0001; 
 
     public static final float fastPow(float a, float b) {
         float x = Float.floatToRawIntBits(a);
@@ -55,7 +55,7 @@ public class PlatformMathUtils {
         double vx = b.x - a.x;
         double vy = b.y - a.y;
         double x = vx * vx;
-        double cos = x / (x + vy * vy); //neni to linearne vzhladom na uzol - kvoli optimalizacii sa odstranila odmocnina, ale to nevadi
+        double cos = x / (x + vy * vy); 
         return vx > 0 ? vy > 0 ? 3 + cos : 1 - cos : vy > 0 ? 3 - cos : 1 + cos;
     }
 

@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 28.12.2003 by RST.
+
 
 package jake2.game;
 
@@ -52,7 +52,7 @@ public class PlayerHud {
         ent.client.ps.blend[3] = 0;
         ent.client.ps.rdflags &= ~Defines.RDF_UNDERWATER;
 
-        // clean up powerup info
+        
         ent.client.quad_framenum = 0;
         ent.client.invincible_framenum = 0;
         ent.client.breather_framenum = 0;
@@ -69,7 +69,7 @@ public class PlayerHud {
         ent.s.sound = 0;
         ent.solid = Defines.SOLID_NOT;
 
-        // add the layout
+        
 
         if (GameBase.deathmatch.value != 0 || GameBase.coop.value != 0) {
             DeathmatchScoreboardMessage(ent, null);
@@ -83,11 +83,11 @@ public class PlayerHud {
         edict_t ent, client;
 
         if (GameBase.level.intermissiontime != 0)
-            return; // already activated
+            return; 
 
         GameBase.game.autosaved = false;
 
-        // respawn any dead clients
+        
         for (i = 0; i < GameBase.maxclients.value; i++) {
             client = GameBase.g_edicts[1 + i];
             if (!client.inuse)
@@ -105,9 +105,9 @@ public class PlayerHud {
                     client = GameBase.g_edicts[1 + i];
                     if (!client.inuse)
                         continue;
-                    // strip players of all keys between units
+                    
                     for (n = 1; n < GameItemList.itemlist.length; n++) {
-                        // null pointer exception fixed. (RST) 
+                        
                         if (GameItemList.itemlist[n] != null)
                             if ((GameItemList.itemlist[n].flags & Defines.IT_KEY) != 0)
                                 client.client.pers.inventory[n] = 0;
@@ -116,25 +116,25 @@ public class PlayerHud {
             }
         } else {
             if (0 == GameBase.deathmatch.value) {
-                GameBase.level.exitintermission = true; // go immediately to the
-                                                        // next level
+                GameBase.level.exitintermission = true; 
+                                                        
                 return;
             }
         }
 
         GameBase.level.exitintermission = false;
 
-        // find an intermission spot
+        
         ent = GameBase.G_FindEdict(null, GameBase.findByClass,
                 "info_player_intermission");
-        if (ent == null) { // the map creator forgot to put in an intermission
-                           // point...
+        if (ent == null) { 
+                           
             ent = GameBase.G_FindEdict(null, GameBase.findByClass,
                     "info_player_start");
             if (ent == null)
                 ent = GameBase.G_FindEdict(null, GameBase.findByClass,
                         "info_player_deathmatch");
-        } else { // chose one of four spots
+        } else { 
             i = Lib.rand() & 3;
             EdictIterator es = null;
 
@@ -142,7 +142,7 @@ public class PlayerHud {
                 es = GameBase.G_Find(es, GameBase.findByClass,
                         "info_player_intermission");
 
-                if (es == null) // wrap around the list
+                if (es == null) 
                     continue;
                 ent = es.o;
             }
@@ -151,7 +151,7 @@ public class PlayerHud {
         Math3D.VectorCopy(ent.s.origin, GameBase.level.intermission_origin);
         Math3D.VectorCopy(ent.s.angles, GameBase.level.intermission_angle);
 
-        // move all clients to the intermission point
+        
         for (i = 0; i < GameBase.maxclients.value; i++) {
             client = GameBase.g_edicts[1 + i];
             if (!client.inuse)
@@ -179,7 +179,7 @@ public class PlayerHud {
         edict_t cl_ent;
         String tag;
 
-        // sort the clients by score
+        
         total = 0;
         for (i = 0; i < GameBase.game.maxclients; i++) {
             cl_ent = GameBase.g_edicts[1 + i];
@@ -199,9 +199,9 @@ public class PlayerHud {
             total++;
         }
 
-        // print level name and exit rules
+        
 
-        // add the clients in sorted order
+        
         if (total > 12)
             total = 12;
         
@@ -213,7 +213,7 @@ public class PlayerHud {
             x = (i >= 6) ? 160 : 0;
             y = 32 + 32 * (i % 6);
 
-            // add a dogtag
+            
             if (cl_ent == ent)
                 tag = "tag1";
             else if (cl_ent == killer)
@@ -226,7 +226,7 @@ public class PlayerHud {
                         .append(" picn ").append(tag);
             }
 
-            // send the layout
+            
             string
                     .append(" client ")
                     .append(x)
@@ -283,7 +283,7 @@ public class PlayerHud {
         DeathmatchScoreboard(ent);
     }
 
-    //=======================================================================
+    
 
     /*
      * =============== 
@@ -295,18 +295,18 @@ public class PlayerHud {
         int index, cells = 0;
         int power_armor_type;
 
-        //
-        // health
-        //
+        
+        
+        
         gclient_t C = ent.client;
         short[] S = C.ps.stats;
 
         S[Defines.STAT_HEALTH_ICON] = (short) GameBase.level.pic_health;
         S[Defines.STAT_HEALTH] = (short) ent.health;
 
-        //
-        // ammo
-        //
+        
+        
+        
         if (0 == C.ammo_index /*
                                         * ||
                                         * !ent.client.pers.inventory[ent.client.ammo_index]
@@ -321,13 +321,13 @@ public class PlayerHud {
             S[Defines.STAT_AMMO] = (short) C.pers.inventory[C.ammo_index];
         }
 
-        //
-        // armor
-        //
+        
+        
+        
         power_armor_type = GameItems.PowerArmorType(ent);
         if (power_armor_type != 0) {
             cells = C.pers.inventory[GameItems.ITEM_INDEX(GameItems.FindItem("cells"))];
-            if (cells == 0) { // ran out of cells for power armor
+            if (cells == 0) { 
                 ent.flags &= ~Defines.FL_POWER_ARMOR;
                 game_import_t
                         .sound(ent, Defines.CHAN_ITEM, game_import_t
@@ -339,14 +339,14 @@ public class PlayerHud {
 
         index = GameItems.ArmorIndex(ent);
         if (power_armor_type != 0
-                && (0 == index || 0 != (GameBase.level.framenum & 8))) { // flash
-                                                                         // between
-                                                                         // power
-                                                                         // armor
-                                                                         // and
-                                                                         // other
-                                                                         // armor
-                                                                         // icon
+                && (0 == index || 0 != (GameBase.level.framenum & 8))) { 
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
+                                                                         
             S[Defines.STAT_ARMOR_ICON] = (short) game_import_t
                     .imageindex("i_powershield");
             S[Defines.STAT_ARMOR] = (short) cells;
@@ -360,17 +360,17 @@ public class PlayerHud {
             S[Defines.STAT_ARMOR] = 0;
         }
 
-        //
-        // pickup message
-        //
+        
+        
+        
         if (GameBase.level.time > C.pickup_msg_time) {
             S[Defines.STAT_PICKUP_ICON] = 0;
             S[Defines.STAT_PICKUP_STRING] = 0;
         }
 
-        //
-        // timers
-        //
+        
+        
+        
         if (C.quad_framenum > GameBase.level.framenum) {
             S[Defines.STAT_TIMER_ICON] = (short) game_import_t
                     .imageindex("p_quad");
@@ -392,10 +392,10 @@ public class PlayerHud {
             S[Defines.STAT_TIMER] = 0;
         }
 
-        //
-        // selected item
-        //
-        // bugfix rst
+        
+        
+        
+        
         if (C.pers.selected_item <= 0)
             S[Defines.STAT_SELECTED_ICON] = 0;
         else
@@ -404,9 +404,9 @@ public class PlayerHud {
 
         S[Defines.STAT_SELECTED_ITEM] = (short) C.pers.selected_item;
 
-        //
-        // layouts
-        //
+        
+        
+        
         S[Defines.STAT_LAYOUTS] = 0;
 
         if (GameBase.deathmatch.value != 0) {
@@ -423,14 +423,14 @@ public class PlayerHud {
                 S[Defines.STAT_LAYOUTS] |= 2;
         }
 
-        //
-        // frags
-        //
+        
+        
+        
         S[Defines.STAT_FRAGS] = (short) C.resp.score;
 
-        //
-        // help icon / current weapon if not shown
-        //
+        
+        
+        
         if (C.pers.helpchanged != 0
                 && (GameBase.level.framenum & 8) != 0)
             S[Defines.STAT_HELPICON] = (short) game_import_t
@@ -458,7 +458,7 @@ public class PlayerHud {
             cl = GameBase.g_edicts[i].client;
             if (!GameBase.g_edicts[i].inuse || cl.chase_target != ent)
                 continue;
-            //memcpy(cl.ps.stats, ent.client.ps.stats, sizeof(cl.ps.stats));
+            
             System.arraycopy(ent.client.ps.stats, 0, cl.ps.stats, 0,
                     Defines.MAX_STATS);
 
@@ -479,7 +479,7 @@ public class PlayerHud {
 
         cl.ps.stats[Defines.STAT_SPECTATOR] = 1;
 
-        // layouts are independant in spectator
+        
         cl.ps.stats[Defines.STAT_LAYOUTS] = 0;
         if (cl.pers.health <= 0 || GameBase.level.intermissiontime != 0
                 || cl.showscores)
@@ -488,8 +488,8 @@ public class PlayerHud {
             cl.ps.stats[Defines.STAT_LAYOUTS] |= 2;
 
         if (cl.chase_target != null && cl.chase_target.inuse)
-            //cl.ps.stats[STAT_CHASE] = (short) (CS_PLAYERSKINS +
-            // (cl.chase_target - g_edicts) - 1);
+            
+            
             cl.ps.stats[Defines.STAT_CHASE] = (short) (Defines.CS_PLAYERSKINS
                     + cl.chase_target.index - 1);
         else
@@ -512,15 +512,15 @@ public class PlayerHud {
         else
             sk = "hard+";
     
-        // send the layout
-        sb.append("xv 32 yv 8 picn help "); // background
-        sb.append("xv 202 yv 12 string2 \"").append(sk).append("\" "); // skill
+        
+        sb.append("xv 32 yv 8 picn help "); 
+        sb.append("xv 202 yv 12 string2 \"").append(sk).append("\" "); 
         sb.append("xv 0 yv 24 cstring2 \"").append(GameBase.level.level_name)
-                .append("\" "); // level name
+                .append("\" "); 
         sb.append("xv 0 yv 54 cstring2 \"").append(GameBase.game.helpmessage1)
-                .append("\" "); // help 1
+                .append("\" "); 
         sb.append("xv 0 yv 110 cstring2 \"").append(GameBase.game.helpmessage2)
-                .append("\" "); // help 2
+                .append("\" "); 
         sb.append("xv 50 yv 164 string2 \" kills     goals    secrets\" ");
         sb.append("xv 50 yv 172 string2 \"");
         sb.append(Com.sprintf("%3i/%3i     %i/%i       %i/%i\" ", new Vargs(6)

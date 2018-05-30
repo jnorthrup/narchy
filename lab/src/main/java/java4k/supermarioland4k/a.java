@@ -17,7 +17,7 @@ package java4k.supermarioland4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -30,7 +30,7 @@ import java.util.Random;
 
 public class a extends Applet implements Runnable {
 
-  // keys
+  
   private final boolean[] a = new boolean[32768];
 
   @Override
@@ -98,7 +98,7 @@ public class a extends Applet implements Runnable {
     final int SPRITE_MARIO_1 = 10;
     final int SPRITE_MARIO_2 = 11;
     final int SPRITE_MARIO_3 = 12;
-    final int SPRITE_MARIO_4 = 13; // converted into SPRITE_MARIO_2
+    final int SPRITE_MARIO_4 = 13; 
     final int SPRITE_MARIO_HEAD = 13;
     final int SPRITE_NOKOBON_0 = 14;
     final int SPRITE_NOKOBON_1 = 15;
@@ -203,7 +203,7 @@ public class a extends Applet implements Runnable {
     Color LIGHT_GRAY = new Color(0xA8A8A8);
     Color WHITE = new Color(0xF8F8F8);
 
-    // decompress the sprites    
+    
     for(i = 0, k = 0; i < SPRITE_COUNT; i++) {
       j = S.charAt(k++);
       int width = j >> 8;
@@ -227,7 +227,7 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    // attach Mario's head
+    
     g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_0]
         .getGraphics();
     g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 3, -6, null);
@@ -241,7 +241,7 @@ public class a extends Applet implements Runnable {
         .getGraphics();
     g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 3, -6, null);
 
-    // create flipped and mirrored versions of the sprites
+    
     for(i = 0; i < SPRITE_COUNT; i++) {
       x = sprites[ORIENTATION_ORIGINAL][i].getWidth();
       y = sprites[ORIENTATION_ORIGINAL][i].getHeight();
@@ -260,7 +260,7 @@ public class a extends Applet implements Runnable {
           null);
     }
 
-    // create pyramid sprite
+    
     sprites[0][SPRITE_PYRAMID] = new BufferedImage(144, 72, 2);
     g2 = (Graphics2D)sprites[0][SPRITE_PYRAMID].getGraphics();
     g2.setColor(BLACK);
@@ -278,9 +278,9 @@ public class a extends Applet implements Runnable {
       do {
         nextFrameStartTime += 16666667;
 
-        // -- update starts ----------------------------------------------------
+        
 
-        // update fade transition
+        
         if (fadeDelta != 0) {
           fadeIntensity += fadeDelta;
           if (fadeDelta < 0) {
@@ -293,17 +293,17 @@ public class a extends Applet implements Runnable {
               fadeIntensity = 255;
               fadeDelta = -fadeDelta;
 
-              // visible map Y is between 16 and 31 (inclusive)
-              // Y: 0--15 is the sky
-              // Y: 32--47 is underground
+              
+              
+              
               map = new int[48][512];
               enemies = new int[48][512];
               queue.clear();
 
-              // -- create level start -----------------------------------------
+              
               random = new Random(4 + (level == 4 ? 16 : level));
 
-              // initialize background planes
+              
               for(i = 0; i < 4; i++) {
                 backgroundPlanes[i] = new ArrayList<float[]>();
                 k = random.nextInt(80);
@@ -386,7 +386,7 @@ public class a extends Applet implements Runnable {
                 i = z;
               }
 
-              // remove enemies that ended up inside of solid blocks
+              
               for(x = 0; x < 340; x++) {
                 for(y = 16; y < 32; y++) {
                   if (enemies[y][x] != 0
@@ -400,7 +400,7 @@ public class a extends Applet implements Runnable {
                 }
               }
 
-              // create Mario
+              
               mario = new float[32];
               queue.add(mario);
               mario[OBJ_X] = 176;
@@ -416,27 +416,27 @@ public class a extends Applet implements Runnable {
               cameraX = 160;
               enemiesX = 0;
 
-              // -- create level end -------------------------------------------
+              
 
-              // since level creation takes a while, reset the game timer
+              
               nextFrameStartTime = System.nanoTime();
             }
           }
           continue;
         }
 
-        // update dying Mario
+        
         if (marioDied) {
           mario[OBJ_VY] += DYING_MARIO_GRAVITY;
           mario[OBJ_Y] += mario[OBJ_VY];
           if (mario[OBJ_Y] > 320) {
-            // reset level
+            
             fadeDelta = FADE_SPEED;
           }
           continue;
         }
 
-        // update Mario
+        
         boolean marioWalking = false;
         if (a[VK_LEFT]) {
           if (mario[OBJ_VX] > -MARIO_MAX_SPEED) {
@@ -453,7 +453,7 @@ public class a extends Applet implements Runnable {
         }
 
         if (marioWalking) {
-          // Mario walks
+          
            mario[OBJ_SPRITE] = SPRITE_MARIO_1 + mario[OBJ_SPRITE_INDEX];
            if (mario[OBJ_SPRITE] == SPRITE_MARIO_4) {
              mario[OBJ_SPRITE] = SPRITE_MARIO_2;
@@ -465,12 +465,12 @@ public class a extends Applet implements Runnable {
              }
            }
         } else {
-          // Mario stands there
+          
           mario[OBJ_SPRITE] = SPRITE_MARIO_0;
           mario[OBJ_SPRITE_INDEX] = 0;
           mario[OBJ_SPRITE_COUNTER] = 0;
 
-          // Mario slows down
+          
           if (mario[OBJ_VX] < -MARIO_ACCELERATION) {
             mario[OBJ_VX] += MARIO_ACCELERATION;
           } else if (mario[OBJ_VX] > MARIO_ACCELERATION) {
@@ -498,14 +498,14 @@ public class a extends Applet implements Runnable {
             }
           }
         } else {
-          // Mario poses as he flies through the air
+          
           mario[OBJ_SPRITE] = SPRITE_MARIO_1;
           if (--jumpCounter > 0 && a[VK_JUMP]) {
             mario[OBJ_VY] = MARIO_JUMP_SPEED;
           }
         }
 
-        // scan for coins
+        
         if (map[((int)(mario[OBJ_Y] + mario[OBJ_Y1])) >> 3]
               [((int)(mario[OBJ_X] + mario[OBJ_X1])) >> 3] == MAP_COIN) {
           map[((int)(mario[OBJ_Y] + mario[OBJ_Y1])) >> 3]
@@ -527,19 +527,19 @@ public class a extends Applet implements Runnable {
               [((int)(mario[OBJ_X] + mario[OBJ_X2])) >> 3] = MAP_EMPTY;
         }
 
-        // update queue
+        
         for(i = queue.size() - 1; i >= 0; i--) {
           float[] object = queue.get(i);
 
           if (object[OBJ_SQUASHED] == 0) {
 
-            // apply gravity
+            
             if (object[OBJ_WEIGHTLESS] == 0) {
               object[OBJ_VY] += GRAVITY;
               object[OBJ_SUPPORTED] = 0;
               if (object[OBJ_VY] > 0) {
-                // blocks only affect objects in downwards direction
-                // scan all points in range established by VY
+                
+                
                 for(y = (int)object[OBJ_Y];
                     y <= (int)(object[OBJ_Y] + object[OBJ_VY]); y++) {
                   x = (y + (int)object[OBJ_Y2]) >> 3;
@@ -554,7 +554,7 @@ public class a extends Applet implements Runnable {
                               && (map[x][((int)object[OBJ_X]
                                   + (int)object[OBJ_X2]) >> 3]
                                       & MAP_MASK) <= MAP_EMPTIES)) {
-                    // object is supported
+                    
                     object[OBJ_Y] = y;
                     object[OBJ_VY] = 0;
                     object[OBJ_SUPPORTED] = 1;
@@ -565,14 +565,14 @@ public class a extends Applet implements Runnable {
               object[OBJ_Y] += object[OBJ_VY];
             }
 
-            // move in X direction
+            
             outter: {
               object[OBJ_OBSTRUCTED] = 0;
               for(x = (int)object[OBJ_X];
                   x != (int)(object[OBJ_X] + object[OBJ_VX]);
                       x += (object[OBJ_VX] < 0) ? -1 : 1) {
 
-                // test for wall collision
+                
                 z = ((object[OBJ_VX] < 0)
                     ? (x + (int)object[OBJ_X1]) - 1
                     : (x + (int)object[OBJ_X2]) + 1) >> 3;
@@ -586,7 +586,7 @@ public class a extends Applet implements Runnable {
                           - (int)object[OBJ_Y1])) >> 1)) >> 3;
                   if (((map[y][z] & MAP_MASK) > MAP_EMPTIES
                       && (map[y][k] & MAP_MASK) <= MAP_EMPTIES)) {
-                    // object obstructed by bricks in X direction
+                    
                     object[OBJ_X] = x;
                     object[OBJ_VX] = 0;
                     object[OBJ_OBSTRUCTED] = 1;
@@ -594,7 +594,7 @@ public class a extends Applet implements Runnable {
                   }
                 }
 
-                // test for enemy-enemy collision
+                
                 if (object != mario) {
                   k = (object[OBJ_VX] < 0) ? x - 1 : x + 1;
                   for(j = queue.size() - 1; j >= 0; j--) {
@@ -611,7 +611,7 @@ public class a extends Applet implements Runnable {
                           && obj[OBJ_Y] + obj[OBJ_Y2]
                               >= object[OBJ_Y] + object[OBJ_Y1]) {
 
-                        // object obstructed by enemy in X direction
+                        
                         object[OBJ_X] = x;
                         object[OBJ_VX] = 0;
                         object[OBJ_OBSTRUCTED] = 1;
@@ -623,7 +623,7 @@ public class a extends Applet implements Runnable {
               }
               object[OBJ_X] += object[OBJ_VX];
 
-              // test for enemy-Mario collision
+              
               if (mario != object
                   && mario[OBJ_X] + mario[OBJ_X1]
                       <= object[OBJ_X] + object[OBJ_X2]
@@ -638,13 +638,13 @@ public class a extends Applet implements Runnable {
                     || ((object[OBJ_TYPE] == TYPE_GIRA
                         || object[OBJ_TYPE] == TYPE_BUNBUN)
                             && mario[OBJ_VY] <= 0)) {
-                  // Enemy killed Mario
+                  
                   marioDied = true;
                   mario[OBJ_MIRRORED] = 1;
                   mario[OBJ_VY] = DYING_MARIO_JUMP_SPEED;
                   mario[OBJ_SPRITE] = SPRITE_MARIO_DEAD;
                 } else if (mario[OBJ_VY] > 0) {
-                  // Mario squashed enemy
+                  
                   mario[OBJ_VY] = MARIO_BOUNCE_SPEED;
                   object[OBJ_SQUASHED] = 1;
                   object[OBJ_SPRITE_COUNTER] = 0;
@@ -654,10 +654,10 @@ public class a extends Applet implements Runnable {
             }
           }
 
-          // update enemies
+          
           if (object[OBJ_TYPE] == TYPE_CHIBIBO) {
 
-            // update chibibo
+            
 
             if (object[OBJ_SQUASHED] == 1) {
               object[OBJ_SPRITE] = SPRITE_SQUASHED_CHIBIBO;
@@ -678,11 +678,11 @@ public class a extends Applet implements Runnable {
             }
           } else if (object[OBJ_TYPE] == TYPE_NOKOBON) {
 
-            // update nokobon
+            
 
             if (object[OBJ_SQUASHED] == 1) {
 
-              // update bomb
+              
 
               if (object[OBJ_SPRITE_COUNTER] == 0) {
                 object[OBJ_Y] += 8;
@@ -694,7 +694,7 @@ public class a extends Applet implements Runnable {
                       : ((((int)object[OBJ_SPRITE_COUNTER]) >> 2) & 1));
               if (++object[OBJ_SPRITE_COUNTER] > 50) {
 
-                // bomb explodes
+                
 
                 object[OBJ_TYPE] = TYPE_EXPLOSION;
                 object[OBJ_MIRRORED] = 1;
@@ -727,7 +727,7 @@ public class a extends Applet implements Runnable {
             }
           } else if (object[OBJ_TYPE] == TYPE_EXPLOSION) {
 
-            // update explosion
+            
 
             object[OBJ_SPRITE] = SPRITE_EXPLOSION_0
                   + ((((int)object[OBJ_SPRITE_COUNTER]) >> 2) & 1);
@@ -737,7 +737,7 @@ public class a extends Applet implements Runnable {
             }
           } else if (object[OBJ_TYPE] == TYPE_PAKKUN_FLOWER) {
 
-            // update pakkun flower
+            
 
             if (++object[OBJ_SPRITE_COUNTER] <= PAKKUN_FLOWER_SLEEPING) {
               if (object[OBJ_SPRITE_COUNTER] == PAKKUN_FLOWER_SLEEPING) {
@@ -761,7 +761,7 @@ public class a extends Applet implements Runnable {
             }
           } else if (object[OBJ_TYPE] == TYPE_GIRA) {
 
-            // update gira
+            
 
             if (object[OBJ_SQUASHED] == 1) {
               object[OBJ_VY] += DYING_MARIO_GRAVITY;
@@ -777,7 +777,7 @@ public class a extends Applet implements Runnable {
             }
           } else if (object[OBJ_TYPE] == TYPE_FIGHTER_FLY) {
 
-            // update fighter fly
+            
 
             if (object[OBJ_SQUASHED] == 1) {
               object[OBJ_VY] += DYING_MARIO_GRAVITY;
@@ -799,7 +799,7 @@ public class a extends Applet implements Runnable {
             }
           } else if (object[OBJ_TYPE] == TYPE_BUNBUN) {
 
-            // update bunbun
+            
 
             if (object[OBJ_SQUASHED] == 1) {
               object[OBJ_VY] += DYING_MARIO_GRAVITY;
@@ -833,28 +833,28 @@ public class a extends Applet implements Runnable {
             }
           } else if (object[OBJ_TYPE] == TYPE_SPEAR) {
 
-            // update spear
+            
 
             object[OBJ_Y]++;
           }
 
-          // remove out of bounds enemies
+          
           if (object[OBJ_X] < cameraX - 80 || object[OBJ_Y] > 320) {
             queue.remove(i);
 
             if (object == mario) {
-              // reset level
+              
               fadeDelta = FADE_SPEED;
             }
           }
         }
 
-        // left side of the screen acts as a wall
+        
         if (mario[OBJ_X] < cameraX - 3) {
           mario[OBJ_X] = cameraX - 3;
         }
 
-        // update camera
+        
         i = (int)mario[OBJ_X] - 72;
         if (i > cameraX) {
           cameraX = i;
@@ -863,14 +863,14 @@ public class a extends Applet implements Runnable {
           cameraX = 2400;
         }
 
-        // generate enemies
+        
         i = (cameraX + 160) >> 3;
         while(enemiesX <= i) {
           for(y = 16; y < 32; y++) {
             if (enemies[y][enemiesX] == TYPE_CHIBIBO) {
               for(j = random.nextInt(2) + 1; j >= 0; j--) {
 
-                // create chibibo
+                
 
                 float[] chibibo = new float[32];
                 queue.add(chibibo);
@@ -886,7 +886,7 @@ public class a extends Applet implements Runnable {
             } else if (enemies[y][enemiesX] == TYPE_NOKOBON) {
               for(j = random.nextInt(2) + 1; j >= 0; j--) {
 
-                // create nokobon
+                
 
                 float[] nokobon = new float[32];
                 queue.add(nokobon);
@@ -901,7 +901,7 @@ public class a extends Applet implements Runnable {
               }
             } else if (enemies[y][enemiesX] == TYPE_PAKKUN_FLOWER) {
 
-              // create pakkun flower
+              
 
               float[] pakkunFlower = new float[32];
               queue.add(pakkunFlower);
@@ -916,7 +916,7 @@ public class a extends Applet implements Runnable {
               pakkunFlower[OBJ_TYPE] = TYPE_PAKKUN_FLOWER;
             } else if (enemies[y][enemiesX] == TYPE_FIGHTER_FLY) {
 
-              // create fighter fly
+              
 
               float[] fighterFly = new float[32];
               queue.add(fighterFly);
@@ -936,7 +936,7 @@ public class a extends Applet implements Runnable {
         if ((level == 2 || level == 4) && cameraX < 2320) {
           if (--giraCountdown == 0) {
 
-            // create gira
+            
 
             giraCountdown = 180;
             float[] gira = new float[32];
@@ -955,7 +955,7 @@ public class a extends Applet implements Runnable {
         if (level > 2 && cameraX < 2320) {
           if (--bunbunCountdown == 0) {
 
-            // create bunbun
+            
 
             bunbunCountdown = 360 + random.nextInt(360);
             float[] bunbun = new float[32];
@@ -974,38 +974,38 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // check if mario reached end of level
+        
         if (mario[OBJ_X] >= 2544) {
-          // advance level
+          
           level++;
           fadeDelta = FADE_SPEED;
         }
 
-        // -- update ends ------------------------------------------------------
+        
 
       } while(nextFrameStartTime < System.nanoTime());
 
-      // -- render starts ------------------------------------------------------
+      
 
-      // clear frame
+      
       g.setColor(WHITE);
       g.fillRect(0, 0, 160, 144);
 
       if (level == 5) {
-        // draw ending
+        
         g.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_0],
             67, 64, null);
         g.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_DAISY], 78, 64, null);
       } else {
 
-        // draw sky
+        
         g.setColor(LIGHT_GRAY);
         g.fillRect(0, 16, 160, 9);
         g.drawLine(0, 30, 160, 30);
         g.drawLine(0, 28, 160, 28);
         g.drawLine(0, 26, 160, 26);        
 
-        // draw background planes
+        
         g.setColor(BLACK);
         for(i = 0; i < 4; i++) {
           for(j = 0; j < 4; j++) {
@@ -1023,7 +1023,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // draw sprites behind of tiles
+        
         for(i = queue.size() - 1; i >= 0; i--) {
           float[] object = queue.get(i);
           if (object[OBJ_BEHIND_TILES] == 1) {
@@ -1035,7 +1035,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // draw blocks
+        
         int mapOffset = cameraX >> 3;
         int drawOffset = cameraX & 7;
         for(y = 0; y < 16; y++) {
@@ -1049,7 +1049,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // draw sprites in front of tiles
+        
         for(i = queue.size() - 1; i >= 0; i--) {
           float[] object = queue.get(i);
           if (object[OBJ_BEHIND_TILES] == 0) {
@@ -1061,16 +1061,16 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // darken image during fading
+        
         if (fadeDelta != 0) {
           g.setColor(new Color(fadeIntensity << 24, true));
           g.fillRect(0, 0, 160, 144);
         }
       }
 
-      // -- render ends --------------------------------------------------------
+      
 
-      // show the hidden buffer
+      
       if (g2 != null) {
         g2.drawImage(image, 0, 0, 640, 576, null);
       } else {
@@ -1078,7 +1078,7 @@ public class a extends Applet implements Runnable {
         requestFocus();
       }
 
-      // burn off extra cycles
+      
       while(nextFrameStartTime - System.nanoTime() > 0) {
         Thread.yield();
       }
@@ -1107,7 +1107,7 @@ public class a extends Applet implements Runnable {
     }
   }
 
-  // to run in window, uncomment below
+  
   /*public static void main(String[] args) throws Throwable {
     javax.swing.JFrame frame = new javax.swing.JFrame("Super Mario Land 4K");
     frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

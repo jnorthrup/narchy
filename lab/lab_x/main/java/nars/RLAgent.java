@@ -26,18 +26,18 @@ public abstract class RLAgent implements AgentInterface {
 
     public void agent_init(String taskSpec) {
         problem = new TaskSpec(taskSpec);
-        //        if (problem.getVersionString().equals("Mario-v1")) {
-        //            TaskSpecVRLGLUE3 hardCodedTaskSpec = new TaskSpecVRLGLUE3();
-        //            hardCodedTaskSpec.setEpisodic();
-        //            hardCodedTaskSpec.setDiscountFactor(1.0d);
-        //            //Run
-        //            hardCodedTaskSpec.addDiscreteAction(new IntRange(-1, 1));
-        //            //Jump
-        //            hardCodedTaskSpec.addDiscreteAction(new IntRange(0, 1));
-        //            //Speed
-        //            hardCodedTaskSpec.addDiscreteAction(new IntRange(0, 1));
-        //            problem = new TaskSpec(hardCodedTaskSpec);
-        //        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         action = new Action(problem.getNumDiscreteActionDims(), problem.getNumContinuousActionDims());
     }
 

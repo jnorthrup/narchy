@@ -17,12 +17,12 @@ public final class TasksRegion implements TaskRegion {
 
 
     public final long start;
-    public final long end; //allow end to stretch for ongoing tasks
+    public final long end; 
 
     public final float freqMin, freqMax, confMin, confMax;
 
-//    static private volatile int SERIAL = 0;
-//    public final int serial = SERIAL++;
+
+
 
     @Override
     public final long start() {
@@ -34,15 +34,15 @@ public final class TasksRegion implements TaskRegion {
         return end;
     }
 
-//    @Override
-//    public boolean equals(Object obj) {
-//        return obj != null && (this == obj || (task != null && Objects.equals(task, ((TaskRegion) obj).task())));
-//    }
 
-//    @Override
-//    public int hashCode() {
-//        return serial;
-//    }
+
+
+
+
+
+
+
+
 
     @Override
     public String toString() {
@@ -58,17 +58,17 @@ public final class TasksRegion implements TaskRegion {
         this.confMax = confMax;
     }
 
-    //private static final AtomicInteger serials = new AtomicInteger(0);
+    
 
 
 
 
-//        /**
-//         * all inclusive time region
-//         */
-//        TaskRegion(long a, long b) {
-//            this(a, b, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY);
-//        }
+
+
+
+
+
+
 
 
     @Override
@@ -86,14 +86,14 @@ public final class TasksRegion implements TaskRegion {
                 case 2: return confMin;
             }
         }
-//        switch (dimension) {
-//            case 0:
-//                return maxOrMin ? end : start;
-//            case 1:
-//                return maxOrMin ? freqMax : freqMin;
-//            case 2:
-//                return maxOrMin ? confMax : confMin;
-//        }
+
+
+
+
+
+
+
+
         throw new UnsupportedOperationException();
     }
 

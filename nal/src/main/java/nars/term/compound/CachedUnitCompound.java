@@ -23,7 +23,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
-        assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
+        assert(op!=NEG); 
 
         this.sub = sub;
         this.op = op.id;

@@ -26,9 +26,9 @@ public class CoreUtil{
 	x = -logBaseE(1/s - 1).
 	*/
 	public static double inverseSigmoid(double fraction){
-		//x = -logBaseE(1/s - 1)
-		//if(s == 0) return .5; //TODO verify this is on the curve
-		if(fraction == 0) return veryNegative; //TODO verify this is on the curve
+		
+		
+		if(fraction == 0) return veryNegative; 
 		double inverseS = 1/fraction;
 		return -Math.log(inverseS - 1);
 	}
@@ -72,7 +72,7 @@ public class CoreUtil{
 	public static final SecureRandom strongRand;
 	static{
 		strongRand = new SecureRandom();
-		//TODO set seed as bigger byte array, more hashcodes to fill it maybe
+		
 		strongRand.setSeed(3+System.nanoTime()*49999+System.currentTimeMillis()*new Object().hashCode());
 		weakRand = new Random(strongRand.nextLong());
 	}
@@ -103,7 +103,7 @@ public class CoreUtil{
 	TODO test it again on newer computers.
 	*/
 	public static double time(){
-		//TODO optimize by caching the 2 start numbers into 1 double */
+		
 		long nanoDiff = System.nanoTime()-startNano;
 		return .001*startMillis + 1e-9*nanoDiff; 
 	}
@@ -216,9 +216,9 @@ public class CoreUtil{
 					System.arraycopy(b, 0, b2, 0, totalBytesRead);
 					b = b2;
 				}
-				//System.out.println("totalBytesRead="+totalBytesRead+" avail="+avail);
+				
 				int instantBytesRead = in.read(b, totalBytesRead, avail);
-				if(instantBytesRead > 0) totalBytesRead += instantBytesRead; //last is -1
+				if(instantBytesRead > 0) totalBytesRead += instantBytesRead; 
 			}
 			byte b2[] = new byte[totalBytesRead];
 			System.arraycopy(b, 0, b2, 0, totalBytesRead);

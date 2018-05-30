@@ -69,17 +69,17 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     /** list of concepts involved in this agent */
     private final List<Concept> concepts = new FasterList();
 
-//    /**
-//     * the general reward signal for this agent
-//     */
-//    @NotNull
-//    public final ScalarConcepts reward;
+
+
+
+
+
 
 
     /**
      * lookahead time in durations (multiples of duration)
      */
-//    public final FloatParam predictAheadDurs = new FloatParam(1, 1, 32);
+
 
 
     /**
@@ -97,7 +97,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public boolean trace;
 
-    public long now = ETERNAL; //not started
+    public long now = ETERNAL; 
 
 
     /**
@@ -152,7 +152,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
                 Stamp.UNSTAMPED
-                //nar().time.nextStampArray()
+                
         );
 
         always.add(t);
@@ -168,7 +168,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public Task alwaysQuestion(Termed x, boolean questionOrQuest) {
         Task t = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
                 ETERNAL, ETERNAL,
-                //Stamp.UNSTAMPED
+                
                 nar().evidence()
         ) {
             @Override
@@ -236,11 +236,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     @NotNull
     public String summary() {
 
-        //sendInfluxDB("localhost", 8089);
+        
 
         return id + " rwrd=" + n2(reward) +
                 " dex=" + /*n4*/(dexterity(now, now)) +
-                //"\t" + Op.cache.summary() +
+                
                 /*" var=" + n4(varPct(nar)) + */ "\t" + nar.concepts.summary() + " " +
                 nar.emotion.summary();
     }
@@ -255,44 +255,44 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             Term id = (this.id == null) ? nar.self() : this.id;
 
-//            Term happyTerm = id == null ?
-//                    $.the("happy") : //generally happy
-//                    $.p(id, $.the("happy"));
-//                    //$.inh(id, $.the("happy")); //happy in this environment
-//                    //$.prop(id, $.the("happy")); //happiness of this environment
 
-//            FloatSupplier happyValue = new FloatCached(
-//                    new FloatNormalized(
-//                    //new FloatPolarNormalized(
-//                    //new FloatHighPass(
-//                    () -> reward
-//                    //)
-//            ) {
-//                        @Override
-//                        public float asFloat() {
-//                            float f = super.asFloat();
-//                            if (f!=f) return Float.NaN;
-//                            else {
-//                                f = Util.unitize(f);
-//
-//                                //assert(f >= 0 && f <= 1f);
-//
-//                                //depression curve and offset
-//                                return Util.max(0,f - depress.floatValue());
-//                            }
-//                        }
-//                        //                        @Override
-////                        public float min() {
-////                            return Util.lerp(depress.floatValue(), super.max(), super.min());
-////                        }
-////
-////                        @Override
-////                        public float max() {
-////                            //decrease the max toward min in proportion to the depression setting
-////                            return Util.lerp(depress.floatValue(), super.max(), super.min());
-////                        }
-//                    }.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
-//                nar::time);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             FloatSupplier happyValue = new FloatCached(
                     () -> reward - depress.floatValue(),
@@ -304,23 +304,23 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
             this.happy =
-                    //new ActionInfluencingScalar(happyTerm, happyValue);
+                    
                     new FilteredScalar(
                             happyValue,
                             nar,
 
-                            //happiness (raw value)
+                            
                             pair($.inh(id, "happy"),
-                                //$.func("happy", id),
+                                
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
-                            //long-term happiness: chronic / satisfaction
+                            
                             pair($.func("happy", id, $.the("chronic")), compose(
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
                                 new FloatExpMovingAverage(0.02f)
                             )),
 
-                            //short-term happiness: acute / joy
+                            
                             pair($.func("happy", id, $.the("acute")), compose(
                                 new FloatExpMovingAverage(0.1f, false),
                                 new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
@@ -335,33 +335,33 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             actions.keySet().forEach(a -> {
                 alwaysQuest(a);
-                //alwaysQuestion(Op.IMPL.the(happy.term, 0 /*XTERNAL*/, a.term));
-                //alwaysQuestion(Op.CONJ.the(happy.term, a.term, $.varQuery(1)));
+                
+                
                 alwaysQuestion(Op.CONJ.the(happy.term, a.term));
                 alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
             });
 
             this.in = nar.newChannel(this);
-            this.now = nar.time() - nar.dur(); //head-start;
+            this.now = nar.time() - nar.dur(); 
 
 
 
-            //initialize concepts list
+            
             concepts.addAll(actions.keySet());
             concepts.addAll(sensors.keySet());
             always.forEach(t -> concepts.add(t.concept(nar,true)));
             Iterables.addAll(concepts, happy);
 
 
-            //finally:
+            
             enabled.set(true);
         }
     }
 
     @Override
     protected void stopping(NAR nar) {
-        //disconnect channel
-        //remove all other services
+        
+        
         throw new TODO();
     }
 
@@ -394,7 +394,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             return;
         this.now = now;
 
-        this.sensorDur = Math.max(nar.dur(), (int)(now - last)); //stretched perceptual duration to the NAgent's effective framerate
+        this.sensorDur = Math.max(nar.dur(), (int)(now - last)); 
 
         reward = act();
 
@@ -405,12 +405,12 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
         sensors.forEach((key, value) -> value.input(key.update(last, now, truther, sensorDur, nar)));
 
-        //nar.goal(happy.filter[0].term, Tense.Present, 1f, nar.confDefault(GOAL));
+        
         always( motivation.floatValue() );
 
-        //HACK TODO compile this to re-used array on init like before
+        
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
-        ArrayUtils.shuffle(aa, random()); //fair chance of ordering to all motors
+        ArrayUtils.shuffle(aa, random()); 
         for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
             Stream<ITask> s = ac.getKey().update(last, now, sensorDur, NAgent.this.nar);
             if (s != null)
@@ -437,16 +437,16 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             int remainMissing = numConcepts;
             if (remainMissing == 0) return;
 
-            //float pri = motivation.floatValue();
+            
             Random rng = nar.random();
             do {
                 Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));
                 if (cc!=null) {
                     a = new Activate(cc, 0);
-                    a.delete(); //prevents termlinking
+                    a.delete(); 
                 } else {
                     a = null;
-                    if (remainMissing-- <= 0) //safety exit
+                    if (remainMissing-- <= 0) 
                         break;
                     else
                         continue;
@@ -482,55 +482,55 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             this.predict = nar.newChannel(a.id + " predict");
 
 
-            //            final Task[] prevHappy = new Task[1];
-
-//                Task se = new NALTask(sad.term(), GOAL, $.t(0f, nar.confDefault(GOAL)), nar.time(), ETERNAL, ETERNAL, nar.time.nextInputStamp());
-//                se.pri(happysadPri);
-//                predictors.add(() -> {
-//                    se.priMax(happysadPri);
-//                    return se;
-//                });
-
-//            {
-//                Task e = nar.goal($.parallel(happy.term(),sad.term().neg())); /* eternal */
-//                predictors.add(() -> {
-//                    e.priMax(nar.priDefault(GOAL));
-//                    return e;
-//                });
-//                Task f = nar.believe($.sim(happy.term(), sad.term().neg()));
-//                predictors.add(() -> f);
-//                Task g = nar.believe($.sim(happy.term().neg(), sad.term()));
-//                predictors.add(() -> g);
-//            }
-//            {
-//                Task happyEternal = nar.goal(happy.term()); /* eternal */
-//                predictors.add(() -> {
-//                    happyEternal.priMax(nar.priDefault(GOAL));
-//                    return happyEternal;
-//                });
-//            }
-//            {
-//                Task sadEternal = nar.goal(sad.term().neg()); /* eternal */
-//                predictors.add(() -> {
-//                    sadEternal.priMax(nar.priDefault(GOAL));
-//                    return sadEternal;
-//                });
-//            }
-
-            //        p.add(
-            //            question(seq($.varQuery(1), dur, happiness),
-            //                now)
-            //                //ETERNAL)
-            //        );
+            
 
 
-            //        predictors.add( question((Compound)$.parallel(happiness, $.varDep(1)), now) );
-            //        predictors.add( question((Compound)$.parallel($.neg(happiness), $.varDep(1)), now) );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            
+            
+            
+            
+            
+
+
+            
+            
 
             Variable what = $.varQuery(1);
 
             predictors.add(question($.impl(what, a.happy.term())));
-            //predictors.add(question($.impl(sad.term(), 0, what)));
+            
 
             for (Concept c : a.actions.keySet()) {
                 Term action = c.term();
@@ -541,128 +541,128 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
                         question($.impl(CONJ.the(what, a.happy.term()), action)),
                         question($.impl(CONJ.the(what, a.happy.term().neg()), action))
-                        //question($.impl(sad.term(), 0, action)),
-//                        question($.impl(action, sad.term())),
-//                        question($.impl(notAction, sad.term())),
-//                        question($.impl(action, what)),
-//                        question($.impl(notAction, what))
-                        //quest(action)
-//                        quest($.parallel(what, action)),
-//                        quest($.parallel(what, notAction))
-
-//                        question(impl(parallel(what, action), happy)),
-//                        question(impl(parallel(what, notAction), happy)),
-
-                        //question(seq(action, dur, happiness), now),
-                        //question(seq(neg(action), dur, happiness), now),
-
-                        //question(seq(action, dur, $.varQuery(1)), now),
-                        //question(seq(neg(action), dur, $.varQuery(1)), now),
-
-                        //dangerous: may lead to immobilizing self-fulfilling prophecy
-                        //quest((Compound) (action.term()),now+dur)
-
-                        //                            //ETERNAL)
-
-                        //question((Compound)$.parallel(varQuery(1), (Compound) (action.term())), now),
-
-                        //quest($.parallel(what, action))
-
-                        //quest((Compound)$.parallel(varQuery(1), happy.term(), (Compound) (action.term())), now)
+                        
 
 
-                        //                    question(impl(conj(varQuery(0),action), dur, happiness), now),
-                        //                    question(impl(conj(varQuery(0),neg(action)), dur, happiness), now)
-
-                        //                    new PredictionTask($.impl(action, dur, happiness), '?').time(nar, dur),
-                        //                    new PredictionTask($.impl($.neg(action), dur, happiness), '?').time(nar, dur),
-
-                        //                    new PredictionTask($.impl($.parallel(action, $.varQuery(1)), happiness), '?')
-                        //                            .eternal(),
-                        //                            //.time(nar, dur),
-                        //                    new PredictionTask($.impl($.parallel($.neg(action), $.varQuery(1)), happiness), '?')
-                        //                            .eternal(),
-                        //                            //.time(nar, dur)
-
-                        //question(impl(neg(action), dur, varQuery(1)), nar.time()),
-
-                        //                    question(impl(happiness, -dur, conj(varQuery(1),action)), now),
-                        //                    question(impl(neg(happiness), -dur, conj(varQuery(1),action)), now)
-
-                        //                    question(impl(happiness, -dur, action), now),
-                        //                    question(impl(neg(happiness), -dur, action), now)
 
 
-                        //                    question(seq(action, dur, happiness), now),
-                        //                    question(seq(neg(action), dur, happiness), now),
-                        //                    question(seq(action, dur, neg(happiness)), now),
-                        //                    question(seq(neg(action), dur, neg(happiness)), now)
+                        
 
 
-                        //                    new PredictionTask($.seq($.varQuery("x"), 0, $.seq(action, dur, happiness)), '?').eternal(),
-                        //                    new PredictionTask($.seq($.varQuery("x"), 0, $.seq($.neg(action), dur, happiness)), '?').eternal()
 
 
-                        //                    new PredictionTask($.seq(action, dur, varQuery(1)), '@')
-                        //                        .present(nar),
-                        //
-                        //
-                        //                    new PredictionTask($.seq($.neg(action), dur, varQuery(1)), '@')
-                        //                        .present(nar)
-
-                        //                    new TaskBuilder($.impl(action, dur, happiness), '?', null)
-                        //                            .present(nar),
-                        //                            //.eternal(),
-                        //                    new TaskBuilder($.impl($.neg(action), dur, happiness), '?', null)
-                        //                            .present(nar)
-                        //                            //.eternal()
 
 
-                        //new TaskBuilder($.seq($.varQuery(0), dur, action), '?', null).eternal(),
-                        //new TaskBuilder($.impl($.varQuery(0), dur, action), '?', null).eternal(),
+                        
+                        
 
-                        //new TaskBuilder($.impl($.parallel($.varDep(0), action), dur, happiness), '?', null).time(now, now + dur),
-                        //new TaskBuilder($.impl($.parallel($.varDep(0), $.neg( action )), dur, happiness), '?', null).time(now, now + dur)
+                        
+                        
+
+                        
+                        
+
+                        
+
+                        
+
+                        
+
+                        
+
+
+                        
+                        
+
+                        
+                        
+
+                        
+                        
+                        
+                        
+                        
+                        
+
+                        
+
+                        
+                        
+
+                        
+                        
+
+
+                        
+                        
+                        
+                        
+
+
+                        
+                        
+
+
+                        
+                        
+                        
+                        
+                        
+                        
+
+                        
+                        
+                        
+                        
+                        
+                        
+
+
+                        
+                        
+
+                        
+                        
                 );
 
             }
 
-            //        predictors.add(
-            //                new TaskBuilder($.seq($.varQuery(0 /*"what"*/), dur, happiness), '?', null).time(now, now)
-            //        );
-            //        predictors.add(
-            //                goal(happiness,
-            //                        t(1f, Math.max(nar.confDefault(/*BELIEF*/ GOAL),nar.confDefault(/*BELIEF*/ BELIEF))),
-            //                        ETERNAL
-            //                )
-            //        );
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
 
-            //        predictors.addAll(
-            //                //what will imply reward
-            //                new TaskBuilder($.equi(what, dt, happiness), '?', null).time(now, now),
-            //                //new TaskBuilder($.equi(sth, dt, happiness), '.', null).time(now,now),
-            //
-            //                //what will imply non-reward
-            //                //new TaskBuilder($.equi(what, dt, $.neg(happiness)), '?', null).time(now, now),
-            //                //new TaskBuilder($.equi(sth, dt, $.neg(happiness)), '.', null).time(now,now),
-            //
-            //                //what co-occurs with reward
-            //                new TaskBuilder($.parallel(what, happiness), '?', null).time(now, now)
-            //
-            //                //what co-occurs with non-reward
-            //                //new TaskBuilder($.parallel(what, $.neg(happiness)), '?', null).time(now, now)
-            //        );
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
-            //        predictors.add(
-            //                nar.ask($.seq(what, dt, happy.term()), '?', now)
-            //        );
-            //        predictors.add( //+2 cycles ahead
-            //                nar.ask($.seq(what, dt*2, happy.term()), '?', now)
-            //        );
+            
+            
+            
+            
+            
+            
 
 
-            //System.out.println(Joiner.on('\n').join(predictors));
+            
 
         }
 
@@ -679,8 +679,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             long now = nar.time();
 
-//        long start = now;
-//        long end = now + Math.round(predictAheadDurs.floatValue() * nar.dur());
+
+
 
             long start = ETERNAL, end = ETERNAL;
 
@@ -695,7 +695,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     u = t;
                 } else {
                     long nownow = nar.time();
-                    //TODO handle task duration
+                    
                     u = new NALTask(t.term(), t.punc(), t.truth(), nownow, nownow, nownow, new long[]{nar.time.nextStamp()});
                 }
 
@@ -727,7 +727,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     /**
      * average confidence of actions
-     * see: http://www.dictionary.com/browse/dexterity?s=t
+     * see: http:
      */
     public float dexterity(long start, long end) {
         int n = actions.size();
@@ -739,59 +739,59 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             Truth g = nar.goalTruth(a, start, end);
             float c;
             if (g != null) {
-                //c = g.evi();
+                
                 c = g.conf();
             } else {
                 c = 0;
             }
             m[0] += c;
         });
-        //return m[0] > 0 ? w2c(m[0] / n /* avg */) : 0;
+        
         return m[0] > 0 ? m[0] / n /* avg */ : 0;
     }
 
 
-//    private Task predict(@NotNull Supplier<Task> t, long next, int horizon /* future time range */) {
-//
-//        Task result;
-////        if (t.start() != ETERNAL) {
-////
-////            //only shift for questions
-////            long shift = //horizon > 0 && t.isQuestOrQuestion() ?
-////                    nar.random().nextInt(horizon)
-////                    //: 0
-////            ;
-////
-////            long range = t.end() - t.start();
-////            result = prediction(t.term(), t.punc(), t.truth(), next + shift, next + shift + range);
-////
-////        } else if (t.isDeleted()) {
-////
-////            result = prediction(t.term(), t.punc(), t.truth(), ETERNAL, ETERNAL);
-////
-////        } else {
-//            //rebudget non-deleted eternal
-////            result = t;
-////        }
-//
-//        return result
-//                .budget(nar)
-//                ;
-//    }
 
 
-//    public static float varPct(NAR nar) {
-//            RecycledSummaryStatistics is = new RecycledSummaryStatistics();
-//            nar.forEachConceptActive(xx -> {
-//                Term tt = xx.term();
-//                float v = tt.volume();
-//                int c = tt.complexity();
-//                is.accept((v - c) / v);
-//            });
-//
-//            return (float) is.getMean();
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -813,30 +813,30 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
 
-//    /** adds the actions to its set of termlink templates */
-//    protected class ActionInfluencingScalar extends Scalar {
-//
-//        List<Termed> templatesPlusActions;
-//
-//        public ActionInfluencingScalar(Term id, FloatNormalized value) {
-//            super(id, value, NAgent.this.nar());
-//            templatesPlusActions = null;
-//
-//
-//            addSensor(this);
-//        }
-//
-//        @Override
-//        public List<Termed> templates() {
-//            List<Termed> superTemplates = super.templates();
-//            //HACK
-//            if (templatesPlusActions == null || templatesPlusActions.size() != (superTemplates.size() + actions.size())) {
-//                List<Termed> l = $.newArrayList(superTemplates.size() + actions.size());
-//                l.addAll(superTemplates);
-//                l.addAll(actions.keySet());
-//                this.templatesPlusActions = l;
-//            }
-//            return templatesPlusActions;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

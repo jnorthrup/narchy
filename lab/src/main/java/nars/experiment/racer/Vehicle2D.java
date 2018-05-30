@@ -28,7 +28,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     public final float height;
 
     float m_currentTraction = 1;
-    // Char caracteristics
+    
     float m_maxForwardSpeed = 1;
     float m_maxBackwardSpeed = 1;
     float m_maxDriveForce = 10000;
@@ -47,9 +47,9 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     private int steer = STEER_NONE;
     private int accelerate = ACCELERATE_NONE;
 
-    //BaseGameActivity context;
+    
     Dynamics2D mPhysicsWorld;
-    //Scene mScene;
+    
 
     public Vehicle2D(Dynamics2D physicWorld) {
 
@@ -61,7 +61,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         this.height = 50;
         mCarShape = this.makeColoredRectangle(0, 0, width,height);
 
-//        mScene.attachChild(mCarShape);
+
 
         final float pDensity = 0.1f;
         final float pElasticity = 0.5f;
@@ -70,16 +70,16 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         final FixtureDef carFixtureDef = new FixtureDef(mCarShape, pDensity, pFriction);
         carFixtureDef.restitution = pElasticity;
         this.mCarBody = mPhysicsWorld.addDynamic(carFixtureDef);
-        //mCarBody.setLinearDamping(5);
-        //mCarBody.setAngularDamping(20);
+        
+        
 
-//        MassData data = mCarBody.getMassData();
-//        data.mass = 3.9f;
-//        mCarBody.setMassData(data);
 
-//        System.out.println("Mass:"+mCarBody.getMass()+" density:"+pDensity+" volume:"+mCarShape.getWidth()*mCarShape.getHeight());
 
-        //this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(this.mCarShape, this.mCarBody, true, true));
+
+
+
+
+        
 
         rightFront = new Wheel(mPhysicsWorld,this,Wheel.WheelPosition.FRONT_RIGHT);
         leftFront = new Wheel(mPhysicsWorld,this,Wheel.WheelPosition.FRONT_LEFT);
@@ -126,12 +126,12 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
     }
 
     public void onUpdate(final float pSecondsElapsed) {
-        //Driving
+        
         updateDrive();
 
-        //control steering
+        
         float lockAngle = 35f * DEGTORAD;
-        float turnSpeedPerSec = 160f * DEGTORAD;//from lock to lock in 0.5 sec
+        float turnSpeedPerSec = 160f * DEGTORAD;
         float turnPerTimeStep = turnSpeedPerSec / 60.0f;
 
         float desiredAngle = 0f;
@@ -143,7 +143,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
             desiredAngle = lockAngle;
             break;
         default:
-            // nothing
+            
         }
 
         RevoluteJoint leftJoint = (RevoluteJoint) leftFront.getJoint();
@@ -160,7 +160,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
 
     protected void updateDrive(){
 
-        // find desired speed
+        
         float desiredSpeed = 0;
         switch (accelerate) {
         case ACCELERATE:
@@ -170,10 +170,10 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
             desiredSpeed = m_maxBackwardSpeed;
             break;
         default:
-            return;// do nothing
+            return;
         }
 
-        //find current speed in forward direction
+        
         v2 localPoint = new v2(0, 1);
         v2 currentForwardNormal = new v2(leftFront.getBody().getWorldVector(localPoint));
 
@@ -181,8 +181,8 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         float currentSpeed = b2Dot(forwardVelocity, currentForwardNormal);
 
 
-        // apply necessary force
-        //apply necessary force
+        
+        
         float force = 0;
         if ( desiredSpeed > currentSpeed ) {
             force = m_maxDriveForce;
@@ -233,8 +233,8 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
 
     protected PolygonShape makeColoredRectangle(final float pX, final float pY,
                                                 final float width, final float height) {
-//        final Rectangle coloredRect = new Rectangle(pX, pY, width, height,context.getVertexBufferObjectManager());
-//        coloredRect.setColor(pRed, pGreen, pBlue);
+
+
         return new PolygonShape(4).setAsBox(width/2, height/2, new v2(pX-width/2, pY-height/2), 0);
     }
 
@@ -253,7 +253,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         }
 
         private final Dynamics2D mDynamics2D;
-        //private final BaseGameActivity context;
+        
 
         private Joint joint;
 
@@ -287,7 +287,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
             default:
                 throw new IllegalArgumentException("Wheel position invalid");
             }
-            //vehicle.mScene.attachChild(mWheelShape);
+            
 
 
             final FixtureDef wheelFixtureDef = new FixtureDef(mWheelShape, 1, 0.5f);
@@ -296,10 +296,10 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
 
             this.mWheelBody = mDynamics2D.addDynamic( wheelFixtureDef);
 
-            //mWheelBody.setLinearDamping(1);
-            //mWheelBody.setAngularDamping(1);
+            
+            
 
-            //this.mDynamics2D.registerPhysicsConnector(new PhysicsConnector(this.mWheelShape, this.mWheelBody, true, true));
+            
 
             createJoint(WHEEL_WIDTH, WHEEL_HEIGHT);
         }
@@ -307,7 +307,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
         private void createJoint(float wheelWidth, float wheelHeight){
             Body2D body = vehicle.getBody();
 
-            // Tody: get the correct center, if its rotated/scaled, etc
+            
             float xCar = vehicle.mCarBody.getWorldCenter().x + vehicle.width/2.0f;
             float xWheel = mWheelBody.getWorldCenter().x + wheelWidth/2.0f;
 
@@ -319,7 +319,7 @@ public class Vehicle2D implements Racer.IVehicleControl/*, IUpdateHandler */{
             revoluteJointDefLeft.collideConnected = false;
             configureJoint(revoluteJointDefLeft);
 
-            // Spitze minus Schaft
+            
             revoluteJointDefLeft.localAnchorA.set((xWheel-xCar)/PIXEL_TO_METER_RATIO_DEFAULT,(yWheel-yCar)/PIXEL_TO_METER_RATIO_DEFAULT);
 
             joint = this.mDynamics2D.addJoint(revoluteJointDefLeft);

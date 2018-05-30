@@ -12,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DecisionTreeGetMajorityLabelTest {
     
-    // TODO fix handling of empty lists
-//    @Test
-//    public void testGetLabelOnEmptyList() {
-//        DecisionTree tree = new DecisionTree();
-//        List<DataSample> data = Lists.newArrayList();
-//        assertNull(tree.getMajorityLabel(data));
-//    }
+    
+
+
+
+
+
+
     
     @Test
     public void testGetMajorityLabel() {

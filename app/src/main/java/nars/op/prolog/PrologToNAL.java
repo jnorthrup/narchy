@@ -29,17 +29,17 @@ public class PrologToNAL {
     }
 
     public static Iterable<nars.term.Term> N(Iterable<alice.tuprolog.Term> t) {
-        //System.out.println(t);
+        
 
         return Iterables.transform(t, PrologToNAL::N);
 
-//        Iterator<? extends Term> xx = t.iterator();
-//        while (xx.hasNext()) {
-//            Term z = xx.next();
-//            System.out.println(z);
-//        }
-//
-//        return y;
+
+
+
+
+
+
+
     }
 
     private static nars.term.Term N(alice.tuprolog.Term t) {
@@ -54,10 +54,10 @@ public class PrologToNAL {
 
                 case ":-":
                     assert(s.subs()==2);
-                    nars.term.Term pre = N(s.sub(1)); //reverse, prolog is backwards
+                    nars.term.Term pre = N(s.sub(1)); 
                     nars.term.Term post = N(s.sub(0));
 
-                    //convert to implication first, then promote variables on the resulting pre/post
+                    
                     Term impl = $.impl(pre, post);
                     pre = impl.sub(0);
                     post = impl.sub(1);
@@ -103,7 +103,7 @@ public class PrologToNAL {
             }
         } else if (t instanceof Var) {
             return $.varQuery(((Var) t).name());
-            //throw new RuntimeException(t + " untranslated");
+            
         } else if (t instanceof NumberTerm.Int) {
             return $.the(((NumberTerm.Int)t).intValue());
         } else {

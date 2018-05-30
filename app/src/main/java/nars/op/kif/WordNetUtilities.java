@@ -2,7 +2,7 @@
  * This code is copyright Articulate Software (c) 2003. Some portions copyright
  * Teknowledge (c) 2003 and reused under the terms of the GNU license. This
  * software is released under the GNU Public License
- * <http://www.gnu.org/copyleft/gpl.html>. Users of this code also consent, by
+ * <http:
  * use of this code, to credit Articulate Software and Teknowledge in any
  * writings, briefings, publications, presentations, or other representations of
  * any software which incorporates, builds on, or uses this code. Please cite
@@ -380,8 +380,8 @@ public class WordNetUtilities {
             remainder = verb.substring(verb.indexOf('_'), verb.length());
         }
 
-        // if (exceptionVerbPluralHash.containsKey(word))                  Note that there appears to be no WordNet exception list for verb plurals, just tenses
-        //    word = (String) exceptionVerbPluralHash.get(word);
+        
+        
         if (word.matches(".*y$") && !isVowel(word.charAt(word.length() - 2))) {
             word = WordNetUtilities.subst(word, "y$", "ies");
         } else {
@@ -573,7 +573,7 @@ public class WordNetUtilities {
      */
     private static String findMappingFromHypernym(String synset) {
 
-        ArrayList rels = (ArrayList) WordNet.wn.relations.get(synset);   // relations requires prefixes
+        ArrayList rels = (ArrayList) WordNet.wn.relations.get(synset);   
         if (rels != null) {
             for (Object rel : rels) {
                 AVPair avp = (AVPair) rel;
@@ -586,7 +586,7 @@ public class WordNetUtilities {
                         if (targetSUMO.charAt(targetSUMO.length() - 1) == '[') {
                             mappingChar = "[";
                         }
-                        if (Character.isUpperCase(targetSUMO.charAt(2))) // char 2 is start of actual term after &%
+                        if (Character.isUpperCase(targetSUMO.charAt(2))) 
                         {
                             return "&%" + getBareSUMOTerm(targetSUMO) + mappingChar;
                         } else {
@@ -634,8 +634,8 @@ public class WordNetUtilities {
                         String newTerm = findMappingFromHypernym(synset);
                         if (newTerm != null && !newTerm.isEmpty()) {
                             pw.println(m.group(1) + m.group(2) + "| " + m.group(3) + ' ' + newTerm);
-//                            System.out.println("INFO in WordNet.processMissingLinks(): synset, newterm: " + 
-//                                               synset + " " + " " + newTerm);
+
+
                         } else {
                             pw.println(line.trim());
                             System.out.println("INFO in WordNet.processMissingLinks(): No term found for synset"
@@ -799,9 +799,9 @@ public class WordNetUtilities {
      * existing mappings. This is a utility which should not be called during
      * normal Sigma operation. Mapping files are in a simple format produced by
      * University of Catalonia and available at
-     * http://www.lsi.upc.edu/~nlp/web/index.php?option=com_content&task=view&id=21&Itemid=57
+     * http:
      * If that address changes you may also start at
-     * http://www.lsi.upc.edu/~nlp/web/ and go to Resources and then an item on
+     * http:
      * WordNet mappings.
      */
     @SuppressWarnings("HardcodedFileSeparator")

@@ -1,13 +1,13 @@
-//
-// Translated by CS2J (http://www.cs2j.com)
-//
+
+
+
 package nars.art;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * code from https://web.archive.org/web/20120109162743/http://users.visualserver.org/xhudik/art
+ * code from https:
  * 
  * 
  */
@@ -43,8 +43,8 @@ public class AdaptiveResonanceTheory2
         DynamicVector<Float> temp;
         float norm;
         int i;
-        //System.Diagnostics.Debug.Assert(beta <= 0.0f && beta <= 1.0f);
-        //System.Diagnostics.Debug.Assert(instance.array.Length == prototype.array.Length);
+        
+        
         norm = 0.0f;
         
         try {
@@ -56,20 +56,20 @@ public class AdaptiveResonanceTheory2
         
         for (i = 0;i < instance.array.length;i++)
         {
-            // make vector  tmp=(1-beta)*P + beta*Ek
+            
             temp.set___idx(i,(1.0f - beta) * prototype.get___idx(i) + beta * instance.get___idx(i));
         }
         for (i = 0;i < instance.array.length;i++)
         {
-            // count vector norm semi = sqrt(tmp^2)
+            
             norm += temp.get___idx(i) * temp.get___idx(i);
         }
         norm = (float) Math.sqrt(norm);
-        //System.Diagnostics.Debug.Assert(norm != 0.0f);
+        
         norm = 1.0f / norm;
         for (i = 0;i < instance.array.length;i++)
         {
-            // count prototype
+            
             prototype.set___idx(i,norm * temp.get___idx(i));
         }
     }
@@ -84,7 +84,7 @@ public class AdaptiveResonanceTheory2
         int i;
         for (i = 0;i < seq.get(iprot).size();i++)
         {
-            // find and erase in the prototype sequence the instance which should be Deleted
+            
             if (seq.get(iprot).get(i) == iinst)
             {
                 seq.get(iprot).remove(i);
@@ -92,8 +92,8 @@ public class AdaptiveResonanceTheory2
             }
              
         }
-        // if the particular prototype is empty now - delete whole prototype
-        // delete also line (prototype) in prototype sequence
+        
+        
         if (seq.get(iprot).isEmpty())
         {
             prot.remove(iprot);
@@ -101,12 +101,12 @@ public class AdaptiveResonanceTheory2
         }
         else
         {
-            // if it is not empty - re-create it from the rest examples
+            
             float score;
-            // builder prototype but without instance which should be Deleted
-            // at first -- prototype is the first item in the prototype sequence
+            
+            
             prot.set(iprot, sample.get(seq.get(iprot).get(0)));
-            // if PE < vigilance -- it won't stop (infinite looping)
+            
             score = countScore(sample.get(seq.get(iprot).get(0)), sample.get(seq.get(iprot).get(0)));
             if (score < vigilance)
             {
@@ -116,10 +116,10 @@ public class AdaptiveResonanceTheory2
              
             for (i = 1;i < seq.get(iprot).size();i++)
             {
-                //cerr << "\nWARNING: vigilance is too high (" << tmpv << "). What means infinite looping!!!\n";
-                //cerr << "Vigilance was decreased: vigilance=" << vigilance << endl;
-                // continually add others examples
-                // it started from 2nd member because the first is already in
+                
+                
+                
+                
                 addInstance(sample.get(seq.get(iprot).get(i)), prot.get(iprot), beta);
             }
         } 
@@ -137,7 +137,7 @@ public class AdaptiveResonanceTheory2
     private static void createPrototype(ArrayList<DynamicVector<Float>> inst, int iinst, ArrayList<DynamicVector<Float>> prot, ArrayList<ArrayList<Integer>> prot_seq, float vigilance) {
         float score;
         ArrayList<Integer> new_seq = new ArrayList<>();
-        // if PE < vigilance -- it won't stop
+        
         score = countScore(inst.get(iinst), inst.get(iinst));
         if (score < vigilance)
         {
@@ -152,15 +152,15 @@ public class AdaptiveResonanceTheory2
                 tmpv = vigilance;
                 vigilance = score;
             } 
-            //    cerr << "\nWARNING: vigilance is too high (" << tmpv << "). What means infinite looping!!!\n";
-            //    cerr << "Vigilance was decreased: vigilance=" << vigilance << endl;
+            
+            
             int x = 0;
         }
          
-        // for breakpoint
-        // create a new prototype
+        
+        
         prot.add(inst.get(iinst));
-        // create a new prototype sequence and insert the first index of instance
+        
         new_seq = new ArrayList<>();
         new_seq.add(iinst);
         prot_seq.add(new_seq);
@@ -175,7 +175,7 @@ public class AdaptiveResonanceTheory2
              * @param used set of already tested prototypes
              **/
     private DynamicVector<Float> bestPrototype2A(DynamicVector<Float> inst, ArrayList<DynamicVector<Float>> prot, ArrayList<DynamicVector<Float>> used) {
-        // prototypes with the same score
+        
         ArrayList<DynamicVector<Float>> sameScore = new ArrayList<>();
         DynamicVector<Float> empty;
         int usize;
@@ -185,11 +185,11 @@ public class AdaptiveResonanceTheory2
         float higher;
         sameScore = new ArrayList<>();
         empty = new DynamicVector<>(0);
-        // ASK< is size 0 right? >
+        
         usize = used.size();
         psize = prot.size();
-        // if the number of already used prototypes and the number of
-        //  prototypes are the same return empty protot. (no best protot.)
+        
+        
         if (used.size() == prot.size())
         {
             return empty;
@@ -198,14 +198,14 @@ public class AdaptiveResonanceTheory2
         score = new float[psize];
         for (i = 0;i < psize;i++)
         {
-            // setting initial value(the minimum for type double for this particular architecture) for scoring prototypes
+            
             score[i] = Float.MIN_VALUE;
         }
         for (i = 0;i < psize;i++)
         {
-            // set score for every prototype
+            
             boolean usedb;
-            // search if prototype is not among already used prototypes
+            
             usedb = false;
             for (j = 0;j < usize;j++)
             {
@@ -216,17 +216,17 @@ public class AdaptiveResonanceTheory2
                 }
                  
             }
-            // is proto[i] among the used ??
+            
             if (usedb)
             {
             }
             else
             {
-                // if not count it's score
+                
                 score[i] = countScore(prot.get(i), inst);
             } 
         }
-        //find prototype with highest score
+        
         higher = Float.MIN_VALUE;
         for (i = 0;i < psize;i++)
         {
@@ -238,7 +238,7 @@ public class AdaptiveResonanceTheory2
             {
                 if (score[i] > higher)
                 {
-                    // erase the old list
+                    
                     sameScore.clear();
                     sameScore.add(prot.get(i));
                     higher = score[i];
@@ -250,16 +250,16 @@ public class AdaptiveResonanceTheory2
         {
             return empty;
         }
-        else // the result is an empty prototype
+        else 
         if (sameScore.size() == 1)
         {
             return sameScore.get(0);
         }
         else
         {
-            // the result is the only one possible best prototype
+            
             int index;
-            // if there is more best prototypes with the same score -- random choosing
+            
             index = random.nextInt(sameScore.size());
             return sameScore.get(index);
         }  
@@ -370,19 +370,19 @@ public class AdaptiveResonanceTheory2
              * \param par all input parameters set by an user or default
              **/
     public void art2A(ArrayList<DynamicVector<Float>> sample, in_param param, Clust results) {
-        // prototype with highest score
+        
         DynamicVector<Float> P;
-        // list of all prototypes
+        
         ArrayList<DynamicVector<Float>> prot = new ArrayList<>();
-        // the best representation of the prototypes of the whole history
+        
         ArrayList<DynamicVector<Float>> prot_best = new ArrayList<>();
-        // sequences of samples Ek from which prototype has been created
-        // it is possible to reconstruct a prototype from the sequence
-        // defined in art_common.h
+        
+        
+        
         ArrayList<ArrayList<Integer>> prot_seq = new ArrayList<>();
-        // the best representation of the prototypes of the whole history
+        
         ArrayList<ArrayList<Integer>> prot_seq_best = new ArrayList<>();
-        // list of prototypes which were used already
+        
         ArrayList<DynamicVector<Float>> used = new ArrayList<>();
         used = new ArrayList<>();
         prot = new ArrayList<>();
@@ -390,12 +390,12 @@ public class AdaptiveResonanceTheory2
         prot_best = new ArrayList<>();
         prot_seq_best = new ArrayList<>();
         float fluctuation = 100.0f;
-        // the lowest error of the whole history
-        // it is initialized as some impossible number(higher than 100% can't be), to avoid problems with first iteration
+        
+        
         float fluctuation_best = 120.0f;
-        // how many times it run throughout the samples
+        
         int pass = 0;
-        // how many Ek's has been reassign to other cluster (prototype) in a previous pass (run)
+        
         ArrayList<Boolean> changed = new ArrayList<>();
         int i, j;
         changed = new ArrayList<>();
@@ -405,33 +405,33 @@ public class AdaptiveResonanceTheory2
         }
         while ((pass < param.pass) && (fluctuation > param.error))
         {
-            // do cycle while error is higher than the parameter -e  or a number of passes is lower than the parameter -E
+            
             int number_changed;
             for (i = 0;i < sample.size();i++)
             {
-                // nullifying changed values
+                
                 changed.set(i, false);
             }
             for (i = 0;i < sample.size();i++)
             {
-                // cycle for instances
-                // zeroing 'used' prototypes
+                
+                
                 used.clear();
                 do
                 {
                     float score;
                     float alphaSum;
-                    // find the best prototype for current Ek
+                    
                     P = bestPrototype2A(sample.get(i), prot, used);
-                    // if there is no best prototype
+                    
                     if (P.array.length == 0)
                     {
                         int prototypeIndex;
-                        //check if the instance is not included already in some other prototype
+                        
                         prototypeIndex = Common.instanceInSequence(prot_seq, i);
                         if (prototypeIndex != -1)
                         {
-                            //if so, remove it (recreate prototype--without the instance)
+                            
                             removeInstance(sample, i, prot, prototypeIndex, prot_seq, param.beta, param.vigilance);
                         }
                          
@@ -440,41 +440,41 @@ public class AdaptiveResonanceTheory2
                         break;
                     }
                      
-                    // add P among 'used'
+                    
                     used.add(P);
-                    //count similarity between P and Ek (it is called "score") and alpha*sum_i Eki
+                    
                     score = countScore(P, sample.get(i));
                     alphaSum = 0.0f;
                     for (j = 0;j < sample.get(i).array.length;j++)
                     {
                         alphaSum += param.alpha * sample.get(i).get___idx(j);
                     }
-                    // if similarity is sufficient -- sample[i] is member of the P
+                    
                     if (score >= alphaSum)
                     {
                         if (score >= param.vigilance)
                         {
                             int prot_index;
                             int Pindex;
-                            // if the example Ek is already included in some prototype -- find it
+                            
                             prot_index = Common.instanceInSequence(prot_seq, i);
                             if (prot_index != -1)
                             {
-                                // test if the found prototype is not actual one (P) in that case try - go for another Ek
+                                
                                 if (prot.get(prot_index).equals(P))
                                 {
                                     break;
                                 }
                                 else
                                 {
-                                    // re-builder prototype - without the sample
+                                    
                                     removeInstance(sample, i, prot, prot_index, prot_seq, param.beta, param.vigilance);
                                 } 
                             }
                              
-                            // find an index of P in prototypes
+                            
                             Pindex = Common.findItem(prot, P, true);
-                            // add instance to the current prototype
+                            
                             addInstance(sample.get(i), prot.get(Pindex), param.beta);
                             prot_seq.get(Pindex).add(i);
                             changed.set(i, true);
@@ -486,15 +486,15 @@ public class AdaptiveResonanceTheory2
                     }
                     else
                     {
-                        // try other best P
-                        //score=>alphaSize
+                        
+                        
                         int prot_index;
-                        // if prototype is not enough similar to the example(sample[i]) then create a new prototype
-                        // check if the instance is not already in some other prototype
+                        
+                        
                         prot_index = Common.instanceInSequence(prot_seq, i);
                         if (prot_index != -1)
                         {
-                            // if so, remove it (recreate prototype--without the instance)
+                            
                             removeInstance(sample, i, prot, prot_index, prot_seq, param.beta, param.vigilance);
                         }
                          
@@ -505,8 +505,8 @@ public class AdaptiveResonanceTheory2
                 }
                 while (prot.size() != sample.size());
             }
-            // for sample
-            //count statistics for this pass
+            
+            
             number_changed = 0;
             for (j = 0;j < changed.size();j++)
             {
@@ -518,19 +518,19 @@ public class AdaptiveResonanceTheory2
             }
             fluctuation = ((float)number_changed / sample.size()) * 100;
             pass++;
-            //cout << "Pass: " << pass <<", fluctuation: " << fluctuation << "%" << ", clusters: " << prot.size() << endl;
-            //test if this iteration has not lower error
+            
+            
             if (fluctuation < fluctuation_best)
             {
-                //if it is so - assign the new best results
+                
                 prot_best = prot;
                 prot_seq_best = prot_seq;
                 fluctuation_best = fluctuation;
             }
              
         }
-        // while
-        // create results
+        
+        
         results.proto = prot_best;
         results.proto_seq = prot_seq_best;
         results.fluctuation = fluctuation_best;

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License. 
  * You may obtain a copy of the License at 
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0 
+ *      http:
  * 
  * Unless required by applicable law or agreed to in writing, software 
  * distributed under the License is distributed on an "AS IS" BASIS, 
@@ -97,7 +97,7 @@ public class TarHeader {
 	 * Ustar header
 	 */
 
-	private static final String USTAR_MAGIC = "ustar"; // POSIX
+	private static final String USTAR_MAGIC = "ustar"; 
 
 	public static final int USTAR_MAGICLEN = 8;
 	public static final int USTAR_USER_NAMELEN = 32;
@@ -105,7 +105,7 @@ public class TarHeader {
 	public static final int USTAR_DEVLEN = 8;
 	public static final int USTAR_FILENAME_PREFIX = 155;
 
-	// Header values
+	
 	public StringBuilder name;
 	public int mode;
 	public int userId;
@@ -115,7 +115,7 @@ public class TarHeader {
 	public int checkSum;
 	public byte linkFlag;
 	public StringBuilder linkName;
-	public StringBuilder magic; // ustar indicator and version
+	public StringBuilder magic; 
 	public StringBuilder userName;
 	public StringBuilder groupName;
 	public int devMajor;

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -45,7 +45,7 @@ import java.util.Collection;
 
 /**
  * SequentialImpulseConstraintSolver uses a Propagation Method and Sequentially applies impulses.
- * The approach is the 3D version of Erin Catto's GDC 2006 tutorial. See http://www.gphysics.com<p>
+ * The approach is the 3D version of Erin Catto's GDC 2006 tutorial. See http:
  * <p>
  * Although Sequential Impulse is more intuitive, it is mathematically equivalent to Projected
  * Successive Overrelaxation (iterative LCP).<p>
@@ -68,7 +68,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
+    
 
     private final FasterList<SolverBody> tmpSolverBodyPool = new FasterList<>();
     private final FasterList<SolverConstraint> tmpSolverConstraintPool = new FasterList<>();
@@ -79,23 +79,23 @@ public class SequentialImpulseConstrainer implements Constrainer {
     protected final ContactSolverFunc[][] contactDispatch = new ContactSolverFunc[MAX_CONTACT_SOLVER_TYPES][MAX_CONTACT_SOLVER_TYPES];
     protected final ContactSolverFunc[][] frictionDispatch = new ContactSolverFunc[MAX_CONTACT_SOLVER_TYPES][MAX_CONTACT_SOLVER_TYPES];
 
-    // btSeed2 is used for re-arranging the constraint rows. improves convergence/quality of friction
+    
     protected long btSeed2;
 
     public SequentialImpulseConstrainer() {
-//        globals.setContactDestroyedCallback(new ContactDestroyedCallback() {
-//            @Override
-//            public boolean contactDestroyed(Object userPersistentData) {
-//                assert (userPersistentData != null);
-//                ConstraintPersistentData cpd = (ConstraintPersistentData) userPersistentData;
-//                //btAlignedFree(cpd);
-//                //totalCpd--;
-//                //printf("totalCpd = %i. DELETED Ptr %x\n",totalCpd,userPersistentData);
-//                return true;
-//            }
-//        });
 
-        // initialize default friction/contact funcs
+
+
+
+
+
+
+
+
+
+
+
+        
         for (int i = 0; i < MAX_CONTACT_SOLVER_TYPES; i++) {
             ContactSolverFunc[] ci = this.contactDispatch[i];
             ContactSolverFunc[] fi = this.frictionDispatch[i];
@@ -111,14 +111,14 @@ public class SequentialImpulseConstrainer implements Constrainer {
         return btSeed2;
     }
 
-    // See ODE: adam's all-int straightforward(?) dRandInt (0..n-1)
+    
     int randInt2(int n) {
-        // seems good; xor-fold and modulus
+        
         long un = n;
         long r = rand2();
 
-        // note: probably more aggressive than it needs to be -- might be
-        //       able to get away without one or two of the innermost branches.
+        
+        
         if (un <= 0x00010000L) {
             r ^= (r >>> 16);
             if (un <= 0x00000100L) {
@@ -135,7 +135,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             }
         }
 
-        // TODO: check modulo C vs Java mismatch
+        
         return (int) Math.abs(r % un);
     }
 
@@ -178,11 +178,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
             BulletStats.gNumSplitImpulseRecoveries++;
             float normalImpulse;
 
-            //  Optimized version of projected relative velocity, use precomputed cross products with normal
-            //      body1.getVelocityInLocalPoint(contactConstraint.m_rel_posA,vel1);
-            //      body2.getVelocityInLocalPoint(contactConstraint.m_rel_posB,vel2);
-            //      btVector3 vel = vel1 - vel2;
-            //      btScalar  rel_vel = contactConstraint.m_contactNormal.dot(vel);
+            
+            
+            
+            
+            
 
             float vel1Dotn = contactConstraint.contactNormal.dot(body1.pushVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.turnVelocity);
             float vel2Dotn = contactConstraint.contactNormal.dot(body2.pushVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.turnVelocity);
@@ -190,15 +190,15 @@ public class SequentialImpulseConstrainer implements Constrainer {
             float rel_vel = vel1Dotn - vel2Dotn;
 
             float positionalError = -contactConstraint.penetration * solverInfo.erp2 / solverInfo.timeStep;
-            //      btScalar positionalError = contactConstraint.m_penetration;
+            
 
-            float velocityError = contactConstraint.restitution - rel_vel;// * damping;
+            float velocityError = contactConstraint.restitution - rel_vel;
 
             float penetrationImpulse = positionalError * contactConstraint.jacDiagABInv;
             float velocityImpulse = velocityError * contactConstraint.jacDiagABInv;
             normalImpulse = penetrationImpulse + velocityImpulse;
 
-            // See Erin Catto's GDC 2006 paper: Clamp the accumulated impulse
+            
             float oldNormalImpulse = contactConstraint.appliedPushImpulse;
             float sum = oldNormalImpulse + normalImpulse;
             contactConstraint.appliedPushImpulse = 0f > sum ? 0f : sum;
@@ -208,11 +208,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
             v3 tmp = new v3();
 
             tmp.scale(body1.invMass, contactConstraint.contactNormal);
-            //tmp.scale(body1.linearFactor);
+            
             body1.internalApplyPushImpulse(tmp, contactConstraint.angularComponentA, normalImpulse);
 
             tmp.scale(body2.invMass, contactConstraint.contactNormal);
-            //tmp.scale(body2.linearFactor);
+            
             body2.internalApplyPushImpulse(tmp, contactConstraint.angularComponentB, -normalImpulse);
         }
     }
@@ -229,11 +229,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
         float normalImpulse;
 
-        //  Optimized version of projected relative velocity, use precomputed cross products with normal
-        //	body1.getVelocityInLocalPoint(contactConstraint.m_rel_posA,vel1);
-        //	body2.getVelocityInLocalPoint(contactConstraint.m_rel_posB,vel2);
-        //	btVector3 vel = vel1 - vel2;
-        //	btScalar  rel_vel = contactConstraint.m_contactNormal.dot(vel);
+        
+        
+        
+        
+        
 
         float rel_vel;
         float vel1Dotn = contactConstraint.contactNormal.dot(body1.linearVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.angularVelocity);
@@ -246,14 +246,14 @@ public class SequentialImpulseConstrainer implements Constrainer {
             positionalError = -contactConstraint.penetration * solverInfo.erp / solverInfo.timeStep;
         }
 
-        float velocityError = contactConstraint.restitution - rel_vel;// * damping;
+        float velocityError = contactConstraint.restitution - rel_vel;
 
         float penetrationImpulse = positionalError * contactConstraint.jacDiagABInv;
         float velocityImpulse = velocityError * contactConstraint.jacDiagABInv;
         normalImpulse = penetrationImpulse + velocityImpulse;
 
 
-        // See Erin Catto's GDC 2006 paper: Clamp the accumulated impulse
+        
         float oldNormalImpulse = contactConstraint.appliedImpulse;
         float sum = oldNormalImpulse + normalImpulse;
         contactConstraint.appliedImpulse = 0f > sum ? 0f : sum;
@@ -263,11 +263,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
         v3 tmp = new v3();
 
         tmp.scale(body1.invMass, contactConstraint.contactNormal);
-        //tmp.scale(body1.linearFactor);
+        
         body1.internalApplyImpulse(tmp, contactConstraint.angularComponentA, normalImpulse);
 
         tmp.scale(body2.invMass, contactConstraint.contactNormal);
-        //tmp.scale(body2.linearFactor);
+        
         body2.internalApplyImpulse(tmp, contactConstraint.angularComponentB, -normalImpulse);
 
         return normalImpulse;
@@ -283,7 +283,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
         float limit = appliedNormalImpulse * combinedFriction;
 
-        if (appliedNormalImpulse > 0f) //friction
+        if (appliedNormalImpulse > 0f) 
         {
 
             float j1;
@@ -293,10 +293,10 @@ public class SequentialImpulseConstrainer implements Constrainer {
             float vel2Dotn = contactConstraint.contactNormal.dot(body2.linearVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.angularVelocity);
             rel_vel = vel1Dotn - vel2Dotn;
 
-            // calculate j that moves us to zero relative velocity
+            
             j1 = -rel_vel * contactConstraint.jacDiagABInv;
-            //#define CLAMP_ACCUMULATED_FRICTION_IMPULSE 1
-            //#ifdef CLAMP_ACCUMULATED_FRICTION_IMPULSE
+            
+            
             float oldTangentImpulse = contactConstraint.appliedImpulse;
             contactConstraint.appliedImpulse = oldTangentImpulse + j1;
 
@@ -308,19 +308,19 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 }
             }
             j1 = contactConstraint.appliedImpulse - oldTangentImpulse;
-            //	#else
-            //	if (limit < j1)
-            //	{
-            //		j1 = limit;
-            //	} else
-            //	{
-            //		if (j1 < -limit)
-            //			j1 = -limit;
-            //	}
-            //	#endif
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
-            //GEN_set_min(contactConstraint.m_appliedImpulse, limit);
-            //GEN_set_max(contactConstraint.m_appliedImpulse, -limit);
+            
+            
 
             v3 tmp = new v3();
 
@@ -375,10 +375,10 @@ public class SequentialImpulseConstrainer implements Constrainer {
             solverConstraint.angularComponentB.set(0f, 0f, 0f);
         }
 
-        //#ifdef COMPUTE_IMPULSE_DENOM
-        //	btScalar denom0 = rb0->computeImpulseDenominator(pos1,solverConstraint.m_contactNormal);
-        //	btScalar denom1 = rb1->computeImpulseDenominator(pos2,solverConstraint.m_contactNormal);
-        //#else
+        
+        
+        
+        
         v3 vec = new v3();
         float denom0 = 0f;
         float denom1 = 0f;
@@ -390,7 +390,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             vec.cross(solverConstraint.angularComponentB, rel_pos2);
             denom1 = body1.getInvMass() + normalAxis.dot(vec);
         }
-        //#endif //COMPUTE_IMPULSE_DENOM
+        
 
         float denom = relaxation / (denom0 + denom1);
         solverConstraint.jacDiagABInv = denom;
@@ -399,54 +399,54 @@ public class SequentialImpulseConstrainer implements Constrainer {
     public float solveGroupCacheFriendlySetup(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
 
             if ((numConstraints + numManifolds) == 0) {
-                // printf("empty\n");
+                
                 return 0f;
             }
             PersistentManifold manifold = null;
             Collidable colObj0 = null, colObj1 = null;
 
-            //btRigidBody* rb0=0,*rb1=0;
+            
 
-            //	//#ifdef FORCE_REFESH_CONTACT_MANIFOLDS
-            //
-            //		BEGIN_PROFILE("refreshManifolds");
-            //
-            //		int i;
-            //
-            //
-            //
-            //		for (i=0;i<numManifolds;i++)
-            //		{
-            //			manifold = manifoldPtr[i];
-            //			rb1 = (btRigidBody*)manifold->getBody1();
-            //			rb0 = (btRigidBody*)manifold->getBody0();
-            //
-            //			manifold->refreshContactPoints(rb0->getCenterOfMassTransform(),rb1->getCenterOfMassTransform());
-            //
-            //		}
-            //
-            //		END_PROFILE("refreshManifolds");
-            //	//#endif //FORCE_REFESH_CONTACT_MANIFOLDS
-
-
-            //int sizeofSB = sizeof(btSolverBody);
-            //int sizeofSC = sizeof(btSolverConstraint);
-
-            //if (1)
-            //if m_stackAlloc, try to pack bodies/constraints to speed up solving
-            //		btBlock*					sablock;
-            //		sablock = stackAlloc->beginBlock();
-
-            //	int memsize = 16;
-            //		unsigned char* stackMemory = stackAlloc->allocate(memsize);
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
 
 
-            // todo: use stack allocator for this temp memory
-            //int minReservation = numManifolds * 2;
+            
+            
 
-            //m_tmpSolverBodyPool.reserve(minReservation);
+            
+            
+            
+            
 
-            //don't convert all bodies, only the one we need so solver the constraints
+            
+            
+
+
+            
+            
+
+            
+
+            
                 /*
 				{
 				for (int i=0;i<numBodies;i++)
@@ -464,8 +464,8 @@ public class SequentialImpulseConstrainer implements Constrainer {
 				}
 				*/
 
-            //m_tmpSolverConstraintPool.reserve(minReservation);
-            //m_tmpSolverFrictionConstraintPool.reserve(minReservation);
+            
+            
 
             {
                 int i;
@@ -480,14 +480,14 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 v3 torqueAxis1 = new v3();
                 v3 vel1 = new v3();
                 v3 vel2 = new v3();
-                //Vector3f frictionDir1 = new Vector3f();
-                //Vector3f frictionDir2 = new Vector3f();
+                
+                
                 v3 vec = new v3();
 
                 Matrix3f tmpMat = new Matrix3f();
 
                 for (i = 0; i < numManifolds; i++) {
-                    //return array[index];
+                    
                     manifold = manifoldPtr.get(manifold_offset + i);
                     colObj0 = (Collidable) manifold.getBody0();
                     colObj1 = (Collidable) manifold.getBody1();
@@ -498,7 +498,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                     if (manifold.numContacts() != 0) {
                         if (colObj0.tag() >= 0) {
                             if (colObj0.getCompanionId() >= 0) {
-                                // body has already been converted
+                                
                                 solverBodyIdA = colObj0.getCompanionId();
                             } else {
                                 solverBodyIdA = tmpSolverBodyPool.size();
@@ -508,7 +508,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 colObj0.setCompanionId(solverBodyIdA);
                             }
                         } else {
-                            // create a static body
+                            
                             solverBodyIdA = tmpSolverBodyPool.size();
                             SolverBody solverBody = new SolverBody();
                             tmpSolverBodyPool.add(solverBody);
@@ -526,7 +526,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 colObj1.setCompanionId(solverBodyIdB);
                             }
                         } else {
-                            // create a static body
+                            
                             solverBodyIdB = tmpSolverBodyPool.size();
                             SolverBody solverBody = new SolverBody();
                             tmpSolverBodyPool.add(solverBody);
@@ -581,10 +581,10 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 solverConstraint.angularComponentB.set(0f, 0f, 0f);
                             }
 
-                            //#ifdef COMPUTE_IMPULSE_DENOM
-                            //btScalar denom0 = rb0->computeImpulseDenominator(pos1,cp.m_normalWorldOnB);
-                            //btScalar denom1 = rb1->computeImpulseDenominator(pos2,cp.m_normalWorldOnB);
-                            //#else
+                            
+                            
+                            
+                            
                             float denom0 = 0f;
                             float denom1 = 0f;
                             if (rb0 != null) {
@@ -595,7 +595,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 vec.cross(solverConstraint.angularComponentB, rel_pos2);
                                 denom1 = rb1.getInvMass() + cp.normalWorldOnB.dot(vec);
                             }
-                            //#endif //COMPUTE_IMPULSE_DENOM
+                            
 
                             float denom = relaxation / (denom0 + denom1);
                             solverConstraint.jacDiagABInv = denom;
@@ -621,7 +621,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                             rel_vel = cp.normalWorldOnB.dot(vel);
 
                             solverConstraint.penetration = Math.min(cp.distance1 + infoGlobal.linearSlop, 0f);
-                            //solverConstraint.m_penetration = cp.getDistance();
+                            
 
                             solverConstraint.friction = cp.combinedFriction;
                             solverConstraint.restitution = restitutionCurve(rel_vel, cp.combinedRestitution);
@@ -637,17 +637,17 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
                             v3 tmp = new v3();
 
-                            // warm starting (or zero if disabled)
+                            
                             if ((infoGlobal.solverMode & SolverMode.SOLVER_USE_WARMSTARTING) != 0) {
                                 solverConstraint.appliedImpulse = cp.appliedImpulse * infoGlobal.warmstartingFactor;
                                 if (rb0 != null) {
                                     tmp.scale(rb0.getInvMass(), solverConstraint.contactNormal);
-                                    //return array[index];
+                                    
                                     tmpSolverBodyPool.get(solverConstraint.solverBodyIdA).internalApplyImpulse(tmp, solverConstraint.angularComponentA, solverConstraint.appliedImpulse);
                                 }
                                 if (rb1 != null) {
                                     tmp.scale(rb1.getInvMass(), solverConstraint.contactNormal);
-                                    //return array[index];
+                                    
                                     tmpSolverBodyPool.get(solverConstraint.solverBodyIdB).internalApplyImpulse(tmp, solverConstraint.angularComponentB, -solverConstraint.appliedImpulse);
                                 }
                             } else {
@@ -662,15 +662,15 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 cp.lateralFrictionDir1.sub(vel, cp.lateralFrictionDir1);
 
                                 float lat_rel_vel = cp.lateralFrictionDir1.lengthSquared();
-                                if (lat_rel_vel > BulletGlobals.FLT_EPSILON)//0.0f)
+                                if (lat_rel_vel > BulletGlobals.FLT_EPSILON)
                                 {
                                     cp.lateralFrictionDir1.scale(1f / (float) Math.sqrt(lat_rel_vel));
                                     addFrictionConstraint(cp.lateralFrictionDir1, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                                     cp.lateralFrictionDir2.cross(cp.lateralFrictionDir1, cp.normalWorldOnB);
-                                    cp.lateralFrictionDir2.normalize(); //??
+                                    cp.lateralFrictionDir2.normalize(); 
                                     addFrictionConstraint(cp.lateralFrictionDir2, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                                 } else {
-                                    // re-calculate friction direction every frame, todo: check if this is really needed
+                                    
 
                                     TransformUtil.planeSpace1(cp.normalWorldOnB, cp.lateralFrictionDir1, cp.lateralFrictionDir2);
                                     addFrictionConstraint(cp.lateralFrictionDir1, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
@@ -683,35 +683,35 @@ public class SequentialImpulseConstrainer implements Constrainer {
                                 addFrictionConstraint(cp.lateralFrictionDir2, solverBodyIdA, solverBodyIdB, frictionIndex, cp, rel_pos1, rel_pos2, colObj0, colObj1, relaxation);
                             }
 
-                            //return array[index];
+                            
                             SolverConstraint frictionConstraint1 = tmpSolverFrictionConstraintPool.get(solverConstraint.frictionIndex);
                             if ((infoGlobal.solverMode & SolverMode.SOLVER_USE_WARMSTARTING) != 0) {
                                 frictionConstraint1.appliedImpulse = cp.appliedImpulseLateral1 * infoGlobal.warmstartingFactor;
                                 if (rb0 != null) {
                                     tmp.scale(rb0.getInvMass(), frictionConstraint1.contactNormal);
-                                    //return array[index];
+                                    
                                     tmpSolverBodyPool.get(solverConstraint.solverBodyIdA).internalApplyImpulse(tmp, frictionConstraint1.angularComponentA, frictionConstraint1.appliedImpulse);
                                 }
                                 if (rb1 != null) {
                                     tmp.scale(rb1.getInvMass(), frictionConstraint1.contactNormal);
-                                    //return array[index];
+                                    
                                     tmpSolverBodyPool.get(solverConstraint.solverBodyIdB).internalApplyImpulse(tmp, frictionConstraint1.angularComponentB, -frictionConstraint1.appliedImpulse);
                                 }
                             } else {
                                 frictionConstraint1.appliedImpulse = 0f;
                             }
-                            //return array[index];
+                            
                             SolverConstraint frictionConstraint2 = tmpSolverFrictionConstraintPool.get(solverConstraint.frictionIndex + 1);
                             if ((infoGlobal.solverMode & SolverMode.SOLVER_USE_WARMSTARTING) != 0) {
                                 frictionConstraint2.appliedImpulse = cp.appliedImpulseLateral2 * infoGlobal.warmstartingFactor;
                                 if (rb0 != null) {
                                     tmp.scale(rb0.getInvMass(), frictionConstraint2.contactNormal);
-                                    //return array[index];
+                                    
                                     tmpSolverBodyPool.get(solverConstraint.solverBodyIdA).internalApplyImpulse(tmp, frictionConstraint2.angularComponentA, frictionConstraint2.appliedImpulse);
                                 }
                                 if (rb1 != null) {
                                     tmp.scale(rb1.getInvMass(), frictionConstraint2.contactNormal);
-                                    //return array[index];
+                                    
                                     tmpSolverBodyPool.get(solverConstraint.solverBodyIdB).internalApplyImpulse(tmp, frictionConstraint2.angularComponentB, -frictionConstraint2.appliedImpulse);
                                 }
                             } else {
@@ -722,23 +722,23 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 }
             }
 
-            // TODO: btContactSolverInfo info = infoGlobal;
+            
 
             int j;
             for (j = 0; j < numConstraints; j++) {
                 constraints.get(constraints_offset + j).buildJacobian();
             }
 
-//			int j;
-//			for (j = 0; j < numConstraints; j++) {
-//                constraints.get(constraints_offset + j).getInfo2(infoGlobal);
-//            }
+
+
+
+
 
 
             int numConstraintPool = tmpSolverConstraintPool.size();
             int numFrictionPool = tmpSolverFrictionConstraintPool.size();
 
-            // todo: use stack allocator for such temporarily memory, same for solver bodies/constraints
+            
             MiscUtil.resize(orderTmpConstraintPool, numConstraintPool, 0);
             MiscUtil.resize(orderFrictionConstraintPool, numFrictionPool, 0);
             int i;
@@ -756,7 +756,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
             int numConstraintPool = tmpSolverConstraintPool.size();
             int numFrictionPool = tmpSolverFrictionConstraintPool.size();
 
-            // should traverse the contacts random order...
+            
             int iteration;
             IntArrayList constraintPool = this.orderTmpConstraintPool;
             IntArrayList frictionPool = this.orderFrictionConstraintPool;
@@ -775,41 +775,41 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 }
 
                 for (int j = 0; j < numConstraints; j++) {
-                    //return array[index];
+                    
                     final TypedConstraint constraint = constraints.get(constraints_offset + j);
-                    // todo: use solver bodies, so we don't need to copy from/to btRigidBody
+                    
 
                     final Body3D ca = constraint.getRigidBodyA();
                     final int cai = ca.getCompanionId();
                     if ((ca.tag() >= 0) && (cai >= 0)) {
-                        //return array[index];
+                        
                         tmpSolverBodyPool.get(cai).writebackVelocity();
                     }
                     Body3D cb = constraint.getRigidBodyB();
                     int cbi = cb.getCompanionId();
                     if ((cb.tag() >= 0) && (cbi >= 0)) {
-                        //return array[index];
+                        
                         tmpSolverBodyPool.get(cbi).writebackVelocity();
                     }
 
                     constraint.solveConstraint(infoGlobal.timeStep);
 
                     if ((ca.tag() >= 0) && (cai >= 0)) {
-                        //return array[index];
+                        
                         tmpSolverBodyPool.get(cai).readVelocity();
                     }
                     if ((cb.tag() >= 0) && (cbi >= 0)) {
-                        //return array[index];
+                        
                         tmpSolverBodyPool.get(cbi).readVelocity();
                     }
                 }
 
                 int numPoolConstraints = tmpSolverConstraintPool.size();
                 for (int j = 0; j < numPoolConstraints; j++) {
-//return array[index];
+
                     SolverConstraint solveManifold = tmpSolverConstraintPool.get(constraintPool.get(j));
-//return array[index];
-//return array[index];
+
+
                     resolveSingleCollisionCombinedCacheFriendly(tmpSolverBodyPool.get(solveManifold.solverBodyIdA),
                             tmpSolverBodyPool.get(solveManifold.solverBodyIdB), solveManifold, infoGlobal);
                 }
@@ -817,16 +817,16 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 int numFrictionPoolConstraints = tmpSolverFrictionConstraintPool.size();
 
                 for (int j = 0; j < numFrictionPoolConstraints; j++) {
-//return array[index];
+
                     SolverConstraint solveManifold = tmpSolverFrictionConstraintPool.get(frictionPool.get(j));
 
-//return array[index];
-//return array[index];
+
+
                     float totalImpulse = tmpSolverConstraintPool.get(solveManifold.frictionIndex).appliedImpulse +
                             tmpSolverConstraintPool.get(solveManifold.frictionIndex).appliedPushImpulse;
 
-//return array[index];
-//return array[index];
+
+
                     resolveSingleFrictionCacheFriendly(tmpSolverBodyPool.get(solveManifold.solverBodyIdA),
                             tmpSolverBodyPool.get(solveManifold.solverBodyIdB), solveManifold, infoGlobal,
                             totalImpulse);
@@ -837,11 +837,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 for (iteration = 0; iteration < infoGlobal.numIterations; iteration++) {
                     int numPoolConstraints = tmpSolverConstraintPool.size();
                     for (int j = 0; j < numPoolConstraints; j++) {
-//return array[index];
+
                         SolverConstraint solveManifold = tmpSolverConstraintPool.get(constraintPool.get(j));
 
-//return array[index];
-//return array[index];
+
+
                         resolveSplitPenetrationImpulseCacheFriendly(tmpSolverBodyPool.get(solveManifold.solverBodyIdA),
                                 tmpSolverBodyPool.get(solveManifold.solverBodyIdB), solveManifold, infoGlobal);
                     }
@@ -866,33 +866,33 @@ public class SequentialImpulseConstrainer implements Constrainer {
         int numPoolConstraints = tmpSolverConstraintPool.size();
         for (int j = 0; j < numPoolConstraints; j++) {
 
-            //return array[index];
+            
             SolverConstraint solveManifold = tmpSolverConstraintPool.get(j);
             ManifoldPoint pt = (ManifoldPoint) solveManifold.originalContactPoint;
             assert (pt != null);
             pt.appliedImpulse = solveManifold.appliedImpulse;
 
-            //return array[index];
+            
             pt.appliedImpulseLateral1 = tmpSolverFrictionConstraintPool.get(solveManifold.frictionIndex).appliedImpulse;
-            //return array[index];
+            
             pt.appliedImpulseLateral1 = tmpSolverFrictionConstraintPool.get(solveManifold.frictionIndex + 1).appliedImpulse;
 
-            // do a callback here?
+            
         }
 
         if (infoGlobal.splitImpulse) {
             for (int i = 0; i < tmpSolverBodyPool.size(); i++) {
-                //return array[index];
+                
                 tmpSolverBodyPool.get(i).writebackVelocity(infoGlobal.timeStep);
             }
         } else {
             for (int i = 0; i < tmpSolverBodyPool.size(); i++) {
-                //return array[index];
+                
                 tmpSolverBodyPool.get(i).writebackVelocity();
             }
         }
 
-        //	printf("m_tmpSolverConstraintPool.size() = %i\n",m_tmpSolverConstraintPool.size());
+        
 
 		/*
 		printf("m_tmpSolverBodyPool.size() = %i\n",m_tmpSolverBodyPool.size());
@@ -917,10 +917,10 @@ public class SequentialImpulseConstrainer implements Constrainer {
      */
     @Override
     public float solveGroup(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal, Intersecter intersecter) {
-            // TODO: solver cache friendly
+            
             if ((infoGlobal.solverMode & SolverMode.SOLVER_CACHE_FRIENDLY) != 0) {
-                // you need to provide at least some bodies
-                // SimpleDynamicsWorld needs to switch off SOLVER_CACHE_FRIENDLY
+                
+                
                 assert (bodies != null);
                 assert (numBodies != 0);
                 float value = solveGroupCacheFriendly(bodies, numBodies, manifoldPtr, manifold_offset, numManifolds, constraints, constraints_offset, numConstraints, infoGlobal/*,stackAlloc*/);
@@ -936,11 +936,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
             {
                 short j;
                 for (j = 0; j < numManifolds; j++) {
-                    //return array[index];
+                    
                     PersistentManifold manifold = manifoldPtr.get(manifold_offset + j);
                     prepareConstraints(manifold, info);
 
-                    //return array[index];
+                    
                     for (short p = 0; p < manifoldPtr.get(manifold_offset + j).numContacts(); p++) {
                         gOrder[totalPoints].manifoldIndex = j;
                         gOrder[totalPoints].pointIndex = p;
@@ -956,14 +956,14 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 }
             }
 
-            // should traverse the contacts random order...
+            
             int iteration;
             for (iteration = 0; iteration < numiter; iteration++) {
                 int j;
                 if ((infoGlobal.solverMode & SolverMode.SOLVER_RANDMIZE_ORDER) != 0) {
                     if ((iteration & 7) == 0) {
                         for (j = 0; j < totalPoints; ++j) {
-                            // JAVA NOTE: swaps references instead of copying values (but that's fine in this context)
+                            
                             OrderIndex tmp = gOrder[j];
                             int swapi = randInt2(j + 1);
                             gOrder[j] = gOrder[swapi];
@@ -984,7 +984,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 }
 
                 for (j = 0; j < totalPoints; j++) {
-                    //return array[index];
+                    
                     PersistentManifold manifold = manifoldPtr.get(manifold_offset + gOrder[j].manifoldIndex);
                     solveFriction(
                             (Body3D) manifold.getBody0(),
@@ -1001,10 +1001,10 @@ public class SequentialImpulseConstrainer implements Constrainer {
         Body3D body0 = (Body3D) manifoldPtr.getBody0();
         Body3D body1 = (Body3D) manifoldPtr.getBody1();
 
-        // only necessary to refresh the manifold once (first iteration). The integration is done outside the loop
-        //#ifdef FORCE_REFESH_CONTACT_MANIFOLDS
-        //manifoldPtr->refreshContactPoints(body0->getCenterOfMassTransform(),body1->getCenterOfMassTransform());
-        //#endif //FORCE_REFESH_CONTACT_MANIFOLDS
+        
+        
+        
+        
         int numpoints = manifoldPtr.numContacts();
 
         BulletStats.gTotalContactPoints += numpoints;
@@ -1037,7 +1037,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 rel_pos1.sub(pos1, body0.transform);
                 rel_pos2.sub(pos2, body1.transform);
 
-                // this jacobian entry is re-used for all iterations
+                
                 Matrix3f mat1 = body0.transform.basis;
                 mat1.transpose();
 
@@ -1054,36 +1054,36 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
                 ConstraintPersistentData cpd = (ConstraintPersistentData) cp.userPersistentData;
                 if (cpd != null) {
-                    // might be invalid
+                    
                     cpd.persistentLifeTime++;
                     if (cpd.persistentLifeTime != cp.lifeTime) {
-                        //printf("Invalid: cpd->m_persistentLifeTime = %i cp.getLifeTime() = %i\n",cpd->m_persistentLifeTime,cp.getLifeTime());
-                        //new (cpd) btConstraintPersistentData;
+                        
+                        
                         cpd.reset();
                         cpd.persistentLifeTime = cp.lifeTime;
 
                     } else {
-                        //printf("Persistent: cpd->m_persistentLifeTime = %i cp.getLifeTime() = %i\n",cpd->m_persistentLifeTime,cp.getLifeTime());
+                        
                     }
                 } else {
-                    // todo: should this be in a pool?
-                    //void* mem = btAlignedAlloc(sizeof(btConstraintPersistentData),16);
-                    //cpd = new (mem)btConstraintPersistentData;
+                    
+                    
+                    
                     cpd = new ConstraintPersistentData();
-                    //assert(cpd != null);
+                    
 
-                    //totalCpd++;
-                    //printf("totalCpd = %i Created Ptr %x\n",totalCpd,cpd);
+                    
+                    
                     cp.userPersistentData = cpd;
                     cpd.persistentLifeTime = cp.lifeTime;
-                    //printf("CREATED: %x . cpd->m_persistentLifeTime = %i cp.getLifeTime() = %i\n",cpd,cpd->m_persistentLifeTime,cp.getLifeTime());
+                    
                 }
                 assert (cpd != null);
 
                 cpd.jacDiagABInv = 1f / jacDiagAB;
 
-                // Dependent on Rigidbody A and B types, fetch the contact/friction response func
-                // perhaps do a similar thing for friction/restutution combiner funcs...
+                
+                
 
                 cpd.frictionSolverFunc = frictionDispatch[body0.frictionSolverType][body1.frictionSolverType];
                 cpd.contactSolverFunc = contactDispatch[body0.contactSolverType][body1.contactSolverType];
@@ -1097,15 +1097,15 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
                 float combinedRestitution = cp.combinedRestitution;
 
-                cpd.penetration = cp.distance1; ///btScalar(info.m_numIterations);
+                cpd.penetration = cp.distance1; 
                 cpd.friction = cp.combinedFriction;
                 cpd.restitution = restitutionCurve(rel_vel, combinedRestitution);
                 if (cpd.restitution <= 0f) {
                     cpd.restitution = 0f;
                 }
 
-                // restitution and penetration work in same direction so
-                // rel_vel
+                
+                
 
                 float penVel = -cpd.penetration / info.timeStep;
 
@@ -1120,17 +1120,17 @@ public class SequentialImpulseConstrainer implements Constrainer {
                     cpd.appliedImpulse = 0f;
                 }
 
-                // for friction
+                
                 cpd.prevAppliedImpulse = cpd.appliedImpulse;
 
-                // re-calculate friction direction every frame, todo: check if this is really needed
+                
                 TransformUtil.planeSpace1(cp.normalWorldOnB, cpd.frictionWorldTangential0, cpd.frictionWorldTangential1);
 
-                //#define NO_FRICTION_WARMSTART 1
-                //#ifdef NO_FRICTION_WARMSTART
+                
+                
                 cpd.accumulatedTangentImpulse0 = 0f;
                 cpd.accumulatedTangentImpulse1 = 0f;
-                //#endif //NO_FRICTION_WARMSTART
+                
                 float denom0 = body0.computeImpulseDenominator(pos1, cpd.frictionWorldTangential0);
                 float denom1 = body1.computeImpulseDenominator(pos2, cpd.frictionWorldTangential0);
                 float denom = relaxation / (denom0 + denom1);
@@ -1141,15 +1141,15 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 denom = relaxation / (denom0 + denom1);
                 cpd.jacDiagABInvTangent1 = denom;
 
-                //btVector3 totalImpulse =
-                //	//#ifndef NO_FRICTION_WARMSTART
-                //	//cpd->m_frictionWorldTangential0*cpd->m_accumulatedTangentImpulse0+
-                //	//cpd->m_frictionWorldTangential1*cpd->m_accumulatedTangentImpulse1+
-                //	//#endif //NO_FRICTION_WARMSTART
-                //	cp.normalWorldOnB*cpd.appliedImpulse;
+                
+                
+                
+                
+                
+                
                 totalImpulse.scale(cpd.appliedImpulse, cp.normalWorldOnB);
 
-                ///
+                
                 torqueAxis0.cross(rel_pos1, cp.normalWorldOnB);
 
                 cpd.angularComponentA.set(torqueAxis0);
@@ -1176,9 +1176,9 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 cpd.frictionAngularComponent1B.set(ftorqueAxis1);
                 body1.invInertiaTensorWorld.transform(cpd.frictionAngularComponent1B);
 
-                ///
+                
 
-                // apply previous frames impulse on both bodies
+                
                 body0.impulse(totalImpulse, rel_pos1);
 
                 tmpVec.negate(totalImpulse);
@@ -1192,7 +1192,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
         float maxImpulse = 0f;
 
         if (cp.distance1 <= 0f) {
-//btConstraintPersistentData* cpd = (btConstraintPersistentData*) cp.m_userPersistentData;
+
             float impulse = ContactConstraint.resolveSingleCollisionCombined(body0, body1, cp, info);
 
             if (maxImpulse < impulse) {
@@ -1246,15 +1246,15 @@ public class SequentialImpulseConstrainer implements Constrainer {
         frictionDispatch[type0][type1] = func;
     }
 
-//    public void setRandSeed(long seed) {
-//        btSeed2 = seed;
-//    }
-//
-//    public long getRandSeed() {
-//        return btSeed2;
-//    }
 
-    ////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+    
 
     private static class OrderIndex {
         public int manifoldIndex;

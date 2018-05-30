@@ -121,9 +121,9 @@ public class EngineRunner implements java.io.Serializable, Runnable{
         mediator.spy(action,env);
     }
     
-//    static void warn(String message) {
-//        Prolog.warn(message);
-//    }
+
+
+
     
     /*Castagna 06/2011*/
         void exception(String message) {
@@ -162,7 +162,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
             if(next.isEmpty() || !next.get(countNext)){
                 synchronized(semaphore){        
                 try {
-                        semaphore.wait();       //Mi metto in attesa di eventuali altre richieste
+                        semaphore.wait();       
                         } catch (InterruptedException e) {
                                 e.printStackTrace();
                         }  
@@ -177,7 +177,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
             
             libraryManager.onSolveBegin(query);
             primitives.identify(query, PREDICATE);
-            //            theoryManager.transBegin();
+            
             
             freeze();
             env = new Engine(this, query);
@@ -229,7 +229,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
         	if(countNext>(next.size()-1) || !next.get(countNext)){
                 try{
 	                synchronized(semaphore){
-	                        semaphore.wait();       //Mi metto in attesa di eventuali altre richieste
+	                        semaphore.wait();       
 	                }
                 }
             catch(InterruptedException e) {}
@@ -274,8 +274,8 @@ public class EngineRunner implements java.io.Serializable, Runnable{
      * Accepts current solution
      */
     public void solveEnd() {
-//        theoryManager.transEnd(sinfo.isSuccess());
-//        theoryManager.optimize();
+
+
         libraryManager.onSolveEnd();
     }
     
@@ -314,9 +314,9 @@ public class EngineRunner implements java.io.Serializable, Runnable{
         primitives.identify(t, PREDICATE);
     }
     
-//    void saveLastTheoryStatus() {
-//        theoryManager.transFreeze();
-//    }
+
+
+
     
     void pushSubGoal(SubGoalTree goals) {
         env.currentContext.goalsToEval.pushSubGoal(goals);
@@ -369,7 +369,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
                                 if(next.get(countNext))
                                         threadSolveNext();
                 } catch (NoMoreSolutionException e) {
-                        // TODO Auto-generated catch block
+                        
                         e.printStackTrace();
                 }
         }

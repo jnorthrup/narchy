@@ -44,11 +44,11 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
         if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
 
-            //durations delta
+            
             float durDT = Math.max(0, (now - last) / ((float) dur));
 
             float nextBudget = work * rate.floatValue() * durDT + lastBudget;
-            //System.out.println(this + " " + rate + " " + durDT + " " + nextBudget + " { " + lastBudget );
+            
 
             if (nextBudget >= RATE_THRESH) {
                 this.lastLeak = now;
@@ -79,10 +79,10 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
                     return Bag.BagSample.RemoveAndStop;
             }
 
-            return Bag.BagSample.Remove; //continue
+            return Bag.BagSample.Remove; 
         }));
 
-        this.lastBudget = Math.min(0, budget[0]); //only store surplus, which will be added to the next. otherwise if positive is also stored, it can explode
+        this.lastBudget = Math.min(0, budget[0]); 
 
         return nextBudget - budget[0];
 

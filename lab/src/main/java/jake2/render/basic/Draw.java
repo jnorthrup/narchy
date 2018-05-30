@@ -52,7 +52,7 @@ public abstract class Draw extends Image {
 	*/
     @Override
     void Draw_InitLocal() {
-		// load console characters (don't bilerp characters)
+		
 		draw_chars = GL_FindImage("pics/conchars.pcx", it_pic);
 		GL_Bind(draw_chars.texnum);
 		gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -73,9 +73,9 @@ public abstract class Draw extends Image {
 
 		num &= 255;
 	
-		if ( (num&127) == 32 ) return; // space
+		if ( (num&127) == 32 ) return; 
 
-		if (y <= -8) return; // totally off screen
+		if (y <= -8) return; 
 
 		int row = num>>4;
 		int col = num&15;
@@ -269,9 +269,9 @@ public abstract class Draw extends Image {
 		int color = d_8to24table[colorIndex]; 
 
 		gl.glColor3ub(
-			(byte)((color >> 0) & 0xff), // r
-			(byte)((color >> 8) & 0xff), // g
-			(byte)((color >> 16) & 0xff) // b
+			(byte)((color >> 0) & 0xff), 
+			(byte)((color >> 8) & 0xff), 
+			(byte)((color >> 16) & 0xff) 
 		);
 
 		gl.glBegin (GL_QUADS);
@@ -286,7 +286,7 @@ public abstract class Draw extends Image {
 		gl.glEnable(GL_TEXTURE_2D);
 	}
 
-//	  =============================================================================
+
 
 	/*
 	================
@@ -311,7 +311,7 @@ public abstract class Draw extends Image {
 		gl.glDisable(GL_BLEND);
 	}
 
-// ====================================================================
+
 final IntBuffer image32=Lib.newIntBuffer(256*256);
     final ByteBuffer image8=Lib.newByteBuffer(256*256);
 

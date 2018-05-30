@@ -2,7 +2,7 @@
 package smartblob.blobs.layeredzigzag;
 
 public abstract class Adjacent{
-	//TODO rename this AdjacentCornersAndTris to AdjacentsTriAndCorner
+	
 	
 	/** starts full of nulls. Size is for all adjacent to fit.
 	TODO first 2 adjacent corners are in same layer.

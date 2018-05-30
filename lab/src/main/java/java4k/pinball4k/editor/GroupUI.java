@@ -72,11 +72,11 @@ public class GroupUI extends JPanel implements ActionListener, ListSelectionList
 	class GroupsCellRenderer extends JLabel implements ListCellRenderer {
 		@Override
         public Component getListCellRendererComponent(
-	    	       JList list,              // the list
-	    	       Object value,            // value to display
-	    	       int index,               // cell index
-	    	       boolean isSelected,      // is the cell selected
-	    	       boolean cellHasFocus)    // does the cell have focus
+	    	       JList list,              
+	    	       Object value,            
+	    	       int index,               
+	    	       boolean isSelected,      
+	    	       boolean cellHasFocus)    
 		 {
 		     String s = value.toString();
 		     setText(s);

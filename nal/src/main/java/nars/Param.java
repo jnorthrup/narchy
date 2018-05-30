@@ -32,10 +32,10 @@ public abstract class Param {
      */
     public static final int MAX_EVAL_RECURSION = 32;
 
-//    /**
-//     * rate that integers in integer-containing termlink compounds will be dynamically mutated on activation
-//     */
-//    public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
+
+
+
+
 
     /**
      * allow leaking of internal Term[] arrays for read-only purposes
@@ -71,10 +71,10 @@ public abstract class Param {
     /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
 
-//    /**
-//     * hard limit to prevent infinite looping
-//     */
-//    public static final int MAX_TASK_FORWARD_HOPS = 4;
+
+
+
+
 
 
     public ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
@@ -99,29 +99,29 @@ public abstract class Param {
     public static final boolean DEBUG_EXTRA = false;
 
 
-    //Budget Merging: the sequence listed here is significant
+    
 
     public static final PriMerge activateMerge =
             PriMerge.plus;
-            //PriMerge.max;
+            
 
     public static final PriMerge termlinkMerge =
-            //PriMerge.max;
+            
             PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
-            //PriMerge.plus;
+            
 
     /**
      * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            //Util::and;
-            //Util::or;
-            (t,b)->(t+b); //sum
-            //Util::mean;
-            //Math::max;
+            
+            
+            (t,b)->(t+b); 
+            
+            
 
     /**
      * budget factor for single-premise derivations: depends only on the task budget
@@ -135,12 +135,12 @@ public abstract class Param {
      * maximum time (in durations) that a signal task can latch its last value before it becomes unknown
      */
     @Deprecated public final static int SIGNAL_LATCH_TIME_MAX =
-            //0;
-            //2;
-            //4;
+            
+            
+            
             8;
-            //16;
-            //Integer.MAX_VALUE;
+            
+            
 
 
     /**
@@ -231,9 +231,9 @@ public abstract class Param {
     @Range(min=0, max=64)
     public static int TTL_DERIVE_TASK_SAME = 5;
 
-//    /** cost of having insufficient evidence (according to NAR's confMin param) to derive task */
-//    @Range(min=0, max=64)
-//    public static int TTL_EVI_INSUFFICIENT = 3;
+
+
+
 
     /**
      * cost of a failed/aborted task derivation
@@ -241,19 +241,19 @@ public abstract class Param {
     @Range(min=0, max=64)
     public static int TTL_DERIVE_TASK_FAIL = 5;
 
-    //    /**
-//     * number between 0 and 1 controlling the proportion of activation going
-//     * forward (compound to subterms) vs. reverse (subterms to parent compound).
-//     * when calculated, the total activation will sum to 1.0.
-//     * so 0.5 is equal amounts for both, 0 is full backward, 1 is full forward.
-//     */
+    
+
+
+
+
+
     public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
-    //public final FloatRange taskLinkMomentum = new FloatRange(0.25f, 0, 1f);
+    
 
     public final FloatRange activateConceptRate = new FloatRange(1f, 0, 1f);
 
-//    public final FloatRange activateLinkRate = new FloatRange(1f, 0, 1f);
+
 
 
     /**
@@ -265,8 +265,8 @@ public abstract class Param {
 
     public int dtDitherCycles() {
         return dtDither.intValue();
-//        float dd = dtDither.floatValue();
-//        return dd > 0 ? Math.max(1, Math.round(dd * dur())) : 1;
+
+
     }
 
     abstract int dur();
@@ -297,12 +297,12 @@ public abstract class Param {
      */
     public static final int COMPOUND_SUBTERMS_MAX = 127;
 
-//    /**
-//     * how many answers to record per input question task (per each concept's answer bag)
-//     */
-//    public static final int ANSWER_BAG_CAPACITY = 8;
-//
-//    public static final boolean DEBUG_REPORT_ANSWERS = false;
+
+
+
+
+
+
 
 
     /**
@@ -347,18 +347,18 @@ public abstract class Param {
     public static final int CAUSE_LIMIT = (int) (causeCapacity.max * 2);
 
 
-    public final static int UnificationStackMax = 96; //how many assignments can be stored in the 'versioning' maps
-
-//    /** estimate initial capacity for variable unification maps */
-//    public static final int UnificationVariableCapInitial = 8;
+    public final static int UnificationStackMax = 96; 
 
 
-    //public static final boolean DEBUG_BAG_MASS = false;
-    //public static boolean DEBUG_TRACE_EVENTS = false; //shows all emitted events
-    //public static boolean DEBUG_DERIVATION_STACKTRACES; //includes stack trace in task's derivation rule string
-    //public static boolean DEBUG_INVALID_SENTENCES = true;
-    //public static boolean DEBUG_NONETERNAL_QUESTIONS = false;
-    public static final boolean DEBUG_TASK_LOG = true; //false disables task history completely
+
+
+
+    
+    
+    
+    
+    
+    public static final boolean DEBUG_TASK_LOG = true; 
 
     /**
      * internal granularity which truth components are rounded to
@@ -375,15 +375,15 @@ public abstract class Param {
     public static final float TESTS_TRUTH_ERROR_TOLERANCE = TRUTH_EPSILON*4;
 
 
-//    /** EXPERIMENTAL  decreasing priority of sibling tasks on temporal task insertion */
-//    public static final boolean SIBLING_TEMPORAL_TASK_FEEDBACK = false;
-
-//    /** EXPERIMENTAL enable/disable dynamic tasklink truth revision */
-//    public static final boolean ACTION_CONCEPT_LINK_TRUTH = false;
 
 
-//    /** derivation confidence (by evidence) multiplier.  normal=1.0, <1.0= under-confident, >1.0=over-confident */
-//    @NotNull public final FloatParam derivedEvidenceGain = new FloatParam(1f, 0f, 4f);
+
+
+
+
+
+
+
 
 
     /**
@@ -403,19 +403,19 @@ public abstract class Param {
         @Override
         public void set(float value) {
             super.set(value);
-            value = get(); //update for rounding
+            value = get(); 
             if (confMin.floatValue() < value)
                 confMin.set(value);
         }
     };
 
 
-//    /**
-//     * tolerance of complexity
-//     * low values (~0) will penalize complexity in derivations maximally (preferring simplicity)
-//     * high values (~1) will penalize complexity in deriations minimally (allowing complexity)
-//     */
-//    public final FloatRange deep = new FloatRange(0f, 0, 1f);
+
+
+
+
+
+
 
     /**
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence
@@ -424,32 +424,32 @@ public abstract class Param {
      */
     public static double evi(double evi, double dt, long dur) {
 
-//        assert(Double.isFinite(dt) && dt>=0 && dur > 0);
-        return evi / (1.0 + (dt / dur)); //inverse linear
 
-        //double ddt = dt;
-        //return (float) (evi / (1.0 + ddt * ddt / dur)); //inverse square
+        return evi / (1.0 + (dt / dur)); 
 
-        //return evi / Util.sqr( 1f + dt / dur ); //inverse square suck
+        
+        
 
-        //hard linear with half duration on either side of the task -> sum to 1.0 duration
-//        float scale = dt / dur;
-//        if (scale > 0.5f) return 0;
-//        else return evi * (1f - scale*2f);
+        
+
+        
 
 
-        //return evi / (1 + ((float) Math.log(1+dt/dur))); //inverse log
-            //return evi / (1 + (((float) Math.log(1+dt)) / dur)); //inverse log
-
-        //return evi / (1 + ((float) Math.log(1+dt))/dur); // 1 / (1 + log(1+x*x)/dt) //inverse log square
-
-        //return evi / (1 + ((float) Math.log(1+(dt*dt)))/dur); // 1 / (1 + log(1+pow(x,n))/dt) //inverse log Nth
-
-        //return evi /( 1 + 2 * (dt/dur) ); //inverse linear * 2 (nyquist recovery period)
 
 
-        //return evi / (1f + dt / dur ); //first order decay
-        //return evi / (1f + (dt*dt) / (dur*dur) ); //2nd order decay
+
+        
+            
+
+        
+
+        
+
+        
+
+
+        
+        
 
     }
 
@@ -469,8 +469,8 @@ public abstract class Param {
     }
 
 
-//    /** no term sharing means faster comparison but potentially more memory usage. TODO determine effects */
-//    public static boolean CompoundDT_TermSharing;
+
+
 
 
     /**
@@ -522,9 +522,9 @@ public abstract class Param {
 
 
     public static float beliefValue(Task beliefOrGoal) {
-        //return (1f + beliefOrGoal.conf())/2f;
+        
         return beliefOrGoal.conf();
-        //return beliefOrGoal.conf() * (1 + (1f-beliefOrGoal.originality())); //input tasks are 'forced' into the system. derived tasks should seem more valuable, being the result of reasoning effort
+        
     }
 
 

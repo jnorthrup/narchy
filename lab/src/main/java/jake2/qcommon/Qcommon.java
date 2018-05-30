@@ -58,8 +58,8 @@ public final class Qcommon extends Globals {
 	public static void Init(String[] args) {
 		try {
 
-			// prepare enough of the subsystems to handle
-			// cvar and command buffer management
+			
+			
 			Com.InitArgv(args);
 
 			Cbuf.Init();
@@ -69,10 +69,10 @@ public final class Qcommon extends Globals {
 
 			Key.Init();
 
-			// we need to add the early commands twice, because
-			// a basedir or cddir needs to be set before execing
-			// config files, but we want other parms to override
-			// the settings of the config files
+			
+			
+			
+			
 			Cbuf.AddEarlyCommands(false);
 			Cbuf.Execute();
 
@@ -88,18 +88,18 @@ public final class Qcommon extends Globals {
 			
 			reconfigure(false);
 
-			FS.setCDDir(); // use cddir from config.cfg
-			FS.markBaseSearchPaths(); // mark the default search paths
+			FS.setCDDir(); 
+			FS.markBaseSearchPaths(); 
 
 			if (Globals.dedicated.value != 1.0f) {
-			    Jake2.q2DataTool.testQ2Data(); // test for valid baseq2
+			    Jake2.q2DataTool.testQ2Data(); 
                         }
 			
-			reconfigure(true); // reload default.cfg and config.cfg
+			reconfigure(true); 
 			
-			//
-			// init commands and vars
-			//
+			
+			
+			
 			Cmd.AddCommand("error", Com.Error_f);
 
 			Globals.host_speeds= Cvar.Get("host_speeds", "0", 0);
@@ -123,13 +123,13 @@ public final class Qcommon extends Globals {
 				Jake2.q2DataTool.setStatus("initializing network subsystem...");
 			}
 			
-			NET.Init();	//ok
-			Netchan.Netchan_Init();	//ok
+			NET.Init();	
+			Netchan.Netchan_Init();	
 
 			if (Globals.dedicated.value != 1.0f) {			
 				Jake2.q2DataTool.setStatus("initializing server subsystem...");
 			}
-			SV_MAIN.SV_Init();	//ok
+			SV_MAIN.SV_Init();	
 			
 			if (Globals.dedicated.value != 1.0f) {
 				Jake2.q2DataTool.setStatus("initializing client subsystem...");
@@ -137,9 +137,9 @@ public final class Qcommon extends Globals {
 			
 			CL.Init();
 
-			// add + commands from command line
+			
 			if (!Cbuf.AddLateCommands()) {
-				// if the user didn't give any commands, run default action
+				
 			      if (Globals.dedicated.value == 0)
 			          Cbuf.AddText ("d1\n");
 			      else
@@ -147,14 +147,14 @@ public final class Qcommon extends Globals {
 			          
 				Cbuf.Execute();
 			} else {
-				// the user asked for something explicit
-				// so drop the loading plaque
+				
+				
 				SCR.EndLoadingPlaque();
 			}
 
 			Com.Printf("====== Quake2 Initialized ======\n\n");
 
-			// save config when configuration is completed
+			
 			CL.WriteConfiguration();
 						
 			if (Globals.dedicated.value != 1.0f) {

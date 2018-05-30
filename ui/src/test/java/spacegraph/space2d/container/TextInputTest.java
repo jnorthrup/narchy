@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class TextInputTest {
 
     /**
-     * https://download.java.net/java/early_access/jdk11/docs/api/jdk.jshell/jdk/jshell/package-summary.html
-     * https://download.java.net/java/early_access/jdk11/docs/api/jdk.jshell/jdk/jshell/SourceCodeAnalysis.html
+     * https:
+     * https:
      */
     final static JShell js = JShell.create();
 
@@ -29,14 +29,14 @@ public class TextInputTest {
         js.types().forEach(System.out::println);
         js.methods().forEach(System.out::println);
 
-//        SourceCodeAnalysis.CompletionInfo cmpl = js.sourceCodeAnalysis().analyzeCompletion("Thre");
+
 
 
         List<SourceCodeAnalysis.Suggestion> sugg = js.sourceCodeAnalysis().completionSuggestions("Thre", 3, new int[1]);
         Set<String> ss = sugg.stream().map(SourceCodeAnalysis.Suggestion::continuation).collect(toSet());
         assertTrue(ss.contains("Thread"));
         assertTrue(ss.contains("ThreadDeath"));
-        //...
+        
 
     }
 
@@ -45,7 +45,7 @@ public class TextInputTest {
         for (SnippetEvent e : js.eval("Thread.currentThread()")) {
             StringBuilder sb = new StringBuilder();
             if (e.causeSnippet() == null) {
-                //  We have a snippet creation event
+                
                 switch (e.status()) {
                     case VALID:
                         sb.append("Successful ");
@@ -84,7 +84,7 @@ public class TextInputTest {
 
                 String input = "Thread.currentThread();";
 
-                //console.readLine();
+                
                 if (input == null) {
                     break;
                 }
@@ -93,7 +93,7 @@ public class TextInputTest {
                 for (SnippetEvent e : events) {
                     StringBuilder sb = new StringBuilder();
                     if (e.causeSnippet() == null) {
-                        //  We have a snippet creation event
+                        
                         switch (e.status()) {
                             case VALID:
                                 sb.append("Successful ");

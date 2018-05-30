@@ -1,6 +1,6 @@
 /** Ben F Rayfield offers this software opensource GNU GPL 2+ */
 package smartblob.commonfuncs;
-//import jselfmodify.JSelfModify;
+
 
 /** Use the following line at the top of each source code file:
 import static commonfuncs.CommonFuncs.*;
@@ -14,12 +14,12 @@ public class CommonFuncs{
 		if(line.trim().equals("")){
 			System.out.println("empty log line");
 		}
-		//JSelfModify.log(line);
+		
 		System.out.println(line);
 	}
 	
 	public static void logToUser(String line){
-		//JSelfModify.logToUser(line);
+		
 		log(line);
 	}
 	

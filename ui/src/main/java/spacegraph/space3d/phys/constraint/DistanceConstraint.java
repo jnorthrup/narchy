@@ -9,7 +9,7 @@ import spacegraph.util.math.v3;
 import static spacegraph.util.math.v3.v;
 
 /**
- * http://bulletphysics.org/Bullet/phpBB3/viewtopic.php?t=4864
+ * http:
  */
 public class DistanceConstraint extends TypedConstraint {
 
@@ -49,7 +49,7 @@ public class DistanceConstraint extends TypedConstraint {
 
         v3 tmp = new v3();
         v3 tmp2 = new v3();
-        //v3 tmpVec = new v3();
+        
 
         Transform centerOfMassA = rbA.getCenterOfMassTransform(new Transform());
         Transform centerOfMassB = rbB.getCenterOfMassTransform(new Transform());
@@ -60,8 +60,8 @@ public class DistanceConstraint extends TypedConstraint {
         v3 pivotBInW = new v3(pivotInB);
         centerOfMassB.transform(pivotBInW);
 
-        //v3 angvelA = m_rbA.getCenterOfMassTransform().getBasis().transpose() * m_rbA.getAngularVelocity();
-        //v3 angvelB = m_rbB.getCenterOfMassTransform().getBasis().transpose() * m_rbB.getAngularVelocity();
+        
+        
 
         v3 rel_pos1 = new v3();
         rel_pos1.sub(pivotAInW, centerOfMassA);
@@ -79,14 +79,14 @@ public class DistanceConstraint extends TypedConstraint {
 
 
 			/*
-            //velocity error (first order error)
+            
 			btScalar rel_vel = m_jac.getRelativeVelocity(m_rbA.getLinearVelocity(),angvelA,
 			m_rbB.getLinearVelocity(),angvelB);
 			 */
 
-        // positional error (zeroth order error)
+        
         tmp.sub(pivotAInW, pivotBInW);
-        float depth = -tmp.dot(normal); //this is the error projected on the normal
+        float depth = -tmp.dot(normal); 
 
         float impulse = error * ((depth * tau / timeStep) - (damping * rel_vel ));
 
@@ -160,7 +160,7 @@ public class DistanceConstraint extends TypedConstraint {
 
         this.error = (currDist - dist) * speed;
 
-        //System.out.println("dist=" + (currDist - dist) + " " + jac.linearJointAxis);
+        
 
 
     }

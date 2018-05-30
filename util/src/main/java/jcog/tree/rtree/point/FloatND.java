@@ -68,11 +68,11 @@ public class FloatND implements HyperPoint, Serializable, Comparable<FloatND> {
         return hash == floatND.hashCode() && Arrays.equals(coord, floatND.coord);
 
 
-//        for (int i = 0; i < coord.length; i++) {
-//            if (floatToIntBits(coord[i])!=floatToIntBits(floatND.coord[i]))
-//                return false;
-//        }
-//        return true;
+
+
+
+
+
     }
 
     @Override

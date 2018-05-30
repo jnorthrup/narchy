@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 27.12.2003 by RST.
-// $Id: GameMisc.java,v 1.7 2006-01-21 21:53:32 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -93,7 +93,7 @@ public class GameMisc {
     }
 
     public static void SP_light(edict_t self) {
-        // no targeted lights in deathmatch, because they cause global messages
+        
         if (null == self.targetname || GameBase.deathmatch.value != 0) {
             GameUtil.G_FreeEdict(self);
             return;
@@ -117,20 +117,20 @@ public class GameMisc {
         if ((self.spawnflags & 16) != 0)
             self.s.effects |= Defines.EF_ANIM_ALLFAST;
 
-        // just a wall
+        
         if ((self.spawnflags & 7) == 0) {
             self.solid = Defines.SOLID_BSP;
             game_import_t.linkentity(self);
             return;
         }
 
-        // it must be TRIGGER_SPAWN
+        
         if (0 == (self.spawnflags & 1)) {
             game_import_t.dprintf("func_wall missing TRIGGER_SPAWN\n");
             self.spawnflags |= 1;
         }
 
-        // yell if the spawnflags are odd
+        
         if ((self.spawnflags & 4) != 0) {
             if (0 == (self.spawnflags & 2)) {
                 game_import_t.dprintf("func_wall START_ON without TOGGLE\n");
@@ -184,7 +184,7 @@ public class GameMisc {
     }
 
     public static void SP_func_explosive(edict_t self) {
-        if (GameBase.deathmatch.value != 0) { // auto-remove for deathmatch
+        if (GameBase.deathmatch.value != 0) { 
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -222,7 +222,7 @@ public class GameMisc {
     }
 
     public static void SP_misc_explobox(edict_t self) {
-        if (GameBase.deathmatch.value != 0) { // auto-remove for deathmatch
+        if (GameBase.deathmatch.value != 0) { 
             GameUtil.G_FreeEdict(self);
             return;
         }
@@ -344,7 +344,7 @@ public class GameMisc {
     }
 
     public static void SP_misc_deadsoldier(edict_t ent) {
-        if (GameBase.deathmatch.value != 0) { // auto-remove for deathmatch
+        if (GameBase.deathmatch.value != 0) { 
             GameUtil.G_FreeEdict(ent);
             return;
         }
@@ -354,7 +354,7 @@ public class GameMisc {
         ent.s.modelindex = game_import_t
                 .modelindex("models/deadbods/dude/tris.md2");
 
-        // Defaults to frame 0
+        
         if ((ent.spawnflags & 2) != 0)
             ent.s.frame = 1;
         else if ((ent.spawnflags & 4) != 0)
@@ -561,7 +561,7 @@ public class GameMisc {
         game_import_t.linkentity(ent);
     }
 
-    //=====================================================
+    
 
     /*
      * QUAKED target_character (0 0 1) ? used with target_string (must be on
@@ -582,8 +582,8 @@ public class GameMisc {
         self.use = target_string_use;
     }
 
-    // don't let field width of any clock messages change, or it
-    // could cause an overwrite after a game load
+    
+    
 
     public static void func_clock_reset(edict_t self) {
         self.activator = null;
@@ -599,15 +599,15 @@ public class GameMisc {
     public static void func_clock_format_countdown(edict_t self) {
         if (self.style == 0) {
             self.message = "" + self.health;
-            //Com_sprintf(self.message, CLOCK_MESSAGE_SIZE, "%2i",
-            // self.health);
+            
+            
             return;
         }
 
         if (self.style == 1) {
             self.message = "" + self.health / 60 + ':' + self.health % 60;
-            //Com_sprintf(self.message, CLOCK_MESSAGE_SIZE, "%2i:%2i",
-            // self.health / 60, self.health % 60);
+            
+            
             /*
              * if (self.message.charAt(3) == ' ') self.message.charAt(3) = '0';
              */
@@ -822,7 +822,7 @@ public class GameMisc {
     
         if ((Lib.rand() & 1) != 0) {
             gibname = "models/objects/gibs/head2/tris.md2";
-            self.s.skinnum = 1; // second skin is player
+            self.s.skinnum = 1; 
         } else {
             gibname = "models/objects/gibs/skull/tris.md2";
             self.s.skinnum = 0;
@@ -845,7 +845,7 @@ public class GameMisc {
         Math3D.VectorAdd(self.velocity, vd, self.velocity);
     
         if (self.client != null)
-        // bodies in the queue don't have a client anymore
+        
         {
             self.client.anim_priority = Defines.ANIM_DEATH;
             self.client.anim_end = self.s.frame;
@@ -894,7 +894,7 @@ public class GameMisc {
         else if (ent.velocity[1] > 300)
             ent.velocity[1] = 300;
         if (ent.velocity[2] < 200)
-            ent.velocity[2] = 200; // always some upwards
+            ent.velocity[2] = 200; 
         else if (ent.velocity[2] > 500)
             ent.velocity[2] = 500;
     }
@@ -904,8 +904,8 @@ public class GameMisc {
         public String getID() { return "use_areaportal";}
         @Override
         public void use(edict_t ent, edict_t other, edict_t activator) {
-            ent.count ^= 1; // toggle state
-            //	gi.dprintf ("portalstate: %i = %i\n", ent.style, ent.count);
+            ent.count ^= 1; 
+            
             game_import_t.SetAreaPortalState(ent.style, ent.count != 0);
         }
     };
@@ -924,7 +924,7 @@ public class GameMisc {
         @Override
         public boolean think(edict_t ent) {
             ent.use = Use_Areaportal;
-            ent.count = 0; // always start closed;
+            ent.count = 0; 
             return true;
         }
     };
@@ -1136,7 +1136,7 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            // only squash thing we fall on top of
+            
             if (plane == null)
                 return;
             if (plane.normal[2] < 1.0)
@@ -1199,7 +1199,7 @@ public class GameMisc {
             int count;
             int mass;
 
-            // bmodel origins are (0 0 0), we need to adjust that here
+            
             Math3D.VectorScale(self.size, 0.5f, size);
             Math3D.VectorAdd(self.absmin, size, origin);
             Math3D.VectorCopy(origin, self.s.origin);
@@ -1215,14 +1215,14 @@ public class GameMisc {
             Math3D.VectorNormalize(self.velocity);
             Math3D.VectorScale(self.velocity, 150, self.velocity);
 
-            // start chunks towards the center
+            
             Math3D.VectorScale(size, 0.5f, size);
 
             mass = self.mass;
             if (0 == mass)
                 mass = 75;
 
-            // big chunks
+            
             if (mass >= 100) {
                 count = mass / 100;
                 if (count > 8)
@@ -1236,7 +1236,7 @@ public class GameMisc {
                 }
             }
 
-            // small chunks
+            
             count = mass / 25;
             if (count > 16)
                 count = 16;
@@ -1320,7 +1320,7 @@ public class GameMisc {
             Math3D.VectorCopy(self.s.origin, save);
             Math3D.VectorMA(self.absmin, 0.5f, self.size, self.s.origin);
 
-            // a few big chunks
+            
             spd = 1.5f * (float) self.dmg / 200.0f;
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
@@ -1333,7 +1333,7 @@ public class GameMisc {
             ThrowDebris(self, "models/objects/debris1/tris.md2", spd,
                     org);
 
-            // bottom corners
+            
             spd = 1.75f * (float) self.dmg / 200.0f;
             Math3D.VectorCopy(self.absmin, org);
             ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
@@ -1352,7 +1352,7 @@ public class GameMisc {
             ThrowDebris(self, "models/objects/debris3/tris.md2", spd,
                     org);
 
-            // a bunch of little chunks
+            
             spd = 2 * self.dmg / 200;
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
@@ -1419,9 +1419,9 @@ public class GameMisc {
         }
     };
 
-    //
-    // miscellaneous specialty items
-    //
+    
+    
+    
 
     /*
      * QUAKED misc_blackhole (1 .5 0) (-8 -8 -8) (8 8 8)
@@ -1876,7 +1876,7 @@ public class GameMisc {
         }
     };
 
-    //=================================================================================
+    
 
     static final EntTouchAdapter teleporter_touch = new EntTouchAdapter() {
         @Override
@@ -1898,23 +1898,23 @@ public class GameMisc {
                 return;
             }
 
-            // unlink to make sure it can't possibly interfere with KillBox
+            
             game_import_t.unlinkentity(other);
 
             Math3D.VectorCopy(dest.s.origin, other.s.origin);
             Math3D.VectorCopy(dest.s.origin, other.s.old_origin);
             other.s.origin[2] += 10;
 
-            // clear the velocity and hold them in place briefly
+            
             Math3D.VectorClear(other.velocity);
-            other.client.ps.pmove.pm_time = 160 >> 3; // hold time
+            other.client.ps.pmove.pm_time = 160 >> 3; 
             other.client.ps.pmove.pm_flags |= pmove_t.PMF_TIME_TELEPORT;
 
-            // draw the teleport splash at source and on the player
+            
             self.owner.s.event = Defines.EV_PLAYER_TELEPORT;
             other.s.event = Defines.EV_PLAYER_TELEPORT;
 
-            // set angles
+            
             for (i = 0; i < 3; i++) {
                 other.client.ps.pmove.delta_angles[i] = (short) Math3D
                         .ANGLE2SHORT(dest.s.angles[i]
@@ -1925,7 +1925,7 @@ public class GameMisc {
             Math3D.VectorClear(other.client.ps.viewangles);
             Math3D.VectorClear(other.client.v_angle);
 
-            // kill anything at the destination
+            
             GameUtil.KillBox(other);
 
             game_import_t.linkentity(other);
@@ -1945,7 +1945,7 @@ public class GameMisc {
             game_import_t.setmodel(ent, "models/objects/dmspot/tris.md2");
             ent.s.skinnum = 0;
             ent.solid = Defines.SOLID_BBOX;
-            //	ent.s.effects |= EF_FLIES;
+            
             Math3D.VectorSet(ent.mins, -32, -32, -24);
             Math3D.VectorSet(ent.maxs, 32, 32, -16);
             game_import_t.linkentity(ent);

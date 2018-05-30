@@ -18,7 +18,7 @@ public class DisposableTermList extends TermList {
 
         Term[] l = arraySharedKeep();
 
-        //kill this TermList from being used again
+        
         this.items = null;
         this.size = -1;
 

@@ -9,7 +9,7 @@ public class FloatRangeRounded extends FloatRange {
     public FloatRangeRounded(float value, float min, float max, float epsilon) {
         super(value, min, max);
         this.epsilon = epsilon;
-        set(value); //set again
+        set(value); 
     }
 
     @Override

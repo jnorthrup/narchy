@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Supplier;
 
 
-//@ExtendWith(NALTestStats.class)
+
 public abstract class NALTest {
 
 
@@ -20,7 +20,7 @@ public abstract class NALTest {
     public final TestNAR test;
     public final MetaGoal.Report metagoals = new MetaGoal.Report();
 
-    //private TestInfo testInfo;
+    
 
     protected NALTest() {
         test = new TestNAR(nar());
@@ -31,7 +31,7 @@ public abstract class NALTest {
 
     @BeforeEach
     void init() {
-        //
+        
     }
 
 
@@ -50,14 +50,14 @@ public abstract class NALTest {
 
         test.nar.stop();
 
-//        metagoals.add(nar.causes).print(System.out);
 
 
-        //        c.publishEntry(t.toString() /*context.getUniqueId() */ + ".NAR.stats",
-//                nar.stats().toString());
 
-//        if (n.metagoals != null)
-//            metagoals.add(n.metagoals);
+        
+
+
+
+
     }
 
 

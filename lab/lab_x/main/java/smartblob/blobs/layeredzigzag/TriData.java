@@ -23,8 +23,8 @@ public class TriData extends Adjacent {
 	*/
 	public float targetVolume;
 	
-	//protected Shape cachedShape;
-	//"TODO use int x[] and y[] instead of Shape? In LayeredZigzag outer shape? At least to replace TriData.cachedShape, or actually let that be replaced by each TriData knowing its 3 CornerData and let the display code get it from there."
+	
+	
 	
 	protected long cachedInWhatCycle = -1;
 	
@@ -40,15 +40,15 @@ public class TriData extends Adjacent {
 		super(edge?2:3, 3, 3);
 		this.smartblob = smartblob;
 		this.tri = tri;
-		//adjacentTris = new TriData[edge ? 2 : 3];
+		
 	}
 
 
 	/** First LineData in TriData is at same layer as first 2 corners */
 	public void connectAdjacent(){
-		//TODO pointers to TriData
 		
-		//pointers to CornerData works
+		
+		
 		adjacentCorners[0] = smartblob.corners[tri.layer][tri.point];
 		adjacentCorners[1] = smartblob.corners[tri.layer][(tri.point+1)%smartblob.layerSize];
 		boolean layerIsOdd = (tri.layer&1)==1;
@@ -58,10 +58,10 @@ public class TriData extends Adjacent {
 			: smartblob.corners[tri.layer+1][pInOtherLayer];
 			
 			
-		//TODO pointers to LineData
+		
 	}
 	
-	//"TODO qnSmartblobLineObject"
+	
 	
 	/** Returns from cache if same LayeredZigzag.cycle() as last call *
 	public Shape triangle(){
@@ -86,7 +86,7 @@ public class TriData extends Adjacent {
 		final int layer = tri.layer, point = tri.point,
 			layers = smartblob.layers, layerSize = smartblob.layerSize; 
 		if(tri.inward){
-			//TODO merge duplicate code
+			
 			if(layer < 1) throw new IndexOutOfBoundsException("Inward from layer "+layer);
 			boolean layerIsOdd = (layer&1)==1;
 			int pointInOtherLayer = layerIsOdd ? (tri.point+1)%smartblob.layerSize : point;
@@ -102,8 +102,8 @@ public class TriData extends Adjacent {
 				(int)x[layer-1][pointInOtherLayer]
 			};
 			return new Polygon(xi, yi, 3);
-		}else{ //outward
-			//TODO merge duplicate code
+		}else{ 
+			
 			if(layers <= layer) throw new IndexOutOfBoundsException("Outward from layer "+layer);
 			boolean layerIsOdd = (layer&1)==1;
 			int pointInOtherLayer = layerIsOdd ? (point+1)%layerSize : point;

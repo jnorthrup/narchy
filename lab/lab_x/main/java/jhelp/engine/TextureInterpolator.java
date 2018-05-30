@@ -298,10 +298,10 @@ public class TextureInterpolator
             }
          break;
          case UNDEFINED:
-         // Already treat above
+         
          break;
          default:
-         // Should never arrive
+         
          break;
       }
 

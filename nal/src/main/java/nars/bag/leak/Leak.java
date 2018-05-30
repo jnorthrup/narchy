@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Leak<X, Y> {
 
-    //private static final Logger logger = LoggerFactory.getLogger(MutaTaskBag.class);
+    
 
     @NotNull
     public final Bag<X, Y> bag;

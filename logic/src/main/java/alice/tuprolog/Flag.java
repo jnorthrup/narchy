@@ -24,7 +24,7 @@ class Flag implements java.io.Serializable {
 
     private volatile Term value;
     private final Struct valueList;
-//    private final Term   defaultValue;
+
     private final boolean modifiable;
     private final String  libraryName;
     
@@ -39,31 +39,31 @@ class Flag implements java.io.Serializable {
      */
     public Flag(Struct valueSet, Term defValue, boolean modifiable, String library) {
         this.valueList = valueSet;
-//        this.defaultValue = defValue;
+
         this.modifiable = modifiable;
         this.libraryName = library;
         this.value = defValue;
     }
     
-//    protected Flag() {}
+
     
     
-//    /**
-//     * Gets a deep copy of the flag
-//     *
-//     * @return a copy of the flag
-//     */
-//    @Override
-//    public Object clone() {
-//        Flag f = new Flag();
-//        f.name=name;
-//        f.valueList=(Struct)valueList.copy(new HashMap<>(),Var.ORIGINAL);
-//        f.value=value.copy(new HashMap<>(),Var.ORIGINAL);
-//        f.defaultValue=defaultValue.copy(new HashMap<>(),Var.ORIGINAL);
-//        f.modifiable=modifiable;
-//        f.libraryName=libraryName;
-//        return f;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
     /**
      * Checks if a value is valid according to flag description

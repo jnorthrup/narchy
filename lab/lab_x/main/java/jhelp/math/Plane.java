@@ -111,9 +111,9 @@ public class Plane {
     return true;
   }
 
-  //----------------------------------------------------------------------
-  // Internals only below this point
-  //
+  
+  
+  
   
   private void recalc() {
     c = normal.dot(point);

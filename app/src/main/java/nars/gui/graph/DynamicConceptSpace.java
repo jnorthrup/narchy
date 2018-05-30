@@ -49,7 +49,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     volatile static int serial = 0;
     final String spaceID;
 
-    //final StampedLock rw = new StampedLock();
+    
 
 
     public SpaceWidget.TermVis vis;
@@ -72,7 +72,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             @Override
             public void onRemove(PriReference<Activate> value) {
-                //ConceptWidget cw = (ConceptWidget) space.get(value.get().id.term().);
+                
                 ConceptWidget cw = value.get().id.meta(spaceID);
                 if (cw != null) {
                     cw.deactivate();
@@ -139,7 +139,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 w.clear();
 
                 concepts.forEach((clink) -> {
-                    //ConceptWidget cw = space.getOrAdd(clink.get().id, ConceptWidget::new);
+                    
                     Concept cc = clink.get().id;
                     ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc) {
                         @Override
@@ -155,7 +155,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                         w.add(cw);
 
                     }
-                    //space.getOrAdd(concept.term(), materializer).setConcept(concept, now)
+                    
                 });
 
 
@@ -173,8 +173,8 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         Priority {
             @Override
             public void color(ConceptWidget cw, NAR nar) {
-//                Draw.colorUnipolarHue(
-//                        cw.id.hashCode(), cw.shapeColor, cw.pri);
+
+
                 float p = cw.pri;
                 p = 0.25f + 0.75f * p;
                 float[] sc = cw.shapeColor;
@@ -248,28 +248,28 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             this.edges =
 
-                    //new PLinkHijackBag(0, 2);
-                    //edges.setCapacity(maxEdges);
+                    
+                    
 
-                    //new ConcurrentArrayBag<>(
+                    
                     new PLinkArrayBag(
-                            //maxEdges,
-//                            //PriMerge.max,
-//                            //PriMerge.replace,
+                            
+
+
                             PriMerge.plus,
-//                            //new UnifiedMap()
-//                            //new LinkedHashMap()
-//                            //new LinkedHashMap() //maybe: edgeBagSharedMap
+
+
+
                             maxEdges
-//                            new HashMap()
+
                     );
-//                    ) {
-//                        @Nullable
-//                        @Override
-//                        public ConceptWidget.EdgeComponent key(ConceptWidget.EdgeComponent x) {
-//                            return x;
-//                        }
-//                    };
+
+
+
+
+
+
+
         }
 
 
@@ -278,7 +278,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             pending.forEach(this::preCollect);
 
-            //float priSum = edges.priSum();
+            
 
             pending.forEach(c -> {
                 c.edges.write().values().forEach(x -> x.inactive = true);
@@ -312,7 +312,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                     if (e.inactive)
                         return true;
 
-                    //e.update(termlinkOpac, tasklinkOpac)
+                    
 
                     float edgeSum = (e.termlinkPri + e.tasklinkPri);
 
@@ -337,13 +337,13 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
                         e.a = Util.lerp(p /* * Math.max(taskish, termish) */, lineAlphaMin, lineAlphaMax);
 
-                        //0.05f + 0.9f * Util.and(this.r * tasklinkBoost, this.g * termlinkBoost);
+                        
 
-                        e.attraction = 0.5f * e.width / 2f;// + priSum * 0.75f;// * 0.5f + 0.5f;
+                        e.attraction = 0.5f * e.width / 2f;
                         float totalRad = srcRad + e.tgt().radius();
                         e.attractionDist =
-                                //4f;
-                                (totalRad * separation) + totalRad; //target.radius() * 2f;// 0.25f; //1f + 2 * ( (1f - (qEst)));
+                                
+                                (totalRad * separation) + totalRad; 
                     } else {
                         e.a = -1;
                         e.attraction = 0;
@@ -377,20 +377,20 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             if (term.op().conceptualizable) {
                 Term tt = term.concept();
                 if (!tt.equals(src.id.term())) {
-                    @Deprecated Concept cc = nar.concept(tt); //TODO generic key should be Term not Concept this would avoid a lookup in the main index
+                    @Deprecated Concept cc = nar.concept(tt); 
                     if (cc != null) {
                         ConceptWidget tgt = cc.meta(spaceID);
                         if (tgt != null && tgt.active()) {
-                            //                Concept c = space.nar.concept(tt);
-                            //                if (c != null) {
+                            
+                            
 
 
 
                             edges.putAsync(new ConceptWidget.EdgeComponent(src, tgt, type, pri * edgeBrightness.floatValue()));
-                            //new PLinkUntilDeleted(ate, pri)
-                            //new PLink(ate, pri)
+                            
+                            
 
-                            //                }
+                            
                         }
                     }
                 }
@@ -402,20 +402,20 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             float p = cw.pri;
 
 
-            //long now = space.now();
-//            float b = conceptWidget.concept.beliefs().eviSum(now);
-//            float g = conceptWidget.concept.goals().eviSum(now);
-//            float q = conceptWidget.concept.questions().priSum();
+            
 
-            //sqrt because the area will be the sqr of this dimension
+
+
+
+            
 
             float volume = 1f / (1f + cw.id.complexity());
             float density = 5f / (1f + volume);
             float ep = 1 + p;
             float minSize = this.minSize.floatValue();
             float nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue()
-                    ;//* volume /* ^1/3? */;
-            //1f + 2f * p;
+                    ;
+            
 
             boolean atomic = (cw.id.op().atomic);
             if (atomic)
@@ -427,7 +427,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             } else {
                 float l = nodeScale * 1.618f;
                 float w = nodeScale;
-                float h = 1; //nodeScale / (1.618f * 2);
+                float h = 1; 
                 cw.scale(l, w, h);
             }
 
@@ -438,23 +438,23 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             }
 
-//            Draw.hsb(
-//                    (tt.op().ordinal() / 16f),
-//                    0.5f + 0.5f / tt.volume(),
-//                    0.3f + 0.2f * p,
-//                    0.9f, conceptWidget.shapeColor);
+
+
+
+
+
 
             cw.front.visible(showLabel.get());
 
-//            Concept c = cw.id;
-//            if (c != null) {
-////                Truth belief = c.belief(space.now, space.dur);
-////                if (belief == null) belief = zero;
-////                Truth goal = c.goal(space.now, space.dur);
-////                if (goal == null) goal = zero;
-////
-////                float angle = 45 + belief.freq() * 180f + (goal.freq() - 0.5f) * 90f;
-//                //angle / 360f
+
+
+
+
+
+
+
+
+
 
             colorNode.get().color(cw, nar);
 

@@ -53,7 +53,7 @@ abstract public class Deriver extends Causable {
 
     public DeriverBudgeting prioritize =
             new DefaultDeriverBudgeting();
-            //new NormalizingDeriverBudgeting(new DefaultDeriverBudgeting());
+            
 
     public Deriver(NAR nar, String... rules) {
         this(new PremiseDeriverRuleSet(nar, rules));
@@ -79,7 +79,7 @@ abstract public class Deriver extends Causable {
 
     public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, PremiseDeriver rules, NAR nar) {
         super(
-            $.func("deriver", $.the(serial.getAndIncrement())) //HACK
+            $.func("deriver", $.the(serial.getAndIncrement())) 
         );
         this.rules = rules;
         this.source = source;
@@ -100,7 +100,7 @@ abstract public class Deriver extends Causable {
         derive(n, iterations, d);
 
         int derived = d.flush(target);
-        return iterations; //HACK
+        return iterations; 
     }
 
     abstract protected void derive(NAR n, int iterations, Derivation d);
@@ -129,7 +129,7 @@ abstract public class Deriver extends Causable {
         TermlinkTemplates t = concept.templates();
 
         Concept[] templates = t.concepts(nar, true);
-        //activate the task concept termlink templates
+        
 
         return templates;
     }
@@ -156,114 +156,114 @@ abstract public class Deriver extends Causable {
 }
 
 
-//    /**
-//     * for now it seems there is a leak so its better if each NAR gets its own copy. adds some overhead but we'll fix this later
-//     * not working yet probably due to unsupported ellipsis IO codec. will fix soon
-//     */
-//    static PremiseRuleSet DEFAULT_RULES_cached() {
-//
-//
-//        return new PremiseRuleSet(
-//                Stream.of(
-//                        "nal1.nal",
-//                        //"nal4.nal",
-//                        "nal6.nal",
-//                        "misc.nal",
-//                        "induction.nal",
-//                        "nal2.nal",
-//                        "nal3.nal"
-//                ).flatMap(x -> {
-//                    try {
-//                        return rulesParsed(x);
-//                    } catch (Exception e) {
-//                        e.printStackTrace();
-//                    }
-//                    return Stream.empty();
-//                }), new PatternTermIndex(), true);
-//    }
 
 
-//    PremiseRuleSet DEFAULT_RULES = PremiseRuleSet.rules(true,
-//                "nal1.nal",
-//                //"nal4.nal",
-//                "nal6.nal",
-//                "misc.nal",
-//                "induction.nal",
-//                "nal2.nal",
-//                "nal3.nal"
-//        );
 
 
-//    Cache<String, Deriver> derivers = Caffeine.newBuilder().builder();
-//    Function<String,Deriver> loader = (s) -> new TrieDeriver(PremiseRuleSet.rules(s));
-
-//    @NotNull
-//    static Deriver get(String... path) {
-//        PremiseRuleSet rules = PremiseRuleSet.rules(true, path);
-//        return TrieDeriver.get(rules);
-//    }
 
 
-//    Logger logger = LoggerFactory.getLogger(Deriver.class);
-//
-//    BiConsumer<Stream<Compound>, DataOutput> encoder = (x, o) -> {
-//        try {
-//            IO.writeTerm(x, o);
-//            //o.writeUTF(x.getTwo());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e); //e.printStackTrace();
-//        }
-//    };
-//
-//
-//    @NotNull
-//    static Stream<Pair<PremiseRule, String>> rulesParsed(String ruleSet) throws IOException, URISyntaxException {
-//
-//        PatternTermIndex p = new PatternTermIndex();
-//
-//        Function<DataInput, PremiseRule> decoder = (i) -> {
-//            try {
-//                return //Tuples.pair(
-//                        (PremiseRule) readTerm(i, p);
-//                //,i.readUTF()
-//                //);
-//            } catch (IOException e) {
-//                throw new RuntimeException(e); //e.printStackTrace();
-//                //return null;
-//            }
-//        };
-//
-//
-//        URL path = NAR.class.getResource("nal/" + ruleSet);
-//
-//        Stream<PremiseRule> parsed =
-//                FileCache.fileCache(path, PremiseRuleSet.class.getSimpleName(),
-//                        () -> load(ruleSet),
-//                        encoder,
-//                        decoder,
-//                        logger
-//                );
-//
-//        return parsed.map(x -> Tuples.pair(x, "."));
-//    }
-//
-//    static Stream<PremiseRule> load(String ruleFile) {
-//        return parsedRules(new PatternTermIndex(), ruleFile).map(Pair::getOne /* HACK */);
-//    }
 
-//    protected void input(Collection<Task> x) {
-////        //experimental normalization
-////        final float[] priSum = {0};
-////        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
-////        if (priSum[0] > 1f) {
-////            float factor = 1f/priSum[0];
-////            derivations.values().forEach(dd -> dd.priMult(factor));
-////        }
-//
-////        int limit = Math.max(8, premises * 2);
-////        if (x.size() > limit) {
-////            x = x.stream().sorted(Comparators.byFloatFunction(Task::priElseZero).reversed()).limit(limit).collect(toList());
-////        }
-//
-//        target.accept(x);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

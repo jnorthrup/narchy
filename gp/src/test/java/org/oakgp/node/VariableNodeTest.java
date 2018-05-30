@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,7 +57,7 @@ public class VariableNodeTest {
         assertEquals(n1, n1);
         assertEquals(n2, n2);
         assertEquals(n1.hashCode(), n2.hashCode());
-        // NOTE: *not* over-riding equals(Object) as two VariableNode references are only "equal" if they refer to the same instance
+        
         assertNotEquals(n1, n2);
     }
 

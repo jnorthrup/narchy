@@ -47,7 +47,7 @@ public class ByQActionSelector implements ActionSelector {
         for (int i = 0; i < ret.length; ++i) {
             double v = ret[i].getV();
             ret[i].setV(
-                    //Math.pow(v, 2)
+                    
                     v * v
             );
         }

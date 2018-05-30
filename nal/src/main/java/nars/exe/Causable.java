@@ -74,7 +74,7 @@ abstract public class Causable extends NARService {
             end = System.nanoTime();
         }
 
-        if (completed >= 0) //TODO this should be done after releasing the singleton state
+        if (completed >= 0) 
             can.add((end - start), completed);
 
         Exe.profiled(can, start, end);

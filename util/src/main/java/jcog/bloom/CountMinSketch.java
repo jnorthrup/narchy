@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -80,15 +80,15 @@ import java.nio.ByteBuffer;
  * so even if there are multiple hash collisions, the returned value will be the best estimate
  * (upper bound) for the given key. The actual count can never be greater than this value.
  *
- * http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.146.2889&rep=rep1&type=pdf
+ * http:
  */
 public class CountMinSketch {
-    // 1% estimation error with 1% probability (99% confidence) that the estimation breaks this limit
+    
     private static final float DEFAULT_DELTA = 0.01f;
     private static final float DEFAULT_EPSILON = 0.01f;
     public final int w;
     public final int d;
-    protected final int[][] multiset; //TODO rotate and convert to 1D array
+    protected final int[][] multiset; 
 
     public CountMinSketch() {
         this(DEFAULT_DELTA, DEFAULT_EPSILON);
@@ -123,20 +123,20 @@ public class CountMinSketch {
     }
 
     public void add(byte... key) {
-        // We use the trick mentioned in "Less Hashing, Same Performance: Building a Better Bloom Filter"
-        // by Kirsch et.al. From abstract 'only two hash functions are necessary to effectively
-        // implement a Bloom filter without any loss in the asymptotic false positive probability'
-        // The paper also proves that the same technique (using just 2 pairwise independent hash functions)
-        // can be used for Count-Min sketch.
+        
+        
+        
+        
+        
 
-        // Lets split up 64-bit hashcode into two 32-bit hashcodes and employ the technique mentioned
-        // in the above paper
+        
+        
         long hash64 = Murmur3Hash.hash64(key);
         int hash1 = (int) hash64;
         int hash2 = (int) (hash64 >>> 32);
         for (int i = 0; i < d; i++) {
             int combinedHash = hash1 + ((i - 1) * hash2);
-            // hashcode should be positive, flip all the bits if it's negative
+            
             if (combinedHash < 0) {
                 combinedHash = ~combinedHash;
             }
@@ -195,7 +195,7 @@ public class CountMinSketch {
         int min = Integer.MAX_VALUE;
         for (int i = 0; i < d; i++) {
             int combinedHash = hash1 + ((i-1) * hash2);
-            // hashcode should be positive, flip all the bits if it's negative
+            
             if (combinedHash < 0) {
                 combinedHash = ~combinedHash;
             }

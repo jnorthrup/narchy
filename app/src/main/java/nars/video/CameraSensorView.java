@@ -34,13 +34,13 @@ import java.util.function.Consumer;
  */
 public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
-    private static final int OPEN_CONCEPT_BUTTON = 1; //middle button
+    private static final int OPEN_CONCEPT_BUTTON = 1; 
 
     private final Bitmap2DSensor cam;
     private final NAR nar;
 
     private DurService on;
-//    private float maxConceptPriority;
+
     private long start, end;
     int dur;
 
@@ -130,11 +130,11 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         dur = nn.dur();
         this.start = now - dur;
         this.end = now + dur;
-//        maxConceptPriority = 1;
+
         update();
-//            nar instanceof Default ?
-//                ((Default) nar).focus.active.priMax() :
-//                1; //HACK TODO cache this
+
+
+
     }
 
     @Override
@@ -149,7 +149,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         float R = bf*0.75f, G = bf*0.75f, B = bf*0.75f;
         if (d!=null) {
             float f = d.expectation();
-            //float c = d.conf();
+            
             if (f > 0.5f) {
                 G += 0.25f * (f - 0.5f)*2f;
             } else {
@@ -157,10 +157,10 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
             }
         }
 
-//        float p = 1f;//nar.pri(s);
-//        if (p!=p) p = 0;
 
-        //p /= maxConceptPriority;
+
+
+        
 
 
 

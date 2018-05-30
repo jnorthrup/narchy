@@ -41,7 +41,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
             b.on((bb,e) -> {
                 if (e) {
                     if (mode == Mode.Multi) {
-                        //allow freely to toggle
+                        
                     } else if (mode == Mode.One) {
                         this.buttons.forEach(cc -> {
                             if (cc != bb)
@@ -49,10 +49,10 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
                         });
                     }
                 } else {
-//                    if (mode == Mode.One) {
-//                        bb.set(true); //HACK dont allow to untoggle
-//                        return;
-//                    }
+
+
+
+
                 }
 
                 if (outerAction != null)
@@ -66,7 +66,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
         set(buttons);
 
         if (mode == Mode.One) {
-            //select the first by default
+            
             this.buttons.first().set(true);
         }
     }

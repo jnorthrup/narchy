@@ -19,7 +19,7 @@ public class StepTruthlet extends ProxyTruthlet {
         long e = end();
 
         if (s <= when && when <= e) {
-            super.truth(when, freqEvi); //during the duty cycle
+            super.truth(when, freqEvi); 
         } else {
 
             long sd = Math.abs(s - when);

@@ -16,21 +16,21 @@ package jcog.data.bit;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  * 
  */
 
-//import it.unimi.dsi.fastutil.BigList;
-//import it.unimi.dsi.fastutil.booleans.AbstractBooleanBigList;
-//import it.unimi.dsi.fastutil.longs.AbstractLongBidirectionalIterator;
-//import it.unimi.dsi.fastutil.longs.AbstractLongBigList;
-//import it.unimi.dsi.fastutil.longs.AbstractLongBigListIterator;
-//import it.unimi.dsi.fastutil.longs.AbstractLongSortedSet;
-//import it.unimi.dsi.fastutil.longs.LongBidirectionalIterator;
-//import it.unimi.dsi.fastutil.longs.LongBigList;
-//import it.unimi.dsi.fastutil.longs.LongComparator;
-//import it.unimi.dsi.fastutil.longs.LongSet;
-//import it.unimi.dsi.fastutil.longs.LongSortedSet;
+
+
+
+
+
+
+
+
+
+
+
 
 /** An abstract implementation of a {@link BitVector}.
  * 
@@ -335,255 +335,255 @@ public abstract class AbstractBitVector implements BitVector {
 		return bits;
 	}
 	
-//	/** An integer sorted set view of a bit vector.
-//	 *
-//	 * <P>This class implements in the obvious way an integer set view
-//	 * of a bit vector. The vector is enlarged as needed (i.e., when
-//	 * a one beyond the current size is set), but it is never shrunk.
-//	 */
-//
-//	public static class LongSetView extends AbstractLongSortedSet implements LongSet, Serializable {
-//
-//		protected final BitVector bitVector;
-//		private static final long serialVersionUID = 1L;
-//		private final long from;
-//		private final long to;
-//
-//		public LongSetView( final BitVector bitVector, final long from, final long to ) {
-//			if ( from > to ) throw new IllegalArgumentException( "Start index (" + from + ") is greater than end index (" + to + ")" );
-//			this.bitVector = bitVector;
-//			this.from = from;
-//			this.to = to;
-//		}
-//
-//
-//		public boolean contains( final long index ) {
-//			if ( index < 0 ) throw new IllegalArgumentException( "The provided index (" + index + ") is negative" );
-//			if ( index < from || index >= to ) return false;
-//			return index < bitVector.size() && bitVector.getBoolean( index );
-//		}
-//
-//		public boolean add( final long index ) {
-//			if ( index < 0 ) throw new IllegalArgumentException( "The provided index (" + index + ") is negative" );
-//			if ( index < from || index >= to ) return false;
-//
-//			final int size = bitVector.size();
-//			if ( index >= size ) bitVector.length( index + 1 );
-//			final boolean oldValue = bitVector.getBoolean( index );
-//			bitVector.set( index );
-//			return ! oldValue;
-//		}
-//
-//		public boolean remove( final long index ) {
-//			final int size = bitVector.size();
-//			if ( index >= size ) return false;
-//			final boolean oldValue = bitVector.getBoolean( index );
-//			bitVector.clear( index );
-//			return oldValue;
-//		}
-//
-//		@Override
-//		public void clear() {
-//			bitVector.clear();
-//		}
-//
-//		public int size() {
-//			// This minimisation is necessary for implementations not supporting long indices.
-//			final long size = bitVector.subVector( from, Math.min( to, bitVector.length() ) ).count();
-//			if ( size > Integer.MAX_VALUE ) throw new IllegalStateException( "Set is too large to return an integer size" );
-//			return (int)size;
-//		}
-//
-//		public LongBidirectionalIterator iterator() {
-//			return iterator( 0 );
-//		}
-//
-//		private final class LongSetViewIterator extends AbstractLongBidirectionalIterator {
-//			long pos, last = -1, nextPos = -1, prevPos = -1;
-//
-//			private LongSetViewIterator( long from ) {
-//				pos = from;
-//			}
-//
-//			public boolean hasNext() {
-//				if ( nextPos == -1 && pos < bitVector.length() ) nextPos = bitVector.nextOne( pos );
-//				return nextPos != -1;
-//			}
-//
-//			public boolean hasPrevious() {
-//				if ( prevPos == -1 && pos > 0 ) prevPos = bitVector.previousOne( pos );
-//				return prevPos != -1;
-//			}
-//
-//			public long nextLong() {
-//				if ( ! hasNext() ) throw new NoSuchElementException();
-//				last = nextPos;
-//				pos = nextPos + 1;
-//				nextPos = -1;
-//				return last;
-//			}
-//
-//			public long previousLong() {
-//				if ( ! hasPrevious() ) throw new NoSuchElementException();
-//				pos = prevPos;
-//				prevPos = -1;
-//				return last = pos;
-//			}
-//
-//			public void remove() {
-//				if ( last == -1 ) throw new IllegalStateException();
-//				bitVector.clear( last );
-//			}
-//		}
-//
-//		public LongBidirectionalIterator iterator( final long from ) {
-//			return new LongSetViewIterator( from );
-//		}
-//
-//		public long firstLong() {
-//			return bitVector.nextOne( from );
-//		}
-//
-//		public long lastLong() {
-//			return bitVector.previousOne( Math.min( bitVector.length(), to ) );
-//		}
-//
-//		public LongComparator comparator() {
-//			return null;
-//		}
-//
-//		public LongSortedSet headSet( final long to ) {
-//			return to < this.to ? new LongSetView( bitVector, from, to ) : this;
-//		}
-//
-//		public LongSortedSet tailSet( final long from ) {
-//			return from > this.from ? new LongSetView( bitVector, from, to ) : this;
-//		}
-//
-//		public LongSortedSet subSet( long from, long to ) {
-//			to = to < this.to ? to : this.to;
-//			from = from > this.from ? from : this.from;
-//			if ( from == this.from && to == this.to ) return this;
-//			return new LongSetView( bitVector, from, to );
-//		}
-//	}
-//
-//	/** A list-of-integers view of a bit vector.
-//	 *
-//	 * <P>This class implements in the obvious way a view
-//	 * of a bit vector as a list of integers of given width. The vector is enlarged as needed (i.e., when
-//	 * adding new elements), but it is never shrunk.
-//	 */
-//
-//	public static class LongBigListView extends AbstractLongBigList implements LongBigList, Serializable {
-//		private static final long serialVersionUID = 1L;
-//		/** The underlying bit vector. */
-//		protected final BitVector bitVector;
-//		/** The width in bit of an element of this list view. */
-//		protected final int width;
-//		/** A bit mask containing {@link #width} bits set to one. */
-//		protected final long fullMask;
-//
-//		public LongBigListView( final BitVector bitVector, final int width ) {
-//			this.width = width;
-//			this.bitVector = bitVector;
-//			fullMask = width == Long.SIZE ? -1 : ( 1L << width ) - 1;
-//		}
-//
-//		public long length() {
-//			return width == 0 ? 0 : bitVector.length() / width;
-//		}
-//
-//		public int size() {
-//			final long length = length();
-//			if ( length > Integer.MAX_VALUE ) throw new IllegalStateException( "The number of elements of this bit list (" + length + ") exceeds Integer.MAX_INT" );
-//			return (int)length;
-//		}
-//
-//		public long size64() {
-//			return length();
-//		}
-//
-//		public LongBigList length( final long newSize ) {
-//			bitVector.length( newSize * width );
-//			return this;
-//		}
-//
-//		public void size( final long newSize ) {
-//			length( newSize );
-//		}
-//
-//		// TODO: implement set()/remove()
-//		private final class LongBigListIterator extends AbstractLongBigListIterator {
-//			private long pos = 0;
-//			public boolean hasNext() { return pos < length(); }
-//			public boolean hasPrevious() { return pos > 0; }
-//
-//			@Override
-//			public long nextLong() {
-//				if ( ! hasNext() ) throw new NoSuchElementException();
-//				return getLong( pos++ );
-//			}
-//
-//			@Override
-//			public long previousLong() {
-//				if ( ! hasPrevious() ) throw new NoSuchElementException();
-//				return getLong( --pos );
-//			}
-//
-//			public long nextIndex() {
-//				return pos;
-//			}
-//
-//			public long previousIndex() {
-//				return pos - 1;
-//			}
-//		}
-//
-//		@Override
-//		public it.unimi.dsi.fastutil.longs.LongBigListIterator listIterator() {
-//			return new LongBigListIterator();
-//		}
-//
-//		public void add( int index, long value ) {
-//			add( (long)index, value );
-//		}
-//
-//		public void add( long index, long value ) {
-//			if ( width != Long.SIZE && value > fullMask ) throw new IllegalArgumentException();
-//			for( int i = 0; i < width; i++ ) bitVector.add( ( value & 1L << i ) != 0 );
-//		}
-//
-//		public long getLong( long index ) {
-//			final long start = index * width;
-//			return bitVector.getLong( start, start + width );
-//		}
-//
-//		public long getLong( int index ) {
-//			return getLong( (long)index );
-//		}
-//
-//		// TODO
-//		public long removeLong( final long index ) {
-//			throw new UnsupportedOperationException();
-//		}
-//
-//		public long set( long index, long value ) {
-//			if ( width != Long.SIZE && value > fullMask ) throw new IllegalArgumentException();
-//			long oldValue = getLong( index );
-//			final long start = index * width;
-//			for( int i = width; i-- != 0; ) bitVector.set( i + start, ( value & 1L << i ) != 0 );
-//			return oldValue;
-//		}
-//
-//		public long set( int index, long value ) {
-//			return set( (long)index, value );
-//		}
-//
-//		public LongBigList subList( long from, long to ) {
-//			return bitVector.subVector( from * width, to * width ).asLongBigList( width );
-//		}
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		
 	@Override
 	public BitVector length(long newLength ) {
@@ -620,11 +620,11 @@ public abstract class AbstractBitVector implements BitVector {
 		return subVector( from, length() );
 	}
 
-//	@Override
-//	public int compareTo( final BigList<? extends Boolean> list ) {
-//		if ( list instanceof BitVector ) return compareTo( (BitVector)list );
-//		return super.compareTo( list );
-//	}
+
+
+
+
+
 	
 	public int compareTo( BitVector v ) {
 		long minLength = Math.min( length(), v.length() );

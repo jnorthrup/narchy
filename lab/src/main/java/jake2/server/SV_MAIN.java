@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 13.01.2004 by RST.
-// $Id: SV_MAIN.java,v 1.16 2006-01-20 22:44:07 salomo Exp $
+
+
 package jake2.server;
 
 import jake2.Defines;
@@ -45,7 +45,7 @@ public class SV_MAIN {
         }
     }
 
-    public static client_t sv_client; // current client
+    public static client_t sv_client; 
 
     public static cvar_t sv_paused;
 
@@ -53,12 +53,12 @@ public class SV_MAIN {
 
     public static cvar_t sv_enforcetime;
 
-    public static cvar_t timeout; // seconds without any message
+    public static cvar_t timeout; 
 
-    public static cvar_t zombietime; // seconds to sink messages after
-                                     // disconnect
+    public static cvar_t zombietime; 
+                                     
 
-    public static cvar_t rcon_password; // password for remote server commands
+    public static cvar_t rcon_password; 
 
     public static cvar_t allow_download;
 
@@ -72,19 +72,19 @@ public class SV_MAIN {
 
     public static cvar_t sv_airaccelerate;
 
-    public static cvar_t sv_noreload; // don't reload level state when
-                                      // reentering
+    public static cvar_t sv_noreload; 
+                                      
 
-    public static cvar_t maxclients; // FIXME: rename sv_maxclients
+    public static cvar_t maxclients; 
 
     public static cvar_t sv_showclamp;
 
     public static cvar_t hostname;
 
-    public static cvar_t public_server; // should heartbeats be sent
+    public static cvar_t public_server; 
 
-    public static cvar_t sv_reconnect_limit; // minimum seconds between connect
-                                             // messages
+    public static cvar_t sv_reconnect_limit; 
+                                             
 
     /**
      * Send a message to the master every few minutes to let it know we are
@@ -98,12 +98,12 @@ public class SV_MAIN {
      * crashing.
      */
     public static void SV_DropClient(client_t drop) {
-        // add the disconnect
+        
         MSG.WriteByte(drop.netchan.message, Defines.svc_disconnect);
 
         if (drop.state == Defines.cs_spawned) {
-            // call the prog function for removing a client
-            // this will remove the body, among other things
+            
+            
             PlayerClient.ClientDisconnect(drop.edict);
         }
 
@@ -112,7 +112,7 @@ public class SV_MAIN {
             drop.download = null;
         }
 
-        drop.state = Defines.cs_zombie; // become free in a few seconds
+        drop.state = Defines.cs_zombie; 
         drop.name = "";
     }
 
@@ -147,7 +147,7 @@ public class SV_MAIN {
                 statusLength = status.length();
 
                 if (statusLength + playerLength >= 1024)
-                    break; // can't hold any more
+                    break; 
 
                 status += player;
             }
@@ -182,7 +182,7 @@ public class SV_MAIN {
         int version;
 
         if (SV_MAIN.maxclients.value == 1)
-            return; // ignore in single player
+            return; 
 
         version = Lib.atoi(Cmd.Argv(1));
 
@@ -223,7 +223,7 @@ public class SV_MAIN {
         oldest = 0;
         oldestTime = 0x7fffffff;
 
-        // see if we already have a challenge for this ip
+        
         for (i = 0; i < Defines.MAX_CHALLENGES; i++) {
             if (NET.CompareBaseAdr(Globals.net_from,
                     SV_INIT.svs.challenges[i].adr))
@@ -235,14 +235,14 @@ public class SV_MAIN {
         }
 
         if (i == Defines.MAX_CHALLENGES) {
-            // overwrite the oldest
+            
             SV_INIT.svs.challenges[oldest].challenge = Lib.rand() & 0x7fff;
             SV_INIT.svs.challenges[oldest].adr = Globals.net_from;
             SV_INIT.svs.challenges[oldest].time = Globals.curtime;
             i = oldest;
         }
 
-        // send it back
+        
         Netchan.OutOfBandPrint(Defines.NS_SERVER, Globals.net_from,
                 "challenge " + SV_INIT.svs.challenges[i].challenge);
     }
@@ -275,10 +275,10 @@ public class SV_MAIN {
         int challenge = Lib.atoi(Cmd.Argv(3));
         userinfo = Cmd.Argv(4);
 
-        // force the IP key/value pair so the game can filter based on ip
+        
         userinfo = Info.Info_SetValueForKey(userinfo, "ip", NET.AdrToString(Globals.net_from));
 
-        // attractloop servers are ONLY for local clients
+        
         if (SV_INIT.sv.attractloop) {
             if (!NET.IsLocalAddress(adr)) {
                 Com.Printf("Remote connect in attract loop.  Ignored.\n");
@@ -288,13 +288,13 @@ public class SV_MAIN {
             }
         }
 
-        // see if the challenge is valid
+        
         if (!NET.IsLocalAddress(adr)) {
             for (i = 0; i < Defines.MAX_CHALLENGES; i++) {
                 if (NET.CompareBaseAdr(Globals.net_from,
                         SV_INIT.svs.challenges[i].adr)) {
                     if (challenge == SV_INIT.svs.challenges[i].challenge)
-                        break; // good
+                        break; 
                     Netchan.OutOfBandPrint(Defines.NS_SERVER, adr,
                             "print\nBad challenge.\n");
                     return;
@@ -307,7 +307,7 @@ public class SV_MAIN {
             }
         }
 
-        // if there is already a slot for this ip, reuse it
+        
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
 
@@ -328,8 +328,8 @@ public class SV_MAIN {
             }
         }
 
-        // find a client slot
-        //newcl = null;
+        
+        
         int index = -1;
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
@@ -352,9 +352,9 @@ public class SV_MAIN {
      */
     public static void gotnewcl(int i, int challenge, String userinfo,
             netadr_t adr, int qport) {
-        // builder a new connection
-        // accept the new client
-        // this is the only place a client_t is ever initialized
+        
+        
+        
 
         SV_MAIN.sv_client = SV_INIT.svs.clients[i];
         
@@ -363,13 +363,13 @@ public class SV_MAIN {
         edict_t ent = GameBase.g_edicts[edictnum];
         SV_INIT.svs.clients[i].edict = ent;
         
-        // save challenge for checksumming
+        
         SV_INIT.svs.clients[i].challenge = challenge;
         
         
 
-        // get the game a chance to reject this connection or modify the
-        // userinfo
+        
+        
         if (!(PlayerClient.ClientConnect(ent, userinfo))) {
             if (Info.Info_ValueForKey(userinfo, "rejmsg") != null)
                 Netchan.OutOfBandPrint(Defines.NS_SERVER, adr, "print\n"
@@ -382,11 +382,11 @@ public class SV_MAIN {
             return;
         }
 
-        // parse some info from the info strings
+        
         SV_INIT.svs.clients[i].userinfo = userinfo;
         SV_UserinfoChanged(SV_INIT.svs.clients[i]);
 
-        // send the connect packet to the client
+        
         Netchan.OutOfBandPrint(Defines.NS_SERVER, adr, "client_connect");
 
         Netchan.Setup(Defines.NS_SERVER, SV_INIT.svs.clients[i].netchan, adr, qport);
@@ -398,7 +398,7 @@ public class SV_MAIN {
                 SV_INIT.svs.clients[i].datagram_buf.length);
         
         SV_INIT.svs.clients[i].datagram.allowoverflow = true;
-        SV_INIT.svs.clients[i].lastmessage = SV_INIT.svs.realtime; // don't timeout
+        SV_INIT.svs.clients[i].lastmessage = SV_INIT.svs.realtime; 
         SV_INIT.svs.clients[i].lastconnect = SV_INIT.svs.realtime;
         Com.DPrintf("new client added.\n");
     }
@@ -470,7 +470,7 @@ public class SV_MAIN {
         String c;
 
         MSG.BeginReading(Globals.net_message);
-        MSG.ReadLong(Globals.net_message); // skip the -1 marker
+        MSG.ReadLong(Globals.net_message); 
 
         s = MSG.ReadStringLine(Globals.net_message);
 
@@ -478,9 +478,9 @@ public class SV_MAIN {
 
         c = Cmd.Argv(0);
         
-        //for debugging purposes 
-        //Com.Printf("Packet " + NET.AdrToString(Netchan.net_from) + " : " + c + "\n");
-        //Com.Printf(Lib.hexDump(net_message.data, 64, false) + "\n");
+        
+        
+        
 
         if (0 == Lib.strcmp(c, "ping"))
             SVC_Ping();
@@ -530,7 +530,7 @@ public class SV_MAIN {
             else
                 cl.ping = total / count;
 
-            // let the game dll know about the ping
+            
             cl.edict.client.ping = cl.ping;
         }
     }
@@ -551,7 +551,7 @@ public class SV_MAIN {
             if (cl.state == Defines.cs_free)
                 continue;
 
-            cl.commandMsec = 1800; // 1600 + some slop
+            cl.commandMsec = 1800; 
         }
     }
 
@@ -566,7 +566,7 @@ public class SV_MAIN {
         while (NET.GetPacket(Defines.NS_SERVER, Globals.net_from,
                 Globals.net_message)) {
 
-            // check for connectionless packet (0xffffffff) first
+            
             if ((Globals.net_message.data[0] == -1)
                     && (Globals.net_message.data[1] == -1)
                     && (Globals.net_message.data[2] == -1)
@@ -575,14 +575,14 @@ public class SV_MAIN {
                 continue;
             }
 
-            // read the qport out of the message so we can fix up
-            // stupid address translating routers
+            
+            
             MSG.BeginReading(Globals.net_message);
-            MSG.ReadLong(Globals.net_message); // sequence number
-            MSG.ReadLong(Globals.net_message); // sequence number
+            MSG.ReadLong(Globals.net_message); 
+            MSG.ReadLong(Globals.net_message); 
             qport = MSG.ReadShort(Globals.net_message) & 0xffff;
 
-            // check for packets from connected clients
+            
             for (i = 0; i < SV_MAIN.maxclients.value; i++) {
                 cl = SV_INIT.svs.clients[i];
                 if (cl.state == Defines.cs_free)
@@ -598,9 +598,9 @@ public class SV_MAIN {
                 }
 
                 if (Netchan.Process(cl.netchan, Globals.net_message)) {
-                    // this is a valid, sequenced packet, so process it
+                    
                     if (cl.state != Defines.cs_zombie) {
-                        cl.lastmessage = SV_INIT.svs.realtime; // don't timeout
+                        cl.lastmessage = SV_INIT.svs.realtime; 
                         SV_USER.SV_ExecuteClientMessage(cl);
                     }
                 }
@@ -632,12 +632,12 @@ public class SV_MAIN {
 
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
-            // message times may be wrong across a changelevel
+            
             if (cl.lastmessage > SV_INIT.svs.realtime)
                 cl.lastmessage = SV_INIT.svs.realtime;
 
             if (cl.state == Defines.cs_zombie && cl.lastmessage < zombiepoint) {
-                cl.state = Defines.cs_free; // can now be reused
+                cl.state = Defines.cs_free; 
                 continue;
             }
             if ((cl.state == Defines.cs_connected || cl.state == Defines.cs_spawned)
@@ -645,7 +645,7 @@ public class SV_MAIN {
                 SV_SEND.SV_BroadcastPrintf(Defines.PRINT_HIGH, cl.name
                         + " timed out\n");
                 SV_DropClient(cl);
-                cl.state = Defines.cs_free; // don't bother with zombie state
+                cl.state = Defines.cs_free; 
             }
         }
     }
@@ -662,7 +662,7 @@ public class SV_MAIN {
 
         for (i = 0; i < GameBase.num_edicts; i++) {
             ent = GameBase.g_edicts[i];
-            // events only last for a single message
+            
             ent.s.event = 0;
         }
 
@@ -675,18 +675,18 @@ public class SV_MAIN {
         if (Globals.host_speeds.value != 0)
             Globals.time_before_game = Timer.Milliseconds();
 
-        // we always need to bump framenum, even if we
-        // don't run the world, otherwise the delta
-        // compression can get confused when a client
-        // has the "current" frame
+        
+        
+        
+        
         SV_INIT.sv.framenum++;
         SV_INIT.sv.time = SV_INIT.sv.framenum * 100;
 
-        // don't run if paused
+        
         if (0 == SV_MAIN.sv_paused.value || SV_MAIN.maxclients.value > 1) {
             GameBase.G_RunFrame();
 
-            // never get more than one tic behind
+            
             if (SV_INIT.sv.time < SV_INIT.svs.realtime) {
                 if (SV_MAIN.sv_showclamp.value != 0)
                     Com.Printf("sv highclamp\n");
@@ -705,28 +705,28 @@ public class SV_MAIN {
     public static void SV_Frame(long msec) {
         Globals.time_before_game = Globals.time_after_game = 0;
 
-        // if server is not active, do nothing
+        
         if (!SV_INIT.svs.initialized)
             return;
 
         SV_INIT.svs.realtime += msec;
 
-        // keep the random time dependent
+        
         Lib.rand();
 
-        // check timeouts
+        
         SV_CheckTimeouts();
 
-        // get packets from clients
+        
         SV_ReadPackets();
 
-        //if (Game.g_edicts[1] !=null)
-        //	Com.p("player at:" + Lib.vtofsbeaty(Game.g_edicts[1].s.origin ));
+        
+        
 
-        // move autonomous things around if enough time has passed
+        
         if (0 == SV_MAIN.sv_timedemo.value
                 && SV_INIT.svs.realtime < SV_INIT.sv.time) {
-            // never let the time get too far off
+            
             if (SV_INIT.sv.time - SV_INIT.svs.realtime > 100) {
                 if (SV_MAIN.sv_showclamp.value != 0)
                     Com.Printf("sv lowclamp\n");
@@ -736,25 +736,25 @@ public class SV_MAIN {
             return;
         }
 
-        // update ping based on the last known frame from all clients
+        
         SV_CalcPings();
 
-        // give the clients some timeslices
+        
         SV_GiveMsec();
 
-        // let everything in the world think and move
+        
         SV_RunGameFrame();
 
-        // send messages back to the clients that had packets read this frame
+        
         SV_SEND.SV_SendClientMessages();
 
-        // save the entire world state if recording a serverdemo
+        
         SV_ENTS.SV_RecordDemoMessage();
 
-        // send a heartbeat to the master if needed
+        
         Master_Heartbeat();
 
-        // clear teleport flags, etc for next frame
+        
         SV_PrepWorldFrame();
 
     }
@@ -763,27 +763,27 @@ public class SV_MAIN {
         String string;
         int i;
 
-        // pgm post3.19 change, cvar pointer not validated before dereferencing
+        
         if (Globals.dedicated == null || 0 == Globals.dedicated.value)
-            return; // only dedicated servers send heartbeats
+            return; 
 
-        // pgm post3.19 change, cvar pointer not validated before dereferencing
+        
         if (null == SV_MAIN.public_server || 0 == SV_MAIN.public_server.value)
-            return; // a private dedicated game
+            return; 
 
-        // check for time wraparound
+        
         if (SV_INIT.svs.last_heartbeat > SV_INIT.svs.realtime)
             SV_INIT.svs.last_heartbeat = SV_INIT.svs.realtime;
 
         if (SV_INIT.svs.realtime - SV_INIT.svs.last_heartbeat < SV_MAIN.HEARTBEAT_SECONDS * 1000)
-            return; // not time to send yet
+            return; 
 
         SV_INIT.svs.last_heartbeat = SV_INIT.svs.realtime;
 
-        // send the same string that we would give for a status OOB command
+        
         string = SV_StatusString();
 
-        // send to group master
+        
         for (i = 0; i < Defines.MAX_MASTERS; i++)
             if (SV_MAIN.master_adr[i].port != 0) {
                 Com.Printf("Sending heartbeat to "
@@ -800,15 +800,15 @@ public class SV_MAIN {
     public static void Master_Shutdown() {
         int i;
 
-        // pgm post3.19 change, cvar pointer not validated before dereferencing
+        
         if (null == Globals.dedicated || 0 == Globals.dedicated.value)
-            return; // only dedicated servers send heartbeats
+            return; 
 
-        // pgm post3.19 change, cvar pointer not validated before dereferencing
+        
         if (null == SV_MAIN.public_server || 0 == SV_MAIN.public_server.value)
-            return; // a private dedicated game
+            return; 
 
-        // send to group master
+        
         for (i = 0; i < Defines.MAX_MASTERS; i++)
             if (SV_MAIN.master_adr[i].port != 0) {
                 if (i > 0)
@@ -828,18 +828,18 @@ public class SV_MAIN {
         String val;
         int i;
 
-        // call prog code to allow overrides
+        
         PlayerClient.ClientUserinfoChanged(cl.edict, cl.userinfo);
 
-        // name for C code
+        
         cl.name = Info.Info_ValueForKey(cl.userinfo, "name");
 
-        // mask off high bit
-        //TODO: masking for german umlaute
-        //for (i=0 ; i<sizeof(cl.name) ; i++)
-        //	cl.name[i] &= 127;
+        
+        
+        
+        
 
-        // rate command
+        
         val = Info.Info_ValueForKey(cl.userinfo, "rate");
         if (val.length() > 0) {
             i = Lib.atoi(val);
@@ -851,7 +851,7 @@ public class SV_MAIN {
         } else
             cl.rate = 5000;
 
-        // msg command
+        
         val = Info.Info_ValueForKey(cl.userinfo, "msg");
         if (val.length() > 0) {
             cl.messagelevel = Lib.atoi(val);
@@ -863,7 +863,7 @@ public class SV_MAIN {
      * Only called at quake2.exe startup, not for each game
      */
     public static void SV_Init() {
-        SV_CCMDS.SV_InitOperatorCommands(); //ok.
+        SV_CCMDS.SV_InitOperatorCommands(); 
 
         SV_MAIN.rcon_password = Cvar.Get("rcon_password", "", 0);
         Cvar.Get("skill", "1", 0);
@@ -930,8 +930,8 @@ public class SV_MAIN {
         else
             MSG.WriteByte(Globals.net_message, Defines.svc_disconnect);
 
-        // send it twice
-        // stagger the packets to crutch operating system limited buffers
+        
+        
 
         for (i = 0; i < SV_INIT.svs.clients.length; i++) {
             cl = SV_INIT.svs.clients[i];
@@ -958,7 +958,7 @@ public class SV_MAIN {
 
         SV_GAME.SV_ShutdownGameProgs();
 
-        // free current level
+        
         if (SV_INIT.sv.demofile != null)
             try {
                 SV_INIT.sv.demofile.close();

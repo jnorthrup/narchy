@@ -28,11 +28,11 @@ public class MirrorShader implements Shader
     {
 	}
 	
-    //TODO: Hintergrundfarbe zur�ckgeben, wenn Ray abgeschnitten
+    
     @Override
     public ColorEx shade(Intersection intersection)
     {
-        // Fortf�hrenden Strahl erzeugen:
+        
         Ray ray = Ray.continueRay(intersection.ray);
         if (ray == null)
             return intersection.scene.getBackgroundColor();

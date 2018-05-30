@@ -52,25 +52,25 @@ public class ColorsUtil
     */
    public static Color changeBright(final Color color, final float factor)
    {
-      // Get color parts
+      
       int red = color.getRed();
       int green = color.getGreen();
       int blue = color.getBlue();
 
-      // Convert in YUV
+      
       double y = (red * 0.299) + (green * 0.587) + (blue * 0.114);
       final double u = ((-0.169 * red) - (0.331 * green)) + (0.500 * blue) + 128.0;
       final double v = ((0.500 * red) - (0.419 * green) - (0.081 * blue)) + 128.0;
 
-      // Apply the factor
+      
       y *= factor;
 
-      // Convert to RGB
+      
       red = ColorsUtil.limite0_255((y - (0.0009267 * (u - 128))) + (1.4016868 * (v - 128)));
       green = ColorsUtil.limite0_255(y - (0.3436954 * (u - 128)) - (0.7141690 * (v - 128)));
       blue = ColorsUtil.limite0_255(y + (1.7721604 * (u - 128)) + (0.0009902 * (v - 128)));
 
-      // Return the new color
+      
       return new Color(red, green, blue);
    }
 

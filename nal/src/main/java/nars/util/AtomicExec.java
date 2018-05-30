@@ -40,15 +40,15 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
      */
     public final FloatRange exeThresh;
 
-//    /**
-//     * time of the current rising edge, or ETERNAL if not activated
-//     */
-//    final AtomicLong rise = new AtomicLong(ETERNAL);
-//
-//    /**
-//     * how many durations before the current time in which a goal remains active in the present
-//     */
-//    final static float presentDurs = 0.5f;
+
+
+
+
+
+
+
+
+
 
 
     static final Logger logger = LoggerFactory.getLogger(AtomicExec.class);
@@ -78,24 +78,24 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
      */
     protected Task exePrefilter(Task x) {
         Subterms a = Operator.args(x);
-        return a.hasAny(Op.ConstantAtomics) ? x : null; //avoid purely variable args
+        return a.hasAny(Op.ConstantAtomics) ? x : null; 
     }
 
 
     public void update(NAR n) {
 
-//        if (!busy.compareAndSet(false, true))
-//            return; //in-progress
 
 
-        //probe all active concepts.
-        //  remove any below desire threshold
-        //  execute any above desire-belief threshold
-        //  if no active remain, disable update service
+
+
+        
+        
+        
+        
 
 
         long[] focus = n.timeFocus();
-        //List<Task> evoke = $.newArrayList(0);
+        
 
         float exeThresh = this.exeThresh.floatValue();
 
@@ -106,7 +106,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
             Concept c = n.concept(xx);
             if (c == null) {
-                //concept disappeared
+                
                 x.delete();
                 return;
             }
@@ -116,18 +116,18 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             Truth goalTruth = c.goals().truth(start, end, n);
             if (goalTruth == null || goalTruth.expectation() < exeThresh) {
                 x.delete();
-                return; //undesired
+                return; 
             }
 
             Truth beliefTruth = c.beliefs().truth(start, end, n); /* assume false with no evidence */
             if (beliefTruth != null && beliefTruth.expectation() > exeThresh) {
-                return; //satisfied
+                return; 
             }
 
             logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
             dispatch.add(xx);
             x.delete();
-            //MetaGoal.learn(MetaGoal.Action, goal.cause(), g, n);
+            
         });
 
         dispatch.forEach(tt -> {
@@ -143,20 +143,20 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     @Override
     public @Nullable Task apply(Task x, NAR n) {
 
-        //TODO handle CMD's
+        
 
         Task y = exePrefilter(x);
         if (y == null)
-            return x; //pass-through to reasoner
+            return x; 
         if (y != x)
-            return y; //transformed
+            return y; 
 
         x = y;
 
         if (x.isCommand()) {
-            //immediately execute
+            
             exe.accept(x.term(), n);
-            return null; //absorbed
+            return null; 
         } else {
 
             active.put(new PLink(x.term().concept() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
@@ -190,41 +190,41 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     }
 
 
-//    public void tryInvoke(Task x, NAR n) {
-//
-//        long now = n.time();
-//        if (!x.isDeleted() && lastActivity == ETERNAL || ((now) - lastActivity > minPeriod * n.dur()) && rise.compareAndSet(ETERNAL, now)) {
-//            try {
-//                @Nullable Concept cc = x.concept(n, true);
-//                if (cc != null) {
-//                    Truth desire = cc.goals().truth(now, n);
-//                    if (desire != null && desire.expectation() >= desireThresh) {
-//                        exe.accept(x, n);
-//                    }
-//                }
-//            } catch (Throwable t) {
-//                logger.info("{} {}", this, t);
-//            } finally {
-//                //end invocation
-//                lastActivity = n.time();
-//                rise.set(ETERNAL);
-//            }
-//        }
-//    }
 
-//    class FutureTask extends NativeTask.SchedTask {
-//
-//        private final Task task;
-//
-//        public FutureTask(long whenOrAfter, Task x) {
-//            super(whenOrAfter, (NAR nn) -> tryInvoke(x, nn));
-//            this.task = x;
-//        }
-//
-//        @Override
-//        public boolean equals(Object obj) {
-//            return obj instanceof FutureTask && ((FutureTask)obj).task.equals(task) && ((SchedTask) obj).when == when;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

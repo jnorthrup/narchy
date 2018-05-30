@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,16 +70,16 @@ public class ConcurrentSlidingHitRate {
                 long lastTimestamp = lastCounterTimestamp.get();
                 boolean isWithinPrecisionRange = (now - lastTimestamp) < precisionInTime;
                 AtomicInteger lastCounter = counters.get(lastTimestamp);
-                // If there's a valid counter for the current last timestamp, and we're in the precision range,
-                // update such counter:
+                
+                
                 if (lastCounter != null && isWithinPrecisionRange)
                 {
                     lastCounter.addAndGet(delta);
 
                     break;
                 }
-                // Else if there's no counter or we're past the precision range, try to create a new counter,
-                // but only the thread updating the last timestamp will create a new counter:
+                
+                
                 else if (lastCounterTimestamp.compareAndSet(lastTimestamp, now))
                 {
                     AtomicInteger existing = counters.putIfAbsent(now, new AtomicInteger(delta));

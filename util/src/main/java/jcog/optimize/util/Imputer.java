@@ -19,11 +19,11 @@ public class Imputer {
 
     public <X> Tweaks<X> learn(X example, String... tags) {
 
-        //Class clz = example.getClass();
+        
         Tweaks<X> t = new Tweaks<>(example).discover();
         for (Tweak<X,?> u : t.tweaks) {
             Object v = u.get(example);
-            //System.out.println(clz + " * " + Joiner.on(',').join(tags) + " ==> " + u + " = " + v);
+            
             for (String tag : tags) {
                 rules.put(u.id, tag, v);
             }
@@ -51,10 +51,10 @@ public class Imputer {
                 if (rr.isEmpty()) {
                     issues.add("unknown: " + x.id);
                 } else {
-                    //descend in tags order
+                    
                     for (String y : tags) {
                         Object rc = rr.get(y);
-                        if (rc!=null) { //TODO support null values
+                        if (rc!=null) { 
                             log.put(x, rc);
                             x.set(subject, floatize(rc));
                         }

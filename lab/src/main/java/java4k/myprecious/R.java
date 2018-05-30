@@ -45,7 +45,7 @@ public class R extends Applet implements Runnable {
 	
 	@Override
     public void run() {
-//		setSize(400, 400); // f�r den AppletViewer
+
 		String s = "";
 		
 		/**
@@ -247,7 +247,7 @@ public class R extends Applet implements Runnable {
 		BufferedImage screenBackground = new BufferedImage(320,480,BufferedImage.TYPE_INT_RGB);
 		Graphics2D gBack = screenBackground.createGraphics();
 		
-		// Graphische Grundlagen f�r das Double Buffering
+		
 		BufferedImage screen = new BufferedImage(320,480,BufferedImage.TYPE_INT_RGB);
 		g = screen.createGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -274,18 +274,18 @@ public class R extends Applet implements Runnable {
 		boolean bDeath = false;
 		boolean bPlayerFall = false;
 		
-		// Variablen zum Zeitmessen und genau Timen wann geupdatet werden soll
+		
 		long lastTime = System.nanoTime();
 		long think = 0;
 		
-		// Game loop.
+		
 		while (true) {
 			long now = System.nanoTime();
 			long delta = now - lastTime;
 			think += delta;
 			
-			// Update / think
-			// Wenn 10 ms vergangen sind, dann denke nach
+			
+			
 			while (think >= 10000000L) {
 				think -= 10000000L;
 				
@@ -597,8 +597,8 @@ public class R extends Applet implements Runnable {
 
 			AffineTransform oldAffineTransform = g.getTransform();
 
-			// Renderabschnitt
-			// Hintergrund malen
+			
+			
 			g.drawImage(screenBackground, 0, 0, null);
 			
 			for (y = 1; y < 15; y += 1) {
@@ -691,7 +691,7 @@ public class R extends Applet implements Runnable {
 				}
 			}
 			
-			// Render das Ganze auf den Bildschirm
+			
 			appletGraphics.drawImage(screen, 0, 0, null);
 
 			try {

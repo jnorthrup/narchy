@@ -40,7 +40,7 @@ public abstract class Expr {
     static {
         for (Object[] objects : printLevelSidesAddA) {
             Integer thisClassOrder = classOrder.get((Class) objects[0]);
-            // System.err.println(((Class) objects[0]).toString() + ".classOrder()=" + thisClassOrder);
+            
             for (Class class1 : classOrderA[thisClassOrder]) {
                 Integer[] printLevelSides = new Integer[2];
                 printLevelSides[0] = objects[1] != null ? thisClassOrder + (Integer) objects[1] : null;
@@ -50,7 +50,7 @@ public abstract class Expr {
         }
     }
     
-    // private static final Class[] functions = {Logarithm.class, Sin.class, Cos.class, Derivative.class};
+    
     
     private static final Class[] trigs = {Sin.class, Cos.class};
     
@@ -58,18 +58,18 @@ public abstract class Expr {
     
     public boolean printSimplified = false;
     
-//     public static Var getVar(Expr expr, char character) {
-//         if (expr instanceof Var) {
-//             if (((Var) expr).character().equals(character)) return (Var) expr;
-//             return null;
-//         }
-//         if (!(expr instanceof Operation)) return null;
-//         for (Expr expr2 : ((Operation) expr).getExprs()) {
-//             Var var = getVar(expr2, character);
-//             if (var != null) return var;
-//         }
-//         return null;
-//     }
+
+
+
+
+
+
+
+
+
+
+
+
     
     public static void noDebug() {
         debug = false;
@@ -165,7 +165,7 @@ public abstract class Expr {
         return classPersonalLevelRight(getClass());
     }
     
-    public Integer printLevelLeft() { // the tightest level allowed around it
+    public Integer printLevelLeft() { 
         return printSimplify().printLevelLeftPass();
     }
     
@@ -206,35 +206,35 @@ public abstract class Expr {
     }
     
     public boolean parensRight(Expr expr) {
-//         if (debug) System.err.println("parensRight: thisClassOrder: " + this.classOrder());
-//         if (debug) System.err.println("parensRight: expr: " + expr);
-//         if (debug) System.err.println("parensRight: expr.printLevelRight(): " + expr.printLevelRight());
+
+
+
         return classOrder() > expr.printLevelRight();
     }
     
     public boolean parensLeft(Expr expr) {
-//         if (debug) System.err.println("parensLeft: thisClassOrder: " + this.classOrder());
-//         if (debug) System.err.println("parensLeft: expr: " + expr);
-//         if (debug) System.err.println("parensRight: expr.printLevelLeft(): " + expr.printLevelLeft());
+
+
+
         return classOrder() > expr.printLevelLeft();
     }
     
     public boolean functionalParens() {
-        return true; // always parens for functions like that
-        // Integer thisClassOrder = Expr.classOrder.get(Sin.class);
-        // Integer exprPrintLevel = this.printLevelLeft();
-        // 
-        // return thisClassOrder > exprPrintLevel || firstParenPrint();
+        return true; 
+        
+        
+        
+        
     }
     
-//     public Integer[] printLevelSides() {
-//         Integer[] sides = new Integer[2];
-//         
-//         sides[0] = printLevelLeft();
-//         sides[1] = printLevelRight();
-//         
-//         return sides;
-//     }
+
+
+
+
+
+
+
+
     
     public boolean isTrig() {
         return Arrays.asList(trigs).contains(getClass())
@@ -323,7 +323,7 @@ public abstract class Expr {
         return copyPass(subs);
     }
     
-    // to be overrided, mostly
+    
     public Expr simplify() {
         return this;
     }

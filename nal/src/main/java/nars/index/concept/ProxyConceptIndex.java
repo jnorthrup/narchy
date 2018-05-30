@@ -22,7 +22,7 @@ public class ProxyConceptIndex extends MaplikeConceptIndex {
     @Override
     public void set(Term src, Termed target) {
         if (target instanceof PermanentConcept) {
-            //ignore HACK. assumes the ref already has it
+            
             return;
         }
         ref.set(src, target);
@@ -30,7 +30,7 @@ public class ProxyConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public void clear() {
-        //ignore
+        
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ProxyConceptIndex extends MaplikeConceptIndex {
 
     @Override
     public void remove(Term entry) {
-        //ignore
+        
     }
 
     @Override

@@ -24,8 +24,8 @@
 /*
  * JBox2D - A Java Port of Erin Catto's Box2D
  *
- * JBox2D homepage: http://jbox2d.sourceforge.net/
- * Box2D homepage: http://www.box2d.org
+ * JBox2D homepage: http:
+ * Box2D homepage: http:
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -50,7 +50,7 @@ import spacegraph.space2d.phys.dynamics.Body2D;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-//Updated to rev 56->130->142 of b2DistanceJoint.cpp/.h
+
 
 /**
  * Distance joint definition. This requires defining an anchor point on both bodies and the non-zero

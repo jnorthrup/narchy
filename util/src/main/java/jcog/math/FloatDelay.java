@@ -17,7 +17,7 @@ public class FloatDelay implements FloatSupplier {
         assert(history > 0);
         this.input = input;
         this.data = new float[history];
-        Arrays.fill(data, input.asFloat()); //fill with initial value, HACK
+        Arrays.fill(data, input.asFloat()); 
     }
 
     @Override

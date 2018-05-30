@@ -25,7 +25,7 @@ public class PriorityAdjustingCauseChannel<X extends Priority> extends CauseChan
 
     @Override public void input(X x) {
 
-        //traffic.accept(p);
+        
 
         float p = x.pri();
         if (p == p && (preBias != 0 || preAmp != 1)) {

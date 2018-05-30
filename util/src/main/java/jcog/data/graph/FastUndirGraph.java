@@ -37,8 +37,8 @@ public class FastUndirGraph extends ConstUndirGraph {
     private BitSet[] triangle;
 
 
-// ======================= initializarion ==========================
-// =================================================================
+
+
 
 
     /**
@@ -48,7 +48,7 @@ public class FastUndirGraph extends ConstUndirGraph {
         super(graph);
     }
 
-// -----------------------------------------------------------------
+
 
     @Override
     protected void initGraph() {
@@ -64,8 +64,8 @@ public class FastUndirGraph extends ConstUndirGraph {
             g.neighborsOut(i).forEach(out -> {
                 if (!g.isEdge(out, ii))
                     in[out].add(ii);
-                // But always add the link to the triangle
-                if (ii > out) // make sure i>j
+                
+                if (ii > out) 
                     triangle[ii].set(out);
                 else
                     triangle[out].set(ii);
@@ -74,14 +74,14 @@ public class FastUndirGraph extends ConstUndirGraph {
     }
 
 
-// ============================ Graph functions ====================
-// =================================================================
+
+
 
 
     @Override
     public boolean isEdge(int i, int j) {
         if (i < j) {
-            //sorted order
+            
             int ii = i;
             i = j;
             j = ii;

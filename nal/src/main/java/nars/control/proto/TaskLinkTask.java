@@ -30,7 +30,7 @@ public class TaskLinkTask extends NativeTask {
         if (c == null) {
             c = task.concept(n, true);
             if (c == null)
-                return null; //couldnt conceptualize
+                return null; 
         }
 
         Tasklinks.linkTask(task, pri, c, n);

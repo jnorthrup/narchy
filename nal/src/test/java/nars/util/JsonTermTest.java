@@ -18,21 +18,21 @@ public class JsonTermTest {
 
         new TaskRule("(json,%1):{x(%2)}", "X(%1,%2)", d);
 
-        //d.believe( $.inh( JsonCompound.the("['a', 1, ['b', 'c']]"), $.the("(json,1)")  ) );
-        //TaskProcess: $.50;.95$ (("a"),(1),(("b"),("c"))). %1.0;.90% {0: 1}
+        
+        
 
         d.believe( $.inh( JsonTerm.the("{ x: 3, y: [\"a\",4] }"), $.$("(json,2)") ) );
-        //d.believe( $.inh( JsonCompound.the("{ x: 3 }"), $.$("(json,2)") ) );
-        //               $.15;.86$ X(3,2). %1.0;.81% {1: 1;;}
+        
+        
 
-        //$.50;.95$ {x(3),y(("a"),("b"))}. %1.0;.90% {0: 2}
+        
 
         d.run(256);
     }
 
     @Test public void testBigJSON() {
         NAR d = new NARS().get();
-        //d.log();
+        
 
         int n = 0;
         for (String json : new String[] {

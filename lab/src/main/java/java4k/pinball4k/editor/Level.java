@@ -235,7 +235,7 @@ public class Level {
 	 * @param out where to write the level
 	 */
 	public void write(OutputStream out, boolean writeBeziers) throws IOException {
-		// sort level object into different types
+		
 		ArrayList<Flipper> flippers = new ArrayList<Flipper>();
 		ArrayList<Line> lines = new ArrayList<Line>();
 		ArrayList<Sircle> sircles = new ArrayList<Sircle>();
@@ -282,7 +282,7 @@ public class Level {
 		sortGroups(lines);
 		sortGroups(sircles);
 
-		// move first line of each strip into lines array. strip will reference this array later
+		
 		HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<ArrayList<Line>, Integer>();
 		ArrayList<ArrayList<Line>> strips = createLineStrips(lines);
 		lines.clear();
@@ -316,7 +316,7 @@ public class Level {
 			objects.add(line);
 		}
 		
-		// start writing
+		
 		DataOutputStream dataOut = new DataOutputStream(out);
 
 		dataOut.writeByte('|');
@@ -344,19 +344,19 @@ public class Level {
 			dataOut.writeByte((byte) (obj.p.y / 6));
 		}
 		
-		// write sircles
+		
 		for (Sircle sircle : sircles) {
-//			if (sircle.flagOr != 0) {
+
 				dataOut.writeByte((byte) sircle.radius);
-//			}
+
 		}
 		
-		// write arrows
+		
 		for (Arrow arrow : arrows) {
 			dataOut.writeByte((byte) arrow.angle);
 		}
 
-		// write flippers
+		
 		for (Flipper flipper : flippers) {
 			if (flipper.minAngle < 0 || flipper.maxAngle < 0) {
 				flipper.minAngle = Flipper.toPacked(Flipper.toAngle(flipper.minAngle) + 2*Math.PI);
@@ -368,14 +368,14 @@ public class Level {
 			dataOut.writeByte(flipper.leftFlipper ? 0 : 2);
 		}
 
-		// write lines
+		
 		int lineStartIdx = flippers.size() + sircles.size() + arrows.size();
 		for (Line line : lines) {
 			dataOut.writeByte((byte) (line.p2.x / 4));
 			dataOut.writeByte((byte) (line.p2.y / 6));
 		}
 		
-		// write line strips
+		
 		dataOut.writeByte(strips.size());
 		for (ArrayList<Line> strip : strips) {
 			dataOut.writeByte(strip.size());
@@ -408,7 +408,7 @@ public class Level {
 
 		if (beziers.size() > 0) {
 			dataOut.writeByte(beziers.size());
-			// write beziers
+			
 			for (Bezier bezier : beziers) {
 				dataOut.writeByte((byte) (bezier.p.x / 4));
 				dataOut.writeByte((byte) (bezier.p.y / 6));
@@ -451,14 +451,14 @@ public class Level {
 	private void read(InputStream in) throws IOException {
 		DataInputStream dataIn = new DataInputStream(in);
 		
-		// skip header
+		
 		dataIn.readUnsignedByte();
 		dataIn.readUnsignedByte();
 		int flippers = dataIn.readByte();
 		int sircles = dataIn.readByte();
 		int arrows = dataIn.readByte();
 		int lineCnt = dataIn.readUnsignedByte();
-		// obj count
+		
 		dataIn.readUnsignedByte();
 
 		for (int i = 0; i < sircles; i++) {
@@ -490,7 +490,7 @@ public class Level {
 			obj.isGate = (flags & GATE_MASK) != 0;
 			obj.score = dataIn.readUnsignedByte();
 			obj.behaviorId = dataIn.readUnsignedByte();
-			//obj.bounce = dataIn.readUnsignedByte() / 64f;
+			
 			obj.bounce = (flags & BUMPER_MASK) != 0 ? 1.1f : 0.75f;
 		}
 		for (LevelObject obj : levelObjects) {
@@ -596,7 +596,7 @@ public class Level {
 
 	
 		/*
-		// paint strips
+		
 		try {
 			JFrame frame = new JFrame();
 			frame.setSize(1024, 768);

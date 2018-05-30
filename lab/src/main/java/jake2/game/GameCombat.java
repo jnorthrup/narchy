@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 16.11.2005 by RST.
-// $Id: GameCombat.java,v 1.3 2006-01-21 21:53:32 salomo Exp $
+
+
 
 package jake2.game;
 
@@ -40,7 +40,7 @@ public class GameCombat {
         float[] dest = { 0, 0, 0 };
         trace_t trace;
     
-        // bmodels need special checking because their origin is 0,0,0
+        
         if (targ.movetype == Defines.MOVETYPE_PUSH) {
             Math3D.VectorAdd(targ.absmin, targ.absmax, dest);
             Math3D.VectorScale(dest, 0.5f, dest);
@@ -103,13 +103,13 @@ public class GameCombat {
     
         if ((targ.svflags & Defines.SVF_MONSTER) != 0
                 && (targ.deadflag != Defines.DEAD_DEAD)) {
-            //			targ.svflags |= SVF_DEADMONSTER; // now treat as a different
-            // content type
+            
+            
             if (0 == (targ.monsterinfo.aiflags & Defines.AI_GOOD_GUY)) {
                 GameBase.level.killed_monsters++;
                 if (GameBase.coop.value != 0 && attacker.client != null)
                     attacker.client.resp.score++;
-                // medics won't heal monsters that they kill themselves
+                
                 if (attacker.classname.equals("monster_medic"))
                     targ.owner = attacker;
             }
@@ -117,8 +117,8 @@ public class GameCombat {
     
         if (targ.movetype == Defines.MOVETYPE_PUSH
                 || targ.movetype == Defines.MOVETYPE_STOP
-                || targ.movetype == Defines.MOVETYPE_NONE) { // doors, triggers,
-                                                             // etc
+                || targ.movetype == Defines.MOVETYPE_NONE) { 
+                                                             
             targ.die.die(targ, inflictor, attacker, damage, point);
             return;
         }
@@ -140,7 +140,7 @@ public class GameCombat {
             damage = 255;
         game_import_t.WriteByte(Defines.svc_temp_entity);
         game_import_t.WriteByte(type);
-        //		gi.WriteByte (damage);
+        
         game_import_t.WritePosition(origin);
         game_import_t.WriteDir(normal);
         game_import_t.multicast(origin, Defines.MULTICAST_PVS);
@@ -187,7 +187,7 @@ public class GameCombat {
             float dot;
             float[] forward = { 0, 0, 0 };
     
-            // only works if damage point is in front
+            
             Math3D.AngleVectors(ent.s.angles, forward, null, null);
             Math3D.VectorSubtract(point, ent.s.origin, vec);
             Math3D.VectorNormalize(vec);
@@ -274,24 +274,24 @@ public class GameCombat {
         if (attacker == targ || attacker == targ.enemy)
             return;
     
-        // if we are a good guy monster and our attacker is a player
-        // or another good guy, do not get mad at them
+        
+        
         if (0 != (targ.monsterinfo.aiflags & Defines.AI_GOOD_GUY)) {
             if (attacker.client != null
                     || (attacker.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0)
                 return;
         }
     
-        // we now know that we are not both good guys
+        
     
-        // if attacker is a client, get mad at them because he's good and we're
-        // not
+        
+        
         if (attacker.client != null) {
             targ.monsterinfo.aiflags &= ~Defines.AI_SOUND_TARGET;
     
-            // this can only happen in coop (both new and old enemies are
-            // clients)
-            // only switch if can't see the current enemy
+            
+            
+            
             if (targ.enemy != null && targ.enemy.client != null) {
                 if (GameUtil.visible(targ, targ.enemy)) {
                     targ.oldenemy = attacker;
@@ -305,9 +305,9 @@ public class GameCombat {
             return;
         }
     
-        // it's the same base (walk/swim/fly) type and a different classname and
-        // it's not a tank
-        // (they spray too much), get mad at them
+        
+        
+        
         if (((targ.flags & (Defines.FL_FLY | Defines.FL_SWIM)) == (attacker.flags & (Defines.FL_FLY | Defines.FL_SWIM)))
                 && (!(targ.classname.equals(attacker.classname)))
                 && (!(attacker.classname.equals("monster_tank")))
@@ -320,7 +320,7 @@ public class GameCombat {
             if (0 == (targ.monsterinfo.aiflags & Defines.AI_DUCKED))
                 GameUtil.FoundTarget(targ);
         }
-        // if they *meant* to shoot us, then shoot back
+        
         else if (attacker.enemy == targ) {
             if (targ.enemy != null && targ.enemy.client != null)
                 targ.oldenemy = targ.enemy;
@@ -328,8 +328,8 @@ public class GameCombat {
             if (0 == (targ.monsterinfo.aiflags & Defines.AI_DUCKED))
                 GameUtil.FoundTarget(targ);
         }
-        // otherwise get mad at whoever they are mad at (help our buddy) unless
-        // it is us!
+        
+        
         else if (attacker.enemy != null && attacker.enemy != targ) {
             if (targ.enemy != null && targ.enemy.client != null)
                 targ.oldenemy = targ.enemy;
@@ -340,9 +340,9 @@ public class GameCombat {
     }
 
     static boolean CheckTeamDamage(edict_t targ, edict_t attacker) {
-        //FIXME make the next line real and uncomment this block
-        // if ((ability to damage a teammate == OFF) && (targ's team ==
-        // attacker's team))
+        
+        
+        
         return false;
     }
 
@@ -395,9 +395,9 @@ public class GameCombat {
         if (targ.takedamage == 0)
             return;
     
-        // friendly fire avoidance
-        // if enabled you can't hurt teammates (but you can hurt yourself)
-        // knockback still occurs
+        
+        
+        
         if ((targ != attacker)
                 && ((GameBase.deathmatch.value != 0 && 0 != ((int) (GameBase.dmflags.value) & (Defines.DF_MODELTEAMS | Defines.DF_SKINTEAMS))) || GameBase.coop.value != 0)) {
             if (GameUtil.OnSameTeam(targ, attacker)) {
@@ -409,7 +409,7 @@ public class GameCombat {
         }
         GameBase.meansOfDeath = mod;
     
-        // easy mode takes half damage
+        
         if (GameBase.skill.value == 0 && GameBase.deathmatch.value == 0
                 && targ.client != null) {
             damage *= 0.5;
@@ -426,7 +426,7 @@ public class GameCombat {
     
         Math3D.VectorNormalize(dir);
     
-        // bonus damage for suprising a monster
+        
         if (0 == (dflags & Defines.DAMAGE_RADIUS)
                 && (targ.svflags & Defines.SVF_MONSTER) != 0
                 && (attacker.client != null) && (targ.enemy == null)
@@ -436,7 +436,7 @@ public class GameCombat {
         if ((targ.flags & Defines.FL_NO_KNOCKBACK) != 0)
             knockback = 0;
     
-        // figure momentum add
+        
         if (0 == (dflags & Defines.DAMAGE_NO_KNOCKBACK)) {
             if ((knockback != 0) && (targ.movetype != Defines.MOVETYPE_NONE)
                     && (targ.movetype != Defines.MOVETYPE_BOUNCE)
@@ -453,7 +453,7 @@ public class GameCombat {
                 if (targ.client != null && attacker == targ)
                     Math3D.VectorScale(dir, 1600.0f * (float) knockback / mass,
                             kvel);
-                // the rocket jump hack...
+                
                 else
                     Math3D.VectorScale(dir, 500.0f * (float) knockback / mass,
                             kvel);
@@ -465,7 +465,7 @@ public class GameCombat {
         take = damage;
         save = 0;
     
-        // check for godmode
+        
         if ((targ.flags & Defines.FL_GODMODE) != 0
                 && 0 == (dflags & Defines.DAMAGE_NO_PROTECTION)) {
             take = 0;
@@ -473,7 +473,7 @@ public class GameCombat {
             SpawnDamage(te_sparks, point, normal, save);
         }
     
-        // check for invincibility
+        
         if ((client != null && client.invincible_framenum > GameBase.level.framenum)
                 && 0 == (dflags & Defines.DAMAGE_NO_PROTECTION)) {
             if (targ.pain_debounce_time < GameBase.level.time) {
@@ -492,15 +492,15 @@ public class GameCombat {
         asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
         take -= asave;
     
-        // treat cheat/powerup savings the same as armor
+        
         asave += save;
     
-        // team damage avoidance
+        
         if (0 == (dflags & Defines.DAMAGE_NO_PROTECTION)
                 && CheckTeamDamage(targ, attacker))
             return;
     
-        // do the damage
+        
         if (take != 0) {
             if (0 != (targ.svflags & Defines.SVF_MONSTER) || (client != null))
                 SpawnDamage(Defines.TE_BLOOD, point, normal, take);
@@ -523,7 +523,7 @@ public class GameCombat {
             if (0 == (targ.monsterinfo.aiflags & Defines.AI_DUCKED)
                     && (take != 0)) {
                 targ.pain.pain(targ, attacker, knockback, take);
-                // nightmare mode monsters don't go into pain frames often
+                
                 if (GameBase.skill.value == 3)
                     targ.pain_debounce_time = GameBase.level.time + 5;
             }
@@ -535,9 +535,9 @@ public class GameCombat {
                 targ.pain.pain(targ, attacker, knockback, take);
         }
     
-        // add to the damage inflicted on a player this frame
-        // the total will be turned into screen blends and view angle kicks
-        // at the end of the frame
+        
+        
+        
         if (client != null) {
             client.damage_parmor += psave;
             client.damage_armor += asave;

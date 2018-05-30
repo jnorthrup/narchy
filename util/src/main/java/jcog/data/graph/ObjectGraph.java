@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
- * see: https://github.com/bramp/objectgraph/blob/master/src/main/java/net/bramp/objectgraph/ObjectGraph.java
+ * see: https:
  */
 public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Accessor /* TODO specific types of edges */> {
 
@@ -53,14 +53,14 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
         Class<?> clazz = x.getClass();
 
-        //boolean terminate = visitor.visit(x, clazz);
-        //if (terminate) return;
+        
+        
 
-        //if (!canDescend(clazz)) continue;
+        
 
         if (clazz.isArray()) {
-            // If an Array, add each element to follow up
-            //Class<?> arrayType = clazz.getComponentType();
+            
+            
 
             if (includeClass(clazz.getComponentType())) {
                 final int len = Array.getLength(x);
@@ -74,16 +74,16 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
             }
 
         } else {
-            // If a normal class, add each field
+            
             fields(x.getClass()).forEach(field -> {
 
                 if (!includeField(field))   return;
 
                 Class<?> fieldType = field.getType();
 
-                // If the field type is directly on the exclude list, then skip.
-                // Strictly this isn't needed as isExcludedClass is called later, but this is cheap
-                // and avoids getting the object, which could be expensive (think hibernate).
+                
+                
+                
                 if (!includeClass(fieldType)) return;
 
                 try {
@@ -103,7 +103,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
 
                 } catch (IllegalAccessException e) {
-                    // Ignore the exception
+                    
                     logger.info("field access {}", e);
                 }
             });
@@ -141,33 +141,33 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
     abstract public boolean includeField(Field f);
 
-//isPrimitive..
-//    int modifiers = field.getModifiers();
-//
-//    boolean excludeStatic = false;
-//    boolean excludeTransient = false;
-//
-//                if (excludeStatic && (modifiers & Modifier.STATIC) == Modifier.STATIC) continue;
-//
-//                if (excludeTransient && (modifiers & Modifier.TRANSIENT) == Modifier.TRANSIENT) continue;
 
 
-//    @Override
-//    protected Node<Object, Object> newNode(Object x) {
-//        return new ObjectNode(x);
-//    }
-//
-//
-//    class ObjectNode extends MutableNode<Object,Object> {
-//
-//        public ObjectNode(Object x) {
-//            super(x, new LinkedHashSet<>(), new LinkedHashSet<>());
-//
-//        }
-//
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Return all declared and inherited fields for this class.

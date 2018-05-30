@@ -14,8 +14,8 @@ public class LongIntervalTest {
     }
     @Test public void testTaskNearestTimePoint_range() {
         Longerval t = assertNearTests(10, 20);
-        assertEquals(18, t.nearestPointExternal(18,18)); //mid
-        assertEquals(12, t.nearestPointExternal(12,12)); //mid
+        assertEquals(18, t.nearestPointExternal(18,18)); 
+        assertEquals(12, t.nearestPointExternal(12,12)); 
     }
     @Test public void testTaskNearestTimePoint_eternal() {
         Longerval t = assertNearTests(ETERNAL, ETERNAL);
@@ -35,23 +35,23 @@ public class LongIntervalTest {
             assertEquals(end, t.nearestPointExternal(end, end + 5));
             assertEquals(end + 5, t.nearestPointExternal(end + 5, end + 5));
         }
-        assertEquals(mid, t.nearestPointExternal(mid,mid)); //mid
+        assertEquals(mid, t.nearestPointExternal(mid,mid)); 
         assertEquals(0, t.nearestPointExternal(0,0));
         assertEquals(ETERNAL, t.nearestPointExternal(ETERNAL,ETERNAL));
         assertEquals(t.mid(), t.nearestPointInternal(ETERNAL, ETERNAL));
 
-        assertEquals(t.start(), t.nearestPointInternal(-1, -1)); //before
-        assertEquals(t.end(), t.nearestPointInternal(100, 100)); //after
+        assertEquals(t.start(), t.nearestPointInternal(-1, -1)); 
+        assertEquals(t.end(), t.nearestPointInternal(100, 100)); 
 
         if (sta!=ETERNAL) {
-            assertEquals(mid, t.nearestPointInternal(mid - 1, mid + 1)); //midpoint
+            assertEquals(mid, t.nearestPointInternal(mid - 1, mid + 1)); 
             assertEquals(mid, t.nearestPointInternal(mid, mid));
             assertEquals(sta, t.nearestPointInternal(0, 1));
             assertEquals(sta, t.nearestPointInternal(0, mid));
             assertEquals(end, t.nearestPointInternal(30, 40));
-            assertEquals((9+21)/2, t.nearestPointInternal(9, 21)); //midpoint
+            assertEquals((9+21)/2, t.nearestPointInternal(9, 21)); 
         } else {
-            assertEquals(ETERNAL, t.nearestPointInternal(9, 21)); //midpoint
+            assertEquals(ETERNAL, t.nearestPointInternal(9, 21)); 
         }
 
 
@@ -67,7 +67,7 @@ public class LongIntervalTest {
         Longerval t = new Longerval(1530, 1545);
         assertEquals(2966, t.nearestPointExternal(2966, 2980));
         assertEquals(0, t.nearestPointExternal(0, 0));
-        assertEquals(1537, t.nearestPointExternal(1530, 1545)); //mid
+        assertEquals(1537, t.nearestPointExternal(1530, 1545)); 
         assertEquals(1545, t.nearestPointExternal(1545, 1545));
         assertEquals(1545, t.nearestPointExternal(1545, 1546));
         assertEquals(1546, t.nearestPointExternal(1546, 1546));

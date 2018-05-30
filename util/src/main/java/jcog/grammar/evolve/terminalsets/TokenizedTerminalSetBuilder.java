@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.terminalsets;
 
@@ -42,7 +42,7 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
     
     private final Tokenizer tokenizer = new BasicTokenizer();
     
-    //It is true when string matches \w (.i.e. its length is one and it is alphabetic or decimal number)
+    
     private boolean matchW(String string){
         return (string.length()==1 && matchW(string.charAt(0)));
     }
@@ -76,10 +76,10 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         
         
         Double TOKEN_THREASHOLD = 80.0; 
-        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
+        boolean DISCARD_W_TOKENS = true; 
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
         if(parameters!=null){
-            //add parameters if needed
+            
             if(parameters.containsKey("tokenThreashold")){
                 TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
             }
@@ -88,28 +88,28 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
             }
         }
         
-        //This is used later for Ranges computation and to define the used character set
+        
         CharHashSet charset = new CharHashSet();
        
         NodeFactory nodeFactory = configuration.getNodeFactory(); 
         
         Set<Leaf> terminalSet = new HashSet<>(nodeFactory.getTerminalSet());
         
-        //get significant tokens (only from matches)
+        
         Map<String,Double> tokensCounter = new HashMap<>();    
         Map<String,Double> winnerTokens = new HashMap<>();    
-        //DataSet dataSet = configuration.getDatasetContainer().getTrainingDataset();
+        
         
         for (Example example : dataSet.getExamples()) {
             for (String match : example.getMatchedStrings()) {
                 
-                //Create the used charset set.
+                
                 for(char c : match.toCharArray()){
                     charset.add(c);
                 }
                 
                 List<String> tokens = tokenizer.tokenize(match);
-                Set<String> tokensSet = new HashSet<>(tokens);//unicity of tokens
+                Set<String> tokensSet = new HashSet<>(tokens);
                 for(String token : tokensSet){
                     if(matchW(token) && DISCARD_W_TOKENS){
                         continue;
@@ -124,19 +124,19 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
                 }
             }
         }
-        //select the significant ones
+        
         int numberOfMatches = dataSet.getNumberMatches();
         for (Map.Entry<String, Double> entry : tokensCounter.entrySet()) {
             String key = entry.getKey();
             Double double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfMatches;
-            entry.setValue(doublePercentange); //update the original collection too
+            entry.setValue(doublePercentange); 
              if(doublePercentange >= TOKEN_THREASHOLD){
                 winnerTokens.put(key,doublePercentange);
             }
         }
         
-        //adds winnertokens to the terminal set
+        
         for (Map.Entry<String, Double> entry : winnerTokens.entrySet()) {
                 String  token = entry.getKey();
                 double v = entry.getValue();
@@ -145,13 +145,13 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
         }
         
         
-        //Generate ranges from characters
+        
         Utils.generateRegexRanges(charset, terminalSet::add);
         
-        //Add classes
+        
         terminalSet.add(new Constant("\\d"));
         terminalSet.add(new Constant("\\w"));
-        //terminalSet.add(new Constant("\\s"));
+        
         
         nodeFactory.getTerminalSet().clear();
         nodeFactory.getTerminalSet().addAll(terminalSet);        
@@ -167,9 +167,9 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
      */
     @Override
     public void setup(Context context) {
-        //creates a Job/thread local instance of NodeFactory (this decuples the terminalSet builders between Jobs)
-        //IMPORTANT in case of striped dataset, the striped version is always used. This is coherent with the 
-        //population builder behavior. The called method accesses the dataset.getStripedDataset(), when defined.
+        
+        
+        
         context.getConfiguration().initNodeFactory();
         setup(context.getConfiguration(), context.getCurrentDataSet());
     }

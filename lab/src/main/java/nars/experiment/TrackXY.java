@@ -39,17 +39,17 @@ public class TrackXY extends NAgent {
 
     final ArrayBitmap2D view;
     public Bitmap2DSensor cam;
-    //target position, to reach
+    
     float tx, ty;
-    //source position, to control
+    
     float sx, sy;
     Consumer<TrackXY> updater =
-            //new RandomTarget();
-            //new CyclicTarget();
+            
+            
             new CircleTarget();
     private final float controlSpeed =
             1f;
-    //0.5f;
+    
     private final float visionContrast = 0.9f;
 
     protected TrackXY(int x, int y) {
@@ -68,7 +68,7 @@ public class TrackXY extends NAgent {
                 .exe(new UniExec(64))
                 .time(new CycleTime().dur(dur))
                 .index(
-                        //new HijackConceptIndex(4 * 1024, 4)
+                        
                         new CaffeineIndex(32 * 1024)
                 );
 
@@ -76,10 +76,10 @@ public class TrackXY extends NAgent {
         NAR n = nb.get();
 
         n.termVolumeMax.set(30);
-//        n.priDefault(BELIEF, 0.2f);
-//        n.priDefault(GOAL, 0.5f);
+
+
         n.activateConceptRate.set(0.5f);
-//        n.forgetRate.set(0.9f);
+
 
 
         TrackXY t = new TrackXY(4, 4);
@@ -87,81 +87,81 @@ public class TrackXY extends NAgent {
 
         int experimentTime = 1280;
         n.synch();
-//        n.run(1);
 
-//        n.runLater(() -> {
-//            TemporalMetrics m = new TemporalMetrics(experimentTime + 100);
-//            n.onCycle(() -> m.update(n.time()));
-//            m.add("reward", () -> t.reward);
-//            m.add("happy", () -> {
-//                float h = t.happy.asFloat();
-//                if (h != h)
-//                    return 0.5f;
-//                return h;
-//            });
-//            m.add("dex", () -> t.dexterity());
-//            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-//                String filename = "/tmp/x.csv";
-//                System.err.println("saving " + m + " to: " + filename);
-//                try {
-//                    m.printCSV(filename);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//            }));
-//        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
         if (rl) {
             new RLBooster(t,
-                    //DQN::new,
-                    //HaiQ::new,
+                    
+                    
                     HaiQae::new,
-                    //RandomAgent::new,
+                    
                     1);
             t.curiosity.set(0);
         }
         if (nars) {
 
-            //
-            //n.log();
+            
+            
 
-//            for (String action : new String[]{"up", "down", "left", "right"}) {
-//                //n.goal($.the(action), Tense.Present, 0f, 0.1f);
-//                n.goal($.the(action), Tense.Present, 1f, 0.1f);
-//            }
+
+
+
+
 
             Deriver d = new MatrixDeriver(Derivers.nal(
-                    //1,
+                    
                     1,
                     8, n,
-                    //"list.nal",
+                    
                     "motivation.nal"));
 
             ((MatrixDeriver)d).conceptsPerIteration.set(32);
             n.timeFocus.set(2);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    //(tt)->true,
+                    
                     Task::isInput,
                     4, 16);
 
-//            ConjClustering cjG = new ConjClustering(n, GOAL,
-//                    (tt)->true,
-//                    //(tt) -> tt.isInput(),
-//                    5, 16);
 
-//            Implier ii = new Implier(t , 0, 1);
 
-//            ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
+
+
+
+
+
+
 
             window(new Gridding(
                     new AutoSurface(d),
                     new AutoSurface(cjB)
-//                    new AutoSurface(cjG)
 
-                    //,new AutoSurface(ai)
+
+                    
             ), 400, 300);
             n.onTask(tt -> {
                 if (tt instanceof DerivedTask && tt.isGoal()) {
@@ -170,10 +170,10 @@ public class TrackXY extends NAgent {
             });
         }
 
-//        n.log();
 
-//        n.startFPS(fps);
-//        t.runFPS(fps);
+
+
+
         n.onCycle(t);
         final double[] rewardSum = {0};
         n.onCycle(() ->
@@ -204,14 +204,14 @@ public class TrackXY extends NAgent {
                 .collect(Collectors.toList());
         l.forEach(System.out::println);
 
-        //n.startFPS(10f);
-        //t.runFPS(10f);
+        
+        
 
-//        System.out.println(
-//
-//                n4(rewardSum[0] / n.time()) + " avg reward");
 
-//        System.exit(0);
+
+
+
+
     }
 
     @Override
@@ -219,17 +219,17 @@ public class TrackXY extends NAgent {
 
         super.starting(nar);
 
-        //actionTriState();
-        //actionPushButton();
+        
+        
         actionSwitch();
 
         this.cam = new Bitmap2DSensor<>(id /* (Term) null*/, view, nar);
         this.cam.pixelPri.set(0.2f);
-        //this.cam.resolution(0.1f);
+        
         sensorCam.add(cam);
 
-        //senseNumber($.the("x"), ()->sx/(view.width()-1));
-        //senseNumber($.the("y"), ()->sy/(view.height()-1));
+        
+        
 
 
         randomize();
@@ -239,35 +239,35 @@ public class TrackXY extends NAgent {
         SwitchAction s = new SwitchAction(nar, (a)->{
             switch (a) {
                 case 0: {
-                    //up
+                    
                     float dy = -1;
                     float py = sy;
                     sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
                     return !Util.equals(py, sy, 0.01f);
                 }
                 case 1: {
-                    //down
+                    
                     float dy = +1;
                     float py = sy;
                     sy = Util.clamp(sy + controlSpeed * dy, 0, view.height() - 1);
                     return !Util.equals(py, sy, 0.01f);
                 }
                 case 2: {
-                    //left
+                    
                     float dx = -1;
                     float px = sx;
                     sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
                     return !Util.equals(px, sx, 0.01f);
                 }
                 case 3: {
-                    //right
+                    
                     float dx = +1;
                     float px = sx;
                     sx = Util.clamp(sx + controlSpeed * dx, 0, view.width() - 1);
                     return !Util.equals(px, sx, 0.01f);
                 }
                 case 4: {
-                    //stay
+                    
                     return true;
                 }
                 default:
@@ -348,8 +348,8 @@ public class TrackXY extends NAgent {
 
             view.set((x, y) -> {
 
-//                float dist = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
-//                return Math.max(0, 1 - dist * visionContrast);
+
+
 
 
                 float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
@@ -360,14 +360,14 @@ public class TrackXY extends NAgent {
                         ));
 
 
-//                if (Util.equals(sx, x, controlSpeed) && Util.equals(sy, y, controlSpeed)) {
-//                    //show cursor in negative
-//                    return 0f;
-//                } else {
-//                    float dist = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
-//                    //return 0.5f + 0.5f * Math.max(0, 1 - dist * visionContrast);
-//                    return 0.55f + 0.5f * Math.max(0, 1 - dist * visionContrast);
-//                }
+
+
+
+
+
+
+
+
 
             });
         }
@@ -380,10 +380,10 @@ public class TrackXY extends NAgent {
                 / maxDist;
 
 
-        //return 1f/(1f+dist);
-        //return controlSpeed - dist*dist; //controlSpeed is margin of tolerance
-        return -dist; //chase
-        //return +dist; //avoid
+        
+        
+        return -dist; 
+        
     }
 
     public static class RandomTarget implements Consumer<TrackXY> {
@@ -414,9 +414,9 @@ public class TrackXY extends NAgent {
         public void accept(TrackXY t) {
             x += speed;
             t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
-//            int tw = t.width();
-//            if (t.tx > tw -1)
-//                t.tx -= tw;
+
+
+
             t.ty = 0;
         }
     }
@@ -443,9 +443,9 @@ public class TrackXY extends NAgent {
             else
                 t.ty = 0;
 
-//            int tw = t.width();
-//            if (t.tx > tw -1)
-//                t.tx -= tw;
+
+
+
 
         }
 

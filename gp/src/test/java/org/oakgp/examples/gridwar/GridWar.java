@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,12 +55,12 @@ class GridWar implements TwoPlayerGame {
         Assignments assignments = createAssignments(player, opponent);
         int nextMove = getNextMove(player, assignments);
         if (isRepeatedMove(player, nextMove)) {
-            // duplicate move - lose
+            
             return LOSE;
         }
         player.updateState(nextMove);
         if (isWon(player, opponent)) {
-            // entered square already occupied by opponent - win
+            
             return WIN;
         }
         return NO_WINNER;
@@ -68,7 +68,7 @@ class GridWar implements TwoPlayerGame {
 
     private static int getNextMove(Player player, Assignments assignments) {
         int result = (int) player.getLogic().eval(assignments);
-        // normalise the result to ensure it is in the valid range of possible moves
+        
         return Math.abs(result % NUMBER_OF_POSSIBLE_DIRECTIONS);
     }
 
@@ -96,20 +96,20 @@ class GridWar implements TwoPlayerGame {
             if (moveOutcome != NO_WINNER) {
                 return currentPlayerIdx == 0 ? moveOutcome : -moveOutcome;
             }
-            // each player takes it in turn to move
+            
             currentPlayerIdx = 1 - currentPlayerIdx;
         }
-        // no winner within maximum number of moves - draw
+        
         return NO_WINNER;
     }
 
     private Player[] createPlayers(Node playerLogic1, Node playerLogic2) {
-        // randomly position player 1
+        
         int x = random.nextInt(GRID_WIDTH);
         int y = random.nextInt(GRID_WIDTH);
         Player player1 = new Player(x, y, playerLogic1);
 
-        // randomly position player 2, ensuring they do not occupy the same or an adjacent square to player 1
+        
         Player player2 = new Player((x + 2) % GRID_WIDTH, (y + 2) % GRID_WIDTH, playerLogic2);
 
         return new Player[]{player1, player2};

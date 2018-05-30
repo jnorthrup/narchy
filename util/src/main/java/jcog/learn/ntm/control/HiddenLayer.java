@@ -10,16 +10,16 @@ public class HiddenLayer
     public final int heads;
     public final int memoryUnitSizeM;
 
-    //Controller hidden layer threshold weights
+    
     public final UVector hiddenLayerThresholds;
 
-    //Weights from input to controller
+    
     public final UMatrix inputToHiddenLayerWeights;
 
-    //Weights from read data to controller
+    
     public final Unit[][][] readDataToHiddenLayerWeights;
 
-    //Hidden layer weights
+    
     public final UVector neurons;
 
     public HiddenLayer(int controllerSize, int inputSize, int headCount, int memoryUnitSizeM) {
@@ -71,7 +71,7 @@ public class HiddenLayer
     }
 
 
-    //TODO refactor - do not use tempsum - but beware of rounding issues
+    
     public void forwardPropagation(double[] input, ReadData[] readData) {
 
         final double[] nv = neurons.value;
@@ -81,15 +81,15 @@ public class HiddenLayer
         final int N = neurons();
 
         for (int neuronIndex = 0; neuronIndex < N; neuronIndex++) {
-            //Foreach neuron in hidden layer
+            
             double sum = 0.0;
             sum += getReadDataContributionToHiddenLayer(neuronIndex, readData);
             sum += getInputContributionToHiddenLayer(neuronIndex, input);
 
-            //getThresholdContributionToHiddenLayer
+            
             sum += hlt[neuronIndex];
 
-            //Set new controller unit value
+            
             nv[neuronIndex] = activation.value(sum);
         }
     }
@@ -115,14 +115,14 @@ public class HiddenLayer
     }
 
 
-//    public void updateWeights(Consumer<Unit> updateAction) {
-//        Consumer<Unit[]> vectorUpdateAction = Unit.getVectorUpdateAction(updateAction);
-//        Consumer<Unit[][]> tensor2UpdateAction = Unit.getTensor2UpdateAction(updateAction);
-//        Consumer<Unit[][][]> tensor3UpdateAction = Unit.getTensor3UpdateAction(updateAction);
-//        tensor3UpdateAction.accept(readDataToHiddenLayerWeights);
-//        tensor2UpdateAction.accept(inputToHiddenLayerWeights);
-//        vectorUpdateAction.accept(hiddenLayerThresholds);
-//    }
+
+
+
+
+
+
+
+
 
     public void updateWeights(IWeightUpdater weightUpdater) {
         weightUpdater.updateWeight(readDataToHiddenLayerWeights);
@@ -140,11 +140,11 @@ public class HiddenLayer
     private double[] calculateHiddenLayerGradinets() {
         double[] hiddenLayerGradients = new double[neurons()];
         for (int i = 0;i < neurons();i++) {
-            //derivative of activation function
+            
             hiddenLayerGradients[i] = activation.derivative(neurons.grad(i),  neurons.value(i));
 
-            //hiddenLayerGradients[i] = unit.Gradient * _activationFunction.Derivative(unit.Value)
-            //hiddenLayerGradients[i] = neurons.grad(i) * neurons.value(i) * (1.0 - neurons.value(i));
+            
+            
         }
         return hiddenLayerGradients;
     }

@@ -52,7 +52,7 @@ public class Occurrify extends TimeGraph {
 
     public static final TaskTimeMerge mergeDefault =
             TaskTimeMerge.Union;
-            //TaskTimeMerge.Intersect;
+            
 
     public static final ImmutableMap<Term, TaskTimeMerge> merge;
     static {
@@ -102,7 +102,7 @@ public class Occurrify extends TimeGraph {
             }
         }
 
-        return null; //save both as alternates
+        return null; 
     }
 
     @Override
@@ -110,7 +110,7 @@ public class Occurrify extends TimeGraph {
         int ddt = Tense.dither(dt, d.ditherTime);
         Term y = super.dt(x, ddt);
         if (y instanceof Bool && ddt != dt) {
-            //the dithered dt has destroyed it, so try the non-dithered (more precise) dt
+            
             y = super.dt(x, dt);
         }
         return y;
@@ -123,7 +123,7 @@ public class Occurrify extends TimeGraph {
 
     public void know(Task t, long when) {
         assert (when != TIMELESS);
-        //assert (when != TIMELESS);
+        
 
         Term tt = t.term();
 
@@ -135,38 +135,38 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-//    private int knowIfSameTruth(Task t, Term tt, Truth tr, long w, LongHashSet sampled) {
-//        if (sampled.add(w)) {
-//            if (t.isQuestionOrQuest() || tr.equalsIn(t.truth(w, d.dur), d.nar)) {
-//                event(tt, w, true);
-//                return 1;
-//            }
-//        }
-//        return 0;
-//    }
 
 
-//    public void know(Task t) {
-//        Iterable<Event> ee = know(t, t.term());
-//        //both positive and negative possibilities
-////        if (autoNegEvents && tt.op() != CONJ) {
-////            for (Event e : ee)
-////                link(know(tt.neg()), 0, e);
-////        }
-//    }
-//
-//    private Iterable<Event> know(Task task, Term term) {
-//        long start = task.start();
-//        long end = task.end();
-//        if (end != start && (end - start) >= d.dur) {
-//            //add each endpoint separately
-//            return List.of(
-//                    event(term, start, true),
-//                    event(term, end, true));
-//        } else {
-//            return Collections.singleton(event(term, start == ETERNAL ? ETERNAL : (start + end) / 2 /* midpoint */, true));
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public Occurrify reset() {
         clear();
@@ -185,18 +185,18 @@ public class Occurrify extends TimeGraph {
         Task belief = !single ? d.belief : null;
         Term bb = !single ? belief.term() : d.beliefTerm;
 
-        //disable autoneg if no negations appear in the premise
+        
         if (!autoNeg && (task.term().hasAny(NEG) || bb.hasAny(NEG))) {
             autoNeg = true;
         }
 
-        //clear these regardless:
+        
         expanded.clear();
         seen.clear();
 
         long now = d.time;
         if (curTime == now && Objects.equals(d.task,curTask) && Objects.equals(d.belief, curBelief) && curSingle == single && autoNeg == this.autoNeg  ) {
-            return this; //no updates necessary
+            return this; 
         } else {
             reset();
             this.autoNeg(autoNeg);
@@ -215,7 +215,7 @@ public class Occurrify extends TimeGraph {
             boolean taskEte = task.isEternal();
             boolean beliefEte = belief.isEternal();
             if (taskEte && !beliefEte) {
-                //if belief is non-eternal against an eternal goal, pretend the goal occurrs now to provide an overriding time for the belief
+                
                 know(task, d.beliefAt);
             } else {
                 know(task, d.taskAt);
@@ -239,7 +239,7 @@ public class Occurrify extends TimeGraph {
     @Override
     protected void onNewTerm(Term t) {
         if (!expanded.add(t))
-            return; //already linked
+            return; 
 
         super.onNewTerm(t);
 
@@ -247,12 +247,12 @@ public class Occurrify extends TimeGraph {
 
         Term u = d.untransform(t);
         if (u != null && !(u instanceof Bool) && !u.equals(t)) {
-            expanded.add(u); //HACK prevent infinite loop
+            expanded.add(u); 
             link(tt, 0, shadow(u));
         }
         Term v = Image.imageNormalize(t);
         if (!v.equals(t)) {
-            expanded.add(v); //HACK prevent infinite loop
+            expanded.add(v); 
             link(tt, 0, shadow(v));
         }
 
@@ -278,7 +278,7 @@ public class Occurrify extends TimeGraph {
         };
 
 
-        //if (!join.occOverride() || pattern.hasXternal())
+        
         solve(pattern, false /* take everything */, seen, each);
 
         return solutions;
@@ -294,8 +294,8 @@ public class Occurrify extends TimeGraph {
             p = solutions.first().id;
         } else {
             p = solutions.get(random()).id;
-            //TODO
-            //find the most common non-XTERNAL containing solution term result
+            
+            
         }
         return p;
     }
@@ -307,14 +307,14 @@ public class Occurrify extends TimeGraph {
             return ()->null;
         }
 
-        //can only prefer occurrence range if the events all have the same term
-//        if (ss > 1) { //prefer occurence range
-//            int occurrenceSolvedRange = ((FasterList<Event>) solutions.list).count(t -> t instanceof AbsoluteRange);
-//            if (occurrenceSolvedRange > 0 && occurrenceSolvedRange < ss) {
-//                if (solutions.removeIf(t -> !(t instanceof AbsoluteRange))) //filter non-ranged
-//                    ss = solutions.size();
-//            }
-//        }
+        
+
+
+
+
+
+
+
 
         ss = filterOnlyNonXternal(solutions);
 
@@ -325,32 +325,32 @@ public class Occurrify extends TimeGraph {
                 return () -> solveThe(solutions.first());
             default:
 
-                //return solveRandomOne(solutions);
-                //FasterList<Event> solutionsCopy = new FasterList(solutions.list);
+                
+                
 
-//                Function<long[], Term> tt = solveMerged(solutions, d.dur);
-//                if (tt == null) {
-                return () -> solveThe(solutions.get(random())); //choose one at random
-//                } else {
-//                    long[] when = new long[]{TIMELESS, TIMELESS};
-//                    Term ttt = tt.apply(when);
-//                    if (ttt == null || when[0] == TIMELESS)
-//                        return null; //should not happen
-//                    return () -> {
-//                        d.concOcc[0] = when[0];
-//                        d.concOcc[1] = when[1];
-//                        return ttt;
-//                    };
-//                }
+
+
+                return () -> solveThe(solutions.get(random())); 
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 
     private int filterOnlyNonXternal(ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
-        if (ss > 1) { //prefer occurrence point
+        if (ss > 1) { 
             int occurrenceSolved = solutions.list.count(t -> t instanceof Absolute);
             if (occurrenceSolved > 0 && occurrenceSolved < ss) {
-                if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
+                if (solutions.removeIf(t -> t instanceof Relative)) 
                     ss = solutions.size();
             }
         }
@@ -548,7 +548,7 @@ public class Occurrify extends TimeGraph {
             if (start != ETERNAL || d.belief == null || d.belief.isEternal())
                 return new long[]{start, d.task.end()};
             else {
-                //task is eternal and belief is non-eternal. so to prevent deriving eternal belief, use now as the focus point.
+                
                 return d.nar.timeFocus();
             }
         }
@@ -574,7 +574,7 @@ public class Occurrify extends TimeGraph {
         }
 
         private static void immediateIfPast(Derivation d, long[] o) {
-            //immediate immenantize
+            
             long NOW = d.time;
             if (o[0] < NOW) {
                 long delta = o[1] - o[0];
@@ -602,7 +602,7 @@ public class Occurrify extends TimeGraph {
             ArrayHashSet<Event> solutions = o.solutions(x);
             Pair<Term, long[]> p = o.solveOccDT(solutions).get();
             if (p!=null && p.getTwo()[0]==TIMELESS) {
-                //get the term it computed possible DT for
+                
                 x = p.getOne();
                 p = null;
             }
@@ -610,8 +610,8 @@ public class Occurrify extends TimeGraph {
         }
 
         protected Pair<Term, long[]> solveOccDTWithGoalOverride(Derivation d, Term x, Occurrify occ) {
-            //override for goal
-            if (d.concPunc == GOAL) { //HACK
+            
+            if (d.concPunc == GOAL) { 
                 return Task.solve(d, x);
             }
 
@@ -637,58 +637,58 @@ public class Occurrify extends TimeGraph {
         public Pair<Term, long[]> solveAuto(Derivation d, Term x) {
 
             if ((d.concPunc == BELIEF || d.concPunc == GOAL) && x.hasXternal())
-                return null; //it would be invalid task or goal
+                return null; 
 
             Task task = d.task;
             Task belief = d.belief;
             long s, e;
         /*if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
-            //inherit question's specific time directly
+            
             s = task.start();
             e = task.end();
         } else*/
             boolean taskEvent =
-                    //!task.term().op().temporal;
+                    
                     !(task.term().op() == CONJ);
 
             if (task.isEternal()) {
                 if (belief == null || belief.isEternal()) {
-                    //entirely eternal
+                    
                     s = e = ETERNAL;
                 } else {
                     if (taskEvent) {
                         s = belief.start();
                         e = belief.end();
                     } else {
-                        //transformed task term, should have been solved
+                        
                         return null;
                     }
                 }
             } else {
                 if (belief == null) {
-                    //inherit task time
+                    
                     s = task.start();
                     e = task.end();
 
                 } else if (belief.isEternal()) {
                     if (!task.isEternal()) {
-                        //inherit task time
+                        
                         s = task.start();
                         e = task.end();
                     } else {
                         s = e = ETERNAL;
                     }
-                    //                    //event: inherit task time
-                    //                    boolean beliefEvent = belief == null || (
-                    //                            !belief.term().op().temporal
-                    //                    );
-                    //                    if (beliefEvent) {
-                    //                        s = task.start();
-                    //                        e = task.end();
-                    //                    } else {
-                    //                        return null; //should have calculated solution normally
-                    //                    }
-                    //                }
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                 } else {
                     byte p = d.concPunc;
                     if ((p == BELIEF || p == GOAL)) {
@@ -712,7 +712,7 @@ public class Occurrify extends TimeGraph {
                             throw new UnsupportedOperationException("evidence from nowhere?");
                         }
                     } else {
-                        //question: use the interval union - does this even happen
+                        
                         Longerval u = Longerval.union(task.start(), task.end(), belief.start(), belief.end());
                         s = u.start();
                         e = u.end();
@@ -720,41 +720,41 @@ public class Occurrify extends TimeGraph {
                 }
             }
 
-//        //couldnt solve the start time, so inherit from task or belief as appropriate
-//        if (!d.single && !te && (belief != null && !belief.isEternal())) {
-//
-//                //joint is a procedure for extending / blending non-temporal terms.
-//                //since conj is temporal use strict
-//                boolean strict = x.op()==CONJ;
-//
-//                if (strict) {
-//                    Interval ii = Interval.intersect(task.start(), task.end(), belief.start(), belief.end());
-//                    if (ii == null)
-//                        return null; //too distant, evidence lacks
-//
-//                    s = ii.a;
-//                    e = x.op()!=IMPL ? ii.b : ii.a;
-//                } else {
-//                    TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
-////                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
-////                        return null;
-//
-//                    s = joint.unionStart;
-//                    e = joint.unionEnd;
-//                    d.concEviFactor *= joint.factor;
-//                }
-//
-//
-//        } else if (d.single || (!te && (belief == null || belief.isEternal()))) {
-//            s = task.start();
-//            e = task.end();
-//        } else {
-//            s = belief.start();
-//            e = belief.end();
-//        }
 
-//                if (!eternalCheck(s))
-//                    return null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             return pair(x, new long[]{s, e});
 
@@ -780,116 +780,115 @@ public class Occurrify extends TimeGraph {
 
     }
 }
-//        //prefer a term which is not a repeat of the task or belief term
-//        boolean aMatch = a.id.equals(d.taskTerm) || a.id.equals(d.beliefTerm);
-//        boolean bMatch = b.id.equals(d.taskTerm) || b.id.equals(d.beliefTerm);
-//        if (aMatch && !bMatch)
-//            return b;
-//        if (!aMatch && bMatch)
-//            return a;
-
-//        //heuristic:
-//        float aSpec =
-//                //((float) at.volume()) / (1+at.dtRange()); //prefer more specific "dense" temporal events rather than sprawling sparse run-on-sentences
-//                at.volume(); //prefer volume
-//        float bSpec =
-//                //((float) bt.volume()) / (1+bt.dtRange());
-//                bt.volume();
-//        if (bSpec > aSpec)
-//            return b;
-//        else //if (aSpec < bSpec)
-//            return a;
-//        else {
-//            //long distToNow = ...
-//        }
-
-//        Term tRoot = at.root();
-//        if (!at.equals(tt)) {
-//            score++;
-//            if (!tRoot.equals(tt.root()))
-//                score++;
-//        }
-//
-//        if (!at.equals(bb)) {
-//            score++;
-//            if (!tRoot.equals(bb.root()))
-//                score++;
-//        }
-
-//    }
 
 
-//    @Override
-//    protected Random random() {
-//        return d.random;
-//    }
 
-//    void know(Termed x) {
-//
-//        Term xterm = x.term();
-//        if (x instanceof Task)
-//            know((Task) x);
-//        else
-//            know(xterm);
-//
-//    }
 
-//
-//}
-//
-////            Map<Term, LongHashSet> uniques = new HashMap();
-////            alternates.forEach(x -> {
-////                long w = x.when();
-////                if (w!=TIMELESS && w!=ETERNAL)
-////                    uniques.computeIfAbsent(x.id, xx -> new LongHashSet()).add(w);
-////            });
-////            if (!uniques.isEmpty()) {
-////                //all alternates of the same term but at different points; so stretch a solution containing all of them
-////
-////                ArrayHashSet<Map.Entry<Term, LongHashSet>> uu = new ArrayHashSet<>(uniques.entrySet());
-////                Map.Entry<Term, LongHashSet> h = uu.get(d.random);
-////
-////                Term st = h.getKey();
-////                LongHashSet s = h.getValue();
-////                occ[0] = s.min();
-////                occ[1] = s.max() + st.dtRange();
-////                return st;
-////            } else {
-//
-//            if (d.single ? d.task.isEternal() : d.eternal) {
-//                    event = solutions.get(d.random); //doesnt really matter which solution is chosen, in terms of probability of projection success
-//                    } else {
-//
-//
-//                    //choose event with least distance to task and belief occurrence so that projection has best propensity for non-failure
-//
-//                    //solutions.shuffle(d.random); //shuffle so that equal items are selected fairly
-//
-////                /* weight the influence of the distance to each
-////                   according to its weakness (how likely it is to null during projection). */
-////                float taskWeight =
-////                        //task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
-////                        0.5f;
-////                float beliefWeight =
-////                        //belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
-////                        0.5f;
-////
-////                final float base = 1f/solutions.size();
-////                event = solutions.roulette((e) -> {
-////                    long when = e.when();
-////                    if (when == TIMELESS)
-////                        return base/2f;
-////                    if (when == ETERNAL)
-////                        return base; //prefer eternal only if a temporal solution does not exist
-////
-////                    long distance = 1;
-////                    distance += task.minDistanceTo(when) * taskWeight;
-////
-////                    if (!d.single && belief!=null)
-////                        distance += belief.minDistanceTo(when) * beliefWeight;
-////
-////                    return 1f/distance;
-////                }, d.nar.random());
-//                    }
-////            }
-//                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

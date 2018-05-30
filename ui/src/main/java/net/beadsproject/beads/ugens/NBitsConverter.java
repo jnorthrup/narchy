@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -33,10 +33,10 @@ public class NBitsConverter extends UGen {
 
     @Override
     public void gen() {
-        // for each float value (-1,1)
-        // map it to -toRange,toRange
-        // and truncate
-        // then map back
+        
+        
+        
+        
 
         for (int i = 0; i < bufferSize; i++) {
             bufOut[0][i] = invToRange * (int) (bufIn[0][i] * toRange);

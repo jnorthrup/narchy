@@ -25,8 +25,8 @@ public class ColorToggle extends ToggleButton {
         super.paintAbove(gl, r);
 
         if (on.get()) {
-            //selection indicator
-            //TODO XOR paint mode
+            
+            
 
             gl.glColor3f(1,1,1);
             gl.glLineWidth(3f);

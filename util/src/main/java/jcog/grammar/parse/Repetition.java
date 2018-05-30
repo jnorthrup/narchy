@@ -120,7 +120,7 @@ public class Repetition extends Parser {
 			}
 		}
 		Set<Assembly> out = numberOfRequiredMatches == 0 ? elementClone(in) : new HashSet<>();
-		Set<Assembly> s = in; // a working state
+		Set<Assembly> s = in; 
 		int countNumberOfMatches = 0;
 		while (!s.isEmpty()) {
 			s = subparser.matchAndAssemble(s);

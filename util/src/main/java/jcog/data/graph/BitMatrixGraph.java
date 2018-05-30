@@ -31,15 +31,15 @@ import java.util.List;
 public class BitMatrixGraph implements Graph {
 
 
-// ====================== private fileds ========================
-// ==============================================================
+
+
 
     private final List<BitSet> sets;
 
     private final boolean directed;
 
-// ====================== public constructors ===================
-// ==============================================================
+
+
 
 
     /**
@@ -53,7 +53,7 @@ public class BitMatrixGraph implements Graph {
         this(n, true);
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * Constructs an graph with the given number of nodes.
@@ -70,8 +70,8 @@ public class BitMatrixGraph implements Graph {
     }
 
 
-// ======================= Graph implementations ================
-// ==============================================================
+
+
 
 
     @Override
@@ -80,7 +80,7 @@ public class BitMatrixGraph implements Graph {
         return sets.get(i).get(j);
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public IntHashSet neighborsOut(int i) {
@@ -95,7 +95,7 @@ public class BitMatrixGraph implements Graph {
         return result;
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * Returns null always
@@ -105,7 +105,7 @@ public class BitMatrixGraph implements Graph {
         return null;
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * Returns null always.
@@ -115,21 +115,21 @@ public class BitMatrixGraph implements Graph {
         return null;
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public int size() {
         return sets.size();
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean directed() {
         return directed;
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean setEdge(int i, int j) {
@@ -149,7 +149,7 @@ public class BitMatrixGraph implements Graph {
         return !old;
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean removeEdge(int i, int j) {
@@ -169,13 +169,13 @@ public class BitMatrixGraph implements Graph {
         return old;
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public int degree(int i) {
 
         BitSet neighb = sets.get(i);
-        return neighb.cardinality(); // only from jdk 1.4
+        return neighb.cardinality(); 
     }
 
 }

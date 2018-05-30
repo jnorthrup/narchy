@@ -41,14 +41,14 @@ public class Product extends Operation {
     }
     
     public Expr deriv(Var respected) {
-        // if (debug) System.err.println("derivative of " + dump());
+        
         if (exprs.isEmpty()) return Num.make();
         if (exprs.size() == 1) return exprs.get(0).deriv(respected);
         if (exprs.size() == 2) {
-            // if (debug) System.err.println(dump() + " => " + Sum.make(Product.make(exprs.get(0), exprs.get(1).deriv(dy, dx)), Product.make(exprs.get(1), exprs.get(0).deriv(dy, dx))));
+            
             return Sum.make(Product.make(exprs.get(0), exprs.get(1).deriv(respected)), Product.make(exprs.get(0).deriv(respected), exprs.get(1)));
         }
-        // if (debug) System.err.println(ArrayLists.dumpAll(exprs));
+        
         return Product.make(new Product(new ArrayList<>(exprs.subList(0, exprs.size() - 1))), exprs.get(exprs.size() - 1), false).deriv(respected);
     }
     
@@ -78,7 +78,7 @@ public class Product extends Operation {
             ArrayList<Expr> constants = new ArrayList<>();
             for (int i = 0; i < other.exprs.size(); i++) {
                 Expr expr = other.exprs.get(i);
-                // if (debug) System.err.println("simplify: on expr: " + expr);
+                
                 if (/*interpolate &&*/ expr instanceof Product) {
                     other.exprs.remove(i);
                     other.exprs.addAll(i, ((Product) expr).getExprs());
@@ -124,18 +124,18 @@ public class Product extends Operation {
 
             if (other.exprs.size() == 1) return other.exprs.get(0);
 
-            // if (debug) System.err.println("Product simplify: " + dump());
+            
             for (int i = 0; i < other.exprs.size(); i++) {
                 Expr expr = other.exprs.get(i);
                 for (int j = 0; j < other.exprs.size(); j++) {
                     if (i != j) {
                         Expr expr2 = other.exprs.get(j);
                         if (expr2 instanceof Division) {
-                            // if (debug) System.err.println("Product simplify: expr2: " + expr2);
+                            
                             ArrayList<Expr> divExprs = ((Division) expr2).getExprs();
-                            // if (debug) System.err.println("Product simplify: dividing (" + expr + ")/(" + divExprs.get(1) + ")");
+                            
                             Expr divided = Division.make(expr, divExprs.get(1));
-                            // if (debug) System.err.println("Product simplify: divided: " + divided);
+                            
                             if (!(divided instanceof Division)) {
                                 other.exprs.set(i, divided);
                                 other.exprs.set(j, divExprs.get(0));
@@ -195,15 +195,15 @@ public class Product extends Operation {
             
             Integer exprLevelLeft = expr.printLevelLeft();
             Integer exprLevelRight = expr.printLevelRight();
-            // if (debug) System.err.println("Product toString(): for i=" + i + ", classOrder=" + exprClassOrder);
-            // if (debug) System.err.println("Product toString(): for expr=" + expr + ", exprLevelLeft=" + exprLevelLeft + ", exprLevelRight=" + exprLevelRight);
+            
+            
 
             boolean lastParens = parens;
             parens = i != 0 && exprLevelLeft != null && classOrder > exprLevelLeft;
             if (i != exprs.size() - 1 && exprLevelRight != null && classOrder > exprLevelRight) parens = true;
             
-            //if (exprClassOrder != null && (exprClassOrder < classOrder || (i != 0 && exprClassOrder == classOrder))) parens = true;
-            //if (i == exprs.size() - 1 && expr.isFunction()) parens = false;
+            
+            
             
             String exprString = expr.pretty();
 
@@ -216,7 +216,7 @@ public class Product extends Operation {
                 string = string + "-";
             }
             else {
-                // if (debug) System.err.println("debug: Product.toString(): expr " + expr);
+                
             
                 string = string + (parens ? "(" : "") + exprString + (parens ? ")" : "");
             }
@@ -232,19 +232,19 @@ public class Product extends Operation {
         if (expr == this) return true;
         if (!(expr instanceof Product)) return false;
         
-        // if (debug) System.err.println("Product: equalsExpr: " + dump() + " =? " + expr);
+        
         ArrayList<Expr> otherExprs = ((Operation) expr).getExprs();
-        // if (debug) System.err.println("Product: equalsExpr: expr2: " + expr2);
+        
         for (Expr expr2 : exprs)
             for (int i = 0; i < 1; i++) {
                 Expr otherExpr2 = otherExprs.get(i);
-                // if (debug) System.err.println("Product: equalsExpr: otherExpr2: " + otherExpr2);
+                
                 if (expr2.equalsExpr(otherExpr2)) {
-                    // if (debug) System.err.println("Product: equalsExpr: " + expr2 + " == " + otherExpr2);
+                    
                     otherExprs.remove(otherExpr2);
                     break;
                 }
-                // if (debug) System.err.println("Product: equalsExpr: " + expr2 + " != " + otherExpr2);
+                
                 return false;
             }
         

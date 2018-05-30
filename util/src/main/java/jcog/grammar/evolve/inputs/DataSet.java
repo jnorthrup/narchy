@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.inputs;
 
@@ -47,7 +47,7 @@ public class DataSet implements Serializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        //return new Gson().fromJson(json, DataSet.class);
+        
     }
 
     public DataSet(String name, String description, String regexTarget) {
@@ -71,8 +71,8 @@ public class DataSet implements Serializable {
     private transient DataSet stripedDataset;
     
     private final transient Map<Long, List<DataSet>> separateAndConquerLevels = new ConcurrentHashMap<>();
-    //private transient DataSet datasetFocus = null;
-    //private final static Logger LOG = Logger.getLogger(DataSet.class.getName());
+    
+    
     
     /**
      * Updates the dataset statistics, numberMatches, numberMatchesChars and so on
@@ -203,7 +203,7 @@ public class DataSet implements Serializable {
      * @return
      */
     public DataSet subDataset(String name, List<Range> ranges){
-            // ranges are inclusive
+            
             DataSet subDataset = new DataSet(name);
             for(Range range : ranges){
                 for(int index = range.getStartIndex(); index <= range.getEndIndex(); index++){
@@ -238,32 +238,32 @@ public class DataSet implements Serializable {
     */
         protected static List<Example> stripeExample(Example example, double marginSize){     
         List<Example> slicesExampleList = new ArrayList<>();
-        //create ranges covering the saved portions 
+        
 
         List<Bounds> mm = example.getMatch();
         List<Bounds> savedBounds = new ArrayList<>(mm.size());
 
         for(Bounds match : mm){
-            //double -> int cast works like Math.floor(); Gives the same results of the older integer version
+            
             int charMargin = (int) Math.max(((match.size() * marginSize) / 2.0),1.0);
             Bounds grownMatch = new Bounds(match.start - charMargin, match.end + charMargin);
             grownMatch.start = (grownMatch.start >= 0) ? grownMatch.start:0;
             grownMatch.end = (grownMatch.end <= example.getNumberOfChars()) ? grownMatch.end : example.getNumberOfChars();
             savedBounds.add(grownMatch);
         }
-        //compact bounds, create a compact representation of saved portions
-        //This bounds represents the slices we are going to cut the example to 
+        
+        
         savedBounds = Bounds.mergeBounds(savedBounds);
         
-        //Create examples from slices
+        
         for(Bounds slice : savedBounds){
             Example sliceExample = new Example();
             sliceExample.setString(example.getString().substring(slice.start, slice.end));
             
-            //find owned matches
+            
             for(Bounds match : mm){
                 if(match.start >= slice.end){
-                    break; //only the internal for
+                    break; 
                 } else {
                     Bounds slicedMatch = match.windowView(slice);
                     if(slicedMatch != null){
@@ -271,10 +271,10 @@ public class DataSet implements Serializable {
                     }
                 }
             }
-            //find owned unmatches
+            
             for(Bounds unmatch : example.getUnmatch()){
                 if(unmatch.start >= slice.end){
-                    break; //only the internal for
+                    break; 
                 } else {
                     Bounds slicedUnmatch = unmatch.windowView(slice);
                     if(slicedUnmatch != null){
@@ -294,9 +294,9 @@ public class DataSet implements Serializable {
      * @return
      */
     public DataSet getStripedDataset(){
-//          if(this.stripedDataset == null){
-//              Logger.getLogger(this.getClass().getName()).info("getStripedDataset returns, null dataset cause uninitialized striped dataset.");
-//          }
+
+
+
           return this.stripedDataset;
     }
     
@@ -364,7 +364,7 @@ public class DataSet implements Serializable {
      * on the convertToUnmatch value: True==unmatch
      */
     private DataSet reduceSeparateAndConquerDataset(String individualRegex, boolean convertToUnmatch, boolean isFlagging ){
-        //initialize pattern matcher
+        
         Pattern pattern = Pattern.compile(individualRegex);
         Matcher individualRegexMatcher = pattern.matcher("");
     
@@ -387,7 +387,7 @@ public class DataSet implements Serializable {
             return false;
             /**
              * Workaround: riferimento BUG: 6984178
-             * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6984178
+             * http:
              * con i quantificatori greedy restituisce una eccezzione
              * invece che restituire un "false".
              */
@@ -396,7 +396,7 @@ public class DataSet implements Serializable {
     
     
     private Example reduceSeparateAndConquerFlaggingExample(Example example, Matcher individualRegexMatcher){
-        //Negative or unannotated are left unchanged
+        
         if(!isTruePositiveFlaggingExample(example, individualRegexMatcher)){
             return new Example(example);
         }
@@ -409,10 +409,10 @@ public class DataSet implements Serializable {
         return this.manipulateSeparateAndConquerExample(example, individualRegexMatcher, convertToUnmatch);
     }
     
-    //creates a reduced ("Separate and conquer") Example instance from an example and a given Regex Instance 
-    //ELIMINATED Feature: When doFocus is true, the method perform focus action instead of examples reduction (Focus action creates the complementary of the reduction in order to focus evolution).
     
-    //When convertToUnmatch is true extracted matches are converted into unannotated. 
+    
+    
+    
     private Example manipulateSeparateAndConquerExample(Example example, Matcher individualRegexMatcher, boolean convertToUnmatch){
         Example exampleClone = new Example(example);
         List<Bounds> extractions = new ArrayList<>();
@@ -425,17 +425,17 @@ public class DataSet implements Serializable {
         } catch (StringIndexOutOfBoundsException ex) {
             /**
              * Workaround: riferimento BUG: 6984178
-             * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6984178
+             * http:
              * con i quantificatori greedy restituisce una eccezzione
              * invece che restituire un "false".
              */
         }
         
-        //remove extracted matches
+        
         for (Iterator<Bounds> it = exampleClone.getMatch().iterator(); it.hasNext();) {
             Bounds match = it.next();
             for(Bounds extraction : extractions){
-                //when doFocus is true, match is remove when equals
+                
                 if(match.equals(extraction)){
                     it.remove();
                     if(convertToUnmatch){
@@ -443,8 +443,8 @@ public class DataSet implements Serializable {
                     }
                     break;
                 }
-                //Optimization
-                //extractions are in ascending order.. because find is going to extract in this order
+                
+                
                 if(extraction.start > match.end){
                     break;
                 }
@@ -624,7 +624,7 @@ public class DataSet implements Serializable {
          */
         public void populateUnmatchesFromMatches(){
             this.unmatch.clear();
-            //generate unmatches
+            
                 int previousMatchFinalIndex = 0;
                 for(Bounds oneMatch : this.match){
                     if(oneMatch.start > previousMatchFinalIndex){
@@ -728,7 +728,7 @@ public class DataSet implements Serializable {
             for (int i = 1; i < boundsList.size(); i++) {
                 Bounds currentBounds = boundsList.get(i);
                 if(currentBounds.start <= prevBounds.end){
-                    //merge
+                    
                     prevBounds.end = Math.max(currentBounds.end,prevBounds.end);
                 } else {
                     newBoundsList.add(prevBounds);
@@ -749,7 +749,7 @@ public class DataSet implements Serializable {
         public Bounds windowView(Bounds rangeBounds){
             Bounds newBounds = new Bounds(this.start-rangeBounds.start, this.end-rangeBounds.start);
             if((newBounds.start >= rangeBounds.size())||(newBounds.end<=0)){
-                return null; //Out of window
+                return null; 
             }
             newBounds.start = Math.max(newBounds.start,0);
             newBounds.end = Math.min(newBounds.end,rangeBounds.size());
@@ -777,8 +777,8 @@ public class DataSet implements Serializable {
         }
     
         
-        //extracted ranges are always ordered collection. In case you have to sort the collection first.
-        //AnnotatedRanges are sorted internally by the method
+        
+        
         /**
          * Counts the number of checkedRanges that overlaps with the zoneRanges. A Bounds object in checkedRanges who doesn't overlap
          * with zoneRanges are not counted.
@@ -789,7 +789,7 @@ public class DataSet implements Serializable {
         static public int countRangesThatCollideZone(Bounds[] ranges, List<Bounds> zoneRanges) {
             Collections.sort(zoneRanges);
              
-            //This approach relies on the fact that both annotatedRanges and extracted ranges are ordered
+            
             int overallEOAA = 0;
             for (Bounds extractedBounds : ranges) {
                 for (Bounds expectedBounds : zoneRanges) {

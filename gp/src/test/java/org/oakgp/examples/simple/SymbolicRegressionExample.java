@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,14 +41,14 @@ public class SymbolicRegressionExample {
 
         Candidates o = new Evolution()
                 .returns(Type.integerType())
-                .constants(Utils.intConsts(0, 10)) // the constant set will contain the integers in the range 0-10 inclusive
-                .variables(Type.integerType()) // the variable set will contain a single variable - representing the integer value input to the function
+                .constants(Utils.intConsts(0, 10)) 
+                .variables(Type.integerType()) 
                 .functions(
                         IntFunc.the.add,
                         IntFunc.the.subtract,
                         IntFunc.the.multiply
                 )
-                .goal(createIntegerTestDataFitnessFunction(createDataSet())) // the fitness function will compare candidates against a data set which maps inputs to their expected outputs
+                .goal(createIntegerTestDataFitnessFunction(createDataSet())) 
                 .population(INITIAL_POPULATION_SIZE)
                 .depth(INITIAL_POPULATION_MAX_DEPTH)
                 .goalTarget(TARGET_FITNESS)

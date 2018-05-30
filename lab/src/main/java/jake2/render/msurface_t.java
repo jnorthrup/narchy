@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 20.11.2003 by RST.
+
 
 package jake2.render;
 
@@ -30,38 +30,38 @@ import java.nio.ByteBuffer;
 public class msurface_t
 {
 
-	public int visframe; // should be drawn when node is crossed
+	public int visframe; 
 
 	public cplane_t plane;
 	public int flags;
 
-	public int firstedge; // look up in model->surfedges[], negative numbers
-	public int numedges; // are backwards edges
+	public int firstedge; 
+	public int numedges; 
 
 	public final short[] texturemins = { 0, 0 };
 	public final short[] extents = { 0, 0 };
 
-	public int light_s, light_t; // gl lightmap coordinates
+	public int light_s, light_t; 
 	public int dlight_s, dlight_t;
-	// gl lightmap coordinates for dynamic lightmaps
+	
 
-	public glpoly_t polys; // multiple if warped
+	public glpoly_t polys; 
 	public msurface_t texturechain;
 	public msurface_t lightmapchain;
 
-	// TODO check this
+	
 	public mtexinfo_t texinfo = new mtexinfo_t();
 
-	// lighting info
+	
 	public int dlightframe;
 	public int dlightbits;
 
 	public int lightmaptexturenum;
 	public final byte[] styles = new byte[Defines.MAXLIGHTMAPS];
 	public final float[] cached_light = new float[Defines.MAXLIGHTMAPS];
-	// values currently used in lightmap
-	//public byte samples[]; // [numstyles*surfsize]
-	public ByteBuffer samples; // [numstyles*surfsize]
+	
+	
+	public ByteBuffer samples; 
 	
 	public void clear() {
 		visframe = 0;
@@ -81,7 +81,7 @@ public class msurface_t
 		texturechain = null;
 		lightmapchain = null;
 
-		//texinfo = new mtexinfo_t();
+		
 		texinfo.clear();
 
 		dlightframe = 0;

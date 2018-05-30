@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -39,7 +39,7 @@ import spacegraph.util.math.v3;
 public abstract class DiscreteCollisionDetectorInterface {
 
 	public static abstract class Result {
-		///setShapeIdentifiers provides experimental support for per-triangle material / custom material combiner
+		
 		public abstract void setShapeIdentifiers(int partId0, int index0, int partId1, int index1);
 
 		public abstract void addContactPoint(v3 normalOnBInWorld, v3 pointInWorld, float depth, float breakingThresh);
@@ -49,7 +49,7 @@ public abstract class DiscreteCollisionDetectorInterface {
 		public final Transform transformA = new Transform();
 		public final Transform transformB = new Transform();
 		public float maximumDistanceSquared;
-		//btStackAlloc* m_stackAlloc;
+		
 
 		public ClosestPointInput() {
 			init();

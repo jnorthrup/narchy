@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 31.10.2003 by RST.
-// $Id: game_import_t.java,v 1.7 2006-01-21 21:53:31 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -29,11 +29,11 @@ import jake2.server.SV_INIT;
 import jake2.server.SV_SEND;
 import jake2.server.SV_WORLD;
 
-//
-//	collection of functions provided by the main engine
-//
+
+
+
 public class game_import_t {
-    // special messages
+    
     public static void bprintf(int printlevel, String s) {
         SV_SEND.SV_BroadcastPrintf(printlevel, s);
     }
@@ -63,10 +63,10 @@ public class game_import_t {
                 attenuation, timeofs);
     }
 
-    // config strings hold all the index strings, the lightstyles,
-    // and misc data like the sky definition and cdtrack.
-    // All of the current configstrings are sent to clients when
-    // they connect, and changes are sent to all connected clients.
+    
+    
+    
+    
     public static void configstring(int num, String string) {
         SV_GAME.PF_Configstring(num, string);
     }
@@ -79,7 +79,7 @@ public class game_import_t {
         SV_GAME.PF_error(level, err);
     }
 
-    // the *index functions create configstrings and some internal server state
+    
     public static int modelindex(String name) {
         return SV_INIT.SV_ModelIndex(name);
     }
@@ -96,7 +96,7 @@ public class game_import_t {
         SV_GAME.PF_setmodel(ent, name);
     }
 
-    // collision detection
+    
     public static trace_t trace(float[] start, float[] mins, float[] maxs,
                                 float[] end, edict_t passent, int contentmask) {
         return SV_WORLD.SV_Trace(start, mins, maxs, end, passent, contentmask);
@@ -116,9 +116,9 @@ public class game_import_t {
         return CM.CM_AreasConnected(area1, area2);
     }
 
-    // an entity will never be sent to a client or used for collision
-    // if it is not passed to linkentity. If the size, position, or
-    // solidity changes, it must be relinked.
+    
+    
+    
     public static void linkentity(edict_t ent) {
         SV_WORLD.SV_LinkEdict(ent);
     }
@@ -127,7 +127,7 @@ public class game_import_t {
         SV_WORLD.SV_UnlinkEdict(ent);
     }
 
-    // call before removing an interactive edict
+    
     public static int BoxEdicts(float[] mins, float[] maxs, edict_t list[],
                                 int maxcount, int areatype) {
         return SV_WORLD.SV_AreaEdicts(mins, maxs, list, maxcount, areatype);
@@ -137,8 +137,8 @@ public class game_import_t {
         PMove.Pmove(pmove);
     }
 
-    // player movement code common with client prediction
-    // network messaging
+    
+    
     public static void multicast(float[] origin, int to) {
         SV_SEND.SV_Multicast(origin, to);
     }
@@ -164,27 +164,27 @@ public class game_import_t {
         SV_GAME.PF_WritePos(pos);
     }
 
-    // some fractional bits
+    
     public static void WriteDir(float[] pos) {
         SV_GAME.PF_WriteDir(pos);
     }
 
-    // console variable interaction
+    
     public static cvar_t cvar(String var_name, String value, int flags) {
         return Cvar.Get(var_name, value, flags);
     }
 
-    // console variable interaction
+    
     public static cvar_t cvar_set(String var_name, String value) {
         return Cvar.Set(var_name, value);
     }
 
-    // console variable interaction
+    
     public static cvar_t cvar_forceset(String var_name, String value) {
         return Cvar.ForceSet(var_name, value);
     }
 
-    // ClientCommand and ServerCommand parameter access
+    
     public static int argc() {
         return Cmd.Argc();
     }
@@ -194,21 +194,21 @@ public class game_import_t {
         return Cmd.Argv(n);
     }
 
-    // concatenation of all argv >= 1
+    
     public static String args() {
         return Cmd.Args();
     }
 
-    // add commands to the server console as if they were typed in
-    // for map changing, etc
+    
+    
     public static void AddCommandString(String text) {
         Cbuf.AddText(text);
     }
 
     private static class MyPointContentsAdapter extends pmove_t.PointContentsAdapter {
-//        @Override
-//        public int pointcontents(float[] o) {
-//            return 0;
-//        }
+
+
+
+
     }
 }

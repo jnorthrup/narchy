@@ -47,21 +47,21 @@ public class AIMATests {
 
         n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
-//        n.activationRate.set(0.1f);
-//        n.confMin.set(0.02f);
-//        n.questionPriDefault.set(0.7f);
-//        n.beliefPriDefault.set(0.7f);
+
+
+
+
         n.termVolumeMax.set(16);
-        //n.conceptActivation.set(0.5f);
+        
 
-//        Deriver.derivers(n).forEach(x->((MatrixDeriver)x).conceptsPerIteration.set(2));
-        //new QuerySpider(n);
-        //new PrologCore(n);
-        //n.run(1);
 
-//        n.log();
+        
+        
+        
+
+
         n.believe(
-            //"((&&, American($x),Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
+            
             "((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
             "Owns(Nono, M1)",
             "Missile(M1)",
@@ -72,48 +72,48 @@ public class AIMATests {
             "Enemy(Nono,America)"
         );
 
-//        n.run(20);
-//        n.clear();
-        //n.log();
+
+
+        
 
 
 
-//        Set<Task> questions = new LinkedHashSet();
-//        n.onTask(x -> {
-//           if (x.isQuestion() && !x.isInput()) {
-//               questions.add(x);
-//           }
-//        });
 
 
-//        n.input("Criminal(?x)?");
-//        n.input("Criminal(?x)?");
-//                n.input("Criminal(?x)?");
 
-//        n.run(200);
-//        n.clear();
-//        n.question($.$$(
-//                "Criminal(?x)"
-//        ));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         n.question($.$(
                 "Criminal:?x"
 
         ), ETERNAL, (q,a)->{
             System.out.println(a);
         });
-        //
-        //n.log();
+        
+        
         n.run(4500);
-//        n.concept($.$("Criminal")).print();
-//        n.concept($.$("Criminal:?1")).print();
-//        if (!questions.isEmpty()) {
-//            System.out.println("Questions Generated:");
-//            questions.forEach(System.out::println);
-//        }
+
+
+
+
+
+
 
         Task y = n.belief($.$("Criminal(West)"));
         if (y == null) {
-            //why
+            
             n.belief($.$("Criminal(West)"));
         }
         assertNotNull(y);
@@ -160,18 +160,18 @@ public class AIMATests {
         );
     }
 
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testKBWithNonDefiniteClauses() {
-//        KnowledgeBase kb = new KnowledgeBase();
-//        "P => Q");
-//        "L & M => P");
-//        "B & L => M");
-//        "~A & P => L"); // Not a definite clause
-//        "A & B => L");
-//        "A");
-//        "B");
-//        PropositionSymbol q = (PropositionSymbol) parser.parse("Q");
-//
-//        Assert.assertEquals(true, plfce.plfcEntails(kb, q));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

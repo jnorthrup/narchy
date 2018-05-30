@@ -32,74 +32,74 @@ import static nars.time.Tense.TIMELESS;
 
 /**
  * NARese, syntax and language for interacting with a NAR in NARS.
- * https://code.google.com/p/open-nars/wiki/InputOutputFormat
+ * https:
  */
 public class Narsese {
 
     private static final Class parser;
 
-    //    static {
-////            String narseseProto = "nars.NarseseParser";
-//            String narseseClass = "nars.NarseseParser$$grappa";
-//            parser = new ClassLoader(Narsese.class.getClassLoader()) {
-//                @Override
-//                public synchronized Class findClass(String name) {
-//
-//                    try {
-//                        //URL nurl = Narsese.class.getClass().getResource("nars/NarseseParser.class");
-//                        URL nurl = Util.locate(this,
-//                                "nars/NarseseParser.class");
-//                        URLConnection nc = nurl.openConnection();
-//                        long lastModified = nc.getLastModified();
-//
-//                        Class[] fresh = new Class[1];
-//                        byte[] classCode = FileCache.fileCache(Narsese.class.getSimpleName() + "_" + lastModified, () -> {
-//                            try {
-//                                ParserClassNode node = ParserTransformer.extendParserClass(NarseseParser.class);
-//                                fresh[0] = node.getExtendedClass();
-//                                return node.getClassCode();
-//                            } catch (Exception e) {
-//                                throw new RuntimeException(e);
-//                            }
-//                        });
-//                        if (fresh[0]!=null)
-//                            return fresh[0];
-//                        else {
-//                            //ClassLoader cl = Narsese.class.getClassLoader();
-//                            try (
-//                                    final ReflectiveClassLoader loader
-//                                            = new ReflectiveClassLoader(this.getParent());
-//                            ) {
-//                                return loader.loadClass(narseseClass, classCode);
-//                            }
-//
-////                            return defineClass(classCode, 0, classCode.length);
-//                        }
-////                        Class<?> protoClass = loadClass(narseseProto);
-////
-////                        //String narseseClass = Narsese.NarseseParser.class.getName() + "$$grappa";
-////                        byte[] classCode = new byte[0];
-////                        ParserClassNode node = ParserTransformer.extendParserClass(protoClass);
-////                        classCode = node.getClassCode();
-////                        //final ClassLoader classLoader = node.getParentClass().getClassLoader();
-////                        final Class<?> extendedClass;
-////
-////
-////                        //                        classCode = ParserTransformer.//extendParserClass(Narsese.class).getClassCode();
-//////                                getByteCode(protoClass);
-////                        //byte[] ba = classCode;
-////                        //return defineClass(name, ba, 0, ba.length);
-////
-////                        //return ParserTransformer.extendParserClass(protoClass).getExtendedClass();
-//                    } catch (Exception e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                }
-//            }.findClass(narseseClass);
-//
-//
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     static {
 
         try {
@@ -128,32 +128,32 @@ public class Narsese {
         public boolean match(MatcherContext context) {
             final Matcher matcher = context.getMatcher();
 
-            //final PreMatchEvent<T> preMatchEvent = new PreMatchEvent<>(context);
-            //bus.post(preMatchEvent);
+            
+            
 
-//            if (throwable != null)
-//                throw new GrappaException("parsing listener error (before match)",
-//                        throwable);
 
-            // FIXME: is there any case at all where context.getMatcher() is null?
+
+
+
+            
             @SuppressWarnings("ConstantConditions") final boolean match = matcher.match(context);
-//
-//            final MatchContextEvent<T> postMatchEvent = match
-//                    ? new MatchSuccessEvent<>(context)
-//                    : new MatchFailureEvent<>(context);
 
-            //bus.post(postMatchEvent);
 
-//            if (throwable != null)
-//                throw new GrappaException("parsing listener error (after match)",
-//                        throwable);
+
+
+
+            
+
+
+
+
 
             return match;
         }
 
     }
 
-    //These should be set to something like RecoveringParseRunner for performance
+    
     private final ParseRunner inputParser;
     private final ParseRunner termParser;
 
@@ -162,13 +162,13 @@ public class Narsese {
         this.termParser = new MyParseRunner(p.Term());
     }
 
-    //private final ParseRunner singleTaskRuleParser = new ListeningParseRunner3(TaskRule());
+    
 
-    //private final Map<String,Term> termCache = new HashMap();
+    
 
 
     static final ThreadLocal<Narsese> parsers = ThreadLocal.withInitial(
-            //() -> Grappa.createParser(Narsese.class)
+            
             () -> {
                 try {
                     return new Narsese((INarseseParser) (parser.getConstructor().newInstance()));
@@ -256,7 +256,7 @@ public class Narsese {
         Term content = ((Term) x[1]).normalize();
             /*if (!(content instanceof Compound)) {
                 throw new NarseseException("Task term unnormalizable: " + contentRaw);
-                //return Command.task($.func("log", content));
+                
             } else */
 
         Object px = x[2];
@@ -268,7 +268,7 @@ public class Narsese {
                         (byte) (((Character) x[2]).charValue());
 
         if (punct == COMMAND) {
-            //TODO warn about the other details which, if present, are being ignored
+            
             return new CommandTask(content);
         }
 
@@ -278,7 +278,7 @@ public class Narsese {
         if (_t instanceof Truth) {
             t = (Truth)_t;
         } else if (_t instanceof Float)  {
-            //frequency, default confidence
+            
             t = $.t((Float)_t, nar.confDefault(punct));
         } else {
             t = null;
@@ -291,7 +291,7 @@ public class Narsese {
         }
 
         Task y = Task.tryTask(content, punct, t, (C, tr) -> {
-            //TODO construct directly and remove TaskBuilder
+            
 
 
             long[] occ = occurrence(nar, x[4]);
@@ -321,7 +321,7 @@ public class Narsese {
             long o = nar.time() + qCycles;
             return new long[] { o, o };
         } else if (O instanceof Integer) {
-            //cycle time, or default time unit
+            
             long o = nar.time() + (Integer) O;
             return new long[] { o, o };
         } else if (O instanceof Object[]) {
@@ -352,11 +352,11 @@ public class Narsese {
             return nullIfNull(y.normalize());
         } else {
             return y;
-            //            Termed existing = index.get(y, false);
-            //            if (existing == null)
-            //                return y;
-            //            else
-            //                return existing.term();
+            
+            
+            
+            
+            
         }
 
 
@@ -374,7 +374,7 @@ public class Narsese {
 
         Exception ee = null;
         try {
-            //Term x = singleTerms.get(s);
+            
 
             ParsingResult r = termParser.run(s);
 

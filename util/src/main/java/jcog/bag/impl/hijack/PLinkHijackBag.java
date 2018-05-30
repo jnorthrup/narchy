@@ -36,44 +36,44 @@ public class PLinkHijackBag<X> extends HijackBag<X, PLinkHashCached<X>> {
         forEach(x -> each.accept(x.get()));
     }
 
-//    
-//    @Override
-//    public HijackBag<X, PLink<X>> commit() {
-//        flatForget(this);
-//        return this;
-//    }
 
-//    public static void flatForget(HijackBag<?,? extends PLink> b) {
-//        int s = b.size();
-//        if (s > 0) {
-//
-//            double p = b.pressure.get() /* MULTIPLIER TO ANTICIPATE NEXT period */;
-//            //float ideal = s * b.temperature();
-//
-//            if (p > EPSILON_DEFAULT) {
-//                if (b.pressure.compareAndSet(p, 0)) {
-//
-//                    b.commit(null); //precommit to get accurate mass
-//                    float mass = b.mass;
-//
-//                    float deduction = //(float) ((p + mass) - ideal);
-//                            ((float) p / ((float) p + mass)) / s;
-//                    if (deduction > EPSILON_DEFAULT) {
-//                        b.commit(x -> x.priSub(deduction));
-//                    }
-//                }
-//
-//            }
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
     protected PLinkHashCached<X> merge(PLinkHashCached<X> existing, PLinkHashCached<X> incoming, MutableFloat overflowing) {
         float overflow = existing.priAddOverflow(incoming.priElseZero() );
         if (overflow > 0) {
-            //pressurize(-overflow);
+            
             if (overflowing!=null) overflowing.add(overflow);
         }
         return existing;
@@ -81,8 +81,8 @@ public class PLinkHijackBag<X> extends HijackBag<X, PLinkHashCached<X>> {
 
 
 
-//    @Override
-//    public PriForget forget(float avgToBeRemoved) {
-//        return new PriForget(avgToBeRemoved);
-//    }
+
+
+
+
 }

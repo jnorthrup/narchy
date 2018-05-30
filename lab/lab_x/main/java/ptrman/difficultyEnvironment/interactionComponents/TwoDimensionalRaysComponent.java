@@ -12,13 +12,13 @@ import spacegraph.space2d.phys.dynamics.Fixture;
 public class TwoDimensionalRaysComponent implements IComponent {
     public float raysLength = 0.0f;
     public float raysStartDistance = 0.0f;
-    public float raysSpreadAngleInRadiants = 0.0f; // from side to side
+    public float raysSpreadAngleInRadiants = 0.0f; 
     public float[] hitDistanceFractions;
 
     private static class RayCastClosestCallback implements RayCastCallback {
         public boolean hittedAnything = false;
 
-        public Vec2 normalizedDirection; // must be set from outside
+        public Vec2 normalizedDirection; 
         public Vec2 globalStartPosition;
 
         public float closestHitDistance = Float.MAX_VALUE;
@@ -32,20 +32,20 @@ public class TwoDimensionalRaysComponent implements IComponent {
             final Vec2 relativeDifference = point.sub(globalStartPosition);
             final float distance = Vec2.dot(relativeDifference, normalizedDirection);
 
-            // we ignore any points/collisions which don't make sense
+            
             if( distance < 0.0f ) {
-                return 1.0f; // continue as usual
+                return 1.0f; 
             }
 
             if( distance < closestHitDistance ) {
                 closestHitDistance = distance;
 
-                // TODO< save other needed things >
+                
             }
 
             hittedAnything = true;
 
-            return 1.0f; // continue as usual
+            return 1.0f; 
         }
     }
 
@@ -81,7 +81,7 @@ public class TwoDimensionalRaysComponent implements IComponent {
             collisionCallback.reset();
 
             collisionCallback.normalizedDirection = rayGlobalStopPosition.sub(rayGlobalStartPosition);
-            // normalize
+            
             collisionCallback.normalizedDirection = collisionCallback.normalizedDirection.mul(1.0f / collisionCallback.normalizedDirection.length());
 
             try {
@@ -114,7 +114,7 @@ public class TwoDimensionalRaysComponent implements IComponent {
 
     private RayCastClosestCallback collisionCallback = new RayCastClosestCallback();
 
-    // helper
+    
     private static Vec2 getNormalizedDirectionOfAngleInRadiants(final float angle) {
         return new Vec2((float) Math.cos(angle), (float) Math.sin(angle));
     }

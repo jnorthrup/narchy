@@ -42,8 +42,8 @@ import java.util.function.Supplier;
  */
 public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
-// =================== private fields ============================
-// ===============================================================
+
+
 
     int serial;
 
@@ -73,7 +73,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      */
     public static class Node<V> {
         public final V v;
-        public final IntHashSet e; //shouldnt be final otherwise i'd extend it :(
+        public final IntHashSet e; 
         public final int id;
 
         public Node(V v, int id) {
@@ -122,8 +122,8 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      */
     private final boolean directed;
 
-// =================== public constructors ======================
-// ===============================================================
+
+
 
     /**
      * Constructs an empty graph. That is, the graph has zero nodes, but any
@@ -143,8 +143,8 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
 
-// =================== public methods =============================
-// ================================================================
+
+
 
     /**
      * If the given object is not associated with a node yet, adds a new
@@ -174,8 +174,8 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
 
-// =================== graph implementations ======================
-// ================================================================
+
+
 
 
     @Override
@@ -224,7 +224,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     }
 
 
-    // ---------------------------------------------------------------
+    
 
 
     @Override
@@ -261,26 +261,26 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         return x;
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public boolean isEdge(int i, int j) {
         return antinodes.get(i).e.contains(j);
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public IntHashSet neighborsOut(int i) {
         return antinodes.get(i).e;
     }
 
-//    public Iterable<V> neighbors(V v) {
-//        int i = nodes.getIfAbsent(v,-1);
-//        if (i < 0)
-//            return Collections.emptyList();
-//        return antinodes.get(i).e.collect((int k)->antinodes.get(k).v);
-//    }
+
+
+
+
+
+
     public void neighborEdges(V v, BiConsumer<V,E> each) {
         int i = node(v);
         if (i < 0)
@@ -303,7 +303,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
                 setEdge(i, ee, ej2);
         });
     }
-// ---------------------------------------------------------------
+
 
     /**
      * If the graph was gradually grown using {@link #addNode}, returns the
@@ -314,24 +314,24 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
         return nodes == null ? null : antinodes.get(v).v;
     }
 
-// ---------------------------------------------------------------
 
 
-// ---------------------------------------------------------------
+
+
 
     @Override
     public int size() {
         return nodes.size();
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean directed() {
         return directed;
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public int degree(int i) {
@@ -408,7 +408,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     public AdjGraph<V, E> compact(TriFunction<V, V, E, E> retain) {
         AdjGraph g = new AdjGraph(directed);
         each((a, b, e) -> {
-            //TODO combine the addNode and setEdge into one call
+            
             e = retain.apply(a, b, e);
             if (e != null) {
                 int aa = g.addNode(a);

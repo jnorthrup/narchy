@@ -29,7 +29,7 @@ public class ParticleGroup {
     Object m_userData;
 
     public ParticleGroup() {
-        // m_system = null;
+        
         m_firstIndex = 0;
         m_lastIndex = 0;
         m_groupFlags = 0;
@@ -99,9 +99,9 @@ public class ParticleGroup {
         return m_transform.pos;
     }
 
-//    public float getAngle() {
-//        return m_transform.rotMatrix.getAngle();
-//    }
+
+
+
 
     public Object getUserData() {
         return m_userData;

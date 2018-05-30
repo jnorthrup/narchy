@@ -37,7 +37,7 @@ public class TermQueue {
             ListIterator<Term> it = queue.listIterator();
             while (it.hasNext()) {
                 if (engine.unify(t, it.next())) {
-                    //found
+                    
                     if (remove)
                         it.remove();
                     return true;

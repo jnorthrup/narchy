@@ -55,11 +55,11 @@ public class NARService extends Service<NAR> implements Termed {
 
         stopping(nar);
 
-        //this.nar = null; //<- not safe to nullify if executing
+        
     }
 
     public void clear() {
-        //default: nothing
+        
     }
 
 
@@ -76,7 +76,7 @@ public class NARService extends Service<NAR> implements Termed {
         if (n!=null) {
             n.services.remove(id);
         }
-        //else: already off
+        
     }
 
     @Override

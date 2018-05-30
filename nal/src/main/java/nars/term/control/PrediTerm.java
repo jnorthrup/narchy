@@ -33,7 +33,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
     static Comparator<PrediTerm<?>> sort(ToIntFunction<PrediTerm<?>> count) {
         return (a, b) -> {
 
-            //if (a.equals(b)) return 0; //doesnt seem to happen
+            
 
             float ac = count.applyAsInt(a) / a.cost();
             float bc = count.applyAsInt(b) / b.cost();
@@ -52,7 +52,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
             case 0: return null;
             case 1: return p[0];
             default:
-                //PrediTerm[] pp = p.clone();
+                
                 FasterList<PrediTerm> pp = new FasterList(p);
                 pp.removeIf(prediTerm -> !prediTerm.remainInAND(p));
                 if (pp.size() > 1)
@@ -65,7 +65,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
     @Nullable
     static <X> PrediTerm<X> compileAnd(Stream<PrediTerm<X>> cond, @Nullable PrediTerm<X> conseq) {
         return
-            //AndCondition.the
+            
             compileAnd(
                     (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond)
                         .toArray(PrediTerm[]::new)
@@ -94,12 +94,12 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
         return true;
     }
 
-//    /** returns null on success; returns this instance on the test failure. go figure */
-//    default PrediTerm<X> exec(X context, CPU cpu) {
-//        if (!test(context))
-//            return this;
-//        else
-//            return null;
-//    }
+
+
+
+
+
+
+
 
 }

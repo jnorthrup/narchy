@@ -147,7 +147,7 @@ public class Enemy extends Sprite
 
 
         float sideWaysSpeed = 1.75f;
-        //        float sideWaysSpeed = onGround ? 2.5f : 1.2f;
+        
 
         if (xa > 2)
         {
@@ -322,7 +322,7 @@ public class Enemy extends Sprite
         {
             if (yD > -height && yD < shell.height)
             {
-                //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+                
 
                 xa = shell.facing * 2;
                 ya = -5;
@@ -352,7 +352,7 @@ public class Enemy extends Sprite
             {
                 if (noFireballDeath) return true;
                 
-                //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+                
 
                 xa = fireball.facing * 2;
                 ya = -5;
@@ -375,7 +375,7 @@ public class Enemy extends Sprite
 
         if (x + width > xTile * 16 && x - width < xTile * 16 + 16 && yTile == (int) ((y - 1) / 16))
         {
-            //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+            
 
             xa = -world.mario.facing * 2;
             ya = -5;

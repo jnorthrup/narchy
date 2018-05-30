@@ -19,11 +19,11 @@ public class NarseseTimeUnitTest {
     @Test
     public void testOccurence() throws Narsese.NarseseException {
         @Deprecated Task now = task("<a --> b>. :|:");
-        //Task f = task("<a --> b>. :/:");
-        //Task p = task("<a --> b>. :\\:");
-        Task now1 = task("<a --> b>. |"); //now, shorthand
-        Task now1withTruth = task("<a --> b>. | %1.0;0.90%"); //now, shorthand with truth
-        Task now2 = task("<a --> b>. +0"); //now, numeric
+        
+        
+        Task now1 = task("<a --> b>. |"); 
+        Task now1withTruth = task("<a --> b>. | %1.0;0.90%"); 
+        Task now2 = task("<a --> b>. +0"); 
         Task next = task("<a --> b>. +1");
         Task prev = task("<a --> b>. -1");
         assertEquals(now1.start() , now2.start());
@@ -74,7 +74,7 @@ public class NarseseTimeUnitTest {
         }
 
         {
-            //reverse corrected
+            
             Task x = n.inputTask("<a --> b>. +5h..-2m");
             assertEquals(n.time() - x.start(), 2 * 60 * 1000, 1000);
             assertEquals(x.end() - n.time(), 5 * 60 * 60 * 1000, 1000);
@@ -100,18 +100,18 @@ public class NarseseTimeUnitTest {
 
     @Test
     public void testTimeDeltaUnits() {
-        //intermediate representation
+        
         assertEquals(
             "term(\"&&\",(a,b),(day,1))",
             $$("(a &&+1day b)").toString()
         );
 
-        //live representation, as determined by reasoner realtime clock and its precision
+        
         assertEquals("(a &&+86400000 b)",
                 $$("(a &&+1day b)").eval(n).toString()
         );
 
-        //decimal parsing
+        
         assertEquals("(a &&+129600000 b)",
                 $$("(a &&+1.5days b)").eval(n).toString()
         );
@@ -132,12 +132,12 @@ public class NarseseTimeUnitTest {
 
     }
 
-//    @Test
-//    public void parsedCorrectOccurrenceTime() throws Narsese.NarseseException {
-//        long now = n.time();
-//        Task t = n.inputTask("b:a. :\\:");
-//        assertEquals(now, t.creation());
-//        assertEquals(now - 1, t.start());
-//    }
+
+
+
+
+
+
+
 
 }

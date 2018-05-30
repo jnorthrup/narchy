@@ -72,7 +72,7 @@ public class NTM implements AbstractNTM
 
     public void initializeMemoryState() {
         now = new MemoryState(memory);
-        //prev = null;
+        
     }
 
     public void backwardErrorPropagation(double[] knownOutput) {

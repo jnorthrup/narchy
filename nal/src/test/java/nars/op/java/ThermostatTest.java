@@ -20,17 +20,17 @@ import static nars.Op.BELIEF;
 public class ThermostatTest {
 
 
-//    final Runnable pause = () -> {
-//        //Util.sleep(500);
-//    };
-//    @Test
-//    @Disabled
-    public static void main (String[] args) {// void test1() {
-        //
+
+
+
+
+
+    public static void main (String[] args) {
+        
         final int DUR = 5;
 
         final int subTrainings = 2;
-        final int thinkDurs = 2; //pause between episodes
+        final int thinkDurs = 2; 
 
         NAR n = NARS.tmp();
 
@@ -43,32 +43,32 @@ public class ThermostatTest {
         n.activateConceptRate.set(0.1f);
 
         n.goalPriDefault.set(0.5f);
-//        n.forgetRate.set(2f);
-        //n.deep.set(0.8);
+
+        
 
 
-     //   n.emotion.want(MetaGoal.Desire, 0.2f);
-//        n.want(MetaGoal.Believe, 0.1f);
-//        n.want(MetaGoal.Perceive, -0.01f);
+     
+
+
 
         float exeThresh = 0.51f;
 
-        //new ArithmeticIntroduction(8, n);
+        
         new ConjClustering(n, BELIEF, (t) -> true, 8, 32);
 
-        //n.priDefault(BELIEF, 0.3f);
+        
 
-        //n.logPriMin(System.out, 0.5f);
-        //n.logWhen(System.out, false, true, true);
-        //n.log();
+        
+        
+        
 
         boolean[] training = new boolean[]{true};
 
         Opjects op = new Opjects(n) {
 
-//            {
-//                pretend = true;
-//            }
+
+
+
 
             @Override
             @Nullable
@@ -76,7 +76,7 @@ public class ThermostatTest {
 
                 if (training[0]) {
                     n.synch();
-                    //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
+                    
                 }
 
                 Object y = super.invoked(obj, wrapped, args, result);
@@ -88,29 +88,29 @@ public class ThermostatTest {
                 return y;
             }
 
-            //            @Override
-//            protected synchronized Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
-//
-//                //n.time.synch(n);
-//
-//
-//                //long now = System.nanoTime();
-//
-//                Object r = super.invoked(in, obj, wrapped, args, result);
-//
-//                //n.runLater(() -> {
-//                    //n.run(DUR * 2);
-//                //});
-//
-//                return r;
-//
-//            }
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         };
 
         Teacher<Thermostat> env = new Teacher<>(op,
                 new Thermostat());
-                //Thermostat.class);
+                
 
 
 
@@ -137,8 +137,8 @@ public class ThermostatTest {
                     n.clear();
 
                     env.teach("down", condition, (Thermostat x) -> {
-//                        x.up(); //demonstrate no change
-//                        x.report();
+
+
 
                         n.run(1);
                         while (x.is() > Thermostat.cold) {
@@ -148,13 +148,13 @@ public class ThermostatTest {
                         x.report();
                         n.run(1);
 
-//                        x.down(); //demonstrate no change
-//                        x.report();
+
+
                     }, isCold);
                     System.out.println("EPISODE END");
                     n.run(thinkDurs * n.dur());
 
-//                    n.concept("do(down)").print();
+
                 }
 
                 for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
@@ -163,8 +163,8 @@ public class ThermostatTest {
                     n.clear();
 
                     env.teach("up", condition, x -> {
-//                        x.down(); //demonstrate no change
-//                        x.report();
+
+
                         n.run(1);
                         while (!isHot.test(x)) {
                             x.up();
@@ -172,8 +172,8 @@ public class ThermostatTest {
                         }
                         x.report();
                         n.run(1);
-//                        x.up(); //demonstrate no change
-//                        x.report();
+
+
                     }, isHot);
 
                     System.out.println("EPISODE END");
@@ -190,22 +190,22 @@ public class ThermostatTest {
 
 
 
-//        n.log();
-            //n.run(100);
 
-//        new Implier(n, new float[] { 1f },
-//                $.$("a_Thermostat(down,())"),
-//                $.$("a_Thermostat(up,())")
-//                //$.$("a_Thermostat(is,(),#x)")
-//        );
+            
 
-//        try {
 
-            //make cold
-//            n.input(new NALTask($.$("a_Thermostat(should,(),0)"),
-//                    BELIEF, $.t(1f, 0.99f),
-//                    n.time(), n.time(), n.time()+1000,
-//                    n.time.nextInputStamp()).pri(1f));
+
+
+
+
+
+
+
+            
+
+
+
+
 
             Thermostat t = env.x;
 
@@ -213,14 +213,14 @@ public class ThermostatTest {
 
             {
 
-                //n.clear();
+                
 
                 t.is(3);
                 t.should(0);
                 n.run(thinkDurs * n.dur());
 
                 Term cold = $.$$("is(a_Thermostat,0)");
-                //Term cold = $.$safe("(a_Thermostat(is,(),0) &| --a_Thermostat(is,(),3))");
+                
                 Term hot = $.$$("is(a_Thermostat,3)");
                 Truth goalTruth = $.t(1f, 0.9f);
 
@@ -235,8 +235,8 @@ public class ThermostatTest {
 
                 for (int i = 0; i < 16 && xPos.isOn(); i++) {
                     int period = 100;
-                    //t.report();
-                    //n.run(period, pause);
+                    
+                    
                     n.run(period);
                 }
 
@@ -255,33 +255,33 @@ public class ThermostatTest {
                 }
 
 
-//            n.input(new NALTask($.$safe("a_Thermostat(is,(),0)"),
-//                    GOAL, $.t(1f, 0.95f),
-//                    n.time(), n.time(), n.time() + periods,
-//                    n.time.nextInputStamp()).pri(1f));
-//            n.input(new NALTask($.$safe("a_Thermostat(is,(),3)"),
-//                    GOAL, $.t(0f, 0.95f),
-//                    n.time(), n.time(), n.time() + periods,
-//                    n.time.nextInputStamp()).pri(1f));
+
+
+
+
+
+
+
+
 
             }
         } while (stupid);
 
 
-        //n.run(thinkDurs * n.dur());
+        
 
         {
-//            n.input(new NALTask($.$safe("a_Thermostat(is,(),3)"),
-//                    GOAL, $.t(0f, 0.99f),
-//                    n.time(), n.time(), n.time()+1000,
-//                    n.time.nextInputStamp()).pri(1f));
+
+
+
+
         }
 
-//        while (t.is() != t.should()) {
-//            int period = 1000;
-//            t.report();
-//            n.run(period);
-//        }
+
+
+
+
+
 
         n.tasks().forEach(t -> {
             if (!t.isInput())
@@ -308,84 +308,84 @@ public class ThermostatTest {
         }
     }
 
-//    @Test
-//    public void test1() {
-//        new ThermostatTester() {
-//
-//            {
-//                int period = 500;
-//                int subPeriods = 6;
-//                int subPeriod = period / subPeriods;
-//
-//                n.log();
-//                n.priDefault(BELIEF, 0.2f);
-//                n.priDefault(QUESTION, 0.1f);
-//                n.priDefault(QUEST, 0.1f);
-//                n.freqResolution.set(0.02f);
-//                n.termVolumeMax.set(28);
-//                n.time.dur(subPeriod / 2);
-//                //MetaGoal.Desire.want(n.want, 1.5f);
-//
-//                for (int i = 0; i < 2; i++) {
-//                    x.set(3);
-//                    n.run(subPeriod);
-//
-//                    x.intValue();
-//                    n.run(subPeriod);
-//
-//                    x.set(4);
-//                    n.run(subPeriod);
-//
-//                    x.intValue();
-//                    n.run(subPeriod);
-//                }
-//
-//                assertEquals(4, x.intValue());
-//
-//                n.run(1);
-//
-//                n.onTask(x -> {
-//                    if (x.isGoal() && !x.isInput())
-//                        System.out.println(x.proof());
-//                });
-//
-//
-//                while (x.intValue() != 3 && n.time() < period) {
-//                    if (n.time() % (period / subPeriods) == 0) {
-//                        try {
-//                            n.input("$1.0 x(intValue, (), 3)! :|: %1.00;0.90%");
-//                        } catch (Narsese.NarseseException e) {
-//                            e.printStackTrace();
-//                        }
-//                        //n.input("$1.0 x(intValue, (), 4)! :|: %0.00;0.90%");
-//                        //n.input("$1.0 (set:?1 <-> intValue:?2)?");
-//                        //n.input("$1.0 x(set, 1)@ :|:");
-//                    }
-//                    n.run(1);
-//                }
-//
-//                assertEquals(3, x.intValue());
-//
-//                while (x.intValue() != 5 && n.time() < period * 2) {
-//                    if (n.time() % (period / subPeriods) == 0) {
-//                        try {
-//                            n.input("$1.0 x(intValue, (), 5)! :|: %1.00;0.90%");
-////                            n.input("$0.5 x(intValue, (), 3)! :|: %0.00;0.90%");
-////                            n.input("$0.5 x(intValue, (), 4)! :|: %0.00;0.90%");
-//                            //n.input("$1.0 (set:?1 <-> intValue:?2)?");
-//                            //n.input("$1.0 x(set, 1)@ :|:");
-//                        } catch (Narsese.NarseseException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                    n.run(1);
-//                }
-//                assertEquals(5, x.intValue());
-//
-//                new MetaGoal.Report().add(n.causes).print(System.out);
-//
-//            }
-//        };
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

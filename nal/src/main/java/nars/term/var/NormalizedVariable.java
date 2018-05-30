@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Open-NARS.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Open-NARS.  If not, see <http:
  */
 package nars.term.var;
 
@@ -38,12 +38,12 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 
     public final short id;
 
-//    static final byte DEP_ORD = Op.VAR_DEP.id;
-//    static {
-//
-//        //test for the expected ordering of the variable op ordinals
-//        assert(Op.VAR_PATTERN.id - DEP_ORD == 3);
-//    }
+
+
+
+
+
+
 
     /*@Stable*/
     private final byte[] bytes;
@@ -123,20 +123,20 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         throw new RuntimeException("invalid variable character");
     }
 
-    //    @NotNull
-//    static Op varCacheFor(Op c) {
-//        switch (c) {
-//            case Op.VAR_PATTERN:
-//                return varCache[0]
-//            case '#':
-//                return varCacheFor
-//            case '$':
-//                return Op.VAR_INDEP;
-//            case '?':
-//                return Op.VAR_QUERY;
-//        }
-//        throw new RuntimeException(c + " not a variable");
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
     public static int opToVarIndex(/*@NotNull*/ Op o) {
         switch (o) {
             case VAR_PATTERN:
@@ -153,11 +153,11 @@ public abstract class NormalizedVariable implements Variable, AnonID {
     }
 
 
-//    @Override
-//    abstract public int volume();
+
+
 
     static {
-        //precompute cached variable instances
+        
         for (Op o : new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, Op.VAR_DEP, Op.VAR_INDEP}) {
             int t = opToVarIndex(o);
             for (byte i = 1; i < Param.MAX_INTERNED_VARS; i++) {
@@ -198,7 +198,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         if (id < Param.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(type)][id];
         } else {
-            //assert(id <= 127);
+            
             return vNew(type, id);
         }
     }
@@ -206,16 +206,16 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 
 
 
-    //    //TODO replace this with a generic counting method of how many subterms there are present
-//    public static int numPatternVariables(Term t) {
-//        t.value(new TermToInt()) //..
-////        final int[] has = {0};
-////        t.recurseTerms((t1, superterm) -> {
-////            if (t1.op() == Op.VAR_PATTERN)
-////                has[0]++;
-////        });
-////        return has[0];
-//    }
+    
+
+
+
+
+
+
+
+
+
 
 
 }

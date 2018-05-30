@@ -56,7 +56,7 @@ public class ProtoWidget extends Widget {
         }
     }
 
-    //Surface palette(Surface... )
+    
 
     static final Supplier<Surface> TODO = () -> new Label("TODO");
     static final WidgetLibrary LIBRARY  = new WidgetLibrary() {{
@@ -207,7 +207,7 @@ public class ProtoWidget extends Widget {
             in = new Port().on((float[] x)->{
                 synchronized (g) {
                     config.reset(x.length);
-                    g.put(Util.toDouble(x));//Util.toDouble(ae.y));
+                    g.put(Util.toDouble(x));
                 }
             });
             display = new Surface() {
@@ -220,29 +220,29 @@ public class ProtoWidget extends Widget {
                 protected void paint(GL2 gl) {
                     synchronized (g) {
                         NeuralGasNet g = Cluster2DChip.this.g;
-//                        double x1 = Double.POSITIVE_INFINITY;
-//                        double x2 = Double.NEGATIVE_INFINITY;
-//                        double y1 = Double.POSITIVE_INFINITY;
-//                        double y2 = Double.NEGATIVE_INFINITY;
 
-//                        double x1 = 0, y1 = 0, x2 = 1, y2 = 1;
+
+
+
+
+
                         float cw = 0.1f;
                         float ch = 0.1f;
                         for (Centroid c : g.centroids) {
                             float a = (float) (1.0 / (1 + c.localError()));
                             ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
-                            float x = //c.getEntry(0);
+                            float x = 
                                     0.5f*(1+ae.y[0]);
-//                            x1 = Math.min(x, x1);
-//                            x2 = Math.max(x, x2);
-                            float y = //c.getEntry(1);
+
+
+                            float y = 
                                     0.5f*(1+ae.y[1]);
-//                            y1 = Math.min(y, y1);
-//                            y2 = Math.max(y, y2);
-//                        }
-//                        for (Centroid c : g.centroids) {
-//                            float x = (float) Util.normalize(c.getEntry(0), x1, x2);
-//                            float y = (float) Util.normalize(c.getEntry(1), y1, y2);
+
+
+
+
+
+
 
                             Draw.colorHash(gl, c.id, a);
                             Draw.rect(gl, x-cw/2, y-ch/2, cw, ch);

@@ -41,7 +41,7 @@ public class WebSocketSelector extends WebSocketAdapter {
     private boolean nextRegistration() throws IOException {
         NewChannel newChannel = newChannels.poll();
         if (newChannel == null) {
-            return false; // done
+            return false; 
         }
 
         WebSocketImpl conn = new ServerWebSocketImpl(this);
@@ -75,22 +75,22 @@ public class WebSocketSelector extends WebSocketAdapter {
         buffer.flip();
 
         if (read == -1) {
-            // connection closed
+            
             conn.eot();
             return true;
         }
 
         if (read == 0) {
-            return true;  // true = done reading
+            return true;  
         }
 
-        // Something has been read (up to WebSocket.RCVBUF)
-        // Perhaps there is more in the TCP receive buffer,
-        // but other connections will get a chance first
+        
+        
+        
 
         conn.decode(buffer);
 
-        return false; // false = keep this connection in the selector list
+        return false; 
     }
 
     private static boolean writable(SelectionKey key, WebSocketImpl conn) throws IOException {
@@ -98,10 +98,10 @@ public class WebSocketSelector extends WebSocketAdapter {
             if (key.isValid()) {
                 key.interestOps(SelectionKey.OP_READ);
             }
-            return true; // true = done writing
+            return true; 
         }
 
-        return false; // false = there is more to write, but give other connections a chance to write something
+        return false; 
     }
 
     private final ByteBuffer buffer = ByteBuffer.allocate(WebSocketImpl.RCVBUF);
@@ -123,7 +123,7 @@ public class WebSocketSelector extends WebSocketAdapter {
 
 
                 try {
-                    //selector.select(SELECTION_PERIOD);
+                    
                     selector.selectNow();
                 } catch (ClosedSelectorException | IOException ex) {
                     return true;
@@ -158,21 +158,21 @@ public class WebSocketSelector extends WebSocketAdapter {
                                 try {
                                     it.remove();
                                 } catch (IllegalStateException ex) {
-                                    // already removed
+                                    
                                 }
                             }
                         }
 
                     } catch (ClosedSelectorException ex) {
-//                        it.remove();
-//                        break;
-                        return false; //?
+
+
+                        return false; 
                     } catch (CancelledKeyException ex) {
                         it.remove();
 
-                        // an other thread may cancel the key
+                        
                     } catch (IOException ex) {
-                        //log.warn("IOException while parsing selector {}", ex);
+                        
                         conn.close();
                         key.cancel();
                         it.remove();
@@ -194,7 +194,7 @@ public class WebSocketSelector extends WebSocketAdapter {
     }
 
     private void handleIOException(WebSocket conn, IOException ex) {
-        onWebsocketError(conn, ex); // conn may be null here
+        onWebsocketError(conn, ex); 
 
         try {
             if (conn != null) {
@@ -288,7 +288,7 @@ public class WebSocketSelector extends WebSocketAdapter {
         try {
             selector.wakeup();
         } catch (IllegalStateException | NullPointerException ex) {
-            // Thread has not started yet, or it just stopped
+            
             assert false;
         }
     }
@@ -339,7 +339,7 @@ public class WebSocketSelector extends WebSocketAdapter {
         private final int hash;
 
         ServerWebSocketImpl(WebSocketListener listener) {
-            // Draft_17 corresponds to Sec-WebSocket-Version: 13 which is RFC 6455
+            
             super(listener, List.of(new Draft_6455()));
             this.hash = serial.incrementAndGet();
         }

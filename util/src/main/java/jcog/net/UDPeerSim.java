@@ -39,10 +39,10 @@ public class UDPeerSim {
         peer[from].tellSome(msg , (byte)ttl );
     }
 
-// TODO
-//    public void tell(int from, int to, int payloadLength) {
-//        peer[from].send(...);
-//    }
+
+
+
+
 
     public void onTell(UDPeer.UDProfile sender, UDPeer recver, UDPeer.Msg msg) {
 
@@ -104,9 +104,9 @@ public class UDPeerSim {
 
         @Override
         public void send(Msg o, InetSocketAddress to) {
-            //getInetAddress();
+            
             if (random.nextFloat() < packetLossRate.floatValue())
-                return; //dropped
+                return; 
 
             long d = delay(addr, to, o.length());
             if (d > delayThreshold) {

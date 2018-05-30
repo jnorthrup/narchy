@@ -18,13 +18,13 @@ public class MainScene implements ICase {
         {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;
-            bodyDef2.position.set(0.0f, 5.0f); //pozicia
+            bodyDef2.position.set(0.0f, 5.0f); 
             Body2D newBody = w.addBody(bodyDef2);
             PolygonShape shape3 = new PolygonShape();
             shape3.setAsBox(5.0f, 5.0f);
             Fixture f = newBody.addFixture(shape3, 1.0f);
-            f.friction = 0.2f; // trenie
-            f.restitution = 0.0f; //odrazivost
+            f.friction = 0.2f; 
+            f.restitution = 0.0f; 
 
             f.material = Material.UNIFORM;
             f.material.m_rigidity = 80.0f;
@@ -34,14 +34,14 @@ public class MainScene implements ICase {
         {
             BodyDef ball = new BodyDef();
             ball.type = BodyType.DYNAMIC;
-            ball.position.set(-30.0f, 5.3f); //pozicia
-            ball.linearVelocity = new v2(100.0f, 0.0f); // smer pohybu
+            ball.position.set(-30.0f, 5.3f); 
+            ball.linearVelocity = new v2(100.0f, 0.0f); 
             Body2D ballBody = w.addBody(ball);
             CircleShape circleShape = new CircleShape();
             circleShape.radius = 1.0f;
             Fixture fb = ballBody.addFixture(circleShape, 5.0f);
-            fb.friction = 0.4f; // trenie
-            fb.restitution = 0.1f; //odrazivost
+            fb.friction = 0.4f; 
+            fb.restitution = 0.1f; 
         }
     }
 

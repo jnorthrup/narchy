@@ -64,7 +64,7 @@ public class AllOne implements Bits{
 	
 	public double doubleAt(long index){ return allOnesAsDouble; }
 	
-	//TODO should bits and bitsJ's howManyBits param be an int for efficiency?
+	
 	
 	public int bits(long start, byte howManyBits){
 		if(howManyBits >= 32) return -1;
@@ -99,7 +99,7 @@ public class AllOne implements Bits{
 	
 	public int efficientBlockSize(){ return 1; }
 	
-	//Functions that are normally implemented as combinations of pre(long) andOr suf(long):
+	
 	
 	public Bits cat(Bits suf){
 		long sufSiz = suf.siz();

@@ -1,73 +1,73 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// The board
+package nars.ca;
+
+
+
 
 import java.awt.*;
 import java.awt.image.MemoryImageSource;
 import java.util.StringTokenizer;
 
-//-----------------------------------------------------------------------
-//-----------------------------------------------------------------------
-//class MJBoard extends Canvas implements Runnable
-class MJBoard extends Panel implements Runnable {
-	public static final int MAX_X = 800; // Universe limits
-	public static final int MAX_Y = 600;
-	public static final int MAX_CLO = 255; // max. state
-	public static final int MAX_CELLSIZE = 32; // max. cell size, in pixels
-	public Thread caThread;
-	public final MJPalette mjPal; // color palette
-	private final boolean InitDone;
-	private final MJCellUI mjUI; // the user interface object (parent)
-	public int AnimDelay = 100; // default delay between cycles
-	public int RefreshStep = 1; // refresh every 1 cycle
-	public int CrrGame; // current rules family, LIFE, GENE, etc.
-	public int GameType = MJRules.GAMTYP_2D; // 1D or 2D
-	public String RuleName; // current rule name
-	public String RuleDef; // current rule definition
-	public int Cycle; // cycle number
-	public int StatesCount = 2; // count of states, 0..n
-	public int Population; // count of alive cells
-	public final int[] Populations = new int[MAX_CLO + 1]; // count of cells in each
-	// state
-	private int lastX, lastY; // mouse handling
-	public boolean IsRunning; // is an animation running?
-	public boolean DrawGrid = true; // draw grid
-	public int ColoringMethod = 1; // 1 - standard, 2 - alternate
-	public int CrrState = 1; // active state (color)
 
-	// local controls
-	private final Panel pnlBotm; // bottom panel, for scrollbar and buttons
+
+
+class MJBoard extends Panel implements Runnable {
+	public static final int MAX_X = 800; 
+	public static final int MAX_Y = 600;
+	public static final int MAX_CLO = 255; 
+	public static final int MAX_CELLSIZE = 32; 
+	public Thread caThread;
+	public final MJPalette mjPal; 
+	private final boolean InitDone;
+	private final MJCellUI mjUI; 
+	public int AnimDelay = 100; 
+	public int RefreshStep = 1; 
+	public int CrrGame; 
+	public int GameType = MJRules.GAMTYP_2D; 
+	public String RuleName; 
+	public String RuleDef; 
+	public int Cycle; 
+	public int StatesCount = 2; 
+	public int Population; 
+	public final int[] Populations = new int[MAX_CLO + 1]; 
+	
+	private int lastX, lastY; 
+	public boolean IsRunning; 
+	public boolean DrawGrid = true; 
+	public int ColoringMethod = 1; 
+	public int CrrState = 1; 
+
+	
+	private final Panel pnlBotm; 
 	private final Scrollbar hSbar;
-    private final Scrollbar vSbar; // scrollbars
-	private final int sbarWidth = 16; // scrollbars width
+    private final Scrollbar vSbar; 
+	private final int sbarWidth = 16; 
 	private final Button btnZoomIn = new Button("+");
 	private final Button btnZoomOut = new Button("-");
 	private final Button btnFit = new Button("F");
 
-	// Universe, board
-	public final Point UnivSize; // universe size, can be partially invisible
-	public int CellSize = 5; // size of cells
-	private final short[][] crrState; // the cells - current state
-	private final short[][] tmpState; // the cells - temporary state
-	private final short[][] bakState; // backup, for rewinding
-	private final Point ViewOrg; // view origin - left-top point
-	private final Point ViewSize; // actual adjusted view size, in pixels
-	private final Point CellsInView; // counts of visible cells in X and Y
-	private final Point LastPanelSize;// last panel size, for resizing handling
+	
+	public final Point UnivSize; 
+	public int CellSize = 5; 
+	private final short[][] crrState; 
+	private final short[][] tmpState; 
+	private final short[][] bakState; 
+	private final Point ViewOrg; 
+	private final Point ViewSize; 
+	private final Point CellsInView; 
+	private final Point LastPanelSize;
 
-	// Graphics
+	
 	private int[] screen;
-	private Image offImg; // the image
+	private Image offImg; 
 
-	//private Graphics offGrx; // the image's graphics
+	
 	private MemoryImageSource offSrs;
 	private int OfsX;
 	private int OfsY;
 
-	// Rules
-	public boolean WrapAtEdges = true; // wrap at edges
-	public int i1DLastRow; // 1-D last generated row
+	
+	public boolean WrapAtEdges = true; 
+	public int i1DLastRow; 
 	public final RuleGene RGene;
 	public final RuleLife RLife;
 	public final RuleVote RVote;
@@ -82,33 +82,33 @@ class MJBoard extends Panel implements Runnable {
 	public final RuleMarg RMarg;
 	public final RuleUser RUser;
 
-	// misc
-	public final MJDiversities Div; // diversities system (black hole, nova,
+	
+	public final MJDiversities Div; 
 
-	// injection, etc.)
+	
 
-	// ----------------------------------------------------------------
-	// Constructor
+	
+	
 	MJBoard(MJCellUI mui) {
 		int i;
 
-		mjUI = mui; // the user interface object
+		mjUI = mui; 
 		mjPal = new MJPalette();
-		CrrGame = MJRules.GAME_LIFE; // Standard Conway-like game
+		CrrGame = MJRules.GAME_LIFE; 
 		crrState = new short[MAX_X + 1][MAX_Y + 1];
 		tmpState = new short[MAX_X + 1][MAX_Y + 1];
 		bakState = new short[MAX_X + 1][MAX_Y + 1];
-		ViewOrg = new Point(20, 20); // view left-top corner, in cells
-		UnivSize = new Point(0, 0); // CA universe size (counts of cells in X and Y)
-		ViewSize = new Point(0, 0); // last view size, in pixels
-		CellsInView = new Point(0, 0); // counts of visible cells in X and Y
-		LastPanelSize = new Point(0, 0); // last panel size, for resizing handling
+		ViewOrg = new Point(20, 20); 
+		UnivSize = new Point(0, 0); 
+		ViewSize = new Point(0, 0); 
+		CellsInView = new Point(0, 0); 
+		LastPanelSize = new Point(0, 0); 
 
 		setLayout(new BorderLayout(0, 0));
 		pnlBotm = new Panel();
 		add("South", pnlBotm);
 
-		pnlBotm.setLayout(new GridLayout(1, 4)); // horizontal layout for 4 items
+		pnlBotm.setLayout(new GridLayout(1, 4)); 
 		pnlBotm.add(btnZoomIn);
 		pnlBotm.add(btnZoomOut);
 		hSbar = new Scrollbar(Scrollbar.HORIZONTAL);
@@ -120,8 +120,8 @@ class MJBoard extends Panel implements Runnable {
 		InitBoard(160, 120, 5);
 		InitDone = true;
 
-		// rules
-		i1DLastRow = 0; // 1-D last generated row
+		
+		i1DLastRow = 0; 
 		RGene = new RuleGene();
 		RLife = new RuleLife();
 		RVote = new RuleVote();
@@ -136,12 +136,12 @@ class MJBoard extends Panel implements Runnable {
 		RMarg = new RuleMarg();
 		RUser = new RuleUser();
 
-		// misc
-		Div = new MJDiversities(); // diversities system (black hole, nova, injection, etc.)
+		
+		Div = new MJDiversities(); 
 	}
 
-	// ----------------------------------------------------------------
-	// start animation
+	
+	
 	public void start() {
 		mjUI.btnRunStop.setLabel("STOP");
 		mjUI.itmRunStop.setLabel("Stop  (Enter)");
@@ -152,41 +152,41 @@ class MJBoard extends Panel implements Runnable {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// stop animation
+	
+	
 	public void stop() {
 		mjUI.btnRunStop.setLabel("START");
 		mjUI.itmRunStop.setLabel("Start  (Enter)");
 		caThread = null;
 	}
 
-	// ----------------------------------------------------------------
-	// The animation endless loop
+	
+	
 	@Override
 	public void run() {
-		int iDelay; // in milliseconds
+		int iDelay; 
 		boolean doRedraw;
 		Thread thisThread = Thread.currentThread();
 		while (thisThread == caThread) {
-			// perform one cycle
+			
 			doRedraw = false;
-			if (OneCycle() > 0) // any cells changed?
+			if (OneCycle() > 0) 
 			{
 				switch (RefreshStep) {
-				case 1: // always
-					doRedraw = true; // always show the universe
+				case 1: 
+					doRedraw = true; 
 					break;
 
-				case -1: // every full page
+				case -1: 
 					if (GameType == MJRules.GAMTYP_1D) {
-						if (i1DLastRow % UnivSize.y == 0) // at the end
+						if (i1DLastRow % UnivSize.y == 0) 
 							doRedraw = true;
 					} else {
-						if (Cycle % UnivSize.y == 0) // every UnivSize.y cycles
+						if (Cycle % UnivSize.y == 0) 
 							doRedraw = true;
 					}
 					break;
-				default: // every n cycles
+				default: 
 					if (Cycle % RefreshStep == 0)
 						doRedraw = true;
 					break;
@@ -195,15 +195,15 @@ class MJBoard extends Panel implements Runnable {
 				stop();
 			}
 
-			mjUI.UpdateUI(); // update the user interface
+			mjUI.UpdateUI(); 
 			if (doRedraw) {
 				RedrawBoard(false);
-				//}
-				//
-				//if (RefreshStep == 1)
-				//{
-				// some waiting
-				//iDelay = (AnimDelay > 0) ? AnimDelay : 5;
+				
+				
+				
+				
+				
+				
 				iDelay = AnimDelay;
 				try {
 					Thread.sleep(iDelay);
@@ -211,141 +211,141 @@ class MJBoard extends Panel implements Runnable {
 				}
 			}
 		}
-		mjUI.UpdateUI(); // update the user interface
+		mjUI.UpdateUI(); 
 		if (RefreshStep != 1)
-			RedrawBoard(false); // show the universe at the end
+			RedrawBoard(false); 
 	}
 
-	// ----------------------------------------------------------------
-	// run one cycle or defined count of steps
+	
+	
 	public void SingleStep() {
 		int i, iCnt;
 		if (RefreshStep > 0) {
 			iCnt = RefreshStep;
-		} else // pagewise
+		} else 
 		{
-			iCnt = UnivSize.y - i1DLastRow; // the rest of the page
+			iCnt = UnivSize.y - i1DLastRow; 
 			if (iCnt <= 0)
-				iCnt = UnivSize.y; // the whole page
+				iCnt = UnivSize.y; 
 		}
 
 		stop();
 		for (i = 1; i <= iCnt; i++) {
-			if (OneCycle() == 0) // any changes?
+			if (OneCycle() == 0) 
 				break;
 		}
-		RedrawBoard(false); // show the universe
-		mjUI.UpdateUI(); // update the user interface
+		RedrawBoard(false); 
+		mjUI.UpdateUI(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Procedure performs one CA cycle. It does not draw anything.
-	// Return value: count of modified cells.
+	
+	
+	
 	int OneCycle() {
 		int i, j;
 		int modCnt = 0;
 
 		try {
-			// Diversities enabled?
+			
 			if (Div.m_Enabled)
-				Div.Perform(true, this); // true - before pass
+				Div.Perform(true, this); 
 
 			switch (CrrGame) {
-			case MJRules.GAME_LIFE: // Standard Conway-like game
+			case MJRules.GAME_LIFE: 
 				modCnt = RLife.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_VOTE: // Vote for life
+			case MJRules.GAME_VOTE: 
 				modCnt = RVote.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_WLIF: // Weighted life
+			case MJRules.GAME_WLIF: 
 				modCnt = RWLife.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_GENE: // Generations
+			case MJRules.GAME_GENE: 
 				modCnt = RGene.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_RTBL: // Rules table
+			case MJRules.GAME_RTBL: 
 				modCnt = RRtab.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_CYCL: // Cyclic CA
+			case MJRules.GAME_CYCL: 
 				modCnt = RCyclic.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState);
 				break;
 
-			case MJRules.GAME_1DTO: // 1D totalistic
+			case MJRules.GAME_1DTO: 
 				modCnt = R1DTo.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_1DBI: // 1D binary
+			case MJRules.GAME_1DBI: 
 				modCnt = R1DBin.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_NMBI: // Neumann binary
+			case MJRules.GAME_NMBI: 
 				modCnt = RNeumBin.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState);
 				break;
 
-			case MJRules.GAME_GEBI: // General binary
+			case MJRules.GAME_GEBI: 
 				modCnt = RGenBin.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_LGTL: // Larger than Life
+			case MJRules.GAME_LGTL: 
 				modCnt = RLgtL.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_MARG: // Margolus
+			case MJRules.GAME_MARG: 
 				modCnt = RMarg.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState, this);
 				break;
 
-			case MJRules.GAME_USER: // User DLL
+			case MJRules.GAME_USER: 
 				modCnt = RUser.OnePass(UnivSize.x, UnivSize.y, WrapAtEdges,
 						ColoringMethod, crrState, tmpState);
 				break;
 			}
 
-			// set cells back
-			if (GameType == MJRules.GAMTYP_2D) // 2D, the whole board
+			
+			if (GameType == MJRules.GAMTYP_2D) 
 			{
 				for (i = 0; i < UnivSize.x; i++) {
 					for (j = 0; j < UnivSize.y; j++) {
 						SetCell(i, j, tmpState[i][j]);
 					}
 				}
-			} else // 1D, only the current row
+			} else 
 			{
 				for (i = 0; i < UnivSize.x; i++) {
 					SetCell(i, i1DLastRow, tmpState[i][i1DLastRow]);
 				}
 			}
 
-			// Diversities enabled?
+			
 			if (Div.m_Enabled)
-				Div.Perform(false, this); // false - after pass
+				Div.Perform(false, this); 
 		} catch (Exception exc) {
         }
 		if (modCnt > 0)
-			Cycle++; // next cycle performed
+			Cycle++; 
 
 		return modCnt;
-	} // OneCycle()
+	} 
 
-	// ----------------------------------------------------------------
-	// Set one cell
-	// This should be *the only* fuction that modifies the board (crrState)
+	
+	
+	
 	public final void SetCell(int x, int y, short bState) {
 		if ((x >= 0) && (y >= 0) && (x < UnivSize.x) && (y < UnivSize.y)) {
 			if (crrState[x][y] != bState) {
@@ -360,8 +360,8 @@ class MJBoard extends Panel implements Runnable {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Set one cell
+	
+	
 	public final void SetCell(CACell cell) {
 		if ((cell.x >= 0) && (cell.y >= 0) && (cell.x < UnivSize.x)
 				&& (cell.y < UnivSize.y)) {
@@ -377,8 +377,8 @@ class MJBoard extends Panel implements Runnable {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Get one cell's value
+	
+	
 	public short GetCell(int x, int y) {
 		if ((x >= 0) && (y >= 0) && (x < UnivSize.x) && (y < UnivSize.y)) {
 			return crrState[x][y];
@@ -386,14 +386,14 @@ class MJBoard extends Panel implements Runnable {
 		return 0;
 	}
 
-	// ----------------------------------------------------------------
-	// Set size of the board
+	
+	
 	public void SetBoardSize(int sizX, int sizY) {
 		InitBoard(sizX, sizY, CellSize);
 	}
 
-	// ----------------------------------------------------------------
-	// Set parameters of the board
+	
+	
 	public void InitBoard(int sizX, int sizY, int cellSiz) {
 		boolean fOldRun = caThread != null;
 		boolean fNewSize = false;
@@ -406,7 +406,7 @@ class MJBoard extends Panel implements Runnable {
 			sizX = 10;
 		if (sizY < 10)
 			sizY = 10;
-		// stop for a while
+		
 		stop();
 		try {
 			Thread.sleep(100);
@@ -418,7 +418,7 @@ class MJBoard extends Panel implements Runnable {
 			UnivSize.x = sizX;
 			UnivSize.y = sizY;
 
-			// clear the universe outside of the active area
+			
 			for (i = UnivSize.x; i <= MAX_X; i++)
 				for (j = 0; j <= MAX_Y; j++)
 					crrState[i][j] = 0;
@@ -429,54 +429,54 @@ class MJBoard extends Panel implements Runnable {
 
 			fNewSize = true;
 			UpdatePopulation();
-			Cycle = 0; // start counting from 0
+			Cycle = 0; 
 		}
 		CellSize = cellSiz;
 
-		if (RecalcLayout()) // recalc all board basic parameters
+		if (RecalcLayout()) 
 		{
-			if (fNewSize) // center the board
+			if (fNewSize) 
 			{
 				CenterBoard();
 			}
 
-			// prepare the offscreen buffer
-			screen = new int[ViewSize.x * ViewSize.y]; // all pixels
+			
+			screen = new int[ViewSize.x * ViewSize.y]; 
 			offSrs = new MemoryImageSource(ViewSize.x, ViewSize.y, screen, 0,
 					ViewSize.x);
 			offSrs.setAnimated(true);
 			offImg = createImage(offSrs);
-			//offImg = createImage(ViewSize.x, ViewSize.y);
-			//offGrx = offImg.getGraphics();
+			
+			
 
-			// prepare the board
-			UpdateScrollbars(); // update scrollbars values
-			//setBackground(Color.lightGray);
+			
+			UpdateScrollbars(); 
+			
 			setBackground(Color.gray);
 			hide();
-			show(); // only this trick repaints the panel
-			ValidateBoard(); // validate all parameters
-			RedrawBoard(true); // show the universe
+			show(); 
+			ValidateBoard(); 
+			RedrawBoard(true); 
 		}
 		if (InitDone) {
-			mjUI.UpdateGridUI(); // update the grid UI
-			mjUI.UpdateUI(); // update the general UI
+			mjUI.UpdateGridUI(); 
+			mjUI.UpdateUI(); 
 		}
 		if (fOldRun)
 			start();
 	}
 
-	// ----------------------------------------------------------------
-	// Recalculate the basic board parameters
+	
+	
 	public boolean RecalcLayout() {
 		boolean retVal = true;
 		int wdt, hgt, iTmp;
-		wdt = getSize().width; // panel size, in pixels
+		wdt = getSize().width; 
 		hgt = getSize().height;
 		LastPanelSize.x = wdt;
 		LastPanelSize.y = hgt;
 
-		// first reshape scrollbars
+		
 		pnlBotm.reshape(0, hgt - sbarWidth, wdt, sbarWidth);
 		btnZoomIn.reshape(0, 0, sbarWidth, sbarWidth);
 		btnZoomOut.reshape(sbarWidth + 1, 0, sbarWidth, sbarWidth);
@@ -485,11 +485,11 @@ class MJBoard extends Panel implements Runnable {
 		btnFit.reshape(wdt - sbarWidth, 0, sbarWidth, sbarWidth);
 		vSbar.reshape(wdt - sbarWidth, 0, sbarWidth, hgt - sbarWidth);
 
-		// now process the remaining space
+		
 		wdt -= sbarWidth;
 		hgt -= sbarWidth;
 		if ((wdt > CellSize) && (hgt > CellSize)) {
-			if (wdt >= UnivSize.x * CellSize) // everything fits in OX
+			if (wdt >= UnivSize.x * CellSize) 
 			{
 				wdt = UnivSize.x * CellSize;
 				ViewOrg.x = 0;
@@ -497,7 +497,7 @@ class MJBoard extends Panel implements Runnable {
 			} else {
 				OfsX = 0;
 			}
-			if (hgt >= UnivSize.y * CellSize) // everything fits in OY
+			if (hgt >= UnivSize.y * CellSize) 
 			{
 				hgt = UnivSize.y * CellSize;
 				ViewOrg.y = 0;
@@ -507,15 +507,15 @@ class MJBoard extends Panel implements Runnable {
 			}
 			ViewSize.x = wdt - (wdt % CellSize);
 			ViewSize.y = hgt - (hgt % CellSize);
-			CellsInView.x = wdt / CellSize; // count of visible cells
+			CellsInView.x = wdt / CellSize; 
 			CellsInView.y = hgt / CellSize;
-			//System.out.println("From RecalcLayout()");
-			//System.out.println("ViewSize: " + String.valueOf(ViewSize.x) +
-			// "x" + String.valueOf(ViewSize.y));
-			//System.out.println("CellsInView: " +
-			// String.valueOf(CellsInView.x) + "x" +
-			// String.valueOf(CellsInView.y));
-		} else // too small board
+			
+			
+			
+			
+			
+			
+		} else 
 		{
 			ViewSize.x = 0;
 			ViewSize.y = 0;
@@ -524,8 +524,8 @@ class MJBoard extends Panel implements Runnable {
 		return retVal;
 	}
 
-	// ----------------------------------------------------------------
-	// Make full backup of the current board state
+	
+	
 	public void MakeBackup() {
 		for (int i = 0; i < UnivSize.x; i++) {
             System.arraycopy(crrState[i], 0, bakState[i], 0, UnivSize.y);
@@ -533,29 +533,29 @@ class MJBoard extends Panel implements Runnable {
 		mjUI.itmRewind.setEnabled(true);
 	}
 
-	// ----------------------------------------------------------------
-	// Restore last backup
+	
+	
 	public void RestoreBackup() {
 		stop();
 		for (int i = 0; i < UnivSize.x; i++) {
             System.arraycopy(bakState[i], 0, crrState[i], 0, UnivSize.y);
 		}
-		Cycle = 0; // start counting from 0
+		Cycle = 0; 
 		UpdatePopulation();
-		RedrawBoard(true); // show the empty universe
+		RedrawBoard(true); 
 	}
 
-	// ----------------------------------------------------------------
-	// count cells
+	
+	
 	private void UpdatePopulation() {
 		int i, iCol, iRow;
 		short bVal;
 
-		// reset counters
+		
 		Population = 0;
 		for (i = 0; i <= MAX_CLO; i++)
 			Populations[i] = 0;
-		// count population
+		
 		for (iCol = 0; iCol < UnivSize.x; iCol++) {
 			for (iRow = 0; iRow < UnivSize.y; iRow++) {
 				bVal = GetCell(iCol, iRow);
@@ -567,16 +567,16 @@ class MJBoard extends Panel implements Runnable {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// update scrollbars values from the board settings
+	
+	
 	private void UpdateScrollbars() {
-		//              pos siz min max
+		
 		hSbar.setValues(ViewOrg.x, CellsInView.x, 0, UnivSize.x);
 		vSbar.setValues(ViewOrg.y, CellsInView.y, 0, UnivSize.y);
 	}
 
-	// ----------------------------------------------------------------
-	// ensure that all board parameters are valid
+	
+	
 	public void ValidateBoard() {
 		if (ViewOrg.x > UnivSize.x - CellsInView.x)
 			ViewOrg.x = UnivSize.x - CellsInView.x;
@@ -588,29 +588,29 @@ class MJBoard extends Panel implements Runnable {
 			ViewOrg.y = 0;
 	}
 
-	// ----------------------------------------------------------------
-	// center the board
+	
+	
 	public void CenterBoard() {
 		Point ctrPnt = new Point(0, 0);
 		ctrPnt.x = UnivSize.x / 2;
 		ctrPnt.y = UnivSize.y / 2;
 		ViewOrg.x = ctrPnt.x - (CellsInView.x / 2);
 		ViewOrg.y = GameType == MJRules.GAMTYP_2D ? ctrPnt.y - (CellsInView.y / 2) : i1DLastRow;
-		ValidateBoard(); // validate all parameters
+		ValidateBoard(); 
 	}
 
-	// ----------------------------------------------------------------
-	// pan the board
+	
+	
 	public void Pan(int dx, int dy) {
 		ViewOrg.x += dx;
 		ViewOrg.y += dy;
-		ValidateBoard(); // validate all parameters
-		RedrawBoard(true); // show the universe
-		UpdateScrollbars(); // update scrollbars values
+		ValidateBoard(); 
+		RedrawBoard(true); 
+		UpdateScrollbars(); 
 	}
 
-	// ----------------------------------------------------------------
-	// calculate the cells' bounging rectangle
+	
+	
 	public Rectangle CalcPatternRect() {
 		Rectangle rct = new Rectangle(MAX_X, MAX_Y, 0, 0);
 		int iCol, iRow;
@@ -630,31 +630,31 @@ class MJBoard extends Panel implements Runnable {
 		return rct;
 	}
 
-	// ----------------------------------------------------------------
-	// Center the board around the (ix, iy) point
+	
+	
 	public void CenterPoint(int ix, int iy, boolean fRedraw) {
 		Point oldOrg = new Point(ViewOrg);
 
-		CellsInView.x = (LastPanelSize.x - sbarWidth - 1) / CellSize; // vsb.
-		// cells
-		// count
+		CellsInView.x = (LastPanelSize.x - sbarWidth - 1) / CellSize; 
+		
+		
 		CellsInView.y = (LastPanelSize.y - sbarWidth - 1) / CellSize;
 
-		// determine the proper left top corner
+		
 		ViewOrg.x = ix - (CellsInView.x / 2);
 		ViewOrg.y = iy - (CellsInView.y / 2);
 
-		ValidateBoard(); // validate all parameters
+		ValidateBoard(); 
 
-		// if to redraw and anything has changed
+		
 		if ((fRedraw) && (oldOrg != ViewOrg)) {
 			InitBoard(UnivSize.x, UnivSize.y, CellSize);
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// fit the pattern in the view:
-	// center the pattern and select the best cell size
+	
+	
+	
 	public void Fit(boolean fRedraw) {
 		Rectangle rct = new Rectangle();
 		int iCtrX, iCtrY, iFac;
@@ -662,15 +662,15 @@ class MJBoard extends Panel implements Runnable {
 
 		rct = CalcPatternRect();
 
-		if (rct.width >= 0) // any cell exists
+		if (rct.width >= 0) 
 		{
 			facX = LastPanelSize.x / rct.width;
 			facY = LastPanelSize.y / rct.height;
 
 			fac = facX < facY ? facX : facY;
 
-			// select the biggest size that covers the full pattern
-			//noinspection IfStatementWithTooManyBranches
+			
+			
 			if (fac >= 12)
 				iFac = 11;
 			else if (fac >= 10)
@@ -690,13 +690,13 @@ class MJBoard extends Panel implements Runnable {
 
 			CellSize = iFac;
 
-			// put the pattern in the center
+			
 			iCtrX = rct.x + rct.width / 2;
 			iCtrY = rct.y + rct.height / 2;
-			CenterPoint(iCtrX, iCtrY, fRedraw); // center the given point
-		} else // no cells
+			CenterPoint(iCtrX, iCtrY, fRedraw); 
+		} else 
 		{
-			CellSize = 5; // default cell size
+			CellSize = 5; 
 			CenterBoard();
 			if (fRedraw) {
 				InitBoard(UnivSize.x, UnivSize.y, CellSize);
@@ -706,15 +706,15 @@ class MJBoard extends Panel implements Runnable {
 		btnZoomOut.setEnabled(CellSize > 1);
 	}
 
-	// ----------------------------------------------------------------
-	// zoom in (true) / out (false)
+	
+	
 	public void Zoom(boolean fIn) {
 		Point ctrPnt = new Point(0, 0);
 		int orgCellSize = CellSize;
 		ctrPnt.x = ViewOrg.x + CellsInView.x / 2;
 		ctrPnt.y = ViewOrg.y + CellsInView.y / 2;
 		if (fIn) {
-			//noinspection IfStatementWithTooManyBranches
+			
 			if (CellSize >= 20)
 				CellSize += 4;
 			else if (CellSize >= 11)
@@ -726,7 +726,7 @@ class MJBoard extends Panel implements Runnable {
 			if (CellSize > MAX_CELLSIZE)
 				CellSize = MAX_CELLSIZE;
 		} else {
-			//noinspection IfStatementWithTooManyBranches
+			
 			if (CellSize > 20)
 				CellSize -= 4;
 			else if (CellSize > 11)
@@ -748,57 +748,57 @@ class MJBoard extends Panel implements Runnable {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// zoom in
+	
+	
 	public void CellsBigger() {
 		Zoom(true);
 	}
 
-	// ----------------------------------------------------------------
-	// zoom out
+	
+	
 	public void CellsSmaller() {
 		Zoom(false);
 	}
 
-	// ----------------------------------------------------------------
-	// handle events we are interested in
+	
+	
 	@Override
 	public boolean handleEvent(Event e) {
-		if ((e.target == hSbar) || (e.target == vSbar)) // one of scrollbars
+		if ((e.target == hSbar) || (e.target == vSbar)) 
 		{
 			ViewOrg.x = hSbar.getValue();
 			ViewOrg.y = vSbar.getValue();
-			Pan(0, 0); // validate and redisplay
+			Pan(0, 0); 
 			return true;
 		}
 		return super.handleEvent(e);
 	}
 
-	// ----------------------------------------------------------------
-	// button action
+	
+	
 	@Override
 	public boolean action(Event e, Object arg) {
-		if (e.target == btnZoomIn) // zoom in - bigger cells
+		if (e.target == btnZoomIn) 
 		{
 			CellsBigger();
-		} else if (e.target == btnZoomOut) // zoom out - smaller cells
+		} else if (e.target == btnZoomOut) 
 		{
 			CellsSmaller();
-		} else if (e.target == btnFit) // fit the pattern
+		} else if (e.target == btnFit) 
 		{
 			Fit(true);
 		}
 		return true;
 	}
 
-	// ----------------------------------------------------------------
-	// put the pixel buffer to the screen
+	
+	
 	@Override
 	public void paint(Graphics g) {
 		if ((LastPanelSize.x != getSize().width)
 				|| (LastPanelSize.y != getSize().height)) {
-			InitBoard(UnivSize.x, UnivSize.y, CellSize); // resized, update
-			// board parameters
+			InitBoard(UnivSize.x, UnivSize.y, CellSize); 
+			
 		}
 		if (ViewSize.x > 0) {
 			offSrs.newPixels();
@@ -806,37 +806,37 @@ class MJBoard extends Panel implements Runnable {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// avoid flickering
+	
+	
 	@Override
 	public void update(Graphics g) {
 		paint(g);
 	}
 
-	// ----------------------------------------------------------------
-	// prepare the pixels buffer and call repaint() to show it
+	
+	
 	public void RedrawBoard(boolean fDrawAll) {
 		int i, j, ic, jc, newClo, iTmpCol;
 		int dx = CellSize * CellsInView.x;
 		int ixCellSize;
 		boolean fDrawGrid = (DrawGrid && (CellSize > 4));
-		int iMinY, iMaxY; // min/max Y to be displayed (optimization)
+		int iMinY, iMaxY; 
 
 		if (fDrawAll || (GameType == MJRules.GAMTYP_2D)) {
 			iMinY = 0;
 			iMaxY = CellsInView.y;
 		} else {
-			iMinY = i1DLastRow - ViewOrg.y; // 1D - paint only the current row
+			iMinY = i1DLastRow - ViewOrg.y; 
 			iMaxY = iMinY + 1;
 		}
 
 		try {
 			for (i = 0; i < CellsInView.x; i++) {
-				ixCellSize = i * CellSize; // x offset
+				ixCellSize = i * CellSize; 
 				for (j = iMinY; j < iMaxY; j++) {
 					newClo = mjPal.Palette[crrState[ViewOrg.x + i][ViewOrg.y
 							+ j]];
-					// now paint the cells - set proper 'screen' array fields
+					
 					if ((fDrawAll)
 							|| (screen[(j * CellSize) * dx + i * CellSize] != newClo)) {
 						switch (CellSize) {
@@ -859,8 +859,8 @@ class MJBoard extends Panel implements Runnable {
 											&& ((ic == CellSize - 1) || (jc == CellSize - 1))) {
 										screen[iTmpCol++] = mjPal.GridColor[ic == CellSize - 1 && (ViewOrg.y + j) % 5 == 0
 												|| jc == CellSize - 1 && (ViewOrg.x + i) % 5 == 0 ? 1 : 0];
-										// grid
-										// line
+										
+										
 									} else {
 										screen[iTmpCol++] = newClo;
 									}
@@ -871,13 +871,13 @@ class MJBoard extends Panel implements Runnable {
 					}
 				}
 			}
-			repaint(); // 'screen' buffer ready, go paint
+			repaint(); 
 		} catch (Exception exc) {
         }
 	}
 
-	// ----------------------------------------------------------------
-	// Set the animation delay, 0..1000
+	
+	
 	public void setAnimDelay(int newDelay) {
 		if (newDelay < 0)
 			newDelay = 0;
@@ -886,16 +886,16 @@ class MJBoard extends Panel implements Runnable {
 		AnimDelay = newDelay;
 	}
 
-	// ----------------------------------------------------------------
-	// Interprete and apply the rule definition
+	
+	
 	public void SetRule(int iGame, String sRuleNam, String sRuleDef) {
 		sRuleDef = sRuleDef.trim();
 		if (sRuleDef.isEmpty())
 			return;
 
-		GameType = MJRules.GAMTYP_2D; // most are 2-dimensional
+		GameType = MJRules.GAMTYP_2D; 
 
-		//noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		char cChar;
@@ -904,107 +904,107 @@ class MJBoard extends Panel implements Runnable {
 
 		CrrGame = iGame;
 		switch (CrrGame) {
-		case MJRules.GAME_LIFE: // Standard Conway-like game
+		case MJRules.GAME_LIFE: 
 			RLife.InitFromString(sRuleDef);
-			sRuleDef = RLife.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RLife.GetAsString(); 
+			
 			break;
 
-		case MJRules.GAME_VOTE: // Vote for life
+		case MJRules.GAME_VOTE: 
 			RVote.InitFromString(sRuleDef);
-			sRuleDef = RVote.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RVote.GetAsString(); 
+			
 			break;
 
-		case MJRules.GAME_GENE: // Generations
+		case MJRules.GAME_GENE: 
 			RGene.InitFromString(sRuleDef);
-			sRuleDef = RGene.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RGene.GetAsString(); 
+			
 			SetStatesCount(RGene.iClo);
 			break;
 
-		case MJRules.GAME_WLIF: // Weighted life
+		case MJRules.GAME_WLIF: 
 			RWLife.InitFromString(sRuleDef);
-			sRuleDef = RWLife.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RWLife.GetAsString(); 
+			
 			if (RWLife.isHist)
 				SetStatesCount(RWLife.iClo);
 			break;
 
-		case MJRules.GAME_RTBL: // Rules table
+		case MJRules.GAME_RTBL: 
 			RRtab.InitFromString(sRuleDef);
-			sRuleDef = RRtab.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RRtab.GetAsString(); 
+			
 			SetStatesCount(RRtab.iClo);
 			break;
 
-		case MJRules.GAME_CYCL: // Cyclic CA
+		case MJRules.GAME_CYCL: 
 			RCyclic.InitFromString(sRuleDef);
-			sRuleDef = RCyclic.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RCyclic.GetAsString(); 
+			
 			SetStatesCount(RCyclic.iClo);
 			break;
 
-		case MJRules.GAME_1DTO: // 1D totalistic
-			GameType = MJRules.GAMTYP_1D; // this one is 1-dimensional
+		case MJRules.GAME_1DTO: 
+			GameType = MJRules.GAMTYP_1D; 
 			R1DTo.InitFromString(sRuleDef);
-			sRuleDef = R1DTo.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = R1DTo.GetAsString(); 
+			
 			if (R1DTo.isHist)
 				SetStatesCount(R1DTo.iClo);
 			break;
 
-		case MJRules.GAME_1DBI: // 1D binary
-			GameType = MJRules.GAMTYP_1D; // this one is 1-dimensional
+		case MJRules.GAME_1DBI: 
+			GameType = MJRules.GAMTYP_1D; 
 			R1DBin.InitFromString(sRuleDef);
-			sRuleDef = R1DBin.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = R1DBin.GetAsString(); 
+			
 			break;
 
 		case MJRules.GAME_NMBI:
 			RNeumBin.InitFromString(sRuleDef);
-			sRuleDef = RNeumBin.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RNeumBin.GetAsString(); 
+			
 			SetStatesCount(RNeumBin.iClo);
 			break;
 
-		case MJRules.GAME_GEBI: // General binary
+		case MJRules.GAME_GEBI: 
 			RGenBin.InitFromString(sRuleDef);
-			sRuleDef = RGenBin.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RGenBin.GetAsString(); 
+			
 			SetStatesCount(RGenBin.iClo);
 			break;
 
 		case MJRules.GAME_LGTL:
 			RLgtL.InitFromString(sRuleDef);
-			sRuleDef = RLgtL.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RLgtL.GetAsString(); 
+			
 			if (RLgtL.isHist)
 				SetStatesCount(RLgtL.iClo);
 			break;
 
 		case MJRules.GAME_MARG:
 			RMarg.InitFromString(sRuleDef);
-			sRuleDef = RMarg.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RMarg.GetAsString(); 
+			
 			if (RMarg.isHist)
 				SetStatesCount(RMarg.iClo);
 			break;
 
 		case MJRules.GAME_USER:
 			RUser.InitFromString(sRuleDef);
-			sRuleDef = RUser.GetAsString(); // get possibly corrected rules
-			// string
+			sRuleDef = RUser.GetAsString(); 
+			
 			SetStatesCount(RUser.iClo);
 			break;
 		}
-		RuleName = sRuleNam; // store current rule name
-		RuleDef = sRuleDef; // store current rule definition
+		RuleName = sRuleNam; 
+		RuleDef = sRuleDef; 
 		mjUI.UpdateColorsUI();
-	} // SetRule()
+	} 
 
-	// ----------------------------------------------------------------
-	// Mouse click; if inside the board, draw a cell
+	
+	
 	@Override
 	public boolean mouseDown(Event p1, int p2, int p3) {
 		if ((p2 >= OfsX) && (p3 >= OfsY)
@@ -1013,21 +1013,21 @@ class MJBoard extends Panel implements Runnable {
 			lastX = (p2 - OfsX) / CellSize + ViewOrg.x;
 			lastY = (p3 - OfsY) / CellSize + ViewOrg.y;
 
-			// toggle the cell
-			//if (crrState[lastX][lastY] > 0)
-			//  SetCell(lastX, lastY, (short)0);
-			//else
-			SetCell(lastX, lastY, (short) CrrState); // active state (color)
-			RedrawBoard(false); // show the universe
-			mjUI.UpdateUI(); // update the user interface
+			
+			
+			
+			
+			SetCell(lastX, lastY, (short) CrrState); 
+			RedrawBoard(false); 
+			mjUI.UpdateUI(); 
 			return true;
 		} else {
 			return super.mouseDown(p1, p2, p3);
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Mouse is dragged, draw a line
+	
+	
 	@Override
 	public boolean mouseDrag(Event p1, int p2, int p3) {
 		if ((p2 >= OfsX) && (p3 >= OfsY)
@@ -1038,22 +1038,22 @@ class MJBoard extends Panel implements Runnable {
 			DrawLine(lastX, lastY, x, y);
 			lastX = x;
 			lastY = y;
-			RedrawBoard(false); // show the universe
-			mjUI.UpdateUI(); // update the user interface
+			RedrawBoard(false); 
+			mjUI.UpdateUI(); 
 			return true;
 		} else {
 			return super.mouseDrag(p1, p2, p3);
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Draw a line joining two given points
+	
+	
 	public void DrawLine(int x1, int y1, int x2, int y2) {
-		int shortDiff, longDiff; // short dimension and long dimension
+		int shortDiff, longDiff; 
 		int xDiff, yDiff;
 		int xRight, yDown;
 		int x, y;
-		boolean across; // across or down
+		boolean across; 
 		int wrap, i, j;
 
 		xDiff = Math.abs(x2 - x1);
@@ -1084,49 +1084,49 @@ class MJBoard extends Panel implements Runnable {
 				y = y1 + (i * yDown);
 			}
 
-			SetCell(x, y, (short) CrrState); // active state (color)
+			SetCell(x, y, (short) CrrState); 
 			wrap += shortDiff;
 			if (wrap >= longDiff) {
 				j++;
 				wrap %= longDiff;
 			}
 		}
-		SetCell(x2, y2, (short) CrrState); // active state (color)
+		SetCell(x2, y2, (short) CrrState); 
 	}
 
-	// ----------------------------------------------------------------
-	// randomize one cell
+	
+	
 	public void RandomizeOneCell(int x, int y, double maxVal) {
 		short newStt;
 
-		if (mjUI.chkMon.getState()) // mono, only 1 state
+		if (mjUI.chkMon.getState()) 
 		{
 			if (Math.random() <= maxVal)
-				SetCell(x, y, (short) CrrState); // active state (color)
-		} else // color
+				SetCell(x, y, (short) CrrState); 
+		} else 
 		{
-			if (mjUI.chkUni.getState()) // uniform, full board with all states
+			if (mjUI.chkUni.getState()) 
 			{
 				newStt = (short) (Math.ceil(Math.random() * StatesCount) - 1);
-				SetCell(x, y, newStt); // set
-			} else // all states
+				SetCell(x, y, newStt); 
+			} else 
 			{
 				if (Math.random() <= maxVal) {
 					newStt = (short) Math.ceil(Math.random()
 							* (StatesCount - 1));
-					SetCell(x, y, newStt); // set
+					SetCell(x, y, newStt); 
 				}
 			}
 		}
 	}
 
-	// ----------------------------------------------------------------
+	
 	public final int RAND_ALL = 1;
 
 	public final int RAND_VIEW = 2;
 
-	// ----------------------------------------------------------------
-	// Fill the board with random cells. sHow is a string like "65%"
+	
+	
 	public void Randomize(String sHow, int what) {
 		int i, j, minX, maxX, minY, maxY;
 		double maxVal = 0.25;
@@ -1152,10 +1152,10 @@ class MJBoard extends Panel implements Runnable {
 			maxY = UnivSize.y - 1;
 			break;
 		}
-		sHow = sHow.substring(0, sHow.length() - 1); // "65%" -> "65"
+		sHow = sHow.substring(0, sHow.length() - 1); 
 		i = Integer.parseInt(sHow.trim());
 		maxVal = i / 100.0;
-		if (!mjUI.chkAdd.getState()) // should clear before
+		if (!mjUI.chkAdd.getState()) 
 		{
 			Clear(false);
 		}
@@ -1164,21 +1164,21 @@ class MJBoard extends Panel implements Runnable {
 			for (i = minX; i <= maxX; i++)
 				for (j = minY; j <= maxY; j++)
 					RandomizeOneCell(i, j, maxVal);
-		} else // 1D
+		} else 
 		{
 			for (i = minX; i <= maxX; i++)
 				RandomizeOneCell(i, i1DLastRow, maxVal);
 		}
-		mjUI.vDescr.clear(); // no old description
-		RedrawBoard(true); // show the universe
-		MakeBackup(); // store the pattern of eventual rewinding
+		mjUI.vDescr.clear(); 
+		RedrawBoard(true); 
+		MakeBackup(); 
 		if (fOldRun)
 			start();
-		Cycle = 0; // start counting from 0
+		Cycle = 0; 
 	}
 
-	// ----------------------------------------------------------------
-	// Seed the board with cells
+	
+	
 	public void Seed(String sHow) {
 		int i, j;
 		int ctrX, ctrY;
@@ -1189,14 +1189,14 @@ class MJBoard extends Panel implements Runnable {
 		} catch (InterruptedException e) {
 		}
 
-		if (!mjUI.chkAdd.getState()) // should clear before
+		if (!mjUI.chkAdd.getState()) 
 		{
 			Clear(false);
 		}
-		// now seed the universe
+		
 		ctrX = UnivSize.x / 2;
 		ctrY = UnivSize.y / 2;
-		if (sHow.startsWith("BLK")) // block of cells
+		if (sHow.startsWith("BLK")) 
 		{
 			sHow = sHow.substring(3).trim();
 			int iPos = sHow.indexOf('x');
@@ -1208,15 +1208,15 @@ class MJBoard extends Panel implements Runnable {
 					for (i = 0; i < dx; i++)
 						for (j = 0; j < dy; j++)
 							SetCell(ctrX - (dx / 2) + i, ctrY - (dy / 2) + j,
-									(short) CrrState); // active state (color)
-				} else // 1D
+									(short) CrrState); 
+				} else 
 				{
 					for (i = 0; i < dx; i++)
 						SetCell(ctrX - (dx / 2) + i, i1DLastRow,
-								(short) CrrState); // active state (color)
+								(short) CrrState); 
 				}
 			}
-		} else if (sHow.startsWith("FRM")) // frame of cells
+		} else if (sHow.startsWith("FRM")) 
 		{
 			sHow = sHow.substring(3).trim();
 			int iPos = sHow.indexOf('x');
@@ -1227,39 +1227,39 @@ class MJBoard extends Panel implements Runnable {
 				if (GameType == MJRules.GAMTYP_2D) {
 					for (i = 0; i < dx; i++) {
 						SetCell(ctrX - (dx / 2) + i, ctrY - (dy / 2),
-								(short) CrrState); // active state (color)
+								(short) CrrState); 
 						SetCell(ctrX - (dx / 2) + i, ctrY - (dy / 2) + dy - 1,
-								(short) CrrState); // active state (color)
+								(short) CrrState); 
 					}
 					for (j = 1; j < dy - 1; j++) {
 						SetCell(ctrX - (dx / 2), ctrY - (dy / 2) + j,
-								(short) CrrState); // active state (color)
+								(short) CrrState); 
 						SetCell(ctrX - (dx / 2) + dx - 1, ctrY - (dy / 2) + j,
-								(short) CrrState); // active state (color)
+								(short) CrrState); 
 					}
-				} else // 1D
+				} else 
 				{
-					SetCell(ctrX - (dx / 2), i1DLastRow, (short) CrrState); // active
-					// state
-					// (color)
-					SetCell(ctrX + (dx / 2) - 1, i1DLastRow, (short) CrrState); // active
-					// state
-					// (color)
+					SetCell(ctrX - (dx / 2), i1DLastRow, (short) CrrState); 
+					
+					
+					SetCell(ctrX + (dx / 2) - 1, i1DLastRow, (short) CrrState); 
+					
+					
 				}
 			}
 		}
-		CenterBoard(); // put (0,0) to the center
-		mjUI.vDescr.clear(); // no old description
-		RedrawBoard(true); // show the universe
-		MakeBackup(); // store the pattern of eventual rewinding
-		UpdateScrollbars(); // update scrollbars values
+		CenterBoard(); 
+		mjUI.vDescr.clear(); 
+		RedrawBoard(true); 
+		MakeBackup(); 
+		UpdateScrollbars(); 
 		if (fOldRun)
 			start();
-		Cycle = 0; // start counting from 0
+		Cycle = 0; 
 	}
 
-	// ----------------------------------------------------------------
-	// Empty the board
+	
+	
 	public void Clear(boolean fRedraw) {
 		int i, j;
 		stop();
@@ -1271,36 +1271,36 @@ class MJBoard extends Panel implements Runnable {
 			for (j = 0; j <= MAX_Y; ++j)
 				SetCell(i, j, (short) 0);
 
-		// no alive cells
+		
 		Population = 0;
-		Populations[0] = UnivSize.x * UnivSize.y; // all cells have state 0
+		Populations[0] = UnivSize.x * UnivSize.y; 
 		for (i = 1; i <= MAX_CLO; i++)
 			Populations[i] = 0;
-		Cycle = 0; // start counting from 0
-		i1DLastRow = 0; // 1-D last generated row
+		Cycle = 0; 
+		i1DLastRow = 0; 
 		if (fRedraw)
-			RedrawBoard(true); // show the empty universe
+			RedrawBoard(true); 
 	}
 
-	// ----------------------------------------------------------------
-	// Set the count of states
+	
+	
 	public void SetStatesCount(int iSttCnt) {
 		if ((iSttCnt >= 2) && (iSttCnt <= MAX_CLO + 1)) {
 			StatesCount = iSttCnt;
-			// recreate the palette for the new count of states
+			
 			mjPal.ActivatePalette(mjPal.PalName, StatesCount);
 			mjUI.UpdateColorsUI();
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Set the active state (used for drawing)
+	
+	
 	public void SetCrrState(int iCrrState) {
 		if ((iCrrState >= 0) && (iCrrState < StatesCount)) {
 			CrrState = iCrrState;
 			mjUI.UpdateColorsUI();
 		}
 	}
-	// ----------------------------------------------------------------
-	// ----------------------------------------------------------------
+	
+	
 }

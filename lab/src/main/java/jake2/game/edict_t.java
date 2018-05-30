@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 04.11.2003 by RST.
+
 
 package jake2.game;
 
@@ -65,7 +65,7 @@ public class edict_t {
 
     public int areanum, areanum2;
 
-    //================================
+    
 
     /** SVF_NOCLIENT, SVF_DEADMONSTER, SVF_MONSTER, etc. */
     public int svflags;
@@ -84,7 +84,7 @@ public class edict_t {
 
     public int clipmask;
 
-    //================================
+    
     public int movetype;
 
     public int flags;
@@ -94,9 +94,9 @@ public class edict_t {
     /** sv.time when the object was freed. */
     public float freetime;
 
-    //
-    // only used locally in game, not by server
-    //
+    
+    
+    
     public String message;
 
     public String classname = "";
@@ -265,7 +265,7 @@ public class edict_t {
     /** also used as areaportal number. */
     public int style;
 
-    public gitem_t item; // for bonus items
+    public gitem_t item; 
 
     /** common integrated data blocks. */
     public final moveinfo_t moveinfo = new moveinfo_t();
@@ -279,173 +279,173 @@ public class edict_t {
     /** Introduced by rst. */
     public int index;
 
-    /////////////////////////////////////////////////
+    
 
     public boolean setField(String key, String value) {
 
         if (key.equals("classname")) {
             classname = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("model")) {
             model = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("spawnflags")) {
             spawnflags = Lib.atoi(value);
             return true;
-        } // F_INT),
+        } 
 
         if (key.equals("speed")) {
             speed = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("accel")) {
             accel = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("decel")) {
             decel = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("target")) {
             target = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("targetname")) {
             targetname = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("pathtarget")) {
             pathtarget = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("deathtarget")) {
             deathtarget = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
         if (key.equals("killtarget")) {
             killtarget = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("combattarget")) {
             combattarget = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("message")) {
             message = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("team")) {
             team = GameSpawn.ED_NewString(value);
             Com.dprintln("Monster Team:" + team);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("wait")) {
             wait = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("delay")) {
             delay = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("random")) {
             random = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("move_origin")) {
             move_origin = Lib.atov(value);
             return true;
-        } // F_VECTOR),
+        } 
 
         if (key.equals("move_angles")) {
             move_angles = Lib.atov(value);
             return true;
-        } // F_VECTOR),
+        } 
 
         if (key.equals("style")) {
             style = Lib.atoi(value);
             return true;
-        } // F_INT),
+        } 
 
         if (key.equals("count")) {
             count = Lib.atoi(value);
             return true;
-        } // F_INT),
+        } 
 
         if (key.equals("health")) {
             health = Lib.atoi(value);
             return true;
-        } // F_INT),
+        } 
 
         if (key.equals("sounds")) {
             sounds = Lib.atoi(value);
             return true;
-        } // F_INT),
+        } 
 
         if (key.equals("light")) {
             return true;
-        } // F_IGNORE),
+        } 
 
         if (key.equals("dmg")) {
             dmg = Lib.atoi(value);
             return true;
-        } // F_INT),
+        } 
 
         if (key.equals("mass")) {
             mass = Lib.atoi(value);
             return true;
-        } // F_INT),
+        } 
 
         if (key.equals("volume")) {
             volume = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("attenuation")) {
             attenuation = Lib.atof(value);
             return true;
-        } // F_FLOAT),
+        } 
 
         if (key.equals("map")) {
             map = GameSpawn.ED_NewString(value);
             return true;
-        } // F_LSTRING),
+        } 
 
         if (key.equals("origin")) {
             s.origin = Lib.atov(value);
             return true;
-        } // F_VECTOR),
+        } 
 
         if (key.equals("angles")) {
             s.angles = Lib.atov(value);
             return true;
-        } // F_VECTOR),
+        } 
 
         if (key.equals("angle")) {
             s.angles = new float[] { 0, Lib.atof(value), 0 };
             return true;
-        } // F_ANGLEHACK),
+        } 
 
         if (key.equals("item")) {
             game_import_t.error("ent.set(\"item\") called.");
             return true;
-        } // F_ITEM)
+        } 
 
         return false;
     }
@@ -605,7 +605,7 @@ public class edict_t {
 
         f.writeEdictRef(owner);
 
-        // rst's checker :-)
+        
         f.writeInt(9876);
     }
 
@@ -770,7 +770,7 @@ public class edict_t {
 
         owner = f.readEdictRef();
 
-        // rst's checker :-)
+        
         if (f.readInt() != 9876)
             System.err.println("ent load check failed for num " + index);
     }

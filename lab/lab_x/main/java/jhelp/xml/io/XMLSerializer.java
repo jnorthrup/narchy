@@ -608,8 +608,8 @@ public class XMLSerializer
             name = field.getName();
 
             if((name.charAt(0) != '$') && (name.equals("serialVersionUID") == false)
-            // $ : For coverage, they add dummy data the we don't want !
-            // serialVersionUID : no need to store it
+            
+            
                   && ((onlyAnnotated == false) || (field.getAnnotation(XMLSerializable.class) != null)))
             {
                dynamicWriteXML.openMarkup(name);

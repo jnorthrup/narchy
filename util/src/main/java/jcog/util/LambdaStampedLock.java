@@ -6,7 +6,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
- * https://www.javaspecialists.eu/talks/pdfs/2014%20JavaLand%20in%20Germany%20-%20%22Java%208%20From%20Smile%20To%20Tears%20-%20Emotional%20StampedLock%22%20by%20Heinz%20Kabutz.pdf
+ * https:
  */
 public class LambdaStampedLock extends StampedLock {
 

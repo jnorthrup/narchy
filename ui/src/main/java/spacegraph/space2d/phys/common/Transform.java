@@ -27,7 +27,7 @@ import com.jogamp.opengl.GL2;
 import spacegraph.util.math.Tuple2f;
 import spacegraph.util.math.v2;
 
-// updated to rev 100
+
 
 /**
  * A transform contains translation and rotation. It is used to represent the position and
@@ -168,22 +168,22 @@ public class Transform extends Rot {
         out.pos.added(A.pos);
     }
 
-//    private static final Tuple2f pool = new Vec2();
-//
-//    public final static Transform mulTrans(final Transform A, final Transform B) {
-//        Transform C = new Transform();
-//        Rot.mulTransUnsafe(A.rotMatrix, B.rotMatrix, C.rotMatrix);
-//        pool.set(B.pos).subbed(A.pos);
-//        Rot.mulTransUnsafe(A.rotMatrix, pool, C.pos);
-//        return C;
-//    }
-//
-//    public final static void mulTransToOut(final Transform A, final Transform B, final Transform out) {
-//        assert (out != A);
-//        Rot.mulTrans(A.rotMatrix, B.rotMatrix, out.rotMatrix);
-//        pool.set(B.pos).subbed(A.pos);
-//        Rot.mulTrans(A.rotMatrix, pool, out.pos);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public final static void mulTransToOutUnsafe(final Transform A, final Transform B,
                                                  final Transform out) {

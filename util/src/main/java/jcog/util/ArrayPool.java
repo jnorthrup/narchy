@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -113,19 +113,19 @@ public class ArrayPool<T> extends FasterList {
             comparator = new ObjectArrayLengthMatcher();
         }
 
-//		if (componentType == byte.class) {
-//			comparator = new ByteComparator(lengthMatcher);
-//		} /*if (componentType == short.class) {
-//			comparator = shortComparator;
-//		} */else if (componentType == float.class) {
-//			comparator = floatComparator;
-//		} else if (componentType == int.class) {
-//			comparator = intComparator;
-//		} else if (!componentType.isPrimitive()) {
-//			comparator = objectComparator;
-//		} else {
-//			throw new UnsupportedOperationException("unsupported type "+componentType);
-//		}
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @SuppressWarnings("unchecked")
@@ -179,7 +179,7 @@ public class ArrayPool<T> extends FasterList {
         if (index < 0) index = -index - 1;
         add(index, array);
 
-        // remove references from object arrays:
+        
         if (!primitive) {
             Object[] objArray = (Object[]) array;
             Arrays.fill(objArray, null);

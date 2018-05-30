@@ -54,7 +54,7 @@ public class Empty extends Parser {
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
 		return in;
-		//return elementClone(in);
+		
 	}
 
 	/*
@@ -63,7 +63,7 @@ public class Empty extends Parser {
 	 */
 	@Override
 	protected List<String> randomExpansion(int maxDepth, int depth) {
-		//return new ArrayList<>(0);
+		
 		return Collections.emptyList();
 	}
 

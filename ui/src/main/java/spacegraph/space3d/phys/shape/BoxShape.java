@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -77,7 +77,7 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec, v3 out) {
-		//v3 halfExtents = getHalfExtentsWithoutMargin(out);
+		
 		v3 halfExtents = this.implicitShapeDimensions;
 		float hx = halfExtents.x;
 		float hy = halfExtents.y;
@@ -92,7 +92,7 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		//v3 halfExtents = getHalfExtentsWithoutMargin(new v3());
+		
 		v3 halfExtents = this.implicitShapeDimensions;
 		float hx = halfExtents.x;
 		float hy = halfExtents.y;
@@ -108,7 +108,7 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public SimpleBoxShape setMargin(float margin) {
-		// correct the implicitShapeDimensions for the margin
+		
 		float m = getMargin();
 		v3 oldMargin = new v3(m, m,m);
 
@@ -157,7 +157,7 @@ public class BoxShape extends SimpleBoxShape {
 
 	@Override
 	public void getPlane(v3 planeNormal, v3 planeSupport, int i) {
-		// this plane might not be aligned...
+		
 		Vector4f plane = new Vector4f();
 		v3 tmp = new v3();
 		getPlaneEquation(plane, i, tmp);

@@ -32,7 +32,7 @@ public class ATraces implements Traces {
 
     protected ATraces(RealVector prototype, double threshold, int size) {
         this.prototype = prototype;
-        vector = prototype.copy(); //size > 0 ? prototype.copy() : null;
+        vector = prototype.copy(); 
         this.threshold = threshold;
     }
 
@@ -47,7 +47,7 @@ public class ATraces implements Traces {
         adjustUpdate();
         if (clearRequired(phi, lambda))
             clearBelowThreshold();
-        //assert Vectors.checkValues(vector);
+        
     }
 
     protected void adjustUpdate() {
@@ -75,41 +75,41 @@ public class ATraces implements Traces {
     }
 
 
-//  protected void clearBelowThreshold() {
-//
-//    OpenMapRealVector v = (OpenMapRealVector) vector;
-//    //double[] values = v.get
-//
-//    Iterator<RealVector.Entry> e = v.iterator();
-//
-//
-//    int[] indexes = OpenMapRealVector.activeIndexes;
-//    int i = 0;
-//    while (i < OpenMapRealVector.nonZeroElements()) {
-//      final double absValue = Math.abs(values[i]);
-//      if (absValue <= threshold)
-//        OpenMapRealVector.removeEntry(indexes[i]);
-//      else
-//        i++;
-//    }
-//  }
-//  private RealVectorChangingVisitor clearBelowThresholdVisitor = new RealVectorChangingVisitor() {
-//    @Override
-//    public void start(int dimension, int start, int end) {
-//
-//    }
-//
-//    @Override
-//    public double visit(int i, double v) {
-//      if (Math.abs(v) <= threshold)
-//      return 0;
-//    }
-//
-//    @Override
-//    public double end() {
-//      return 0;
-//    }
-//  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public RealVector vect() {

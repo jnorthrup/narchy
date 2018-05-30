@@ -16,7 +16,7 @@ public class TweaksTest {
 
         public final FloatRange floatRange = new FloatRange(0.5f, 0, 10);
 
-        @Range(min=0, max=5/*, step=1f*/) //autoInc will apply
+        @Range(min=0, max=5/*, step=1f*/) 
         public float tweakFloat = 0;
 
         @Range(min=-4, max=+4, step=2f)
@@ -51,7 +51,7 @@ public class TweaksTest {
         );
         assertTrue(a.tweaks.size() >= 4);
 
-        //assertEquals(4, a.all.size());
+        
         Optimizing.Result r = a.optimize((m)->m.score()).run(25);
         assertEquals(5, r.data.attrCount());
 

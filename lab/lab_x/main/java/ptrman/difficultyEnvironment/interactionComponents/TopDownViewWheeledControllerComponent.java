@@ -7,7 +7,7 @@ import ptrman.difficultyEnvironment.JavascriptDescriptor;
  *
  */
 public class TopDownViewWheeledControllerComponent extends AbstractControllerComponent {
-    public float relativeSpeed = 0.0f; // from -1.0f to 1.0f
+    public float relativeSpeed = 0.0f; 
     public float maxSpeed;
     public TopDownViewWheeledPhysicsComponent physicsComponent;
     public float relativeAngle = 0.0f;

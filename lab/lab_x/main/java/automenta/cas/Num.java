@@ -33,17 +33,17 @@ public class Num extends Constant implements Comparable<Num> {
         if (allowedVal(val)) return new Num(val);
         
         BigDecimal valBD = new BigDecimal(Double.toString(val));
-        // if (debug) System.err.println("Number.make: big: " + valBD);
+        
         
         double numerator= valBD.scaleByPowerOfTen(valBD.scale()).doubleValue();
         double denom = Math.pow(10, valBD.scale());
-        // if (debug) System.err.println("Number.make: numerator: " + numerator);
+        
             
         return Division.make(new Num(numerator), new Num(denom));
     }
     
     public static boolean allowedVal(double val) {
-        //return true;
+        
         return val == new Double(val).longValue();
     }
     
@@ -86,12 +86,12 @@ public class Num extends Constant implements Comparable<Num> {
     }
     
     public boolean equals(Object o) {
-        // if (debug) System.err.println("Number.equals: " + dump() + ", " + (o instanceof Expr ? ((Expr) o) : o));
+        
         if (o == null) return false;
         if (o == this) return true;
         if (!(o instanceof Num)) return false;
         
-        // if (debug) System.err.println("Number.equals: " + val + " " + (val.equals(((Number) o).val())?"==":"!=") + " " + ((Number) o).val());
+        
         
         return val.equals(((Num) o).val());
     }

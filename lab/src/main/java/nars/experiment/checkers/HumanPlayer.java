@@ -21,6 +21,6 @@ public class HumanPlayer extends Player
 	{
 		super.takeTurn();
 		System.out.println(getName() + "'s turn!");
-		getBoard().enableMouseListener();	// we're human and need the board to listen to us
+		getBoard().enableMouseListener();	
 	}
 }

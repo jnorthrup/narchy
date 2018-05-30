@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,11 +44,11 @@ public class Sum extends Propagator {
 
     @Override
     public boolean propagate() {
-        // Cache trailed values for fast access and update.
+        
         int nAssigned = nAssignedT.getValue();
         int sumAssigned = sumAssignedT.getValue();
 
-        // Repeat until the propagator reaches its fixed-point.
+        
         boolean reduce = true;
         while (reduce) {
             reduce = false;
@@ -57,8 +57,8 @@ public class Sum extends Propagator {
             int sumTermsMax = sumAssigned;
             int maxDiff = 0;
 
-            // Update the set of assigned variables and compute the sum
-            // of the minimum and maximum values of all the variables.
+            
+            
             for (int i = nAssigned; i < assigned.length; i++) {
                 IntVar term = assigned[i];
                 int min = term.min();
@@ -68,8 +68,8 @@ public class Sum extends Propagator {
                 int diff = max - min;
                 if (diff == 0) {
                     sumAssigned += min;
-                    // The term is assigned we thus include it in the
-                    // range [0, nAssigned[.
+                    
+                    
                     assigned[i] = assigned[nAssigned];
                     assigned[nAssigned] = term;
                     nAssigned++;
@@ -78,15 +78,15 @@ public class Sum extends Propagator {
                 maxDiff = Math.max(maxDiff, diff);
             }
 
-            // We update the sum variable to be contained in the range
-            // made by the sum of all the minimum and all the maximum.
+            
+            
             if (!sum.updateMin(sumTermsMin))
                 return false;
             if (!sum.updateMax(sumTermsMax))
                 return false;
 
-            // Note that the domain of the sum variable can be smaller than
-            // the range [sumTermsMin, sumTermsMax].
+            
+            
             int sumMax = sum.max();
             int sumMin = sum.min();
 
@@ -117,7 +117,7 @@ public class Sum extends Propagator {
             }
         }
 
-        // Save the updated trailed values.
+        
         nAssignedT.setValue(nAssigned);
         sumAssignedT.setValue(sumAssigned);
         return true;

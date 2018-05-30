@@ -58,15 +58,15 @@ public class EfficientScene extends Scene
     @Override
     public ColorEx trace(Ray ray)
     {
-        // Falls der Strahl nicht verfolgt wird, liefere die Hintergrundfarbe:
+        
         if (!followRay(ray))
             return new ColorEx(backgroundColor);
         
-        // Falls ein Objekt vom Strahl getroffen wurde:
+        
         if (objects.intersect(ray))
             return ray.hit.getShader().shade(new Intersection(ray,this));
         
-        // Kein Objekt wurde geschnitten. Liefere die Hintergrundfarbe:
+        
         return new ColorEx(backgroundColor);
     }
 

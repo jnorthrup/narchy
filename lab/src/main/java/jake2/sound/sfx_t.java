@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 28.11.2003 by RST.
+
 
 package jake2.sound;
 
@@ -34,7 +34,7 @@ public class sfx_t {
 	public sfxcache_t cache;
 	public String truename;
 	
-	// is used for AL buffers
+	
 	public int bufferId = -1;
 	public boolean isCached;
 	

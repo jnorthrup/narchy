@@ -24,7 +24,7 @@ public class UCTSettings extends Settings {
 	public void parseSettings(File file) {
 		horizon = parseInt("horizon", horizon, file);
 		recycleUCT = parseBoolean("recycle-uct", recycleUCT, file);
-		// updateCTinMC = parseBoolean("update-ct-in-mc", updateCTinMC, file);
+		
 		mcSimulations = parseInt("mc-simulations", mcSimulations, file);
 	}
 
@@ -33,7 +33,7 @@ public class UCTSettings extends Settings {
 		horizon = 1;
 		mcSimulations = 100;
 		recycleUCT = true;
-		// updateCTinMC = true;
+		
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class UCTSettings extends Settings {
 		s.setHorizon(horizon);
 		s.setMcSimulations(mcSimulations);
 		s.setRecycleUCT(recycleUCT);
-		// s.setUpdateCTinMC(updateCTinMC);
+		
 		return s;
 	}
 
@@ -91,7 +91,7 @@ public class UCTSettings extends Settings {
 		s.setHorizon(16);
 		s.setMcSimulations(100);
 		s.setRecycleUCT(true);
-		// s.setUpdateCTinMC(true);
+		
 		return s;
 	}
 

@@ -46,8 +46,8 @@ public class FastLog {
         data = new float[tabSize];
 
         for (int i = 0; i < tabSize; i++) {
-            // note: the -150 is to avoid this addition in the calculation
-            // of the exponent (see the floatToRawIntBits doc).
+            
+            
             data[i] = (float) (log2(i << q) - 150);
         }
     }

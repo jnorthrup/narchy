@@ -21,7 +21,7 @@ public class JUnitNAR {
 
         JUnitPlanetX j = new JUnitPlanetX()
                 .test("nars")
-                //.test(NAL1Test.class)
+                
                 .run();
 
         j.report(new File("/tmp/test/" + System.currentTimeMillis() + ".arff"));
@@ -31,41 +31,41 @@ public class JUnitNAR {
     }
 
 
-//        if (fractionToRun < 1f) {
-//            int toRemove = Math.round((1f-fractionToRun)* mm);
-//            for (int i = 0; i < toRemove; i++){
-//                methods.remove(Math.round(Math.random() * (--mm)));
-//            }
-//        }
-//
-//        if (methods.isEmpty())
-//            throw new RuntimeException("no tests remain");
-//
-//        int totalTests = mm;
-//        final CountDownLatch remain = new CountDownLatch(methods.size());
-//        final AtomicDouble sum = new AtomicDouble(0);
-//        Executor eexe = exe.get();
-//        methods.forEach(m -> eexe.execute(() -> {
-//            try {
-//                sum.addAndGet(test(s, m));
-//            } finally {
-//                remain.countDown();
-//            }
-//        }));
-//        try {
-//            remain.await();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//        if (eexe instanceof ExecutorService)
-//            ((ExecutorService) eexe).shutdownNow();
-//
-//        return sum.floatValue()/totalTests;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public static Method randomTest(Class<? extends NALTest>... c) {
-        //TODO cache this
+        
         List<Method> methods = Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getMethods())
                         .filter(x -> x.getAnnotation(Test.class) != null))
@@ -85,28 +85,28 @@ public class JUnitNAR {
         }
 
         t.test.quiet = true;
-            t.test.set(s); //overwrite NAR with the supplier
+            t.test.set(s); 
             t.test.nar.random().setSeed(
                     System.nanoTime()
-                    //1 //should change on each iteration so constant value wont work
+                    
             );
 
-            //setup
+            
             try {
                 m.invoke(t);
             } catch (Throwable ee) {
-                return null; //fatal setup
+                return null; 
             }
 
             Param.DEBUG = false;
 
             try {
                 t.test.test();
-                //return 1 + t.test.score; //+1 for successful completion
+                
             } catch (Throwable ee) {
-                //return -2f;
-                //return -1f;
-                return null; //0.0f; //fatal during test
+                
+                
+                return null; 
             }
             return t;
 

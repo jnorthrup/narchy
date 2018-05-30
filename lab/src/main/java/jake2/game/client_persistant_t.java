@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 31.10.2003 by RST.
+
 
 package jake2.game;
 
@@ -55,15 +55,15 @@ public class client_persistant_t {
 		spectator= from.spectator;
 	}
 
-	//	client data that stays across multiple level loads
+	
 	String userinfo= "";
 	String netname= "";
 	int hand;
 
-	boolean connected; // a loadgame will leave valid entities that
-	// just don't have a connection yet
+	boolean connected; 
+	
 
-	// values saved and restored from edicts when changing levels
+	
 	int health;
 	int max_health;
 	int savedFlags;
@@ -71,22 +71,22 @@ public class client_persistant_t {
 	int selected_item;
 	final int[] inventory= new int[Defines.MAX_ITEMS];
 
-	// ammo capacities
+	
 	public int max_bullets;
 	public int max_shells;
 	public int max_rockets;
 	public int max_grenades;
 	public int max_cells;
 	public int max_slugs;
-	//pointer
+	
 	gitem_t weapon;
-	//pointer
+	
 	gitem_t lastweapon;
-	int power_cubes; // used for tracking the cubes in coop games
-	int score; // for calculating total unit score in coop games
+	int power_cubes; 
+	int score; 
 	int game_helpchanged;
 	int helpchanged;
-	boolean spectator; // client is a spectator
+	boolean spectator; 
 
 	/** Reads a client_persistant structure from a file. */
 	public void read(QuakeFile f) throws IOException {
@@ -125,7 +125,7 @@ public class client_persistant_t {
 
 	/** Writes a client_persistant structure to a file. */
 	public void write(QuakeFile f) throws IOException {
-		// client persistant_t
+		
 		f.writeString(userinfo);
 		f.writeString(netname);
 

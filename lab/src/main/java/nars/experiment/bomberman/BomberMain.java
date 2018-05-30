@@ -78,12 +78,12 @@ public class BomberMain extends JFrame {
         /** set the window title */
         setTitle("Bomberman 1.0 by Sammy Leong");
 
-//        /** set the window icon */
-//        try {
-//            setIconImage(Toolkit.getDefaultToolkit().getImage(
-//                new File(RP + "Images/Bomberman.gif").getCanonicalPath()));
-//        }
-//        catch (Exception e) { new ErrorDialog(e); }
+
+
+
+
+
+
 
         /** create and add the menu to the frame */
         getContentPane().add(menu = new BomberMenu(this));
@@ -138,12 +138,12 @@ public class BomberMain extends JFrame {
         dialog.dispose();
         /** show the frame */
         show();
-//        /** if Java 2 available */
-//        if (Main.J2) {
-//           BomberBGM.unmute();
-//           /** player music */
-//           BomberBGM.change("Battle");
-//        }
+
+
+
+
+
+
     }
 
     /**

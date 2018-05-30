@@ -43,7 +43,7 @@ import java.util.Random;
  */
 public class v3 extends Tuple3f {
 
-    // Combatible with 1.1
+    
     static final long serialVersionUID = -7031930069184524614L;
     public static v2 one = new v2(1,1);
 
@@ -82,15 +82,15 @@ public class v3 extends Tuple3f {
         set(v1.x * scale, v1.y * scale, v1.z * scale);
     }
 
-//
-//    /**
-//     * Constructs and initializes a Vector3f from the specified Vector3d.
-//     *
-//     * @param v1 the Vector3d containing the initialization x y z data
-//     */
-//    public v3(Vector3d v1) {
-//        super(v1);
-//    }
+
+
+
+
+
+
+
+
+
 
 
     /**
@@ -102,15 +102,15 @@ public class v3 extends Tuple3f {
         super(t1);
     }
 
-//
-//    /**
-//     * Constructs and initializes a Vector3f from the specified Tuple3d.
-//     *
-//     * @param t1 the Tuple3d containing the initialization x y z data
-//     */
-//    public v3(Tuple3d t1) {
-//        super(t1);
-//    }
+
+
+
+
+
+
+
+
+
 
 
     /**

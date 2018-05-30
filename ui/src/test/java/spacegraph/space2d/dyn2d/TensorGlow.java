@@ -51,28 +51,28 @@ public class TensorGlow {
         for (int j = 0; j < 3; j++)        {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;
-            bodyDef2.angle = -0.6f; // otocenie
-            bodyDef2.linearVelocity = new v2(0.0f, 0.0f); // smer pohybu
-            bodyDef2.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
+            bodyDef2.angle = -0.6f; 
+            bodyDef2.linearVelocity = new v2(0.0f, 0.0f); 
+            bodyDef2.angularVelocity = 0.0f; 
             Body2D newBody = p.W.addBody(bodyDef2);
             PolygonShape shape2 = new PolygonShape();
             shape2.setAsBox(0.25f, 0.25f);
             Fixture f = newBody.addFixture(shape2, 1.0f);
-            f.friction = 0.5f; // trenie
-            f.restitution = 0.0f; //odrazivost
+            f.friction = 0.5f; 
+            f.restitution = 0.0f; 
             f.material = new Uniform();
             f.material.m_rigidity = 1.0f;
         }
-//        //ceiling rack
-//        addBox(p.W, -1, +0.4f, 0, +0.65f, false, true, true, true);
 
-        //new Pacman(p.W);
+
+
+        
         {
             p.W.setContactListener(new Explosives.ExplosionContacts());
 
             TheoJansen t = new TheoJansen(p.W, 0.35f);
             Dyn2DSurface.PhyWindow pw = p.put(new Gridding(0.5f, new Port((float[] v) -> {
-                //System.out.println(v);
+                
                 t.motorJoint.setMotorSpeed(v[0]*2 - v[1]*2);
                 t.motorJoint.setMaxMotorTorque(v[2]);
                 t.motorJoint.enableLimit(true);
@@ -95,10 +95,10 @@ public class TensorGlow {
             ParticleGroupDef pd = new ParticleGroupDef();
             pd.flags = ParticleType.
                     b2_waterParticle;
-                    //b2_viscousParticle;
-                    //b2_elasticParticle;
-                    //b2_springParticle;
-                    //b2_powderParticle;
+                    
+                    
+                    
+                    
             pd.color = new ParticleColor(0.7f, 0.1f, 0.1f, 0.8f);
             pd.shape = shape;
             p.W.addParticles(pd);

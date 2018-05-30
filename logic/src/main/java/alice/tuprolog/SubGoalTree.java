@@ -37,17 +37,17 @@ public final class SubGoalTree extends FasterList<SubTree> implements SubTree {
         return result + " ] ";
     }
 
-//    public boolean removeChild(int i) {
-//        try {
-//            remove(i);
-//            return true;
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
+
+
+
+
+
+
+
+
 
     public SubGoalTree copy(){
-        //return new SubGoalTree(this);
+        
         return this;
     }
 }

@@ -76,9 +76,9 @@ abstract public class Search<N, E> {
             if (start != next) {
                 BooleanObjectPair<ImmutableDirectedEdge<N, E>> move =
                         path instanceof Cons ? ((Cons<BooleanObjectPair<ImmutableDirectedEdge<N, E>>>) path).tail : path.get(path.size() - 1);
-                //guard
+                
                 if (!next(move, next))
-                    return false; //leaves path intact on exit
+                    return false; 
 
             }
 
@@ -91,7 +91,7 @@ abstract public class Search<N, E> {
     public boolean dfs(NodeGraph.Node<N, E> current) {
 
         if (!log.visit(current))
-            return true; //skip
+            return true; 
 
         Iterator<ImmutableDirectedEdge<N, E>> n = next(current).iterator();
         if (!n.hasNext())
@@ -104,18 +104,18 @@ abstract public class Search<N, E> {
             NodeGraph.Node<N, E> next = e.other(this.at);
 
             if (log.hasVisited(next))
-                return true; //pre-skip, avoiding some work
+                return true; 
 
             BooleanObjectPair<ImmutableDirectedEdge<N, E>> move = pair(next == e.to, e);
 
-            //push
+            
             path.add(move);
 
-            //guard
+            
             if (!next(move, next) || !dfs(next))
-                return false; //leaves path intact on exit
+                return false; 
 
-            //pop
+            
             this.at = current;
             path.remove(path.size() - 1);
 

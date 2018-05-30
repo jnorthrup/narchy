@@ -22,34 +22,34 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
     protected final NAR nar;
     private final On on;
     private PrediTerm<Term> term;
-    //private final BoolPred<Truth> truth = null;
+    
     private PrediTerm<Byte> punctuation;
-    //private final BoolPred<LongLongPair> time = null;
-    //private final BoolPred<Priority> budget = null;
+    
+    
 
 
 
-//    abstract public static class TermMatch extends AtomicPred<Term> {
-//
-//        public final Term term;
-//
-//        public TermMatch(String s) throws Narsese.NarseseException {
-//            this($.$(s));
-//        }
-//
-//        public TermMatch(Term t) {
-//            this.term = t;
-//        }
-//
-//        @Override
-//        abstract public boolean test(Term p);
-//
-//        @NotNull
-//        @Override
-//        public String toString() {
-//            return getClass().getSimpleName() + '(' + term + ')';
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     protected TaskMatch(@NotNull NAR n) {
         this.nar = n;
@@ -70,11 +70,11 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
         return id().toString();
     }
 
-    //HACK
+    
     public Term id() {
         return $.func(getClass().getSimpleName(),
             (term), (punctuation)
-                //, $.nonNull(truth), $.nonNull(time), $.nonNull(budget)
+                
             );
     }
 
@@ -101,7 +101,7 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
 
 
     protected void onError(SoftException e) {
-        //default: do nothing
+        
     }
 
     /** accepts the next match

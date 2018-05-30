@@ -27,21 +27,21 @@ public class Plot2D extends Widget {
     public Plot2D on(Function<Runnable, On> trigger) {
         synchronized (series) {
             if (on != null)
-                on.off(); //remove previous handler
+                on.off(); 
             this.on = trigger.apply(this::update);
         }
         return this;
     }
 
-//    public <X> Surface to(Consumer<Consumer<X>> y) {
-//        y.accept((Consumer<X>)this);
-//        return this;
-//    }
 
 
-    //public static final ColorArray BlueRed = new ColorArray(128, Color.BLUE, Color.RED);
 
-    //public static final ColorMatrix ca = new ColorMatrix(17, 1, (x, y) -> Color.hsb(x * 360.0, 0.6f, y * 0.5 + 0.5));
+
+
+
+    
+
+    
 
     public static class Series extends FloatArrayList {
 
@@ -96,7 +96,7 @@ public class Plot2D extends Widget {
             forEach(v -> {
                 if (v < minValue) minValue = v;
                 if (v > maxValue) maxValue = v;
-                //mean += v;
+                
             });
         }
 
@@ -123,10 +123,10 @@ public class Plot2D extends Widget {
 
 
     public PlotVis plotVis;
-    //private final SimpleObjectProperty<PlotVis> plotVis = new SimpleObjectProperty<>();
+    
 
     public Plot2D(int history, PlotVis vis) {
-        //super(w, h);
+        
 
         this.series = new FasterList();
         this.maxHistory = history;
@@ -149,7 +149,7 @@ public class Plot2D extends Widget {
 
                 limit();
                 if (v != v) {
-                    //throw new RuntimeException("invalid value");
+                    
                     super.add(Float.NaN);
                 } else {
                     if (v < min) v = min;
@@ -186,38 +186,38 @@ public class Plot2D extends Widget {
 
         List<Series> series = this.series;
 
-        //HACK (not initialized yet but run() called
+        
         if (series.isEmpty()) {
             return;
         }
 
-//        GraphicsContext g = graphics();
-//
-//        double W = g.getCanvas().getWidth();
-//        double H = g.getCanvas().getHeight();
-//
-//        g.clearRect(0, 0, W, H);
-//
-//        PlotVis pv = plotVis.get();
-//        if (pv != null) {
-//            pv.draw(series, g, minValue, maxValue);
-//        }
 
-        //background
+
+
+
+
+
+
+
+
+
+
+
+        
         gl.glColor4fv(backgroundColor, 0);
         Draw.rect(gl, 0, 0, 1, 1);
 
         plotVis.draw(series, gl, minValue, maxValue);
 
         if (title != null) {
-//            gl.glEnable(GL2.GL_COLOR_LOGIC_OP);
-//            gl.glLogicOp(GL2.GL_XOR);
 
-            //Draw.text(gl, 0.001f, 0.001f, title, 0.5f,0.5f,0);
+
+
+            
             gl.glColor3f(1f, 1f, 1f);
             gl.glLineWidth(1f);
             Draw.text(gl, title, 0.1f, 0.5f, 0.5f, 0);
-//            gl.glDisable(GL2.GL_COLOR_LOGIC_OP);
+
         }
 
     }
@@ -238,8 +238,8 @@ public class Plot2D extends Widget {
     public static final PlotVis BarWave = (List<Series> series, GL2 g, float minValue, float maxValue) -> {
         if (minValue != maxValue) {
 
-            float w = 1.0f; //g.getCanvas().getWidth();
-            float h = 1.0f; //g.getCanvas().getHeight();
+            float w = 1.0f; 
+            float h = 1.0f; 
 
 
             for (int z = 0, seriesSize = series.size(); z < seriesSize; z++) {
@@ -286,7 +286,7 @@ public class Plot2D extends Widget {
             maxValue = center + (center / 2);
         }
 
-        gl.glColor4f(1f, 1f, 1f, 1f); //gray
+        gl.glColor4f(1f, 1f, 1f, 1f); 
 
         gl.glLineWidth(2);
 
@@ -312,34 +312,34 @@ public class Plot2D extends Widget {
 
             int histSize = ss;
 
-            //float py = 0;
+            
 
             gl.glLineWidth(3);
             gl.glColor3fv(s.color, 0);
 
             gl.glBegin(
                     GL.GL_LINE_STRIP
-                    //GL.GL_TRIANGLE_STRIP
-                    //GL.GL_TRIANGLE_FAN
-                    //GL2.GL_POLYGON
+                    
+                    
+                    
             );
             float range = maxValue - minValue;
             float yy = Float.NaN;
             float x = 0;
             float dx = (W / histSize);
-            //float epsilon = 0.001f * range;
-            //int repeats = 0;
+            
+            
             for (int i = 0; i < ss; i++) {
 
                 float v = ssh[i];
                 float ny = (v == v) ? ypos(minValue, range, v) : mid /*HACK for NaN*/;
-//                if (Util.equals(ny, yy, epsilon))
-//                    repeats++;
-//                else
-//                    repeats = 0;
-//                if (repeats < 3 || (i == ss - 1) || (i == 0)) {
+
+
+
+
+
                 gl.glVertex2f(x, yy = ny);
-                //}
+                
 
                 x += dx;
             }
@@ -353,13 +353,13 @@ public class Plot2D extends Widget {
 
     private static float ypos(float minValue, float range, float v) {
         float ny = (v - minValue) / range;
-        //if (ny < 0) ny = 0;
-        //else if (ny > 1.0) ny = 1.0f;
+        
+        
         return ny;
     }
 
 
-    //TODO AtomicBoolean busy... instead of synchronized
+    
 
     public void update() {
         synchronized (series) {
@@ -375,54 +375,54 @@ public class Plot2D extends Widget {
         }
     }
 
-//    public static class BitmapWave implements PlotVis {
-//
-//        public GL2 gl;
-//        BitmapMatrixView view;
-//        Series series;
-//        int width;
-//        int yRes = 32;
-//        float[] yHeights;
-//        AtomicBoolean ready = new AtomicBoolean(false);
-//
-//        @Override
-//        public void update() {
-//
-//            if (series == null)
-//                return;
-//
-//            if (view == null) {
-//
-//                width = series.size();
-//                yHeights = new float[width];
-//                view = new BitmapMatrixView(width, yRes, (int x, int y)->{
-//                    return (y * yRes) < yHeights[x] ? Draw.rgbInt(255, 255, 255) : 0;
-//                });
-//            }
-//
-//            float[] array = series.array();
-//            float min = series.minValue;
-//            float max = series.maxValue;
-//            float range = max-min;
-//            final int width = this.width;
-//            final float[] yHeights = this.yHeights;
-//            for (int i = 0; i < width; i++) {
-//                yHeights[i] = (array[i] - min)/range * yRes;
-//            }
-//            view.update();
-//
-//            ready.set(true);
-//        }
-//
-//        @Override
-//        public void draw(List<Series> series, GL2 g, float minValue, float maxValue) {
-//            if (ready.get()) {
-//                view.render(g, window.getWidth(), window.getHeight(), 0);
-//            } else {
-//                BitmapWave.this.series = series.get(0);
-//                this.gl = g;
-//            }
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 

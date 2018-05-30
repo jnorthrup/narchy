@@ -4,7 +4,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
@@ -53,11 +53,11 @@ import java.util.stream.Stream;
  *     manager.addListener(new Listener() {
  *         public void stopped() {}
  *         public void healthy() {
- *           // Services have been initialized and are healthy, start accepting requests...
+ *           
  *         }
  *         public void failure(Service service) {
- *           // Something failed, at this point we could log it, notify a load balancer, or take
- *           // some other action.  For now we will just exit.
+ *           
+ *           
  *           System.exit(1);
  *         }
  *       },
@@ -65,16 +65,16 @@ import java.util.stream.Stream;
  *
  *     Runtime.getRuntime().addShutdownHook(new Thread() {
  *       public void run() {
- *         // Give the services 5 seconds to stop to ensure that we are responsive to shutdown
- *         // requests.
+ *         
+ *         
  *         try {
  *           manager.stopAsync().awaitStopped(5, TimeUnit.SECONDS);
  *         } catch (TimeoutException timeout) {
- *           // stopping timed out
+ *           
  *         }
  *       }
  *     });
- *     manager.startAsync();  // start all the services asynchronously
+ *     manager.startAsync();  
  *   }
  * }}</pre>
  * <p>
@@ -151,10 +151,10 @@ public class Services<C /* context */, K /* service key */>  {
         Service<C> removed = services.put(key, s);
 
         if (removed == s)
-            return; //no change
+            return; 
 
         if (removed != null) {
-            //if start, then start after the previous stopped
+            
             removed.stop(this, exe, start ? ()-> s.start(this, exe) : null);
         } else {
             if (start) {

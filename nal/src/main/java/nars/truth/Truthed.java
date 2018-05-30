@@ -39,40 +39,40 @@ public interface Truthed  {
         return freq() >= 0.5f;
     }
 
-//    /**
-//     * how expectation polarized (expectation distance from 0.5) a given truth value is:
-//     *      expectation=0.5        -> polarization=0
-//     *      expectation=0 or 1     -> polarization=1
-//     */
-//    default float expolarity() {
-//        float exp = expectation();
-//        if (exp < 0.5f)
-//            exp = 1f - exp;
-//        return (exp - 0.5f) * 2f;
-//    }
 
-//    /** balanced form of expectation, where -1 = no, +1 = yes, and 0 = maybe */
-//    default float motivationUnweighted() {
-//        return (freq() - 0.5f) * conf() * 2f;
-//    }
 
-//    /** balanced form of expectation, where -infinity = no, +infinity = yes, and 0 = maybe */
-//    default float motivation() {
-//        return (freq() - 0.5f) * evi(dur) * 2f;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     default float freq() {
         Truth t = truth();
-        //return t == null ? Float.NaN : t.freq();
-        return t.freq(); //throw NPE if not a belief/goal
+        
+        return t.freq(); 
     }
     default float conf() {
-        //return t == null ? Float.NaN : t.conf();
-        return w2cSafe(evi()); //throw NPE if not a belief/goal
+        
+        return w2cSafe(evi()); 
     }
     /** weight of evidence ( confidence converted to weight, 'c2w()' )  */
     default float evi() {
-        return truth().evi(); //throws NPE if not a belief/goal
+        return truth().evi(); 
     }
 
 
@@ -89,15 +89,15 @@ public interface Truthed  {
     }
 
 
-    //void setValue(T v); //move to MutableMetaTruth interface
+    
 
 
 
 
 
 
-//    /** TODO move this to a MutableTruth interface to separate a read-only impl */
-//    void setConfidence(float c);
+
+
 
 
 

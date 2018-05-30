@@ -69,11 +69,11 @@ public class AirPlaneLanding extends AbstractProblem {
     private static Pattern decimalPattern;
 
     static {
-        // \\p{javaDigit} may not be perfect, see above
+        
         String digit = "([0-9])";
         String groupedNumeral = "(" + non0Digit + digit + "?" + digit + "?(" +
                 groupSeparator + digit + digit + digit + ")+)";
-        // Once again digit++ is used for performance, as above
+        
         String numeral = "((" + digit + "++)|" + groupedNumeral + ")";
         String decimalNumeral = "(" + numeral + "|" + numeral +
                 decimalSeparator + digit + "*+|" + decimalSeparator +
@@ -86,11 +86,11 @@ public class AirPlaneLanding extends AbstractProblem {
     @Option(name = "-d", usage = "Airplan landing Data.", required = false)
     Data mData = Data.airland3;
 
-    //DATA
+    
     private int[][] data;
     int n;
 
-    //    private static final int AT = 0;
+    
     private static final int ELT = 1;
     private static final int TT = 2;
     private static final int LLT = 3;
@@ -126,8 +126,8 @@ public class AirPlaneLanding extends AbstractProblem {
         for (int i = 0; i < n; i++) {
             planes[i] = VariableFactory.bounded("p_" + i, data[i][ELT], data[i][LLT], solver);
 
-//            earliness[i] = VariableFactory.bounded("a_" + i, 0, data[i][TT] - data[i][ELT], solver);
-//            tardiness[i] = VariableFactory.bounded("t_" + i, 0, data[i][LLT] - data[i][TT], solver);
+
+
 
             obj_ub += Math.max(
                     (data[i][TT] - data[i][ELT]) * data[i][PCBT],
@@ -138,7 +138,7 @@ public class AirPlaneLanding extends AbstractProblem {
             LLTs[i] = data[i][LLT];
         }
         List<BoolVar> booleans = new ArrayList<BoolVar>();
-        //disjunctive
+        
         for (int i = 0; i < n - 1; i++) {
             for (int j = i + 1; j < n; j++) {
                 BoolVar boolVar = VariableFactory.bool("b_" + i + "_" + j, solver);
@@ -154,7 +154,7 @@ public class AirPlaneLanding extends AbstractProblem {
 
         objective = VariableFactory.bounded("obj", 0, obj_ub, solver);
 
-        // builder cost array
+        
         costLAT = new int[2 * n];
         maxCost = new TObjectIntHashMap<IntVar>();
         for (int i = 0; i < n; i++) {
@@ -163,7 +163,7 @@ public class AirPlaneLanding extends AbstractProblem {
             maxCost.put(planes[i], Math.max(data[i][PCBT], data[i][PCAT]));
         }
 
-//        solver.post(Sum.eq(ArrayUtils.append(earliness, tardiness), costLAT, objective, 1, solver));
+
         IntVar obj_e = VariableFactory.bounded("obj_e", 0, obj_ub, solver);
         solver.post(IntConstraintFactory.scalar(earliness, Arrays.copyOfRange(costLAT, 0, n), obj_e));
 
@@ -187,7 +187,7 @@ public class AirPlaneLanding extends AbstractProblem {
             }
         });
         solver.set(
-                //IntStrategyFactory.random_bound(bVars, seed),
+                
                 IntStrategyFactory.lexico_LB(planes)
         );
     }
@@ -195,10 +195,10 @@ public class AirPlaneLanding extends AbstractProblem {
     @Override
     public void solve() {
         IntVar[] ivars = solver.retrieveIntVars();
-        //LNSFactory.pglns(solver, ivars, 30, 10, 200, 0, new FailCounter(100));
+        
         solver.plugMonitor(new GUI(solver));        
-        SMF.limitTime(solver, "55s"); // because PGLNS is not complete (due to Fast Restarts), we add a time limit
-        //SMF.log(solver, true, true);
+        SMF.limitTime(solver, "55s"); 
+        
         solver.findOptimalSolution(ResolutionPolicy.MINIMIZE, objective);
     }
 
@@ -228,14 +228,14 @@ public class AirPlaneLanding extends AbstractProblem {
         data = new int[nb][6 + nb];
         sc.nextLine();
         for (int i = 0; i < nb; i++) {
-            data[i][0] = sc.nextInt(); // appearance time
-            data[i][1] = sc.nextInt(); // earliest landing time
-            data[i][2] = sc.nextInt(); // target landing time
-            data[i][3] = sc.nextInt(); // latest landing time
+            data[i][0] = sc.nextInt(); 
+            data[i][1] = sc.nextInt(); 
+            data[i][2] = sc.nextInt(); 
+            data[i][3] = sc.nextInt(); 
             Double tt = Double.parseDouble(sc.next(decimalPattern));
-            data[i][4] = (int) Math.ceil(tt); // penalty cost per unit of time for landing before target
+            data[i][4] = (int) Math.ceil(tt); 
             tt = Double.parseDouble(sc.next(decimalPattern));
-            data[i][5] = (int) Math.ceil(tt); // penalty cost per unit of time for landing after target
+            data[i][5] = (int) Math.ceil(tt); 
             for (int j = 0; j < nb; j++) {
                 data[i][6 + j] = sc.nextInt();
             }
@@ -244,7 +244,7 @@ public class AirPlaneLanding extends AbstractProblem {
         return data;
     }
 
-    /////////////////////////////////////////
+    
 
     static enum Data {
         airland1(" 10 10 \n" +

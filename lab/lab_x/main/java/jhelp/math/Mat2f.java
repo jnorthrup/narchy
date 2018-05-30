@@ -108,14 +108,14 @@ public class Mat2f {
     if (det == 0.0f)
       return false;
 
-    // Create transpose of cofactor matrix in place
+    
     float t = get(0, 0);
     set(0, 0, get(1, 1));
     set(1, 1, t);
     set(0, 1, -get(0, 1));
     set(1, 0, -get(1, 0));
   
-    // Now divide by determinant
+    
     for (int i = 0; i < 4; i++) {
       data[i] /= det;
     }

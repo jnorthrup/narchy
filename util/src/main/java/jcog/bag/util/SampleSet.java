@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ * http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package jcog.bag.util;
 import java.util.*;
 
 /**
- * https://raw.githubusercontent.com/addthis/stream-lib/master/src/main/java/com/clearspring/analytics/stream/SampleSet.java
+ * https:
  */
 public class SampleSet<T> {
 
@@ -139,13 +139,13 @@ public class SampleSet<T> {
     }
 
     protected void promote(Node<T> node) {
-        // Bring node closer to the head as necessary
+        
         while (node.prev != null && node.count > node.prev.count) {
-            // BEFORE head... [A]node.prev.prev --> [B]node.prev --> [C]node --> [D]node.next ...tail
-            // AFTER  head... [A]node.prev.prev --> [C]node --> [B]node.prev --> [D]node.next ...tail
+            
+            
             Node<T> b = node.prev, c = node, d = node.next, a = (b == null) ? null : b.prev;
 
-            // Re-link each of 3 neighboring pairs
+            
             if (a != null) {
                 a.next = c;
             }
@@ -159,7 +159,7 @@ public class SampleSet<T> {
                 d.prev = b;
             }
 
-            // B and C may have switched head/tail roles
+            
             if (head == b) {
                 head = c;
             }
@@ -170,14 +170,14 @@ public class SampleSet<T> {
     }
 
     protected void demote(Node<T> node) {
-        // Bring node closer to the tail as necessary
+        
         while (node.next != null && node.count < node.next.count) {
-            // BEFORE head... [A]node.prev --> [B]node --> [C]node.next --> [D]node.next.next ...tail
-            // AFTER  head... [A]node.prev --> [C]node.next --> [B]node --> [D]node.next.next ...tail
+            
+            
             Node<T> a = node.prev, b = node, c = node.next,
                     d = (c == null) ? null : c.next;
 
-            // Re-link each of 3 neighboring pairs
+            
             if (a != null) {
                 a.next = c;
             }
@@ -191,7 +191,7 @@ public class SampleSet<T> {
             }
             b.next = d;
 
-            // B and C may have switched head/tail roles
+            
             if (head == b) {
                 head = c;
             }
@@ -216,7 +216,7 @@ public class SampleSet<T> {
      * you may not use this file except in compliance with the License.
      * You may obtain a copy of the License at
      *
-     * http://www.apache.org/licenses/LICENSE-2.0
+     * http:
      *
      * Unless required by applicable law or agreed to in writing, software
      * distributed under the License is distributed on an "AS IS" BASIS,

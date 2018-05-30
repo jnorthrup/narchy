@@ -20,7 +20,7 @@ abstract public class Loop implements Runnable {
 
     protected final Logger logger;
 
-    //make Loop extend FixedRateFuture...
+    
     @Deprecated private volatile FixedRateTimedFuture task = null;
 
     /** busy lock */
@@ -39,11 +39,11 @@ abstract public class Loop implements Runnable {
     public final AtomicInteger periodMS = new AtomicInteger(-1);
 
 
-//    @Override
-//    public String toString() {
-//        return super.toString() + " ideal=" + periodMS + "ms";
-//                //Texts.n4(dutyTime.getMean()) + "+-" + Texts.n4(dutyTime.getStandardDeviation()) + "ms avg";
-//    }
+
+
+
+
+
 
     /**
      * create but do not start
@@ -89,38 +89,38 @@ abstract public class Loop implements Runnable {
                 logger.debug("start period={}ms", nextPeriodMS);
 
                 synchronized (periodMS) {
-//                    Thread myNewThread = newThread();
-//                    myNewThread.start();
+
+
                     assert(this.task == null);
                     onStart();
                     this.task = Exe.timer()
                         .scheduleAtFixedRate(this, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
-                        //.scheduleWithFixedDelay(this::loop, 0, nextPeriodMS, TimeUnit.MILLISECONDS);
+                        
                 }
             } else if (prevPeriodMS >= 0 && nextPeriodMS <= 0) {
 
                 logger.info("stop");
 
                 synchronized (periodMS) {
-                    //Thread prevThread = this.thread;
+                    
                     FixedRateTimedFuture prevTask = this.task;
                     if (prevTask != null) {
 
                         this.task = null;
-                        //try {
+                        
                             prevTask.cancel(false);
-                            //prevThread.interrupt();
-                            //prevThread.stop();
-//                        } catch (Throwable ii) {
-//                            ii.printStackTrace();
-//                        }
+                            
+                            
+
+
+
 
                     }
 
                     onStop();
                 }
             } else if (prevPeriodMS >= 0) {
-                //change speed
+                
 
                 logger.debug("period={}ms", nextPeriodMS);
 
@@ -135,14 +135,14 @@ abstract public class Loop implements Runnable {
     }
 
 
-//    private synchronized Thread newThread() {
-//        if (this.thread!=null)
-//            throw new RuntimeException("thread already started: " + thread);
-//
-//        Thread t = new Thread(this::run);
-//        this.thread = t;
-//        return t;
-//    }
+
+
+
+
+
+
+
+
 
     public final void stop() {
         setPeriodMS(-1);
@@ -171,17 +171,17 @@ abstract public class Loop implements Runnable {
 
 
         if (!executing.compareAndSet(false, true))
-            return; //already in-progress
+            return; 
 
         try {
             if (periodMS.intValue()<0) {
-                return; //stopped
+                return; 
             }
 
             beforeNext();
             try {
                 if (!next()) {
-                    stop(); //will exit after statistics at the end of this loop
+                    stop(); 
                 }
             } catch (Throwable e) {
                 thrown(e);
@@ -203,32 +203,32 @@ abstract public class Loop implements Runnable {
 
     abstract public boolean next();
 
-//    public void join() {
-//        try {
-//            Thread t = thread;
-//            if (t != null) {
-//                t.join();
-//            } else {
-//                throw new RuntimeException("not started");
-//            }
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
 
-//    /**
-//     * lag in proportion to the current FPS, >= 0
-//     */
-//    public float lag() {
-//        return lag;
-//    }
-//
-//    public float lagSumThenClear() {
-//        float l = lagSum;
-//        this.lagSum = 0;
-//        return l;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public float getFPS() {

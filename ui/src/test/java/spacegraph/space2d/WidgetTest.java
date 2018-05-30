@@ -27,11 +27,11 @@ public class WidgetTest {
                 , 1200, 800);
 
 
-        //SpaceGraph dd = SpaceGraph.window(new Cuboid(widgetDemo(), 16, 8f).color(0.5f, 0.5f, 0.5f, 0.25f), 1000, 1000);
+        
 
-//        new SpaceGraph2D(
-//                new Cuboid(widgetDemo(), 16, 8f, 0.2f).color(0.5f, 0.5f, 0.5f, 0.25f).move(0,0,0)
-//        ).show(800, 600);
+
+
+
 
     }
 
@@ -59,9 +59,9 @@ public class WidgetTest {
                                 new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
                                 new FloatSlider("knob slider", 0.75f, 0, 1).type(SliderModel.KnobHoriz)
                         ),
-                        new XYSlider(),//.state(Widget.META),
+                        new XYSlider(),
                         new DummyConsole().surface(),
-                        new MetaFrame(new Sketch2DBitmap(256, 256)) //.state(Widget.META)
+                        new MetaFrame(new Sketch2DBitmap(256, 256)) 
                 );
     }
 
@@ -82,7 +82,7 @@ public class WidgetTest {
 
                 addLine((Math.random()) + "");
                 if (++i % 7 == 0) {
-                    text(""); //clear
+                    text(""); 
                 }
 
                 Util.sleep(400);

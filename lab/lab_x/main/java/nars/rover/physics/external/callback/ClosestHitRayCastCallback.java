@@ -44,16 +44,16 @@ public class ClosestHitRayCastCallback implements RayCastCallback {
 	
 	public float reportFixture(Fixture fixture, Vec2 point, Vec2 normal,
 								  float fraction) {
-		// check if this hit is any closer than the closest one
+		
 		float dist = fixture.getBody().getPosition().sub(origin).lengthSquared();
 		if(dist <= closestDist*closestDist){
 			closestDist = dist;
-			closest = (DynamicEntity) fixture.getUserData();// PhysicsHelper.getDynamicEntity(fixture);
+			closest = (DynamicEntity) fixture.getUserData();
 			pointOnClosest.set(point);
 			normalOnClosest.set(normal);
 		}
 		
-		// returning 1 here continues on to the next hit in the ray cast
+		
 		return 1;
 	}
 	

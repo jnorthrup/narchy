@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ class TowersOfHanoiFitnessFunction implements FitnessFunction {
         Move previousMove = null;
         int previousFitness = Integer.MAX_VALUE;
         while (true) {
-            // update the puzzle with the next move returned from the potential solution
+            
             Assignments assignments = new Assignments(towersOfHanoi, previousMove);
             previousMove = n.eval(assignments);
             towersOfHanoi = towersOfHanoi.move(previousMove);
@@ -56,16 +56,16 @@ class TowersOfHanoiFitnessFunction implements FitnessFunction {
             }
 
             if (towersOfHanoi == null) {
-                // the last move was invalid - stop evaluating
+                
                 return previousFitness;
             }
             if (!previousStates.add(towersOfHanoi)) {
-                // the last move has returned the puzzle to a state it has already been in - exit now to avoid getting stuck in a loop
+                
                 return previousFitness;
             }
             previousFitness = Math.min(previousFitness, towersOfHanoi.getFitness());
             if (previousFitness == 0) {
-                // the puzzle has been solved - no need to keep evaluating
+                
                 return previousFitness;
             }
         }

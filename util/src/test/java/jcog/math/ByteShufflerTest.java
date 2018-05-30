@@ -28,7 +28,7 @@ public class ByteShufflerTest {
             assertEquals(len, order.length );
             combos.add( Arrays.toString(order) );
         }
-        //System.out.println(combos);
+        
         assertEquals(permutations, combos.size());
     }
 

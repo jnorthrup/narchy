@@ -45,7 +45,7 @@ public class Switching extends Container {
      * selects the active state
      */
     public Switching state(int next) {
-        //Loop.invokeLater(() -> {
+        
             if (switched == next)
                 return this;
 
@@ -61,7 +61,7 @@ public class Switching extends Container {
                 layout();
             }
 
-        //});
+        
         return this;
     }
 

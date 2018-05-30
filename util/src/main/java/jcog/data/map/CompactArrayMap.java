@@ -51,7 +51,7 @@ public class CompactArrayMap<K, V>  {
                 int s = a.length;
                 for (int i = 0; i < s; ) {
                     if (keyEquals(a[i], key)) {
-                        a[i + 1] = value; //directly modify
+                        a[i + 1] = value; 
                         return;
                     }
                     i += 2;
@@ -84,11 +84,11 @@ public class CompactArrayMap<K, V>  {
 
     public V removeKey(Object key) {
         throw new TODO();
-//        int i = indexOf(key);
-//        if (i != -1) {
-//
-//        }
-//        return null;
+
+
+
+
+
     }
 
     /** override for alternate equality test */
@@ -98,25 +98,25 @@ public class CompactArrayMap<K, V>  {
 
 
     public void clear() {
-        //synchronized(this) {
+        
             items = null;
-        //}
+        
     }
 
     public void clearExcept(K key) {
-        //synchronized(this) {
+        
             V exist = get(key);
             clear();
             if (exist!=null)
                 put(key, exist);
-        //}
+        
     }
 
     public void clearPut(K key, V value) {
-        //synchronized(this) {
+        
             clear();
             if (value!=null)
                 put(key, value);
-        //}
+        
     }
 }

@@ -23,15 +23,15 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
     private final ArrayRealVector maxInput = new ArrayRealVector(numberOfInputs());
     private final Point[] points;
 
-//    @Override
-//    public double getParameter(int i) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public void setParameter(int i, double v) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
+
+
+
+
+
+
+
+
+
 
     private class Point {
 
@@ -137,7 +137,7 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
         nearest.xs.setSubVector(0, xs3);
         nearest.y = y;
 
-        //move the points away from each other to get a homogenous distribution
+        
         for (Point a : points) {
             for (Point b : points) {
                 if (a != b) {

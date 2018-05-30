@@ -34,7 +34,7 @@ public class NLPGen {
 
         train("A same B", "(A <-> B).");
         train("A imply B", "(A ==> B).");
-        //train("A not imply B", "(--,(A ==> B)).");
+        
 
         train("A not a B", "(--,(A --> B)).");
         train("A not same B", "(--,(A <-> B)).");
@@ -86,7 +86,7 @@ public class NLPGen {
                                     String var = x.toString();
                                     if (!var.startsWith("%"))
                                         return;
-                                    var = String.valueOf(((char) (var.charAt(1) - '1' + 'A'))); //HACK conversion between normalized pattern vars and the vars used in the input pattern
+                                    var = String.valueOf(((char) (var.charAt(1) - '1' + 'A'))); 
                                     r[0] = r[0].replace(var, y.toString());
                                 });
 
@@ -108,7 +108,7 @@ public class NLPGen {
 
     private boolean timeMatch(@NotNull Task t, Tense tense) {
         return t.isEternal() && tense == Tense.Eternal;
-        //TODO non-eternal case
+        
     }
 
     /*public String toString(Term x, boolean tru) {
@@ -121,7 +121,7 @@ public class NLPGen {
             if (y != null)
                 return y;
         }
-        //DEFAULT
+        
         return x.toString();
     }
 

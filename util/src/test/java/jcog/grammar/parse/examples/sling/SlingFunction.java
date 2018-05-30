@@ -127,7 +127,7 @@ public abstract class SlingFunction implements Cloneable {
 			f.source = new SlingFunction[source.length];
 			return f;
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

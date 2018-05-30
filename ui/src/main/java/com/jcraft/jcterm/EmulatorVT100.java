@@ -62,9 +62,9 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                 b = getChar();
 
-                //System.out.println("@0: "+ new Character((char)b)+"["+Integer.toHexString(b&0xff)+"]");
+                
 
-                //System.out.println("@0: ry="+ry);
+                
 
         /*
                 outputs from infocmp on RedHat8.0
@@ -172,14 +172,14 @@ public final class EmulatorVT100 extends TerminalEmulator {
                 if (b == 0x1b) {
                     b = getChar();
 
-                    //System.out.println("@1: "+ new Character((char)b)+"["+Integer.toHexString(b&0xff)+"]");
+                    
 
-                    if (b == 'M') { // sr \EM sr scroll text down (P)
+                    if (b == 'M') { 
                         scroll_reverse();
                         continue;
                     }
 
-                    if (b == 'D') { // sf
+                    if (b == 'D') { 
                         scroll_forward();
                         continue;
                     }
@@ -197,7 +197,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                                 b = getChar();
                                 if (b == ')') {
                                     b = getChar();
-                                    if (b == '0') { // enacs
+                                    if (b == '0') { 
                                         ena_acs();
                                         continue;
                                     } else {
@@ -215,31 +215,31 @@ public final class EmulatorVT100 extends TerminalEmulator {
                     }
 
                     if (b == '>') {
-                        b = getChar(); // 0x1b
-                        b = getChar(); // '['
-                        b = getChar(); // '?'
-                        b = getChar(); // '3'
-                        b = getChar(); // 'l'
-                        b = getChar(); // 0x1b
-                        b = getChar(); // '['
-                        b = getChar(); // '?'
-                        b = getChar(); // '4'
-                        b = getChar(); // 'l'
-                        b = getChar(); // 0x1b
-                        b = getChar(); // '['
-                        b = getChar(); // '?'
-                        b = getChar(); // '5'
-                        b = getChar(); // 'l'
-                        b = getChar(); // 0x1b
-                        b = getChar(); // '['
-                        b = getChar(); // '?'
-                        b = getChar(); // '7'
-                        b = getChar(); // 'h'
-                        b = getChar(); // 0x1b
-                        b = getChar(); // '['
-                        b = getChar(); // '?'
-                        b = getChar(); // '8'
-                        b = getChar(); // 'h'
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
+                        b = getChar(); 
 
                         reset_2string();
                         continue;
@@ -252,7 +252,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    //System.out.print("@2: "+ new Character((char)b)+"["+Integer.toHexString(b&0xff)+"]");
+                    
 
                     intargi = 0;
                     intarg[intargi] = 0;
@@ -260,7 +260,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                     while (true) {
                         b = getChar();
-                        //System.out.print("#"+new Character((char)b)+"["+Integer.toHexString(b&0xff)+"]");
+                        
                         if (b == ';') {
                             if (digit > 0) {
                                 intargi++;
@@ -282,15 +282,15 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                     b = getChar();
 
-                    //System.out.print("@4: "+ new Character((char)b)+"["+Integer.toHexString(b&0xff)+"]");
+                    
 
                     if (b == 'm') {
             /*
             b=getChar();
             if(b=='$'){
-              b=getChar();  // <
-              b=getChar();  // 2
-              b=getChar();  // >
+              b=getChar();  
+              b=getChar();  
+              b=getChar();  
             }
             else{
               pushChar(b);
@@ -299,10 +299,10 @@ public final class EmulatorVT100 extends TerminalEmulator {
 
                         if (digit == 0 && intargi == 0) {
                             b = getChar();
-                            if (b == 0x0f) { // sgr0
+                            if (b == 0x0f) { 
                                 exit_attribute_mode();
                                 continue;
-                            } else { // rmso, rmul
+                            } else { 
                                 exit_underline_mode();
                                 exit_standout_mode();
                                 pushChar(b);
@@ -316,21 +316,21 @@ public final class EmulatorVT100 extends TerminalEmulator {
                             Object tmp = null;
 
                             switch (intarg[i]) {
-                                case 0: // Reset all attributes
+                                case 0: 
                                     exit_standout_mode();
                                     continue;
-                                case 1: // Bright  // bold
+                                case 1: 
                                     enter_bold_mode();
                                     continue;
-                                case 2: // Dim
+                                case 2: 
                                     break;
-                                case 4: // Underline
+                                case 4: 
                                     enter_underline_mode();
                                     continue;
-                                case 5: // Blink
-                                case 8: // Hidden
+                                case 5: 
+                                case 8: 
                                     break;
-                                case 7: // reverse
+                                case 7: 
                                     enter_reverse_mode();
                                     continue;
                                 case 30:
@@ -365,26 +365,26 @@ public final class EmulatorVT100 extends TerminalEmulator {
                             if (bg != null)
                                 term.setBackGround(bg);
                         }
-                        //System.out.println("fg: "+fg+" bg: "+bg);
+                        
                         continue;
                     }
 
-                    if (b == 'r') { // csr
+                    if (b == 'r') { 
                         change_scroll_region(intarg[0], intarg[1]);
-                        //System.out.println("r: "+region_y1+", "+region_y2+", intargi="+intargi);
+                        
                         continue;
                     }
 
-                    if (b == 'H') { // cup
+                    if (b == 'H') { 
             /*
             b=getChar();
-            if(b!='$'){      // home
+            if(b!='$'){      
               pushChar(b);
             }
             else{
-              b=getChar();  // <
-              b=getChar();  // 5
-              b=getChar();  // >
+              b=getChar();  
+              b=getChar();  
+              b=getChar();  
             }
             */
 
@@ -392,22 +392,22 @@ public final class EmulatorVT100 extends TerminalEmulator {
                             intarg[0] = intarg[1] = 1;
                         }
 
-                        //System.out.println("H: "+region_y1+", "+region_y2+", intargi="+intargi);
+                        
                         cursor_address(intarg[0], intarg[1]);
                         continue;
                     }
 
-                    if (b == 'B') { // cud
+                    if (b == 'B') { 
                         parm_down_cursor(intarg[0]);
                         continue;
                     }
 
-                    if (b == 'D') { // cub
+                    if (b == 'D') { 
                         parm_left_cursor(intarg[0]);
                         continue;
                     }
 
-                    if (b == 'C') { // cuf
+                    if (b == 'C') { 
                         if (digit == 0 && intargi == 0) {
                             intarg[0] = 1;
                         }
@@ -415,35 +415,35 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         continue;
                     }
 
-                    if (b == 'K') { // el
+                    if (b == 'K') { 
           /*
-          	  b=getChar(); //
+          	  b=getChar(); 
           	  if(b=='$'){
-          	    b=getChar(); // <
-          	    b=getChar(); // 3
-          	    b=getChar(); // >
+          	    b=getChar(); 
+          	    b=getChar(); 
+          	    b=getChar(); 
           	  }
           	  else{
           	    pushChar(b);
           	  }
           */
 
-                        if (digit == 0 && intargi == 0) { // el
+                        if (digit == 0 && intargi == 0) { 
                             clr_eol();
-                        } else { // el1
+                        } else { 
                             clr_bol();
                         }
                         continue;
                     }
 
                     if (b == 'J') {
-                        //for(int i=0; i<intargi; i++){ System.out.print(intarg[i]+" ");}
-                        //System.out.println(intarg[0]+"<- intargi="+intargi);
+                        
+                        
                         clr_eos();
                         continue;
                     }
 
-                    if (b == 'A') { // cuu
+                    if (b == 'A') { 
                         if (digit == 0 && intargi == 0) {
                             intarg[0] = 1;
                         }
@@ -459,9 +459,9 @@ public final class EmulatorVT100 extends TerminalEmulator {
                                 b = getChar();
                                 if (b == 0x1b) {
                                     b = getChar();
-                                    if (b == '>' || // rmkx   , leave 'keybroad_transmit' mode
-                                            b == '=') { // smkx   , enter 'keyborad_transmit' mode
-                                        // TODO
+                                    if (b == '>' || 
+                                            b == '=') { 
+                                        
                                         continue;
                                     }
                                 }
@@ -469,20 +469,20 @@ public final class EmulatorVT100 extends TerminalEmulator {
                                 b = getChar();
                                 if (b == 0x1b) {
                                     b = getChar();
-                                    if (b == '=') { // smkx enter 'keyborad_transmit' mode
+                                    if (b == '=') { 
                                         continue;
                                     }
                                 }
                             }
                         } else if (b == '7') {
                             b = getChar();
-                            if (b == 'h') { // smam
-                                // TODO
-                                //System.out.println("turn on automatic magins");
+                            if (b == 'h') { 
+                                
+                                
                                 continue;
-                            } else if (b == 'l') { // rmam
-                                // TODO
-                                //System.out.println("turn off automatic magins");
+                            } else if (b == 'l') { 
+                                
+                                
                                 continue;
                             }
                             pushChar(b);
@@ -491,7 +491,7 @@ public final class EmulatorVT100 extends TerminalEmulator {
                         }
                     }
 
-                    if (b == 'h') { // kh \Eh home key
+                    if (b == 'h') { 
                         continue;
                     }
 
@@ -501,22 +501,22 @@ public final class EmulatorVT100 extends TerminalEmulator {
                     continue;
                 }
 
-                if (b == 0x07) { // bel ^G
+                if (b == 0x07) { 
                     bell();
                     continue;
                 }
 
-                if (b == 0x09) { // ht(^I)
+                if (b == 0x09) { 
                     tab();
                     continue;
                 }
 
-                if (b == 0x0f) { // rmacs ^O  	// end alternate character set (P)
+                if (b == 0x0f) { 
                     exit_alt_charset_mode();
                     continue;
                 }
 
-                if (b == 0x0e) { // smacs ^N  	// start alternate character set (P)
+                if (b == 0x0e) { 
                     enter_alt_charset_mode();
                     continue;
                 }
@@ -531,14 +531,14 @@ public final class EmulatorVT100 extends TerminalEmulator {
                     continue;
                 }
 
-                if (b == 0x0a) { // '\n'
-                    //System.out.println("x="+x+",y="+y);
+                if (b == 0x0a) { 
+                    
                     cursor_down();
-                    //check_region();
+                    
                     continue;
                 }
 
-                if (b != 0x0a) { // !'\n'
+                if (b != 0x0a) { 
                     pushChar(b);
                     draw_text();
                 }

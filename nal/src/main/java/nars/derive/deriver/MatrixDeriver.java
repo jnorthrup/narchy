@@ -81,7 +81,7 @@ public class MatrixDeriver extends Deriver {
 
             premiseBurst.clear();
 
-            //SELECT
+            
             selectPremises(n, burstSize, (t, termlink) -> {
 
                 Premise premise = new Premise(t, termlink);
@@ -99,7 +99,7 @@ public class MatrixDeriver extends Deriver {
             if (s > 2)
                 premiseBurst.list.sort(Task.sortByTaskSloppy);
 
-            //--- FIRE
+            
             premiseBurst.forEach(premise -> {
 
                 if (premise.match(d, matchTTL)) {
@@ -130,11 +130,11 @@ public class MatrixDeriver extends Deriver {
 
         int tasklinks = (int) Math.ceil(premisesMax / ((float) termLinksPerTaskLink));
 
-        //return false to stop the current concept but not the entire chain
+        
         BiPredicate<Task, PriReference<Term>> continueHypothesizing = (tasklink, termlink) ->
                 (perConceptRemain[0]-- > 0) && each.test(tasklink, termlink) && (--premisesRemain[0] > 0);
 
-        //for safety in case nothing is generated, this will limit the max # of concepts tried
+        
         int[] conceptsRemain = new int[]{2 * (int) Math.ceil(premisesMax / ((float) (termLinksPerTaskLink * termLinksPerTaskLink)))};
 
         this.source.accept(a -> {
@@ -164,8 +164,8 @@ public class MatrixDeriver extends Deriver {
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
         if (!commit(nar, tasklinks, termlinks)) {
-            //if no tasklinks:
-            //conceptActivation.priSet(0); //drain and fwd to subterms
+            
+            
             concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
             return;
         }
@@ -180,7 +180,7 @@ public class MatrixDeriver extends Deriver {
 
         int[] conceptTTL = { _tasklinks *  (1 + _termlinksPerTasklink) };
 
-        //((TaskLinkCurveBag)tasklinks).compress(nar);
+        
 
         int nTermLinks = termlinks.size();
         int nTaskLinks = tasklinks.size();
@@ -191,7 +191,7 @@ public class MatrixDeriver extends Deriver {
             if (task != null) {
 
                 taskPriSum[0] += task.priElseZero();
-                //active even if there are no termlinks yet, it may create them
+                
                 activate(tasklink, templates, rng);
 
                 if (!termlinks.isEmpty()) {
@@ -208,7 +208,7 @@ public class MatrixDeriver extends Deriver {
                 tasklink.delete();
             }
 
-            return (--conceptTTL[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
+            return (--conceptTTL[0] > 0);
         });
 
         if (taskPriSum[0] > 0)

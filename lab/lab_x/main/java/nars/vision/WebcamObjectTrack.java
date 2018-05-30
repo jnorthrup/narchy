@@ -38,10 +38,10 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
 
     TrackerObjectQuad<T> tracker;
 
-    // location of the target being tracked
+    
     Quadrilateral_F64 target = new Quadrilateral_F64();
 
-    // location selected by the mouse
+    
     Point2D_I32 point0 = new Point2D_I32();
     Point2D_I32 point1 = new Point2D_I32();
 
@@ -53,7 +53,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
     JFrame window;
 
 
-    // Polynomial fitting tolerances
+    
     static double toleranceDist = 8;
     static double toleranceAngle= Math.PI/10;
 
@@ -79,7 +79,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
-    // used to select colors for each line
+    
     static Random rand = new XORShiftRandom();
 
 
@@ -94,7 +94,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
 
         final int blurRadius = 2;
 
-        // Finds edges inside the image
+        
         CannyEdge<ImageFloat32,ImageFloat32> canny =
                 FactoryEdgeDetectors.canny(blurRadius, false, true, ImageFloat32.class, ImageFloat32.class);
 
@@ -108,7 +108,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
 
         final int iterations = 80;
         for( Contour c : contours ) {
-            // Only the external contours are relevant.
+            
             List<PointIndex_I32> vertexes = ShapeFittingOps.fitPolygon(c.external, true,
                     toleranceDist, toleranceAngle, iterations);
 
@@ -116,7 +116,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
             VisualizeShapes.drawPolygon(vertexes, true, overlay);
         }
 
-        //ShowImages.showWindow(displayImage, "Canny Contour");
+        
     }
 
     /**
@@ -125,7 +125,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
     public void process() {
         Webcam webcam = UtilWebcamCapture.openDefault(desiredWidth, desiredHeight);
 
-        // adjust the window size and let the GUI know it has changed
+        
         Dimension actualSize = webcam.getViewSize();
         setPreferredSize(actualSize);
         setMinimumSize(actualSize);
@@ -133,7 +133,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
         window.setPreferredSize(actualSize);
         window.setVisible(true);
 
-        // create
+        
         T input = tracker.getImageType().createImage(actualSize.width,actualSize.height);
 
         workImage = new BufferedImage(input.getWidth(),input.getHeight(),BufferedImage.TYPE_INT_RGB);
@@ -144,7 +144,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
             BufferedImage buffered = webcam.getImage();
             ConvertBufferedImage.convertFrom(webcam.getImage(), input, true);
 
-            // mode is read/written to by the GUI also
+            
             int mode = this.mode;
 
             boolean success = false;
@@ -160,7 +160,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
 
 
             synchronized( workImage ) {
-                // copy the latest image into the work buffered
+                
                 Graphics2D g2 = workImage.createGraphics();
 
                 g2.drawImage(buffered,0,0,null);
@@ -168,7 +168,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
                 ConvertBufferedImage.convertFrom(buffered, inputFloat);
                 fitCannyBinary(inputFloat, g2);
 
-                // visualize the current results
+                
                 if (mode == 1) {
                     drawSelected(g2);
                 } else if (mode == 3) {
@@ -185,7 +185,7 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
     @Override
     public void paint (Graphics g) {
         if( workImage != null ) {
-            // draw the work image and be careful to make sure it isn't being manipulated at the same time
+            
             synchronized (workImage) {
                 ((Graphics2D) g).drawImage(workImage, 0, 0, null);
             }
@@ -256,11 +256,11 @@ public class WebcamObjectTrack<T extends ImageBase> extends JPanel
 
         TrackerObjectQuad tracker =
                 FactoryTrackerObjectQuad.circulant(null, ImageUInt8.class);
-				//FactoryTrackerObjectQuad.sparseFlow(null,ImageUInt8.class,null);
-//				FactoryTrackerObjectQuad.tld(null,ImageUInt8.class);
-//				FactoryTrackerObjectQuad.meanShiftComaniciu2003(new ConfigComaniciu2003(), colorType);
-//				FactoryTrackerObjectQuad.meanShiftComaniciu2003(new ConfigComaniciu2003(true),colorType);
-//				FactoryTrackerObjectQuad.meanShiftLikelihood(30,5,255, MeanShiftLikelihoodType.HISTOGRAM,colorType);
+				
+
+
+
+
 
 
         WebcamObjectTrack app = new WebcamObjectTrack(tracker,640,480);

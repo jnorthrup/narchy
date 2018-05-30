@@ -38,7 +38,7 @@ class GeneratedJavaSourceFile extends SimpleJavaFileObject {
  interface is implemented by String, StringBuffer and StringBuilder, thus we do not need to create an unnecessary 
  String. We can simply pass in our existing StringBuilder. I wish more classes used the CharSequence interface!
 
- According to the JavaDocs, the recommended URI for a Java source String object is "string:///NameOfClass.java", 
+ According to the JavaDocs, the recommended URI for a Java source String object is "string:
  but "NameOfClass.java" also works, so that is what we will use.
 */
   

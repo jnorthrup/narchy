@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 08.11.2003 by RST.
+
 
 package jake2.game;
 
@@ -41,7 +41,7 @@ public class entity_state_t implements Cloneable
 
 	/** edict index. TODO: this is critical. The index has to be proper managed. */
 	public int number;
-	// TODO: why was this introduced?
+	
 	public edict_t surrounding_ent;
 	public float[] origin = { 0, 0, 0 };
 	public float[] angles = { 0, 0, 0 };
@@ -57,13 +57,13 @@ public class entity_state_t implements Cloneable
 	public int effects; 
 	public int renderfx;
 	public int solid;
-	// for client side prediction, 8*(bits 0-4) is x/y radius
-	// 8*(bits 5-9) is z down distance, 8(bits10-15) is z up
-	// gi.linkentity sets this properly
-	public int sound; // for looping sounds, to guarantee shutoff
-	public int event; // impulse events -- muzzle flashes, footsteps, etc
-	// events only go out for a single frame, they
-	// are automatically cleared each frame
+	
+	
+	
+	public int sound; 
+	public int event; 
+	
+	
 
 	/** Writes the entity state to the file. */
 	public void write(QuakeFile f) throws IOException
@@ -149,7 +149,7 @@ public class entity_state_t implements Cloneable
 
 	public void clear()
 	{
-	    //TODO: this is critical. The index has to be proper managed.
+	    
 		number = 0;
 		surrounding_ent = null;
 		Math3D.VectorClear(origin);

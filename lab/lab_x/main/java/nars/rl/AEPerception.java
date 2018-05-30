@@ -70,7 +70,7 @@ public class AEPerception extends RawPerception {
         if (history > 1)
             ii = new double[frameDimension * history];
         else
-            ii = new double[frameDimension * 1]; //env.observe();
+            ii = new double[frameDimension * 1]; 
 
         this.agent = agent;
 
@@ -83,32 +83,32 @@ public class AEPerception extends RawPerception {
 
         if (history > 1) {
 
-            //subtract old input from current input
+            
             for (int i = 0; i < input.length; i++) {
                 ii[i] = input[i] - ii[i];
             }
 
-            //shift over
+            
             System.arraycopy(ii, 0, ii, frameDimension, ii.length - frameDimension);
 
-            //copy new input to first frame
+            
             System.arraycopy(input, 0, ii, 0, input.length);
         } else {
             ii = input;
         }
 
-        //System.out.println(Arrays.toString(ii));
+        
 
         double error = ae.train(ii, learningRate, 0, noise, sigmoid);
 
-        //float conf = (float) (1.0f / (1.0f + error)); //TODO normalize against input mag?
+        
 
         float conf = (float)(1.0f - error);
 
-        //agent.learn(ae.getOutput(), reward, conf);
+        
 
 
-        //perception input
+        
 
         if (vis != null) {
 
@@ -121,7 +121,7 @@ public class AEPerception extends RawPerception {
             vis.repaint();
         }
 
-        //System.out.println(error + " " + conf + " " + Arrays.toString(ae.getOutput()));
+        
 
         return super.perceive(nar, ae.getOutput(), t);
 

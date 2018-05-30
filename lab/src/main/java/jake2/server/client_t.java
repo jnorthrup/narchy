@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 13.01.2004 by RST.
+
 
 package jake2.server;
 
@@ -43,45 +43,45 @@ public class client_t {
 
 	String userinfo = "";
 
-	int lastframe; // for delta compression
-	usercmd_t lastcmd = new usercmd_t(); // for filling in big drops
+	int lastframe; 
+	usercmd_t lastcmd = new usercmd_t(); 
 
-	int commandMsec; // every seconds this is reset, if user
-	// commands exhaust it, assume time cheating
+	int commandMsec; 
+	
 
 	final int[] frame_latency = new int[LATENCY_COUNTS];
 	int ping;
 
-	final int[] message_size = new int[RATE_MESSAGES]; // used to rate drop packets
+	final int[] message_size = new int[RATE_MESSAGES]; 
 	int rate;
-	int surpressCount; // number of messages rate supressed
+	int surpressCount; 
 
-	// pointer
-	edict_t edict; // EDICT_NUM(clientnum+1)
+	
+	edict_t edict; 
 
-	//char				name[32];			// extracted from userinfo, high bits masked
-	String name = ""; // extracted from userinfo, high bits masked
+	
+	String name = ""; 
 
-	int messagelevel; // for filtering printed messages
+	int messagelevel; 
 
-	// The datagram is written to by sound calls, prints, temp ents, etc.
-	// It can be harmlessly overflowed.
+	
+	
 	final sizebuf_t datagram = new sizebuf_t();
 	final byte[] datagram_buf = new byte[Defines.MAX_MSGLEN];
 
-	final client_frame_t[] frames = new client_frame_t[Defines.UPDATE_BACKUP]; // updates can be delta'd from here
+	final client_frame_t[] frames = new client_frame_t[Defines.UPDATE_BACKUP]; 
 
-	byte download[]; // file being downloaded
-	int downloadsize; // total bytes (can't use EOF because of paks)
-	int downloadcount; // bytes sent
+	byte download[]; 
+	int downloadsize; 
+	int downloadcount; 
 
-	int lastmessage; // sv.framenum when packet was last received
+	int lastmessage; 
 	int lastconnect;
 
-	int challenge; // challenge of this user, randomly generated
+	int challenge; 
 
 	final netchan_t netchan = new netchan_t();
 
-	//this was introduced by rst, since java can't calculate the index out of the address.
+	
 	int serverindex;
 }

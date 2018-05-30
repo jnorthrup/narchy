@@ -62,7 +62,7 @@ public class Osm {
         factory.setValidating(false);
         factory.setIgnoringComments(true);
         factory.setIgnoringElementContentWhitespace(true);
-//        factory.setXIncludeAware(false);
+
 
 
         DocumentBuilder documentBuilder = factory.newDocumentBuilder();
@@ -166,7 +166,7 @@ public class Osm {
         }
 
 
-        // Relation 2nd pass
+        
         for (Element relationElement : relationElements) {
             long id = l(relationElement.getAttribute("id"));
 
@@ -184,7 +184,7 @@ public class Osm {
                 landuse = tags.get("landuse");
             }
 
-            NodeList relationChildren = relationElement.getElementsByTagName("member"); //getChildNodes();
+            NodeList relationChildren = relationElement.getElementsByTagName("member"); 
             List<OsmElement> osmMembers = null;
             int l = relationChildren.getLength();
             for (int j = 0; j < l; j++) {
@@ -194,7 +194,7 @@ public class Osm {
                     Element r = (Element) relationChild;
                     String type = r.getAttribute("type");
                     long ref = l(r.getAttribute("ref"));
-//                    String role = relationChildElement.getAttribute("role");
+
                     OsmElement member = null;
                     switch (type) {
                         case "node":
@@ -236,8 +236,8 @@ public class Osm {
                 osmRelation.addChildren(osmMembers);
         }
 
-        //System.out.println("3");
-        // Relation 3rd pass: merge multipolygon
+        
+        
         for (Element relationElement : relationElements) {
             long id = l(relationElement.getAttribute("id"));
 
@@ -274,7 +274,7 @@ public class Osm {
                         if (w1.isFollowedBy(w2)) {
                             w1.addOsmWay(w2);
                             ii.remove();
-                            //break repeat; // loop again
+                            
                         }
                     }
                 }

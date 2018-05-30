@@ -8,10 +8,10 @@ public class Taxonomy<E> implements Iterable<E>{
 	private final double[][] relations;
     private final ArrayList<E> concepts;
    
-//    public Taxonomy(int size){
-//    	relations = new double[size][size];
-//    	concepts = new ArrayList<E>();
-//    }
+
+
+
+
     
     public Taxonomy(ArrayList<E> concepts){
     	this.concepts = concepts;
@@ -56,15 +56,15 @@ public class Taxonomy<E> implements Iterable<E>{
     	}
     	
     	
-    	//inizializzazione
+    	
     	for(i = 0; i < numConcepts; i++)
     		for(j = 0; j < numConcepts; j++){
-    			// la distanza da un arco a se stesso è 0
+    			
     			if(i == j){
     				distance[i][j] = 0;
     				continue;
     			}
-    			// distance[i][j] è bigNum solo se relations[i][j] <= 0
+    			
     			distance[i][j] = (relations[i][j] > 0) ? relations[i][j]:bigNum; 
     		}
     	

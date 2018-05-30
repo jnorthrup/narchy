@@ -13,7 +13,7 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 
 /*
@@ -23,7 +23,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * https://github.com/huxi/sulky/blob/master/sulky-blobs/src/main/java/de/huxhorn/sulky/blobs/impl/BlobRepositoryImpl.java
+ * https:
  * <p>
  * This implementation of the BlobRepository interface is similar the internal structure used by a git repository.
  * <p>
@@ -150,7 +150,7 @@ public class Blobs {
                 deleteTempFile(tempFile);
                 return hashString;
             } else {
-                // this is very, very, very unlikely...
+                
                 if (logger.isWarnEnabled())
                     logger.warn("A different blob with the hash {} does already exist!", hashString);
                 deleteTempFile(tempFile);
@@ -369,7 +369,7 @@ public class Blobs {
         if (result.isFile()) {
             try {
                 if (result.getCanonicalPath().endsWith(hashRest)) {
-                    // this is necessary for case-sensitivity
+                    
                     if (logger.isDebugEnabled()) logger.debug("Found exact match: {}", result.getAbsolutePath());
                     return result;
                 }
@@ -447,7 +447,7 @@ public class Blobs {
             }
             return formatter.toString().equals(id);
         } catch (IOException e) {
-            // ignore...
+            
         } finally {
             closeQuietly(input);
         }
@@ -463,7 +463,7 @@ public class Blobs {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(into);
-            ByteStreams.copy(dis, fos); //IOUtils.copyLarge(dis, fos);
+            ByteStreams.copy(dis, fos); 
             byte[] hash = digest.digest();
             Formatter formatter = new Formatter();
             for (byte b : hash) {
@@ -483,7 +483,7 @@ public class Blobs {
     }
 
     static void closeQuietly(Closeable fos) {
-        try { fos.close(); }catch (Throwable t) {  } //IOUtils.closeQuietly(fos);
+        try { fos.close(); }catch (Throwable t) {  } 
     }
 
 
@@ -543,7 +543,7 @@ public class Blobs {
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -552,80 +552,79 @@ public class Blobs {
  * limitations under the License.
  */
 
-//
-///**
-// * This interface specifies a repository for BLOBs (binary large object).
-// *
-// * It simply stores and retrieves bytes using an identifier.
-// */
-//public interface BlobRepository
-//{
-//
-//	/**
-//	 * Puts the data that's available from the InputStream into the repository and returns the id used to reference it.
-//	 *
-//	 * @param input the InputStream used to read the data to be put into the repository.
-//	 * @return the id that is used to reference the data.
-//	 * @throws IOException in case of I/O problems.
-//	 */
-//	String put(InputStream input)
-//			throws IOException;
-//
-//	/**
-//	 * Puts the given data into the repository and returns the id used to reference it.
-//	 *
-//	 * @param bytes the data to be put into the repository.
-//	 * @return the id that is used to reference the data.
-//	 * @throws IOException in case of I/O problems.
-//	 */
-//	String put(byte[] bytes)
-//			throws IOException;
-//
-//	/**
-//	 * Retrieves an InputStream providing the data associated with the given id.
-//	 *
-//	 * @param id the id of the blob to be retrieved from the repository.
-//	 * @return an InputStream that can be used to retrieve the data of the blob.
-//	 * @throws IOException in case of I/O problems.
-//	 * @throws AmbiguousIdException if the given id references more than a single blob.
-//	 */
-//	InputStream get(String id)
-//			throws IOException, AmbiguousIdException;
-//
-//	/**
-//	 * Deletes the blob represented by the given id.
-//	 *
-//	 * @param id the id of the blob to be deleted.
-//	 * @return true if the blob was deleted, false otherwise.
-//	 * @throws AmbiguousIdException if the given id references more than a single blob.
-//	 */
-//	boolean delete(String id)
-//			throws AmbiguousIdException;
-//
-//	/**
-//	 * Returns true if a blob for the given id exists.
-//	 *
-//	 * @param id the id of the blob.
-//	 * @return true if the blob exists, false otherwise.
-//	 * @throws AmbiguousIdException if the given id references more than a single blob.
-//	 */
-//	boolean contains(String id)
-//			throws AmbiguousIdException;
-//
-//	/**
-//	 * Returns the size of the blob for the given id.
-//	 *
-//	 * @param id the id of the blob.
-//	 * @return the size of the blob in bytes or -1 if no blob with the given id exists.
-//	 * @throws AmbiguousIdException if the given id references more than a single blob.
-//	 */
-//	long sizeOf(String id)
-//			throws AmbiguousIdException;
-//
-//	/**
-//	 * Returns a Set containing all ids of this repository.
-//	 *
-//	 * @return a Set containing all ids of this repository.
-//	 */
-//	Set<String> idSet();
-//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

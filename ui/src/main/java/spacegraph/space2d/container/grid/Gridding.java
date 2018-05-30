@@ -67,20 +67,20 @@ public class Gridding extends MutableContainer {
         layout();
         return this;
     }
-    //    @Override
-//    public void transform(GL2 gl, v2 globalScale) {
-//        super.transform(gl, globalScale);
-//
-//        if (!children.isEmpty() && isGrid())  {
-//            float xx = scale.x * globalScale.x;
-//            float yy = scale.y * globalScale.y;
-//            //if ((lw != xx) || (lh != yy)) {
-//                layout();
-//                lw = xx;
-//                lh = yy;
-//            //}
-//        }
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void doLayout(int dtMS) {
@@ -91,16 +91,16 @@ public class Gridding extends MutableContainer {
         if (n == 0) return;
 
         float a = gridAspect;
-//        if ((n < 3) && !((a==0) || (a == Float.POSITIVE_INFINITY)))
-//            a = 0; //use linear layout for small n
+
+
 
 
         if (a!=0 && Float.isFinite(a)) {
 
-            //determine the ideal rows and columns of the grid to match the visible aspect ratio
-            //in a way that keeps each grid cell as close to 1:1 as possible
+            
+            
 
-            //TODO use the 'a' value to adjust the x/y balance, currently it is not
+            
 
             float h = h();
             float w = w();
@@ -114,7 +114,7 @@ public class Gridding extends MutableContainer {
             if (actualAspect/a > 1f) {
                 x = Math.round(lerp((actualAspect)/n, s, 1f));
             } else if (actualAspect/a < 1f) {
-                //TODO fix
+                
                 x = Math.round(lerp(1f-(1f/actualAspect)/n, n, (float)s));
             } else {
                 x = s;
@@ -126,9 +126,9 @@ public class Gridding extends MutableContainer {
             assert(y*x >= s);
 
             if (y==1) {
-                a = 0; //row
+                a = 0; 
             } else if (x == 1) {
-                a = Float.POSITIVE_INFINITY; //column
+                a = Float.POSITIVE_INFINITY; 
             } else {
                 layoutGrid(children, x, y, margin);
                 return;
@@ -136,10 +136,10 @@ public class Gridding extends MutableContainer {
         }
 
         if (a == 0) {
-            //horizontal
+            
             layoutGrid(children, n, 1, margin);
         } else /*if (!Float.isFinite(aa))*/ {
-            //vertical
+            
             layoutGrid(children, 1, n, margin);
         }
 
@@ -171,13 +171,13 @@ public class Gridding extends MutableContainer {
 
         for (int y = 0; y < ny; y++) {
 
-            float px = hm;//margin / 2f;
+            float px = hm;
 
             final float py = (((ny-1)-y) * dy) + hm;
             float y1 = py * H;
 
             for (int x = 0; x < nx; x++) {
-                //System.out.println("\t" + px + " " + py);
+                
 
                 Surface c = children[i++];
 

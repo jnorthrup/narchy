@@ -162,9 +162,9 @@ public class JHelpGradient
       final int xx = this.width - x;
       final int yy = this.height - y;
 
-      return ((((((this.alphaUpLeft * xx) + (this.alphaUpRight * x)) * yy) + (((this.alphaDownLeft * xx) + (this.alphaDownRight * x)) * y)) / this.size) << 24) | //
-            ((((((this.redUpLeft * xx) + (this.redUpRight * x)) * yy) + (((this.redDownLeft * xx) + (this.redDownRight * x)) * y)) / this.size) << 16) | //
-            ((((((this.greenUpLeft * xx) + (this.greenUpRight * x)) * yy) + (((this.greenDownLeft * xx) + (this.greenDownRight * x)) * y)) / this.size) << 8) | //
+      return ((((((this.alphaUpLeft * xx) + (this.alphaUpRight * x)) * yy) + (((this.alphaDownLeft * xx) + (this.alphaDownRight * x)) * y)) / this.size) << 24) | 
+            ((((((this.redUpLeft * xx) + (this.redUpRight * x)) * yy) + (((this.redDownLeft * xx) + (this.redDownRight * x)) * y)) / this.size) << 16) | 
+            ((((((this.greenUpLeft * xx) + (this.greenUpRight * x)) * yy) + (((this.greenDownLeft * xx) + (this.greenDownRight * x)) * y)) / this.size) << 8) | 
             (((((this.blueUpLeft * xx) + (this.blueUpRight * x)) * yy) + (((this.blueDownLeft * xx) + (this.blueDownRight * x)) * y)) / this.size);
    }
 }

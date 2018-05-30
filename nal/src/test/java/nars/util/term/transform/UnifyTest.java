@@ -28,22 +28,22 @@ public class UnifyTest {
         testUnify($.$("(--,(a))"), $.$("<?C-->(b)>"), false);
     }
 
-//        static {
-//
-//    }
 
-//
-//    @Before
-//    public void start() {
-//        t = new TestNAR(
-//                //new Terminal()
-//                new NARBuilder().get() //TODO return to using Terminal as a demo of its minimal functionality
-//        );
-//    }
-//
-//    public TestNAR test() {
-//        return t;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static /**/ Term pattern(/**/ String s) throws Narsese.NarseseException {
         Term ss = Narsese.the().term(s, false);
@@ -57,15 +57,15 @@ public class UnifyTest {
 
     void test(/**/ Op type,  String s1,  String s2, boolean shouldSub) {
         test(type, s1, s2, shouldSub, false, false);
-//        test(type, s1, s2, shouldSub, true, true);
+
         test(type, s1, s2, shouldSub, true, true);
     }
 
     Unify test(/**/ Op type,  String s1,  String s2, boolean shouldSub, boolean anon1, boolean anon2) {
 
-        //
+        
 
-        //NAR nar = NARS.shell();
+        
         Anon a = new Anon();
 
         try {
@@ -75,7 +75,7 @@ public class UnifyTest {
 
             Term t1;
             if (type == Op.VAR_PATTERN) {
-                t1 = Narsese.the().term(s1, false); //special handling for ellipsis
+                t1 = Narsese.the().term(s1, false); 
                 if (anon1) t1 = pattern(a.put(t1)).normalize();
                 else t1 = pattern(t1).normalize();
             } else {
@@ -89,21 +89,21 @@ public class UnifyTest {
 
 
 
-//            nar.question(s2);
-//            nar.run(cycles);
+
+
 
 
             Set<Term> t1u = ((Compound)t1).recurseTermsToSet(type);
-            //assertTrue(t1u.size() > 0);
-            //Set<Term> t2u = ((Compound)t2).recurseTermsToSet(type);
-            //assertTrue(t2u.size() == 0);
+            
+            
+            
 
-            int n1 = t1u.size(); //Sets.difference(t1u, t2u).size();
-//            int n2 = Sets.difference(t2u, t1u).size();
+            int n1 = t1u.size(); 
 
-            //a somewhat strict lower bound
-            //int power = 4 * (1 + t1.volume() * t2.volume());
-            //power*=power;
+
+            
+            
+            
 
             AtomicBoolean subbed = new AtomicBoolean(false);
 
@@ -132,13 +132,13 @@ public class UnifyTest {
                             System.out.println("incomplete:\n\t" + xy);
                         }*/
 
-//                        assertFalse("incomplete: " + toString(), this.isEmpty());
+
 
 
                     } else {
-                        //HACK there should be incomplete assignments even though this says it matched
-                        assertTrue((n1) > (xy.size()), "why matched?: " + xy); //|| (n2) <= (yx.size()));
-                        //assertFalse("match found but should not have", true);
+                        
+                        assertTrue((n1) > (xy.size()), "why matched?: " + xy); 
+                        
                     }
 
                 }
@@ -146,7 +146,7 @@ public class UnifyTest {
 
             sub.unify(t1, t2, true);
 
-            sub.revert(0); //for testing
+            sub.revert(0); 
 
             assertEquals(shouldSub, subbed.get());
 
@@ -219,14 +219,14 @@ public class UnifyTest {
         );
     }
 
-//    @Test
-//    public void unification4() {
-//        test(Op.VAR_PATTERN,
-//                "<(%1,%2,%3,$1) --> wu>",
-//                "<(%1,lol2,%1,$1) --> wu>",
-//                true
-//        );
-//    }
+
+
+
+
+
+
+
+
 
 
     @Test
@@ -252,10 +252,10 @@ public class UnifyTest {
                 "(<(SELF,x) --> on>,<(#1,x) --> at>)",
                 true);
 
-        //THESE NEED TO BE TESTED WITHIN THE SUBSTITUTION BECAUSE XY AND YX WILL HAVE BEEN CLEARED BY NOW
-        //additional test that verifies correct common variable substitution result
-//        assertEquals("{#1={t002}}", sub.xy.toString());
-//        assertEquals("{(SELF,x)=#1}", sub.yx.toString());
+        
+        
+
+
     }
 
     @Test
@@ -400,7 +400,7 @@ public class UnifyTest {
 
     @Test
     public void pattern_trySubs_Pattern_Var_2_setComplex0_5_s() {
-        //may require more termutation matches than default is set but it should work if it had all
+        
         test(Op.VAR_PATTERN,
                 "{<{%1,x} --> on>, c:{a,b}}",
                 "{<{z,x} --> on>, c:{a,b}}",
@@ -536,19 +536,19 @@ public class UnifyTest {
                 true);
     }
 
-    //not valid test anymore
-//    @Test public void diffVarTypes1()  {
-//        test(Op.VAR_DEP,
-//                "(a,$1)",
-//                "(#1,$2)",
-//                true);
-//    }
-//    @Test public void diffVarTypes1Reverse()  {
-//        test(Op.VAR_DEP,
-//                "(#1,$1)",
-//                "(a,$1)",
-//                true);
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
     @Test
     public void impossibleMatch1() {
         test(Op.VAR_DEP,
@@ -559,8 +559,8 @@ public class UnifyTest {
 
     @Test
     public void posNegQuestion() {
-        //((p1, (--,p1), task("?")), (p1, (<BeliefNegation --> Truth>, <Judgment --> Punctuation>)))
-        //  ((a:b, (--,a:b), task("?")), (a:b, (<BeliefNegation --> Truth>, <Judgment --> Punctuation>)))
+        
+        
         RuleTest.get(new TestNAR(NARS.shell()),
                 "a:b?", "(--,a:b).",
                 "a:b.",
@@ -607,13 +607,13 @@ public class UnifyTest {
                 false);
     }
 
-//   @Test
-//    public void patternLongSeq_YES() {
-//        test(Op.VAR_PATTERN,
-//                "(a,b,c,d,e,f,g,h,j)",
-//                "(a,b,c,d,e,f,g,h,j)",
-//                true);
-//    }
+
+
+
+
+
+
+
 
     @Test
     public void ellipsisCommutive1a() {
@@ -718,7 +718,7 @@ public class UnifyTest {
 
     @Test
     public void ellipsisCommutiveRepeat2_a() {
-        //b, c, d -  which can match exactly in both
+        
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {z, %X..+}}",
                 "{{a, b, c, d}, {z, b, c, d}}", true);
@@ -726,7 +726,7 @@ public class UnifyTest {
 
     @Test
     public void ellipsisCommutiveRepeat2_aa() {
-        //no X which can match exactly in both
+        
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {z, b, %X..+}}",
                 "{{a, b, c, d}, {z, b, c, d}}", false);
@@ -748,7 +748,7 @@ public class UnifyTest {
 
     @Test
     public void ellipsisCommutiveRepeat2_c() {
-        //X and Y are different so they can match
+        
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {b, %Y..+}}",
                 "{{a, b, c}, {d, b, c}}", true);
@@ -756,7 +756,7 @@ public class UnifyTest {
 
     @Test
     public void ellipsisCommutiveRepeat2_cc() {
-        //X and Y are different so they can match
+        
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {b, %Y..+}}",
                 "{{a, b, c, d}, {z, b, c, d}}", true);
@@ -765,119 +765,119 @@ public class UnifyTest {
     @Test
     public void ellipsisLinearInner() {
 
-        //TODO - lower priority
+        
         test(Op.VAR_PATTERN,
                 "(a, %X..+, d)",
                 "(a, b, c, d)", true);
     }
-//
-//    @Test
-//    public void patternImage() {
-//        test(Op.VAR_DEP,
-//                "<A --> (/, n, _, #X)>",
-//                "<A --> (/, n, _, B)>", true);
-//
-//        test(Op.VAR_DEP,
-//                "<A --> (/, #X, _, n)>",
-//                "<A --> (/, B, _, n)>", true);
-//
-//        test(Op.VAR_DEP,
-//                "<A --> (/, x, #X, _)>",
-//                "<A --> (/, x, _, B)>", false);
-//
-//
-////        test(Op.VAR_PATTERN,
-////                "(&&,<F --> A>,<%X --> (/,E, _,C,D)>)",
-////                "(&&,<F --> A>,<E --> (/,E,_,C,D)>)", true);
-////        test(Op.VAR_PATTERN,
-////                "(&&,<F --> A>,<%X --> (/,C,D,_)>)",
-////                "(&&,<F --> A>,<E --> (/,C,D,_)>)", true);
-////        test(Op.VAR_PATTERN,
-////                "(&&,<F --> A>,<D --> (/,C,%X, _)>)",
-////                "(&&,<F --> A>,<D --> (/,C,E, _)>)", true);
-//
-//    }
-//
-//    @Test
-//    public void testImage2ShouldNotMatch() {
-//        test(Op.VAR_PATTERN,
-//                "(/, %X, _)",
-//                "(/, _, A)", false);
-//    }
-//
-//    @Test
-//    public void ellipsisImage1() {
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, z, _, %X..+)>",
-//                "<A --> (/, z, _, B)>", true);
-//    }
-//
-//    @Test
-//    public void ellipsisImage2() {
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, z, _, %X..+)>",
-//                "<A --> (/, z, _, B,C)>", true);
-//
-//    }
-//
-//    @Test
-//    public void testEllipsisImage2a() {
-//        test(Op.VAR_PATTERN,
-//                "(/,_, B, %X..+)",
-//                "(/,_, B, C, D)", true);
-//    }
-//
-//    @Test
-//    public void testEllipsisImage2b() {
-//        test(Op.VAR_PATTERN,
-//                "(/,_, %X..+)",
-//                "(/,_, B, C, D)", true);
-//    }
-//
-//    @Test
-//    public void testEllipsisImage2c() {
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, z, _, B, %X..+)>",
-//                "<A --> (/, z, _, B, C, D)>", true);
-//    }
-//
-//    @Test
-//    public void testEllipsisImage2d() {
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, z, _, E, %X..+)>",
-//                "<A --> (/, z, _, B, C, D)>", false);
-//    }
-//
-//    @Test
-//    public void testEllipsisImage2e() {
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, B, _, %X..+)>",
-//                "<A --> (/, B, _, C, D)>", true);
-//    }
-//
-//
-//    @Disabled
-//    @Test
-//    public void testImageRelationAfterEllipsis() {
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, B, %X..+, _)>",
-//                "<A --> (/, B, C, D, _)>", true);
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, B, %X..+, _)>",
-//                "<A --> (/, B, C, _, D)>", false);
-//    }
-//
-//    @Disabled
-//    @Test
-//    public void testInnerEllipsis() {
-//        test(Op.VAR_PATTERN,
-//                "<A --> (/, B, %X..+, E, _)>",
-//                "<A --> (/, B, C, D, E, _)>", true);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Test
     public void ellipsisSequence() {
-        //TODO test for inclusion of intervals in matching
+        
     }
 
 
@@ -897,28 +897,28 @@ public class UnifyTest {
                 .believe('(' + subj + ' ' + relation + ' ' + pred + ')')
                 .believe(belief)
                 .mustBelieve(4, concl, 0.81f);
-        //.next()
-        //.run(1).assertTermLinkGraphConnectivity();
+        
+        
 
     }
 
-//    @Test
-//    public void testIndVarConnectivity() throws Narsese.NarseseException {
-//
-//        String c = "(<$x --> bird> ==> <$x --> animal>).";
-//
-//        NAR n = new Default();
-//        n.nal(6);
-//
-//        n.input(c);
-//        n.run(1);
-//
-//        //n.forEachActiveConcept(x -> x.get().print());
-//
-//        TermLinkGraph g = new TermLinkGraph(n);
-//        assertTrue("termlinks form a fully connected graph:\n" + g, g.isConnected());
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * this case is unrealistic as far as appearing in rules but it would be nice to get working
@@ -955,8 +955,8 @@ public class UnifyTest {
     }
 
     /*
-    //// second level variable handling rules ////////////////////////////////////////////////////////////////////////////////////
-    //second level variable elimination (termlink level2 growth needed in order for these rules to work)
+    
+    
 
     (B --> K), (&&,(#X --> L),(($Y --> K) ==> A)) |- substitute((&&, (#X --> L), A), $Y,B), (Truth:Deduction)
     (B --> K), (&&,(#X --> L),(($Y --> K) ==> (&&,A..+))) |- substitute((&&,(#X --> L),A..+),$Y,B), (Truth:Deduction)
@@ -977,10 +977,10 @@ public class UnifyTest {
 
                 matched.set(true);
 
-                //identifier: punctuation, mapA, mapB
+                
                 assertEquals("{?1=a}", xy.toString());
 
-                //output
+                
                 assertEquals(
                         "(a-->b) (?1-->b) -?>",
                         a + " " + b + " -?>"  /*+ " remaining power"*/);

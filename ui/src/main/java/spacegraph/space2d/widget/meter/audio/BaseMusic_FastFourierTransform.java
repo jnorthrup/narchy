@@ -2,18 +2,18 @@ package spacegraph.space2d.widget.meter.audio;
 
 /**
  **   __ __|_  ___________________________________________________________________________  ___|__ __
- **  //    /\                                           _                                  /\    \\  
- ** //____/  \__     __ _____ _____ _____ _____ _____  | |     __ _____ _____ __        __/  \____\\ 
+ **  
+ ** 
  **  \    \  / /  __|  |     |   __|  _  |     |  _  | | |  __|  |     |   __|  |      /\ \  /    /  
  **   \____\/_/  |  |  |  |  |  |  |     | | | |   __| | | |  |  |  |  |  |  |  |__   "  \_\/____/   
  **  /\    \     |_____|_____|_____|__|__|_|_|_|__|    | | |_____|_____|_____|_____|  _  /    /\     
- ** /  \____\                       http://jogamp.org  |_|                              /____/  \    
+ ** /  \____\                       http:
  ** \  /   "' _________________________________________________________________________ `"   \  /    
  **  \/____.                                                                             .____\/     
  **
  ** Fast Fourier Transformation class used for calculating the realtime spectrum analyzer.
  ** Slightly adapted, stripped down and modified ripoff from KJ-DSS project by Kristofer Fudalewski.
- ** Web: http://sirk.sytes.net - Original author email: sirk_sytes@hotmail.com 
+ ** Web: http:
  **
  **/
 
@@ -36,20 +36,20 @@ public class BaseMusic_FastFourierTransform {
      */
     public BaseMusic_FastFourierTransform(int pSampleSize) {
         nu = (int)Math.ceil( Math.log( pSampleSize ) / Math.log( 2 ) );
-        //calculate the nearest sample size to a power of 2
+        
         ss = (int)Math.pow( 2, nu );
         ss2 = ss >> 1; 
-        //allocate calculation buffers
+        
         xre = new float[ ss ];
         xim = new float[ ss ];
         mag = new float[ ss2 ];
-        //allocate FFT SIN/COS tables
+        
         fftSin = new float[ nu * ss2 ];
         fftCos = new float[ nu * ss2 ];
         prepareTables();
     }
 
-    //bit swapping method
+    
     private int bitrev( int pJ, int pNu ) {
         int j1 = pJ;
         int j2;
@@ -70,12 +70,12 @@ public class BaseMusic_FastFourierTransform {
      */
     public float[] calculate( float[] pSample ) {
         int n2 = ss2;
-        //fill buffer
+        
         for ( int a = 0; a < pSample.length; a++ ) {
             xre[ a ] = pSample[ a ];
             xim[ a ] = 0.0f;
         }
-        //clear the remainder of the buffer
+        
         for ( int a = pSample.length; a < ss; a++ ) {
             xre[ a ] = 0.0f;
             xim[ a ] = 0.0f;
@@ -86,7 +86,7 @@ public class BaseMusic_FastFourierTransform {
             k = 0;
             while ( k < ss ) {
                 for ( int i = 0; i < n2; i++ ) {
-                    //tabled sin/cos
+                    
                     c = fftCos[ x ]; 
                     s = fftSin[ x ]; 
                     kn2 = k + n2;
@@ -104,9 +104,9 @@ public class BaseMusic_FastFourierTransform {
             n2 >>= 1; 
         }
         int r;
-        //reorder output
+        
         for( k = 0; k < ss; k++ ) {
-            //use tabled BR values
+            
             r = fftBr[ k ]; 
             if ( r > k ) {
                 tr = xre[ k ];
@@ -117,7 +117,7 @@ public class BaseMusic_FastFourierTransform {
                 xim[ r ] = ti;
             }
         }
-        //calculate magnitude
+        
         for ( int i = 0; i < ss2; i++ ) {
             mag[ i ] = Math.abs( ( (float)( Math.sqrt( ( xre[ i ] * xre[ i ] ) + ( xim[ i ] * xim[ i ] ) ) ) / ss ) );
         }
@@ -142,11 +142,11 @@ public class BaseMusic_FastFourierTransform {
      */
     public float[] calculateFrequencyTable( float pSampleRate ) {
         float wFr = pSampleRate / 2.0f;
-        //calculate band width. 
+        
         float wBw = wFr / ss2;
-        //store for frequency table
+        
         float[] wFt = new float[ss2];
-        //build band range table.
+        
         int b = 0;
         for( float wFp = ( wBw / 2.0f ); wFp <= wFr; wFp += wBw ) {
             wFt[ b ] = wFp;
@@ -181,7 +181,7 @@ public class BaseMusic_FastFourierTransform {
         int nu1 = nu - 1;
         float p, arg;
         int   k = 0, x = 0;
-        //prepare SIN/COS tables
+        
         for ( int l = 0; l < nu; l++ ) {
             k = 0;
             while ( k < ss ) {
@@ -198,7 +198,7 @@ public class BaseMusic_FastFourierTransform {
             nu1--;
             n2 >>= 1;
         }
-        //prepare bitrev table
+        
         fftBr = new int[ ss ];
         for( k = 0; k < ss; k++ ) {
             fftBr[ k ] = bitrev( k, nu );

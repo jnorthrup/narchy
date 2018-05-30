@@ -24,7 +24,7 @@ import org.checkerframework.dataflow.qual.*;
  * <p>Java builds in interning for Strings, but not for other objects. The methods in this class
  * extend interning to all Java objects.
  * <p>
- * https://raw.githubusercontent.com/mernst/plume-lib/
+ * https:
  */
 public final class Intern {
 
@@ -41,8 +41,8 @@ public final class Intern {
     private static boolean assertsEnabled = false;
 
     static {
-        assert assertsEnabled = true; // Intentional side-effect!!!
-        // Now assertsEnabled is set to the correct value
+        assert assertsEnabled = true; 
+        
     }
 
     /**
@@ -61,28 +61,28 @@ public final class Intern {
      */
     public interface Hasher<X> extends CustomConcurrentHashMap.Equivalence<X> {
 
-//        /**
-//         * hashCode function for objects under consideration (not for Hasher objects).
-//         *
-//         * @param o object whose hash code to compute
-//         * @return o's hash code
-//         */
-//        int hash(Object o);
-//
-//        /**
-//         * The equality function over the objects being hashed.
-//         * <p>
-//         * <p>Has nothing to do with testing Hashers themselves for equality.
-//         *
-//         * @param o1 the first value to test for equality
-//         * @param o2 the second value to test for equality
-//         * @return whether o1 equals o2
-//         */
-//        boolean equal(X o1, Object o2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
-    ///////////////////////////////////////////////////////////////////////////
-    /// Strings
-    ///
+    
+    
+    
 
     /**
      * Replace each element of the array by its interned version. Side-effects the array, but also
@@ -92,7 +92,7 @@ public final class Intern {
      * @return an interned version of a
      * @see String#intern
      */
-    @SuppressWarnings("interning") // side-effects the array in place (dangerous, but convenient)
+    @SuppressWarnings("interning") 
     public static /*@Interned*/ String[] internStrings(String[] a) {
         for (int i = 0; i < a.length; i++) {
             if (a[i] != null) {
@@ -102,9 +102,9 @@ public final class Intern {
         return a;
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    /// Testing interning
-    ///
+    
+    
+    
 
     /**
      * Return true if the argument is interned (is canonical among all objects equal to itself).
@@ -112,11 +112,11 @@ public final class Intern {
      * @param value the value to test for interning
      * @return true iff value is interned
      */
-    @SuppressWarnings("interning") // interning implementation
+    @SuppressWarnings("interning") 
             /*@Pure*/
     public static boolean isInterned(/*@Nullable*/ Object value) {
         if (value == null) {
-            // nothing to do
+            
             return true;
         } else if (value instanceof String) {
             return (value == ((String) value).intern());
@@ -137,15 +137,15 @@ public final class Intern {
         } else if (value instanceof Object[]) {
             return (value == intern((Object[]) value));
         } else {
-            // Nothing to do, because we don't intern other types.
-            // System.out.println("What type? " + value.getClass().getName());
+            
+            
             return true;
         }
     }
 
-    ///////////////////////////////////////////////////////////////////////////
-    /// Interning objects
-    ///
+    
+    
+    
 
     /**
      * Hasher object which hashes and compares Integers. This is the obvious implementation that uses
@@ -222,7 +222,7 @@ public final class Intern {
     }
 
     private static final int FACTOR = 23;
-    // private static final double DOUBLE_FACTOR = 65537;
+    
     private static final double DOUBLE_FACTOR = 263;
 
     /**
@@ -252,9 +252,9 @@ public final class Intern {
     private static final class DoubleArrayHasher implements Hasher {
         @Override
         public boolean equal(Object a1, Object a2) {
-            // "Arrays.equals" considers +0.0 != -0.0.
-            // Also, it gives inconsistent results (on different JVMs/classpaths?).
-            // return Arrays.equals((double[])a1, (double[])a2);
+            
+            
+            
             double[] da1 = (double[]) a1;
             double[] da2 = (double[]) a2;
             if (da1.length != da2.length) {
@@ -271,14 +271,14 @@ public final class Intern {
         @Override
         public int hash(Object o) {
             double[] a = (double[]) o;
-            // Not Arrays.hashCode(a), for consistency with equals method
-            // immediately above.
+            
+            
             double running = 0;
             for (int i = 0; i < a.length; i++) {
                 double elt = (Double.isNaN(a[i]) ? 0.0 : a[i]);
                 running = running * FACTOR + elt * DOUBLE_FACTOR;
             }
-            // Could add "... % Integer.MAX_VALUE" here; is that good to do?
+            
             long result = Math.round(running);
             return (int) (result % Integer.MAX_VALUE);
         }
@@ -320,11 +320,11 @@ public final class Intern {
         }
     }
 
-    // Each of these maps has:
-    //   key = an interned object
-    //   value = a WeakReference for the object itself.
-    // They can be looked up using a non-interned value; equality tests know
-    // nothing of the interning types.
+    
+    
+    
+    
+    
 
     public static class WeakHasherMap<X,Y> extends CustomConcurrentHashMap<X,Y> {
         private final Hasher hasher;
@@ -432,7 +432,7 @@ public final class Intern {
                         new SequenceAndIndicesHasher</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>());
     }
 
-    // For testing only
+    
     public static int numIntegers() {
         return internedIntegers.size();
     }
@@ -505,7 +505,7 @@ public final class Intern {
      */
     /*@Pure*/
     public static /*@Interned*/ /*@PolyNull*/ String intern(/*@PolyNull*/ String a) {
-        // Checker Framework cannot typecheck:  return (a == null) ? null : a.intern();
+        
         if (a == null) {
             return null;
         }
@@ -540,10 +540,10 @@ public final class Intern {
      * @param a an Integer to canonicalize
      * @return a canonical representation for the Integer
      */
-    // TODO: JLS 5.1.7 requires that the boxing conversion interns integer
-    // values between -128 and 127 (and Intern.valueOf is intended to promise
-    // the same).  This does not currently take advantage of that.
-    @SuppressWarnings({"interning", "purity"}) // interning implementation
+    
+    
+    
+    @SuppressWarnings({"interning", "purity"}) 
             /*@Pure*/
     public static /*@Interned*/ Integer intern(Integer a) {
         WeakReference</*@Interned*/ Integer> lookup = internedIntegers.get(a);
@@ -551,14 +551,14 @@ public final class Intern {
         if (result1 != null) {
             return result1;
         } else {
-            @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
+            @SuppressWarnings("cast") 
                     /*@Interned*/ Integer result = a;
             internedIntegers.put(result, new WeakReference</*@Interned*/ Integer>(result));
             return result;
         }
     }
 
-    // Not sure whether this convenience method is really worth it.
+    
 
     /**
      * Returns an interned Integer with value i.
@@ -570,7 +570,7 @@ public final class Intern {
         return intern(Integer.valueOf(i));
     }
 
-    // Not sure whether this convenience method is really worth it.
+    
 
     /**
      * Returns an interned Integer with value parsed from the string.
@@ -588,9 +588,9 @@ public final class Intern {
      * @param a the value to intern
      * @return a canonical representation for the Long
      */
-    // TODO: JLS 5.1.7 requires that the boxing conversion interns integer
-    // values between -128 and 127 (and Long.valueOf is intended to promise
-    // the same).  This could take advantage of that.
+    
+    
+    
     @SuppressWarnings({"interning", "purity"})
             /*@Pure*/
     public static /*@Interned*/ Long intern(Long a) {
@@ -599,14 +599,14 @@ public final class Intern {
         if (result1 != null) {
             return result1;
         } else {
-            @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
+            @SuppressWarnings("cast") 
                     /*@Interned*/ Long result = a;
             internedLongs.put(result, new WeakReference</*@Interned*/ Long>(result));
             return result;
         }
     }
 
-    // Not sure whether this convenience method is really worth it.
+    
 
     /**
      * Returns an interned Long with value i.
@@ -618,7 +618,7 @@ public final class Intern {
         return intern(Long.valueOf(i));
     }
 
-    // Not sure whether this convenience method is really worth it.
+    
 
     /**
      * Returns an interned Long with value parsed from the string.
@@ -630,10 +630,10 @@ public final class Intern {
         return intern(Long.decode(s));
     }
 
-    // I might prefer to have the intern methods first check using a straight
-    // eq hashing, which would be more efficient if the array is already
-    // interned.  (How frequent do I expect that to be, and how much would
-    // that really improve performance even in that case?)
+    
+    
+    
+    
 
     /**
      * Intern (canonicalize) an int[]. Return a canonical representation for the int[] array. Arrays
@@ -645,16 +645,16 @@ public final class Intern {
     @SuppressWarnings({"interning", "purity"})
             /*@Pure*/
     public static int /*@Interned*/[] intern(int[] a) {
-        // Throwable stack = new Throwable("debug traceback");
-        // stack.fillInStackTrace();
-        // stack.printStackTrace();
+        
+        
+        
 
         WeakReference<int /*@Interned*/[]> lookup = internedIntArrays.get(a);
         int[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
-            @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
+            @SuppressWarnings("cast") 
                     /*@Interned*/ int[] result = a;
             internedIntArrays.put(result, new WeakReference<int /*@Interned*/[]>(result));
             return result;
@@ -671,14 +671,14 @@ public final class Intern {
     @SuppressWarnings({"interning", "purity"})
             /*@Pure*/
     public static long /*@Interned*/[] intern(long[] a) {
-        // System.out.printf("intern %s %s long[] %s%n", a.getClass(),
-        //                   a, Arrays.toString (a));
+        
+        
         WeakReference<long /*@Interned*/[]> lookup = internedLongArrays.get(a);
         long[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
             return result1;
         } else {
-            @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
+            @SuppressWarnings("cast") 
                     /*@Interned*/ long[] result = a;
             internedLongArrays.put(result, new WeakReference<long /*@Interned*/[]>(result));
             return result;
@@ -691,18 +691,18 @@ public final class Intern {
      * @param a the Double to canonicalize
      * @return a canonical representation for the Double
      */
-    // TODO: JLS 5.1.7 requires that the boxing conversion interns integer
-    // values between -128 and 127 (and Double.valueOf is intended to promise
-    // the same).  This could take advantage of that.
+    
+    
+    
     @SuppressWarnings({"interning", "purity"})
             /*@Pure*/
     public static /*@Interned*/ Double intern(Double a) {
-        // Double.NaN == Double.Nan  always evaluates to false.
+        
         if (a.isNaN()) {
             return internedDoubleNaN;
         }
-        // Double.+0 == Double.-0,  but they compare true via equals()
-        if (a.doubleValue() == 0) { // catches both positive and negative zero
+        
+        if (a.doubleValue() == 0) { 
             return internedDoubleZero;
         }
         WeakReference</*@Interned*/ Double> lookup = internedDoubles.get(a);
@@ -710,14 +710,14 @@ public final class Intern {
         if (result1 != null) {
             return result1;
         } else {
-            @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
+            @SuppressWarnings("cast") 
                     /*@Interned*/ Double result = a;
             internedDoubles.put(result, new WeakReference</*@Interned*/ Double>(result));
             return result;
         }
     }
 
-    // Not sure whether this convenience method is really worth it.
+    
 
     /**
      * Returns an interned Double with value i.
@@ -729,7 +729,7 @@ public final class Intern {
         return intern(Double.valueOf(d));
     }
 
-    // Not sure whether this convenience method is really worth it.
+    
 
     /**
      * Returns an interned Double with value parsed from the string.
@@ -741,10 +741,10 @@ public final class Intern {
         return internedDouble(Double.parseDouble(s));
     }
 
-    // I might prefer to have the intern methods first check using a straight
-    // eq hashing, which would be more efficient if the array is already
-    // interned.  (How frequent do I expect that to be, and how much would
-    // that really improve performance even in that case?)
+    
+    
+    
+    
 
     /**
      * Intern (canonicalize) a double[]. Return a canonical representation for the double[] array.
@@ -761,7 +761,7 @@ public final class Intern {
         if (result1 != null) {
             return result1;
         } else {
-            @SuppressWarnings("cast") // cast is redundant (except in JSR 308)
+            @SuppressWarnings("cast") 
                     /*@Interned*/ double[] result = a;
             internedDoubleArrays.put(result, new WeakReference<double /*@Interned*/[]>(result));
             return result;
@@ -776,16 +776,16 @@ public final class Intern {
      * @return a canonical representation for the String[] array
      */
     @SuppressWarnings({
-            "interning", // interns its argument
+            "interning", 
             "ReferenceEquality",
             "purity",
             "cast"
-    }) // cast is redundant (except in JSR 308)
+    }) 
             /*@Pure*/
     public static /*@PolyNull*/ /*@Interned*/ String /*@Interned*/[] intern(
             /*@PolyNull*/ /*@Interned*/ String[] a) {
 
-        // Make sure each element is already interned
+        
         if (assertsEnabled) {
             for (int k = 0; k < a.length; k++) {
                 if (!(a[k] == Intern.intern(a[k]))) {
@@ -804,7 +804,7 @@ public final class Intern {
                     result, new WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>(result));
         }
         @SuppressWarnings(
-                "nullness") // Polynull:  value = parameter a, so same type & nullness as for parameter a
+                "nullness") 
                 /*@PolyNull*/ /*@Interned*/ String /*@Interned*/[] polyresult = result;
         return polyresult;
     }
@@ -818,15 +818,15 @@ public final class Intern {
      * @return a canonical representation for the Object[] array
      */
     @SuppressWarnings({
-            "interning", // interns its argument
+            "interning", 
             "purity",
             "cast"
-    }) // cast is redundant (except in JSR 308)
+    }) 
             /*@Pure*/
     public static /*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[] intern(
             /*@PolyNull*/ /*@Interned*/ Object[] a) {
         @SuppressWarnings(
-                "nullness") // Polynull:  value = parameter a, so same type & nullness as for parameter a
+                "nullness") 
                 WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]> lookup =
                 internedObjectArrays.get(a);
         /*@Nullable*/ /*@Interned*/
@@ -837,7 +837,7 @@ public final class Intern {
                     result, new WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>(result));
         }
         @SuppressWarnings(
-                "nullness") // Polynull:  value = parameter a, so same type & nullness as for parameter a
+                "nullness") 
                 /*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[] polyresult = result;
         return polyresult;
     }
@@ -850,7 +850,7 @@ public final class Intern {
      * @param a an Object to canonicalize
      * @return a canonical version of a
      */
-    @SuppressWarnings("purity") // defensive coding: throw exception when argument is invalid
+    @SuppressWarnings("purity") 
             /*@Pure*/
     public static /*@Interned*/ /*@PolyNull*/ Object intern(/*@PolyNull*/ Object a) {
         if (a == null) {
@@ -924,7 +924,7 @@ public final class Intern {
      * @return a subsequence of seq from start to end that is interned
      * @see #internSubsequence(int[], int, int)
      */
-    @SuppressWarnings("purity") // interning logic
+    @SuppressWarnings("purity") 
             /*@Pure*/
     public static long /*@Interned*/[] internSubsequence(
             long /*@Interned*/[] seq, int start, int end) {
@@ -952,7 +952,7 @@ public final class Intern {
      * @return a subsequence of seq from start to end that is interned
      * @see #internSubsequence(int[], int, int)
      */
-    @SuppressWarnings("purity") // interning logic
+    @SuppressWarnings("purity") 
             /*@Pure*/
     public static double /*@Interned*/[] internSubsequence(
             double /*@Interned*/[] seq, int start, int end) {
@@ -980,7 +980,7 @@ public final class Intern {
      * @return a subsequence of seq from start to end that is interned
      * @see #internSubsequence(int[], int, int)
      */
-    @SuppressWarnings("purity") // interning logic
+    @SuppressWarnings("purity") 
             /*@Pure*/
     public static /*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[] internSubsequence(
             /*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[] seq, int start, int end) {
@@ -989,7 +989,7 @@ public final class Intern {
         }
         SequenceAndIndices</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]> sai =
                 new SequenceAndIndices</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]>(seq, start, end);
-        @SuppressWarnings("nullness") // same nullness as key
+        @SuppressWarnings("nullness") 
                 WeakReference</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]> lookup =
                 internedObjectSequenceAndIndices.get(sai);
         /*@PolyNull*/ /*@Interned*/
@@ -1001,9 +1001,9 @@ public final class Intern {
             Object[] subseq_uninterned = ArrayUtils.subarray(seq, start, end - start);
             /*@PolyNull*/ /*@Interned*/
             Object /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
-            @SuppressWarnings("nullness") // safe because map does no side effects
+            @SuppressWarnings("nullness") 
                     Object
-                    ignore = // assignment just so there is a place to hang the @SuppressWarnings annotation
+                    ignore = 
                     internedObjectSequenceAndIndices.put(
                             sai,
                             new WeakReference</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]>(subseq));
@@ -1019,7 +1019,7 @@ public final class Intern {
      * @see #internSubsequence(int[], int, int)
      */
     /*@Pure*/
-    @SuppressWarnings("purity") // interning logic
+    @SuppressWarnings("purity") 
     public static /*@PolyNull*/ /*@Interned*/ String /*@Interned*/[] internSubsequence(
             /*@PolyNull*/ /*@Interned*/ String /*@Interned*/[] seq, int start, int end) {
         if (assertsEnabled && !Intern.isInterned(seq)) {
@@ -1027,7 +1027,7 @@ public final class Intern {
         }
         SequenceAndIndices</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]> sai =
                 new SequenceAndIndices</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]>(seq, start, end);
-        @SuppressWarnings("nullness") // same nullness as key
+        @SuppressWarnings("nullness") 
                 WeakReference</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]> lookup =
                 internedStringSequenceAndIndices.get(sai);
         /*@PolyNull*/ /*@Interned*/
@@ -1039,9 +1039,9 @@ public final class Intern {
             String[] subseq_uninterned = ArrayUtils.subarray(seq, start, end - start);
             /*@PolyNull*/ /*@Interned*/
             String /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
-            @SuppressWarnings("nullness") // safe because map does no side effects
+            @SuppressWarnings("nullness") 
                     Object
-                    ignore = // assignment just so there is a place to hang the @SuppressWarnings annotation
+                    ignore = 
                     internedStringSequenceAndIndices.put(
                             sai,
                             new WeakReference</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]>(subseq));
@@ -1099,7 +1099,7 @@ public final class Intern {
             return seq.hashCode() + start * 30 - end * 2;
         }
 
-        // For debugging
+        
         /*@SideEffectFree*/
         @Override
         public String toString(/*>>>@GuardSatisfied SequenceAndIndices<T> this*/) {
@@ -1120,7 +1120,7 @@ public final class Intern {
             SequenceAndIndices<T> sai1 = (SequenceAndIndices<T>) a1;
             @SuppressWarnings("unchecked")
             SequenceAndIndices<T> sai2 = (SequenceAndIndices<T>) a2;
-            // The SAI objects are *not* interned, but the arrays inside them are.
+            
             return sai1.equals(sai2);
         }
 

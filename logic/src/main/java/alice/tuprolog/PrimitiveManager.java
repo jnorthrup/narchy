@@ -42,13 +42,13 @@ public class PrimitiveManager  {
     private final Map<String, PrologPrimitive> functors;
 
     public PrimitiveManager() {
-        libs = //Collections.synchronizedMap(new IdentityHashMap<IPrimitives, List<PrimitiveInfo>>());
+        libs = 
                 new CopyOnWriteArraySet<>();
-        directives = //Collections.synchronizedMap
+        directives = 
                 new ConcurrentHashMap();
-        predicates = //Collections.synchronizedMap(
+        predicates = 
                 new ConcurrentHashMap();
-        functors = //Collections.synchronizedMap(new HashMap<String,PrimitiveInfo>());
+        functors = 
                 new ConcurrentHashMap();
     }
 
@@ -135,49 +135,49 @@ public class PrimitiveManager  {
         Struct t = (Struct) term;
 
         int arity = t.subs();
-        //------------------------------------------
+        
 
         final int primType = PRIMITIVE_PREDICATES.contains(t.name()) ? PREDICATE : FUNCTOR;
         for (int c = 0; c < arity; c++) {
             identify(t.sub(c), primType);
         }
 
-        //------------------------------------------
-        //log.debug("Identification "+t);    
+        
+        
 
         t.setPrimitive(table(typeOfPrimitive).get(t.key()));
     }
 
 
-//    Library getLibraryDirective(String name, int nArgs) {
-//        try {
-//            return (Library) directives.get(name + '/' + nArgs).source;
-//        } catch (NullPointerException e) {
-//            return null;
-//        }
-//    }
 
-//    Library getLibraryPredicate(String name, int nArgs) {
-//        try {
-//            return (Library) predicates.get(name + '/' + nArgs).source;
-//        } catch (NullPointerException e) {
-//            return null;
-//        }
-//    }
 
-//    Library getLibraryFunctor(String name, int nArgs) {
-//        try {
-//            return (Library) functors.get(name + '/' + nArgs).source;
-//        } catch (NullPointerException e) {
-//            return null;
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*Castagna 06/2011*/
-//    public boolean containsTerm(String name, int nArgs) {
-//        String key = name + '/' + nArgs;
-//        return (functors.containsKey(key) ||
-//                predicates.containsKey(key));
-//    }
+
+
+
+
+
     /**/
 }

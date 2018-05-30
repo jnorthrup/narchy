@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,8 +40,8 @@ public class ArgumentsTest {
         Arguments second = new Arguments(args);
         assertArguments(second, x, a, z);
 
-        // assert the Arguments created first remains unchanged by subsequent changes to args
-        //assertArguments(first, x, y, z);
+        
+        
     }
 
     @Test
@@ -58,26 +58,26 @@ public class ArgumentsTest {
 
     @Test
     public void testReplaceAt() {
-        // create arguments
+        
         Node x = integerConstant(1);
         Node y = integerConstant(2);
         Node z = integerConstant(3);
         Arguments original = new Arguments(new Node[]{x, y, z});
         assertArguments(original, x, y, z);
 
-        // create new arguments based on original
+        
         Node replacement = integerConstant(9);
         assertArguments(original.replaceAt(0, replacement), replacement, y, z);
         assertArguments(original.replaceAt(1, replacement), x, replacement, z);
         assertArguments(original.replaceAt(2, replacement), x, y, replacement);
 
-        // assert original arguments has remained unchanged
+        
         assertArguments(original, x, y, z);
     }
 
     @Test
     public void testSwap() {
-        // create arguments
+        
         Node x = integerConstant(1);
         Node y = integerConstant(2);
         Node z = integerConstant(3);
@@ -117,16 +117,16 @@ public class ArgumentsTest {
     public void testNotEquals() {
         Arguments a = new Arguments(new Node[]{integerConstant(7), createVariable(0), integerConstant(42)});
 
-        // same arguments, different order
+        
         assertNotEquals(a, new Arguments(new Node[]{integerConstant(42), createVariable(0), integerConstant(7)}));
 
-        // different arguments
+        
         assertNotEquals(a, new Arguments(new Node[]{integerConstant(7), createVariable(0), integerConstant(43)}));
 
-        // one fewer argument
+        
         assertNotEquals(a, new Arguments(new Node[]{integerConstant(7), createVariable(0)}));
 
-        // one extra argument
+        
         assertNotEquals(a, new Arguments(new Node[]{integerConstant(7), createVariable(0), integerConstant(42), integerConstant(42)}));
     }
 
@@ -141,7 +141,7 @@ public class ArgumentsTest {
             arguments.get(index);
             fail("");
         } catch (ArrayIndexOutOfBoundsException e) {
-            // expected
+            
         }
     }
 

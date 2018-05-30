@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -171,7 +171,7 @@ public class Envelope extends UGen {
      * @param duration  the duration.
      * @param curvature the exponent of the curve.
      */
-    public synchronized Envelope addSegment(float endValue, float duration, float curvature) { //synchronized
+    public synchronized Envelope addSegment(float endValue, float duration, float curvature) { 
         if (!lock) {
             if (!Float.isNaN(endValue) && !Float.isInfinite(endValue)) {
                 segments.add(new Segment(endValue, duration, curvature, null));
@@ -189,7 +189,7 @@ public class Envelope extends UGen {
      * @param curvature the exponent of the curve.
      * @param trigger   the trigger.
      */
-    public synchronized Envelope add(float endValue, float duration, float curvature, Auvent trigger) { //synchronized
+    public synchronized Envelope add(float endValue, float duration, float curvature, Auvent trigger) { 
         if (!lock) {
             if (!Float.isNaN(endValue) && !Float.isInfinite(endValue)) {
                 segments.add(new Segment(endValue, duration, curvature, trigger));
@@ -254,7 +254,7 @@ public class Envelope extends UGen {
     /**
      * Clears the list of Segments.
      */
-    public synchronized Envelope clear() { //synchronized
+    public synchronized Envelope clear() { 
         if (!lock) {
             segments = new LinkedList<>();
             currentSegment = null;
@@ -306,8 +306,8 @@ public class Envelope extends UGen {
                 } else {
                     iChanged = true;
                     float ratio;
-                    // if(currentSegment.curvature != 1.0f) ratio = (float)AudioUtils.fastPow((double)currentTime / (double)currentSegment.duration, (double)currentSegment.curvature);
-                    // BP, fastPow doesn't like values > 1
+                    
+                    
                     ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
                     currentValue = (1f - ratio) * currentStartValue + ratio * currentSegment.endValue;
                     currentTime++;

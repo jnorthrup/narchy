@@ -14,20 +14,20 @@ public class Branchify extends AbstractPred<Derivation> {
 
     public final int id;
 
-//        /**
-//         * global cause channel ID's that this leads to
-//         */
-//        private final RoaringBitmap downstream;
+
+
+
+
 
     public Branchify(int id, RoaringBitmap downstream) {
         super($.func("can", /*$.the(id),*/ $.sFast(downstream)));
         this.id = id;
-//            this.downstream = downstream;
+
     }
 
     @Override
     public float cost() {
-        return Float.POSITIVE_INFINITY; //post-condition: must be the last element in any sequence
+        return Float.POSITIVE_INFINITY; 
     }
 
     @Override

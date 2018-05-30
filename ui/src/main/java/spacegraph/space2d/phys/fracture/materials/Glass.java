@@ -47,7 +47,7 @@ public class Glass extends Material {
             for (int c = 0; c < count; c++) {
                 int i = l * count + c;
 
-                double u = r.nextDouble() * Math.PI * 2; // uhol pod ktorym sa nachadza dany bod
+                double u = r.nextDouble() * Math.PI * 2; 
                 double deficit = (r.nextDouble() - 0.5) * m_shattering / 20;
                 double r = (l + 1) * m_shattering + deficit;
 

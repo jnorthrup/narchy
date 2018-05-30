@@ -15,9 +15,9 @@ public final class ShuffledSubterms extends ShuffledPermutations implements Subt
 
     public final Subterms srcsubs;
 
-//    public ShuffledSubterms(Random rng, Term[] subterms) {
-//        this(TermVector.the(subterms), rng  /* must be unique, private instance */);
-//    }
+
+
+
 
     public ShuffledSubterms(Subterms subterms, Random rng) {
         this.srcsubs = subterms;
@@ -51,11 +51,11 @@ public final class ShuffledSubterms extends ShuffledPermutations implements Subt
     }
 
 
-//    @Override
-//    public boolean equalTerms(@NotNull TermContainer c) {
-//        //to compare them in-order
-//        return TermContainer.equ(this, c);
-//    }
+
+
+
+
+
 
     @Override
     public String toString() {
@@ -67,10 +67,10 @@ public final class ShuffledSubterms extends ShuffledPermutations implements Subt
         return srcsubs.impossibleSubTermVolume(otherTermVolume);
     }
 
-//    @Override
-//    public Ellipsis firstEllipsis() {
-//        return srcsubs.firstEllipsis();
-//    }
+
+
+
+
 
 
 

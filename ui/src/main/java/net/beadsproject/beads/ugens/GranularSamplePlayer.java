@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -441,8 +441,8 @@ public class GranularSamplePlayer extends SamplePlayer {
      */
     @Override
     public synchronized void gen() {
-        //special condition for first grain
-        //update the various envelopes
+        
+        
         if (sample != null) {
             rateEnvelope.update();
             if (positionEnvelope != null) {
@@ -456,9 +456,9 @@ public class GranularSamplePlayer extends SamplePlayer {
             randomnessEnvelope.update();
             randomPanEnvelope.update();
             firstGrain();
-            //now loop through the buffer
+            
             for (int i = 0; i < bufferSize; i++) {
-                //determine if we need a new grain
+                
                 if (timeSinceLastGrain > grainIntervalEnvelope.getValue(0, i)) {
                     Grain g = null;
                     g = !freeGrains.isEmpty() ? freeGrains.pollFirst() : new Grain();
@@ -467,16 +467,16 @@ public class GranularSamplePlayer extends SamplePlayer {
                     grains.add(g);
                     timeSinceLastGrain = 0f;
                 }
-                //for each channel, start by resetting current output frame
+                
                 for (int j = 0; j < outs; j++) {
                     bufOut[j][i] = 0.0f;
                 }
-                //gather the output from each grain
+                
                 for (Grain g : grains) {
-                    //calculate value of grain window
+                    
                     float windowScale = window.getFractInterp((float) (g.age / g.grainSize));
-                    //get position in sample for this grain
-                    //get the frame for this grain
+                    
+                    
                     switch (interpolationType) {
                         case ADAPTIVE:
                             if (pitch > ADAPTIVE_INTERP_HIGH_THRESH) {
@@ -497,20 +497,20 @@ public class GranularSamplePlayer extends SamplePlayer {
                             sample.getFrameNoInterp(g.position, frame);
                             break;
                     }
-                    //add it to the current output frame
+                    
                     for (int j = 0; j < outs; j++) {
                         bufOut[j][i] += g.pan[j] * windowScale * frame[j % sample.getNumChannels()];
                     }
                 }
-                //increment time and stuff
+                
                 calculateNextPosition(i);
                 pitch = Math.abs(pitchEnvelope.getValue(0, i));
                 for (Grain g : grains) {
                     calculateNextGrainPosition(g);
                 }
-                //increment timeSinceLastGrain
+                
                 timeSinceLastGrain += msPerSample;
-                //finally, see if any grains are dead
+                
                 for (Grain g : grains) {
                     if (g.age > g.grainSize) {
                         freeGrains.add(g);
@@ -529,7 +529,7 @@ public class GranularSamplePlayer extends SamplePlayer {
      * @param g the Grain.
      */
     private void calculateNextGrainPosition(Grain g) {
-        int direction = rate >= 0 ? 1 : -1;    //this is a bit odd in the case when controlling grain from positionEnvelope
+        int direction = rate >= 0 ? 1 : -1;    
         g.age += msPerSample;
         if (loopInsideGrains) {
             switch (loopType) {
@@ -581,24 +581,24 @@ public class GranularSamplePlayer extends SamplePlayer {
     }
 
 
-//	public static void main(String[] args) {
-//		AudioContext ac = new AudioContext();
-//		ac.start();
-//		//clock
-//		Clock c = new Clock(ac, 500);
-//		ac.out.addDependent(c);
-//		GranularSamplePlayer gsp = new GranularSamplePlayer(ac, SampleManager.sample("/Users/ollie/git/HappyBrackets/HappyBrackets/data/audio/guit.wav"));
-//		gsp.getRateUGen().setValue(0.1f);
-//		ac.out.addInput(gsp);
-//		c.addMessageListener(new Bead() {
-//			@Override
-//			protected void messageReceived(Bead bead) {
-//				if (c.getCount() % 32 == 0) {
-//					gsp.reset();
-//				}
-//			}
-//		});
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

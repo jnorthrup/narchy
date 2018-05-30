@@ -78,11 +78,11 @@ public class NALTask extends UnitPri implements Task {
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
         super();
 
-        //quick truth/punctuation validity test
+        
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new InvalidTaskException(term, "null truth");
 
-        //quick occurrence validity test
+        
         if ((start == ETERNAL && end != ETERNAL) ||
             (start != ETERNAL && start > end) ||
             (start == TIMELESS) || (end == TIMELESS)
@@ -133,9 +133,9 @@ public class NALTask extends UnitPri implements Task {
 
         Param.taskMerge.merge(this, incoming);
 
-        //dont merge if they are duplicates, it's pointless here
+        
         if (!Arrays.equals(cause(), incoming.cause())) {
-            int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); //TODO use NAR's?
+            int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); 
             this.cause = Cause.sample(causeCap, this, incoming);
         }
         return this;
@@ -200,51 +200,51 @@ public class NALTask extends UnitPri implements Task {
     public boolean delete() {
         if (super.delete()) {
             if (Param.DEBUG) {
-                //dont clear meta if debugging
+                
             } else {
-//                CompactArrayMap<String, Object> m = this.meta;
-//                m.clearExcept("@");
+
+
             }
             return true;
         }
         return false;
     }
 
-//    public boolean delete(Task forwardTo) {
-//        return delete();
-//
-//        //return delete(forwardTo.term().concept(), forwardTo.punc(), forwardTo.mid());
-//
-////        if (super.delete()) {
-////            if (meta!=null) {
-////                if (Param.DEBUG)
-////                    meta.put("@", forwardTo);
-////                else
-////                    meta.clearPut("@", forwardTo);
-////            }
-////
-////            return true;
-////        }
-////        return false;
-//    }
 
-//    public boolean delete(Term forwardTo, byte punc, long when) {
-//        return delete(new TaskLink.GeneralTaskLink(forwardTo, punc, when, 0));
-//    }
-//
-//    public boolean delete(TaskLink forwardLink) {
-//        if (super.delete()) {
-//            if (meta!=null) {
-//                if (Param.DEBUG)
-//                    meta.put("@", forwardLink);
-//                else
-//                    meta.clearPut("@", forwardLink);
-//            }
-//
-//            return true;
-//        }
-//        return false;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public String toString() {

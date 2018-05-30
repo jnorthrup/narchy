@@ -23,7 +23,7 @@
  ******************************************************************************/
 package spacegraph.space2d.phys.common;
 
-// updated to rev 100
+
 
 import spacegraph.util.math.Tuple2f;
 

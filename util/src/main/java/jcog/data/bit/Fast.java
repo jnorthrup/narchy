@@ -16,7 +16,7 @@ package jcog.data.bit;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  *  
  */
 
@@ -30,10 +30,10 @@ package jcog.data.bit;
   * <p>The main highlight is now a new algorithm for {@linkplain #select(long, int) selection} that is twice as
   * fast as the one previously implemented, but that will behave impredictably if there is no bit with the requested rank; the 
   * algorithm is based on the one presented
-  * by Sebastiano Vigna in &ldquo;<a href="http://vigna.dsi.unimi.it/papers.php#VigBIRSQ">Broadword Implementation of Rank/Select Queries</a>&rdquo;,
+  * by Sebastiano Vigna in &ldquo;<a href="http:
   * <i>Proc. of the 7th International Workshop on Experimental Algorithms, WEA 2008</i>,
   * number 5038 in Lecture Notes in Computer Science, pages 154&minus;168. Springer&ndash;Verlag, 2008, but it
-  * has been improved with ideas from Simon Gog's <a href="https://github.com/simongog/sdsl">SDSL library</a>. 
+  * has been improved with ideas from Simon Gog's <a href="https:
   * 
   * @author Sebastiano Vigna
   * @since 0.1
@@ -206,7 +206,7 @@ public enum Fast {
 	 */
 	public static int approximateLog2( double x ) {
 		long bits = Double.doubleToRawLongBits( x );
-		// The exponent is corrected by one if the first significand digits are big enough.
+		
 		return (int)( ( bits >>> 52 ) & 0x7FF ) - 1023 + ( ( bits >>> 48 & 0xF ) > 6 ? 1 : 0 );
 	}
 
@@ -216,7 +216,7 @@ public enum Fast {
 	 * @return 2<sup><code>exponent</code></sup>.
 	 */
 	public static double pow2( int exponent ) {
-		//return fixedValues[ approximate + ( 1 << EXPONENT_BITS ) - ADJUSTMENT - 1 ];
+		
 		if ( exponent < 0 ) return 1.0 / ( 1L  << -exponent );
 		return 1L << exponent;
 	}
@@ -241,23 +241,23 @@ public enum Fast {
 	}
 
 	private static int selectBroadword( long x, int rank ) {
-        // Phase 1: sums by byte
+        
         long byteSums = x - ( ( x & 0xa * ONES_STEP_4 ) >>> 1 );
         byteSums = ( byteSums & 3 * ONES_STEP_4 ) + ( ( byteSums >>> 2 ) & 3 * ONES_STEP_4 );
         byteSums = ( byteSums + ( byteSums >>> 4 ) ) & 0x0f * ONES_STEP_8;
         byteSums *= ONES_STEP_8;
         
-        // Phase 2: compare each byte sum with rank to obtain the relevant byte
+        
         long rankStep8 = rank * ONES_STEP_8;
         long byteOffset = ( ( ( ( ( rankStep8 | MSBS_STEP_8 ) - byteSums ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8 >>> 53 ) & ~0x7;
 
-        // Phase 3: Locate the relevant byte and make 8 copies with incremental masks
+        
         int byteRank = (int)( rank - ( ( ( byteSums << 8 ) >>> byteOffset ) & 0xFF ) );
 
         long spreadBits = ( x >>> byteOffset & 0xFF ) * ONES_STEP_8 & INCR_STEP_8;
         long bitSums = ( ( ( spreadBits | ( ( spreadBits | MSBS_STEP_8 ) - ONES_STEP_8 ) ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8;
 
-        // Compute the inside-byte location and return the sum
+        
         long byteRankStep8 = byteRank * ONES_STEP_8;
 
         return (int)( byteOffset + ( ( ( ( ( byteRankStep8 | MSBS_STEP_8 ) - bitSums ) & MSBS_STEP_8 ) >>> 7 ) * ONES_STEP_8 >>> 56 ) );
@@ -330,19 +330,19 @@ public enum Fast {
 			0x4040404040404040L
 	};
 
-//	private static int selectGogPetri( final long x, final int rank ) {
-//		assert rank < Long.bitCount( x );
-//		// Phase 1: sums by byte
-//		long byteSums = x - ( ( x >>> 1 ) & 0x5 * ONES_STEP_4 );
-//		byteSums = ( byteSums & 3 * ONES_STEP_4 ) + ( ( byteSums >>> 2 ) & 3 * ONES_STEP_4 );
-//		byteSums = ( byteSums + ( byteSums >>> 4 ) ) & 0x0f * ONES_STEP_8;
-//		byteSums *= ONES_STEP_8;
-//
-//		// Phase 2: compare each byte sum with rank to obtain the relevant byte
-//		final int byteOffset = ( Long.numberOfTrailingZeros( byteSums + overflow[ rank ] & 0x8080808080808080L ) >> 3 ) << 3;
-//
-//		return byteOffset + selectInByte[ (int)( x >>> byteOffset & 0xFF ) | (int)( rank - ( ( ( byteSums << 8 ) >>> byteOffset ) & 0xFF ) ) << 8 ];
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	/** Returns the position of a bit of given rank (starting from zero).
@@ -354,13 +354,13 @@ public enum Fast {
 	 */
 	public static int select( long x, int rank ) {
 		assert rank < Long.bitCount( x );
-		// Phase 1: sums by byte
+		
 		long byteSums = x - ( ( x >>> 1 ) & 0x5 * ONES_STEP_4 );
 		byteSums = ( byteSums & 3 * ONES_STEP_4 ) + ( ( byteSums >>> 2 ) & 3 * ONES_STEP_4 );
 		byteSums = ( byteSums + ( byteSums >>> 4 ) ) & 0x0f * ONES_STEP_8;
 		byteSums *= ONES_STEP_8;
 
-		// Phase 2: compare each byte sum with rank to obtain the relevant byte
+		
 		int byteOffset = Long.bitCount( ( ( rank * ONES_STEP_8 | MSBS_STEP_8 ) - byteSums ) & MSBS_STEP_8 ) << 3;
 
 		return byteOffset + selectInByte[ (int)( x >>> byteOffset & 0xFF ) | (int)( rank - ( ( ( byteSums << 8 ) >>> byteOffset ) & 0xFF ) ) << 8 ];
@@ -389,43 +389,43 @@ public enum Fast {
 	}
 	
 
-//	public static void main( final String a[] ) {
-//		final long n = Long.parseLong( a[ 0 ] );
-//
-//		long start, elapsed;
-//
-//		long w = 0xFFFFFFFFFFFFFFFFL;
-//		int x = 0;
-//
-//		for( int k = 10; k-- !=0;  ) {
-//			System.out.print( "Broadword select (new): " );
-//
-//			start = System.nanoTime();
-//			for( long i = n; i-- != 0; ) x ^= Fast.select( w, (int)( i & 63 ) );
-//			elapsed = System.nanoTime() - start;
-//
-//			System.out.println( "elapsed " + elapsed + ", " + (double)elapsed / n + " ns/call" );
-//
-//			System.out.print( "Broadword select (Gog & Petri): " );
-//
-//			start = System.nanoTime();
-//			for( long i = n; i-- != 0; ) x ^= Fast.selectGogPetri( w, (int)( i & 63 ) );
-//			elapsed = System.nanoTime() - start;
-//
-//			System.out.println( "elapsed " + elapsed + ", " + (double)elapsed / n + " ns/call" );
-//
-//			System.out.print( "Broadword select (old): " );
-//
-//			start = System.nanoTime();
-//			for( long i = n; i-- != 0; ) x ^= Fast.selectBroadword( w, (int)( i & 63 ) );
-//			elapsed = System.nanoTime() - start;
-//
-//			System.out.println( "elapsed " + elapsed + ", " + (double)elapsed / n + " ns/call" );
-//
-//		}
-//
-//		if ( x == 0 ) System.out.println( 0 );
-//
-//	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 }

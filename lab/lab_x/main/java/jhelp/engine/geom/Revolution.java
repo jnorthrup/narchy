@@ -90,7 +90,7 @@ public class Revolution
     */
    private void recomputeTheMesh(final boolean omogeonous, final float start, final float end)
    {
-      // Initialization
+      
       final Mesh mesh = new Mesh();
 
       final double radian = Math.toRadians(this.angle);
@@ -117,10 +117,10 @@ public class Revolution
          list = this.path.computePath(this.pathPrecision);
       }
 
-      // For each line of the path
+      
       for(final Line2D line2D : list)
       {
-         // Get start and end point
+         
          x0 = line2D.pointStart.getX();
          y0 = line2D.pointStart.getY();
          v0 = line2D.start;
@@ -129,7 +129,7 @@ public class Revolution
          y1 = line2D.pointEnd.getY();
          v1 = line2D.end;
 
-         // Compute the vector start to end and normalize it
+         
          vx = x1 - x0;
          vy = y1 - y0;
 
@@ -140,14 +140,14 @@ public class Revolution
             vy /= length;
          }
 
-         // For each rotation step
+         
          for(an = 0; an < this.rotationPrecision; an++)
          {
-            // Compute U
+            
             u0 = (an * this.multU) / this.rotationPrecision;
             u1 = ((an + 1f) * this.multU) / this.rotationPrecision;
 
-            // Compute angles, cosinus and sinus
+            
             angle = (radian * an) / this.rotationPrecision;
             angleFuture = (radian * (an + 1)) / this.rotationPrecision;
 
@@ -156,7 +156,7 @@ public class Revolution
             cosFuture = Math.cos(angleFuture);
             sinFuture = Math.sin(angleFuture);
 
-            // Compute each vertex
+            
             xAA = (float) (cos * x0);
             yAA = (float) (y0);
             zAA = (float) (-sin * x0);
@@ -193,7 +193,7 @@ public class Revolution
             nyFF = (float) (vx);
             nzFF = (float) (-sinFuture * vy);
 
-            // Draw the face
+            
             mesh.addVertexToTheActualFace(new Vertex(xAA, yAA, zAA, uAA, vAA, nxAA, nyAA, nzAA));
             mesh.addVertexToTheActualFace(new Vertex(xFA, yFA, zFA, uFA, vFA, nxFA, nyFA, nzFA));
             mesh.addVertexToTheActualFace(new Vertex(xFF, yFF, zFF, uFF, vFF, nxFF, nyFF, nzFF));
@@ -203,7 +203,7 @@ public class Revolution
          }
       }
 
-      // Change object's mesh by the computed one
+      
       this.mesh = mesh;
    }
 

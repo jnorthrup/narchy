@@ -20,10 +20,10 @@ public class Diffusion extends Material {
 
     @Override
     public Tuple2f[] focee(Tuple2f startPoint, Tuple2f vektor) {
-        final int count = 128; //pocet
-        double c = 4; // natiahnutie
+        final int count = 128; 
+        double c = 4; 
 
-        //vektor = new v2(1, 0);
+        
 
         float ln = vektor.length();
         Transform t = new Transform();

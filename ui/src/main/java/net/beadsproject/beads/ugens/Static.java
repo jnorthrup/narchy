@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -30,7 +30,7 @@ public class Static extends UGen {
         this.x = x;
         outputInitializationRegime = OutputInitializationRegime.NULL;
         outputPauseRegime = OutputPauseRegime.NULL;
-        pause(true); //might as well be muted
+        pause(true); 
     }
 
     /* (non-Javadoc)
@@ -38,7 +38,7 @@ public class Static extends UGen {
      */
     @Override
     public void gen() {
-        // Do nothing
+        
     }
 
     /* (non-Javadoc)
@@ -54,7 +54,7 @@ public class Static extends UGen {
      */
     @Override
     public float getValue(int a, int b) {
-        return x;    //whatever happens return x
+        return x;    
     }
 
     /* (non-Javadoc)

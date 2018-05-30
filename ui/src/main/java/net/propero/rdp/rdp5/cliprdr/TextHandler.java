@@ -77,10 +77,10 @@ public class TextHandler extends TypeHandler {
                 s = e.toString();
             }
 
-            // TODO: think of a better way of fixing this
+            
             s = s.replace('\n', (char) 0x0a);
-            // s = s.replaceAll("" + (char) 0x0a, "" + (char) 0x0d + (char)
-            // 0x0a);
+            
+            
             s = Utilities_Localised.strReplaceAll(s, "" + (char) 0x0a, ""
                     + (char) 0x0d + (char) 0x0a);
             return s.getBytes();
@@ -121,14 +121,14 @@ public class TextHandler extends TypeHandler {
                 s = e.toString();
             }
 
-            // TODO: think of a better way of fixing this
+            
             s = s.replace('\n', (char) 0x0a);
-            // s = s.replaceAll("" + (char) 0x0a, "" + (char) 0x0d + (char)
-            // 0x0a);
+            
+            
             s = Utilities_Localised.strReplaceAll(s, "" + (char) 0x0a, ""
                     + (char) 0x0d + (char) 0x0a);
 
-            // return s.getBytes();
+            
             c.send_data(s.getBytes(), s.length());
         }
     }

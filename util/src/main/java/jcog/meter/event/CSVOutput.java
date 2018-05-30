@@ -14,7 +14,7 @@ import java.util.stream.DoubleStream;
  */
 public class CSVOutput extends PrintStream {
 
-    //public String[] headers;
+    
 
     public CSVOutput(File out, String... headers) throws FileNotFoundException {
         this(new FileOutputStream(out), headers);
@@ -24,7 +24,7 @@ public class CSVOutput extends PrintStream {
         super(out);
         println(Joiner.on(',').join(Iterables.transform(
                 new ArrayIterator<>(headers),
-                col -> "\"" + col + "\"" //column quoted in case it contains special chars
+                col -> "\"" + col + "\"" 
             )
         ));
     }

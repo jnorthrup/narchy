@@ -34,12 +34,12 @@ import java.util.*;
  *     public Object invoke(Object self, Method m, Method proceed,
  *                          Object[] args) throws Throwable {
  *         System.out.println("Name: " + m.getName());
- *         return proceed.invoke(self, args);  // execute the original method.
+ *         return proceed.invoke(self, args);  
  *     }
  * };
  * f.setFilter(new MethodFilter() {
  *     public boolean isHandled(Method m) {
- *         // ignore finalize()
+ *         
  *         return !m.getName().equals("finalize");
  *     }
  * });
@@ -69,7 +69,7 @@ import java.util.*;
  * execute the following code:
  *
  * <ul><pre>
- * MethodHandler mi2 = ... ;    // another handler
+ * MethodHandler mi2 = ... ;    
  * ((ProxyObject)foo).setHandler(mi2);
  * </pre></ul>
  *
@@ -78,7 +78,7 @@ import java.util.*;
  * <ul><pre>
  * ProxyFactory f2 = new ProxyFactory();
  * f2.setSuperclass(Foo.class);
- * f2.setHandler(mi);            // set the default handler
+ * f2.setHandler(mi);            
  * Class c2 = f2.createClass();
  * </pre></ul>
  *
@@ -132,12 +132,12 @@ public class J2PProxyFactory extends ProxyFactory {
     private static final String HANDLER_SETTER_TYPE = '(' + HANDLER_TYPE + ")V";
 
     private static final String METACLASS_FIELD = "_meta$Prolog$Class";
-    //private static final String METACLASS_TYPE = "Lalice/tuprologx/pj/meta/PrologMetaClass;";
+    
     
     private static final String THEORY_FIELD = "_prolog$Theory";    
     
-    //private static final String METACLASS_GETTER = "getMetaPrologClass";
-    //private static final String METACLASS_GETTER_TYPE = "()" + METACLASS_TYPE;
+    
+    
     
     /**
      * If true, a generated proxy class is cached and it will be reused
@@ -274,7 +274,7 @@ public class J2PProxyFactory extends ProxyFactory {
          * execution speed down (with JDK 1.5).  Thus, we use a jumbo lock for
          * reducing concrrency.
          */
-        // synchronized (proxyCache) {
+        
             Map<CacheKey,CacheKey> cacheForTheLoader = proxyCache.get(cl);
             if (cacheForTheLoader == null) {
                 cacheForTheLoader = new HashMap<>();
@@ -287,16 +287,16 @@ public class J2PProxyFactory extends ProxyFactory {
                     cacheForTheLoader.put(key, key);
                 else {
                     key = found;
-                    Class<?> c = isValidEntry(key);    // no need to synchronize
+                    Class<?> c = isValidEntry(key);    
                     if (c != null) {
                         thisClass = c;
                         return;
                     }
                 }
             }
-        // }
+        
 
-        // synchronized (key) {
+        
             Class<?> c = isValidEntry(key);
             if (c == null) {
                 createClass3(cl);
@@ -304,7 +304,7 @@ public class J2PProxyFactory extends ProxyFactory {
             }
             else
                 thisClass = c; 
-        // }
+        
     }
 
     private static Class<?> isValidEntry(CacheKey key) {
@@ -405,7 +405,7 @@ public class J2PProxyFactory extends ProxyFactory {
  
         if (loader == null) {
             loader = getClass().getClassLoader();
-             // In case javassist is in the endorsed dir
+             
             if (loader == null) {
                 loader = Thread.currentThread().getContextClassLoader();
                 if (loader == null)
@@ -536,19 +536,19 @@ public class J2PProxyFactory extends ProxyFactory {
         
 
         HashMap<String,Method> allMethods = getMethods(superClass, interfaces);
-        //int size = allMethods.size();
+        
         makeConstructors(classname, cf, pool, classname);
         int s = overrideMethods(cf, pool, classname, allMethods);
         addMethodsHolder(cf, pool, classname, s);
         addSetter(classname, cf, pool);
         
-        //addGetter(classname, cf, pool);
+        
         
         try {
             cf.addMethod(makeWriteReplace(pool));
         }
         catch (DuplicateMemberException e) {
-            // writeReplace() is already declared in the super class/interfaces.
+            
         }
 
         thisClass = null;          
@@ -648,7 +648,7 @@ public class J2PProxyFactory extends ProxyFactory {
         else {
             MethodInfo delegator
                 = makeDelegator(meth, desc, cp, declClass, delegatorName);
-            // delegator is not a bridge method.  See Sec. 15.12.4.5 of JLS 3rd Ed.
+            
             delegator.setAccessFlags(delegator.getAccessFlags() & ~AccessFlag.BRIDGE);
             cf.addMethod(delegator);
         }
@@ -754,7 +754,7 @@ public class J2PProxyFactory extends ProxyFactory {
         String desc = RuntimeSupport.makeDescriptor(cons.getParameterTypes(),
                                                     Void.TYPE);
         MethodInfo minfo = new MethodInfo(cp, "<init>", desc);
-        minfo.setAccessFlags(Modifier.PUBLIC);      // cons.getModifiers() & ~Modifier.NATIVE
+        minfo.setAccessFlags(Modifier.PUBLIC);      
         setThrows(minfo, cp, cons.getExceptionTypes());
         Bytecode code = new Bytecode(cp, 0, 0);
 
@@ -816,7 +816,7 @@ public class J2PProxyFactory extends ProxyFactory {
          *     = RuntimeSupport.findMethod(this, <overridden name>, <desc>);
          *   methods[index * 2 + 1]
          *     = RuntimeSupport.findMethod(this, <delegator name>, <desc>);
-         *     or = null // the original method is abstract.
+         *     or = null 
          * }
          * return ($r)handler.invoke(this, methods[index * 2],
          *                methods[index * 2 + 1], $args);

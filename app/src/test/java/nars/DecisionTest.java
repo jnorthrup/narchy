@@ -16,8 +16,8 @@ public class DecisionTest {
         n.input("add(2,2,#y)!");
         n.input("zero(#y)?");
 
-        //n.input("use(1)@");
-        //n.input("use(2)@");
+        
+        
         n.log();
         n.run(400);
     }

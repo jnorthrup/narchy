@@ -119,7 +119,7 @@ public class StructTestCase {
 	@Test public void testNonListHead() throws InvalidTermException {
 		Struct s = new Struct("f", new Var("X"));
 		try {
-			assertNotNull(s.listHead()); // just to make an assertion...
+			assertNotNull(s.listHead()); 
 			fail("");
 		} catch (UnsupportedOperationException e) {
 			assertEquals("The structure " + s + " is not a list.", e.getMessage());
@@ -129,7 +129,7 @@ public class StructTestCase {
 	@Test public void testNonListTail() {
 		Struct s = new Struct("h", new NumberTerm.Int(1));
 		try {
-			assertNotNull(s.listTail()); // just to make an assertion...
+			assertNotNull(s.listTail()); 
 			fail("");
 		} catch (UnsupportedOperationException e) {
 			assertEquals("The structure " + s + " is not a list.", e.getMessage());
@@ -139,7 +139,7 @@ public class StructTestCase {
 	@Test public void testNonListSize() throws InvalidTermException {
 		Struct s = new Struct("f", new Var("X"));
 		try {
-			assertEquals(0, s.listSize()); // just to make an assertion...
+			assertEquals(0, s.listSize()); 
 			fail("");
 		} catch (UnsupportedOperationException e) {
 			assertEquals("The structure " + s + " is not a list.", e.getMessage());
@@ -149,7 +149,7 @@ public class StructTestCase {
 	@Test public void testNonListIterator() {
 		Struct s = new Struct("f", new NumberTerm.Int(2));
 		try {
-			assertNotNull(s.listIterator()); // just to make an assertion...
+			assertNotNull(s.listIterator()); 
 			fail("");
 		} catch (UnsupportedOperationException e) {
 			assertEquals("The structure " + s + " is not a list.", e.getMessage());

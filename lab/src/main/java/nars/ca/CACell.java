@@ -1,7 +1,7 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// The cell class
+package nars.ca;
+
+
+
 
 public class CACell {
 	final int x;

@@ -56,27 +56,27 @@ public class Derivation extends PreDerivation {
      */
     private final Map<Task, Task> derivedTasks = new HashMap<>();
     public final ArrayHashSet<Premise> premiseBuffer =
-            //new LinkedHashSet();
+            
             new ArrayHashSet<>();
 
 
-//    /** re-used buffer for roulette/choice weight values */
-//    public final float[] choices = new float[128];
+
+
 
     public NAR nar;
 
 
     final static int ANON_INITIAL_CAPACITY = 16;
     public final Anon anon =
-            //new Anon(ANON_INITIAL_CAPACITY);
-            new CachedAnon(ANON_INITIAL_CAPACITY, 16*1024); //<-- needs TESTED
+            
+            new CachedAnon(ANON_INITIAL_CAPACITY, 16*1024); 
 
     /** temporary un-transform map */
     public Map<Term,Term> untransform = new UnifiedMap<>() {
         @Override
         public Term put(Term key, Term value) {
             if (key.equals(value))
-                return null; //HACK ignore
+                return null; 
 
             return super.put(key, value);
         }
@@ -175,48 +175,48 @@ public class Derivation extends PreDerivation {
      */
     public Derivation() {
         super(
-                //null /* any var type */
+                
                 VAR_PATTERN
                 , null, Param.UnificationStackMax, 0,
                     new TermHashMap()
-                    //new NormalizedVariableMap() //<-- TODO
+                    
         );
 
-        //random generator local to this Derivation context.
-        //gets seeded by NAR rng every init
+        
+        
         this.random =
-                //new XoRoShiRo128PlusRandom(1);
+                
                 new SplitMix64Random(1);
 
-        //anon = new Anon();
-//            @Override
-//            public Term get(Term x) {
-//                Term y = super.get(x);
-//                boolean possiblyEvaluable = false; //quick test
-//                Term z = (y != null) ?
-//                        ((possiblyEvaluable = y.hasAll(Op.funcBits)) ? y.eval(nar.terms) : y) : Null;
-//
-//                return z;
-//            }
-
-//            @Override
-//            public Term _get(Term x) {
-//                Term y = super._get(x);
-//                return y != null ? y.eval(nar.terms) : null;
-//            }
+        
 
 
-//        Caffeine cb = Caffeine.newBuilder().executor(nar.exe);
-//            //.executor(MoreExecutors.directExecutor());
-//        int cs = Param.DERIVATION_TRANSFORM_CACHE_SIZE_PER_THREAD;
-//        if (cs == -1)
-//            cb.softValues();
-//        else
-//            cb.maximumSize(cs);
-//
-//        //cb.recordStats();
-//
-//        transformsCache = cb.builder();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
@@ -240,8 +240,8 @@ public class Derivation extends PreDerivation {
         for (Termed x : derivationFunctors)
             m.put(x.term(), x);
 
-//        m.put(TaskTerm, taskTerm);
-//        m.put(BeliefTerm, beliefTerm);
+
+
         this.derivationFunctors = Maps.immutable.ofMap(m);
 
     }
@@ -250,7 +250,7 @@ public class Derivation extends PreDerivation {
     public Term resolve(Term x) {
         return x instanceof Variable ?
                 super.resolve(x) :
-                x; //only concerned about variables
+                x; 
     }
 
     /**
@@ -272,20 +272,20 @@ public class Derivation extends PreDerivation {
         if (taskUniques>0 && this._task!=null && this._task.term().equals(_task.term())) {
 
 
-            //same task; just rollback anon to the point where a belief's uniques can be added
+            
 
-            //TODO test if beliefTerm is the same also in which case rollback isnt even necessary
+            
 
             anon.rollback(taskUniques);
 
-            //keep previous taskTerm
+            
 
         } else {
 
             anon.clear();
             this.taskTerm = anon.put(_task.term());
 
-            //store the unique index after initializing the Anon with the task term's components for quick rollback to this position on a subsequent derivation with the same task
+            
             this.taskUniques = anon.uniques();
         }
 
@@ -298,22 +298,22 @@ public class Derivation extends PreDerivation {
 
         if (this._task==null || this._task != _task) {
 
-            //TODO handle if 'dur' changed but task hasn't.  anon should be used to get a new task. this would occurr rarely though
+            
 
             this._task = _task;
 
-            this.task = new TaskWithTerm(taskTerm, _task); //create new proxy even if task are .equal() because cause and other instance-specific details may differ
+            this.task = new TaskWithTerm(taskTerm, _task); 
 
             this._taskStruct = taskTerm.structure();
             this._taskOp = taskTerm.op().id;
         }
 
         long tAt = _task.start();
-//        //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
-//        if (_task.isEternal() && (_belief!=null && !_belief.isEternal()))
-//            tAt = time;
-//        else
-//            tAt = _task.nearestPointInternal(time);
+
+
+
+
+
 
         if (tAt == TIMELESS)
             throw new RuntimeException();
@@ -336,19 +336,19 @@ public class Derivation extends PreDerivation {
             if (beliefTruth != null || beliefTruthDuringTask != null) {
                 this._belief = _belief;
             } else {
-                this._belief = null; //force single premise
+                this._belief = null; 
             }
         } else {
-            this._belief = null; //single premise
+            this._belief = null; 
         }
 
         if (this._belief != null) {
-            //double
+            
             beliefTerm = anon.put(this._beliefTerm = _belief.term());
             this.belief = new TaskWithTerm(beliefTerm, _belief);
             this.beliefAt = _belief.start();
         } else {
-            //single
+            
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
             if (beliefTerm.op()==NEG)
                 throw new RuntimeException("should not be NEG: " + beliefTerm);
@@ -369,7 +369,7 @@ public class Derivation extends PreDerivation {
         this.evidenceDouble = evidenceSingle = null;
 
 
-        return true; //ready
+        return true; 
     }
 
 
@@ -377,50 +377,50 @@ public class Derivation extends PreDerivation {
 
     /** called after protoderivation has returned some possible Try's */
     public void derive(int ttl) {
-//        int ttv = taskTerm.vars();
-//        if (ttv > 0 && bt.vars() > 0) {
-//            bt = bt.normalize(ttv); //shift variables up to be unique compared to taskTerm's
-//        }
+
+
+
+
         this.parentComplexitySum =
                 Util.sum(
-                        //Math.max(
+                        
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 
 
 
-        //long[] taskStamp = task.stamp();
-        this.overlapSingle = task.isCyclic(); //Stamp.cyclicity(taskStamp);
+        
+        this.overlapSingle = task.isCyclic(); 
 
         if (_belief != null) {
 
             /** to compute the time-discounted truth, find the minimum distance
              *  of the tasks considering their dtRange
              */
-//            if (!belief.isEternal()) {
-//                //project belief truth to task's time
-//                this.beliefTruth = !task.isEternal() ?
-//                        belief.truth(belief.nearestTimeOf(task.start(), task.end()), dur, confMin) :
-//                        belief.truth();
-//                //belief.truth(ETERNAL, ETERNAL...)
-//            } else {
-//            this.beliefTruth = beliefTruth;
-//            }
+
+
+
+
+
+
+
+
+
 
             long[] beliefStamp = _belief.stamp();
             this.overlapDouble = Stamp.overlapsAny(this.taskStamp, beliefStamp);
 
-            //Math.min(1, Util.sum(
-//                    Util.or(
-//                            //Util.max(
-//                            overlapSingle,
-//                            Stamp.overlapFraction(taskStamp, beliefStamp),
-//                            Stamp.cyclicity(beliefStamp)
-//                    );
+            
 
-//                    (task.isCyclic() /* || belief.isCyclic()*/) ?
-//                            1 :
-//                            Stamp.overlapFraction(taskStamp, beliefStamp);
+
+
+
+
+
+
+
+
+
 
         } else {
             this.overlapDouble = false;
@@ -440,38 +440,38 @@ public class Derivation extends PreDerivation {
                         Param.TaskToDerivation.valueOf(taskPri) :
                         Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
 
-        //this.pri *= Math.max(1f, nar.amp(parentCause));
+        
 
         this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : Float.NaN;
         this.premiseEviDouble = beliefTruth != null ?
-                //Math.max(premiseEviSingle, beliefTruth.evi()) :
+                
                 premiseEviSingle + beliefTruth.evi() :
                 premiseEviSingle;
 
 
         setTTL(ttl);
-//        try {
+
 
             deriver.prioritize.premise(this);
 
             deriver.rules.can.test(this);
-//        } finally {
-//            nar.emotion.deriveTTLRemain.increment(this.ttl);
-//        }
+
+
+
     }
 
     @Override
     public final void tryMatch() {
 
 
-//        int now = now();
-//        try {
+
+
         forEachMatch.test(this);
-//        } catch (Exception e) {
-//            logger.error("{} {}", this, e);
-//        }
+
+
+
         /* finally {
-            revert(now); //undo any changes applied in conclusion
+            revert(now); 
         }*/
 
     }
@@ -479,16 +479,16 @@ public class Derivation extends PreDerivation {
     /** accelerated version that executes inline functors */
     @Override
     public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
-        //InlineFunctor application
+        
         if (op == INH && yy.subs()==2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit) ) {
             Term pred;
-            if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) { //TODO only inline functors
+            if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) { 
                 Term args = yy.sub(0);
                 if (args.op()==PROD) {
                     Term v = ((Functor.InlineFunctor) pred).applyArgs(args);
                     if (v!=null)
                         return v;
-                    //else: miss?
+                    
                 }
             }
         }
@@ -508,27 +508,27 @@ public class Derivation extends PreDerivation {
                 return (Term)f;
         }
 
-        if (atomic instanceof Bool)//assert (!(x instanceof Bool));
+        if (atomic instanceof Bool)
             return atomic;
 
         if (atomic instanceof Functor)
-            return atomic; //pre-resolved functor
+            return atomic; 
 
 
         if (atomic instanceof Variable) {
             Term y = xy(atomic);
             if (y != null)
-                return y; //an assigned substitution, whether a variable or other type of term
+                return y; 
 
         }
 
         return atomic;
 
-//        else if (x.hasAny(substitutionVector)) {
-//            return super.applyTermIfPossible(x);
-//        } else {
-//            return x;
-//        }
+
+
+
+
+
     }
 
     public Derivation cycle(NAR nar, Deriver deri) {
@@ -545,7 +545,7 @@ public class Derivation extends PreDerivation {
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();
             this.random.setSeed(nar.random().nextLong());
-            //transformsCache.cleanUp();
+            
         }
 
         this.deriver = deri;
@@ -567,12 +567,12 @@ public class Derivation extends PreDerivation {
         if (evidenceDouble == null) {
             float te, be, tb;
             if (task.isBeliefOrGoal()) {
-                //for belief/goal use the relative evi
+                
                 te = taskTruth.evi();
-                be = beliefTruth != null ? beliefTruth.evi() : 0; //beliefTruth can be zero in temporal cases
+                be = beliefTruth != null ? beliefTruth.evi() : 0; 
                 tb = te / (te + be);
             } else {
-                //for question/quest, use the relative priority
+                
                 te = task.priElseZero();
                 be = belief.priElseZero();
                 tb = te + be;
@@ -616,7 +616,7 @@ public class Derivation extends PreDerivation {
         pp.priMax(tt.pri());
         ((NALTask)pp).causeMerge(tt);
         if (pp.isCyclic() && !tt.isCyclic()) {
-            //clear cyclic if the other is not cyclic, for fairness
+            
             pp.setCyclic(false);
         }
         return pp;
@@ -633,7 +633,7 @@ public class Derivation extends PreDerivation {
             Term replaced = xx.sub(1);
             Term replacement = xx.sub(2);
             if (replaced instanceof Atom) {
-                //resolve any constants which appear in the rules in terms of what has been Anon'd
+                
                 replaced = anon.put(replaced);
             }
 
@@ -641,27 +641,27 @@ public class Derivation extends PreDerivation {
 
             if (y != null && !(y instanceof Bool)) {
 
-                //replaceXY(replaced, replacement);
-                //untransform.put(replaced, replacement);
+                
+                
                 untransform.put(y, input);
 
-//                replaceXY(xx.sub(0), y);
-                //replaceXY(y, input);
 
-//                Term a = xx.sub(1);
-//                Term b = replacement;
-//                if (!a.equals(b)) {
-//                    replaceXY(a, b); //also include the subterms in case the structure of the compound changed signficantly the events may still hold the clue
-//                    replaceXY(b, a); //reverse mapping
-//                }
+                
+
+
+
+
+
+
+
             }
             return y;
         }
     };
 
     public Term untransform(Term t) {
-//        if (untransform.containsValue(t))
-//            return t; //dont try to transform, risks infinite loop
+
+
         return t.replace(untransform);
     }
 
@@ -687,7 +687,7 @@ public class Derivation extends PreDerivation {
         }
     };
 
-    //TODO make inline
+    
     private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     private final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
         x = anon.get(x);
@@ -720,100 +720,100 @@ public class Derivation extends PreDerivation {
     }
 
 
-    //    /**
-//     * experimental memoization of transform results
-//     */
-//    @Override
-//    @Nullable
-//    public Term transform(@NotNull Term pattern) {
-//
-//        if (!Param.DERIVATION_TRANSFORM_CACHE) {
-//            return super.transform(pattern); //xy.get(pattern); //fast variable resolution
-//        }
-//
-//        Term y = xy(pattern);
-//        if (y!=null) {
-//            if (pattern instanceof Variable || y.vars(null) == 0) {
-////                if (xy.get(y)!=null)
-////                    System.out.println(y + " -> " + xy.get(y));
-//
-//                return y;
-//            }
-//            pattern = y;
-//        }
-//        if (pattern instanceof Atomic) {
-////            if (xy.get(x)!=null)
-////                System.out.println(x + " -> " + xy.get(x));
-//            return pattern;
-//        }
-//
-////        if (x.OR(xx -> xx == Null))
-////            return Null;
-//
-//        Transformation key = Transformation.the((Compound) pattern, currentMatch);
-//
-//        //avoid recursive update problem on the single thread by splitting the get/put
-//        Term value = transformsCache.getIfPresent(key);
-//        if (value != null)
-//            return value;
-//
-//        value = super.transform(key.pattern);
-//        if (value == null)
-//            value = Null;
-//
-//        transformsCache.put(key, value);
-//
-//        if (value == Null)
-//            value = null;
-//
-//        return value;
-//    }
-//
-//    final static class Transformation {
-//        public final Compound pattern;
-//        final byte[] assignments;
-//        final int hash;
-//
-//        Transformation(Compound pattern, DynBytes assignments) {
-//            this.pattern = pattern;
-//            this.assignments = assignments.array();
-//            this.hash = Util.hashCombine(assignments.hashCode(), pattern.hashCode());
-//        }
-//
-//        @Override
-//        public boolean equals(Object o) {
-//            //if (this == o) return true;
-//            Transformation tthat = (Transformation) o;
-//            if (hash != tthat.hash) return false;
-//            return pattern.equals(tthat.pattern) && Arrays.equals(assignments, tthat.assignments);
-//        }
-//
-//        @Override
-//        public int hashCode() {
-//            return hash;
-//        }
-//
-//        static Transformation the(@NotNull Compound pattern, @NotNull Term[][] match) {
-//
-//            //TODO only include in the key the free variables in the pattern because there can be extra and this will cause multiple results that could have done the same thing
-//            //FasterList<Term> key = new FasterList<>(currentMatch.length * 2 + 1);
-//
-//            DynBytes key = new DynBytes((2 * match.length + 1) * 8 /* estimate */);
-//            pattern.append((ByteArrayDataOutput) key); //in 0th
-//            key.writeByte(0);
-//            for (Term[] m : match) {
-//                Term var = m[0];
-//                if (pattern.containsRecursively(var)) {
-//                    var.append((ByteArrayDataOutput) key);
-//                    key.writeByte(0);
-//                    m[1].append((ByteArrayDataOutput) key);
-//                    key.writeByte(0);
-//                }
-//            }
-//            return new Transformation(pattern, key);
-//        }
-//
-//    }
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

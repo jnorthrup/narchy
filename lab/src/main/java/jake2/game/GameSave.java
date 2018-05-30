@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 29.12.2003 by RST.
-// $Id: GameSave.java,v 1.11 2006-01-21 21:53:32 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -34,7 +34,7 @@ public class GameSave {
         GameBase.g_edicts = new edict_t[GameBase.game.maxentities];
         for (int i = 0; i < GameBase.game.maxentities; i++)
             GameBase.g_edicts[i] = new edict_t(i);
-        //GameBase.g_edicts = GameBase.g_edicts;
+        
     }
 
     public static void CreateClients() {
@@ -108,7 +108,7 @@ public class GameSave {
 		"jake2.game.monsters.M_Supertank",
 		"jake2.game.monsters.M_Tank",
 		"jake2.game.GameItems",
-		// DANGER! init as last, when all adatpers are != null
+		
 		"jake2.game.GameItemList"
     };
     
@@ -121,7 +121,7 @@ public class GameSave {
     public static void InitGame() {
         game_import_t.dprintf("==== InitGame ====\n");
 
-        // preload all classes to register the adapters
+        
         for ( int n=0; n < preloadclasslist.length; n++)
         {
         	try
@@ -139,17 +139,17 @@ public class GameSave {
         GameBase.gun_y = game_import_t.cvar("gun_y", "0", 0);
         GameBase.gun_z = game_import_t.cvar("gun_z", "0", 0);
 
-        //FIXME: sv_ prefix are wrong names for these variables 
+        
         GameBase.sv_rollspeed = game_import_t.cvar("sv_rollspeed", "200", 0);
         GameBase.sv_rollangle = game_import_t.cvar("sv_rollangle", "2", 0);
         GameBase.sv_maxvelocity = game_import_t.cvar("sv_maxvelocity", "2000", 0);
         GameBase.sv_gravity = game_import_t.cvar("sv_gravity", "800", 0);
 
-        // noset vars
+        
         Globals.dedicated = game_import_t.cvar("dedicated", "0",
                 Defines.CVAR_NOSET);
 
-        // latched vars
+        
         GameBase.sv_cheats = game_import_t.cvar("cheats", "0",
                 Defines.CVAR_SERVERINFO | Defines.CVAR_LATCH);
         game_import_t.cvar("gamename", Defines.GAMEVERSION,
@@ -168,7 +168,7 @@ public class GameSave {
         GameBase.maxentities = game_import_t.cvar("maxentities", "1024",
                 Defines.CVAR_LATCH);
 
-        // change anytime vars
+        
         GameBase.dmflags = game_import_t.cvar("dmflags", "0",
                 Defines.CVAR_SERVERINFO);
         GameBase.fraglimit = game_import_t.cvar("fraglimit", "0",
@@ -192,25 +192,25 @@ public class GameSave {
         GameBase.bob_pitch = game_import_t.cvar("bob_pitch", "0.002", 0);
         GameBase.bob_roll = game_import_t.cvar("bob_roll", "0.002", 0);
 
-        // flood control
+        
         GameBase.flood_msgs = game_import_t.cvar("flood_msgs", "4", 0);
         GameBase.flood_persecond = game_import_t.cvar("flood_persecond", "4", 0);
         GameBase.flood_waitdelay = game_import_t.cvar("flood_waitdelay", "10", 0);
 
-        // dm map list
+        
         GameBase.sv_maplist = game_import_t.cvar("sv_maplist", "", 0);
 
-        // items
+        
         GameItems.InitItems();
 
         GameBase.game.helpmessage1 = "";
         GameBase.game.helpmessage2 = "";
 
-        // initialize all entities for this game
+        
         GameBase.game.maxentities = (int) GameBase.maxentities.value;
         CreateEdicts();
 
-        // initialize all clients for this game
+        
         GameBase.game.maxclients = (int) GameBase.maxclients.value;
 
         CreateClients();
@@ -292,10 +292,10 @@ public class GameSave {
             if (f == null)
                 game_import_t.error("Couldn't open for writing: " + filename);
 
-            // write out level_locals_t
+            
             GameBase.level.write(f);
 
-            // write out all the entities
+            
             for (i = 0; i < GameBase.num_edicts; i++) {
                 ent = GameBase.g_edicts[i];
                 if (!ent.inuse)
@@ -335,15 +335,15 @@ public class GameSave {
             if (f == null)
                 game_import_t.error("Couldn't read level file " + filename);
 
-            // wipe all the entities
+            
             CreateEdicts();
 
             GameBase.num_edicts = (int) GameBase.maxclients.value + 1;
 
-            // load the level locals
+            
             GameBase.level.read(f);
 
-            // load all the entities
+            
             while (true) {
                 int entnum = f.readInt();
                 if (entnum == -1)
@@ -360,21 +360,21 @@ public class GameSave {
 
             Lib.fclose(f);
 
-            // mark all clients as unconnected
+            
             for (int i = 0; i < GameBase.maxclients.value; i++) {
                 ent = GameBase.g_edicts[i + 1];
                 ent.client = GameBase.game.clients[i];
                 ent.client.pers.connected = false;
             }
 
-            // do any load time things at this point
+            
             for (int i = 0; i < GameBase.num_edicts; i++) {
                 ent = GameBase.g_edicts[i];
 
                 if (!ent.inuse)
                     continue;
 
-                // fire any cross-level triggers
+                
                 if (ent.classname != null)
                     if (Lib.strcmp(ent.classname, "target_crosslevel_target") == 0)
                         ent.nextthink = GameBase.level.time + ent.delay;

@@ -79,7 +79,7 @@ public class CellMap<K, V> {
     }
 
     protected void added(CacheCell<K, V> entry) {
-        //impl in subclases
+        
     }
 
     public boolean whileEach(Predicate<CacheCell<K,V>> o) {
@@ -129,7 +129,7 @@ public class CellMap<K, V> {
     }
 
     protected void invalidated() {
-        //impl in subclasses
+        
         cache.invalidate();
     }
 
@@ -174,7 +174,7 @@ public class CellMap<K, V> {
         }
 
         public void clear() {
-            //V vs = this.value;
+            
             value = null;
         }
 
@@ -196,13 +196,13 @@ public class CellMap<K, V> {
                     delete = true;
                 } else {
                     if (Objects.equals(value, prev)) {
-                        //equal value, dont re-create surface
+                        
                     } else {
                         delete = true;
-                        create = true; //replace
+                        create = true; 
                     }
                 }
-            } else { //if (existingSurface == null) {
+            } else { 
                 if (next != null)
                     create = true;
                 else

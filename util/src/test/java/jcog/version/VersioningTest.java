@@ -36,7 +36,7 @@ public class VersioningTest {
         assertEquals(2, w.size);
         assertEquals(2, mvx.size());
 
-        w.revert(2); //should have no effect:
+        w.revert(2); 
         assertEquals(2, w.size);
         assertEquals("(a, b)", mvx.toStackString());
         assertEquals(2, mvx.size());
@@ -55,7 +55,7 @@ public class VersioningTest {
         assertEquals(0, mvx.size());
         assertEquals("{}", m.toString());
 
-        assertNull(m.get("x")); //removed from map because it did not exist at version 0 which is effectively empty
+        assertNull(m.get("x")); 
 
 
     }
@@ -120,7 +120,7 @@ public class VersioningTest {
 
         System.out.println("revert to 3");
 
-        //skip behind to halfway
+        
         v.revert(3); System.out.println(v);
         assertEquals(3, v.size);
         assertEquals(3, v.size); assertEquals("a1 b0", s.get());

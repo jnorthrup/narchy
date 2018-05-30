@@ -108,7 +108,7 @@ public class WorkerMultiExec extends AbstractExec {
             long max = activeThreadIds.max();
             long min = activeThreadIds.min();
             if (max - min == activeThreadIds.size() - 1) {
-                //contiguous id's, use fast id tester
+                
                 isActiveThreadId = (x) -> x >= min && x <= max;
             } else {
                 isActiveThreadId = activeThreadIds::contains;
@@ -136,9 +136,9 @@ public class WorkerMultiExec extends AbstractExec {
             super.start(nar);
 
             this.pool = new BusyPool(threads.intValue(),
-                    new MultithreadConcurrentQueue(qSize) //(disruptor) fastest but unsafe (overflow trainwrecks)
-                    //new MPMCBlockingQueue<>(qSize)
-                    //Util.blockingQueue(qSize) //(disruptor) fast, and safe (overflows gracefully, with warning too)
+                    new MultithreadConcurrentQueue(qSize) 
+                    
+                    
             ) {
                 @Override
                 protected WorkLoop newWorkLoop(ConcurrentQueue<Runnable> q) {
@@ -148,17 +148,17 @@ public class WorkerMultiExec extends AbstractExec {
                 @Override
                 protected void queueOverflow(Object x) {
 
-                    //help clear the queue
+                    
                     int qSize = q.size();
                     Object next;
                     while (((next = q.poll())!=null) && qSize-- > 0) {
                         executeNow(next);
                         if (q.offer(x))
-                            return; //ok
+                            return; 
                     }
                     if (!q.offer(x)) {
                         Thread.yield();
-                        //emergency defer to ForkJoin commonPool
+                        
                         ForkJoinPool.commonPool().execute(x instanceof Runnable ? ((Runnable)x) : ()->executeNow(x));
                     }
 
@@ -198,10 +198,10 @@ public class WorkerMultiExec extends AbstractExec {
         public MyWorkLoop(ConcurrentQueue q) {
             super(q);
 
-            //TODO resize this by analyzing the average queue size each cycle, divide by # of workers , divide by a granularity constant
+            
             qBatch = new Object[64];
 
-            rng = //new XoRoShiRo128PlusRandom(System.nanoTime());
+            rng = 
                     new SplitMix64Random(System.nanoTime());
         }
 
@@ -211,29 +211,29 @@ public class WorkerMultiExec extends AbstractExec {
             focus.decide(rng, x -> {
 
                 int next = q.remove(qBatch);
-//                if (next > 0)
-//                    System.out.println(next + " " + Arrays.toString(qBatch));
+
+
                 for (int i = 0; i < next; i++) {
                     Object qqq = qBatch[i];
                     qBatch[i] = null;
                     executeNow(qqq);
                 }
 
-                //TODO throttling
-//            long next = nar.time();
-//            if (next != now) {
-//                now = next;
-//                long throttleNS = nar.loop.throttleNS();
-//                if (throttleNS > 0) {
-//                    Util.sleepNS(throttleNS);
-//                }
-//            }
+                
+
+
+
+
+
+
+
+
 
                 focus.tryRun(x);
 
 
-//                if (done == 0 && idles++ > 0)
-//                    Util.pauseNext(idles);
+
+
 
                 return true;
             });

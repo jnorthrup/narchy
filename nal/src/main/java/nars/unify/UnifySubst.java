@@ -13,7 +13,7 @@ import java.util.function.Predicate;
  */
 public class UnifySubst extends Unify {
 
-    //static final Logger logger = LoggerFactory.getLogger(UnifySubst.class);
+    
 
     /*@NotNull*/
     public final TimeAware timeAware;
@@ -40,17 +40,17 @@ public class UnifySubst extends Unify {
     @Override
     public void tryMatch() {
 
-        //TODO combine these two blocks to use the same sub-method
+        
 
-        //try {
+        
 
 
-        //try {
+        
 
-        //        } catch (InvalidTermException e) {
-//            return null;
-//        }
-        Termed aa = apply(a); //a.replace(xy);
+        
+
+
+        Termed aa = apply(a); 
         if (aa != null) {
             Term aaa = aa.term();
             if (aaa.op().conceptualizable) {
@@ -62,29 +62,29 @@ public class UnifySubst extends Unify {
         }
 
 
-//        }
-//        catch (InvalidTermException e) {
-//            if (Param.DEBUG)
-//                logger.warn("{}",e);
-//
-//        }
-
-//        if ((aa == null) ||
-//        //Op aaop = aa.op();
-//        //only set the values if it will return true, otherwise if it returns false the callee can expect its original values untouched
-//            ((a.op() == Op.VAR_QUERY) && (aa.op().in(Op.VarDepOrIndep)))
-//         ) {
-//            return false;
-//        }
-
-//        Term bb = applySubstituteAndRenameVariables(b, yx);
-//        if (bb == null) return false;
-//        Op bbop = bb.op();
-//        if (bbop == Op.VAR_QUERY && (bbop == Op.VAR_INDEP || bbop == Op.VAR_DEP))
-//            return false;
 
 
-        //return matches < maxMatches; //determines how many
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     }
 
     public int matches() {

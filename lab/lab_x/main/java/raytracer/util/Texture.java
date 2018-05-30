@@ -10,7 +10,7 @@ public class Texture
 {
     public static ColorEx getTextureColor(BufferedImage texture, Vector2d location)
     {
-        // Dimensionen des Textur-Bildes:
+        
         int imageWidth = texture.getWidth();
         int imageHeight = texture.getHeight();
         
@@ -30,8 +30,8 @@ public class Texture
             float fracY = (float)(locationY- (double) y);
             ColorEx color = new ColorEx();
             
-            // Farbwert im Smooth-Modus berechnen. Dabei werden alle Pixel in der
-            // Umgebung betrachtet und deren Farbwerte anteilig dazu addiert:
+            
+            
             for (byte j = (byte) -1; (int) j <= 1; j++)
             {
                 float factorY = 1.0f - Math.abs(fracY - (j + 0.5f));

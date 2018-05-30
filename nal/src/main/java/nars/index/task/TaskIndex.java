@@ -38,12 +38,12 @@ public interface TaskIndex {
 
     void forEach(@NotNull Consumer<Task> each);
 
-//    default void change(@Nullable List<Task> toAdd, @Nullable List<Task> toRemove) {
-//        if (toRemove!=null)
-//            remove(toRemove);
-//        if (toAdd!=null)
-//            addIfAbsent(toAdd);
-//    }
+
+
+
+
+
+
 
     default void addIfAbsent(@NotNull List<Task> toAdd) {
         for (int i = 0, toAddSize = toAdd.size(); i < toAddSize; i++) {

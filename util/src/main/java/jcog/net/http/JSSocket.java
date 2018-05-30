@@ -114,7 +114,7 @@ public class JSSocket<X> implements HttpModel {
     public void wssMessage(WebSocket ws, String _message) {
         String message = _message.trim();
         if (message.isEmpty())
-            return; //ignore
+            return; 
 
         session.get(ws).invoke(message);
 
@@ -149,7 +149,7 @@ public class JSSocket<X> implements HttpModel {
                 return;
 
             if (!q.offer(expr))
-                socket.close(CloseFrame.TOOBIG, "Overflow"); //exceeds rate limit
+                socket.close(CloseFrame.TOOBIG, "Overflow"); 
 
             if (pending.compareAndSet(false, true)) {
                 Exe.invokeLater(this);
@@ -166,8 +166,8 @@ public class JSSocket<X> implements HttpModel {
 
             q.removeIf(message -> {
                 try {
-                    //TODO parameter safeguards for executing arbitrary code:
-                    //optional: parameters limited to primitives only (doable via regex on input code string)
+                    
+                    
 
                     Object y = eval("i." + message, JsSession.this, JS);
                     if (y == null)

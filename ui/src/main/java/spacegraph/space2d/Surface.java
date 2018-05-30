@@ -32,7 +32,7 @@ abstract public class Surface implements SurfaceBase {
     /**
      * scale can remain the unit 1 vector, normally
      */
-//    public v2 scale = new v2(1, 1); //v2.ONE;
+
     public volatile RectFloat2D bounds;
     public volatile SurfaceBase parent;
     protected volatile boolean visible = true, showing = false;
@@ -41,9 +41,9 @@ abstract public class Surface implements SurfaceBase {
         bounds = RectFloat2D.Unit;
     }
 
-//    public static boolean leftButton(short[] buttons) {
-//        return buttons != null && buttons.length == 1 && buttons[0] == 1;
-//    }
+
+
+
 
 
     public float x() {
@@ -143,7 +143,7 @@ abstract public class Surface implements SurfaceBase {
 
     public boolean start(SurfaceBase parent) {
         assert(parent!=null);
-        if (_parent.getAndSet(this, parent)==null) { //if this atomic update changed from non-null to null, the callee has got it
+        if (_parent.getAndSet(this, parent)==null) { 
             return true;
         }
         return false;
@@ -162,7 +162,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public void layout() {
-        //nothing by default
+        
     }
 
     public float w() {

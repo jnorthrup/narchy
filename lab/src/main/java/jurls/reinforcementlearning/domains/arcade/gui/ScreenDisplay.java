@@ -13,7 +13,7 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  along with this program.  If not, see <http:
  */
 package jurls.reinforcementlearning.domains.arcade.gui;
 
@@ -47,7 +47,7 @@ public class ScreenDisplay extends JPanel {
     int frameCount = 0;
     double fps = 0;
     long frameTime = 0;
-    int updateRate = 5; // How often to update FPS, in hertz
+    int updateRate = 5; 
     double fpsAlpha = 0.9;
     
     /** Additional user strings to be displayed */
@@ -107,12 +107,12 @@ public class ScreenDisplay extends JPanel {
             frameCount++;
             long time = System.currentTimeMillis();
 
-            // If one second has elapsed, update FPS
+            
             if (time - frameTime >= 1000 / updateRate) {
                 if (fps == 0) {
                     fps = frameCount;
                 } else {
-                    // Compute the exact number of (fractional) ticks since FPS update
+                    
                     double ticksSinceUpdate = (time - frameTime) * updateRate / 1000.0;
                     double alpha = Math.pow(fpsAlpha, ticksSinceUpdate);
 
@@ -140,29 +140,29 @@ public class ScreenDisplay extends JPanel {
 
     public void drawImages(Graphics g) {
         synchronized (this) {
-            // Do some message cleanup if necessary
+            
             messages.update(maxMessageAge);
 
-            // Zoom up on the Atari image
+            
             rescale(g, xScaleFactor, yScaleFactor);
-            // draw the atari image
+            
             if (image != null) {
                 g.drawImage(image, 0, 0, null);
             }
 
-            // Zoom out to draw text
+            
             rescale(g, 1.0 / xScaleFactor, 1.0 / yScaleFactor);
 
             int statusBarTextOffset = statusBarY + 15;
 
-            // draw FPS information in the bottom left corner
+            
             if (fps > 0) {
                 g.setColor(Color.BLACK);
                 double roundedFPS = (Math.round(fps * 10) / 10.0);
                 g.drawString("FPS: " + roundedFPS, 0, statusBarTextOffset);
             }
 
-            // Draw a string center-bottom
+            
             if (centerString != null) {
                 int stringLength = g.getFontMetrics().stringWidth(centerString);
                 g.drawString(centerString, (windowWidth - stringLength) / 2, statusBarTextOffset);
@@ -172,15 +172,15 @@ public class ScreenDisplay extends JPanel {
 
             g.setColor(Color.YELLOW);
 
-            // Draw messages in the bottom right corner
+            
             for (MessageHistory.Message m : messages.getMessages()) {
-                // Draw one message
+                
                 String text = m.getText();
                 int stringLength = g.getFontMetrics().stringWidth(text);
                 g.drawString(text, windowWidth - stringLength - 2, textOffset);
 
-                // Decrement textOffset so that the next (older) message
-                //  is drawn on top of it
+                
+                
                 textOffset -= g.getFontMetrics().getHeight();
             }
         }

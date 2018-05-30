@@ -100,27 +100,27 @@ public class QueryBuilder implements PubliclyCloneable<QueryBuilder> {
 	public Query build(AxiomSource as) {
 		Vector structures = new Vector();
 
-		// create the "projection" structure
+		
 		Term[] termArray = new Term[terms.size()];
 		terms.copyInto(termArray);
 		Structure s = new Structure("q", termArray);
 		structures.addElement(s);
 
-		// add each queried table
+		
 		Enumeration e = classNames.elements();
 		while (e.hasMoreElements()) {
 			String name = (String) e.nextElement();
 			structures.addElement(ChipSource.queryStructure(name));
 		}
 
-		// add each comparison
+		
 		e = comparisons.elements();
 		while (e.hasMoreElements()) {
 			Comparison c = (Comparison) e.nextElement();
 			structures.addElement(c);
 		}
 
-		// create and return a query
+		
 		Structure sarray[] = new Structure[structures.size()];
 		structures.copyInto(sarray);
 		return new Query(as, sarray);
@@ -139,7 +139,7 @@ public class QueryBuilder implements PubliclyCloneable<QueryBuilder> {
 			c.comparisons = (Vector) comparisons.clone();
 			return c;
 		} catch (CloneNotSupportedException e) {
-			// this shouldn't happen, since we are Cloneable
+			
 			throw new InternalError();
 		}
 	}

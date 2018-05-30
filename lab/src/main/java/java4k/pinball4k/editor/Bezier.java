@@ -38,7 +38,7 @@ public class Bezier extends LevelObject {
 		float x2 = p3.x;
 		float y2 = p3.y;
 		
-		//int subdivs = (int) Math.max(5, ((Math.abs(x2-x0) + Math.abs(y2-y0)) / 10));
+		
 		
 		float prevx = x0;
 		float prevy = y0;

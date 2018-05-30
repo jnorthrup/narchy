@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -99,21 +99,21 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
       
         this.status.overallGenerationsDone++;
 
-        double timeTakenPerGen = (double)(System.currentTimeMillis() - startTime) / this.status.overallGenerationsDone; //changed to double in case is less than one
+        double timeTakenPerGen = (double)(System.currentTimeMillis() - startTime) / this.status.overallGenerationsDone; 
         long elapsedMillis = (long)((this.status.overallGenerations - this.status.overallGenerationsDone) * timeTakenPerGen);
 
         this.status.evolutionEta = String.format("%d h, %d m, %d s",
                 TimeUnit.MILLISECONDS.toHours(elapsedMillis),
                 TimeUnit.MILLISECONDS.toMinutes(elapsedMillis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(elapsedMillis)),
                 TimeUnit.MILLISECONDS.toSeconds(elapsedMillis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(elapsedMillis)));
-        //let's store the current generatin best(fitness) individual performances on validation. remind performances indexes != fintesses 
+        
         Ranking bestRanking = new Ranking(best, fitness);
         FinalSolution generationBestSolution = new FinalSolution(bestRanking);
       
-        //The learning performance is needed by the checkBestCandidate, commented out from production code
-        //Objective learningObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.LEARNING, strategy.getConfiguration());
-        //double[] learningPerformance = learningObjective.fitness(population.get(0).getTree());
-        //PerformacesObjective.populatePerformancesMap(learningPerformance, generationBestSolution.getLearningPerformances());
+        
+        
+        
+        
         
         Objective trainingObjective = PerformancesFactory.buildObjective(Context.EvaluationPhases.TRAINING, strategy.getConfiguration());
         double[] trainingPerformace = trainingObjective.fitness(best);
@@ -121,8 +121,8 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
                        
         status.updateBest(generationBestSolution);
         
-        //This code is used for history selection experiments, commented out from production code
-        //results.getJobTrace(jobId).checkBestCandidateSolution(generationBestSolution); 
+        
+        
 
         results.addCharachterEvaluated(strategy.getContext().getCurrentDataSet().getNumberOfChars() * population.size());
     }
@@ -132,7 +132,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
         int jobId = strategy.getConfiguration().getJobId();
         long executionTime = System.currentTimeMillis() - this.jobStartTimes.remove(jobId);
         
-        //Strategies can stop first then the maximum number of generations; we consider jumped generations like succesfully executed (useful for ETA stats):
+        
         int jumpedGenerations = strategy.getConfiguration().getEvolutionParameters().getGenerations() - generation;
         this.status.overallGenerationsDone+=jumpedGenerations;
              
@@ -156,7 +156,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
         int i = 0;
         for (Ranking individual : population) {
             FinalSolution finalSolution = new FinalSolution(individual);
-            //This condition is used in production release only.. performance is calculated only for first individual
+            
             if(i++==0){
                 double[] trainingPerformace = trainingObjective.fitness(individual.getNode());
                 double[] validationPerformance = validationObjective.fitness(individual.getNode());
@@ -168,12 +168,12 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
             jobTrace.getFinalGeneration().add(finalSolution);
         }
         
-        //When jobsDone >= number of Jobs we can call the PostProcessor to elaborate all the results
+        
         if (this.status.jobDone >= strategy.getConfiguration().getJobs()) {
             
         
-            //All the jobs has finished, let's manage the postprocessing stuff
-            //PostProcessor calls the BestSelector which selects the best job
+            
+            
             if(callPostProcessorAutomatically) {
                 callPostProcessor();
             }
@@ -189,7 +189,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
         this.status.jobDone++;
         this.status.jobFailed++;
         if (this.status.jobDone >= strategy.getConfiguration().getJobs()) {
-            //All the jobs has finished, let's manage the postprocessing stuff
+            
             if(callPostProcessorAutomatically) {
                 callPostProcessor();
             }
@@ -211,7 +211,7 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
 
     @Override
     public void register(ExecutionStrategy strategy) {
-        //NO OP
+        
     }
 
     @Override
@@ -233,21 +233,21 @@ public class BasicExecutionListener implements ExecutionListener, ExecutionListe
         return treeEvaluator.evaluate(bestIndividualReplica, new Context(Context.EvaluationPhases.LEARNING, this.configuration));
     }
  
-    //errors per example, on learning
+    
     public List<BasicStats> getBestEvaluationStats(int startIndex, int endIndex) throws TreeEvaluationException{
-        List<DataSet.Bounds[]> bestevaluations = getBestEvaluations();//.subList(startIndex, endIndex+1);
+        List<DataSet.Bounds[]> bestevaluations = getBestEvaluations();
         DataSet dataset = this.configuration.getDatasetContainer().getLearningDataset();
         List<BasicStats> statsPerExample = new LinkedList<>();
         for (int index = startIndex; index <= endIndex; index++) {
             DataSet.Bounds[] extractionsList = bestevaluations.get(index);
             Set<DataSet.Bounds> extractionsSet = UnifiedSet.newSetWith(extractionsList);
             DataSet.Example example = dataset.getExample(index);
-            extractionsSet.removeAll(example.getMatch()); //left only false extractions
+            extractionsSet.removeAll(example.getMatch()); 
             BasicStats exampleStats = new BasicStats();
-            exampleStats.fn = -1; //unset, not interesting at the moment
+            exampleStats.fn = -1; 
             exampleStats.fp = extractionsSet.size();
             exampleStats.tp = extractionsList.length - exampleStats.fp;
-            exampleStats.tn = -1; //unset, not interesting at the moment
+            exampleStats.tn = -1; 
             statsPerExample.add(exampleStats);
         }
         return statsPerExample;

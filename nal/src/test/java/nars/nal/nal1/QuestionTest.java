@@ -63,71 +63,71 @@ public class QuestionTest {
 
         nar.run(cycles);
 
-        //nar.conceptsActive().forEach(System.out::println);
+        
 
         assertTrue( ok.get() > 0);
 
-//           .onAnswer(question, a -> { //.en("What is a type of swimmer?")
-//
-//                System.out.println(nar.time() + ": " + question + " " + a);
-//                //test for a few task conditions, everything except for evidence
-//                if (a.punc() == expectedTask.punc())
-//                    if (a.term().equals(expectedTask.term())) {
-//                        if (Objects.equals(a.truth(), expectedTask.truth()))
-//                            solved.set(true);
-//                }
-//
-//            }).run(cycles);
+
+
+
+
+
+
+
+
+
+
+
 
 
     }
 
 
-//    @Test public void testQuestionHandler() throws Narsese.NarseseException {
-//        NAR nar = NARS.shell();
-//
-//        final int[] s = {0};
-//        new TaskMatch("add(%1, %2, #x)", nar) {
-//
-//            @Override public boolean test(@NotNull Task task) { return task.isQuestOrQuestion(); }
-//
-//            @Override
-//            protected void accept(Task task, Map<Term, Term> xy) {
-//                System.out.println(task + " " + xy);
-//                s[0] = xy.size();
-//            }
-//        };
-//
-//        nar.ask($.$("add(1, 2, #x)"));
-//
-//        assertEquals(3, s[0]);
-//
-//    }
 
-//    @Test public void testOperationHandler() throws Narsese.NarseseException {
-//        NAR nar = NARS.shell();
-//
-//        final int[] s = {0};
-//        StringBuilder match = new StringBuilder();
-//        new OperationTaskMatch( $.$("add(%1, %2, #x)"), nar) {
-//
-//            @Override public boolean test(@NotNull Task task) { return task.isQuestOrQuestion(); }
-//
-//            @Override
-//            protected void onMatch(Term[] args) {
-//                match.append(Arrays.toString(args)).append(' ');
-//            }
-//        };
-//
-//        nar.ask($.$("add(1, 2, #x)"));
-//
-//        assertTrue(match.toString().contains("[1, 2, #1026]"));
-//
-//        nar.ask($.$("add(1, #x)"));
-//        nar.ask($.$("(#x --> add)"));
-//
-//        assertFalse(match.toString().contains("[1, #1026]"));
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /** tests whether the use of a question guides inference as measured by the speed to reach a specific conclusion */
     @Test public void questionDrivesInference() {
@@ -159,7 +159,7 @@ public class QuestionTest {
                     new DeductiveMeshTest(t, dims, timelimit) {
                         @Override
                         public void ask(@NotNull TestNAR n, Term term) {
-                            //disabled
+                            
                         }
                     };
                     break;
@@ -189,8 +189,8 @@ public class QuestionTest {
         System.out.println("withOut: " + withOutTime);
 
 
-//        assertTrue(withTime.getSum() < withOutTime.getSum());
-//        assertTrue(withTime.getSum() < 2 * withOutTime.getSum()); //less than half, considering that a search "diameter" becomes a "radius" by providing the answer end-point
+
+
     }
 
 
@@ -209,7 +209,7 @@ public class QuestionTest {
 
                 }
             }
-            return null; //$.f("odd", a[0]); //vars, etc.
+            return null; 
         });
         n.termVolumeMax.set(24);
         n.input(
@@ -218,10 +218,10 @@ public class QuestionTest {
             "((({#x} --> number) && --odd(#x)) ==> ({#x} --> EVEN)).",
             "({#x} --> ODD)?",
             "({#x} --> EVEN)?"
-//            "(1 --> ODD)?",
-//            "(1 --> EVEN)?",
-//            "(2 --> ODD)?",
-//            "(2 --> EVEN)?"
+
+
+
+
         );
         n.run(2500);
 
@@ -229,14 +229,14 @@ public class QuestionTest {
 
     @Disabled @Test
     public void testDeriveQuestionOrdinary() throws Narsese.NarseseException {
-        new TestNAR(NARS.tmp()) //requires NAL3 single premise
+        new TestNAR(NARS.tmp()) 
                 .ask("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuestion(512, "(P --> M)").test();
     }
     @Disabled @Test
     public void testDeriveQuestOrdinary() throws Narsese.NarseseException {
-        new TestNAR(NARS.tmp()) //requires NAL3 single premise
+        new TestNAR(NARS.tmp()) 
                 .quest("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuest(256, "(P --> M)").test();
@@ -247,7 +247,7 @@ public class QuestionTest {
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "x. :|: %0.50;0.90%")
                 .inputAt(7, "x. :|: %0.00;0.90%")
-                .inputAt(8, "$1.0 x?") //eternal question that triggers eternalization (the answer)
+                .inputAt(8, "$1.0 x?") 
                 .mustBelieve(64, "x", 0.5f, 0.73f /*ETERNAL*/)
                 .test();
     }
@@ -256,42 +256,42 @@ public class QuestionTest {
         new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "y. :|: %1.00;0.90%")
-                .inputAt(1, "$1.0 (x &&+3 y)? :|:") //temporal
-                .inputAt(1, "$1.0 (x &&+3 y)?") //eternal
-                //should produce 2 different answers, one temporal and one eternal. both calculated via the dynamic conjunction model
-                //.mustBelieve(16, "(x &&+3 y)", 1f, 0.45f, t -> t == ETERNAL)
+                .inputAt(1, "$1.0 (x &&+3 y)? :|:") 
+                .inputAt(1, "$1.0 (x &&+3 y)?") 
+                
+                
                 .mustBelieve(64, "(x &&+3 y)", 1f, 0.45f, t -> t == ETERNAL)
                 .mustBelieve(64, "(x &&+3 y)", 1f, 0.81f, t -> t == 1)
                 .test();
     }
 
-//    @Test public void testSaneBudgeting() {
-//
-//        String c = "((parent($X,$Y) && parent($Y,$Z)) ==> grandparent($X,$Z))";
-//        new Default(1000, 8, 1, 3)
-//            .logSummaryGT(System.out, 0.1f)
-//            .eachFrame(nn->{
-//                Concept cc = nn.concept(c);
-//                if (cc!=null) {
-//                    cc.print(System.out, false, false, true, false);
-//                }
-//            })
-//            .input(c + ".", "")
-//            .run(100);
-//
-//    }
 
-//    @Test public void testPrologLike1() {
-//
-//        new Default(1000, 8, 1, 3)
-//            .logSummaryGT(System.out, 0.1f)
-//            .input(
-//                "((parent($X,$Y) && parent($Y,$Z)) ==> grandparent($X,$Z)).",
-//                "parent(c, p).",
-//                "parent(p, g).",
-//                "grandparent(p, #g)?"
-//            )
-//            .run(800);
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

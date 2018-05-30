@@ -10,17 +10,17 @@ import nars.term.Term;
 import java.util.Arrays;
 
 public final class InternedCompound extends UnitPri implements HijackMemoize.Computation<InternedCompound, Term> {
-    //X
+    
     public final Op op;
     public final int dt;
     private final int hash;
 
-    //public Term[] subs;
+    
     final byte[] subs;
 
     public transient Term[] rawSubs;
 
-    //Y
+    
     public Term y = null;
 
     public InternedCompound(Op o, int dt, Term... subs) {
@@ -43,25 +43,25 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
         return y;
     }
 
-    //        /**
-//         * if accepted into the interner, it can call this with a resolver function to fully intern this
-//         * by resolving the subterm values which are now present in the index
-//         */
-//        public void compact(Function<InternedCompound, Term> intern) {
-////            for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
-////                Term x = subs[i];
-////                if (x instanceof Compound) {
-////                    Term y = intern.apply(key(x));
-////                    if (y != null && y != x) {
-////                        subs[i] = y;
-////                    }
-////                }
-////            }
-//        }
+    
 
-//        private InternedCompound key(Term x) {
-//            return new InternedCompound(x.op(), x.subterms().arrayShared());
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -71,28 +71,28 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
 
     @Override
     public boolean equals(Object obj) {
-        //op == p.op && dt == p.dt &&
+        
         InternedCompound p = (InternedCompound) obj;
         return hash == p.hash && Arrays.equals(subs, p.subs);
     }
 
     public float value() {
         return 0.5f;
-//            float f;
-//            switch (dt) {
-//                case DTERNAL:
-//                    f = 1f;
-//                    break;
-//                case XTERNAL:
-//                case 0:
-//                    f = 0.75f;
-//                    break;
-//                default:
-//                    f = 0.25f;
-//                    break;
-//            }
-//            return f;
-        //return f / (1 + subs.length / 10f); //simple policy: prefer shorter
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     }
 
     @Override
@@ -103,24 +103,24 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
     public void set(Term y) {
         this.y = y;
 
-//            //HACK extended interning
-//            int n = subs.length;
-//            if (y != null && y.subs() == n) {
-//                if (n > 1) {
-//                    Subterms ys = y.subterms();
-//                    if (ys instanceof TermVector) {
-//                        Term[] yy = ys.arrayShared();
-//                        if (subs != yy && Arrays.equals(subs, yy)) {
-//                            subs = yy;
-//                        }
-//                    }
-//                } else if (n == 1) {
-//                    Term y0 = y.sub(0);
-//                    Term s0 = subs[0];
-//                    if (s0 != y0 && s0.equals(y0))
-//                        subs[0] = y0;
-//                }
-//            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public Term compute() {

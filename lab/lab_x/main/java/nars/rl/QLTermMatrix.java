@@ -33,17 +33,17 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
     /** pending tasks to execute to prevent CME */
     transient private final List<Task> stateActionImplications = Global.newArrayList();
 
-    final int implicationOrder = TemporalRules.ORDER_FORWARD; //TemporalRules.ORDER_FORWARD;
+    final int implicationOrder = TemporalRules.ORDER_FORWARD; 
 
     /**
      * what type of state implication (q-entry) affected: belief (.) or goal (!)
      */
     char implicationPunctuation = Symbols.JUDGMENT;
-    float updateThresh = DefaultTruth.DEFAULT_TRUTH_EPSILON * 0.25f; //seems to be better to aggregate them to a significant amount before generating a new belief otherwise it spams the belief tables
+    float updateThresh = DefaultTruth.DEFAULT_TRUTH_EPSILON * 0.25f; 
 
 
-    float sensedStatePriorityChanged = 1.0f; //scales priority by this amount
-    float sensedStatePrioritySame = 0.85f; //scales priority by this amount
+    float sensedStatePriorityChanged = 1.0f; 
+    float sensedStatePrioritySame = 0.85f; 
     float inputPriorityMult = 1.0f;
 
     /**
@@ -51,9 +51,9 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
      */
 
 
-    //boolean updateEachFrame = false; //TODO specify as a frequency either in # per frame or cycle (ex: hz)
+    
 
-    //OPERATING PARAMETERS ------------------------
+    
     /** confidence of update beliefs (a learning rate); set to zero to disable */
     float qUpdateConfidence = 0.25f;
 
@@ -63,12 +63,12 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
     /** confidence of reward command goal; set to zero to disable reward beliefs */
     float rewardGoalConfidence = 0.8f;
 
-    //TODO belief update priority, durability etc
-    //TODO reward goal priority, durability etc
+    
+    
 
 
-    protected float actedGoalConfidence = 0; //set to 0 to disable qAutonomous
-    protected float actedBeliefConfidence = 0; //set to 0 to disable qAutonomous
+    protected float actedGoalConfidence = 0; 
+    protected float actedBeliefConfidence = 0; 
     float actionPriority = Global.DEFAULT_GOAL_PRIORITY;
     float actionDurability = Global.DEFAULT_GOAL_DURABILITY;
 
@@ -128,17 +128,17 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
                 return QLTermMatrix.this.qSentence(state, action);
             }
 
-//            @Deprecated @Override
-//            protected A qlearn(S state, double reward, A nextAction, double confidence) {
-//                //belief about current state
-//                if (stateUpdateConfidence > 0) {
-//
-//                    //TODO avoid using String
-//                    input(nar.task((state) + ". :|: %" + confidence + ";" + stateUpdateConfidence + "%"));
-//                }
-//
-//                return super.qlearn(state, reward, nextAction, confidence);
-//            }
+
+
+
+
+
+
+
+
+
+
+
 
             @Override
             public Iterable<S> getStates() {
@@ -253,29 +253,29 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
     /**
      * this should return operations which call an operator that calls this instance's learn(state, reward) function at the end of its execution
      */
-    //abstract public Operation getActionOperation(int s);
+    
 
 
 
-//    protected synchronized void qCommit() {
-//        if (qUpdateConfidence == 0) return;
-//
-//
-//        //input all dQ values
-//        for (Table.Cell<S, A, QEntry> c : table.cellSet()) {
-//            S state = c.getRowKey();
-//            A action = c.getColumnKey();
-//            Task t = qCommit(state, action, c.getValue());
-//            if (t!=null)
-//                stateActionImplications.add(t);
-//        }
-//
-//        for (int i = 0; i< stateActionImplications.size(); i++) {
-//            Task t = stateActionImplications.get(i);
-//            input(t);
-//        }
-//        stateActionImplications.clear();
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -284,8 +284,8 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
         Task last = lastState.get(state);
         boolean changed = (last == null ||
                 !newState.getTruth().equals(last.getTruth())
-                //TODO compare time?
-                //TODO compare priority? (before it was scaled?)
+                
+                
         );
         lastState.put(state, newState);
         last = newState;
@@ -343,25 +343,25 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
         input(t);
     }
 
-//    public void react() {
-//        act(getNextAction(), Symbols.GOAL);
-//    }
 
 
 
-//    public Term learn( S state, final double reward, A nextAction, double confidence) {
-//        believeReward((float) reward);
-//        goalReward();
-//
-//        Term l = brain.learn(state, reward, nextAction, confidence);
-//        qCommit();
-//        return l;
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     protected void goalReward() {
-        //seek reward goal
+        
         if (rewardGoalConfidence > 0) {
             input(TaskSeed.make(nar.memory, (Compound) getRewardTerm()).present().goal().truth(1.0f, rewardGoalConfidence));
         }
@@ -377,7 +377,7 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
      * @param maxReward
      */
     protected void believeReward(float reward, float minReward, float maxReward) {
-        //belief about current reward amount
+        
         if (rewardBeliefConfidence > 0) {
 
 
@@ -392,10 +392,10 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
                 rFreq = -((reward) / (minReward));
             }
 
-            //expects -1..+1 as reward range input
+            
             rFreq = rFreq / 2.0f + 0.5f;
 
-            //clip reward to bounds
+            
             if (rFreq < 0) rFreq = 0;
             if (rFreq > 1f) rFreq = 1f;
 
@@ -416,9 +416,9 @@ abstract public class QLTermMatrix<S extends Term, A extends Term> extends Conce
     protected void input(Task t) {
         t.getBudget().mulPriority(inputPriorityMult);
 
-        //System.out.println("ql: " + t);
+        
         TaskProcess.run(nar, t);
-        //nar.input(t);
+        
     }
 
     /** master input gain */

@@ -17,10 +17,10 @@ import java.util.List;
 /** 2d physics dynamic layout
  * TODO unfinished */
 public class Dyn2DLayout<E> extends DynamicLayout2D<E, MovingRectFloat2D> {
-//
-//    class PhyMovingRect extends MovingRectFloat2D {
-//        Body2D body;
-//    }
+
+
+
+
 
     float scale = 0.01f;
 
@@ -39,8 +39,8 @@ public class Dyn2DLayout<E> extends DynamicLayout2D<E, MovingRectFloat2D> {
     @Override
     protected void layoutDynamic(Graph2D<E> g) {
 
-//        Dynamics2D.staticBox(W, g.bounds.x*scale, g.bounds.y*scale, g.bounds.right()*scale, g.bounds.bottom()*scale,
-//                true, false, true, false);
+
+
         float bo = g.h()*scale/10;
         W.addStatic(new FixtureDef(PolygonShape.box(0, g.y()-bo, g.w()*scale, g.y()), 0.9f, 0));
         W.addStatic(new FixtureDef(PolygonShape.box(0, g.y()+g.h(), g.w()*scale, g.y()+g.h()+bo), 0.9f, 0));
@@ -48,7 +48,7 @@ public class Dyn2DLayout<E> extends DynamicLayout2D<E, MovingRectFloat2D> {
         for (int i = 0, boundsSize = bounds.size(); i < boundsSize; i++) {
             MovingRectFloat2D b = bounds.get(i);
             FixtureDef fd = new FixtureDef(PolygonShape.box(b.w * scale * 2, b.h * scale * 2), 1f, 0.9f);
-            //fd.restitution = 0.1f;
+            
             Body2D bbb = W.addBody(
                     new Body2D(BodyType.DYNAMIC, W),
                     fd
@@ -69,8 +69,8 @@ public class Dyn2DLayout<E> extends DynamicLayout2D<E, MovingRectFloat2D> {
             Tuple2f pos = bbb.getPosition();
             b.pos(pos.x/scale, pos.y/scale);
 
-            //if (i == 0) System.out.println(i + " " + pos);
-            //W.removeBody(bbb);
+            
+            
         }
         bb.clear();
 

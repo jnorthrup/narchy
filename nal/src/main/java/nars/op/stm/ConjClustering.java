@@ -58,20 +58,20 @@ public class ConjClustering extends Causable {
             @Override
             public void coord(Task t, double[] c) {
                 c[0] = t.start();
-                c[3] = t.priElseZero(); //0..+1
+                c[3] = t.priElseZero(); 
                 Truth tt = t.truth();
-                c[1] = tt.polarity(); //0..+1 //if negative, will be negated in subterms
-                c[2] = tt.conf(); //0..+1
+                c[1] = tt.polarity(); 
+                c[2] = tt.conf(); 
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return (1 + Math.abs(a[0] - b[0]) / dur)    //d(time)/dur
+                return (1 + Math.abs(a[0] - b[0]) / dur)    
                         *
                         (
-                          Math.abs(a[1] - b[1])  //d(freq_polarity)
-                        + Math.abs(a[2] - b[2])  //d(conf)
-                        + Math.abs(a[3] - b[3])*0.1f  //d(pri)
+                          Math.abs(a[1] - b[1])  
+                        + Math.abs(a[2] - b[2])  
+                        + Math.abs(a[3] - b[3])*0.1f  
                         );
             }
         };
@@ -84,14 +84,14 @@ public class ConjClustering extends Causable {
         nar.onTask(t -> {
             if (!t.isEternal()
                     && t.punc() == punc
-                    && !t.hasVars() //<-- excludes any variable-containing terms
+                    && !t.hasVars() 
                     && filter.test(t)) {
                 bag.put(t,
-                        //t.priElseZero() * (1f / t.volume()) //prefer smaller events
+                        
                         t.priElseZero()
-                        //(1f + t.expolarity()) * (1f + t.conf())
+                        
                 );
-                //* (1f + t.priElseZero()));// / t.volume());
+                
             }
         });
     }
@@ -102,7 +102,7 @@ public class ConjClustering extends Causable {
     protected int next(NAR nar, int work /* max tasks generated per centroid, >=1 */) {
 
         if (bag.bag.isEmpty())
-            return -1; //done for cycle
+            return -1; 
 
         this.now = nar.time();
         this.dur = nar.dur();
@@ -118,46 +118,46 @@ public class ConjClustering extends Causable {
 
     }
 
-//    /**
-//     * produces a parallel conjunction term consisting of all the task's terms
-//     */
-//    public Stream<List<Task>> chunk(Stream<Task> input, int maxComponentsPerTerm, int maxVolume) {
-//        final int[] group = {0};
-//        final int[] subterms = {0};
-//        final int[] currentVolume = {0};
-//        final float[] currentConf = {1};
-//        return input.filter(x -> !x.isDeleted())
-//                .collect(Collectors.groupingBy(x -> {
-//
-//                    int v = x.volume();
-//                    float c = x.conf();
-//
-//                    if ((subterms[0] >= maxComponentsPerTerm) || (currentVolume[0] + v >= maxVolume) || (currentConf[0] * c < confMin)) {
-//                        //next group
-//                        group[0]++;
-//                        subterms[0] = 1;
-//                        currentVolume[0] = v;
-//                        currentConf[0] = c;
-//                    } else {
-//                        subterms[0]++;
-//                        currentVolume[0] += v;
-//                        currentConf[0] *= c;
-//                    }
-//
-//                    return group[0];
-//                }))
-//                .entrySet().stream()
-//                .map(c -> {
-//                    List<Task> v = c.getValue();
-//                    return c.getKey() >= 0 && //only batches of >1
-//                            v.size() > 1 ? v : null;  //ignore the -1 discard group
-//                })
-//                .filter(Objects::nonNull);
-//
-//    }
 
-//    static final BiFunction<Task, Task, Task> termPointMerger = (prevZ, newZ) -> ((prevZ == null) || (newZ.conf() >= prevZ.conf())) ?
-//            newZ : prevZ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
@@ -196,12 +196,12 @@ public class ConjClustering extends Causable {
 
                 Task t =
                         gg.next().id;
-                //gg.peek().id;
+                
                 Term xt = t.term();
 
                 long zs = Tense.dither(t.start(), ditherTime);
-                //long ze = Tense.dither(t.end(), ditherTime);
-//                assert (end >= start);
+                
+
 
                 Truth tx = t.truth();
                 Term xtn = xt.neg();
@@ -212,33 +212,33 @@ public class ConjClustering extends Causable {
                 int xtv = xt.volume();
                 maxVolume = Math.max(maxVolume, xt.volume());
                 if (vol + xtv + 1 >= volMax || conf * tx.conf() < confMin) {
-                    continue; //cant go any further with this task
+                    continue; 
                 }
 
                 boolean involved = false;
                 LongObjectPair<Term> ps = pair(zs, xt);
                 Term xtNeg = xt.neg();
 
-//                //TODO fairly decide midpoint if the conj cant hold both endpoints:
-//
+
+
                 if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
                     if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
                         vol += xtv;
                         involved = true;
                     }
                 }
-//
-//                if (ze - zs >= dur) {
-//                    //endpoint
-//                    if (vol + xtv + 1 < volMax) {
-//                        LongObjectPair<Term> pe = pair(ze, xt);
-//                        if (!vv.containsKey(pair(ze, xtNeg)) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
-//                            vol += xtv;
-//                            if (end < ze) end = ze;
-//                            involved = true;
-//                        }
-//                    }
-//                }
+
+
+
+
+
+
+
+
+
+
+
+
 
                 if (involved) {
 
@@ -252,14 +252,14 @@ public class ConjClustering extends Causable {
                     conf *= tx.conf();
 
                     float tf = tx.freq();
-                    freq *= tx.isNegative() ? (1f - tf) : tf; //since it will appear as a negated subterm
+                    freq *= tx.isNegative() ? (1f - tf) : tf; 
 
                     float p = t.priElseZero();
                     if (p < priMin) priMin = p;
                     if (p > priMax) priMax = p;
 
                     if (actualTasks.size() >= Param.STAMP_CAPACITY)
-                        break; //done
+                        break; 
                 }
             } while (vol < volMax - 1 && conf > confMin);
 
@@ -267,12 +267,12 @@ public class ConjClustering extends Causable {
             if (vs < 2)
                 continue;
 
-            //the tasks which are actually involved
+            
 
 
             Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
 
-            //TODO discount based on evidential overlap? needs N-way overlapFraction function
+            
 
             float e = c2w(conf);
             if (e > 0) {
@@ -285,25 +285,25 @@ public class ConjClustering extends Causable {
                         cj = cj.normalize();
 
 
-                        if (Math.abs(cj.dtRange() - (end - start)) < ditherTime) { //test if merge collapse occurred and occurrence time needs recalculated
+                        if (Math.abs(cj.dtRange() - (end - start)) < ditherTime) { 
 
 
                             ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, true);
                             if (cp != null) {
 
 
-                                NALTask m = new STMClusterTask(cp, t, start, start, actualStamp.toArray(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
-                                //if (evidence.getTwo() > 0) m.setCyclic(true);
+                                NALTask m = new STMClusterTask(cp, t, start, start, actualStamp.toArray(), punc, now); 
+                                
 
                                 m.cause = Cause.sample(Param.causeCapacity.intValue(), uu);
 
                                 float p =
-                                        //priMax;
+                                        
                                         priMin;
-                                //(priMin + priMax) / 2f;
+                                
 
-                                //complexity deduction
-                                //  how much more complex the conjunction is than the most complex of its ingredients
+                                
+                                
                                 int v = cp.getOne().volume();
                                 float cmplFactor =
                                         ((float) v) / (v + maxVolume);
@@ -313,7 +313,7 @@ public class ConjClustering extends Causable {
                                 centroidGen++;
                             }
                         } else {
-                            //System.out.println("merge collapse, recalcu");
+                            
                         }
                     }
 
@@ -331,33 +331,33 @@ public class ConjClustering extends Causable {
     }
 
 
-//        Map<Term, Task> vv = new HashMap();
-//        net.nodeStream()
-//                .filter(x -> x.size() >= minConjSize)
-//                .sorted(Comparator.comparingDouble(x -> x.localError() / (x.size())))
-//                .filter(n -> {
-//                    //TODO wrap all the coherence tests in one function call which the node can handle in a synchronized way because the results could change in between each of the sub-tests:
-//
-//
-//                    double[] fc = n.coherence(2);
-//                    if (fc != null && fc[1] >= freqCoherenceThresh) {
-//                        double[] cc = n.coherence(3);
-//                        if (cc != null && cc[1] >= confCoherenceThresh) {
-//                            return true;
-//                        }
-//                        //return true;
-//                    }
-//
-//                    return false;
-//                })
-//                .flatMap(n -> {
-//
 
-//
-//                    //if temporal clustering is close enough, allow up to maxGroupSize in &&, otherwise lmiit to 2
-//                    int gSize = ((n.range(0) <= dur && n.range(1) <= dur)) ? maxConjSize : 2;
-//
-//                    return n.chunk(gSize, maxVol).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     public static class STMClusterTask extends NALTask {

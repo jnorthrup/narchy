@@ -1,7 +1,7 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Various tools
+package nars.ca;
+
+
+
 
 import java.io.*;
 import java.net.MalformedURLException;
@@ -9,12 +9,12 @@ import java.net.URL;
 import java.util.Vector;
 
 public class MJTools {
-	// ----------------------------------------------------------------
+	
 	public MJTools() {
 	}
 
-	// ----------------------------------------------------------------
-	// Read the specified text file, return its lines in vLines
+	
+	
 	public boolean LoadTextFile(String sPath, Vector vLines) {
 		boolean fRetVal = false;
 		URL theUrl;
@@ -37,7 +37,7 @@ public class MJTools {
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 					theFile));
 
-			// read-in the whole file
+			
 			while ((sBff = br.readLine()) != null) {
 				if (!sBff.isEmpty()) {
 					vLines.addElement(sBff.trim());
@@ -52,9 +52,9 @@ public class MJTools {
 		return fRetVal;
 	}
 
-	// ----------------------------------------------------------------
-	// Read the specified resource file, return its lines in vLines
-	// Resource file MUST be given as a relative path.
+	
+	
+	
 	public boolean LoadResTextFile(String sPath, Vector vLines) {
 		boolean fRetVal = false;
 		String sBff;
@@ -65,7 +65,7 @@ public class MJTools {
 				BufferedReader br = new BufferedReader(
 						new InputStreamReader(in));
 
-				// read-in the whole file
+				
 				while ((sBff = br.readLine()) != null) {
 					if (!sBff.isEmpty()) {
 						vLines.addElement(sBff.trim());
@@ -80,7 +80,7 @@ public class MJTools {
 
 		return fRetVal;
 	}
-	// ----------------------------------------------------------------
-	// ----------------------------------------------------------------
-	// ----------------------------------------------------------------
+	
+	
+	
 }

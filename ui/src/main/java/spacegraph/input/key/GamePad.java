@@ -20,7 +20,7 @@ import java.util.function.Function;
  * using a method like:
  * gamePad1.calibrate(event1) -> CalibratedGameInputEvent
  * <p>
- * http://www.java-gaming.org/index.php?PHPSESSID=ecau62mklg3us0870iq44ule60&topic=16866.0
+ * http:
  */
 public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnable {
 
@@ -57,8 +57,8 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
     }
 
     public static class GameInputEvent {
-        final int axis; //"number"
-        final long when; //"time"
+        final int axis; 
+        final long when; 
         final int value;
 
         public GameInputEvent(int axis, int value, long when) {
@@ -83,7 +83,7 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
         String prefix = "Event: ";
         if (!l.startsWith(prefix)) {
             logger.warn("unknown: {}", l);
-            return null; //??
+            return null; 
         }
 
         String remaining = l.substring(prefix.length());
@@ -94,11 +94,11 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
             return null;
         }
 
-        //ignor the "type" field for now
+        
 
         long when =
-                //TODO for more accuracy, use the included time stamp, but it must be shifted to absolute unixtime
-                //Long.parseLong(fields.get("time"));
+                
+                
                 System.currentTimeMillis();
 
         int axis = Integer.parseInt(fields.get("number"));

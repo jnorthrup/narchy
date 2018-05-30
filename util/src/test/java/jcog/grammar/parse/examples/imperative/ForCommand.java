@@ -18,7 +18,7 @@ import jcog.grammar.parse.examples.engine.*;
  * <pre>
  * 
  * for (int i = 0; i &lt; limit; i++) {
- * 	// body
+ * 	
  * }
  * </pre>
  * 

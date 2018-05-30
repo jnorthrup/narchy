@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.ugens;
 
@@ -72,6 +72,6 @@ public class BiquadCustomCoeffCalculator {
      * @param gain The gain of the filter.
      */
     public void calcCoeffs(float freq, float q, float gain) {
-        // override with coefficient calculations
+        
     }
 }

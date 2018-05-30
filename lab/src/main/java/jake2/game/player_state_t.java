@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 31.10.2003 by RST.
+
 
 package jake2.game;
 
@@ -39,24 +39,24 @@ import java.io.RandomAccessFile;
 
 public class player_state_t {
 
-	public final pmove_state_t pmove= new pmove_state_t(); // for prediction
+	public final pmove_state_t pmove= new pmove_state_t(); 
 
-	// these fields do not need to be communicated bit-precise
-	public final float[] viewangles= { 0, 0, 0 }; // for fixed views
-	public final float[] viewoffset= { 0, 0, 0 }; // add to pmovestate->origin
-	public final float[] kick_angles= { 0, 0, 0 }; // add to view direction to get render angles
+	
+	public final float[] viewangles= { 0, 0, 0 }; 
+	public final float[] viewoffset= { 0, 0, 0 }; 
+	public final float[] kick_angles= { 0, 0, 0 }; 
 
-	// set by weapon kicks, pain effects, etc
+	
 	public final float[] gunangles= { 0, 0, 0 };
 	public final float[] gunoffset= { 0, 0, 0 };
 	public int gunindex;
 	public int gunframe;
 
-	public final float[] blend= new float[4]; // rgba full screen effect
+	public final float[] blend= new float[4]; 
 
-	public float fov; // horizontal field of view
+	public float fov; 
 
-	public int rdflags; // refdef flags
+	public int rdflags; 
 
 	public final short[] stats= new short[Defines.MAX_STATS];
 

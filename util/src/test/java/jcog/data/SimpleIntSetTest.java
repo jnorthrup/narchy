@@ -23,7 +23,7 @@ class SimpleIntSetTest {
             int xi = x.nextInt();
             if (h.add(xi)) {
                 s.add(xi);
-                assertFalse(s.add(xi)); //duplicate
+                assertFalse(s.add(xi)); 
             } else {
                 assertTrue(s.contains(xi));
             }
@@ -32,7 +32,7 @@ class SimpleIntSetTest {
         for (int i = 0; i < length; i++) {
             int yi = y.nextInt();
             assertTrue(s.contains(yi));
-            if (!h.contains(yi+1)) //a negative example
+            if (!h.contains(yi+1)) 
                 assertFalse(s.contains(yi+1));
         }
 

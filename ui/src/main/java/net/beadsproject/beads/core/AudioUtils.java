@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  * CREDIT: This class uses portions of code taken from JASS. See readme/CREDITS.txt.
  *
  */
@@ -141,8 +141,8 @@ public final class AudioUtils {
             for (int i = startIndexInFloatArray; i < min; ++i) {
                 float sample = ((in[ib + 0] << 8) | (in[ib + 1] & 0xFF)) / 32768.0F;
 
-                // BP: Could you explain the above code better?
-                // How do we generalise to N-bytes per float?
+                
+                
 
                 ib += 2;
                 out[i] = sample;
@@ -186,7 +186,7 @@ public final class AudioUtils {
 			int ib = startIndexInByteArray;
 			int min = Math.min(out.length,startIndexInFloatArray+numFloats);
 			for (int i = startIndexInFloatArray; i < min; ++i) {
-				// float sample = ((in[ib + 0] << 8) | (in[ib + 1] & 0xFF)) / maxvalue;
+				
 				
 				long l = 0;
 				for(int k=0;k<nBytesPerFloat;k++)
@@ -199,7 +199,7 @@ public final class AudioUtils {
 			int ib = startIndexInByteArray;
 			int min = Math.min(out.length,startIndexInFloatArray+numFloats);
 			for (int i = startIndexInFloatArray; i < min; ++i) {
-				// float sample = ((in[ib] & 0xFF) | (in[ib + 1] << 8)) / maxvalue;
+				
 				
 				long l = 0;
 				for(int k=0;k<nBytesPerFloat;k++)
@@ -275,22 +275,22 @@ public final class AudioUtils {
      */
     static public void stretchBuffer(float[][] source, float[][] dest) {
         int numChannels = Math.min(source.length, dest.length);
-        // this many steps in source for one step in dest
+        
         double segStep = (source[0].length - 1.0) / (dest[0].length - 1.0);
 
         for (int ch = 0; ch < numChannels; ch++) {
             float[] src = source[ch];
             float[] dst = dest[ch];
 
-            // trivial case
+            
             if (src.length == 1 || dst.length == 1) {
                 dst[0] = src[0];
                 continue;
             }
 
-            // each segment of src is considered a linear region that is interpolated to map onto dst,
-            // for each segment, only need to calculate the gradient once
-            // the first and last elements of src are mapped into the first and last elements of dst
+            
+            
+            
             dst[0] = src[0];
             dst[dst.length - 1] = src[src.length - 1];
 
@@ -300,25 +300,25 @@ public final class AudioUtils {
              * if so, recalculate the lerp data for that segment
              */
 
-            // current segment data
-            int segment = -1; // current segment, initialised to nothing
-            double segstart = 0, segend = 0, seggrad = 0; // start, end, and gradient of current segment
+            
+            int segment = -1; 
+            double segstart = 0, segend = 0, seggrad = 0; 
 
             double fractionalSegment = 0;
 
             for (int i = 1; i < dst.length - 1; i++) {
-                // compute segment
+                
                 fractionalSegment += segStep;
                 int currentSegment = (int) Math.floor(fractionalSegment);
                 if (currentSegment != segment) {
-                    // new segment, so calculate lerp data
+                    
                     segment = currentSegment;
                     segstart = src[segment];
                     segend = src[segment + 1];
                     seggrad = segend - segstart;
                 }
 
-                // compute value from segstart, end, and grad
+                
                 dst[i] = (float) (segstart + seggrad * (fractionalSegment - currentSegment));
             }
         }
@@ -332,7 +332,7 @@ public final class AudioUtils {
     static public void reverseBuffer(float[][] buffer) {
         for (float[] b : buffer) {
             for (int left = 0, right = b.length - 1; left < right; left++, right--) {
-                // exchange the first and last
+                
                 float temp = b[left];
                 b[left] = b[right];
                 b[right] = temp;
@@ -344,7 +344,7 @@ public final class AudioUtils {
     /**
      * Does a freaky shortcut for calculating pow (limited to base with range 0-1), faster but less accurate than regular Math.pow().
      * <p>
-     * <p/>CREDIT: this method is copied directly from <a href="http://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/">http://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/</a>
+     * <p/>CREDIT: this method is copied directly from <a href="http:
      *
      * @param a the base.
      * @param b the exponent.

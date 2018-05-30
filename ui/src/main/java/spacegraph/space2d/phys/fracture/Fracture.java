@@ -30,13 +30,13 @@ public class Fracture {
      */
     public final float normalImpulse;
 
-    private final Fixture f1; //primarna fixture, ktora sa rozbija
-    private final Fixture f2; //sekundarna fixture
-    private final Body2D b1; //telo fixtury f1
-    private final Body2D b2; //telo fuxtury f2
-    private final Material m; //material triestiaceho sa telesa
-    private final Tuple2f point; //kolizny bod vo worldCoordinates
-    private final Contact contact; //kontakt, z ktoreho vznika fraktura
+    private final Fixture f1; 
+    private final Fixture f2; 
+    private final Body2D b1; 
+    private final Body2D b2; 
+    private final Material m; 
+    private final Tuple2f point; 
+    private final Contact contact; 
 
     /**
      * Vytvori Frakturu. Ta este nieje aplikovana na svet.
@@ -64,7 +64,7 @@ public class Fracture {
         if (s == null)
             return;
 
-        if (contact == null) { //riesi sa staticky prvok, ktory ma priliz maly obsah
+        if (contact == null) { 
             b1.setType(BodyType.DYNAMIC);
             return;
         }
@@ -89,11 +89,11 @@ public class Fracture {
                     float radius = cs.radius;
 
                     double u = Math.PI * 2 / CIRCLEVERTICES;
-                    radius = (float) Math.sqrt(u / Math.sin(u)) * radius; //upravim radius tak, aby bola zachovana velkost obsahu
+                    radius = (float) Math.sqrt(u / Math.sin(u)) * radius; 
 
                     Tuple2f center = cs.center;
                     for (int i = 0; i < CIRCLEVERTICES; ++i) {
-                        double j = u * i; //uhol
+                        double j = u * i; 
                         float sin = (float) Math.sin(j);
                         float cos = (float) Math.cos(j);
                         Tuple2f v = new v2(sin, cos).scaled(radius).added(center);
@@ -105,14 +105,14 @@ public class Fracture {
             }
         }
 
-        float mConst = f1.material.m_rigidity / normalImpulse; //sila v zavislosti na pevnosti telesa
+        float mConst = f1.material.m_rigidity / normalImpulse; 
 
-        boolean fixA = f1 == contact.aFixture; //true, ak f2 je v objekte contact ako m_fixtureA
+        boolean fixA = f1 == contact.aFixture; 
         float oldAngularVelocity = fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
         Tuple2f oldLinearVelocity = fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
         b1.setAngularVelocity((b1.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
         b1.setLinearVelocity(b1.vel.sub(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
-        if (!w.isFractured(f2) && b2.type == BodyType.DYNAMIC && !b2.m_fractureTransformUpdate) { //ak sa druhy objekt nerozbija, tak sa jej nahodia povodne hodnoty (TREBA MODIFIKOVAT POHYB OBJEKTU, KTORY SPOSOBUJE ROZPAD)
+        if (!w.isFractured(f2) && b2.type == BodyType.DYNAMIC && !b2.m_fractureTransformUpdate) { 
             oldAngularVelocity = !fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
             oldLinearVelocity = !fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
             b2.setAngularVelocity((b2.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
@@ -120,7 +120,7 @@ public class Fracture {
             b2.setTransform(
                     b2.transformPrev.pos.add(b2.vel.scale(dt)),
                     b2.transformPrev.angle()
-            ); //osetruje jbox2d od posuvania telesa pri rieseni kolizie
+            ); 
             b2.m_fractureTransformUpdate = true;
         }
 
@@ -131,26 +131,26 @@ public class Fracture {
 
         localVelocity.scaled(dt);
 
-        Polygon[] fragment = m.split(smasher, p, localPoint, localVelocity, normalImpulse); //rodeli to
-        if (fragment.length <= 1) { //nerozbilo to na ziadne fragmenty
+        Polygon[] fragment = m.split(smasher, p, localPoint, localVelocity, normalImpulse); 
+        if (fragment.length <= 1) { 
             return;
         }
 
-        //definuje tela fragmentov - tie maju vsetky rovnaku definiciu (preberaju parametre z povodneho objektu)
+        
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(b1.pos); //pozicia
-        bodyDef.angle = b1.angle(); // otocenie
+        bodyDef.position.set(b1.pos); 
+        bodyDef.angle = b1.angle(); 
         bodyDef.fixedRotation = b1.isFixedRotation();
         bodyDef.angularDamping = b1.m_angularDamping;
         bodyDef.allowSleep = b1.isSleepingAllowed();
 
         FixtureDef fd = new FixtureDef();
-        fd.friction = f1.friction; // trenie
-        fd.restitution = f1.restitution; //odrazivost
+        fd.friction = f1.friction; 
+        fd.restitution = f1.restitution; 
         fd.isSensor = f1.isSensor;
         fd.density = f1.density;
 
-        //odstrani fragmentacne predmety/cele teleso
+        
         List<Fixture> fixtures = new FasterList<>();
         if (f1.polygon != null) {
             for (Fixture f = b1.fixtures; f != null; f = f.next) {
@@ -170,9 +170,9 @@ public class Fracture {
             w.removeBody(b1);
         }
 
-        //prida fragmenty do simulacie
+        
         MyList<Body2D> newbodies = new MyList<>();
-        for (Polygon pg : fragment) { //vytvori tela, prida fixtury, poriesi konvexnu dekompoziciu
+        for (Polygon pg : fragment) { 
             if (pg.isCorrect()) {
                 if (pg instanceof Fragment) {
                     Polygon[] convex = pg.convexDecomposition();
@@ -185,7 +185,7 @@ public class Fracture {
                         fd.shape = ps;
                         fd.polygon = null;
                         fd.material = f1.material;
-                                //.m_fragments; //rekurzivne stiepenie
+                                
 
                         f_body.addFixture(fd);
                         f_body.setAngularVelocity(b1.velAngular);
@@ -195,7 +195,7 @@ public class Fracture {
 
                 } else {
                     fd.material =
-                            f1.material;//.m_fragments; //rekurzivne stiepenie
+                            f1.material;
                     bodyDef.type = b1.getType();
                     Body2D f_body = w.addBody(bodyDef);
                     PolygonFixture pf = new PolygonFixture(pg);
@@ -208,7 +208,7 @@ public class Fracture {
             }
         }
 
-        //zavola sa funkcia z fraction listeneru (pokial je nadefinovany)
+        
         FractureListener fl = w.getContactManager().m_fractureListener;
         if (fl != null) {
             fl.action(m, normalImpulse, newbodies);
@@ -233,32 +233,32 @@ public class Fracture {
         }
     }
 
-//    /**
-//     * Kontrolue, ci je kolizia kriticka, ak je, tak ju prida do hashovacej tabulky
-//     * kritickych kolizii. Treba zauvazit aj multimaterialove telesa. Materialy
-//     * tvoria spojovy zoznam, pre triestenie sa vsak pouzije len jeden
-//     */
-//    private static final MyList<Material> materials = new MyList<>();
+
+
+
+
+
+
 
     private static void fractureCheck(final Fixture f1, final Fixture f2, final float iml, Dynamics2D w, Contact contact, int i) {
-//        materials.clear();
-//        for (Material m = f1.material; m != null; m = m.m_fragments) {
-//            if (materials.contains(m)) {
-//                return;
-//            }
+
+
+
+
+
             Material m = f1.material;
             if (m!=null && m.m_rigidity < iml) {
                 f1.body.m_fractureTransformUpdate = f2.body.m_fractureTransformUpdate = false;
                 if (f1.body.m_massArea > Material.MINMASSDESCTRUCTION) {
                     WorldManifold wm = new WorldManifold();
-                    contact.getWorldManifold(wm); //vola sa iba raz
+                    contact.getWorldManifold(wm); 
                     w.addFracture(new Fracture(f1, f2, m, contact, iml, new v2(wm.points[i])));
                 } else if (f1.body.type != BodyType.DYNAMIC) {
                     w.addFracture(new Fracture(f1, f2, m, null, 0, null));
                 }
             }
-//            materials.add(m);
-//        }
+
+
     }
 
     private static boolean equals(Fixture f1, Fixture f2) {

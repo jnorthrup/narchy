@@ -193,19 +193,19 @@ public class SlingParser {
 		t.get(reserve("for"));
 		t.get(lParen());
 
-		// variable
+		
 		t.get(variable());
 		t.get(comma());
 
-		// from
+		
 		t.get(expression());
 		t.get(comma());
 
-		// to
+		
 		t.get(expression());
 		t.get(rParen());
 
-		// commands
+		
 		t.get(lBrace());
 		t.get(statements());
 		t.get(rBrace());
@@ -369,7 +369,7 @@ public class SlingParser {
 	 */
 	protected Parser s1() {
 		Parser p = reserve("s1");
-		// the index here recovers a real slider from the target
+		
 		p.put(new SliderAssembler(1));
 		return p;
 
@@ -482,7 +482,7 @@ public class SlingParser {
 	 */
 	public Tokenizer tokenizer() {
 		if (tokenizer == null) {
-			start(); // to reserve the key words
+			start(); 
 			tokenizer = new Tokenizer();
 			tokenizer.setCharacterState('a', 'z', wors());
 			tokenizer.setCharacterState('A', 'Z', wors());

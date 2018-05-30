@@ -29,19 +29,19 @@ public class CompoundNormalization extends VariableNormalization {
         return super.transformCompoundUnneg(x);
     }
 
-//        /**
-//         * for use with compounds that have exactly one variable (when offset=0, default)
-//         */
-//        public static final VariableTransform singleVariableNormalization = new VariableTransform() {
-//
-//            @Override public Term transformAtomic(Term atomic) {
-//                return normalizable(atomic) ? atomic.normalize((byte)1) : atomic;
-//            }
-//
-//            @Override
-//            public @Nullable Term transformCompoundUnneg(Compound x) {
-//                throw new TODO();
-//            }
-//        };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -115,8 +115,8 @@ public class VectorUtil {
 		s * v0.y + rt * v1.y,
 		s * v0.z + rt * v1.z);
 
-		// don't do the unused w component
-		//		m_co[3] = s * v0[3] + rt * v1[3];
+		
+		
 	}
 
 	public static void add(v3 dest, v3 v1, v3 v2) {
@@ -198,13 +198,13 @@ public class VectorUtil {
 		v.z *= norm;
 	}
 
-//	public static void cross3(v3 dest, Vector4f v1, Vector4f v2) {
-//        float x,y;
-//        x = v1.y*v2.z - v1.z*v2.y;
-//        y = v2.x*v1.z - v2.z*v1.x;
-//        dest.z = v1.x*v2.y - v1.y*v2.x;
-//        dest.x = x;
-//        dest.y = y;
-//	}
+
+
+
+
+
+
+
+
 	
 }

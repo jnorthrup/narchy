@@ -7,7 +7,7 @@ public class EnergyMinimizer
 {
     public static class State
     {
-        public DecoratedCausalGraph workingGraph; // graph which is being modified
+        public DecoratedCausalGraph workingGraph; 
         public DecoratedCausalGraph graphWithMinimalEnergy;
         public int minimalEnergy = Integer.MAX_VALUE;
         public ArrayList<Integer> minimalSequence;

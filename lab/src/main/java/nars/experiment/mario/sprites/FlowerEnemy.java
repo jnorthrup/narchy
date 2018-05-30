@@ -96,7 +96,7 @@ public class FlowerEnemy extends Enemy
         int yPixel = (int)(yOld+(y-yOld)*alpha)-yPicO;
 
         int a = ((tick/3)&1)*2;
-//        a += ((tick/8)&1);
+
         og.drawImage(sheet[a*2+0][6], xPixel-8, yPixel+8, 16, 32, null);
         og.drawImage(sheet[a*2+1][6], xPixel+8, yPixel+8, 16, 32, null);
     }*/

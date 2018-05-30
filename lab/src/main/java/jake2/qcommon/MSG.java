@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 29.11.2003 by RST.
-// $Id: MSG.java,v 1.8 2005-12-18 22:10:02 cawe Exp $
+
+
 package jake2.qcommon;
 
 import jake2.Globals;
@@ -30,27 +30,27 @@ import jake2.util.Math3D;
 
 public class MSG extends Globals {
 
-    //
-    // writing functions
-    //
+    
+    
+    
 
-    //ok.
+    
     public static void WriteChar(sizebuf_t sb, int c) {
         sb.data[SZ.GetSpace(sb, 1)] = (byte) (c & 0xFF);
     }
 
-    //ok.
+    
     public static void WriteChar(sizebuf_t sb, float c) {
 
         WriteChar(sb, (int) c);
     }
 
-    //ok.
+    
     public static void WriteByte(sizebuf_t sb, int c) {
         sb.data[SZ.GetSpace(sb, 1)] = (byte) (c & 0xFF);
     }
 
-    //ok.
+    
     public static void WriteByte(sizebuf_t sb, float c) {
         WriteByte(sb, (int) c);
     }
@@ -61,7 +61,7 @@ public class MSG extends Globals {
         sb.data[i] = (byte) ((c >>> 8) & 0xFF);
     }
 
-    //ok.
+    
     public static void WriteInt(sizebuf_t sb, int c) {
         int i = SZ.GetSpace(sb, 4);
         byte[] d = sb.data;
@@ -71,17 +71,17 @@ public class MSG extends Globals {
         d[i++] = (byte) ((c >>> 24) & 0xff);
     }
 
-    //ok.
+    
     public static void WriteLong(sizebuf_t sb, int c) {
         WriteInt(sb, c);
     }
 
-    //ok.
+    
     public static void WriteFloat(sizebuf_t sb, float f) {
         WriteInt(sb, Float.floatToIntBits(f));
     }
 
-    // had a bug, now its ok.
+    
     public static void WriteString(sizebuf_t sb, String s) {
         String x = s;
 
@@ -90,10 +90,10 @@ public class MSG extends Globals {
 
         SZ.Write(sb, Lib.stringToBytes(x));
         WriteByte(sb, 0);
-        //Com.dprintln("MSG.WriteString:" + s.replace('\0', '@'));
+        
     }
 
-    //ok.
+    
     public static void WriteString(sizebuf_t sb, byte s[]) {
         WriteString(sb, new String(s).trim());
     }
@@ -121,9 +121,9 @@ public class MSG extends Globals {
             usercmd_t cmd) {
         int bits;
 
-        //
-        // send the movement message
-        //
+        
+        
+        
         bits = 0;
         if (cmd.angles[0] != from.angles[0])
             bits |= CM_ANGLE1;
@@ -167,7 +167,7 @@ public class MSG extends Globals {
         WriteByte(buf, cmd.lightlevel);
     }
 
-    //should be ok.
+    
     public static void WriteDir(sizebuf_t sb, float[] dir) {
         int i, best;
         float d, bestd;
@@ -189,7 +189,7 @@ public class MSG extends Globals {
         WriteByte(sb, best);
     }
 
-    //should be ok.
+    
     public static void ReadDir(sizebuf_t sb, float[] dir) {
         int b;
 
@@ -214,11 +214,11 @@ public class MSG extends Globals {
         if (to.number >= MAX_EDICTS)
             Com.Error(ERR_FATAL, "Entity number >= MAX_EDICTS");
 
-        // send an update
+        
         bits = 0;
 
         if (to.number >= 256)
-            bits |= U_NUMBER16; // number8 is implicit otherwise
+            bits |= U_NUMBER16; 
 
         if (to.origin[0] != from.origin[0])
             bits |= U_ORIGIN1;
@@ -271,7 +271,7 @@ public class MSG extends Globals {
         if (to.solid != from.solid)
             bits |= U_SOLID;
 
-        // event is not delta compressed, just 0 compressed
+        
         if (to.event != 0)
             bits |= U_EVENT;
 
@@ -290,13 +290,13 @@ public class MSG extends Globals {
         if (newentity || (to.renderfx & RF_BEAM) != 0)
             bits |= U_OLDORIGIN;
 
-        //
-        // write the message
-        //
+        
+        
+        
         if (bits == 0 && !force)
-            return; // nothing to send!
+            return; 
 
-        //----------
+        
 
         if ((bits & 0xff000000) != 0)
             bits |= U_MOREBITS3 | U_MOREBITS2 | U_MOREBITS1;
@@ -318,7 +318,7 @@ public class MSG extends Globals {
             WriteByte(msg, (bits >>> 8) & 255);
         }
 
-        //----------
+        
 
         if ((bits & U_NUMBER16) != 0)
             WriteShort(msg, to.number);
@@ -339,8 +339,8 @@ public class MSG extends Globals {
         if ((bits & U_FRAME16) != 0)
             WriteShort(msg, to.frame);
 
-        if ((bits & U_SKIN8) != 0 && (bits & U_SKIN16) != 0) //used for laser
-                                                             // colors
+        if ((bits & U_SKIN8) != 0 && (bits & U_SKIN16) != 0) 
+                                                             
             WriteInt(msg, to.skinnum);
         else if ((bits & U_SKIN8) != 0)
             WriteByte(msg, to.skinnum);
@@ -389,17 +389,17 @@ public class MSG extends Globals {
             WriteShort(msg, to.solid);
     }
 
-    //============================================================
+    
 
-    //
-    // reading functions
-    //
+    
+    
+    
 
     public static void BeginReading(sizebuf_t msg) {
         msg.readcount = 0;
     }
 
-    // returns -1 if no more characters are available, but also [-128 , 127]
+    
     public static int ReadChar(sizebuf_t msg_read) {
         int c;
 
@@ -408,7 +408,7 @@ public class MSG extends Globals {
         else
             c = msg_read.data[msg_read.readcount];
         msg_read.readcount++;
-        // kickangles bugfix (rst)
+        
         return c;
     }
 
@@ -466,7 +466,7 @@ public class MSG extends Globals {
         return Float.intBitsToFloat(n);
     }
 
-    // 2k read buffer.
+    
     public static final byte[] readbuf = new byte[2048];
 
     public static String ReadString(sizebuf_t msg_read) {
@@ -483,7 +483,7 @@ public class MSG extends Globals {
             l++;
         } while (l < 2047);
 
-        // Com.dprintln("MSG.ReadString:[" + ret + "]");
+        
         return new String(rb, 0, l);
     }
 
@@ -529,12 +529,12 @@ public class MSG extends Globals {
             usercmd_t move) {
         int bits;
 
-        //memcpy(move, from, sizeof(* move));
-        // IMPORTANT!! copy without new
+        
+        
         move.set(from);
         bits = ReadByte(msg_read);
 
-        // read current angles
+        
         if ((bits & CM_ANGLE1) != 0)
             move.angles[0] = ReadShort(msg_read);
         if ((bits & CM_ANGLE2) != 0)
@@ -542,7 +542,7 @@ public class MSG extends Globals {
         if ((bits & CM_ANGLE3) != 0)
             move.angles[2] = ReadShort(msg_read);
 
-        // read movement
+        
         if ((bits & CM_FORWARD) != 0)
             move.forwardmove = ReadShort(msg_read);
         if ((bits & CM_SIDE) != 0)
@@ -550,17 +550,17 @@ public class MSG extends Globals {
         if ((bits & CM_UP) != 0)
             move.upmove = ReadShort(msg_read);
 
-        // read buttons
+        
         if ((bits & CM_BUTTONS) != 0)
             move.buttons = (byte) ReadByte(msg_read);
 
         if ((bits & CM_IMPULSE) != 0)
             move.impulse = (byte) ReadByte(msg_read);
 
-        // read time to run command
+        
         move.msec = (byte) ReadByte(msg_read);
 
-        // read the light level
+        
         move.lightlevel = (byte) ReadByte(msg_read);
 
     }

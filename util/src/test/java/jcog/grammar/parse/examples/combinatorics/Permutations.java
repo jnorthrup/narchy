@@ -105,7 +105,7 @@ public class Permutations implements Iterator<Object> {
 		this.n = inArray.length;
 		this.m = m;
 
-		// throw exception unless n >= m >= 0
+		
 		Combinatoric.check(n, m);
 
 		/**
@@ -152,14 +152,14 @@ public class Permutations implements Iterator<Object> {
 	 */
 	protected void moveIndex() {
 
-		// find the index of the first element that dips
+		
 		int i = rightmostDip();
 		if (i < 0) {
 			hasMore = false;
 			return;
 		}
 
-		// find the least greater element to the right of the dip
+		
 		int leastToRightIndex = i + 1;
 		for (int j = i + 2; j < n; j++) {
 			if (index[j] < index[leastToRightIndex] && index[j] > index[i]) {
@@ -167,16 +167,16 @@ public class Permutations implements Iterator<Object> {
 			}
 		}
 
-		// switch dip element with least greater element to its
-		// right
+		
+		
 		int t = index[i];
 		index[i] = index[leastToRightIndex];
 		index[leastToRightIndex] = t;
 
 		if (m - 1 > i) {
-			// reverse the elements to the right of the dip
+			
 			reverseAfter(i);
-			// reverse the elements to the right of m - 1
+			
 			reverseAfter(m - 1);
 		}
 

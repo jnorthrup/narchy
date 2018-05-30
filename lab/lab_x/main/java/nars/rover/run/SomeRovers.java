@@ -30,58 +30,58 @@ public class SomeRovers {
 
         int cycPerFrame = 5;
 
-        //Alann d = new ParallelAlann(64, threads);
-        //DefaultAlann d = new DefaultAlann(32);
-        //d.tlinkToConceptExchangeRatio = 1f;
+        
+        
+        
 
         Equalized d = new Equalized(1000, 32, 4);
 
-        //d.param.conceptActivationFactor.set(0.25f);
-        //d.param.inputsMaxPerCycle.set(4);
+        
+        
 
-        //Default d = new Equalized(1024, 16, 10);
-        //d.setTermLinkBagSize(16);
-        //d.setTaskLinkBagSize(16);
+        
+        
+        
 
-//
-//            @Override
-//            public Concept newConcept(final Term t, final Budget b, final Memory m) {
-//
-//                Bag<Sentence, TaskLink> taskLinks =
-//                        new CurveBag(rng, /*sentenceNodes,*/ getConceptTaskLinks());
-//                        //new ChainBag(rng,  getConceptTaskLinks());
-//
-//                Bag<TermLinkKey, TermLink> termLinks =
-//                        new CurveBag(rng, /*termlinkKeyNodes,*/ getConceptTermLinks());
-//                        //new ChainBag(rng, /*termlinkKeyNodes,*/ getConceptTermLinks());
-//
-//                return newConcept(t, b, taskLinks, termLinks, m);
-//            }
-//
-//        };
-        //d.setInternalExperience(null);
-        //d.param.setClock(clock);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        
         d.setClock(clock);
 
         d.param.conceptTaskTermProcessPerCycle.set(4);
 
 
-        //d.param.setCyclesPerFrame(cycPerFrame);
+        
         d.setCyclesPerFrame(cycPerFrame);
         d.param.duration.set(cycPerFrame);
         d.param.conceptBeliefsMax.set(16);
         d.param.conceptGoalsMax.set(8);
 
-        //TextOutput.out(nar).setShowInput(true).setShowOutput(false);
+        
 
 
-        //N/A for solid
-        //nar.param.inputsMaxPerCycle.set(32);
-        //nar.param.conceptsFiredPerCycle.set(4);
+        
+        
+        
 
         d.param.conceptCreationExpectation.set(0);
 
-        //d.termLinkForgetDurations.set(4);
+        
 
 
 
@@ -98,11 +98,11 @@ public class SomeRovers {
 
         RoverWorld world;
 
-        //world = new ReactorWorld(this, 32, 48, 48*2);
+        
 
         world = new FoodSpawnWorld1(128, 48, 48, 0.5f);
 
-        //world = new GridSpaceWorld(GridSpaceWorld.newMazePlanet());
+        
 
 
         final Sim game = new Sim(clock, world);
@@ -124,7 +124,7 @@ public class SomeRovers {
         {
             NAR nar = new NAR( newDefault(1) );
 
-            //nar.param.outputVolume.set(0);
+            
 
             game.add(new CarefulRover("r2", nar));
 
@@ -176,7 +176,7 @@ public class SomeRovers {
             if (a < min) a = min;
             if (a > 1f) a = 1f;
 
-            //System.out.println("act: " + a + " (" + bInst + "," + bAvg);
+            
 
             nar.param.inputActivationFactor.set(a);
             nar.param.conceptActivationFactor.set( 0.5f * (1f + a) /** half as attenuated */ );

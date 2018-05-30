@@ -43,22 +43,22 @@ public final class Sys extends Defines {
     public static void Error(String error) {
 
         CL.Shutdown();
-        //StackTrace();
+        
         new Exception(error).printStackTrace();
-        //if (!Globals.appletMode) {
+        
             System.exit(1);
-        //}
+        
     }
 
     public static void Quit() {
         CL.Shutdown();
 
-        //if (!Globals.appletMode) {
+        
             System.exit(0);
-        //}
+        
     }
 
-    //ok!
+    
     public static File[] FindAll(String path, int musthave, int canthave) {
 
         int index = path.lastIndexOf('/');
@@ -131,7 +131,7 @@ public final class Sys extends Defines {
 
             String subst;
 
-            // convert pattern
+            
             for (int i = 0; i < pattern.length(); i++) {
                 c = pattern.charAt(i);
                 subst = null;
@@ -161,22 +161,22 @@ public final class Sys extends Defines {
                     sb.append(c);
             }
 
-            // the converted pattern
+            
             String regexpr = sb.toString();
 
-            //Com.DPrintf("pattern: " + pattern + " regexpr: " + regexpr +
-            // '\n');
+            
+            
             try {
                 Pattern.compile(regexpr);
             } catch (PatternSyntaxException e) {
                 Com.Printf("invalid file pattern ( *.* is used instead )\n");
-                return ".*"; // the default
+                return ".*"; 
             }
             return regexpr;
         }
 
         static boolean CompareAttributes(File dir, int musthave, int canthave) {
-            // . and .. never match
+            
             String name = dir.getName();
 
             return !(name.equals(".") || name.equals(".."));
@@ -186,7 +186,7 @@ public final class Sys extends Defines {
     }
 
 
-    //============================================
+    
 
     static File[] fdir;
 
@@ -196,13 +196,13 @@ public final class Sys extends Defines {
 
     static String findpattern;
 
-    // ok.
+    
     public static File FindFirst(String path, int musthave, int canthave) {
 
         if (fdir != null)
             Sys.Error("Sys_BeginFind without close");
 
-        //	COM_FilePath (path, findbase);
+        
 
         fdir = FindAll(path, canthave, musthave);
         fileindex = 0;
@@ -228,12 +228,12 @@ public final class Sys extends Defines {
     public static void SendKeyEvents() {
         Globals.re.getKeyboardHandler().Update();
 
-        // grab frame time
+        
         Globals.sys_frame_time = Timer.Milliseconds();
     }
 
     public static String GetClipboardData() {
-        // TODO: implement GetClipboardData
+        
         return null;
     }
 

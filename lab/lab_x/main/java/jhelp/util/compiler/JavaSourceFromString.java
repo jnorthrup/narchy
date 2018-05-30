@@ -35,7 +35,7 @@ public class JavaSourceFromString
     */
    public JavaSourceFromString(String name, String code)
    {
-      super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
+      super(URI.create("string:
       this.code = code;
    }
 

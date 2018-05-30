@@ -38,7 +38,7 @@ package spacegraph.util.math;
  */
 public class Vector2d extends Tuple2d {
 
-    // Combatible with 1.1
+    
     static final long serialVersionUID = 8572646365302599857L;
 
     /**

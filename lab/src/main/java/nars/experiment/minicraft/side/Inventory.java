@@ -7,7 +7,7 @@
  * 
  * Minicraft is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http://www.gnu.org/licenses/.
+ * You should have received a copy of the GNU General Public License along with Minicraft. If not, see http:
  */
 
 package nars.experiment.minicraft.side;
@@ -44,13 +44,13 @@ public class Inventory implements java.io.Serializable {
 	}
 	
 	public void addItem(Item item, int count) {
-		// try active slots
+		
 		int itemsToGo = inventoryItems[0][playerRow].add(item, count);
 		for (int i = 0; i < inventoryItems.length && itemsToGo > 0; i++) {
 			itemsToGo = inventoryItems[i][playerRow].add(item, count);
 		}
 		
-		// try the rest
+		
 		for (int i = 0; i < inventoryItems.length && itemsToGo > 0; i++) {
 			for (int j = 0; j < inventoryItems[0].length - 1 && itemsToGo > 0; j++) {
 				if ((j < craftingHeight && i < inventoryItems.length - tableSizeAvailable)
@@ -70,7 +70,7 @@ public class Inventory implements java.io.Serializable {
 		return inventoryItems[hotbarIdx][playerRow];
 	}
 	
-	// returns true if the mouse hit in the inventory
+	
 	public boolean updateInventory(int screenWidth, int screenHeight,
 			Int2 mousePos, boolean leftClick, boolean rightClick) {
 		if (!visible) {
@@ -169,7 +169,7 @@ public class Inventory implements java.io.Serializable {
 			craftThisUpdate = true;
 		}
 		
-		// check for a construction
+		
 		
 		craftable.item = null;
 		craftable.count = 0;
@@ -177,7 +177,7 @@ public class Inventory implements java.io.Serializable {
 		boolean keepChecking = true;
 		while (keepChecking) {
 			keepChecking = false;
-			// only craft one at a time for now
+			
 			char[][] currentTable = computeCraftTable();
 			for (Item entry : Constants.itemTypes.values()) {
 				craftable.item = null;
@@ -234,7 +234,7 @@ public class Inventory implements java.io.Serializable {
 		return currentTable;
 	}
 	
-	// relative x/y in px
+	
 	private Int2 mouseToCoor(int x, int y, int seperation, int tileSize) {
 		clickPos.x = x / (seperation + tileSize);
 		clickPos.y = y / (seperation + tileSize) - 1;
@@ -269,16 +269,16 @@ public class Inventory implements java.io.Serializable {
 			}
 			g.setColor(Color.LIGHT_GRAY);
 			g.fillRect(x + seperation, y + seperation, tileSize, tileSize);
-			// if(hotbarIdx == j)
-			// {
-			//
-			// if(current.item == null)
-			// }
-			// else
-			// {
-			// g.setColor(Color.LIGHT_GRAY);
-			// g.fillRect(x+seperation-2, y+seperation-2, tileSize+4, tileSize+4);
-			// }
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			current.draw(g, x + seperation, y + seperation, tileSize);
 			x += tileSize + seperation;

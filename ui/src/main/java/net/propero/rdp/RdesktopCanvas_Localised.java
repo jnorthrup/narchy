@@ -35,7 +35,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-// Created on 03-Sep-2003
+
 
 public class RdesktopCanvas_Localised extends RdesktopCanvas {
 
@@ -60,9 +60,9 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
         Graphics g = img.getGraphics();
         g.drawImage(image, 0, 0, null);
 
-        // Write generated image to a file
+        
         try {
-            // Save as JPEG
+            
             File file = new File("./testimages/" + Options.imgCount + ".jpg");
             Options.imgCount++;
             ImageIO.write(img, "jpg", file);
@@ -111,7 +111,7 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
                     r.width, r.height));
         }
 
-        // }
+        
 
     }
 

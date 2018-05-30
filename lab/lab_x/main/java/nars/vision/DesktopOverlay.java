@@ -13,7 +13,7 @@ import java.io.IOException;
 public class DesktopOverlay {
 
     public static void main(String[] args) throws IOException {
-        //Indeed, use GLJPanel instead of GLCanvas
+        
         GLProfile glp = GLProfile.getDefault();
         GLCapabilities glcap = new GLCapabilities(glp);
         glcap.setAlphaBits(8);

@@ -16,7 +16,7 @@ package jcog.math.random;
  *  for more details.
  *
  *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program; if not, see <http://www.gnu.org/licenses/>.
+ *  along with this program; if not, see <http:
  *
  */
 
@@ -28,13 +28,13 @@ import java.util.Random;
 /**
  * A fast, top-quality {@linkplain Random pseudorandom number generator} that
  * combines a long-period instance of George Marsaglia's Xorshift generators (described in <a
- * href="http://www.jstatsoft.org/v08/i14/paper/">&ldquo;Xorshift RNGs&rdquo;</a>, <i>Journal of
+ * href="http:
  * Statistical Software</i>, 8:1&minus;6, 2003) with a multiplication.
  * <p>
  * <p><strong>Warning</strong>: in version 2.2.3 the seeding procedure has been changed, as
  * it now uses a {@link SplitMix64RandomGenerator}.
  * <p>
- * <p>More details can be found on the <a href="http://xorshift.di.unimi.it/"><code>xorshift*</code>/<code>xorshift+</code> generators and the PRNG shootout</a> page.
+ * <p>More details can be found on the <a href="http:
  * <p>
  * <p>Note that this is <strong>not</strong> a cryptographic-strength pseudorandom number generator. Its period is
  * 2<sup>1024</sup>&nbsp;&minus;&nbsp;1, which is more than enough for any massive parallel application (it is actually
@@ -114,7 +114,7 @@ public class XorShift1024StarRandom extends Random {
      */
     public final long nextLong(long n) {
         if (n <= 0) throw new IllegalArgumentException();
-        // No special provision for n power of two: all our bits are good.
+        
         while (true) {
             long bits = nextLong() >>> 1;
             long value = bits % n;
@@ -207,10 +207,10 @@ public class XorShift1024StarRandom extends Random {
          */
         private long x;
 
-//		/** Creates a new generator seeded using {@link Util#randomSeed()}. */
-//		public SplitMix64RandomGenerator() {
-//			this( Util.randomSeed() );
-//		}
+
+
+
+
 
         /**
          * Creates a new generator using a given seed.
@@ -221,7 +221,7 @@ public class XorShift1024StarRandom extends Random {
             setSeed(seed);
         }
 
-        /* David Stafford's (http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html)
+        /* David Stafford's (http:
          * "Mix13" variant of the 64-bit finalizer in Austin Appleby's MurmurHash3 algorithm. */
         private static long staffordMix13(long z) {
             z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
@@ -229,7 +229,7 @@ public class XorShift1024StarRandom extends Random {
             return z ^ (z >>> 31);
         }
 
-        /* David Stafford's (http://zimbry.blogspot.com/2011/09/better-bit-mixing-improving-on.html)
+        /* David Stafford's (http:
          * "Mix4" variant of the 64-bit finalizer in Austin Appleby's MurmurHash3 algorithm. */
         private static int staffordMix4Upper32(long z) {
             z = (z ^ (z >>> 33)) * 0x62A9D9ED799705F5L;
@@ -252,7 +252,7 @@ public class XorShift1024StarRandom extends Random {
          * this random number generator's sequence.
          * <p>
          * <p>The hedge &ldquo;approximately&rdquo; is due to the fact that to be always
-         * faster than <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadLocalRandom.html"><code>ThreadLocalRandom</code></a>
+         * faster than <a href="http:
          * we return
          * the upper 63 bits of {@link #nextLong()} modulo {@code n} instead of using
          * {@link Random}'s fancy algorithm (which {@link #nextLong(long)} uses though).
@@ -282,7 +282,7 @@ public class XorShift1024StarRandom extends Random {
          */
         public long nextLong(long n) {
             if (n <= 0) throw new IllegalArgumentException();
-            // No special provision for n power of two: all our bits are good.
+            
             while (true) {
                 long bits = staffordMix13(x += PHI) >>> 1;
                 long value = bits % n;

@@ -44,7 +44,7 @@ public class Predict1 {
 
     float signalFreq = 0.75f;
     float sampleConfidence = 0.99f;
-    float sampleFreq = 1.00f; //0.5f + 0.5f / (discretization);
+    float sampleFreq = 1.00f; 
 
     float predictionFutureCycles = cyclesPerDuration * 1f;
     
@@ -56,7 +56,7 @@ public class Predict1 {
      */
     abstract public class BeliefSet {
 
-        //TODO store solutions separately in different Map per channel
+        
 
         Map<Term, Sentence> belief = new TreeMap();
 
@@ -84,7 +84,7 @@ public class Predict1 {
         }
 
         public void forget(float rate) {
-            //TODO apply forget to confidence
+            
             belief.clear();
         }
 
@@ -164,7 +164,7 @@ public class Predict1 {
         /*for (int i = 1; i < discretization; i++) {
          c += "<" + (i-1) + " <-> " + (i) + ">. %1.00;0.10%\n";
          }*/
-//        nar.addInput(c);
+
 
     }
 
@@ -212,7 +212,7 @@ public class Predict1 {
     public int f(float p) {
         if (p < 0) {
             p = 0;
-            //p = 0;
+            
         }
         if (p > 1f) {
             p = 1f;
@@ -227,23 +227,23 @@ public class Predict1 {
         }
         return s;
     }
-//    public Term getMostLikelyPrediction(String channel) {
-//        Term best = null;
-//        Iterator<Sentence> p = solutionPos.values().iterator();
-//        Iterator<Sentence> n = solutionNeg.values().iterator();
-//        for (int i = 0; i < solutionPos.size(); i++) {
-//            Sentence p = solutionPos.
-//            if (best == null) { best = s; continue; }
-//            if (best.truth.getExpectation() < s.truth.getExpectation())
-//                best = s;            
-//        }
-//        if (best!=null)
-//            return solutionTerm(channel, best.content, "y");
-//        return null;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public float getSurprise(float newValue) {
-        //TODO characterization of how predicted value equals/doesn't equal current observations        
+        
         return 0;
     }
 
@@ -265,7 +265,7 @@ public class Predict1 {
         }
 
         for (int i = 0; i < discretization; i++) {
-            //negative            
+            
             if (i != curr) {
                 String n = "<" + i + " --> " + channel + ">";
 
@@ -274,7 +274,7 @@ public class Predict1 {
             }
         }
 
-//        nar.addInput(antiObservation);
+
         String x0 = "<" + channel + " --> " + prev + ">";
         String x = "<" + channel + " --> " + curr + ">";
         nar.addInput(x + ". :|: %" + n2(sampleFreq) + ";" + n2(conf) + "%");
@@ -290,7 +290,7 @@ public class Predict1 {
     }
 
     public void tick() {
-        //nar.addInput("<time --> now>. :|:");
+        
 
     }
 
@@ -309,14 +309,14 @@ public class Predict1 {
             Integer i = getSampleObservation(t, "x");
             if (i == null) return;
             
-            //System.out.println(c + " " + c.beliefs);
+            
             if (nar.time() <= s.getOccurenceTime()) {
                 float dt = s.getOccurenceTime() - nar.time();
                 float weight = s.truth.getExpectation();
                 evidence[i] = Math.max(evidence[i], weight);
-                //System.out.println((dt >= 0 ? "+" : "") + dt + " " + s + "---> " + i + " " + weight + " " + evidence[i]);
+                
                 solutions.add(s, 0);
-                //System.out.println("  "+ solutions.getExpectation(t));
+                
             }
 
         }
@@ -324,7 +324,7 @@ public class Predict1 {
     }
 
     public Predict1() {
-        //577.0 [1, 259.0, 156.0, 2.0, 101.0, 4.0, 16.0, 2.0, 3.0, 1.0]
+        
 
         Parameters.DEBUG = true;
         
@@ -343,7 +343,7 @@ public class Predict1 {
          builder();
          */
 
-        //new TextOutput(nar, System.out, 0.95f);
+        
         
         
 
@@ -370,7 +370,7 @@ public class Predict1 {
                         }
                     }
 
-                    //System.out.println(solutions.belief);
+                    
 
                     Term predTerm = solutions.getMostLikely();
                     int predicted = Integer.valueOf(predTerm.toString());
@@ -382,11 +382,11 @@ public class Predict1 {
                     }
                     /*
                      System.out.println("@" + nar.time() + ": " + prediction + "? " + f(sample) + " ");*/
-                    //System.out.println(summarizeExpectation(getLikeliness("x")));
+                    
                 }
 
                 if (!Float.isNaN(sample) /*&& (nar.time() % cyclesPerFrame == 0)*/) {
-                    //solutions.forget(1);
+                    
 
                     if (inputting && Math.random() > errorRate) {
                         observed.add((int)d+1, sample);
@@ -406,7 +406,7 @@ public class Predict1 {
             public void event(Class event, Object[] args) {
                 Sentence s = ((Task) args[1]).sentence;
 
-                //onBelief(s);
+                
             }
         });
 
@@ -447,27 +447,27 @@ public class Predict1 {
                 new LineChart(predictions).height(8),
                 new BarChart(error).height(4)
                 
-        //            new StackedPercentageChart(t, "concept.priority.hist.0", "concept.priority.hist.1", "concept.priority.hist.2", "concept.priority.hist.3").height(2),
-        //
-        //            new LineChart(
-        //                    new TreeMLData.ConceptBagTreeMLData(nar, nar.memory.concepts, cycles, TreeMLData.ConceptBagTreeMLData.Mode.ConceptPriorityTotal)            
-        //            ).height(4),
-        //
-        //            new LineChart(
-        //                    new TreeMLData.ConceptBagTreeMLData(nar, nar.memory.concepts, cycles, TreeMLData.ConceptBagTreeMLData.Mode.TermLinkPriorityMean),
-        //                    new TreeMLData.ConceptBagTreeMLData(nar, nar.memory.concepts, cycles, TreeMLData.ConceptBagTreeMLData.Mode.TaskLinkPriorityMean)
-        //            
-        //            ).height(4),
-        //
-        //
-        //            new LineChart(t, "task.novel.add", "task.immediate_processed").height(3),
-        //            new LineChart(t, "task.goal.process", "task.question.process", "task.judgment.process").height(3),
-        //            new LineChart(t, "emotion.busy").height(1),
-        //            new EventChart(t, false, false, true).height(3)                
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         );
 
         new NWindow("_", new PCanvas(tc)).show(800, 800, true);
-        //new NARSwing(nar);
+        
 
         addAxioms();
 

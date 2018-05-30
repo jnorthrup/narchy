@@ -14,7 +14,7 @@ public class C {
     private C() {
     }
 
-    // Variable multiply, divide, and unary invert
+    
     public static DoubleTerm multiply(DoubleVar variable, double coefficient) {
         return new DoubleTerm(variable, coefficient);
     }
@@ -27,7 +27,7 @@ public class C {
         return multiply(variable, -1.0);
     }
 
-    // Term multiply, divide, and unary invert
+    
     public static DoubleTerm multiply(DoubleTerm term, double coefficient) {
         return new DoubleTerm(term.var, term.coefficient * coefficient);
     }
@@ -40,7 +40,7 @@ public class C {
         return multiply(term, -1.0);
     }
 
-    // Expression multiply, divide, and unary invert
+    
     public static Expression multiply(Expression expression, double coefficient) {
 
         List<DoubleTerm> terms = new ArrayList<>();
@@ -49,7 +49,7 @@ public class C {
             terms.add(multiply(term, coefficient));
         }
 
-        // TODO Do we need to make a copy of the term objects in the array?
+        
         return new Expression(terms, expression.getConstant() * coefficient);
     }
 
@@ -79,7 +79,7 @@ public class C {
         return multiply(expression, -1.0);
     }
 
-    // Double multiply
+    
     public static Expression multiply(double coefficient, Expression expression) {
         return multiply(expression, coefficient);
     }
@@ -94,9 +94,9 @@ public class C {
         return multiply(variable, coefficient);
     }
 
-    // Expression add and subtract
+    
     public static Expression add(Expression first, Expression second) {
-        //TODO do we need to copy term objects?
+        
         List<DoubleTerm> terms = new ArrayList<>(first.terms.size() + second.terms.size());
 
         terms.addAll(first.terms);
@@ -106,7 +106,7 @@ public class C {
     }
 
     public static Expression add(Expression first, DoubleTerm second) {
-        //TODO do we need to copy term objects?
+        
         List<DoubleTerm> terms = new ArrayList<>(first.terms.size() + 1);
 
         terms.addAll(first.terms);
@@ -139,7 +139,7 @@ public class C {
         return add(expression, -constant);
     }
 
-    // Term add and subtract
+    
     public static Expression add(DoubleTerm term, Expression expression) {
         return add(expression, term);
     }
@@ -151,9 +151,9 @@ public class C {
 
 
 
-//    public static Expression add(List<Variable> tt) {
-//        return new Expression(new FasterList<>(tt.stream().map(Term::new).toArray(Term[]::new)));
-//    }
+
+
+
 
     public static Expression add(List<DoubleTerm> tt) {
         return new Expression(tt);
@@ -183,7 +183,7 @@ public class C {
         return add(term, -constant);
     }
 
-    // Variable add and subtract
+    
     public static Expression add(DoubleVar variable, Expression expression) {
         return add(expression, variable);
     }
@@ -216,7 +216,7 @@ public class C {
         return add(variable, -constant);
     }
 
-    // Double add and subtract
+    
 
     public static Expression add(double constant, Expression expression) {
         return add(expression, constant);
@@ -242,7 +242,7 @@ public class C {
         return add(negate(variable), constant);
     }
 
-    // Expression relations
+    
     public static ContinuousConstraint equals(Expression first, Expression second) {
         return new ContinuousConstraint(subtract(first, second), RelationalOperator.OP_EQ);
     }
@@ -291,7 +291,7 @@ public class C {
         return greaterThanOrEqualTo(expression, new Expression(constant));
     }
 
-    // Term relations
+    
     public static ContinuousConstraint equals(DoubleTerm term, Expression expression) {
         return equals(expression, term);
     }
@@ -340,7 +340,7 @@ public class C {
         return greaterThanOrEqualTo(new Expression(term), constant);
     }
 
-    // Variable relations
+    
     public static ContinuousConstraint equals(DoubleVar variable, Expression expression) {
         return equals(expression, variable);
     }
@@ -389,7 +389,7 @@ public class C {
         return greaterThanOrEqualTo(new DoubleTerm(variable), constant);
     }
 
-    // Double relations
+    
     public static ContinuousConstraint equals(double constant, Expression expression) {
         return equals(expression, constant);
     }
@@ -422,13 +422,13 @@ public class C {
         return greaterThanOrEqualTo(constant, new DoubleTerm(variable));
     }
 
-    // Constraint strength modifier
+    
     public static ContinuousConstraint modifyStrength(ContinuousConstraint constraint, double strength) {
         return new ContinuousConstraint(constraint, strength);
     }
 
-//    public static Constraint modifyStrength(double strength, Constraint constraint) {
-//        return modifyStrength(strength, constraint);
-//    }
+
+
+
 
 }

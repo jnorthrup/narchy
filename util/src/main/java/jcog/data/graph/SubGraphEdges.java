@@ -35,8 +35,8 @@ import java.util.BitSet;
 public class SubGraphEdges implements Graph {
 
 
-// ====================== private fields ========================
-// ==============================================================
+
+
 
 
     private final Graph g;
@@ -44,8 +44,8 @@ public class SubGraphEdges implements Graph {
     private final BitSet nodes;
 
 
-// ====================== public constructors ===================
-// ==============================================================
+
+
 
 
     /**
@@ -59,8 +59,8 @@ public class SubGraphEdges implements Graph {
     }
 
 
-// ======================= Graph implementations ================
-// ==============================================================
+
+
 
 
     @Override
@@ -69,7 +69,7 @@ public class SubGraphEdges implements Graph {
         return nodes.get(i) && nodes.get(j) && g.isEdge(i, j);
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public IntHashSet neighborsOut(int i) {
@@ -84,14 +84,14 @@ public class SubGraphEdges implements Graph {
         return result;
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public Object vertex(int v) {
         return g.vertex(v);
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * If both i and j are within the node set of the subgraph and the original
@@ -104,21 +104,21 @@ public class SubGraphEdges implements Graph {
         return null;
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public int size() {
         return g.size();
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean directed() {
         return g.directed();
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * not supported
@@ -129,7 +129,7 @@ public class SubGraphEdges implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * not supported
@@ -140,7 +140,7 @@ public class SubGraphEdges implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public int degree(int i) {
@@ -155,8 +155,8 @@ public class SubGraphEdges implements Graph {
     }
 
 
-// ================= public functions =================================
-// ====================================================================
+
+
 
 
     /**
@@ -167,7 +167,7 @@ public class SubGraphEdges implements Graph {
         return nodes.cardinality();
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Removes given node from subgraph.
@@ -181,7 +181,7 @@ public class SubGraphEdges implements Graph {
         return was;
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * Adds given node to subgraph.

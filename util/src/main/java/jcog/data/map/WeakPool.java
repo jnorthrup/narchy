@@ -4,7 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.WeakHashMap;
 
 /**
- * https://github.com/ggrandes/sandbox/blob/master/src/XPoolWH.java
+ * https:
  */
 public class WeakPool<X> {
 

@@ -21,9 +21,9 @@ public class ParserTestCase {
 	
 	@Test public void testUnaryPlusOperator() {
 		Parser p = new Parser("n(+100).\n");
-        // SICStus Prolog interprets "n(+100)" as "n(100)"
-		// GNU Prolog interprets "n(+100)" as "n(+(100))"
-		// The ISO Standard says + is not a unary operator
+        
+		
+		
 		try {
 			assertNotNull(p.nextTerm(true));
 			fail("");
@@ -32,10 +32,10 @@ public class ParserTestCase {
 	
 	@Test public void testUnaryMinusOperator() throws InvalidTermException {
 		Parser p = new Parser("n(-100).\n");
-		// TODO Check the interpretation by other engines
-		// SICStus Prolog interprets "n(+100)" as "n(100)"
-		// GNU Prolog interprets "n(+100)" as "n(+(100))"
-		// What does the ISO Standard say about that?
+		
+		
+		
+		
 		Struct result = new Struct("n", new NumberTerm.Int(-100));
 		result.resolveTerm();
 		assertEquals(result, p.nextTerm(true));
@@ -51,7 +51,7 @@ public class ParserTestCase {
 	@Test public void testListWithTail() throws InvalidTermException {
 		Parser p = new Parser("[p|Y]");
 		Struct a = new Struct(new Struct("p"), new Var("Y"));
-		//result.resolveTerm();
+		
 		Term b = p.nextTerm(false);
 		a.resolveTerm(((Var)((Struct)b).sub(1)).timestamp);
 		assertEquals(a, b);
@@ -162,7 +162,7 @@ public class ParserTestCase {
 		assertEquals(result, p.nextTerm(false));
 	}
 	
-	 //This is an error both in 2.0.1 and in 2.1... don't know why, though.
+	 
 	@Test public void testDCGActionWithOperators() throws Exception {
         String input = "{A =.. B, hotel, 2}";
         Struct result = new Struct("{}",
@@ -170,7 +170,7 @@ public class ParserTestCase {
                                 new Struct(",", new Struct("hotel"), new NumberTerm.Int(2))));
         result.resolveTerm();
         Parser p = new Parser(input);
-        //assertEquals(result, p.nextTerm(false));
+        
 		assertEquals(result.toString(), p.nextTerm(false).toString());
 	}
 	
@@ -231,14 +231,14 @@ public class ParserTestCase {
 		} catch (InvalidTermException expected) {}
 	}
 	
-	// TODO More tests on Parser
 	
-	// Character code for Integer representation
 	
-	// :-op(500, yfx, v). 3v2 NOT CORRECT, 3 v 2 CORRECT
-	// 3+2 CORRECT, 3 + 2 CORRECT
 	
-	// +(2, 3) is now acceptable
-	// what about f(+)
+	
+	
+	
+	
+	
+	
 
 }

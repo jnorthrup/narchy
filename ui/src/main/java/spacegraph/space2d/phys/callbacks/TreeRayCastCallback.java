@@ -26,7 +26,7 @@ package spacegraph.space2d.phys.callbacks;
 import spacegraph.space2d.phys.collision.RayCastInput;
 import spacegraph.space2d.phys.collision.broadphase.DynamicTree;
 
-// updated to rev 100
+
 
 /**
  * callback for {@link DynamicTree}

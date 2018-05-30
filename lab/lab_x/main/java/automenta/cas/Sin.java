@@ -8,30 +8,30 @@ public class Sin extends Function {
     
     private static final HashMap<Expr, Expr> values = new HashMap<>();
     static {
-        values.put(Num.make(0), Num.make(0)); // 0
-        values.put(Num.make(1), Num.make(0)); // pi
-        values.put(Num.make(0.5), Num.make(1)); // pi/2
-        values.put(Num.make(1.5), Num.make(-1)); // 3pi/2
-        values.put(Division.make(Num.make(1), Num.make(6)), Num.make(0.5)); // pi/6
-        values.put(Division.make(Num.make(5), Num.make(6)), Num.make(0.5)); // 5pi/6
-        values.put(Division.make(Num.make(-1), Num.make(6)), Num.make(-0.5)); // -pi/6
-        values.put(Division.make(Num.make(-5), Num.make(6)), Num.make(-0.5)); // -5pi/6
+        values.put(Num.make(0), Num.make(0)); 
+        values.put(Num.make(1), Num.make(0)); 
+        values.put(Num.make(0.5), Num.make(1)); 
+        values.put(Num.make(1.5), Num.make(-1)); 
+        values.put(Division.make(Num.make(1), Num.make(6)), Num.make(0.5)); 
+        values.put(Division.make(Num.make(5), Num.make(6)), Num.make(0.5)); 
+        values.put(Division.make(Num.make(-1), Num.make(6)), Num.make(-0.5)); 
+        values.put(Division.make(Num.make(-5), Num.make(6)), Num.make(-0.5)); 
         values.put(Num.make(0.25),
-                   Division.make(Num.make(1), Exponent.make(Num.make(2), Num.make(0.5)))); // pi/4
+                   Division.make(Num.make(1), Exponent.make(Num.make(2), Num.make(0.5)))); 
         values.put(Num.make(0.75),
-                   Division.make(Num.make(1), Exponent.make(Num.make(2), Num.make(0.5)))); // 3pi/4
+                   Division.make(Num.make(1), Exponent.make(Num.make(2), Num.make(0.5)))); 
         values.put(Num.make(-0.25),
-                   Division.make(Num.make(-1), Exponent.make(Num.make(2), Num.make(0.5)))); // -pi/4
+                   Division.make(Num.make(-1), Exponent.make(Num.make(2), Num.make(0.5)))); 
         values.put(Num.make(-0.75),
-                   Division.make(Num.make(-1), Exponent.make(Num.make(2), Num.make(0.5)))); // -3pi/4
+                   Division.make(Num.make(-1), Exponent.make(Num.make(2), Num.make(0.5)))); 
         values.put(Division.make(Num.make(1), Num.make(3)),
-                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(2))); // pi/3
+                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(2))); 
         values.put(Division.make(Num.make(2), Num.make(3)),
-                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(2))); // 2pi/3
+                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(2))); 
         values.put(Division.make(Num.make(-1), Num.make(3)),
-                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(-2))); // -pi/3
+                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(-2))); 
         values.put(Division.make(Num.make(-2), Num.make(3)),
-                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(-2))); // -2pi/3
+                   Division.make(Exponent.make(Num.make(3), Num.make(0.5)), Num.make(-2))); 
     }
     
     private Expr ofExpr;

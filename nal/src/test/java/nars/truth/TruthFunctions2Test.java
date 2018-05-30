@@ -16,7 +16,7 @@ public class TruthFunctions2Test {
         assertEquals("%1.0;.67%", intersectionX($.t(1f, 0.5f), $.t(1f, 0.5f), 0).toString());
         assertEquals("%.50;.25%", intersectionX($.t(1f, 0.5f), $.t(0f, 0.5f), 0).toString());
 
-        //these 2 should be each other's negations, reflected about f=0.5
+        
         assertEquals(
                 intersectionX($.t(1f, 0.5f), $.t(0.75f, 0.5f), 0),
                 intersectionX($.t(0f, 0.5f), $.t(0.25f, 0.5f), 0).neg());

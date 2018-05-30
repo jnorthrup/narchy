@@ -51,8 +51,8 @@ public class LinkedMRUMemoize<X, Y> extends MRUCache<X, Y> implements Memoize<X,
 
         @Override
         public void clear() {
-//            if (hit + miss > 0)
-//                System.out.println(summary());
+
+
 
             hit = miss = 0;
 
@@ -70,9 +70,9 @@ public class LinkedMRUMemoize<X, Y> extends MRUCache<X, Y> implements Memoize<X,
                 hit++;
             }
             return y;
-//
-//            Y r = super.apply(x);
-//            return r;
+
+
+
         }
 
     }

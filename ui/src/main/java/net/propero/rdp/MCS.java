@@ -86,19 +86,19 @@ public class MCS {
      */
     public static void sendBerInteger(RdpPacket_Localised buffer, int value) {
 
-//		int len = 1;
-//
-//		if (value > 0xff)
-//			len = 2;
+
+
+
+
 
         sendBerHeader(buffer, BER_TAG_INTEGER, 2);
         buffer.setBigEndian16(value);
 
-//		if (value > 0xff) {
-//			buffer.setBigEndian16(value);
-//		} else {
-//			buffer.set8(value);
-//		}
+
+
+
+
+
 
     }
 
@@ -207,7 +207,7 @@ public class MCS {
         len = data.get8();
 
         if ((len & 0x00000080) != 0) {
-            len &= ~0x00000080; // subtract 128
+            len &= ~0x00000080; 
             length = 0;
             while (len-- != 0) {
                 length = (length << 8) + data.get8();
@@ -262,8 +262,8 @@ public class MCS {
      */
     public void disconnect() {
         IsoLayer.disconnect();
-        // in=null;
-        // out=null;
+        
+        
     }
 
     /**
@@ -275,7 +275,7 @@ public class MCS {
      */
     public static RdpPacket_Localised init(int length) throws RdesktopException {
         RdpPacket_Localised data = ISO.init(length + 8);
-        // data.pushLayer(RdpPacket_Localised.MCS_HEADER, 8);
+        
         data.setHeader(RdpPacket.MCS_HEADER);
         data.incrementPosition(8);
         data.setStart(data.getPosition());
@@ -313,7 +313,7 @@ public class MCS {
         buffer.set8((SDRQ << 2));
         buffer.setBigEndian16(this.McsUserID);
         buffer.setBigEndian16(channel);
-        buffer.set8(0x70); // Flags
+        buffer.set8(0x70); 
         buffer.setBigEndian16(length);
         IsoLayer.send(buffer);
     }
@@ -347,10 +347,10 @@ public class MCS {
             throw new EOFException("End of transmission!");
         }
 
-        buffer.incrementPosition(2); // Skip UserID
-        channel[0] = buffer.getBigEndian16(); // Get ChannelID
+        buffer.incrementPosition(2); 
+        channel[0] = buffer.getBigEndian16(); 
         logger.debug("Channel ID = {}", channel[0]);
-        buffer.incrementPosition(1); // Skip Flags
+        buffer.incrementPosition(1); 
 
         length = buffer.get8();
 
@@ -374,21 +374,21 @@ public class MCS {
     public static void sendDomainParams(RdpPacket_Localised buffer, int max_channels,
                                         int max_users, int max_tokens, int max_pdusize) {
 
-//		int size = BERIntSize(max_channels) + BERIntSize(max_users)
-//				+ BERIntSize(max_tokens) + BERIntSize(1) + BERIntSize(0)
-//				+ BERIntSize(1) + BERIntSize(max_pdusize) + BERIntSize(2);
+
+
+
 
         sendBerHeader(buffer, TAG_DOMAIN_PARAMS, 32);
         sendBerInteger(buffer, max_channels);
         sendBerInteger(buffer, max_users);
         sendBerInteger(buffer, max_tokens);
 
-        sendBerInteger(buffer, 1); // num_priorities
-        sendBerInteger(buffer, 0); // min_throughput
-        sendBerInteger(buffer, 1); // max_height
+        sendBerInteger(buffer, 1); 
+        sendBerInteger(buffer, 0); 
+        sendBerInteger(buffer, 1); 
 
         sendBerInteger(buffer, max_pdusize);
-        sendBerInteger(buffer, 2); // ver_protocol
+        sendBerInteger(buffer, 2); 
     }
 
     /**
@@ -403,28 +403,28 @@ public class MCS {
         logger.debug("MCS.sendConnectInitial");
 
         int datalen = data.getEnd();
-//		int length = 9 + domainParamSize(34, 2, 0, 0xffff)
-//				+ domainParamSize(1, 1, 1, 0x420)
-//				+ domainParamSize(0xffff, 0xfc17, 0xffff, 0xffff) + 4 + datalen; // RDP5
+
+
+
         int length = 9 + 3 * 34 + 4 + datalen;
-        // Code
+        
 
         RdpPacket_Localised buffer = ISO.init(length + 5);
 
         sendBerHeader(buffer, CONNECT_INITIAL, length);
-        sendBerHeader(buffer, BER_TAG_OCTET_STRING, 1); // calling domain
-        buffer.set8(1); // RDP5 Code
-        sendBerHeader(buffer, BER_TAG_OCTET_STRING, 1); // called domain
-        buffer.set8(1); // RDP5 Code
+        sendBerHeader(buffer, BER_TAG_OCTET_STRING, 1); 
+        buffer.set8(1); 
+        sendBerHeader(buffer, BER_TAG_OCTET_STRING, 1); 
+        buffer.set8(1); 
 
         sendBerHeader(buffer, BER_TAG_BOOLEAN, 1);
-        buffer.set8(0xff); // upward flag
+        buffer.set8(0xff); 
 
-        sendDomainParams(buffer, 34, 2, 0, 0xffff); // target parameters // RDP5
-        // Code
-        sendDomainParams(buffer, 1, 1, 1, 0x420); // minimum parameters
-        sendDomainParams(buffer, 0xffff, 0xfc17, 0xffff, 0xffff); // maximum
-        // parameters
+        sendDomainParams(buffer, 34, 2, 0, 0xffff); 
+        
+        sendDomainParams(buffer, 1, 1, 1, 0x420); 
+        sendDomainParams(buffer, 0xffff, 0xfc17, 0xffff, 0xffff); 
+        
 
         sendBerHeader(buffer, BER_TAG_OCTET_STRING, datalen);
 
@@ -470,7 +470,7 @@ public class MCS {
                     + connect_results[result]);
         }
         length = berParseHeader(buffer, BER_TAG_INTEGER);
-        length = buffer.get8(); // connect id
+        length = buffer.get8(); 
         parseDomainParams(buffer);
         length = berParseHeader(buffer, BER_TAG_OCTET_STRING);
 
@@ -497,8 +497,8 @@ public class MCS {
         logger.debug("send_edrq");
         RdpPacket_Localised buffer = ISO.init(5);
         buffer.set8(EDRQ << 2);
-        buffer.setBigEndian16(1); // height
-        buffer.setBigEndian16(1); // interval
+        buffer.setBigEndian16(1); 
+        buffer.setBigEndian16(1); 
         buffer.markEnd();
         IsoLayer.send(buffer);
     }
@@ -513,8 +513,8 @@ public class MCS {
     public void send_cjrq(int channelid) throws IOException, RdesktopException {
         RdpPacket_Localised buffer = ISO.init(5);
         buffer.set8(CJRQ << 2);
-        buffer.setBigEndian16(this.McsUserID); // height
-        buffer.setBigEndian16(channelid); // interval
+        buffer.setBigEndian16(this.McsUserID); 
+        buffer.setBigEndian16(channelid); 
         buffer.markEnd();
         IsoLayer.send(buffer);
     }
@@ -570,10 +570,10 @@ public class MCS {
             throw new RdesktopException("Expected CJRQ got " + result);
         }
 
-        buffer.incrementPosition(4); // skip userid, req_channelid
+        buffer.incrementPosition(4); 
 
         if ((opcode & 2) != 0) {
-            buffer.incrementPosition(2); // skip join_channelid
+            buffer.incrementPosition(2); 
         }
 
         if (buffer.getPosition() != buffer.getEnd()) {

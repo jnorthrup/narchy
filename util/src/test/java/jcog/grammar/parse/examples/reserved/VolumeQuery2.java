@@ -66,7 +66,7 @@ public class VolumeQuery2 {
 
 		Parser p = new ReservedWord();
 
-		// an anonymous Assembler subclass notes volume matches
+		
 
 		p.put(new IAssembler() {
 			public void accept(Assembly a) {

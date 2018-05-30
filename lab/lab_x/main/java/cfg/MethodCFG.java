@@ -25,7 +25,7 @@ public enum MethodCFG {
                 ;
 
         System.out.println(g.vertexSet().size() + " vert , "  + g.edgeSet().size() + " edge");
-        //System.out.println(g);
+        
 
 
         System.out.println("Methods: ");
@@ -40,17 +40,17 @@ public enum MethodCFG {
 
         CGMethod fireConcept = g.method("nars.nal.rule.ConceptFire#rule([])");
         CGMethod derivedTask = g.method("nars.nal.NAL#deriveTask([nars.nal.entity.Task, boolean, boolean, nars.nal.entity.Task, nars.nal.entity.Sentence, nars.nal.entity.Sentence, nars.nal.entity.Task])");
-        //CGMethod addTask = g.method("nars.logic.NAL#addTask([nars.logic.entity.Task, java.lang.String])");
+        
 
         KShortestPaths fromFireConcept = new KShortestPaths(g, fireConcept, 500, 500);
 
         System.out.println(fireConcept + " to " + derivedTask);
         list("  DERIVATION_EDGE ", fromFireConcept.getPaths(derivedTask));
 
-        //System.out.println("FireConcept to NAL.addTask:");
-        //list(fromFireConcept.getPaths(addTask));
+        
+        
 
-        //new NWindow("methods", new JGraphXGraphPanel(g)).show(500,500,true);
+        
         System.out.println(g.vertexSet().size() + "V|" + g.edgeSet().size() + 'E');
     }
 

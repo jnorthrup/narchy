@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -49,7 +49,7 @@ public class CapsuleShape extends ConvexInternalShape {
 	
 	protected int upAxis;
 
-	// only used for CapsuleShapeZ and CapsuleShapeX subclasses.
+	
 	CapsuleShape() {
 	}
 	
@@ -116,13 +116,13 @@ public class CapsuleShape extends ConvexInternalShape {
 
 	@Override
 	public void batchedUnitVectorGetSupportingVertexWithoutMargin(v3[] vectors, v3[] supportVerticesOut, int numVectors) {
-		// TODO: implement
+		
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public void calculateLocalInertia(float mass, v3 inertia) {
-		// as an approximation, take the inertia of the box that bounds the spheres
+		
 
 		Transform ident = new Transform();
 		ident.setIdentity();

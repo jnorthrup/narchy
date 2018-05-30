@@ -46,16 +46,16 @@ public class Implier extends DurService {
 
 
     AdjGraph<Term, Term> impl = null;
-    //NodeGraph<Term, Term> impl;
+    
 
     private final float[] relativeTargetDurs;
 
     /** truth cache */
-    //private final Map<Term, Truth> desire = new HashMap();
+    
     /**
      * truth cache
      */
-//    private final Map<Term, Task> belief = new HashMap();
+
 
     final Map<LongObjectPair<Term>, TruthAccumulator> beliefTruth = new HashMap();
     final Map<LongObjectPair<Term>, TruthAccumulator> goalTruth = new HashMap();
@@ -67,7 +67,7 @@ public class Implier extends DurService {
     private long then, now;
     private int dur;
 
-    //final ArrayBag<Task,PLink<Task>> implTasks = new PLinkArrayBag(256, PriMerge.max, new HashMap());
+    
 
     public Implier(NAR n, float[] relativeTargetDur, Term... seeds) {
         this(n, List.of(seeds), relativeTargetDur);
@@ -75,9 +75,9 @@ public class Implier extends DurService {
     }
 
 
-//    public Implier(NAgent a, float... relativeTargetDurs) {
-//        this(1, a, relativeTargetDurs);
-//    }
+
+
+
 
     public Implier(float everyDurs, NAgent a, float... relativeTargetDurs) {
         this(everyDurs, a.nar(),
@@ -106,12 +106,12 @@ public class Implier extends DurService {
         this.relativeTargetDurs = relativeTargetDurs;
         this.seeds = seeds;
         this.in = n.newChannel(this);
-//        this.tg = new TermGraph.ImplGraph() {
-//            @Override
-//            protected boolean acceptTerm(Term p) {
-//                return !(p instanceof Variable);// && !p.isTemporal();
-//            }
-//        };
+
+
+
+
+
+
     }
 
     @Override
@@ -123,7 +123,7 @@ public class Implier extends DurService {
         if (implCount == 0)
             return;
 
-        //impl.edges.forEach
+        
 
 
         dur = nar.dur();
@@ -140,7 +140,7 @@ public class Implier extends DurService {
 
             long nextThen = Tense.dither(now + Math.round(relativeTargetDur * dur), dtDither);
             if (then == nextThen)
-                continue; //same time as previous iteration, don't repeat
+                continue; 
 
             then = nextThen;
 
@@ -165,7 +165,7 @@ public class Implier extends DurService {
     private void imply(Task impl) {
 
         if (ArrayUtils.indexOf(impl.cause(), in.id)!=-1)
-            return; //avoid cyclical logic by any implications at least partially resulting from this cause
+            return; 
 
         int implDT = impl.dt();
         if (implDT == DTERNAL)
@@ -200,12 +200,12 @@ public class Implier extends DurService {
                 Truth S_belief = nar.beliefTruth(S, when);
                 if (S_belief != null) {
                     if (implTruth.isPositive()) {
-                        //IMPL+
+                        
                         Truth P_belief_pos = ded.apply(S_belief.negIf(Sneg), implTruth, nar, Float.MIN_NORMAL);
                         if (P_belief_pos != null)
                             believe(P, then + implDT, P_belief_pos);
                     } else {
-                        //IMPL-
+                        
                         Truth P_belief_neg = ded.apply(S_belief.negIf(Sneg), implTruth.neg(), nar, Float.MIN_NORMAL);
                         if (P_belief_neg != null)
                             believe(P, then + implDT, P_belief_neg.neg());
@@ -228,12 +228,12 @@ public class Implier extends DurService {
                 if (S_goal != null) {
                     if (implTruth.isPositive()) {
 
-                        //IMPL+
+                        
                         Truth P_goal_pos = ind.apply(S_goal.negIf(Sneg), implTruth, nar, Float.MIN_NORMAL);
                         if (P_goal_pos != null)
                             goal(P, then + implDT, P_goal_pos);
                     } else {
-                        //IMPL-
+                        
                         Truth P_goal_neg = ind.apply(S_goal.negIf(Sneg), implTruth.neg(), nar, Float.MIN_NORMAL);
                         if (P_goal_neg != null)
                             goal(P, then + implDT, P_goal_neg.neg());
@@ -255,12 +255,12 @@ public class Implier extends DurService {
                 if (P_goal != null) {
                     if (implTruth.isPositive()) {
 
-                        //IMPL+
+                        
                         Truth S_goal_pos = ded.apply(P_goal, implTruth, nar, Float.MIN_NORMAL);
                         if (S_goal_pos != null)
                             goal(P, then, S_goal_pos);
                     } else {
-                        //IMPL-
+                        
                         Truth S_goal_neg = ded.apply(P_goal.neg(), implTruth.neg(), nar, Float.MIN_NORMAL);
                         if (S_goal_neg != null)
                             goal(P, then, S_goal_neg);
@@ -270,11 +270,11 @@ public class Implier extends DurService {
         }
 
 
-        //TODO
-        //   P,   (S ==> P) |-   S (Belief:Abduction)
-        //   P, (--S ==> P) |- --S (Belief:Abduction)
-        // x P,   (S ==> P) |-   S (Goal:Deduction)  ^^above
-        //   P, (--S ==> P) |- --S (Goal:Deduction)
+        
+        
+        
+        
+        
 
     }
 
@@ -318,10 +318,10 @@ public class Implier extends DurService {
             }
             y.pri(nar.priDefault(y.punc));
 
-            //                        if (Param.DEBUG)
-            //                            y.log("")
+            
+            
 
-            //System.out.println("\t" + y);
+            
 
             gen.add(y);
         });
@@ -329,7 +329,7 @@ public class Implier extends DurService {
 
 
     protected void search(NAR nar) {
-        if (impl == null || impl.edgeCount() > 256) { //HACK
+        if (impl == null || impl.edgeCount() > 256) { 
             impl = new AdjGraph(true);
         }
 
@@ -339,40 +339,40 @@ public class Implier extends DurService {
         );
     }
 
-    //    private Truth desire(Term x) {
-//        return desire.computeIfAbsent(x, (xx) -> desire(xx, then));
-//    }
+    
 
 
-//    public void goal(Map<LongObjectPair<Term>, TruthAccumulator> goals, Term tt, Truth g) {
-//
-//        if (tt.op() == NEG) {
-//            tt = tt.unneg();
-//            g = g.neg();
-//        }
-//
-//        if (!tt.op().conceptualizable)
-//            return;
-//
-//        //recursively divide the desire among the conjunction events occurring NOW,
-//        // emulating (not necessarily exactly) StructuralDeduction's
-//        if (tt.op() == CONJ) {
-//            FastList<LongObjectPair<Term>> e = tt.eventList();
-//            if (e.size() > 1) {
-//                float eSub = g.evi() / e.size();
-//                float cSub = w2c(eSub);
-//                if (cSub >= nar.confMin.floatValue()) {
-//                    Truth gSub = $.t(g.freq(), cSub);
-//                    for (LongObjectPair<Term> ee : e) {
-//                        Term one = ee.getTwo();
-//                        if (ee.getOne() == 0  && (one.op().conceptualizable))
-//                            goal(goals, one, gSub);
-//                    }
-//                }
-//                return;
-//            }
-//        }
-//
-//        goals.computeIfAbsent(tt, (ttt) -> new TruthAccumulator()).add(g);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

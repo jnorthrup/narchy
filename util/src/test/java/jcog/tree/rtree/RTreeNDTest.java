@@ -74,11 +74,11 @@ public class RTreeNDTest {
             }
 
             final int expectedCount = 9;
-            //assertEquals("[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount, expectedCount, foundCount);
+            
 
             assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
 
-            // If the order of nodes in the tree changes, this test may fail while returning the correct results.
+            
             Collections.sort(results);
             for (int i = 0; i < resultCount; i++) {
                 assertTrue(results.get(i).min.coord(0) == i + 2 && results.get(i).min.coord(1) == i + 2 && results.get(i).max.coord(0) == i + 5 && results.get(i).max.coord(1) == i + 5, "Unexpected result found");
@@ -138,7 +138,7 @@ public class RTreeNDTest {
                 }
 
                 final int expectedCount = rects.length;
-                //assertEquals("[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount, expectedCount, foundCount);
+                
                 assertTrue(Math.abs(expectedCount - foundCount) < 10,
                         "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
 
@@ -149,12 +149,12 @@ public class RTreeNDTest {
                 Collections.addAll(output, results);
 
 
-                //assertEquals( " same content", input, output);
+                
 
 
                 Stats s = rTree.stats();
                 s.print(System.out);
-                //System.out.println("\t" + rTree.getRoot());
+                
                 assertTrue(s.getMaxDepth() <= 8 /* reasonable */);
             }
         }
@@ -192,7 +192,7 @@ public class RTreeNDTest {
             assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
 
             Arrays.sort(results);
-            // If the order of nodes in the tree changes, this test may fail while returning the correct results.
+            
             for (int i = 0; i < resultCount; i++) {
                 assertTrue(Util.equals(results[i].min.x, (double) (i + 5), Spatialization.EPSILON) &&
                                 Util.equals(results[i].min.y, (double) (i + 5), Spatialization.EPSILON) &&
@@ -233,7 +233,7 @@ public class RTreeNDTest {
 
             Collections.sort(results);
 
-            // If the order of nodes in the tree changes, this test may fail while returning the correct results.
+            
             for (int i = 0; i < resultCount; i++) {
                 assertTrue(Util.equals(results.get(i).min.x, (double) (i + 2), Spatialization.EPSILON) &&
                                 Util.equals(results.get(i).min.y, (double) (i + 2), Spatialization.EPSILON) &&
@@ -248,7 +248,7 @@ public class RTreeNDTest {
     static RectDouble2D[] generateRandomRects(int count) {
         final Random rand = new Random(13);
 
-        // changing these values changes the rectangle sizes and consequently the distribution density
+        
         final int minX = 500;
         final int minY = 500;
         final int maxXRange = 25;
@@ -313,7 +313,7 @@ public class RTreeNDTest {
      * more visible.
      */
     @Disabled
-    // This test ignored because output needs to be manually evaluated.
+    
     public void treeStructureStatsTest() {
 
         final int entryCount = 50_000;
@@ -339,7 +339,7 @@ public class RTreeNDTest {
      * - QUADRATIC seems to be ideal for small search bounding boxes.
      */
     @Disabled
-    // This test ignored because output needs to be manually evaluated.
+    
     public void treeSearchStatsTest() {
 
         final int entryCount = 5000;
@@ -362,7 +362,7 @@ public class RTreeNDTest {
                 final long end = System.nanoTime() - start;
                 CounterNode<RectDouble2D> root = (CounterNode<RectDouble2D>) rTree.root();
 
-                //System.out.println("[" + type + "] searched " + root.containingCount + " nodes, returning " + foundCount + " entries");
+                
                 System.out.println("[" + type + "] evaluated " + CounterNode.bboxEvalCount + " b-boxes, returning " + foundCount + " entries");
 
                 System.out.println("Run was " + end / 1000 + " us");
@@ -504,7 +504,7 @@ public class RTreeNDTest {
     }
 
     @Disabled
-    // This test ignored because output needs to be manually evaluated.
+    
     public void treeRemoveAndRebalanceTest() {
         final RTree<RectDouble2D> rTree = createRectDouble2DTree(Spatialization.DefaultSplits.QUADRATIC);
 
@@ -588,18 +588,18 @@ public class RTreeNDTest {
         rTree.add(new RectDouble2D(2, 2, 4, 4));
         rTree.add(search = new RectDouble2D(5, 2, 6, 3));
 
-        // now make sure root node is a branch
+        
         for (int i = 0; i < 5; i++) {
             rTree.add(new RectDouble2D(3.0 - 1.0 / (10.0 + i), 3.0 - 1.0 / (10.0 + i), 3.0 + 1.0 / (10.0 + i), 3.0 + 1.0 / (10.0 + i)));
         }
 
-        // add subtree/child on first rectangle - fully contained
+        
         rTree.add(new RectDouble2D(2.5, 2.5, 3.5, 3.5));
 
         assertEquals(8, rTree.size());
 
         final AtomicInteger hitCount = new AtomicInteger();
-        // but 5, 2, 6, 3 must still be found!
+        
         rTree.whileEachContaining(search, (closure) -> {
             hitCount.incrementAndGet();
             return true;

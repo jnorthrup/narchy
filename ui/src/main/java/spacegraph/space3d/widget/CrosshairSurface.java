@@ -30,13 +30,13 @@ public class CrosshairSurface extends Surface implements MouseListener {
         gl.glPushMatrix();
 
         if (!mouseEnabled) {
-            //HACK
+            
             space.addMouseListenerPost(this);
             mouseEnabled = true;
         }
 
 
-        //gl.glTranslatef(mx, my, 0);
+        
         float g, b;
         float r = g = b = 0.75f;
         if (pressed!=null && pressed.length > 0) {
@@ -55,11 +55,11 @@ public class CrosshairSurface extends Surface implements MouseListener {
         gl.glColor4f(r, g, b, 0.6f);
 
         gl.glLineWidth(4f);
-        float ch = 175f; //TODO proportional to ortho height (pixels)
-        float cw = 175f; //TODO proportional to ortho width (pixels)
+        float ch = 175f; 
+        float cw = 175f; 
         Draw.rectStroke(gl, smx-cw/2f, smy-ch/2f, cw, ch);
 
-        float hl = 1.25f; //cross hair length
+        float hl = 1.25f; 
         Draw.line(gl, smx, smy-ch*hl, smx, smy+ch*hl);
         Draw.line(gl, smx-cw*hl, smy, smx+cw*hl, smy);
 

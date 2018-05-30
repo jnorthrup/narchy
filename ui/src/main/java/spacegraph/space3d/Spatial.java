@@ -48,7 +48,7 @@ public abstract class Spatial<X> implements Active {
     public String toString() {
 
         return id + "<" +
-                //(body!=null ? body.shape() : "shapeless")  +
+                
                 '>';
     }
 
@@ -71,16 +71,16 @@ public abstract class Spatial<X> implements Active {
 
 
     public void update(Dynamics3D world) {
-        //create and update any bodies and constraints
+        
     }
 
-//    public final boolean isShown(short nextOrder, Dynamics world) {
-//        if (active()) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-//    }
+
+
+
+
+
+
+
 
     @Override
     public boolean active() {
@@ -111,7 +111,7 @@ public abstract class Spatial<X> implements Active {
 
 
 
-    //abstract public Iterable<Collidable> bodies();
+    
     abstract public void forEachBody(Consumer<Collidable> c);
 
     @Nullable abstract public List<TypedConstraint> constraints();
@@ -126,12 +126,12 @@ public abstract class Spatial<X> implements Active {
     }
 
     public void stabilize(v3 boundsMin, v3 boundsMax) {
-        //v3 zero = v(0,0,0);
+        
 
         forEachBody(b -> {
             v3 t = b.transform;
-            //((Dynamic)b).clearForces();
-            //((Dynamic)b).setLinearVelocity(zero);
+            
+            
             t.clamp(boundsMin, boundsMax);
         });
     }

@@ -71,7 +71,7 @@ public abstract class ISO {
      * @return Packet configured as ISO PDU, ready to write at higher level
      */
     public static RdpPacket_Localised init(int length) {
-        RdpPacket_Localised data = new RdpPacket_Localised(length + 7);// getMemory(length+7);
+        RdpPacket_Localised data = new RdpPacket_Localised(length + 7);
         data.incrementPosition(7);
         data.setStart(data.getPosition());
         return data;
@@ -104,7 +104,7 @@ public abstract class ISO {
         int[] code = new int[1];
         doSocketConnect(host, port);
         rdpsock.setTcpNoDelay(Options.low_latency);
-        // this.in = new InputStreamReader(rdpsock.getInputStream());
+        
         this.in = new DataInputStream(new BufferedInputStream(rdpsock
                 .getInputStream()));
         this.out = new DataOutputStream(new BufferedOutputStream(rdpsock
@@ -134,20 +134,20 @@ public abstract class ISO {
      * @throws IOException when an I/O Error occurs
      */
     private void sendMessage(int type) throws IOException {
-        RdpPacket_Localised buffer = new RdpPacket_Localised(11);// getMemory(11);
+        RdpPacket_Localised buffer = new RdpPacket_Localised(11);
         byte[] packet = new byte[11];
 
-        buffer.set8(PROTOCOL_VERSION); // send Version Info
-        buffer.set8(0); // reserved byte
-        buffer.setBigEndian16(11); // Length
-        buffer.set8(6); // Length of Header
+        buffer.set8(PROTOCOL_VERSION); 
+        buffer.set8(0); 
+        buffer.setBigEndian16(11); 
+        buffer.set8(6); 
 
-        buffer.set8(type); // where code = CR or DR
-        buffer.setBigEndian16(0); // Destination reference ( 0 at CC and DR)
+        buffer.set8(type); 
+        buffer.setBigEndian16(0); 
 
-        buffer.setBigEndian16(0); // source reference should be a reasonable
-        // address we use 0
-        buffer.set8(0); // service class
+        buffer.setBigEndian16(0); 
+        
+        buffer.set8(0); 
         buffer.copyToByteArray(packet, 0, 0, packet.length);
         out.write(packet);
         out.flush();
@@ -169,13 +169,13 @@ public abstract class ISO {
         } else {
             int length = buffer.getEnd();
             byte[] packet = new byte[length];
-            // RdpPacket data = this.getMemory(length+7);
+            
             buffer.setPosition(0);
-            buffer.set8(PROTOCOL_VERSION); // Version
-            buffer.set8(0); // reserved
-            buffer.setBigEndian16(length); // length of packet
+            buffer.set8(PROTOCOL_VERSION); 
+            buffer.set8(0); 
+            buffer.setBigEndian16(length); 
 
-            buffer.set8(2); // length of header
+            buffer.set8(2); 
             buffer.set8(DATA_TRANSFER);
             buffer.set8(EOT);
             buffer.copyToByteArray(packet, 0, 0, buffer.getEnd());
@@ -231,11 +231,11 @@ public abstract class ISO {
 
         in.readFully(packet, 0, length);
 
-        // try{ }
-        // catch(IOException e){ logger.warn("IOException: " + e.getMessage());
-        // return null; }
+        
+        
+        
         if (Options.debug_hexdump) {
-//		    dump.encode(packet, "RECEIVE" /* System.out */);
+
             System.out.println(String.format("\nISO receive RDP packet # %d", ++g_packetno));
             System.out.println(net.propero.rdp.tools.HexDump.dumpHexString(packet));
         }
@@ -286,7 +286,7 @@ public abstract class ISO {
             rdpver[0] = version;
 
             if (version == 3) {
-                s.incrementPosition(1); // pad
+                s.incrementPosition(1); 
                 length = s.getBigEndian16();
             } else {
                 length = s.get8();
@@ -312,11 +312,11 @@ public abstract class ISO {
 
         if (type[0] == DATA_TRANSFER) {
             logger.debug("Data Transfer Packet");
-            s.incrementPosition(1); // eot
+            s.incrementPosition(1); 
             return s;
         }
 
-        s.incrementPosition(5); // dst_ref, src_ref, class
+        s.incrementPosition(5); 
         return s;
     }
 
@@ -359,23 +359,23 @@ public abstract class ISO {
     void send_connection_request() throws IOException {
 
         String uname = Options.username;
-//		if (uname.length() > 9)
-//			uname = uname.substring(0, 9);
+
+
         int length = 11 + (!Options.username.isEmpty() ? ("Cookie: mstshash="
                 .length()
                 + uname.length() + 2) : 0)/* + 8*/;
         RdpPacket_Localised buffer = new RdpPacket_Localised(length);
         byte[] packet = new byte[length];
 
-        buffer.set8(PROTOCOL_VERSION); // send Version Info
-        buffer.set8(0); // reserved byte
-        buffer.setBigEndian16(length); // Length
-        buffer.set8(length - 5); // Length of Header
+        buffer.set8(PROTOCOL_VERSION); 
+        buffer.set8(0); 
+        buffer.setBigEndian16(length); 
+        buffer.set8(length - 5); 
         buffer.set8(CONNECTION_REQUEST);
-        buffer.setBigEndian16(0); // Destination reference ( 0 at CC and DR)
-        buffer.setBigEndian16(0); // source reference should be a reasonable
-        // address we use 0
-        buffer.set8(0); // service class
+        buffer.setBigEndian16(0); 
+        buffer.setBigEndian16(0); 
+        
+        buffer.set8(0); 
         if (!Options.username.isEmpty()) {
             logger.debug("Including username");
             buffer
@@ -383,27 +383,27 @@ public abstract class ISO {
                             .length());
             buffer.out_uint8p(uname, uname.length());
 
-            buffer.set8(0x0d); // unknown
-            buffer.set8(0x0a); // unknown
+            buffer.set8(0x0d); 
+            buffer.set8(0x0a); 
         }
 
         /*
-         * // Authentication request? buffer.setLittleEndian16(0x01);
-         * buffer.setLittleEndian16(0x08); // Do we try to use SSL?
+         * 
+         * buffer.setLittleEndian16(0x08); 
          * buffer.set8(Options.use_ssl? 0x01 : 0x00);
          * buffer.incrementPosition(3);
          */
-//		buffer.set8(0x01);
-//		buffer.set8(0x00);
-//		buffer.setLittleEndian16(0x08);
-//		buffer.setLittleEndian32(0x01);
+
+
+
+
 
         buffer.copyToByteArray(packet, 0, 0, packet.length);
         out.write(packet);
         out.flush();
 
         if (Options.debug_hexdump) {
-//          dump.encode(packet, "SEND"/* System.out */);
+
             System.out.println("ISO Sending packet:");
             System.out.println(net.propero.rdp.tools.HexDump.dumpHexString(packet));
         }

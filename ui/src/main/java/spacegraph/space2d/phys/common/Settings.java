@@ -33,7 +33,7 @@ public class Settings {
      * A "close to zero" float epsilon value for use
      */
     public static final float EPSILON =
-            //1.1920928955078125E-6f;
+            
             1.1920928955078125E-7f;
 
     /**
@@ -41,7 +41,7 @@ public class Settings {
      */
     public static final float PI = (float) Math.PI;
 
-    // JBox2D specific settings
+    
     public static final boolean FAST_ABS = true;
     public static final boolean FAST_FLOOR = true;
     public static final boolean FAST_CEIL = true;
@@ -84,7 +84,7 @@ public class Settings {
     public static final boolean SINCOS_LUT_LERP = false;
 
 
-    // Collision
+    
 
     /**
      * The maximum number of contact points between two convex shapes.
@@ -132,7 +132,7 @@ public class Settings {
      */
     public static final int maxSubSteps = 8;
 
-    // Dynamics
+    
 
     /**
      * Maximum number of contacts to be handled to solve a TOI island.
@@ -179,7 +179,7 @@ public class Settings {
     public static final float toiBaugarte = 0.75f;
 
 
-    // Sleep
+    
 
     /**
      * The time that a body must be still before it will go to sleep.
@@ -196,7 +196,7 @@ public class Settings {
      */
     public static final float angularSleepTolerance = (1.0f / 180.0f * PI);
 
-    // Particle
+    
 
     /**
      * A symbolic constant that stands for particle allocation error.

@@ -6,8 +6,8 @@ import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
 /**
- * http://www.doc.ic.ac.uk/~shm/progol_anim_example_in.html
- * http://www.doc.ic.ac.uk/~shm/progol_anim_example_out.html
+ * http:
+ * http:
  */
 public class TestProgol {
     @Test
@@ -30,18 +30,18 @@ public class TestProgol {
         :- modeb(1,class(+animal,#class))?
          */
 
-        //types
+        
         n.input(
         "animal(dog).  animal(dolphin).  animal(platypus).  animal(bat).\n" +
             "animal(trout).  animal(herring).  animal(shark). animal(eel).\n" +
             "animal(lizard).  animal(crocodile).  animal(t_rex).  animal(turtle).\n" +
             "animal(snake).  animal(eagle).  animal(ostrich).  animal(penguin).\n" +
             "species(mammal).  species(fish).  species(reptile).  species(bird).\n" +
-                //"class(mammal).  class(fish).  class(reptile).  class(bird).\n" +
+                
             "covering(hair).  covering(none).  covering(scales).  covering(feathers).\n" +
             "habitat(land).  habitat(water).  habitat(air).  habitat(caves).");
 
-        //Positive examples
+        
         n.input(
                 "class(dog,mammal).\n" +
                     "class(dolphin,mammal).\n" +
@@ -60,7 +60,7 @@ public class TestProgol {
                     "class(ostrich,bird).\n" +
                     "class(penguin,bird).");
 
-        //Negative examples
+        
         n.input(
             "--(class(#X,mammal) && class(#X,fish)).\n" +
                 "--(class(#X,mammal) && class(#X,reptile)).\n" +
@@ -112,7 +112,7 @@ public class TestProgol {
                 "--class(t_rex,bird).\n" +
                 "--class(turtle,bird).");
 
-        //Background knowledge
+        
         n.input(
             "has_covering(dog,hair).\n" +
                 "has_covering(dolphin,none).\n" +
@@ -201,7 +201,7 @@ public class TestProgol {
 
         n.freqResolution.set(0.25f);
         n.stats(System.out);
-        //n.log();
+        
         n.run(100);
         n.stats(System.out);
 

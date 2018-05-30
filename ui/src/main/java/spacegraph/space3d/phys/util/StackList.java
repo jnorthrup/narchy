@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2007 Erwin Coumans  http://continuousphysics.com/Bullet/
+ * Copyright (c) 2003-2007 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -88,7 +88,7 @@ public abstract class StackList<T> extends FasterList<T>  {
 	 * @return instance
 	 */
 	public T get() {
-		//if (true) return create();
+		
 		
 		if (pos == size()) {
 			expand();
@@ -106,7 +106,7 @@ public abstract class StackList<T> extends FasterList<T>  {
 	 * @return one slot instance for returning purposes
 	 */
 	public final T returning(T obj) {
-		//if (true) { T ret = create(); copy(ret, obj); return ret; }
+		
 		
 		copy(returnObj, obj);
 		return returnObj;

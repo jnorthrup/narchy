@@ -1,5 +1,5 @@
 /*
- * This file is part of Beads. See http://www.beadsproject.net for all information.
+ * This file is part of Beads. See http:
  */
 package net.beadsproject.beads.data;
 
@@ -45,10 +45,10 @@ public class Sample {
     private long nFrames;
     private String simpleName;
     private String filename;
-    private float[][] theSampleData; // theSampleData[0] first channel, theSampleData[1] second channel, etc..
-    private float[] current, next;   // used as temp buffers whilst calculating interpolation
+    private float[][] theSampleData; 
+    private float[] current, next;   
 
-    // These are the classes that handle audio file IO
+    
     private Class<? extends AudioFileReader> audioFileReaderClass;
     private Class<? extends AudioFileWriter> audioFileWriterClass;
     private static Class<? extends AudioFileReader> defaultAudioFileReaderClass;
@@ -229,7 +229,7 @@ public class Sample {
             double frame_frac = frame - frame_floor;
             if (frame_floor == nFrames - 1) {
                 getFrame(frame_floor, result);
-            } else // lerp
+            } else 
             {
                 getFrame(frame_floor, current);
                 getFrame(frame_floor + 1, next);
@@ -273,14 +273,14 @@ public class Sample {
                 y0 = current[i];
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
-                    y1 = current[i]; // ??
+                    y1 = current[i]; 
                 } else {
                     getFrame(realCurrentSample++, current);
                     y1 = current[i];
                 }
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
-                    y2 = current[i]; // ??
+                    y2 = current[i]; 
                 } else {
                     getFrame(realCurrentSample++, current);
                     y2 = current[i];
@@ -359,7 +359,7 @@ public class Sample {
         if (frame < 0) {
             return;
         }
-        // TODO in loop record this falls over
+        
         for (int i = 0; i < nChannels; i++) {
             System.arraycopy(frameData[i], 0, theSampleData[i], frame, numFrames);
         }
@@ -381,7 +381,7 @@ public class Sample {
         if (numFrames <= 0) {
             return;
         }
-        // clip numFrames
+        
         numFrames = Math.min(numFrames, (int) (nFrames - frame));
         for (int i = 0; i < nChannels; i++) {
             System.arraycopy(frameData[i], offset, theSampleData[i], frame,
@@ -422,12 +422,12 @@ public class Sample {
      */
     public void write(String fn, AudioFileType type, SampleAudioFormat saf) throws IOException {
         Class<? extends AudioFileWriter> theRealAudioFileWriterClass = audioFileWriterClass == null ? defaultAudioFileWriterClass : audioFileWriterClass;
-        //JavaSound can only write 16-bit, but we can use WavFileReaderWriter for >16-bit wavs, hence always write wavs this way
+        
         if (type == AudioFileType.WAV) {
             try {
                 theRealAudioFileWriterClass = (Class<? extends AudioFileWriter>) Class.forName("net.beadsproject.beads.data.audiofile.WavFileReaderWriter");
             } catch (ClassNotFoundException e) {
-                //worth continuing in case the default manages it.
+                
             }
         }
         if (theRealAudioFileWriterClass == null) {
@@ -580,15 +580,15 @@ public class Sample {
      * @throws IOException
      */
     private void loadAudioFile(String file) throws IOException {
-        //we have to deal with a bug in Tritonus: JavaSound doesn't accept 24-bit wav but strangely Tritonus
-        //interprets 24-bit wavs as mp3s. So we intercept all wavs and send them to the WavFileReaderWriter.
-        //In the first instance we can only use the file suffix as a clue to this, not the header.
+        
+        
+        
         Class<? extends AudioFileReader> theRealAudioFileReaderClass = audioFileReaderClass == null ? defaultAudioFileReaderClass : audioFileReaderClass;
         if (file.endsWith(".wav") || file.endsWith(".WAV")) {
             try {
                 theRealAudioFileReaderClass = (Class<? extends AudioFileReader>) Class.forName("net.beadsproject.beads.data.audiofile.WavFileReaderWriter");
             } catch (ClassNotFoundException e) {
-                //worth continuing in case the default manages it.
+                
             }
         }
         AudioFileReader audioFileReader;

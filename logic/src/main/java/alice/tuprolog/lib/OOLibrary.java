@@ -83,22 +83,22 @@ public class OOLibrary extends Library {
     
     public OOLibrary()
     {
-//    	if (System.getProperty("java.vm.name").equals("Dalvik"))
-//		{
-//			dynamicLoader = new AndroidDynamicClassLoader(new URL[] {}, getClass().getClassLoader());
-//		}
-//		else
-//		{
+
+
+
+
+
+
 			dynamicLoader = new JavaDynamicClassLoader(new URL[] {}, getClass().getClassLoader());
-//		}
+
     }
     
     @Override
     public String getTheory() {
         return
-        //
-        // operators defined by the JavaLibrary theory
-        //
+        
+        
+        
         ":- op(800,xfx,'<-').\n"
                 + ":- op(850,xfx,'returns').\n"
                 + ":- op(200,xfx,'as').\n"
@@ -118,7 +118,7 @@ public class OOLibrary extends Library {
 				+ "array_length(Array,Length):- class('java.lang.reflect.Array') <- getLength(Array as 'java.lang.Object') returns Length.\n"
 
                 
-                + //**** following section deprecated from tuProlog 3.0  ***//
+                + 
                 "java_object_bt(ClassName,Args,Id):- java_object(ClassName,Args,Id).\n"
                 + "java_object_bt(ClassName,Args,Id):- destroy_object(Id).\n"
                 
@@ -129,7 +129,7 @@ public class OOLibrary extends Library {
                 
                 + "java_array_length(Array,Length):- class('java.lang.reflect.Array') <- getLength(Array as 'java.lang.Object') returns Length.\n"
                 + "java_object_string(Object,String):- Object <- toString returns String.    \n"
-                +//**** end section deprecated from tuProlog 3.0  ***//
+                +
                 "java_catch(JavaGoal, List, Finally) :- call(JavaGoal), call(Finally).\n";
         		
     }
@@ -200,7 +200,7 @@ public class OOLibrary extends Library {
                         "Java class not found: " + className));
             }
             String clName = ((Struct) className).name();
-            // check for array type
+            
             if (clName.endsWith("[]")) {
                 Object[] list = getArrayFromList(arg);
                 int nargs = ((NumberTerm) list[0]).intValue();
@@ -214,7 +214,7 @@ public class OOLibrary extends Library {
                 throw new IllegalArgumentException(
                         "Illegal constructor arguments  " + arg);
             }
-            // object creation with argument described in args
+            
             try {
             	Class<?> cl = Class.forName(clName, true, dynamicLoader);
                 Object[] args_value = args.getValues();
@@ -265,37 +265,37 @@ public class OOLibrary extends Library {
      */
     @SuppressWarnings("unchecked")
 	public <T> boolean new_lambda_3(Term interfaceName, Term implementation, Term id) {
-//    	try {
-//    		counter++;
-//    		String target_class=(interfaceName.toString()).substring(1, interfaceName.toString().length()-1);
-//    		String lambda_expression=(implementation.toString()).substring(1, implementation.toString().length()-1);
-//    		//following lines allow to delete escape char from received string
-//    		target_class = StringEscaperUtils.unescapeJava(target_class);
-//    		lambda_expression = StringEscapeUtils.unescapeJava(lambda_expression);
-//
-//    		Class<?> lambdaMetaFactory = alice.util.proxyGenerator.Generator.make(
-//                    java.lang.ClassLoader.getSystemClassLoader(),
-//		        "MyLambdaFactory"+counter,
-//                    "public class MyLambdaFactory" + counter + " {\n" + "  public " + target_class + " getFunction() {\n" + " 		return " + lambda_expression + "; \n" + "  }\n" + "}\n"
-//    		);
-//
-//    		Object myLambdaFactory = lambdaMetaFactory.newInstance();
-//    		Class<?> myLambdaClass = myLambdaFactory.getClass();
-//    		Method[] allMethods = myLambdaClass.getDeclaredMethods();
-//    		T myLambdaInstance=null;
-//    		for (Method m : allMethods) {
-//    			String mname = m.getName();
-//    			if (mname.startsWith("getFunction"))
-//    				myLambdaInstance=(T) m.invoke(myLambdaFactory);
-//    		}
-//    		id = id.term();
-//    		if (bindDynamicObject(id, myLambdaInstance))
-//    			return true;
-//    		else
-//    			throw new JavaException(new Exception());
-//    	} catch (Exception ex) {
-//            throw new JavaException(ex);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         throw new TODO();
     }
 
@@ -445,7 +445,7 @@ public class OOLibrary extends Library {
 				}
 			}
 			args = parseArg(method);
-			// object and argument must be instantiated
+			
 			if (objId instanceof Var)
 				throw new JavaException(new IllegalArgumentException(objId
 						.toString()));
@@ -486,20 +486,20 @@ public class OOLibrary extends Library {
 							m.setAccessible(true);
 							res = m.invoke(null, args.getValues());
 						} catch (ClassNotFoundException ex) {
-							// if not found even as a class id -> consider as a
-							// String object value
+							
+							
 							Prolog.warn("Unknown class.");
 							throw new JavaException(ex);
 						}
 					}
 					else {
-						// the object is the string itself
+						
 						Method m = java.lang.String.class.getMethod(methodName, args.getTypes());
 						m.setAccessible(true);
 						res = m.invoke(objName, args.getValues());
 					}
 				} else {
-					// the object is the string itself
+					
 					Method m = java.lang.String.class.getMethod(methodName,
 							args.getTypes());
 					m.setAccessible(true);
@@ -618,7 +618,7 @@ public class OOLibrary extends Library {
             if(objId.isCompound() && ((Struct) objId).name().equals("class"))
             {
             	String clName = null;
-            	// Case: class(className)
+            	
             	if(((Struct) objId).subs() == 1)
             		 clName = alice.util.Tools.removeApostrophes(((Struct) objId).sub(0).toString());
             	if(clName != null)
@@ -651,7 +651,7 @@ public class OOLibrary extends Library {
                 }
             }
 
-            // first check for primitive data field
+            
             Field field = cl.getField(fieldName);
             if (what instanceof NumberTerm) {
                 NumberTerm wn = (NumberTerm) what;
@@ -673,7 +673,7 @@ public class OOLibrary extends Library {
                 if (obj2 != null) {
                     field.set(obj, obj2);
                 } else {
-                    // consider value as a simple string
+                    
                     field.set(obj, what_name);
                 }
             }
@@ -747,7 +747,7 @@ public class OOLibrary extends Library {
                 double value = field.getDouble(obj);
                 return unify(what, new NumberTerm.Double(value));
             } else {
-                // the field value is an object
+                
                 Object res = field.get(obj);
                 return bindDynamicObject(what, res);
             }
@@ -977,7 +977,7 @@ public class OOLibrary extends Library {
                     throw new JavaException(new Exception());
             }
         } catch (Exception ex) {
-            // ex.printStackTrace();
+            
             throw new JavaException(ex);
         }
 
@@ -1020,7 +1020,7 @@ public class OOLibrary extends Library {
             }
             return bindDynamicObject(id, array);
         } catch (Exception ex) {
-            // ex.printStackTrace();
+            
             return false;
         }
     }
@@ -1131,7 +1131,7 @@ public class OOLibrary extends Library {
                     types[i] = java.lang.Float.TYPE;
                 }
             } else if (term instanceof Struct) {
-                // argument descriptors
+                
                 Struct tc = (Struct) term;
                 if (tc.name().equals("as")) {
                     return parse_as(values, types, i, tc.subResolve(0), tc
@@ -1169,7 +1169,7 @@ public class OOLibrary extends Library {
                         .removeApostrophes(((Struct) castTo).name());
                 String castWhat_name = alice.util.Tools.removeApostrophes(castWhat
                         .term().toString());
-                // System.out.println(castWhat_name+" "+castTo_name);
+                
                 if (castTo_name.equals("java.lang.String")
                         && castWhat_name.equals("true")) {
                     values[i] = "true";
@@ -1229,7 +1229,7 @@ public class OOLibrary extends Library {
                             }
                             types[i] = Boolean.TYPE;
                         } else {
-                            // conversion to array
+                            
                             return false;
                         }
                     } else {
@@ -1325,7 +1325,7 @@ public class OOLibrary extends Library {
      */
     private boolean parseResult(Term id, Object obj) {
         if (obj == null) {
-            // return unify(id,Term.TRUE);
+            
             return unify(id, new Var());
         }
         try {
@@ -1353,7 +1353,7 @@ public class OOLibrary extends Library {
                 return bindDynamicObject(id, obj);
             }
         } catch (Exception ex) {
-            // ex.printStackTrace();
+            
             return false;
         }
     }
@@ -1390,12 +1390,12 @@ public class OOLibrary extends Library {
         if (!id.isGround()) {
             throw new InvalidObjectIdException();
         }
-        // already registered object?
+        
         synchronized (staticObjects) {
             Object aKey = staticObjects_inverse.get(obj);
 
             if (aKey != null) {
-                // object already referenced
+                
                 return false;
             } else {
                 String raw_name = alice.util.Tools.removeApostrophes(id.term()
@@ -1469,13 +1469,13 @@ public class OOLibrary extends Library {
      * @return fresh id
      */
     public Struct register(Object obj) {
-    	// already registered object?
+    	
         synchronized (staticObjects) {
             Object aKey = staticObjects_inverse.get(obj);
             if (aKey != null) {
-                // object already referenced -> unifying terms
-                // referencing the object
-                // log("obj already registered: unify "+id+" "+aKey);
+                
+                
+                
                 return (Struct) aKey;
             } else {
                 Struct id = generateFreshId();
@@ -1558,15 +1558,15 @@ public class OOLibrary extends Library {
      * @return identifier
      */
     public Struct registerDynamic(Object obj) {
-        // System.out.println("lib: "+this+" current id: "+this.id);
+        
 
-        // already registered object?
+        
         synchronized (currentObjects) {
             Object aKey = currentObjects_inverse.get(obj);
             if (aKey != null) {
-                // object already referenced -> unifying terms
-                // referencing the object
-                // log("obj already registered: unify "+id+" "+aKey);
+                
+                
+                
                 return (Struct) aKey;
             } else {
                 Struct id = generateFreshId();
@@ -1617,39 +1617,39 @@ public class OOLibrary extends Library {
      * Term id can be a variable or a ground term.
      */
     protected boolean bindDynamicObject(Term id, Object obj) {
-        // null object are considered to _ variable
+        
         if (obj == null) {
             return unify(id, new Var());
         }
-        // already registered object?
+        
         synchronized (currentObjects) {
             Object aKey = currentObjects_inverse.get(obj);
             if (aKey != null) {
-                // object already referenced -> unifying terms
-                // referencing the object
-                // log("obj already registered: unify "+id+" "+aKey);
+                
+                
+                
                 return unify(id, (Term) aKey);
             } else {
-                // object not previously referenced
+                
                 if (id instanceof Var) {
-                    // get a ground term
+                    
                     Struct idTerm = generateFreshId();
                     unify(id, idTerm);
                     registerDynamic(idTerm, obj);
-                    // log("not ground id for a new obj: "+id+" as ref for "+obj);
+                    
                     return true;
                 } else {
-                    // verify of the id is already used
+                    
                     String raw_name = alice.util.Tools.removeApostrophes(id
                             .term().toString());
                     Object linkedobj = currentObjects.get(raw_name);
                     if (linkedobj == null) {
                         registerDynamic((Struct) (id.term()), obj);
-                        // log("ground id for a new obj: "+id+" as ref for "+obj);
+                        
                         return true;
                     } else {
-                        // an object with the same id is already
-                        // present: must be the same object
+                        
+                        
                         return obj == linkedobj;
                     }
                 }
@@ -1698,22 +1698,22 @@ public class OOLibrary extends Library {
         preregisterObjects();
     }
 
-    // --------------------------------------------------
+    
 
     private static Method lookupMethod(Class<?> target, String name,
                                        Class<?>[] argClasses, Object... argValues)
             throws NoSuchMethodException {
-        // first try for exact match
+        
         try {
             return target.getMethod(name, argClasses);
         } catch (NoSuchMethodException e) {
-            if (argClasses.length == 0) { // if no args & no exact match, out of
-                // luck
+            if (argClasses.length == 0) { 
+                
                 return null;
             }
         }
 
-        // go the more complicated route
+        
         Method[] methods = target.getMethods();
         Vector<Method> goodMethods = new Vector<>();
         for (int i = 0; i != methods.length; i++) {
@@ -1723,21 +1723,21 @@ public class OOLibrary extends Library {
         }
         switch (goodMethods.size()) {
         case 0:
-            // no methods have been found checking for assignability
-            // and (int -> long) conversion. One last chance:
-            // looking for compatible methods considering also
-            // type conversions:
-            // double --> float
-            // (the first found is used - no most specific
-            // method algorithm is applied )
+            
+            
+            
+            
+            
+            
+            
 
             for (int i = 0; i != methods.length; i++) {
                 if (name.equals(methods[i].getName())) {
                     Class<?>[] types = methods[i].getParameterTypes();
                     Object[] val = matchClasses(types, argClasses, argValues);
                     if (val != null) {
-                        // found a method compatible
-                        // after type conversions
+                        
+                        
                         for (int j = 0; j < types.length; j++) {
                             argClasses[j] = types[j];
                             argValues[j] = val[j];
@@ -1758,17 +1758,17 @@ public class OOLibrary extends Library {
     private static Constructor<?> lookupConstructor(Class<?> target,
                                                     Class<?>[] argClasses, Object... argValues)
             throws NoSuchMethodException {
-        // first try for exact match
+        
         try {
             return target.getConstructor(argClasses);
         } catch (NoSuchMethodException e) {
-            if (argClasses.length == 0) { // if no args & no exact match, out of
-                // luck
+            if (argClasses.length == 0) { 
+                
                 return null;
             }
         }
 
-        // go the more complicated route
+        
         Constructor<?>[] constructors = target.getConstructors();
         Vector<Constructor<?>> goodConstructors = new Vector<>();
         for (int i = 0; i != constructors.length; i++) {
@@ -1777,20 +1777,20 @@ public class OOLibrary extends Library {
         }
         switch (goodConstructors.size()) {
         case 0:
-            // no constructors have been found checking for assignability
-            // and (int -> long) conversion. One last chance:
-            // looking for compatible methods considering also
-            // type conversions:
-            // double --> float
-            // (the first found is used - no most specific
-            // method algorithm is applied )
+            
+            
+            
+            
+            
+            
+            
 
             for (int i = 0; i != constructors.length; i++) {
                 Class<?>[] types = constructors[i].getParameterTypes();
                 Object[] val = matchClasses(types, argClasses, argValues);
                 if (val != null) {
-                    // found a method compatible
-                    // after type conversions
+                    
+                    
                     for (int j = 0; j < types.length; j++) {
                         argClasses[j] = types[j];
                         argValues[j] = val[j];
@@ -1807,7 +1807,7 @@ public class OOLibrary extends Library {
         }
     }
 
-    // 1st arg is from method, 2nd is actual parameters
+    
     private static boolean matchClasses(Class<?>[] mclasses, Class<?>... pclasses) {
         if (mclasses.length == pclasses.length) {
             for (int i = 0; i != mclasses.length; i++) {
@@ -1850,7 +1850,7 @@ public class OOLibrary extends Library {
             throw new NoSuchMethodException(">1 most specific method");
     }
 
-    // true if c1 is more specific than c2
+    
     private static boolean moreSpecific(Method c1, Method c2) {
         Class<?>[] p1 = c1.getParameterTypes();
         Class<?>[] p2 = c2.getParameterTypes();
@@ -1883,7 +1883,7 @@ public class OOLibrary extends Library {
             throw new NoSuchMethodException(">1 most specific constructor");
     }
 
-    // true if c1 is more specific than c2
+    
     private static boolean moreSpecific(Constructor<?> c1, Constructor<?> c2) {
         Class<?>[] p1 = c1.getParameterTypes();
         Class<?>[] p2 = c2.getParameterTypes();
@@ -1896,24 +1896,24 @@ public class OOLibrary extends Library {
         return true;
     }
 
-    // Checks compatibility also considering explicit type conversion.
-    // The method returns the argument values, since they could be changed
-    // after a type conversion.
-    //
-    // In particular the check must be done for the DEFAULT type of tuProlog,
-    // that are int and double; so
-    // (required X, provided a DEFAULT -
-    // with DEFAULT to X conversion 'conceivable':
-    // for instance *double* to *int* is NOT considered good
-    //
-    // required a float, provided an int OK
-    // required a double, provided a int OK
-    // required a long, provided a int ==> already considered by
-    // previous match test
-    // required a float, provided a double OK
-    // required a int, provided a double => NOT CONSIDERED
-    // required a long, provided a double => NOT CONSIDERED
-    //
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private static Object[] matchClasses(Class<?>[] mclasses, Class<?>[] pclasses,
                                          Object... values) {
         if (mclasses.length == pclasses.length) {
@@ -1927,18 +1927,18 @@ public class OOLibrary extends Library {
                     newvalues[i] = values[i];
                 } else if (mclasses[i].equals(java.lang.Float.TYPE)
                         && pclasses[i].equals(java.lang.Double.TYPE)) {
-                    // arg required: a float, arg provided: a double
-                    // so we need an explicit conversion...
+                    
+                    
                     newvalues[i] = ((Double) values[i]).floatValue();
                 } else if (mclasses[i].equals(java.lang.Float.TYPE)
                         && pclasses[i].equals(java.lang.Integer.TYPE)) {
-                    // arg required: a float, arg provided: an int
-                    // so we need an explicit conversion...
+                    
+                    
                     newvalues[i] = (float) (Integer) values[i];
                 } else if (mclasses[i].equals(java.lang.Double.TYPE)
                         && pclasses[i].equals(java.lang.Integer.TYPE)) {
-                    // arg required: a double, arg provided: an int
-                    // so we need an explicit conversion...
+                    
+                    
                     newvalues[i] = ((Integer) values[i]).doubleValue();
                 } else if (values[i] == null && !mclasses[i].isPrimitive()) {
                     newvalues[i] = null;
@@ -1997,12 +1997,12 @@ class ClassLoader extends java.lang.ClassLoader {
 class ListenerInfo implements Serializable {
     public final String listenerInterfaceName;
     public final EventListener listener;
-    // public String eventName;
+    
    public final String eventFullClass;
 
     public ListenerInfo(EventListener l, String eventClass, String n) {
         listener = l;
-        // this.eventName=eventName;
+        
         this.eventFullClass = eventClass;
         listenerInterfaceName = n;
     }

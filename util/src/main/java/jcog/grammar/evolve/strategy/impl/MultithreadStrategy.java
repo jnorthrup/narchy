@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -85,7 +85,7 @@ public class MultithreadStrategy extends AbstractExecutionStrategy {
                 }
                 result = completionService.take();
             } catch (InterruptedException ex) {
-                //someone said me to stop
+                
                 if (listener != null) {
                         listener.evolutionStopped();
                 }
@@ -98,7 +98,7 @@ public class MultithreadStrategy extends AbstractExecutionStrategy {
                     TreeEvaluationException ex = (TreeEvaluationException) x.getCause();
                     RunStrategy strategy = ex.getAssociatedStrategy();
                     LOG.log(Level.SEVERE, "Job " + strategy.getConfiguration().getJobId() + " failed with exception", ex.getCause());
-                    //ExecutionListener listener = strategy.getExecutionListener();
+                    
                     if (listener != null) {
                         listener.evolutionFailed(strategy, ex);
                     }

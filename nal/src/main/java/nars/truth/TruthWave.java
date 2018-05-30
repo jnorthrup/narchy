@@ -80,7 +80,7 @@ public class TruthWave {
         long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
         b.forEachTask(false, minT, maxT, x -> {
             int ss = size[0];
-            if (ss >= s) { //HACK in case the table size changed since allocating above
+            if (ss >= s) { 
                 return;
             }
 
@@ -121,7 +121,7 @@ public class TruthWave {
         if (c < s)
             resize(s);
         else {
-            //if (s < c) Arrays.fill(truth, 0); //TODO memfill only the necessary part of the array that won't be used
+            
         }
 
     }
@@ -148,11 +148,11 @@ public class TruthWave {
             long a = Math.round(t - dt/2);
             long b = Math.round(t + dt/2);
 
-            Truth tr = table.truth(a, b, nar); //range;
+            Truth tr = table.truth(a, b, nar); 
 
             load(data, (j++) * ENTRY_SIZE,
-                    //mid, mid,
-                    //table.truth(mid, nar) //point
+                    
+                    
                     minT, maxT,
                     a, b,
                     tr
@@ -216,79 +216,79 @@ public class TruthWave {
         return truth.length / ENTRY_SIZE;
     }
 
-//        //get min and max occurence time
-//        for (Task t : beliefs) {
-//            long o = t.occurrence();
-//            if (o == Tense.ETERNAL) {
-//                expectEternal1 += t.truth().expectationPositive();
-//                expectEternal0 += t.truth().expectationNegative();
-//                numEternal++;
-//            }
-//            else {
-//                numTemporal++;
-//                if (o > max) max = o;
-//                if (o < min) min = o;
-//            }
-//        }
-//
-//        if (numEternal > 0) {
-//            expectEternal1 /= numEternal;
-//            expectEternal0 /= numEternal;
-//        }
-//
-//        start = min;
-//        end = max;
-//
-//        int range = length();
-//        expect = new float[2][];
-//        expect[0] = new float[range+1];
-//        expect[1] = new float[range+1];
-//
-//        if (numTemporal > 0) {
-//            for (Task t : beliefs) {
-//                long o = t.occurrence();
-//                if (o != Tense.ETERNAL) {
-//                    int i = (int)(o - min);
-//                    expect[1][i] += t.truth().expectationPositive();
-//                    expect[0][i] += t.truth().expectationNegative();
-//                }
-//            }
-//
-//            //normalize
-//            for (int i = 0; i < (max-min); i++) {
-//                expect[0][i] /= numTemporal;
-//                expect[1][i] /= numTemporal;
-//            }
-//        }
-//
-//    }
-//
-//    //TODO getFrequencyAnalysis
-//    //TODO getDistribution
-//
-//    public int length() { return (int)(end-start); }
-//
-//    public void print() {
-//        System.out.print("eternal=" + numEternal + ", temporal=" + numTemporal);
-//
-//
-//        if (length() == 0) {
-//            System.out.println();
-//            return;
-//        }
-//        System.out.println(" @ " + start + ".." + end);
-//
-//        for (int c = 0; c < 2; c++) {
-//            for (int i = 0; i < length(); i++) {
-//
-//                float v = expect[c][i];
-//
-//                System.out.print(Util.n2u(v) + ' ');
-//
-//            }
-//            System.out.println();
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @NotNull

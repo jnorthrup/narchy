@@ -66,8 +66,8 @@ public class Jake2Agent extends NAgentX implements Runnable {
             edict_t p = PlayerView.current_player;
             if (p == null) return;
             if (p.deadflag > 0) {
-                //Cmd.ExecuteString("map " + nextMap());
-                //Cmd.ExecuteString("begin");
+                
+                
                 Key.Event(Key.K_ENTER, true, 0);
                 return;
             }
@@ -110,27 +110,27 @@ public class Jake2Agent extends NAgentX implements Runnable {
         qcam.resolution(0.01f);
         qcam.src.vflip = true;
 
-//        new ShapeSensor(p(id, the("shape")), new Scale(screenshotter, 128, 96) {
-//            @Override
-//            public float brightness(int xx, int yy, float rFactor, float gFactor, float bFactor) {
-//                if (ph> 0)
-//                    return super.brightness(xx, (ph - 1) - yy, rFactor, gFactor, bFactor);
-//                else
-//                    return Float.NaN;
-//            }
-//        },this);
 
 
-//        camAE = new PixelAutoClassifier("cra", qcam.src.pixels, 16, 16, 32, this);
-//        window(camAE.newChart(), 500, 500);
+
+
+
+
+
+
+
+
+
+
+
 
         senseFields("q", player);
 
         actionToggle($("q(move,fore)"), (x) -> CL_input.in_forward.state = x ? 1 : 0);
         actionToggle($("q(move,back)"), (x) -> CL_input.in_back.state = x ? 1 : 0);
 
-        //actionToggle($.$("(left)"), (x) -> CL_input.in_left.state = x ? 1 : 0);
-        //actionToggle($.$("(right)"), (x) -> CL_input.in_right.state = x ? 1 : 0);
+        
+        
         actionToggle($("q(move,left)"), (x) -> CL_input.in_moveleft.state = x ? 1 : 0);
         actionToggle($("q(move,right)"), (x) -> CL_input.in_moveright.state = x ? 1 : 0);
         actionToggle($("q(jump)"), (x) -> CL_input.in_up.state = x ? 1 : 0);
@@ -149,13 +149,13 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
         actionToggle($("q(attak)"), (x) -> CL_input.in_attack.state = x ? 1 : 0);
 
-//        actionBipolar($("q(lookpitch)"), (x) -> {
-//
-//            cl.viewangles[Defines.PITCH] = pitchSpeed * x;
-//            //return CL_input.in_lookup.state = x ? 1 : 0;
-//            return x;
-//        });
-        //actionToggle($.$("(lookdown)"), (x) -> CL_input.in_lookdown.state = x ? 1 : 0);
+
+
+
+
+
+
+        
 
         new Thread(this).start();
     }
@@ -179,27 +179,27 @@ public class Jake2Agent extends NAgentX implements Runnable {
     @Override
     public void run() {
 
-        //http://aq2maps.quadaver.org/
-        //https://www.quaddicted.com/reviews/
-        //http://tastyspleen.net/~quake2/baseq2/maps/
-        //https://www.eecis.udel.edu/~portnoi/quake/quakeiicom.html
+        
+        
+        
+        
         IN.mouse_avail = false;
         Jake2.run(new String[]{
                 "+god",
-                //"+vid_gamma 3",
-                //"+debuggraph",
-                //"+give all",
-                //"+use chaingun",
-                //"+mlook 0", //disable mouse
-                //"+in_initmouse 0",
-                //"+in_mouse 0",
-                "+dmflags 1024", //deathmatch force respawn
-                "+cl_gun 0", //hide gun
+                
+                
+                
+                
+                
+                
+                
+                "+dmflags 1024", 
+                "+cl_gun 0", 
                 "+timescale 0.5",
-                //"+timescale 1.5",
-                //"+map base1"
+                
+                
                 "+map " + nextMap()
-                //"+connect .."
+                
         }, this::onDraw);
 
 
@@ -245,7 +245,7 @@ public class Jake2Agent extends NAgentX implements Runnable {
         Final Showdown	boss2.bsp
 
 
-        Read more: http://www.cheatcodes.com/quake-2-pc/#ixzz4L7BYreED
+        Read more: http:
         Under Creative Commons License: Attribution Non-Commercial No Derivatives
         Follow us: @CheatCodes on Twitter | CheatCodes on Facebook
 

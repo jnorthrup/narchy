@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.objective.performance;
 
@@ -48,14 +48,14 @@ import java.util.logging.Logger;
 public class PerformacesObjective implements Objective {
 
     private Context context;
-    //private DataSet dataSetView;
+    
 
-    //private int numberCharsInMatches = 0;
+    
     @Override
     public void setup(Context context) {
         this.context = context;
-        //this.dataSetView = this.context.getCurrentDataSet();
-        //this.dataSetView.populateMatchesStrings();
+        
+        
     }
 
     @Override
@@ -72,13 +72,13 @@ public class PerformacesObjective implements Objective {
             return fitness;
         }
 
-        //match stats makes sense only for tp e fp values... we cannot use instance statistic formulas other than precision
+        
         BasicStats statsOverall = new BasicStats();
 
-        //char stats can be managed as ususal
+        
         BasicStats statsCharsOverall = new BasicStats();
 
-        //Flagging
+        
         BasicStats statsOverallFlagging = new BasicStats();
 
         int i = 0;
@@ -87,7 +87,7 @@ public class PerformacesObjective implements Objective {
             BasicStats statsChars = new BasicStats();
             BasicStats statsFlagging = new BasicStats();
 
-            //Characted extracted in the right place (match)
+            
             Example example = dataSetView.getExample(i);
             List<Bounds> expectedMatchMask = example.getMatch();
             List<Bounds> expectedUnmatchMask = example.getUnmatch();
@@ -99,7 +99,7 @@ public class PerformacesObjective implements Objective {
             statsChars.tp = intersection(result, expectedMatchMask);
             statsChars.fp = intersection(result, expectedUnmatchMask);
 
-            //Flagging
+            
             
             if (!isUnannotated(example)){
                 statsFlagging.tp = isTruePositive(result, example.match) ? 1 : 0;
@@ -117,11 +117,11 @@ public class PerformacesObjective implements Objective {
         statsCharsOverall.tn = dataSetView.getNumberUnmatchedChars() - statsCharsOverall.fp;
         statsCharsOverall.fn = dataSetView.getNumberMatchedChars() - statsCharsOverall.tp;
 
-        double charAccuracy = statsCharsOverall.accuracy(); //Chars extraction accuracy
-        double charPrecision = statsCharsOverall.precision(); //Chars precision (how many extracted chars are in positive matches?)
-        double charRecall = statsCharsOverall.recall(); //Chars recall (how many extracted chars vs overall chars in positive matches)
-        double precision = statsOverall.precision(); //How many extractions are correct?
-        double recall = statsOverall.recall(dataSetView.getNumberMatches()); //Right extractions vs overall matches number
+        double charAccuracy = statsCharsOverall.accuracy(); 
+        double charPrecision = statsCharsOverall.precision(); 
+        double charRecall = statsCharsOverall.recall(); 
+        double precision = statsOverall.precision(); 
+        double recall = statsOverall.recall(dataSetView.getNumberMatches()); 
         double fmeasure = 2 * (precision * recall) / (precision + recall);
 
         fitness[0] = precision;
@@ -130,7 +130,7 @@ public class PerformacesObjective implements Objective {
         fitness[3] = charRecall;
         fitness[4] = charAccuracy;
         fitness[5] = fmeasure;
-        //Flagging
+        
         fitness[6] = statsOverallFlagging.accuracy();
         fitness[7] = statsOverallFlagging.fpr();
         fitness[8] = statsOverallFlagging.fnr();
@@ -141,7 +141,7 @@ public class PerformacesObjective implements Objective {
         return fitness;
     }
 
-    //Returns number of chars of this extracted ranges which falls into expected ranges
+    
     private static int intersection(Bounds[] extractedRanges, List<Bounds> expectedRanges) {
         int overallNumChars = 0;
 
@@ -162,7 +162,7 @@ public class PerformacesObjective implements Objective {
         return overallNumChars;
     }
 
-    //Rerurns the number of idential intervals in two list of ranges
+    
     private static int countIdenticalRanges(Bounds[] rangesA, List<Bounds> rangesB) {
         int identicalRanges = 0;
 
@@ -196,7 +196,7 @@ public class PerformacesObjective implements Objective {
             performancesMap.put("character accuracy", performances[4]);
             performancesMap.put("match f-measure", performances[5]);
         } else {
-            //flagging performances
+            
             performancesMap.put("flag accuracy", performances[6]);
             performancesMap.put("flag fpr", performances[7]);
             performancesMap.put("flag fnr", performances[8]);
@@ -218,7 +218,7 @@ public class PerformacesObjective implements Objective {
         Objective phaseObjective = PerformancesFactory.buildObjective(phase, configuration);
         Node finalTree = new Constant(finalSolution.getSolution());
         double[] phasePerformaceRoughtValues = phaseObjective.fitness(finalTree);
-        Map<String, Double> phasePerformances = null; //let it explode in case of errors
+        Map<String, Double> phasePerformances = null; 
         switch (phase) {
             case TRAINING:
                 phasePerformances = finalSolution.getTrainingPerformances();

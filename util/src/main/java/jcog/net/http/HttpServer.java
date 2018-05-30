@@ -38,7 +38,7 @@ import java.nio.channels.SocketChannel;
  */
 public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSocketHandler, HttpModel {
 
-    static final int LINEBUFFER_SIZE = 512; // Used to combine a line that spans multiple TCP segments
+    static final int LINEBUFFER_SIZE = 512; 
     private static final int RCVBUFFER_SIZE = 16384;
     static final int BUFFER_SIZE = RCVBUFFER_SIZE + LINEBUFFER_SIZE;
 
@@ -117,7 +117,7 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
 
         ws.onStart();
 
-        //logger.info("Http server setup at {0}:{1,number,#}", new Object[]{ssChannel.socket().getInetAddress(), getListeningPort(ssChannel)});
+        
     }
 
     @Override
@@ -140,10 +140,10 @@ public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSock
             http.next();
 
         } catch (ClosedChannelException ex) {
-            // This exception is okay after stop() has been called.
-            // However normally this error should only shown once.
-            // Stop running the loop (or unregister this object from the loop)
-            // when calling close()
+            
+            
+            
+            
             logger.info("Channel closed in accept()");
         } catch (IOException ex) {
             logger.error("IOException in accept()", ex);

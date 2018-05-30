@@ -8,10 +8,10 @@
  * This file is part of parsemis.
  *
  * Licence: 
- *  LGPL: http://www.gnu.org/licenses/lgpl.html
- *   EPL: http://www.eclipse.org/org/documents/epl-v10.php
+ *  LGPL: http:
+ *   EPL: http:
  *   See the LICENSE file in the project's top-level directory for details.
- *   https://raw.githubusercontent.com/timtadh/parsemis/master/src/de/parsemis/utils/HalfIntMatrix.java
+ *   https:
  */
 
 package jcog.data.graph;
@@ -112,8 +112,8 @@ public class HalfIntMatrix {
 	 * @see de.parsemis.utils.IntMatrix#get(int, int)
 	 */
 	public int get(final int row, final int col) {
-//		assert row >= 0 && col >= 0 && row < size && col < size : "row/col out of bounds: "
-//				+ row + "/" + col + " size: " + size;
+
+
 		return matrix[idx(row, col)];
 	}
 

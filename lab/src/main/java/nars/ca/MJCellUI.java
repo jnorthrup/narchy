@@ -1,7 +1,7 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// User interface
+package nars.ca;
+
+
+
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -15,22 +15,22 @@ class MJCellUI extends Frame {
 	public MJBoard mjb;
 	public final MJCell mjc;
 	public MJOpen mjo;
-	public String sInitGame = "Generations"; // initial game
-	public String sInitRule = "Brian's Brain"; // initial rule
-	public String sInitPatt = ""; // optional initial pattern
-	public boolean bInitPanelLeft = true; // Left panel visible
-	public boolean bInitPanelBotm = true; // Bottom panel visible
+	public String sInitGame = "Generations"; 
+	public String sInitRule = "Brian's Brain"; 
+	public String sInitPatt = ""; 
+	public boolean bInitPanelLeft = true; 
+	public boolean bInitPanelBotm = true; 
     private Panel pnlLeft;
 	private Panel pnlBotm;
     private Panel pnlPatterns;
 	private Panel pnlFav;
     public String sBaseURL;
-	public List<String> vDescr; // pattern description
-	private Dialog msgDlg; // dialog used for "Info" and "About"
-	private MJPatternsList PatDlg; // patterns list dialog
-	private MJFavourities FavDlg; // favourite patterns
+	public List<String> vDescr; 
+	private Dialog msgDlg; 
+	private MJPatternsList PatDlg; 
+	private MJFavourities FavDlg; 
 
-	// menu
+	
 	private final MenuBar mnuBar = new MenuBar();
 	private final Menu mnuFile = new Menu("File");
 	private final Menu mnuView = new Menu("View");
@@ -41,14 +41,14 @@ class MJCellUI extends Frame {
 	private final Menu mnuHelp = new Menu("Help");
 	private final Menu mnuSeed = new Menu("Seed");
 
-	// File
+	
 	private final MenuItem itmOpen = new MenuItem("Open pattern...");
 	private final MenuItem itmFav = new MenuItem("Favourite patterns...");
 	private final MenuItem itmInfo = new MenuItem("General info...  (I)");
 	private final MenuItem itmDesc = new MenuItem("Pattern description...  (D)");
 	private final MenuItem itmExit = new MenuItem("Exit");
 
-	// Animation
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public final MenuItem itmRunStop = new MenuItem("Start / Stop  (Enter)");
 	private final MenuItem itmStep = new MenuItem("Single step  (Space)");
@@ -68,19 +68,19 @@ class MJCellUI extends Frame {
 	private final CheckboxMenuItem itmRefreshStepPage = new CheckboxMenuItem(
 			"Refresh every full page (1D CA)");
 
-	// Rules
+	
 	private final MenuItem itmUserRule = new MenuItem("Define own rules...  (?)");
 	private final CheckboxMenuItem itmWrap = new CheckboxMenuItem(
 			"Wrapping at edges  (W)");
 
-	// View
+	
 	private final MenuItem itmRefresh = new MenuItem("Refresh  (F5)");
 	private final CheckboxMenuItem itmViewControls = new CheckboxMenuItem(
 			"Show control panel", true);
 	private final CheckboxMenuItem itmViewSeed = new CheckboxMenuItem(
 			"Show seeding panel", true);
 
-	// Board
+	
 	private final MenuItem itmRand = new MenuItem("Randomize  (R)");
 	private final MenuItem itmSeed = new MenuItem("Seed  (S)");
 	private final MenuItem itmClear = new MenuItem("Clear  (C)");
@@ -101,7 +101,7 @@ class MJCellUI extends Frame {
 	private final MenuItem itmCellsBigger = new MenuItem("Zoom in  (+)");
 	private final MenuItem itmCellsSmaller = new MenuItem("Zoom out  (-)");
 
-	// Colors
+	
 	private final MenuItem itmCloStatesCnt = new MenuItem("Count of states...");
 	private final MenuItem itmCloCrrState = new MenuItem("Active state...");
 	private final MenuItem itmCloNextState = new MenuItem(
@@ -123,10 +123,10 @@ class MJCellUI extends Frame {
 	private final CheckboxMenuItem itmCPlTst = new CheckboxMenuItem(
 			"Palette 'Milky way'");
 
-	// Help
+	
 	private final MenuItem itmAbout = new MenuItem("About...  (F1)");
 
-	// Buttons, etc.
+	
 	private final Button btnOpen = new Button("Patterns library");
 	private final Button btnFav = new Button("Favourities");
 	private final Button btnRand = new Button("Rand");
@@ -139,14 +139,14 @@ class MJCellUI extends Frame {
 	public final Button btnFaster = new Button("Faster");
 	private final Button btnUserRule = new Button("?");
 	private final Button btnDesc = new Button("d");
-	private final Checkbox chkWrap = new Checkbox("Wrap", true); // wrap at edges?
-	private final Checkbox chkGrid = new Checkbox("Grid", true); // show grid?
+	private final Checkbox chkWrap = new Checkbox("Wrap", true); 
+	private final Checkbox chkGrid = new Checkbox("Grid", true); 
 	public final Choice cmbGames = new Choice();
 	public final Choice cmbRules = new Choice();
-	public final Checkbox chkAdd = new Checkbox("Add", false); // Rand/seed add to
-	// existing universe?
-	public final Checkbox chkMon = new Checkbox("Mono", false); // Mono, only 1 state?
-	public final Checkbox chkUni = new Checkbox("Uni", false); // Uniform colors
+	public final Checkbox chkAdd = new Checkbox("Add", false); 
+	
+	public final Checkbox chkMon = new Checkbox("Mono", false); 
+	public final Checkbox chkUni = new Checkbox("Uni", false); 
 	private final Choice cmbRand = new Choice();
 	private final Choice cmbSeed = new Choice();
 	@SuppressWarnings("HardcodedFileSeparator")
@@ -157,20 +157,20 @@ class MJCellUI extends Frame {
 	@SuppressWarnings("HardcodedFileSeparator")
 	private final Label lblBoard = new Label("Board: 000x000/00");
 
-	// ----------------------------------------------------------------
-	// Constructor
+	
+	
 	public MJCellUI(MJCell cMjc) {
-		mjc = cMjc; // the calling class
+		mjc = cMjc; 
 		vDescr = new Vector();
 	}
 
-	// ----------------------------------------------------------------
-	// Build UI elements
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void build() {
 		sBaseURL = mjc.sBaseURL;
 
-		// Panels
+		
         Panel pnlTop = new Panel();
 		pnlLeft = new Panel();
 		pnlBotm = new Panel();
@@ -182,14 +182,14 @@ class MJCellUI extends Frame {
         Panel pnlRun = new Panel();
 
 		setTitle(mjc.getAppletName());
-		setLayout(new BorderLayout(1, 1)); // adds nice division lines
-		pnlLeft.setLayout(new GridLayout(12, 1)); // vertical layout for 12
-		// items
+		setLayout(new BorderLayout(1, 1)); 
+		pnlLeft.setLayout(new GridLayout(12, 1)); 
+		
 		pnlTop.setBackground(Color.lightGray);
 		pnlLeft.setBackground(Color.lightGray);
 		pnlBotm.setBackground(Color.lightGray);
 
-		// builder the menu
+		
 		mnuFile.removeAll();
 		mnuView.removeAll();
 		mnuAnim.removeAll();
@@ -237,7 +237,7 @@ class MJCellUI extends Frame {
 		mnuBord.add(itmSeed);
 		mnuBord.add(itmClear);
 		mnuBord.add("-");
-		mnuBord.add(mnuBoardSize); // Board size submenu
+		mnuBord.add(mnuBoardSize); 
 		mnuBoardSize.add(itmBoardAnySize);
 		mnuBoardSize.add("-");
 		mnuBoardSize.add(itmBoard80x60);
@@ -251,24 +251,24 @@ class MJCellUI extends Frame {
 		mnuBoardSize.add(itmBoard500x500);
 		mnuBoardSize.add(itmBoard800x600);
 		mnuBord.add("-");
-		mnuBord.add(itmBoardFit); // fit the pattern
-		mnuBord.add(itmCellsBigger); // Zoom in
-		mnuBord.add(itmCellsSmaller); // Zoom out
+		mnuBord.add(itmBoardFit); 
+		mnuBord.add(itmCellsBigger); 
+		mnuBord.add(itmCellsSmaller); 
 
-		mnuColo.add(itmCloStatesCnt); // count of states
+		mnuColo.add(itmCloStatesCnt); 
 		mnuColo.add("-");
-		mnuColo.add(itmCloCrrState); // active state
-		mnuColo.add(itmCloNextState); // activate next state
-		mnuColo.add(itmCloPrevState); // activate previous state
+		mnuColo.add(itmCloCrrState); 
+		mnuColo.add(itmCloNextState); 
+		mnuColo.add(itmCloPrevState); 
 		mnuColo.add("-");
-		mnuColo.add(itmCloMtdStd); // standard coloring
-		mnuColo.add(itmCloMtdAlt); // alternate coloring
+		mnuColo.add(itmCloMtdStd); 
+		mnuColo.add(itmCloMtdAlt); 
 		mnuColo.add("-");
-		mnuColo.add(itmCPlMjcStd); // "MJCell Standard"
-		mnuColo.add(itmCPl8Color); // "8 colors"
-		mnuColo.add(itmCPlRedWht); // "Red & blue"
-		mnuColo.add(itmCPlBlu); // "Dolphin"
-		mnuColo.add(itmCPlTst); // "Milky way"
+		mnuColo.add(itmCPlMjcStd); 
+		mnuColo.add(itmCPl8Color); 
+		mnuColo.add(itmCPlRedWht); 
+		mnuColo.add(itmCPlBlu); 
+		mnuColo.add(itmCPlTst); 
 
 		mnuHelp.add(itmAbout);
 
@@ -281,24 +281,24 @@ class MJCellUI extends Frame {
 		mnuBar.add(mnuHelp);
 		setMenuBar(mnuBar);
 
-		// add games
+		
 		mjr = new MJRules();
 		cmbGames.removeAll();
-		cmbGames.addItem(MJRules.GAME_GENE_Name); // Generations
-		cmbGames.addItem(MJRules.GAME_LIFE_Name); // Life
-		cmbGames.addItem(MJRules.GAME_WLIF_Name); // Weighted Life
-		cmbGames.addItem(MJRules.GAME_VOTE_Name); // Vote
-		cmbGames.addItem(MJRules.GAME_RTBL_Name); // Rules table
-		cmbGames.addItem(MJRules.GAME_CYCL_Name); // Cyclic CA
-		cmbGames.addItem(MJRules.GAME_1DTO_Name); // 1D totalistic
-		cmbGames.addItem(MJRules.GAME_1DBI_Name); // 1D binary
-		cmbGames.addItem(MJRules.GAME_NMBI_Name); // Neumann binary
-		cmbGames.addItem(MJRules.GAME_GEBI_Name); // General binary
-		cmbGames.addItem(MJRules.GAME_LGTL_Name); // Larger than Life
-		cmbGames.addItem(MJRules.GAME_MARG_Name); // Margolus
-		cmbGames.addItem(MJRules.GAME_USER_Name); // User DLL
+		cmbGames.addItem(MJRules.GAME_GENE_Name); 
+		cmbGames.addItem(MJRules.GAME_LIFE_Name); 
+		cmbGames.addItem(MJRules.GAME_WLIF_Name); 
+		cmbGames.addItem(MJRules.GAME_VOTE_Name); 
+		cmbGames.addItem(MJRules.GAME_RTBL_Name); 
+		cmbGames.addItem(MJRules.GAME_CYCL_Name); 
+		cmbGames.addItem(MJRules.GAME_1DTO_Name); 
+		cmbGames.addItem(MJRules.GAME_1DBI_Name); 
+		cmbGames.addItem(MJRules.GAME_NMBI_Name); 
+		cmbGames.addItem(MJRules.GAME_GEBI_Name); 
+		cmbGames.addItem(MJRules.GAME_LGTL_Name); 
+		cmbGames.addItem(MJRules.GAME_MARG_Name); 
+		cmbGames.addItem(MJRules.GAME_USER_Name); 
 
-		// left panel
+		
 		pnlLeft.add(cmbGames);
 		pnlLeft.add(cmbRules);
 
@@ -315,12 +315,12 @@ class MJCellUI extends Frame {
 		pnlFav.add(btnFav);
 		pnlLeft.add(pnlFav);
 
-		pnlRun.setLayout(new GridLayout(1, 2)); // horizontal layout
+		pnlRun.setLayout(new GridLayout(1, 2)); 
 		pnlRun.add(btnRunStop);
 		pnlRun.add(btnStep);
 		pnlLeft.add(pnlRun);
 
-		pnlSpeed.setLayout(new GridLayout(1, 2)); // horizontal layout
+		pnlSpeed.setLayout(new GridLayout(1, 2)); 
 		pnlSpeed.add(btnSlower);
 		pnlSpeed.add(btnFaster);
 		pnlLeft.add(pnlSpeed);
@@ -329,12 +329,12 @@ class MJCellUI extends Frame {
 		pnlLeft.add(lblPopul);
 		pnlLeft.add(lblStates);
 		pnlLeft.add(lblBoard);
-		pnlWrapGrid.setLayout(new GridLayout(1, 2)); // horizontal layout
+		pnlWrapGrid.setLayout(new GridLayout(1, 2)); 
 		pnlWrapGrid.add(chkWrap);
 		pnlWrapGrid.add(chkGrid);
 		pnlLeft.add(pnlWrapGrid);
 
-		// bottom panel
+		
 		pnlBotm.add(chkAdd);
 		pnlBotm.add(chkMon);
 		pnlBotm.add(chkUni);
@@ -364,7 +364,7 @@ class MJCellUI extends Frame {
 		cmbSeed.addItem("BLK 20x20");
 		cmbSeed.addItem("BLK 30x10");
 		cmbSeed.addItem("BLK 50x50");
-		//cmbSeed.addItem("CIR 10"); QQtodo
+		
 		cmbSeed.addItem("FRM 10x10");
 		cmbSeed.addItem("FRM 30x30");
 		cmbSeed.addItem("FRM 50x50");
@@ -375,7 +375,7 @@ class MJCellUI extends Frame {
 		pnlBotm.add(new Label(""));
 		pnlBotm.add(btnClear);
 
-		// add panels and the board
+		
 		setSize(560, 430);
 		pnlLeft.setVisible(bInitPanelLeft);
 		itmViewControls.setState(bInitPanelLeft);
@@ -387,37 +387,37 @@ class MJCellUI extends Frame {
 		mjb = new MJBoard(this);
 		add("Center", mjb);
 
-		// final initialization
+		
 		mjo = new MJOpen(this, mjb);
 		SetWrapping(true);
 		SetGridVisibility(true);
-		SetRefreshStep(1); // refresh every 1 cycle
-		SetColoringMethod(1); // standard coloring
-		mjb.SetStatesCount(9); // count of states (for games with no history)
+		SetRefreshStep(1); 
+		SetColoringMethod(1); 
+		mjb.SetStatesCount(9); 
 		SetColorPalette("MJCell Standard");
 		PatDlg = new MJPatternsList(new Frame(""), this);
 		FavDlg = new MJFavourities(new Frame(""), this);
 
-		// initial rule
+		
 		cmbGames.select(sInitGame);
 		InitRules();
 		cmbRules.select(sInitRule);
 		SendActiveRule();
 
-		// create some random cells in case no initial pattern is loaded
+		
 		mjb.Randomize(cmbRand.getSelectedItem(), mjb.RAND_ALL);
 
-		// initial pattern
+		
 		if (!sInitPatt.isEmpty()) {
 			mjo.OpenFile(cmbGames.getSelectedItem() + '/'
 					+ cmbRules.getSelectedItem() + '/' + sInitPatt);
 		}
 
-		// prepare the label for the rule definition
+		
 		int iLen = lblRule.getText().length();
 		if (iLen < 20) {
-			// a trick - I set a long text so that the label length
-			// is big enough to show rules with names longer than initial BB
+			
+			
 			String str = "";
 			iLen = 20 - iLen;
 			while (iLen-- > 0)
@@ -426,8 +426,8 @@ class MJCellUI extends Frame {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// first-time initialization
+	
+	
 	public void Init() {
 		cmbGames.transferFocus();
 		cmbRules.transferFocus();
@@ -435,8 +435,8 @@ class MJCellUI extends Frame {
 				btnRunStop.getFont().getSize()));
 	}
 
-	// ----------------------------------------------------------------
-	// Resize size-sensitive controls
+	
+	
 	@Override
 	public void paint(Graphics g) {
 		btnUserRule.setBounds(0, 0, 20, 20);
@@ -445,8 +445,8 @@ class MJCellUI extends Frame {
 		btnFav.setBounds(0, 0, pnlFav.getSize().width, 20);
 	}
 
-	// ----------------------------------------------------------------
-	// A game was selected, fill the rules combo
+	
+	
 	public void InitRules() {
 		int i, iGame;
 		String sGameName = cmbGames.getSelectedItem();
@@ -457,11 +457,11 @@ class MJCellUI extends Frame {
 			for (i = 0; i < mjr.Rules[iGame].size(); i++)
 				cmbRules.addItem(((CARule) mjr.Rules[iGame].elementAt(i)).name);
 		}
-		SendActiveRule(); // activate also the rule
+		SendActiveRule(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Activate the given game
+	
+	
 	public void ActivateGame(String sGame) {
 		cmbGames.select(mjr.GetGameName(mjr.GetGameIndex(sGame)));
 		InitRules();
@@ -473,15 +473,15 @@ class MJCellUI extends Frame {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Activate the given rule
+	
+	
 	public void ActivateRule(String sRule) {
 		cmbRules.select(sRule);
 		SendActiveRule();
 	}
 
-	// ----------------------------------------------------------------
-	// Interprete the rule from the combo box and send it to the board
+	
+	
 	public void SendActiveRule() {
 		int i, iGame;
 		String sRuleName = cmbRules.getSelectedItem();
@@ -493,21 +493,21 @@ class MJCellUI extends Frame {
 		sRuleDef = mjr.GetRuleDef(sGameName, sRuleName);
 		SendRule(iGame, sRuleName, sRuleDef);
 
-		PatDlg.InitList(); // refresh the patterns list
+		PatDlg.InitList(); 
 	}
 
-	// ----------------------------------------------------------------
-	// send the specified rule to the board
+	
+	
 	public void SendRule(int iGame, String sRuleName, String sRuleDef) {
 		mjb.SetRule(iGame, sRuleName, sRuleDef);
 		if (sRuleDef.length() > 20)
 			sRuleDef = sRuleDef.substring(0, 17) + "...";
-		lblRule.setText(sRuleDef); // show rule definition
-		UpdateUI(); // update dynamic elements of the UI
+		lblRule.setText(sRuleDef); 
+		UpdateUI(); 
 	}
 
-	// ----------------------------------------------------------------
-	// handle events we are interested in
+	
+	
 	@Override
 	public boolean handleEvent(Event e) {
 		if (e.id == Event.WINDOW_DESTROY) {
@@ -526,12 +526,12 @@ class MJCellUI extends Frame {
 		return super.handleEvent(e);
 	}
 
-	// ----------------------------------------------------------------
-	// button / menu item selected
+	
+	
 	@Override
 	public boolean action(Event e, Object arg) {
 		int i, j;
-		//noinspection IfStatementWithTooManyBranches
+		
 		if ((e.target == btnRunStop) || (e.target == itmRunStop)) {
 			if (mjb.caThread != null)
 				mjb.stop();
@@ -551,13 +551,13 @@ class MJCellUI extends Frame {
 			SetRefreshStep(100);
 		} else if (e.target == itmRefreshStepPage) {
 			SetRefreshStep(-1);
-		} else if ((e.target == btnOpen) || (e.target == itmOpen)) // patterns
-		// list
+		} else if ((e.target == btnOpen) || (e.target == itmOpen)) 
+		
 		{
 			PatDlg.show(true);
 			PatDlg.requestFocus();
-		} else if ((e.target == btnFav) || (e.target == itmFav))// favourite
-		// patterns
+		} else if ((e.target == btnFav) || (e.target == itmFav))
+		
 		{
 			FavDlg.show(true);
 			FavDlg.requestFocus();
@@ -589,19 +589,19 @@ class MJCellUI extends Frame {
 			mjb.stop();
 			hide();
 			removeAll();
-		} else if (e.target == cmbGames) // one of games selected
+		} else if (e.target == cmbGames) 
 		{
 			InitRules();
-		} else if (e.target == cmbRules) // one of rules selected
+		} else if (e.target == cmbRules) 
 		{
 			SendActiveRule();
 		} else if ((e.target == chkMon) || (e.target == chkUni)) {
 			UpdateRandomizingUI();
-		} else if (e.target == itmBoardFit) // fit the pattern
+		} else if (e.target == itmBoardFit) 
 			mjb.Fit(true);
-		else if (e.target == itmCellsBigger) // Zoom in
+		else if (e.target == itmCellsBigger) 
 			mjb.CellsBigger();
-		else if (e.target == itmCellsSmaller) // Zoom out
+		else if (e.target == itmCellsSmaller) 
 			mjb.CellsSmaller();
 		else if (e.target == itmBoard80x60)
 			mjb.InitBoard(80, 60, mjb.CellSize);
@@ -633,55 +633,55 @@ class MJCellUI extends Frame {
 			mjb.SetCrrState(mjb.CrrState + 1);
 		else if (e.target == itmCloPrevState)
 			mjb.SetCrrState(mjb.CrrState - 1);
-		else if (e.target == itmCloMtdStd) // standard coloring
+		else if (e.target == itmCloMtdStd) 
 			SetColoringMethod(1);
-		else if (e.target == itmCloMtdAlt) // alternate coloring
+		else if (e.target == itmCloMtdAlt) 
 			SetColoringMethod(2);
-		else if (e.target == itmCPlMjcStd) // "MJCell Standard"
+		else if (e.target == itmCPlMjcStd) 
 			SetColorPalette("MJCell Standard");
-		else if (e.target == itmCPl8Color) // "8 colors"
+		else if (e.target == itmCPl8Color) 
 			SetColorPalette("8 colors");
-		else if (e.target == itmCPlRedWht) // "Red & blue"
+		else if (e.target == itmCPlRedWht) 
 			SetColorPalette("Red & blue");
-		else if (e.target == itmCPlBlu) // "Dolphin"
+		else if (e.target == itmCPlBlu) 
 			SetColorPalette("Dolphin");
-		else if (e.target == itmCPlTst) // "Milky way"
+		else if (e.target == itmCPlTst) 
 			SetColorPalette("Milky way");
 		else if (e.target == itmAbout) {
 			DialogAbout();
-		} else if (e.target == itmInfo) // show Info
+		} else if (e.target == itmInfo) 
 		{
 			DialogInfo();
-		} else if ((e.target == itmDesc) || (e.target == btnDesc)) // show
-		// pattern
-		// description
+		} else if ((e.target == itmDesc) || (e.target == btnDesc)) 
+		
+		
 		{
 			DialogDesc();
 		} else if ((e.target == btnUserRule) || (e.target == itmUserRule)) {
 			DefineUserRules();
 		}
 
-		UpdateUI(); // update dynamic elements of the UI
+		UpdateUI(); 
 		return true;
 	}
 
-	// ----------------------------------------------------------------
-	// Hot keys handling
+	
+	
 	@Override
 	@SuppressWarnings("HardcodedFileSeparator")
 	public boolean keyDown(Event evt, int key) {
-		boolean retVal = false; // event handled?
+		boolean retVal = false; 
 		switch (key) {
-		case Event.F1: // help/about
+		case Event.F1: 
 			DialogAbout();
 			retVal = true;
 			break;
 
-		case Event.F5: // refresh
+		case Event.F5: 
 			mjb.RedrawBoard(true);
 			break;
 
-		case Event.ENTER: // run/stop
+		case Event.ENTER: 
 			if (mjb.caThread != null)
 				mjb.stop();
 			else
@@ -774,89 +774,89 @@ class MJCellUI extends Frame {
 				retVal = true;
 				break;
 
-			case '+': // zoom in - bigger cells
+			case '+': 
 				mjb.CellsBigger();
 				break;
 
-			case '-': // zoom out - smaller cells
+			case '-': 
 				mjb.CellsSmaller();
 				break;
 
-			case '/': // slower
+			case '/': 
 				RunSlower();
 				break;
 
-			case '*': // faster
+			case '*': 
 				RunFaster();
 				break;
 
-			case '?': // user rules
+			case '?': 
 				DefineUserRules();
 				break;
 
-			case ']': // activate next state
+			case ']': 
 				mjb.SetCrrState(mjb.CrrState + 1);
 				break;
 
-			case '[': // activate previous state
+			case '[': 
 				mjb.SetCrrState(mjb.CrrState - 1);
 				break;
 			}
 		}
-		UpdateUI(); // update the user interface
+		UpdateUI(); 
 		return retVal;
 	}
 
-	// ----------------------------------------------------------------
-	// Allow to define custom rules
+	
+	
 	private void DefineUserRules() {
-		// input the user rule
+		
 		InputBox ib = new InputBox(new Frame(""), mjb.RuleDef, "User rules",
 				" Enter your own rules (refer to the rules lexicon for syntax):");
 		requestFocus();
 		if (ib.isAccepted) {
-			String sGameName = mjr.GetGameName(mjb.CrrGame); // correct the rule
+			String sGameName = mjr.GetGameName(mjb.CrrGame); 
 			String sRuleDef = ib.txtFld.getText();
 			sRuleDef = mjr.CorrectRuleDef(sGameName, sRuleDef);
 
-			// if the rule is new, add it as a user rule
+			
 			String sRuleName = mjr.GetRuleName(sGameName, sRuleDef);
-			if (sRuleName.isEmpty()) // no such rule yet, add it
+			if (sRuleName.isEmpty()) 
 			{
-				cmbRules.select(MJRules.S_USERRULE); // activate "User rule"
-				// item
+				cmbRules.select(MJRules.S_USERRULE); 
+				
 				SendRule(mjb.CrrGame, MJRules.S_USERRULE, sRuleDef);
-				// store the user rule
+				
 				mjr.Rules[mjb.CrrGame].addElement(new CARule(
 						MJRules.S_USERRULE, sRuleDef));
-			} else // one of existing rules
+			} else 
 			{
 				cmbRules.select(sRuleName);
 				SendRule(mjb.CrrGame, sRuleName, sRuleDef);
 			}
-			mjb.SetStatesCount(mjb.StatesCount); // recreate the palette
+			mjb.SetStatesCount(mjb.StatesCount); 
 		}
 		ib.dispose();
 	}
 
-	// ----------------------------------------------------------------
-	// Set the wrapping state, update UI
+	
+	
 	public void SetWrapping(boolean fOn) {
 		mjb.WrapAtEdges = fOn;
 		chkWrap.setState(fOn);
 		itmWrap.setState(fOn);
 	}
 
-	// ----------------------------------------------------------------
-	// Set the grid visibility state, update UI
+	
+	
 	private void SetGridVisibility(boolean fOn) {
 		mjb.DrawGrid = fOn;
 		UpdateGridUI();
 		mjb.RedrawBoard(true);
 	}
 
-	// ----------------------------------------------------------------
-	// Set and update the RefreshStep user interface
+	
+	
 	private void SetRefreshStep(int i) {
 		itmRefreshStep1.setState(i == 1);
 		itmRefreshStep10.setState(i == 10);
@@ -866,8 +866,8 @@ class MJCellUI extends Frame {
 		mjb.RefreshStep = i;
 	}
 
-	// ----------------------------------------------------------------
-	// Input count of states
+	
+	
 	private void InputCountOfStates() {
 		String sDefault = String.valueOf(mjb.StatesCount);
 		String sRange = "2.." + (MJBoard.MAX_CLO + 1);
@@ -886,8 +886,8 @@ class MJCellUI extends Frame {
 		ib.dispose();
 	}
 
-	// ----------------------------------------------------------------
-	// Input the active state
+	
+	
 	private void InputActiveState() {
 		String sDefault = String.valueOf(mjb.CrrState);
 		String sRange = "0.." + (mjb.StatesCount - 1);
@@ -906,8 +906,8 @@ class MJCellUI extends Frame {
 		ib.dispose();
 	}
 
-	// ----------------------------------------------------------------
-	// Input the board size
+	
+	
 	private void InputBoardSize() {
 		String sDefault = String.valueOf(mjb.UnivSize.x) + 'x'
 				+ String.valueOf(mjb.UnivSize.y);
@@ -918,9 +918,9 @@ class MJCellUI extends Frame {
 		requestFocus();
 		if (ib.isAccepted) {
 			Point iSize = mjb.UnivSize;
-			String sRetVal = ib.txtFld.getText(); // "999x999"
+			String sRetVal = ib.txtFld.getText(); 
 			try {
-				//noinspection UseOfStringTokenizer
+				
 				StringTokenizer st = new StringTokenizer(sRetVal, " .,;x-",
 						false);
 				if (st.hasMoreTokens()) {
@@ -938,12 +938,12 @@ class MJCellUI extends Frame {
 		ib.dispose();
 	}
 
-	// ----------------------------------------------------------------
-	// Update the states/colors UI logic
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void UpdateColorsUI() {
-		itmCloMtdStd.setState(mjb.ColoringMethod == 1); // standard coloring
-		itmCloMtdAlt.setState(mjb.ColoringMethod == 2); // alternate coloring
+		itmCloMtdStd.setState(mjb.ColoringMethod == 1); 
+		itmCloMtdAlt.setState(mjb.ColoringMethod == 2); 
 		itmCloStatesCnt.setLabel("Count of states... ("
 				+ mjb.StatesCount + ')');
 		itmCloCrrState.setLabel("Active state... ("
@@ -953,34 +953,34 @@ class MJCellUI extends Frame {
 
 		boolean fSttCntEna = false;
 		switch (mjb.CrrGame) {
-		case MJRules.GAME_LIFE: // Standard Conway-like game
-		case MJRules.GAME_VOTE: // Vote for life
-		case MJRules.GAME_SPEC: // Special rules
-		case MJRules.GAME_1DBI: // 1D binary
+		case MJRules.GAME_LIFE: 
+		case MJRules.GAME_VOTE: 
+		case MJRules.GAME_SPEC: 
+		case MJRules.GAME_1DBI: 
 			fSttCntEna = true;
 			break;
-		case MJRules.GAME_GENE: // Generations
-		case MJRules.GAME_RTBL: // Rules table
-		case MJRules.GAME_CYCL: // Cyclic CA
-		case MJRules.GAME_NMBI: // Neumann binary
+		case MJRules.GAME_GENE: 
+		case MJRules.GAME_RTBL: 
+		case MJRules.GAME_CYCL: 
+		case MJRules.GAME_NMBI: 
 			fSttCntEna = false;
 			break;
-		case MJRules.GAME_WLIF: // Weighted life
+		case MJRules.GAME_WLIF: 
 			fSttCntEna = !mjb.RWLife.isHist;
 			break;
-		case MJRules.GAME_GEBI: // General binary
+		case MJRules.GAME_GEBI: 
 			fSttCntEna = !mjb.RGenBin.isHist;
 			break;
-		case MJRules.GAME_LGTL: // Larger than Life
+		case MJRules.GAME_LGTL: 
 			fSttCntEna = !mjb.RLgtL.isHist;
 			break;
-		case MJRules.GAME_MARG: // Margolus
+		case MJRules.GAME_MARG: 
 			fSttCntEna = !mjb.RMarg.isHist;
 			break;
-		case MJRules.GAME_USER: // User DLL
+		case MJRules.GAME_USER: 
 			fSttCntEna = !mjb.RUser.isHist;
 			break;
-		case MJRules.GAME_1DTO: // 1-D CA totalistic
+		case MJRules.GAME_1DTO: 
 			fSttCntEna = !mjb.R1DTo.isHist;
 			break;
 		}
@@ -991,8 +991,8 @@ class MJCellUI extends Frame {
 		itmCloPrevState.setEnabled(mjb.CrrState > 0);
 	}
 
-	// ----------------------------------------------------------------
-	// update the randomizing controls logic
+	
+	
 	public void UpdateRandomizingUI() {
 		if (chkMon.getState()) {
 			chkUni.setEnabled(false);
@@ -1007,8 +1007,8 @@ class MJCellUI extends Frame {
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// update the grid UI
+	
+	
 	public void UpdateGridUI() {
 		chkGrid.setState(mjb.DrawGrid);
 		itmGrid.setState(chkGrid.getState());
@@ -1017,23 +1017,23 @@ class MJCellUI extends Frame {
 		itmGrid.setEnabled(chkGrid.isEnabled());
 	}
 
-	// ----------------------------------------------------------------
-	// Set one of two coloring methods:
-	//  1 - standard coloring
-	//  2 - alternate coloring
+	
+	
+	
+	
 	public void SetColoringMethod(int mtd) {
 		if ((mtd != 1) && (mtd != 2))
-			mtd = 1; // standard coloring
+			mtd = 1; 
 		mjb.ColoringMethod = mtd;
 		UpdateColorsUI();
 	}
 
-	// ----------------------------------------------------------------
-	// Activate the given color palette
+	
+	
 	public void SetColorPalette(String sPalNam) {
 		mjb.mjPal.PalName = sPalNam;
-		mjb.SetStatesCount(mjb.StatesCount); // force activation
-		mjb.RedrawBoard(true); // redraw everything
+		mjb.SetStatesCount(mjb.StatesCount); 
+		mjb.RedrawBoard(true); 
 
 		itmCPlMjcStd.setState("MJCell Standard".equalsIgnoreCase(sPalNam));
 		itmCPl8Color.setState("8 colors".equalsIgnoreCase(sPalNam));
@@ -1042,8 +1042,8 @@ class MJCellUI extends Frame {
 		itmCPlTst.setState("Milky way".equalsIgnoreCase(sPalNam));
 	}
 
-	// ----------------------------------------------------------------
-	// Show the 'About...' dialog
+	
+	
 	public void DialogAbout() {
 		msgDlg = new Dialog(this, "About MJCell");
 		msgDlg.setSize(360, 340);
@@ -1073,12 +1073,12 @@ class MJCellUI extends Frame {
 		msgDlg.show();
 	}
 
-	// ----------------------------------------------------------------
-	// Show the 'Info...' dialog
+	
+	
 	public void DialogInfo() {
 		boolean fOldRun = mjb.caThread != null;
 
-		// stop while the dialog in open
+		
 		mjb.stop();
 		try {
 			Thread.sleep(200);
@@ -1138,12 +1138,12 @@ class MJCellUI extends Frame {
 		msgDlg.show();
 	}
 
-	// ----------------------------------------------------------------
-	// show pattern description
+	
+	
 	public void DialogDesc() {
 		boolean fOldRun = mjb.caThread != null;
 
-		// stop while the dialog in open
+		
 		mjb.stop();
 		try {
 			Thread.sleep(200);
@@ -1184,8 +1184,8 @@ class MJCellUI extends Frame {
 		msgDlg.show();
 	}
 
-	// ----------------------------------------------------------------
-	// Faster animation
+	
+	
 	public void RunFaster() {
 		if (mjb.AnimDelay <= 50)
 			setAnimDelay(0);
@@ -1195,8 +1195,8 @@ class MJCellUI extends Frame {
 			setAnimDelay(mjb.AnimDelay - 100);
 	}
 
-	// ----------------------------------------------------------------
-	// Faster animation
+	
+	
 	public void RunSlower() {
 		if (mjb.AnimDelay < 50)
 			setAnimDelay(50);
@@ -1206,8 +1206,8 @@ class MJCellUI extends Frame {
 			setAnimDelay(mjb.AnimDelay + 100);
 	}
 
-	// ----------------------------------------------------------------
-	// Set the animation delay, 0..1000
+	
+	
 	public void setAnimDelay(int newDelay) {
 		mjb.setAnimDelay(newDelay);
 		btnSlower.enable(mjb.AnimDelay < 1000);
@@ -1216,8 +1216,8 @@ class MJCellUI extends Frame {
 		itmFaster.enable(mjb.AnimDelay > 0);
 	}
 
-	// ----------------------------------------------------------------
-	// update dynamic elements of the UI
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void UpdateUI() {
 		lblCycle.setText("Cycle: " + Integer.toString(mjb.Cycle));
@@ -1228,11 +1228,11 @@ class MJCellUI extends Frame {
 				+ Integer.toString(mjb.CellSize));
 	}
 
-	// ----------------------------------------------------------------
-	// applet info
+	
+	
 	public String getAppletInfo() {
 		return mjc.getAppletInfo();
 	}
-	// ----------------------------------------------------------------
+	
 
 }

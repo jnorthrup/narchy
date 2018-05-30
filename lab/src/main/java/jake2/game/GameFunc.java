@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 18.11.2003 by RST.
-// $Id: GameFunc.java,v 1.9 2006-01-21 21:53:32 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.Defines;
@@ -47,7 +47,7 @@ public class GameFunc {
                 ent.think = Move_Begin;
             }
         } else {
-            // accelerative
+            
             ent.moveinfo.current_speed = 0;
             ent.think = Think_AccelMove;
             ent.nextthink = GameBase.level.time + Defines.FRAMETIME;
@@ -105,7 +105,7 @@ public class GameFunc {
     }
 
     static void plat_Accelerate(moveinfo_t moveinfo) {
-        // are we decelerating?
+        
         if (moveinfo.remaining_distance <= moveinfo.decel_distance) {
             if (moveinfo.remaining_distance < moveinfo.decel_distance) {
                 if (moveinfo.next_speed != 0) {
@@ -119,7 +119,7 @@ public class GameFunc {
             return;
         }
 
-        // are we at full speed and need to start decelerating during this move?
+        
         if (moveinfo.current_speed == moveinfo.move_speed)
             if ((moveinfo.remaining_distance - moveinfo.current_speed) < moveinfo.decel_distance) {
                 float p1_distance;
@@ -137,7 +137,7 @@ public class GameFunc {
                 return;
             }
 
-        // are we accelerating?
+        
         if (moveinfo.current_speed < moveinfo.speed) {
             float old_speed;
             float p1_distance;
@@ -147,20 +147,20 @@ public class GameFunc {
 
             old_speed = moveinfo.current_speed;
 
-            // figure simple acceleration up to move_speed
+            
             moveinfo.current_speed += moveinfo.accel;
             if (moveinfo.current_speed > moveinfo.speed)
                 moveinfo.current_speed = moveinfo.speed;
 
-            // are we accelerating throughout this entire move?
+            
             if ((moveinfo.remaining_distance - moveinfo.current_speed) >= moveinfo.decel_distance)
                 return;
 
-            // during this move we will accelrate from current_speed to
-            // move_speed
-            // and cross over the decel_distance; figure the average speed for
-            // the
-            // entire move
+            
+            
+            
+            
+            
             p1_distance = moveinfo.remaining_distance - moveinfo.decel_distance;
             p1_speed = (old_speed + moveinfo.move_speed) / 2.0f;
             p2_distance = moveinfo.move_speed
@@ -173,7 +173,7 @@ public class GameFunc {
             return;
         }
 
-        // we are at constant velocity (move_speed)
+        
     }
 
     static void plat_go_up(edict_t ent) {
@@ -192,9 +192,9 @@ public class GameFunc {
         edict_t trigger;
         float[] tmin = { 0, 0, 0 }, tmax = { 0, 0, 0 };
 
-        //
-        //	   middle trigger
-        //	
+        
+        
+        
         trigger = GameUtil.G_Spawn();
         trigger.touch = Touch_Plat_Center;
         trigger.movetype = Defines.MOVETYPE_NONE;
@@ -278,7 +278,7 @@ public class GameFunc {
         if (GameBase.st.lip == 0)
             GameBase.st.lip = 8;
 
-        // pos1 is the top position, pos2 is the bottom
+        
         Math3D.VectorCopy(ent.s.origin, ent.pos1);
         Math3D.VectorCopy(ent.s.origin, ent.pos2);
         if (GameBase.st.height != 0)
@@ -288,7 +288,7 @@ public class GameFunc {
 
         ent.use = Use_Plat;
 
-        plat_spawn_inside_trigger(ent); // the "start moving" trigger
+        plat_spawn_inside_trigger(ent); 
 
         if (ent.targetname != null) {
             ent.moveinfo.state = STATE_UP;
@@ -357,10 +357,10 @@ public class GameFunc {
 
     static void door_go_up(edict_t self, edict_t activator) {
         if (self.moveinfo.state == STATE_UP)
-            return; // already going up
+            return; 
 
         if (self.moveinfo.state == STATE_TOP) {
-            // reset top wait time
+            
             if (self.moveinfo.wait >= 0)
                 self.nextthink = GameBase.level.time + self.moveinfo.wait;
             return;
@@ -409,14 +409,14 @@ public class GameFunc {
         default:
             break;
 
-        case 1: // water
+        case 1: 
             self.moveinfo.sound_start = game_import_t
                     .soundindex("world/mov_watr.wav");
             self.moveinfo.sound_end = game_import_t
                     .soundindex("world/stp_watr.wav");
             break;
 
-        case 2: // lava
+        case 2: 
             self.moveinfo.sound_start = game_import_t
                     .soundindex("world/mov_watr.wav");
             self.moveinfo.sound_end = game_import_t
@@ -424,7 +424,7 @@ public class GameFunc {
             break;
         }
 
-        // calculate second position
+        
         Math3D.VectorCopy(self.s.origin, self.pos1);
         abs_movedir[0] = Math.abs(self.movedir[0]);
         abs_movedir[1] = Math.abs(self.movedir[1]);
@@ -435,7 +435,7 @@ public class GameFunc {
         Math3D.VectorMA(self.pos1, self.moveinfo.distance, self.movedir,
                 self.pos2);
 
-        // if it starts open, switch the positions
+        
         if ((self.spawnflags & DOOR_START_OPEN) != 0) {
             Math3D.VectorCopy(self.pos2, self.s.origin);
             Math3D.VectorCopy(self.pos1, self.pos2);
@@ -511,9 +511,9 @@ public class GameFunc {
         game_import_t.linkentity(self);
 
         if (self.target != null) {
-            // start trains on the second frame, to make sure their targets have
-            // had
-            // a chance to spawn
+            
+            
+            
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
             self.think = func_train_find;
         } else {
@@ -585,9 +585,9 @@ public class GameFunc {
 
     public final static int DOOR_Y_AXIS = 128;
 
-    //
-    //	   Support routines for movement (changes in origin using velocity)
-    //
+    
+    
+    
 
     static final EntThinkAdapter Move_Done = new EntThinkAdapter() {
         @Override
@@ -646,9 +646,9 @@ public class GameFunc {
         }
     };
 
-    //
-    //	   Support routines for angular movement (changes in angle using avelocity)
-    //
+    
+    
+    
 
     static final EntThinkAdapter AngleMove_Done = new EntThinkAdapter() {
         @Override
@@ -698,7 +698,7 @@ public class GameFunc {
             float traveltime;
             float frames;
 
-            // set destdelta to the vector needed to move
+            
             if (ent.moveinfo.state == STATE_UP)
                 Math3D.VectorSubtract(ent.moveinfo.end_angles, ent.s.angles,
                         destdelta);
@@ -706,10 +706,10 @@ public class GameFunc {
                 Math3D.VectorSubtract(ent.moveinfo.start_angles, ent.s.angles,
                         destdelta);
 
-            // calculate length of vector
+            
             len = Math3D.VectorLength(destdelta);
 
-            // divide by speed to get time to reach dest
+            
             traveltime = len / ent.moveinfo.speed;
 
             if (traveltime < Defines.FRAMETIME) {
@@ -719,11 +719,11 @@ public class GameFunc {
 
             frames = (float) (Math.floor(traveltime / Defines.FRAMETIME));
 
-            // scale the destdelta vector by the time spent traveling to get
-            // velocity
+            
+            
             Math3D.VectorScale(destdelta, 1.0f / traveltime, ent.avelocity);
 
-            // set nextthink to trigger a think when dest is reached
+            
             ent.nextthink = GameBase.level.time + frames * Defines.FRAMETIME;
             ent.think = AngleMove_Final;
             return true;
@@ -737,12 +737,12 @@ public class GameFunc {
         public boolean think(edict_t ent) {
             ent.moveinfo.remaining_distance -= ent.moveinfo.current_speed;
 
-            if (ent.moveinfo.current_speed == 0) // starting or blocked
+            if (ent.moveinfo.current_speed == 0) 
                 plat_CalcAcceleratedMove(ent.moveinfo);
 
             plat_Accelerate(ent.moveinfo);
 
-            // will the entire move complete on next frame?
+            
             if (ent.moveinfo.remaining_distance <= ent.moveinfo.current_speed) {
                 Move_Final.think(ent);
                 return true;
@@ -819,11 +819,11 @@ public class GameFunc {
         public void blocked(edict_t self, edict_t other) {
             if (0 == (other.svflags & Defines.SVF_MONSTER)
                     && (null == other.client)) {
-                // give it a chance to go away on it's own terms (like gibs)
+                
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
                         Defines.MOD_CRUSH);
-                // if it's still there, nuke it
+                
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
                 return;
@@ -847,7 +847,7 @@ public class GameFunc {
         @Override
         public void use(edict_t ent, edict_t other, edict_t activator) {
             if (ent.think != null)
-                return; // already down
+                return; 
             plat_go_down.think(ent);
         }
     };
@@ -864,13 +864,13 @@ public class GameFunc {
             if (other.health <= 0)
                 return;
 
-            ent = ent.enemy; // now point at the plat, not the trigger
+            ent = ent.enemy; 
             if (ent.moveinfo.state == STATE_BOTTOM)
                 plat_go_up(ent);
             else if (ent.moveinfo.state == STATE_TOP) {
-                ent.nextthink = GameBase.level.time + 1; // the player is still
-                                                         // on the plat, so
-                                                         // delay going down
+                ent.nextthink = GameBase.level.time + 1; 
+                                                         
+                                                         
             }
         }
     };
@@ -943,17 +943,17 @@ public class GameFunc {
             else
                 ent.movetype = Defines.MOVETYPE_PUSH;
 
-            // set the axis of rotation
+            
             Math3D.VectorClear(ent.movedir);
             if ((ent.spawnflags & 4) != 0)
                 ent.movedir[2] = 1.0f;
             else if ((ent.spawnflags & 8) != 0)
                 ent.movedir[0] = 1.0f;
             else
-                // Z_AXIS
+                
                 ent.movedir[1] = 1.0f;
 
-            // check for reverse rotation
+            
             if ((ent.spawnflags & 2) != 0)
                 Math3D.VectorNegate(ent.movedir, ent.movedir);
 
@@ -962,7 +962,7 @@ public class GameFunc {
             if (0 == ent.dmg)
                 ent.dmg = 2;
 
-            //		ent.moveinfo.sound_middle = "doors/hydro1.wav";
+            
 
             ent.use = rotating_use;
             if (ent.dmg != 0)
@@ -1259,7 +1259,7 @@ public class GameFunc {
             if ((self.spawnflags & DOOR_TOGGLE) != 0) {
                 if (self.moveinfo.state == STATE_UP
                         || self.moveinfo.state == STATE_TOP) {
-                    // trigger all paired doors
+                    
                     for (ent = self; ent != null; ent = ent.teamchain) {
                         ent.message = null;
                         ent.touch = null;
@@ -1269,7 +1269,7 @@ public class GameFunc {
                 }
             }
 
-            // trigger all paired doors
+            
             for (ent = self; ent != null; ent = ent.teamchain) {
                 ent.message = null;
                 ent.touch = null;
@@ -1316,9 +1316,9 @@ public class GameFunc {
             float dist;
 
             if ((self.flags & Defines.FL_TEAMSLAVE) != 0)
-                return true; // only the team master does this
+                return true; 
 
-            // find the smallest distance any member of the team will be moving
+            
             min = Math.abs(self.moveinfo.distance);
             for (ent = self.teamchain; ent != null; ent = ent.teamchain) {
                 dist = Math.abs(ent.moveinfo.distance);
@@ -1328,7 +1328,7 @@ public class GameFunc {
 
             time = min / self.moveinfo.speed;
 
-            // adjust speeds so they will all complete at the same time
+            
             for (ent = self; ent != null; ent = ent.teamchain) {
                 newspeed = Math.abs(ent.moveinfo.distance) / time;
                 ratio = newspeed / ent.moveinfo.speed;
@@ -1355,7 +1355,7 @@ public class GameFunc {
             float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
 
             if ((ent.flags & Defines.FL_TEAMSLAVE) != 0)
-                return true; // only the team leader spawns a trigger
+                return true; 
 
             Math3D.VectorCopy(ent.absmin, mins);
             Math3D.VectorCopy(ent.absmax, maxs);
@@ -1365,7 +1365,7 @@ public class GameFunc {
                 GameBase.AddPointToBounds(other.absmax, mins, maxs);
             }
 
-            // expand
+            
             mins[0] -= 60;
             mins[1] -= 60;
             maxs[0] += 60;
@@ -1397,11 +1397,11 @@ public class GameFunc {
 
             if (0 == (other.svflags & Defines.SVF_MONSTER)
                     && (null == other.client)) {
-                // give it a chance to go away on it's own terms (like gibs)
+                
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
                         Defines.MOD_CRUSH);
-                // if it's still there, nuke it
+                
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
                 return;
@@ -1414,9 +1414,9 @@ public class GameFunc {
             if ((self.spawnflags & DOOR_CRUSHER) != 0)
                 return;
 
-            // if a door has a negative wait, it would never come back if
-            // blocked,
-            // so let it just squash the object to death real fast
+            
+            
+            
             if (self.moveinfo.wait >= 0) {
                 if (self.moveinfo.state == STATE_DOWN) {
                     for (ent = self.teammaster; ent != null; ent = ent.teamchain)
@@ -1505,7 +1505,7 @@ public class GameFunc {
             if (0 == ent.dmg)
                 ent.dmg = 2;
 
-            // calculate second position
+            
             Math3D.VectorCopy(ent.s.origin, ent.pos1);
             abs_movedir[0] = Math.abs(ent.movedir[0]);
             abs_movedir[1] = Math.abs(ent.movedir[1]);
@@ -1517,7 +1517,7 @@ public class GameFunc {
             Math3D.VectorMA(ent.pos1, ent.moveinfo.distance, ent.movedir,
                     ent.pos2);
 
-            // if it starts open, switch the positions
+            
             if ((ent.spawnflags & DOOR_START_OPEN) != 0) {
                 Math3D.VectorCopy(ent.pos2, ent.s.origin);
                 Math3D.VectorCopy(ent.pos1, ent.pos2);
@@ -1549,8 +1549,8 @@ public class GameFunc {
             if ((ent.spawnflags & 64) != 0)
                 ent.s.effects |= Defines.EF_ANIM_ALLFAST;
 
-            // to simplify logic elsewhere, make non-teamed doors into a team of
-            // one
+            
+            
             if (null == ent.team)
                 ent.teammaster = ent;
 
@@ -1601,17 +1601,17 @@ public class GameFunc {
         public boolean think(edict_t ent) {
             Math3D.VectorClear(ent.s.angles);
 
-            // set the axis of rotation
+            
             Math3D.VectorClear(ent.movedir);
             if ((ent.spawnflags & DOOR_X_AXIS) != 0)
                 ent.movedir[2] = 1.0f;
             else if ((ent.spawnflags & DOOR_Y_AXIS) != 0)
                 ent.movedir[0] = 1.0f;
             else
-                // Z_AXIS
+                
                 ent.movedir[1] = 1.0f;
 
-            // check for reverse rotation
+            
             if ((ent.spawnflags & DOOR_REVERSE) != 0)
                 Math3D.VectorNegate(ent.movedir, ent.movedir);
 
@@ -1654,7 +1654,7 @@ public class GameFunc {
                         .soundindex("doors/dr1_end.wav");
             }
 
-            // if it starts open, switch the positions
+            
             if ((ent.spawnflags & DOOR_START_OPEN) != 0) {
                 Math3D.VectorCopy(ent.pos2, ent.s.angles);
                 Math3D.VectorCopy(ent.pos1, ent.pos2);
@@ -1686,8 +1686,8 @@ public class GameFunc {
             if ((ent.spawnflags & 16) != 0)
                 ent.s.effects |= Defines.EF_ANIM_ALL;
 
-            // to simplify logic elsewhere, make non-teamed doors into a team of
-            // one
+            
+            
             if (ent.team == null)
                 ent.teammaster = ent;
 
@@ -1725,11 +1725,11 @@ public class GameFunc {
         public void blocked(edict_t self, edict_t other) {
             if (0 == (other.svflags & Defines.SVF_MONSTER)
                     && (null == other.client)) {
-                // give it a chance to go away on it's own terms (like gibs)
+                
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
                         Defines.MOD_CRUSH);
-                // if it's still there, nuke it
+                
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
                 return;
@@ -1762,7 +1762,7 @@ public class GameFunc {
                 GameUtil.G_UseTargets(ent, self.activator);
                 ent.target = savetarget;
 
-                // make sure we didn't get killed by a killtarget
+                
                 if (!self.inuse)
                     return true;
             }
@@ -1771,7 +1771,7 @@ public class GameFunc {
                 if (self.moveinfo.wait > 0) {
                     self.nextthink = GameBase.level.time + self.moveinfo.wait;
                     self.think = train_next;
-                } else if (0 != (self.spawnflags & TRAIN_TOGGLE)) // && wait < 0
+                } else if (0 != (self.spawnflags & TRAIN_TOGGLE)) 
                 {
                     train_next.think(self);
                     self.spawnflags &= ~TRAIN_START_ON;
@@ -1807,7 +1807,7 @@ public class GameFunc {
             boolean dogoto = true;
             while (dogoto) {
                 if (null == self.target) {
-                    //			gi.dprintf ("train_next: no next target\n");
+                    
                     return true;
                 }
 
@@ -1820,7 +1820,7 @@ public class GameFunc {
 
                 self.target = ent.target;
                 dogoto = false;
-                // check for a teleport path_corner
+                
                 if ((ent.spawnflags & 1) != 0) {
                     if (!first) {
                         game_import_t
@@ -1882,7 +1882,7 @@ public class GameFunc {
             Math3D.VectorSubtract(ent.s.origin, self.mins, self.s.origin);
             game_import_t.linkentity(self);
 
-            // if not triggered, start immediately
+            
             if (null == self.targetname)
                 self.spawnflags |= TRAIN_START_ON;
 
@@ -1929,7 +1929,7 @@ public class GameFunc {
             edict_t target;
 
             if (0 != self.movetarget.nextthink) {
-                //			gi.dprintf("elevator busy\n");
+                
                 return;
             }
 
@@ -2023,13 +2023,13 @@ public class GameFunc {
         public void use(edict_t self, edict_t other, edict_t activator) {
             self.activator = activator;
 
-            // if on, turn it off
+            
             if (self.nextthink != 0) {
                 self.nextthink = 0;
                 return;
             }
 
-            // turn it on
+            
             if (self.delay != 0)
                 self.nextthink = GameBase.level.time + self.delay;
             else
@@ -2108,7 +2108,7 @@ public class GameFunc {
         public String getID() { return "door_secret_use";}
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            // make sure we're not already moving
+            
             if (!Math3D.VectorEquals(self.s.origin, Globals.vec3_origin))
                 return;
 
@@ -2204,11 +2204,11 @@ public class GameFunc {
         public void blocked(edict_t self, edict_t other) {
             if (0 == (other.svflags & Defines.SVF_MONSTER)
                     && (null == other.client)) {
-                // give it a chance to go away on it's own terms (like gibs)
+                
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, 100000, 1, 0,
                         Defines.MOD_CRUSH);
-                // if it's still there, nuke it
+                
                 if (other != null)
                     GameMisc.BecomeExplosion1(other);
                 return;
@@ -2274,7 +2274,7 @@ public class GameFunc {
 
             ent.moveinfo.accel = ent.moveinfo.decel = ent.moveinfo.speed = 50;
 
-            // calculate positions
+            
             Math3D.AngleVectors(ent.s.angles, forward, right, up);
             Math3D.VectorClear(ent.s.angles);
             side = 1.0f - (ent.spawnflags & SECRET_1ST_LEFT);

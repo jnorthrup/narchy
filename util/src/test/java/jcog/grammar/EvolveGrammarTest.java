@@ -46,11 +46,11 @@ public class EvolveGrammarTest {
                 "acs(x111111);", "fn_c(yy3333,ab);", "d123();", "a(x,y,z);",
                 "xf(/*ab,c*/z, z1);", "gggg(b /* !;*(fs)s! */);"
 
-                //"a(dd, a123);", "b(x, yz124, v)", "b(a,a,a,a);"
+
                 ));
     }
 
-//    static final Gson resultOutput = new GsonBuilder().setPrettyPrinting().serializeSpecialFloatingPointValues().create();
+
 
     private void run(DataSet d) throws Exception {
         Results r = EvolveGrammar.run(new SimpleConfig(
@@ -61,11 +61,11 @@ public class EvolveGrammarTest {
 
         System.out.println(r.getBestSolution());
         System.out.println(r.getBestExtractionsStats());
-//        System.out.println(resultOutput.toJson( r.getBestSolution()) );
-//        System.out.println(resultOutput.toJson(r.getBestExtractionsStats()));
 
 
-        //Configurator.configure(j));
+
+
+        
     }
 
 }

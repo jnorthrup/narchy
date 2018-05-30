@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -203,10 +203,10 @@ public class MatrixUtil {
 	}
 
 	public static void getRotation(Matrix3f mat, Quat4f dest) {
-		//ArrayPool<float[]> floatArrays = ArrayPool.get(float.class);
+		
 		
 		float trace = mat.m00 + mat.m11 + mat.m22;
-		//float[] temp = new float[4]; //floatArrays.getFixed(4);
+		
 
 		if (trace > 0f) {
 			float s = (float) Math.sqrt(trace + 1f);
@@ -230,9 +230,9 @@ public class MatrixUtil {
 			dest.set(j, (mat.get(j, i) + mat.get(i, j)) * s);
 			dest.set(k, (mat.get(k, i) + mat.get(i, k)) * s);
 		}
-		//dest.set(temp);
 		
-		//floatArrays.release(temp);
+		
+		
 	}
 
 	public static void setQuat(Quaternion q, int i, float v) {
@@ -244,10 +244,10 @@ public class MatrixUtil {
 		}
 	}
 	public static void getRotation(Matrix3f mat, Quaternion q) {
-		//ArrayPool<float[]> floatArrays = ArrayPool.get(float.class);
+		
 
 		float trace = mat.m00 + mat.m11 + mat.m22;
-		//float[] temp = floatArrays.getFixed(4);
+		
 
 		if (trace > 0f) {
 			float s = (float) Math.sqrt(trace + 1f);
@@ -316,13 +316,13 @@ public class MatrixUtil {
 	 * by the sum of the absolute values of the diagonal, or when maxSteps have
 	 * been executed. Note that this matrix is assumed to be symmetric.
 	 */
-	// JAVA NOTE: diagonalize method from 2.71
+	
 	public static void diagonalize(Matrix3f mat, Matrix3f rot, float threshold, int maxSteps) {
 		v3 row = new v3();
 
 		rot.setIdentity();
 		for (int step = maxSteps; step > 0; step--) {
-			// find off-diagonal element [p][q] with largest magnitude
+			
 			int q = 1;
 			int r = 2;
 			float max = Math.abs(mat.m01);
@@ -349,7 +349,7 @@ public class MatrixUtil {
 				step = 1;
 			}
 
-			// compute Jacobi rotation J which leads to a zero for element [p][q]
+			
 			float mpq = mat.get(p, q);
 			float theta = (mat.get(q, q) - mat.get(p, p)) / (2 * mpq);
 			float theta2 = theta * theta;
@@ -361,13 +361,13 @@ public class MatrixUtil {
 				sin = cos * t;
 			}
 			else {
-				// approximation for large theta-value, i.e., a nearly diagonal matrix
+				
 				t = 1 / (theta * (2 + 0.5f / theta2));
 				cos = 1 - 0.5f * t * t;
 				sin = cos * t;
 			}
 
-			// apply rotation to matrix (this = J^T * this * J)
+			
 			mat.setElement(p, q, 0f);
 			mat.setElement(q, p, 0f);
 			mat.setElement(p, p, mat.get(p, p) - t * mpq);
@@ -379,7 +379,7 @@ public class MatrixUtil {
 			mat.setElement(r, q, cos * mrq + sin * mrp);
 			mat.setElement(q, r, cos * mrq + sin * mrp);
 
-			// apply rotation to rot (rot = rot * J)
+			
 			for (int i=0; i<3; i++) {
 				rot.getRow(i, row);
 

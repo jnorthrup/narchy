@@ -59,7 +59,7 @@ public class Shell extends Sprite
             {
                 if (facing!=0) return true;
                 
-                //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+                
 
                 xa = fireball.facing * 2;
                 ya = -5;
@@ -148,7 +148,7 @@ public class Shell extends Sprite
         if (facing != 0) anim++;
 
         float sideWaysSpeed = 11f;
-        //        float sideWaysSpeed = onGround ? 2.5f : 1.2f;
+        
 
         if (xa > 2)
         {
@@ -176,7 +176,7 @@ public class Shell extends Sprite
 
         if (!move(xa, 0))
         {
-            //world.sound.play(Art.samples[Art.SAMPLE_SHELL_BUMP], this, 1, 1, 1);
+            
 
             facing = -facing;
         }
@@ -337,7 +337,7 @@ public class Shell extends Sprite
         {
             if (yD > -height && yD < shell.height)
             {
-                //world.sound.play(Art.samples[Art.SAMPLE_MARIO_KICK], this, 1, 1, 1);
+                
 
                 if (world.mario.carried == shell || world.mario.carried == this)
                 {

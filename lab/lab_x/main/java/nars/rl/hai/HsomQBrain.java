@@ -8,12 +8,12 @@ import jurls.core.LearnerAndActor;
  */
 public class HsomQBrain extends LearnerAndActor {
 
-    double Q[][][]; //state, action
-    double et[][][]; //eligiblity trace
+    double Q[][][]; 
+    double et[][][]; 
     int nActions, nStates;
-    double Alpha = 0.1, Gamma = 0.5, Lambda = 0.9; //0.1 0.5 0.9
+    double Alpha = 0.1, Gamma = 0.5, Lambda = 0.9; 
 
-    double Epsilon = 0.01; //random rate
+    double Epsilon = 0.01; 
 
     Hsom som;
 
@@ -41,7 +41,7 @@ public class HsomQBrain extends LearnerAndActor {
     
     int q(final int StateX, final int StateY, final double reward) {
 
-        final double[][][] Q = this.Q; //local reference
+        final double[][][] Q = this.Q; 
         final double[][][] et = this.et;
         final int actions = nActions;
         final int states = nStates;

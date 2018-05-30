@@ -43,7 +43,7 @@ public class MinimathParser {
 	 */
 	public static Parser e() {
 
-		// lazy-initialize e to prevent cycling
+		
 
 		if (e == null) {
 			e = new Seq();

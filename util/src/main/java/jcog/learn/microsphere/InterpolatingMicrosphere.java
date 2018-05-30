@@ -6,7 +6,7 @@
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -54,13 +54,13 @@ public class InterpolatingMicrosphere {
     /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
     private final float pointRadius = 0f;
 
-//    /** Maximum fraction of the facets that can be dark. */
-//    private float maxDarkFraction;
-//    /** Lowest non-zero illumination. */
-//    private float darkThreshold;
-//    /** Background value. */
-//    private float background;
-//    private float backgroundConfidence;
+
+
+
+
+
+
+
 
     /**
      * Create an unitialiazed sphere.
@@ -93,17 +93,17 @@ public class InterpolatingMicrosphere {
 
         this.dimension = dimension;
         this.size = size;
-        //this.backgroundConfidence = 1.0f;
+        
         microsphere = new FasterList(size);
         microsphereData = new FasterList(size);
 
 
     }
 
-//    public void setBackground(float background, float confidence) {
-//        this.background = background;
-//        this.backgroundConfidence = confidence;
-//    }
+
+
+
+
 
     /**
      * Create a sphere from randomly sampled vectors.
@@ -141,45 +141,45 @@ public class InterpolatingMicrosphere {
 
             throw new UnsupportedOperationException("TODO support float[] conversion from UnitSphereRandomVectorGenerator.nextVector()");
 
-//            // Generate the microsphere normals, assuming that a number of
-//            // randomly generated normals will represent a sphere.
-//            for (int i = 0; i < size; i++) {
-//                addNormal(rand.nextVector());
-//            }
+
+
+
+
+
         }
     }
 
 
-//    /**
-//     * Copy constructor.
-//     *
-//     * @param other Instance to copy.
-//     */
-//    protected InterpolatingMicrosphere(InterpolatingMicrosphere other) {
-//        dimension = other.dimension;
-//        size = other.size;
-//        maxDarkFraction = other.maxDarkFraction;
-//        darkThreshold = other.darkThreshold;
-//        background = other.background;
-//
-//        // Field can be shared.
-//        microsphere = other.microsphere;
-//
-//        // Field must be copied.
-//        microsphereData = Global.newArrayList(size);
-//        for (FacetData fd : other.microsphereData) {
-//            microsphereData.add(new float[] { fd.illumination(), fd.sample() } );
-//        }
-//    }
 
-//    /**
-//     * Perform a copy.
-//     *
-//     * @return a copy of this instance.
-//     */
-//    public InterpolatingMicrosphere copy() {
-//        return new InterpolatingMicrosphere(this);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Get the space dimensionality.
@@ -225,8 +225,8 @@ public class InterpolatingMicrosphere {
         clear();
 
 
-        // Contribution of each sample point to the illumination of the
-        // microsphere's facets.
+        
+        
         illuminate(targetPoint, data, curve, numSamples);
 
         return interpolate();
@@ -234,7 +234,7 @@ public class InterpolatingMicrosphere {
     }
 
     public static float[] ebeSubtract(float[] a, float[] b) throws DimensionMismatchException {
-        //checkEqualLength(a, b);
+        
         float[] result = a.clone();
 
         int l = a.length;
@@ -313,15 +313,15 @@ public class InterpolatingMicrosphere {
         float epsilon = 0.01f;
 
         for (int i = 0; i < numSamples; i++) {
-            // Vector between interpolation point and current sample point.
-            //HACK this only supports 1D points for now
+            
+            
             float[] X = data[i];
             final float[] diff = ebeSubtract(new float[] { X[0] }, targetPoint);
             final float distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
 
             @Nullable float[] sampleDirection = distance!=0 ? diff : null;
             float evidence = X[2];
-            int vectors = distance!=0  ? this.size : 1; //if exactly on-point then only compute once, otherwise compute for each microsphere vecctor
+            int vectors = distance!=0  ? this.size : 1; 
 
             for (int j = 0; j < vectors; j++) {
 
@@ -337,7 +337,7 @@ public class InterpolatingMicrosphere {
                     }
                 }
             }
-            //}
+            
         }
     }
 
@@ -422,7 +422,7 @@ public class InterpolatingMicrosphere {
     }
 
     public static float linearCombination(float[] a, float[] b) throws DimensionMismatchException {
-        //checkEqualLength(a, b);
+        
         int len = a.length;
         if (len == 1) {
             return a[0] * b[0];
@@ -440,14 +440,14 @@ public class InterpolatingMicrosphere {
         d[3] = sampleNum; /* winner */
     }
 
-//    /**
-//     * assumes sampleValue in range 0..1
-//     */
-//    static float valueIntersection(float a, float b) {
-//        float s = 1f - Math.abs(a - b);
-//        return s;
-//        //return s*s;
-//    }
+
+
+
+
+
+
+
+
 
     /**
      * Reset the all the {@link Facet facets} data to zero.
@@ -456,74 +456,74 @@ public class InterpolatingMicrosphere {
         for (int i = 0; i < size; i++) {
             float[] d = microsphereData.get(i);
             d[0] = d[1] = d[2] = 0;
-            d[3] = -1; //DEPRECATED
+            d[3] = -1; 
         }
     }
 
-//    /**
-//     * Microsphere "facet" (surface element).
-//     */
-//    private static class Facet {
-//        /** Normal vector characterizing a surface element. */
-//        private final float[] normal;
-//
-//        /**
-//         * @param n Normal vector characterizing a surface element
-//         * of the microsphere. No copy is made.
-//         */
-//        Facet(float[] n) {
-//            normal = n;
-//        }
-//
-//        /**
-//         * Return a reference to the vector normal to this facet.
-//         *
-//         * @return the normal vector.
-//         */
-//        public float[] getNormal() {
-//            return normal;
-//        }
-//    }
-//
-//    /**
-//     * Data associated with each {@link Facet}.
-//     */
-//    private static class FacetData {
-//        /** Illumination received from the sample. */
-//        private final float illumination;
-//        /** Data value of the sample. */
-//        private final float sample;
-//
-//        /**
-//         * @param illumination Illumination.
-//         * @param sample Data value.
-//         */
-//        FacetData(float illumination, float sample) {
-//            this.illumination = illumination;
-//            this.sample = sample;
-//        }
-//
-//        /**
-//         * Get the illumination.
-//         * @return the illumination.
-//         */
-//        public float illumination() {
-//            return illumination;
-//        }
-//
-//        /**
-//         * Get the data value.
-//         * @return the data value.
-//         */
-//        public float sample() {
-//            return sample;
-//        }
-//    }
 
-//
-//    public float[] value(float[] floats, float[][] data, float[] value, float exp, float ulp) {
-//        return value(floats, data, value, null, exp, ulp, data.length);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Determines the conservation and decay of evidence through time during interpolation of belief table evidence

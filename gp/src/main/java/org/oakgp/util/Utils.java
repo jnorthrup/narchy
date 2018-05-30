@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -125,7 +125,7 @@ public enum Utils { ;
     public static int selectSubNodeIndex(GPRandom random, Node tree) {
         int nodeCount = tree.size();
         if (nodeCount == 1) {
-            // will get here if and only if 'tree' is a terminal (i.e. variable or constant) rather than a function node
+            
             return 0;
         } else {
             return selectSubNodeIndex(random, nodeCount);
@@ -136,7 +136,7 @@ public enum Utils { ;
      * Returns a int value between 0 (inclusive) and the specified {@code nodeCount} value minus 1 (exclusive).
      */
     public static int selectSubNodeIndex(GPRandom random, int nodeCount) {
-        // Note: -1 to avoid selecting root node
+        
         return random.nextInt(nodeCount - 1);
     }
 

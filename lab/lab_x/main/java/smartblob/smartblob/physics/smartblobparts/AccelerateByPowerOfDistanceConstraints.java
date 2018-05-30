@@ -25,7 +25,7 @@ public class AccelerateByPowerOfDistanceConstraints extends AbstractChangeSpeedL
 			float dx = b.x - a.x;
 			float distance = (float)Math.sqrt(dx*dx+dy*dy);
 			if(distance == 0) continue;
-			float wantToAddToDistance = ld.targetDistance-distance; //positive or negative
+			float wantToAddToDistance = ld.targetDistance-distance; 
 			float normDy = dy/distance, normDx = dx/distance;
 			double exp = Math.pow(Math.abs(wantToAddToDistance), exponent);
 			float addToEachSpeed = (float)(mult*exp);

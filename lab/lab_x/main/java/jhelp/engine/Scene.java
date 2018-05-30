@@ -88,7 +88,7 @@ public class Scene
    synchronized void renderTheScene(final GL2 gl, final GLU glu, final JHelpSceneRenderer sceneRenderer)
    {
       Node node;
-      // Get the node's list
+      
       if(this.nodeList == null)
       {
          final Stack<Node> stack = new Stack<Node>();
@@ -107,7 +107,7 @@ public class Scene
          this.nodeList = nodes.toArray(this.nodeList);
       }
 
-      // Compute Z-Orders
+      
       int length = this.nodeList.length;
       for(int i = 0; i < length; i++)
       {
@@ -116,10 +116,10 @@ public class Scene
       }
       length--;
 
-      // Sort nodes
+      
       Arrays.sort(this.nodeList, NodeComparatorZorder.NODE_COMPARATOR_Z_ORDER);
 
-      // Draw nodes
+      
       for(; length >= 0; length--)
       {
          node = this.nodeList[length];

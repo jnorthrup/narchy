@@ -55,8 +55,8 @@ public class TabularAction<A> implements StateToStateAction<A>, Cloneable {
         if (buffer == null)
             buffer = new ArrayRealVector(vectorSize());
         int offset = atoi(a) * stateVectorSize;
-//        if (s instanceof BinaryVector)
-//            return stateAction(s, offset);
+
+
         RealVector phi_sa = buffer;
         phi_sa.set(0.0);
         if (includeActiveFeature)

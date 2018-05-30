@@ -155,14 +155,14 @@ public final class UtilText
                   stringBuffer.append(car);
                   break;
                }
-               // No break
-               //$FALL-THROUGH$
+               
+               
             case '\\':
             case '"':
                stringBuffer.append('\\');
-               // No break, we want also add the character itself, like other
-               // ones
-               //$FALL-THROUGH$
+               
+               
+               
             default:
                stringBuffer.append(car);
             break;
@@ -1138,7 +1138,7 @@ public final class UtilText
             }
             catch(final Exception exception)
             {
-               // Nothing to do here
+               
             }
 
             if((indexReplacement >= 0) && (indexReplacement < replacement.length))
@@ -1267,7 +1267,7 @@ public final class UtilText
                   }
                   catch(final Exception exception1)
                   {
-                     // Nothing to do, just ignore this error
+                     
                   }
                }
             }
@@ -1323,53 +1323,53 @@ public final class UtilText
       return string.getBytes(UtilText.UTF8);
    }
 
-//   /**
-//    * Compute the upper case version of of string, and remove all accent.
-//    *
-//    * @param text
-//    *           Text to upper case
-//    * @return Upper case result
-//    */
-//   public static String upperCaseWithoutAccent(final String text)
-//   {
-//      final char[] characters = text.toUpperCase().toCharArray();
-//      final int lenght = characters.length;
-//
-//      for(int i = 0; i < lenght; i++)
-//      {
-//         switch(characters[i])
-//         {
-//            case 'Â':
-//            case 'Ä':
-//               characters[i] = 'A';
-//            break;
-//            case 'Ê':
-//            case 'Ë':
-//            case 'É':
-//            case 'È':
-//               characters[i] = 'E';
-//            break;
-//            case 'Î':
-//            case 'Ï':
-//               characters[i] = 'I';
-//            break;
-//            case 'Ô':
-//            case 'Ö':
-//               characters[i] = 'O';
-//            break;
-//            case 'Û':
-//            case 'Ü':
-//            case 'Ù':
-//               characters[i] = 'U';
-//            break;
-//            case 'Ñ':
-//               characters[i] = 'N';
-//            break;
-//         }
-//      }
-//
-//      return new String(characters);
-//   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
    /** To avoid instance */
    private UtilText()

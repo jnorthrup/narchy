@@ -26,7 +26,7 @@ package spacegraph.space2d.phys.collision;
 import spacegraph.space2d.phys.common.Vec2;
 import spacegraph.util.math.v2;
 
-// updated to rev 100
+
 
 /**
  * Ray-cast output data. The ray hits at p1 + fraction * (p2 - p1), where p1 and p2

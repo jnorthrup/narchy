@@ -85,7 +85,7 @@ public interface Polydim extends HeaderAndData{
 	you could give it only 1 int at a time and recurse dims.
 	*/
 	public Polydim bits(int... lessDims);
-	//TODO MultiDim.bits(int...) decide on bigEndian (as it is now) or littleEndian (default for this software) list of dims should be.
+	
 	
 	public Polydim bits(long... lessDims);
 	

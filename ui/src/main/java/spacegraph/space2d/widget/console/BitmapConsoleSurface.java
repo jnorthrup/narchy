@@ -37,12 +37,12 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     protected BitmapConsoleSurface() {
 
 
-//        this.cursorIsVisible = true;
-//        this.enableInput = false;
-//        this.lastDrawnCursorPosition = null;
-//        this.lastComponentHeight = 0;
-//        this.lastComponentWidth = 0;
-//        this.blinkOn = true;
+
+
+
+
+
+
         this.backbuffer = null;
 
         setBitmapFontSize(28);
@@ -58,16 +58,16 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
             return true;
 
 
-        //System.out.println(cols + " x " + pixelWidth() + " _ " + rows + " x " + pixelHeight());
+        
 
         BufferedImage newBackbuffer = new BufferedImage(pixelWidth(), pixelHeight(), 1);
         Graphics2D backbufferGraphics = newBackbuffer.createGraphics();
-        //backbufferGraphics.setPaint(new Color(0,0,0,0));
-        //backbufferGraphics.fillRect(0, 0, newBackbuffer.getWidth(), newBackbuffer.getHeight());
+        
+        
         backbufferGraphics.drawImage(this.backbuffer, 0, 0, null);
 
         backbufferGraphics.setFont(font);
-        if (antialias) { //if (this.isTextAntiAliased()) {
+        if (antialias) { 
             backbufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         }
         if (quality) {
@@ -83,7 +83,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 
     public void setFillTextBackground(boolean fillTextBackground) {
         this.fillTextBackground = fillTextBackground;
-        //...setUpdateNecessary();
+        
     }
 
     public BitmapConsoleSurface alpha(float alpha) {
@@ -118,14 +118,14 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         layout();
     }
 
-//    @Override
-//    public boolean tangible() {
-//        return true;
-//    }
+
+
+
+
 
     @Override
     public void doLayout(int dtMS) {
-        float va = h()/w(); //visual aspect ratio
+        float va = h()/w(); 
         int r, c;
         if (va <= charAspect) {
             r = scale;
@@ -172,15 +172,15 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         if (fillTextBackground) {
             Color backgroundColor = character.getBackgroundColor().toColor();
             g.setColor(backgroundColor);
-            //g.setClip(x, y, characterWidth, fontHeight);
+            
             g.fillRect(x, y, characterWidth, fontHeight);
         }
 
         Color foregroundColor = character.getForegroundColor().toColor();
         g.setColor(foregroundColor);
 
-        //FontMetrics fontMetrics = g.getFontMetrics();
-        //g.drawString(Character.toString(character.getCharacter()), x, y + fontHeight - fontMetrics.getDescent() + 1);
+        
+        
         final int descent = 8;
         char c = character.getCharacter();
         if (c != ' ')
@@ -203,11 +203,11 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         if (drawCursor) {
             g.setColor(cursorColor == null ? foregroundColor : cursorColor);
 
-//        if (this.deviceConfiguration.getCursorStyle() == CursorStyle.UNDER_BAR) {
-//            g.fillRect(x, y + fontHeight - 3, characterWidth, 2);
-//        } else if (this.deviceConfiguration.getCursorStyle() == CursorStyle.VERTICAL_BAR) {
+
+
+
             g.fillRect(x, y + 1, characterWidth, fontHeight - 2);
-//        }
+
         }
 
     }

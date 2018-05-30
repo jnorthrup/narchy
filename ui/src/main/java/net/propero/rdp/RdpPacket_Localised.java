@@ -44,8 +44,8 @@ public class RdpPacket_Localised extends RdpPacket {
     }
 
     public void reset(int length) {
-        // logger.info("RdpPacket_Localised.reset(" + length + "), capacity = "
-        // + bb.capacity());
+        
+        
         this.end = 0;
         this.start = 0;
         if (bb.capacity() < length)
@@ -63,24 +63,24 @@ public class RdpPacket_Localised extends RdpPacket {
         bb.put(where, (byte) what);
     }
 
-    // where is a 8-bit offset
+    
     @Override
     public int get8(int where) {
         if (where < 0 || where >= bb.capacity()) {
             throw new ArrayIndexOutOfBoundsException(
                     "memory accessed out of Range!");
         }
-        return bb.get(where) & 0xff; // treat as unsigned byte
+        return bb.get(where) & 0xff; 
     }
 
-    // where is a 8-bit offset
+    
     @Override
     public int get8() {
         if (bb.position() >= bb.capacity()) {
             throw new ArrayIndexOutOfBoundsException(
                     "memory accessed out of Range!");
         }
-        return bb.get() & 0xff; // treat as unsigned byte
+        return bb.get() & 0xff; 
     }
 
     @Override
@@ -101,13 +101,13 @@ public class RdpPacket_Localised extends RdpPacket {
             throw new ArrayIndexOutOfBoundsException(
                     "memory accessed out of Range!");
         }
-        // store position
+        
         int oldpos = getPosition();
 
         setPosition(mem_offset);
         bb.put(array, array_offset, len);
 
-        // restore position
+        
         setPosition(oldpos);
     }
 
@@ -161,11 +161,11 @@ public class RdpPacket_Localised extends RdpPacket {
         return bb.capacity();
     }
 
-    // return size in bytes
+    
     @Override
     public int size() {
         return size;
-        // return bb.capacity(); //this.end - this.start;
+        
     }
 
     @Override

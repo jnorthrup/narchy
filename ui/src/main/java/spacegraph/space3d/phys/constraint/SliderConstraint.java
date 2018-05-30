@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -39,7 +39,7 @@ import spacegraph.space3d.phys.solve.JacobianEntry;
 import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.v3;
 
-// JAVA NOTE: SliderConstraint from 2.71
+
 
 /**
  * UNTESTED
@@ -53,20 +53,20 @@ public class SliderConstraint extends TypedConstraint {
 
 	protected final Transform frameInA = new Transform();
 	protected final Transform frameInB = new Transform();
-	// use frameA fo define limits, if true
+	
 	protected boolean useLinearReferenceFrameA;
-	// linear limits
+	
 	protected float lowerLinLimit;
 	protected float upperLinLimit;
-	// angular limits
+	
 	protected float lowerAngLimit;
 	protected float upperAngLimit;
-	// softness, restitution and damping for different cases
-	// DirLin - moving inside linear limits
-	// LimLin - hitting linear limit
-	// DirAng - moving inside angular limits
-	// LimAng - hitting angular limit
-	// OrthoLin, OrthoAng - against constraint axis
+	
+	
+	
+	
+	
+	
 	protected float softnessDirLin;
 	protected float restitutionDirLin;
 	protected float dampingDirLin;
@@ -86,7 +86,7 @@ public class SliderConstraint extends TypedConstraint {
 	protected float restitutionOrthoAng;
 	protected float dampingOrthoAng;
 
-	// for interlal use
+	
 	protected boolean solveLinLim;
 	protected boolean solveAngLim;
 
@@ -445,7 +445,7 @@ public class SliderConstraint extends TypedConstraint {
 		return this.linPos;
 	}
 
-	// access for ODE solver
+	
 
 	public boolean getSolveLinLimit() {
 		return solveLinLim;
@@ -463,7 +463,7 @@ public class SliderConstraint extends TypedConstraint {
 		return angDepth;
 	}
 	
-	// internal
+	
 	
 	public void buildJacobianInt(Body3D rbA, Body3D rbB, Transform frameInA, Transform frameInB) {
 		Transform tmpTrans = new Transform();
@@ -472,20 +472,20 @@ public class SliderConstraint extends TypedConstraint {
 		v3 tmp = new v3();
 		v3 tmp2 = new v3();
 
-		// calculate transforms
+		
 		calculatedTransformA.mul(rbA.getCenterOfMassTransform(tmpTrans), frameInA);
 		calculatedTransformB.mul(rbB.getCenterOfMassTransform(tmpTrans), frameInB);
 		realPivotAInW.set(calculatedTransformA);
 		realPivotBInW.set(calculatedTransformB);
 		calculatedTransformA.basis.getColumn(0, tmp);
-		sliderAxis.set(tmp); // along X
+		sliderAxis.set(tmp); 
 		delta.sub(realPivotBInW, realPivotAInW);
 		projPivotInW.scaleAdd(sliderAxis.dot(delta), sliderAxis, realPivotAInW);
 		relPosA.sub(projPivotInW, rbA.getCenterOfMassPosition(tmp));
 		relPosB.sub(realPivotBInW, rbB.getCenterOfMassPosition(tmp));
 		v3 normalWorld = new v3();
 
-		// linear part
+		
 		for (int i=0; i<3; i++) {
 			calculatedTransformA.basis.getColumn(i, normalWorld);
 
@@ -510,7 +510,7 @@ public class SliderConstraint extends TypedConstraint {
 		}
 		testLinLimits();
 
-		// angular part
+		
 		for (int i=0; i<3; i++) {
 			calculatedTransformA.basis.getColumn(i, normalWorld);
 
@@ -532,7 +532,7 @@ public class SliderConstraint extends TypedConstraint {
 		v3 axisA = new v3();
 		calculatedTransformA.basis.getColumn(0, axisA);
 		kAngle = 1f / (rbA.computeAngularImpulseDenominator(axisA) + rbB.computeAngularImpulseDenominator(axisA));
-		// clear accumulator for motors
+		
 		accumulatedLinMotorImpulse = 0f;
 		accumulatedAngMotorImpulse = 0f;
 	}
@@ -540,7 +540,7 @@ public class SliderConstraint extends TypedConstraint {
 	public void solveConstraintInt(Body3D rbA, Body3D rbB) {
 		v3 tmp = new v3();
 
-		// linear
+		
 		v3 velA = rbA.getVelocityInLocalPoint(relPosA, new v3());
 		v3 velB = rbB.getVelocityInLocalPoint(relPosB, new v3());
 		v3 vel = new v3();
@@ -551,13 +551,13 @@ public class SliderConstraint extends TypedConstraint {
 		for (int i=0; i<3; i++) {
 			v3 normal = jacLin[i].linearJointAxis;
 			float rel_vel = normal.dot(vel);
-			// calculate positional error
+			
 			float depth = VectorUtil.coord(this.depth, i);
-			// get parameters
+			
 			float softness = (i != 0)? softnessOrthoLin : (solveLinLim? softnessLimLin : softnessDirLin);
 			float restitution = (i != 0)? restitutionOrthoLin : (solveLinLim? restitutionLimLin : restitutionDirLin);
 			float damping = (i != 0)? dampingOrthoLin : (solveLinLim? dampingLimLin : dampingDirLin);
-			// calcutate and apply impulse
+			
 			float normalImpulse = softness * (restitution * depth / timeStep - damping * rel_vel) * jacLinDiagABInv[i];
 			impulse_vector.scale(normalImpulse, normal);
 			rbA.impulse(impulse_vector, relPosA);
@@ -565,12 +565,12 @@ public class SliderConstraint extends TypedConstraint {
 			rbB.impulse(tmp, relPosB);
 
 			if (poweredLinMotor && (i == 0)) {
-				// apply linear motor
+				
 				if (accumulatedLinMotorImpulse < maxLinMotorForce) {
 					float desiredMotorVel = targetLinMotorVelocity;
 					float motor_relvel = desiredMotorVel + rel_vel;
 					normalImpulse = -motor_relvel * jacLinDiagABInv[i];
-					// clamp accumulated impulse
+					
 					float new_acc = accumulatedLinMotorImpulse + Math.abs(normalImpulse);
 					if (new_acc > maxLinMotorForce) {
 						new_acc = maxLinMotorForce;
@@ -583,7 +583,7 @@ public class SliderConstraint extends TypedConstraint {
 						normalImpulse = del;
 					}
 					accumulatedLinMotorImpulse = new_acc;
-					// apply clamped impulse
+					
 					impulse_vector.scale(normalImpulse, normal);
 					rbA.impulse(impulse_vector, relPosA);
 					tmp.negate(impulse_vector);
@@ -592,8 +592,8 @@ public class SliderConstraint extends TypedConstraint {
 			}
 		}
 
-		// angular
-		// get axes in world space
+		
+		
 		v3 axisA = new v3();
 		calculatedTransformA.basis.getColumn(0, axisA);
 		v3 axisB = new v3();
@@ -614,7 +614,7 @@ public class SliderConstraint extends TypedConstraint {
 		v3 velrelOrthog = new v3();
 		velrelOrthog.sub(angAorthog, angBorthog);
 
-		// solve orthogonal angular velocity correction
+		
 		float len = velrelOrthog.length();
 		if (len > 0.00001f) {
 			v3 normal = new v3();
@@ -623,7 +623,7 @@ public class SliderConstraint extends TypedConstraint {
 			velrelOrthog.scale((1f / denom) * dampingOrthoAng * softnessOrthoAng);
 		}
 
-		// solve angular positional correction
+		
 		v3 angularError = new v3();
 		angularError.cross(axisA, axisB);
 		angularError.scale(1f / timeStep);
@@ -635,7 +635,7 @@ public class SliderConstraint extends TypedConstraint {
 			angularError.scale((1f / denom2) * restitutionOrthoAng * softnessOrthoAng);
 		}
 
-		// apply impulse
+		
 		tmp.negate(velrelOrthog);
 		tmp.add(angularError);
 		rbA.torqueImpulse(tmp);
@@ -643,7 +643,7 @@ public class SliderConstraint extends TypedConstraint {
 		rbB.torqueImpulse(tmp);
 		float impulseMag;
 
-		// solve angular limits
+		
 		if (solveAngLim) {
 			tmp.sub(angVelB, angVelA);
 			impulseMag = tmp.dot(axisA) * dampingLimAng + angDepth * restitutionLimAng / timeStep;
@@ -660,7 +660,7 @@ public class SliderConstraint extends TypedConstraint {
 		tmp.negate(impulse);
 		rbB.torqueImpulse(tmp);
 
-		// apply angular motor
+		
 		if (poweredAngMotor) {
 			if (accumulatedAngMotorImpulse < maxAngMotorForce) {
 				v3 velrel = new v3();
@@ -671,7 +671,7 @@ public class SliderConstraint extends TypedConstraint {
 				float motor_relvel = desiredMotorVel - projRelVel;
 
 				float angImpulse = kAngle * motor_relvel;
-				// clamp accumulated impulse
+				
 				float new_acc = accumulatedAngMotorImpulse + Math.abs(angImpulse);
 				if (new_acc > maxAngMotorForce) {
 					new_acc = maxAngMotorForce;
@@ -684,7 +684,7 @@ public class SliderConstraint extends TypedConstraint {
 				}
 				accumulatedAngMotorImpulse = new_acc;
 
-				// apply clamped impulse
+				
 				v3 motorImp = new v3();
 				motorImp.scale(angImpulse, axisA);
 				rbA.torqueImpulse(motorImp);
@@ -694,7 +694,7 @@ public class SliderConstraint extends TypedConstraint {
 		}
 	}
 	
-	// shared code used by ODE solver
+	
 	
 	public void calculateTransforms() {
 		Transform tmpTrans = new Transform();
@@ -709,11 +709,11 @@ public class SliderConstraint extends TypedConstraint {
 		}
 		realPivotAInW.set(calculatedTransformA);
 		realPivotBInW.set(calculatedTransformB);
-		calculatedTransformA.basis.getColumn(0, sliderAxis); // along X
+		calculatedTransformA.basis.getColumn(0, sliderAxis); 
 		delta.sub(realPivotBInW, realPivotAInW);
 		projPivotInW.scaleAdd(sliderAxis.dot(delta), sliderAxis, realPivotAInW);
 		v3 normalWorld = new v3();
-		// linear part
+		
 		for (int i=0; i<3; i++) {
 			calculatedTransformA.basis.getColumn(i, normalWorld);
 			VectorUtil.setCoord(depth, i, delta.dot(normalWorld));
@@ -764,7 +764,7 @@ public class SliderConstraint extends TypedConstraint {
 		}
 	}
 	
-	// access for PE Solver
+	
 	
 	public v3 getAncorInA(v3 out) {
 		Transform tmpTrans = new Transform();

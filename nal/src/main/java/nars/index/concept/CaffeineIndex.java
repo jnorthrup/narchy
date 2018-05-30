@@ -45,22 +45,22 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
     private CaffeineIndex(Caffeine builder, boolean weightDynamic) {
         super();
         this.weightDynamic = weightDynamic;
-//        if (Param.DEBUG)
-//            builder.recordStats();
+
+
         builder.removalListener(this);
         builder.executor(this);
 
         this.concepts = builder.build(this);
 
-        //this.conceptsAsync = builder.buildAsync(this);
-        //this.concepts = conceptsAsync.synchronous();
+        
+        
     }
 
 
     @Override
     public Stream<Termed> stream() {
         return concepts.asMap().values().stream()
-                //.distinct() //<- shouldnt be necessary
+                
                 ;
     }
 
@@ -108,30 +108,30 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
         }
 
         if (createIfMissing && weightDynamic && y!=null)
-            concepts.put(x, y); //refresh weight
+            concepts.put(x, y); 
 
         return y;
     }
 
-//    @Override
-//    public CompletableFuture<Termed> getAsync(Term x, boolean createIfMissing) {
-//        if (createIfMissing)
-//            return conceptsAsync.get(x, (Function<? super Term, ? extends Termed>) conceptBuilder::apply);
-//        else
-//            return conceptsAsync.getIfPresent(x);
-//    }
+
+
+
+
+
+
+
 
     @Override
     public @NotNull String summary() {
-        //CacheStats s = cache.stats();
+        
         String s = concepts.estimatedSize() + " concepts, ";
 
         if (Param.DEBUG)
             s += ' ' + concepts.stats().toString();
 
         return s;
-        //(" + n2(s.hitRate()) + " hitrate, " +
-        //s.requestCount() + " reqs)";
+        
+        
 
     }
 
@@ -140,7 +140,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
      */
     @Override
     public final void onRemoval(Term key, Termed value, RemovalCause cause) {
-        //value will be null if collected (Weak/Soft modes)
+        
         if (value != null)
             onRemove(value);
     }
@@ -153,7 +153,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
             return;
         }
 
-        //possibly a removal notification (its class will be an anonymous lambda :( ), execute inline immediately
+        
         nar.exe.execute(command);
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
  *
  */
 public class EnvironmentScriptingAccessor {
-    // TODO< find nearest intersection to given point in the constructor >
+    
     private class MyRaycastCallback implements RayCastCallback {
         public ArrayRealVector nearestPoint;
 
@@ -41,14 +41,14 @@ public class EnvironmentScriptingAccessor {
 
     public EntityDescriptor createNewEntity(ArrayRealVector direction) {
         EntityDescriptor createdEntity = new EntityDescriptor();
-        // createdEntity.direction = direction
+        
 
         return createdEntity;
     }
 
 
 
-    // must be called before using the 2d physics
+    
     public void physics2dCreateWorld() {
         environment.physicsWorld2d = new World(new Vec2(0.0f, 0.0f));
     }
@@ -94,7 +94,7 @@ public class EnvironmentScriptingAccessor {
 
         Vec2[] vertices = convertVerticesFromArrayRealVectorGenericList(verticesPoints);
         shape.set(vertices, vertices.length);
-        //shape.m_centroid.set(bodyDef.position);
+        
 
         BodyDef bodyDefinition = new BodyDef();
         bodyDefinition.linearDamping = linearDamping;

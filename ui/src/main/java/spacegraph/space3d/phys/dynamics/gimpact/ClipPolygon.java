@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -60,12 +60,12 @@ class ClipPolygon {
 		boolean _classif = (dist1 > BulletGlobals.SIMD_EPSILON);
 		if (_classif != _prevclassif) {
 			float blendfactor = -dist0 / (dist1 - dist0);
-            //return array[index];
+            
             vec_blend(clipped.get(clipped_count[0]), point0, point1, blendfactor);
 			clipped_count[0]++;
 		}
 		if (!_classif) {
-            //return array[index];
+            
             clipped.get(clipped_count[0]).set(point1);
 			clipped_count[0]++;
 		}
@@ -82,23 +82,23 @@ class ClipPolygon {
 		int[] clipped_count = intArrays.getExact(1);
 		clipped_count[0] = 0;
 
-		// clip first point
-        //return array[index];
+		
+        
         float firstdist = distance_point_plane(plane, polygon_points.get(0));
 		if (!(firstdist > BulletGlobals.SIMD_EPSILON)) {
-            //return array[index];
-            //return array[index];
+            
+            
             clipped.get(clipped_count[0]).set(polygon_points.get(0));
 			clipped_count[0]++;
 		}
 
 		float olddist = firstdist;
 		for (int i=1; i<polygon_point_count; i++) {
-            //return array[index];
+            
             float dist = distance_point_plane(plane, polygon_points.get(i));
 
-            //return array[index];
-            //return array[index];
+            
+            
             plane_clip_polygon_collect(
                     polygon_points.get(i - 1), polygon_points.get(i),
 					olddist,
@@ -110,10 +110,10 @@ class ClipPolygon {
 			olddist = dist;
 		}
 
-		// RETURN TO FIRST point
+		
 
-        //return array[index];
-        //return array[index];
+        
+        
         plane_clip_polygon_collect(
                 polygon_points.get(polygon_point_count - 1), polygon_points.get(0),
 				olddist,
@@ -138,15 +138,15 @@ class ClipPolygon {
 		int[] clipped_count = intArrays.getExact(1);
 		clipped_count[0] = 0;
 
-		// clip first point0
+		
 		float firstdist = distance_point_plane(plane, point0);
 		if (!(firstdist > BulletGlobals.SIMD_EPSILON)) {
-            //return array[index];
+            
             clipped.get(clipped_count[0]).set(point0);
 			clipped_count[0]++;
 		}
 
-		// point 1
+		
 		float olddist = firstdist;
 		float dist = distance_point_plane(plane, point1);
 
@@ -160,7 +160,7 @@ class ClipPolygon {
 		olddist = dist;
 
 
-		// point 2
+		
 		dist = distance_point_plane(plane, point2);
 
 		plane_clip_polygon_collect(
@@ -173,7 +173,7 @@ class ClipPolygon {
 
 
 
-		// RETURN TO FIRST point0
+		
 		plane_clip_polygon_collect(
 				point2, point0,
 				olddist,

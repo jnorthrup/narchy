@@ -20,7 +20,7 @@ public class EdgeDirected3D extends ForceDirected3D {
 
             Spatial A = ((Spatial) c.data());
 
-            //TODO abstract the Edges as a feature to optionally add to a TermWidget, not just for ConceptWidgets
+            
             if (A instanceof SpaceWidget) {
                 ((SpaceWidget<?>) A).edges().forEach(e -> {
 

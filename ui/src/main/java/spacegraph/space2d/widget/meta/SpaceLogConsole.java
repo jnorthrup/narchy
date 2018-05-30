@@ -21,10 +21,10 @@ public class SpaceLogConsole extends Gridding implements SpaceLogger {
     public SpaceLogConsole() {
         super();
         text.textBox.setReadOnly(true);
-        //TextBox.DefaultTextBoxRenderer r = new TextBox.DefaultTextBoxRenderer();
-        //r.setHideScrollBars(true);
+        
+        
         SimpleTheme theme = new SimpleTheme(TextColor.ANSI.WHITE, TextColor.ANSI.BLACK);
-        //text.textBox.setRenderer(r);
+        
         text.textBox.setTheme(theme);
 
 

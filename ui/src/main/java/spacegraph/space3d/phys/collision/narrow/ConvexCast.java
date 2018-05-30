@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -39,7 +39,7 @@ public abstract class ConvexCast {
 	 */
 	public abstract boolean calcTimeOfImpact(Transform fromA, Transform toA, Transform fromB, Transform toB, CastResult result);
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 	
 	/**
 	 * RayResult stores the closest result. Alternatively, add a callback method
@@ -51,7 +51,7 @@ public abstract class ConvexCast {
 		
 		public final v3 normal = new v3();
 		public final v3 hitPoint = new v3();
-		public float fraction = 1e30f; // input and output
+		public float fraction = 1e30f; 
 		public float allowedPenetration;
 		
 		public IDebugDraw debugDrawer;

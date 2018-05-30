@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 16.11.2005 by RST.
-// $Id: GameItems.java,v 1.4 2006-01-21 21:53:32 salomo Exp $
+
+
 
 package jake2.game;
 
@@ -59,7 +59,7 @@ public class GameItems {
     
                 master = ent.teammaster;
     
-                // count the depth
+                
                 for (count = 0, ent = master; ent != null; ent = ent.chain, count++)
                     ;
     
@@ -73,7 +73,7 @@ public class GameItems {
             ent.solid = Defines.SOLID_TRIGGER;
             game_import_t.linkentity(ent);
     
-            // send an effect
+            
             ent.s.event = Defines.EV_ITEM_RESPAWN;
     
             return false;
@@ -204,23 +204,23 @@ public class GameItems {
             if (other.client == null)
                 return;
             if (other.health < 1)
-                return; // dead people can't pickup
+                return; 
             if (ent.item.pickup == null)
-                return; // not a grabbable item?
+                return; 
     
             taken = ent.item.pickup.interact(ent, other);
     
             if (taken) {
-                // flash the screen
+                
                 other.client.bonus_alpha = 0.25f;
     
-                // show icon and name on status bar
+                
                 other.client.ps.stats[Defines.STAT_PICKUP_ICON] = (short) game_import_t
                         .imageindex(ent.item.icon);
                 other.client.ps.stats[Defines.STAT_PICKUP_STRING] = (short) (Defines.CS_ITEMS + ITEM_INDEX(ent.item));
                 other.client.pickup_msg_time = GameBase.level.time + 3.0f;
     
-                // change selected item
+                
                 if (ent.item.use != null)
                     other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
@@ -238,7 +238,7 @@ public class GameItems {
                                 .soundindex("items/l_health.wav"), 1,
                                 Defines.ATTN_NORM, 0);
                     else
-                        // (ent.count == 100)
+                        
                         game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
                                 .soundindex("items/m_health.wav"), 1,
                                 Defines.ATTN_NORM, 0);
@@ -455,12 +455,12 @@ public class GameItems {
             float salvage;
             int salvagecount;
     
-            // get info on new armor
+            
             newinfo = ent.item.info;
     
             old_armor_index = ArmorIndex(other);
     
-            // handle armor shards specially
+            
             if (ent.item.tag == Defines.ARMOR_SHARD) {
                 if (0 == old_armor_index)
                     other.client.pers.inventory[jacket_armor_index] = 2;
@@ -468,14 +468,14 @@ public class GameItems {
                     other.client.pers.inventory[old_armor_index] += 2;
             }
     
-            // if player has no armor, just use it
+            
             else if (0 == old_armor_index) {
                 other.client.pers.inventory[ITEM_INDEX(ent.item)] = newinfo.base_count;
             }
     
-            // use the better armor
+            
             else {
-                // get info on old armor
+                
                 if (old_armor_index == jacket_armor_index)
                     oldinfo = jacketarmor_info;
     
@@ -483,11 +483,11 @@ public class GameItems {
                     oldinfo = combatarmor_info;
     
                 else
-                    // (old_armor_index == body_armor_index)
+                    
                     oldinfo = bodyarmor_info;
     
                 if (newinfo.normal_protection > oldinfo.normal_protection) {
-                    // calc new armor values
+                    
                     salvage = oldinfo.normal_protection
                             / newinfo.normal_protection;
                     salvagecount = (int) salvage
@@ -496,13 +496,13 @@ public class GameItems {
                     if (newcount > newinfo.max_count)
                         newcount = newinfo.max_count;
     
-                    // zero count of old armor so it goes away
+                    
                     other.client.pers.inventory[old_armor_index] = 0;
     
-                    // change armor to new item with computed value
+                    
                     other.client.pers.inventory[ITEM_INDEX(ent.item)] = newcount;
                 } else {
-                    // calc new armor values
+                    
                     salvage = newinfo.normal_protection
                             / oldinfo.normal_protection;
                     salvagecount = (int) salvage * newinfo.base_count;
@@ -511,12 +511,12 @@ public class GameItems {
                     if (newcount > oldinfo.max_count)
                         newcount = oldinfo.max_count;
     
-                    // if we're already maxed out then we don't need the new
-                    // armor
+                    
+                    
                     if (other.client.pers.inventory[old_armor_index] >= newcount)
                         return false;
     
-                    // update current armor value
+                    
                     other.client.pers.inventory[old_armor_index] = newcount;
                 }
             }
@@ -543,7 +543,7 @@ public class GameItems {
             if (GameBase.deathmatch.value != 0) {
                 if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
                     SetRespawn(ent, ent.item.quantity);
-                // auto-use for DM only if we didn't already have one
+                
                 if (0 == quantity)
                     ent.item.use.use(other, ent.item);
             }
@@ -719,13 +719,13 @@ public class GameItems {
             trace_t tr;
             float[] dest = { 0, 0, 0 };
     
-            //float v[];
+            
     
-            //v = Lib.tv(-15, -15, -15);
-            //Math3D.VectorCopy(v, ent.mins);
+            
+            
             ent.mins[0] = ent.mins[1] = ent.mins[2] = -15;
-            //v = Lib.tv(15, 15, 15);
-            //Math3D.VectorCopy(v, ent.maxs);
+            
+            
             ent.maxs[0] = ent.maxs[1] = ent.maxs[2] = 15;
     
             if (ent.model != null)
@@ -860,7 +860,7 @@ public class GameItems {
     /*
      * =============== FindItem ===============
      */
-    //geht.
+    
     static gitem_t FindItem(String pickup_name) {
         for (int i = 1; i < GameBase.game.num_items; i++) {
             gitem_t it = GameItemList.itemlist[i];
@@ -993,7 +993,7 @@ public class GameItems {
         if (GameBase.deathmatch.value != 0) {
             if (0 == (ent.spawnflags & Defines.DROPPED_ITEM))
                 SetRespawn(ent, ent.item.quantity);
-            // auto-use for DM only if we didn't already have one
+            
             if (0 == quantity)
                 ent.item.use.use(other, ent.item);
         }
@@ -1073,7 +1073,7 @@ public class GameItems {
             return;
         }
     
-        // scan for the next valid one
+        
         for (i = 1; i <= Defines.MAX_ITEMS; i++) {
             index = (cl.pers.selected_item + i) % Defines.MAX_ITEMS;
             if (0 == cl.pers.inventory[index])
@@ -1103,7 +1103,7 @@ public class GameItems {
             return;
         }
     
-        // scan for the next valid one
+        
         for (i = 1; i <= Defines.MAX_ITEMS; i++) {
             index = (cl.pers.selected_item + Defines.MAX_ITEMS - i)
                     % Defines.MAX_ITEMS;
@@ -1150,14 +1150,14 @@ public class GameItems {
         if (it.icon != null)
             game_import_t.imageindex(it.icon);
     
-        // parse everything for its ammo
+        
         if (it.ammo != null && it.ammo.length() != 0) {
             ammo = FindItem(it.ammo);
             if (ammo != it)
                 PrecacheItem(ammo);
         }
     
-        // parse the space seperated precache string for other items
+        
         s = it.precaches;
         if (s == null || s.length() != 0)
             return;
@@ -1174,7 +1174,7 @@ public class GameItems {
                         .error("PrecacheItem: it.classname has bad precache string: "
                                 + s);
     
-            // determine type based on extension
+            
             if (data.endsWith("md2"))
                 game_import_t.modelindex(data);
             else if (data.endsWith("sp2"))
@@ -1208,7 +1208,7 @@ public class GameItems {
             }
         }
     
-        // some items will be prevented in deathmatch
+        
         if (GameBase.deathmatch.value != 0) {
             if (((int) GameBase.dmflags.value & Defines.DF_NO_ARMOR) != 0) {
                 if (item.pickup == Pickup_Armor
@@ -1246,7 +1246,7 @@ public class GameItems {
             GameBase.level.power_cubes++;
         }
     
-        // don't let them drop items that stay in a coop game
+        
         if ((GameBase.coop.value != 0)
                 && (item.flags & Defines.IT_STAY_COOP) != 0) {
             item.drop = null;
@@ -1254,7 +1254,7 @@ public class GameItems {
     
         ent.item = item;
         ent.nextthink = GameBase.level.time + 2 * Defines.FRAMETIME;
-        // items start after other solids
+        
         ent.think = droptofloor;
         ent.s.effects = item.world_model_flags;
         ent.s.renderfx = Defines.RF_GLOW;
@@ -1337,27 +1337,27 @@ public class GameItems {
             csurface_t surf) {
         boolean taken;
 
-        // freed edicts have not items.
+        
         if (other.client == null || ent.item == null)
             return;
         if (other.health < 1)
-            return; // dead people can't pickup
+            return; 
         if (ent.item.pickup == null)
-            return; // not a grabbable item?
+            return; 
     
         taken = ent.item.pickup.interact(ent, other);
     
         if (taken) {
-            // flash the screen
+            
             other.client.bonus_alpha = 0.25f;
     
-            // show icon and name on status bar
+            
             other.client.ps.stats[Defines.STAT_PICKUP_ICON] = (short) game_import_t
                     .imageindex(ent.item.icon);
             other.client.ps.stats[Defines.STAT_PICKUP_STRING] = (short) (Defines.CS_ITEMS + ITEM_INDEX(ent.item));
             other.client.pickup_msg_time = GameBase.level.time + 3.0f;
     
-            // change selected item
+            
             if (ent.item.use != null)
                 other.client.pers.selected_item = other.client.ps.stats[Defines.STAT_SELECTED_ITEM] = (short) ITEM_INDEX(ent.item);
     
@@ -1375,7 +1375,7 @@ public class GameItems {
                             .soundindex("items/l_health.wav"), 1,
                             Defines.ATTN_NORM, 0);
                 else
-                    // (ent.count == 100)
+                    
                     game_import_t.sound(other, Defines.CHAN_ITEM, game_import_t
                             .soundindex("items/m_health.wav"), 1,
                             Defines.ATTN_NORM, 0);

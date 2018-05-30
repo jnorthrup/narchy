@@ -57,7 +57,7 @@ public class ArithmeticIntroduction extends LeakBack {
         if (anon == null && !x.hasAny(INT) || x.complexity() < 3)
             return x;
 
-        //find all unique integer subterms
+        
         IntHashSet ints = new IntHashSet(4);
         x.recurseTerms(t->t.hasAny(Op.INT), t -> {
             if (t instanceof Anom) {
@@ -71,17 +71,17 @@ public class ArithmeticIntroduction extends LeakBack {
 
         int ui = ints.size();
         if (ui <= 1)
-            return x; //nothing to do
+            return x; 
 
-        int[] ii = ints.toSortedArray();  //increasing so that relational comparisons can assume that 'a' < 'b'
+        int[] ii = ints.toSortedArray();  
 
         List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mmm = mods(ii);
 
-        //TODO fair select randomly if multiple of the same length
+        
 
-        //RichIterable<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mkv = mods.keyValuesView(); //toSortedListBy(i->-i.getTwo().size());
+        
 
-        //select randomly, weighted by the most frequently associated base term
+        
 
 
         int choice = Roulette.selectRoulette(mmm.size(), c -> mmm.get(c).getTwo().size(), random);
@@ -99,18 +99,18 @@ public class ArithmeticIntroduction extends LeakBack {
             Term s0 = s.getOne();
             Term s1 = s.getTwo().apply(V);
             if (anon!=null)
-                s0 = anon.put(s0); //TODO check
+                s0 = anon.put(s0); 
             yy = yy.replace(s0, s1);
         }
 
         Term y =
                 CONJ.the(yy, eternal ? DTERNAL : 0, SIM.the(baseTerm, V));
-                //IMPL.the(SIM.the(baseTerm, v), yy);
-                //IMPL.the(yy, SIM.the(baseTerm, v));
+                
+                
 
         if (y.op()!=CONJ) {
-        //if (y.op()!=IMPL) {
-            return null; //something happened
+        
+            return null; 
         }
 
         if (x.isNormalized()) {
@@ -144,21 +144,21 @@ public class ArithmeticIntroduction extends LeakBack {
         modsCache = new HijackMemoize<>(ArithmeticIntroduction::_mods, 512, 3);
 
     static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> mods(int[] ii) {
-//        if (ThreadLocalRandom.current().nextFloat() < 0.01f)
-//            System.out.println(modsCache.summary());
+
+
         return modsCache.apply(new IntArrayListCached(ii));
     }
 
     static List<IntObjectPair<List<Pair<Term, Function<Term, Term>>>>> _mods(IntArrayListCached iii) {
-        //potential mods to select from
-        //FasterList<Supplier<Term[]>> mods = new FasterList(1);
+        
+        
 
         int[] ii = iii.toArray();
 
         IntObjectHashMap<List<Pair<Term, Function<Term,Term>>>> mods = new IntObjectHashMap<>(ii.length);
 
 
-        //test arithmetic relationships
+        
         for (int a = 0; a < ii.length; a++) {
             int ia = ii[a];
             for (int b = 0; b < ii.length; b++) {
@@ -169,39 +169,39 @@ public class ArithmeticIntroduction extends LeakBack {
 
                 int BMinA = ib - ia;
                 if (ia == -ib) {
-                    //negation (x * -1)
+                    
                     maybe(mods, ia).add(pair(
                             Int.the(ib), v-> $.func(MathFunc.mul, v,Int.NEG_ONE)
                     ));
-//                    maybe(mods, ib).add(pair(
-//                            Int.the(ia), v-> $.func(MathFunc.mul, v, Int.NEG_ONE)
-//                    ));
+
+
+
                 } else if (ia!=0 && Math.abs(ia)!=1 && ib!=0 && Math.abs(ib)!=1 && Util.equals(ib/ia, (float)ib /ia, Float.MIN_NORMAL)) {
 
-                    //integer scaling
+                    
                     maybe(mods, ia).add(pair(
                             Int.the(ib), v->$.func(MathFunc.mul, v, $.the(ib/ia))
                     ));
-                } else if (ia < ib) { // if (/*BMinA < Math.abs(ia)*/ /* && ia!=0*/) {
+                } else if (ia < ib) { 
 
                     maybe(mods, ia).add(pair(
                             Int.the(ib), v-> $.func(MathFunc.add, v, $.the(BMinA))
                     ));
 
-//                    maybe(mods, ib).add(pair(
-//                            Int.the(ia), v-> $.func(MathFunc.add, v, $.the(-BMinA))
-//                    ));
+
+
+
 
                 }
 
-//                maybe(mods, ia).add(pair(
-//                        Int.the(ib), v->
-//                                $.func("\">\"", v)       //ib => ">(v=ia)"
-//                ));
-//                maybe(mods, ib).add(pair(
-//                        Int.the(ia), v->
-//                                $.func("\">\"", v).neg() //ia => --">(v=ib)"
-//                ));
+
+
+
+
+
+
+
+
             }
         }
         return !mods.isEmpty() ? mods.keyValuesView().toList() : List.of();
@@ -231,7 +231,7 @@ public class ArithmeticIntroduction extends LeakBack {
         if (numInts < 2)
             return Float.NaN;
 
-        //ratio of number subterms to volume
+        
         float intTerms = numInts / ((float)tt.volume());
         return p * intTerms;
     }
@@ -241,14 +241,14 @@ public class ArithmeticIntroduction extends LeakBack {
         Term y = apply(x, xx.isEternal(), nar.random());
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             Task yy = Task.clone(xx, y);
-            //TODO apply a pri discount if size grow
+            
             if (yy!=null) {
                 input(yy);
                 return 1;
             }
         } else {
-//            if (Param.DEBUG)
-//                logger.warn("fail: task={} result=", xx, y);
+
+
         }
 
         return 0;

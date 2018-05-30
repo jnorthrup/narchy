@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.tree;
 
@@ -23,9 +23,9 @@ package jcog.grammar.evolve.tree;
  */
 public class RegexRange extends Leaf<String> {
 
-//    public RegexRange(char a, char b) {
-//        super(PrimitiveTuples.pair(a, b));
-//    }
+
+
+
 
     public RegexRange(String r) {
         super(r);
@@ -41,7 +41,7 @@ public class RegexRange extends Leaf<String> {
 
     @Override
     public Leaf cloneTree() {
-        RegexRange clone = new RegexRange(this); //value.getOne(), value.getTwo());
+        RegexRange clone = new RegexRange(this); 
         return clone;
     }
 

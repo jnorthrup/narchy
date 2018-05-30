@@ -11,7 +11,7 @@ public class FastCompoundNAL1Test extends NAL1Test {
 
     @Override
     protected NAR nar() {
-        //The.Compound.the = FastCompound.FAST_COMPOUND_BUILDER;
+        
         return NARS.tmp(1);
     }
 }

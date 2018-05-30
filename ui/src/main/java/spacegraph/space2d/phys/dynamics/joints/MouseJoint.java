@@ -45,12 +45,12 @@ public class MouseJoint extends Joint {
     private float m_dampingRatio;
     private float m_beta;
 
-    // Solver shared
+    
     private final v2 m_impulse = new v2();
     private float m_maxForce;
     private float m_gamma;
 
-    // Solver temp
+    
     private int m_indexB;
     private final Tuple2f m_rB = new v2();
     private final Tuple2f m_localCenterB = new v2();
@@ -111,7 +111,7 @@ public class MouseJoint extends Joint {
         return m_targetA;
     }
 
-    // / set/get the maximum force in Newtons.
+    
     public void setMaxForce(float force) {
         m_maxForce = force;
     }
@@ -120,7 +120,7 @@ public class MouseJoint extends Joint {
         return m_maxForce;
     }
 
-    // / set/get the frequency in Hertz.
+    
     public void setFrequency(float hz) {
         m_frequencyHz = hz;
     }
@@ -129,7 +129,7 @@ public class MouseJoint extends Joint {
         return m_frequencyHz;
     }
 
-    // / set/get the damping ratio (dimensionless).
+    
     public void setDampingRatio(float ratio) {
         m_dampingRatio = ratio;
     }
@@ -156,18 +156,18 @@ public class MouseJoint extends Joint {
 
         float mass = B.getMass();
 
-        // Frequency
+        
         float omega = 2.0f * MathUtils.PI * m_frequencyHz;
 
-        // Damping coefficient
+        
         float d = 2.0f * mass * m_dampingRatio * omega;
 
-        // Spring stiffness
+        
         float k = mass * (omega * omega);
 
-        // magic formulas
-        // gamma has units of inverse mass.
-        // beta has units of inverse time.
+        
+        
+        
         float h = data.step.dt;
         assert (d + h * k > Settings.EPSILON);
         m_gamma = h * (d + h * k);
@@ -178,12 +178,12 @@ public class MouseJoint extends Joint {
 
         Tuple2f temp = pool.popVec2();
 
-        // Compute the effective mass matrix.
+        
         Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
 
-        // K = [(1/m1 + 1/m2) * eye(2) - skew(r1) * invI1 * skew(r1) - skew(r2) * invI2 * skew(r2)]
-        // = [1/m1+1/m2 0 ] + invI1 * [r1.y*r1.y -r1.x*r1.y] + invI2 * [r1.y*r1.y -r1.x*r1.y]
-        // [ 0 1/m1+1/m2] [-r1.x*r1.y r1.x*r1.x] [-r1.x*r1.y r1.x*r1.x]
+        
+        
+        
         final Mat22 K = pool.popMat22();
         K.ex.x = m_invMassB + m_invIB * m_rB.y * m_rB.y + m_gamma;
         K.ex.y = -m_invIB * m_rB.x * m_rB.y;
@@ -195,7 +195,7 @@ public class MouseJoint extends Joint {
         m_C.set(cB).added(m_rB).subbed(m_targetA);
         m_C.scaled(m_beta);
 
-        // Cheat with some damping
+        
         wB *= 0.98f;
 
         if (data.step.warmStarting) {
@@ -207,7 +207,7 @@ public class MouseJoint extends Joint {
             m_impulse.setZero();
         }
 
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(1);
@@ -226,7 +226,7 @@ public class MouseJoint extends Joint {
         Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
-        // Cdot = v + cross(w, r)
+        
         final Tuple2f Cdot = pool.popVec2();
         Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot);
         Cdot.added(vB);
@@ -251,7 +251,7 @@ public class MouseJoint extends Joint {
         vB.y += m_invMassB * impulse.y;
         wB += m_invIB * Tuple2f.cross(m_rB, impulse);
 
-//    data.velocities[m_indexB].v.set(vB);
+
         data.velocities[m_indexB].w = wB;
 
         pool.pushVec2(3);

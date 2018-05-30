@@ -68,7 +68,7 @@ public class Math3D
     */
    public static int[] computePowerOf2couple(final int integer)
    {
-      // For integer less or equal than 1, the return couple is (0, 1)
+      
       if(integer <= 1)
       {
          return new int[]
@@ -77,8 +77,8 @@ public class Math3D
          };
       }
 
-      // If the integer is bigger or equal than the maximum value, the return
-      // the maximum
+      
+      
       int end = Math3D.powerOf2.length - 1;
       if(integer >= Math3D.powerOf2[end])
       {
@@ -88,7 +88,7 @@ public class Math3D
          };
       }
 
-      // Search the value
+      
       int start = 0;
       while((start + 1) < end)
       {

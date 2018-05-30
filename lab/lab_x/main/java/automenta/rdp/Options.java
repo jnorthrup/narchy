@@ -38,35 +38,35 @@ public class Options {
 	public static final int INTEGER_BITMAP_DECOMPRESSION = 2;
 
 	public static int bitmap_decompression_store =
-			//DIRECT_BITMAP_DECOMPRESSION;
+			
 			INTEGER_BITMAP_DECOMPRESSION;
-			//BUFFEREDIMAGE_BITMAP_DECOMPRESSION; //seems slow
+			
 
 
-	// disables bandwidth saving tcp packets
+	
 	public static boolean low_latency = true;
 
-	public static int keylayout = 0x409; // UK by default
+	public static int keylayout = 0x409; 
 
-	public static String username = ""; // -u username
+	public static String username = ""; 
 
-	public static String domain = ""; // -d domain
+	public static String domain = ""; 
 
-	public static String password = ""; // -p password
+	public static String password = ""; 
 
-	public static String hostname = ""; // -n hostname
+	public static String hostname = ""; 
 
-	public static String command = ""; // -s command
+	public static String command = ""; 
 
-	public static String directory = ""; // -d directory
+	public static String directory = ""; 
 
-	public static String windowTitle = "RDP"; // -T windowTitle
+	public static String windowTitle = "RDP"; 
 
-	public static int width = 1280; // -g widthxheight
+	public static int width = 1280; 
 
-	public static int height = 1024; // -g widthxheight
+	public static int height = 1024; 
 
-	public static int port = 3389; // -t port
+	public static int port = 3389; 
 
 	public static boolean fullscreen = false;
 
@@ -84,7 +84,7 @@ public class Options {
 
 	public static boolean enable_menu = true;
 
-	// public static boolean paste_hack = true;
+	
 
 	public static boolean altkey_quiet = false;
 
@@ -96,12 +96,12 @@ public class Options {
 
 	public static boolean use_rdp5 = true;
 
-	public static int server_bpp = 16; // Bits per pixel
+	public static int server_bpp = 16; 
 
-	public static int Bpp = (server_bpp + 7) / 8; // Bytes per pixel
+	public static int Bpp = (server_bpp + 7) / 8; 
 
-	// Correction value to ensure only the relevant number of bytes are used for
-	// a pixel
+	
+	
 	public static int bpp_mask = 0xFFFFFF >> 8 * (3 - Bpp);
 
 	public static int imgCount = 0;

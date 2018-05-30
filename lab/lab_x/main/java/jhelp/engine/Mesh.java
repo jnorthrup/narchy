@@ -40,12 +40,12 @@ public class Mesh
                                                                  @Override
                                                                  protected void doSimpleAction(final Object3D object)
                                                                  {
-                                                                    Debug.println(DebugLevel.VERBOSE, "Just flush");// "Delayed compute for OBJ start");
-                                                                    // LapsTime.startMeasure();
-                                                                    // object.computeUVfromMax(1, 1);
-                                                                    // final LapsTime lapsTime = LapsTime.endMeasure();
-                                                                    // Debug.println(DebugLevel.VERBOSE,
-                                                                    // "Delayed compute for OBJ END. Time=", lapsTime);
+                                                                    Debug.println(DebugLevel.VERBOSE, "Just flush");
+                                                                    
+                                                                    
+                                                                    
+                                                                    
+                                                                    
 
                                                                     object.flush();
                                                                  }
@@ -161,26 +161,26 @@ public class Mesh
       {
          Debug.println(DebugLevel.WARNING, "No uv !");
 
-         // Debug.println(DebugLevel.VERBOSE, "Delayed compute for OBJ start");
-         // LapsTime.startMeasure();
-         // try
-         // {
-         // object3D.computeUVfromMax(1, 1);
-         // }
-         // catch(final Exception exception)
-         // {
-         // Debug.printException(exception);
-         // }
-         // catch(final Error error)
-         // {
-         // Debug.printError(error);
-         // }
-         // final LapsTime lapsTime = LapsTime.endMeasure();
-         // Debug.println(DebugLevel.VERBOSE, "Delayed compute for OBJ END. Time=", lapsTime);
-         //
-         // object3D.flush();
-         //
-         // ThreadManager.THREAD_MANAGER.delayedThread(Mesh.delayedComputeUV, object3D, 1234L);
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
+         
       }
 
       if(hasNormal == false)
@@ -227,19 +227,19 @@ public class Mesh
       this.points = new ArrayList<Point3D>();
       this.uv = new ArrayList<Point2D>();
       this.normals = new ArrayList<Point3D>();
-      //
+      
       this.facesPoints = new ArrayList<ArrayInt>();
       this.facesUV = new ArrayList<ArrayInt>();
       this.facesNormals = new ArrayList<ArrayInt>();
-      //
+      
       this.actualFacePoints = new ArrayInt();
       this.actualFaceUV = new ArrayInt();
       this.actualFaceNormals = new ArrayInt();
-      //
+      
       this.facesPoints.add(this.actualFacePoints);
       this.facesUV.add(this.actualFaceUV);
       this.facesNormals.add(this.actualFaceNormals);
-      //
+      
       this.mayBeUnvalid = false;
       this.box = new VirtualBox();
    }
@@ -277,7 +277,7 @@ public class Mesh
       final float gapX = maxX - minX;
       final float gapY = maxY - minY;
       final float gapZ = maxZ - minZ;
-      //
+      
       this.box = null;
       box = this.computeBox();
 
@@ -331,8 +331,8 @@ public class Mesh
       for(int i = 0; i < nb; i++)
       {
          point = this.points.get(facePoints.getInteger(i));
-         uv = new Point2D(//
-               multU * ((point.getX() - minX) / gapX),//
+         uv = new Point2D(
+               multU * ((point.getX() - minX) / gapX),
                multV * ((point.getY() - minY) / gapY));
          index = this.uv.indexOf(uv);
          if(index < 0)
@@ -376,8 +376,8 @@ public class Mesh
       for(int i = 0; i < nb; i++)
       {
          point = this.points.get(facePoints.getInteger(i));
-         uv = new Point2D(//
-               multU * ((point.getX() - minX) / gapX),//
+         uv = new Point2D(
+               multU * ((point.getX() - minX) / gapX),
                multV * ((point.getZ() - minZ) / gapZ));
          index = this.uv.indexOf(uv);
          if(index < 0)
@@ -421,8 +421,8 @@ public class Mesh
       for(int i = 0; i < nb; i++)
       {
          point = this.points.get(facePoints.getInteger(i));
-         uv = new Point2D(//
-               multU * ((point.getY() - minY) / gapY),//
+         uv = new Point2D(
+               multU * ((point.getY() - minY) / gapY),
                multV * ((point.getZ() - minZ) / gapZ));
          index = this.uv.indexOf(uv);
          if(index < 0)
@@ -462,10 +462,10 @@ public class Mesh
       {
          point = this.points.get(facePoints.getInteger(i)).substract(center);
          norme = point.length();
-         uv = new Point2D(//
-               multU * (float) ((Math.atan2(point.getY(), point.getX()) + Math.PI) / (2d * Math.PI)),//
+         uv = new Point2D(
+               multU * (float) ((Math.atan2(point.getY(), point.getX()) + Math.PI) / (2d * Math.PI)),
                multV * (float) (Math.acos(point.getZ() / norme) / Math.PI));
-         // Debug.println("Mesh.computeUVspherical(" + uv + ")");
+         
          index = this.uv.indexOf(uv);
          if(index < 0)
          {
@@ -543,11 +543,11 @@ public class Mesh
     */
    private void internMovePoint(final int indexPoint, final ArrayInt forbiden, float vx, float vy, float vz, final float solidity, int near)
    {
-      // Move the vertex
+      
       this.points.get(indexPoint).translate(vx, vy, vz);
       ArrayInt neighbors = new ArrayInt();
 
-      // Collect vertex neighbors able to move
+      
       int index;
       boolean isGoodFace;
       for(final ArrayInt arrayInt : this.facesPoints)
@@ -576,13 +576,13 @@ public class Mesh
          }
       }
 
-      // While there are vertex to move
+      
       ArrayInt temp;
       int neig;
       float solid = 1f;
       while(neighbors.getSize() > 0)
       {
-         // Compute the new translation
+         
          if(near > 0)
          {
             near--;
@@ -597,14 +597,14 @@ public class Mesh
          }
 
          temp = new ArrayInt();
-         // For each neighbor
+         
          for(int i = neighbors.getSize() - 1; i >= 0; i--)
          {
-            // Translate the neighbor
+            
             neig = neighbors.getInteger(i);
             this.points.get(neig).translate(vx, vy, vz);
 
-            // Collect neighbor's neighbors able to move
+            
             for(final ArrayInt arrayInt : this.facesPoints)
             {
                isGoodFace = false;
@@ -631,7 +631,7 @@ public class Mesh
                }
             }
          }
-         // Next loop, treat new neighbors
+         
          neighbors = temp;
          temp = null;
       }
@@ -935,9 +935,9 @@ public class Mesh
       final Point3D position = vertex.getPosition();
       final Point2D uv = vertex.getUv();
       final Point3D normal = vertex.getNormal();
-      //
+      
       this.box.add(position);
-      //
+      
       int index = this.points.indexOf(position);
       if(index < 0)
       {
@@ -945,7 +945,7 @@ public class Mesh
          this.points.add(position);
       }
       this.actualFacePoints.add(index);
-      //
+      
       index = this.uv.indexOf(uv);
       if(index < 0)
       {
@@ -953,7 +953,7 @@ public class Mesh
          this.uv.add(uv);
       }
       this.actualFaceUV.add(index);
-      //
+      
       index = this.normals.indexOf(normal);
       if(index < 0)
       {
@@ -1142,7 +1142,7 @@ public class Mesh
       this.actualFacePoints = new ArrayInt();
       this.actualFaceUV = new ArrayInt();
       this.actualFaceNormals = new ArrayInt();
-      //
+      
       this.facesPoints.add(this.actualFacePoints);
       this.facesUV.add(this.actualFaceUV);
       this.facesNormals.add(this.actualFaceNormals);
@@ -1228,7 +1228,7 @@ public class Mesh
     */
    public synchronized void loadFromXML(final MarkupXML markupXML) throws Exception
    {
-      // Initialize
+      
       this.box = null;
       this.mayBeUnvalid = false;
 
@@ -1240,7 +1240,7 @@ public class Mesh
       this.uv.clear();
       this.normals.clear();
 
-      // Point list
+      
       EnumerationIterator<MarkupXML> enumerationIterator = markupXML.obtainChildren(ConstantsXML.MARKUP_POINTS);
       if(enumerationIterator.hasMoreElements() == false)
       {
@@ -1263,7 +1263,7 @@ public class Mesh
          throw new Exception("Problem on parsing points list", exception);
       }
 
-      // UV list
+      
       enumerationIterator = markupXML.obtainChildren(ConstantsXML.MARKUP_UV);
       if(enumerationIterator.hasMoreElements() == false)
       {
@@ -1286,7 +1286,7 @@ public class Mesh
          throw new Exception("Problem on parsing UV list", exception);
       }
 
-      // Normals list
+      
       enumerationIterator = markupXML.obtainChildren(ConstantsXML.MARKUP_NORMALS);
       if(enumerationIterator.hasMoreElements() == false)
       {
@@ -1310,7 +1310,7 @@ public class Mesh
          throw new Exception("Problem on parsing normals list", exception);
       }
 
-      // Points face
+      
       enumerationIterator = markupXML.obtainChildren(ConstantsXML.MARKUP_FACE_POINTS);
       if(enumerationIterator.hasMoreElements() == false)
       {
@@ -1339,7 +1339,7 @@ public class Mesh
          throw new Exception("Problem on parsing points face", exception);
       }
 
-      // UV face
+      
 
       enumerationIterator = markupXML.obtainChildren(ConstantsXML.MARKUP_FACE_UV);
       if(enumerationIterator.hasMoreElements() == false)
@@ -1369,7 +1369,7 @@ public class Mesh
          throw new Exception("Problem on parsing UV face", exception);
       }
 
-      // Normals face
+      
 
       enumerationIterator = markupXML.obtainChildren(ConstantsXML.MARKUP_FACE_NORMALS);
       if(enumerationIterator.hasMoreElements() == false)
@@ -1448,7 +1448,7 @@ public class Mesh
       {
          throw new IllegalArgumentException("The indexPoint " + indexPoint + " is not in [0, " + this.points.size() + "[");
       }
-      // Initialize and launch the move
+      
       ArrayInt forbiden = new ArrayInt();
       forbiden.add(indexPoint);
       this.internMovePoint(indexPoint, forbiden, vx, vy, vz, solidity, near);
@@ -1525,19 +1525,19 @@ public class Mesh
       this.points = new ArrayList<Point3D>();
       this.uv = new ArrayList<Point2D>();
       this.normals = new ArrayList<Point3D>();
-      //
+      
       this.facesPoints = new ArrayList<ArrayInt>();
       this.facesUV = new ArrayList<ArrayInt>();
       this.facesNormals = new ArrayList<ArrayInt>();
-      //
+      
       this.actualFacePoints = new ArrayInt();
       this.actualFaceUV = new ArrayInt();
       this.actualFaceNormals = new ArrayInt();
-      //
+      
       this.facesPoints.add(this.actualFacePoints);
       this.facesUV.add(this.actualFaceUV);
       this.facesNormals.add(this.actualFaceNormals);
-      //
+      
       this.mayBeUnvalid = false;
       this.box = new VirtualBox();
    }
@@ -1551,7 +1551,7 @@ public class Mesh
    {
       final MarkupXML markupXMLMesh = new MarkupXML(ConstantsXML.MARKUP_MESH);
 
-      // Save points
+      
       MarkupXML markupXML = new MarkupXML(ConstantsXML.MARKUP_POINTS);
       StringBuffer stringBuffer = new StringBuffer();
       for(final Point3D point3D : this.points)
@@ -1566,7 +1566,7 @@ public class Mesh
       markupXML.setText(stringBuffer.toString());
       markupXMLMesh.addChild(markupXML);
 
-      // Save UV
+      
       markupXML = new MarkupXML(ConstantsXML.MARKUP_UV);
       stringBuffer = new StringBuffer();
       for(final Point2D point2D : this.uv)
@@ -1579,7 +1579,7 @@ public class Mesh
       markupXML.setText(stringBuffer.toString());
       markupXMLMesh.addChild(markupXML);
 
-      // Save normals
+      
       markupXML = new MarkupXML(ConstantsXML.MARKUP_NORMALS);
       stringBuffer = new StringBuffer();
       for(final Point3D point3D : this.normals)
@@ -1594,7 +1594,7 @@ public class Mesh
       markupXML.setText(stringBuffer.toString());
       markupXMLMesh.addChild(markupXML);
 
-      // Save face points
+      
       markupXML = new MarkupXML(ConstantsXML.MARKUP_FACE_POINTS);
       for(final ArrayInt arrayInt : this.facesPoints)
       {
@@ -1602,7 +1602,7 @@ public class Mesh
       }
       markupXMLMesh.addChild(markupXML);
 
-      // Save face UV
+      
       markupXML = new MarkupXML(ConstantsXML.MARKUP_FACE_UV);
       for(final ArrayInt arrayInt : this.facesUV)
       {
@@ -1610,7 +1610,7 @@ public class Mesh
       }
       markupXMLMesh.addChild(markupXML);
 
-      // Save face normals
+      
       markupXML = new MarkupXML(ConstantsXML.MARKUP_FACE_NORMALS);
       for(final ArrayInt arrayInt : this.facesNormals)
       {

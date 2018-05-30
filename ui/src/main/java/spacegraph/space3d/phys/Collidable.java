@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -40,9 +40,9 @@ import spacegraph.util.math.v3;
  */
 public class Collidable<X> {
 
-	//protected final BulletStack stack = BulletStack.get();
+	
 
-	// island management, m_activationState1
+	
 	public static final int ACTIVE_TAG = 1;
 	public static final int ISLAND_SLEEPING = 2;
 	public static final int WANTS_DEACTIVATION = 3;
@@ -50,13 +50,13 @@ public class Collidable<X> {
 	public static final int DISABLE_SIMULATION = 5;
 	public final Transform transform;
 
-	///m_interpolationWorldTransform is used for CCD and interpolation
-	///it can be either previous or future (predicted) transform
+	
+	
 	public final Transform interpolationWorldTransform = new Transform();
-	//those two are experimental: just added for bullet time effect, so you can still apply impulses (directly modifying velocities) 
-	//without destroying the continuous interpolated motion (which uses this interpolation velocities)
-//	protected final v3 interpolationLinearVelocity = new v3();
-//	protected final v3 interpolationAngularVelocity = new v3();
+	
+	
+
+
 
 	/** broadphase handle */
 	public Broadphasing broadphase;
@@ -65,10 +65,10 @@ public class Collidable<X> {
 
 	public short mask, group;
 
-	// rootCollisionShape is temporarily used to store the original collision shape
-	// The collisionShape might be temporarily replaced by a child collision shape during collision detection purposes
-	// If it is null, the collisionShape is not temporarily replaced.
-	//protected CollisionShape rootCollisionShape;
+	
+	
+	
+	
 
 	protected int collisionFlags;
 	protected int islandTag1;
@@ -78,21 +78,21 @@ public class Collidable<X> {
 	protected float friction;
 	protected float restitution;
 
-	///users can point to their objects, m_userPointer is not used by Bullet, see setUserPointer/getUserPointer
+	
 	protected X data;
 
-	// internalType is reserved to distinguish Bullet's CollisionObject, RigidBody, SoftBody etc.
-	// do not assign your own internalType unless you write a new dynamics object class.
+	
+	
 	protected final CollidableType internalType;
 
-	///time of impact calculation
+	
 	protected float hitFraction;
-	///Swept sphere radius (0.0 by default), see btConvexConvexAlgorithm::
+	
 	protected float ccdSweptSphereRadius;
 
-	/// Don't do continuous collision detection if the motion (in one step) is less then ccdMotionThreshold
+	
 	protected float ccdMotionThreshold;
-	/// If some object should have elaborate collision filtering by sub-classes
+	
 	protected boolean checkCollideWith;
 
 
@@ -113,7 +113,7 @@ public class Collidable<X> {
 	}
 
 	public final boolean mergesSimulationIslands() {
-		///static objects, kinematic and object without contact response don't merge islands
+		
 		return ((collisionFlags & (CollisionFlags.STATIC_OBJECT | CollisionFlags.KINEMATIC_OBJECT | CollisionFlags.NO_CONTACT_RESPONSE)) == 0);
 	}
 
@@ -139,12 +139,12 @@ public class Collidable<X> {
 
 	public void setCollisionShape(CollisionShape collisionShape) {
 		this.collisionShape = collisionShape;
-		//this.rootCollisionShape = collisionShape;
+		
 	}
 
-//	public CollisionShape getRootCollisionShape() {
-//		return rootCollisionShape;
-//	}
+
+
+
 
 	/**
 	 * Avoid using this internal API call.
@@ -208,7 +208,7 @@ public class Collidable<X> {
 		this.friction = friction;
 	}
 
-	// reserved for Bullet internal usage
+	
 	public CollidableType getInternalType() {
 		return internalType;
 	}
@@ -237,14 +237,14 @@ public class Collidable<X> {
 		this.interpolationWorldTransform.set(interpolationWorldTransform);
 	}
 
-//	public void setInterpolationLinearVelocity(v3 linvel) {
-//		interpolationLinearVelocity.set(linvel);
-//	}
-//
-//	public void setInterpolationAngularVelocity(v3 angvel) {
-//		interpolationAngularVelocity.set(angvel);
-//	}
-//
+
+
+
+
+
+
+
+
 
 
 	public final int tag() {
@@ -279,12 +279,12 @@ public class Collidable<X> {
 		this.collisionFlags = collisionFlags;
 	}
 
-	// Swept sphere radius (0.0 by default), see btConvexConvexAlgorithm::
+	
 	public float getCcdSweptSphereRadius() {
 		return ccdSweptSphereRadius;
 	}
 
-	// Swept sphere radius (0.0 by default), see btConvexConvexAlgorithm::
+	
 	public void setCcdSweptSphereRadius(float ccdSweptSphereRadius) {
 		this.ccdSweptSphereRadius = ccdSweptSphereRadius;
 	}
@@ -297,9 +297,9 @@ public class Collidable<X> {
 		return ccdMotionThreshold * ccdMotionThreshold;
 	}
 
-	// Don't do continuous collision detection if the motion (in one step) is less then ccdMotionThreshold
+	
 	public void setCcdMotionThreshold(float ccdMotionThreshold) {
-		// JAVA NOTE: fixed bug with usage of ccdMotionThreshold*ccdMotionThreshold
+		
 		this.ccdMotionThreshold = ccdMotionThreshold;
 	}
 

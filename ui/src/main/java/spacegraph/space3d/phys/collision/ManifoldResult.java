@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -39,7 +39,7 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 	
 	private PersistentManifold manifoldPtr;
 
-	// we need this for compounds
+	
 	private final Transform rootTransA = new Transform();
 	private final Transform rootTransB = new Transform();
 	private Collidable body0;
@@ -82,7 +82,7 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 	@Override
     public void addContactPoint(v3 normalOnBInWorld, v3 pointInWorld, float depth, float breakingThresh) {
 		assert (manifoldPtr != null);
-		//order in manifold needs to match
+		
 
 		if (depth > breakingThresh) {
 			return;
@@ -116,27 +116,27 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 		newPt.combinedFriction = calculateCombinedFriction(body0, body1);
 		newPt.combinedRestitution = calculateCombinedRestitution(body0, body1);
 
-		// BP mod, store contact triangles.
+		
 		newPt.partId0 = partId0;
 		newPt.partId1 = partId1;
 		newPt.index0 = index0;
 		newPt.index1 = index1;
 
-		/// todo, check this for any side effects
+		
 		if (insertIndex >= 0) {
-			//const btManifoldPoint& oldPoint = m_manifoldPtr->getContactPoint(insertIndex);
+			
 			manifoldPtr.replaceContactPoint(newPt, insertIndex);
 		}
 		else {
 			insertIndex = manifoldPtr.addManifoldPoint(newPt);
 		}
 
-		// User can override friction and/or restitution
+		
 		if (manifoldPtr.globals.getContactAddedCallback() != null &&
-				// and if either of the two bodies requires custom material
+				
 				((body0.getCollisionFlags() & CollisionFlags.CUSTOM_MATERIAL_CALLBACK) != 0 ||
 				(body1.getCollisionFlags() & CollisionFlags.CUSTOM_MATERIAL_CALLBACK) != 0)) {
-			//experimental feature info, for per-triangle material etc.
+			
 			Collidable obj0 = isSwapped ? body1 : body0;
 			Collidable obj1 = isSwapped ? body0 : body1;
 			manifoldPtr.globals.getContactAddedCallback().contactAdded(manifoldPtr.getContactPoint(insertIndex), obj0, partId0, index0, obj1, partId1, index1);
@@ -144,7 +144,7 @@ public class ManifoldResult extends DiscreteCollisionDetectorInterface.Result {
 
 	}
 
-	///User can override this material combiner by implementing gContactAddedCallback and setting body0->m_collisionFlags |= btCollisionObject::customMaterialCallback;
+	
 	private static float calculateCombinedFriction(Collidable body0, Collidable body1) {
 		float friction = body0.getFriction() * body1.getFriction();
 

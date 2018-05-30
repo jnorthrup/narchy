@@ -84,13 +84,13 @@ public class Turret extends Robotic {
 
     public void fireBullet(/*float ttl*/) {
 
-//        final float now = sim.getTime();
-//        Iterator<Body> ib = bullets.iterator();
-//        while (ib.hasNext()) {
-//            Body b = ib.next();
-//            ((BulletData)b.getUserData()).diesAt
-//
-//        }
+
+
+
+
+
+
+
 
         final float speed = 100f;
 
@@ -109,35 +109,35 @@ public class Turret extends Robotic {
         rayDir.mulLocal(speed);
 
 
-        //float diesAt = now + ttl;
+        
         b.setUserData(new BulletData(b, 0));
         bullets.add(b);
 
         b.applyForce(rayDir, new Vec2(0,0));
 
-//        float angle = (i / (float)numRays) * 360 * DEGTORAD;
-//        b2Vec2 rayDir( sinf(angle), cosf(angle) );
-//
-//        b2BodyDef bd;
-//        bd.type = b2_dynamicBody;
-//        bd.fixedRotation = true; // rotation not necessary
-//        bd.bullet = true; // prevent tunneling at high speed
-//        bd.linearDamping = 10; // drag due to moving through air
-//        bd.gravityScale = 0; // ignore gravity
-//        bd.position = center; // start at blast center
-//        bd.linearVelocity = blastPower * rayDir;
-//        b2Body* body = m_world->CreateBody( &bd );
-//
-//        b2CircleShape circleShape;
-//        circleShape.m_radius = 0.05; // very small
-//
-//        b2FixtureDef fd;
-//        fd.shape = &circleShape;
-//        fd.density = 60 / (float)numRays; // very high - shared across all particles
-//        fd.friction = 0; // friction not necessary
-//        fd.restitution = 0.99f; // high restitution to reflect off obstacles
-//        fd.filter.groupIndex = -1; // particles should not collide with each other
-//        body->CreateFixture( &fd );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public class BulletData implements Collidable {
@@ -152,7 +152,7 @@ public class Turret extends Robotic {
         }
 
         public void explode() {
-            //System.out.println("expldoe " + bullet.getWorldCenter());
+            
             float force = 175f;
             Explosion.explodeBlastRadius(bullet.getWorld(), bullet.getWorldCenter(), 160f,force);
             explosionTTL = (int)force/2;
@@ -161,7 +161,7 @@ public class Turret extends Robotic {
         public Vec2 getCenter() { return bullet.getWorldCenter(); }
 
         @Override public void onCollision(Contact c) {
-            //System.out.println(bullet + " collided");
+            
             removedBullets.add(bullet);
         }
     }

@@ -121,7 +121,7 @@ public class Mat3f {
     if (det == 0.0f)
       return false;
 
-    // Form cofactor matrix
+    
     Mat3f cf = new Mat3f();
     cf.set(0, 0, get(1, 1) * get(2, 2) - get(2, 1) * get(1, 2));
     cf.set(0, 1, get(2, 0) * get(1, 2) - get(1, 0) * get(2, 2));
@@ -133,7 +133,7 @@ public class Mat3f {
     cf.set(2, 1, get(1, 0) * get(0, 2) - get(0, 0) * get(1, 2));
     cf.set(2, 2, get(0, 0) * get(1, 1) - get(1, 0) * get(0, 1));
 
-    // Now copy back transposed
+    
     for (int i = 0; i < 3; i++)
       for (int j = 0; j < 3; j++)
         set(i, j, cf.get(j, i) / det);

@@ -70,15 +70,15 @@ public class CL_tent {
 
     static final beam_t[] cl_beams = new beam_t[MAX_BEAMS];
 
-    //	  PMM - added this for player-linked beams. Currently only used by the
-    // plasma beam
+    
+    
     static final beam_t[] cl_playerbeams = new beam_t[MAX_BEAMS];
 
     static final int MAX_LASERS = 32;
 
     static final laser_t[] cl_lasers = new laser_t[MAX_LASERS];
 
-    //	  ROGUE
+    
     static final int MAX_SUSTAINS = 32;
 
     static final cl_sustain_t[] cl_sustains = new cl_sustain_t[MAX_SUSTAINS];
@@ -150,9 +150,9 @@ public class CL_tent {
 
     static final int ex_poly2 = 6;
 
-    //	  ROGUE
+    
 
-    // all are references;
+    
     static sfx_t cl_sfx_ric1;
 
     static sfx_t cl_sfx_ric2;
@@ -175,7 +175,7 @@ public class CL_tent {
 
     static sfx_t cl_sfx_watrexp;
 
-    // RAFAEL
+    
     static sfx_t cl_sfx_plasexp;
 
     static final sfx_t[] cl_sfx_footsteps = new sfx_t[4];
@@ -198,10 +198,10 @@ public class CL_tent {
 
     static model_t cl_mod_powerscreen;
 
-    //	   RAFAEL
+    
     static model_t cl_mod_plasmaexplo;
 
-    //	  ROGUE
+    
     static sfx_t cl_sfx_lightning;
 
     static sfx_t cl_sfx_disrexp;
@@ -214,7 +214,7 @@ public class CL_tent {
 
     static model_t cl_mod_explo4_big;
 
-    //	  ROGUE
+    
     /*
      * ================= CL_RegisterTEntSounds =================
      */
@@ -222,9 +222,9 @@ public class CL_tent {
         int i;
         String name;
 
-        // PMM - version stuff
-        //		Com_Printf ("%s\n", ROGUE_VERSION_STRING);
-        // PMM
+        
+        
+        
         cl_sfx_ric1 = S.RegisterSound("world/ric1.wav");
         cl_sfx_ric2 = S.RegisterSound("world/ric2.wav");
         cl_sfx_ric3 = S.RegisterSound("world/ric3.wav");
@@ -236,27 +236,27 @@ public class CL_tent {
         cl_sfx_rockexp = S.RegisterSound("weapons/rocklx1a.wav");
         cl_sfx_grenexp = S.RegisterSound("weapons/grenlx1a.wav");
         cl_sfx_watrexp = S.RegisterSound("weapons/xpld_wat.wav");
-        // RAFAEL
-        // cl_sfx_plasexp = S.RegisterSound ("weapons/plasexpl.wav");
+        
+        
         S.RegisterSound("player/land1.wav");
 
         S.RegisterSound("player/fall2.wav");
         S.RegisterSound("player/fall1.wav");
 
         for (i = 0; i < 4; i++) {
-            //Com_sprintf (name, sizeof(name), "player/step%i.wav", i+1);
+            
             name = "player/step" + (i + 1) + ".wav";
             cl_sfx_footsteps[i] = S.RegisterSound(name);
         }
 
-        //	  PGM
+        
         cl_sfx_lightning = S.RegisterSound("weapons/tesla.wav");
         cl_sfx_disrexp = S.RegisterSound("weapons/disrupthit.wav");
-        // version stuff
-        //		sprintf (name, "weapons/sound%d.wav", ROGUE_VERSION_ID);
-        //		if (name[0] == 'w')
-        //			name[0] = 'W';
-        //	  PGM
+        
+        
+        
+        
+        
     }
 
     /*
@@ -289,15 +289,15 @@ public class CL_tent {
         Globals.re.RegisterModel("models/objects/gibs/bone/tris.md2");
         Globals.re.RegisterModel("models/objects/gibs/sm_meat/tris.md2");
         Globals.re.RegisterModel("models/objects/gibs/bone2/tris.md2");
-        //	   RAFAEL
-        //	   re.RegisterModel ("models/objects/blaser/tris.md2");
+        
+        
 
         Globals.re.RegisterPic("w_machinegun");
         Globals.re.RegisterPic("a_bullets");
         Globals.re.RegisterPic("i_health");
         Globals.re.RegisterPic("a_grenades");
 
-        //	  ROGUE
+        
         cl_mod_explo4_big = Globals.re
                 .RegisterModel("models/objects/r_explode2/tris.md2");
         cl_mod_lightning = Globals.re
@@ -305,26 +305,26 @@ public class CL_tent {
         cl_mod_heatbeam = Globals.re.RegisterModel("models/proj/beam/tris.md2");
         cl_mod_monster_heatbeam = Globals.re
                 .RegisterModel("models/proj/widowbeam/tris.md2");
-        //	  ROGUE
+        
     }
 
     /*
      * ================= CL_ClearTEnts =================
      */
     static void ClearTEnts() {
-        //		memset (cl_beams, 0, sizeof(cl_beams));
+        
         for (beam_t cl_beam : cl_beams) cl_beam.clear();
-        //		memset (cl_explosions, 0, sizeof(cl_explosions));
+        
         for (explosion_t cl_explosion : cl_explosions) cl_explosion.clear();
-        //		memset (cl_lasers, 0, sizeof(cl_lasers));
+        
         for (laser_t cl_laser : cl_lasers) cl_laser.clear();
-        //
-        //	  ROGUE
-        //		memset (cl_playerbeams, 0, sizeof(cl_playerbeams));
+        
+        
+        
         for (beam_t cl_playerbeam : cl_playerbeams) cl_playerbeam.clear();
-        //		memset (cl_sustains, 0, sizeof(cl_sustains));
+        
         for (cl_sustain_t cl_sustain : cl_sustains) cl_sustain.clear();
-        //	  ROGUE
+        
     }
 
     /*
@@ -337,12 +337,12 @@ public class CL_tent {
 
         for (i = 0; i < MAX_EXPLOSIONS; i++) {
             if (cl_explosions[i].type == ex_free) {
-                //memset (&cl_explosions[i], 0, sizeof (cl_explosions[i]));
+                
                 cl_explosions[i].clear();
                 return cl_explosions[i];
             }
         }
-        //	   find the oldest explosion
+        
         time = Globals.cl.time;
         index = 0;
 
@@ -351,7 +351,7 @@ public class CL_tent {
                 time = (int) cl_explosions[i].start;
                 index = i;
             }
-        //memset (&cl_explosions[index], 0, sizeof (cl_explosions[index]));
+        
         cl_explosions[index].clear();
         return cl_explosions[index];
     }
@@ -396,7 +396,7 @@ public class CL_tent {
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
 
-        //	   override any beam with the same entity
+        
         b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
@@ -409,7 +409,7 @@ public class CL_tent {
                 return ent;
             }
 
-        //	   find a free beam
+        
         b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time) {
@@ -443,9 +443,9 @@ public class CL_tent {
         MSG.ReadPos(Globals.net_message, end);
         MSG.ReadPos(Globals.net_message, offset);
 
-        //		Com_Printf ("end- %f %f %f\n", end[0], end[1], end[2]);
+        
 
-        //	   override any beam with the same entity
+        
         b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
@@ -458,7 +458,7 @@ public class CL_tent {
                 return ent;
             }
 
-        //	   find a free beam
+        
         b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time) {
@@ -475,7 +475,7 @@ public class CL_tent {
         return ent;
     }
 
-    //	   ROGUE
+    
     /*
      * ================= CL_ParsePlayerBeam - adds to the cl_playerbeam array
      * instead of the cl_beams array =================
@@ -492,7 +492,7 @@ public class CL_tent {
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
-        // PMM - network optimization
+        
         if (model == cl_mod_heatbeam)
             Math3D.VectorSet(offset, 2, 7, -3);
         else if (model == cl_mod_monster_heatbeam) {
@@ -501,10 +501,10 @@ public class CL_tent {
         } else
             MSG.ReadPos(Globals.net_message, offset);
 
-        //		Com_Printf ("end- %f %f %f\n", end[0], end[1], end[2]);
+        
 
-        //	   override any beam with the same entity
-        //	   PMM - For player beams, we only want one per player (entity) so..
+        
+        
         b = cl_playerbeams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].entity == ent) {
@@ -518,15 +518,15 @@ public class CL_tent {
             }
         }
 
-        //	   find a free beam
+        
         b = cl_playerbeams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time) {
                 b[i].entity = ent;
                 b[i].model = model;
-                b[i].endtime = Globals.cl.time + 100; // PMM - this needs to be
-                                                      // 100 to prevent multiple
-                                                      // heatbeams
+                b[i].endtime = Globals.cl.time + 100; 
+                                                      
+                                                      
                 Math3D.VectorCopy(start, b[i].start);
                 Math3D.VectorCopy(end, b[i].end);
                 Math3D.VectorCopy(offset, b[i].offset);
@@ -537,9 +537,9 @@ public class CL_tent {
         return ent;
     }
 
-    //	  rogue
+    
 
-    // stack variable
+    
     private static final float[] start = new float[3];
     private static final float[] end = new float[3];
     /*
@@ -556,12 +556,12 @@ public class CL_tent {
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
 
-        //	   override any beam with the same source AND destination entities
+        
         b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == srcEnt && b[i].dest_entity == destEnt) {
-                //				Com_Printf("%d: OVERRIDE %d . %d\n", cl.time, srcEnt,
-                // destEnt);
+                
+                
                 b[i].entity = srcEnt;
                 b[i].dest_entity = destEnt;
                 b[i].model = model;
@@ -572,11 +572,11 @@ public class CL_tent {
                 return srcEnt;
             }
 
-        //	   find a free beam
+        
         b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time) {
-                //				Com_Printf("%d: NORMAL %d . %d\n", cl.time, srcEnt, destEnt);
+                
                 b[i].entity = srcEnt;
                 b[i].dest_entity = destEnt;
                 b[i].model = model;
@@ -591,8 +591,8 @@ public class CL_tent {
         return srcEnt;
     }
 
-    // stack variable
-    // start, end
+    
+    
     /*
      * ================= CL_ParseLaser =================
      */
@@ -619,11 +619,11 @@ public class CL_tent {
         }
     }
 
-    // stack variable
+    
     private static final float[] pos = new float[3];
     private static final float[] dir = new float[3];
-    //	  =============
-    //	  ROGUE
+    
+    
     static void ParseSteam() {
         int id, i;
         int r;
@@ -633,11 +633,11 @@ public class CL_tent {
         cl_sustain_t[] s;
         cl_sustain_t free_sustain;
 
-        id = MSG.ReadShort(Globals.net_message); // an id of -1 is an instant
-                                                 // effect
-        if (id != -1) // sustains
+        id = MSG.ReadShort(Globals.net_message); 
+                                                 
+        if (id != -1) 
         {
-            //				Com_Printf ("Sustain effect id %d\n", id);
+            
             free_sustain = null;
             s = cl_sustains;
             for (i = 0; i < MAX_SUSTAINS; i++) {
@@ -665,17 +665,17 @@ public class CL_tent {
                 s[i].thinkinterval = 100;
                 s[i].nextthink = Globals.cl.time;
             } else {
-                //					Com_Printf ("No free sustains!\n");
-                // FIXME - read the stuff anyway
+                
+                
                 cnt = MSG.ReadByte(Globals.net_message);
                 MSG.ReadPos(Globals.net_message, pos);
                 MSG.ReadDir(Globals.net_message, dir);
                 r = MSG.ReadByte(Globals.net_message);
                 magnitude = MSG.ReadShort(Globals.net_message);
-                magnitude = MSG.ReadLong(Globals.net_message); // really
-                                                               // interval
+                magnitude = MSG.ReadLong(Globals.net_message); 
+                                                               
             }
-        } else // instant
+        } else 
         {
             cnt = MSG.ReadByte(Globals.net_message);
             MSG.ReadPos(Globals.net_message, pos);
@@ -684,12 +684,12 @@ public class CL_tent {
             magnitude = MSG.ReadShort(Globals.net_message);
             color = r & 0xff;
             CL_newfx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
-            //			S_StartSound (pos, 0, 0, cl_sfx_lashit, 1, ATTN_NORM, 0);
+            
         }
     }
     
-    // stack variable
-    // pos
+    
+    
     static void ParseWidow() {
         int id, i;
         cl_sustain_t[] s;
@@ -717,15 +717,15 @@ public class CL_tent {
             };
             s[i].thinkinterval = 1;
             s[i].nextthink = Globals.cl.time;
-        } else // no free sustains
+        } else 
         {
-            // FIXME - read the stuff anyway
+            
             MSG.ReadPos(Globals.net_message, pos);
         }
     }
 
-    // stack variable
-    // pos
+    
+    
     static void ParseNuke() {
         int i;
         cl_sustain_t[] s;
@@ -751,22 +751,22 @@ public class CL_tent {
             };
             s[i].thinkinterval = 1;
             s[i].nextthink = Globals.cl.time;
-        } else // no free sustains
+        } else 
         {
-            // FIXME - read the stuff anyway
+            
             MSG.ReadPos(Globals.net_message, pos);
         }
     }
 
-    //	  ROGUE
-    //	  =============
+    
+    
 
     /*
      * ================= CL_ParseTEnt =================
      */
     static final int[] splash_color = { 0x00, 0xe0, 0xb0, 0x50, 0xd0, 0xe0, 0xe8 };
-    // stack variable
-    // pos, dir
+    
+    
     private static final float[] pos2 = {0, 0, 0};
 
     static void ParseTEnt() {
@@ -781,13 +781,13 @@ public class CL_tent {
         type = MSG.ReadByte(Globals.net_message);
 
         switch (type) {
-        case Defines.TE_BLOOD: // bullet hitting flesh
+        case Defines.TE_BLOOD: 
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
             CL_fx.ParticleEffect(pos, dir, 0xe8, 60);
             break;
 
-        case Defines.TE_GUNSHOT: // bullet hitting wall
+        case Defines.TE_GUNSHOT: 
         case Defines.TE_SPARKS:
         case Defines.TE_BULLET_SPARKS:
             MSG.ReadPos(Globals.net_message, pos);
@@ -800,7 +800,7 @@ public class CL_tent {
             if (type != Defines.TE_SPARKS) {
                 SmokeAndFlash(pos);
 
-                // impact sound
+                
                 cnt = Lib.rand() & 15;
                 if (cnt == 1)
                     S.StartSound(pos, 0, 0, cl_sfx_ric1, 1, Defines.ATTN_NORM,
@@ -823,18 +823,18 @@ public class CL_tent {
                 CL_fx.ParticleEffect(pos, dir, 0xd0, 40);
             else
                 CL_fx.ParticleEffect(pos, dir, 0xb0, 40);
-            //FIXME : replace or remove this sound
+            
             S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
             break;
 
-        case Defines.TE_SHOTGUN: // bullet hitting wall
+        case Defines.TE_SHOTGUN: 
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
             CL_fx.ParticleEffect(pos, dir, 0, 20);
             SmokeAndFlash(pos);
             break;
 
-        case Defines.TE_SPLASH: // bullet hitting water
+        case Defines.TE_SPLASH: 
             cnt = MSG.ReadByte(Globals.net_message);
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
@@ -867,14 +867,14 @@ public class CL_tent {
             CL_fx.ParticleEffect2(pos, dir, color, cnt);
             break;
 
-        // RAFAEL
+        
         case Defines.TE_BLUEHYPERBLASTER:
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadPos(Globals.net_message, dir);
             CL_fx.BlasterParticles(pos, dir);
             break;
 
-        case Defines.TE_BLASTER: // blaster hitting wall
+        case Defines.TE_BLASTER: 
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
             CL_fx.BlasterParticles(pos, dir);
@@ -882,7 +882,7 @@ public class CL_tent {
             ex = AllocExplosion();
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.ent.angles[0] = (float) (Math.acos(dir[2]) / Math.PI * 180);
-            // PMM - fixed to correct for pitch of 0
+            
             if (dir[0] != 0.0f)
                 ex.ent.angles[1] = (float) (Math.atan2(dir[1], dir[0])
                         / Math.PI * 180);
@@ -904,7 +904,7 @@ public class CL_tent {
             S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
             break;
 
-        case Defines.TE_RAILTRAIL: // railgun effect
+        case Defines.TE_RAILTRAIL: 
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadPos(Globals.net_message, pos2);
             CL_fx.RailTrail(pos, pos2);
@@ -940,7 +940,7 @@ public class CL_tent {
                                 Defines.ATTN_NORM, 0);
             break;
 
-        // RAFAEL
+        
         case Defines.TE_PLASMA_EXPLOSION:
             MSG.ReadPos(Globals.net_message, pos);
             ex = AllocExplosion();
@@ -962,10 +962,10 @@ public class CL_tent {
             break;
 
         case Defines.TE_EXPLOSION1:
-        case Defines.TE_EXPLOSION1_BIG: // PMM
+        case Defines.TE_EXPLOSION1_BIG: 
         case Defines.TE_ROCKET_EXPLOSION:
         case Defines.TE_ROCKET_EXPLOSION_WATER:
-        case Defines.TE_EXPLOSION1_NP: // PMM
+        case Defines.TE_EXPLOSION1_NP: 
             MSG.ReadPos(Globals.net_message, pos);
 
             ex = AllocExplosion();
@@ -978,16 +978,16 @@ public class CL_tent {
             ex.lightcolor[1] = 0.5f;
             ex.lightcolor[2] = 0.5f;
             ex.ent.angles[1] = Lib.rand() % 360;
-            if (type != Defines.TE_EXPLOSION1_BIG) // PMM
-                ex.ent.model = cl_mod_explo4; // PMM
+            if (type != Defines.TE_EXPLOSION1_BIG) 
+                ex.ent.model = cl_mod_explo4; 
             else
                 ex.ent.model = cl_mod_explo4_big;
             if (Globals.rnd.nextFloat() < 0.5)
                 ex.baseframe = 15;
             ex.frames = 15;
             if ((type != Defines.TE_EXPLOSION1_BIG)
-                    && (type != Defines.TE_EXPLOSION1_NP)) // PMM
-                CL_fx.ExplosionParticles(pos); // PMM
+                    && (type != Defines.TE_EXPLOSION1_NP)) 
+                CL_fx.ExplosionParticles(pos); 
             if (type == Defines.TE_ROCKET_EXPLOSION_WATER)
                 S
                         .StartSound(pos, 0, 0, cl_sfx_watrexp, 1,
@@ -1035,7 +1035,7 @@ public class CL_tent {
             ent = ParseBeam(cl_mod_parasite_segment);
             break;
 
-        case Defines.TE_BOSSTPORT: // boss teleporting to station
+        case Defines.TE_BOSSTPORT: 
             MSG.ReadPos(Globals.net_message, pos);
             CL_fx.BigTeleportParticles(pos);
             S.StartSound(pos, 0, 0, S.RegisterSound("misc/bigtele.wav"), 1,
@@ -1046,7 +1046,7 @@ public class CL_tent {
             ent = ParseBeam2(cl_mod_grapple_cable);
             break;
 
-        // RAFAEL
+        
         case Defines.TE_WELDING_SPARKS:
             cnt = MSG.ReadByte(Globals.net_message);
             MSG.ReadPos(Globals.net_message, pos);
@@ -1057,8 +1057,8 @@ public class CL_tent {
             ex = AllocExplosion();
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.type = ex_flash;
-            // note to self
-            // we need a better no draw flag
+            
+            
             ex.ent.flags = Defines.RF_BEAM;
             ex.start = Globals.cl.frame.servertime - 0.1f;
             ex.light = 100 + (Lib.rand() % 75);
@@ -1075,7 +1075,7 @@ public class CL_tent {
             CL_fx.ParticleEffect2(pos, dir, 0xdf, 30);
             break;
 
-        // RAFAEL
+        
         case Defines.TE_TUNNEL_SPARKS:
             cnt = MSG.ReadByte(Globals.net_message);
             MSG.ReadPos(Globals.net_message, pos);
@@ -1084,24 +1084,24 @@ public class CL_tent {
             CL_fx.ParticleEffect3(pos, dir, color, cnt);
             break;
 
-        //	  =============
-        //	  PGM
-        // PMM -following code integrated for flechette (different color)
-        case Defines.TE_BLASTER2: // green blaster hitting wall
-        case Defines.TE_FLECHETTE: // flechette
+        
+        
+        
+        case Defines.TE_BLASTER2: 
+        case Defines.TE_FLECHETTE: 
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
 
-            // PMM
+            
             if (type == Defines.TE_BLASTER2)
                 CL_newfx.BlasterParticles2(pos, dir, 0xd0);
             else
-                CL_newfx.BlasterParticles2(pos, dir, 0x6f); // 75
+                CL_newfx.BlasterParticles2(pos, dir, 0x6f); 
 
             ex = AllocExplosion();
             Math3D.VectorCopy(pos, ex.ent.origin);
             ex.ent.angles[0] = (float) (Math.acos(dir[2]) / Math.PI * 180);
-            // PMM - fixed to correct for pitch of 0
+            
             if (dir[0] != 0.0f)
                 ex.ent.angles[1] = (float) (Math.atan2(dir[1], dir[0])
                         / Math.PI * 180);
@@ -1115,19 +1115,19 @@ public class CL_tent {
             ex.type = ex_misc;
             ex.ent.flags = Defines.RF_FULLBRIGHT | Defines.RF_TRANSLUCENT;
 
-            // PMM
+            
             if (type == Defines.TE_BLASTER2)
                 ex.ent.skinnum = 1;
             else
-                // flechette
+                
                 ex.ent.skinnum = 2;
 
             ex.start = Globals.cl.frame.servertime - 100;
             ex.light = 150;
-            // PMM
+            
             if (type == Defines.TE_BLASTER2)
                 ex.lightcolor[1] = 1;
-            else // flechette
+            else 
             {
                 ex.lightcolor[0] = 0.19f;
                 ex.lightcolor[1] = 0.41f;
@@ -1199,12 +1199,12 @@ public class CL_tent {
             break;
 
         case Defines.TE_HEATBEAM_SPARKS:
-            //			cnt = MSG.ReadByte (net_message);
+            
             cnt = 50;
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
-            //			r = MSG.ReadByte (net_message);
-            //			magnitude = MSG.ReadShort (net_message);
+            
+            
             r = 8;
             magnitude = 60;
             color = r & 0xff;
@@ -1213,13 +1213,13 @@ public class CL_tent {
             break;
 
         case Defines.TE_HEATBEAM_STEAM:
-            //			cnt = MSG.ReadByte (net_message);
+            
             cnt = 20;
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
-            //			r = MSG.ReadByte (net_message);
-            //			magnitude = MSG.ReadShort (net_message);
-            //			color = r & 0xff;
+            
+            
+            
             color = 0xe0;
             magnitude = 60;
             CL_newfx.ParticleSteamEffect(pos, dir, color, cnt, magnitude);
@@ -1231,7 +1231,7 @@ public class CL_tent {
             break;
 
         case Defines.TE_BUBBLETRAIL2:
-            //			cnt = MSG.ReadByte (net_message);
+            
             cnt = 8;
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadPos(Globals.net_message, pos2);
@@ -1256,9 +1256,9 @@ public class CL_tent {
         case Defines.TE_ELECTRIC_SPARKS:
             MSG.ReadPos(Globals.net_message, pos);
             MSG.ReadDir(Globals.net_message, dir);
-            //			CL_ParticleEffect (pos, dir, 109, 40);
+            
             CL_fx.ParticleEffect(pos, dir, 0x75, 40);
-            //FIXME : replace or remove this sound
+            
             S.StartSound(pos, 0, 0, cl_sfx_lashit, 1, Defines.ATTN_NORM, 0);
             break;
 
@@ -1287,16 +1287,16 @@ public class CL_tent {
             MSG.ReadPos(Globals.net_message, pos);
             CL_newfx.WidowSplash(pos);
             break;
-        //	  PGM
-        //	  ==============
+        
+        
 
         default:
             Com.Error(Defines.ERR_DROP, "CL_ParseTEnt: bad type");
         }
     }
 
-    // stack variable
-    // dist, org
+    
+    
     private static final entity_t ent = new entity_t();
     /*
      * ================= CL_AddBeams =================
@@ -1310,22 +1310,22 @@ public class CL_tent {
         float len, steps;
         float model_length;
 
-        //	   update beams
+        
         b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time)
                 continue;
 
-            // if coming from the player, update the start position
-            if (b[i].entity == Globals.cl.playernum + 1) // entity 0 is the
-                                                         // world
+            
+            if (b[i].entity == Globals.cl.playernum + 1) 
+                                                         
             {
                 Math3D.VectorCopy(Globals.cl.refdef.vieworg, b[i].start);
-                b[i].start[2] -= 22; // adjust for view height
+                b[i].start[2] -= 22; 
             }
             Math3D.VectorAdd(b[i].start, b[i].offset, org);
 
-            // calculate pitch and yaw
+            
             Math3D.VectorSubtract(b[i].end, org, dist);
 
             if (dist[1] == 0 && dist[0] == 0) {
@@ -1335,7 +1335,7 @@ public class CL_tent {
                 else
                     pitch = 270;
             } else {
-                // PMM - fixed to correct for pitch of 0
+                
                 if (dist[0] != 0.0f)
                     yaw = (float) (Math.atan2(dist[1], dist[0]) * 180 / Math.PI);
                 else if (dist[1] > 0)
@@ -1352,33 +1352,33 @@ public class CL_tent {
                     pitch += 360.0;
             }
 
-            // add new entities for the beams
+            
             d = Math3D.VectorNormalize(dist);
 
-            //memset (&ent, 0, sizeof(ent));
+            
             ent.clear();
             if (b[i].model == cl_mod_lightning) {
                 model_length = 35.0f;
-                d -= 20.0; // correction so it doesn't end in middle of tesla
+                d -= 20.0; 
             } else {
                 model_length = 30.0f;
             }
             steps = (float) Math.ceil(d / model_length);
             len = (d - model_length) / (steps - 1);
 
-            // PMM - special case for lightning model .. if the real length is
-            // shorter than the model,
-            // flip it around & draw it from the end to the start. This prevents
-            // the model from going
-            // through the tesla mine (instead it goes through the target)
+            
+            
+            
+            
+            
             if ((b[i].model == cl_mod_lightning) && (d <= model_length)) {
-                //				Com_Printf ("special case\n");
+                
                 Math3D.VectorCopy(b[i].end, ent.origin);
-                // offset to push beam outside of tesla model (negative because
-                // dist is from end to start
-                // for this beam)
-                //				for (j=0 ; j<3 ; j++)
-                //					ent.origin[j] -= dist[j]*10.0;
+                
+                
+                
+                
+                
                 ent.model = b[i].model;
                 ent.flags = Defines.RF_FULLBRIGHT;
                 ent.angles[0] = pitch;
@@ -1401,7 +1401,7 @@ public class CL_tent {
                     ent.angles[2] = Lib.rand() % 360;
                 }
 
-                //				Com_Printf("B: %d . %d\n", b[i].entity, b[i].dest_entity);
+                
                 V.AddEntity(ent);
 
                 for (j = 0; j < 3; j++)
@@ -1411,9 +1411,9 @@ public class CL_tent {
         }
     }
 
-    //extern cvar_t *hand;
+    
 
-    // stack variable
+    
     private static final float[] dist = new float[3];
     private static final float[] org = new float[3];
     private static final float[] f = new float[3];
@@ -1425,7 +1425,7 @@ public class CL_tent {
      */
     static void AddPlayerBeams() {
         float d;
-        //entity_t ent = new entity_t();
+        
         float yaw, pitch;
         float forward;
         float len, steps;
@@ -1436,7 +1436,7 @@ public class CL_tent {
         frame_t oldframe;
         player_state_t ps, ops;
 
-        //	  PMM
+        
         if (Globals.hand != null) {
             if (Globals.hand.value == 2)
                 hand_multiplier = 0;
@@ -1447,9 +1447,9 @@ public class CL_tent {
         } else {
             hand_multiplier = 1;
         }
-        //	  PMM
+        
 
-        //	   update beams
+        
         beam_t[] b = cl_playerbeams;
         for (int i = 0; i < MAX_BEAMS; i++) {
 
@@ -1458,12 +1458,12 @@ public class CL_tent {
 
             if (cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam)) {
 
-                // if coming from the player, update the start position
-                if (b[i].entity == Globals.cl.playernum + 1) // entity 0 is the
-                                                             // world
+                
+                if (b[i].entity == Globals.cl.playernum + 1) 
+                                                             
                 {
-                    // set up gun position
-                    // code straight out of CL_AddViewWeapon
+                    
+                    
                     ps = Globals.cl.frame.playerstate;
                     int j = (Globals.cl.frame.serverframe - 1)
                             & Defines.UPDATE_MASK;
@@ -1471,8 +1471,8 @@ public class CL_tent {
 
                     if (oldframe.serverframe != Globals.cl.frame.serverframe - 1
                             || !oldframe.valid)
-                        oldframe = Globals.cl.frame; // previous frame was
-                                                     // dropped or involid
+                        oldframe = Globals.cl.frame; 
+                                                     
 
                     ops = oldframe.playerstate;
                     for (j = 0; j < 3; j++) {
@@ -1489,7 +1489,7 @@ public class CL_tent {
                     if ((Globals.hand != null) && (Globals.hand.value == 2)) {
                         Math3D.VectorMA(org, -1, Globals.cl.v_up, org);
                     }
-                    // FIXME - take these out when final
+                    
                     Math3D.VectorCopy(Globals.cl.v_right, r);
                     Math3D.VectorCopy(Globals.cl.v_forward, f);
                     Math3D.VectorCopy(Globals.cl.v_up, u);
@@ -1497,20 +1497,20 @@ public class CL_tent {
                 } else
                     Math3D.VectorCopy(b[i].start, org);
             } else {
-                // if coming from the player, update the start position
-                if (b[i].entity == Globals.cl.playernum + 1) // entity 0 is the
-                                                             // world
+                
+                if (b[i].entity == Globals.cl.playernum + 1) 
+                                                             
                 {
                     Math3D.VectorCopy(Globals.cl.refdef.vieworg, b[i].start);
-                    b[i].start[2] -= 22; // adjust for view height
+                    b[i].start[2] -= 22; 
                 }
                 Math3D.VectorAdd(b[i].start, b[i].offset, org);
             }
 
-            // calculate pitch and yaw
+            
             Math3D.VectorSubtract(b[i].end, org, dist);
 
-            //	  PMM
+            
             if (cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam)
                     && (b[i].entity == Globals.cl.playernum + 1)) {
 
@@ -1524,7 +1524,7 @@ public class CL_tent {
                     Math3D.VectorMA(org, -1, Globals.cl.v_up, org);
                 }
             }
-            //	  PMM
+            
 
             if (dist[1] == 0 && dist[0] == 0) {
                 yaw = 0;
@@ -1533,7 +1533,7 @@ public class CL_tent {
                 else
                     pitch = 270;
             } else {
-                // PMM - fixed to correct for pitch of 0
+                
                 if (dist[0] != 0.0f)
                     yaw = (float) (Math.atan2(dist[1], dist[0]) * 180 / Math.PI);
                 else if (dist[1] > 0)
@@ -1553,22 +1553,22 @@ public class CL_tent {
             if (cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam)) {
                 if (b[i].entity != Globals.cl.playernum + 1) {
                     framenum = 2;
-                    //					Com_Printf ("Third person\n");
+                    
                     ent.angles[0] = -pitch;
                     ent.angles[1] = yaw + 180.0f;
                     ent.angles[2] = 0;
-                    //					Com_Printf ("%f %f - %f %f %f\n", -pitch, yaw+180.0,
-                    // b[i].offset[0], b[i].offset[1], b[i].offset[2]);
+                    
+                    
                     Math3D.AngleVectors(ent.angles, f, r, u);
 
-                    // if it's a non-origin offset, it's a player, so use the
-                    // hardcoded player offset
+                    
+                    
                     if (!Math3D.VectorEquals(b[i].offset, Globals.vec3_origin)) {
                         Math3D.VectorMA(org, -(b[i].offset[0]) + 1, r, org);
                         Math3D.VectorMA(org, -(b[i].offset[1]), f, org);
                         Math3D.VectorMA(org, -(b[i].offset[2]) - 10, u, org);
                     } else {
-                        // if it's a monster, do the particle effect
+                        
                         CL_newfx.MonsterPlasma_Shell(b[i].start);
                     }
                 } else {
@@ -1576,41 +1576,41 @@ public class CL_tent {
                 }
             }
 
-            // if it's the heatbeam, draw the particle effect
+            
             if ((cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam) && (b[i].entity == Globals.cl.playernum + 1))) {
                 CL_newfx.Heatbeam(org, dist);
             }
 
-            // add new entities for the beams
+            
             d = Math3D.VectorNormalize(dist);
 
-            //memset (&ent, 0, sizeof(ent));
+            
             ent.clear();
 
             if (b[i].model == cl_mod_heatbeam) {
                 model_length = 32.0f;
             } else if (b[i].model == cl_mod_lightning) {
                 model_length = 35.0f;
-                d -= 20.0; // correction so it doesn't end in middle of tesla
+                d -= 20.0; 
             } else {
                 model_length = 30.0f;
             }
             steps = (float) Math.ceil(d / model_length);
             len = (d - model_length) / (steps - 1);
 
-            // PMM - special case for lightning model .. if the real length is
-            // shorter than the model,
-            // flip it around & draw it from the end to the start. This prevents
-            // the model from going
-            // through the tesla mine (instead it goes through the target)
+            
+            
+            
+            
+            
             if ((b[i].model == cl_mod_lightning) && (d <= model_length)) {
-                //				Com_Printf ("special case\n");
+                
                 Math3D.VectorCopy(b[i].end, ent.origin);
-                // offset to push beam outside of tesla model (negative because
-                // dist is from end to start
-                // for this beam)
-                //				for (j=0 ; j<3 ; j++)
-                //					ent.origin[j] -= dist[j]*10.0;
+                
+                
+                
+                
+                
                 ent.model = b[i].model;
                 ent.flags = Defines.RF_FULLBRIGHT;
                 ent.angles[0] = pitch;
@@ -1623,13 +1623,13 @@ public class CL_tent {
                 Math3D.VectorCopy(org, ent.origin);
                 ent.model = b[i].model;
                 if (cl_mod_heatbeam != null && (b[i].model == cl_mod_heatbeam)) {
-                    //					ent.flags = RF_FULLBRIGHT|RF_TRANSLUCENT;
-                    //					ent.alpha = 0.3;
+                    
+                    
                     ent.flags = Defines.RF_FULLBRIGHT;
                     ent.angles[0] = -pitch;
                     ent.angles[1] = yaw + 180.0f;
                     ent.angles[2] = (Globals.cl.time) % 360;
-                    //					ent.angles[2] = rand()%360;
+                    
                     ent.frame = framenum;
                 } else if (b[i].model == cl_mod_lightning) {
                     ent.flags = Defines.RF_FULLBRIGHT;
@@ -1642,7 +1642,7 @@ public class CL_tent {
                     ent.angles[2] = Lib.rand() % 360;
                 }
 
-                //				Com_Printf("B: %d . %d\n", b[i].entity, b[i].dest_entity);
+                
                 V.AddEntity(ent);
 
                 for (int j = 0; j < 3; j++)
@@ -1662,7 +1662,7 @@ public class CL_tent {
         float frac;
         int f;
 
-        //memset (&ent, 0, sizeof(ent)); Pointer!
+        
         ent = null;
         ex = cl_explosions;
         for (i = 0; i < MAX_EXPLOSIONS; i++) {
@@ -1779,11 +1779,11 @@ public class CL_tent {
      */
     static void AddTEnts() {
         AddBeams();
-        // PMM - draw plasma beams
+        
         AddPlayerBeams();
         AddExplosions();
         AddLasers();
-        // PMM - set up sustain
+        
         ProcessSustain();
     }
 }

@@ -16,7 +16,7 @@ public interface TraveLog {
     boolean hasVisited(NodeGraph.Node n);
 
 
-    //TODO: reachable, etc
+    
 
     class IntHashTraveLog implements TraveLog {
 

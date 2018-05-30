@@ -40,10 +40,10 @@ public class GreedyGQ<A> implements HordeAgent.OffPolicyLearner<A> {
             behaviour.update(x_t);
             rho_t = target.pi(a_t) / behaviour.pi(a_t);
         }
-        //assert Utils.checkValue(rho_t);
+        
         VectorPool pool = VectorPools.pool(prototype, gq.v.getDimension());
         RealVector sa_bar_tp1 = pool.newVector();
-        //if (!Vectors.isNull(x_t) && !Vectors.isNull(x_tp1)) {
+        
         if (x_t != null && x_tp1 != null) {
             target.update(x_tp1);
             for (A a : actions) {

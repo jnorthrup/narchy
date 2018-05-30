@@ -36,15 +36,15 @@ import java.util.StringTokenizer;
 
 public class MapDef {
 
-	// Flag masks for use in generating an integer modifiers value (for text
-	// definition output)
-	private static final int FLAG_SHIFT = 0x01; // flag mask for a shift modifier
+	
+	
+	private static final int FLAG_SHIFT = 0x01; 
 
-	private static final int FLAG_CTRL = 0x02; // flag mask for a control modifier
+	private static final int FLAG_CTRL = 0x02; 
 
-	private static final int FLAG_ALT = 0x04; // flag mask for an alt modifier
+	private static final int FLAG_ALT = 0x04; 
 
-	private static final int FLAG_CAPSLOCK = 0x08; // flag mask for a capslock modifier
+	private static final int FLAG_CAPSLOCK = 0x08; 
 
 	private int scancode;
 
@@ -190,8 +190,8 @@ public class MapDef {
 	 * @return The number of modifier changes to make
 	 */
 	public int modifierDistance(KeyEvent e, boolean capslock) {
-		// boolean capslock = e.getComponent().getToolkit().getLockingKeyState(
-		// KeyEvent.VK_CAPS_LOCK);
+		
+		
 
 		if (!characterDef)
 			return 0;
@@ -228,12 +228,12 @@ public class MapDef {
 
 		/*
 		if (Constants.OS == Constants.MAC) {
-			// Remap the hash key to �
+			
 			if (Options.remap_hash && (e.getKeyChar() == '�')) {
 				return ((characterDef) && (this.keyChar == '#'));
 			}
 
-			// Handle unreported shifted capitals (with capslock) on a Mac
+			
 			if (capslock && Character.isLetter(e.getKeyChar())
 					&& Character.isUpperCase(e.getKeyChar()) && e.isShiftDown()) {
 				char c = Character.toLowerCase(e.getKeyChar());
@@ -254,7 +254,7 @@ public class MapDef {
 	 * @return
 	 */
 	protected boolean appliesToPressed(KeyEvent e) {
-		// only match special characters if the modifiers are consistent
+		
 		if (!characterDef) {
 			if (!((ctrlDown && e.isControlDown()) || !ctrlDown))
 				return false;
@@ -278,23 +278,23 @@ public class MapDef {
 	public MapDef(String definition) throws KeyMapException {
 		StringTokenizer st = new StringTokenizer(definition);
 		try {
-			// determine whether the definition is character-oriented
+			
 			characterDef = ((Integer.parseInt(st.nextToken()) == 1) ? true
 					: false);
 
-			// read in the character or keycode
+			
 			if (characterDef)
 				keyChar = (char) Integer.parseInt(st.nextToken());
 			else
 				keyCode = Integer.parseInt(st.nextToken());
 
-			// read in the key location
+			
 			keyLocation = Integer.parseInt(st.nextToken());
 
-			// read in the scancode (from a HEX string)
+			
 			scancode = Integer.decode(st.nextToken()).intValue();
 
-			// read in the modifiers and interpret
+			
 			int modifiers = Integer.parseInt(st.nextToken());
 			shiftDown = ((modifiers & this.FLAG_SHIFT) != 0);
 			ctrlDown = ((modifiers & this.FLAG_CTRL) != 0);
@@ -319,22 +319,22 @@ public class MapDef {
 	 */
 	public void writeToStream(PrintStream p) {
 
-		// create definition string with first character 1 if the
-		// mapping is character-defined, 0 otherwise
+		
+		
 		String definition = String.valueOf(characterDef ? 1 : 0);
 
-		// add character or keycode
+		
 		definition += "\t";
 		if (characterDef)
 			definition += (int) keyChar;
 		else
 			definition += keyCode;
 
-		// add key location
+		
 		definition += "\t" + keyLocation;
 		definition += "\t0x" + Integer.toHexString(scancode);
 
-		// builder and add modifiers as a set of flags in an integer value
+		
 		int modifiers = 0;
 		modifiers |= (shiftDown ? FLAG_SHIFT : 0);
 		modifiers |= (ctrlDown ? FLAG_CTRL : 0);
@@ -342,11 +342,11 @@ public class MapDef {
 		modifiers |= (capslockDown ? FLAG_CAPSLOCK : 0);
 		definition += "\t" + modifiers;
 
-		// add additional information if available (and necessary)
+		
 		if (!characterDef)
 			definition += '\t' + KeyEvent.getKeyText(this.keyCode);
 
-		// output the definition to the specified stream
+		
 		p.println(definition);
 	}
 

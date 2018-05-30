@@ -3,14 +3,14 @@
  *
  * This source file is subject to the Open Software License (OSL 3.0) that is
  * bundled with this package in the file LICENSE.txt. It is also available
- * through the world-wide-web at http://opensource.org/licenses/osl-3.0.php
+ * through the world-wide-web at http:
  * If you did not receive a copy of the license and are unable to obtain it
  * through the world-wide-web, please send an email to magnos.software@gmail.com
  * so we can send you a copy immediately. If you use any of this software please
  * notify me via our website or email, your feedback is much appreciated.
  *
- * @copyright   Copyright (c) 2011 Magnos Software (http://www.magnos.org)
- * @license     http://opensource.org/licenses/osl-3.0.php
+ * @copyright   Copyright (c) 2011 Magnos Software (http:
+ * @license     http:
  *              Open Software License (OSL 3.0)
  */
 
@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 public enum Tries {
     ;
 
-    //TODO add the remaining ones, they are stateless so can be shared
+    
     public static final TrieSequencerByteArray TRIE_SEQUENCER_BYTE_ARRAY = new TrieSequencerByteArray();
     public static final TrieSequencerByteList TRIE_SEQUENCER_BYTE_LIST = new TrieSequencerByteList();
     public static final TrieSequencerCharSequence<String> STRING_TRIE_SEQUENCER_CHAR_SEQUENCE = new TrieSequencerCharSequence<>();

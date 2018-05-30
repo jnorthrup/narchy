@@ -20,8 +20,8 @@ public class LineData extends Adjacent {
 
 	public final Line line;
 	
-	//better to calculate this again each time since thats where dx and dy numbers are:
-	//public float distance;
+	
+	
 	
 	public float targetDistance;
 	
@@ -41,11 +41,11 @@ public class LineData extends Adjacent {
 	}*/
 	
 	public void connectAdjacent(){
-		//TODO pointers to TriData
 		
-		//TODO pointers to LineData
+		
+		
 					
-		//TODO pointers to CornerData
+		
 		adjacentCorners[0] = smartblob.corners[line.cornerLow.layer][line.cornerLow.point];
 		adjacentCorners[1] = smartblob.corners[line.cornerHigh.layer][line.cornerHigh.point];
 	}

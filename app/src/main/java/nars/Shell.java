@@ -61,11 +61,11 @@ public class Shell {
             System.out.println("  gui\t\tstart gui");
             System.out.println("  telnet <port>\t\tstart telnet server on given port");
             System.out.println("  http <port>\t\tstart http server on given port");
-            System.out.println("  \"<narsese>\"\t\texecute narsese command"); //daemonize?
-            //System.out.println("Reading narsese from stdin..\n"); //daemonize?
+            System.out.println("  \"<narsese>\"\t\texecute narsese command"); 
+            
             narseseStdin();
 
-            //System.out.println("  js \"<javascript>\"\t\texecute NARjs code");
+            
         } else {
 
             args = ArrayUtils.subarray(args, 1, args.length);
@@ -99,13 +99,13 @@ public class Shell {
                         String[] finalArgs = args;
                         narsese(() -> finalArgs[1]);
                     } else {
-                        //stdin
+                        
                         narseseStdin();
                     }
 
                     break;
-//                case "js":
-//                    break;
+
+
             }
         }
 
@@ -141,7 +141,7 @@ public class Shell {
             try {
                 String l = lr.readLine();
                 if (l == null)
-                    break; //EOF
+                    break; 
                 n.input(l);
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
@@ -153,20 +153,20 @@ public class Shell {
 
     public void shellSwing(NAR nar) {
 
-        //DefaultTerminalFactory tf = new DefaultTerminalFactory();
-        //tf.setForceTextTerminal(true);
-//        try {
-//          //Terminal tt = tf.createTerminal();
-//            //Terminal tt = tf.createTerminal();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        
+        
+
+
+
+
+
+
 
         MySwingTerminalFrame tt = new MySwingTerminalFrame(
                 "",
                 null,
                 null,
-                //null
+                
                 new SwingTerminalFontConfiguration(true, AWTTerminalFontConfiguration.BoldMode.EVERYTHING_BUT_SYMBOLS, new Font("Monospaced", Font.PLAIN, 28)),
                 null,
                 EnumSet.of(TerminalEmulatorAutoCloseTrigger.CloseOnExitPrivateMode).toArray(new TerminalEmulatorAutoCloseTrigger[1]));
@@ -184,9 +184,9 @@ public class Shell {
 
 
 
-//            Terminal term = new DefaultTerminalFactory(termIn, termOut, Charset.defaultCharset())
-//                    .createScreen().getTerminal();
-//            System.out.println(term.getClass() + " " + term.toString());
+
+
+
 
 
             PipedOutputStream termIn;
@@ -198,20 +198,20 @@ public class Shell {
 
             JShell js = JShell.builder()
                     .in(termOut)
-                    //.out(new PrintStream(termView.output()))
+                    
                     .build();
 
 
             SpaceGraph.window(termView = new ConsoleTerminal(term) {
                 @Override
                 public boolean tryKey(KeyEvent e, boolean pressed) {
-//                    try {
-                        //termKeys.write(e.getKeyChar());
+
+                        
                         js.eval(String.valueOf(e.getKeyChar()));
 
-//                    } catch (IOException e1) {
-//                        e1.printStackTrace();
-//                    }
+
+
+
                     return super.tryKey(e, pressed);
                 }
             },1000,800);
@@ -243,8 +243,8 @@ public class Shell {
 
                     float charAspect = 1.6f;
 
-                    //target rows to cols ratio
-                    //float areaAspect = (80f/25f)/(charAspect);
+                    
+                    
 
                     float scale = 80f;
 
@@ -272,15 +272,15 @@ public class Shell {
                         float cc, rr;
                         float boundsAspect = text.h() / text.w();
                         if (boundsAspect >= 1) {
-                            //taller
+                            
                             cc = scale / boundsAspect;
                             rr = cc / charAspect;
-                            //System.out.println(bounds + " taller: " + cc + "x" + rr);
+                            
                         } else {
-                            //wider
+                            
                             cc = scale;
                             rr = cc * (boundsAspect / charAspect);
-                            //System.out.println(bounds + "  wider: " + cc + "x" + rr);
+                            
                         }
 
                         resize(Math.max(2, Math.round(cc)), Math.max(2, Math.round(rr)));
@@ -371,13 +371,13 @@ public class Shell {
 
                 swingTerminal.setIgnoreRepaint(true);
                 setContentPane(swingTerminal);
-//            getContentPane().setLayout(new BorderLayout());
-//            getContentPane().add(swingTerminal, BorderLayout.CENTER);
+
+
                 setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                setBackground(Color.BLACK); //This will reduce white flicker when resizing the window
+                setBackground(Color.BLACK); 
                 pack();
 
-                //Put input focus on the terminal component by default
+                
                 swingTerminal.requestFocusInWindow();
             }
 
@@ -439,9 +439,9 @@ public class Shell {
                 swingTerminal.addInput(keyStroke);
             }
 
-            ///////////
-            // Delegate all Terminal interface implementations to SwingTerminal
-            ///////////
+            
+            
+            
             @Override
             public KeyStroke pollInput() {
                 if (disposed) {

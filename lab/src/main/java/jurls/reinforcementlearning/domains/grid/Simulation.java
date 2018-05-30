@@ -15,7 +15,7 @@ import javax.swing.*;
 public class Simulation {
 
     public final Agent agent;
-//    private AgentPanel ap;
+
     private JFrame jf;
     private int time = 1;
 
@@ -44,10 +44,10 @@ public class Simulation {
     */
     
     public void displayAgent(Agent a) {
-//        if (agent instanceof BeccaAgent) {        
-//            ap = new AgentPanel((BeccaAgent)a);
-//            jf = AgentPanel.window(ap, true);
-//        }
+
+
+
+
 
         
     }
@@ -76,38 +76,38 @@ public class Simulation {
             displayAgent(agent);
         }
         if (displayRewardChart) {
-//            new DynamicChart(displayPeriodMS) {
-//
-//                double lastRewardTime = 0;
-//                
-//                @Override
-//                public double getReward() {
-//                    double r = rewardTotal;
-//                    rewardTotal = 0;
-//                    double cycles = getTime() - lastRewardTime;
-//                    lastRewardTime = getTime();
-//                    return r / ((double)cycles);
-//                }
-//
-//                @Override
-//                public double[] getAction() {
-//                    return agent.getAction();
-//                }
-//
-//                @Override
-//                public double[] getSensor() {
-//                    if (agent instanceof BeccaAgent)
-//                        return ((BeccaAgent)agent).getPercept();
-//                    return agent.getSensor();
-//                }
-//
-//                @Override
-//                public double getTime() {
-//                    return time;
-//                }
-//
-//
-//            };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
         
         /*if restore:
@@ -143,7 +143,7 @@ public class Simulation {
 
             long now = System.currentTimeMillis();
             if ((lastDisplay == -1) || (now - lastDisplay > displayPeriodMS)) {
-                //if (ap!=null) ap.update();
+                
                 if (jf!=null) jf.setTitle("Reward: " + reward + ", @" + time);
                 lastDisplay = System.currentTimeMillis();
 
@@ -152,9 +152,9 @@ public class Simulation {
                 double cycleTime = ((((double)n) - ((double)lastCycleTime))/1000000000.0);
                 double fps = cycles/cycleTime;
                 System.out.println(time + " (" + fps + " cycles/sec)" + " " + cycleTime + "s");
-//                if (agent instanceof BeccaAgent) {
-//                    ((BeccaAgent)agent).printTiming(cycles);
-//                }
+
+
+
                 
                 lastCycleTime = n;
                 cycles = 0;            

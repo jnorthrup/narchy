@@ -7,7 +7,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
 
-/** https://stackoverflow.com/a/5505512
+/** https:
  * warning: do not call int get() or set(int), and
  * mostly all other of the superclass methods
  * since this will invoke the superclass's final methods

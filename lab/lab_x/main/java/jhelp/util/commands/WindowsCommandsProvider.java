@@ -12,7 +12,7 @@ class WindowsCommandsProvider
    @Override
    public List<String>[] createChangeWallPaperCommands(final File wallpaper)
    {
-      // {@todo} TODO Implements createChangeWallPaperCommands
+      
       Debug.printTodo("Implements createChangeWallPaperCommands");
       return null;
    }
@@ -25,7 +25,7 @@ class WindowsCommandsProvider
          Debug.println(DebugLevel.VERBOSE, line);
       }
 
-      // {@todo} TODO Implements extractIPFormResultLines in jhelp.util.commands [JHelpUtil]
+      
       Debug.printTodo("Implements extractIPFormResultLines in jhelp.util.commands [JHelpUtil]");
 
       return "127.0.0.1";
@@ -40,7 +40,7 @@ class WindowsCommandsProvider
    @Override
    public List<String> openFileExplorerCommand(final File file)
    {
-      // {@todo} TODO Implements openFileExplorerCommand
+      
       Debug.printTodo("Implements openFileExplorerCommand");
       return null;
    }

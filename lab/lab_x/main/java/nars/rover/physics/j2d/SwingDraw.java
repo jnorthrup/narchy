@@ -96,16 +96,16 @@ public class SwingDraw extends DebugDraw {
         
         
         
-        //for (LayerDraw l : layers) l.drawGround(this, w);
+        
         
         int flags = getFlags();
-        //boolean wireframe = (flags & DebugDraw.e_wireframeDrawingBit) != 0;
+        
 
         if ((flags & DebugDraw.e_shapeBit) != 0) {
             for (Body b = w.getBodyList(); b != null; b = b.getNext()) {
                 drawBody(b);
             }
-            //drawParticleSystem(m_particleSystem);
+            
         }
 
         if ((flags & DebugDraw.e_jointBit) != 0) {
@@ -115,57 +115,57 @@ public class SwingDraw extends DebugDraw {
             }
         }
 
-//        if ((flags & DebugDraw.e_pairBit) != 0) {
-//            color.set(0.3f, 0.9f, 0.9f);
-//            for (Contact c = m_contactManager.m_contactList; c != null; c = c.getNext()) {
-//                Fixture fixtureA = c.getFixtureA();
-//                Fixture fixtureB = c.getFixtureB();
-//                fixtureA.getAABB(c.getChildIndexA()).getCenterToOut(cA);
-//                fixtureB.getAABB(c.getChildIndexB()).getCenterToOut(cB);
-//                drawSegment(cA, cB, color);
-//            }
-//        }
-//
-//        if ((flags & DebugDraw.e_aabbBit) != 0) {
-//            color.set(0.9f, 0.3f, 0.9f);
-//
-//            for (Body b = m_bodyList; b != null; b = b.getNext()) {
-//                if (b.isActive() == false) {
-//                    continue;
-//                }
-//
-//                for (Fixture f = b.getFixtureList(); f != null; f = f.getNext()) {
-//                    for (int i = 0; i < f.m_proxyCount; ++i) {
-//                        FixtureProxy proxy = f.m_proxies[i];
-//                        AABB aabb = m_contactManager.m_broadPhase.getFatAABB(proxy.proxyId);
-//                        if (aabb != null) {
-//                            Vec2[] vs = avs.get(4);
-//                            vs[0].set(aabb.lowerBound.x, aabb.lowerBound.y);
-//                            vs[1].set(aabb.upperBound.x, aabb.lowerBound.y);
-//                            vs[2].set(aabb.upperBound.x, aabb.upperBound.y);
-//                            vs[3].set(aabb.lowerBound.x, aabb.upperBound.y);
-//                            drawPolygon(vs, 4, color);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        if ((flags & DebugDraw.e_centerOfMassBit) != 0) {
-//            for (Body b = m_bodyList; b != null; b = b.getNext()) {
-//                xf.set(b.getTransform());
-//                xf.p.set(b.getWorldCenter());
-//                drawTransform(xf);
-//            }
-//        }
-//
-//        if ((flags & DebugDraw.e_dynamicTreeBit) != 0) {
-//            m_contactManager.m_broadPhase.drawTree(m_debugDraw);
-//        }
 
-        //for (LayerDraw l : layers) l.drawSky(this, w);
 
-        //flush();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+        
 
     }
     public interface DrawProperty {
@@ -247,7 +247,7 @@ public class SwingDraw extends DebugDraw {
             case CIRCLE: {
                 CircleShape circle = (CircleShape) fixture.getShape();
 
-                // Vec2 center = Mul(xf, circle.m_p);
+                
                 Transform.mulToOutUnsafe(xf, circle.m_p, center);
                 float radius = circle.m_radius;
                 xf.q.getXAxis(axis);
@@ -285,7 +285,7 @@ public class SwingDraw extends DebugDraw {
 
                 
                 for (int i = 0; i < vertexCount; ++i) {
-                    // vertices[i] = Mul(xf, poly.m_vertices[i]);
+                    
                     Transform.mulToOutUnsafe(xf, poly.m_vertices[i], vertices[i]);
                 }
                 if (wireframe) {
@@ -321,8 +321,8 @@ public class SwingDraw extends DebugDraw {
         }
     }
 
-    Vec2 p1 = new Vec2(); //pool.popVec2();
-    Vec2 p2 = new Vec2(); //pool.popVec2();
+    Vec2 p1 = new Vec2(); 
+    Vec2 p2 = new Vec2(); 
 
     private void drawJoint(Joint joint) {
         Body bodyA = joint.getBodyA();
@@ -337,7 +337,7 @@ public class SwingDraw extends DebugDraw {
         color.set(0.5f, 0.8f, 0.8f);
 
         switch (joint.getType()) {
-            // TODO djm write after writing joints
+            
             case DISTANCE:
                 drawSegment(p1, p2, color);
                 break;
@@ -353,14 +353,14 @@ public class SwingDraw extends DebugDraw {
             break;
             case CONSTANT_VOLUME:
             case MOUSE:
-                // don't draw this
+                
                 break;
             default:
                 drawSegment(x1, p1, color);
                 drawSegment(p1, p2, color);
                 drawSegment(x2, p2, color);
         }
-        //pool.pushVec2(2);
+        
     }
 
     /*@Override
@@ -433,7 +433,7 @@ public class SwingDraw extends DebugDraw {
     private void transformGraphics(Graphics2D g, Vec2 center) {
         Vec2 e = viewportTransform.getExtents();
         Vec2 vc = viewportTransform.getCenter();
-        Mat22 vt = new Mat22(e, vc);//viewportTransform.getMat22Representation();
+        Mat22 vt = new Mat22(e, vc);
 
         int flip = yFlip ? -1 : 1;
         tr.setTransform(vt.ex.x, flip * vt.ex.y, vt.ey.x, flip * vt.ey.y, e.x, e.y);
@@ -494,58 +494,58 @@ public class SwingDraw extends DebugDraw {
     private final Vec2 zero = new Vec2();
     private final Color pcolorA = new Color(1f, 1f, 1f, .4f);
 
-//    @Override
-//    public void drawParticles(final Vec2[] centers, final float radius, ParticleColor[] colors, final int count) {
-//        Graphics2D g = getGraphics();
-//        saveState(g);
-//        transformGraphics(g, zero);
-//        g.setStroke(stroke);
-//        for (int i = 0; i < count; i++) {
-//            Vec2 center = centers[i];
-//            Color color;
-//            if (colors == null) {
-//                color = pcolorA;
-//            } else {
-//                ParticleColor c = colors[i];
-//                color = new Color(c.r * 1f / 127, c.g * 1f / 127, c.b * 1f / 127, c.a * 1f / 127);
-//            }
-//            AffineTransform old = g.getTransform();
-//            g.translate(center.x, center.y);
-//            g.scale(radius, radius);
-//            g.setColor(color);
-//            g.fill(circle);
-//            g.setTransform(old);
-//        }
-//        restoreState(g);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private final Color pcolor = new Color(1f, 1f, 1f, 1f);
 
-//    @Override
-//    public void drawParticlesWireframe(Vec2[] centers, float radius, ParticleColor[] colors, int count) {
-//        Graphics2D g = getGraphics();
-//        saveState(g);
-//        transformGraphics(g, zero);
-//        g.setStroke(stroke);
-//        for (int i = 0; i < count; i++) {
-//            Vec2 center = centers[i];
-//            Color color;
-//            // No alpha channel, it slows everything down way too much.
-//            if (colors == null) {
-//                color = pcolor;
-//            } else {
-//                ParticleColor c = colors[i];
-//                color = new Color(c.r * 1f / 127, c.g * 1f / 127, c.b * 1f / 127, 1);
-//            }
-//            AffineTransform old = g.getTransform();
-//            g.translate(center.x, center.y);
-//            g.scale(radius, radius);
-//            g.setColor(color);
-//            g.draw(circle);
-//            g.setTransform(old);
-//        }
-//        restoreState(g);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private final Vec2 temp = new Vec2();
     private final static IntArray xIntsPool = new IntArray();
@@ -553,7 +553,7 @@ public class SwingDraw extends DebugDraw {
 
     public void drawSolidRect(float px, float py, float w, float h, float r, float G, float b) {
         Graphics2D g = getGraphics();
-        //saveState(g);
+        
                 
         getWorldToScreenToOut(px, py, temp);
         int ipx = (int)temp.x;  int ipy = (int)temp.y;
@@ -563,17 +563,17 @@ public class SwingDraw extends DebugDraw {
         int iw = Math.abs(jpx - ipx);
         int ih = Math.abs(jpy - ipy);
           
-//        if ((ipy/2 > g.getDeviceConfiguration().getBounds().getHeight()) ||
-//                (ipx/2 > g.getDeviceConfiguration().getBounds().getWidth()))
-//                    return;
+
+
+
         
         g.setColor(new Color(r, G, b));
         g.fillRect(ipx-iw/2, ipy-ih/2, iw, ih);
 
-        //if (g.getDeviceConfiguration().getBounds().intersects(ipx-iw/2, ipy-ih/2, iw, ih)) {
-        //}        
         
-        //restoreState(g);        
+        
+        
+        
     }
 
     @Override
@@ -581,7 +581,7 @@ public class SwingDraw extends DebugDraw {
         Color s = strokeColor;
         Color f = fillColor;
         Graphics2D g = getGraphics();
-        //saveState(g);
+        
         int[] xInts = xIntsPool.get(vertexCount);
         int[] yInts = yIntsPool.get(vertexCount);
         for (int i = 0; i < vertexCount; i++) {
@@ -594,15 +594,15 @@ public class SwingDraw extends DebugDraw {
         g.fillPolygon(xInts, yInts, vertexCount);
         g.setColor(s);
         g.drawPolygon(xInts, yInts, vertexCount);
-        //restoreState(g);
+        
     }
 
     @Override
     public void drawPolygon(Vec2[] vertices, int vertexCount, Color3f color) {
-        Color s = strokeColor; //new Color(color.x, color.y, color.z, 1f);
+        Color s = strokeColor; 
         Graphics2D g = getGraphics();
         
-        //saveState(g);
+        
         int[] xInts = xIntsPool.get(vertexCount);
         int[] yInts = yIntsPool.get(vertexCount);
         for (int i = 0; i < vertexCount; i++) {
@@ -613,7 +613,7 @@ public class SwingDraw extends DebugDraw {
         g.setStroke(stroke);
         g.setColor(s);
         g.drawPolygon(xInts, yInts, vertexCount);
-        //restoreState(g);
+        
     }
 
     @Override

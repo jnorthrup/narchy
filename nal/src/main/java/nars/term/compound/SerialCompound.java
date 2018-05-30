@@ -83,27 +83,27 @@ public class SerialCompound extends DynBytes implements Compound, The {
 
     @Override
     public int hashCode() {
-        throw new UnsupportedOperationException(); //TODO impl in a subclass
+        throw new UnsupportedOperationException(); 
     }
 
     @Override
     public int hashCodeSubterms() {
-        throw new UnsupportedOperationException(); //TODO
+        throw new UnsupportedOperationException(); 
     }
 
     @Override
     public boolean equals(Object obj) {
-        throw new UnsupportedOperationException(); //TODO impl in a subclass
+        throw new UnsupportedOperationException(); 
     }
 
     @Override
     public @NotNull Subterms subterms() {
-        return build().subterms(); //HACK just a temporary way of accessing them
+        return build().subterms(); 
     }
 
-//    static class SerialTermVector implements TermContainer {
-//
-//    }
+
+
+
 
     @Override
     public boolean isNormalized() {
@@ -112,7 +112,7 @@ public class SerialCompound extends DynBytes implements Compound, The {
 
     @Override
     public int dt() {
-        //last two bytes
+        
         Op o = op();
         if (o.temporal) {
             int p = this.len;
@@ -123,72 +123,72 @@ public class SerialCompound extends DynBytes implements Compound, The {
         }
     }
 
-//        public ByteSource in;
-//
-//    final byte volume;
-//    boolean normalized;
-//
-//
-//    public static SerialCompound heap(Compound c) {
-//        return heap(c.op(), c.dt(), c.theArray());
-//    }
-//
-//    public static SerialCompound heap(Op op, int dt, Term... subterms) {
-//
-//
-//        UncheckedBytes h = new UncheckedBytes(Bytes.allocateDirect(new byte[64 * subterms.length /* est */]));
-//        h.writeByte(op.id);
-//        h.writeByte((byte) subterms.length);
-//
-//        int v = 1;
-//
-//        try {
-//
-//            for (int i = 0; i < subterms.length; i++) {
-//                Term x = subterms[i];
-//
-//                x.append((ByteArrayDataOutput) this);
-//
-//                v += x.volume();
-//            }
-//
-//            IO.writeCompoundSuffix(this, dt, op);
-//
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//        assert(v < Param.COMPOUND_VOLUME_MAX);
-//        this.volume = (byte) v;
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
 
-//    public SerialCompound(/*@NotNull*/ Op op, int dt, @NotNull TermContainer subs) {
-//        super(op, dt, subs);
-//
-//        uniqueSubs = new ObjectByteHashMap<>(volume());
-//        recurseTerms((x) -> uniqueSubs.getIfAbsentPut(x, ()->(byte)uniqueSubs.size()));
-//
-//        new SubtermVisitorXY(term()) {
-//
-//            @NotNull
-//            @Override
-//            public SubtermVisitorXY.Next accept(int subterm, Compound superterm, int depth) {
-//                System.out.println(superterm + "(" + subterm + "): " + superterm.term(subterm) + ", depth=" + depth);
-//                return Next.Next;
-//            }
-//        };
-//
-//        uniqueSubIndex = new Term[uniqueSubs.size()];
-//        uniqueSubs.forEachKeyValue((k,v) -> {
-//            uniqueSubIndex[v] = k;
-//        });
-//
-//    }
-//
-//    public void print() {
-//        System.out.println(toString() + "\n\tuniqueSubs=" + uniqueSubs);
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

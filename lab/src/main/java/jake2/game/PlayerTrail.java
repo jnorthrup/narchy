@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 13.11.2003 by RST.
-// $Id: PlayerTrail.java,v 1.2 2004-09-22 19:22:04 salomo Exp $
+
+
 package jake2.game;
 
 import jake2.util.Math3D;
@@ -47,7 +47,7 @@ public class PlayerTrail {
 
     static boolean trail_active;
     static {
-        //TODO: potential error
+        
         for (int n = 0; n < TRAIL_LENGTH; n++)
             trail[n] = new edict_t(n);
     }
@@ -62,7 +62,7 @@ public class PlayerTrail {
 
     static void Init() {
 
-        // FIXME || coop
+        
         if (GameBase.deathmatch.value != 0)
             return;
 

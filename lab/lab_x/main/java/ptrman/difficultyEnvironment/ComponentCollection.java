@@ -14,7 +14,7 @@ public class ComponentCollection {
     }
 
     public IComponent getComponentByName(String longName) {
-        // TODO< use hashmap for acceleration? >
+        
         for( IComponent iterationComponent : components ) {
             if( iterationComponent.getLongName().equals(longName) ) {
                 return iterationComponent;

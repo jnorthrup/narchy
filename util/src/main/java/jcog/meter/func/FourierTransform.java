@@ -10,5 +10,5 @@ package jcog.meter.func;
  * @author me
  */
 public class FourierTransform {
-	// TODO
+	
 }

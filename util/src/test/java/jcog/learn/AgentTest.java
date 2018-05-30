@@ -22,17 +22,17 @@ public class AgentTest {
 
     @Disabled
     @Test public void testDPGAgent() {
-        testAgent( new DPG(1, 2) ); //broken it seems
+        testAgent( new DPG(1, 2) ); 
     }
 
 
     @Test public void testDQNAgent() {
-        testAgent( new DQN(1, 2) ); //broken it seems
+        testAgent( new DQN(1, 2) ); 
     }
 
     static void testAgent(Agent agent) {
 
-        //assert(agent.inputs == 1); //not true via HaiQ perception
+        
         assert(agent.inputs >= 1);
         assert(agent.actions == 2);
 
@@ -44,7 +44,7 @@ public class AgentTest {
         IntIntHashMap acts = new IntIntHashMap();
         for (int i = 0; i < cycles; i++) {
             int action = agent.act(nextReward, new float[] { (float)Math.random() } );
-            //System.out.println(a);
+            
             acts.addToValue(action, 1);
             switch (action) {
                 case 0: nextReward = -1.0f; break;
@@ -55,7 +55,7 @@ public class AgentTest {
         }
         System.out.println(agent.getClass() + " " + agent.summary() + "\n" + acts);
         assertTrue(acts.get(1) > acts.get(0));
-        assertTrue(acts.get(1)/ minRatio > acts.get(0)); //at least 10:1
+        assertTrue(acts.get(1)/ minRatio > acts.get(0)); 
     }
 
 }

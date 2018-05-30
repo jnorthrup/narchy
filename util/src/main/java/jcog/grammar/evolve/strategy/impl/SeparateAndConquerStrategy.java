@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.strategy.impl;
 
@@ -82,21 +82,21 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
     private void initialize() {
         throw new RuntimeException("share the impl from DiversityElitismStrategy");
 
-//        int targetPopSize = param.getPopulationSize();
-//        this.rankings.clear();
-//
-//        InitialPopulationBuilder populationBuilder = context.getConfiguration().getPopulationBuilder();
-//        this.population = populationBuilder.init(this.context);
-//        this.context.getConfiguration().getTerminalSetBuilder().setup(this.context);
-//        Generation ramped = new Ramped(this.maxDepth, this.context);
-//        this.population.addAll(ramped.generate(targetPopSize - population.size()));
-//        List<Ranking> tmp = buildRankings(population, objective);
-//        while (tmp.size() > 0) {
-//            List<Ranking> t = Utils.getFirstParetoFront(tmp);
-//            tmp.removeAll(t);
-//            sortByFirst(t);
-//            this.rankings.addAll(t);
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -105,7 +105,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
             listener.evolutionStarted(this);
             initialize();
             Set<Node> bests = new UnifiedSet<>();
-            //Variables for termination criteria
+            
             context.setSeparateAndConquerEnabled(true);
 
             int terminationCriteriaGenerationsCounter = 0;
@@ -117,7 +117,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 evolve();
                 Ranking best = rankings.first();
 
-                //computes joined solution and fitenss on ALL training
+                
                 List<Node> tmpBests = new LinkedList<>(bests);
                  
                 
@@ -130,9 +130,9 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 
                 
                 if (listener != null) {
-                    //note: the rankings contains the individuals of the current sub-evolution (on divided training)
-                    //logGeneration usually takes into account best and fitness fields for stats and persistence,
-                    //rankings is used for size and other minor stats.
+                    
+                    
+                    
                     listener.logGeneration(this, generation + 1, joinedBest, fitnessOfJoined, this.rankings);
                 }
                 boolean allPerfect = true;
@@ -165,19 +165,19 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                 if (terminationCriteriaGenerationsCounter >= terminationCriteriaGenerations && pr >= dividePrecisionThreashold && generation < (param.getGenerations() - 1)) {
                     terminationCriteriaGenerationsCounter = 0;
                     bests.add(best.getNode());
-                    // remove matched matches
+                    
                     StringBuilder builder = new StringBuilder();
                     best.getNode().describe(builder);
                     context.getTrainingDataset().addSeparateAndConquerLevel(builder.toString(), (int) context.getSeed(), convertToUnmatch, isFlagging);
 
-                    // check if matches still exists, when matches are zero, the new level is removed and the evolution exits.
+                    
                     if (context.getCurrentDataSet().getNumberMatches() == 0) {
                         context.getTrainingDataset().removeSeparateAndConquerLevel((int) context.getSeed());
                         break;
                     }
-                    // re-initialize population
+                    
                     initialize();
-                    // continue evolvution
+                    
                 }
 
                 if (Thread.interrupted()) {
@@ -191,7 +191,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
              
              
-            //THe bests list insertion code should be refined.
+            
             if (listener != null) {
                 List<Node> dividedPopulation = new ArrayList<>(population.size());
                 List<Node> tmpBests = new LinkedList<>(bests);
@@ -200,7 +200,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
                     dividedPopulation.add(joinSolutions(tmpBests));
                 }
 
-//                //We have to evaluate the new solutions on the testing dataset
+
                 context.setSeparateAndConquerEnabled(false);
                 TreeSet<Ranking> tmp = new TreeSet();
                 sortRankings(dividedPopulation, objective, tmp);

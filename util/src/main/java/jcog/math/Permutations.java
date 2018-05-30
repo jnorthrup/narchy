@@ -15,18 +15,18 @@ public class Permutations {
 	/** current iteration */
 	int count;
 
-	// private E[] arr;
+	
 	protected int[] ind;
 
-	// public E[] output;//next() returns this array, make it public
+	
 
 	public Permutations() {
 	}
 
 	public Permutations restart(int size) {
 
-		// this.arr = arr; //TODO clone option: arr.clone();
-		this.size = size; // size = arr.length;
+		
+		this.size = size; 
 
 		int[] ind = this.ind;
 		if (ind == null || ind.length < size) {
@@ -69,7 +69,7 @@ public class Permutations {
 		int[] ind = this.ind;
 
 		if (count == 0) {
-			// first access since restart()
+			
 			return ind;
 		}
 
@@ -79,16 +79,16 @@ public class Permutations {
 
 			int itm = ind[tailMin1];
 
-			if (itm < ind[tail]) {// still increasing
+			if (itm < ind[tail]) {
 
-				// find last element which does not exceed ind[tail-1]
+				
 				int s = size - 1;
 				while (itm >= ind[s])
 					s--;
 
 				swap(ind, tailMin1, s);
 
-				// reverse order of elements in the tail
+				
 				for (int i = tail, j = size - 1; i < j; i++, j--) {
 					swap(ind, i, j);
 				}

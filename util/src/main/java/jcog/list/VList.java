@@ -267,7 +267,7 @@ public final class VList<T> extends AbstractList<T> {
      */
     @Override
     public T set(int index, T value) {
-        //TODO use lambda w/ indexFunction here
+        
 
         VListLocation<T> where = locateElement(index);
 

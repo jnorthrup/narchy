@@ -66,32 +66,32 @@ public class ExecutionContext {
         return currentGoal;
     }
 
-//    public SubGoal getFatherGoalId() {
-//        return fatherGoalId;
-//    }
+
+
+
 
     public Struct getClause() {
         return clause;
     }
 
-//    public Struct getHeadClause() {
-//        return headClause;
-//    }
+
+
+
 
     public SubGoalStore getSubGoalStore() {
         return goalsToEval;
     }
 
-//    public List<List<Var>> getTrailingVars() {
-//        OneWayList<List<Var>> t = trailingVars;
-//        List<List<Var>> l = new FasterList<>();
-//
-//        while (t != null) {
-//            l.add(t.head);
-//            t = t.tail;
-//        }
-//        return l;
-//    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Save the state of the parent context to later bring the ExectutionContext
@@ -124,11 +124,11 @@ public class ExecutionContext {
                     switch (gn) {
                         case "catch":
                         case "java_catch":
-                            break; //continue below
+                            break; 
 
                         default: {
                             fatherCtx = ctx.fatherCtx;
-                            //position of the new context in the list
+                            
                             depth = ctx.depth;
                             return;
 

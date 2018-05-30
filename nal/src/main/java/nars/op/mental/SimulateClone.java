@@ -17,8 +17,8 @@ package nars.op.mental;
  */
 public class SimulateClone {
 
-	// TODO
+	
 
-	// depends on a working NAR.clone(), NAR.clone(resolution,filter,...)
+	
 
 }

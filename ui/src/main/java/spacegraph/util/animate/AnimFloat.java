@@ -30,10 +30,10 @@ public class AnimFloat extends MutableFloat implements Animated {
 
         float x = floatValue();
         if (x!=x) {
-            //invalidated
+            
             super.set(target);
         } else {
-            //interpLinear(dt);
+            
             interpLERP(dt);
         }
 
@@ -42,7 +42,7 @@ public class AnimFloat extends MutableFloat implements Animated {
 
     public void interpLERP(float dt) {
         float rate = speed.floatValue() * dt;
-        //System.out.println(target + " " + floatValue() + " " + rate);
+        
         super.set(
                 Util.lerp(rate, floatValue(), target)
         );

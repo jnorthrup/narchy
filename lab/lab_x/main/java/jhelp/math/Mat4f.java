@@ -146,7 +146,7 @@ public class Mat4f {
       transforms by inverted rotation. */
   public void invertRigid() {
     float t;
-    // Transpose upper left 3x3
+    
     t = get(0, 1);
     set(0, 1, get(1, 0));
     set(1, 0, t);
@@ -156,7 +156,7 @@ public class Mat4f {
     t = get(1, 2);
     set(1, 2, get(2, 1));
     set(2, 1, t);
-    // Transform negative translation by this
+    
     Vec3f negTrans = new Vec3f(-get(0, 3), -get(1, 3), -get(2, 3));
     Vec3f trans = new Vec3f();
     xformDir(negTrans, trans);

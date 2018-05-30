@@ -17,7 +17,7 @@ package java4k.legendofzelda4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -32,7 +32,7 @@ import java.util.Random;
 
 public class a extends GamePanel {
 
-  // keys
+  
   private final boolean[] a = new boolean[32768];
 
   @Override
@@ -160,7 +160,7 @@ public class a extends GamePanel {
 
     ArrayList<int[]> enemies = new ArrayList<int[]>();
 
-    // create candle light
+    
     BufferedImage candleLight = new BufferedImage(112, 112, 2);
     for(i = 0; i < 112; i++) {
       for(j = 0; j < 112; j++) {
@@ -172,7 +172,7 @@ public class a extends GamePanel {
       }
     }
 
-    // decompress sprites
+    
     int[] pixels = new int[16];
     int[] pixels2 = new int[16];
     BufferedImage[] sprites = new BufferedImage[64];
@@ -203,7 +203,7 @@ public class a extends GamePanel {
       }
     }
 
-    // decompress map
+    
     for(i = 0; i < 5; i++) {
       for(j = 0; j < 55; j++) {
         for(k = 0; k < 16; k++) {
@@ -213,7 +213,7 @@ public class a extends GamePanel {
       }
     }
 
-    // add items to map
+    
     map[45][31] = MAP_SWORD;
     map[51][3] = MAP_CANDLE;
     map[14][51] = MAP_KEY;
@@ -227,7 +227,7 @@ public class a extends GamePanel {
     map[3][77] = MAP_PRINCESS;
     map[27][15] = MAP_CRACKED_WALL;
 
-    // add bodies of water and ladder
+    
     for(i = 0; i < 23; i++) {
       if (i != 6) {
         map[i + 32][5] = map[i + 32][6] = MAP_WATER;
@@ -245,7 +245,7 @@ public class a extends GamePanel {
       }
     }
 
-    // add bridge
+    
     map[38][5] = map[38][6] = MAP_BRIDGE;
 
     BufferedImage image = new BufferedImage(256, 240, 1);
@@ -258,7 +258,7 @@ public class a extends GamePanel {
       do {
         nextFrameStartTime += 16666667;
 
-        // -- update starts ----------------------------------------------------
+        
 
         if (fading) {
           fadeIntensity += fadeDelta;
@@ -267,7 +267,7 @@ public class a extends GamePanel {
             fadeIntensity = 255;
             fadeDelta = -8;
 
-            // reset game
+            
             playerX = 640;
             playerY = 792;
             playerSprite = SPRITE_LINK_UP_1;
@@ -291,8 +291,8 @@ public class a extends GamePanel {
           attackReleased = true;
         }
 
-        // scroll camera when player moves off the screen
-        // and push player fully onto new screen
+        
+        
         if (targetCameraX < cameraX) {
           cameraX -= 4;
           if ((playerX & 15) != 0) {
@@ -337,12 +337,12 @@ public class a extends GamePanel {
           }
         }
 
-        // update enemies
+        
         for(i = enemies.size() - 1; i >= 0; i--) {
           int[] enemy = enemies.get(i);
           if (enemy[ENEMY_DYING] > 0) {
             if (++enemy[ENEMY_DYING] == 16) {
-              // remove dead enemy after flashing
+              
               enemies.remove(i);
 
               if (random.nextInt(7) == 0) {
@@ -391,22 +391,22 @@ public class a extends GamePanel {
                 x -= r;
                 y -= s;
                 if (x * x + y * y < 128) {
-                  // enemy begins to flash into nonexistence
+                  
                   ++enemy[ENEMY_DYING];
                   continue;
                 }
               }
 
-              // test for collision between enemy and player
+              
               if (playerStunned == 0 && attacking == 0
                   && playerX <= enemy[ENEMY_X] + 4
                   && playerX >= enemy[ENEMY_X] - 20
                   && playerY <= enemy[ENEMY_Y] + 4
                   && playerY >= enemy[ENEMY_Y] - 20) {
-                // player injured and stunned
+                
                 playerStunned = 64;
                 if (--playerHealth == 0) {
-                  // player died
+                  
                   fading = true;
                   fadeIntensity = 0;
                   fadeDelta = 2;
@@ -417,7 +417,7 @@ public class a extends GamePanel {
                   || enemy[ENEMY_X] >= cameraX + 256
                   || enemy[ENEMY_Y] < cameraY
                   || enemy[ENEMY_Y] >= cameraY + 176) {
-                // remove enemies that are out of bounds
+                
                 enemies.remove(i);
               }
             }
@@ -440,7 +440,7 @@ public class a extends GamePanel {
           attacking = 10;
           playerWalkCount = 0;
         } else {
-          // player walks 1.5 pixels on average per step
+          
           i = 1 + (counter & 1);
           x = playerX;
           y = playerY;
@@ -480,7 +480,7 @@ public class a extends GamePanel {
             playerWalkCount++;
             playerLastDirection = playerDirection;
 
-            // toggle walking sprite
+            
             if (playerDirection == DIRECTION_UP) {
               playerSprite = playerSprite != SPRITE_LINK_UP_1
                   ? SPRITE_LINK_UP_1 : SPRITE_LINK_UP_2;
@@ -496,7 +496,7 @@ public class a extends GamePanel {
             }
           }
 
-          // line up player to nearest 8 pixels in perpendular direction
+          
           if (playerDirection == DIRECTION_UP
                 || playerDirection == DIRECTION_DOWN) {
             i = x & 7;
@@ -518,13 +518,13 @@ public class a extends GamePanel {
             }
           }
 
-          // detect locks
+          
           p = map[(y + 8) >> 4][x >> 4];
           q = map[(y + 15) >> 4][x >> 4];
           r = map[(y + 8) >> 4][(x + 14) >> 4];
           s = map[(y + 15) >> 4][(x + 14) >> 4];
           if (acquiredKey) {
-            // lose key when a lock is unlocked
+            
             if (p == MAP_LOCK) {
               map[(y + 8) >> 4][x >> 4] = MAP_EMPTY;
               acquiredKey = false;
@@ -540,13 +540,13 @@ public class a extends GamePanel {
             }
           }
 
-          // walls acts a barriers for the player
+          
           if (p < MAP_WALL && q < MAP_WALL && r < MAP_WALL && s < MAP_WALL) {
             playerX = x;
             playerY = y;
           }
 
-          // acquire items
+          
           i = (y + 12) >> 4;
           j = (x + 8) >> 4;
           k = map[i][j];
@@ -565,7 +565,7 @@ public class a extends GamePanel {
             }
           }
 
-          // compute where the camera should be
+          
           targetCameraX = (playerX + 8) & ~0xFF;
           targetCameraY = ((playerY + 12) / 176) * 176;
 
@@ -573,7 +573,7 @@ public class a extends GamePanel {
             if (!scrolling) {
               scrolling = true;
 
-              // create new enemies
+              
               for(i = 3; i >= 0; i--) {
                 do {
                   x = targetCameraX + ((2 + random.nextInt(12)) << 4);
@@ -593,14 +593,14 @@ public class a extends GamePanel {
           }
         }
 
-        // -- update ends ------------------------------------------------------
+        
 
       } while(nextFrameStartTime < System.nanoTime());
 
-      // -- render starts ------------------------------------------------------
+      
 
       if (won) {
-        // draw ending
+        
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 256, 240);
         g.drawImage(sprites[SPRITE_TRIFORCE], 123, 84, null);
@@ -610,11 +610,11 @@ public class a extends GamePanel {
         g.drawImage(sprites[SPRITE_LINK_DOWN_1], 128, 112, null);
       } else {
 
-        // draw ground
+        
         g.setColor(COLOR_FLOOR);
         g.fillRect(0, 64, 256, 176);
 
-        // draw map
+        
         x = cameraX >> 4;
         y = cameraY >> 4;
         r = playerX >> 4;
@@ -649,7 +649,7 @@ public class a extends GamePanel {
         }
 
         if (attacking > 0) {
-          // draw sword
+          
           i = playerX - cameraX + 8;
           j = playerY - cameraY + 72;
           float angle = 1.57f * (playerDirection - 1);
@@ -671,18 +671,18 @@ public class a extends GamePanel {
 
         flash = !flash;
         if (flash || playerStunned == 0) {
-          // draw player
+          
           g.drawImage(sprites[playerSprite],
               playerX - cameraX, playerY - cameraY + 64, null);
         }
 
         if ((x >= 64 && y >= 22) || (x >= 16 && x <= 48 && y == 0)) {
-          // draw candle light
+          
           g.drawImage(candleLight, playerX - cameraX - 48,
               playerY - cameraY + 16, null);
         }
 
-        // draw enemies
+        
         for(i = enemies.size() - 1; i >= 0; i--) {
           int[] enemy = enemies.get(i);
           g.translate(enemy[ENEMY_X] - cameraX, enemy[ENEMY_Y] - cameraY + 64);
@@ -701,11 +701,11 @@ public class a extends GamePanel {
           g.setTransform(affineTransform);
         }
 
-        // draw heads-up display (HUD)
+        
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, 256, 64);
 
-        // draw mini-map
+        
         g.setColor(COLOR_MAP_1);
         g.fillRect(16, 24, 64, 32);
         g.setColor(COLOR_MAP_2);
@@ -713,33 +713,33 @@ public class a extends GamePanel {
             23 + (((cameraY + 88) << 1) / 55), 3, 3);
 
         if (acquiredSword) {
-          // draw sword in HUD
+          
           g.drawImage(sprites[SPRITE_SWORD], 176, 24, null);
         }
         if (acquiredCandle) {
-          // draw candle in HUD
+          
           g.drawImage(sprites[SPRITE_CANDLE], 192, 24, null);
         }
         if (acquiredKey) {
-          // draw candle in HUD
+          
           g.drawImage(sprites[SPRITE_KEY], 208, 24, null);
         }
 
-        // draw health hearts
+        
         for(i = 0; i < playerHealth; i++) {
           g.drawImage(sprites[SPRITE_HEART], 171 + (i << 3), 44, null);
         }
 
         if (fading) {
-          // draw fade
+          
           g.setColor(new Color(0, 0, 0, fadeIntensity));
           g.fillRect(0, 0, 256, 240);
         }
       }
 
-      // -- render ends --------------------------------------------------------
+      
 
-      // show the hidden buffer
+      
       if (g2 == null) {
         g2 = (Graphics2D)getGraphics();
         requestFocus();
@@ -747,7 +747,7 @@ public class a extends GamePanel {
         g2.drawImage(image, 0, 0, 512, 480, null);
       }
 
-      // burn off extra cycles
+      
       while(nextFrameStartTime - System.nanoTime() > 0) {
         Thread.yield();
       }
@@ -775,7 +775,7 @@ public class a extends GamePanel {
     }
   }
 
-  // to run in window, uncomment below
+  
   public static void main(String[] args) throws Throwable {
     javax.swing.JFrame frame = new javax.swing.JFrame("Legend of Zelda 4K");
     frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

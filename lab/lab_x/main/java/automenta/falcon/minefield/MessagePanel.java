@@ -1,4 +1,4 @@
-package automenta.falcon.minefield;// MessagePanel.java: Display a message on a JPanel
+package automenta.falcon.minefield;
 
 public class MessagePanel extends JPanel {
     /**
@@ -121,13 +121,13 @@ public class MessagePanel extends JPanel {
         super.paintComponent(g);
 
         if (centered) {
-            // Get font metrics for the current font
+            
             FontMetrics fm = g.getFontMetrics();
 
-            // Find the center location to display
+            
             int stringWidth = fm.stringWidth(message);
             int stringAscent = fm.getAscent();
-            // Get the position of the leftmost character in the baseline
+            
             xCoordinate = getWidth() / 2 - stringWidth / 2;
             yCoordinate = getHeight() / 2 + stringAscent / 2;
         }

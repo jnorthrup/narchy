@@ -45,7 +45,7 @@ public class CGMethodCall extends CGMethod {
 
     @Override
     protected void pre() {
-        //nothing
+        
     }
 
     @Override

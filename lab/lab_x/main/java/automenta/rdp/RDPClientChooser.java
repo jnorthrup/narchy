@@ -61,21 +61,21 @@ public class RDPClientChooser {
 
 		String os = System.getProperty("os.name");
 
-		// For Linux we need to identify an appropriate native client
+		
 
 		if (os.startsWith("Linux")) {
 
-			// TBD
+			
 
 		}
 
 		return false;
 	}
 
-	//
-	// Private Class method to run the Microsoft MAC OS X Remote Desktop
-	// Connection (RDP) Client
-	//
+	
+	
+	
+	
 
 	/**
 	 * Private method to run the Mac OS RDP client provided by Microsoft
@@ -93,8 +93,8 @@ public class RDPClientChooser {
 
 		Options.windowTitle = "Remote Desktop Connection";
 
-		// Process arguments (there are more than we need now - need to reduce -
-		// also need to check for correct args)
+		
+		
 
 		Getopt g = new Getopt("properJavaRDP", args,
 				"bc:d:f::g:k:l:n:p:s:t:T:u:", alo);
@@ -137,7 +137,7 @@ public class RDPClientChooser {
 			}
 		}
 
-		// Obtain Server name and possibly port from command args
+		
 
 		String server = null;
 
@@ -155,9 +155,9 @@ public class RDPClientChooser {
 			return false;
 		}
 
-		// Create a temporary directory from which to run RDC - we do this so
-		// that
-		// we can run multiple instances
+		
+		
+		
 
 		String rdproot = "/var/tmp/RDP-" + Options.hostname + '-'
 				+ Options.port;
@@ -169,7 +169,7 @@ public class RDPClientChooser {
 			return false;
 		}
 
-		// Dynamically create the RDP config file based on args passed.
+		
 
 		logger.info("Creating RDP Config in " + rdproot);
 
@@ -177,15 +177,15 @@ public class RDPClientChooser {
 
 		rdpConfigFile.write("screen mode id:i:0\n");
 		rdpConfigFile.write("startdisplay:i:0\n");
-		rdpConfigFile.write("desktop size id:i:6\n"); // full screen - this
-		// needs to be mapped
-		// from geometry param
-		// passed in TBD
+		rdpConfigFile.write("desktop size id:i:6\n"); 
+		
+		
+		
 		rdpConfigFile.write("desktopwidth:i:1280\n");
 		rdpConfigFile.write("desktopheight:i:854\n");
 		rdpConfigFile.write("autoshowmenu:i:1\n");
 		rdpConfigFile.write("desktopallowresize:i:1\n");
-		rdpConfigFile.write("session bpp:i:8\n"); // 256 colors
+		rdpConfigFile.write("session bpp:i:8\n"); 
 		rdpConfigFile.write("winposstr:s:0,3,0,0,800,600\n");
 		rdpConfigFile.write("auto connect:i:1\n");
 		rdpConfigFile.write("full address:s:" + server + ':' + Options.port
@@ -219,11 +219,11 @@ public class RDPClientChooser {
 
 		rdpConfigFile.close();
 
-		//
-		// Set recent servers indicating that local drives are accessable This
-		// avoids the warning
-		// and prevents a growing list of server:port entries
-		//
+		
+		
+		
+		
+		
 
 		if (new File(System.getProperty("user.home")
 				+ "/Library/Preferences/Microsoft/RDC Client").exists()) {
@@ -234,12 +234,12 @@ public class RDPClientChooser {
 			recentServersFile.close();
 		}
 
-		// Copy the RDP Client application to a temporary directory to allow
-		// multiple copies to run. Note here that we use the MAC OS X ditto
-		// command because
-		// a normal copy of the executable would not copy the advanced OS X
-		// attributes which (among other things) denote the file as an
-		// "application".
+		
+		
+		
+		
+		
+		
 
 		String[] appcopycmd = {
 				"/bin/sh",
@@ -258,7 +258,7 @@ public class RDPClientChooser {
 			Process p = Runtime.getRuntime().exec(appcopycmd);
 			logger.warn("RDP Client copied to " + rdproot);
 			try {
-				p.waitFor(); // Wait for the command to complete
+				p.waitFor(); 
 			} catch (InterruptedException e) {
 				logger.warn("Unable to wait for application to copy");
 				return false;
@@ -268,8 +268,8 @@ public class RDPClientChooser {
 			return false;
 		}
 
-		// Move the application to the name of the title so that the running
-		// application shows when using ALT-TAB etc.
+		
+		
 
 		String[] mvcmd = {
 				"/bin/sh",
@@ -281,7 +281,7 @@ public class RDPClientChooser {
 		try {
 			Process p = Runtime.getRuntime().exec(mvcmd);
 			try {
-				p.waitFor(); // Wait for the mv command to complete
+				p.waitFor(); 
 			} catch (InterruptedException e) {
 				logger.warn("Unable to wait for application to run");
 				return false;
@@ -291,7 +291,7 @@ public class RDPClientChooser {
 			return false;
 		}
 
-		// Run an instance of the RDP Client using the Mac OS X "open" command
+		
 
 		String[] rdpcmd = {
 				"/bin/sh",
@@ -303,7 +303,7 @@ public class RDPClientChooser {
 			Process p = Runtime.getRuntime().exec(rdpcmd);
 			logger.info("RDP Client Launched from " + rdproot);
 			try {
-				p.waitFor(); // Wait for the open command to complete
+				p.waitFor(); 
 			} catch (InterruptedException e) {
 				logger.warn("Unable to wait for application to run");
 				return false;
@@ -313,8 +313,8 @@ public class RDPClientChooser {
 			return false;
 		}
 
-		// Sleep 10 seconds to give the RDP client a chance to start before we
-		// remove the temp directory.
+		
+		
 
 		try {
 			Thread.sleep(10000);
@@ -323,7 +323,7 @@ public class RDPClientChooser {
 			return false;
 		}
 
-		// Remove the tempory directory
+		
 
 		String[] rmcmd = { "/bin/sh", "-c",
 				"rm -r " + rdproot + " >/dev/null 2>/dev/null" };

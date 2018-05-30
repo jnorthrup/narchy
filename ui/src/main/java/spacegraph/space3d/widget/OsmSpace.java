@@ -35,10 +35,10 @@ public class OsmSpace implements GLUtessellatorCallback {
 
 
 
-    //    double scale = 0.3; //global scale
-//    double scaleLat = 1;
-//    double scaleLon = 1;
-//    GeoCoordinate center;
+    
+
+
+
     final GeoCoordinate min;
     final GeoCoordinate max;
     private final Osm osm;
@@ -71,7 +71,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         double maxLon = osm.bounds.maxLon;
         scaleLat = (float) ( (maxLat - minLat));
         scaleLon = (float) ( (maxLon - minLon));
-        scaleLat = scaleLon = Math.max(scaleLat, scaleLon); //1:1
+        scaleLat = scaleLon = Math.max(scaleLat, scaleLon); 
         center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
 
     }
@@ -83,17 +83,17 @@ public class OsmSpace implements GLUtessellatorCallback {
 
     void project(GeoCoordinate global, double[] target, int offset) {
 
-        //2D flat projection
+        
         target[offset++] = (global.latitude - center.latitude);
         target[offset++] = (global.longitude - center.longitude);
         target[offset/*++*/] = 0;
 
-//        //3D ECEF
-//        double[] t = ECEF.latlon2ecef(global.latitude * 20, global.longitude * 20, global.altitude);
-//        double s = 100 * 1E-7;
-//        target[offset++] = t[0] * s;
-//        target[offset++] = t[1] * s;
-//        target[offset/*++*/] = t[2] * s;
+
+
+
+
+
+
 
     }
 
@@ -124,7 +124,7 @@ public class OsmSpace implements GLUtessellatorCallback {
 
             @Override
             public void move(float tx, float ty) {
-                //System.out.println(startPos + " "  + tx + " "  + ty);
+                
                 float scale = OsmSurface.this.scale.floatValue()/2;
                 translate.set((translateStart.x+tx*scale), (translateStart.y+ty*scale));
             }
@@ -134,7 +134,7 @@ public class OsmSpace implements GLUtessellatorCallback {
         public Surface tryTouch(Finger finger) {
             float wheel;
             if ((wheel = finger.rotationY())!=0) {
-                //zoom
+                
                 scale.multiply( (1f - wheel*0.1f) );
             }
 
@@ -395,50 +395,50 @@ public class OsmSpace implements GLUtessellatorCallback {
         return (v) -> draw.forEach(d -> d.accept(v));
     }
 
-//    @Override
-//    protected void render(int dtMS) {
-//
-//        if (render == null) {
-//            compile();
-//        }
-//
-//        render.accept(this);
-//
-//        super.render(dtMS);
-//    }
 
-//    @Override
-//    public void reshape(GLAutoDrawable glAutoDrawable, int x, int y, int w, int h) {
-//        System.out.printf("reshape(%d, %d, %d, %d)\n", x, y, w, h);
-//
-//        GL2 gl = glAutoDrawable.getGL().getGL2();
-//        gl.glMatrixMode(GL_PROJECTION);
-//        gl.glLoadIdentity();
-//        gl.glViewport(x, y, w, h);
-////        gl.glOrtho((float)-w/300, (float)w/300, (float)-h/300, (float)h/300, -1f, 1f);
-////        gl.glOrtho(-1f, 1f, (float)-h/w, (float)h/w, -1f, 1f);
-//        gl.glOrtho((float) -w / h, (float) w / h, -1f, 1f, -1f, 1f);
-//
-//    }
-//
-//    @Override
-//    public void keyPressed(KeyEvent keyEvent) {
-//        switch (keyEvent.getKeyCode()) {
-//            case KeyEvent.VK_ESCAPE:
-//                System.exit(0);
-//                break;
-//            case KeyEvent.VK_SPACE:
-//                wireframe = !wireframe;
-//                break;
-//            default:
-//                break;
-//        }
-//    }
-//
-//    @Override
-//    public void keyReleased(KeyEvent keyEvent) {
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -472,7 +472,7 @@ public class OsmSpace implements GLUtessellatorCallback {
      * is weighted.
      */
     @Override
-    public void combine(double[] coords, Object[] data, //
+    public void combine(double[] coords, Object[] data, 
                         float[] weight, Object[] outData) {
         double[] vertex = new double[6];
 
@@ -493,7 +493,7 @@ public class OsmSpace implements GLUtessellatorCallback {
     }
 
     @Override
-    public void combineData(double[] coords, Object[] data, //
+    public void combineData(double[] coords, Object[] data, 
                             float[] weight, Object[] outData, Object polygonData) {
     }
 

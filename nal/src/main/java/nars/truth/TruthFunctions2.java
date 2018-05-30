@@ -33,7 +33,7 @@ public enum TruthFunctions2 { ;
         float extreme = 2f * Math.abs(0.5f - Math.abs(a.freq() - b.freq()));
         float ac = a.conf(), bc = b.conf();
         float conf = Util.lerp(extreme, (ac * bc), w2cSafe(c2wSafe(ac) + c2wSafe(bc)));
-        //float freq = ((((a.freq()) * ac) * ((1f-b.freq()) * bc)) / (ac + bc));
+        
         float freq = a.freq() * (1f-b.freq());
         return conf >= confMin ? $.t(freq, conf) : null;
     }
@@ -46,12 +46,12 @@ public enum TruthFunctions2 { ;
     @Nullable
     public static Truth deduction(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
 
-        //float f = and(a.freq()-0.5f, bF)+0.5f;
+        
         float f = and(a.freq(), bF);
-        //float c = w2cSafe(Util.lerp(bC, 0, a.evi())); //absolute conf
-        //float c = w2cSafe(Util.lerp(bC/(bC + a.conf()), 0, a.evi())); //relative to a.conf
+        
+        
         float aC = a.conf();
-        //float c = Util.lerp(bC/(bC + aC), aC * bC, aC); //relative to a.conf
+        
         float c = Util.lerp(bC/(bC + aC), 0 ,aC);
 
         return c >= minConf ? t(f, c) : null;
@@ -69,18 +69,18 @@ public enum TruthFunctions2 { ;
     @Nullable public static Truth desireNew(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
         float c = and(goal.conf(), belief.conf(), belief.freq());
-        //float c = and(goal.conf(), belief.conf());
+        
         if (!strong)
             c *= TruthFunctions.w2c(1.0f);
 
         if (c >= minConf) {
 
-//            //instead of the original's f = and(aFreq,bFreq),
-//            //this does not discriminate against negative goals but instead
-//            //pulls the frequency toward 0.5 in proportion to (1- bFreq)
-//            float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
 
-            //this uses the task's frequency as-is
+
+
+
+
+            
             float f = goal.freq();
 
             return $.t(f, c);
@@ -88,20 +88,20 @@ public enum TruthFunctions2 { ;
         } else {
             return null;
         }
-        //return c < minConf ? null : $.t(Util.lerp(b.freq(), 0.5f, a.freq()), c);
+        
 
 
-//        float c = a.conf() * b.freq();
-//        return c < minConf ? null : $.t(a.freq(), c);
-
-        //float c = and(a.conf(), b.conf(), b.freq());
-//        return c < minConf ? null : $.t(a.freq(), c);
-        //return $.t(a.expectation(b.freq()), b.conf());
-        //return c < minConf ? null : $.t(a.expectation(b.freq()), c);
-        //return c < minConf ? null : $.t(TruthFunctions.expectation(a.freq(), b.freq()) /* b.freq used in conf param */, c);
 
 
-        //return c < minConf ? null : $.t(a.freq(), c);
+
+        
+
+        
+        
+        
+
+
+        
 
     }
 }

@@ -59,8 +59,8 @@ public abstract class flat extends Functor.UnaryFunctor {
 
     };
 
-    //public Flat(boolean productOrSet, boolean breadthOrDepth) {
-        //generate each of the 4 different operate names
+    
+        
 
-    //}
+    
 }

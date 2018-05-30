@@ -54,8 +54,8 @@ public class AtomicMeanFloat extends AtomicFloat implements FloatProcedure {
         })) / (c[0] > 0 ? c[0] : Float.NaN);
 
         if (mean==mean) {
-            //recalculate sum via the atomically calculated mean on the stack, not field access
-            //slight loss of precision
+            
+            
             return new float[] { mean, mean * c[0] };
         } else {
             return new float[] { Float.NaN, 0 };

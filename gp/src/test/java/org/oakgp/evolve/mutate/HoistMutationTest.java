@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,8 +36,8 @@ public class HoistMutationTest {
 
     @Test
     public void testFunctionNodeNoAlternatives() {
-        // tests when the return type of the root node (in this case a boolean)
-        // is not same type of any of the other nodes in the tree (in this case they are all integers)
+        
+        
         Node input = readNode("(zero? (+ (+ v0 v1) (+ 9 v2)))");
         Node result = hoistMutate(DummyRandom.EMPTY, input);
         assertSame(input, result);

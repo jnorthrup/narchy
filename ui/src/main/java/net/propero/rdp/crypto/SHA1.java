@@ -12,13 +12,13 @@ package net.propero.rdp.crypto;
  * <p>
  * <li> NIST FIPS PUB 180-1, "Secure Hash Standard", U.S. Department of
  * Commerce, May 1993.<br>
- * <a href="http://www.itl.nist.gov/div897/pubs/fip180-1.htm">
- * http://www.itl.nist.gov/div897/pubs/fip180-1.htm</a>
+ * <a href="http:
+ * http:
  * </ol>
  * <p>
  * <b>Copyright</b> &copy; 1995-1997 <a
- * href="http://www.systemics.com/">Systemics Ltd</a> on behalf of the <a
- * href="http://www.systemics.com/docs/cryptix/">Cryptix Development Team</a>.
+ * href="http:
+ * href="http:
  * <br>
  * All rights reserved.
  * <p>
@@ -30,8 +30,8 @@ package net.propero.rdp.crypto;
  */
 public final class SHA1 extends BlockMessageDigest implements Cloneable {
 
-    // SHA-1 constants and variables
-    // ...........................................................................
+    
+    
 
     /**
      * Length of the final hash (in bytes).
@@ -94,12 +94,12 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
         return (a ^ b ^ c) + 0xCA62C1D6;
     }
 
-    // why was this public?
-    // Note: parameter order changed to be consistent with System.arraycopy.
+    
+    
     private static void byte2int(byte[] src, int srcOffset, int[] dst,
                                  int dstOffset, int length) {
         while (length-- > 0) {
-            // Big endian
+            
             dst[dstOffset++] = (src[srcOffset++] << 24)
                     | ((src[srcOffset++] & 0xFF) << 16)
                     | ((src[srcOffset++] & 0xFF) << 8)
@@ -139,8 +139,8 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
         java_reset();
     }
 
-    // SHA-1 transform routines
-    // ...........................................................................
+    
+    
 
     private void java_reset() {
         digest[0] = 0x67452301;
@@ -200,9 +200,9 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
 
         byte2int(tmp, 0, data, 0, (DATA_LENGTH / 4) - 2);
 
-        // Big endian
-        // WARNING: int>>>32 != 0 !!!
-        // bitcount() used to return a long, now it's an int.
+        
+        
+        
         int bc = bitcount();
         data[14] = 0;
         data[15] = bc;
@@ -211,7 +211,7 @@ public final class SHA1 extends BlockMessageDigest implements Cloneable {
 
         byte buf[] = new byte[HASH_LENGTH];
 
-        // Big endian
+        
         int off = 0;
         for (int i = 0; i < HASH_LENGTH / 4; ++i) {
             int d = digest[i];

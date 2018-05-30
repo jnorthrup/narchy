@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -30,8 +30,8 @@ package spacegraph.space3d.phys.collision;
  */
 public enum CollidableType {
 	RIGID_BODY,
-	// CO_GHOST_OBJECT keeps track of all objects overlapping its AABB and that pass its collision filter
-	// It is useful for collision sensors, explosion objects, character controller etc.
+	
+	
 	GHOST_OBJECT,
 	SOFT_BODY
 }

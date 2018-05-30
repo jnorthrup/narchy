@@ -44,10 +44,10 @@ import java.nio.channels.FileChannel;
  * @author cwei
  */
 public final class Misc extends Mesh {
-////	   r_misc.c
-//
-//	#include "gl_local.h"
-//
+
+
+
+
 	/*
 	==================
 	R_InitParticleTexture
@@ -71,9 +71,9 @@ final byte[][] dottexture =
 		int		x,y;
 		byte[] data = new byte[8 * 8 * 4];
 
-		//
-		// particle texture
-		//
+		
+		
+		
 		for (x=0 ; x<8 ; x++)
 		{
 			for (y=0 ; y<8 ; y++)
@@ -87,16 +87,16 @@ final byte[][] dottexture =
 		}
 		r_particletexture = GL_LoadPic("***particle***", data, 8, 8, it_sprite, 32);
 
-		//
-		// also use this for bad textures, but without alpha
-		//
+		
+		
+		
 		for (x=0 ; x<8 ; x++)
 		{
 			for (y=0 ; y<8 ; y++)
 			{
 				data[y * 32 + x * 4 + 0] = (byte)(dottexture[x&3][y&3]*255);
-				data[y * 32 + x * 4 + 1] = 0; // dottexture[x&3][y&3]*255;
-				data[y * 32 + x * 4 + 2] = 0; //dottexture[x&3][y&3]*255;
+				data[y * 32 + x * 4 + 1] = 0; 
+				data[y * 32 + x * 4 + 2] = 0; 
 				data[y * 32 + x * 4 + 3] = (byte)255;
 			}
 		}
@@ -104,21 +104,21 @@ final byte[][] dottexture =
 	}
 
 
-//	/* 
-//	============================================================================== 
-// 
-//							SCREEN SHOTS 
-// 
-//	============================================================================== 
-//	*/ 
-//
-//	typedef struct _TargaHeader {
-//		unsigned char 	id_length, colormap_type, image_type;
-//		unsigned short	colormap_index, colormap_length;
-//		unsigned char	colormap_size;
-//		unsigned short	x_origin, y_origin, width, height;
-//		unsigned char	pixel_size, attributes;
-//	} TargaHeader;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	private final static int TGA_HEADER_SIZE = 18;
 
@@ -130,7 +130,7 @@ final byte[][] dottexture =
 	    StringBuilder sb = new StringBuilder(FS.Gamedir() + "/scrshot/jake00.tga");
 	    FS.CreatePath(sb.toString());
 	    File file = new File(sb.toString());
-	    // find a valid file name
+	    
 	    int i = 0; int offset = sb.length() - 6;
 	    while (file.exists() && i++ < 100) {
 	        sb.setCharAt(offset, (char) ((i/10) + '0'));
@@ -150,35 +150,35 @@ final byte[][] dottexture =
 	        MappedByteBuffer image = ch.map(FileChannel.MapMode.READ_WRITE, 0,
 	                fileLength);
 	        
-	        // write the TGA header
-	        image.put(0, (byte) 0).put(1, (byte) 0);
-	        image.put(2, (byte) 2); // uncompressed type
-	        image.put(12, (byte) (vid.getWidth() & 0xFF)); // vid.getWidth()
-	        image.put(13, (byte) (vid.getWidth() >> 8)); // vid.getWidth()
-	        image.put(14, (byte) (vid.getHeight() & 0xFF)); // vid.getHeight()
-	        image.put(15, (byte) (vid.getHeight() >> 8)); // vid.getHeight()
-	        image.put(16, (byte) 24); // pixel size
 	        
-	        // go to image data position
+	        image.put(0, (byte) 0).put(1, (byte) 0);
+	        image.put(2, (byte) 2); 
+	        image.put(12, (byte) (vid.getWidth() & 0xFF)); 
+	        image.put(13, (byte) (vid.getWidth() >> 8)); 
+	        image.put(14, (byte) (vid.getHeight() & 0xFF)); 
+	        image.put(15, (byte) (vid.getHeight() >> 8)); 
+	        image.put(16, (byte) 24); 
+	        
+	        
 	        image.position(TGA_HEADER_SIZE);
-	        // jogl needs a sliced buffer
+	        
 	        ByteBuffer rgb = image.slice();
 
-	        // change pixel alignment for reading
+	        
 	        if (vid.getWidth() % 4 != 0) {
 	            gl.glPixelStorei(GL_PACK_ALIGNMENT, 1); 
 	        }
 
-	        // OpenGL 1.2+ supports the GL_BGR color format
-	        // check the GL_VERSION to use the TARGA BGR order if possible
-	        // e.g.: 1.5.2 NVIDIA 66.29
+	        
+	        
+	        
 	        if (gl_config.getOpenGLVersion() >= 1.2f) {
-	            // read the BGR values into the image buffer
+	            
 	            gl.glReadPixels(0, 0, vid.getWidth(), vid.getHeight(), GL_BGR, GL_UNSIGNED_BYTE, rgb);
 	        } else {
-	            // read the RGB values into the image buffer
+	            
 	            gl.glReadPixels(0, 0, vid.getWidth(), vid.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, rgb);
-		        // flip RGB to BGR
+		        
 		        byte tmp;
 		        for (i = TGA_HEADER_SIZE; i < fileLength; i += 3) {
 		            tmp = image.get(i);
@@ -186,9 +186,9 @@ final byte[][] dottexture =
 		            image.put(i + 2, tmp);
 		        }
 	        }
-	        // reset to default alignment
+	        
 	        gl.glPixelStorei(GL_PACK_ALIGNMENT, 4); 
-	        // close the file channel
+	        
 	        ch.close();
 	    } catch (IOException e) {
 		    VID.Printf(Defines.PRINT_ALL, e.getMessage() + '\n');
@@ -215,8 +215,8 @@ final byte[][] dottexture =
     @Override
     void GL_SetDefaultState()
 	{
-		gl.glClearColor(1f,0f, 0.5f , 0.5f); // original quake2
-		//gl.glClearColor(0, 0, 0, 0); // replaced with black
+		gl.glClearColor(1f,0f, 0.5f , 0.5f); 
+		
 		gl.glCullFace(GL_FRONT);
 		gl.glEnable(GL_TEXTURE_2D);
 
@@ -248,7 +248,7 @@ final byte[][] dottexture =
 
 		if ( qglPointParameterfEXT )
 		{
-			//float[] attenuations = { gl_particle_att_a.value, gl_particle_att_b.value, gl_particle_att_c.value };
+			
             FloatBuffer attenuations = Lib.newFloatBuffer(4);
             attenuations.put(0,gl_particle_att_a.value);
             attenuations.put(1,gl_particle_att_b.value);
@@ -284,8 +284,8 @@ final byte[][] dottexture =
 	}
 	
 
-	// ============================================================================
-	// remove after impl this methods in jake2.render.jogl package
-	// ============================================================================
+	
+	
+	
 
 }

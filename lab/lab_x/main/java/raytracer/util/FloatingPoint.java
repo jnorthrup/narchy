@@ -29,7 +29,7 @@ public class FloatingPoint
      */
     public static int compareTolerated(double f1, double f2)
     {
-        // Pr�fen, ob die Differenz innerhalb der Toleranz liegt:
+        
         double f = f1-f2;
         if ((f >= -DOUBLE_TOLERANCY) && (f <= DOUBLE_TOLERANCY))
             return 0;
@@ -37,11 +37,11 @@ public class FloatingPoint
         long bits1 = Double.doubleToLongBits(f1);
         long bits2 = Double.doubleToLongBits(f2);
         
-        // Pr�fen, ob die Exponenten gleich sind und die Differenz der Mantissen
-        // innerhalb der Toleranz liegt:
+        
+        
         if (((bits1 ^ bits2) & 0x7FF0000000000000L) == 0)
         {
-            // Differenz der Mantissen berechnen:
+            
             f = Double.longBitsToDouble((bits1 & 0x800FFFFFFFFFFFFFL) | 0x3FF0000000000000L);
             f -= Double.longBitsToDouble((bits2 & 0x800FFFFFFFFFFFFFL) | 0x3FF0000000000000L);
             
@@ -49,7 +49,7 @@ public class FloatingPoint
                 return 0;
         }
         
-        // Ungleiche Exponenten:
+        
         return (f1 < f2) ? -1 : 1;
     }
     

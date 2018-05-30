@@ -41,9 +41,9 @@ class HttpWebSocketServerTest {
 
         String x = new String(content.readAllBytes());
         assertEquals("", x);
-        //------------------
+        
 
-        //test websocket client connect
+        
         WebSocketTest.Client c = new WebSocketTest.Client();
 
         c.connectBlocking();
@@ -57,7 +57,7 @@ class HttpWebSocketServerTest {
         Util.sleep(500);
 
         c.closeBlocking();
-        //-----------
+        
 
 
         server.stop();
@@ -95,9 +95,9 @@ class HttpWebSocketServerTest {
 
             String x = new String(content.readAllBytes());
             System.out.println(x);
-            //------------------
+            
 
-            //test websocket client connect
+            
             WebSocketTest.Client c = new WebSocketTest.Client();
 
             c.connectBlocking();
@@ -112,7 +112,7 @@ class HttpWebSocketServerTest {
             Util.sleep(500);
 
             c.closeBlocking();
-            //-----------
+            
 
 
             server.stop();

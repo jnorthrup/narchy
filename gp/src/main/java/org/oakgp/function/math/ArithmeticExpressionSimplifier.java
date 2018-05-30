@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -53,7 +53,7 @@ final class ArithmeticExpressionSimplifier {
     }
 
     private static void sanityCheck(Runnable r) {
-        // TODO remove this method - only here to sanity check input during development
+        
         if (SANITY_CHECK) {
             r.run();
         }
@@ -125,10 +125,10 @@ final class ArithmeticExpressionSimplifier {
         } else if (isFunction(firstArg)) {
             return combineWithChildNodes(firstArg, secondArg, isPos);
         } else if (isFunction(secondArg)) {
-            // 3, (+ (* 12 v2) 30) -> (+ (* 12 v2) 33)
+            
             Node tmp = combineWithChildNodes(secondArg, firstArg, isPos);
             if (tmp != null && numberUtils.isSubtract(f)) {
-                // 3, (- (* 12 v2) 30) -> (- (* 12 v2) 33) -> (0 - (- (* 12 v2) 33))
+                
                 return new FunctionNode(f, numberUtils.zero, tmp);
             } else {
                 return tmp;

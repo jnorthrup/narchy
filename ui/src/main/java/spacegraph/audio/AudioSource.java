@@ -28,16 +28,16 @@ public class AudioSource implements WaveSource {
     volatile public byte[] audioBytes;
     volatile public int audioBytesRead;
 
-//    private short sampleMin, sampleMax;
+
 
 
 
     public AudioSource(float frameRate) {
         this.frameRate = new FloatRange(frameRate, 1f, 40f);
 
-        // Pick a format...
-        // NOTE: It is better to enumerate the formats that the system supports,
-        // because getLine() can error out with any particular format...
+        
+        
+        
         audioFormat = new AudioFormat(22050, 16, 1, true, false);
         bytesPerSample = 2;
 
@@ -47,7 +47,7 @@ public class AudioSource implements WaveSource {
     }
 
     public void printDevices() {
-        // Get TargetDataLine with that format
+        
         Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
         System.out.println("Devices:\n\t" + Joiner.on("\n\t").join(minfoSet));
     }
@@ -57,9 +57,9 @@ public class AudioSource implements WaveSource {
 
         for (Mixer.Info i : minfoSet)
             System.out.println(i);
-//        System.out.println(mixer);
-//        System.out.println(mixer.getMixerInfo());
-//        System.out.println(Arrays.toString(mixer.getControls()));
+
+
+
     }
 
     @Override public int channelsPerSample() {
@@ -68,10 +68,10 @@ public class AudioSource implements WaveSource {
 
     @Override
     public int start() {
-        // Open and start capturing audio
-        // It's possible to have more control over the chosen audio device with this line:
+        
+        
         try {
-            //line = (TargetDataLine) mixer.getLine(dataLineInfo);
+            
             line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
 
             int sampleRate = (int) audioFormat.getSampleRate();
@@ -123,24 +123,24 @@ public class AudioSource implements WaveSource {
 
 
 
-        // Read from the line... non-blocking
+        
         int avail = Math.min(bufferSamples, line.available());
 
 
         int bytesToTake = Math.min(bufferSamples * bytesPerSample, avail);
         audioBytesRead = line.read(audioBytes, avail-bytesToTake /* take the end of the buffer */,
-                //bufferSamples*2
+                
                 bytesToTake
         );
 
-        // Since we specified 16 bits in the AudioFormat,
-        // we need to convert our read byte[] to short[]
-        // (see source from FFmpegFrameRecorder.recordSamples for AV_SAMPLE_FMT_S16)
-        // Let's initialize our short[] array
+        
+        
+        
+        
 
 
-        // Let's wrap our short[] into a ShortBuffer and
-        // pass it to recordSamples
+        
+        
         ByteBuffer.wrap(audioBytes).order(ByteOrder.LITTLE_ENDIAN).asShortBuffer().get(samples);
 
         int nSamplesRead = audioBytesRead / 2;
@@ -157,8 +157,8 @@ public class AudioSource implements WaveSource {
         }
         sampleNum += j;
         Arrays.fill(buffer, end, buffer.length, 0);
-//        this.sampleMin = min;
-//        this.sampleMax = max;
+
+
 
         line.flush();
         busy.set(false);
@@ -167,7 +167,7 @@ public class AudioSource implements WaveSource {
 
     }
 
-    static final float shortRange = ((float)Short.MAX_VALUE);//-((float)Short.MIN_VALUE)-1f)/2f;
+    static final float shortRange = ((float)Short.MAX_VALUE);
 
     public long sampleNum() {
         return sampleNum;

@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class ThrowCatchTestCase {
 
-	// verifico che handler venga eseguito con le sostituzioni effettuate
-	// nell'unificazione
+	
+	
 	@Test
 	public void test_catch_3_1() throws Exception {
 		Prolog engine = new Prolog();
@@ -32,8 +32,8 @@ public class ThrowCatchTestCase {
         assertEquals(10, y.intValue());
 	}
 
-	// verifico che venga eseguito il piu' vicino antenato catch/3 nell'albero di
-	// risoluzione il cui secondo argomento unifica con l'argomento di throw/1
+	
+	
 	@Test public void test_catch_3_2() throws Exception {
 		Prolog engine = new Prolog();
 		String theory = "p(0) :- throw(error). p(1).";
@@ -47,9 +47,9 @@ public class ThrowCatchTestCase {
         assertEquals(5, length.intValue());
 	}
 
-	// verifico che l'esecuzione fallisce se si verifica un errore durante
-	// l'esecuzione di un goal e non viene trovato nessun nodo catch/3 il cui
-	// secondo argomento unifica con l'argomento dell'eccezione lanciata
+	
+	
+	
 	@Test public void test_catch_3_3() throws Exception {
 		Prolog engine = new Prolog();
 		String theory = "p(0) :- throw(error).";
@@ -60,7 +60,7 @@ public class ThrowCatchTestCase {
 		assertTrue(info.isHalted());
 	}
 
-	// verifico che catch/3 fallisce se Handler e' falso
+	
 	@Test public void test_catch_3_4() throws Exception {
 		Prolog engine = new Prolog();
 		String theory = "p(0) :- throw(error).";
@@ -70,10 +70,10 @@ public class ThrowCatchTestCase {
 		assertFalse(info.isSuccess());
 	}
 
-	// verifico che un Goal non deterministico venga rieseguito, e nel caso
-	// venga lanciata una eccezione durante l'esecuzione di Goal allora tutti i
-	// punti di scelta devono essere tagliati e Handler deve essere eseguito una
-	// sola volta
+	
+	
+	
+	
 	@Test public void test_catch_3_5() throws Exception {
 		Prolog engine = new Prolog();
 		String theory = "p(0). p(1) :- throw(error). p(2).";
@@ -87,7 +87,7 @@ public class ThrowCatchTestCase {
 		assertFalse(info.hasOpenAlternatives());
 	}
 
-	// verifico che catch/3 fallisce se si verifica un'eccezione durante Handler
+	
 	@Test public void test_catch_3_6() throws Exception {
 		Prolog engine = new Prolog();
 		String theory = "p(0) :- throw(error).";

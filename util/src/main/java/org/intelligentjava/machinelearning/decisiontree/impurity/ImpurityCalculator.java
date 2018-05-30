@@ -35,7 +35,7 @@ public interface ImpurityCalculator {
      * @return Empirical probability.
      */
     static <K, V> double getEmpiricalProbability(K value, List<Function<K, V>> splitData, V positive, V negative) {
-        // TODO cache calculated counts
+        
         return (double) splitData.stream().filter(d -> d.apply(value).equals(positive)).count() / splitData.size();
     }
 }

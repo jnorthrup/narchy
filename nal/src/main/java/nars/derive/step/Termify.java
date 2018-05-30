@@ -26,7 +26,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
     public final Term pattern;
 
-    //    public final Set<Variable> uniqueVars;
+    
     public final PremiseDeriverProto rule;
     private final Occurrify.TaskTimeMerge time;
 
@@ -37,7 +37,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
         this.time = time;
 
-//        this.uniqueVars = pattern instanceof Compound ? ((PatternCompound)pattern).uniqueVars : Set.of();
+
     }
 
 
@@ -75,7 +75,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
         if (c1.op() == NEG) {
             c1 = c1.unneg();
-            if (d.concTruth != null) //belief or goal
+            if (d.concTruth != null) 
                 d.concTruth = d.concTruth.neg();
         }
 
@@ -101,8 +101,8 @@ public final class Termify extends AbstractPred<Derivation> {
                     (occ[1] >= occ[0])))
                 throw new RuntimeException("bad occurrence result");
 
-            //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
-            //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
+            
+            
             if (!Taskify.valid(c2, d.concPunc)) {
                 Term c1e = c1;
                 d.nar.emotion.deriveFailTemporal.increment(/*() ->
@@ -114,7 +114,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
             if (d.concPunc == GOAL) {
                 if (occ[0] == ETERNAL && d.task.isEternal() && (d.single || !d.belief.isEternal())) {
-                    //desire in present moment
+                    
                     occ = d.concOcc = nar.timeFocus();
                 }
             }

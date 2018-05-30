@@ -28,7 +28,7 @@ public class Main
         
         
         
-        // Look&Feel anpassen:
+        
         try
         {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

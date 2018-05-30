@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -154,17 +154,17 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			GImpactMeshShape.GImpactMeshShapePart shapepart0 = (GImpactMeshShape.GImpactMeshShapePart) shape0;
 			GImpactMeshShape.GImpactMeshShapePart shapepart1 = (GImpactMeshShape.GImpactMeshShapePart) shape1;
 
-			//specialized function
-			//#ifdef BULLET_TRIANGLE_COLLISION
-			//collide_gjk_triangles(body0,body1,shapepart0,shapepart1,&pairset[0].m_index1,pairset.size());
-			//#else
+			
+			
+			
+			
 			collide_sat_triangles(body0, body1, shapepart0, shapepart1, pairset, pairset.size());
-			//#endif
+			
 
 			return;
 		}
 
-		// general function
+		
 
 		shape0.lockChildShapes();
 		shape1.lockChildShapes();
@@ -195,7 +195,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 				body1.transform(tmpTrans);
 			}
 
-			// collide two convex shapes
+			
 			convex_vs_convex_collision(body0, body1, colshape0, colshape1);
 
 			if (child_has_transform0) {
@@ -229,7 +229,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			return;
 		}
 
-		//#ifdef GIMPACT_VS_PLANE_COLLISION
+		
 		if (s == ShapeType.TRIMESH_SHAPE_PART &&
 				shape1.getShapeType() == BroadphaseNativeType.STATIC_PLANE_PROXYTYPE) {
 			GImpactMeshShape.GImpactMeshShapePart shapepart = (GImpactMeshShape.GImpactMeshShapePart) shape0;
@@ -237,7 +237,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			gimpacttrimeshpart_vs_plane_collision(body0, body1, shapepart, planeshape, swapped);
 			return;
 		}
-		//#endif
+		
 
 		if (shape1.isCompound()) {
 			CompoundShape compoundshape = (CompoundShape) shape1;
@@ -286,7 +286,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 				body0.transform(tmpTrans);
 			}
 
-			// collide two shapes
+			
 			if (swapped) {
 				shape_vs_shape_collision(body1, body0, shape1, colshape0);
 			}
@@ -294,7 +294,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 				shape_vs_shape_collision(body0, body1, colshape0, shape1);
 			}
 
-			// restore transforms
+			
 			if (child_has_transform0) {
 				body0.transform(orgtrans0);
 			}
@@ -316,17 +316,17 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 			body1.transform(childtrans1);
 
-			// collide child shape
+			
 			gimpact_vs_shape(body0, body1,
 					shape0, colshape1, swapped);
 
-			// restore transforms
+			
 			body1.transform(orgtrans1);
 		}
 	}
 	
 	public void gimpact_vs_concave(Collidable body0, Collidable body1, GImpactShape shape0, ConcaveShape shape1, boolean swapped) {
-		// create the callback
+		
 		GImpactTriangleCallback tricallback = new GImpactTriangleCallback();
 		tricallback.algorithm = this;
 		tricallback.body0 = body0;
@@ -335,7 +335,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		tricallback.swapped = swapped;
 		tricallback.margin = shape1.getMargin();
 
-		// getting the trimesh AABB
+		
 		Transform gimpactInConcaveSpace = body1.transform; /*new Transform();
 
 		body1.getWorldTransform(gimpactInConcaveSpace);*/
@@ -358,7 +358,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 	protected void destroyConvexAlgorithm() {
 		if (convex_algorithm != null) {
-			//convex_algorithm.destroy();
+			
 			Intersecter.freeCollisionAlgorithm(convex_algorithm);
 			convex_algorithm = null;
 		}
@@ -441,9 +441,9 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 		float breakingThresh = manifoldPtr.getContactBreakingThreshold();
 		while ((pair_count--) != 0) {
-			//triface0 = pairs.get(pair_pointer);
-			//triface1 = pairs.get(pair_pointer + 1);
-			//pair_pointer += 2;
+			
+			
+			
 			Pair pair = pairs.get(pair_pointer++);
 			triface0 = pair.index1;
 			triface1 = pair.index2;
@@ -451,18 +451,18 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			shape0.getPrimitiveTriangle(triface0, ptri0);
 			shape1.getPrimitiveTriangle(triface1, ptri1);
 
-			//#ifdef TRI_COLLISION_PROFILING
-			//bt_begin_gim02_tri_time();
-			//#endif
+			
+			
+			
 
 			ptri0.applyTransform(orgtrans0);
 			ptri1.applyTransform(orgtrans1);
 
-			// builder planes
+			
 			ptri0.buildTriPlane();
 			ptri1.buildTriPlane();
 
-			// test conservative
+			
 			if (ptri0.overlap_test_conservative(ptri1)) {
 				if (ptri0.find_triangle_collision_clip_method(ptri1, contact_data)) {
 
@@ -480,9 +480,9 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 				}
 			}
 
-			//#ifdef TRI_COLLISION_PROFILING
-			//bt_end_gim02_tri_time();
-			//#endif
+			
+			
+			
 		}
 
 		shape0.unlockChildShapes();
@@ -497,13 +497,13 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		body1.internalSetTemporaryCollisionShape(shape1);
 
         CollisionAlgorithm algor = newAlgorithm(body0, body1);
-        // post :	checkManifold is called
+        
 
         resultOut.setShapeIdentifiers(part0, triface0, part1, triface1);
 
         algor.processCollision(body0, body1, dispatchInfo, resultOut);
 
-        //algor.destroy();
+        
         Intersecter.freeCollisionAlgorithm(algor);
 
         body0.internalSetTemporaryCollisionShape(tmpShape0);
@@ -586,7 +586,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		Vector4f plane = new Vector4f();
 		PlaneShape.get_plane_equation_transformed(planeshape, orgtrans1, plane);
 
-		// test box against plane
+		
 
 		BoxCollision.AABB tribox = new BoxCollision.AABB();
 		shape0.getAabb(orgtrans0, tribox.min, tribox.max);
@@ -611,7 +611,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 			float distance = VectorUtil.dot3(vertex, plane) - plane.w - margin;
 
-			if (distance < 0f)//add contact
+			if (distance < 0f)
 			{
 				if (swapped) {
 					tmp.set(-plane.x, -plane.y, -plane.z);
@@ -672,7 +672,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		}
 	}
 	
-	////////////////////////////////////////////////////////////////////////////
+	
 
 	/**
 	 * Use this function for register the algorithm externally.

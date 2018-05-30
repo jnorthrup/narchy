@@ -26,7 +26,7 @@ public class LambdaMemoizerTest {
         int result = cachingSlowFunction.apply(new Object[] { 2 });
         long endSlow = System.currentTimeMillis();
 
-        // Do it again!
+        
         long startFast = System.currentTimeMillis();
         int result2 = cachingSlowFunction.apply(new Object[] { 2 });
         long endFast = System.currentTimeMillis();

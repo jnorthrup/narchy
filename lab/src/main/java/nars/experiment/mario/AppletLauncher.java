@@ -28,8 +28,8 @@ public class AppletLauncher extends JApplet
             mario.setFocusCycleRoot(true);
 
             mario.start();
-//            addKeyListener(mario);
-//            addFocusListener(mario);
+
+
         }
     }
 

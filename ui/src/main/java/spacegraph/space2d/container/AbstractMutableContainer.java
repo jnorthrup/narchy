@@ -8,10 +8,10 @@ public abstract class AbstractMutableContainer extends Container {
     public boolean start(SurfaceBase parent) {
         if (super.start(parent)) {
 
-            //add pre-added
+            
             forEach(c -> {
-//                if (c == null)
-//                    throw new NullPointerException();
+
+
 
                 assert (c.parent == null || c.parent == AbstractMutableContainer.this) : c + " has parent " + c.parent + " when trying to add to " + AbstractMutableContainer.this;
                 c.start(this);

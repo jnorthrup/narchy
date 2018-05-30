@@ -60,7 +60,7 @@ public final class FS extends Globals {
 
         static final int NAME_SIZE = 56;
 
-        String name; // char name[56]
+        String name; 
 
         int filepos, filelen;
 
@@ -78,7 +78,7 @@ public final class FS extends Globals {
 
         int numfiles;
 
-        HashMap files; // with packfile_t entries
+        HashMap files; 
     }
 
     public static String fs_gamedir;
@@ -99,20 +99,20 @@ public final class FS extends Globals {
         String to;
     }
 
-    // with filelink_t entries
+    
     public static final Deque<filelink_t> fs_links = new ArrayDeque();
 
     public static class searchpath_t {
         String filename;
 
-        pack_t pack; // only one of filename or pack will be used
+        pack_t pack; 
 
         searchpath_t next;
     }
 
     public static searchpath_t fs_searchpaths;
 
-    // without gamedirs
+    
     public static searchpath_t fs_base_searchpaths;
 
     /*
@@ -142,7 +142,7 @@ public final class FS extends Globals {
      */
     public static void CreatePath(String path) {
         int index = path.lastIndexOf('/');
-        // -1 if not found and 0 means write to root
+        
         if (index > 0) {
             File f = new File(path.substring(0, index));
             if (!f.mkdirs() && !f.isDirectory()) {
@@ -173,7 +173,7 @@ public final class FS extends Globals {
 
         file_from_pak = 0;
 
-        // check for links first
+        
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
             link = (filelink_t) it.next();
 
@@ -188,22 +188,22 @@ public final class FS extends Globals {
             }
         }
 
-        // search through the path, one element at a time
+        
 
         for (search = fs_searchpaths; search != null; search = search.next) {
-            // is the element a pak file?
+            
             if (search.pack != null) {
-                // look through all the pak file elements
+                
                 pak = search.pack;
                 filename = filename.toLowerCase();
                 packfile_t entry = (packfile_t) pak.files.get(filename);
 
                 if (entry != null) {
-                    // found it!
+                    
                     file_from_pak = 1;
                     Com.DPrintf("PackFile: " + pak.filename + " : " + filename
                             + '\n');
-                    // open a new file on the pakfile
+                    
                     File file = new File(pak.filename);
                     if (!file.canRead()) {
                         Com.Error(Defines.ERR_FATAL, "Couldn't reopen "
@@ -212,7 +212,7 @@ public final class FS extends Globals {
                     return entry.filelen;
                 }
             } else {
-                // check a file in the directory tree
+                
                 netpath = search.filename + '/' + filename;
 
                 File file = new File(netpath);
@@ -246,47 +246,47 @@ public final class FS extends Globals {
 
         file_from_pak = 0;
 
-        // check for links first
+        
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
             link = (filelink_t) it.next();
 
-            //			if (!strncmp (filename, link->from, link->fromlength))
+            
             if (filename.regionMatches(0, link.from, 0, link.fromlength)) {
                 netpath = link.to + filename.substring(link.fromlength);
                 file = new File(netpath);
                 if (file.canRead()) {
-                    //Com.DPrintf ("link file: " + netpath +'\n');
+                    
                     return new RandomAccessFile(file, "r");
                 }
                 return null;
             }
         }
 
-        //
-        // search through the path, one element at a time
-        //
+        
+        
+        
         for (search = fs_searchpaths; search != null; search = search.next) {
-            // is the element a pak file?
+            
             if (search.pack != null) {
-                // look through all the pak file elements
+                
                 pak = search.pack;
                 filename = filename.toLowerCase();
                 packfile_t entry = (packfile_t) pak.files.get(filename);
 
                 if (entry != null) {
-                    // found it!
+                    
                     file_from_pak = 1;
-                    //Com.DPrintf ("PackFile: " + pak.filename + " : " +
-                    // filename + '\n');
+                    
+                    
                     file = new File(pak.filename);
                     if (!file.canRead())
                         Com.Error(Defines.ERR_FATAL, "Couldn't reopen "
                                 + pak.filename);
                     if (pak.handle == null || !pak.handle.getFD().valid()) {
-                        // hold the pakfile handle open
+                        
                         pak.handle = new RandomAccessFile(pak.filename, "r");
                     }
-                    // open a new file on the pakfile
+                    
 
                     RandomAccessFile raf = new RandomAccessFile(file, "r");
                     raf.seek(entry.filepos);
@@ -294,26 +294,26 @@ public final class FS extends Globals {
                     return raf;
                 }
             } else {
-                // check a file in the directory tree
+                
                 netpath = search.filename + '/' + filename;
 
                 file = new File(netpath);
                 if (!file.canRead())
                     continue;
 
-                //Com.DPrintf("FindFile: " + netpath +'\n');
+                
 
                 return new RandomAccessFile(file, "r");
             }
         }
-        //Com.DPrintf ("FindFile: can't find " + filename + '\n');
+        
         return null;
     }
 
 
     public static final int MAX_READ =
-            //0x10000; //64k
-            1024*1024; //1024k
+            
+            1024*1024; 
 
     /**
      * Read
@@ -324,7 +324,7 @@ public final class FS extends Globals {
 
         int offset = 0;
         int read = 0;
-        // read in chunks for progress bar
+        
         int remaining = len;
         int block;
 
@@ -341,9 +341,9 @@ public final class FS extends Globals {
             } else if (read == -1) {
                 Com.Error(Defines.ERR_FATAL, "FS_Read: -1 bytes read");
             }
-            //
-            // do some progress bar thing here...
-            //
+            
+            
+            
             remaining -= read;
             offset += read;
         }
@@ -361,12 +361,12 @@ public final class FS extends Globals {
         byte[] buf = null;
         int len = 0;
 
-        // TODO hack for bad strings (fuck \0)
+        
         int index = path.indexOf('\0');
         if (index != -1)
             path = path.substring(0, index);
 
-        // look for it in the filesystem or pack files
+        
         len = FileLength(path);
 
         if (len < 1)
@@ -375,7 +375,7 @@ public final class FS extends Globals {
         try {
 
             file = FOpenFile(path);
-            //Read(buf = new byte[len], len, h);
+            
             buf = new byte[len];
             file.readFully(buf);
             file.close();
@@ -406,7 +406,7 @@ public final class FS extends Globals {
         file_from_pak = 0;
 
         try {
-            // check for links first
+            
 
             for (Iterator it = fs_links.iterator(); it.hasNext();) {
                 link = (filelink_t) it.next();
@@ -427,31 +427,31 @@ public final class FS extends Globals {
                 }
             }
 
-            //
-            // search through the path, one element at a time
-            //
+            
+            
+            
             for (search = fs_searchpaths; search != null; search = search.next) {
-                // is the element a pak file?
+                
                 if (search.pack != null) {
-                    // look through all the pak file elements
+                    
                     pak = search.pack;
                     filename = filename.toLowerCase();
                     packfile_t entry = (packfile_t) pak.files.get(filename);
 
                     if (entry != null) {
-                        // found it!
+                        
                         file_from_pak = 1;
-                        //Com.DPrintf ("PackFile: " + pak.filename + " : " +
-                        // filename + '\n');
+                        
+                        
                         file = new File(pak.filename);
                         if (!file.canRead())
                             Com.Error(Defines.ERR_FATAL, "Couldn't reopen "
                                     + pak.filename);
                         if (pak.handle == null || !pak.handle.getFD().valid()) {
-                            // hold the pakfile handle open
+                            
                             pak.handle = new RandomAccessFile(pak.filename, "r");
                         }
-                        // open a new file on the pakfile
+                        
                         if (pak.backbuffer == null) {
                             channel = pak.handle.getChannel();
                             pak.backbuffer = channel.map(
@@ -465,14 +465,14 @@ public final class FS extends Globals {
                         return buffer;
                     }
                 } else {
-                    // check a file in the directory tree
+                    
                     netpath = search.filename + '/' + filename;
 
                     file = new File(netpath);
                     if (!file.canRead())
                         continue;
 
-                    //Com.DPrintf("FindFile: " + netpath +'\n');
+                    
                     input = new FileInputStream(file);
                     channel = input.getChannel();
                     fileLength = (int) channel.size();
@@ -498,13 +498,13 @@ public final class FS extends Globals {
      * FreeFile
      */
     public static void FreeFile(byte[] buffer) {
-        //buffer = null;
+        
     }
 
     static final int IDPAKHEADER = (('K' << 24) + ('C' << 16) + ('A' << 8) + 'P');
 
     static class dpackheader_t {
-        int ident; // IDPAKHEADER
+        int ident; 
 
         int dirofs;
 
@@ -513,7 +513,7 @@ public final class FS extends Globals {
 
     static final int MAX_FILES_IN_PACK = 4096;
 
-    // buffer for C-Strings char[56]
+    
     static final byte[] tmpText = new byte[packfile_t.NAME_SIZE];
 
     /*
@@ -531,8 +531,8 @@ public final class FS extends Globals {
         RandomAccessFile file;
         int numpackfiles = 0;
         pack_t pack = null;
-        //		unsigned checksum;
-        //
+        
+        
         try {
         	file = new RandomAccessFile(packfile, "r");
         	FileChannel fc = file.getChannel();
@@ -543,7 +543,7 @@ public final class FS extends Globals {
             
             if (packhandle == null || packhandle.limit() < 1)
                 return null;
-            //
+            
             header = new dpackheader_t();
             header.ident = packhandle.getInt();
             header.dirofs = packhandle.getInt();
@@ -562,7 +562,7 @@ public final class FS extends Globals {
 
             packhandle.position(header.dirofs);
 
-            // parse the directory
+            
             packfile_t entry = null;
 
             for (int i = 0; i < numpackfiles; i++) {
@@ -607,9 +607,9 @@ public final class FS extends Globals {
 
         fs_gamedir = dir;
 
-        //
-        // add the directory to the search path
-        // ensure fs_userdir is first in searchpath
+        
+        
+        
         search = new searchpath_t();
         search.filename = dir;
         if (fs_searchpaths != null) {
@@ -619,9 +619,9 @@ public final class FS extends Globals {
             fs_searchpaths = search;
         }
 
-        //
-        // add any pak files in the format pak0.pak pak1.pak, ...
-        //
+        
+        
+        
         for (i = 0; i < 10; i++) {
             pakfile = dir + "/pak" + i + ".pak";
             if (!(new File(pakfile).canRead()))
@@ -694,9 +694,9 @@ public final class FS extends Globals {
             return;
         }
 
-        //
-        // free up any current game dir info
-        //
+        
+        
+        
         while (fs_searchpaths != fs_base_searchpaths) {
             if (fs_searchpaths.pack != null) {
                 try {
@@ -704,7 +704,7 @@ public final class FS extends Globals {
                 } catch (IOException e) {
                     Com.DPrintf(e.getMessage() + '\n');
                 }
-                // clear the hashtable
+                
                 fs_searchpaths.pack.files.clear();
                 fs_searchpaths.pack.files = null;
                 fs_searchpaths.pack = null;
@@ -714,9 +714,9 @@ public final class FS extends Globals {
             fs_searchpaths = next;
         }
 
-        //
-        // flush all data, so it will be forced to reload
-        //
+        
+        
+        
         if ((Globals.dedicated != null) && (Globals.dedicated.value == 0.0f))
             Cbuf.AddText("vid_restart\nsnd_restart\n");
 
@@ -747,13 +747,13 @@ public final class FS extends Globals {
             return;
         }
 
-        // see if the link already exists
+        
         for (Iterator it = fs_links.iterator(); it.hasNext();) {
             entry = (filelink_t) it.next();
 
             if (entry.from.equals(Cmd.Argv(1))) {
                 if (Cmd.Argv(2).length() < 1) {
-                    // delete it
+                    
                     it.remove();
                     return;
                 }
@@ -762,7 +762,7 @@ public final class FS extends Globals {
             }
         }
 
-        // create a new link if the <to> is not empty
+        
         if (Cmd.Argv(2).length() > 0) {
             entry = new filelink_t();
             entry.from = Cmd.Argv(1);
@@ -911,29 +911,29 @@ public final class FS extends Globals {
         FS.CreatePath(fs_userdir + '/');
         FS.AddGameDirectory(fs_userdir);
 
-        //
-        // basedir <path>
-        // allows the game to run from outside the data tree
-        //
+        
+        
+        
+        
         fs_basedir = Cvar.Get("basedir", ".", CVAR_NOSET);
 
-        //
-        // cddir <path>
-        // Logically concatenates the cddir after the basedir for
-        // allows the game to run from outside the data tree
-        //
+        
+        
+        
+        
+        
 
         setCDDir();
 
-        //
-        // start up with baseq2 by default
-        //
+        
+        
+        
         AddGameDirectory(fs_basedir.string + '/' + Globals.BASEDIRNAME);
 
-        // any set gamedirs will be freed up to here
+        
         markBaseSearchPaths();
 
-        // check for game override
+        
         fs_gamedirvar = Cvar.Get("game", "", CVAR_LATCH | CVAR_SERVERINFO);
 
         if (fs_gamedirvar.string.length() > 0)
@@ -950,18 +950,18 @@ public final class FS extends Globals {
     }
     
     static void markBaseSearchPaths() {
-        // any set gamedirs will be freed up to here
+        
         fs_base_searchpaths = fs_searchpaths;
     }
 
-    //	RAFAEL
+    
     /*
      * Developer_searchpath
      */
     public static int Developer_searchpath(int who) {
 
-        // PMM - warning removal
-        //	 char *start;
+        
+        
         searchpath_t s;
 
         for (s = fs_searchpaths; s != null; s = s.next) {

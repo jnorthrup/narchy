@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 13.11.2003 by RST.
-// $Id: M_Boss2.java,v 1.6 2009-12-13 19:18:04 salomo Exp $
+
+
 package jake2.game.monsters;
 
 import jake2.Defines;
@@ -500,7 +500,7 @@ public class M_Boss2 {
                 return;
 
             self.pain_debounce_time = GameBase.level.time + 3;
-            //	   American wanted these at no attenuation
+            
             if (damage < 10) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain3, 1,
                         Defines.ATTN_NONE, 0);
@@ -562,7 +562,7 @@ public class M_Boss2 {
             float enemy_yaw;
 
             if (self.enemy.health > 0) {
-                // see if any entities are in the way of the shot
+                
                 Math3D.VectorCopy(self.s.origin, spot1);
                 spot1[2] += self.viewheight;
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
@@ -573,7 +573,7 @@ public class M_Boss2 {
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA);
 
-                // do we have a clear shot?
+                
                 if (tr.ent != self.enemy)
                     return false;
             }
@@ -584,7 +584,7 @@ public class M_Boss2 {
 
             self.ideal_yaw = enemy_yaw;
 
-            // melee attack
+            
             if (enemy_range == Defines.RANGE_MELEE) {
                 if (self.monsterinfo.melee != null)
                     self.monsterinfo.attack_state = Defines.AS_MELEE;
@@ -593,7 +593,7 @@ public class M_Boss2 {
                 return true;
             }
 
-            //	   missile attack
+            
             if (self.monsterinfo.attack == null)
                 return false;
 
@@ -657,7 +657,7 @@ public class M_Boss2 {
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
 
-            //	  1
+            
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_1],
                     forward, right, start);
@@ -668,7 +668,7 @@ public class M_Boss2 {
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
                     Defines.MZ2_BOSS2_ROCKET_1);
 
-            //	  2
+            
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_2],
                     forward, right, start);
@@ -679,7 +679,7 @@ public class M_Boss2 {
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
                     Defines.MZ2_BOSS2_ROCKET_2);
 
-            //	  3
+            
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_3],
                     forward, right, start);
@@ -690,7 +690,7 @@ public class M_Boss2 {
             Monster.monster_fire_rocket(self, start, dir, 50, 500,
                     Defines.MZ2_BOSS2_ROCKET_3);
 
-            //	  4
+            
             Math3D.G_ProjectSource(self.s.origin,
                     M_Flash.monster_flash_offset[Defines.MZ2_BOSS2_ROCKET_4],
                     forward, right, start);
@@ -919,7 +919,7 @@ public class M_Boss2 {
     static final mmove_t boss2_move_attack_pre_mg = new mmove_t(FRAME_attack1,
             FRAME_attack9, boss2_frames_attack_pre_mg, null);
 
-    //	   Loop this
+    
     static final mframe_t[] boss2_frames_attack_mg = {
             new mframe_t(GameAI.ai_charge, 1, Boss2MachineGun),
             new mframe_t(GameAI.ai_charge, 1, Boss2MachineGun),

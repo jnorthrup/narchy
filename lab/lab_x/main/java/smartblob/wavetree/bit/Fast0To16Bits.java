@@ -1,6 +1,6 @@
 /** Ben F Rayfield offers Wavetree opensource GNU LGPL 2+ */
 package smartblob.wavetree.bit;
-//import old.bitstring.Bitstring;
+
 
 /** Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are
 <br><br>
@@ -75,7 +75,7 @@ public final class Fast0To16Bits implements Bits{
 	}
 	
 	public Bits pre(long endExclusive){
-		//Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are
+		
 		if(endExclusive < 0 || siz < endExclusive) throw new IndexOutOfBoundsException(""+endExclusive);
 		int possibleValues = 1 << endExclusive;
 		int bitMask = possibleValues-1;
@@ -85,19 +85,19 @@ public final class Fast0To16Bits implements Bits{
 		return Fast0To16Bits.get(endExclusiveInt, d);
 		
 		/*OLD
-		//littleEndian
+		
 		if(endExclusive < 0 || siz < endExclusive) throw new IndexOutOfBoundsException(""+endExclusive);
-		//TODO what happens if endExclusive is negative here?
-		//If throws, could save time by not checking for that earlier
+		
+		
 		int possibleValues = 1 << endExclusive;
 		int bitMask = possibleValues-1;
-		int data = data&bitMask; //TODO what if howManyBits is 32?
+		int data = data&bitMask; 
 		return Fast0To16Bits.get((int)endExclusive, data);
 		*/
 	}
 	
 	public Bits suf(long start){
-		//Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are
+		
 		if(start < 0 || siz < start) throw new IndexOutOfBoundsException(""+start);
 		int suffixBitSize = siz-(int)start;
 		int possibleValues = 1 << suffixBitSize;
@@ -106,26 +106,26 @@ public final class Fast0To16Bits implements Bits{
 		return Fast0To16Bits.get(suffixBitSize, d);
 		
 		/*OLD
-		//littleEndian
+		
 		if(start < 0 || siz < start) throw new IndexOutOfBoundsException(""+start);
-		//TODO what happens if start is negative here?
-		//If throws, could save time by not checking for that earlier
+		
+		
 		int suffixBitSize = siz-(int)start;
 		int possibleValues = 1 << suffixBitSize;
 		int bitMask = (possibleValues-1);
-		//TODO optimize by making sure this mask is already zerod in unsignedInteger in constructor
+		
 		int data = (data >>> start) & bitMask;
 		return Fast0To16Bits.get(suffixBitSize, data);
 		*/
 	}
 	
 	public boolean bitAt(long index){
-		//TODO what if index wraps around and happens to still be in range?
-		//Shouldnt that throw? Or not, see comment below about hanging off ends?
+		
+		
 		return copyOfData[(int)index];
-		//TODO? design allows last byte/short/char/int/long to hang off end and get 0s outside, so shouldnt it be allowed to ask bitAt?
-		//if(index > howManyBits) throw new IndexOutOfBoundsException(""+index);
-		//return (unsignedInteger & (1 << index)) != 0;
+		
+		
+		
 	}
 	
 	public byte byteAt(long index){
@@ -162,22 +162,22 @@ public final class Fast0To16Bits implements Bits{
 		}
 		/*
 		int i = data >> start;
-		if(getHowManyBits >= 32) return i; //TODO at most 16, but this wont hurt it as long as you give good param
-		int mask = (1 << getHowManyBits)-1; //FIXME what if howManyBits==32?
+		if(getHowManyBits >= 32) return i; 
+		int mask = (1 << getHowManyBits)-1; 
 		return i&mask;
 		*/
 		
 		/*int i = data >> start;
-		if(getHowManyBits >= 32) return i; //TODO at most 16, but this wont hurt it as long as you give good param
+		if(getHowManyBits >= 32) return i; 
 		long sizRemaining = siz-start;
-		int mask = (1 << sizRemaining)-1; //FIXME what if howManyBits==32?
-		int d = i&mask; //start to siz
+		int mask = (1 << sizRemaining)-1; 
+		int d = i&mask; 
 		return d >> (sizRemaining-getHowManyBits);
 		*/
 		
 		long sizRemaining = siz-start;
 		int mask = (1 << sizRemaining)-1;
-		int d = data&mask; //start to siz
+		int d = data&mask; 
 		return d >> (sizRemaining-getHowManyBits);
 	}
 	
@@ -197,14 +197,14 @@ public final class Fast0To16Bits implements Bits{
 		throw new RuntimeException("TODO decide on a standard for hashcode and equals by bitstring content? Or use default compare by == and System.identityHashcode (as it already is)?");
 	}*/
 	
-	//Functions that are normally implemented as combinations of prefix(long) andOr suffix(long):
+	
 	
 	public Bits cat(Bits suf){
 		
 		long sufSiz = suf.siz();
 		long sizeAfterCat = siz+sufSiz;
 		if(sizeAfterCat <= 16){
-			//Update 2015-5 changing to bigEndian since thats the way people think and multidimensional arrays are
+			
 			int sufI = suf.bits(0, (byte)sufSiz);
 			int bitsAfterCat = (data << sufSiz) | sufI;
 			return Fast0To16Bits.get((int)sizeAfterCat, bitsAfterCat);
@@ -307,15 +307,15 @@ public final class Fast0To16Bits implements Bits{
 			int maxValue = (1<<howManyBits)-1;
 			for(int valueI=0; valueI<=maxValue; valueI++){
 				boolean value[] = AvlBitstring.bitsOfInt(valueI, howManyBits);
-				//if(valueI == 49999) valueI+=37; //TODO remove this line, testing the testing code to make sure it can fail
+				
 				Bits bits = Fast0To16Bits.get(howManyBits, valueI);
 				for(int j=0; j<howManyBits; j++){
 					boolean observedBit = bits.bitAt(j);
-					//System.out.println("bitAt howmanyBits="+howManyBits+" observedBit="+(observedBit?1:0)+" correctBit="+(value[j]?1:0));
+					
 					if(observedBit != value[j]){
-						//bitAt error.
-						//bitAt func tests are more basic than bits func tests.
-						//Fast0To16Bits tests are more basic than AvlBitstring tests which have those at leafs.
+						
+						
+						
 						System.out.println();
 						System.out.println();
 						System.out.println("bitAt error in "+Fast0To16Bits.class+". howManyBits="+howManyBits+" index="+j+" valueI="+valueI);
@@ -336,7 +336,7 @@ public final class Fast0To16Bits implements Bits{
 				boolean observedValue[] = ;
 				*/
 				
-				//TODO
+				
 			}
 			
 			System.out.println("END: Testing "+Fast0To16Bits.class.getSimpleName()+" bitAt func with howManyBits="+howManyBits);
@@ -344,7 +344,7 @@ public final class Fast0To16Bits implements Bits{
 			System.out.println();
 			System.out.println();
 		}
-		//tested bitAt func above. If that works, we at least know the data is there. Next, test bits func.
+		
 		for(byte howManyBitsInObject=1; howManyBitsInObject<=16; howManyBitsInObject++){
 			System.out.println();
 			System.out.println("START testing "+Fast0To16Bits.class.getSimpleName()+" bits func with howManyBitsInObject="+howManyBitsInObject);
@@ -355,12 +355,12 @@ public final class Fast0To16Bits implements Bits{
 				for(byte howManyBitsToObserve=1; howManyBitsToObserve<=howManyBitsInObject; howManyBitsToObserve++){
 					for(long start=0; start<howManyBitsInObject-howManyBitsToObserve; start++){
 						int observedI = bits.bits(start, howManyBitsToObserve);
-						//boolean valueObserved[] = AvlBitstring.bitsOfInt(observedI, howManyBitsInObject);
+						
 						int correctI = valueI;
 						correctI >>>= start;
 						int mask = (1<<howManyBitsToObserve)-1;
 						correctI &= mask;
-						if(observedI != correctI){ //error in bits func
+						if(observedI != correctI){ 
 							System.out.println();
 							System.out.println();
 							System.out.println("error in bits func. howManyBitsInObject="+howManyBitsInObject

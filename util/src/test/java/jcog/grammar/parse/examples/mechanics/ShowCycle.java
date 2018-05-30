@@ -20,7 +20,7 @@ public class ShowCycle {
 	 */
 	public static void main(String args[]) {
 
-		// ticks = "tick" | "tick" ticks;
+		
 
 		Alternation ticks = new Alternation();
 		Literal tick = new Literal("tick");

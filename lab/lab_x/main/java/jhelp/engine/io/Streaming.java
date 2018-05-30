@@ -84,14 +84,14 @@ public class Streaming
     */
    private byte[] readData(final InputStream inputStream) throws IOException
    {
-      // Initialize
+      
       ByteArrayOutputStream byteArrayOutputStream;
       byte[] temp;
       int read;
       temp = new byte[4096];
       byteArrayOutputStream = new ByteArrayOutputStream();
 
-      // Read data until there no more to read
+      
       read = inputStream.read(temp);
       while(read >= 0)
       {
@@ -108,7 +108,7 @@ public class Streaming
          read = inputStream.read(temp);
       }
 
-      // Close streams
+      
       byteArrayOutputStream.flush();
       byteArrayOutputStream.close();
       inputStream.close();
@@ -137,13 +137,13 @@ public class Streaming
     */
    private void transferDataTo(final byte[] data, final Texture texture) throws IOException
    {
-      // Initialization
+      
       BufferedImage bufferedImage;
       int width;
       int height;
       int[] pixels;
 
-      // Transform data into image
+      
       bufferedImage = ImageIO.read(new ByteArrayInputStream(data));
       try
       {
@@ -153,11 +153,11 @@ public class Streaming
       {
       }
 
-      // Get image dimension
+      
       width = bufferedImage.getWidth();
       height = bufferedImage.getHeight();
 
-      // Extract image's pixels
+      
       pixels = new int[width * height];
       pixels = bufferedImage.getRGB(0, 0, width, height, pixels, 0, width);
       bufferedImage.flush();
@@ -170,7 +170,7 @@ public class Streaming
       {
       }
 
-      // Update the texture
+      
       texture.setPixels(width, height, pixels);
       pixels = null;
    }
@@ -210,18 +210,18 @@ public class Streaming
     */
    public Texture loadTexture(final String name, final InputStream inputStream, final Color defaultColor) throws IOException
    {
-      // Create Stream informations and the texture
+      
       final Stream stream = new Stream();
       stream.inputStream = inputStream;
       stream.texture = new Texture(name, 1, 1, defaultColor);
 
-      // Enqueue the stream on the list off texture to load
+      
       this.streams.inQueue(stream);
 
-      // Launch (if need) the loading
+      
       this.launch();
 
-      // The texture
+      
       return stream.texture;
    }
 
@@ -234,18 +234,18 @@ public class Streaming
       Stream stream;
       byte[] data;
 
-      // For each stream
+      
       while((this.thread != null) && (this.streams.isEmpty() == false))
       {
-         // Get the stream
+         
          stream = this.streams.outQueue();
 
          try
          {
-            // Get data from stream
+            
             data = this.readData(stream.inputStream);
 
-            // Transfer data to texture
+            
             if(stream.texture != null)
             {
                this.transferDataTo(data, stream.texture);

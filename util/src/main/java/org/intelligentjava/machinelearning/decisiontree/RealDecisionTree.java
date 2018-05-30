@@ -68,7 +68,7 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
         };
 
         this.cols = IntStream.range(0, table.cols.length).mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x], discretization,
-                //new Gasolinear()
+                
                 new QuantileDiscretize1D()
         ))
                 .toArray(DiscretizedScalarFeature[]::new);
@@ -100,11 +100,11 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
     void update(Stream<float[]> rows, int column) {
 
-        //System.out.println(classifiers);
+        
 
         put(column, rows.map((r) -> (Function<Integer,Float>) i -> r[i]).collect(toList()),
 
-                //the classifiers from every non-target column
+                
                 Stream.of(cols).
                         filter(x -> x.num != column).
                         flatMap(f -> f.classifiers(rangeLabels)).

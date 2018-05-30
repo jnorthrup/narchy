@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,8 +37,8 @@ public final class VariableNode extends TerminalNode {
     public VariableNode(int id, Type type) {
         this.id = id;
         this.type = type;
-        // +1 so never multiplying by 0
-        // *997 as an alternative to *31 - so VariableNode with id 1 has a different hash code than a ConstantNode with an Integer with value 1
+        
+        
         this.hashCode = (id + 1) * 997;
     }
 
@@ -81,8 +81,8 @@ public final class VariableNode extends TerminalNode {
      */
     @Override
     public boolean equals(Object o) {
-        // Even though this implementation is the same as Object.equals(Object),
-        // still overriding in order to be explicit about the behaviour and to be able to add javadoc.
+        
+        
         return this == o;
     }
 

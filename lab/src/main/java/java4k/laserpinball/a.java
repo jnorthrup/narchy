@@ -17,7 +17,7 @@ package java4k.laserpinball;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
 
 public class a extends GamePanel {
 
-	// keys
+	
 	private final boolean[] a = new boolean[65535];
 
 	public a() {
@@ -121,8 +121,8 @@ public class a extends GamePanel {
 
 		int[][] itemsTable = null;
 
-		// layer 0 lines, layer 0 arcs, layer 1 lines, layer 1 arcs
-		// items table, image size table
+		
+		
 		final String S = "ubc1bubcffua829ua81aua81aub127ub127ub1ffu9554" + "u8e66u8e66u9168u9168ua153uaf57u9290u9290u9593u9e9bub1ae" + "u700fu760fu760fu7615u7615u7015u7015u700fu830fu890fu890f"
 				+ "u8916u8916u8316u8316u830fu9711u9d11u9d11u9d1cu9d1cu971c" + "u971cu9711ub1e0u9aeeu9aeeu9affu25ffu25f1u25f1u19eau19ea" + "u19f5u19f5u0df5u0df5u0dabu1ca0u1c84u1c84u013eu013eu010c"
 				+ "u0f0cu0f3eu0f3eu2162u2162u2560u2560u1d4bu440au7401u7401" + "ua301u19d4u19dcu19dcu31e9u31e9u34e7u34e7u19d4ua4d4ua4dc" + "ua4dcu8ce9u8ce9u89e7u89e7ua4d4u29b2u37d6u37d6u32d8u32d8"
@@ -144,19 +144,19 @@ public class a extends GamePanel {
 		Graphics2D g = null;
 		Graphics2D g2 = null;
 
-		// create images
+		
 		for (i = 0; i < 9; i++) {
 			(imageGraphics[i] = (Graphics2D) (images[i] = new BufferedImage((S.charAt(i + 297) >> 8) << 2, (S.charAt(i + 297) & 0xFF) << 2, i < 2 ? BufferedImage.TYPE_INT_RGB
 					: BufferedImage.TYPE_INT_ARGB_PRE)).getGraphics()).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		}
 
-		// decompress lines
+		
 		for (q = 0; q < 2; q++) {
 			g = imageGraphics[IMAGE_LAYER_0 + q];
 
-			for (j = 63; j >= 0; j--) { // glow loop
+			for (j = 63; j >= 0; j--) { 
 
-				// draw lines
+				
 				for (i = 0; i < (q == 0 ? 70 : 32); i++) {
 					p = q == 0 ? 0 : 176;
 					k = (i << 1) + p;
@@ -181,7 +181,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// draw arcs
+				
 				for (i = 0; i < (q == 0 ? 12 : 11); i++) {
 					p = q == 0 ? 140 : 240;
 					k = i * 3 + p;
@@ -221,28 +221,28 @@ public class a extends GamePanel {
 			}
 		}
 
-		// create ball sprite
+		
 		g = imageGraphics[IMAGE_BALL];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 0, 0, (63 - j) >> 3));
 			g.fillOval(65 - j, 65 - j, 39 + (j << 1), 39 + (j << 1));
 		}
 
-		// create bumper sprite
+		
 		g = imageGraphics[IMAGE_BUMPER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 255, 255, (63 - j) >> 3));
 			g.fillOval(63 - j, 63 - j, 100 + (j << 1), 100 + (j << 1));
 		}
 
-		// create slingshot sprite
+		
 		g = imageGraphics[IMAGE_SLINGSHOT];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(new Color(255, 255, 255, (63 - j) >> 3));
 			g.fillOval(63 - j, 63 - j, 100 + (j << 1), 100 + (j << 1));
 		}
 
-		// create gate sprite
+		
 		g = imageGraphics[IMAGE_GATE];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(0, 128, 255, (63 - j) >> 3));
@@ -250,7 +250,7 @@ public class a extends GamePanel {
 			g.drawLine(32, 32, 64, 32);
 		}
 
-		// create plunger sprite
+		
 		g = imageGraphics[IMAGE_PLUNGER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color(255, 0, 255, (63 - j) >> 3));
@@ -258,7 +258,7 @@ public class a extends GamePanel {
 			g.drawLine(32, 32, 32, 160);
 		}
 
-		// create flipper sprites
+		
 		g = imageGraphics[IMAGE_FLIPPER];
 		for (j = 63; j >= 0; j--) {
 			g.setColor(j == 0 ? Color.WHITE : new Color((63 - j) << 2, 0, (63 - j) << 2));
@@ -273,7 +273,7 @@ public class a extends GamePanel {
 			}
 		}
 
-		// draw top barriers and slot kicker
+		
 		g = imageGraphics[IMAGE_LAYER_0];
 		g.drawImage(images[IMAGE_PLUNGER], 364, -60, null);
 		g.drawImage(images[IMAGE_PLUNGER], 640, -60, null);
@@ -291,11 +291,11 @@ public class a extends GamePanel {
 			do {
 				nextFrameStartTime += 16666667;
 
-				// -- update starts ----------------------------------------------------
+				
 
 				if (gameOver && a[VK_ENTER]) {
 
-					// start/reset game          
+					
 					a[VK_ENTER] = false;
 					gameOver = false;
 					lowerLeftGateEnabled = false;
@@ -310,7 +310,7 @@ public class a extends GamePanel {
 					ball[BALL_X] = 730;
 					ball[BALL_Y] = 854;
 
-					// decompress items table
+					
 					itemsTable = new int[12][extraBalls = 4];
 					for (i = 0; i < ITEMS; i++) {
 						itemsTable[i][0] = S.charAt((i << 1) + 273);
@@ -319,7 +319,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update plunger
+				
 				int plungerStrike = 0;
 				if (!gameOver && a[VK_SPACE]) {
 					if (plungerX < 64) {
@@ -330,7 +330,7 @@ public class a extends GamePanel {
 					plungerX = 0;
 				}
 
-				// update left flipper
+				
 				if (!gameOver && (a[VK_LEFT_0] || a[VK_LEFT_1])) {
 					leftFlipperCounter++;
 					if (leftFlipperAngle > -0.44f) {
@@ -345,7 +345,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update right flipper
+				
 				if (!gameOver && (a[VK_RIGHT_0] || a[VK_RIGHT_1])) {
 					rightFlipperCounter++;
 					if (rightFlipperAngle > -0.44f) {
@@ -360,7 +360,7 @@ public class a extends GamePanel {
 					}
 				}
 
-				// update bumpers and slingshots
+				
 				if (leftBumper > 0) {
 					leftBumper--;
 				}
@@ -374,7 +374,7 @@ public class a extends GamePanel {
 					rightSlingshot--;
 				}
 
-				// update balls
+				
 				int maxBallY = 0;
 				int cameraVy = 0;
 				for (i = ballCount - 1; i >= 0; i--) {
@@ -382,7 +382,7 @@ public class a extends GamePanel {
 
 					if (ball[BALL_Y] > 1170) {
 
-						// ball lost
+						
 						for (j = i; j < 2; j++) {
 							balls[j] = balls[j + 1];
 						}
@@ -390,7 +390,7 @@ public class a extends GamePanel {
 
 						if (hit) {
 							if (ballCount == 0 && !(gameOver = extraBalls == 0)) {
-								// position next ball over plunger
+								
 								ball = balls[ballCount++] = new float[8];
 								ball[BALL_X] = 730;
 								ball[BALL_Y] = 854;
@@ -401,7 +401,7 @@ public class a extends GamePanel {
 								multiplier = 1;
 							}
 						} else {
-							// ball lost, but no flipper hits; return ball
+							
 							ball = balls[ballCount++] = new float[8];
 							ball[BALL_X] = 475;
 							ball[BALL_Y] = 369;
@@ -412,7 +412,7 @@ public class a extends GamePanel {
 						continue;
 					}
 
-					// ball cannot travel faster than max speed
+					
 					mag = ball[BALL_VX] * ball[BALL_VX] + ball[BALL_VY] * ball[BALL_VY];
 					if (mag > MAX_VELOCITY2) {
 						mag = MAX_VELOCITY / (float) Math.sqrt(mag);
@@ -420,20 +420,20 @@ public class a extends GamePanel {
 						ball[BALL_VY] *= mag;
 					}
 
-					// find max ball Y for camera tracking
+					
 					if (ball[BALL_Y] > maxBallY) {
 						maxBallY = (int) ball[BALL_Y];
 
-						// camera speed depends on if ball is stuck or moving
+						
 						cameraVy = ball[BALL_STUCK] < 80 && ball[BALL_STUCK] >= 48 ? 4 : 24;
 					}
 
-					// ball clock advances 1 time unit
+					
 					ball[BALL_TIME]++;
 
 					do {
 
-						// ball takes steps no larger than 1 unit
+						
 						t = ball[BALL_TIME];
 						vx = t * ball[BALL_VX];
 						vy = t * ball[BALL_VY];
@@ -443,31 +443,31 @@ public class a extends GamePanel {
 						}
 						ball[BALL_TIME] -= t;
 
-						// store the original position for cross-boundary tests later
+						
 						vx = ball[BALL_X];
 						vy = ball[BALL_Y];
 
-						// move the ball
+						
 						ball[BALL_VY] += t * GRAVITY;
 						ball[BALL_Y] += t * ball[BALL_VY];
 						ball[BALL_X] += t * ball[BALL_VX];
 
-						// enter ramp tests
-						if (ball[BALL_X] >= 200 && ball[BALL_X] <= 290) { // left ramp 
+						
+						if (ball[BALL_X] >= 200 && ball[BALL_X] <= 290) { 
 							if (ball[BALL_Y] < 240 && vy >= 240) {
 								ball[BALL_LAYER] = 1;
 							} else if (ball[BALL_Y] >= 240 && vy < 240) {
 								ball[BALL_LAYER] = 0;
 							}
 						}
-						if (ball[BALL_X] >= 360 && ball[BALL_X] <= 450) { // middle ramp
+						if (ball[BALL_X] >= 360 && ball[BALL_X] <= 450) { 
 							if (ball[BALL_Y] < 310 && vy >= 310) {
 								ball[BALL_LAYER] = 1;
 							} else if (ball[BALL_Y] >= 310 && vy < 310) {
 								ball[BALL_LAYER] = 0;
 							}
 						}
-						if (ball[BALL_X] >= 627 && ball[BALL_X] <= 705) { // right ramp
+						if (ball[BALL_X] >= 627 && ball[BALL_X] <= 705) { 
 							if (ball[BALL_Y] < 350 && vy >= 350) {
 								ball[BALL_LAYER] = 1;
 							} else if (ball[BALL_Y] >= 350 && vy < 350) {
@@ -475,27 +475,27 @@ public class a extends GamePanel {
 							}
 						}
 
-						// lower left gate            
+						
 						if (lowerLeftGateEnabled && ball[BALL_X] >= 49 && ball[BALL_X] <= 102 && ball[BALL_Y] > 907 && vy <= 907) {
 							ball[BALL_Y] = vy;
 							ball[BALL_VY] = 0;
 							ball[BALL_VX] = 2;
 						}
 
-						// rail gate
+						
 						if (ball[BALL_LAYER] == 1 && railGateEnabled && ball[BALL_X] >= 47 && ball[BALL_X] <= 135 && ball[BALL_Y] > 481 && vy <= 481) {
 							ball[BALL_Y] = vy;
 							ball[BALL_VY] = 0;
 							ball[BALL_VX] = -2;
 						}
 
-						// exit left/right bottom of rail tracks
+						
 						if (ball[BALL_LAYER] == 1 && ball[BALL_Y] >= 805 && ((ball[BALL_X] >= 90 && ball[BALL_X] <= 155) || (ball[BALL_X] >= 605 && ball[BALL_X] <= 660))) {
 							ball[BALL_LAYER] = ball[BALL_VX] = ball[BALL_VY] = 0;
 							score += multiplier * 25;
 						}
 
-						// top barriers
+						
 						if (ball[BALL_LAYER] == 0 && ball[BALL_Y] <= 100) {
 							if (ball[BALL_X] > 653 && vx <= 653) {
 								ball[BALL_X] = 653;
@@ -511,7 +511,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// left-top hole suction
+						
 						vx = ball[BALL_X] - 32;
 						vy = ball[BALL_Y] - 52;
 						if (vx * vx + vy * vy <= 1225) {
@@ -531,7 +531,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// left rail hole suction
+						
 						vx = ball[BALL_X] - 32;
 						vy = ball[BALL_Y] - 613;
 						if (vx * vx + vy * vy <= 1225) {
@@ -550,7 +550,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// middle track end hole suction
+						
 						vx = ball[BALL_X] - 656;
 						vy = ball[BALL_Y] - 523;
 						if (vx * vx + vy * vy <= 1225) {
@@ -569,7 +569,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// center hole suction              
+						
 						vx = ball[BALL_X] - 475;
 						vy = ball[BALL_Y] - 369;
 						if (vx * vx + vy * vy <= 1225) {
@@ -587,7 +587,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// right hole suction  
+						
 						vx = ball[BALL_X] - 624;
 						vy = ball[BALL_Y] - 590;
 						if (vx * vx + vy * vy <= 1225) {
@@ -605,7 +605,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// lower left hole suction
+						
 						vx = ball[BALL_X] - 77;
 						vy = ball[BALL_Y] - 955;
 						if (vx * vx + vy * vy <= 1225) {
@@ -623,7 +623,7 @@ public class a extends GamePanel {
 							}
 						}
 
-						// plunger collision test          
+						
 						vx = ball[BALL_X] - 730;
 						vy = ball[BALL_Y] - 854;
 						if (vx * vx + vy * vy <= 1225) {
@@ -636,27 +636,27 @@ public class a extends GamePanel {
 							}
 						}
 
-						// ball slowly unsticks when stuck in suction hole
+						
 						if (ball[BALL_STUCK] > 0 && (cameraOnTarget || cameraVy != 4)) {
 							ball[BALL_STUCK]--;
 						}
 
-						// item collision test
+						
 						if (ball[BALL_LAYER] == 0) {
 							for (j = 0; j < ITEMS; j++) {
 								if (itemsTable[j][2] == 0) {
 									vx = ball[BALL_X] - itemsTable[j][0];
 									vy = ball[BALL_Y] - itemsTable[j][1];
 									if (vx * vx + vy * vy < 900) {
-										// item collision
+										
 										score += multiplier * 25;
 										itemsTable[j][2] = 1;
-										for (k = 0; k <= ITEMS; k++) { // check if group complete
+										for (k = 0; k <= ITEMS; k++) { 
 											if (k == ITEMS) {
 
 												score += multiplier * 100;
 
-												// group complete; restore group
+												
 												for (k = 0; k < ITEMS; k++) {
 													if (itemsTable[j][3] == itemsTable[k][3]) {
 														itemsTable[k][2] = 0;
@@ -671,7 +671,7 @@ public class a extends GamePanel {
 
 													score += multiplier * 125;
 
-													// create extra balls
+													
 													if (ballCount < 3) {
 														ball2 = balls[ballCount++] = new float[8];
 														ball2[BALL_X] = 475;
@@ -685,7 +685,7 @@ public class a extends GamePanel {
 												}
 												break;
 											} else if (itemsTable[j][3] == itemsTable[k][3] && itemsTable[k][2] == 0) {
-												// group not complete yet
+												
 												break;
 											}
 										}
@@ -697,7 +697,7 @@ public class a extends GamePanel {
 						boolean first = true;
 						boolean collision = false;
 						do {
-							// test for collision with points in layer
+							
 							x1 = ((int) ball[BALL_X] - 20) >> 5;
 							x2 = ((int) ball[BALL_X] + 20) >> 5;
 							y2 = ((int) ball[BALL_Y] + 20) >> 5;
@@ -729,7 +729,7 @@ public class a extends GamePanel {
 
 							boolean flipperHit = false;
 
-							// left flipper collision test
+							
 							for (float angle = leftFlipperAngle + (leftFlipperCounter > 0 && leftFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= leftFlipperAngle; angle -= .006f) {
 								float sin = (float) Math.sin(angle);
 								float cos = (float) Math.cos(angle);
@@ -753,7 +753,7 @@ public class a extends GamePanel {
 								}
 							}
 
-							// right flipper collision test
+							
 							for (float angle = rightFlipperAngle + (rightFlipperCounter > 0 && rightFlipperCounter <= FLIPPER_DELAY ? .3f : 0); angle >= rightFlipperAngle; angle -= .006f) {
 								float sin = (float) Math.sin(angle);
 								float cos = (float) Math.cos(angle);
@@ -792,7 +792,7 @@ public class a extends GamePanel {
 
 									if (ball[BALL_LAYER] == 0) {
 
-										// collision with moving flipper test
+										
 										if (flipperHit) {
 											if (ball[BALL_VY] > 0) {
 												ball[BALL_VY] = -ball[BALL_VY];
@@ -800,7 +800,7 @@ public class a extends GamePanel {
 											ball[BALL_VY] -= FLIPPER_VELOCITY;
 										} else {
 
-											// collision with right bumper test
+											
 											if (rightBumper == 0) {
 												vx = ball[BALL_X] - 600;
 												vy = ball[BALL_Y] - 236;
@@ -814,7 +814,7 @@ public class a extends GamePanel {
 												}
 											}
 
-											// collision with left bumper test  
+											
 											if (leftBumper == 0) {
 												vx = ball[BALL_X] - 460;
 												vy = ball[BALL_Y] - 172;
@@ -828,7 +828,7 @@ public class a extends GamePanel {
 												}
 											}
 
-											// collision with right slingshot
+											
 											if (rightSlingshot == 0) {
 												vx = ball[BALL_X] - 535;
 												vy = ball[BALL_Y] - 778;
@@ -840,7 +840,7 @@ public class a extends GamePanel {
 												}
 											}
 
-											// collision with left slingshot
+											
 											if (leftSlingshot == 0) {
 												vx = ball[BALL_X] - 218;
 												vy = ball[BALL_Y] - 778;
@@ -862,7 +862,7 @@ public class a extends GamePanel {
 				}
 
 				if (ballCount > 0) {
-					// compute cameraY
+					
 					cameraOnTarget = true;
 					maxBallY = 280 - maxBallY;
 					if (maxBallY > 0) {
@@ -888,23 +888,23 @@ public class a extends GamePanel {
 				}
 
 				if (lastScore / EXTRA_BALL_BONUS < score / EXTRA_BALL_BONUS) {
-					// extra ball awarded
+					
 					extraBalls++;
 				}
 				lastScore = score;
 
-				// -- update ends ------------------------------------------------------
+				
 
 			} while (nextFrameStartTime < System.nanoTime());
 
-			// -- render starts ------------------------------------------------------
+			
 
 			g.translate(0, cameraY);
 
-			// draw layer 0
+			
 			g.drawImage(images[IMAGE_LAYER_0], 0, 0, null);
 
-			// draw items
+			
 			for (j = 0; j < ITEMS; j++) {
 				if (itemsTable[j][2] == 0) {
 					g.setColor(itemsTable[j][3] != 1 ? Color.GRAY : Color.WHITE);
@@ -912,7 +912,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw left flipper         
+			
 			g.translate(219, 948);
 			g.scale(-1, 1);
 			g.rotate(-leftFlipperAngle);
@@ -920,44 +920,44 @@ public class a extends GamePanel {
 			g.setTransform(transform);
 			g.translate(0, cameraY);
 
-			// draw right flipper
+			
 			g.translate(538, 948);
 			g.rotate(-rightFlipperAngle);
 			g.drawImage(images[IMAGE_FLIPPER], -156, -52, null);
 			g.setTransform(transform);
 			g.translate(0, cameraY);
 
-			// draw lower left gate      
+			
 			if (lowerLeftGateEnabled) {
 				g.drawImage(images[IMAGE_GATE], 28, 897, null);
 			}
 
-			// draw rail gate
+			
 			if (railGateEnabled) {
 				g.drawImage(images[IMAGE_GATE], 55, 470, null);
 			}
 
-			// draw lit right bumper
+			
 			if (rightBumper > 0) {
 				g.drawImage(images[IMAGE_BUMPER], 490, 122, null);
 			}
 
-			// draw lit left bumper
+			
 			if (leftBumper > 0) {
 				g.drawImage(images[IMAGE_BUMPER], 346, 58, null);
 			}
 
-			// draw lit right slingshot
+			
 			if (rightSlingshot > 0) {
 				g.drawImage(images[IMAGE_SLINGSHOT], 438, 670, null);
 			}
 
-			// draw lit left slingshot
+			
 			if (leftSlingshot > 0) {
 				g.drawImage(images[IMAGE_SLINGSHOT], 90, 670, null);
 			}
 
-			// draw balls on layer 0
+			
 			for (i = ballCount - 1; i >= 0; i--) {
 				ball = balls[i];
 				if (ball[BALL_LAYER] == 0) {
@@ -965,13 +965,13 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw plunger
+			
 			g.drawImage(images[IMAGE_PLUNGER], 698, 842 + plungerX, null);
 
-			// draw layer 1
+			
 			g.drawImage(images[IMAGE_LAYER_1], 0, 0, null);
 
-			// draw balls on layer 1
+			
 			for (i = ballCount - 1; i >= 0; i--) {
 				ball = balls[i];
 				if (ball[BALL_LAYER] == 1) {
@@ -979,7 +979,7 @@ public class a extends GamePanel {
 				}
 			}
 
-			// draw HUD
+			
 			g.setTransform(transform);
 			g.setColor(Color.BLACK);
 			g.fillRect(0, 560, 800, 40);
@@ -990,16 +990,16 @@ public class a extends GamePanel {
 			g.drawString(String.valueOf(multiplier), 128, 595);
 			g.drawString(String.valueOf(extraBalls), 16, 595);
 
-			// -- render ends --------------------------------------------------------
+			
 
-			// show the hidden buffer
+			
 			if (g2 == null) {
 				g2 = (Graphics2D) getGraphics();
 			} else {
 				g2.drawImage(images[IMAGE_BUFFER], 0, 0, null);
 			}
 
-			// burn off extra cycles
+			
 			while (nextFrameStartTime - System.nanoTime() > 0) {
 				Thread.yield();
 			}
@@ -1011,7 +1011,7 @@ public class a extends GamePanel {
 		return a[e.key] = e.id == 401;
 	}
 
-	// to run in window, uncomment below
+	
 	public static void main(String[] args) throws Throwable {
 	  javax.swing.JFrame frame = new javax.swing.JFrame("Laser Pinball");
 	  frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

@@ -46,26 +46,26 @@ public class Options {
             | Rdp.RDP5_NO_CURSORSETTINGS | Rdp.RDP5_NO_FULLWINDOWDRAG
             | Rdp.RDP5_NO_MENUANIMATIONS /*| Rdp.RDP5_NO_THEMING*/
             | Rdp.RDP5_NO_WALLPAPER;
-    // disables bandwidth saving tcp packets
+    
     public static boolean low_latency = true;
-    public static int keylayout = 0x409; // UK by default
-    public static String username = "Administrator"; // -u username
-    public static String domain = ""; // -d domain
-    public static String password = ""; // -p password
-    public static String hostname = ""; // -n hostname
-    public static String command = ""; // -s command
-    public static String directory = ""; // -d directory
-    public static String windowTitle = "properJavaRDP"; // -T windowTitle
-    public static int width = 1024; // -g widthxheight
-    public static int height = 768; // -g widthxheight
-    public static int port = 3389; // -t port
+    public static int keylayout = 0x409; 
+    public static String username = "Administrator"; 
+    public static String domain = ""; 
+    public static String password = ""; 
+    public static String hostname = ""; 
+    public static String command = ""; 
+    public static String directory = ""; 
+    public static String windowTitle = "properJavaRDP"; 
+    public static int width = 1024; 
+    public static int height = 768; 
+    public static int port = 3389; 
     public static boolean fullscreen;
     public static boolean built_in_licence;
     public static boolean load_licence;
     public static boolean save_licence;
     public static String licence_path = "./";
 
-    // public static boolean paste_hack = true;
+    
     public static boolean debug_keyboard;
     public static boolean debug_hexdump;
     public static boolean enable_menu = true;
@@ -74,10 +74,10 @@ public class Options {
     public static boolean remap_hash = true;
     public static boolean useLockingKeyState = true;
     public static boolean use_rdp5 = true;
-    public static int server_bpp = 24; // Bits per pixel
-    public static int Bpp = (server_bpp + 7) / 8; // Bytes per pixel
-    // Correction value to ensure only the relevant number of bytes are used for
-    // a pixel
+    public static int server_bpp = 24; 
+    public static int Bpp = (server_bpp + 7) / 8; 
+    
+    
     public static int bpp_mask = 0xFFFFFF >> 8 * (3 - Bpp);
     public static int imgCount;
     public static DirectColorModel colour_model = new DirectColorModel(24,

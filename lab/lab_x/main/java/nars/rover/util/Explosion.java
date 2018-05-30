@@ -8,14 +8,14 @@ import spacegraph.space2d.phys.dynamics.Fixture;
 import spacegraph.space2d.phys.dynamics.World;
 
 /**
- * http://www.iforce2d.net/b2dtut/explosions
+ * http:
  */
 public class Explosion {
 
     public static void applyBlastImpulse(Body body, Vec2 blastCenter, Vec2 applyPoint, float blastPower) {
         Vec2 blastDir = applyPoint.sub( blastCenter );
         float distance = blastDir.normalize();
-        //ignore bodies exactly at the blast point - blast direction is undefined
+        
         if ( distance == 0 )
             return;
         float invDistance = 1 / distance;
@@ -27,14 +27,14 @@ public class Explosion {
 
         final float m_blastRadiusSq = blastRadius*blastRadius;
 
-        //find all bodies with fixtures in blast radius AABB
+        
         QueryCallback queryCallback = new QueryCallback() {
             @Override
             public boolean reportFixture(Fixture fixture) {
                 Body body = fixture.getBody();
                 Vec2 bodyCom = body.getWorldCenter();
 
-                //ignore bodies outside the blast range
+                
                 if ((bodyCom.sub(center)).lengthSquared() < m_blastRadiusSq) {
                     applyBlastImpulse(body, center, bodyCom, blastPower);
                     return true;
@@ -50,19 +50,19 @@ public class Explosion {
 
     }
 
-//    public void explode() {
-//
-//        for (int i = 0; i < numRays; i++) {
-//            float angle = (i / (float)numRays) * 360 * DEGTORAD;
-//            b2Vec2 rayDir( sinf(angle), cosf(angle) );
-//            b2Vec2 rayEnd = center + blastRadius * rayDir;
-//
-//            //check what this ray hits
-//            RayCastClosestCallback callback;//basic callback to record body and hit point
-//            m_world->RayCast(&callback, center, rayEnd);
-//            if ( callback.m_body )
-//                applyBlastImpulse(callback.body, center, callback.point, (m_blastPower / (float)numRays));
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -36,7 +36,7 @@ public class NTMMemory {
         return parent.get();
     }
 
-    // mainly for visualisation, but also useful for other introspective "mutations"
+    
     public Head getHead(int index) {
         return heads[index];
     }
@@ -129,7 +129,7 @@ public class NTMMemory {
 
         final NTMMemory p = parent();
 
-        //local cache copy avoiding field reference in critical loop
+        
         final HeadSetting[] heading = this.heading;
         final double[][] erase = this.erase;
 
@@ -170,7 +170,7 @@ public class NTMMemory {
                 Unit[] row = data[k];
                 double itemGradient = row[j].grad;
                 double addressingVectorItemValue = headSetting.addressingVector.value[k];
-                //Gradient of Erase vector
+                
                 double gradientErase2 = p.data[k][j].value;
                 for (int q = 0; q < h; q++) {
                     if (q == headIndex)
@@ -183,11 +183,11 @@ public class NTMMemory {
 
                 gradientErase += gradientAddressing * (-gradientErase2);
 
-                //Gradient of Add vector
+                
                 gradientAdd += gradientAddressing;
             }
 
-            //TODO use activation derivative
+            
             double e = erase[j];
             head.getEraseVector()[j].grad += gradientErase * e * (1.0 - e);
             double a = add[j];
@@ -201,7 +201,7 @@ public class NTMMemory {
         final NTMMemory p = parent();
 
         for (int j = 0; j < memoryHeight; j++) {
-            //Gradient of head settings
+            
             Unit[] row = data[j];
             Unit[] oldRow = p.data[j];
             double gradient = 0.0;
@@ -238,7 +238,7 @@ public class NTMMemory {
     private static double[][] getTensor2(int x, int y) {
         double[][] tensor = new double[x][y];
 
-        // ASK< required? >
+        
         for (int i = 0; i < x; i++) {
             tensor[i] = new double[y];
         }

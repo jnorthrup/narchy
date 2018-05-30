@@ -4,8 +4,8 @@ import java.util.AbstractList;
 import java.util.List;
 
 
-//TODO update a collection of states all at once, to reduce the lookup/hashing of table access
-//  in: A qlearn(final S state, final double reward, A nextAction, double confidence) {
+
+
 
 abstract public class AbstractHaiQBrain<S,A> {
 
@@ -16,7 +16,7 @@ abstract public class AbstractHaiQBrain<S,A> {
     double gamma = 0.5f;
 
     /** value of λ=1.0 effectively makes algorithm run an online Monte Carlo in which the effects of all future interactions are fully considered in updating each Q-value of an episode." */
-    double lambda = 0.1; //0.1 0.5 0.9
+    double lambda = 0.1; 
 
     /** random rate */
     double epsilon = 0;
@@ -47,7 +47,7 @@ abstract public class AbstractHaiQBrain<S,A> {
         final Iterable<Integer> actionRange, stateRange;
 
         private final double[][] Q;
-        double et[][]; //eligiblity trace
+        double et[][]; 
 
         public ArrayHaiQBrain(int states, int actions) {
             this.nActions = actions;
@@ -106,14 +106,14 @@ abstract public class AbstractHaiQBrain<S,A> {
     abstract public double q(S state, A action);
 
 
-//    /** learn a discrete state */
-//    public A learn(final S state, final double reward) {
-//        return learn(state, reward, 1f);
-//    }
-//
-//    public A learn(final S state, final double reward, double confidence) {
-//        return learn(state, reward, null, confidence);
-//    }
+
+
+
+
+
+
+
+
 
     abstract public Iterable<S> getStates();
     abstract public Iterable<A> getActions();
@@ -155,12 +155,12 @@ abstract public class AbstractHaiQBrain<S,A> {
         }
 
         /*
-        //https://github.com/davidrobles/reinforcement-learning/blob/master/src/net/davidrobles/rl/algorithms/QLearning.java
+        
         double updateValue = reward + (gamma * nextStateNextActionValue) - table.getValue(state, action);
         double newValue = table.getValue(state, action) + (alpha * updateValue);
 
 
-        //https://github.com/davidrobles/reinforcement-learning/blob/master/src/net/davidrobles/rl/algorithms/TabularSARSA.java
+        
         double updateValue = reward + (gamma * nextStateNextActionValue) - table.getValue(state, action);
         double newValue = table.getValue(state, action) + (alpha * updateValue);
         table.setValue(new QPair<S, A>(state, action), newValue);
@@ -168,12 +168,12 @@ abstract public class AbstractHaiQBrain<S,A> {
 
     }
 
-//    /**
-//     * returns action #
-//     */
-//    public A learn(final S state, final double reward, A nextAction, double confidence) {
-//        return qlearn(state, reward, nextAction, confidence);
-//    }
+
+
+
+
+
+
 
     abstract public A getRandomAction();
 

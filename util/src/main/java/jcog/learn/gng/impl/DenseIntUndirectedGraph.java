@@ -12,13 +12,13 @@ import java.util.Arrays;
 public class DenseIntUndirectedGraph implements ShortUndirectedGraph {
 
     public static final int CLEAR_VALUE =
-            //Integer.MIN_VALUE;
+            
             0;
 
     public final int[][] data;
 
     public DenseIntUndirectedGraph(short dim) {
-        this.data = new int[dim][dim]; //HACK techncially only a triangular matrix should be necessary
+        this.data = new int[dim][dim]; 
         clear();
     }
 

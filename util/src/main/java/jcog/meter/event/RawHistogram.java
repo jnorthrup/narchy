@@ -11,7 +11,7 @@
  *     GNU Lesser General Public License for more details.
  *
  *     You should have received a copy of the GNU Lesser General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *     along with this program.  If not, see <http:
  */
 
 package jcog.meter.event;
@@ -19,10 +19,10 @@ package jcog.meter.event;
 import java.util.function.DoubleFunction;
 
 /**
- * https://github.com/OpenHFT/Chronicle-Core/blob/master/src/main/java/net/openhft/chronicle/core/util/Histogram.java
+ * https:
  * Created by peter on 10/07/15.
  */
-// TODO add a dummy histogram.
+
 public class RawHistogram {
     private final int fractionBits;
     private final int powersOf2;

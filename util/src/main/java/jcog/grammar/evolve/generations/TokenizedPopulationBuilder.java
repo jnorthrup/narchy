@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.generations;
 
@@ -61,7 +61,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
         target.addAll(population);
     }
 
- //It is true when string matches \w (.i.e. its length is one and it is alphabetic or decimal number)
+ 
     private boolean matchW(String string){
         return (string.length()==1 && matchW(string.charAt(0)));
     }
@@ -84,10 +84,10 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
         DataSet dataSet = usedTrainingDataset;
         
         Double TOKEN_THREASHOLD = 80.0; 
-        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
+        boolean DISCARD_W_TOKENS = true; 
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
         if(parameters!=null){
-            //add parameters if needed
+            
             if(parameters.containsKey("tokenThreashold")){
                 TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
             }
@@ -100,7 +100,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
             for (String match : example.getMatchedStrings()) {
                 List<String> tokens = tokenizer.tokenize(match);
                 matchTokens.add(tokens);
-                Set<String> tokensSet = new HashSet<>(tokens);//unicity of tokens
+                Set<String> tokensSet = new HashSet<>(tokens);
                 for(String token : tokensSet){
                     if(matchW(token) && DISCARD_W_TOKENS){
                         continue;
@@ -121,7 +121,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
             String key = entry.getKey();
             Double double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfMatches;
-            entry.setValue(doublePercentange); //update the original collection too
+            entry.setValue(doublePercentange); 
              if(doublePercentange >= TOKEN_THREASHOLD){
                 winnerTokens.put(key,doublePercentange);
             }
@@ -150,7 +150,7 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
         String w = "\\w";
         String d = "\\d";
 
-        //winner tokens are added with no modifications(only escaped), other parts are converted to classes or escaped
+        
          
         for(String token : tokenizedString){
             if(winnerTokens.containsKey(token)){
@@ -169,11 +169,11 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
             }
         }
         
-        //when two adiacent nodes are equal symbols/tokens, a quantifier is used to compact.
-        // /w/w/w is converted to /w++
+        
+        
         if(compact){
             Deque<Node> newNodes = new LinkedList<>();
-            //do compact
+            
             
             while (!nodes.isEmpty()) {
 
@@ -187,10 +187,10 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
 
                     if(nodeValue.equals(nextValue)){
                         isRepeat = true;
-                        //Consume and drop the repetition
+                        
                         nodes.pollFirst();
                     } else {
-                        //They are different, get out
+                        
                         break;
                     } 
                 }    
@@ -202,8 +202,8 @@ public class TokenizedPopulationBuilder implements InitialPopulationBuilder {
             nodes = newNodes;
         }
 
-        //Build the concatenation of given nodes
-        //This code is the same as NaivePopulationBulder and has been "cloned" from older code
+        
+        
        
         while (nodes.size() > 1) {
 

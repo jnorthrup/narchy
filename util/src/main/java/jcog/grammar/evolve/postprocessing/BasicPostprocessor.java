@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.postprocessing;
 
@@ -52,7 +52,7 @@ public class BasicPostprocessor implements Postprocessor {
 
     @Override
     public void elaborate(Configuration config, Results results, long timeTaken) {
-        //The PostProcessor gets the parameters in real time
+        
         Map<String, String> parameters = config.getPostprocessorParameters();
         if(parameters!=null){
             if(parameters.containsKey(PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS)){
@@ -60,17 +60,17 @@ public class BasicPostprocessor implements Postprocessor {
             }
         }
           
-        //"Start evaluating results..."
         
-        //crunches the results file and find out the best individual
+        
+        
         config.getBestSelector().elaborate(results);
         results.setOverallExecutionTimeMillis(timeTaken);
-        //Populate optional fields
+        
         if(populateOptionalFields){
             results.setExamples(config.getDatasetContainer().getDataset().getExamples());
         }
         try {
-            //Populate extractions data and stats
+            
             results.setBestExtractions(this.getEvaluations(results.getBestSolution().getSolution(), config, Context.EvaluationPhases.LEARNING));
             results.setBestExtractionsStrings(this.getEvaluationsStrings(results.getBestExtractions(),config.getDatasetContainer().getLearningDataset()));
             results.setBestExtractionsStats(this.getEvaluationStats(results.getBestExtractions(), config));
@@ -79,15 +79,15 @@ public class BasicPostprocessor implements Postprocessor {
         }
         
         
-        //Populate knowledge avaiable
+        
         DataSet training = config.getDatasetContainer().getTrainingDataset();
         DataSet learning = config.getDatasetContainer().getLearningDataset();
-        //training stats
+        
         int numberTrainingMatches = training.getNumberMatches();
         int numberTrainingUnmatches = training.getNumberUnmatches();
         results.setNumberTrainingMatches(numberTrainingMatches);
         results.setNumberTrainingUnmatches(numberTrainingUnmatches);
-        //Here is the KA from definitions
+        
         int numberMatches = learning.getNumberMatches();
         int numberUnmatches = learning.getNumberUnmatches();
         int numberMatchedChars = learning.getNumberMatchedChars();
@@ -122,7 +122,7 @@ public class BasicPostprocessor implements Postprocessor {
     }
 
     
-    //errors per example, on learning; 
+    
     private List<BasicStats> getEvaluationStats(List<Bounds[]> evaluation, Configuration config) {
         DataSet dataset = config.getDatasetContainer().getLearningDataset();
         List<BasicStats> statsPerExample = new LinkedList<>();
@@ -130,12 +130,12 @@ public class BasicPostprocessor implements Postprocessor {
             Bounds[] extractionsList = evaluation.get(index);
             Set<Bounds> extractionsSet = UnifiedSet.newSetWith(extractionsList);
             Example example = dataset.getExample(index);
-            extractionsSet.removeAll(example.getMatch()); //left only false extractions
+            extractionsSet.removeAll(example.getMatch()); 
             BasicStats exampleStats = new BasicStats();
-            exampleStats.fn = -1; //unset, not interesting at the moment
+            exampleStats.fn = -1; 
             exampleStats.fp = extractionsSet.size();
             exampleStats.tp = extractionsList.length - exampleStats.fp;
-            exampleStats.tn = -1; //unset, not interesting at the moment
+            exampleStats.tn = -1; 
             statsPerExample.add(exampleStats);
         }
         return statsPerExample;

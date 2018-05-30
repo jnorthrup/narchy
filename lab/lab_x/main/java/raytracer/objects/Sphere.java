@@ -75,7 +75,7 @@ public class Sphere extends Shape
     @Override
     public void getBoundingPoints(Collection<Vector3d> points)
     {
-        // Die Kugel wird durch den umschlie�enden W�rfel interpoliert:
+        
         points.add(new Vector3d(center.x-radius, center.y-radius, center.z-radius));
         points.add(new Vector3d(center.x+radius, center.y-radius, center.z-radius));
         points.add(new Vector3d(center.x-radius, center.y+radius, center.z-radius));
@@ -118,7 +118,7 @@ public class Sphere extends Shape
     @Override
     public byte compareAxis(final byte axisId, final double axisValue)
     {
-        // Abstand des Kugel-Zentrums vom Achsen-Punkt berechnen:
+        
         double distance;
         switch (axisId)
         {
@@ -135,7 +135,7 @@ public class Sphere extends Shape
             throw new IllegalArgumentException();
         }
         
-        // Laga des Objekts zur�ckgeben:
+        
         if (distance < -radius)
             return (byte) -1;
         if (distance > radius)
@@ -180,20 +180,20 @@ public class Sphere extends Shape
     @Override
     public boolean intersect(Ray ray)
     {
-        // Lichter ignorieren, falls erw�nscht:
+        
         if ((isLight) && (ray.ignoreLights))
             return false;
         
         double ddd = ray.dir.dot(ray.dir);
         Vector3d p = new Vector3d();
         
-        // Schnittpunkt des Strahles mit der Ebene durch den Kugelmittelpunkt
-        // berechnen:
+        
+        
         p.sub(center, ray.org);
         double t = ray.dir.dot(p) / ddd;
         p.scaleAdd(t, ray.dir, ray.org);
         
-        // Schnittpunkte des Strahls mit der Kugel berechnen:
+        
         p.sub(center);
         double x = radius * radius - p.dot(p);
         if (x < 0.0)
@@ -201,23 +201,23 @@ public class Sphere extends Shape
         x /= ddd;
         x = Math.sqrt(x);
         
-        // N�chsten Schnittpuntk zur�ckgeben:
+        
         if ((double) FloatingPoint.compareTolerated(t, x) <= 0.0)
         {
             if ((double) FloatingPoint.compareTolerated(t, -x) <= 0.0)
-                return false;   // Kugel liegt auf der falschen Seite des Strahls
-            t += x;             // Schnittpunkt: Kugel-Innenseite
+                return false;   
+            t += x;             
         }
         else
-            t -= x;             // Schnittpunkt: Kugel-Au�enseite
+            t -= x;             
 
-        // Falls der Strahl bereits ein anderes Objekt schneidet, das weiter
-        // vorne liegt:
+        
+        
         if (ray.length <= t)
             return false;
         
-        ray.length = t;     // Strahl schneidet die Kugel
-        ray.hit = this;     // Geschnittenes Objekt
+        ray.length = t;     
+        ray.hit = this;     
         return true;
 	}
 
@@ -231,7 +231,7 @@ public class Sphere extends Shape
     @Override
     public Vector2d getTextureCoords(Vector3d point)
     {
-        // Normale am Punkt berechnen:
+        
         Vector3d normal = new Vector3d();
         normal.sub(point, center);
         
@@ -256,7 +256,7 @@ public class Sphere extends Shape
         double y = alpha/Math.PI;
         double x = (2.0 *Math.PI-beta)/(2.0 *Math.PI);
         
-        //double x = Math.sqrt(l*l-(y-0.5)*(y-0.5));
+        
         
         
         return new Vector2d(x, y);
@@ -265,7 +265,7 @@ public class Sphere extends Shape
     @Override
     public void transformTexture(Transformation t)
     {
-        // Texturkoordinaten der Kugel transformieren:
+        
         t.transformVector(textureUp);
         t.transformVector(textureStart);
     }
@@ -277,7 +277,7 @@ public class Sphere extends Shape
         GL2 gl = (GL2)drawable.getGL();
         GLU glu = GLU.createGLU(gl);
         
-        // Kugel mittels "Quadrik"-Objekt zeichnen:
+        
         GLUquadric quadric = glu.gluNewQuadric();
 
         gl.glPushMatrix();

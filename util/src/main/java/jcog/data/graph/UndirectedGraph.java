@@ -33,15 +33,15 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 public class UndirectedGraph implements Graph {
 
 
-// ====================== private fileds ========================
-// ==============================================================
+
+
 
 
     private final Graph g;
 
 
-// ====================== public constructors ===================
-// ==============================================================
+
+
 
 
     public UndirectedGraph(Graph g) {
@@ -50,8 +50,8 @@ public class UndirectedGraph implements Graph {
     }
 
 
-// ======================= Graph implementations ================
-// ==============================================================
+
+
 
 
     @Override
@@ -60,7 +60,7 @@ public class UndirectedGraph implements Graph {
         return g.isEdge(i, j) || g.isEdge(j, i);
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * Uses sets as collection so does not support multiple edges now, even if
@@ -79,14 +79,14 @@ public class UndirectedGraph implements Graph {
         return result;
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public Object vertex(int v) {
         return g.vertex(v);
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * If there is an (i,j) edge, returns that, otherwise if there is a (j,i)
@@ -100,21 +100,21 @@ public class UndirectedGraph implements Graph {
         return null;
     }
 
-// ---------------------------------------------------------------
+
 
     @Override
     public int size() {
         return g.size();
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public boolean directed() {
         return false;
     }
 
-// --------------------------------------------------------------------
+
 
     /**
      * not supported
@@ -125,7 +125,7 @@ public class UndirectedGraph implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// ---------------------------------------------------------------
+
 
     /**
      * not supported
@@ -136,7 +136,7 @@ public class UndirectedGraph implements Graph {
         throw new UnsupportedOperationException();
     }
 
-// --------------------------------------------------------------------
+
 
     @Override
     public int degree(int i) {
@@ -144,7 +144,7 @@ public class UndirectedGraph implements Graph {
         return neighborsOut(i).size();
     }
 
-// --------------------------------------------------------------------
+
 /*
 public static void main( String[] args ) {
 

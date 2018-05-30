@@ -89,7 +89,7 @@ public class Combinations implements Iterator<Object> {
 		this.n = inArray.length;
 		this.m = m;
 
-		// throw exception unless n >= m >= 0
+		
 		Combinatoric.check(n, m);
 
 		/**

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,7 +47,7 @@ public class EvolutionTest {
     @SuppressWarnings("unchecked")
     static RankedCandidate createRunExpectations(GenerationRanker ranker, GenerationEvolver evolver, Predicate<Candidates> terminator,
                                                  Collection<Node> initialPopulation) {
-        // create mock objects used in processing
+        
         Candidates rankedInitialPopulation = singletonRankedCandidates();
         Collection<Node> secondGeneration = mock(Collection.class);
         Candidates rankedSecondGeneration = singletonRankedCandidates();
@@ -56,19 +56,19 @@ public class EvolutionTest {
         Collection<Node> fourthGeneration = mock(Collection.class);
         Candidates rankedFourthGeneration = singletonRankedCandidates();
 
-        // expectations for initial population
+        
         when(ranker.rank(initialPopulation)).thenReturn(rankedInitialPopulation);
         when(evolver.evolve(rankedInitialPopulation)).thenReturn(secondGeneration);
 
-        // expectations for second generation
+        
         when(ranker.rank(secondGeneration)).thenReturn(rankedSecondGeneration);
         when(evolver.evolve(rankedSecondGeneration)).thenReturn(thirdGeneration);
 
-        // expectations for third generation
+        
         when(ranker.rank(thirdGeneration)).thenReturn(rankedThirdGeneration);
         when(evolver.evolve(rankedThirdGeneration)).thenReturn(fourthGeneration);
 
-        // expectations for fourth generation
+        
         when(ranker.rank(fourthGeneration)).thenReturn(rankedFourthGeneration);
         when(terminator.test(rankedFourthGeneration)).thenReturn(true);
 
@@ -78,7 +78,7 @@ public class EvolutionTest {
     @SuppressWarnings("unchecked")
     @Test
     public void test() {
-        // Create mock objects to pass as arguments to process method of Runner
+        
         GenerationRanker ranker = mock(GenerationRanker.class);
         GenerationEvolver evolver = mock(GenerationEvolver.class);
         Predicate<Candidates> terminator = mock(Predicate.class);
@@ -104,7 +104,7 @@ public class EvolutionTest {
                 .setTerminator(terminator).get();
         RankedCandidate actual = output.best();
 
-        // confirm output matches expected behaviour
+        
         assertSame(expected, actual);
     }
 
@@ -126,7 +126,7 @@ public class EvolutionTest {
     }
 
     private void assertInvalidSizes(IntFunction<?> setter) {
-        // confirm negative values and zero are not valid
+        
         for (int i : new int[]{Integer.MIN_VALUE, -2, -1, 0}) {
             assertInvalidSize(setter, i);
         }

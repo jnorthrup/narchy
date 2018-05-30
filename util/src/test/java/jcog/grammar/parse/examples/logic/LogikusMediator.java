@@ -1,7 +1,7 @@
 package jcog.grammar.parse.examples.logic;
 
-//import javax.swing.*;
-//import javax.swing.border.*;
+
+
 
 import jcog.grammar.parse.examples.engine.Program;
 import jcog.grammar.parse.examples.engine.Query;
@@ -112,7 +112,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 		}
 		computeThread = new Thread(this);
 		computeThread.start();
-		// this thread will setComputing(false) in due time.
+		
 	}
 
 	/**
@@ -123,8 +123,8 @@ public class LogikusMediator implements ActionListener, Runnable {
 	 *                   area
 	 */
 	protected void display(final String s) {
-		// Using invokeAndWait() keeps appends from outrunning
-		// the event dispatch thread.
+		
+		
 
 		Runnable r = new Runnable() {
 			public void run() {
@@ -168,8 +168,8 @@ public class LogikusMediator implements ActionListener, Runnable {
 
 		String queryText = queryArea.getText();
 
-		// create a fresh query if the program changes or the
-		// query text changes
+		
+		
 
 		if (programChanged || (lastQueryText == null) || (!lastQueryText.equals(queryText))) {
 			query = LogikusFacade.query(queryText, program);
@@ -237,7 +237,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 	 */
 	protected void setComputing(boolean computing) {
 
-		// computing means everything is disabled, except "Halt"
+		
 
 		proveNextButton.setEnabled(!computing);
 		proveRestButton.setEnabled(!computing);

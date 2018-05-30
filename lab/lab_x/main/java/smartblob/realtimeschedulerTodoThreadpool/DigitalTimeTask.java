@@ -7,9 +7,9 @@ The task may choose to wait until a certain amount of time has passed
 as multiple calls to Task.nextState(double) before calling nextState()
 from inside it, or it may call every time, depending on the task.
 */
-@Deprecated //Since Task changed to extend Eventable,
-//this would be better done by event(new CountEvent(long)),
-//which I'm commentingOut nextState() to do that here, but dont need this interface.
+@Deprecated 
+
+
 public interface DigitalTimeTask extends Task{
 	
 	/** For DigitalTimeTask that really want to just be a Task,
@@ -18,6 +18,6 @@ public interface DigitalTimeTask extends Task{
 	*/
 	public static final double defaultNextStateInterval = .05;
 	
-	//public boolean nextState();
+	
 
 }

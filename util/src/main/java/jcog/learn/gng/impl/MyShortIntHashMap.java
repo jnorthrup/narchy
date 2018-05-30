@@ -100,13 +100,13 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         if (sv != null && sv.containsZeroKey) {
             if (!toKeep.accept(sv.zeroValue)) {
                 removeKey((short) 0);
-                sv = this.sentinelValues; //because it may have changed
+                sv = this.sentinelValues; 
             }
         }
         if (sv != null && sv.containsOneKey) {
             if (!toKeep.accept(sv.oneValue)) {
                 removeKey((short) 1);
-                sv = this.sentinelValues; //because it may have changed
+                sv = this.sentinelValues; 
             }
         }
 
@@ -195,39 +195,39 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     public boolean equals(Object obj) {
         return obj == this;
-//        if(this == obj) {
-//            return true;
-//        } else if(!(obj instanceof ShortIntMap)) {
-//            return false;
-//        } else {
-//            ShortIntMap other = (ShortIntMap)obj;
-//            if(this.size() != other.size()) {
-//                return false;
-//            } else {
-//                if(this.sentinelValues == null) {
-//                    if(other.containsKey(0) || other.containsKey(1)) {
-//                        return false;
-//                    }
-//                } else {
-//                    if(this.sentinelValues.containsZeroKey && (!other.containsKey(0) || this.sentinelValues.zeroValue != other.getOrThrow(0))) {
-//                        return false;
-//                    }
-//
-//                    if(this.sentinelValues.containsOneKey && (!other.containsKey(1) || this.sentinelValues.oneValue != other.getOrThrow(1))) {
-//                        return false;
-//                    }
-//                }
-//
-//                for(int i = 0; i < this.keys.length; ++i) {
-//                    short key = this.keys[i];
-//                    if(isNonSentinel(key) && (!other.containsKey(key) || this.values[i] != other.getOrThrow(key))) {
-//                        return false;
-//                    }
-//                }
-//
-//                return true;
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     public int hashCode() {
@@ -805,17 +805,17 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         throw new UnsupportedOperationException();
     }
 
-//    public MutableShortIntMap asUnmodifiable() {
-//        return new UnmodifiableShortIntMap(this);
-//    }
-//
-//    public MutableShortIntMap asSynchronized() {
-//        return new SynchronizedShortIntMap(this);
-//    }
-//
-//    public ImmutableShortIntMap toImmutable() {
-//        return ShortIntMaps.immutable.ofAll(this);
-//    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public int get(short key) {
@@ -948,87 +948,87 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         throw new UnsupportedOperationException();
     }
 
-//    public LazyShortIterable keysView() {
-//        return new MyShortIntHashMap.KeysView(null);
-//    }
 
-//    public RichIterable<ShortIntPair> keyValuesView() {
-//        return new MyShortIntHashMap.KeyValuesView(null);
-//    }
 
-//    public MyShortIntHashMap select(ShortIntPredicate predicate) {
-//        MyShortIntHashMap result = new MyShortIntHashMap();
-//        if(this.sentinelValues != null) {
-//            if(this.sentinelValues.containsZeroKey && predicate.accept(0, this.sentinelValues.zeroValue)) {
-//                result.put(0, this.sentinelValues.zeroValue);
-//            }
-//
-//            if(this.sentinelValues.containsOneKey && predicate.accept(1, this.sentinelValues.oneValue)) {
-//                result.put(1, this.sentinelValues.oneValue);
-//            }
-//        }
-//
-//        for(int i = 0; i < this.keys.length; ++i) {
-//            if(isNonSentinel(this.keys[i]) && predicate.accept(this.keys[i], this.values[i])) {
-//                result.put(this.keys[i], this.values[i]);
-//            }
-//        }
-//
-//        return result;
-//    }
-//
-//    public MyShortIntHashMap reject(ShortIntPredicate predicate) {
-//        MyShortIntHashMap result = new MyShortIntHashMap();
-//        if(this.sentinelValues != null) {
-//            if(this.sentinelValues.containsZeroKey && !predicate.accept(0, this.sentinelValues.zeroValue)) {
-//                result.put(0, this.sentinelValues.zeroValue);
-//            }
-//
-//            if(this.sentinelValues.containsOneKey && !predicate.accept(1, this.sentinelValues.oneValue)) {
-//                result.put(1, this.sentinelValues.oneValue);
-//            }
-//        }
-//
-//        for(int i = 0; i < this.keys.length; ++i) {
-//            if(isNonSentinel(this.keys[i]) && !predicate.accept(this.keys[i], this.values[i])) {
-//                result.put(this.keys[i], this.values[i]);
-//            }
-//        }
-//
-//        return result;
-//    }
 
-//    public void writeExternal(ObjectOutput out) throws IOException {
-//        out.writeInt(this.size());
-//        if(this.sentinelValues != null) {
-//            if(this.sentinelValues.containsZeroKey) {
-//                out.writeShort(0);
-//                out.writeInt(this.sentinelValues.zeroValue);
-//            }
-//
-//            if(this.sentinelValues.containsOneKey) {
-//                out.writeShort(1);
-//                out.writeInt(this.sentinelValues.oneValue);
-//            }
-//        }
-//
-//        for(int i = 0; i < this.keys.length; ++i) {
-//            if(isNonSentinel(this.keys[i])) {
-//                out.writeShort(this.keys[i]);
-//                out.writeInt(this.values[i]);
-//            }
-//        }
-//
-//    }
-//
-//    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-//        int size = in.readInt();
-//
-//        for(int i = 0; i < size; ++i) {
-//            this.put(in.readShort(), in.readInt());
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void compact() {
 
@@ -1162,14 +1162,14 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         return key == 1;
     }
 
-//    private static boolean isNonSentinel_(short key) {
-//        return key!=0 && key!=1;
-//        //return !isEmptyKey(key) && !isRemovedKey(key);
-//    }
+
+
+
+
     private static boolean isNonSentinel(short k) {
-        //return !(k == 0 || k == 1);
+        
         return k > 1 || k < 0;
-        //return !isEmptyKey(key) && !isRemovedKey(key);
+        
     }
 
     @Override
@@ -1210,13 +1210,13 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         return keys.length;
     }
 
-//    public MutableShortSet keySet() {
-//        return new MyShortIntHashMap.KeySet(null);
-//    }
-//
-//    public MutableIntCollection values() {
-//        return new MyShortIntHashMap.ValuesCollection(null);
-//    }
+
+
+
+
+
+
+
 
     private class KeyValuesView extends AbstractLazyIterable<ShortIntPair> {
         private KeyValuesView() {
@@ -1342,117 +1342,117 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         }
     }
 
-//    private class ValuesCollection extends AbstractIntValuesCollection {
-//        private ValuesCollection() {
-//            super(MyShortIntHashMap.this);
-//        }
-//
-//        public MutableIntIterator intIterator() {
-//            return MyShortIntHashMap.this.intIterator();
-//        }
-//
-//        public boolean remove(int item) {
-//            int oldSize = MyShortIntHashMap.this.size();
-//            if(MyShortIntHashMap.this.sentinelValues != null) {
-//                if(MyShortIntHashMap.this.sentinelValues.containsZeroKey && item == MyShortIntHashMap.this.sentinelValues.zeroValue) {
-//                    MyShortIntHashMap.this.removeKey(0);
-//                }
-//
-//                if(MyShortIntHashMap.this.sentinelValues.containsOneKey && item == MyShortIntHashMap.this.sentinelValues.oneValue) {
-//                    MyShortIntHashMap.this.removeKey(1);
-//                }
-//            }
-//
-//            for(int i = 0; i < MyShortIntHashMap.this.keys.length; ++i) {
-//                if(MyShortIntHashMap.isNonSentinel(MyShortIntHashMap.this.keys[i]) && item == MyShortIntHashMap.this.values[i]) {
-//                    MyShortIntHashMap.this.removeKey(MyShortIntHashMap.this.keys[i]);
-//                }
-//            }
-//
-//            return oldSize != MyShortIntHashMap.this.size();
-//        }
-//
-//        public boolean retainAll(IntIterable source) {
-//            int oldSize = MyShortIntHashMap.this.size();
-//            final Object sourceSet = source instanceof IntSet?(IntSet)source:source.toSet();
-//            MyShortIntHashMap retained = MyShortIntHashMap.this.select(new ShortIntPredicate() {
-//                public boolean accept(short key, int value) {
-//                    return ((IntSet)sourceSet).contains(value);
-//                }
-//            });
-//            if(retained.size() != oldSize) {
-//                MyShortIntHashMap.this.keys = retained.keys;
-//                MyShortIntHashMap.this.values = retained.values;
-//                MyShortIntHashMap.this.sentinelValues = retained.sentinelValues;
-//                MyShortIntHashMap.this.occupiedWithData = retained.occupiedWithData;
-//                MyShortIntHashMap.this.occupiedWithSentinels = retained.occupiedWithSentinels;
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        }
-//    }
 
-//    private class KeySet extends AbstractMutableShortKeySet {
-//        private KeySet() {
-//        }
-//
-//        protected MutableShortKeysMap getOuter() {
-//            return MyShortIntHashMap.this;
-//        }
-//
-//        protected SentinelValues getSentinelValues() {
-//            return MyShortIntHashMap.this.sentinelValues;
-//        }
-//
-//        protected short getKeyAtIndex(int index) {
-//            return MyShortIntHashMap.this.keys[index];
-//        }
-//
-//        protected int getTableSize() {
-//            return MyShortIntHashMap.this.keys.length;
-//        }
-//
-//        public MutableShortIterator shortIterator() {
-//            return MyShortIntHashMap.this.new KeySetIterator(null);
-//        }
-//
-//        public boolean retainAll(ShortIterable source) {
-//            int oldSize = MyShortIntHashMap.this.size();
-//            final Object sourceSet = source instanceof ShortSet?(ShortSet)source:source.toSet();
-//            MyShortIntHashMap retained = MyShortIntHashMap.this.select(new ShortIntPredicate() {
-//                public boolean accept(short key, int value) {
-//                    return ((ShortSet)sourceSet).contains(key);
-//                }
-//            });
-//            if(retained.size() != oldSize) {
-//                MyShortIntHashMap.this.keys = retained.keys;
-//                MyShortIntHashMap.this.values = retained.values;
-//                MyShortIntHashMap.this.sentinelValues = retained.sentinelValues;
-//                MyShortIntHashMap.this.occupiedWithData = retained.occupiedWithData;
-//                MyShortIntHashMap.this.occupiedWithSentinels = retained.occupiedWithSentinels;
-//                return true;
-//            } else {
-//                return false;
-//            }
-//        }
-//
-//        public boolean retainAll(short... source) {
-//            return this.retainAll((ShortIterable)ShortHashSet.newSetWith(source));
-//        }
-//
-//        public ShortSet freeze() {
-//            MyShortIntHashMap.this.copyKeysOnWrite = true;
-//            boolean containsZeroKey = false;
-//            boolean containsOneKey = false;
-//            if(MyShortIntHashMap.this.sentinelValues != null) {
-//                containsZeroKey = MyShortIntHashMap.this.sentinelValues.containsZeroKey;
-//                containsOneKey = MyShortIntHashMap.this.sentinelValues.containsOneKey;
-//            }
-//
-//            return new ImmutableShortMapKeySet(MyShortIntHashMap.this.keys, MyShortIntHashMap.this.occupiedWithData, containsZeroKey, containsOneKey);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private class KeySetIterator implements MutableShortIterator {
         private int count;
@@ -1515,18 +1515,18 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         }
     }
 
-//    private class KeysView extends AbstractLazyShortIterable {
-//        private KeysView() {
-//        }
-//
-//        public ShortIterator shortIterator() {
-//            return new UnmodifiableShortIterator(MyShortIntHashMap.this.new KeySetIterator(null));
-//        }
-//
-//        public void each(ShortProcedure procedure) {
-//            MyShortIntHashMap.this.forEachKey(procedure);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     private class InternalIntIterator implements MutableIntIterator {
         private int count;
@@ -1618,13 +1618,13 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             return valueEqualsZeroValue || valueEqualsOneValue;
         }
 
-        //        public AbstractMutableIntValuesMap.SentinelValues copy() {
-        //            AbstractMutableIntValuesMap.SentinelValues sentinelValues = new AbstractMutableIntValuesMap.SentinelValues();
-        //            sentinelValues.zeroValue = this.zeroValue;
-        //            sentinelValues.oneValue = this.oneValue;
-        //            sentinelValues.containsOneKey = this.containsOneKey;
-        //            sentinelValues.containsZeroKey = this.containsZeroKey;
-        //            return sentinelValues;
-        //        }
+        
+        
+        
+        
+        
+        
+        
+        
     }
 }

@@ -37,7 +37,7 @@ import java.text.DecimalFormat;
  *
  * @author Benjamin 'BePo' Poppinga
  * @author Victor 'SokeOner' Pavluchinskyy
- * https://github.com/SokeOner/GestureRecognize
+ * https:
  */
 public class HMM implements Serializable{
 	/** The number of states */
@@ -78,21 +78,21 @@ public class HMM implements Serializable{
 	private void reset() {
 		int jumplimit = 2;
 		
-		// set startup probability
+		
 		pi[0] = 1;
 		for(int i=1; i<numStates; i++) {
 			pi[i] = 0;
 		}
 		
-		// set state change probabilities in the left-to-right version
-		// NOTE: i now that this is dirty and very static. :)
+		
+		
 		for(int i=0; i<numStates; i++) {
 			for(int j=0; j<numStates; j++) {
-				if(i==numStates-1 && j==numStates-1) { // last row
+				if(i==numStates-1 && j==numStates-1) { 
 					a[i][j] = 1.0;
-				} else if(i==numStates-2 && j==numStates-2) { // next to last row
+				} else if(i==numStates-2 && j==numStates-2) { 
 					a[i][j] = 0.5;
-				} else if(i==numStates-2 && j==numStates-1) { // next to last row
+				} else if(i==numStates-2 && j==numStates-1) { 
 					a[i][j] = 0.5;
 				} else if(i<=j && i>j-jumplimit-1) {
 					a[i][j] = 1.0/(jumplimit+1);
@@ -103,7 +103,7 @@ public class HMM implements Serializable{
 		}
 		
 		
-		// emission probability
+		
 		for(int i=0; i<numStates; i++) {
 			for(int j=0; j<numObservations; j++) {
 				b[i][j] = 1.0/(double)numObservations;
@@ -129,7 +129,7 @@ public class HMM implements Serializable{
 
 		double[][] a_new = new double[a.length][a.length];
 		double[][] b_new = new double[b.length][b[0].length];
-		// re calculate state change probability a
+		
 		for(int i=0; i<a.length; i++) {
 			for(int j=0; j<a[i].length; j++) {	
 				double zaehler=0;
@@ -151,15 +151,15 @@ public class HMM implements Serializable{
 					}
 					zaehler+=(1/prob)*zaehler_innersum;
 					nenner+=(1/prob)*nenner_innersum;
-				} // k
+				} 
 		
 				a_new[i][j] = zaehler/nenner;
-			} // j
-		} // i
+			} 
+		} 
 		
-		// re calculate emission probability b
-		for(int i=0; i<b.length; i++) { // zustaende
-			for(int j=0; j<b[i].length; j++) {	// symbole
+		
+		for(int i=0; i<b.length; i++) { 
+			for(int j=0; j<b[i].length; j++) {	
 				double zaehler=0;
 				double nenner=0;
 			
@@ -181,11 +181,11 @@ public class HMM implements Serializable{
 					}
 					zaehler+=(1/prob)*zaehler_innersum;
 					nenner+=(1/prob)*nenner_innersum;
-				} // k
+				} 
 		
 				b_new[i][j] = zaehler/nenner;
-			} // j
-		} // i
+			} 
+		} 
 	
 		this.a=a_new;
 		this.b=b_new;
@@ -226,8 +226,8 @@ public class HMM implements Serializable{
 	public double getProbability(int[] o) {
 		double prob = 0.0;
 		double[][] forward = this.forwardProc(o);
-		//	add probabilities
-		for (int i = 0; i < forward.length; i++) { // for every state
+		
+		for (int i = 0; i < forward.length; i++) { 
 			prob += forward[i][forward[i].length - 1];
 		}
 		return prob;

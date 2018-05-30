@@ -15,8 +15,8 @@ public class FPSLook extends SpaceMouse {
 
     boolean dragging;
     private int prevX, prevY;
-    float h = (float) Math.PI; //angle
-    float v; //angle
+    float h = (float) Math.PI; 
+    float v; 
 
     public FPSLook(SpaceGraphPhys3D g) {
         super(g);
@@ -54,14 +54,14 @@ public class FPSLook extends SpaceMouse {
                     (float) (cos(this.v) * cos(h))
             );
 
-            //System.out.println("set direction: " + direction);
+            
 
             space.camFwd.set(direction);
 
             prevX = x;
             prevY = y;
 
-            //e.setConsumed(true);
+            
         }
     }
 

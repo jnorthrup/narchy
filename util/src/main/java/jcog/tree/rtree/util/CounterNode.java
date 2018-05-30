@@ -10,7 +10,7 @@ package jcog.tree.rtree.util;
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -100,10 +100,10 @@ public final class CounterNode<T> implements Node<T, Object> {
         return this.node.containing(rect, t, model);
     }
 
-//    @Override
-//    public void intersectingNodes(HyperRegion rect, Predicate<Node<T, ?>> t, Spatialization<T> model) {
-//        node.intersectingNodes(rect, t, model);
-//    }
+
+
+
+
 
     @Override
     public int size() {
@@ -131,10 +131,10 @@ public final class CounterNode<T> implements Node<T, Object> {
         return this;
     }
 
-//    @Override
-//    public double perimeter(Spatialization<T> model) {
-//        return node.perimeter(model);
-//    }
+
+
+
+
 
     @Override
     public boolean contains(T t, HyperRegion b, Spatialization<T> model) {

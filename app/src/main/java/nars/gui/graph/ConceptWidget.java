@@ -34,18 +34,18 @@ public class ConceptWidget extends SpaceWidget<Concept> {
         super(x);
 
 
-//        final PushButton icon = new PushButton(x.toString(), (z) -> {
-//            setFront(new BeliefTableChart(nar, x).scale(4,4));
-//        });
-//        setFront(icon);
-
-        //float edgeActivationRate = 1f;
-
-//        edges = //new HijackBag<>(maxEdges * maxNodes, 4, BudgetMerge.plusBlend, nar.random);
 
 
-//        for (int i = 0; i < edges; i++)
-//            this.edges.add(new EDraw());
+
+
+
+        
+
+
+
+
+
+
 
     }
     public static float r(float range) {
@@ -68,13 +68,13 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         final float initDistanceEpsilon = 50f;
 
-        //place in a random direction
+        
         x.transform.set(
                 r(initDistanceEpsilon),
                 r(initDistanceEpsilon),
                 r(initDistanceEpsilon));
 
-        //impulse in a random direction
+        
         final float initImpulseEpsilon = 0.25f;
         x.impulse(v(
                 r(initImpulseEpsilon),
@@ -84,30 +84,30 @@ public class ConceptWidget extends SpaceWidget<Concept> {
         return x;
     }
 
-    //final RecycledSummaryStatistics edgeStats = new RecycledSummaryStatistics();
+    
 
 
 
-    //    @Override
-//    protected void renderRelativeAspect(GL2 gl) {
-//        renderLabel(gl, 0.05f);
-//    }
+    
 
 
-//    @Nullable
-//    public EDraw addEdge(@NotNull Budget l, @NotNull ConceptWidget target) {
-//
-//        EDraw z = new TermEdge(target, l);
-//        edges.add(z);
-//        return z;
-//    }
 
 
-//    public ConceptWidget setConcept(Concept concept, long when) {
-//        this.concept = concept;
-//        //icon.update(concept, when);
-//        return this;
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public static class ConceptVis1 implements TermVis<ConceptWidget> {
 
@@ -122,10 +122,10 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         public void each(ConceptWidget cw) {
             float p = cw.pri;
-            p = (p == p) ? p : 0;// = 1; //pri = key.priIfFiniteElseZero();
+            p = (p == p) ? p : 0;
 
-            //sqrt because the area will be the sqr of this dimension
-            float nodeScale = (float) (minSize + Math.sqrt(p) * maxSize);//1f + 2f * p;
+            
+            float nodeScale = (float) (minSize + Math.sqrt(p) * maxSize);
             cw.scale(nodeScale, nodeScale, nodeScale);
 
 
@@ -172,9 +172,9 @@ public class ConceptWidget extends SpaceWidget<Concept> {
         }
 
         protected void decay(float rate) {
-            //termlinkPri = tasklinkPri = 0;
+            
 
-            //decay
+            
             termlinkPri *= rate;
             tasklinkPri *= rate;
         }
@@ -218,83 +218,83 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     }
 
-//        private class ConceptFilter implements Predicate<BLink<Concept>> {
-//
-//            int count;
-//
-//            public void reset() {
-//                count = 0;
-//            }
-//
-//            @Override
-//            public boolean test(BLink<Concept> cc) {
-//
-//
-//                float p = cc.pri();
-//                if ((p < _minPri) || (p > _maxPri)) {
-//                    return true;
-//                }
-//
-//                Concept c = cc.get();
-//
-//                String keywordFilter1 = keywordFilter;
-//                if (keywordFilter1 != null) {
-//                    if (!c.toString().contains(keywordFilter1)) {
-//                        return true;
-//                    }
-//                }
-//
-//                concepts.add(c);
-//                return count++ <= maxNodes;
-//
-//            }
-//        }
 
 
-//    public static void updateConceptEdges(SpaceGrapher g, TermNode s, TLink link, DoubleSummaryReusableStatistics accumulator) {
-//
-//
-//        Term t = link.getTerm();
-//        TermNode target = g.getTermNode(t);
-//        if ((target == null) || (s.equals(target))) return;
-//
-//        TermEdge ee = getConceptEdge(g, s, target);
-//        if (ee != null) {
-//            ee.linkFrom(s, link);
-//            accumulator.accept(link.getPriority());
-//        }
-//    }
 
 
-//    public final void updateNodeOLD(SpaceGrapher sg, BagBudget<Concept> cc, TermNode sn) {
-//
-//        sn.c = cc.get();
-//        sn.priNorm = cc.getPriority();
-//
-//
-//
-//        //final Term t = tn.term;
-//        //final DoubleSummaryReusableStatistics ta = tn.taskLinkStat;
-//        //final DoubleSummaryReusableStatistics te = tn.termLinkStat;
-//
-//
-////        System.out.println("refresh " + Thread.currentThread() + " " + termLinkMean.getResult() + " #" + termLinkMean.getN() );
-//
-//
-////        Consumer<TLink> tLinkConsumer = t -> {
-////            Term target = t.getTerm();
-////            if (!source.equals(target.getTerm())) {
-////                TermNode tn = getTermNode(graph, target);
-////                //TermEdge edge = getConceptEdge(graph, sn, tn);
-////
-////            }
-////        };
-////
-////        c.getTaskLinks().forEach(tLinkConsumer);
-////        c.getTermLinks().forEach(tLinkConsumer);
-//
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

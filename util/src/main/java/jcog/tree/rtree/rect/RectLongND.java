@@ -72,7 +72,7 @@ public class RectLongND implements HyperRegion<LongND>, Serializable, Comparable
         int dim = dim();
         for (int i = 0; i < dim; i++) {
             if (!(min.coord[i] <= inner.min.coord[i] && max.coord[i] >= inner.max.coord[i]))
-                //if (min.coord[i] > inner.min.coord[i] || max.coord[i] < inner.max.coord[i])
+                
                 return false;
         }
         return true;

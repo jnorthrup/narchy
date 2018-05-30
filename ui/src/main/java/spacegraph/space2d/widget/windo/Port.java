@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /** base class for a port implementation
- * @see http://rawbots.wikia.com/wiki/Category:Visual_Programming_Operands
+ * @see http:
  * */
 public class Port extends Widget implements Wiring.Wireable {
 
@@ -88,12 +88,12 @@ public class Port extends Widget implements Wiring.Wireable {
         return this;
     }
 
-//    public Wire link(Port target) {
-//        PhyWall.PhyWindow pw = parent(PhyWall.PhyWindow.class);
-//        if (pw == null)
-//            throw new RuntimeException("port not materialized");
-//        return pw.link(this,target);
-//    }
+
+
+
+
+
+
 
     public boolean enabled() {
         return enabled;
@@ -103,12 +103,12 @@ public class Port extends Widget implements Wiring.Wireable {
         if (other.specifyHow !=null) {
 
             if (specifyHow!=null) {
-                //both specify a protocol, so test that the spec matches
+                
                 return specifyHow.get().equals(other.specifyHow.get());
             }
 
             if (obeyHow!=null) {
-                //teach how to obey the protocol
+                
                 obeyHow.accept(other.specifyHow.get());
             }
         }
@@ -135,23 +135,23 @@ public class Port extends Widget implements Wiring.Wireable {
 
     }
 
-//            final FingerDragging dragInit = new FingerDragging(0) {
-//
-//                @Override
-//                public void start(Finger f) {
-//                    //root().debug(this, 1f, ()->"fingering " + this);
-//                }
-//
-//                @Override
-//                protected boolean drag(Finger f) {
-//                    SurfaceRoot root = root();
-//                    root.debug(this, 1f, ()->"drag " + this);
-//                    if (f.tryFingering(this))
-//                        return false;
-//                    else
-//                        return true;
-//                }
-//            };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     @Override
@@ -188,9 +188,9 @@ public class Port extends Widget implements Wiring.Wireable {
         return super.tryTouch(finger);
 
 
-//                Surface c = super.onTouch(finger, buttons);
-//                if (c != null)
-//                    return c;
+
+
+
 
 
     }
@@ -264,7 +264,7 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     protected final void out(Port sender, Object x) {
-        //TODO optional transfer function
+        
         if (enabled) {
             NodeGraph.Node<Surface, Wire> n = this.node;
             if (n!=null)

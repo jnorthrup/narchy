@@ -1,36 +1,36 @@
-package nars.ca;// Mirek's Java Cellebration
-// http://www.mirekw.com
-//
-// Generations rules
+package nars.ca;
+
+
+
 
 import java.util.StringTokenizer;
 
 public class RuleGene {
-	public int iClo; // count of states
-	private final boolean[] RulesS = new boolean[9]; // rules for surviving
-	private final boolean[] RulesB = new boolean[9]; // rules for birth
+	public int iClo; 
+	private final boolean[] RulesS = new boolean[9]; 
+	private final boolean[] RulesB = new boolean[9]; 
 
-	// ----------------------------------------------------------------
+	
 	public RuleGene() {
 		ResetToDefaults();
 	}
 
-	// ----------------------------------------------------------------
-	// Set default parameters
+	
+	
 	public void ResetToDefaults() {
-		iClo = 3; // count of states
+		iClo = 3; 
 		for (int i = 0; i <= 8; i++) {
 			RulesS[i] = false;
 			RulesB[i] = false;
 		}
 	}
 
-	// ----------------------------------------------------------------
-	// Parse the rule string
-	// Example: '345/2/4'
+	
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitFromString(String sStr) {
-		//noinspection UseOfStringTokenizer
+		
 		StringTokenizer st;
 		String sTok;
 		int i, iNum = 1;
@@ -46,8 +46,8 @@ public class RuleGene {
 				continue;
 			}
 			switch (iNum) {
-			case 1: // S
-			case 2: // B
+			case 1: 
+			case 2: 
 				for (i = 0; i < sTok.length(); i++) {
 					cChar = sTok.charAt(i);
 					if (Character.isDigit(cChar)) {
@@ -61,46 +61,46 @@ public class RuleGene {
 					}
 				}
 				break;
-			case 3: // C
+			case 3: 
 				iClo = Integer.valueOf(sTok);
 				break;
 			}
 		}
 
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	//
+	
+	
 	public void InitFromPrm(int i_Clo, boolean[] rulS, boolean[] rulB) {
 		iClo = i_Clo;
 		for (int i = 0; i <= 8; i++) {
 			RulesS[i] = rulS[i];
 			RulesB[i] = rulB[i];
 		}
-		Validate(); // now correct parameters
+		Validate(); 
 	}
 
-	// ----------------------------------------------------------------
-	// Create the rule string
-	// Example: '345/2/4'
+	
+	
+	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public String GetAsString() {
 		String sBff = "";
 		int i;
 
-		// correct parameters first
+		
 		Validate();
 
-		// make the string
+		
 		for (i = 0; i <= 8; i++)
-			// S
+			
 			if (RulesS[i])
 				sBff = sBff + i;
 		sBff = sBff + '/';
 
 		for (i = 0; i <= 8; i++)
-			// B
+			
 			if (RulesB[i])
 				sBff = sBff + i;
 		sBff = sBff + '/';
@@ -109,9 +109,9 @@ public class RuleGene {
 		return sBff;
 	}
 
-	// ----------------------------------------------------------------
-	// Check the validity of the parameters, correct
-	// them if necessary.
+	
+	
+	
 	public void Validate() {
 		if (iClo < 2)
 			iClo = 2;
@@ -119,29 +119,29 @@ public class RuleGene {
 			iClo = MJBoard.MAX_CLO;
 	}
 
-	// ----------------------------------------------------------------
-	// Perform one pass of the rule
+	
+	
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 					   short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, j, iCnt;
-		int[] lurd = new int[4]; // 0-left, 1-up, 2-right, 3-down
+		int[] lurd = new int[4]; 
 
 		for (i = 0; i < sizX; ++i) {
-			// determine left and right cells
+			
 			lurd[0] = (i > 0) ? i - 1 : (isWrap) ? sizX - 1 : sizX;
 			lurd[2] = (i < sizX - 1) ? i + 1 : (isWrap) ? 0 : sizX;
 			for (j = 0; j < sizY; ++j) {
-				// determine up and down cells
+				
 				lurd[1] = (j > 0) ? j - 1 : (isWrap) ? sizY - 1 : sizY;
 				lurd[3] = (j < sizY - 1) ? j + 1 : (isWrap) ? 0 : sizY;
 				bOldVal = crrState[i][j];
 				bNewVal = bOldVal;
-				if (bOldVal > 1) // decay
+				if (bOldVal > 1) 
 				{
 					bNewVal = bOldVal < iClo - 1 ? (short) (bOldVal + 1) : 0;
-				} else // 0, 1
+				} else 
 				{
 					iCnt = 0;
 					if (crrState[lurd[0]][lurd[1]] == 1)
@@ -167,7 +167,7 @@ public class RuleGene {
 							bNewVal = (short) (bOldVal + 1);
 						else
 							bNewVal = 0;
-					} else // 0
+					} else 
 					{
 						if (RulesB[iCnt])
 							bNewVal = 1;
@@ -175,11 +175,11 @@ public class RuleGene {
 				}
 				tmpState[i][j] = bNewVal;
 				if (bNewVal != bOldVal) {
-					modCnt++; // one more modified cell
+					modCnt++; 
 				}
-			} // closes the main for j loop
-		} // closes the main for i loop
+			} 
+		} 
 		return modCnt;
 	}
-	// ----------------------------------------------------------------
+	
 }

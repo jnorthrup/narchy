@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -33,13 +33,13 @@ public class PointCollector extends DiscreteCollisionDetectorInterface.Result {
 
 	public final v3 normalOnBInWorld = new v3();
 	public final v3 pointInWorld = new v3();
-	public float distance = 1e30f; // negative means penetration
+	public float distance = 1e30f; 
 
 	public boolean hasResult;
 	
 	@Override
 	public void setShapeIdentifiers(int partId0, int index0, int partId1, int index1) {
-		// ??
+		
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class PointCollector extends DiscreteCollisionDetectorInterface.Result {
 			hasResult = true;
 			this.normalOnBInWorld.set(normalOnBInWorld);
 			this.pointInWorld.set(pointInWorld);
-			// negative means penetration
+			
 			distance = depth;
 		}
 	}

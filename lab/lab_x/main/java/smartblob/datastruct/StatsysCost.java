@@ -17,11 +17,11 @@ public interface StatsysCost{
 	*/
 	public double maxMemoryIncreasePerVector(StatsysFuncType funcType);
 	
-	//TODO? public double aveMemoryIncreasePerCall(StatsysFuncType funcType);
+	
 	
 	public double maxComputeCostPerVector(StatsysFuncType funcType);
 	
-	//TODO public double aveComputeCost(StatsysFuncType funcType);
+	
 	
 	/** Returns true if the StatsysCost funcs of this object always return the same for the same input.
 	Example: If this is a mutable statsys but it never changes array sizes inside itself,

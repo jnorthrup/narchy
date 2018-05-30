@@ -14,8 +14,8 @@ import static nars.time.Tense.XTERNAL;
 @FunctionalInterface
 public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
-    //Retemporalize retemporalizeAllToDTERNAL = new RetemporalizeAll(DTERNAL);
-    //Retemporalize retemporalizeDTERNALToZero = new RetemporalizeFromTo(DTERNAL, 0);
+    
+    
     Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);
     Retemporalize retemporalizeAllToZero = new RetemporalizeAll(0);
     Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
@@ -32,9 +32,9 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
         @Override
         public @Nullable Term transformCompound(Compound x, Op op, int dt) {
-//            //assert (dt == XTERNAL || dt == DTERNAL);
-//            Term y = Retemporalize.super.transformCompound(x, op, dt);
-//            return y!=x ? xternalIfNecessary(x, y, dt) : x;
+
+
+
             throw new UnsupportedOperationException("apparently this is never called");
         }
 
@@ -46,7 +46,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
         Term xternalIfNecessary(Compound x, Term y, int dtNext) {
             if (corrupted(x, y, dtNext)) {
-                //oops; deformed - we need XTERNAL
+                
                 return Retemporalize.super.transformCompound(x, x.op(), dtNext == DTERNAL ? XTERNAL : DTERNAL);
             }
             return y;
@@ -63,7 +63,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
                 return true;
 
             if (x.subterms().equals(y.subterms()))
-                return false; //its ok. just differs in dt
+                return false; 
 
             switch (xop) {
                 case CONJ:
@@ -71,7 +71,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
                 case IMPL:
                     return (y.op() != IMPL || x.structure() != y.structure() || x.volume() != y.volume());
                 default:
-                    return (x.subs() != y.subs()) || (y.volume() != x.volume()) || y.structure() != x.structure(); //etc
+                    return (x.subs() != y.subs()) || (y.volume() != x.volume()) || y.structure() != x.structure(); 
             }
 
         }
@@ -88,9 +88,9 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
                         return (x.subs() != y.subs() || x.volume() != y.volume());
 
                     default:
-//                        System.out.println(x + " " + recursiveEvents(x));
-//                        System.out.println(y + " " + recursiveEvents(y));
-//                        System.out.println();
+
+
+
                         return recursiveEvents(x) != recursiveEvents(y);
                 }
             }
@@ -100,7 +100,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
             return x.intifyShallow((s, t) -> {
                 switch (t.op()) {
                     case CONJ:
-                        return s + recursiveEvents(t); //t.sum(this::recursiveEvents);
+                        return s + recursiveEvents(t); 
                     default:
                         return s + 1;
                 }
@@ -128,7 +128,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
     default Term transformTemporal(Compound x, int dtNext) {
         if (x.dt() == dtNext && !requiresTransform(x.subterms()))
-            return x; //no change
+            return x; 
         else
             return TermTransform.NegObliviousTermTransform.super.transformCompound(x, x.op(), dtNext);
     }
@@ -173,35 +173,35 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
         }
     }
 
-//    final class RetemporalizeFromToFunc implements Retemporalize {
-//
-//        final int from;
-//        final IntSupplier to;
-//
-//        public RetemporalizeFromToFunc(int from, IntSupplier to) {
-//            this.from = from;
-//            this.to = to;
-//        }
-//
-//        @Override
-//        public int dt(Compound x) {
-//            int dt = x.dt();
-//            return dt == from ? to.getAsInt() : dt;
-//        }
-//    }
 
-//    Predicate<Term> isCommutiveConjOrImpl = xx -> {
-//        switch (xx.op()) {
-//            case CONJ:
-//                int xdt = xx.dt();
-//                if (xdt == DTERNAL || xdt == 0)
-//                    return true;
-//                break;
-//            case IMPL:
-//                return true;
-//        }
-//        return xx.hasAny(IMPL);
-//    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

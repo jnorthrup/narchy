@@ -17,8 +17,8 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
     protected long count;
 
     protected double sSum;
-    //private float sumCompensation; // Low order bits of sum
-//    private float simpleSum; // Used to compute right sum for non-finite inputs
+    
+
     protected double min;
     protected double max;
     protected double mean;
@@ -53,29 +53,29 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
      */
     public final void accept(double value) {
 
-        //http://stackoverflow.com/a/36590815
-        //"waldorf method"
+        
+        
         double tmpMean = mean;
 
         double delta = value - tmpMean;
         mean += delta / ++count;
         sSum += delta * (value - mean);
 
-        //sumWithCompensation(value);
+        
         if (min > value) min = value;
         if (max < value) max = value;
     }
 
-//    /**
-//     * Incorporate a new float value using Kahan summation /
-//     * compensated summation.
-//     */
-//    private final void sumWithCompensation(float value) {
-//        float tmp = value - sumCompensation;
-//        float velvel = sum + tmp; // Little wolf of rounding error
-//        sumCompensation = (velvel - sum) - tmp;
-//        sum = velvel;
-//    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Returns the sum of values recorded, or zero if no values have been
@@ -104,16 +104,16 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
     public final double getSum() {
         return (float) getMean() * count;
 
-//        // Better error bounds to add both terms as the final sum
-//        float tmp =  sum + sumCompensation;
-//        if (float.isNaN(tmp) && float.isInfinite(simpleSum))
-//            // If the compensated sum is spuriously NaN from
-//            // accumulating one or more same-signed infinite values,
-//            // return the correctly-signed infinity stored in
-//            // simpleSum.
-//            return simpleSum;
-//        else
-//            return tmp;
+
+
+
+
+
+
+
+
+
+
     }
 
     /**
@@ -231,20 +231,20 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
         return Util.unitize( (float)((x - min) / r) );
     }
 
-//    public float normPolar(float x) {
-//        if (Util.equals(min, max, 2 * Pri.EPSILON)) {
-//            return 0.5f;
-//        } else if (min < -Pri.EPSILON) {
-//            if (x < 0) {
-//                return 0.5f - norm(x, min, 0)/2f;
-//            } else {
-//                return 0.5f + norm(x, 0, max)/2f;
-//            }
-//        } else {
-//            //return norm(x, min, max); //unipolar
-//            return norm(x, 0, max);
-//        }
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public void setMin(double min) {
         this.min = min;
@@ -254,10 +254,10 @@ public class RecycledSummaryStatistics implements FloatProcedure, StatisticalSum
         this.max = v;
     }
 
-//    public void bipolarize() {
-//        double a = Math.max(Math.abs(this.max), Math.abs(this.min));
-//        min = -a;
-//        max = +a;
-//    }
+
+
+
+
+
 
 }

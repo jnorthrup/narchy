@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015 Machine Learning Lab - University of Trieste, 
- * Italy (http://machinelearning.inginf.units.it/)  
+ * Italy (http:
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  */
 package jcog.grammar.evolve.terminalsets;
 
@@ -46,7 +46,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     
     static private final Tokenizer tokenizer = new BasicTokenizer();
     
-    //It is true when string matches \w (.i.e. its length is one and it is alphabetic or decimal number)
+    
     static private boolean matchW(String string){
         return (string.length()==1 && matchW(string.charAt(0)));
     }
@@ -79,19 +79,19 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
      */
     public void setup(Configuration configuration, DataSet trainingDataset) {
 
-        //Change to striped dataset when striped version is initialized
-        //IMPORTANT in case of striped dataset, the striped version is always used. This is coherent with the 
-        //population builder behavior
+        
+        
+        
         if (trainingDataset.getStripedDataset()!=null){
             trainingDataset = trainingDataset.getStripedDataset();
         }
         
         Map<String, String> parameters = configuration.getPopulationBuilderParameters();
-        boolean DISCARD_W_TOKENS = true; //Discard all tokens who match \w
+        boolean DISCARD_W_TOKENS = true; 
         Double TOKEN_UNMATCH_THREASHOLD = 80.0;
         Double TOKEN_THREASHOLD = 80.0;
         if(parameters!=null){
-            //add parameters if needed
+            
             if(parameters.containsKey("tokenThreashold")){
                 TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
             }
@@ -103,7 +103,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
             }
         }
         
-        //This is used later for Ranges computation and to define the used character set
+        
         CharHashSet charset = new CharHashSet();
 
         
@@ -115,7 +115,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         for (Example example : trainingDataset.getExamples()) {
             for (String match : example.getMatchedStrings()) {
 
-                //Create the used charset set.
+                
                 for (int i = 0; i < match.length(); i++)
                     charset.add( match.charAt(i) );
 
@@ -127,10 +127,10 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         Map<String, Double> winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(trainingDataset, TOKEN_UNMATCH_THREASHOLD,DISCARD_W_TOKENS);
         winnerTokens.putAll(winnerUnMatchTokens);
         
-        //adds winnertokens (match and unmatch) to the terminal set
+        
         for (Map.Entry<String, Double> entry : winnerTokens.entrySet()) {
                 String  token = entry.getKey();
-                //double v = entry.getValue();
+                
                 Leaf leaf = new Constant(Utils.escape(token));
                 terminalSet.add(leaf);
 
@@ -138,13 +138,13 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         
         
         
-        //Generate ranges from characters
+        
         Utils.generateRegexRanges(charset, terminalSet::add);
         
-        //Add classes
+        
         terminalSet.add(new Constant("\\d"));
         terminalSet.add(new Constant("\\w"));
-        //terminalSet.add(new Constant("\\s"));
+        
         
         nodeFactory.getTerminalSet().clear();
         nodeFactory.getTerminalSet().addAll(terminalSet);        
@@ -158,7 +158,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         for (Example example : dataSet.getExamples()) {
             for (String match : example.getMatchedStrings()) {
                 List<String> tokens = tokenizer.tokenize(match);
-                Set<String> tokensSet = new HashSet<>(tokens);//unicity of tokens
+                Set<String> tokensSet = new HashSet<>(tokens);
                 for(String token : tokensSet){
                     if(matchW(token) && discardWtokens){
                         continue;
@@ -179,7 +179,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
             String key = entry.getKey();
             Double double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfMatches;
-            entry.setValue(doublePercentange); //update the original collection too
+            entry.setValue(doublePercentange); 
              if(doublePercentange >= threashold){
                 winnerMatchTokensLocal.put(key,doublePercentange);
             }
@@ -193,18 +193,18 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         int numberOfPositiveExamples = 0;
         for (Example example : dataSet.getExamples()) {
             if(example.getMatch().isEmpty()){
-                //only positive example are interesting
+                
                 continue;
             }
             numberOfPositiveExamples++;
-            Set<String> exampleTokenSet = new HashSet<>();//unicity of tokens
+            Set<String> exampleTokenSet = new HashSet<>();
                 
             for (String unmatch : example.getUnmatchedStrings()) {
                 List<String> tokens = tokenizer.tokenize(unmatch);
                 exampleTokenSet.addAll(tokens);
             }
             
-            //add one point per example
+            
             for(String token : exampleTokenSet){
                 if(matchW(token) && discardWtokens){
                     continue;
@@ -223,7 +223,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
             String key = entry.getKey();
             Double double1 = entry.getValue();
             Double doublePercentange = (double1 * 100.0) / numberOfPositiveExamples;
-            entry.setValue(doublePercentange); //update the original collection too
+            entry.setValue(doublePercentange); 
              if(doublePercentange >= threashold){
                 
                 winnerUnmatchTokensLocal.put(key,doublePercentange);
@@ -241,9 +241,9 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
      */
     @Override
     public void setup(Context context) {
-        //creates a Job/thread local instance of NodeFactory (this decuples the terminalSet builders between Jobs)
-        //IMPORTANT in case of striped dataset, the striped version is always used. This is coherent with the 
-        //population builder behavior. The called method accesses the dataset.getStripedDataset(), when defined.
+        
+        
+        
         
         context.getConfiguration().initNodeFactory();
         setup(context.getConfiguration(), context.getCurrentDataSet());

@@ -30,8 +30,8 @@ and collected until power is depleted.
 
 
 
-https://github.com/rupertlssmith/lojix/blob/master/lojix/prolog/src/main/com/thesett/aima/logic/fol/prolog/PrologUnifier.java
-https://github.com/rupertlssmith/lojix/blob/master/lojix/wam_prolog/src/main/com/thesett/aima/logic/fol/wam/compiler/WAMInstruction.java
+https:
+https:
 see this code for a clear explanation of what a prolog unifier does.
 this code does some additional things but shares a general structure with the lojix code which i just found now
 So it can be useful for a more easy to understand rewrite of this class TODO
@@ -50,8 +50,8 @@ public abstract class Unify extends Versioning implements Subst {
 
     public final Set<Termutator> termutes = new LinkedHashSet(8);
 
-//    @NotNull
-//    public final TermIndex terms;
+
+
 
 
     public final VersionMap<Variable, Term> xy;
@@ -66,10 +66,10 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public boolean varSymmetric = true;
 
-//    /**
-//     * free variables remaining unassigned, for counting
-//     */
-//    protected final Versioned<Set<Term>> free;
+
+
+
+
 
 
     /**
@@ -79,21 +79,21 @@ public abstract class Unify extends Versioning implements Subst {
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
         this(type, random, stackMax, initialTTL,
                 new TermHashMap()
-                //new NormalizedVariableMap<>() //<- TODO: CommonVariables, and EllipsisMatch need it
+                
         );
     }
 
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL, Map/*<Variable,Versioned<Term>>*/ termMap) {
         super(stackMax, initialTTL);
 
-//        this.terms = terms;
+
 
         this.random = random;
         this.type = type;
 
         xy = new ConstrainedVersionMap(this, termMap);
-        //this.free = new Versioned<>(this, 4); //task, belief, subIfUnifies + ?
-        //this.freeCount = new Versioned<>(versioning, 8);
+        
+        
 
     }
 
@@ -113,32 +113,32 @@ public abstract class Unify extends Versioning implements Subst {
     public abstract void tryMatch();
 
 
-//    void tryMatch(boolean termuting) {
-//
-//        if (termuting) {
-//
-//            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES && matches == null)
-//                matches = new UnifiedSet(1);
-//
-//            if (!Param.DEBUG_FILTER_DUPLICATE_MATCHES || matches.add(((ConstrainedVersionMap) xy).snapshot())) {
-//
-//                tryMatch(); //new unique match
-//
-//            } else {
-//                //duplicate
-//                throw new UnsupportedOperationException("duplicate match");
-//            }
-//        } else {
-//
-//            tryMatch();
-//
-//            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES) {
-//                assert (matches == null);
-//                matches = Collections.emptySet();//indicates that there was a match, by being non-null
-//            }
-//        }
-//
-//    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     public final boolean tryMutate(Termutator[] chain, int next) {
 
@@ -150,7 +150,7 @@ public abstract class Unify extends Versioning implements Subst {
             chain[next].mutate(this, chain, next);
 
         } else {
-            tryMatch(); //end of chain
+            tryMatch(); 
         }
         return true;
     }
@@ -164,32 +164,32 @@ public abstract class Unify extends Versioning implements Subst {
             return null;
         return xy.get(x0);
 
-//        Term xy = x0, y = null;
-//        while ((xy = this.xy.get(xy)) != null) { //completely dereference
-//            y = xy;
-//        }
-//        return y;
 
-//        //SAFE VERSION:
-//        Term xy = x0, y0 = null, y = null;
-//        while ((xy = this.xy.get(xy))!=null) { //completely dereference
-//            if (y0!=null)
-//                return y0;
-//            y0 = y;
-//            y = xy;
-//        }
-//        return y;
 
-//        Term y0 = xy.get(x0);
-//        if (y0 == null)
-//            return null;
-//        else {
-//            Term y1 = xy.get(y0);
-//            if (y1 == null)
-//                return y0;
-//            else
-//                return y1;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
@@ -204,15 +204,15 @@ public abstract class Unify extends Versioning implements Subst {
     public Unify unify(Term x, Term y, boolean finish) {
 
 
-        //accumulate any new free variables in this next matched term
-//        Set<Term> freeX = freeVariables(x);
-////        if (null == free.set(freeX)) //plus and not equals because this may continue from another unification!!!!!
-////            return false;
-//        if (freeX.isEmpty())
-//            return x.equals(y);
+        
 
-        //assert (unassigned.isEmpty() ) : "non-purposeful unification";
-        //this.freeCount.add( newFree.size() );
+
+
+
+
+
+        
+        
 
         if (x.unify(y, this)) {
             if (finish) {
@@ -223,83 +223,83 @@ public abstract class Unify extends Versioning implements Subst {
         return this;
     }
 
-//    /**
-//     * computes a lazy set with the new free variables added by the incoming term, to continue
-//     * from a previous partial unification if necessary.
-//     */
-//    Set<Term> freeVariables(@NotNull Term x) {
-//        Set<Term> prevFree = free.get();
-//        Set<Term> nextFree = x.varsUnique(type, prevFree != null ?  prevFree : Collections.emptySet());
-//        return concat(prevFree, nextFree);
-//    }
+
+
+
+
+
+
+
+
+
 
 
     void tryMatches() {
         int ts = termutes.size();
         if (ts > 0) {
 
-            //TODO use Termutator[] not List
+            
             Termutator[] t = termutes.toArray(new Termutator[ts]);
 
             termutes.clear();
 
-            //shuffle the ordering of the termutes themselves
+            
             if (ts > 1)
                 Util.shuffle(t, random);
 
-            tryMutate(t, -1); //start combinatorial recurse
+            tryMutate(t, -1); 
 
         } else {
-            //tryMatch(false); //go directly to conclusion
+            
             tryMatch();
         }
 
-//        if (matched.size()>1)
-//            System.out.println(matched);
 
-//        matched.clear();
+
+
+
 
     }
 
-//    private void tryMatch() {
-//
-//
-////        if (freeCount.get() > 0) {
-////            //quick test for no assignments
-////            return;
-////        }
-//
-//        //filter incomplete matches by detecting them here
-//        //TODO use a counter to measure this instead of checking all the time
-////        Iterator<Map.Entry<Term, Versioned<Term>>> ee = xy.map.entrySet().iterator();
-////        while (ee.hasNext()) {
-////            Map.Entry<Term, Versioned<Term>> e = ee.next();
-////            Versioned<Term> v = e.getValue();
-////            if ((v == null || v.get() == null) && matchType(e.getKey()))
-////                return;
-////        }
-//
-//
-////        Set<Term> free = this.free.get();
-////        Term[][] match = new Term[free.size()][];
-////        int m = 0;
-////        for (Term x : free) {
-////            Term y = xy(x);
-////            if (y == null)
-////                return;
-////            match[m++] = new Term[]{x, y};
-////        }
-////        Arrays.sort(match, matchElementComparator); //sort by key
-//
-////        if (!matched.add(((ConstrainedVersionMap)xy).snapshot()))
-////            return; //already seen
-//
-//        onMatch( /*match*/);
-//
-//
-//    }
 
-    //final static Comparator<Term[]> matchElementComparator = Comparator.comparing(v -> v[0]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 
     @Override
@@ -314,8 +314,8 @@ public abstract class Unify extends Versioning implements Subst {
     public final boolean matchType(Op oy) {
         Op t = this.type;
         return t == null ?
-                oy.var : //any variable
-                oy == t; //the specified type
+                oy.var : 
+                oy == t; 
     }
 
     @Override
@@ -331,33 +331,33 @@ public abstract class Unify extends Versioning implements Subst {
     public final boolean putXY(final Variable x, Term y) {
 
         if (y.containsRecursively(x)) {
-            //create a variation of y with a new unique unnormalized variable
-//            if (x instanceof Variable) {
-//                Op xo = x.op();
-//                if (xo == Op.VAR_INDEP)
-                    return false; //doesnt seem possible; DEP and QUERY only for now
+            
 
-//                Term z = xy(y);
-//                if (z!=null) {
-//                   xy.remove(y);
-//                }
-//                y = y.replace(x, $.v(x.op(), random.nextInt(100) + "x")); //"" + x + "_" + y + "" )); //HACK
-//                if (z!=null) {
-//                    replaceXY(y, z);
-//                }
-                //continue..
-//            } else {
-//                return false; //cyclic constantly
-//            }
+
+
+                    return false; 
+
+
+
+
+
+
+
+
+
+                
+
+
+
         }
 
-//        //TODO use a single Map.compute() function to avoid repeat hashmap gets
-//        return xy.compute(x, (y0) -> {
-//            if (y0 != null !replace(y0, y))
-//                return null; //no change //<- should return y0 if replace failed
-//            else
-//                return y;   //try set
-//        });
+
+
+
+
+
+
+
 
 
         return replaceXY(x, y);
@@ -371,16 +371,16 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-//
-//    /** returns the updated value */
-//    public int addTTL(int x) {
-//        return this.ttl += x;
-//    }
 
-//    public boolean constant(Termlike xsubs, Termlike ysubs) {
-//        //return relevantVariables(xsubs) || (varSymmetric && relevantVariables(ysubs));
-//        return constant(xsubs) && (!varSymmetric || constant(ysubs));
-//    }
+
+
+
+
+
+
+
+
+
 
     /**
      * whether is constant with respect to the current matched variable type
@@ -392,7 +392,7 @@ public abstract class Unify extends Versioning implements Subst {
     /** counts the number of variables are unifiable in the given term */
     public int vars(Termlike x) {
         if (type == null) {
-            return x.vars(); //all var types
+            return x.vars(); 
         } else {
             return x.subs(type);
         }
@@ -410,73 +410,73 @@ public abstract class Unify extends Versioning implements Subst {
     private class ConstrainedVersionMap extends VersionMap<Variable, Term> {
         public ConstrainedVersionMap(Versioning versioning, Map<Variable,Versioned<Term>> termMap) {
             super(versioning,
-                    //4
+                    
                     termMap,
                     1);
         }
 
-//        @Nullable
-//        @Override
-//        public Term remove(Object key) {
-//            Versioned<Term> x = map.remove(key);
-//            if (x == null)
-//                return null;
-//            ConstrainedVersionedTerm cx = (ConstrainedVersionedTerm)x;
-//            if (((ConstrainedVersionedTerm) x).forMatchedType)
-//                assigned--;
-//
-//            return x.get();
-//        }
 
-//        @Override
-//        public boolean tryPut(Term key, @NotNull Term value) {
-//            int beforePut = matchType(key) ? now() : Integer.MAX_VALUE;
-//            if (super.tryPut(key, value)) {
-//                if (now() > beforePut) { //detects change and not just an equals() match
-////                    int nextUnassigned = freeCount.get() - 1;
-////
-////                    if (nextUnassigned < 0)
-////                        return false;
-////                    //assert(nextUnassigned >= 0): "underflow";
-////
-////                    freeCount.add(nextUnassigned);
-//                }
-//                return true;
-//            }
-//            return false;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         @Override
         protected Versioned newEntry(Variable x) {
             return new ConstrainedVersionedTerm();
         }
 
-//        public AbstractBytes snapshot() {
-//            List<RawBytes> pre = new FasterList<>(8);
-//            DynBytes b = new DynBytes(64);
-//            xy.forEach((x, y) -> {
-//                x.append((ByteArrayDataOutput) b);
-//                b.writeByte(0); //separator
-//                y.append((ByteArrayDataOutput) b);
-//                pre.add(b.rawCopy());
-//                b.clear();
-//            });
-//
-//            int s = pre.size();
-//            switch (s) {
-//                case 0:
-//                    return AbstractBytes.EMPTY;
-//                case 1:
-//                    return pre.get(0);
-//                default:
-//                    Collections.sort(pre);
-//                    for (RawBytes r : pre) {
-//                        b.write(r.bytes);
-//                    }
-//                    //b.compact();
-//                    return b;
-//            }
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     final class ConstrainedVersionedTerm extends Versioned<Term> {

@@ -54,7 +54,7 @@ public class ByteArray
       @Override
       public void close() throws IOException
       {
-         // Nothing to do
+         
       }
 
       /**
@@ -205,7 +205,7 @@ public class ByteArray
       @Override
       public void close() throws IOException
       {
-         // Nothing to do
+         
       }
 
       /**
@@ -221,7 +221,7 @@ public class ByteArray
       @Override
       public void flush() throws IOException
       {
-         // Nothing to do
+         
       }
 
       /**

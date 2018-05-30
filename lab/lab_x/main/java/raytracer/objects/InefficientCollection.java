@@ -34,7 +34,7 @@ public class InefficientCollection extends SceneObjectCollection
         InefficientCollection clone = (InefficientCollection)super.clone();
         clone.objects = new Vector<Shape>();
         
-        // Alle Objekte zum Klon hinzuklonen:
+        
         for (Shape object : objects) clone.objects.add(object.clone());
         
         return clone;
@@ -77,7 +77,7 @@ public class InefficientCollection extends SceneObjectCollection
     @Override
     public void transform(Transformation t)
     {
-        // Objekte transformieren:
+        
         for (Shape object : objects) object.transform(t);
     }
 
@@ -87,7 +87,7 @@ public class InefficientCollection extends SceneObjectCollection
     {
         boolean intersection = false;
 
-        // Alle unendlichen Objekte auf Schnitt pr�fen:
+        
         for (Shape object : objects)
             if (object.intersect(ray))
                 intersection = true;
@@ -108,7 +108,7 @@ public class InefficientCollection extends SceneObjectCollection
     @Override
     public void display(GLAutoDrawable drawable)
     {
-        // Objekte zeichnen:
+        
         for (Shape object : objects) object.display(drawable);
     }
 }

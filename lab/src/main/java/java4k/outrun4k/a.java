@@ -17,7 +17,7 @@ package java4k.outrun4k;
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http:
  *
  */
 
@@ -31,7 +31,7 @@ import java.util.Random;
 
 public class a extends Applet implements Runnable {
 
-  // keys
+  
   private final boolean[] a = new boolean[32768];
 
   @Override
@@ -95,11 +95,11 @@ public class a extends Applet implements Runnable {
     boolean raceStarted = false;
 
     final int[] colors = {
-      0xE3BD7C, // sand
-      0x6AC730, // grass
-      0xFF8A68, // rock
-      0xD7C6B4, // rock 2
-      0xF1F0F5, // snow
+      0xE3BD7C, 
+      0x6AC730, 
+      0xFF8A68, 
+      0xD7C6B4, 
+      0xF1F0F5, 
     };
 
     BufferedImage image = new BufferedImage(256, 256, 1);
@@ -127,7 +127,7 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    // create player
+    
     queue.add(player);
     player[OBJ_SPRITE] = 0;
     player[OBJ_TIME] = 16;
@@ -138,7 +138,7 @@ public class a extends Applet implements Runnable {
       renderList[i] = new ArrayList<float[]>();
     }
 
-    // generate road and hill segments
+    
     float[][][] segments = new float[2][SEGMENTS][3];
     float slope;
     float nextSlope;
@@ -195,7 +195,7 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    // generate tree sprites
+    
     for(k = 0; k < 3; k++) {
       if (k == 2) {
         random = new Random(22);
@@ -215,14 +215,14 @@ public class a extends Applet implements Runnable {
           hue = 0.175f;
         }
         if (k == 0) {
-          // green tree
+          
           g3.setColor(new Color(Color.HSBtoRGB(hue, 0.5f + hue, 0.7f - mag)));
         } else if (k == 1) {
-          // autom tree
+          
           g3.setColor(new Color(Color.HSBtoRGB(
               hue - 0.2f, 0.5f + hue, 0.7f - mag)));
         } else {
-          // flowering tree
+          
           float s = 0.495f - hue * 1.9f;
           if (s < -0.05f) {
             s = -0.05f;
@@ -249,7 +249,7 @@ public class a extends Applet implements Runnable {
       }
     }
 
-    // generate snowman sprite
+    
     sprites[SNOWMAN_SPRITE] = new BufferedImage(256, 256, 2);
     g4 = (Graphics2D)sprites[SNOWMAN_SPRITE].getGraphics();
     AffineTransform transform = g4.getTransform();
@@ -268,7 +268,7 @@ public class a extends Applet implements Runnable {
     g4.fillOval(142, 250, 25, 25);
     g4.setTransform(transform);
 
-    // generate telephone pole sprite
+    
     sprites[TELEPHONE_POLE_SPRITE] = new BufferedImage(84, 256, 2);
     g3 = (Graphics2D)sprites[TELEPHONE_POLE_SPRITE].getGraphics();
     for(i = 0; i < 16; i++) {
@@ -281,7 +281,7 @@ public class a extends Applet implements Runnable {
       g3.drawLine(16, y, 42, y + 26);
       g3.drawLine(68, y, 42, y + 26);
 
-      // add arms to snowman
+      
       g4.setColor(color);
       g4.drawLine(0, 96 + i, 48, 64 + i);
       g4.drawLine(48, 64 + i, 90, 96 + i);
@@ -289,7 +289,7 @@ public class a extends Applet implements Runnable {
       g4.drawLine(207, 64 + i, 165, 96 + i);
     }
 
-    // generate road bitmap
+    
     int[] pixels = new int[256 << 8];
     BufferedImage[] roadImages = new BufferedImage[256];
     for(y = 0; y < 256; y++) {      
@@ -317,7 +317,7 @@ public class a extends Applet implements Runnable {
       roadImages[y].setRGB(0, 0, 256, 1, pixels, 0, 256);
     }
 
-    // generate sky image
+    
     BufferedImage skyImage = new BufferedImage(512, 512, 1);
     g3 = (Graphics2D)skyImage.getGraphics();
     for(y = 0; y < 512; y++) {
@@ -338,7 +338,7 @@ public class a extends Applet implements Runnable {
       g3.fillOval(x, y, 100, 20);
     }
 
-    // generate car sprites
+    
     String S = "\u03c0\u0000\u5ff0\u0000\u5ff0\u0000\ufbe4\u0000\u0aac\u0000\u0aad\u0000\u0aa3\u0000\u0aa3\u0000\u0aa3\u0000\u0283\u0000\u0e83\uf000\u3aaf\ufc00\ueaaa\ufc00\uaaab\ubc00\ufeaa\u8000\uaaaa\u8000\uaaaa\u5000\u555a\u9000\u5555\u9400\u5555\u5400\u5555\u5500\u5555\u5550\u5555\u5550\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\u5555\u5554\uaa95\u5557\uaaa9\u5557\uaaaa\u9557\uaaaa\ua955\u5555\u55fd\u555f\ufead\u555a\uaaa5\u955a\uaaa5\u955a\uaaa5\u555a\ua957\u5555\u57f7\u5555\u57f7\ufff5\u57f7\uffd5\u57f7\uaad5\u57f7\uffd5\u55f4\ufb55\u55f4\ufaff\uf5f4\ufaea\ufff4\uaaee\ufff4\ufff3\ufffc\uffc0\u3ffc\u0000\u3ffc\u0000\u3ffc\u0000\u3ff0";    
     for(k = 0; k < 10; k++) {
 
@@ -373,7 +373,7 @@ public class a extends Applet implements Runnable {
       g3.drawImage(carImage, 0, 0, 84, 54, null);
     }
 
-    // generate check point sprite
+    
     sprites[CHECKPOINT_SPRITE] = new BufferedImage(710, 256, 2);
     g3 = (Graphics2D)sprites[CHECKPOINT_SPRITE].getGraphics();
     for(z = 0; z < 8; z++) {
@@ -405,14 +405,14 @@ public class a extends Applet implements Runnable {
       do {
         nextFrameStartTime += 16666667;
 
-        // -- update starts ----------------------------------------------------
+        
 
         if (!a[VK_START]) {
           startReleased = true;
         }
 
         if (startReleased && a[VK_START]) {
-          // reset the race
+          
           startReleased = false;
           raceStarted = true;
           time = 50;
@@ -428,7 +428,7 @@ public class a extends Applet implements Runnable {
           player[OBJ_HEIGHT] = 54;
           random = new Random();
 
-          // create checkpoints
+          
           for(i = 0; i < 6; i++) {
             float[] checkpoint = new float[32];
             queue.add(checkpoint);
@@ -440,7 +440,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // update remaining time
+        
         if (raceStarted) {
           if (player[OBJ_TIME] < 2018) {
             if (++timeIncrementor == 60) {
@@ -455,7 +455,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // update player car
+        
         if (raceStarted && time > 0 && player[OBJ_TIME] < 2018
             && a[VK_GAS] 
             && player[OBJ_DT] < (player[OBJ_X] > 1.25f
@@ -480,7 +480,7 @@ public class a extends Applet implements Runnable {
           if (k > 100 && k < 300) {            
             if (j == 0) {
               if ((i & 3) == 0) {
-                // add telephone pole
+                
                 float[] pole = new float[32];
                 queue.add(pole);
                 pole[OBJ_TIME] = player[OBJ_TIME] + 32;
@@ -490,7 +490,7 @@ public class a extends Applet implements Runnable {
                 pole[OBJ_X] = 1.4f;
               }
             } else {
-              // add tree
+              
               float[] tree = new float[32];
               queue.add(tree);
               tree[OBJ_TIME] = player[OBJ_TIME] + 32;
@@ -515,7 +515,7 @@ public class a extends Applet implements Runnable {
 
           int segment = (int)((player[OBJ_TIME] - 18) / 400);
 
-          // add cars
+          
           x = 1;
           j = 1;
           if (random.nextInt(1 + segment) == 0) {
@@ -549,13 +549,13 @@ public class a extends Applet implements Runnable {
           nextCarTime = 16 + player[OBJ_TIME] + random.nextInt(16 - segment);
         }
 
-        // update other cars
+        
         for(i = queue.size() - 1; i >= 0; i--) {
           float[] car = queue.get(i);
           if (car[OBJ_CAR] == 1) {
             car[OBJ_TIME] += CAR_SPEED;
 
-            // test for collision with player
+            
             if (player[OBJ_DT] > 0
                 && player[OBJ_TIME] < car[OBJ_TIME]
                 && player[OBJ_TIME] > car[OBJ_TIME] - 0.16f) {
@@ -564,13 +564,13 @@ public class a extends Applet implements Runnable {
                 dx = -dx;
               }
               if (dx < 0.328125f) {
-                // collision occurred
+                
                 player[OBJ_DT] = -player[OBJ_DT];
                 car[OBJ_SEEKER] = 0;
               }
             }
 
-            // seeker cars intentionally move directly in front of the player
+            
             if (car[OBJ_SEEKER] == 1
                 && player[OBJ_X] < 1.25f && player[OBJ_X] > -1.25f) {
               if (car[OBJ_X] < player[OBJ_X] - car[OBJ_SEEKER_SPEED]) {
@@ -589,14 +589,14 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // -- update ends ------------------------------------------------------
+        
 
       } while(nextFrameStartTime < System.nanoTime());
 
-      // -- render starts ------------------------------------------------------
+      
 
 
-      // Find player coordinates in space (playerX is within the segment)
+      
       float playerTime = player[OBJ_TIME];
       float playerX = playerTime - (int)playerTime;
       float[] road = segments[ROAD][(int)playerTime];
@@ -604,14 +604,14 @@ public class a extends Applet implements Runnable {
       float playerY = (road[0] * playerX + road[1]) * playerX + road[2];
       float playerZ = (hill[0] * playerX + hill[1]) * playerX + hill[2] + 0.5f;
 
-      // direction of road at player point
+      
       float vx = 1;
       float vy = 2 * road[0] * playerX + road[1];
       mag = (float)Math.sqrt(vx * vx + vy * vy);
       vx /= mag;
       vy /= mag;
       
-      // draw sky
+      
       i = (int)(playerZ * 16) - 128;
       if (i > 0) {
         i = 0;
@@ -621,7 +621,7 @@ public class a extends Applet implements Runnable {
       }
       g.drawImage(skyImage, (int)(vy * 256) - 128, i, null);
 
-      // draw road
+      
       int height = 256;
       for(i = 0; i < 32; i++) {
         road = segments[ROAD][(int)playerTime + i];
@@ -629,19 +629,19 @@ public class a extends Applet implements Runnable {
         for(j = 0; j < 256; j++) {
           float tx = I256 * j;
 
-          // coordinates of road point relative to player
+          
           float py = (road[0] * tx + road[1]) * tx + road[2] - playerY;
           float pz = (hill[0] * tx + hill[1]) * tx + hill[2] - playerZ;
           float px = tx - playerX + i;
 
-          // rotate point around z-axis using road direction as basis vector
+          
           float qx = vy * px - vx * py - player[OBJ_X];
           float qy = vx * px - vy * py;
 
           float K = 256 / (1 + qy);
           int Y = 128 - (int)(K * pz);
 
-          // only draw a strip of road if it is not blocked by nearer hill
+          
           if (Y < height) {
             height = Y;
 
@@ -660,7 +660,7 @@ public class a extends Applet implements Runnable {
                     X1, Y, X2 - X1 + 1, 1, null);
           }
 
-          // save information about the road for rendering sprites on next pass
+          
           float[] roadInfo = roadInfos[(i << 8) + j];
           roadInfo[ROAD_HEIGHT] = pz;
           roadInfo[ROAD_K] = K;
@@ -671,7 +671,7 @@ public class a extends Applet implements Runnable {
       }
 
       if (raceStarted) {
-        // order and position sprites
+        
         for(i = 8191; i >= 0; i--) {
           renderList[i].clear();
         }
@@ -694,7 +694,7 @@ public class a extends Applet implements Runnable {
           }
         }
 
-        // draw sprites
+        
         for(i = 8191; i >= 0; i--) {
           ArrayList<float[]> spriteList = renderList[i];
           if (spriteList.size() > 0) {
@@ -711,7 +711,7 @@ public class a extends Applet implements Runnable {
         }
         g.setClip(0, 0, 256, 256);
 
-        // draw time bar
+        
         g.setColor(Color.MAGENTA);
         for(i = 0; i < time; i++) {
           x = 127 - (i << 1);
@@ -720,7 +720,7 @@ public class a extends Applet implements Runnable {
           g.drawLine(y, 10, y, 18);
         }
 
-        // draw progress bar
+        
         y = (int)(0.1f * (player[OBJ_TIME] - 18));
         g.setColor(Color.RED);
         g.drawLine(28, 4, 228, 4);
@@ -735,9 +735,9 @@ public class a extends Applet implements Runnable {
         }
       }
 
-      // -- render ends --------------------------------------------------------
+      
 
-      // show the hidden buffer
+      
       if (g2 == null) {
         g2 = (Graphics2D)getGraphics();
         requestFocus();
@@ -745,7 +745,7 @@ public class a extends Applet implements Runnable {
         g2.drawImage(image, 0, 0, 512, 512, null);
       }
 
-      // burn off extra cycles
+      
       while(nextFrameStartTime - System.nanoTime() > 0) {
         Thread.yield();
       }
@@ -773,7 +773,7 @@ public class a extends Applet implements Runnable {
     }
   }
 
-  // to run in window, uncomment below
+  
   /*public static void main(String[] args) throws Throwable {
     javax.swing.JFrame frame = new javax.swing.JFrame("Out Run 4K");
     frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);

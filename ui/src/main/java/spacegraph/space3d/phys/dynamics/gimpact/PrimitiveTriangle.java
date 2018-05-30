@@ -3,7 +3,7 @@
  *
  * This source file is part of GIMPACT Library.
  *
- * For the latest info, see http://gimpact.sourceforge.net/
+ * For the latest info, see http:
  *
  * Copyright (c) 2007 Francisco Leon Najera. C.C. 80087371.
  * email: projectileman@yahoo.com
@@ -82,7 +82,7 @@ public class PrimitiveTriangle {
 	 */
 	public boolean overlap_test_conservative(PrimitiveTriangle other) {
 		float total_margin = margin + other.margin;
-		// classify points on other triangle
+		
 		float dis0 = ClipPolygon.distance_point_plane(plane, other.vertices[0]) - total_margin;
 
 		float dis1 = ClipPolygon.distance_point_plane(plane, other.vertices[1]) - total_margin;
@@ -90,7 +90,7 @@ public class PrimitiveTriangle {
 		float dis2 = ClipPolygon.distance_point_plane(plane, other.vertices[2]) - total_margin;
 
 		if (dis0 > 0.0f && dis1 > 0.0f && dis2 > 0.0f) {
-			return false; // classify points on this triangle
+			return false; 
 		}
 		
 		dis0 = ClipPolygon.distance_point_plane(other.plane, vertices[0]) - total_margin;
@@ -129,7 +129,7 @@ public class PrimitiveTriangle {
 	 * @return the number of clipped points
 	 */
 	public int clip_triangle(PrimitiveTriangle other, OArrayList<v3> clipped_points) {
-		// edge 0
+		
 		OArrayList<v3> temp_points = tmpVecList1;
 
 		Vector4f edgeplane = new Vector4f();
@@ -143,13 +143,13 @@ public class PrimitiveTriangle {
 		}
 		OArrayList<v3> temp_points1 = tmpVecList2;
 
-		// edge 1
+		
 		get_edge_plane(1, edgeplane);
 
 		clipped_count = ClipPolygon.plane_clip_polygon(edgeplane, temp_points, clipped_count, temp_points1);
 
 		if (clipped_count == 0) {
-			return 0; // edge 2
+			return 0; 
 		}
 		get_edge_plane(2, edgeplane);
 
@@ -168,8 +168,8 @@ public class PrimitiveTriangle {
 		OArrayList<v3> clipped_points = tmpVecList3;
 
 		int clipped_count;
-		//create planes
-		// plane v vs U points
+		
+		
 
 		TriangleContact contacts1 = new TriangleContact();
 
@@ -178,35 +178,35 @@ public class PrimitiveTriangle {
 		clipped_count = clip_triangle(other, clipped_points);
 
 		if (clipped_count == 0) {
-			return false; // Reject
+			return false; 
 		}
 
-		// find most deep interval face1
+		
 		contacts1.merge_points(contacts1.separating_normal, margin, clipped_points, clipped_count);
 		if (contacts1.point_count == 0) {
-			return false; // too far
-		// Normal pointing to this triangle
+			return false; 
+		
 		}
 		contacts1.separating_normal.x *= -1.f;
 		contacts1.separating_normal.y *= -1.f;
 		contacts1.separating_normal.z *= -1.f;
 
-		// Clip tri1 by tri2 edges
+		
 		TriangleContact contacts2 = new TriangleContact();
 		contacts2.separating_normal.set(other.plane);
 
 		clipped_count = other.clip_triangle(this, clipped_points);
 
 		if (clipped_count == 0) {
-			return false; // Reject
+			return false; 
 		}
 
-		// find most deep interval face1
+		
 		contacts2.merge_points(contacts2.separating_normal, margin, clipped_points, clipped_count);
 		if (contacts2.point_count == 0) {
-			return false; // too far
+			return false; 
 
-		// check most dir for contacts
+		
 		}
 		if (contacts2.penetration_depth < contacts1.penetration_depth) {
 			contacts.copy_from(contacts2);

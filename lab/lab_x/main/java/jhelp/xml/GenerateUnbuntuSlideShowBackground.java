@@ -138,7 +138,7 @@ public class GenerateUnbuntuSlideShowBackground
          final float staticTime = Float.parseFloat(args[2]);
          final float transitionTime = Float.parseFloat(args[3]);
 
-         //
+         
 
          bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
 
@@ -182,7 +182,7 @@ public class GenerateUnbuntuSlideShowBackground
          }
          bufferedWriter.write("   </starttime>");
          bufferedWriter.newLine();
-         //
+         
 
          final Stack<File> stack = new Stack<File>();
          stack.push(directory);
@@ -303,7 +303,7 @@ public class GenerateUnbuntuSlideShowBackground
             }
             catch(final Exception exception)
             {
-               // Nothing to do
+               
             }
 
             try
@@ -312,7 +312,7 @@ public class GenerateUnbuntuSlideShowBackground
             }
             catch(final Exception exception)
             {
-               // Nothing to do
+               
             }
          }
       }

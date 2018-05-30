@@ -114,8 +114,8 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
 
     @Override
     public boolean testOverlap(int proxyIdA, int proxyIdB) {
-        // return AABB.testOverlap(proxyA.aabb, proxyB.aabb);
-        // return m_tree.overlap(proxyIdA, proxyIdB);
+        
+        
         final AABB a = m_tree.getFatAABB(proxyIdA);
         final AABB b = m_tree.getFatAABB(proxyIdB);
         if (b.lowerBound.x - a.upperBound.x > 0.0f || b.lowerBound.y - a.upperBound.y > 0.0f) {
@@ -137,44 +137,44 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
 
     @Override
     public final void updatePairs(PairCallback callback) {
-        // Reset pair buffer
+        
         m_pairCount = 0;
 
-        // Perform tree queries for all moving proxies.
+        
         for (int i = 0; i < m_moveCount; ++i) {
             m_queryProxyId = m_moveBuffer[i];
             if (m_queryProxyId == NULL_PROXY) {
                 continue;
             }
 
-            // We have to query the tree with the fat AABB so that
-            // we don't fail to create a pair that may touch later.
+            
+            
             final AABB fatAABB = m_tree.getFatAABB(m_queryProxyId);
 
-            // Query tree, create pairs and add them pair buffer.
-            // log.debug("quering aabb: "+m_queryProxy.aabb);
+            
+            
             m_tree.query(this, fatAABB);
         }
-        // log.debug("Number of pairs found: "+m_pairCount);
+        
 
-        // Reset move buffer
+        
         m_moveCount = 0;
 
-        // Sort the pair buffer to expose duplicates.
+        
         Arrays.sort(m_pairBuffer, 0, m_pairCount);
 
-        // Send the pairs back to the client.
+        
         int i = 0;
         while (i < m_pairCount) {
             Pair primaryPair = m_pairBuffer[i];
             Object userDataA = m_tree.getUserData(primaryPair.proxyIdA);
             Object userDataB = m_tree.getUserData(primaryPair.proxyIdB);
 
-            // log.debug("returning pair: "+userDataA+", "+userDataB);
+            
             callback.addPair(userDataA, userDataB);
             ++i;
 
-            // Skip any duplicate pairs.
+            
             while (i < m_pairCount) {
                 Pair pair = m_pairBuffer[i];
                 if (pair.proxyIdA != primaryPair.proxyIdA || pair.proxyIdB != primaryPair.proxyIdB) {
@@ -234,12 +234,12 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
      * This is called from DynamicTree::query when we are gathering pairs.
      */
     public final boolean treeCallback(int proxyId) {
-        // A proxy cannot form a pair with itself.
+        
         if (proxyId == m_queryProxyId) {
             return true;
         }
 
-        // Grow the pair buffer as needed.
+        
         if (m_pairCount == m_pairCapacity) {
             Pair[] oldBuffer = m_pairBuffer;
             m_pairCapacity *= 2;

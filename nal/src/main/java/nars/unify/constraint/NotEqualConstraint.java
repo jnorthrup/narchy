@@ -17,9 +17,9 @@ public final class NotEqualConstraint extends RelationConstraint {
     @Override
     public boolean invalid(Term x, Term y) {
         return
-                //Terms.equalAtemporally(y, canNotEqual);
+                
                 y.equals(x);
-                //y.equalsRoot(x);
+                
     }
 
 
@@ -40,9 +40,9 @@ public final class NotEqualConstraint extends RelationConstraint {
         public boolean invalid(Term x, Term y) {
 
             return
-                    //Terms.equalAtemporally(y, canNotEqual);
+                    
                     y.equals(x);
-                    //y.unneg().equalsRoot(x.unneg());
+                    
         }
 
 

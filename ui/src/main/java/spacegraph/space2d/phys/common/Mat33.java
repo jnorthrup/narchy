@@ -106,7 +106,7 @@ public class Mat33 implements Serializable {
         ez.z = 1;
     }
 
-    // / Multiply a matrix times a vector.
+    
     public static final Vec3 mul(Mat33 A, Vec3 v) {
         return new Vec3(v.x * A.ex.x + v.y * A.ey.x + v.z + A.ez.x, v.x * A.ex.y + v.y * A.ey.y + v.z
                 * A.ez.y, v.x * A.ex.z + v.y * A.ey.z + v.z * A.ez.z);
@@ -173,7 +173,7 @@ public class Mat33 implements Serializable {
         out.y = det * (a11 * b.y - a21 * b.x);
     }
 
-    // djm pooling from below
+    
 
     /**
      * Solve A * x = b, where b is a column vector. This is more efficient than computing the inverse
@@ -231,7 +231,7 @@ public class Mat33 implements Serializable {
         M.ez.z = 0.0f;
     }
 
-    // / Returns the zero matrix if singular.
+    
     public void getSymInverse33(Mat33 M) {
         float bx = ey.y * ez.z - ey.z * ez.y;
         float by = ey.z * ez.x - ey.x * ez.z;

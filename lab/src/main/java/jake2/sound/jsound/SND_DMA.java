@@ -24,7 +24,7 @@
 
  */
 
-// Created on 26.01.2004 by RST.
+
 package jake2.sound.jsound;
 
 import jake2.Defines;
@@ -51,13 +51,13 @@ import java.nio.ByteBuffer;
  */
 public class SND_DMA extends SND_MIX {
 
-    ////
-    // =======================================================================
-    //// Internal sound data & structures
-    ////
-    // =======================================================================
-    //
-    //// only begin attenuating sound volumes when outside the FULLVOLUME range
+    
+    
+    
+    
+    
+    
+    
     static final int SOUND_FULLVOLUME = 80;
 
     static final float SOUND_LOOPATTENUATE = 0.003f;
@@ -76,12 +76,12 @@ public class SND_DMA extends SND_MIX {
 
     static boolean s_registering;
 
-    static int soundtime; // sample PAIRS
+    static int soundtime; 
 
-    //	   during registration it is possible to have more sounds
-    //	   than could actually be referenced during gameplay,
-    //	   because we don't want to free anything until we are
-    //	   sure we won't need it.
+    
+    
+    
+    
     static final int MAX_SFX = (MAX_SOUNDS * 2);
 
     static final sfx_t[] known_sfx = new sfx_t[MAX_SFX];
@@ -117,15 +117,15 @@ public class SND_DMA extends SND_MIX {
 
     static cvar_t s_primary;
 
-    //
-    //
-    //	int s_rawend;
-    //	portable_samplepair_t s_rawsamples[MAX_RAW_SAMPLES];
-    //
-    //
-    //	   ====================================================================
-    //	   User-setable variables
-    //	   ====================================================================
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     static void SoundInfo_f() {
         if (!sound_started) {
@@ -135,7 +135,7 @@ public class SND_DMA extends SND_MIX {
 
         Com.Printf("%5d stereo\n", new Vargs(1).add(dma.channels - 1));
         Com.Printf("%5d samples\n", new Vargs(1).add(dma.samples));
-        //Com.Printf("%5d samplepos\n", new Vargs(1).add(dma.samplepos));
+        
         Com.Printf("%5d samplebits\n", new Vargs(1).add(dma.samplebits));
         Com.Printf("%5d submission_chunk\n", new Vargs(1)
                 .add(dma.submission_chunk));
@@ -160,8 +160,8 @@ public class SND_DMA extends SND_MIX {
             s_mixahead = Cvar.Get("s_mixahead", "0.2", CVAR_ARCHIVE);
             s_show = Cvar.Get("s_show", "0", 0);
             s_testsound = Cvar.Get("s_testsound", "0", 0);
-            s_primary = Cvar.Get("s_primary", "0", CVAR_ARCHIVE); // win32
-                                                                  // specific
+            s_primary = Cvar.Get("s_primary", "0", CVAR_ARCHIVE); 
+                                                                  
 
             Cmd.AddCommand("play", new xcommand_t() {
                 @Override
@@ -206,9 +206,9 @@ public class SND_DMA extends SND_MIX {
         Com.Printf("------------------------------------\n");
     }
 
-    //	   =======================================================================
-    //	   Shutdown sound engine
-    //	   =======================================================================
+    
+    
+    
 
     public static void Shutdown() {
         int i;
@@ -226,21 +226,21 @@ public class SND_DMA extends SND_MIX {
         Cmd.RemoveCommand("soundlist");
         Cmd.RemoveCommand("soundinfo");
 
-        // free all sounds
+        
         for (i = 0, sfx = known_sfx; i < num_sfx; i++) {
             if (sfx[i].name == null)
                 continue;
 
-            //memset (sfx, 0, sizeof(*sfx));
+            
             sfx[i].clear();
         }
 
         num_sfx = 0;
     }
 
-    //	   =======================================================================
-    //	   Load a sound
-    //	   =======================================================================
+    
+    
+    
 
     /*
      * ================== S_FindName
@@ -259,7 +259,7 @@ public class SND_DMA extends SND_MIX {
         if (name.length() >= MAX_QPATH)
             Com.Error(ERR_FATAL, "Sound name too long: " + name);
 
-        // see if already loaded
+        
         for (i = 0; i < num_sfx; i++)
             if (name.equals(known_sfx[i].name)) {
                 return known_sfx[i];
@@ -268,10 +268,10 @@ public class SND_DMA extends SND_MIX {
         if (!create)
             return null;
 
-        // find a free sfx
+        
         for (i = 0; i < num_sfx; i++)
             if (known_sfx[i].name == null)
-                // registration_sequence < s_registration_sequence)
+                
                 break;
 
         if (i == num_sfx) {
@@ -281,7 +281,7 @@ public class SND_DMA extends SND_MIX {
         }
 
         sfx = known_sfx[i];
-        //memset (sfx, 0, sizeof(*sfx));
+        
         sfx.clear();
         sfx.name = name;
         sfx.registration_sequence = s_registration_sequence;
@@ -296,13 +296,13 @@ public class SND_DMA extends SND_MIX {
      */
     static sfx_t AliasName(String aliasname, String truename) {
         sfx_t sfx = null;
-        //		char *s;
+        
         int i;
 
-        //		s = Z_Malloc (MAX_QPATH);
-        //		strcpy (s, truename);
+        
+        
 
-        // find a free sfx
+        
         for (i = 0; i < num_sfx; i++)
             if (known_sfx[i].name == null)
                 break;
@@ -314,8 +314,8 @@ public class SND_DMA extends SND_MIX {
         }
 
         sfx = known_sfx[i];
-        //memset (sfx, 0, sizeof(*sfx));
-        //strcpy (sfx->name, aliasname);
+        
+        
         sfx.name = aliasname;
         sfx.registration_sequence = s_registration_sequence;
         sfx.truename = truename;
@@ -363,29 +363,29 @@ public class SND_DMA extends SND_MIX {
         sfx_t sfx;
         int size;
 
-        // free any sounds not from this registration sequence
+        
         for (i = 0; i < num_sfx; i++) {
             sfx = known_sfx[i];
             if (sfx.name == null)
                 continue;
-            if (sfx.registration_sequence != s_registration_sequence) { // don't
-                                                                        // need
-                                                                        // this
-                                                                        // sound
-                //memset (sfx, 0, sizeof(*sfx));
+            if (sfx.registration_sequence != s_registration_sequence) { 
+                                                                        
+                                                                        
+                                                                        
+                
                 sfx.clear();
             } else {
-                // make sure it is paged in
-                //				if (sfx->cache)
-                //				{
-                //					size = sfx->cache->length*sfx->cache->width;
-                //					Com_PageInMemory ((byte *)sfx->cache, size);
-                //				}
+                
+                
+                
+                
+                
+                
             }
 
         }
 
-        // load everything in
+        
         for (i = 0; i < num_sfx; i++) {
             sfx = known_sfx[i];
             if (sfx.name == null)
@@ -396,7 +396,7 @@ public class SND_DMA extends SND_MIX {
         s_registering = false;
     }
 
-    //	  =============================================================================
+    
 
     /*
      * ================= S_PickChannel =================
@@ -410,22 +410,22 @@ public class SND_DMA extends SND_MIX {
         if (entchannel < 0)
             Com.Error(ERR_DROP, "S_PickChannel: entchannel<0");
 
-        // Check for replacement sound, or find the best one to replace
+        
         first_to_die = -1;
         life_left = 0x7fffffff;
         for (ch_idx = 0; ch_idx < MAX_CHANNELS; ch_idx++) {
-            if (entchannel != 0 // channel 0 never overrides
+            if (entchannel != 0 
                     && channels[ch_idx].entnum == entnum
-                    && channels[ch_idx].entchannel == entchannel) { // always
-                                                                    // override
-                                                                    // sound
-                                                                    // from same
-                                                                    // entity
+                    && channels[ch_idx].entchannel == entchannel) { 
+                                                                    
+                                                                    
+                                                                    
+                                                                    
                 first_to_die = ch_idx;
                 break;
             }
 
-            // don't let monster sounds override player sounds
+            
             if ((channels[ch_idx].entnum == cl.playernum + 1)
                     && (entnum != cl.playernum + 1)
                     && channels[ch_idx].sfx != null)
@@ -441,7 +441,7 @@ public class SND_DMA extends SND_MIX {
             return null;
 
         ch = channels[first_to_die];
-        //memset (ch, 0, sizeof(*ch));
+        
         ch.clear();
 
         return ch;
@@ -464,19 +464,19 @@ public class SND_DMA extends SND_MIX {
             return;
         }
 
-        //	   calculate stereo seperation and distance attenuation
+        
         Math3D.VectorSubtract(origin, listener_origin, source_vec);
 
         dist = Math3D.VectorNormalize(source_vec);
         dist -= SOUND_FULLVOLUME;
         if (dist < 0)
-            dist = 0; // close enough to be at full volume
-        dist *= dist_mult; // different attenuation levels
+            dist = 0; 
+        dist *= dist_mult; 
 
         dot = Math3D.DotProduct(listener_right, source_vec);
 
-        if (dma.channels == 1 || dist_mult == 0.0f) { // no attenuation = no
-                                                      // spatialization
+        if (dma.channels == 1 || dist_mult == 0.0f) { 
+                                                      
             rscale = 1.0f;
             lscale = 1.0f;
         } else {
@@ -484,7 +484,7 @@ public class SND_DMA extends SND_MIX {
             lscale = 0.5f * (1.0f - dot);
         }
 
-        // add in distance effect
+        
         scale = (1.0f - dist) * rscale;
         ch.rightvol = (int) (master_vol * scale);
         if (ch.rightvol < 0)
@@ -502,7 +502,7 @@ public class SND_DMA extends SND_MIX {
     static void Spatialize(channel_t ch) {
         float[] origin = { 0, 0, 0 };
 
-        // anything coming from the view entity will always be full volume
+        
         if (ch.entnum == cl.playernum + 1) {
             ch.leftvol = ch.master_vol;
             ch.rightvol = ch.master_vol;
@@ -525,9 +525,9 @@ public class SND_DMA extends SND_MIX {
 
         ps = s_freeplays.next;
         if (ps == s_freeplays)
-            return null; // no free playsounds
+            return null; 
 
-        // unlink from freelist
+        
         ps.prev.next = ps.next;
         ps.next.prev = ps.prev;
 
@@ -538,11 +538,11 @@ public class SND_DMA extends SND_MIX {
      * ================= S_FreePlaysound =================
      */
     static void FreePlaysound(playsound_t ps) {
-        // unlink from channel
+        
         ps.prev.next = ps.next;
         ps.next.prev = ps.prev;
 
-        // add to free list
+        
         ps.next = s_freeplays.next;
         s_freeplays.next.prev = ps;
         ps.prev = s_freeplays;
@@ -561,14 +561,14 @@ public class SND_DMA extends SND_MIX {
 
         if (s_show.value != 0.0f)
             Com.Printf("Issue " + ps.begin + '\n');
-        // pick a channel to play on
+        
         ch = PickChannel(ps.entnum, ps.entchannel);
         if (ch == null) {
             FreePlaysound(ps);
             return;
         }
 
-        // spatialize
+        
         if (ps.attenuation == ATTN_STATIC)
             ch.dist_mult = ps.attenuation * 0.001f;
         else
@@ -586,14 +586,14 @@ public class SND_DMA extends SND_MIX {
         sc = WaveLoader.LoadSound(ch.sfx);
         ch.end = paintedtime + sc.length;
 
-        // free the playsound
+        
         FreePlaysound(ps);
     }
 
     static sfx_t RegisterSexedSound(entity_state_t ent, String base) {
         sfx_t sfx = null;
 
-        // determine what model the client is using
+        
         String model = "male";
         int n = CS_PLAYERSKINS + ent.number - 1;
         if (cl.configstrings[n] != null) {
@@ -601,40 +601,40 @@ public class SND_DMA extends SND_MIX {
             if (p >= 0) {
                 p++;
                 model = cl.configstrings[n].substring(p);
-                //strcpy(model, p);
+                
                 p = model.indexOf('/');
                 if (p > 0)
                     model = model.substring(0, p - 1);
             }
         }
-        // if we can't figure it out, they're male
+        
         if (model == null || model.length() == 0)
             model = "male";
 
-        // see if we already know of the model specific sound
+        
         String sexedFilename = "#players/" + model + '/' + base.substring(1);
-        //Com_sprintf (sexedFilename, sizeof(sexedFilename), "#players/%s/%s",
-        // model, base+1);
+        
+        
         sfx = FindName(sexedFilename, false);
 
         if (sfx == null) {
-            // no, so see if it exists
+            
             RandomAccessFile f = null;
             try {
                 f = FS.FOpenFile(sexedFilename.substring(1));
             } catch (IOException e) {
             }
             if (f != null) {
-                // yes, close the file and register it
+                
                 try {
                     FS.FCloseFile(f);
                 } catch (IOException e1) {
                 }
                 sfx = RegisterSound(sexedFilename);
             } else {
-                // no, revert to the male sound in the pak0.pak
-                //Com_sprintf (maleFilename, sizeof(maleFilename),
-                // "player/%s/%s", "male", base+1);
+                
+                
+                
                 String maleFilename = "player/male/" + base.substring(1);
                 sfx = AliasName(sexedFilename, maleFilename);
             }
@@ -643,9 +643,9 @@ public class SND_DMA extends SND_MIX {
         return sfx;
     }
 
-    //	   =======================================================================
-    //	   Start a sound effect
-    //	   =======================================================================
+    
+    
+    
 
     /*
      * ==================== S_StartSound
@@ -666,14 +666,14 @@ public class SND_DMA extends SND_MIX {
         if (sfx.name.charAt(0) == '*')
             sfx = RegisterSexedSound(cl_entities[entnum].current, sfx.name);
 
-        // make sure the sound is loaded
+        
         sfxcache_t sc = WaveLoader.LoadSound(sfx);
         if (sc == null)
-            return; // couldn't load the sound's data
+            return; 
 
         int vol = (int) (fvol * 255);
 
-        // make the playsound_t
+        
         playsound_t ps = AllocPlaysound();
         if (ps == null)
             return;
@@ -690,7 +690,7 @@ public class SND_DMA extends SND_MIX {
         ps.volume = vol;
         ps.sfx = sfx;
 
-        // drift s_beginofs
+        
         int start = (int) (cl.frame.servertime * 0.001f * dma.speed + s_beginofs);
         if (start < paintedtime) {
             start = paintedtime;
@@ -707,7 +707,7 @@ public class SND_DMA extends SND_MIX {
         else
             ps.begin = (long) (start + timeofs * dma.speed);
 
-        // sort into the pending sound list
+        
         playsound_t sort;
         for (sort = s_pendingplays.next; sort != s_pendingplays
                 && sort.begin < ps.begin; sort = sort.next)
@@ -755,8 +755,8 @@ public class SND_DMA extends SND_MIX {
 
         SNDDMA_BeginPainting();
         if (dma.buffer != null)
-            //memset(dma.buffer, clear, dma.samples * dma.samplebits/8);
-            //Arrays.fill(dma.buffer, (byte)clear);
+            
+            
             SNDDMA_Submit();
     }
 
@@ -769,8 +769,8 @@ public class SND_DMA extends SND_MIX {
         if (!sound_started)
             return;
 
-        // clear all the playsounds
-        //memset(s_playsounds, 0, sizeof(s_playsounds));
+        
+        
         s_freeplays.next = s_freeplays.prev = s_freeplays;
         s_pendingplays.next = s_pendingplays.prev = s_pendingplays;
 
@@ -782,8 +782,8 @@ public class SND_DMA extends SND_MIX {
             s_playsounds[i].next.prev = s_playsounds[i];
         }
 
-        // clear all the channels
-        //memset(channels, 0, sizeof(channels));
+        
+        
         for (i = 0; i < MAX_CHANNELS; i++)
             channels[i].clear();
 
@@ -828,7 +828,7 @@ public class SND_DMA extends SND_MIX {
 
             sfx = cl.sound_precache[sounds[i]];
             if (sfx == null)
-                continue; // bad sound effect
+                continue; 
             sc = sfx.cache;
             if (sc == null)
                 continue;
@@ -837,14 +837,14 @@ public class SND_DMA extends SND_MIX {
             ent = cl_parse_entities[num];
 
             channel_t tch = new channel_t();
-            // find the total contribution of all sounds of this type
+            
             SpatializeOrigin(ent.origin, 255.0f, SOUND_LOOPATTENUATE, tch);
             left_total = tch.leftvol;
             right_total = tch.rightvol;
             for (j = i + 1; j < cl.frame.num_entities; j++) {
                 if (sounds[j] != sounds[i])
                     continue;
-                sounds[j] = 0; // don't check this again later
+                sounds[j] = 0; 
 
                 num = (cl.frame.parse_entities + j) & (MAX_PARSE_ENTITIES - 1);
                 ent = cl_parse_entities[num];
@@ -855,9 +855,9 @@ public class SND_DMA extends SND_MIX {
             }
 
             if (left_total == 0 && right_total == 0)
-                continue; // not audible
+                continue; 
 
-            // allocate a channel
+            
             ch = PickChannel(0, 0);
             if (ch == null)
                 return;
@@ -868,14 +868,14 @@ public class SND_DMA extends SND_MIX {
                 right_total = 255;
             ch.leftvol = left_total;
             ch.rightvol = right_total;
-            ch.autosound = true; // remove next frame
+            ch.autosound = true; 
             ch.sfx = sfx;
             ch.pos = paintedtime % sc.length;
             ch.end = paintedtime + sc.length - ch.pos;
         }
     }
 
-    //	  =============================================================================
+    
 
     /*
      * ============ S_RawSamples
@@ -884,7 +884,7 @@ public class SND_DMA extends SND_MIX {
      */
     static void RawSamples(int samples, int rate, int width, int channels,
             ByteBuffer data) {
-        //TODO RawSamples
+        
         int i;
         int src, dst;
         float scale;
@@ -896,71 +896,71 @@ public class SND_DMA extends SND_MIX {
             s_rawend = paintedtime;
         scale = (float) rate / dma.speed;
 
-        //	  Com_Printf ("%i < %i < %i\n", soundtime, paintedtime, s_rawend);
+        
         if (channels == 2 && width == 2) {
-            if (scale == 1.0) { // optimized case
-            //				for (i=0 ; i<samples ; i++)
-            //				{
-            //					dst = s_rawend&(MAX_RAW_SAMPLES-1);
-            //					s_rawend++;
-            //					s_rawsamples[dst].left =
-            //						LittleShort(((short *)data)[i*2]) << 8;
-            //					s_rawsamples[dst].right =
-            //						LittleShort(((short *)data)[i*2+1]) << 8;
-            //				}
+            if (scale == 1.0) { 
+            
+            
+            
+            
+            
+            
+            
+            
+            
             } else {
                 for (i = 0;; i++) {
-                    //					src = i*scale;
-                    //					if (src >= samples)
-                    //						break;
-                    //					dst = s_rawend&(MAX_RAW_SAMPLES-1);
-                    //					s_rawend++;
-                    //					s_rawsamples[dst].left =
-                    //						LittleShort(((short *)data)[src*2]) << 8;
-                    //					s_rawsamples[dst].right =
-                    //						LittleShort(((short *)data)[src*2+1]) << 8;
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                 }
             }
         } else if (channels == 1 && width == 2) {
             for (i = 0;; i++) {
-                //				src = i*scale;
-                //				if (src >= samples)
-                //					break;
-                //				dst = s_rawend&(MAX_RAW_SAMPLES-1);
-                //				s_rawend++;
-                //				s_rawsamples[dst].left =
-                //					LittleShort(((short *)data)[src]) << 8;
-                //				s_rawsamples[dst].right =
-                //					LittleShort(((short *)data)[src]) << 8;
+                
+                
+                
+                
+                
+                
+                
+                
+                
             }
         } else if (channels == 2 && width == 1) {
             for (i = 0;; i++) {
-                //				src = i*scale;
-                //				if (src >= samples)
-                //					break;
-                //				dst = s_rawend&(MAX_RAW_SAMPLES-1);
-                //				s_rawend++;
-                //				s_rawsamples[dst].left =
-                //					((char *)data)[src*2] << 16;
-                //				s_rawsamples[dst].right =
-                //					((char *)data)[src*2+1] << 16;
+                
+                
+                
+                
+                
+                
+                
+                
+                
             }
         } else if (channels == 1 && width == 1) {
             for (i = 0;; i++) {
-                //				src = i*scale;
-                //				if (src >= samples)
-                //					break;
-                //				dst = s_rawend&(MAX_RAW_SAMPLES-1);
-                //				s_rawend++;
-                //				s_rawsamples[dst].left =
-                //					(((byte *)data)[src]-128) << 16;
-                //				s_rawsamples[dst].right = (((byte *)data)[src]-128) << 16;
+                
+                
+                
+                
+                
+                
+                
+                
             }
         }
     }
 
-    ////
-    // =============================================================================
+    
+    
 
     /*
      * ============ S_Update
@@ -973,15 +973,15 @@ public class SND_DMA extends SND_MIX {
         if (!sound_started)
             return;
 
-        // if the laoding plaque is up, clear everything
-        // out to make sure we aren't looping a dirty
-        // dma buffer while loading
+        
+        
+        
         if (cls.disable_screen != 0.0f) {
             ClearBuffer();
             return;
         }
 
-        // rebuild scale tables if volume is modified
+        
         if (s_volume.modified)
             InitScaletable();
 
@@ -992,31 +992,31 @@ public class SND_DMA extends SND_MIX {
 
         channel_t combine = null;
 
-        // update spatialization for dynamic sounds
+        
         channel_t ch;
         for (int i = 0; i < MAX_CHANNELS; i++) {
             ch = channels[i];
             if (ch.sfx == null)
                 continue;
-            if (ch.autosound) { // autosounds are regenerated fresh each frame
-                //memset (ch, 0, sizeof(*ch));
+            if (ch.autosound) { 
+                
                 ch.clear();
                 continue;
             }
-            Spatialize(ch); // respatialize channel
+            Spatialize(ch); 
             if (ch.leftvol == 0 && ch.rightvol == 0) {
-                //memset (ch, 0, sizeof(*ch));
+                
                 ch.clear();
                 continue;
             }
         }
 
-        // add loopsounds
+        
         AddLoopSounds();
 
-        //
-        // debugging output
-        //
+        
+        
+        
         if (s_show.value != 0.0f) {
             int total = 0;
 
@@ -1029,11 +1029,11 @@ public class SND_DMA extends SND_MIX {
                 }
             }
 
-            //Com.Printf("----(" + total + ")---- painted: " + paintedtime +
-            // "\n");
+            
+            
         }
 
-        //	   mix some sound
+        
         Update_();
     }
 
@@ -1043,21 +1043,21 @@ public class SND_DMA extends SND_MIX {
 
     static void GetSoundtime() {
         int samplepos;
-        //static int buffers;
-        //static int oldsamplepos;
+        
+        
         int fullsamples;
 
         fullsamples = dma.samples / dma.channels;
 
-        //	   it is possible to miscount buffers if it has wrapped twice between
-        //	   calls to S_Update. Oh well.
+        
+        
         samplepos = SNDDMA_GetDMAPos();
 
         if (samplepos < oldsamplepos) {
-            buffers++; // buffer wrapped
+            buffers++; 
 
-            if (paintedtime > 0x40000000) { // time to chop things off to avoid
-                                            // 32 bit limits
+            if (paintedtime > 0x40000000) { 
+                                            
                 buffers = 0;
                 paintedtime = fullsamples;
                 StopAllSounds();
@@ -1080,20 +1080,20 @@ public class SND_DMA extends SND_MIX {
         if (dma.buffer == null)
             return;
 
-        // Updates DMA time
+        
         GetSoundtime();
 
-        // check to make sure that we haven't overshot
+        
         if (paintedtime < soundtime) {
             Com.DPrintf("S_Update_ : overflow\n");
             paintedtime = soundtime;
         }
 
-        // mix ahead of current position
+        
         endtime = (int) (soundtime + s_mixahead.value * dma.speed);
-        //	  endtime = (soundtime + 4096) & ~4095;
+        
 
-        // mix to an even submission block size
+        
         endtime = (endtime + dma.submission_chunk - 1)
                 & ~(dma.submission_chunk - 1);
         samps = dma.samples >> (dma.channels - 1);

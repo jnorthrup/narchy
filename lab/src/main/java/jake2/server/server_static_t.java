@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 14.01.2004 by RST.
-// $Id: server_static_t.java,v 1.2 2004-09-22 19:22:12 salomo Exp $
+
+
 package jake2.server;
 
 import jake2.Defines;
@@ -35,34 +35,34 @@ public class server_static_t {
         }
     }
 
-    boolean initialized; // sv_init has completed
+    boolean initialized; 
 
-    int realtime; // always increasing, no clamping, etc
+    int realtime; 
 
-    String mapcmd = ""; // ie: *intro.cin+base
+    String mapcmd = ""; 
 
-    int spawncount; // incremented each server start
+    int spawncount; 
 
-    // used to check late spawns
+    
 
-    client_t clients[]; // [maxclients->value];
+    client_t clients[]; 
 
-    int num_client_entities; // maxclients->value*UPDATE_BACKUP*MAX_PACKET_ENTITIES
+    int num_client_entities; 
 
-    int next_client_entities; // next client_entity to use
+    int next_client_entities; 
 
-    entity_state_t client_entities[]; // [num_client_entities]
+    entity_state_t client_entities[]; 
 
     int last_heartbeat;
 
-    final challenge_t[] challenges = new challenge_t[Defines.MAX_CHALLENGES]; // to
-                                                                        // prevent
-                                                                        // invalid
-                                                                        // IPs
-                                                                        // from
-                                                                        // connecting
+    final challenge_t[] challenges = new challenge_t[Defines.MAX_CHALLENGES]; 
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
 
-    // serverrecord values
+    
     RandomAccessFile demofile;
 
     final sizebuf_t demo_multicast = new sizebuf_t();

@@ -24,14 +24,14 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
         super(x, 1, 1);
 
         setFront(
-            //col(
-                //new Label(x.toString())
+            
+                
                 new PushButton(x.toString()).click(this::onClicked)
-                //row(new FloatSlider( 0, 0, 4 ), new PushButton("x"))
-                        //, new BeliefTableChart(nar, x))
-                    //new CheckBox("?")
-            //)
-                //new TermIcon(x)
+                
+                        
+                    
+            
+                
         );
 
     }
@@ -52,14 +52,14 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
     @Override
     public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraphPhys3D space) {
         Surface s = super.onTouch(finger, body, hitPoint, buttons, space);
-//        if (s != null) {
-//        }
+
+
 
         touched = true;
 
-//        if (buttons.length > 0 && buttons[0] == 1) {
-//            window(Vis.reflect(id), 800, 600);
-//        }
+
+
+
 
         return s;
     }
@@ -86,16 +86,16 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
 
     @Override
     public void renderAbsolute(GL2 gl, int dtMS) {
-//        gl.glDepthMask(false); //disable writing to depth buffer
-//        gl.glDisable(GL.GL_DEPTH_BUFFER_BIT);
+
+
 
         render(gl, this,
-                //(float)Math.PI * 2 * (timeMS % 4000) / 4000f,
+                
                 0,
                 edges());
 
-//        gl.glDepthMask(true);
-//        gl.glEnable(GL.GL_DEPTH_BUFFER_BIT);
+
+
 
         if (touched) {
             gl.glPushMatrix();

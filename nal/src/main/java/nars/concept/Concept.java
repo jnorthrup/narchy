@@ -16,7 +16,7 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with Open-NARS.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Open-NARS.  If not, see <http:
  */
 package nars.concept;
 
@@ -120,7 +120,7 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
                 try {
                     out.append(printIndent);
                     out.append(b.toString());
-                    //out.append(String.valueOf(b.get())).append(' ').append(b.toBudgetString());
+                    
                     out.append("\n");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -128,8 +128,8 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
             };
 
             if (showtermlinks) {
-                //out.append("TermLinkTemplates: ");
-                //out.appendln(termlinkTemplates());
+                
+                
 
                 out.append("\n TermLinks: ").append(String.valueOf(termlinks().size())).append(String.valueOf('/')).append(String.valueOf(termlinks().capacity())).append('\n');
 
@@ -198,10 +198,10 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
 
     }
 
-//    @Override
-//    default int compareTo(/*@NotNull*/ Termed o) {
-//        return term().compareTo(o.term());
-//    }
+
+
+
+
 
 
     /*@NotNull*/ ConceptState state();

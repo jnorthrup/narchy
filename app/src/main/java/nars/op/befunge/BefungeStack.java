@@ -9,7 +9,7 @@ import java.util.Stack;
  * Created by didrik on 30.12.2014.
  */
 public class BefungeStack {
-    //TODO replace with Long primitive
+    
     Stack<Long> stack;
 
     public BefungeStack(){

@@ -28,7 +28,7 @@ public class CLink<X extends Priority> extends RoaringBitmap implements Priority
     public boolean equals(Object o) {
         if (this == o) return true;
         if (this.ref == o) return true;
-        CLink c = (CLink)o; //assumed
+        CLink c = (CLink)o; 
         return ref.equals(c.ref);
     }
 

@@ -5,8 +5,8 @@ import org.junit.jupiter.api.Test;
 import java.util.Iterator;
 
 public class FamilyClausesListTest {
-    // Short test about the new implementation of the ListItr
-    // Alessandro Montanari - alessandro.montanar5@studio.unibo.it
+    
+    
 
 
     @Test
@@ -22,37 +22,37 @@ public class FamilyClausesListTest {
         clauseList.add(third);
         clauseList.add(fourth);
 
-        // clauseList = [First, Second, Third, Fourh]
+        
 
         Iterator<ClauseInfo> allClauses = clauseList.iterator();
-        // Get the first object and remove it
+        
         allClauses.next();
 
 
-//        allClauses.remove();
-//        if (clauseList.contains(first)) {
-//            System.out.println("Error!");
-//            System.exit(-1);
-//        }
 
-        // First object removed
-        // clauseList = [Second, Third, Fourh]
 
-        // Get the second object
+
+
+
+
+        
+        
+
+        
         allClauses.next();
-        // Get the third object
+        
         allClauses.next();
-        // Get the third object
-        //allClauses.previous();
-        // Get the second object and remove it
-        //allClauses.previous();
-//        allClauses.remove();
-//        if (clauseList.contains(second)) {
-//            System.out.println("Error!");
-//            System.exit(-2);
-//        }
+        
+        
+        
+        
 
-        // clauseList = [Third, Fourh]
+
+
+
+
+
+        
 
         System.out.println("Ok!!!");
     }

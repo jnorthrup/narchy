@@ -20,7 +20,7 @@ class LinuxCommandsProvider
       final List<String>[] commands = new List[2];
 
       final String path = wallpaper.getAbsolutePath();
-      commands[0] = new ListFromArray<String>("/usr/bin/gsettings", "set", "org.gnome.desktop.background", "picture-uri", "file://" + path);
+      commands[0] = new ListFromArray<String>("/usr/bin/gsettings", "set", "org.gnome.desktop.background", "picture-uri", "file:
       commands[1] = new ListFromArray<String>("/usr/bin/gconftool-2", "--type=string", "--set", "/desktop/gnome/background/picture_filename", path);
 
       return commands;

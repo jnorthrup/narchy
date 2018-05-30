@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
-// Created on 09.01.2004 by RST.
+
 
 package jake2.game;
 
@@ -45,7 +45,7 @@ public abstract class SuperAdapter {
 	public static SuperAdapter getFromID(String key) {
 		SuperAdapter sa= adapters.get(key);
 
-		// try to create the adapter
+		
 		if (sa == null) {
 			Com.DPrintf("SuperAdapter.getFromID():adapter not found->" + key + '\n');
 		}

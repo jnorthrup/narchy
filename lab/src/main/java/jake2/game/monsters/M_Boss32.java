@@ -18,8 +18,8 @@
  *  
  */
 
-// Created on 13.11.2003 by RST.
-// $Id: M_Boss32.java,v 1.5 2009-12-13 11:21:18 salomo Exp $
+
+
 package jake2.game.monsters;
 
 import jake2.Defines;
@@ -1063,9 +1063,9 @@ public class M_Boss32 {
         }
     };
 
-    //
-    //	   stand
-    //
+    
+    
+    
     static final EntThinkAdapter makron_stand = new EntThinkAdapter() {
     	@Override
         public String getID() { return "makron_stand"; }
@@ -1159,7 +1159,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 10
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -1170,7 +1170,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 20
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -1181,7 +1181,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 30
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -1192,7 +1192,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 40
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -1203,7 +1203,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            // 50
+            
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
@@ -1213,7 +1213,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
             new mframe_t(GameAI.ai_stand, 0, null),
-            new mframe_t(GameAI.ai_stand, 0, null) // 60
+            new mframe_t(GameAI.ai_stand, 0, null) 
     };
 
     static final mmove_t makron_move_stand = new mmove_t(FRAME_stand201,
@@ -1249,9 +1249,9 @@ public class M_Boss32 {
     static final mmove_t makron_move_walk = new mmove_t(FRAME_walk204, FRAME_walk213,
             makron_frames_run, null);
 
-    //
-    //	   death
-    //
+    
+    
+    
     static final EntThinkAdapter makron_dead = new EntThinkAdapter() {
     	@Override
         public String getID() { return "makron_dead"; }
@@ -1301,7 +1301,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 10
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1312,7 +1312,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 20
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1353,7 +1353,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 10
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1364,7 +1364,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 11, makron_step_right),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 20
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1375,7 +1375,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 30
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1386,7 +1386,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, -1, null),
             new mframe_t(GameAI.ai_move, 2, null),
-            // 40
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1397,7 +1397,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 50
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1408,7 +1408,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, -4, makron_step_left),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 60
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, -2, null),
@@ -1419,7 +1419,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, -7, null),
             new mframe_t(GameAI.ai_move, -4, null),
             new mframe_t(GameAI.ai_move, -4, makron_step_right),
-            // 70
+            
             new mframe_t(GameAI.ai_move, -6, null),
             new mframe_t(GameAI.ai_move, -7, null),
             new mframe_t(GameAI.ai_move, 0, makron_step_left),
@@ -1430,7 +1430,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 80
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1441,12 +1441,12 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 2, null),
             new mframe_t(GameAI.ai_move, 0, null),
-            // 90
+            
             new mframe_t(GameAI.ai_move, 27, makron_hit),
             new mframe_t(GameAI.ai_move, 26, null),
             new mframe_t(GameAI.ai_move, 0, makron_brainsplorch),
             new mframe_t(GameAI.ai_move, 0, null),
-            new mframe_t(GameAI.ai_move, 0, null) // 95
+            new mframe_t(GameAI.ai_move, 0, null) 
     };
 
     static final mmove_t makron_move_death2 = new mmove_t(FRAME_death201,
@@ -1528,15 +1528,15 @@ public class M_Boss32 {
         public String getID() { return "MakronSaveloc"; }
         @Override
         public boolean think(edict_t self) {
-            Math3D.VectorCopy(self.enemy.s.origin, self.pos1); //save for
-                                                               // aiming the
-                                                               // shot
+            Math3D.VectorCopy(self.enemy.s.origin, self.pos1); 
+                                                               
+                                                               
             self.pos1[2] += self.enemy.viewheight;
             return true;
         }
     };
 
-    //	   FIXME: He's not firing from the proper Z
+    
 
     static final EntThinkAdapter MakronRailgun = new EntThinkAdapter() {
     	@Override
@@ -1552,7 +1552,7 @@ public class M_Boss32 {
                     M_Flash.monster_flash_offset[Defines.MZ2_MAKRON_RAILGUN_1],
                     forward, right, start);
 
-            // calc direction to where we targted
+            
             Math3D.VectorSubtract(self.pos1, start, dir);
             Math3D.VectorNormalize(dir);
 
@@ -1563,7 +1563,7 @@ public class M_Boss32 {
         }
     };
 
-    //	   FIXME: This is all wrong. He's not firing at the proper angles.
+    
 
     static final EntThinkAdapter MakronHyperblaster = new EntThinkAdapter() {
     	@Override
@@ -1622,14 +1622,14 @@ public class M_Boss32 {
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
-            // Lessen the chance of him going into his pain frames
+            
             if (damage <= 25)
                 if (Lib.random() < 0.2)
                     return;
 
             self.pain_debounce_time = GameBase.level.time + 3;
             if (GameBase.skill.value == 3)
-                return; // no pain anims in nightmare
+                return; 
 
             if (damage <= 40) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain4, 1,
@@ -1740,7 +1740,7 @@ public class M_Boss32 {
             int n;
 
             self.s.sound = 0;
-            // check for gib
+            
             if (self.health <= self.gib_health) {
                 game_import_t
                         .sound(self, Defines.CHAN_VOICE, game_import_t
@@ -1763,7 +1763,7 @@ public class M_Boss32 {
             if (self.deadflag == Defines.DEAD_DEAD)
                 return;
 
-            //	   regular death
+            
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_death, 1,
                     Defines.ATTN_NONE, 0);
             self.deadflag = Defines.DEAD_DEAD;
@@ -1793,7 +1793,7 @@ public class M_Boss32 {
             float enemy_yaw;
 
             if (self.enemy.health > 0) {
-                // see if any entities are in the way of the shot
+                
                 Math3D.VectorCopy(self.s.origin, spot1);
                 spot1[2] += self.viewheight;
                 Math3D.VectorCopy(self.enemy.s.origin, spot2);
@@ -1804,7 +1804,7 @@ public class M_Boss32 {
                                 | Defines.CONTENTS_SLIME
                                 | Defines.CONTENTS_LAVA);
 
-                // do we have a clear shot?
+                
                 if (tr.ent != self.enemy)
                     return false;
             }
@@ -1815,7 +1815,7 @@ public class M_Boss32 {
 
             self.ideal_yaw = enemy_yaw;
 
-            // melee attack
+            
             if (enemy_range == Defines.RANGE_MELEE) {
                 if (self.monsterinfo.melee != null)
                     self.monsterinfo.attack_state = Defines.AS_MELEE;
@@ -1824,7 +1824,7 @@ public class M_Boss32 {
                 return true;
             }
 
-            //	   missile attack
+            
             if (null != self.monsterinfo.attack)
                 return false;
 
@@ -1869,7 +1869,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_charge, 0, null),
             new mframe_t(GameAI.ai_charge, 0, null),
             new mframe_t(GameAI.ai_charge, 0, makronBFG),
-            // FIXME: BFG Attack here
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1884,23 +1884,23 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_charge, 0, null),
             new mframe_t(GameAI.ai_charge, 0, null),
             new mframe_t(GameAI.ai_move, 0, MakronHyperblaster),
-            // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
-            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), // fire
+            
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
+            new mframe_t(GameAI.ai_move, 0, MakronHyperblaster), 
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1920,7 +1920,7 @@ public class M_Boss32 {
             new mframe_t(GameAI.ai_charge, 0, null),
             new mframe_t(GameAI.ai_charge, 0, MakronSaveloc),
             new mframe_t(GameAI.ai_move, 0, MakronRailgun),
-            // Fire railgun
+            
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
             new mframe_t(GameAI.ai_move, 0, null),
@@ -1948,7 +1948,7 @@ public class M_Boss32 {
 
             SP_monster_makron(self);
 
-            // jump at player
+            
             player = GameBase.level.sight_client;
             if (player == null)
                 return true;
@@ -1980,9 +1980,9 @@ public class M_Boss32 {
         }
     };
 
-    //
-    //	   monster_makron
-    //
+    
+    
+    
 
     static void MakronPrecache() {
         sound_pain4 = game_import_t.soundindex("makron/pain3.wav");
@@ -2039,7 +2039,7 @@ public class M_Boss32 {
 
         game_import_t.linkentity(self);
 
-        //		self.monsterinfo.currentmove = &makron_move_stand;
+        
         self.monsterinfo.currentmove = makron_move_sight;
         self.monsterinfo.scale = MODEL_SCALE;
 

@@ -64,7 +64,7 @@ public class BooleanLabel  {
     @Override
     public String toString() {
         return String.valueOf(label);
-        //return "BooleanLabel [label=" + label + ']';
+        
     }
 
 }

@@ -18,7 +18,7 @@
  *  
  */
 
-// Created on 02.01.2004 by RST.
+
 package jake2.qcommon;
 
 import jake2.Defines;
@@ -38,15 +38,15 @@ import java.util.Arrays;
 public class CM {
 
     public static class cnode_t {
-        cplane_t plane; // ptr
+        cplane_t plane; 
 
-        final int[] children = { 0, 0 }; // negative numbers are leafs
+        final int[] children = { 0, 0 }; 
     }
 
     public static class cbrushside_t {
-        cplane_t plane; // ptr
+        cplane_t plane; 
 
-        mapsurface_t surface; // ptr
+        mapsurface_t surface; 
     }
 
     public static class cleaf_t {
@@ -56,10 +56,10 @@ public class CM {
 
         int area;
 
-        // was unsigned short, but is ok (rst)
+        
         short firstleafbrush;
 
-        // was unsigned short, but is ok (rst)
+        
         short numleafbrushes;
     }
 
@@ -70,7 +70,7 @@ public class CM {
 
         int firstbrushside;
 
-        int checkcount; // to avoid repeated testings
+        int checkcount; 
     }
 
     public static class carea_t {
@@ -78,7 +78,7 @@ public class CM {
 
         int firstareaportal;
 
-        int floodnum; // if two areas have equal floodnums, they are connected
+        int floodnum; 
 
         int floodvalid;
     }
@@ -123,7 +123,7 @@ public class CM {
             map_nodes[n] = new cnode_t();
     }
 
-    static int numleafs = 1; // allow leaf funcs to be called without a map
+    static int numleafs = 1; 
 
     static final cleaf_t[] map_leafs = new cleaf_t[Defines.MAX_MAP_LEAFS];
     static {
@@ -223,10 +223,10 @@ public class CM {
                 Arrays.fill(portalopen, false);
                 FloodAreaConnections();
             }
-            return map_cmodels[0]; // still have the right version
+            return map_cmodels[0]; 
         }
 
-        // free old stuff
+        
         numnodes = 0;
         numleafs = 0;
         numcmodels = 0;
@@ -241,12 +241,12 @@ public class CM {
             numareas = 1;
             checksum[0] = 0;
             return map_cmodels[0];
-            // cinematic servers won't have anything at all
+            
         }
 
-        //
-        // load the file
-        //
+        
+        
+        
         buf = FS.LoadFile(name);
 
         if (buf == null)
@@ -268,8 +268,8 @@ public class CM {
 
         cmod_base = buf;
 
-        // load into heap
-        CMod_LoadSurfaces(header.lumps[Defines.LUMP_TEXINFO]); // ok        
+        
+        CMod_LoadSurfaces(header.lumps[Defines.LUMP_TEXINFO]); 
         CMod_LoadLeafs(header.lumps[Defines.LUMP_LEAFS]);
         CMod_LoadLeafBrushes(header.lumps[Defines.LUMP_LEAFBRUSHES]);
         CMod_LoadPlanes(header.lumps[Defines.LUMP_PLANES]);
@@ -324,7 +324,7 @@ public class CM {
                     * qfiles.dmodel_t.SIZE + l.fileofs, qfiles.dmodel_t.SIZE));
             out = map_cmodels[i];
 
-            for (j = 0; j < 3; j++) { // spread the mins / maxs by a pixel
+            for (j = 0; j < 3; j++) { 
                 out.mins[j] = in.mins[j] - 1;
                 out.maxs[j] = in.maxs[j] + 1;
                 out.origin[j] = in.origin[j];
@@ -477,7 +477,7 @@ public class CM {
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no leafs");
 
-        // need to save space for box planes
+        
         if (count > Defines.MAX_MAP_PLANES)
             Com.Error(Defines.ERR_DROP, "Map has too many planes");
 
@@ -546,7 +546,7 @@ public class CM {
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no planes");
 
-        // need to save space for box planes
+        
         if (count > Defines.MAX_MAP_PLANES)
             Com.Error(Defines.ERR_DROP, "Map has too many planes");
 
@@ -599,7 +599,7 @@ public class CM {
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no planes");
 
-        // need to save space for box planes
+        
         if (count > Defines.MAX_MAP_LEAFBRUSHES)
             Com.Error(Defines.ERR_DROP, "Map has too many leafbrushes");
 
@@ -634,7 +634,7 @@ public class CM {
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
         count = l.filelen / qfiles.dbrushside_t.SIZE;
 
-        // need to save space for box planes
+        
         if (count > Defines.MAX_MAP_BRUSHSIDES)
             Com.Error(Defines.ERR_DROP, "Map has too many planes");
 
@@ -655,16 +655,16 @@ public class CM {
 
             num = in.planenum;
 
-            out.plane = map_planes[num]; // pointer
+            out.plane = map_planes[num]; 
 
             j = in.texinfo;
 
             if (j >= numtexinfo)
                 Com.Error(Defines.ERR_DROP, "Bad brushside texinfo");
 
-            // java specific handling of -1
+            
             if (j == -1)
-                out.surface = new mapsurface_t(); // just for safety
+                out.surface = new mapsurface_t(); 
             else
                 out.surface = map_surfaces[j];
 
@@ -845,7 +845,7 @@ public class CM {
      */
     public static void CM_InitBoxHull() {
 
-        box_headnode = numnodes; //rst: still room for 6 brushes left?
+        box_headnode = numnodes; 
 
         box_planes = new cplane_t[] { map_planes[numplanes],
                 map_planes[numplanes + 1], map_planes[numplanes + 2],
@@ -882,12 +882,12 @@ public class CM {
         for (int i = 0; i < 6; i++) {
             side = i & 1;
 
-            // brush sides
+            
             s = map_brushsides[numbrushsides + i];
             s.plane = map_planes[(numplanes + i * 2 + side)];
             s.surface = nullsurface;
 
-            // nodes
+            
             c = map_nodes[box_headnode + i];
             c.plane = map_planes[(numplanes + i * 2)];
             c.children[side] = -1 - emptyleaf;
@@ -896,7 +896,7 @@ public class CM {
             else
                 c.children[side ^ 1] = -1 - numleafs;
 
-            // planes
+            
             p = box_planes[i * 2];
             p.type = (byte) (i >> 1);
             p.signbits = 0;
@@ -950,14 +950,14 @@ public class CM {
                 num = node.children[0];
         }
 
-        Globals.c_pointcontents++; // optimize counter
+        Globals.c_pointcontents++; 
 
         return -1 - num;
     }
 
     /** Searches the leaf number that contains the 3d point. */
     public static int CM_PointLeafnum(float[] p) {
-    	// sound may call this without map loaded
+    	
         if (numplanes == 0)
             return 0; 
         return CM_PointLeafnum_r(p, 0);
@@ -998,7 +998,7 @@ public class CM {
             else if (s == 2)
                 nodenum = node.children[1];
             else {
-                // go down both
+                
                 if (leaf_topnode == -1)
                     leaf_topnode = nodenum;
                 CM_BoxLeafnums_r(node.children[0]);
@@ -1037,7 +1037,7 @@ public class CM {
     public static int PointContents(float[] p, int headnode) {
         int l;
 
-        if (numnodes == 0) // map not loaded
+        if (numnodes == 0) 
             return 0;
 
         l = CM_PointLeafnum_r(p, headnode);
@@ -1058,10 +1058,10 @@ public class CM {
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
         int l;
 
-        // subtract origin offset
+        
         Math3D.VectorSubtract(p, origin, p_l);
 
-        // rotate start and end into the models frame of reference
+        
         if (headnode != box_headnode
                 && (angles[0] != 0 || angles[1] != 0 || angles[2] != 0)) {
             Math3D.AngleVectors(angles, forward, right, up);
@@ -1085,7 +1085,7 @@ public class CM {
      * ===============================================================================
      */
 
-    // 1/32 epsilon to keep floating point happy
+    
     private static final float DIST_EPSILON = 0.03125f;
 
     private static final float[] trace_start = { 0, 0, 0 };
@@ -1100,7 +1100,7 @@ public class CM {
 
     private static int trace_contents;
 
-    private static boolean trace_ispoint; // optimized case
+    private static boolean trace_ispoint; 
 
     /*
      * ================ CM_ClipBoxToBrush ================
@@ -1134,13 +1134,13 @@ public class CM {
             side = map_brushsides[brush.firstbrushside + i];
             plane = side.plane;
 
-            // FIXME: special case for axial
+            
 
-            if (!trace_ispoint) { // general box case
+            if (!trace_ispoint) { 
 
-                // push the plane out apropriately for mins/maxs
+                
 
-                // FIXME: use signbits into 8 way lookup for each mins/maxs
+                
                 for (j = 0; j < 3; j++) {
                     if (plane.normal[j] < 0)
                         ofs[j] = maxs[j];
@@ -1149,7 +1149,7 @@ public class CM {
                 }
                 dist = Math3D.DotProduct(ofs, plane.normal);
                 dist = plane.dist - dist;
-            } else { // special point case
+            } else { 
                 dist = plane.dist;
             }
 
@@ -1157,33 +1157,33 @@ public class CM {
             d2 = Math3D.DotProduct(p2, plane.normal) - dist;
 
             if (d2 > 0)
-                getout = true; // endpoint is not in solid
+                getout = true; 
             if (d1 > 0)
                 startout = true;
 
-            // if completely in front of face, no intersection
+            
             if (d1 > 0 && d2 >= d1)
                 return;
 
             if (d1 <= 0 && d2 <= 0)
                 continue;
 
-            // crosses face
-            if (d1 > d2) { // enter
+            
+            if (d1 > d2) { 
                 f = (d1 - DIST_EPSILON) / (d1 - d2);
                 if (f > enterfrac) {
                     enterfrac = f;
                     clipplane = plane;
                     leadside = side;
                 }
-            } else { // leave
+            } else { 
                 f = (d1 + DIST_EPSILON) / (d1 - d2);
                 if (f < leavefrac)
                     leavefrac = f;
             }
         }
 
-        if (!startout) { // original point was inside brush
+        if (!startout) { 
             trace.startsolid = true;
             if (!getout)
                 trace.allsolid = true;
@@ -1194,7 +1194,7 @@ public class CM {
                 if (enterfrac < 0)
                     enterfrac = 0;
                 trace.fraction = enterfrac;
-                // copy
+                
                 trace.plane.set(clipplane);
                 trace.surface = leadside.surface.c;
                 trace.contents = brush.contents;
@@ -1221,10 +1221,10 @@ public class CM {
             side = map_brushsides[brush.firstbrushside + i];
             plane = side.plane;
 
-            // FIXME: special case for axial
-            // general box case
-            // push the plane out apropriately for mins/maxs
-            // FIXME: use signbits into 8 way lookup for each mins/maxs
+            
+            
+            
+            
 
             for (j = 0; j < 3; j++) {
                 if (plane.normal[j] < 0)
@@ -1237,13 +1237,13 @@ public class CM {
 
             d1 = Math3D.DotProduct(p1, plane.normal) - dist;
 
-            // if completely in front of face, no intersection
+            
             if (d1 > 0)
                 return;
 
         }
 
-        // inside this brush
+        
         trace.startsolid = trace.allsolid = true;
         trace.fraction = 0;
         trace.contents = brush.contents;
@@ -1262,13 +1262,13 @@ public class CM {
         if (0 == (leaf.contents & trace_contents))
             return;
 
-        // trace line against all brushes in the leaf
+        
         for (k = 0; k < leaf.numleafbrushes; k++) {
 
             brushnum = map_leafbrushes[leaf.firstleafbrush + k];
             b = map_brushes[brushnum];
             if (b.checkcount == checkcount)
-                continue; // already checked this brush in another leaf
+                continue; 
             b.checkcount = checkcount;
 
             if (0 == (b.contents & trace_contents))
@@ -1293,12 +1293,12 @@ public class CM {
         leaf = map_leafs[leafnum];
         if (0 == (leaf.contents & trace_contents))
             return;
-        // trace line against all brushes in the leaf
+        
         for (k = 0; k < leaf.numleafbrushes; k++) {
             brushnum = map_leafbrushes[leaf.firstleafbrush + k];
             b = map_brushes[brushnum];
             if (b.checkcount == checkcount)
-                continue; // already checked this brush in another leaf
+                continue; 
             b.checkcount = checkcount;
 
             if (0 == (b.contents & trace_contents))
@@ -1326,18 +1326,18 @@ public class CM {
         float midf;
 
         if (trace_trace.fraction <= p1f)
-            return; // already hit something nearer
+            return; 
 
-        // if < 0, we are in a leaf node
+        
         if (num < 0) {
             CM_TraceToLeaf(-1 - num);
             return;
         }
 
-        //
-        // find the point distances to the seperating plane
-        // and the offset for the size of the box
-        //
+        
+        
+        
+        
         node = map_nodes[num];
         plane = node.plane;
 
@@ -1356,7 +1356,7 @@ public class CM {
                         + Math.abs(trace_extents[2] * plane.normal[2]);
         }
 
-        // see which sides we need to consider
+        
         if (t1 >= offset && t2 >= offset) {
             CM_RecursiveHullCheck(node.children[0], p1f, p2f, p1, p2);
             return;
@@ -1366,7 +1366,7 @@ public class CM {
             return;
         }
 
-        // put the crosspoint DIST_EPSILON pixels on the near side
+        
         if (t1 < t2) {
             idist = 1.0f / (t1 - t2);
             side = 1;
@@ -1383,7 +1383,7 @@ public class CM {
             frac2 = 0;
         }
 
-        // move up to the node
+        
         if (frac < 0)
             frac = 0;
         if (frac > 1)
@@ -1397,7 +1397,7 @@ public class CM {
 
         CM_RecursiveHullCheck(node.children[side], p1f, midf, p1, mid);
 
-        // go past the node
+        
         if (frac2 < 0)
             frac2 = 0;
         if (frac2 > 1)
@@ -1411,7 +1411,7 @@ public class CM {
         Vec3Cache.release();
     }
 
-    //======================================================================
+    
 
     /*
      * ================== CM_BoxTrace ==================
@@ -1419,21 +1419,21 @@ public class CM {
     public static trace_t BoxTrace(float[] start, float[] end, float[] mins,
             float[] maxs, int headnode, int brushmask) {
 
-        // for multi-check avoidance
+        
         checkcount++;
 
-        // for statistics, may be zeroed
+        
         Globals.c_traces++;
 
-        // fill in a default trace
-        //was: memset(& trace_trace, 0, sizeof(trace_trace));
+        
+        
         trace_trace = new trace_t();
 
         trace_trace.fraction = 1;
         trace_trace.surface = nullsurface.c;
 
         if (numnodes == 0) {
-            // map not loaded
+            
             return trace_trace;
         }
 
@@ -1443,9 +1443,9 @@ public class CM {
         Math3D.VectorCopy(mins, trace_mins);
         Math3D.VectorCopy(maxs, trace_maxs);
 
-        //
-        // check for position test special case
-        //
+        
+        
+        
         if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2]) {
 
             int leafs[] = new int[1024];
@@ -1475,9 +1475,9 @@ public class CM {
             return trace_trace;
         }
 
-        //
-        // check for point special case
-        //
+        
+        
+        
         if (mins[0] == 0 && mins[1] == 0 && mins[2] == 0 && maxs[0] == 0
                 && maxs[1] == 0 && maxs[2] == 0) {
             trace_ispoint = true;
@@ -1489,9 +1489,9 @@ public class CM {
             trace_extents[2] = -mins[2] > maxs[2] ? -mins[2] : maxs[2];
         }
 
-        //
-        // general sweeping through world
-        //
+        
+        
+        
         CM_RecursiveHullCheck(headnode, 0, 1, start, end);
 
         if (trace_trace.fraction == 1) {
@@ -1518,11 +1518,11 @@ public class CM {
         float[] temp = { 0, 0, 0 };
         boolean rotated;
 
-        // subtract origin offset
+        
         Math3D.VectorSubtract(start, origin, start_l);
         Math3D.VectorSubtract(end, origin, end_l);
 
-        // rotate start and end into the models frame of reference
+        
         rotated = headnode != box_headnode
                 && (angles[0] != 0 || angles[1] != 0 || angles[2] != 0);
 
@@ -1540,11 +1540,11 @@ public class CM {
             end_l[2] = Math3D.DotProduct(temp, up);
         }
 
-        // sweep the box through the model
+        
         trace = BoxTrace(start_l, end_l, mins, maxs, headnode, brushmask);
 
         if (rotated && trace.fraction != 1.0) {
-            // FIXME: figure out how to do this with existing angles
+            
             Math3D.VectorNegate(angles, a);
             Math3D.AngleVectors(a, forward, right, up);
 
@@ -1579,8 +1579,8 @@ public class CM {
         int outp = 0;
         int inp = offset;
 
-        if (in == null || numvisibility == 0) { // no vis info, so make all
-                                                // visible
+        if (in == null || numvisibility == 0) { 
+                                                
             while (row != 0) {
                 out[outp++] = (byte) 0xFF;
                 row--;
@@ -1636,7 +1636,7 @@ public class CM {
      */
 
     public static void FloodArea_r(carea_t area, int floodnum) {
-        //Com.Printf("FloodArea_r(" + floodnum + ")...\n");
+        
         int i;
         qfiles.dareaportal_t p;
 
@@ -1666,17 +1666,17 @@ public class CM {
         carea_t area;
         int floodnum;
 
-        // all current floods are now invalid
+        
         floodvalid++;
         floodnum = 0;
 
-        // area 0 is not used
+        
         for (i = 1; i < numareas; i++) {
 
             area = map_areas[i];
 
             if (area.floodvalid == floodvalid)
-                continue; // already flooded into
+                continue; 
             floodnum++;
             FloodArea_r(area, floodnum);
         }
@@ -1722,7 +1722,7 @@ public class CM {
         bytes = (numareas + 7) >> 3;
 
         if (map_noareas.value != 0) { 
-            // for debugging, send everything
+            
             Arrays.fill(buffer, 0, bytes, (byte) 255);
         } else {
             Arrays.fill(buffer, 0, bytes, (byte) 0);
@@ -1757,7 +1757,7 @@ public class CM {
      */
     public static void CM_ReadPortalState(RandomAccessFile f) {
 
-        //was: FS_Read(portalopen, sizeof(portalopen), f);
+        
         int len = portalopen.length * 4;
 
         byte buf[] = new byte[len];

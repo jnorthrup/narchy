@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http:
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,7 +29,7 @@ import java.util.Arrays;
  * This RTree has been optimized to work with bitmap inverted indexes.
  * <p>
  * This code will probably make a lot more sense if you read:
- * http://www.sai.msu.su/~megera/postgres/gist/papers/gutman-rtree.pdf
+ * http:
  */
 public class RTree {
     public final int dim;
@@ -153,7 +153,7 @@ public class RTree {
                     minCost = cost;
                     optimal = child;
                 } else if (cost == minCost) {
-                    // Resolve ties by choosing the entry with the rectangle of smallest area
+                    
                     if (child.area() < optimal.area()) {
                         optimal = child;
                     }
@@ -182,7 +182,7 @@ public class RTree {
      * @param nn - optional second node to adjust
      */
     private void adjust(Node n, Node nn) {
-        // special case for root
+        
         if (n == root) {
             if (nn != null) {
                 root = buildRoot(false);

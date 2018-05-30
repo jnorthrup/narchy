@@ -94,7 +94,7 @@ public class GO extends JPanel implements MouseListener{
     g.drawString("Black has captured "+blackP+" stones", 350, 554);
     g.drawString("White has captured "+whiteP+" stones", 350, 568);
     
-    //g.drawString("It is currently " + ((turn+1%2==1)?"Black":"White")+"'s turn", 40, 550);
+    
     
   }
  
@@ -103,7 +103,7 @@ public class GO extends JPanel implements MouseListener{
   public static JButton pass = new JButton("Pass");
   static JFrame frame = new JFrame("GO");
   public static void main(String args[]) {
-    //JFrame menu = new JFrame("MENU");
+    
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     
     
@@ -112,15 +112,15 @@ public class GO extends JPanel implements MouseListener{
       frame.add(panel);
       
       
-//      menu.setLayout(new FlowLayout());
-//      menu.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-//      menu.add(reset);
-//      menu.add(back);
-//      menu.add(pass);
-//      
-//      menu.setSize(300, 100);
-//      menu.setVisible(true);
-//      menu.setLocation(600, 0);
+
+
+
+
+
+
+
+
+
       
     frame.setSize(560, 650);
     frame.setVisible(true);
@@ -243,7 +243,7 @@ public void mouseReleased(MouseEvent e ) {
 			if(turn>=3){
 				if(!Arrays.toString(boardHist.get(turn-1)[i]).equals(Arrays.toString(board[i]))){
 					matches = false;
-					//System.out.println("ROW " + i +" doesn't match");	
+					
 				}
 			}
 			else

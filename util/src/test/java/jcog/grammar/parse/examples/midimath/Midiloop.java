@@ -75,7 +75,7 @@ public class Midiloop {
 	 */
 	public static void main(String args[]) {
 
-		Parser e = new Midiloop().expression(); // hang or crash!
+		Parser e = new Midiloop().expression(); 
 
 		Assembly out = e.bestMatch(new TokenAssembly("(7 + 13) * 5"));
 		System.out.println(out.pop());

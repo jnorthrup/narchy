@@ -52,31 +52,31 @@ public abstract class JoglAbstractPanel extends GLCanvas implements TestbedPanel
     private final World world;
     private final DebugDraw debugDraw;
     private Timer timer;
-    //LightEngine light = new LightEngine();
+    
 
     private TestbedState model;
 
-    // model can be null
-    // if it is null world and debugDraw can be null, because they are retrived from model
+    
+    
     public JoglAbstractPanel(final World world, DebugDraw debugDraw, final PhysicsController controller, TestbedState model, GLCapabilitiesImmutable config) {
         super(config);
         this.controller = controller;
         setSize(800, 800);
-        //(new Dimension(600, 600));
-        //setAutoSwapBufferMode(true);
+        
+        
         addGLEventListener(this);
         enableInputMethods(true);
 
         if( model != null && controller != null ) {
-            //AWTPanelHelper.addHelpAndPanelListeners(this, model, controller, SCREEN_DRAG_BUTTON);
+            
             AWTPanelHelper.addHelpAndPanelListeners(this, model, controller, SCREEN_DRAG_BUTTON);
         }
 
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                //setsSize(getWidth(), getHeight());
-                //dbImage = null;
+                
+                
             }
         });
 
@@ -109,18 +109,18 @@ public abstract class JoglAbstractPanel extends GLCanvas implements TestbedPanel
 
         GL2 gl = getGL().getGL2();
 
-        //getGL().getGL2().glClearAccum(0,0,0,1f);
+        
 
-        //gl.glClear(GL2.GL_COLOR_BUFFER_BIT);
+        
 
 
 
-        gl.glAccum(GL2.GL_RETURN, 0.5f); //adding the current frame to the buffer
+        gl.glAccum(GL2.GL_RETURN, 0.5f); 
 
 
         JoglAbstractDraw drawer = ((JoglAbstractDraw)getDebugDraw());
 
-        float time = 0.0f; // what does this?
+        float time = 0.0f; 
         if( model != null ) {
             time = model.model.getTime();
         }
@@ -128,13 +128,13 @@ public abstract class JoglAbstractPanel extends GLCanvas implements TestbedPanel
         drawer.draw(model.getWorld(), time);
 
 
-        //https://www.opengl.org/sdk/docs/man2/xhtml/glAccum.xml
+        
 
-        //light.render(gl, drawer.getViewportTranform());
+        
 
 
-        gl.glAccum(GL2.GL_LOAD, 0.95f); //Drawing last frame, saved in buffer
-        gl.glAccum(GL2.GL_MULT, 0.95f ); //make current frame in buffer dim
+        gl.glAccum(GL2.GL_LOAD, 0.95f); 
+        gl.glAccum(GL2.GL_MULT, 0.95f ); 
 
 
         getGL().glFlush();
@@ -176,13 +176,13 @@ public abstract class JoglAbstractPanel extends GLCanvas implements TestbedPanel
         gl2.glBlendFunc(gl2.GL_SRC_ALPHA, gl2.GL_ONE_MINUS_SRC_ALPHA);
 
 
-        //getGL().getGL2().glBlendFunc(GL2.GL_SRC_ALPHA, GL2.GL_ONE_MINUS_SRC_ALPHA);
+        
 
         getGL().glClearColor(0.0f, 0.0f, 0.0f, 0.8f);
         getGL().glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT | GL2.GL_STENCIL_BUFFER_BIT);
 
 
-        //getGL().getGL2().glClearColor(0f, 0f, 0f, 1f);
+        
 
 
 
@@ -200,7 +200,7 @@ public abstract class JoglAbstractPanel extends GLCanvas implements TestbedPanel
         gl2.glMatrixMode(GL2.GL_PROJECTION);
         gl2.glLoadIdentity();
 
-        // coordinate system origin at lower left with width and height same as the window
+        
         GLU glu = new GLU();
         glu.gluOrtho2D(0.0f, width, 0.0f, height);
 

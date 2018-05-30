@@ -41,13 +41,13 @@ public interface LongInterval {
             return (a + b) / 2L;
         long e = end();
 
-        //test if inside
+        
         long mid = (s + e) / 2;
         if (s >= a && s <= b) {
-            return mid; //the mid-point of this task directly
+            return mid; 
         }
 
-        //compare to which of the two ends is closest the midpoint
+        
         if (Math.abs(mid - a) <= Math.abs(mid - b))
             return a;
         else
@@ -79,7 +79,7 @@ public interface LongInterval {
     }
 
     default boolean isDuringAny(long... when) {
-        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); //quick
+        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); 
         for (long x : when) {
             if (isDuring(x)) return true;
         }
@@ -87,7 +87,7 @@ public interface LongInterval {
     }
 
     default boolean isDuringAll(long... when) {
-        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); //quick
+        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); 
         for (long x : when) {
             if (!isDuring(x)) return false;
         }
@@ -115,9 +115,9 @@ public interface LongInterval {
         else {
             long m = (s + e) / 2L;
             if (Math.abs(m - x) <= Math.abs(m - x))
-                return s; //closer to start
+                return s; 
             else
-                return e; //closer to end
+                return e; 
         }
     }
 
@@ -141,9 +141,9 @@ public interface LongInterval {
             return s;
 
         if ((a >= s) && (b <= e)) {
-            return (a + b) / 2L; //midpoint of the contained range surrounded by this
+            return (a + b) / 2L; 
         } else if (a < s && b > e) {
-            return (s + e) / 2L; //midpoint of this within the range surrounding this
+            return (s + e) / 2L; 
         } else {
             long se = (s + e) / 2L;
             long ab = (a + b) / 2L;
@@ -186,7 +186,7 @@ public interface LongInterval {
 
         long e = end();
         if (intersects(a, b)) {
-            return 0; //contains that interval
+            return 0; 
         } else {
             long sa = Math.abs(s - a);
             if (a == b) {
@@ -213,7 +213,7 @@ public interface LongInterval {
         assert (b >= a): a + " > " + b;
 
         if (a == ETERNAL) {
-            //throw new TODO();
+            
             return 0;
         }
 
@@ -223,7 +223,7 @@ public interface LongInterval {
 
         long e = end();
         if (intersects(a, b)) {
-            return 0; //contains that interval
+            return 0; 
         } else {
             long sa = Math.abs(s - a);
             if (a == b) {
@@ -275,10 +275,10 @@ public interface LongInterval {
         return xStart >= start && this.end() <= end;
     }
 
-//    default boolean containedBy(long start, long end) {
-//        if (start == ETERNAL) return true;
-//        long s = start();
-//        if (s == )
-//        if only.isEternal() || (only.start() == start && only.end() == end)
-//    }
+
+
+
+
+
+
 }

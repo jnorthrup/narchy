@@ -297,7 +297,7 @@ public class FrameView3D
    {
       super(title);
 
-      //MemorySweeper.launch();
+      
 
       this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 

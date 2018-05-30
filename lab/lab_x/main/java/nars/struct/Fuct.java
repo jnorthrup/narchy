@@ -1,6 +1,6 @@
 /*
  * Javolution - Java(TM) Solution for Real-Time and Embedded Systems
- * Copyright (C) 2012 - Javolution (http://javolution.org/)
+ * Copyright (C) 2012 - Javolution (http:
  * All rights reserved.
  * 
  * Permission to use, copy, modify, and distribute this software is
@@ -78,7 +78,7 @@ import java.nio.ByteOrder;
  *     Struct's members are directly accessible:[code]
  *     Student student = new Student();
  *     student.gender.set(Gender.MALE);
- *     student.name.set("John Doe"); // Null terminated (C compatible)
+ *     student.name.set("John Doe"); 
  *     int age = 2003 - student.birth.year.get();
  *     student.grades[2].set(12.5f);
  *     student = student.next.get();[/code]</p>
@@ -95,23 +95,23 @@ import java.nio.ByteOrder;
  *         DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
  *         UDPMessage message = new UDPMessage();
  *         message.setByteBuffer(ByteBuffer.wrap(bytes), 0);
- *         // packet and message are now two different views of the same data.
+ *         
  *         while (isListening) {
  *             multicastSocket.receive(packet);
  *             int xxx = message.xxx.get();
- *             ... // Process message fields directly.
+ *             ... 
  *         }
  *     }[/code]</p>
  *
  * <p> It is relatively easy to map instances of this class to any physical
  *     address using
- *     <a href="http://java.sun.com/docs/books/tutorial/native1.1/index.html">
+ *     <a href="http:
  *     JNI</a>. Here is an example:[code]
  *     import java.nio.ByteBuffer;
- *     class Clock extends Struct { // Hardware clock mapped to memory.
- *         Unsigned16 seconds  = new Unsigned16(5); // unsigned short seconds:5
- *         Unsigned16 minutes  = new Unsigned16(5); // unsigned short minutes:5
- *         Unsigned16 hours    = new Unsigned16(4); // unsigned short hours:4
+ *     class Clock extends Struct { 
+ *         Unsigned16 seconds  = new Unsigned16(5); 
+ *         Unsigned16 minutes  = new Unsigned16(5); 
+ *         Unsigned16 hours    = new Unsigned16(4); 
  *         Clock() {
  *             setByteBuffer(Clock.nativeBuffer(), 0);
  *         }
@@ -120,7 +120,7 @@ import java.nio.ByteOrder;
  *     Below is the <code>nativeBuffer()</code> implementation
  *     (<code>Clock.c</code>):[code]
  *     #include <jni.h>
- *     #include "Clock.h" // Generated using javah
+ *     #include "Clock.h" 
  *     JNIEXPORT jobject JNICALL Java_Clock_nativeBuffer (JNIEnv *env, jclass) {
  *         return (*env)->NewDirectByteBuffer(env, clock_address, buffer_size)
  *     }[/code]</p>
@@ -266,7 +266,7 @@ public class Fuct {
     }
 
     private synchronized ByteBuffer newBuffer() {
-        if (bb != null) return bb; // Synchronized check.
+        if (bb != null) return bb; 
         ByteBuffer bf = ByteBuffer.allocateDirect(size());
         bf.order(byteOrder());
         set(bf, 0);
@@ -309,7 +309,7 @@ public class Fuct {
      * @throws UnsupportedOperationException if this struct is an inner struct.
      */
     public final Fuct pos(final int position) {
-        //final ByteBuffer b = getByteBuffer();
+        
         /*if (byteBuffer.order() != byteOrder()) throw new IllegalArgumentException(
                 "The byte order of the specified byte buffer"
                         + " is different from this struct byte order");*/
@@ -352,8 +352,8 @@ public class Fuct {
         ByteBuffer buffer = getByteBuffer();
         int size = size();
         int remaining = size - buffer.position();
-        if (remaining == 0) remaining = size;// at end so move to beginning
-        int alreadyRead = size - remaining; // typically 0
+        if (remaining == 0) remaining = size;
+        int alreadyRead = size - remaining; 
         if (buffer.hasArray()) {
             int offset = buffer.arrayOffset() + pos();
             int bytesRead = in
@@ -460,9 +460,9 @@ public class Fuct {
     private static final char[] HEXA = { '0', '1', '2', '3', '4', '5', '6',
             '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    ///////////////////
-    // CONFIGURATION //
-    ///////////////////
+    
+    
+    
     /**
      * Indicates if this struct's members are mapped to the same location
      * in memory (default <code>false</code>). This method is useful for
@@ -473,7 +473,7 @@ public class Fuct {
      *     protected FortranString[] array(FortranString[] array, int stringLength) { ... }
      * }
      * public abstract class FortranUnion extends FortranStruct {
-     *     // Inherits new members and methods.
+     *     
      *     public final isUnion() {
      *         return true;
      *     }
@@ -493,9 +493,9 @@ public class Fuct {
      * The byte order is inherited by inner structs. Sub-classes may change
      * the byte order by overriding this method. For example:[code]
      * public class TopStruct extends Struct {
-     *     ... // Members initialization.
+     *     ... 
      *     public ByteOrder byteOrder() {
-     *         // TopStruct and its inner structs use hardware byte order.
+     *         
      *         return ByteOrder.nativeOrder();
      *    }
      * }}[/code]</p></p>
@@ -515,9 +515,9 @@ public class Fuct {
      * Sub-classes may change the packing directive by overriding this method.
      * For example:[code]
      * public class MyStruct extends Struct {
-     *     ... // Members initialization.
+     *     ... 
      *     public boolean isPacked() {
-     *         return true; // MyStruct is packed.
+     *         return true; 
      *     }
      * }}[/code]
      *
@@ -539,7 +539,7 @@ public class Fuct {
     protected <S extends Fuct> S inner(S struct) {
         if (struct.outer != null) throw new IllegalArgumentException(
                 "struct: Already an inner struct");
-        Member inner = new Member(struct.size() << 3, struct.alignment); // Update indexes.
+        Member inner = new Member(struct.size() << 3, struct.alignment); 
         struct.outer = this;
         struct.outerOffset = inner.offset();
         return struct;
@@ -560,7 +560,7 @@ public class Fuct {
         boolean resetIndexSaved = resetIndex;
         if (resetIndex) {
             index = 0;
-            resetIndex = false; // Ensures the array elements are sequential.
+            resetIndex = false; 
         }
         for (int i = 0; i < structs.length;) {
             S struct = structs[i];
@@ -599,7 +599,7 @@ public class Fuct {
         boolean resetIndexSaved = resetIndex;
         if (resetIndex) {
             index = 0;
-            resetIndex = false; // Ensures the array elements are sequential.
+            resetIndex = false; 
         }
         for (int i = 0; i < structs.length; i++) {
             array(structs[i]);
@@ -622,7 +622,7 @@ public class Fuct {
         boolean resetIndexSaved = resetIndex;
         if (resetIndex) {
             index = 0;
-            resetIndex = false; // Ensures the array elements are sequential.
+            resetIndex = false; 
         }
         for (int i = 0; i < structs.length; i++) {
             array(structs[i]);
@@ -645,7 +645,7 @@ public class Fuct {
         boolean resetIndexSaved = resetIndex;
         if (resetIndex) {
             index = 0;
-            resetIndex = false; // Ensures the array elements are sequential.
+            resetIndex = false; 
         }
         if (BOOL.isInstance(arrayMember)) {
             for (int i = 0; i < arrayMember.length;) {
@@ -730,7 +730,7 @@ public class Fuct {
         boolean resetIndexSaved = resetIndex;
         if (resetIndex) {
             index = 0;
-            resetIndex = false; // Ensures the array elements are sequential.
+            resetIndex = false; 
         }
         for (int i = 0; i < arrayMember.length; i++) {
             array(arrayMember[i]);
@@ -753,7 +753,7 @@ public class Fuct {
         boolean resetIndexSaved = resetIndex;
         if (resetIndex) {
             index = 0;
-            resetIndex = false; // Ensures the array elements are sequential.
+            resetIndex = false; 
         }
         for (int i = 0; i < arrayMember.length; i++) {
             array(arrayMember[i]);
@@ -774,7 +774,7 @@ public class Fuct {
         boolean resetIndexSaved = resetIndex;
         if (resetIndex) {
             index = 0;
-            resetIndex = false; // Ensures the array elements are sequential.
+            resetIndex = false; 
         }
         for (int i = 0; i < array.length; i++) {
             array[i] = new UTF8String(stringLength);
@@ -804,15 +804,15 @@ public class Fuct {
                 - bitSize - bitStart;
         int index = pos() + offset;
         long value = readByteBufferLong(index);
-        value <<= bitStart; // Clears preceding bits.
-        value >>= (64 - bitSize); // Signed shift.
+        value <<= bitStart; 
+        value >>= (64 - bitSize); 
         return value;
     }
 
     private long readByteBufferLong(int index) {
         ByteBuffer byteBuffer = getByteBuffer();
         if (index + 8 < byteBuffer.limit()) return byteBuffer.getLong(index);
-        // Else possible buffer overflow.
+        
         if (byteBuffer.order() == ByteOrder.LITTLE_ENDIAN) {
             return (readByte(index, byteBuffer) & 0xff)
                     + ((readByte(++index, byteBuffer) & 0xff) << 8)
@@ -854,11 +854,11 @@ public class Fuct {
         int bitStart = (byteOrder() == ByteOrder.BIG_ENDIAN) ? bitOffset
                 - (offset << 3) : 64 - bitSize - (bitOffset - (offset << 3));
         long mask = -1L;
-        mask <<= bitStart; // Clears preceding bits
-        mask >>>= (64 - bitSize); // Unsigned shift.
+        mask <<= bitStart; 
+        mask >>>= (64 - bitSize); 
         mask <<= 64 - bitSize - bitStart;
         value <<= (64 - bitSize - bitStart);
-        value &= mask; // Protects against out of range values.
+        value &= mask; 
         int index = pos() + offset;
         long oldValue = readByteBufferLong(index);
         long resetValue = oldValue & (~mask);
@@ -872,7 +872,7 @@ public class Fuct {
             byteBuffer.putLong(index, value);
             return;
         }
-        // Else possible buffer overflow.
+        
         if (byteBuffer.order() == ByteOrder.LITTLE_ENDIAN) {
             writeByte(index, byteBuffer, (byte) value);
             writeByte(++index, byteBuffer, (byte) (value >> 8));
@@ -900,9 +900,9 @@ public class Fuct {
         }
     }
 
-    /////////////
-    // MEMBERS //
-    /////////////
+    
+    
+    
     /**
      * This inner class represents the base class for all {@link Fuct}
      * members. It allows applications to define additional member types.
@@ -912,7 +912,7 @@ public class Fuct {
      *        ...
      *        public BitSet extends Member {
      *            public BitSet(int nbrBits) {
-     *                super(nbrBits, 0); // Direct bit access.
+     *                super(nbrBits, 0); 
      *            }
      *            public boolean get(int i) { ... }
      *            public void set(int i, boolean value) { ...}
@@ -950,12 +950,12 @@ public class Fuct {
         protected Member(int bitLength, int wordSize) {
             _bitLength = bitLength;
 
-            // Resets index if union.
+            
             if (resetIndex) {
                 index = 0;
             }
 
-            // Check if we can merge bitfields (always true if no word boundary).
+            
             if ((wordSize == 0)
                     || ((bitLength != 0) && (wordSize == words) && ((bitsUsed + bitLength) <= (wordSize << 3)))) {
 
@@ -963,40 +963,40 @@ public class Fuct {
                 _bitIndex = bitsUsed;
                 bitsUsed += bitLength;
 
-                // Straddling word boundary only possible if (wordSize == 0)
+                
                 while (bitsUsed > (words << 3)) {
                     index++;
                     words++;
                     length = MathLib.max(length, index);
                 }
-                return; // Bit field merge done.
+                return; 
             }
 
-            // Check alignment.
+            
             if (!isPacked()) {
 
-                // Updates struct's alignment constraint, based on largest word size.
+                
                 if ((alignment < wordSize)) {
                     alignment = wordSize;
                 }
 
-                // Adds padding if misaligned.
+                
                 int misaligned = index % wordSize;
                 if (misaligned != 0) {
                     index += wordSize - misaligned;
                 }
             }
 
-            // Sets member indices.
+            
             _offset = index;
             _bitIndex = 0;
 
-            // Update struct indices.
+            
             index += MathLib.max(wordSize, (bitLength + 7) >> 3);
             words = wordSize;
             bitsUsed = bitLength;
             length = MathLib.max(length, index);
-            // size and index may differ because of {@link Union}
+            
         }
 
         final public int get(final int index) {
@@ -1043,7 +1043,7 @@ public class Fuct {
             return _bitLength;
         }
 
-        // Returns the member int value.
+        
         final int get(int wordSize, int word) {
             final int shift = (byteOrder() == ByteOrder.BIG_ENDIAN) ? (wordSize << 3)
                     - bitIndex() - bitLength()
@@ -1053,7 +1053,7 @@ public class Fuct {
             return word & mask;
         }
 
-        // Sets the member int value.
+        
         final int set(int value, int wordSize, int word) {
             final int shift = (byteOrder() == ByteOrder.BIG_ENDIAN) ? (wordSize << 3)
                     - bitIndex() - bitLength()
@@ -1064,7 +1064,7 @@ public class Fuct {
             return (word & ~mask) | (value & mask);
         }
 
-        // Returns the member long value.
+        
         final long get(int wordSize, long word) {
             final int shift = (byteOrder() == ByteOrder.BIG_ENDIAN) ? (wordSize << 3)
                     - bitIndex() - bitLength()
@@ -1074,7 +1074,7 @@ public class Fuct {
             return word & mask;
         }
 
-        // Sets the member long value.
+        
         final long set(long value, int wordSize, long word) {
             final int shift = (byteOrder() == ByteOrder.BIG_ENDIAN) ? (wordSize << 3)
                     - bitIndex() - bitLength()
@@ -1092,9 +1092,9 @@ public class Fuct {
         }
     }
 
-    ///////////////////////
-    // PREDEFINED FIELDS //
-    ///////////////////////
+    
+    
+    
     /**
      * This class represents a UTF-8 character string, null terminated
      * (for C/C++ compatibility)
@@ -1107,7 +1107,7 @@ public class Fuct {
 
         public UTF8String(int length) {
             super(length << 3, 1);
-            _length = length; // Takes into account 0 terminator.
+            _length = length; 
         }
 
         public void set(byte[] b) {
@@ -1138,13 +1138,13 @@ public class Fuct {
                     _writer.setOutput(buffer);
                     if (string.length() < _length) {
                         _writer.write(string);
-                        _writer.write(0); // Marks end of string.
-                    } else if (string.length() > _length) { // Truncates.
+                        _writer.write(0); 
+                    } else if (string.length() > _length) { 
                         _writer.write(string.substring(0, _length));
-                    } else { // Exact same length.
+                    } else { 
                         _writer.write(string);
                     }
-                } catch (IOException e) { // Should never happen.
+                } catch (IOException e) { 
                     throw new Error(e.getMessage());
                 } finally {
                     _writer.reset();
@@ -1162,14 +1162,14 @@ public class Fuct {
                     _reader.setInput(buffer);
                     for (int i = 0; i < _length; i++) {
                         char c = (char) _reader.read();
-                        if (c == 0) { // Null terminator.
+                        if (c == 0) { 
                             return tmp.toString();
                         } else {
                             tmp.append(c);
                         }
                     }
                     return tmp.toString();
-                } catch (IOException e) { // Should never happen.
+                } catch (IOException e) { 
                     throw new Error(e.getMessage());
                 } finally {
                     _reader.reset();

@@ -44,7 +44,7 @@ public class Server_Socket extends AbstractSocket{
 	}
 	@Override
 	public boolean isDatagramSocket() {
-		// TODO Auto-generated method stub
+		
 		return false;
 	}
 	

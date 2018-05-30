@@ -2,7 +2,7 @@
  * Java port of Bullet (c) 2008 Martin Dvorak <jezek2@advel.cz>
  *
  * Bullet Continuous Collision Detection and Physics Library
- * Copyright (c) 2003-2008 Erwin Coumans  http://www.bulletphysics.com/
+ * Copyright (c) 2003-2008 Erwin Coumans  http:
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
@@ -25,7 +25,7 @@
 2007-09-09
 btGeneric6DofConstraint Refactored by Francisco Le�n
 email: projectileman@yahoo.com
-http://gimpact.sf.net
+http:
 */
 
 package spacegraph.space3d.phys.constraint.generic;
@@ -41,21 +41,21 @@ import spacegraph.util.math.v3;
  */
 public class RotationalLimitMotor {
 	
-	//protected final BulletStack stack = BulletStack.get();
+	
 
-	public float loLimit; //!< joint limit
-	public float hiLimit; //!< joint limit
-	public float targetVelocity; //!< target motor velocity
-	public float maxMotorForce; //!< max force on motor
-	public float maxLimitForce; //!< max force on limit
-	public float damping; //!< Damping.
-	public float limitSoftness; //! Relaxation factor
-	public float ERP; //!< Error tolerance factor when joint is at limit
-	public float bounce; //!< restitution factor
+	public float loLimit; 
+	public float hiLimit; 
+	public float targetVelocity; 
+	public float maxMotorForce; 
+	public float maxLimitForce; 
+	public float damping; 
+	public float limitSoftness; 
+	public float ERP; 
+	public float bounce; 
 	public boolean enableMotor;
 	
-	public float currentLimitError;//!  How much is violated this limit
-	public int currentLimit;//!< 0=free, 1=at lo limit, 2=at hi limit
+	public float currentLimitError;
+	public int currentLimit;
 	public float accumulatedImpulse;
 
 	public RotationalLimitMotor() {
@@ -108,22 +108,22 @@ public class RotationalLimitMotor {
 	 */
 	public int testLimitValue(float test_value) {
 		if (loLimit > hiLimit) {
-			currentLimit = 0; // Free from violation
+			currentLimit = 0; 
 			return 0;
 		}
 
 		if (test_value < loLimit) {
-			currentLimit = 1; // low limit violation
+			currentLimit = 1; 
 			currentLimitError = test_value - loLimit;
 			return 1;
 		}
         if (test_value > hiLimit) {
-            currentLimit = 2; // High limit violation
+            currentLimit = 2; 
             currentLimitError = test_value - hiLimit;
             return 2;
         }
 
-        currentLimit = 0; // Free from violation
+        currentLimit = 0; 
 		return 0;
 	}
 
@@ -139,7 +139,7 @@ public class RotationalLimitMotor {
 		float target_velocity = this.targetVelocity;
 		float maxMotorForce = this.maxMotorForce;
 
-		// current error correction
+		
 		if (currentLimit != 0) {
 			target_velocity = -ERP * currentLimitError / (timeStep);
 			maxMotorForce = maxLimitForce;
@@ -147,7 +147,7 @@ public class RotationalLimitMotor {
 
 		maxMotorForce *= timeStep;
 
-		// current velocity difference
+		
 		v3 vel_diff = body0.getAngularVelocity(new v3());
 		if (body1 != null) {
 			vel_diff.sub(body1.getAngularVelocity(new v3()));
@@ -155,20 +155,20 @@ public class RotationalLimitMotor {
 
 		float rel_vel = axis.dot(vel_diff);
 
-		// correction velocity
+		
 		float motor_relvel = limitSoftness * (target_velocity - damping * rel_vel);
 
 		if (motor_relvel < BulletGlobals.FLT_EPSILON && motor_relvel > -BulletGlobals.FLT_EPSILON) {
-			return 0.0f; // no need for applying force
+			return 0.0f; 
 		}
 
-		// correction impulse
+		
 		float unclippedMotorImpulse = (1 + bounce) * motor_relvel * jacDiagABInv;
 
-		// clip correction impulse
+		
 		float clippedMotorImpulse;
 
-		// todo: should clip against accumulated impulse
+		
 		if (unclippedMotorImpulse > 0.0f) {
 			clippedMotorImpulse = unclippedMotorImpulse > maxMotorForce ? maxMotorForce : unclippedMotorImpulse;
 		}
@@ -176,7 +176,7 @@ public class RotationalLimitMotor {
 			clippedMotorImpulse = unclippedMotorImpulse < -maxMotorForce ? -maxMotorForce : unclippedMotorImpulse;
 		}
 
-		// sort with accumulated impulses
+		
 		float lo = -1e30f;
 		float hi = 1e30f;
 

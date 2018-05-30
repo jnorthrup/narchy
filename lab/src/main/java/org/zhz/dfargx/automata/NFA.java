@@ -11,7 +11,7 @@ import static org.zhz.dfargx.automata.NFAState.create;
 /**
  * Created on 2015/5/10.
  */
-public class NFA     { // only able to accept wfs accessing order, this class construct a NFA with iterate the syntax tree recursively from the root node.
+public class NFA     { 
 
     private final Stack<NFAState> stateStack;
 
@@ -51,7 +51,7 @@ public class NFA     { // only able to accept wfs accessing order, this class co
     }
 
     public void visit(LNull lNull) {
-        // do nothing
+        
     }
 
     public void visit(BOr bOr) {

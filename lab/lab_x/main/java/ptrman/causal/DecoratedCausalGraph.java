@@ -9,10 +9,10 @@ public class DecoratedCausalGraph
     {
         public static class Anotation
         {
-            public boolean isOrWasInWorkingSet; // is/was this node in the working set for ttraversal?
+            public boolean isOrWasInWorkingSet; 
             
-            // flags used to indicate that the node of the incomming edge must occur before that node
-            // flag is not set for elements which are allready in the output
+            
+            
             public boolean[] incommingEdgesRedFlags;
             
             public int incommingEdgesRedFlagsCounter;
@@ -120,7 +120,7 @@ public class DecoratedCausalGraph
                 
                 outputNodeIndex = nodes.get(iterationOutgoingElementIndex).anotation.outputIndex;
                 
-                // assert
+                
                 if( currentNodeIndex > outputNodeIndex )
                 {
                     throw new Exception();

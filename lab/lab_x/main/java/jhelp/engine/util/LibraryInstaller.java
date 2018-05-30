@@ -27,7 +27,7 @@ public class LibraryInstaller
          return;
       }
 
-      // Get the jar name where extract the good libraries for the local OS
+      
       final String jarFileName = NativeLibInfo.getJarFileName();
       Debug.println(DebugLevel.VERBOSE, "jarFileName=", jarFileName);
       if(jarFileName == null)
@@ -35,7 +35,7 @@ public class LibraryInstaller
          return;
       }
 
-      // Open the jar file
+      
       final File file = UtilIO.obtainExternalFile("jar/" + jarFileName);
       Debug.println(DebugLevel.VERBOSE, "file=", file.getAbsolutePath(), " | ", file.exists());
       if(file.exists() == false)
