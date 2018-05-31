@@ -1,7 +1,6 @@
 package nars;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.data.map.MRUCache;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -12,7 +11,6 @@ import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
-import nars.exe.AbstractExec;
 import nars.exe.Exec;
 import nars.exe.UniExec;
 import nars.index.concept.CaffeineIndex;
@@ -253,10 +251,6 @@ public class NARS {
 
         @Override
         protected void init(NAR nar) {
-
-            nar.activateConceptRate.set(
-                Util.unitize(3f/Math.sqrt(((AbstractExec)nar.exe).active.capacity()))
-            );
 
             nar.termlinkBalance.set(0.5f);
             nar.termVolumeMax.set(24);

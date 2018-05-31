@@ -30,8 +30,8 @@ public class Gradius extends NAgentX {
         g.updateMS = 20;
 
 
-        int dx = 3, dy = 2;
-        int px = 8, py = 8;
+        int dx = 3, dy = 3;
+        int px = 12, py = 8;
 
         for (int i = 0; i < dx; i++)
             for (int j = 0; j < dy; j++) {
@@ -39,16 +39,14 @@ public class Gradius extends NAgentX {
                 int jj = j;
                 Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
-                                $.p(
-                                        subSection,
-                                        $.p(x, y)
-
-
+                                $.inh(
+                                        $.p(x, y),
+                                        subSection
                                 ),
                         new Scale(() -> g.image, px, py)
                                 .window(
-                                        i * (1f / dx), j * (1f / dy),
-                                        (i + 1) * (1f / dx), (j + 1) * (1f / dy)))
+                                        (i / dx), (j / dy),
+                                        (i + 1) / dx, (j + 1) / dy))
                         .resolution(0.02f);
             }
 

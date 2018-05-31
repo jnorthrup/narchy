@@ -43,7 +43,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
         assert(area > 0);
 
         this.src = src;
-        this.pixelPri.set( n.priDefault(BELIEF) );
+        this.pixelPri.set( n.priDefault(BELIEF)*(1/Math.sqrt(area) ));
 
         this.matrix = new Scalar[width][height];
 

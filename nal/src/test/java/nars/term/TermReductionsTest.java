@@ -1073,7 +1073,8 @@ public class TermReductionsTest extends NarseseTest {
     @Test public void testConjParallelOverrideEternal2() {
 
         assertReduction(
-                "(a&|b)",
+                "(&&,(a&|b),a,b)",
+                //"(a&|b)",
                 "( (a&&b) && (a&|b) )");
 
     }

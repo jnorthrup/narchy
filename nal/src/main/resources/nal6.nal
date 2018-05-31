@@ -327,8 +327,8 @@
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
     X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:Task)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakN, Time:Task)
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:TaskImmediate)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakN, Time:TaskImmediate)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
