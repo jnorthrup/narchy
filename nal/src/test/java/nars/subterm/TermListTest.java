@@ -4,7 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.subterm.util.TermList;
 import nars.term.TermTest;
-import nars.term.compound.CompoundLight;
+import nars.term.compound.LightCompound;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -61,9 +61,9 @@ public class TermListTest {
         Subterms[] ab = {mutable, immutable};
         for (Subterms a : ab) {
             for (Subterms b : ab) {
-                TermTest.assertReallyEquals(Op.terms.theCompound(PROD, a), new CompoundLight(PROD, b));
-                TermTest.assertReallyEquals(Op.terms.theCompound(SETe, a), new CompoundLight(SETe, b));
-                assertNotEquals(Op.terms.theCompound(PROD, a), new CompoundLight(SETi, b));
+                TermTest.assertReallyEquals(Op.terms.theCompound(PROD, a), new LightCompound(PROD, b));
+                TermTest.assertReallyEquals(Op.terms.theCompound(SETe, a), new LightCompound(SETe, b));
+                assertNotEquals(Op.terms.theCompound(PROD, a), new LightCompound(SETi, b));
 
             }
         }

@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    public final int cycles = 850;
+    public final int cycles = 450;
 
     @BeforeEach
     void setup() {
@@ -25,7 +25,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(20);
 
         return n;
     }
@@ -659,7 +659,30 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-
+    @Test
+    public void testDecomposeDisj() {
+        test
+                .believe("(||, x, z)")
+                .believe("--x")
+                .mustBelieve(cycles, "z", 1f, 0.81f)
+        ;
+    }
+    @Test
+    public void testDecomposeDisjNeg() {
+        test
+                .believe("(||, --x, z)")
+                .believe("x")
+                .mustBelieve(cycles, "z", 1f, 0.81f)
+        ;
+    }
+    @Test
+    public void testDecomposeDisjNeg2() {
+        test
+                .believe("(||, x, --z)")
+                .believe("--x")
+                .mustBelieve(cycles, "z", 0f, 0.81f)
+        ;
+    }
     @Test
     public void testDecomposeImplSubjDisjBelief() {
         test

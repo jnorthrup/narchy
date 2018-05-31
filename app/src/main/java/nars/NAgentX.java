@@ -184,7 +184,7 @@ abstract public class NAgentX extends NAgent {
                         
                         
                         
-                        new HijackConceptIndex(96 * 1024, 4)
+                        new HijackConceptIndex(16 * 1024, 4)
                         
                         
                 )

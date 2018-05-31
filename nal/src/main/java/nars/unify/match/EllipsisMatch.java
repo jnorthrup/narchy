@@ -2,9 +2,8 @@ package nars.unify.match;
 
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Evaluation;
 import nars.term.Term;
-import nars.term.compound.CompoundLight;
+import nars.term.compound.LightCompound;
 import nars.unify.Unify;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
@@ -18,7 +17,7 @@ import static nars.Op.PROD;
 /**
  * Holds results of an ellipsis match and
 */
-public class EllipsisMatch extends CompoundLight {
+public class EllipsisMatch extends LightCompound {
 
     
 

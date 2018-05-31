@@ -9,17 +9,17 @@ import nars.term.Term;
 import static nars.time.Tense.DTERNAL;
 
 /** use with extreme caution when op is not PROD */
-public class CompoundLight implements Compound {
+public class LightCompound implements Compound {
 
     final Subterms subs;
     private final byte op;
     private final int hash;
 
-    public CompoundLight(Op o, Term... s) {
+    public LightCompound(Op o, Term... s) {
         this(o, $.vFast(s));
     }
 
-    public CompoundLight(Op o, Subterms s) {
+    public LightCompound(Op o, Subterms s) {
         this.op = o.id;
         this.subs = s;
         this.hash = s.hashWith(o);

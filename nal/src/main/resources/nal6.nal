@@ -258,8 +258,10 @@
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
-//SUSPECT
+
     S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositiveNegativeNegative)
+        //disj
+        //S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposePositivePositivePositive)
         //S, (||,S,A..+) |- (||,A..+), (Belief:DecomposeNegativePositivePositive)
     S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativeNegativeNegative)
         //S, (||,(--,%S),A..+) |- (||,A..+), (Belief:DecomposePositivePositivePositive)
@@ -359,7 +361,7 @@
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
     //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-        C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN, Time:Task)
+        //C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN, Time:Task)
 
     //Conj and Disj Question Decomposition
     X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)

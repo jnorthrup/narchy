@@ -23,7 +23,7 @@ import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.compound.CompoundLight;
+import nars.term.compound.LightCompound;
 import nars.term.control.LambdaPred;
 import nars.term.control.PrediTerm;
 import nars.term.obj.JsonTerm;
@@ -854,17 +854,17 @@ public enum $ {
 
     public static Term pFast(Subterms x) {
         if (x.subs() == 0) return Op.EmptyProduct;
-        return new CompoundLight(Op.PROD,x);
+        return new LightCompound(Op.PROD,x);
     }
 
     public static Term pFast(Term... x) {
         if (x.length == 0) return Op.EmptyProduct;
-        return new CompoundLight(Op.PROD,x);
+        return new LightCompound(Op.PROD,x);
     }
 
     public static Term sFast(Subterms x) {
         if (x.subs() == 0) return Op.EmptySet;
-        return new CompoundLight(Op.SETe, x);
+        return new LightCompound(Op.SETe, x);
     }
 
     public static Term sFast(SortedSet<Term> x) {
@@ -875,7 +875,7 @@ public enum $ {
         if (x.length == 0) return Op.EmptySet;
         if (x.length > 1 && sort)
             x = Terms.sorted(x);
-        return new CompoundLight(Op.SETe, x);
+        return new LightCompound(Op.SETe, x);
     }
 
     public static Term sFast(RoaringBitmap b) {

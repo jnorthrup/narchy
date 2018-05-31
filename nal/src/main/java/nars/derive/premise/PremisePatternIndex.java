@@ -9,7 +9,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Variable;
-import nars.term.compound.LightCompoundDT;
+import nars.term.compound.LightDTCompound;
 import nars.unify.Unify;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
@@ -164,7 +164,7 @@ public class PremisePatternIndex extends MapConceptIndex {
     }
 
     @Deprecated
-    abstract public static class PremisePatternCompound extends LightCompoundDT {
+    abstract public static class PremisePatternCompound extends LightDTCompound {
 
 
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {

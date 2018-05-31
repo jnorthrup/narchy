@@ -20,7 +20,7 @@ import static nars.time.Tense.XTERNAL;
  * referring to the base for all other details.
  * TODO a CachedCompound version of this
  */
-public class LightCompoundDT implements Compound {
+public class LightDTCompound implements Compound {
 
     /**
      * numeric (term or "dt" temporal relation)
@@ -29,7 +29,7 @@ public class LightCompoundDT implements Compound {
     private final int hashDT;
     private final Compound ref;
 
-    public LightCompoundDT(Compound base, int dt) {
+    public LightDTCompound(Compound base, int dt) {
 
         Op op = base.op();
 
@@ -44,7 +44,7 @@ public class LightCompoundDT implements Compound {
 
         if (Param.DEBUG_EXTRA) {
 
-            assert (getClass() != LightCompoundDT.class /* a subclass */ || dt != DTERNAL);
+            assert (getClass() != LightDTCompound.class /* a subclass */ || dt != DTERNAL);
 
             int size = s.subs();
 
@@ -182,8 +182,8 @@ public class LightCompoundDT implements Compound {
         if (!(that instanceof Compound) || (hashDT != that.hashCode()))
             return false;
 
-        if (that instanceof LightCompoundDT) {
-            LightCompoundDT cthat = (LightCompoundDT) that;
+        if (that instanceof LightDTCompound) {
+            LightDTCompound cthat = (LightDTCompound) that;
             Compound thatRef = cthat.ref;
             Compound myRef = this.ref;
 
