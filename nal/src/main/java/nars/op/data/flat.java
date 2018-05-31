@@ -19,7 +19,7 @@ import java.util.List;
  *
  * TODO recursive version with order=breadth|depth option
  */
-public abstract class flat extends Functor.UnaryFunctor {
+public abstract class flat extends Functor.AbstractInlineFunctor1 {
 
     protected flat() {
         super("flat");

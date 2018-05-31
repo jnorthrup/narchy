@@ -27,7 +27,7 @@ public class ThermostatTest {
 
     public static void main (String[] args) {
         
-        final int DUR = 5;
+        final int DUR = 3;
 
         final int subTrainings = 2;
         final int thinkDurs = 2; 

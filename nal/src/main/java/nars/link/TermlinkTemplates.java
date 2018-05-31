@@ -155,7 +155,9 @@ public class TermlinkTemplates extends FasterList<Term> {
             }
 
             case INH: {
-//                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits | Op.PROD.bit)))
+//                if (x.subterms().OR(xx -> xx.unneg().isAny(SetBits | Op.SectBits
+//                        | Op.PROD.bit
+//                        )))
 //                    return 3;
 
                 return 2;
@@ -210,7 +212,7 @@ public class TermlinkTemplates extends FasterList<Term> {
     }
 
     /**
-     * link and activate the templates
+     * termlink and activate the templates
      */
     public void linkAndActivate(Concept src, float pri, NAR nar) {
 

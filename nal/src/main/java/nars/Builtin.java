@@ -46,25 +46,25 @@ public class Builtin {
     public static final Functor.InlineCommutiveBinaryBidiFunctor EQUAL = new Functor.InlineCommutiveBinaryBidiFunctor("equal") {
 
         @Override
-        protected Term apply2(Term x, Term y) {
+        protected Term apply2(Evaluation e, Term x, Term y) {
             boolean xVar = x.op().var;
             boolean yVar = y.op().var;
             if (xVar ^ yVar) {
                 if (xVar) {
-                    Evaluation.the().replace(x, y);
+                    e.replace(x, y);
                     return null;
                 } else {
-                    Evaluation.the().replace(y, x);
+                    e.replace(y, x);
                     return null;
                 }
             }
 
-            return super.apply2(x, y);
+            return super.apply2(e, x, y);
         }
 
 
         @Override
-        protected Term compute(Term x, Term y) {
+        protected Term compute(Evaluation e, Term x, Term y) {
             if (x.equals(y))
                 return True;
 
@@ -75,12 +75,12 @@ public class Builtin {
         }
 
         @Override
-        protected Term computeFromXY(Term x, Term y, Term xy) {
+        protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
             return null;
         }
 
         @Override
-        protected Term computeXfromYandXY(Term x, Term y, Term xy) {
+        protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
             return xy == True ? y : null;
         }
 

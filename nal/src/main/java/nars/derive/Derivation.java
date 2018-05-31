@@ -49,87 +49,125 @@ import static nars.time.Tense.TIMELESS;
 public class Derivation extends PreDerivation {
 
 
+    public static final Atomic Task = Atomic.the("task");
+    public static final Atomic Belief = Atomic.the("belief");
+    final static int ANON_INITIAL_CAPACITY = 16;
+    private final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
+        pp.priMax(tt.pri());
+        ((NALTask) pp).causeMerge(tt);
+        if (pp.isCyclic() && !tt.isCyclic()) {
 
+            pp.setCyclic(false);
+        }
+        return pp;
+    };
+    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
+    public final ArrayHashSet<Premise> premiseBuffer =
 
+            new ArrayHashSet<>();
+    public final Anon anon =
+
+            new CachedAnon(ANON_INITIAL_CAPACITY, 16 * 1024);
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
     private final Map<Task, Task> derivedTasks = new HashMap<>();
-    public final ArrayHashSet<Premise> premiseBuffer =
-            
-            new ArrayHashSet<>();
+    private final SubIfUnify uniSubAny = new SubIfUnify(this);
+    private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
+        @Override
+        protected Term apply(Term subterm, Term whichTask) {
+            if (subterm instanceof Bool)
+                return subterm;
 
-
-
-
-
+            Truth compared;
+            if (whichTask.equals(Task)) {
+                compared = taskTruth;
+            } else {
+                compared = beliefTruth;
+            }
+            if (compared == null)
+                return Null;
+            else
+                return compared.isNegative() ? subterm.neg() : subterm;
+        }
+    };
     public NAR nar;
+    private final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
+        x = anon.get(x);
+        if (x == null)
+            return Null;
 
-
-    final static int ANON_INITIAL_CAPACITY = 16;
-    public final Anon anon =
-            
-            new CachedAnon(ANON_INITIAL_CAPACITY, 16*1024); 
-
-    /** temporary un-transform map */
-    public Map<Term,Term> untransform = new UnifiedMap<>() {
+        Term y = $.func(_tlRandom, x).eval(nar);
+        if (y != null && y.op().conceptualizable)
+            return anon.put(y);
+        return Null;
+    });
+    /**
+     * temporary un-transform map
+     */
+    public Map<Term, Term> untransform = new UnifiedMap<>() {
         @Override
         public Term put(Term key, Term value) {
             if (key.equals(value))
-                return null; 
+                return null;
 
             return super.put(key, value);
         }
     };
+    private final Subst uniSub = new Subst("substitute") {
+
+        @Override
+        public @Nullable Term apply(Evaluation e, Subterms xx) {
+            Term input = xx.sub(0);
+            Term replaced = xx.sub(1);
+            Term replacement = xx.sub(2);
+            if (replaced instanceof Atom) {
+
+                replaced = anon.put(replaced);
+            }
+
+            Term y = super.apply(xx, input, replaced, replacement);
+
+            if (y != null && !(y instanceof Bool)) {
+
+
+                untransform.put(y, input);
+
+
+            }
+            return y;
+        }
+    };
     public long[] concOcc;
-
-
-    private ImmutableMap<Term, Termed> derivationFunctors;
-
-
-
     /**
      * mutable state
      */
     public Truth concTruth;
     public byte concPunc;
     public Term derivedTerm;
-
     public Task _task;
     public Task _belief;
-    private Term _beliefTerm;
-
     /**
      * cached values ==========================================
      */
     public int termVolMax;
     public float confMin;
-
-
     public Task task;
     public Task belief;
-
-
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
     public PrediTerm<Derivation> forEachMatch;
-
-
     /**
      * current NAR time, set at beginning of derivation
      */
     public long time = ETERNAL;
-
-
-
-
     /**
      * evidential overlap
      */
     public boolean overlapDouble, overlapSingle;
-
-    /** the base priority determined by the task and/or belief (tasks) of the premise.
+    /**
+     * the base priority determined by the task and/or belief (tasks) of the premise.
      * note: this is not the same as the premise priority, which is determined by the links
      * and has already affected the selection of those links to create derived premises.
      * instead, the derived tasks are budgeted according to the priorities of the
@@ -137,37 +175,31 @@ public class Derivation extends PreDerivation {
      * separate.
      */
     public float pri;
-
     public short[] parentCause;
-
     public boolean single;
     public float parentComplexitySum;
-
-
     public float premiseEviSingle;
     public float premiseEviDouble;
-    private long[] evidenceDouble, evidenceSingle;
-
     public Occurrify occ = new Occurrify(this);
-
-
     /**
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
     public boolean temporal;
     public boolean eternal;
-
     /**
      * original non-anonymized tasks
      */
     public TruthOperator truthFunction;
     public int ditherTime;
     public Deriver deriver;
-
-    /** precise time that the task and belief truth are sampled */
+    /**
+     * precise time that the task and belief truth are sampled
+     */
     public long taskAt, beliefAt;
+    private ImmutableMap<Term, Termed> derivationFunctors;
+    private Term _beliefTerm;
+    private long[] evidenceDouble, evidenceSingle;
     private int taskUniques;
-
     private ImmutableLongSet taskStamp;
 
     /**
@@ -175,51 +207,20 @@ public class Derivation extends PreDerivation {
      */
     public Derivation() {
         super(
-                
+
                 VAR_PATTERN
                 , null, Param.UnificationStackMax, 0,
-                    new TermHashMap()
-                    
+                new TermHashMap()
+
         );
 
-        
-        
+
         this.random =
-                
+
                 new SplitMix64Random(1);
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
-
 
     private void init(NAR nar) {
 
@@ -241,7 +242,6 @@ public class Derivation extends PreDerivation {
             m.put(x.term(), x);
 
 
-
         this.derivationFunctors = Maps.immutable.ofMap(m);
 
     }
@@ -250,13 +250,13 @@ public class Derivation extends PreDerivation {
     public Term resolve(Term x) {
         return x instanceof Variable ?
                 super.resolve(x) :
-                x; 
+                x;
     }
 
     /**
      * setup for a new derivation.
      * returns false if the premise is invalid to derive
-     *
+     * <p>
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
     public boolean reset(Task _task, final Task _belief, Term _beliefTerm) {
@@ -268,51 +268,40 @@ public class Derivation extends PreDerivation {
         this.derivedTerm = null;
 
 
+        if (taskUniques > 0 && this._task != null && this._task.term().equals(_task.term())) {
 
-        if (taskUniques>0 && this._task!=null && this._task.term().equals(_task.term())) {
-
-
-            
-
-            
 
             anon.rollback(taskUniques);
 
-            
 
         } else {
 
             anon.clear();
             this.taskTerm = anon.put(_task.term());
 
-            
+
             this.taskUniques = anon.uniques();
         }
 
-        assert(taskTerm!=null): (_task + " could not be anonymized: " + _task.term().anon() + " , " + taskTerm);
+        assert (taskTerm != null) : (_task + " could not be anonymized: " + _task.term().anon() + " , " + taskTerm);
 
 
         if (this._task == null || !Arrays.equals(this._task.stamp(), _task.stamp())) {
             this.taskStamp = Stamp.toSet(_task);
         }
 
-        if (this._task==null || this._task != _task) {
+        if (this._task == null || this._task != _task) {
 
-            
 
             this._task = _task;
 
-            this.task = new TaskWithTerm(taskTerm, _task); 
+            this.task = new TaskWithTerm(taskTerm, _task);
 
             this._taskStruct = taskTerm.structure();
             this._taskOp = taskTerm.op().id;
         }
 
         long tAt = _task.start();
-
-
-
-
 
 
         if (tAt == TIMELESS)
@@ -329,35 +318,35 @@ public class Derivation extends PreDerivation {
         }
 
 
-        if (_belief!=null) {
+        if (_belief != null) {
             this.beliefTruthDuringTask = _belief.truth(_task.start(), _task.end(), dur);
             this.beliefTruth = _belief.truth();
 
             if (beliefTruth != null || beliefTruthDuringTask != null) {
                 this._belief = _belief;
             } else {
-                this._belief = null; 
+                this._belief = null;
             }
         } else {
-            this._belief = null; 
+            this._belief = null;
         }
 
         if (this._belief != null) {
-            
+
             beliefTerm = anon.put(this._beliefTerm = _belief.term());
             this.belief = new TaskWithTerm(beliefTerm, _belief);
             this.beliefAt = _belief.start();
         } else {
-            
+
             this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm);
-            if (beliefTerm.op()==NEG)
+            if (beliefTerm.op() == NEG)
                 throw new RuntimeException("should not be NEG: " + beliefTerm);
             this.beliefAt = TIMELESS;
             this.belief = null;
             this.beliefTruth = this.beliefTruthDuringTask = null;
         }
 
-        assert(beliefTerm!=null): (_beliefTerm + " could not be anonymized");
+        assert (beliefTerm != null) : (_beliefTerm + " could not be anonymized");
         this._beliefStruct = beliefTerm.structure();
         this._beliefOp = beliefTerm.op().id;
 
@@ -369,28 +358,23 @@ public class Derivation extends PreDerivation {
         this.evidenceDouble = evidenceSingle = null;
 
 
-        return true; 
+        return true;
     }
 
-
-
-
-    /** called after protoderivation has returned some possible Try's */
+    /**
+     * called after protoderivation has returned some possible Try's
+     */
     public void derive(int ttl) {
-
-
 
 
         this.parentComplexitySum =
                 Util.sum(
-                        
+
                         taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 
 
-
-        
-        this.overlapSingle = task.isCyclic(); 
+        this.overlapSingle = task.isCyclic();
 
         if (_belief != null) {
 
@@ -399,27 +383,8 @@ public class Derivation extends PreDerivation {
              */
 
 
-
-
-
-
-
-
-
-
             long[] beliefStamp = _belief.stamp();
             this.overlapDouble = Stamp.overlapsAny(this.taskStamp, beliefStamp);
-
-            
-
-
-
-
-
-
-
-
-
 
 
         } else {
@@ -440,11 +405,10 @@ public class Derivation extends PreDerivation {
                         Param.TaskToDerivation.valueOf(taskPri) :
                         Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
 
-        
 
         this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : Float.NaN;
         this.premiseEviDouble = beliefTruth != null ?
-                
+
                 premiseEviSingle + beliefTruth.evi() :
                 premiseEviSingle;
 
@@ -452,10 +416,9 @@ public class Derivation extends PreDerivation {
         setTTL(ttl);
 
 
-            deriver.prioritize.premise(this);
+        deriver.prioritize.premise(this);
 
-            deriver.rules.can.test(this);
-
+        deriver.rules.can.test(this);
 
 
     }
@@ -464,31 +427,31 @@ public class Derivation extends PreDerivation {
     public final void tryMatch() {
 
 
-
-
         forEachMatch.test(this);
 
 
 
         /* finally {
-            revert(now); 
+            revert(now);
         }*/
 
     }
 
-    /** accelerated version that executes inline functors */
+    /**
+     * accelerated version that executes inline functors
+     */
     @Override
     public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
-        
-        if (op == INH && yy.subs()==2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit) ) {
+
+        if (op == INH && yy.subs() == 2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit)) {
             Term pred;
-            if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) { 
+            if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) {
                 Term args = yy.sub(0);
-                if (args.op()==PROD) {
-                    Term v = ((Functor.InlineFunctor) pred).applyArgs(args);
-                    if (v!=null)
+                if (args.op() == PROD) {
+                    Term v = ((Functor.InlineFunctor) pred).apply(args);
+                    if (v != null)
                         return v;
-                    
+
                 }
             }
         }
@@ -505,28 +468,24 @@ public class Derivation extends PreDerivation {
         if (atomic instanceof Atom) {
             Termed f = derivationFunctors.get(atomic);
             if (f != null)
-                return (Term)f;
+                return (Term) f;
         }
 
         if (atomic instanceof Bool)
             return atomic;
 
         if (atomic instanceof Functor)
-            return atomic; 
+            return atomic;
 
 
         if (atomic instanceof Variable) {
             Term y = xy(atomic);
             if (y != null)
-                return y; 
+                return y;
 
         }
 
         return atomic;
-
-
-
-
 
 
     }
@@ -545,14 +504,13 @@ public class Derivation extends PreDerivation {
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();
             this.random.setSeed(nar.random().nextLong());
-            
+
         }
 
         this.deriver = deri;
 
         return this;
     }
-
 
     @Nullable
     public long[] evidenceSingle() {
@@ -567,12 +525,12 @@ public class Derivation extends PreDerivation {
         if (evidenceDouble == null) {
             float te, be, tb;
             if (task.isBeliefOrGoal()) {
-                
+
                 te = taskTruth.evi();
-                be = beliefTruth != null ? beliefTruth.evi() : 0; 
+                be = beliefTruth != null ? beliefTruth.evi() : 0;
                 tb = te / (te + be);
             } else {
-                
+
                 te = task.priElseZero();
                 be = belief.priElseZero();
                 tb = te + be;
@@ -605,100 +563,15 @@ public class Derivation extends PreDerivation {
         super.clear();
     }
 
-
-
     public Task add(Task t) {
         return derivedTasks.merge(t, t, DUPLICATE_DERIVATION_MERGE);
     }
-
-
-    private final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
-        pp.priMax(tt.pri());
-        ((NALTask)pp).causeMerge(tt);
-        if (pp.isCyclic() && !tt.isCyclic()) {
-            
-            pp.setCyclic(false);
-        }
-        return pp;
-    };
-
-
-    private final SubIfUnify uniSubAny = new SubIfUnify(this);
-
-    private final Subst uniSub = new Subst("substitute") {
-
-        @Override
-        public @Nullable Term apply(Subterms xx) {
-            Term input = xx.sub(0);
-            Term replaced = xx.sub(1);
-            Term replacement = xx.sub(2);
-            if (replaced instanceof Atom) {
-                
-                replaced = anon.put(replaced);
-            }
-
-            Term y = super.apply(xx, input, replaced, replacement);
-
-            if (y != null && !(y instanceof Bool)) {
-
-                
-                
-                untransform.put(y, input);
-
-
-                
-
-
-
-
-
-
-
-            }
-            return y;
-        }
-    };
 
     public Term untransform(Term t) {
 
 
         return t.replace(untransform);
     }
-
-    public static final Atomic Task = Atomic.the("task");
-    public static final Atomic Belief = Atomic.the("belief");
-
-    private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
-        @Override
-        protected Term apply(Term subterm, Term whichTask) {
-            if (subterm instanceof Bool)
-                return subterm;
-
-            Truth compared;
-            if (whichTask.equals(Task)) {
-                compared = taskTruth;
-            } else {
-                compared = beliefTruth;
-            }
-            if (compared == null)
-                return Null;
-            else
-                return compared.isNegative() ? subterm.neg() : subterm;
-        }
-    };
-
-    
-    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
-    private final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
-        x = anon.get(x);
-        if (x == null)
-            return Null;
-
-        Term y = $.func(_tlRandom, x).eval(nar);
-        if (y!=null && y.op().conceptualizable)
-            return anon.put(y);
-        return Null;
-    });
 
     public int flush(Consumer<Collection<Task>> target) {
         int s = derivedTasks.size();
@@ -718,102 +591,6 @@ public class Derivation extends PreDerivation {
     public Occurrify occ(Term pattern) {
         return occ.reset(pattern.hasAny(NEG));
     }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -65,7 +65,7 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
-    public final boolean equals(@Nullable Object that) {
+    public boolean equals(@Nullable Object that) {
         if (this == that) return true;
         if (that instanceof Term) {
             Term x = (Term) that;

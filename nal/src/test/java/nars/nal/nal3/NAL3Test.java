@@ -119,12 +119,26 @@ public class NAL3Test extends NALTest {
 
     @Test
     public void compound_composition_one_premise2() throws Narsese.NarseseException {
+        test
+        .believe("(swan --> bird)", 0.9f, 0.9f)
+        .ask("((swan&swimmer) --> bird)")
+        .mustBelieve(cycles, "((swan&swimmer) --> bird)", 0.90f, 0.73f);
+    }
 
-        TestNAR tester = test;
-        tester.believe("<swan --> bird>", 0.9f, 0.9f); 
-        tester.ask("<(&,swan,swimmer) --> bird>"); 
-        tester.mustBelieve(cycles, "<(&,swan,swimmer) --> bird>", 0.90f, 0.73f); 
+    @Test
+    public void intersectionComposition(){
+        test
+                .believe("(swan --> bird)")
+                .believe("(swimmer--> bird)")
+                .mustBelieve(cycles, "((swan&swimmer) --> bird)", 1f, 0.81f);
+    }
 
+    @Test
+    public void intersectionCompositionWrappedInProd(){
+        test
+                .believe("((swan) --> bird)")
+                .believe("((swimmer)--> bird)")
+                .mustBelieve(cycles, "(((swan)&(swimmer)) --> bird)", 1f, 0.81f);
     }
 
     @Test

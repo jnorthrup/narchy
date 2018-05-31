@@ -310,7 +310,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                             nar,
 
                             
-                            pair($.inh(id, "happy"),
+                            pair(id, ///$.inh(id, "happy"),
                                 
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 

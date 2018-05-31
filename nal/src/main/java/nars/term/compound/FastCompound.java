@@ -84,7 +84,7 @@ abstract public class FastCompound implements Compound /* The */ {
         }
     }
 
-    @NotNull
+
     protected final byte[] shadow;
 
     final int hash;

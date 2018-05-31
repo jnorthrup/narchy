@@ -214,11 +214,11 @@ public class NAL8Test extends NALTest {
     public void testGoalConjunctionDecompose() {
 
         test
-                
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "x", 1f, 0.81f, 0)
-                
-                .mustNotOutput(cycles, "y", GOAL, ETERNAL);
+                .mustNotOutput(cycles, "x", GOAL, (t) -> t!=0 && t!=ETERNAL)
+                .mustNotOutput(cycles, "y", GOAL, (t) -> t!=0 && t!=ETERNAL)
+                ;
     }
 
     @Test
@@ -944,29 +944,31 @@ public class NAL8Test extends NALTest {
 
         test.goal("a")
                 .believe("(b &&+1 (a &&+1 c))")
-                .mustGoal(cycles, "(b &&+1 (a &&+1 c))", 1f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, x->true); 
+                .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f)
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x->true);
     }
 
     @Test public void testGoalByConjAssociationNegPos() {
 
         test.goal("--a")
                 .believe("(b &&+1 (a &&+1 c))")
-                .mustGoal(cycles, "(b &&+1 (a &&+1 c))", 0f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+1 (a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, x->true); 
+                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t)->t > 0)
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x->true);
     }
+
 @Test public void testGoalByConjAssociationPosNeg() {
 
     test.goal("a")
             .believe("(b &&+1 (--a &&+1 c))")
-            .mustGoal(cycles, "(b &&+1 (--a &&+1 c))", 0f, 0.45f)
-            .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0.5f, 1f, 0f, 1f, x->true); 
+            .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t)->t > 0)
+            .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x->true);
 }
     @Test public void testGoalByConjAssociationNegNeg() {
 
         test.goal("--a")
                 .believe("(b &&+1 (--a &&+1 c))")
-                .mustGoal(cycles, "(b &&+1 (--a &&+1 c))", 1f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+1 (--a &&+1 c))", GOAL, 0f, 0.5f, 0f, 1f, x->true); 
+                .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f)
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x->true);
     }
+
 }

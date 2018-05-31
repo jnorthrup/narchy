@@ -5,6 +5,7 @@ import nars.Op;
 import nars.The;
 import nars.term.Term;
 import nars.term.compound.UnitCompound;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 
@@ -52,6 +53,15 @@ public final class Neg extends UnitCompound implements The {
     @Override
     public Term sub() {
         return sub;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object that) {
+        if (that instanceof Neg) {
+            return this==that ||
+                    (sub.equals(((Neg)that).sub));
+        }
+        return super.equals(that);
     }
 
     @Override

@@ -204,12 +204,12 @@ public interface Atomic extends Term {
 
     @Override
     default boolean ANDrecurse(Predicate<Term> v) {
-        return AND(v);
+        return v.test(this);
     }
 
     @Override
     default boolean ORrecurse(Predicate<Term> v) {
-        return OR(v);
+        return v.test(this);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class Derivers {
 
                     files.add("induction.nal");  
 
-                    files.add("misc.nal"); 
+                    //files.add("misc.nal");
                     break;
                 case 5:
                 case 4:

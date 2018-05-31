@@ -74,8 +74,8 @@ public final class PostCondition implements Serializable
         if (!pc.modifiesPunctuation() && pattern instanceof Compound) {
             assert !rule.getTask().equals(pattern) :
                     "punctuation not modified yet rule task equals pattern: " + rule;
-            assert !rule.getBelief().equals(pattern) :
-                    "punctuation not modified yet rule belief equals pattern: " + rule + "\n\t" + rule.getBelief() + "\n\t" + pattern;
+//            assert !rule.getBelief().equals(pattern) :
+//                    "punctuation not modified yet rule belief equals pattern: " + rule + "\n\t" + rule.getBelief() + "\n\t" + pattern;
         }
 
         return pc;

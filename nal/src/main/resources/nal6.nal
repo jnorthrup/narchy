@@ -317,16 +317,16 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong, Time:Task)
+    X, C, eventOf(C,X) |- conjDropIfLatest(C,X), (Goal:Strong, Time:TaskImmediate)
         //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-        X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:Strong, Time:Task)
+        X, C, eventOfNeg(C,X) |- conjDropIfLatest(C,--X), (Goal:Strong, Time:TaskImmediate)
             //X, C, eventOfPosOrNeg(C,X) |- conjDropIfLatest(C,polarize(X,task)), (Goal:StrongDepolarizedTask)
 
-    X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:Task)
-    X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:Task)
+    X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
+    X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:Belief)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakN, Time:Belief)
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:Task)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakN, Time:Task)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
@@ -354,12 +354,12 @@
 
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, task("."), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction)
-    C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
+    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Task)
+    //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
     //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
-        C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN)
+        C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN, Time:Task)
 
     //Conj and Disj Question Decomposition
     X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)

@@ -1041,16 +1041,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (!Evaluation.possiblyNeedsEval(x)) {
             preProcess(n, x, yy);
         } else {
-            
-            
 
-            
-            Evaluation.solve(x, n.functors,
+            Evaluation.solve(null, x, true, n.functors,
                     z -> {
                         preProcess(n, z, yy);
                         return true;
                     });
-
 
         }
         switch (yy.size()) {

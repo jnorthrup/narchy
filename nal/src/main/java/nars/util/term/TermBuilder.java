@@ -40,6 +40,10 @@ public abstract class TermBuilder {
         return newCompound(o, dt, o.commute(dt, u.length) ? sorted(u) : u);
     }
 
+    protected Term resolve(Term x){
+        return x;
+    }
+
     abstract protected Term newCompound(Op o, int dt, Term[] u);
 
 
@@ -117,11 +121,12 @@ public abstract class TermBuilder {
                 "subterm underflow: " + o + ' ' + Arrays.toString(u);
 
         if (s == 1) {
+            Term x = resolve(u[0]);
             switch (o) {
                 case NEG:
-                    return Neg.the(u[0]);
+                    return Neg.the(x);
                 default:
-                    return new CachedUnitCompound(o, u[0]);
+                    return new CachedUnitCompound(o, x);
             }
         } else {
             return theCompound(o, dt, newSubterms(o, u));

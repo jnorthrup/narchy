@@ -106,8 +106,15 @@ abstract public class Deriver extends Causable {
     abstract protected void derive(NAR n, int iterations, Derivation d);
 
 
+    /** tasklink templates */
     protected final void activate(TaskLink tasklink, Concept[] templates, Random r) {
-        Tasklinks.linkTask(tasklink, tasklink.priElseZero(), templates, r);
+
+        float pri = tasklink.priElseZero();
+        Tasklinks.linkTask(tasklink, pri, templates, r);
+//
+//
+//        for (Concept x : templates)
+//            nar.activate(x, pri);
     }
 
     static protected boolean commit(NAR nar, Bag<?, TaskLink> tasklinks, @Nullable Bag<Term, PriReference<Term>> termlinks) {

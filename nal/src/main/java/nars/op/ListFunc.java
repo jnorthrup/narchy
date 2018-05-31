@@ -15,7 +15,8 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 
-public enum ListFunc { ;
+public enum ListFunc {
+    ;
 
     /**
      * emulates prolog append/3
@@ -23,7 +24,7 @@ public enum ListFunc { ;
     public final static Functor append = new Functor.BinaryBidiFunctor("append") {
 
         @Override
-        protected Term compute(Term x, Term y) {
+        protected Term compute(Evaluation e, Term x, Term y) {
             Term[] xx = x.op() == PROD ? x.subterms().arrayShared() : new Term[]{x};
             if (xx.length == 0) return y;
             Term[] yy = y.op() == PROD ? y.subterms().arrayShared() : new Term[]{y};
@@ -32,45 +33,45 @@ public enum ListFunc { ;
         }
 
         @Override
-        protected Term computeFromXY(Term x, Term y, Term xy) {
+        protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
 
             int l = xy.subs();
             if (l == 0) {
-                return Evaluation.solve(s ->
-                        s.replace(
-                                x, Op.EmptyProduct,
-                                y, Op.EmptyProduct)
+                e.replace(
+                        x, Op.EmptyProduct,
+                        y, Op.EmptyProduct
                 );
+                return null;
             } else if (l == 1) {
-                return Evaluation.solve(s ->
-                        s.replace(
-                                s.subst(
-                                        x, Op.EmptyProduct,
-                                        y, xy),
-                                s.subst(
-                                        x, xy,
-                                        y, Op.EmptyProduct)
-                        )
+                e.replace(
+                        e.subst(
+                                x, Op.EmptyProduct,
+                                y, xy),
+                        e.subst(
+                                x, xy,
+                                y, Op.EmptyProduct)
+
                 );
+                return null;
             } else {
                 Subterms xys = xy.subterms();
-                return Evaluation.solve(s ->
-                        s.replace(
-                                Util.map(-1, l, finalI ->
-                                                s.subst(
-                                                        x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
-                                                        y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
-                                        ,
-                                        Predicate[]::new
-                                )
+                e.replace(
+                        Util.map(-1, l, finalI ->
+                                        e.subst(
+                                                x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
+                                                y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
+                                ,
+                                Predicate[]::new
+
                         ));
+                return null;
             }
 
         }
 
         @Override
-        protected Term computeXfromYandXY(Term x, Term y, Term xy) {
-            
+        protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
+
             Term yy;
             if (y.op() != PROD)
                 yy = $.pFast(y);
@@ -82,24 +83,24 @@ public enum ListFunc { ;
             int remainderLength = xy.subs() - ys;
             if (remainderLength >= 0) {
                 if (yy.subterms().ANDwith((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
-                    
-                    if (remainderLength == 0)
-                        return Evaluation.solve(s -> s.replace(x, Op.EmptyProduct));
-                    else
-                        return Evaluation.solve(s ->
-                                s.replace(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys)))
-                        );
+                    if (remainderLength == 0) {
+                        e.replace(x, Op.EmptyProduct);
+                        return null;
+                    } else {
+                        e.replace(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys)));
+                        return null;
+                    }
                 }
             }
             return y.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
-                    null 
+                    null
                     :
-                    Null; 
+                    Null;
         }
 
         @Override
-        protected Term computeYfromXandXY(Term x, Term y, Term xy) {
-            
+        protected Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy) {
+
             Term xx;
             if (x.op() != PROD)
                 xx = $.pFast(x);
@@ -110,43 +111,44 @@ public enum ListFunc { ;
             int remainderLength = xy.subs() - xs;
             if (remainderLength >= 0) {
                 if (xx.subterms().ANDwith((xi, xii) -> xy.sub(xii).equals(xi))) {
-                    
-                    if (remainderLength == 0)
-                        return Evaluation.solve(s -> s.replace(y, Op.EmptyProduct));
-                    else
-                        return Evaluation.solve(s ->
-                                s.replace(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs)))
-                        );
+
+                    if (remainderLength == 0) {
+                        e.replace(y, Op.EmptyProduct);
+                        return null;
+                    } else {
+                        e.replace(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs)));
+                        return null;
+                    }
                 }
             }
             return x.hasAny(Op.varBits) || xy.hasAny(Op.varBits) ?
-                    null 
+                    null
                     :
-                    Null; 
+                    Null;
         }
     };
 
 
-    public static Functor sub = Functor.f2("sub", (x,n)->{
-        if (n.op()==INT) {
-            return x.sub( ((Int)n).id, Null );
+    public static Functor sub = Functor.f2("sub", (x, n) -> {
+        if (n.op() == INT) {
+            return x.sub(((Int) n).id, Null);
         } else {
             return null;
         }
     });
-    public static Functor subs = Functor.f2Or3("subs", (Term[] args)->{
+    public static Functor subs = Functor.f2Or3("subs", (Term[] args) -> {
         if (args.length == 2) {
-            
+
             Term x = args[0];
             Term n = args[1];
-            if (n.op()==INT) {
-                int nn = ((Int)n).id;
+            if (n.op() == INT) {
+                int nn = ((Int) n).id;
                 Subterms xx = x.subterms();
                 int m = xx.subs();
                 if (nn < m) {
                     return PROD.the(xx.toArraySubRange(nn, m));
                 } else {
-                    return Null; 
+                    return Null;
                 }
             } else {
                 return null;

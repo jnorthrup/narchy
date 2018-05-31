@@ -96,12 +96,12 @@ public enum MathFunc { ;
         abstract protected Term uncompute(int xy, int xx);
 
         @Override
-        protected Term apply2(Term x, Term y) {
-            return compute(x, y); 
+        protected Term apply2(Evaluation e, Term x, Term y) {
+            return compute(e, x, y);
         }
 
         @Override
-        protected Term compute(Term x, Term y) {
+        protected Term compute(Evaluation e, Term x, Term y) {
 
             boolean xi = x.op() == INT;
             int xx = xi ? ((Int) x).id : Integer.MIN_VALUE;
@@ -152,12 +152,12 @@ public enum MathFunc { ;
         }
 
         @Override
-        protected Term computeFromXY(Term x, Term y, Term xy) {
+        protected Term computeFromXY(Evaluation e, Term x, Term y, Term xy) {
             return null; 
         }
 
         @Override
-        protected Term computeXfromYandXY(Term x, Term y, Term xy) {
+        protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
             if (y.op()==INT && xy.op()==INT) {
                 int XY = ((Int)xy).id;
                 int Y = ((Int)y).id;
@@ -165,9 +165,8 @@ public enum MathFunc { ;
 
                 Term X = uncompute(XY, Y);
 
-                return Evaluation.solve(s->
-                    s.replace(x, X)
-                );
+                e.replace(x, X);
+                return null;
             }
             return null; 
         }

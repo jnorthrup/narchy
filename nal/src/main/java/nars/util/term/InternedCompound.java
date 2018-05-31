@@ -10,58 +10,44 @@ import nars.term.Term;
 import java.util.Arrays;
 
 public final class InternedCompound extends UnitPri implements HijackMemoize.Computation<InternedCompound, Term> {
-    
-    public final Op op;
+
+    public final byte op;
     public final int dt;
-    private final int hash;
-
-    
     final byte[] subs;
-
+    private final int hash;
     public transient Term[] rawSubs;
 
-    
     public Term y = null;
 
-    public InternedCompound(Op o, int dt, Term... subs) {
-        this.op = o;
-        this.dt = dt;
-        this.rawSubs = subs;
+    /** for look-up */
+    public InternedCompound(Term x) {
+        HashCachedBytes key = new HashCachedBytes(4 * x.volume() /* ESTIMATE */);
+        key.writeByte((this.op = x.op().id));
+        key.writeInt((this.dt = x.dt()));
+        for (Term s : x.subterms())
+            s.append((ByteArrayDataOutput) key);
+        this.subs = key.array();
+        this.hash = key.hashCode();
+        this.rawSubs = null;
+    }
 
-        HashCachedBytes key = new HashCachedBytes(4 * subs.length);
-        key.writeByte(o.id);
-        key.writeInt(dt);
+    public InternedCompound(Op o, int dt, Term... subs) {
+        HashCachedBytes key = new HashCachedBytes(4 * subs.length /* ESTIMATE */);
+        key.writeByte((this.op = o.id));
+        key.writeInt((this.dt = dt));
         for (Term s : subs)
             s.append((ByteArrayDataOutput) key);
 
         this.subs = key.array();
         this.hash = key.hashCode();
+        this.rawSubs = subs;
+
     }
 
     @Override
     public Term get() {
         return y;
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -71,28 +57,14 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
 
     @Override
     public boolean equals(Object obj) {
-        
         InternedCompound p = (InternedCompound) obj;
-        return hash == p.hash && Arrays.equals(subs, p.subs);
+        return hash==p.hash && Arrays.equals(subs, p.subs);
     }
 
     public float value() {
         return 0.5f;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-        
     }
 
     @Override
@@ -104,27 +76,10 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
         this.y = y;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     public Term compute() {
-        return compute(Op.terms.compoundInstance(op, dt, this.rawSubs));
+        return compute(Op.terms.compoundInstance(Op.ops[op], dt, this.rawSubs));
     }
 
     public Term compute(Term computed) {

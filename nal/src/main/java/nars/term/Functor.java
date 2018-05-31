@@ -30,7 +30,7 @@ import static nars.term.Terms.atomOrNull;
  * a result Term from the TermContainer arguments of
  * a function term, for example: f(x) or f(x, y).
  */
-abstract public class Functor extends NodeConcept implements PermanentConcept, Function<Subterms, Term>, Atomic {
+abstract public class Functor extends NodeConcept implements PermanentConcept, BiFunction<Evaluation, Subterms, Term>, Atomic {
 
     protected Functor(@NotNull String atom) {
         this(fName(atom));
@@ -137,8 +137,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
     public static Functor f1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
         return new AbstractInlineFunctor1(termAtom) {
-            @Override protected final Term apply(Term x) {
-                return ff.apply(x);
+            @Override public final Term apply(Term x) {
+                return ff.apply(x.sub(0));
             }
         };
     }
@@ -262,10 +262,14 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
      * transformation or term construction processes.
      * these are good for simple functors that are guaranteed to return quickly.
      */
-    public interface InlineFunctor extends Function<Subterms,Term> {
+    public interface InlineFunctor extends BiFunction<Evaluation, Subterms,Term> {
 
-        default Term applyArgs(Term args) {
-            return apply(args.subterms());
+        default Term applyArgs(Evaluation eval, Term args) {
+            return apply(eval, args.subterms());
+        }
+
+        default Term apply(Term args) {
+            return apply(null, args.subterms());
         }
 
     }
@@ -284,16 +288,15 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         }
 
         @Override
-        final public Term applyArgs(Term args) {
+        final public Term applyArgs(Evaluation eval, Term args) {
             return args.subs()!=1 ? Null : apply(args.sub(0));
         }
 
         @Override
-        final public Term apply(Subterms terms) {
+        final public Term apply(Evaluation e, Subterms terms) {
             return terms.subs() != 1 ? Null : apply(terms.sub(0));
         }
 
-        protected abstract Term apply(Term x);
     }
 
     abstract public static class AbstractInlineFunctor2 extends AbstractInlineFunctor {
@@ -303,7 +306,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         }
 
         @Override
-        final public Term apply(Subterms terms) {
+        final public Term apply(Evaluation e, Subterms terms) {
             return terms.subs() != 2 ? Null : apply(terms.sub(0), terms.sub(1));
         }
 
@@ -322,33 +325,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
         @Nullable
         @Override
-        public final Term apply(Subterms terms) {
+        public final Term apply(Evaluation e, Subterms terms) {
             return f.apply(terms);
         }
     }
 
-    /**
-     * Created by me on 12/12/15.
-     */
-    public abstract static class UnaryFunctor extends Functor {
-
-        protected UnaryFunctor(@NotNull String id) {
-            super(id);
-        }
-
-        @Nullable
-        @Override
-        public final Term apply(Subterms x) {
-            if (x.subs() != 1)
-                return null;
-            
-
-            return apply(x.sub(0));
-        }
-
-        @Nullable
-        public abstract Term apply(Term x);
-    }
 
 
     public abstract static class FunctorResolver implements Evaluation.TermContext {
@@ -380,13 +361,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
         @Nullable
         @Override
-        public final Term apply(Subterms terms) {
+        public final Term apply(Evaluation e, Subterms terms) {
             int s = terms.subs();
             switch (s) {
                 case 1:
                     return apply1(terms.sub(0));
                 case 2:
-                    return apply2(terms.sub(0), terms.sub(1));
+                    return apply2(e, terms.sub(0), terms.sub(1));
                 default:
                     return Null; 
             }
@@ -407,7 +388,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
             return null;
         }
 
-        protected Term apply2(Term x, Term y) {
+        protected Term apply2(Evaluation e, Term x, Term y) {
             boolean xVar = x.op().var;
             if (y.op().var) {
                 
@@ -416,9 +397,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else {
                     Term XY = compute(x);
                     if (XY!=null) {
-                        return Evaluation.solve(s ->
-                                s.replace(y, XY)
-                        );
+                        e.replace(y, XY);
+                        return null;
                     } else {
                         return null; 
                     }
@@ -427,9 +407,8 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 if (x.hasAny(Op.VariableBits)) {
                     Term X = uncompute(x, y);
                     if (X!=null) {
-                        return Evaluation.solve(s ->
-                                s.replace(x, X)
-                        );
+                        e.replace(x, X);
+                        return null;
                     } else {
                         return null; 
                     }
@@ -462,13 +441,13 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
         @Nullable
         @Override
-        public final Term apply(Subterms terms) {
+        public final Term apply(Evaluation e,Subterms terms) {
             int s = terms.subs();
             switch (s) {
                 case 2:
                     return apply1(terms.sub(0), terms.sub(1));
                 case 3:
-                    return apply2(terms.sub(0), terms.sub(1), terms.sub(2));
+                    return apply2(e, terms.sub(0), terms.sub(1), terms.sub(2));
                 default:
                     return Null; 
             }
@@ -485,11 +464,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         protected abstract Term compute(Term x, Term parameter);
 
         /** override for reversible functions, though it isnt required */
-        protected Term uncompute(Term x, Term param, Term y) {
+        protected Term uncompute(Evaluation e, Term x, Term param, Term y) {
             return null;
         }
 
-        protected Term apply2(Term x, Term param, Term y) {
+        protected Term apply2(Evaluation e, Term x, Term param, Term y) {
             boolean xVar = x.op().var;
             if (y.op().var) {
                 
@@ -498,20 +477,18 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else {
                     Term XY = compute(x, param);
                     if (XY!=null) {
-                        return Evaluation.solve(s ->
-                                s.replace(y, XY)
-                        );
+                        e.replace(y, XY);
+                        return null;
                     } else {
                         return null; 
                     }
                 }
             } else {
                 if (x.hasAny(Op.VariableBits)) {
-                    Term X = uncompute(x, param, y);
+                    Term X = uncompute(e, x, param, y);
                     if (X!=null) {
-                        return Evaluation.solve(s ->
-                                s.replace(x, X)
-                        );
+                        e.replace(x, X);
+                        return null;
                     } else {
                         return null; 
                     }
@@ -541,29 +518,29 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
         @Nullable
         @Override
-        public final Term apply(Subterms terms) {
+        public final Term apply(Evaluation e, Subterms terms) {
             int s = terms.subs();
             switch (s) {
                 case 2:
-                    return apply2(terms.sub(0), terms.sub(1));
+                    return apply2(e, terms.sub(0), terms.sub(1));
                 case 3:
-                    return apply3(terms.sub(0), terms.sub(1), terms.sub(2));
+                    return apply3(e, terms.sub(0), terms.sub(1), terms.sub(2));
                 default:
                     return Null; 
             }
         }
 
-        protected Term apply2(Term x, Term y) {
+        protected Term apply2(Evaluation e, Term x, Term y) {
             if (x.op().var || y.op().var)
                 return null; 
             else {
-                return compute(x,y); 
+                return compute(e, x,y);
             }
         }
 
-        protected abstract Term compute(Term x, Term y);
+        protected abstract Term compute(Evaluation e, Term x, Term y);
 
-        protected Term apply3(Term x, Term y, Term xy) {
+        protected Term apply3(Evaluation e, Term x, Term y, Term xy) {
             boolean xVar = x.op().var;
             boolean yVar = y.op().var;
             if (xy.op().var) {
@@ -571,23 +548,22 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 if (xVar || yVar) {
                     return null; 
                 } else {
-                    Term XY = compute(x, y);
+                    Term XY = compute(e, x, y);
                     if (XY!=null) {
-                        return Evaluation.solve(s ->
-                                s.replace(xy, XY)
-                        );
+                        e.replace(xy, XY);
+                        return null;
                     } else {
                         return null; 
                     }
                 }
             } else {
                 if (xVar && !yVar) {
-                    return computeXfromYandXY(x, y, xy);
+                    return computeXfromYandXY(e, x, y, xy);
                 } else if (yVar && !xVar) {
-                    return computeYfromXandXY(x, y, xy);
+                    return computeYfromXandXY(e, x, y, xy);
                 } else if (!yVar && !xVar) {
                     
-                    Term XY = compute(x, y);
+                    Term XY = compute(e, x, y);
                     if (XY==null || XY.equals(xy)) {
                         
                         return True;
@@ -596,16 +572,16 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                         return False;
                     }
                 } else {
-                    return computeFromXY(x, y, xy); 
+                    return computeFromXY(e, x, y, xy);
                 }
             }
         }
 
-        protected abstract Term computeFromXY(Term x, Term y, Term xy);
+        protected abstract Term computeFromXY(Evaluation e, Term x, Term y, Term xy);
 
-        protected abstract Term computeXfromYandXY(Term x, Term y, Term xy);
+        protected abstract Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy);
 
-        protected abstract Term computeYfromXandXY(Term x, Term y, Term xy);
+        protected abstract Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy);
     }
 
     public abstract static class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
@@ -620,17 +596,17 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         }
 
         @Override
-        protected Term apply2(Term x, Term y) {
+        protected Term apply2(Evaluation e, Term x, Term y) {
             
             if ((x.op().var || y.op().var) && x.compareTo(y) > 0) {
-                return $.func(this, y, x);
+                return $.func((Atomic) term(), y, x);
             }
-            return super.apply2(x, y);
+            return super.apply2(e, x, y);
         }
 
         @Override
-        protected final Term computeYfromXandXY(Term x, Term y, Term xy) {
-            return computeXfromYandXY(y, x, xy);
+        protected final Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy) {
+            return computeXfromYandXY(e, y, x, xy);
         }
     }
 

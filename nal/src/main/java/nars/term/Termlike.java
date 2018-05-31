@@ -142,9 +142,6 @@ public interface Termlike {
     }
 
     default boolean impossibleSubTerm(/*@NotNull*/Termlike target) {
-        
-        
-        
         return !hasAll(target.structure()) || impossibleSubTermVolume(target.volume());
     }
 

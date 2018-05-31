@@ -25,7 +25,7 @@ public enum Image { ;
         
         if (t.op()==INH) {
             Term p = t.sub(0);
-            if (p.op()==PROD) {
+            if (p.op()==PROD && !p.contains(Op.imInt)) {
                 Term r = p.replace(x, Op.imExt);
                 if (r!=p) {
                     Term i = t.sub(1);
@@ -41,7 +41,7 @@ public enum Image { ;
         
         if (t.op()==INH) {
             Term p = t.sub(1);
-            if (p.op()==PROD) {
+            if (p.op()==PROD && !p.contains(Op.imExt)) {
                 Term r = p.replace(x, Op.imInt);
                 if (r!=p) {
                     Term i = t.sub(0);
@@ -53,7 +53,7 @@ public enum Image { ;
     }
 
     public static Term imageNormalize(Term _t) {
-        if (!(_t instanceof Compound) && !_t.hasAll(imageBits))
+        if (!(_t instanceof Compound) || !_t.hasAll(imageBits))
             return _t;
 
         boolean negated;
@@ -66,7 +66,7 @@ public enum Image { ;
             negated = false;
         }
 
-        if (t.op()==INH) {
+        if (t.op()==INH && t.hasAll(imageBits)) {
             Term s = t.sub(0);
             Subterms ss = null;
             boolean isInt = s.op()==PROD && (ss = s.subterms()).contains(Op.imInt);

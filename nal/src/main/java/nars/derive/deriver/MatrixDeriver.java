@@ -163,9 +163,8 @@ public class MatrixDeriver extends Deriver {
         Bag<?, TaskLink> tasklinks = concept.tasklinks();
         final Bag<Term, PriReference<Term>> termlinks = concept.termlinks();
 
+
         if (!commit(nar, tasklinks, termlinks)) {
-            
-            
             concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
             return;
         }
@@ -191,7 +190,7 @@ public class MatrixDeriver extends Deriver {
             if (task != null) {
 
                 taskPriSum[0] += task.priElseZero();
-                
+
                 activate(tasklink, templates, rng);
 
                 if (!termlinks.isEmpty()) {

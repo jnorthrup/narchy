@@ -73,28 +73,6 @@ public interface Term extends Termed, Comparable<Termed> {
     ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     static <X> boolean pathsTo(Term that, ByteArrayList p, Predicate<Term> descendIf, Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
         if (!descendIf.test(that))
             return true;
@@ -106,7 +84,7 @@ public interface Term extends Termed, Comparable<Termed> {
         int n = superTerm.subs();
         for (int i = 0; i < n; i++) {
 
-            p.add((byte) i); 
+            p.add((byte) i);
 
             Term s = superTerm.sub(i);
 
@@ -122,7 +100,7 @@ public interface Term extends Termed, Comparable<Termed> {
                     kontinue = false;
             }
 
-            p.removeAtIndex(ppp); 
+            p.removeAtIndex(ppp);
 
             if (!kontinue)
                 return false;
@@ -174,27 +152,10 @@ public interface Term extends Termed, Comparable<Termed> {
     boolean containsRoot(Term t);
 
 
-    
-
-
-
     void append(ByteArrayDataOutput out);
 
     @Override
     boolean equals(Object o);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -216,16 +177,13 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
 
-
-
-
-
     /**
      * whether this term is or contains, as subterms, any temporal terms
      */
     boolean isTemporal();
 
-    @Override default boolean hasXternal() {
+    @Override
+    default boolean hasXternal() {
         return (dt() == XTERNAL) ||
                 Termed.super.hasXternal();
     }
@@ -251,7 +209,7 @@ public interface Term extends Termed, Comparable<Termed> {
             throw new RuntimeException("path overflow");
 
         if (!(src instanceof Compound))
-            return src; 
+            return src;
 
         Compound csrc = (Compound) src;
         Subterms css = csrc.subterms();
@@ -264,10 +222,10 @@ public interface Term extends Termed, Comparable<Termed> {
         for (int i = 0; i < n; i++) {
             Term x = css.sub(i);
             if (path.get(depth) != i)
-                
+
                 target[i] = x;
             else {
-                
+
                 target[i] = x.subs() == 0 ? replacement : x.transform(path, depth + 1, replacement);
             }
 
@@ -299,7 +257,7 @@ public interface Term extends Termed, Comparable<Termed> {
             shortest = Math.min(shortest, subpath.size());
         }
 
-        
+
         int i;
         done:
         for (i = 0; i < shortest; i++) {
@@ -310,10 +268,10 @@ public interface Term extends Termed, Comparable<Termed> {
                 if (j == 0) {
                     needs = pi;
                 } else if (needs != pi) {
-                    break done; 
-                } 
+                    break done;
+                }
             }
-            
+
         }
         return i == 0 ? this : subPath(i, subpaths.get(0));
 
@@ -360,17 +318,6 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Commutivity in NARS means that a Compound term's
      * subterms will be unique and arranged in order (compareTo)
@@ -386,26 +333,7 @@ public interface Term extends Termed, Comparable<Termed> {
     boolean isCommutative();
 
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
     /**
-     * equlity has already been tested prior to calling this
-     *
      * @param y       another term
      * @param ignored the unification context
      * @return whether unification succeeded
@@ -413,10 +341,12 @@ public interface Term extends Termed, Comparable<Termed> {
     default boolean unify(Term y, Unify u) {
         return equals(y)
                 ||
-               y.unifyReverse(this, u);
+                y.unifyReverse(this, u);
     }
 
-    /** by default this has no effect by returning false */
+    /**
+     * by default this has no effect by returning false
+     */
     default boolean unifyReverse(Term x, Unify u) {
         return false;
     }
@@ -455,52 +385,6 @@ public interface Term extends Termed, Comparable<Termed> {
 
         throw new RuntimeException(x + " not contained by " + this);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -549,8 +433,6 @@ public interface Term extends Termed, Comparable<Termed> {
         if (this == y) return 0;
 
 
-
-
         int vc = Integer.compare(y.volume(), this.volume());
         if (vc != 0)
             return vc;
@@ -562,13 +444,13 @@ public interface Term extends Termed, Comparable<Termed> {
 
         if (this instanceof Atomic) {
 
-            
+
             int h = Integer.compare(hashCode(), y.hashCode());
             if (h != 0)
                 return h;
 
-            if (this instanceof NormalizedVariable || this instanceof Int) { 
-                return 0; 
+            if (this instanceof NormalizedVariable || this instanceof Int) {
+                return 0;
             } else if (this instanceof Int.IntRange) {
                 return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) y).hash64());
             } else /*if (this instanceof Atomic)*/ {
@@ -606,37 +488,16 @@ public interface Term extends Termed, Comparable<Termed> {
      * for safety, dont override this method. override evalSafe
      */
 
-    default Term eval(Evaluation.TermContext context, Random rng) {
+    default Term eval(Evaluation e, Evaluation.TermContext context, Random rng) {
         if (!Evaluation.possiblyNeedsEval(this))
             return this;
-        return Evaluation.solveAny(this, context, rng);
-
+        return Evaluation.solveAny(this, e, context, rng);
     }
 
 
     default Term eval(NAR nar) {
-        return eval(nar.functors, nar.random());
+        return eval(null, nar.functors, nar.random());
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -647,23 +508,12 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
     /* collects any contained events */
     @Deprecated
     default void events(Consumer<LongObjectPair<Term>> events) {
         eventsWhile((w, t) -> {
             events.accept(PrimitiveTuples.pair(w, t));
-            return true; 
+            return true;
         }, 0);
     }
 
@@ -681,7 +531,7 @@ public interface Term extends Termed, Comparable<Termed> {
             events.add(PrimitiveTuples.pair(
                     (dtDither > 1) ? Tense.dither(w, dtDither) : w,
                     t));
-            return true; 
+            return true;
         }, offset, decomposeParallel, decomposeEternal, false, 0);
         if (events.size() > 1) {
             events.sortThisByLong(LongObjectPair::getOne);
@@ -709,10 +559,6 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
 
-
-
-
-
     default void printRecursive() {
         printRecursive(System.out);
     }
@@ -726,30 +572,6 @@ public interface Term extends Termed, Comparable<Termed> {
 
         return this;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -779,7 +601,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default Term normalize(byte offset) {
-        return this; 
+        return this;
     }
 
     @Nullable
@@ -790,9 +612,9 @@ public interface Term extends Termed, Comparable<Termed> {
 
     @Nullable
     default Term replace(Map<? extends Term, Term> m) {
-        if (m.size()==1) {
+        if (m.size() == 1) {
             Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
-            return replace(e.getKey(), e.getValue()); 
+            return replace(e.getKey(), e.getValue());
         }
 
         Subst s = MapSubst.the(m);
@@ -810,7 +632,8 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    @Deprecated Term temporalize(Retemporalize r);
+    @Deprecated
+    Term temporalize(Retemporalize r);
 
 
     default Term anon() {

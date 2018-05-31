@@ -1,6 +1,7 @@
 package nars.op;
 
 import nars.subterm.Subterms;
+import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -29,7 +30,7 @@ public class Subst extends Functor implements Functor.InlineFunctor {
         super(id);
     }
 
-    @Nullable @Override public Term apply( Subterms xx) {
+    @Nullable @Override public Term apply(Evaluation e, Subterms xx) {
 
         final Term input = xx.sub(0); 
 

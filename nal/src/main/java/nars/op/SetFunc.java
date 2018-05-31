@@ -152,7 +152,7 @@ public class SetFunc {
             }
 
             @Override
-            protected Term uncompute(Term x, Term param, Term y) {
+            protected Term uncompute(Evaluation e, Term x, Term param, Term y) {
                 
 
                 
@@ -168,7 +168,7 @@ public class SetFunc {
                     if (missing.size() == 1) {
                         Term[] xxx = xx.terms((n, xs) -> xs.op().var);
                         if (xxx.length == 1) {
-                            Evaluation.the().replace(xxx[0], missing.get(0));
+                            e.replace(xxx[0], missing.get(0));
                             return null;
                         }
                     }
@@ -194,6 +194,12 @@ public class SetFunc {
 
         @Nullable
         @Override
+        @Deprecated public final Term apply(Evaluation e, Subterms x) {
+            return apply(x);
+        }
+
+        @Nullable
+        ///@Override
         public final Term apply(Subterms x) {
             if (x.subs() != 2)
                 throw new UnsupportedOperationException("# args must equal 2");
