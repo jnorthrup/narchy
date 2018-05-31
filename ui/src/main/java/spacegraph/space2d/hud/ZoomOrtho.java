@@ -15,69 +15,13 @@ import spacegraph.video.JoglSpace;
  */
 public class ZoomOrtho extends Ortho {
 
-    private final Surface content;
-    float zoomRate =
-            0.5f;
-
-
     public final static short PAN_BUTTON = 0;
     final static short MOVE_WINDOW_BUTTON = 1;
-
     final HUD hud = new HUD();
-
-    public ZoomOrtho(Surface content) {
-        super();
-
-        this.content = content;
-        this.surface = hud;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
-
-    @Override
-    public void start(JoglSpace s) {
-        super.start(s);
-        hud.parent = this;
-        hud.add(content);
-    }
-
-    @Override public boolean autoresize() {
-        return true; 
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        hud.dragMode = null;
-        super.mouseReleased(e);
-    }
-
-
     final Fingering fingerContentPan = new FingerMovePixels(PAN_BUTTON) {
 
-        private v3 camStart;
         float speed = 1f;
+        private v3 camStart;
 
         @Override
         protected JoglSpace window() {
@@ -97,11 +41,10 @@ public class ZoomOrtho extends Ortho {
         }
 
     };
-
     final Fingering fingerWindowMove = new FingerMovePixels(MOVE_WINDOW_BUTTON) {
 
 
-        private v2 posAtStart = new v2();
+        private v2 windowStart = new v2();
 
         @Override
         protected JoglSpace window() {
@@ -112,20 +55,19 @@ public class ZoomOrtho extends Ortho {
         protected boolean startDrag(Finger f) {
 
 
-            posAtStart.set(window.window.getX(), window.window.getY());
+            windowStart.set(window.window.getX(), window.window.getY());
+            //System.out.println("window start=" + windowStart);
             return super.startDrag(f);
         }
 
         @Override
         protected v2 pos(Finger finger) {
-            
+
             return finger.posScreen.clone();
         }
 
         @Override
         public void move(float dx, float dy) {
-            
-
 
 
             window.setPosition(
@@ -134,15 +76,44 @@ public class ZoomOrtho extends Ortho {
         }
 
     };
+    private final Surface content;
+    float zoomRate =
+            0.5f;
 
+    public ZoomOrtho(Surface content) {
+        super();
+
+        this.content = content;
+        this.surface = hud;
+
+
+    }
+
+    @Override
+    public void start(JoglSpace s) {
+        super.start(s);
+        hud.parent = this;
+        hud.add(content);
+    }
+
+    @Override
+    public boolean autoresize() {
+        return true;
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        hud.dragMode = null;
+        super.mouseReleased(e);
+    }
 
     @Override
     protected Surface finger() {
 
         Surface touchPrev = finger.touching();
         Surface touchNext = super.finger();
-        if (touchNext!=null && touchNext!=touchPrev) {
-            debug(this, 1f, ()->"touch(" + touchNext + ')');
+        if (touchNext != null && touchNext != touchPrev) {
+            debug(this, 1f, () -> "touch(" + touchNext + ')');
         }
 
         if (touchNext == null) {
@@ -179,24 +150,16 @@ public class ZoomOrtho extends Ortho {
         if (e.isConsumed())
             return;
 
-        
-        
-        
+
         float dWheel = e.getRotation()[1];
 
         cam.set(cam.x, cam.y, cam.z * (1f + (dWheel * zoomRate)));
 
 
-
-
-
-
     }
 
 
-
     public class HUD extends Windo {
-        
 
 
         {
@@ -206,27 +169,8 @@ public class ZoomOrtho extends Ortho {
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        @Override protected FingerResize fingeringResize(Windo.DragEdit mode) {
+        @Override
+        protected FingerResize fingeringResize(Windo.DragEdit mode) {
             return new FingerResizeWindow(window, 0, mode);
         }
 
@@ -239,28 +183,6 @@ public class ZoomOrtho extends Ortho {
         public boolean opaque() {
             return false;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         @Override
@@ -281,26 +203,11 @@ public class ZoomOrtho extends Ortho {
         }
 
 
-
-
-
-
-
-
-
-
-
-
         @Override
         public Surface tryTouch(Finger finger) {
 
 
-            
             if (finger != null) {
-
-
-
-
 
 
             }
@@ -309,20 +216,16 @@ public class ZoomOrtho extends Ortho {
         }
 
 
-
-
-
-
         @Override
         public boolean fingeringBounds(Finger finger) {
-            
+
             return true;
         }
 
         public v2 windowHitPointRel(Finger finger) {
             v2 v = new v2(finger.posPixel);
-            v.x = v.x/w(); 
-            v.y = v.y/h();
+            v.x = v.x / w();
+            v.y = v.y / h();
             return v;
         }
 

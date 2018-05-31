@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.button;
 
+import jcog.exe.Exe;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.space2d.widget.windo.Widget;
@@ -15,7 +16,8 @@ public abstract class AbstractButton extends Widget {
 
     final Predicate<Finger> pressable = Finger.clicked(0, (f)->{
         dz = 0;
-        onClick(f);
+        Exe.invokeLater(()->
+            onClick(f));
     }, ()-> {
         dz = 0.5f;
     }, () -> {

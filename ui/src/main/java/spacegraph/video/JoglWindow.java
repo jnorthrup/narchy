@@ -61,15 +61,16 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private volatile int nx, ny, nw, nh;
     private final Consumer<JoglWindow> windowUpdater = (s) -> {
         GLWindow w = window;
-        if (nx != w.getX() || ny != w.getY())
-            w.setPosition(nx, ny);
+        int nx = this.nx;
+        int ny = this.ny;
         int nw = this.nw;
         int nh = this.nh;
+        if (nx != w.getX() || ny != w.getY())
+            w.setPosition(nx, ny);
 
         if (nw == 0 || nh == 0) {
             if (w.isVisible()) {
                 w.setVisible(false);
-                return;
             }
         } else {
             if (!w.isVisible())
@@ -186,9 +187,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowResized(WindowEvent windowEvent) {
-        GLWindow w = this.window;
-        nw = w.getSurfaceWidth();
-        nh = w.getSurfaceHeight();
+//        GLWindow w = this.window;
+//        nw = w.getSurfaceWidth();
+//        nh = w.getSurfaceHeight();
     }
 
     @Override
@@ -335,13 +336,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         if (window == null) return; 
 
         boolean change = false;
-        if (change |= (window.getX() != x))
+        if (change |= (nx != x))
             nx = x;
-        if (change |= (window.getY() != y))
+        if (change |= (ny != y))
             ny = y;
-        if (change |= (window.getWidth() != w))
+        if (change |= (nw != w))
             nw = w;
-        if (change |= (window.getHeight() != h))
+        if (change |= (nh != h))
             nh = h;
 
         if (change)
@@ -463,12 +464,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
                     if (window != null) {
-                        if (!preRenderTasks.isEmpty()) {
-                            preRenderTasks.removeIf(r -> {
-                                r.accept(JoglWindow.this);
-                                return true;
-                            });
-                        }
 
                         if (!paused) {
                             try {
@@ -486,6 +481,14 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
                                 if (!window.isSurfaceLockedByOtherThread()) {
                                     animThread = Thread.currentThread();
+
+                                    if (!preRenderTasks.isEmpty()) {
+                                        preRenderTasks.removeIf(r -> {
+                                            r.accept(JoglWindow.this);
+                                            return true;
+                                        });
+                                    }
+
                                     drawables.forEach(GLAutoDrawable::display);
                                 }
 

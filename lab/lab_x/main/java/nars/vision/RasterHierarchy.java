@@ -1,24 +1,13 @@
 package nars.op.video;
 
-import boofcv.abst.feature.detect.interest.ConfigFastHessian;
-import boofcv.abst.feature.detect.interest.InterestPointDetector;
-import boofcv.alg.misc.ImageMiscOps;
 import boofcv.core.image.ConvertBufferedImage;
-import boofcv.factory.feature.detect.interest.FactoryInterestPoint;
-import boofcv.gui.feature.FancyInterestPointRender;
 import boofcv.io.webcamcapture.UtilWebcamCapture;
-import boofcv.struct.BoofDefaults;
-import boofcv.struct.image.ImageSingleBand;
 import boofcv.struct.image.ImageUInt8;
 import boofcv.struct.image.MultiSpectral;
 import com.github.sarxos.webcam.Webcam;
-import georegression.struct.point.Point2D_F64;
 import georegression.struct.point.Point2D_I32;
 import nars.NAR;
-import nars.nal.nal1.Inheritance;
-import nars.nal.nal4.Product;
 import nars.nar.Default;
-import nars.task.TaskSeed;
 import nars.term.Atom;
 
 import java.awt.event.MouseAdapter;

@@ -31,7 +31,10 @@ package jcog.data.map;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 

@@ -7,8 +7,6 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.concept.Concept;
-import nars.derive.deriver.SimpleDeriver;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;

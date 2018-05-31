@@ -2,7 +2,6 @@ package nars.term.atom;
 
 import nars.Op;
 import nars.The;
-import nars.term.Evaluation;
 import nars.term.Term;
 import nars.unify.Unify;
 
