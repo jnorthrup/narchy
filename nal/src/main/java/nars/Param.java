@@ -45,7 +45,7 @@ public abstract class Param {
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 1.5f;
 
 
     @Range(min=1, max=32)
@@ -173,7 +173,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(256, 0, 2048);
+    public final IntRange deriveTTL = new IntRange(384, 0, 2048);
 
 
     /** estimate */
