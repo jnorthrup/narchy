@@ -41,19 +41,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         int n = term.size();
         int h = 1;
         for (int i = 0; i < n; i++)
-            h = Util.hashCombine(h, term.get(i).hashCode());
+            h = Util.hashCombine(h, term.get(i));
         return h;
     }
 
     static int hash(Subterms container) {
-
-
-
-
-
-
-
-        return container.intifyShallow((h, x) -> Util.hashCombine(h, x.hashCode()), 1);
+        return container.intifyShallow(Util::hashCombine, 1);
     }
 
 
@@ -108,7 +101,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (commonStructure == 0)
             return false;
 
-        Set<Term> scratch = new HashSet(/*a.size() + b.size()*/);
+        Set<Term> scratch = new UnifiedSet<>(4);
         aa.recurseTermsToSet(commonStructure, scratch, true);
         return bb.recurseTermsToSet(commonStructure, scratch, false);
     }
@@ -123,7 +116,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (commonStructure == 0)
             return false;
 
-        Set<Term> scratch = new HashSet(a.subs());
+        Set<Term> scratch = new UnifiedSet(a.subs());
         a.termsToSet(commonStructure, scratch, true);
         return b.termsToSet(commonStructure, scratch, false);
 

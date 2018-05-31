@@ -23,20 +23,20 @@ public final class CommonSubtermConstraint extends RelationConstraint {
     @Override
     public boolean invalid(Term x, Term y) {
 
-        int vx = x.volume();
-        int vy = y.volume();
-        if (vx == vy || x.op().var || y.op().var /* variables excluded from recursive containment test */) {
-            
-        } else {
-            if (vy > vx) {
-                
-                Term c = x;
-                x = y;
-                y = c;
-            }
-            if (x.containsRecursively(y, true, (t)->true))
-                return false; 
-        }
+//        int vx = x.volume();
+//        int vy = y.volume();
+//        if (vx == vy || x.op().var || y.op().var /* variables excluded from recursive containment test */) {
+//
+//        } else {
+//            if (vy > vx) {
+//
+//                Term c = x;
+//                x = y;
+//                y = c;
+//            }
+//            if (x.containsRecursively(y, true, (t)->true))
+//                return false;
+//        }
 
         return !Subterms.hasCommonSubtermsRecursive(x, y, true);
     }

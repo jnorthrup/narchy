@@ -27,12 +27,16 @@ import static nars.Op.GOAL;
  */
 public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier {
 
-    /** update directly with next value */
-    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> SET = (conf)->
-            ((p,n) -> n==n ? $.t(n, conf.asFloat()) : null);
-    /** first order difference */
-    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> DIFF = (conf)->
-            ((p,n) -> (n==n) ? ((p==p) ? $.t((n-p)/2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
+    /**
+     * update directly with next value
+     */
+    public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> SET = (conf) ->
+            ((p, n) -> n == n ? $.t(n, conf.asFloat()) : null);
+    /**
+     * first order difference
+     */
+    public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> DIFF = (conf) ->
+            ((p, n) -> (n == n) ? ((p == p) ? $.t((n - p) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
     public FloatSupplier signal;
 
     private volatile float currentValue = Float.NaN;
@@ -44,7 +48,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
     public Scalar(Term c, byte punc, FloatSupplier signal, NAR n) {
         this(c, punc, signal, n.conceptBuilder);
         pri(() -> n.priDefault(punc));
-        ((ScalarBeliefTable)beliefs()).res(resolution);
+        ((ScalarBeliefTable) beliefs()).res(resolution);
         n.on(this);
     }
 
@@ -67,7 +71,6 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
     }
 
 
-
     @Override
     public float floatValueOf(Term anObject /* ? */) {
         return this.currentValue = signal.asFloat();
@@ -79,40 +82,48 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
         return currentValue;
     }
 
-    @Deprecated public final DurService auto(NAR n) {
+    @Deprecated
+    public final DurService auto(NAR n) {
         return auto(n, 1);
     }
 
-    @Deprecated public DurService auto(NAR n, float durs) {
+    @Deprecated
+    public DurService auto(NAR n, float durs) {
         FloatFloatToObjectFunction<Truth> truther =
                 (prev, next) -> $.t(next, n.confDefault(BELIEF));
 
-        return DurService.on(n, nn->
+        return DurService.on(n, nn ->
                 nn.input(update(truther, n))).durs(durs);
     }
 
-    @Nullable @Deprecated public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
+    @Nullable
+    @Deprecated
+    public final Task update(FloatFloatToObjectFunction<Truth> truther, NAR n) {
         return update(truther, n.time(), n.dur(), n);
     }
 
     @Nullable
-    @Deprecated public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
-        return update(time-dur/2, time+dur/2, truther, dur, n);
+    @Deprecated
+    public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
+        return update(time - dur / 2, time + dur / 2, truther, dur, n);
     }
 
     @Nullable
     public Task update(long start, long end, FloatFloatToObjectFunction<Truth> truther, int dur, NAR n) {
 
-        Truth nextTruth = truther.value(currentValue, floatValueOf(term));
-        if (nextTruth!=null) {
-            SignalTask x = ((ScalarBeliefTable) beliefs()).add(nextTruth,
-                    start, end, dur, n);
+        float nextValue = floatValueOf(term);
+        if (nextValue == nextValue /* not NaN */) {
+            Truth nextTruth = truther.value(currentValue, nextValue);
+            if (nextTruth != null) {
+                SignalTask x = ((ScalarBeliefTable) beliefs()).add(nextTruth,
+                        start, end, dur, n);
 
 
-            return x;
-        } else {
-            return null;
+                return x;
+            }
         }
+        return null;
+
     }
 
 
@@ -122,7 +133,7 @@ public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier
     }
 
     public Scalar pri(FloatSupplier pri) {
-        ((ScalarBeliefTable)beliefs()).pri(pri);
+        ((ScalarBeliefTable) beliefs()).pri(pri);
         return this;
     }
 

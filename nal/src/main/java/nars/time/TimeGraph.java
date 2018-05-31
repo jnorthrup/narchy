@@ -1175,7 +1175,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         }
 
         protected Absolute(Term t, long start) {
-            this(t, start, Util.hashCombine(t.hashCode(), start));
+            this(t, start, Util.hashCombine(t.hashCode(), Long.hashCode(start)));
         }
 
         @Override

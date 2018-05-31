@@ -408,6 +408,11 @@ public enum Util {
     public static int hashCombine(int a, int b) {
         return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2));
     }
+
+    public static int hashCombine(int a, Object b) {
+        return hashCombine(a, b.hashCode());
+    }
+
     public static int hashCombine(Object a, Object b) {
         return hashCombine(a.hashCode(), b.hashCode());
     }
