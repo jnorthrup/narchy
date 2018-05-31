@@ -11,10 +11,11 @@ import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 import org.eclipse.collections.api.iterator.LongIterator;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
@@ -24,7 +25,6 @@ import java.util.*;
 import java.util.function.IntPredicate;
 
 import static nars.Op.*;
-import static nars.term.Terms.sorted;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -32,45 +32,28 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * representation of conjoined (eternal, parallel, or sequential) events specified in one or more conjunctions,
  * for use while constructing, merging, and/or analyzing
  */
-public class Conj {
+public class Conj extends AnonMap {
 
-    
+
     private static final int ROARING_UPGRADE_THRESH = 4;
-
-    
 
 
     public final LongObjectHashMap event = new LongObjectHashMap<>(2);
-    /**
-     * unnegated events
-     */
-    final ObjectByteHashMap<Term> terms = new ObjectByteHashMap<>(4);
-
-    
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    final List<Term> termsIndex = new FasterList(4);
     /**
      * state which will be set in a terminal condition, or upon term construction in non-terminal condition
      */
     Term term = null;
 
     public Conj() {
+        super(4);
+    }
 
+    public void clear() {
+        super.clear();
+        event.clear();
+        term = null;
     }
 
     public static int eventCount(Object what) {
@@ -87,11 +70,11 @@ public class Conj {
     public static StringBuilder sequenceString(Term a, Conj x) {
         StringBuilder sb = new StringBuilder(4);
         int range = a.dtRange();
-        final float stepResolution = 16f; 
+        final float stepResolution = 16f;
         float factor = stepResolution / range;
         a.eventsWhile((when, what) -> {
             int step = Math.round(when * factor);
-            sb.append((char) step); 
+            sb.append((char) step);
             sb.append(((char) x.add(what)));
             return true;
         }, 0, true, true, false, 0);
@@ -108,7 +91,7 @@ public class Conj {
             return Null;
 
         int cdt = conj.dt();
-        
+
         if (cdt == DTERNAL || cdt == 0) {
             Term[] csDropped = conj.subterms().termsExcept(event);
             if (csDropped != null) {
@@ -122,7 +105,7 @@ public class Conj {
         Conj c = Conj.from(conj);
         long targetTime;
         if (c.event.size() == 1) {
-            
+
             targetTime = c.event.keysView().longIterator().next();
         } else if (earlyOrLate) {
             Object eternalTemporarilyRemoved = c.event.remove(ETERNAL);
@@ -135,20 +118,10 @@ public class Conj {
         assert (targetTime != XTERNAL);
         boolean removed = c.remove(event, targetTime);
         if (!removed) {
-            return Null; 
+            return Null;
         }
 
         return c.term();
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -163,7 +136,7 @@ public class Conj {
 
     public static Conj from(Term t, long rootTime) {
         Conj x = new Conj();
-        x.add(t, rootTime);
+        x.add(rootTime, t);
         return x;
     }
 
@@ -180,7 +153,7 @@ public class Conj {
 
         for (int i = 0; i < eventsSize; i++) {
             LongObjectPair<Term> o = events.get(i);
-            if (!ce.add(o.getTwo(), o.getOne())) {
+            if (!ce.add(o.getOne(), o.getTwo())) {
                 break;
             }
         }
@@ -200,7 +173,7 @@ public class Conj {
         Conj ce = new Conj();
 
         for (LongObjectPair<Term> o : events) {
-            if (!ce.add(o.getTwo(), o.getOne())) {
+            if (!ce.add(o.getOne(), o.getTwo())) {
                 break;
             }
         }
@@ -213,19 +186,19 @@ public class Conj {
             return True;
         if (includeNeg && include.equalsNeg(exclude))
             return True;
-        if (include.op()!=CONJ || include.impossibleSubTerm(exclude))
+        if (include.op() != CONJ || include.impossibleSubTerm(exclude))
             return include;
 
         Conj xx = Conj.from(include);
         if (xx.removeEventsByTerm(exclude, true, includeNeg)) {
-            return xx.term(); 
+            return xx.term();
         } else {
-            return include; 
+            return include;
         }
     }
 
     public static Term withoutAll(Term include, Term exclude) {
-        if (include.op()!=CONJ)
+        if (include.op() != CONJ)
             return include;
 
         if (include.equals(exclude))
@@ -233,7 +206,7 @@ public class Conj {
 
         Conj x = Conj.from(include);
         int edt = exclude.dt();
-        boolean[] removed = new boolean[] { false };
+        boolean[] removed = new boolean[]{false};
         exclude.eventsWhile((when, what) -> {
             removed[0] |= x.remove(what, when);
             return true;
@@ -250,10 +223,10 @@ public class Conj {
 
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
         Conj c = new Conj();
-        if (c.add(a, aStart)) {
-            c.add(b, bStart);
+        if (c.add(aStart, a)) {
+            c.add(bStart, b);
         }
-        return c.term(); 
+        return c.term();
     }
 
     static int indexOfZeroTerminated(byte[] b, byte val) {
@@ -262,7 +235,7 @@ public class Conj {
             if (val == bi) {
                 return i;
             } else if (bi == 0) {
-                return -1; 
+                return -1;
             }
         }
         return -1;
@@ -297,11 +270,11 @@ public class Conj {
 
         Term left = conjSeq(events, start, center + 1);
         if (left == Null) return Null;
-        if (left == False) return False; 
+        if (left == False) return False;
 
         Term right = conjSeq(events, center + 1, end);
         if (right == Null) return Null;
-        if (right == False) return False; 
+        if (right == False) return False;
 
         int dt = (int) (events.get(center + 1).getOne() - first.getOne() - left.dtRange());
 
@@ -324,14 +297,11 @@ public class Conj {
             if (left.equalsNeg(right)) return False;
 
 
-            
         }
 
 
-        
-        
         if (left.compareTo(right) > 0) {
-            
+
             dt = -dt;
             Term t = right;
             right = left;
@@ -343,7 +313,7 @@ public class Conj {
             if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
                 int ls = left.subs(), rs = right.subs();
                 if ((ls > 1 + rs) || (rs > ls)) {
-                    
+
                     return CONJ.compound(dt, new Term[]{left, right});
                 }
             }
@@ -361,94 +331,104 @@ public class Conj {
         return new Conjterpolate(a, b, bOffset, nar).term();
     }
 
-    public boolean hasTerm(Term what) {
-        return termsIndex.contains(what);
-    }
+//    static int conflictOrSame(Object e, int id) {
+//        if (e == null) {
+//
+//        } else if (e instanceof RoaringBitmap) {
+//            RoaringBitmap r = (RoaringBitmap) e;
+//            if (r.contains(-id))
+//                return -1;
+//            else if (r.contains(id)) {
+//                return +1;
+//            }
+//        } else if (e instanceof byte[]) {
+//            byte[] r = (byte[]) e;
+//            if (indexOfZeroTerminated(r, (byte) -id) != -1)
+//                return -1;
+//            else if (indexOfZeroTerminated(r, (byte) id) != -1)
+//                return +1;
+//        }
+//        return 0;
+//    }
 
     /**
      * returns false if contradiction occurred, in which case this
      * ConjEvents instance is
      * now corrupt and its result via .term() should be considered final
      */
-    public boolean add(Term t, long at) {
+    public boolean add(long at, Term what) {
 
         if (term != null)
-            throw new RuntimeException("already terminated");
+            throw new RuntimeException("already term-inated to: " + term);
 
-        if (t == True)
-            return true; 
-        else if (t == False) {
+        if (what == True)
+            return true;
+        else if (what == False) {
             this.term = False;
             return false;
-        } else if (t == Null) {
+        } else if (what == Null) {
             this.term = Null;
             return false;
         }
 
 
-        Op x = t.op();
+        Op x = what.op();
         boolean polarity;
         if (x == NEG) {
-            t = t.unneg();
+            what = what.unneg();
             polarity = false;
         } else {
             polarity = true;
         }
 
         if (x == CONJ) {
-            int dt = t.dt();
+            int dt = what.dt();
 
             boolean atEternal = at == ETERNAL;
 
             if ((dt != XTERNAL)
-                
-                
-                && (!atEternal || (dt == DTERNAL))
+
+
+                    && (!atEternal || (dt == DTERNAL))
 
             ) {
 
-
-
-                return t.eventsWhile((w, e) -> add(e, w),
+                return what.eventsWhile(this::add,
                         at,
                         true,
                         true,
                         false, 0);
 
 
-
-
             }
         }
 
 
-
-        int id = add(t);
+        int id = add(what);
         if (!polarity)
             id = -id;
 
         if (!addIfValid(at, id)) {
-            
             term = False;
             return false;
+        } else {
+            return true;
         }
-
-        return true;
     }
 
     public boolean add(Term t, long start, long end, int maxSamples, int minSegmentLength) {
         if ((start == end) || start == ETERNAL) {
-            return add(t, start);
+            return add(start, t);
         } else {
             if (maxSamples == 1) {
-                
-                return add(t, (start + end) / 2L);
+
+                return add((start + end) / 2L, t);
             } else {
-                
+
                 long dt = Math.max(minSegmentLength, (end - start) / maxSamples);
                 long x = start;
                 while (x < end) {
-                    if (!add(t, x))
+                    if (!add(x, t))
                         return false;
                     x += dt;
                 }
@@ -460,30 +440,10 @@ public class Conj {
     protected boolean addIfValid(long at, int id) {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         Object what = event.get(at);
         if (what == null) {
             byte[] bwhat = new byte[ROARING_UPGRADE_THRESH];
-            bwhat[0] = (byte)id;
+            bwhat[0] = (byte) id;
             event.put(at, bwhat);
             return true;
         }
@@ -495,8 +455,8 @@ public class Conj {
             }
         } else {
             byte[] ii = (byte[]) what;
-            if (indexOfZeroTerminated(ii, ((byte)id)) != -1) {
-                
+            if (indexOfZeroTerminated(ii, ((byte) id)) != -1) {
+
                 return true;
             }
             if (indexOfZeroTerminated(ii, ((byte) -id)) == -1) {
@@ -504,7 +464,7 @@ public class Conj {
                 if (nextSlot != -1) {
                     ii[nextSlot] = (byte) id;
                 } else {
-                    
+
                     RoaringBitmap rb = new RoaringBitmap();
                     for (byte b : ii)
                         rb.add(b);
@@ -517,52 +477,33 @@ public class Conj {
         return false;
     }
 
-    static int conflictOrSame(Object e, int id) {
-        if (e == null) {
-            
-        } else if (e instanceof RoaringBitmap) {
-            RoaringBitmap r = (RoaringBitmap) e;
-            if (r.contains(-id))
-                return -1; 
-            else if (r.contains(id)) {
-                return +1; 
-            }
-        } else if (e instanceof byte[]) {
-            byte[] r = (byte[])e;
-            if (indexOfZeroTerminated(r, (byte)-id)!=-1)
-                return -1; 
-            else if (indexOfZeroTerminated(r, (byte)id)!=-1)
-                return +1; 
-        }
-        return 0;
-    }
-
     public int add(Term t) {
         assert (t != null && !(t instanceof Bool));
-        return terms.getIfAbsentPutWithKey(t.unneg(), tt -> {
-            int s = terms.size();
-            termsIndex.add(tt);
+        return termToId.getIfAbsentPutWithKey(t.unneg(), tt -> {
+            //int s = termToId.size();
+            int s = idToTerm.addAndGetSize(tt);
             assert (s < Byte.MAX_VALUE);
             return (byte) s;
-        }) + 1;
+        });
     }
 
-    /** returns index of an item if it is present, or -1 if not */
+    /**
+     * returns index of an item if it is present, or -1 if not
+     */
     public byte index(Term t) {
-        return terms.getIfAbsent(t.unneg(), (byte)-1);
+        return termToId.getIfAbsent(t.unneg(), (byte) -1);
     }
 
     public byte get(Term x) {
         boolean neg;
-        if (neg = (x.op()==NEG))
+        if (neg = (x.op() == NEG))
             x = x.unneg();
         byte index = index(x);
         if (index == -1)
             return Byte.MIN_VALUE;
 
-        index++;
         if (neg)
-            index =(byte)(-index);
+            index = (byte) (-index);
 
         return index;
     }
@@ -571,47 +512,26 @@ public class Conj {
 
         Object o = event.get(at);
         if (o == null)
-            return false; 
+            return false;
 
 
-        int i = get(t); 
-        if (removeFromEvent(at, o, true, i)!=0) {
-            term = null; 
+        int i = get(t);
+        if (i == Byte.MIN_VALUE)
+            return false;
+
+        if (removeFromEvent(at, o, true, i) != 0) {
+            term = null;
             return true;
         }
         return false;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /** returns:
-     *    +2 removed, and now this event time is empty
-     *    +1 removed
-     *    +0 not removed
+    /**
+     * returns:
+     * +2 removed, and now this event time is empty
+     * +1 removed
+     * +0 not removed
      */
     private int removeFromEvent(long at, Object o, boolean autoRemoveIfEmpty, int... i) {
         if (o instanceof RoaringBitmap) {
@@ -630,14 +550,14 @@ public class Conj {
         } else {
             byte[] b = (byte[]) o;
 
-            int num = ArrayUtils.indexOf(b, (byte)0);
+            int num = ArrayUtils.indexOf(b, (byte) 0);
             if (num == -1) num = b.length;
 
             int removals = 0;
             for (int ii : i) {
                 int bi = ArrayUtils.indexOf(b, (byte) ii);
                 if (bi != -1) {
-                    if (b[bi]!=0) {
+                    if (b[bi] != 0) {
                         b[bi] = 0;
                         removals++;
                     }
@@ -651,12 +571,12 @@ public class Conj {
                     event.remove(at);
                 return 2;
             } else {
-                
+
 
                 MetalBitSet toRemove = MetalBitSet.bits(b.length);
-                
+
                 for (int zeroIndex = 0; zeroIndex < b.length; zeroIndex++) {
-                    if (b[zeroIndex]==0)
+                    if (b[zeroIndex] == 0)
                         toRemove.set(zeroIndex);
                 }
 
@@ -677,7 +597,7 @@ public class Conj {
             negateInput = false;
         }
 
-        int i = get(t); 
+        int i = get(t);
         int[] ii;
         if (pos && neg) {
             ii = new int[]{i, -i};
@@ -718,8 +638,7 @@ public class Conj {
 
         int numTimes = event.size();
         if (numTimes == 0)
-            return True; 
-
+            return True;
 
 
         IntPredicate validator = null;
@@ -728,13 +647,13 @@ public class Conj {
         if (eternal != null) {
 
             if (eternal instanceof Bool)
-                return this.term = eternal; 
+                return this.term = eternal;
 
             if (numTimes > 1) {
-                
+
 
                 if (eternal.op() == CONJ) {
-                    
+
                     if (eternalWhat instanceof byte[]) {
                         byte[] b = (byte[]) eternalWhat;
                         validator = (i) -> indexOfZeroTerminated(b, (byte) -i) == -1;
@@ -744,7 +663,7 @@ public class Conj {
                     }
                 } else {
                     Term finalEternal = eternal;
-                    validator = (t) -> !finalEternal.equalsNeg(termsIndex.get(Math.abs(t - 1)).negIf(t < 0));
+                    validator = (t) -> !finalEternal.equalsNeg(idToTerm.get(Math.abs(t - 1)).negIf(t < 0));
                 }
             }
         }
@@ -759,16 +678,16 @@ public class Conj {
                 LongObjectPair<Term> next = ii.next();
                 long when = next.getOne();
                 if (when == ETERNAL)
-                    continue; 
+                    continue;
 
                 Term wt = term(when, next.getTwo(), validator);
 
                 if (wt == True) {
-                    continue; 
+                    continue;
                 } else if (wt == False) {
-                    return this.term = False; 
+                    return this.term = False;
                 } else if (wt == Null) {
-                    return this.term = Null; 
+                    return this.term = Null;
                 }
 
                 temporals.add(pair(when, wt));
@@ -789,8 +708,8 @@ public class Conj {
                     break;
             }
 
-            if (eternal != null && temporal!=null) {
-                ci = CONJ.compound(DTERNAL, sorted(temporal, eternal));
+            if (eternal != null && temporal != null) {
+                ci = CONJ.the(temporal, eternal);
             } else if (eternal == null) {
                 ci = temporal;
             } else /*if (temporal == null)*/ {
@@ -799,10 +718,6 @@ public class Conj {
         }
 
 
-        
-
-        
-        
         if (ci.op() == CONJ && ci.hasAny(NEG)) {
             Subterms cci;
             if ((cci = ci.subterms()).hasAny(CONJ)) {
@@ -882,7 +797,7 @@ public class Conj {
             rb = null;
             n = indexOfZeroTerminated(b, (byte) 0);
             if (n == 1) {
-                
+
                 return sub(b[0], null, validator);
             }
         } else {
@@ -893,24 +808,22 @@ public class Conj {
 
 
         final boolean[] negatives = {false};
-        TreeSet<Term> t = new TreeSet();
+        MutableSet<Term> t = new UnifiedSet(4);
         if (b != null) {
             for (byte x : b) {
                 if (x == 0)
-                    break; 
+                    break;
                 t.add(sub(x, negatives, validator));
             }
         } else {
-            rb.forEach((int termIndex) -> {
-                t.add(sub(termIndex, negatives, validator));
-            });
+            rb.forEach((int termIndex) ->
+                t.add(sub(termIndex, negatives, validator))
+            );
         }
 
         if (negatives[0] && n > 1) {
-            
-            
-            
-            
+
+
             Iterator<Term> oo = t.iterator();
             List<Term> csa = null;
             while (oo.hasNext()) {
@@ -918,19 +831,19 @@ public class Conj {
                 if (x.hasAll(NEG.bit | CONJ.bit)) {
                     if (x.op() == NEG) {
                         Term x0 = x.sub(0);
-                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { 
+                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) {
                             Term disj = x.unneg();
                             SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
-                            
+
                             if (!disjSubs.isEmpty()) {
-                                
+
                                 oo.remove();
 
                                 if (!disjSubs.isEmpty()) {
                                     if (csa == null)
                                         csa = new FasterList(1);
                                     csa.add(
-                                            CONJ.compound(disj.dt(), sorted(disjSubs)).neg()
+                                            CONJ.the(disj.dt(), disjSubs).neg()
                                     );
                                 }
                             }
@@ -945,26 +858,18 @@ public class Conj {
         int ts = t.size();
         switch (ts) {
             case 0:
-                
                 return True;
             case 1:
-                return t.first();
+                return t.getOnly();
             default: {
                 int dt;
                 if (when == ETERNAL) {
                     dt = DTERNAL;
                 } else {
-
-
-
-                    dt = 0; 
+                    dt = 0;
                 }
-                return
-                        
-                        Op.compound(CONJ,
-                                dt,
-                                sorted(t));
-                
+                return Op.compound(CONJ, dt, t.toArray(Op.EmptyTermArray));
+
             }
         }
     }
@@ -985,7 +890,7 @@ public class Conj {
         if (validator != null && !validator.test(termIndex))
             return False;
 
-        Term c = termsIndex.get(termIndex - 1);
+        Term c = idToTerm.get(termIndex - 1);
         if (neg) {
             c = c.neg();
             if (negatives != null)
@@ -1006,33 +911,31 @@ public class Conj {
         private final boolean mergeOrChoose;
 
         public Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
-            
+
             this.b = b;
             this.nar = nar;
             this.mergeOrChoose = nar.dtMergeOrChoose();
             this.rng = nar.random();
             Conj aa = new Conj();
-            aa.add(a, 0);
+            aa.add(0, a);
             this.aa = aa;
-            add(b, bOffset);
+            add(bOffset, b);
         }
 
         @Override
-        public boolean add(final Term t, long bt) {
+        public boolean add(long bt, final Term what) {
             assert (bt != XTERNAL);
 
 
-            if (t == b)
-                return super.add(t, bt);
+            if (what == b)
+                return super.add(bt, what);
             else {
-                boolean neg = t.op() == NEG;
+                boolean neg = what.op() == NEG;
 
 
-                
-                
-                byte tInA = (byte) ((aa.terms.get(neg ? t.unneg() : t) + 1) * (neg ? -1 : +1));
+                byte tInA = (byte) ((aa.termToId.get(neg ? what.unneg() : what) + 1) * (neg ? -1 : +1));
 
-                
+
                 LongArrayList whens = new LongArrayList(2);
 
                 aa.event.forEachKeyValue((long when, Object wat) -> {
@@ -1051,63 +954,50 @@ public class Conj {
 
                 int ws = whens.size();
                 if (ws == 0) {
-                    return super.add(t, bt); 
+                    return super.add(bt, what);
                 }
 
                 long theWhen;
                 if (ws > 1) {
-                    LongToLongFunction TemporalDistance;
+                    LongToLongFunction temporalDistance;
                     if (bt == ETERNAL) {
-                        TemporalDistance = (at) -> at == ETERNAL ? 0 : 1; 
+                        temporalDistance = (at) -> at == ETERNAL ? 0 : 1;
                     } else {
                         long finalBt = bt;
-                        TemporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE; 
+                        temporalDistance = (at) -> at != ETERNAL ? Math.abs(finalBt - at) : Long.MAX_VALUE;
                     }
                     long[] whensArray = whens.toArray();
-                    ArrayUtils.sort(whensArray, TemporalDistance);
+                    ArrayUtils.sort(whensArray, temporalDistance);
 
                     theWhen = whensArray[whensArray.length - 1];
                 } else {
                     theWhen = whens.get(0);
                 }
 
-                return super.add(t, Tense.dither(merge(theWhen, bt), nar));
+                return super.add(Tense.dither(merge(theWhen, bt), nar), what);
             }
 
         }
 
         long merge(long x, long y) {
             if (x == y) return x;
-            if (x == ETERNAL ^ y == ETERNAL)
+            if (x == ETERNAL | y == ETERNAL)
                 return ETERNAL;
+            if (x == XTERNAL | y == XTERNAL)
+                throw new RuntimeException("xternal in conjtermpolate");
 
 
-            
-            if (mergeOrChoose) {
+            if (mergeOrChoose || Math.abs(x - y) < 2 /* 1 apart, then choose */) {
                 if (Math.abs(x - y) > 1) {
-                    
                     return (x + y) / 2L;
                 }
             }
 
-            
-            return rng.nextBoolean() ? x : y; 
+
+            return rng.nextBoolean() ? x : y;
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

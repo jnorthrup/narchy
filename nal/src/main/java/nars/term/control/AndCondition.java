@@ -1,6 +1,7 @@
 package nars.term.control;
 
 import jcog.Util;
+import jcog.list.FasterList;
 import nars.$;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
@@ -38,7 +39,8 @@ public final class AndCondition<D> extends AbstractPred<D> {
         switch (s) {
             case 0: return null;
             case 1: return cond.get(0);
-            default: return the(cond.toArray(new PrediTerm[s]));
+            default: return the(
+                    cond instanceof FasterList ? ((FasterList<PrediTerm<D>>)cond).toArrayRecycled(PrediTerm[]::new) : cond.toArray(new PrediTerm[s]));
         }
     }
 

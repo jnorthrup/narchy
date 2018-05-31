@@ -12,11 +12,11 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
-public class ProxyTerm<T extends Term> implements Term, Compound {
+public class ProxyTerm implements Term, Compound {
 
-    public final /*HACK make unpublic */ T ref;
+    public final /*HACK make unpublic */ Term ref;
 
-    public ProxyTerm(T t) {
+    public ProxyTerm(Term t) {
         
         this.ref = t;
     }

@@ -356,7 +356,7 @@
 
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Task)
+    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
     //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)

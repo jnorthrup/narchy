@@ -1,30 +1,21 @@
 package nars.term.anon;
 
-import jcog.list.FasterList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
+import nars.term.compound.util.AnonMap;
 import nars.term.var.UnnormalizedVariable;
 import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
-
-import static nars.term.anon.Anom.MAX_ANOM;
 
 /**
  * term anonymization context, for canonicalization and generification of compounds
  */
-public class Anon {
-
-    /** term -> id */
-    final ObjectByteHashMap<Term> fwd;
-
-    /** id -> term */
-    public final FasterList<Term> rev = new FasterList<>(0);
+public class Anon extends AnonMap {
 
     private final TermTransform PUT, GET;
 
@@ -33,13 +24,13 @@ public class Anon {
     }
 
     public Anon(int estSize) {
-        fwd = new ObjectByteHashMap(estSize);
+        super(estSize);
         this.PUT = newPut();
         this.GET = newGet();
     }
 
     public int uniques() {
-        return rev.size();
+        return idToTerm.size();
     }
     /** returns true if anything changed */
     public boolean rollback(int uniques) {
@@ -51,21 +42,21 @@ public class Anon {
         int max;
         if (uniques < (max = uniques())) {
             for (int i = uniques; i < max; i++)
-                fwd.removeKey(rev.get(i));
-            rev.removeAbove(uniques);
+                termToId.removeKey(idToTerm.get(i));
+            idToTerm.removeAbove(uniques);
             return true;
         }
         return false;
     }
 
     final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
-        int s = rev.addAndGetSize(next);
-        assert (s < MAX_ANOM);
+        int s = idToTerm.addAndGetSize(next);
+        assert (s < Byte.MAX_VALUE);
         return (byte) s;
     };
 
     protected TermTransform newPut() {
-        
+
         return new DirectTermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
@@ -75,7 +66,7 @@ public class Anon {
     }
 
     protected TermTransform newGet() {
-        
+
         return new TermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
@@ -84,23 +75,19 @@ public class Anon {
         };
     }
 
-    public void clear() {
-        fwd.clear();
-        rev.clear();
-    }
 
     public Term put(Term x) {
         if (x instanceof AnonID) {
-            
 
 
-            return x; 
+
+            return x;
         } else if (x instanceof Atomic) {
 
-            if (x instanceof UnnormalizedVariable) return x; 
-            if (x instanceof Int.IntRange) return x; 
+            if (x instanceof UnnormalizedVariable) return x;
+            if (x instanceof Int.IntRange) return x;
 
-            return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
+            return Anom.the[termToId.getIfAbsentPutWithKey(x, nextUniqueAtom)];
 
         } else {
             return PUT.transformCompound((Compound)x);
@@ -109,7 +96,7 @@ public class Anon {
 
     public Term get(Term x) {
         if (x instanceof Anom) {
-            return rev.get(((Int) x).id - 1); 
+            return idToTerm.get(((Int) x).id - 1);
         } else if (x instanceof Compound) {
             return GET.transformCompound((Compound) x);
         } else {

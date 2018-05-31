@@ -34,199 +34,6 @@ public enum Terms {
     ;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static Term[] sorted(Term... arg) {
         int len = arg.length;
         switch (len) {
@@ -241,24 +48,16 @@ public enum Terms {
                 Term a = arg[0];
                 Term b = arg[1];
                 int c = a.compareTo(b);
-                if (c < 0) return arg; 
+                if (c < 0) return arg;
                 else if (c > 0) return new Term[]{b, a};
-                else /*if (c == 0)*/ return new Term[]{a}; 
+                else /*if (c == 0)*/ return new Term[]{a};
 
-
-                
-
-            default: {
-                SortedList<Term> sl = new SortedList<>(arg, new Term[arg.length]);
-                if (sl.orderChangedOrDeduplicated)
-                    return sl.toArrayRecycled(Term[]::new);
-                else
-                    return arg; 
-            }
-
-            
 
         }
+
+        SortedList<Term> sl = new SortedList<>(arg, new Term[arg.length]);
+        return sl.orderChangedOrDeduplicated ?
+                sl.toArrayRecycled(Term[]::new) : arg;
     }
 
     public static void printRecursive(PrintStream out, Term x) {
@@ -266,7 +65,7 @@ public enum Terms {
     }
 
     static void printRecursive(PrintStream out, Term x, int level) {
-        
+
         for (int i = 0; i < level; i++)
             out.print("  ");
 
@@ -276,7 +75,6 @@ public enum Terms {
         out.print("c" + x.complexity() + ",v" + x.volume() + ",dt=" + x.dt() + ",dtRange=" + x.dtRange() + " ");
         out.print(Integer.toBinaryString(x.structure()) + ')');
         out.println();
-
 
 
         x.subterms().forEach(z -> printRecursive(out, z, level + 1));
@@ -292,7 +90,7 @@ public enum Terms {
     }
 
     public static void printRecursive(Term x, int level, Consumer<String> c) {
-        
+
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < level; i++)
             line.append("  ");
@@ -306,16 +104,6 @@ public enum Terms {
 
         c.accept(line.toString());
     }
-
-
-
-
-
-
-
-
-
-
 
 
     @Nullable
@@ -367,76 +155,6 @@ public enum Terms {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
      * when there is a chocie, it prefers least aggressive introduction. and then random choice if
@@ -449,86 +167,29 @@ public enum Terms {
 
         LazyIterable<Term> ok = oi.keysView();
         switch (oi.size()) {
-            case 0: return null;
-            case 1: return ok.getFirst();
+            case 0:
+                return null;
+            case 1:
+                return ok.getFirst();
         }
-
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         {
-            
-            
+
+
             Term[] x = oi.keysView().toArray(Op.EmptyTermArray);
-            return x[ Roulette.selectRoulette(x.length, n->1f/(x[n].volume()), rng) ];
-
-
-
-
-
-
-
-
-
-
-
-
-
+            return x[Roulette.selectRoulette(x.length, n -> 1f / (x[n].volume()), rng)];
 
 
         }
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * counts the repetition occurrence count of each subterm within a compound
      */
-    @Nullable public static ObjectIntHashMap<Term> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
+    @Nullable
+    public static ObjectIntHashMap<Term> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
         ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume());
 
         c.recurseTerms((Term subterm) -> {
@@ -549,7 +210,7 @@ public enum Terms {
         }
 
         return uniques.isEmpty() ? null : uniques;
-        
+
     }
 
     /**
@@ -559,7 +220,7 @@ public enum Terms {
 
         Term[] x = s.toArray(Op.EmptyTermArray);
 
-        
+
         if ((x.length >= 2) && (!(s instanceof SortedSet)))
             return sorted(x);
         else
@@ -574,135 +235,6 @@ public enum Terms {
         }
         return u;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static Term[] dropRandom(Random random, Subterms t) {
@@ -720,7 +252,7 @@ public enum Terms {
 
     public static StableBloomFilter<Term> newTermBloomFilter(Random rng, int cells) {
         return new StableBloomFilter<>(
-                cells, 2, 1f/cells, rng,
+                cells, 2, 1f / cells, rng,
                 new BytesHashProvider<>(IO::termToBytes));
     }
 
@@ -729,27 +261,22 @@ public enum Terms {
         int yStruct = y.structure();
         return (xStruct & yStruct) != 0;
     }
+
     public static boolean commonStructureExcept(Termlike x, Termlike y, int maskedBits) {
         int xStruct = x.structure() & ~(maskedBits);
         int yStruct = y.structure() & ~(maskedBits);
         return (xStruct & yStruct) != 0;
     }
 
-    /** non-symmetric use only */
+    /**
+     * non-symmetric use only
+     */
     public static boolean hasAllExcept(Termlike requirer, Termlike required, int maskedBits) {
-        int xStruct = requirer.structure() & ~(maskedBits); 
-        if (xStruct!=0) {
-            int yStruct = required.structure() & ~(maskedBits); 
+        int xStruct = requirer.structure() & ~(maskedBits);
+        if (xStruct != 0) {
+            int yStruct = required.structure() & ~(maskedBits);
             if (!Op.hasAll(yStruct, xStruct))
                 return false;
-
-
-
-
-
-
-
-
 
 
         }
@@ -759,7 +286,7 @@ public enum Terms {
     public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
         if (u.varSymmetric)
             return true;
-        return hasAllExcept( x, y, u.typeBits() );
+        return hasAllExcept(x, y, u.typeBits());
     }
 }
 

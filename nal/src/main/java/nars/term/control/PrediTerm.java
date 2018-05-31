@@ -30,7 +30,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
     };
     PrediTerm[] EmptyPrediTermArray = new PrediTerm[0];
 
-    static Comparator<PrediTerm<?>> sort(ToIntFunction<PrediTerm<?>> count) {
+    static Comparator<PrediTerm> sort(ToIntFunction<PrediTerm> count) {
         return (a, b) -> {
 
             
@@ -47,18 +47,18 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
         return Util.map(x -> x.transform(f), new PrediTerm[cache.length], cache);
     }
 
-    static PrediTerm compileAnd(PrediTerm[] p) {
+    static <X> PrediTerm<X> compileAnd(PrediTerm<X>[] p) {
         switch (p.length) {
             case 0: return null;
             case 1: return p[0];
             default:
                 
-                FasterList<PrediTerm> pp = new FasterList(p);
+                FasterList<PrediTerm<X>> pp = new FasterList<>(p);
                 pp.removeIf(prediTerm -> !prediTerm.remainInAND(p));
                 if (pp.size() > 1)
                     pp.sort(sortByCost);
 
-                return AndCondition.the(pp.toArrayRecycled(PrediTerm[]::new));
+                return AndCondition.the(pp);
         }
     }
 

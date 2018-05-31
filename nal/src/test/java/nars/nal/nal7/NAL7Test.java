@@ -30,7 +30,7 @@ public class NAL7Test extends NALTest {
     public void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.termVolumeMax.set(18);
-        test.nar.confMin.set(0.2f);
+        test.nar.confMin.set(0.1f);
     }
 
 
@@ -170,7 +170,7 @@ public class NAL7Test extends NALTest {
         ;
     }
 
-    @Test @Disabled
+    @Test
     public void testConjDecomposeParallelGoal() {
         test
                 .inputAt(1, "(a &| b)! :|:")
@@ -189,7 +189,7 @@ public class NAL7Test extends NALTest {
                   $.50 c. 5 %1.0;.90% {5: 3}
          */
         test
-                .inputAt(1, "a. :|:") 
+                .inputAt(1, "a. :|:")
                 .inputAt(5, "b. :|:")
                 .inputAt(10, "c. :|:")
                 .mustBelieve(10, "(b &&+5 c)", 1.00f, 0.81f, 5)
@@ -200,28 +200,28 @@ public class NAL7Test extends NALTest {
     @Test
     public void testDropAnyEventSimple2a() {
         test
-                .inputAt(1, "((happy &&+4120 (i)) &&+1232 (j)). :|:")
-                .mustBelieve(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "((i)&&happy)", BELIEF, 1)
+                .inputAt(1, "((happy &&+4120 i) &&+1232 j). :|:")
+                .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "(i&&happy)", BELIEF, 1)
         ;
     }
 
     @Test
     public void testDropAnyEventSimple2ba() {
         test
-                .inputAt(1, "(happy &&+4120 ((i) &&+1232 (--,(i)))). :|:")
-                .mustBelieve(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(happy &&+4120 (i))", BELIEF, 1233)
-                .mustNotOutput(cycles, "((i)&&happy)", BELIEF, 1)
+                .inputAt(1, "(happy &&+4120 (i &&+1232 (--,i))). :|:")
+                .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "(happy &&+4120 i)", BELIEF, 1233)
+                .mustNotOutput(cycles, "(i&&happy)", BELIEF, 1)
         ;
     }
     @Test
     public void testDropAnyEventSimple2bb() {
         test
                 .inputAt(1, "((happy &&+4120 i) &&+1232 --i). :|:")
-                .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(happy &&+4120 i)", BELIEF, 1233)
-                .mustNotOutput(cycles, "(i && happy)", BELIEF, 1)
+                .mustBelieve(cycles*2, "(happy &&+4120 i)", 1f, 0.81f, 1)
+                .mustNotOutput(cycles*2, "(happy &&+4120 i)", BELIEF, 1233)
+                .mustNotOutput(cycles*2, "(i && happy)", BELIEF, 1)
         ;
     }
 
@@ -1077,7 +1077,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(0, "(x --> a). :|:")
                 .inputAt(0, "(y --> a). :|:")
-                .mustBelieve(cycles, "((x&y)-->a)", 1f, 0.81f, 0)
+                .mustBelieve(cycles*4, "((x&y)-->a)", 1f, 0.81f, 0)
         ;
     }
 
@@ -1161,17 +1161,18 @@ public class NAL7Test extends NALTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " :|:"}) 
     public void multiConditionSyllogismPost(String implSuffix) {
-        
 
+
+        long implTime = implSuffix.equals("") ? ETERNAL : 0;
         test
                 .input("hold(key). :|:")
-                .input("(goto(door) =|> (hold(#x) &| open(door)))." + implSuffix)
+                .input("(goto(door) =|> (hold(key) &| open(door)))." + implSuffix)
                 .mustBelieve(cycles, "(goto(door) =|> open(door))",
-                        1f, 1.00f, 0.73f, 0.81f,
-                        0)
+                        1f, 1.00f, 0.73f, 0.82f,
+                        implTime)
                 .mustBelieve(cycles, "(goto(door) =|> hold(key))",
-                        1f, 1.00f, 0.73f, 0.81f,
-                        0);
+                        1f, 1.00f, 0.73f, 0.82f,
+                        implTime);
     }
 
     @Test
@@ -1562,8 +1563,8 @@ public class NAL7Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((x1 && a) ==>+2 c)");
         tester.believe("((y1 && a) ==>+1 c)");
-        tester.mustBelieve(cycles, "(x1 ==>+1 y1)", 1.00f, 0.45f);
-        tester.mustBelieve(cycles, "(y1 ==>-1 x1)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles*4, "(x1 ==>+1 y1)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles*4, "(y1 ==>-1 x1)", 1.00f, 0.45f);
     }
 
 }

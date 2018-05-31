@@ -22,8 +22,8 @@ public class ConjTest {
 
     @Test public void testSimpleEternals() {
         Conj c = new Conj();
-        c.add($.the("x"), ETERNAL);
-        c.add($.the("y"), ETERNAL);
+        c.add(ETERNAL, $.the("x"));
+        c.add(ETERNAL, $.the("y"));
         assertEquals("(x&&y)", c.term().toString());
         assertEquals(1, c.event.size());
         assertEquals(byte[].class, c.event.get(ETERNAL).getClass());
@@ -31,75 +31,75 @@ public class ConjTest {
 
     @Test public void testSimpleEternalsNeg() {
         Conj c = new Conj();
-        c.add($.the("x"), ETERNAL);
-        c.add($.the("y").neg(), ETERNAL);
+        c.add(ETERNAL, $.the("x"));
+        c.add(ETERNAL, $.the("y").neg());
         assertEquals("((--,y)&&x)", c.term().toString());
     }
 
     @Test public void testSimpleEvents() {
         Conj c = new Conj();
-        c.add($.the("x"), 1);
-        c.add($.the("y"), 2);
+        c.add(1, $.the("x"));
+        c.add(2, $.the("y"));
         assertEquals("(x &&+1 y)", c.term().toString());
         assertEquals(1, c.shift());
         assertEquals(2, c.event.size());
     }
     @Test public void testRoaringBitmapNeededManyEventsAtSameTime() {
         Conj c = new Conj();
-        c.add($.the("a"), 1);
-        c.add($.the("b"), 1);
-        c.add($.the("c"), 1);
-        c.add($.the("d"), 1);
-        c.add($.the("e"), 1);
+        c.add(1, $.the("a"));
+        c.add(1, $.the("b"));
+        c.add(1, $.the("c"));
+        c.add(1, $.the("d"));
+        c.add(1, $.the("e"));
         assertEquals("(&|,a,b,c,d,e)", c.term().toString());
         assertEquals(1, c.event.size());
         assertEquals(RoaringBitmap.class, c.event.get(1).getClass());
     }
     @Test public void testSimpleEventsNeg() {
         Conj c = new Conj();
-        c.add($.the("x"), 1);
-        c.add($.the("y").neg(), 2);
+        c.add(1, $.the("x"));
+        c.add(2, $.the("y").neg());
         assertEquals("(x &&+1 (--,y))", c.term().toString());
     }
 
     @Test public void testEventContradiction() {
         Conj c = new Conj();
-        c.add($.the("x"), 1);
-        assertFalse(c.add($.the("x").neg(), 1));
+        c.add(1, $.the("x"));
+        assertFalse(c.add(1, $.the("x").neg()));
         assertEquals(False, c.term());
     }
     @Test public void testEventContradictionAmongNonContradictions() {
         Conj c = new Conj();
-        c.add($.the("x"), 1);
-        c.add($.the("y"), 1);
-        c.add($.the("z"), 1);
-        assertFalse(c.add($.the("x").neg(), 1));
+        c.add(1, $.the("x"));
+        c.add(1, $.the("y"));
+        c.add(1, $.the("z"));
+        assertFalse(c.add(1, $.the("x").neg()));
         assertEquals(False, c.term());
     }
     @Test public void testEventContradictionAmongNonContradictionsRoaring() {
         Conj c = new Conj();
-        c.add($$("(&&,a,b,c,d,e,f,g,h)"), ETERNAL);
-        boolean added = c.add($.the("a").neg(), 1);
+        c.add(ETERNAL, $$("(&&,a,b,c,d,e,f,g,h)"));
+        boolean added = c.add(1, $.the("a").neg());
         assertEquals(False, c.term());
     }
     @Test public void testEventContradictionWithEternal() {
         Conj c = new Conj();
-        c.add($.the("x"), ETERNAL);
-        boolean added = c.add($.the("x").neg(), 1);
+        c.add(ETERNAL, $.the("x"));
+        boolean added = c.add(1, $.the("x").neg());
         assertEquals(False, c.term());
     }
     @Test public void testEventNonContradictionWithEternal() {
         Conj c = new Conj();
-        c.add($.the("x"), ETERNAL);
-        boolean added = c.add($.the("y"), 1);
+        c.add(ETERNAL, $.the("x"));
+        boolean added = c.add(1, $.the("y"));
         assertTrue(added);
         assertEquals("(x&&y)", c.term().toString());
     }
     @Test public void testEventNonContradictionWithEternal2() {
         Conj c = new Conj();
-        c.add($.the("x"), ETERNAL);
-        c.add($.the("y"), 1);
-        c.add($.the("z"), 2);
+        c.add(ETERNAL, $.the("x"));
+        c.add(1, $.the("y"));
+        c.add(2, $.the("z"));
         assertEquals("((y &&+1 z)&&x)", c.term().toString());
     }
 
@@ -268,14 +268,14 @@ public class ConjTest {
 
     @Test public void testConjWithoutAll() {
         assertEquals("(a&&b)", Conj.withoutAll(
-                    $$("(&&,a,b,c)"),
-                    $$("(&&,c,d,e)")).toString());
+                $$("(&&,a,b,c)"),
+                $$("(&&,c,d,e)")).toString());
 
         assertEquals("(a&|b)", Conj.withoutAll(
                 $$("(&|,a,b,c)"),
                 $$("(&|,c,d,e)")).toString());
 
-        
+
         assertEquals("(&&,a,b,c)", Conj.withoutAll(
                 $$("(&&,a,b,c)"),
                 $$("(&|,c,d,e)")).toString());
@@ -283,6 +283,9 @@ public class ConjTest {
         assertEquals("(a&&b)", Conj.withoutAll(
                 $$("(&&,a,b,--c)"),
                 $$("(&&,--c,d,e)")).toString());
+    }
+
+    @Test public void testConjWithoutAllMixEternalAndParallel() {
 
         assertEquals("(x&&y)", Conj.withoutAll(
                 $$("(&|,(x&&y),(b&&c))"),
@@ -293,6 +296,43 @@ public class ConjTest {
     @Test public void testEmptyConjResultTerm() {
         Conj c = new Conj();
         assertEquals(True, c.term());
+    }
+    @Test public void testEmptyConjTrueEternal() {
+        Conj c = new Conj();
+        c.add(ETERNAL, True);
+        assertEquals(True, c.term());
+    }
+    @Test public void testEmptyConjTrueTemporal() {
+        Conj c = new Conj();
+        c.add(0, True);
+        assertEquals(True, c.term());
+    }
+    @Test public void testEmptyConjFalseEternal() {
+        Conj c = new Conj();
+        c.add(ETERNAL, False);
+        assertEquals(False, c.term());
+    }
+    @Test public void testEmptyConjFalseTemporal() {
+        Conj c = new Conj();
+        c.add(0, False);
+        assertEquals(False, c.term());
+    }
+    @Test public void testEmptyConjFalseEternalShortCircuit() {
+        Conj c = new Conj();
+        c.add(ETERNAL, $$("x"));
+        boolean addedFalse = c.add(ETERNAL, False);
+        assertFalse(addedFalse);
+        //boolean addedAfterFalse = c.add($$("y"), ETERNAL);
+        assertEquals(False, c.term());
+    }
+
+    @Test public void testEmptyConjFalseTemporalShortCircuit() {
+        Conj c = new Conj();
+        c.add(0, $$("x"));
+        boolean addedFalse = c.add(0, False);
+        assertFalse(addedFalse);
+        //boolean addedAfterFalse = c.add($$("y"), 0);
+        assertEquals(False, c.term());
     }
 
 }

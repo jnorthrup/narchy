@@ -12,8 +12,6 @@ import static nars.Op.ATOM;
 /* indexed anonymous term */
 public final class Anom extends Int implements AnonID {
 
-    final static int MAX_ANOM = 127;
-
     static final byte ANOM_SUBTYPE = 1;
     static final int ANOM_OPX = Term.opX(ATOM, ANOM_SUBTYPE);
     static final byte ANOM_HEADER = IO.opAndSubType(ATOM, ANOM_SUBTYPE);
@@ -78,7 +76,7 @@ public final class Anom extends Int implements AnonID {
         
     }
 
-    static final Anom[] the = Util.map(0, MAX_ANOM, (i) -> new Anom((byte) i), Anom[]::new);
+    static final Anom[] the = Util.map(0, (int) Byte.MAX_VALUE, (i) -> new Anom((byte) i), Anom[]::new);
     static {
         the[0] = null; 
     }

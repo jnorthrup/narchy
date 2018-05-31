@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static nars.Op.Null;
-import static nars.term.Terms.sorted;
 import static nars.time.Tense.DTERNAL;
 
 /**
@@ -37,7 +36,7 @@ public abstract class TermBuilder {
     public final Term compound(Op o, int dt, Term[] u) {
         if (Op.hasNull(u))
             return Null;
-        return newCompound(o, dt, o.commute(dt, u.length) ? sorted(u) : u);
+        return newCompound(o, dt, o.sortedIfNecessary(dt, u));
     }
 
     protected Term resolve(Term x){

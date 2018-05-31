@@ -243,7 +243,7 @@ public enum Op {
                     Conj c = new Conj();
                     long sdt = dt == DTERNAL ? ETERNAL : 0;
                     for (Term x : u) {
-                        if (!c.add(x, sdt))
+                        if (!c.add(sdt, x))
                             break;
                     }
                     return c.term();
@@ -1673,7 +1673,7 @@ public enum Op {
                         
                         Conj c = new Conj();
                         for (int i = 0, peSize = pe.size(); i < peSize; i++) {
-                            if (!c.add(pe.get(i).getTwo(), ETERNAL)) 
+                            if (!c.add(ETERNAL, pe.get(i).getTwo()))
                                 break;
                         }
                         newPredicate = c.term();
@@ -2078,8 +2078,15 @@ public enum Op {
         }
     }
 
-    public final boolean commute(int dt, int size) {
-        return commutative && size > 1 && Op.concurrent(dt);
+    public final Term[] sortedIfNecessary(int dt, Term[] u) {
+        if (commutative && commute(dt, u.length)) {
+            return sorted(u);
+        }
+        return u;
+    }
+
+    public boolean commute(int dt, int subterms) {
+        return subterms > 1 && Op.concurrent(dt);
     }
 
     public final Term the(/*@NotNull*/ Collection<Term> sub) {

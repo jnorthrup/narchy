@@ -19,18 +19,12 @@ import static nars.experiment.Tetris.TetrisState.*;
  */
 public class Tetris extends NAgentX implements Bitmap2D {
 
-    public final FloatRange timePerFall = new FloatRange(2f, 1f, 32f);
-
     public static final int tetris_width = 8;
     public static final int tetris_height = 16;
-
-    
-    
     static boolean easy;
-
-    private TetrisState state;
-
+    public final FloatRange timePerFall = new FloatRange(2f, 1f, 32f);
     private final Bitmap2DSensor<Bitmap2D> pixels;
+    private TetrisState state;
 
     public Tetris(NAR nar) throws Narsese.NarseseException {
         this(nar, Tetris.tetris_width, Tetris.tetris_height);
@@ -54,514 +48,54 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
                 if (easy) {
-                    
-                    return 1; 
-                    
+
+                    return 1;
+
                 } else {
-                    return super.nextBlock(); 
+                    return super.nextBlock();
                 }
             }
-
-
-
-
 
 
         };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         addCamera(
                 pixels = new Bitmap2DSensor<>(
-                    (x, y)->$.p(id,$.the(x),$.the(y))
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                , this, nar)
-                
+                        (x, y) -> $.p(id, $.the(x), $.the(y))
+
+
+                        , this, nar)
+
         );
-        
 
 
         actionsReflect();
-        
+
         actionsToggle();
 
         state.reset();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
-
-    private void actionsReflect() {
-
-        Opjects oo = new Opjects(nar);
-        oo.exeThresh.set(0.6f);
-
-        Opjects.methodExclusions.add("toVector");
-
-        state = oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
-
-    }
-
-
-    void actionsToggle() {
-        final Term LEFT = $.the("left"); 
-        final Term RIGHT = $.the("right"); 
-        final Term ROT = $.the("rotate"); 
-
-        actionPushButtonMutex(LEFT, RIGHT,
-                (b) -> state.act(TetrisState.LEFT, b),
-                (b) -> state.act(TetrisState.RIGHT, b));
-
-        actionPushButton(ROT, () -> state.act(CW));
-        
-    }
-
-    void actionsTriState() {
-
-
-        actionTriState($.func("X", id), (i) -> {
-            switch (i) {
-                case -1:
-                    return state.act(LEFT);
-                case +1:
-                    return state.act(RIGHT);
-                default:
-                case 0:
-                    return true;
-            }
-        });
-
-
-
-        actionPushButton($.func("R", id), () -> state.act(CW));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-    }
-
-    @Override
-    public int width() {
-        return state.width;
-    }
-
-    @Override
-    public int height() {
-        return state.height;
-    }
-
-    @Override
-    public float brightness(int xx, int yy) {
-        int index = yy * state.width + xx;
-        return state.seen[index] > 0 ? 1f : 0f;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Override
-    public float act() {
-
-        state.timePerFall = Math.round(timePerFall.floatValue());
-        return state.next();
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public static void main(String[] args) {
-        
 
 
         TimeAware nn = NAgentX.runRT((n) -> {
             Tetris a = null;
             try {
 
-                
-
-
 
                 a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
 
 
+                n.freqResolution.set(0.2f);
 
-                n.freqResolution.set(0.02f);
-                
 
-                
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             return a;
@@ -586,7 +120,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
 
-        
 
 
 
@@ -605,19 +138,20 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
 
-        
-
-
-        
-
-        
 
 
 
 
-        
 
-        
+
+
+
+
+
+
+
+
+
 
 
 
@@ -678,117 +212,74 @@ public class Tetris extends NAgentX implements Bitmap2D {
         */
 
 
+    }
 
+    private void actionsReflect() {
 
+        Opjects oo = new Opjects(nar);
+        oo.exeThresh.set(0.6f);
 
+        Opjects.methodExclusions.add("toVector");
 
+        state = oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
 
+    }
 
+    void actionsToggle() {
+        final Term LEFT = $.the("left");
+        final Term RIGHT = $.the("right");
+        final Term ROT = $.the("rotate");
 
+        actionPushButtonMutex(LEFT, RIGHT,
+                (b) -> state.act(TetrisState.LEFT, b),
+                (b) -> state.act(TetrisState.RIGHT, b));
 
+        actionPushButton(ROT, () -> state.act(CW));
 
+    }
 
+    void actionsTriState() {
 
 
+        actionTriState($.func("X", id), (i) -> {
+            switch (i) {
+                case -1:
+                    return state.act(LEFT);
+                case +1:
+                    return state.act(RIGHT);
+                default:
+                case 0:
+                    return true;
+            }
+        });
 
 
+        actionPushButton($.func("R", id), () -> state.act(CW));
 
 
+    }
 
+    @Override
+    public int width() {
+        return state.width;
+    }
 
+    @Override
+    public int height() {
+        return state.height;
+    }
 
+    @Override
+    public float brightness(int xx, int yy) {
+        int index = yy * state.width + xx;
+        return state.seen[index] > 0 ? 1f : 0f;
+    }
 
+    @Override
+    public float act() {
 
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-        
-
-        
-
-
-
-
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-
-
-
+        state.timePerFall = Math.round(timePerFall.floatValue());
+        return state.next();
 
     }
 
@@ -800,12 +291,12 @@ public class Tetris extends NAgentX implements Bitmap2D {
             n.time.dur(4);
             n.freqResolution.set(0.02f);
             n.confResolution.set(0.02f);
-            
+
 
             new Tetris(n, Tetris.tetris_width, Tetris.tetris_height, 2);
             n.run(200);
 
-            
+
             n.concepts().forEach(c -> {
                 System.out.println(c);
                 c.tasks().forEach(t -> {
@@ -819,221 +310,16 @@ public class Tetris extends NAgentX implements Bitmap2D {
         }
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public static class TetrisPiece {
 
         int[][][] thePiece = new int[4][5][5];
         int currentOrientation;
 
-        public void setShape(int Direction, int[] row0, int[] row1, int[] row2, int[] row3, int[] row4) {
-            thePiece[Direction][0] = row0;
-            thePiece[Direction][1] = row1;
-            thePiece[Direction][2] = row2;
-            thePiece[Direction][3] = row3;
-            thePiece[Direction][4] = row4;
-        }
-
-        public int[][] getShape(int whichOrientation) {
-            return thePiece[whichOrientation];
-        }
-
         public static TetrisPiece makeSquare() {
             TetrisPiece newPiece = new TetrisPiece();
 
-            
+
             int[] row0 = {0, 0, 0, 0, 0};
             int[] row1 = {0, 0, 1, 1, 0};
             int[] row2 = {0, 0, 1, 1, 0};
@@ -1051,7 +337,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             TetrisPiece newPiece = new TetrisPiece();
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 1, 0, 0};
                 int[] row2 = {0, 1, 1, 1, 0};
@@ -1060,7 +346,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 newPiece.setShape(0, row0, row1, row2, row3, row4);
             }
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 1, 0, 0};
                 int[] row2 = {0, 0, 1, 1, 0};
@@ -1070,7 +356,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 0, 0, 0};
                 int[] row2 = {0, 1, 1, 1, 0};
@@ -1078,7 +364,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 int[] row4 = {0, 0, 0, 0, 0};
                 newPiece.setShape(2, row0, row1, row2, row3, row4);
             }
-            
+
             int[] row0 = {0, 0, 0, 0, 0};
             int[] row1 = {0, 0, 1, 0, 0};
             int[] row2 = {0, 1, 1, 0, 0};
@@ -1093,7 +379,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             TetrisPiece newPiece = new TetrisPiece();
 
             {
-                
+
                 int[] row0 = {0, 0, 1, 0, 0};
                 int[] row1 = {0, 0, 1, 0, 0};
                 int[] row2 = {0, 0, 1, 0, 0};
@@ -1103,7 +389,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 newPiece.setShape(2, row0, row1, row2, row3, row4);
             }
 
-            
+
             int[] row0 = {0, 0, 0, 0, 0};
             int[] row1 = {0, 0, 0, 0, 0};
             int[] row2 = {0, 1, 1, 1, 1};
@@ -1119,7 +405,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             TetrisPiece newPiece = new TetrisPiece();
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 1, 0, 0, 0};
                 int[] row2 = {0, 1, 1, 0, 0};
@@ -1129,7 +415,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 newPiece.setShape(2, row0, row1, row2, row3, row4);
             }
 
-            
+
             int[] row0 = {0, 0, 0, 0, 0};
             int[] row1 = {0, 0, 1, 1, 0};
             int[] row2 = {0, 1, 1, 0, 0};
@@ -1145,7 +431,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             TetrisPiece newPiece = new TetrisPiece();
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 1, 0, 0};
                 int[] row2 = {0, 1, 1, 0, 0};
@@ -1155,7 +441,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 newPiece.setShape(2, row0, row1, row2, row3, row4);
             }
 
-            
+
             int[] row0 = {0, 0, 0, 0, 0};
             int[] row1 = {0, 1, 1, 0, 0};
             int[] row2 = {0, 0, 1, 1, 0};
@@ -1171,7 +457,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             TetrisPiece newPiece = new TetrisPiece();
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 1, 0, 0};
                 int[] row2 = {0, 0, 1, 0, 0};
@@ -1180,7 +466,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 newPiece.setShape(0, row0, row1, row2, row3, row4);
             }
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 0, 0, 0};
                 int[] row2 = {0, 1, 1, 1, 0};
@@ -1190,7 +476,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 1, 1, 0, 0};
                 int[] row2 = {0, 0, 1, 0, 0};
@@ -1198,7 +484,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 int[] row4 = {0, 0, 0, 0, 0};
                 newPiece.setShape(2, row0, row1, row2, row3, row4);
             }
-            
+
             int[] row0 = {0, 0, 0, 0, 0};
             int[] row1 = {0, 0, 0, 1, 0};
             int[] row2 = {0, 1, 1, 1, 0};
@@ -1213,7 +499,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             TetrisPiece newPiece = new TetrisPiece();
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 1, 0, 0};
                 int[] row2 = {0, 0, 1, 0, 0};
@@ -1222,7 +508,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 newPiece.setShape(0, row0, row1, row2, row3, row4);
             }
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 1, 0, 0, 0};
                 int[] row2 = {0, 1, 1, 1, 0};
@@ -1232,7 +518,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
 
             {
-                
+
                 int[] row0 = {0, 0, 0, 0, 0};
                 int[] row1 = {0, 0, 1, 1, 0};
                 int[] row2 = {0, 0, 1, 0, 0};
@@ -1240,7 +526,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 int[] row4 = {0, 0, 0, 0, 0};
                 newPiece.setShape(2, row0, row1, row2, row3, row4);
             }
-            
+
             int[] row0 = {0, 0, 0, 0, 0};
             int[] row1 = {0, 0, 0, 0, 0};
             int[] row2 = {0, 1, 1, 1, 0};
@@ -1249,6 +535,18 @@ public class Tetris extends NAgentX implements Bitmap2D {
             newPiece.setShape(3, row0, row1, row2, row3, row4);
 
             return newPiece;
+        }
+
+        public void setShape(int Direction, int[] row0, int[] row1, int[] row2, int[] row3, int[] row4) {
+            thePiece[Direction][0] = row0;
+            thePiece[Direction][1] = row1;
+            thePiece[Direction][2] = row2;
+            thePiece[Direction][3] = row3;
+            thePiece[Direction][4] = row4;
+        }
+
+        public int[][] getShape(int whichOrientation) {
+            return thePiece[whichOrientation];
         }
 
         @Override
@@ -1273,14 +571,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
         public static final int CCW = 3; /*Action value for a counter clockwise rotation*/
         public static final int NONE = 4; /*The no-action Action*/
         public static final int FALL = 5; /* fall down */
-
-
+        private final Random randomGenerator = new Random();
         public int width;
         public int height;
         public float[] seen;
-
-        private final Random randomGenerator = new Random();
-
         public boolean running = true;
         public int currentBlockId;/*which block we're using in the block table*/
 
@@ -1294,17 +588,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
         public float[] worldState;/*what the world looks like without the current block*/
-
-        
-        Vector<TetrisPiece> possibleBlocks = new Vector<>();
         public int time;
-
         public int timePerFall;
+        Vector<TetrisPiece> possibleBlocks = new Vector<>();
         private int rowsFilled;
-
-
-        
-
 
 
         public TetrisState(int width, int height, int timePerFall) {
@@ -1319,7 +606,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             possibleBlocks.add(TetrisPiece.makeLShape());
             possibleBlocks.add(TetrisPiece.makeJShape());
 
-            worldState=new float[this.height * this.width];
+            worldState = new float[this.height * this.width];
             seen = new float[width * height];
             reset();
         }
@@ -1340,7 +627,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         }
 
         private void toVector(boolean monochrome, float[] target) {
-            
+
 
             Arrays.fill(target, -1);
 
@@ -1349,15 +636,12 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else
-                    target[x] = i > 0 ? (float)i : - 1.0f;
+                    target[x] = i > 0 ? (float) i : -1.0f;
                 x++;
             }
 
             writeCurrentBlock(target, 0.5f);
 
-
-    
-    
 
         }
 
@@ -1370,8 +654,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
             for (int y = 0; y < thisPiece[0].length; ++y) {
                 for (int x = 0; x < thisPiece.length; ++x) {
                     if (thisPiece[x][y] != 0) {
-                        
-                        
+
+
                         int linearIndex = i(currentX + x, currentY + y);
                         /*if(linearIndex<0){
                             System.err.printf("Bogus linear index %d for %d + %d, %d + %d\n",linearIndex,currentX,x,currentY,y);
@@ -1423,7 +707,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                     boolean isInBounds = true;
                     boolean isColliding = false;
 
-                    
+
                     while (isInBounds && !isColliding) {
                         nextY++;
                         isInBounds = inBounds(nextX, nextY, nextRotation);
@@ -1447,8 +731,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         protected boolean act(int nextRotation, int nextX, int nextY) {
 
-            
-            
+
             if (inBounds(nextX, nextY, nextRotation)) {
                 if (!colliding(nextX, nextY, nextRotation)) {
                     currentRotation = nextRotation;
@@ -1465,27 +748,24 @@ public class Tetris extends NAgentX implements Bitmap2D {
          * Calculate the learn array position from (x,y) components based on
          * worldWidth.
          * Package level access so we can use it in tests.
+         *
          * @param x
          * @param y
          * @return
          */
         private final int i(int x, int y) {
             return y * width + x;
-            
-            
+
+
         }
-    
-    
-    
-    
-    
-    
+
 
         /**
          * Check if any filled part of the 5x5 block array is either out of bounds
          * or overlapping with something in wordState
-         * @param checkX X location of the left side of the 5x5 block array
-         * @param checkY Y location of the top of the 5x5 block array
+         *
+         * @param checkX           X location of the left side of the 5x5 block array
+         * @param checkY           Y location of the top of the 5x5 block array
          * @param checkOrientation Orientation of the block to check
          * @return
          */
@@ -1497,20 +777,18 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 for (int y = 0; y < thePiece[0].length; ++y) {
                     for (int x = 0; x < ll; ++x) {
                         if (thePiece[x][y] != 0) {
-                            
-                            
-                            
+
+
                             if (checkY + y < 0 || checkX + x < 0) {
                                 return true;
                             }
 
-                            
-                            
+
                             if (checkY + y >= height || checkX + x >= width) {
                                 return true;
                             }
 
-                            
+
                             int linearArrayIndex = i(checkX + x, checkY + y);
                             if (worldState[linearArrayIndex] != 0) {
                                 return true;
@@ -1540,10 +818,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
                     for (int x = 0; x < ll; ++x) {
                         if (thePiece[x][y] != 0) {
 
-                            
+
                             if ((checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height)) {
-                                
-                                
+
+
                                 int linearArrayIndex = i(checkX + x, checkY + y);
                                 if (worldState[linearArrayIndex] != 0) {
                                     return true;
@@ -1569,8 +847,9 @@ public class Tetris extends NAgentX implements Bitmap2D {
          * This function checks every filled part of the 5x5 block array and sees if
          * that piece is in bounds if the entire block is sitting at (checkX,checkY)
          * on the board.
-         * @param checkX X location of the left side of the 5x5 block array
-         * @param checkY Y location of the top of the 5x5 block array
+         *
+         * @param checkX           X location of the left side of the 5x5 block array
+         * @param checkY           Y location of the top of the 5x5 block array
          * @param checkOrientation Orientation of the block to check
          * @return
          */
@@ -1581,11 +860,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 for (int y = 0; y < thePiece[0].length; ++y) {
                     for (int x = 0; x < thePiece.length; ++x) {
                         if (thePiece[x][y] != 0) {
-                            
-                            
-                            
-                            
-                            
+
+
                             if (!(checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height)) {
                                 return false;
                             }
@@ -1619,14 +895,12 @@ public class Tetris extends NAgentX implements Bitmap2D {
             act();
             time++;
 
-            
+
             if (!inBounds(currentX, currentY, currentRotation)) {
                 System.err.println("In GameState.Java the Current Position of the board is Out Of Bounds... Consistency Check Failed");
             }
 
-            
 
-            
             boolean onSomething = false;
             if (!nextInBounds()) {
                 onSomething = true;
@@ -1641,7 +915,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 running = false;
                 writeCurrentBlock(worldState, -1);
             } else {
-                
+
                 if (time % timePerFall == 0)
                     currentY += 1;
             }
@@ -1657,13 +931,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
             currentX = (width / 2) - 2;
             currentY = -4;
 
-            
 
-    
-    
             boolean hitOnWayIn = false;
             while (!inBounds(currentX, currentY, currentRotation)) {
-                
+
                 hitOnWayIn = collidingCheckOnlySpotsInBounds(currentX, currentY, currentRotation);
                 currentY++;
             }
@@ -1684,14 +955,13 @@ public class Tetris extends NAgentX implements Bitmap2D {
             int rowsFilled = 0;
 
 
-            
             for (int y = height - 1; y >= 0; --y) {
                 if (isRow(y, true)) {
                     removeRow(y);
                     numRowsCleared += 1;
                     y += 1;
                 } else {
-                    if (!isRow(y,false))
+                    if (!isRow(y, false))
                         rowsFilled++;
                 }
             }
@@ -1701,44 +971,41 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
             if (numRowsCleared > 0) {
-                
-                
-                
-                
-                
+
+
             } else {
-                
+
             }
-            
 
 
             int diff = prevRows - rowsFilled;
 
-            if (diff >= height-1) {
-                
+            if (diff >= height - 1) {
+
                 score = Float.NaN;
-                        
+
             } else {
 
 
-                    score = diff;
+                score = diff;
             }
         }
 
         public float height() {
-            return (((float)rowsFilled) / height);
+            return (((float) rowsFilled) / height);
         }
 
         /**
          * Check if a row has been completed at height y.
          * Short circuits, returns false whenever we hit an unfilled spot.
+         *
          * @param y
          * @return
          */
         public boolean isRow(int y, boolean filledOrClear) {
             for (int x = 0; x < width; ++x) {
                 float s = worldState[i(x, y)];
-                if (filledOrClear ? (s==0) : (s != 0)) {
+                if (filledOrClear ? (s == 0) : (s != 0)) {
                     return false;
                 }
             }
@@ -1746,11 +1013,11 @@ public class Tetris extends NAgentX implements Bitmap2D {
         }
 
 
-
         /**
          * Dec 13/07.  Radkie + Tanner found 2 bugs here.
          * Bug 1: Top row never gets updated when removing lower rows. So, if there are
          * pieces in the top row, and we clear something, they will float there.
+         *
          * @param y
          */
         void removeRow(int y) {
@@ -1764,7 +1031,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 worldState[linearIndex] = 0;
             }
 
-            
+
             for (int ty = y; ty > 0; --ty) {
                 for (int x = 0; x < width; ++x) {
                     int linearIndexTarget = i(x, ty);
@@ -1773,21 +1040,13 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 }
             }
 
-            
+
             for (int x = 0; x < width; ++x) {
                 int linearIndex = i(x, 0);
                 worldState[linearIndex] = 0;
             }
 
         }
-
-    
-    
-    
-    
-    
-    
-    
 
 
         public int getWidth() {
@@ -1798,15 +1057,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
             return height;
         }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
         public int getCurrentPiece() {
             return currentBlockId;
@@ -1814,7 +1064,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         /**
          * Utility methd for debuggin
-         *
          */
         public void printState() {
             int index = 0;
@@ -1829,9 +1078,6 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         }
 
-    
-    
-    
 
         protected float next() {
             if (running) {
@@ -1860,27 +1106,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             reset();
         }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     }
 }
 

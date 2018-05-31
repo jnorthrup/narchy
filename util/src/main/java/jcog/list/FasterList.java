@@ -116,11 +116,12 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-
-
-
-
-
+    @Override
+    public FasterList<X> sortThis(Comparator<? super X> comparator) {
+        if (size > 1)
+            super.sortThis(comparator);
+        return this;
+    }
 
     /**
      * uses array directly

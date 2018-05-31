@@ -82,12 +82,11 @@ public enum PremiseDeriverCompiler {
             }
         });
 
-        Comparator<PrediTerm<?>> sortPrecondition = PrediTerm.sort(preconditionCount::get);
+        Comparator<PrediTerm> sortPrecondition = PrediTerm.sort(preconditionCount::get);
 
         post.forEach((k, v) -> {
 
-            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
-            pre.sortThis(sortPrecondition);
+            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1).sortThis(sortPrecondition);
 
             PrediTerm<Derivation>[] branches = StreamSupport.stream(v.spliterator(), false)
                     .map(i -> compileBranch(conclusions.get(i))).toArray(PrediTerm[]::new);
