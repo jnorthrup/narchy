@@ -67,8 +67,8 @@ public final class NoCommonSubtermConstraint extends RelationConstraint {
             }
 
             return recurse ?
-                    a.containsRecursively(b, true, limit) :
-                    a.containsRoot(b);
+                    a.containsRecursively(b, false, limit) :
+                    a.contains(b);
         }
     }
     

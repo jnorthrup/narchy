@@ -1787,13 +1787,14 @@ public enum Op {
     public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
         int xv = x.volume();
         int yv = y.volume();
+        boolean root = false;
         if (xv == yv)
             return Terms.commonStructure(x,y) &&
-                    (x.containsRecursively(y, true, delim) || y.containsRecursively(x, true, delim));
+                    (x.containsRecursively(y, root, delim) || y.containsRecursively(x, root, delim));
         else if (xv > yv)
-            return x.containsRecursively(y, true, delim);
+            return x.containsRecursively(y, root, delim);
         else
-            return y.containsRecursively(x, true, delim);
+            return y.containsRecursively(x, root, delim);
     }
 
 
