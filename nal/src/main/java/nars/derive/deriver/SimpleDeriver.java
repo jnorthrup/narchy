@@ -141,7 +141,7 @@ public class SimpleDeriver extends Deriver {
             else {
                 
                 
-                concept.templates().linkAndActivate(concept, a.pri(), nar);
+                //concept.templates().linkAndActivate(concept, a.pri(), nar);
             }
 
             return ii[0]-- > 0;

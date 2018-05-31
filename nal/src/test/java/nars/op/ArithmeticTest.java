@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
+import static nars.$.$$;
+import static nars.Op.False;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** arithmetic operators and arithmetic introduction tests */
@@ -89,6 +91,14 @@ public class ArithmeticTest {
 
     }
 
+    @Test
+    public void testContradictionResultsInFalse() {
+        assertEquals(
+                False,
+                $$("(add(1,1,#2) && add(#2,1,1))").eval(NARS.shell())
+        );
+    }
+
     @Test public void testEqBackSubstitution() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.termVolumeMax.set(12);
@@ -119,7 +129,7 @@ public class ArithmeticTest {
     }
 
     @Test
-    public void testCompleteAddInduction() throws Narsese.NarseseException {
+    public void testCompleteAddInduction() {
         NAR n = NARS.tmp();
         new ArithmeticIntroduction(8, n);
 

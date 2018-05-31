@@ -438,7 +438,7 @@ public final class TruthFunctions {
         if (c12 < minConf) return null;
         float f1 = a.freq(), f2 = b.freq();
         float f = and(x ? f1 : 1 - f1, y ? f2 : 1 - f2);
-        
+        //float c = f * c12;
         float c = (c12);
         return c < minConf ? null : t(z ? f : 1 - f, c);
     }

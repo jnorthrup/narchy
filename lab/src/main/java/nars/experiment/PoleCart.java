@@ -10,9 +10,7 @@ import nars.NAR;
 import nars.NAgent;
 import nars.NAgentX;
 import nars.concept.Concept;
-import nars.concept.scalar.DigitizedScalar;
 import nars.gui.NARui;
-import nars.term.atom.Int;
 import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
@@ -100,8 +98,8 @@ public class PoleCart extends NAgentX {
 
     
     
-    @NotNull DigitizedScalar angX;
-    @NotNull DigitizedScalar angY;
+    @NotNull Concept angX;
+    @NotNull Concept angY;
     
     Concept angVel;
     
@@ -145,15 +143,19 @@ public class PoleCart extends NAgentX {
         FloatSupplier angXval = () -> (float) (0.5f + 0.5f * (Math.sin(angle)));
         FloatSupplier angYval = () -> (float) (0.5f + 0.5f * (Math.cos(angle)));
 
-
-        angX = senseNumber(a->$.inst(Int.the(a),$.the("angX")), angXval, 2, DigitizedScalar.FuzzyNeedle);
-
-
-        
-        angY = senseNumber(a->$.inst(Int.the(a), $.the("angY")), angYval, 2, DigitizedScalar.FuzzyNeedle);
-
-        angX.resolution(0.02f);
-        angY.resolution(0.02f);
+//
+//        angX = senseNumber(a->$.inst(Int.the(a),$.the("angX")), angXval, 2, DigitizedScalar.FuzzyNeedle);
+//
+//
+//
+//        angY = senseNumber(a->$.inst(Int.the(a), $.the("angY")), angYval, 2, DigitizedScalar.FuzzyNeedle);
+//
+//        angX.resolution(0.02f);
+//        angY.resolution(0.02f);
+        this.angX = senseNumber($.the("angX"),
+                () -> (float) (0.5f + 0.5f * (Math.sin(angle))));
+        this.angY = senseNumber($.the("angY"),
+                () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
         
         this.angVel = senseNumber($.the("angVel"),

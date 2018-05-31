@@ -64,8 +64,14 @@
         ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePositiveNegativePositive)
 
 
+     //intersection conditional goal decompose
+     ((S|P) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositivePositive)
+     ((S&P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativeNegativeNegative)
+     (M --> (S&P)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositivePositive)
+     (M --> (S|P)), (M --> S) |- (M --> P), (Goal:DecomposeNegativeNegativeNegative)
 
-    //NAL3 single premise decompose
+
+//NAL3 single premise decompose
     (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOfNeg(S,X) |- (M --> without(S,--X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 

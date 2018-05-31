@@ -96,7 +96,12 @@ public enum GoalFunction implements TruthOperator {
             return TruthFunctions.decompose(T, B, true, false, true, minConf);
         }
     },
-
+    DecomposeNegativeNegativePositive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.decompose(T, B, false, false, true, minConf);
+        }
+    },
     DecomposeNegativeNegativeNegative() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

@@ -263,9 +263,12 @@
         //disj
         //S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposePositivePositivePositive)
         //S, (||,S,A..+) |- (||,A..+), (Belief:DecomposeNegativePositivePositive)
-    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativeNegativeNegative)
+    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative)
         //S, (||,(--,%S),A..+) |- (||,A..+), (Belief:DecomposePositivePositivePositive)
 
+    //disjunction goal select
+    D, X, eventOfNeg(D,X) |- conjWithout(D,--X), (Goal:DecomposeNegativePositivePositive)
+       //D, X, eventOf(D,X) |- conjWithout(D,X), (Goal:DecomposeNegativeNegativePositive)
 
 
 

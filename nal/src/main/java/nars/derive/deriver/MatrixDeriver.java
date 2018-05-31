@@ -165,7 +165,7 @@ public class MatrixDeriver extends Deriver {
 
 
         if (!commit(nar, tasklinks, termlinks)) {
-            concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
+            //concept.templates().linkAndActivate(concept, conceptActivation.priElseZero(), nar);
             return;
         }
 

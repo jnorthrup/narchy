@@ -210,7 +210,7 @@ public class PatrickTests extends NALTest {
         tt.mustGoal(cycles, "molten:toothbrush", 1f, 0.5f, (t)->t >= 0);
         tt.mustGoal(cycles, "lighter(toothbrush)", 1f,
                 0.3f,
-                (t) -> t == 0);
+                (t) -> t >= 0);
 
     }
 

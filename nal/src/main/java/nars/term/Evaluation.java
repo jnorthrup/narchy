@@ -301,7 +301,8 @@ public class Evaluation {
 
             for (Predicate p : n) {
                 if (!p.test(subst)) {
-                    continue nextPermute;
+                    return each.test(False);
+                    //continue nextPermute;
                 }
             }
 

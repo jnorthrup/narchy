@@ -27,6 +27,7 @@ public class NARio extends NAgentX {
         super("nario", nar);
         
 
+//        nar.freqResolution.set(0.1f);
         
         
 
@@ -52,7 +53,7 @@ public class NARio extends NAgentX {
         mario.start();
 
 
-        PixelBag cc = PixelBag.of(() -> mario.image, 36, 28);
+        PixelBag cc = PixelBag.of(() -> mario.image, 32, 24);
         cc.addActions(id, this, false, false, true);
         cc.actions.forEach(a -> a.resolution.set(0.25f));
         

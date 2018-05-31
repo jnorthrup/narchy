@@ -20,17 +20,12 @@ import static nars.Op.BELIEF;
 public class ThermostatTest {
 
 
+    public static void main(String[] args) {
 
-
-
-
-
-    public static void main (String[] args) {
-        
         final int DUR = 3;
 
         final int subTrainings = 2;
-        final int thinkDurs = 2; 
+        final int thinkDurs = 2;
 
         NAR n = NARS.tmp();
 
@@ -44,30 +39,16 @@ public class ThermostatTest {
 
         n.goalPriDefault.set(0.5f);
 
-        
-
-
-     
-
-
 
         float exeThresh = 0.51f;
 
-        
+
         new ConjClustering(n, BELIEF, (t) -> true, 8, 32);
 
-        
-
-        
-        
-        
 
         boolean[] training = new boolean[]{true};
 
         Opjects op = new Opjects(n) {
-
-
-
 
 
             @Override
@@ -76,7 +57,7 @@ public class ThermostatTest {
 
                 if (training[0]) {
                     n.synch();
-                    
+
                 }
 
                 Object y = super.invoked(obj, wrapped, args, result);
@@ -88,30 +69,11 @@ public class ThermostatTest {
                 return y;
             }
 
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         };
 
         Teacher<Thermostat> env = new Teacher<>(op,
                 new Thermostat());
-                
-
 
 
         Consumer<Thermostat>
@@ -139,7 +101,6 @@ public class ThermostatTest {
                     env.teach("down", condition, (Thermostat x) -> {
 
 
-
                         n.run(1);
                         while (x.is() > Thermostat.cold) {
                             x.down();
@@ -147,7 +108,6 @@ public class ThermostatTest {
                         }
                         x.report();
                         n.run(1);
-
 
 
                     }, isCold);
@@ -189,38 +149,18 @@ public class ThermostatTest {
             op.exeThresh.set(exeThresh);
 
 
-
-
-            
-
-
-
-
-
-
-
-
-
-            
-
-
-
-
-
             Thermostat t = env.x;
-
 
 
             {
 
-                
 
                 t.is(3);
                 t.should(0);
                 n.run(thinkDurs * n.dur());
 
                 Term cold = $.$$("is(a_Thermostat,0)");
-                
+
                 Term hot = $.$$("is(a_Thermostat,3)");
                 Truth goalTruth = $.t(1f, 0.9f);
 
@@ -235,8 +175,8 @@ public class ThermostatTest {
 
                 for (int i = 0; i < 16 && xPos.isOn(); i++) {
                     int period = 100;
-                    
-                    
+
+
                     n.run(period);
                 }
 
@@ -255,32 +195,14 @@ public class ThermostatTest {
                 }
 
 
-
-
-
-
-
-
-
-
-
             }
         } while (stupid);
 
 
-        
-
         {
 
 
-
-
         }
-
-
-
-
-
 
 
         n.tasks().forEach(t -> {
@@ -307,85 +229,6 @@ public class ThermostatTest {
             return result;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

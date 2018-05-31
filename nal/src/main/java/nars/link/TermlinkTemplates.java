@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static nars.Op.CONJ;
+import static nars.Op.INH;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -100,10 +101,8 @@ public class TermlinkTemplates extends FasterList<Term> {
             tc.add(x);
         }
 
-
-        if ((++depth >= maxDepth) || xo.atomic || !xo.conceptualizable)
+        if ((++depth >= maxDepth + extraDepth(depth, root, x)) || xo.atomic || !xo.conceptualizable)
             return;
-
 
         Subterms bb = x.subterms();
         int nextDepth = depth;
@@ -120,6 +119,29 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
 
+    }
+
+    /** depth extensions */
+    private static int extraDepth(int depth, Term root, Term x) {
+        if (depth == 2) {
+            switch (root.op()) {
+                case SIM:
+                case INH:
+                    if (x.isAny(Op.SectBits | Op.SetBits | Op.PROD.bit))
+                        return +1;
+                    break;
+                case CONJ:
+                    if (x.op().statement)
+                    //if (x.op()==IMPL || x.op()==INH)
+                        return +1;
+                    break;
+                case IMPL:
+                    if (x.op()==INH)
+                        return +1;
+                    break;
+            }
+        }
+        return 0;
     }
 
 
@@ -168,13 +190,13 @@ public class TermlinkTemplates extends FasterList<Term> {
 //                    if (x.hasAny(Op.INH.bit))
 //                        return 4;
 //                    else
-                        return 3;
+                        return 2;
 //                }
 
 
             case CONJ:
-                if (x.hasAny(Op.IMPL))
-                    return 3;
+//                if (x.hasAny(Op.IMPL))
+//                    return 3;
                 return 2;
 
 
