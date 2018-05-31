@@ -129,8 +129,8 @@ public class AnonTest {
         }
     }
 
-    static Anon assertAnon(String expect, String test) throws Narsese.NarseseException {
-        return assertAnon(expect, $(test));
+    static Anon assertAnon(String expect, String test)  {
+        return assertAnon(expect, $$(test));
     }
 
     /**
@@ -158,4 +158,12 @@ public class AnonTest {
         assertArrayEquals(bytesExpected, bytesActual);
     }
 
+    @Test public void testAnonSorting() {
+        assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,1,2,--3,4,5)");
+        assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,--1,2,3,4,5)");
+        assertAnon("(_2(_1)&&_3)", "(&&,1(2),3)");
+        assertAnon("(_2(_1)&&_3)", "(&&,3(2),1)");
+        assertAnon("((_2(_1)&&_3) &&+- _4)", "((&&,3(2),1) &&+- 4)");
+        assertAnon("((_2(_1)&&_3) &&+- _4)", "(1 &&+- (&&,3(2),4))");
+    }
 }

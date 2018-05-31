@@ -232,8 +232,8 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
             GL2 gl = this.gl;
 
             
-            int w = getWidth();
-            int h = getHeight();
+            int w = window.getWidth();
+            int h = window.getHeight();
             gl.glViewport(0, 0, w, h);
             gl.glMatrixMode(GL_PROJECTION);
             gl.glLoadIdentity();
@@ -261,7 +261,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
             gl.glDisable(GL2.GL_DEPTH_TEST);
 
-            SurfaceRender r = new SurfaceRender(getWidth(), getHeight(), dtMS);
+            SurfaceRender r = new SurfaceRender(w, h, dtMS);
             for (int i = 0; i < facialsSize; i++) {
                 Surface l = layers.get(i);
                 if (l.visible()) {
@@ -354,7 +354,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         
         
-        float aspect = ((float) getWidth()) / getHeight();
+        float aspect = ((float) window.getWidth()) / window.getHeight();
 
         this.aspect = aspect;
 

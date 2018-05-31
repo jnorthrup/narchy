@@ -1,0 +1,30 @@
+package nars.util;
+
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
+import nars.NAR;
+import nars.concept.Concept;
+import nars.term.Term;
+import nars.term.Termed;
+
+/** a snapshot of a set of concepts */
+public class MemorySnapshot {
+
+    public final Multimap<Term,Concept> byAnon = MultimapBuilder.ListMultimapBuilder.hashKeys().arrayListValues().build();
+
+    public MemorySnapshot() {
+
+    }
+
+    public MemorySnapshot(NAR n) {
+        n.concepts.forEach(this::add);
+    }
+
+    protected void add(Termed /*Concept*/ _c) {
+        Concept c = (Concept)_c;
+        Term t = c.term();
+        //index
+        byAnon.put(t.anon(), c);
+    }
+
+}

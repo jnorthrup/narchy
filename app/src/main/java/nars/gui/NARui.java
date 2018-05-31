@@ -6,12 +6,14 @@ import nars.NAR;
 import nars.Narsese;
 import nars.gui.graph.run.ConceptGraph2D;
 import nars.term.Termed;
+import nars.util.MemorySnapshot;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.MutableContainer;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.grid.KeyValueModel;
 import spacegraph.space2d.container.grid.ScrollGrid;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
@@ -25,6 +27,7 @@ import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.util.math.Color3f;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -54,132 +57,19 @@ public class NARui {
     }
 
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static Surface bagHistogram(Iterable<? extends Prioritized> bag, int bins, NAR n) {
-        
 
 
         float[] d = new float[bins];
         return DurSurface.get(new HistogramChart(
-                () -> d,
-                new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f)),
-
-
-
-
+                        () -> d,
+                        new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f)),
 
 
                 n, () -> PriReference.histogram(bag, d));
 
 
-
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static Label label(Object x) {
@@ -202,111 +92,6 @@ public class NARui {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static Surface top(NAR n) {
         return
                 new Bordering(
@@ -317,20 +102,35 @@ public class NARui {
                                 "can", () -> ExeCharts.causePanel(n),
                                 "grp", () -> new ConceptGraph2D(n).widget(),
                                 "svc", () -> new ServicesTable(n.services),
-                                "cpt", () -> bagHistogram((Iterable)()->n.conceptsActive().iterator(), 8, n),
+                                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8, n),
+                                "snp", () -> memoryView(n),
                                 "mem", () -> ScrollGrid.list(
-                                                (x,y,m)->new PushButton(m.toString()).click((mm)->
-                                                    
-                                                    SpaceGraph.window(
-                                                            ScrollGrid.list((xx,yy,zm)->new PushButton(zm.toString()), n.memory.contents(m).collect(toList())), 800, 800, true)
-                                                ),
-                                                n.memory.roots().collect(toList())
-                                            )
+                                        (x, y, m) -> new PushButton(m.toString()).click((mm) ->
+
+                                                SpaceGraph.window(
+                                                        ScrollGrid.list((xx, yy, zm) -> new PushButton(zm.toString()), n.memory.contents(m).collect(toList())), 800, 800, true)
+                                        ),
+                                        n.memory.roots().collect(toList())
+                                )
                         ))
                 )
-                .north(ExeCharts.runPanel(n))
-                .south(new OmniBox(new NarseseJShellModel(n)))
-        ;
+                        .north(ExeCharts.runPanel(n))
+                        .south(new OmniBox(new NarseseJShellModel(n)))
+                ;
+    }
+
+    private static Surface memoryView(NAR n) {
+
+        return new ScrollGrid<>(new KeyValueModel(new MemorySnapshot(n).byAnon),
+                (x, y, v)-> {
+                    if (x == 0) {
+                        return new PushButton(v.toString()).click(() -> {
+
+                        });
+                    } else {
+                        return new Label(((Collection)v).size() +  " concepts");
+                    }
+                });
     }
 
     public static void conceptWindow(String t, NAR n) {
@@ -345,7 +145,7 @@ public class NARui {
     public static class BeliefChartsGrid extends Gridding implements Consumer<NAR> {
 
         private final int window;
-        
+
         long[] btRange;
 
         public BeliefChartsGrid(Iterable<?> ii, NAR nar, int window) {

@@ -1,19 +1,31 @@
 package spacegraph.space2d.container.grid;
 
+
+
+import org.eclipse.collections.api.multimap.Multimap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /** simple 2-column/2-row key->value table */
 public class KeyValueModel implements GridModel {
 
-    private final Map map;
+    private final Function map;
 
     /** cached keys as an array for fast access */
     private final transient Object[] keys;
 
     public KeyValueModel(Map map) {
-        this.map = map;
+        this.map = map::get;
+        this.keys = map.keySet().toArray();
+    }
+    public KeyValueModel(com.google.common.collect.Multimap map) {
+        this.map = map::get;
+        this.keys = map.keySet().toArray();
+    }
+    public KeyValueModel(Multimap map) {
+        this.map = map::get;
         this.keys = map.keySet().toArray();
     }
 
@@ -34,7 +46,7 @@ public class KeyValueModel implements GridModel {
             case 0: 
                 return keys[y];
             case 1: 
-                return map.get(keys[y]);
+                return map.apply(keys[y]);
         }
         return null;
     }
