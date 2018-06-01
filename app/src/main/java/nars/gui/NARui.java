@@ -156,7 +156,7 @@ public class NARui {
 
             List<Surface> s = StreamSupport.stream(ii.spliterator(), false)
                     .map(x -> x instanceof Termed ? (Termed) x : null).filter(Objects::nonNull)
-                    .map(c -> new MetaFrame(new BeliefTableChart(nar, c, btRange))).collect(toList());
+                    .map(c -> new MetaFrame(new BeliefTableChart2(nar, c))).collect(toList());
 
             if (!s.isEmpty()) {
                 set(s);

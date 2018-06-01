@@ -74,11 +74,11 @@ public final class DefaultConceptState extends ConceptState {
         this.beliefsMaxEte = beliefsMaxEte.intValue();
         this.beliefsMinEte = 2;
         this.beliefsMaxTemp = beliefsMaxTemp.intValue();
-        this.beliefsMinTemp = 2;
+        this.beliefsMinTemp = 6;
         this.goalsMaxEte = goalsMaxEte.intValue();
         this.goalsMinEte = 2;
         this.goalsMaxTemp = goalsMaxTemp.intValue();
-        this.goalsMinTemp = 2;
+        this.goalsMinTemp = 6;
         this.questionsMax = questionsMax;
 
         this.termlinksCapacity = termlinksCapacity;

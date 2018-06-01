@@ -103,7 +103,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
      *
      * @param y (freq,conf)->y
      */
-    private static void renderWaveLine(float nowX, long minT, long maxT, GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
+    public static void renderWaveLine(float nowX, long minT, long maxT, GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
 
 
         gl.glBegin(GL2.GL_LINE_STRIP);
@@ -112,16 +112,11 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
         int dMargin = Math.round(dt/8);
         wave.forEach((freq, conf, start, end) -> {
 
-            boolean eternal = (start != start);
+
             float x;
 
 
-
-            
-
-            if (eternal) {
-                x = nowX; 
-            } else if ((start >= minT) && (start <= maxT)) {
+            if ((start >= minT) && (start <= maxT)) {
                 x = xTime(minT, maxT, start + dMargin);
             } else {
                 return;
@@ -137,9 +132,6 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             if (start == end)
                 return; 
 
-            if (eternal)
-                return;
-
             if ((end >= minT) && (end <= maxT)) {
                 x = xTime(minT, maxT, end-dMargin);
                 gl.glVertex2f(x, Y);
@@ -152,7 +144,7 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
 
     private static float xTime(long minT, long maxT, long o) {
         if (minT == maxT) return 0.5f;
-        return ((float)(Math.min(maxT, Math.max(minT, o)) - minT)) / (maxT - minT)*2;
+        return ((float)(Math.min(maxT, Math.max(minT, o)) - minT)) / (maxT - minT);
     }
 
 

@@ -39,7 +39,6 @@ import static nars.table.TemporalBeliefTable.value;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -62,17 +61,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     private static final int COMPLEX_EVENT_MATCH_LIMIT =
             SIMPLE_EVENT_MATCH_LIMIT;
-    
+
 
     private static final int SAMPLE_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
 
     private static final float PRESENT_AND_FUTURE_BOOST =
-    
-    
-    2f;
-    
-    
-    
+
+
+            2f;
 
 
     private static final int SCAN_CONF_OCTAVES_MAX = 1;
@@ -82,7 +78,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int MAX_TASKS_PER_LEAF = 4;
     private static final Split<TaskRegion> SPLIT =
             new AxialSplitLeaf<>();
-    
+
 
     /**
      * if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps)
@@ -101,25 +97,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     @Deprecated
     private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
-        
+
         return t -> ts.floatValueOf((Task) t);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -132,13 +112,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             Leaf l = (Leaf) next;
             for (Object _x : l.data) {
                 if (_x == null)
-                    break; 
+                    break;
 
                 TaskRegion x = (TaskRegion) _x;
                 if (((Deleteable) x).isDeleted()) {
-                    
-                    boolean removed = tree.remove(x);
 
+                    boolean removed = tree.remove(x);
 
 
                     assert (removed);
@@ -154,13 +133,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             if (l.size >= 2)
                 weakLeaf.accept(l);
 
-        } else { 
+        } else {
 
             Branch b = (Branch) next;
 
             for (Node ww : b.data) {
                 if (ww == null)
-                    break; 
+                    break;
                 else if (!findEvictable(tree, ww, closest, weakest, weakLeaf))
                     return false;
             }
@@ -177,27 +156,22 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return (TaskRegion r) -> {
 
             long regionTimeDist =
-                    
-                    
+
+
                     r.midDistanceTo(when);
 
             float timeDist = (regionTimeDist) / ((float) perceptDur);
 
 
             float evi =
-                    c2wSafe((float) r.coord(true, 2)); 
+                    c2wSafe((float) r.coord(true, 2));
 
 
-            
-            
-
-            
             float antivalue = 1f / (1f + evi);
 
             if (PRESENT_AND_FUTURE_BOOST != 1 && r.end() >= when - perceptDur)
                 antivalue /= PRESENT_AND_FUTURE_BOOST;
 
-            
 
             return (float) ((antivalue) * (1 + timeDist));
         };
@@ -230,6 +204,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
     }
 
+    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur, long tableDur) {
+        return (Task x) -> {
+
+            return (!x.isAfter(now) ? presentAndFutureBoost : 1f) *
+                    value(x, when, when, tableDur);
+        };
+    }
+
     abstract protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur);
 
     @Override
@@ -255,8 +237,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     @Override
     public Truth truth(long start, long end, EternalTable eternal, Term template, int dur) {
-
-
 
 
         assert (end >= start);
@@ -332,14 +312,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         ExpandingScan tt = new ExpandingScan(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
                 task(m.value()),
-                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), 
+                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
                 null)
                 .scan(this, m.start(), m.end());
 
         int tts = tt.size();
         if (tts > 0) {
             if (tts == 1) {
-                target.accept((Task) tt.get(0)); 
+                target.accept((Task) tt.get(0));
             } else {
 
                 final int[] limit = {m.limit()};
@@ -352,14 +332,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
 
     }
-
-    
-
-
-
-
-
-
 
     @Override
     public void setCapacity(int capacity) {
@@ -381,23 +353,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
         return !x.isDeleted();
 
     }
-
 
     private boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, NAR nar) {
         int cap = this.capacity;
@@ -405,28 +363,25 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         if (s <= cap)
             return true;
 
-        
 
         long now = nar.time();
         int perceptDur = nar.dur();
         FloatFunction<Task> taskStrength =
-                
-                
-                
+
+
                 taskStrengthWithFutureBoost(now, PRESENT_AND_FUTURE_BOOST, now,
                         perceptDur,
                         perceptDur
-                        
+
                 );
 
-        
 
         int e = 0;
         while (treeRW.size() > cap) {
             if (!compress(treeRW, e == 0 ? inputRegion : null /** only limit by inputRegion first */,
                     taskStrength, cap,
                     now,
-                    
+
                     perceptDur, nar))
                 return false;
             e++;
@@ -461,21 +416,20 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 weakestTask
         );
 
-        
+
         if (!findEvictable(tree, tree.root(), closest, weakest, weakLeaf)) {
-            
+
             return true;
         }
 
-        
+
         assert (tree.size() >= cap);
 
-        
+
         return mergeOrDelete(tree, input, closest, weakest, weakLeaf, taskStrength, inputStrength, weakestTask, nar);
 
 
     }
-
 
     private boolean mergeOrDelete(Space<TaskRegion> treeRW,
                                   @Nullable Task I /* input */,
@@ -485,9 +439,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                                   FloatFunction<TaskRegion> weakness,
                                   NAR nar) {
 
-        
-        
-
 
         Task A, B, W, AB, IC, C;
 
@@ -495,7 +446,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             C = (Task) closest.the;
             IC = Revision.mergeTasks(nar, I, C);
             if (IC != null && (IC.equals(I) || IC.equals(C)))
-                IC = null; 
+                IC = null;
         } else {
             IC = null;
             C = null;
@@ -519,34 +470,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             A = (Task) a;
             B = (Task) b;
         } else {
@@ -557,7 +480,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         W = (weakest != null && weakest.the != null) ? (Task) weakest.the : A;
         if (W == null)
-            return false;  
+            return false;
 
         float value[] = new float[4];
         value[RejectInput] =
@@ -573,11 +496,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         if (B == null) {
             AB = null;
-            value[MergeLeaf] = Float.NEGATIVE_INFINITY; 
+            value[MergeLeaf] = Float.NEGATIVE_INFINITY;
         } else {
             AB = Revision.mergeTasks(nar, A, B);
             if (AB == null || (AB.equals(A) || AB.equals(B))) {
-                value[MergeLeaf] = Float.NEGATIVE_INFINITY; 
+                value[MergeLeaf] = Float.NEGATIVE_INFINITY;
             } else {
                 value[MergeLeaf] =
                         (I != null ? +inputStrength : 0)
@@ -592,7 +515,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         int best = Util.maxIndex(value);
 
         if (value[best] == Float.NEGATIVE_INFINITY) {
-            return false; 
+            return false;
         }
 
         switch (best) {
@@ -611,7 +534,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 if (treeRW.add(IC)) {
                     delete(treeRW, C, nar);
-                    
+
                     return true;
                 } else {
                     return false;
@@ -629,7 +552,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 } else {
                     if (I != null)
                         I.delete();
-                    return false; 
+                    return false;
                 }
             }
 
@@ -645,65 +568,57 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         assert (removed);
         if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS)
             eternalize(x, nar);
-        
+
     }
 
     private void eternalize(Task x, NAR nar) {
         if ((x instanceof SignalTask)) {
-            
+
             return;
         }
 
-        float xPri = x.priElseZero();
 
 
+//        float xc = x.conf();
+//        float e = x.evi();
+//
+//        float c = w2cSafe(e);
+//
+//        if (c >= nar.confMin.floatValue()) {
 
-        float xc = x.conf();
-        float e = x.evi();
-        
-        float c = w2cSafe(e);
 
-        if (c >= nar.confMin.floatValue()) {
-
-            
-            
-            
             Task eternalized = Task.eternalized(x, 1f / size());
 
             if (eternalized != null) {
+                float xPri = x.priElseZero();
 
-                eternalized.pri(xPri * c / xc);
-
+                //eternalized.pri(xPri * c / xc);
+                eternalized.pri(xPri);
                 if (Param.DEBUG)
                     eternalized.log("Eternalized Temporal");
 
-                nar.input(eternalized);
 
-                if (!(eternalized.isDeleted()))
-                    x.delete(/*fwd: eternalized*/);
+                nar.runLater(() -> {
+
+                    nar.input(eternalized);
+
+                    //if (!(eternalized.isDeleted()))
+                });
             }
 
-            
-            
-        }
+        x.delete(/*fwd: eternalized*/);
+
+//        }
 
     }
 
-    private double tableDur() {
-        HyperRegion root = root().bounds();
-        if (root == null)
-            return 1;
-        else
-            return 1 + root.rangeIfFinite(0, 1);
-    }
-
-    static private FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur, long tableDur) {
-        return (Task x) -> {
-            
-            return (!x.isAfter(now) ? presentAndFutureBoost : 1f) *
-                    value(x, when, when, tableDur);
-        };
-    }
+//    private double tableDur() {
+//        HyperRegion root = root().bounds();
+//        if (root == null)
+//            return 1;
+//        else
+//            return 1 + root.rangeIfFinite(0, 1);
+//    }
 
     @Override
     public int capacity() {
@@ -764,7 +679,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             ExpandingScan tt = new ExpandingScan(SIMPLE_EVENT_MATCH_LIMIT, SIMPLE_EVENT_MATCH_LIMIT,
                     task(taskStrength(start, end, dur)),
-                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), 
+                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
                     filter)
                     .scan(this, start, end);
 
@@ -780,7 +695,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         protected FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
             FloatFunction<Task> f = taskStrength(start, end, dur);
             if (template == null) {
-                
+
                 return f;
             } else {
                 return x -> f.floatValueOf(x) / TemporalBeliefTable.costDtDiff(template, x, dur);
@@ -792,7 +707,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             ExpandingScan tt = new ExpandingScan(COMPLEX_EVENT_MATCH_LIMIT, COMPLEX_EVENT_MATCH_LIMIT,
                     task(taskStrength(template, start, end, dur)),
-                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), 
+                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
                     filter)
                     .scan(this, start, end);
 
@@ -802,41 +717,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 return null;
 
             TaskRegion[] ttt = tt.array(TaskRegion[]::new);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             return Revision.mergeTasks(nar, nar.dur(), start, end, false, ttt);
@@ -861,19 +741,15 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return taskRegion;
         }
 
-        
-
-
-
 
         @Override
         protected void merge(TaskRegion existing, TaskRegion incoming) {
             Task i = incoming.task();
             Task e = existing.task();
-            if (e instanceof NALTask) 
+            if (e instanceof NALTask)
                 ((NALTask) e).causeMerge(i);
-            
-            
+
+
         }
 
     }
@@ -899,7 +775,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         @Override
         public boolean add(TaskRegion taskRegion) {
-            
+
             return (!(taskRegion instanceof Task)) || super.add(taskRegion);
         }
 
@@ -909,7 +785,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return --attemptsRemain > 0;
         }
 
-        @Override public boolean valid(TaskRegion x) {
+        @Override
+        public boolean valid(TaskRegion x) {
             return ((!(x instanceof Task)) || (filter == null || filter.test((Task) x)));
         }
 
@@ -929,7 +806,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             boolean eternal = _start == ETERNAL;
 
 
-            this.attemptsRemain = attempts; 
+            this.attemptsRemain = attempts;
 
             int s = table.size();
             if (s == 0)
@@ -959,8 +836,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 scanStart = Math.min(boundsEnd, Math.max(boundsStart, _start));
                 scanEnd = Math.max(boundsStart, Math.min(boundsEnd, _end));
 
-                
-
 
                 timeDivisions = Math.max(1, Math.min(SCAN_TIME_OCTAVES_MAX, ss));
                 confDivisions = Math.max(1, Math.min(SCAN_CONF_OCTAVES_MAX,
@@ -978,13 +853,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     Math.round(((double) (boundsEnd - boundsStart)) / (1 << (timeDivisions))))
             );
 
-            
-
 
             long mid = (scanStart + scanEnd) / 2;
             long leftStart = scanStart, leftMid = mid, rightMid = mid, rightEnd = scanEnd;
             boolean leftComplete = false, rightComplete = false;
-            
+
 
             TimeRange ll = confDivisions > 1 ? new TimeConfRange() : new TimeRange();
             TimeRange rr = confDivisions > 1 ? new TimeConfRange() : new TimeRange();
@@ -1001,7 +874,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 if (confDivisions == 1) {
                     cMax = 1;
                     cMin = 0;
-                    cDelta = 0; 
+                    cDelta = 0;
                 } else {
                     cMax = maxConf;
                     cDelta =
@@ -1037,11 +910,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                         rrr = null;
                     }
 
-                    if (lll!=null || rrr!=null) {
+                    if (lll != null || rrr != null) {
                         table.readOptimistic((Space<TaskRegion> tree) -> {
-                            if (lll!=null)
+                            if (lll != null)
                                 tree.whileEachIntersecting(lll, this);
-                            if (rrr!=null)
+                            if (rrr != null)
                                 tree.whileEachIntersecting(rrr, this);
                         });
                     }
@@ -1054,9 +927,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 if (done)
                     break;
 
-                
+
                 long ls0 = leftStart;
-                leftComplete |= (ls0 == (leftStart = Math.max(boundsStart, leftStart - expand - 1))); 
+                leftComplete |= (ls0 == (leftStart = Math.max(boundsStart, leftStart - expand - 1)));
 
                 if (leftComplete && rightComplete) break;
 
@@ -1074,86 +947,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             return this;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -138,21 +138,19 @@ public class TruthWave {
         }
         size(points);
 
-        float dt = (maxT - minT) / ((float) points+1);
+        double dt = (maxT - minT) / ((float) points);
         long t = minT ;
         float[] data = this.truth;
         int j = 0;
         byte punc = beliefOrGoal ? BELIEF : GOAL;
         BeliefTable table = (BeliefTable) c.table(punc);
         for (int i = 0; i < points; i++) {
-            long a = Math.round(t - dt/2);
-            long b = Math.round(t + dt/2);
+            long a = t; //Math.round(t - dt/2);
+            long b = Math.round(t + dt);
 
             Truth tr = table.truth(a, b, nar); 
 
             load(data, (j++) * ENTRY_SIZE,
-                    
-                    
                     minT, maxT,
                     a, b,
                     tr
@@ -196,7 +194,7 @@ public class TruthWave {
         void onTruth(float f, float c, long start, long end);
     }
 
-    public final void forEach(@NotNull TruthWaveVisitor v) {
+    public final void forEach(TruthWaveVisitor v) {
         int n = this.size;
         float[] t = this.truth;
         int j = 0;

@@ -90,7 +90,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
 
 
-                n.freqResolution.set(0.2f);
+                Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
+                n.freqResolution.set(0.1f);
 
 
             } catch (Narsese.NarseseException e) {
@@ -217,7 +218,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
     private void actionsReflect() {
 
         Opjects oo = new Opjects(nar);
-        oo.exeThresh.set(0.6f);
+        oo.exeThresh.set(0.51f);
 
         Opjects.methodExclusions.add("toVector");
 

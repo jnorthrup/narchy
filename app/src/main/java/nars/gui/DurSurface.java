@@ -14,11 +14,11 @@ import java.util.function.Consumer;
  * automatically attaches update handler on start (ex: added to graph) and
  * removes on stop (ex: removal from graph)
  */
-abstract public class DurSurface extends UnitContainer {
+abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     protected final NAR nar;
     DurService on;
 
-    protected DurSurface(Surface x, NAR nar) {
+    protected DurSurface(S x, NAR nar) {
         super(x);
         this.nar = nar;
     }

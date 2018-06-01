@@ -40,7 +40,7 @@ public abstract class Param {
     public static final boolean STRONG_COMPOSITION = false;
 
     /** warning: can interfere with expected test results */
-    public static final boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
+    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
     public static final boolean TASKLINK_DYN_GENERATED_TASKS = false;
 
     /** extends the time all unit tests are allowed to run for.

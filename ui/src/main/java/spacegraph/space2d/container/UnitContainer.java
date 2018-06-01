@@ -6,11 +6,11 @@ import spacegraph.space2d.SurfaceBase;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class UnitContainer extends Container {
+public class UnitContainer<S extends Surface> extends Container {
 
-    public final Surface the;
+    public final S the;
 
-    protected UnitContainer(Surface the) {
+    protected UnitContainer(S the) {
         this.the = the;
     }
 
