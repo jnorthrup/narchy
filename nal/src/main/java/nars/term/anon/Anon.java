@@ -67,7 +67,7 @@ public class Anon extends AnonMap {
 
     protected TermTransform newGet() {
 
-        return new TermTransform() {
+        return new TermTransform.NegObliviousTermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
                 return get(atomic);
@@ -78,14 +78,11 @@ public class Anon extends AnonMap {
 
     public Term put(Term x) {
         if (x instanceof AnonID) {
-
-
-
             return x;
         } else if (x instanceof Atomic) {
 
-            if (x instanceof UnnormalizedVariable) return x;
-            if (x instanceof Int.IntRange) return x;
+            if (x instanceof UnnormalizedVariable || x instanceof Int.IntRange)
+                return x;
 
             return Anom.the[termToId.getIfAbsentPutWithKey(x, nextUniqueAtom)];
 

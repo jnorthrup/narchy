@@ -60,12 +60,7 @@ public class CachedAnon extends Anon {
             
             externCache = new UnifiedMap<>();
 
-        return new CachedTermTransform(new TermTransform() {
-            @Override
-            public final @Nullable Termed transformAtomic(Term atomic) {
-                return get(atomic);
-            }
-        }, externCache);
+        return new CachedTermTransform(super.newGet(), externCache);
     }
 
 }

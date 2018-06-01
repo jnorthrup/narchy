@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AnonTest {
 
     @Test
-    public void testAtoms() throws Narsese.NarseseException {
+    public void testAtoms() {
         assertAnon("_1", "a");
         assertAnon("#1", $.varDep(1)); 
         assertAnon("_1", $.the(2)); 
@@ -43,7 +43,7 @@ public class AnonTest {
     }
 
     @Test
-    public void testCompounds() throws Narsese.NarseseException {
+    public void testCompounds() {
         assertAnon("(_1-->_2)", "(a-->b)");
 
         assertAnon("(_1-->#1)", "(a-->#1)");
@@ -64,7 +64,7 @@ public class AnonTest {
     }
 
     @Test
-    public void testCompoundsWithNegations() throws Narsese.NarseseException {
+    public void testCompoundsWithNegations() {
         assertAnon("((--,_1),_1,_2)", "((--,a), a, c)");
         assertAnon("(--,((--,_1),_1,_2))", "--((--,a), a, c)");
     }
@@ -166,4 +166,9 @@ public class AnonTest {
         assertAnon("((_2(_1)&&_3) &&+- _4)", "((&&,3(2),1) &&+- 4)");
         assertAnon("((_2(_1)&&_3) &&+- _4)", "(1 &&+- (&&,3(2),4))");
     }
+
+//    @Test public void testAnonSortingOfRepeats() {
+//        assertAnon("(_1,_1,_2)", "(1,1,2)");
+//        assertAnon("(_2,_1,_1)", "(1,2,2)");
+//    }
 }
