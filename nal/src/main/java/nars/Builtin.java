@@ -9,7 +9,6 @@ import nars.concept.Operator;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
-import nars.op.java.Opjects;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.*;
@@ -24,9 +23,11 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import javax.script.ScriptException;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.*;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
@@ -90,7 +91,7 @@ public class Builtin {
 
             Subst.replace,
 
-            
+
             SetFunc.intersect,
             SetFunc.differ,
             SetFunc.union,
@@ -110,7 +111,7 @@ public class Builtin {
                 protected Term apply(Term conj, Term event) {
                     Term x = Conj.without(conj, event, false);
                     if (conj.equals(x))
-                        return Null; 
+                        return Null;
                     return x;
                 }
             },
@@ -120,7 +121,7 @@ public class Builtin {
                 protected Term apply(Term include, Term exclude) {
                     Term x = Conj.withoutAll(include, exclude);
                     if (include.equals(x))
-                        return Null; 
+                        return Null;
                     return x;
                 }
             },
@@ -128,12 +129,12 @@ public class Builtin {
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
                 if (from.equals(to))
-                    return Null; 
+                    return Null;
 
                 int n;
                 if (from.op() == to.op() && (n = from.subs()) == to.subs()) {
-                    
-                    Map<Term, Term> m = null; 
+
+                    Map<Term, Term> m = null;
                     for (int i = 0; i < n; i++) {
                         Term f = from.sub(i);
                         Term t = to.sub(i);
@@ -142,7 +143,7 @@ public class Builtin {
                             m.put(f, t);
                         }
                     }
-                    if (m != null) { 
+                    if (m != null) {
                         Term y = target.replace(m);
                         if (y != null && !y.equals(target))
                             return y;
@@ -154,13 +155,13 @@ public class Builtin {
             /** similar to C/Java "indexOf" but returns a set of all numeric indices where the 2nd argument occurrs as a subterm of the first
              *  if not present, returns Null
              * */
-            
+
             Functor.f2("indicesOf", (x, y) -> {
-                
+
 
                 int s = x.subs();
                 if (s > 0) {
-                    TreeSet<Term> indices = null; 
+                    TreeSet<Term> indices = null;
                     for (int i = 0; i < s; i++) {
                         if (x.sub(i).equals(y)) {
                             if (indices == null) indices = new TreeSet();
@@ -171,18 +172,17 @@ public class Builtin {
                         return Null;
                     else {
                         return $.sete(indices);
-                        
+
                     }
                 }
                 return Null;
             }),
             Functor.f2("keyValues", (x, y) -> {
-                
 
-                
+
                 int s = x.subs();
                 if (s > 0) {
-                    TreeSet<Term> indices = null; 
+                    TreeSet<Term> indices = null;
                     for (int i = 0; i < s; i++) {
                         if (x.sub(i).equals(y)) {
                             if (indices == null) indices = new TreeSet();
@@ -194,11 +194,11 @@ public class Builtin {
                     else {
                         switch (indices.size()) {
                             case 0:
-                                return Null; 
+                                return Null;
                             case 1:
                                 return indices.first();
                             default:
-                                
+
                                 return $.sete(indices);
                         }
                     }
@@ -211,18 +211,15 @@ public class Builtin {
                 if (s > 0) {
                     Term[] t = new Term[s];
                     for (int i = 0; i < s; i++) {
-                        t[i] = x.sub(i).equals(y) ? y : $.varDep("z" + i); 
+                        t[i] = x.sub(i).equals(y) ? y : $.varDep("z" + i);
                     }
                     return $.p(t);
                 }
                 return Null;
             }),
 
-            
 
             Functor.f1Const("reflect", reflect::reflect),
-
-
 
 
             Functor.f1Const("toString", x -> $.quote(x.toString())),
@@ -247,7 +244,7 @@ public class Builtin {
             EQUAL,
 
             Functor.f2("if", (condition, conseq) -> {
-                if (condition.hasVars()) return null; 
+                if (condition.hasVars()) return null;
                 else {
                     if (condition.equals(True))
                         return conseq;
@@ -256,7 +253,7 @@ public class Builtin {
             }),
 
             Functor.f3("ifOrElse", (condition, conseqTrue, conseqFalse) -> {
-                if (condition.hasVars()) return null; 
+                if (condition.hasVars()) return null;
                 else {
                     if (condition.equals(True))
                         return conseqTrue;
@@ -270,10 +267,6 @@ public class Builtin {
                     !returned.equalsRoot(compareTo) ? returned : Null
             ),
 
-            
-
-
-
 
             Functor.f2("subterm", (Term x, Term index) -> {
                 try {
@@ -285,19 +278,14 @@ public class Builtin {
                 return null;
             }),
 
-            
+
             MathFunc.add,
             MathFunc.mul,
 
-            
 
-
-            Functor.f1("quote", x -> x) 
+            Functor.f1("quote", x -> x)
     };
 
-
-    
-    
 
     public static void init(NAR nar) {
         registerFunctors(nar);
@@ -317,7 +305,7 @@ public class Builtin {
             Term[] args = s.sub(1).subterms().arrayClone();
             if (s.subs() > 2) {
                 if (o.temporal) {
-                    
+
                     Term dtTerm = s.sub(2);
                     if (!(dtTerm instanceof QuantityTerm)) {
                         dtTerm = QuantityTerm.the(dtTerm);
@@ -355,13 +343,6 @@ public class Builtin {
         }));
 
 
-
-
-
-
-
-
-
         /** subterm, but specifically inside an ellipsis. otherwise pass through */
         nar.on(Functor.f("esubterm", (Subterms c) -> {
 
@@ -384,7 +365,7 @@ public class Builtin {
                     return Null;
                 }
             } else {
-                
+
                 which = nar.random().nextInt(x.subs());
             }
 
@@ -421,14 +402,14 @@ public class Builtin {
 
             if (oo == INT) {
                 if (t instanceof Int.IntRange) {
-                    
+
                     Int.IntRange i = (Int.IntRange) t;
                     Random rng = nar.random();
                     if (i.min + 1 == i.max) {
-                        
+
                         return Int.the(rng.nextBoolean() ? i.min : i.max);
                     } else if (i.min + 2 == i.max) {
-                        
+
                         switch (rng.nextInt(4)) {
                             case 0:
                                 return Int.the(i.min);
@@ -443,15 +424,15 @@ public class Builtin {
                         }
                     } else {
                         int split =
-                                (i.max + i.min) / 2; 
-                        
+                                (i.max + i.min) / 2;
+
                         return (rng.nextBoolean()) ?
                                 Int.range(i.min, split + 1) :
                                 Int.range(split + 1, i.max);
                     }
                 }
 
-                
+
                 return Null;
             }
 
@@ -502,13 +483,7 @@ public class Builtin {
             return Conj.conj(ee);
 
 
-
-
-
-
-
         }));
-
 
 
         /** similar to without() but for (possibly-recursive) CONJ sub-events. removes all instances of the positive or negative of event */
@@ -517,7 +492,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.without(conj, event, true);
                 if (conj.equals(x))
-                    return Null; 
+                    return Null;
                 return x;
             }
         });
@@ -527,7 +502,7 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.conjDrop(conj, event, false);
                 if (conj.equals(x))
-                    return Null; 
+                    return Null;
                 return x;
             }
         });
@@ -537,11 +512,10 @@ public class Builtin {
             protected Term apply(Term conj, Term event) {
                 Term x = Conj.conjDrop(conj, event, true);
                 if (conj.equals(x))
-                    return Null; 
+                    return Null;
                 return x;
             }
         });
-
 
 
         nar.on(Functor.f1Concept("beliefTruth", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
@@ -572,10 +546,6 @@ public class Builtin {
         }));
 
 
-
-
-
-
         nar.on(Functor.f("slice", (args) -> {
             if (args.subs() == 2) {
                 Term x = args.sub(0);
@@ -585,7 +555,7 @@ public class Builtin {
                     Term index = args.sub(1);
                     Op o = index.op();
                     if (o == INT) {
-                        
+
                         int i = ((Int) index).id;
                         if (i >= 0 && i < len)
                             return x.sub(i);
@@ -608,7 +578,7 @@ public class Builtin {
                                         }
                                     }
                                 }
-                                
+
                                 return False;
                             }
                         }
@@ -622,7 +592,6 @@ public class Builtin {
 
     static void registerOperators(NAR nar) {
 
-        
 
         nar.onOp(Op.BELIEF_TERM, (x, nn) -> {
                     return Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> {
@@ -631,14 +600,6 @@ public class Builtin {
                     });
                 }
         );
-
-
-
-
-
-
-
-
 
 
         nar.onOp1("assertTrue", (x, nn) -> {
@@ -674,21 +635,21 @@ public class Builtin {
                 nn.runLater(r);
         });
 
-        /** eternal tasks only */
-        nar.onOp1("remember", (id, nn) -> {
-            nn.runLater(() -> {
-                save(nn, id, Task::isEternal);
-                nn.logger.info("remembered {}", id);
-            });
-        });
-
-        /** all tasks */
-        nar.onOp1("save", (id, nn) -> {
-            nn.runLater(() -> {
-                save(nn, id, (t) -> true);
-                nn.logger.info("saved {}", id);
-            });
-        });
+//        /** eternal tasks only */
+//        nar.onOp1("remember", (id, nn) -> {
+//            nn.runLater(() -> {
+//                save(nn, id, Task::isEternal);
+//                nn.logger.info("remembered {}", id);
+//            });
+//        });
+//
+//        /** all tasks */
+//        nar.onOp1("save", (id, nn) -> {
+//            nn.runLater(() -> {
+//                save(nn, id, (t) -> true);
+//                nn.logger.info("saved {}", id);
+//            });
+//        });
 
         nar.onOp2("memory2txtfile", (id, filePath, nn) -> {
             nn.runLater(() -> {
@@ -712,357 +673,15 @@ public class Builtin {
             });
         });
     }
-
-    static void save(NAR nar, Term id, Predicate<Task> filter) {
-        ByteArrayOutputStream memDump;
-        nar.outputBinary(memDump = new ByteArrayOutputStream(256 * 1024), filter);
-        User.the().put(id.toString(), memDump.toByteArray());
-    }
-
-    public static class System {
-
-        private final NAR nar;
-        private final Opjects opj;
-
-        public System() {
-            
-            this.nar = null;
-            this.opj = null;
-        }
-
-        public System(NAR n) {
-            this.nar = n;
-            opj = new Opjects(n);
-            opj.the("sys", this);
-        }
-
-        /**
-         * shutdown, terminates VM
-         */
-        public void off() {
-
-            nar.stop();
-            java.lang.System.exit(0);
-        }
-
-        /**
-         * NAR clear
-         */
-        public void clear() {
-            nar.clear();
-        }
-
-        public void reset() {
-            nar.reset();
-        }
-
-        public void start() {
-            nar.start();
-        }
-
-        public void startFPS(int fps) {
-            nar.startFPS(fps);
-        }
-
-        public void save(Object target) {
-            
-        }
-
-        public void load(Object source) {
-            
-        }
-
-
-
-
-
-
-
-
-
-        public void log(Object x) {
-            nar.logger.info(" {}", x);
-        }
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//
+//    static void save(NAR nar, Term id, Predicate<Task> filter) {
+//        ByteArrayOutputStream memDump;
+//        nar.outputBinary(memDump = new ByteArrayOutputStream(256 * 1024), filter);
+//        User.the().put(id.toString(), memDump.toByteArray());
+//    }
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

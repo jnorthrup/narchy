@@ -24,11 +24,11 @@ public class PrologToNAL {
 
     public static final Term QUESTION_GOAL = $.the("?-");
 
-    public static Iterable<nars.term.Term> N(Theory t) {
+    public static Iterable<Term> N(Theory t) {
         return N((Iterable)t);
     }
 
-    public static Iterable<nars.term.Term> N(Iterable<alice.tuprolog.Term> t) {
+    public static Iterable<Term> N(Iterable<alice.tuprolog.Term> t) {
         
 
         return Iterables.transform(t, PrologToNAL::N);
@@ -42,7 +42,7 @@ public class PrologToNAL {
 
     }
 
-    private static nars.term.Term N(alice.tuprolog.Term t) {
+    private static Term N(alice.tuprolog.Term t) {
         if (t instanceof alice.tuprolog.Term) {
             Struct s = (Struct) t;
             String name = s.name();
@@ -54,8 +54,8 @@ public class PrologToNAL {
 
                 case ":-":
                     assert(s.subs()==2);
-                    nars.term.Term pre = N(s.sub(1)); 
-                    nars.term.Term post = N(s.sub(0));
+                    Term pre = N(s.sub(1));
+                    Term post = N(s.sub(0));
 
                     
                     Term impl = $.impl(pre, post);
@@ -79,7 +79,7 @@ public class PrologToNAL {
                         MutableSet<Variable> common = prev.intersect(posv);
                         int cs = common.size();
                         if (cs > 0) {
-                            Map<nars.term.Term,nars.term.Term> x = new UnifiedMap(cs);
+                            Map<Term, Term> x = new UnifiedMap(cs);
                             for (Variable c : common) {
                                 x.put(c, $.varIndep(c.toString().substring(1)));
                             }
@@ -91,13 +91,13 @@ public class PrologToNAL {
                 case ",":
                     return CONJ.the(N(s.sub(0)), N(s.sub(1)));
                 default:
-                    nars.term.Term atom = $.the(name);
+                    Term atom = $.the(name);
                     int arity = s.subs();
                     if (arity == 0) {
                         return atom;
                     } else {
                         return $.inh(
-                                $.p((nars.term.Term[])Util.map(0, arity, i -> N(s.sub(i)), nars.term.Term[]::new)),
+                                $.p((Term[])Util.map(0, arity, i -> N(s.sub(i)), Term[]::new)),
                                 atom);
                     }
             }

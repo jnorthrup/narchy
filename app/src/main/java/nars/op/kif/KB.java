@@ -65,7 +65,6 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -449,10 +448,6 @@ public class KB implements Serializable {
             Iterator<String> formulas = formulaMap.keySet().iterator();
             while (formulas.hasNext()) {
                 Formula f = formulaMap.get(formulas.next());
-                if (counter == 100) {
-                    System.out.print(".");
-                    counter = 0;
-                }
                 String term = PredVarInst.hasCorrectArity(f, this);
                 if (!StringUtil.emptyString(term)) {
                     errors.add("Formula in " + f.sourceFile + " rejected due to arity error of predicate " + term
@@ -976,13 +971,11 @@ public class KB implements Serializable {
                     partiala = partial1;
                 }
             }
-            if (partiala != null) {
-                for (int i = 0; i < partiala.size(); i++) {
-                    Formula f = partiala.get(i);
-                    if (f.getArgument(argb).equals(termb)) {
-                        if (f.getArgument(argc).equals(termc))
-                            result.add(f);
-                    }
+            for (int i = 0; i < partiala.size(); i++) {
+                Formula f = partiala.get(i);
+                if (f.getArgument(argb).equals(termb)) {
+                    if (f.getArgument(argc).equals(termc))
+                        result.add(f);
                 }
             }
         }
@@ -1412,7 +1405,7 @@ public class KB implements Serializable {
                             found = true;
                             
                             
-                            if (formulasPresent != null && !formulasPresent.contains(oldFormula))
+                            if (!formulasPresent.contains(oldFormula))
                                 formulasPresent.add(oldFormula);
                         }
                     }
@@ -2452,8 +2445,6 @@ public class KB implements Serializable {
         catch (Exception ex1) {
             StringBuilder error = new StringBuilder();
             error.append(ex1.getMessage());
-            if (ex1 instanceof ParseException)
-                error.append(" at line " + ((ParseException) ex1).getErrorOffset());
             error.append(" in file " + canonicalPath);
             errors.add(error.toString());
             System.out.println("Error in KB.addConstituent(): " + error);

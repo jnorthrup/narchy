@@ -68,6 +68,14 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 
+/**
+ * The meaning "word or phrase used in a limited or precise sense"
+ * is first recorded late 14c..
+ * from Medieval Latin use of terminus to render Greek horos "boundary,"
+ * employed in mathematics and logic.
+ * Hence in terms of "in the language or phraseology peculiar to."
+ * https://www.etymonline.com/word/term
+ */
 public interface Term extends Termed, Comparable<Termed> {
 
     ImmutableByteList EmptyByteList = ByteLists.immutable.empty();

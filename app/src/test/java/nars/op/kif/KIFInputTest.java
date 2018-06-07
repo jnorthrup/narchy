@@ -127,9 +127,8 @@ class KIFInputTest {
     public void testLoad() throws Narsese.NarseseException {
         
 
-        NAR n =
-                
-                NARchy.core();
+        NAR n = NARS.tmp();
+                //NARchy.core();
 
         n.beliefPriDefault.set(0.05f);
         n.activateConceptRate.set(0.01f);

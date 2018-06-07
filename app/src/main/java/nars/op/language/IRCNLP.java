@@ -1,25 +1,21 @@
 
 package nars.op.language;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Param;
+import nars.Task;
 import nars.bag.leak.TaskLeak;
 import nars.op.language.util.IRC;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-
-import static nars.Op.INH;
-import static nars.Op.PROD;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * http:
@@ -263,239 +259,80 @@ public class IRCNLP extends IRC {
     }
 
 
-    public static void main(String[] args) {
-
-        
-
-        float durFPS = 20f;
-        NAR n = NARS.realtime(durFPS).get();
-
-        n.activateConceptRate.set(0.2f);
-        n.forgetRate.set(1f);
-
-        n.freqResolution.set(0.2f);
-        n.confResolution.set(0.05f);
-
-        n.termVolumeMax.set(48);
-
-        /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
-            new RealTime.DS(true),
-            new TaskExecutor(256, 0.25f));*/
-
-
-
-        
-
-
-        
-
-        new Thread(() -> {
-            try {
-                new TextUI(n, 1024);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-
-        IRCNLP bot = new IRCNLP(n,
-                
-                "nar" + Math.round(64 * 1024 * Math.random()),
-                "irc.freenode.net",
-                "#123xyz"
-                
-        );
-
-
-        Term HEAR = $.the("hear");
-        
-
-        n.onTask(t -> {
-            
-            
-            Term tt = t.term();
-            long start = t.start();
-            if (start != ETERNAL) {
-                if (t.isBeliefOrGoal() /* BOTH */) {
-                    long now = n.time();
-                    int dur = n.dur();
-                    if (start >= now - dur) {
-                        if (tt.op()==INH && HEAR.equals(tt.sub(1))) {
-                            if (tt.subIs(0, PROD) && tt.sub(0).subIs(0, Op.ATOM)) {
-                                bot.speak(tt.sub(0).sub(0), start, t.truth());
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-
-        
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        NARHear.readURL(n);
-        n.logPriMin(System.out, 0.9f);
-
-        n.start();
-
-        try {
-            bot.start();
-        } catch (IOException | IrcException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    }
+//    public static void main(String[] args) {
+//
+//
+//        float durFPS = 20f;
+//        NAR n = NARS.realtime(durFPS).get();
+//
+//        n.activateConceptRate.set(0.2f);
+//        n.forgetRate.set(1f);
+//
+//        n.freqResolution.set(0.2f);
+//        n.confResolution.set(0.05f);
+//
+//        n.termVolumeMax.set(48);
+//
+//        /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
+//            new RealTime.DS(true),
+//            new TaskExecutor(256, 0.25f));*/
+//
+//
+//        new Thread(() -> {
+//            try {
+//                new TextUI(n, 1024);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
+//
+//
+//        IRCNLP bot = new IRCNLP(n,
+//
+//                "nar" + Math.round(64 * 1024 * Math.random()),
+//                "irc.freenode.net",
+//                "#123xyz"
+//
+//        );
+//
+//
+//        Term HEAR = $.the("hear");
+//
+//
+//        n.onTask(t -> {
+//
+//
+//            Term tt = t.term();
+//            long start = t.start();
+//            if (start != ETERNAL) {
+//                if (t.isBeliefOrGoal() /* BOTH */) {
+//                    long now = n.time();
+//                    int dur = n.dur();
+//                    if (start >= now - dur) {
+//                        if (tt.op() == INH && HEAR.equals(tt.sub(1))) {
+//                            if (tt.subIs(0, PROD) && tt.sub(0).subIs(0, Op.ATOM)) {
+//                                bot.speak(tt.sub(0).sub(0), start, t.truth());
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//
+//
+//        NARHear.readURL(n);
+//        n.logPriMin(System.out, 0.9f);
+//
+//        n.start();
+//
+//        try {
+//            bot.start();
+//        } catch (IOException | IrcException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//    }
 
 
     private void speak(Term word, long when, @Nullable Truth truth) {

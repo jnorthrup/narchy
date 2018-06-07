@@ -1,5 +1,6 @@
 package nars.term;
 
+import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.decide.Roulette;
@@ -10,6 +11,7 @@ import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
 import org.eclipse.collections.api.LazyIterable;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -174,14 +176,11 @@ public enum Terms {
         }
 
 
-        {
-
-
-            Term[] x = oi.keysView().toArray(Op.EmptyTermArray);
-            return x[Roulette.selectRoulette(x.length, n -> 1f / (x[n].volume()), rng)];
-
-
-        }
+        Term[] x = oi.keysView().toArray(Op.EmptyTermArray);
+        IntToFloatFunction curve =
+                //n -> 1f / (x[n].volume());
+                n -> Util.sqr(1f / (x[n].volume()));
+        return x[Roulette.selectRoulette(x.length, curve, rng)];
     }
 
 

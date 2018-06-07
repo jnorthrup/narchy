@@ -1,20 +1,16 @@
 package nars.op.language;
 
 import nars.NAR;
-import nars.NARchy;
 import nars.Param;
 import nars.Task;
 import nars.bag.leak.TaskLeak;
 import nars.op.language.util.IRC;
 import org.jetbrains.annotations.NotNull;
-import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * $0.9;0.9;0.99$
@@ -205,114 +201,114 @@ public class IRCAgent extends IRC {
     }
 
 
-    public static void main(String[] args) {
-
-        
-
-        @NotNull NAR n = NARchy.ui(); 
-                
-
-        n.termVolumeMax.set(20);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        IRCAgent bot = new IRCAgent(n,
-                "experiment1", "irc.freenode.net",
-                
-                "#netention"
-                
-        );
-
-        n.onOpN("trace", (arg, nn) -> {
-            if (arg.subs() > 0) {
-                switch (arg.sub(0).toString()) {
-                    case "on": bot.setTrace(true); break;
-                    case "off": bot.setTrace(false);  bot.out.clear(); break;
-                }
-            }
-        });
-
-
-        /*
-        n.on("readToUs", (Command) (a, t, nn) -> {
-            if (t.length > 0) {
-                String url = $.unquote(t[0]);
-                if (canReadURL(url)) {
-                    try {
-
-                        Term[] targets;
-                        if (t.length > 1 && t[1] instanceof Compound) {
-                            targets = ((Compound)t[1]).terms();
-                        } else {
-                            targets = null;
-                        }
-
-                        Collection<String> lines = IOUtil.readLines(new URL(url).openStream());
-
-                        new RateIterator<String>(lines.iterator(), 2)
-                                .threadEachRemaining(l -> {
-
-                                    bot.hear(l, nn.self().toString());
-
-                                    if (targets == null) {
-                                        bot.broadcast(l);
-                                    } else {
-                                        for (Term u : targets)
-                                            bot.send($.unquote(u), l);
-                                    }
-
-                                }).start();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        */
-
-
-        /*
-
-        try {
-            new RateIterator<Task>(
-                NQuadsRDF.stream(n,
-                    new File("/home/me/Downloads/nquad")), 500)
-                        .threadEachRemaining(n::inputLater).start();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        */
-
-
-        
-        n.startFPS(10f);
-
-        try {
-            bot.start();
-        } catch (IOException | IrcException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-
-
-    }
+//    public static void main(String[] args) {
+//
+//
+//
+//        @NotNull NAR n = NARchy.ui();
+//
+//
+//        n.termVolumeMax.set(20);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//        IRCAgent bot = new IRCAgent(n,
+//                "experiment1", "irc.freenode.net",
+//
+//                "#netention"
+//
+//        );
+//
+//        n.onOpN("trace", (arg, nn) -> {
+//            if (arg.subs() > 0) {
+//                switch (arg.sub(0).toString()) {
+//                    case "on": bot.setTrace(true); break;
+//                    case "off": bot.setTrace(false);  bot.out.clear(); break;
+//                }
+//            }
+//        });
+//
+//
+//        /*
+//        n.on("readToUs", (Command) (a, t, nn) -> {
+//            if (t.length > 0) {
+//                String url = $.unquote(t[0]);
+//                if (canReadURL(url)) {
+//                    try {
+//
+//                        Term[] targets;
+//                        if (t.length > 1 && t[1] instanceof Compound) {
+//                            targets = ((Compound)t[1]).terms();
+//                        } else {
+//                            targets = null;
+//                        }
+//
+//                        Collection<String> lines = IOUtil.readLines(new URL(url).openStream());
+//
+//                        new RateIterator<String>(lines.iterator(), 2)
+//                                .threadEachRemaining(l -> {
+//
+//                                    bot.hear(l, nn.self().toString());
+//
+//                                    if (targets == null) {
+//                                        bot.broadcast(l);
+//                                    } else {
+//                                        for (Term u : targets)
+//                                            bot.send($.unquote(u), l);
+//                                    }
+//
+//                                }).start();
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        });
+//        */
+//
+//
+//        /*
+//
+//        try {
+//            new RateIterator<Task>(
+//                NQuadsRDF.stream(n,
+//                    new File("/home/me/Downloads/nquad")), 500)
+//                        .threadEachRemaining(n::inputLater).start();
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//        */
+//
+//
+//
+//        n.startFPS(10f);
+//
+//        try {
+//            bot.start();
+//        } catch (IOException | IrcException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//
+//
+//
+//
+//    }
 
     public void send(@NotNull String target, String l) {
         irc.send().message(target, l);
