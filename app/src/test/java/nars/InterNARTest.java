@@ -1,10 +1,6 @@
-package nars.nar;
+package nars;
 
 import jcog.Util;
-import nars.InterNAR;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -21,19 +17,24 @@ public class InterNARTest {
 
     static synchronized void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
 
-        final int MAX_CONNECT_INTERVALS = 20;
-        final int CONNECT_INTERVAL_MS = 200; 
+        final int MAX_CONNECT_INTERVALS = 10;
+        final int CONNECT_INTERVAL_MS = 30;
+        int outRate = 8;
 
-        final float NET_FPS = 10f;
-        final float REASONER_FPS = 20f;
-        final int INTERACT_TIME = 1500; 
+        final float NET_FPS = 20f;
+        final float NAR_FPS = NET_FPS * 2;
+        final int INTERACT_TIME = 700;
+
+        int volMax = 8;
 
         int preCycles = 1;
-        int postCycles = 100;
+        int postCycles = 64;
 
-        NAR a = NARS.realtime(10f).get().named("a");
-        NAR b = NARS.realtime(10f).get().named("b");
+        NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get().named("a");
+        NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get().named("b");
 
+        a.termVolumeMax.set(volMax);
+        b.termVolumeMax.set(volMax);
 
         beforeConnect.accept(a, b);
 
@@ -43,20 +44,20 @@ public class InterNARTest {
         }
 
 
-        InterNAR ai = new InterNAR(a, 1, 0, false) {
+        InterNAR ai = new InterNAR(a, outRate, 0, false) {
             @Override
             protected void starting(NAR nar) {
                 runFPS(NET_FPS);
             }
         };
-        InterNAR bi = new InterNAR(b, 1, 0, false) {
+        InterNAR bi = new InterNAR(b, outRate, 0, false) {
 
             @Override
             protected void starting(NAR nar) {
                 runFPS(NET_FPS);
             }
         };
-        assertTrue(ai.id!=bi.id);
+        assertTrue(ai.id != bi.id);
         assertTrue(!ai.addr().equals(bi.addr()));
         assertTrue(!ai.peer.name().equals(bi.peer.name()));
 
@@ -78,13 +79,13 @@ public class InterNARTest {
 
         afterConnect.accept(a, b);
 
-        
-        a.startFPS(REASONER_FPS);
-        b.startFPS(REASONER_FPS);
+
+        a.startFPS(NAR_FPS);
+        b.startFPS(NAR_FPS);
 
         Util.sleep(INTERACT_TIME);
 
-        
+
         a.pause();
         b.pause();
 
@@ -100,10 +101,13 @@ public class InterNARTest {
         a.stop();
         b.stop();
 
-        }
+    }
 
-    /** direct question answering */
-    @Test public void testInterNAR1() {
+    /**
+     * direct question answering
+     */
+    @Test
+    public void testInterNAR1() {
         AtomicBoolean aRecvQuestionFromB = new AtomicBoolean();
 
         testAB((a, b) -> {
@@ -144,10 +148,6 @@ public class InterNARTest {
 
         testAB((a, b) -> {
 
-
-
-
-
             b.onTask(bt -> {
 
                 if (bt.isBelief() && bt.toString().contains("(a-->d)"))
@@ -156,13 +156,16 @@ public class InterNARTest {
 
         }, (a, b) -> {
 
-            
-            
+
             a.believe($$("(b --> c)"));
 
             b.believe($$("(a --> b)"));
             b.believe($$("(c --> d)"));
-            b.question($$("(a --> d)"));
+            try {
+                b.input(("$1.0 (a --> d)?"));
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            }
 
         });
 

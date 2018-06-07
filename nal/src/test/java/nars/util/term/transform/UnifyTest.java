@@ -8,7 +8,7 @@ import nars.term.Term;
 import nars.term.anon.Anon;
 import nars.test.TestNAR;
 import nars.unify.Unify;
-import nars.util.signal.RuleTest;
+import nars.util.RuleTest;
 import nars.util.term.TermHashMap;
 import org.junit.jupiter.api.Test;
 

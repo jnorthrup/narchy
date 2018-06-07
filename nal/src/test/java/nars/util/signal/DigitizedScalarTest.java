@@ -1,5 +1,6 @@
 package nars.util.signal;
 
+import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatNormalized;
@@ -16,6 +17,8 @@ import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.Collectors;
+
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,53 +28,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 public class DigitizedScalarTest {
 
-    
+
     final static float tolerance = 0.2f;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    @Disabled
     @Test
     public void testRewardConceptsFuzzification3() {
         NAR n = NARS.shell();
         MutableFloat m = new MutableFloat(0f);
 
-        FloatNormalized range = new FloatPolarNormalized(() -> m.floatValue(), 1f);
+        FloatNormalized range = new FloatPolarNormalized(m::floatValue, 1f);
         DigitizedScalar f = new DigitizedScalar(range, DigitizedScalar.FuzzyNeedle, n,
                 $.p("low"), $.p("mid"), $.p("hih"));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         testSteadyFreqCondition(m, f, (freqSum) -> {
@@ -82,27 +50,21 @@ public class DigitizedScalarTest {
 
     public void testSteadyFreqCondition(MutableFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
 
-        
+
         for (int i = 0; i < 5; i++) {
             m.set(Math.sin(i / 2f));
             n.run();
 
 
-            double freqSum = f.sensors.stream()
-                    .peek(x -> n.input(x.update((prev,next) -> $.t(next, n.confDefault(BELIEF)),
+            double freqSum = f.stream()
+                    .peek(x -> n.input(x.update((prev, next) -> $.t(next, n.confDefault(BELIEF)),
                             n.time(), n.dur(), n)))
                     .map(x -> n.beliefTruth(x, n.time()))
                     .mapToDouble(x -> x != null ? x.freq() : 0f).sum();
 
-            System.out.println(
-                    Texts.n4(m.floatValue()) + "\t" +
-                            f + " " +
-                            freqSum
-
-                    
-            );
-
-            assertTrue(withFreqSum.accept((float) freqSum));
+            assertTrue(withFreqSum.accept((float) freqSum), ()->Texts.n4(m.floatValue()) + "\t" +
+                    Joiner.on(",").join(f.stream().map(x -> x + "=" + x.asFloat()).collect(Collectors.toList())) + " " +
+                    freqSum);
 
 
         }
@@ -118,9 +80,10 @@ public class DigitizedScalarTest {
                         new FloatNormalized(x::floatValue).updateRange(-1).updateRange(1),
                         DigitizedScalar.FuzzyBinary, n, $.p("x0"), $.p("x1"), $.p("x2")),
                 (f) -> true /*Util.equals(f, 0.5f + 0.5f * m.floatValue(), tolerance)*/
-        , n);
+                , n);
     }
 
+    @Disabled
     @Test
     public void testServiceAndFluidEncoder() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
@@ -132,11 +95,11 @@ public class DigitizedScalarTest {
 
         int dt = 20;
 
-        for (float v : new float[] { 0f, 0.5f, 1f }) {
+        for (float v : new float[]{0f, 0.5f, 1f}) {
 
 
             x.set(v);
-            xc.update(n.time()-n.dur()/2, n.time()+n.dur()/2, n.dur(), n);
+            xc.update(n.time() - n.dur() / 2, n.time() + n.dur() / 2, n.dur(), n);
             n.run(1);
 
             System.out.println("\n" + n.time() + " x=" + x);
@@ -145,7 +108,7 @@ public class DigitizedScalarTest {
                 System.out.println(d + "\t" + bt);
             });
 
-            int m = (dt - 1)/2;
+            int m = (dt - 1) / 2;
             n.run(m);
 
             Truth[] f = xc.belief(n.time(), n);
@@ -161,7 +124,7 @@ public class DigitizedScalarTest {
                 assertEquals(1.0f, f[1].freq(), tolerance);
             }
 
-            n.run(dt-1-m);
+            n.run(dt - 1 - m);
 
         }
     }

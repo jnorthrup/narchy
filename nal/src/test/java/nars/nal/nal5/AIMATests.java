@@ -19,111 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class AIMATests {
 
 
-
-
-    @ParameterizedTest
-    @ValueSource(doubles = { 0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5 })
-    public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
-
-        n.termVolumeMax.set(11);
-        n.freqResolution.set((float)truthRes);
-
-        n.believe("(P ==> Q)",
-                "((L && M) ==> P)",
-                "((B && L) ==> M)",
-                "((A && P) ==> L)",
-                "((A && B) ==> L)",
-                "A",
-                "B");
-
-        assertBelief(n, true, "Q", 350);
-
-    }
-
-    @Test
-    public void testWeaponsDomain() throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
-
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.02f);
-
-
-
-
-        n.termVolumeMax.set(14);
-        
-
-
-        
-        
-        
-
-
-        n.believe(
-            
-            "((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
-            "Owns(Nono, M1)",
-            "Missile(M1)",
-            "((Missile($x) && Owns(Nono,$x)) ==> Sells(West,$x,Nono))",
-            "(Missile($x) ==> Weapon($x))",
-            "(Enemy($x,America) ==> Hostile($x))",
-            "American(West)",
-            "Enemy(Nono,America)"
-        );
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        n.question($.$(
-                "Criminal:?x"
-
-        ), ETERNAL, (q,a)->{
-            System.out.println(a);
-        });
-        
-        
-        n.run(5500);
-
-
-
-
-
-
-
-        Task y = n.belief($.$("Criminal(West)"));
-        if (y == null) {
-            
-            n.belief($.$("Criminal(West)"));
-        }
-        assertNotNull(y);
-
-    }
-
-
     static void assertBelief(NAR n, boolean expcted, String x, int time) {
 
-        final int metricPeriod = time/4;
+        final int metricPeriod = time / 4;
 
         PairedStatsAccumulator timeVsConf = new PairedStatsAccumulator();
 
@@ -160,18 +58,71 @@ public class AIMATests {
         );
     }
 
+    @ParameterizedTest
+    @ValueSource(doubles = {0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5})
+    public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
+        final NAR n = NARS.tmp(6);
+
+        n.termVolumeMax.set(11);
+        n.freqResolution.set((float) truthRes);
+
+        n.believe("(P ==> Q)",
+                "((L && M) ==> P)",
+                "((B && L) ==> M)",
+                "((A && P) ==> L)",
+                "((A && B) ==> L)",
+                "A",
+                "B");
+
+        assertBelief(n, true, "Q", 350);
+
+    }
+
+    @Test
+    public void testWeaponsDomain() throws Narsese.NarseseException {
+        final NAR n = NARS.tmp(6);
+
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.02f);
+
+        n.questionPriDefault.set(1f);
+
+        n.termVolumeMax.set(18);
 
 
+        n.believe(
+
+                "((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
+                "Owns(Nono, M1)",
+                "Missile(M1)",
+                "((Missile($x) && Owns(Nono,$x)) ==> Sells(West,$x,Nono))",
+                "(Missile($x) ==> Weapon($x))",
+                "(Enemy($x,America) ==> Hostile($x))",
+                "American(West)",
+                "Enemy(Nono,America)"
+        );
 
 
+        n.question($.$(
+                "Criminal:?x"
+
+        ), ETERNAL, (q, a) -> {
+            System.out.println(a);
+        });
 
 
+        n.run(3500);
+        n.synch();
 
 
+        Task y = n.belief($.$("Criminal(West)"));
+        if (y == null) {
 
+            n.belief($.$("Criminal(West)"));
+        }
+        assertNotNull(y);
 
-
-
+    }
 
 
 }

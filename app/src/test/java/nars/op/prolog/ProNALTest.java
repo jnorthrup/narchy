@@ -1,4 +1,4 @@
-package nars.prolog;
+package nars.op.prolog;
 
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Theory;
@@ -7,7 +7,6 @@ import nars.NARS;
 import nars.Narsese;
 import nars.Op;
 import nars.concept.Operator;
-import nars.op.prolog.PrologToNAL;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 

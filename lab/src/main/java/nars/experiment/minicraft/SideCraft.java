@@ -7,7 +7,7 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.minicraft.side.SideScrollMinicraft;
 import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
-import nars.util.signal.Bitmap2DSensor;
+import nars.agent.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
 import spacegraph.SpaceGraph;

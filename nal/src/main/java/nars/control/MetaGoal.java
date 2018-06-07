@@ -2,15 +2,7 @@ package nars.control;
 
 import com.google.common.collect.TreeBasedTable;
 import jcog.Paper;
-import jcog.Util;
-import jcog.learn.ql.HaiQae;
 import jcog.list.FasterList;
-import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatNormalized;
-import jcog.math.FloatPolarNormalized;
-import nars.Emotion;
-import nars.NAR;
-import nars.NAgent;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -18,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 
 import static jcog.Texts.n4;
 
@@ -118,72 +109,72 @@ public enum MetaGoal {
     }
 
 
-    public static AgentBuilder newController(NAgent a) {
-        NAR n = a.nar;
-
-        Emotion ne = n.emotion;
-        Arrays.fill(ne.want, 0);
-
-        AgentBuilder b = new AgentBuilder(
-                
-                HaiQae::new,
-                
-                () -> a.enabled.get() ? (0.1f + a.dexterity()) * Util.tanhFast(a.reward) /* - lag */ : 0f) 
-
-                .in(a::dexterity)
-                .in(a.happy)
-
-
-
-
-                .in(new FloatNormalized(
-                        
-                        new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
-                ).relax(0.1f))
-                .in(new FloatNormalized(
-                                
-                                new FloatFirstOrderDifference(n::time, () -> n.emotion.premiseFire.getValue().longValue())
-                        ).relax(0.1f)
-                ).in(new FloatNormalized(
-                                n.emotion.busyVol::getSum
-                        ).relax(0.1f)
-                );
-
-
-        for (MetaGoal g : values()) {
-            final int gg = g.ordinal();
-            float min = -2;
-            float max = +2;
-            b.in(new FloatPolarNormalized(() -> ne.want[gg], max));
-
-            float step = 0.5f;
-
-            b.out(2, (w) -> {
-                float str = 0.05f + step * Math.abs(ne.want[gg] / 4f);
-                switch (w) {
-                    case 0:
-                        ne.want[gg] = Math.min(max, ne.want[gg] + str);
-                        break;
-                    case 1:
-                        ne.want[gg] = Math.max(min, ne.want[gg] - str);
-                        break;
-                }
-            });
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-        return b;
-    }
+//    public static AgentBuilder newController(NAgent a) {
+//        NAR n = a.nar;
+//
+//        Emotion ne = n.emotion;
+//        Arrays.fill(ne.want, 0);
+//
+//        AgentBuilder b = new AgentBuilder(
+//
+//                HaiQae::new,
+//
+//                () -> a.enabled.get() ? (0.1f + a.dexterity()) * Util.tanhFast(a.reward) /* - lag */ : 0f)
+//
+//                .in(a::dexterity)
+//                .in(a.happy)
+//
+//
+//
+//
+//                .in(new FloatNormalized(
+//
+//                        new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
+//                ).relax(0.1f))
+//                .in(new FloatNormalized(
+//
+//                                new FloatFirstOrderDifference(n::time, () -> n.emotion.premiseFire.getValue().longValue())
+//                        ).relax(0.1f)
+//                ).in(new FloatNormalized(
+//                                n.emotion.busyVol::getSum
+//                        ).relax(0.1f)
+//                );
+//
+//
+//        for (MetaGoal g : values()) {
+//            final int gg = g.ordinal();
+//            float min = -2;
+//            float max = +2;
+//            b.in(new FloatPolarNormalized(() -> ne.want[gg], max));
+//
+//            float step = 0.5f;
+//
+//            b.out(2, (w) -> {
+//                float str = 0.05f + step * Math.abs(ne.want[gg] / 4f);
+//                switch (w) {
+//                    case 0:
+//                        ne.want[gg] = Math.min(max, ne.want[gg] + str);
+//                        break;
+//                    case 1:
+//                        ne.want[gg] = Math.max(min, ne.want[gg] - str);
+//                        break;
+//                }
+//            });
+//        }
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//        return b;
+//    }
 
     public static class Report extends ObjectDoubleHashMap<ObjectBytePair<Cause>> {
 

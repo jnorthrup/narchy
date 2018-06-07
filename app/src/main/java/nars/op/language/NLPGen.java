@@ -1,4 +1,4 @@
-package nars.util;
+package nars.op.language;
 
 import nars.*;
 import nars.derive.premise.PremisePatternIndex;

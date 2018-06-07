@@ -1,4 +1,4 @@
-package nars.prolog;
+package nars.op.prolog;
 
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.MalformedGoalException;
@@ -6,7 +6,6 @@ import alice.tuprolog.Theory;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.op.prolog.PrologCore;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

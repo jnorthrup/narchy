@@ -1,4 +1,4 @@
-package nars.op;
+package nars.agent;
 
 import nars.NAR;
 import nars.NARS;

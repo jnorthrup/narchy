@@ -5,7 +5,6 @@ import jcog.math.MutableInteger;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
-import nars.concept.action.ActionConcept;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 
 import static jcog.Util.clamp;
@@ -104,9 +103,9 @@ public final class DefaultConceptState extends ConceptState {
             if (!eternalOrTemporal) {
                 c *= 2;
             } else {
-                if (concept instanceof ActionConcept) {
-                    c = 0; 
-                }
+//                if (concept instanceof ActionConcept) {
+//                    c = 0;
+//                }
             }
         }
 

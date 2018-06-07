@@ -7,7 +7,7 @@ import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.NAgent;
+import nars.agent.NAgent;
 import nars.NAgentX;
 import nars.concept.Concept;
 import nars.gui.NARui;

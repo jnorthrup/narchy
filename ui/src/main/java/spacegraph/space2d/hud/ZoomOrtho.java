@@ -233,12 +233,12 @@ public class ZoomOrtho extends Ortho {
 
         @Override
         public float w() {
-            return window.getWidth();
+            return window.getWidthNext();
         }
 
         @Override
         public float h() {
-            return window.getHeight();
+            return window.getHeightNext();
         }
     }
 

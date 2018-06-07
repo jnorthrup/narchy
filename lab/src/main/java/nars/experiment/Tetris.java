@@ -6,7 +6,7 @@ import nars.*;
 import nars.op.java.Opjects;
 import nars.term.Term;
 import nars.util.TimeAware;
-import nars.util.signal.Bitmap2DSensor;
+import nars.agent.Bitmap2DSensor;
 
 import java.util.Arrays;
 import java.util.Random;

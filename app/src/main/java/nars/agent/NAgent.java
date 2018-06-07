@@ -1,4 +1,4 @@
-package nars;
+package nars.agent;
 
 import com.google.common.collect.Iterables;
 import jcog.TODO;
@@ -9,6 +9,7 @@ import jcog.event.Topic;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.*;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.action.ActionConcept;
 import nars.concept.scalar.DigitizedScalar;
@@ -27,7 +28,6 @@ import nars.term.atom.Atomic;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.TimeAware;
-import nars.util.signal.Bitmap2DSensor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;

@@ -166,18 +166,23 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public final int getWidth() {
+        return window.getWidth();
+    }
+    public final int getWidthNext() {
         return nw;
     }
-
     public final int getHeight() {
+        return window.getHeight();
+    }
+    public final int getHeightNext() {
         return nh;
     }
 
-    public final int getX() {
+    public final int getXNext() {
         return nx;
     }
 
-    public final int getY() {
+    public final int getYNext() {
         return ny;
     }
 
@@ -428,6 +433,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     public On onUpdate(Runnable c) {
         return onUpdate.on((JoglWindow s) -> c.run());
     }
+
+    public int getX() {
+        return window.getX();
+    }public int getY() {
+        return window.getY();
+    }
+
 
     /* from: Jake2's */
     class GameAnimatorControl extends AnimatorBase {

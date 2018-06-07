@@ -17,7 +17,7 @@ import georegression.struct.shapes.Rectangle2D_I32;
 import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.NAgent;
+import nars.agent.NAgent;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;

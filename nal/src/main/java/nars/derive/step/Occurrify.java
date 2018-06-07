@@ -6,6 +6,7 @@ import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Image;
@@ -72,9 +73,11 @@ public class Occurrify extends TimeGraph {
     final Set<Term> expanded = new UnifiedSet<>();
 
     final Derivation d;
-    Task curTask, curBelief;
-    boolean curSingle;
-    long curTime = ETERNAL;
+
+
+    private Task curTask;
+    private long curTaskAt = XTERNAL, curBeliefAt = XTERNAL;
+    private Termed curBelief;
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -137,65 +140,59 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-    public Occurrify reset() {
-        clear();
 
-        autoNeg(false);
-        return this;
-    }
+    public void reset(boolean autoNeg) {
+        seen.clear();
 
-    public Occurrify reset(boolean autoNeg) {
         Task task = d.task;
         boolean single = d.single;
         Task belief = !single ? d.belief : null;
-        Term bb = !single ? belief.term() : d.beliefTerm;
+        long beliefAt = single ? XTERNAL : d.beliefAt;
+        long taskAt = d.taskAt;
+        Termed bb = !single ? belief : d.beliefTerm;
 
 
         if (!autoNeg && (task.term().hasAny(NEG) || bb.hasAny(NEG))) {
             autoNeg = true;
         }
 
-
-        expanded.clear();
-        seen.clear();
-
-        long now = d.time;
-        if (curTime == now && Objects.equals(d.task, curTask) && Objects.equals(d.belief, curBelief) && curSingle == single && autoNeg == this.autoNeg) {
-            return this;
-        } else {
-            reset();
-            this.autoNeg(autoNeg);
-            this.curTask = task;
-            this.curBelief = belief;
-            this.curSingle = single;
-            this.curTime = now;
-        }
-
-
-        if (single) {
-            know(task, d.taskAt);
-        } else {
-
+        if (!single) {
             boolean taskEte = task.isEternal();
             boolean beliefEte = belief.isEternal();
             if (taskEte && !beliefEte) {
-
-                know(task, d.beliefAt);
-            } else {
-                know(task, d.taskAt);
-            }
-
-            if (!d.belief.equals(d.task)) {
-                if (beliefEte && !taskEte) {
-                    know(belief, d.taskAt);
-                } else {
-                    know(belief, d.beliefAt);
-                }
+                taskAt = beliefAt; //use belief time for eternal task
+            } else if (beliefEte && !taskEte) {
+                beliefAt = taskAt; //use task time for eternal belief
             }
         }
 
-        return this;
+        //determine re-usability:
+        boolean reUse =
+                autoNeg == this.autoNeg && this.curBeliefAt == beliefAt && this.curTaskAt == taskAt && Objects.equals(d.task, curTask) && Objects.equals(bb, curBelief);
 
+        this.curTask = task; //update to current instance, even if equal
+        this.curBelief = bb; //update to current instance, even if equal
+
+
+        if (!reUse) {
+            clear();
+            expanded.clear();
+            this.autoNeg(autoNeg);
+            this.curBeliefAt = beliefAt;
+            this.curTaskAt = taskAt;
+
+            if (single) {
+                know(task, taskAt);
+                if (!task.term().equals(bb))
+                    know((Term)bb);
+            } else {
+                know(task, taskAt);
+
+                if (!belief.equals(task)) {
+                    know(belief, beliefAt);
+                }
+            }
+        }
     }
 
 
@@ -453,7 +450,7 @@ public class Occurrify extends TimeGraph {
          */
         Intersect() {
 
-            final PrediTerm<Derivation> filter = new AbstractPred<>(Atomic.the("TimeIntersects")) {
+            final PrediTerm<Derivation> filter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
                 @Override
                 public boolean test(Derivation derivation) {
                     nars.Task b = derivation._belief;
@@ -536,12 +533,13 @@ public class Occurrify extends TimeGraph {
         }
 
         private static void immediateIfPast(Derivation d, long[] o) {
-
-            long NOW = d.time;
-            if (o[0] < NOW) {
-                long delta = o[1] - o[0];
-                o[0] = NOW;
-                o[1] = NOW + delta;
+            if (o[0] != ETERNAL) {
+                long NOW = d.time;
+                if (o[0] < NOW) {
+                    long delta = o[1] - o[0];
+                    o[0] = NOW;
+                    o[1] = NOW + delta;
+                }
             }
         }
 

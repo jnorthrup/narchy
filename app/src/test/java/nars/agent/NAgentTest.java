@@ -1,12 +1,8 @@
-package nars.nar;
+package nars.agent;
 
 import jcog.learn.ql.HaiQae;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.NAgent;
+import nars.*;
 import nars.control.MetaGoal;
-import nars.op.RLBooster;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;

@@ -32,8 +32,8 @@ public class SubOrtho extends Ortho {
 
     @Override
     protected void doLayout(int dtMS) {
-        int ww = window.getWidth();
-        int wh = window.getHeight();
+        int ww = window.getWidthNext();
+        int wh = window.getHeightNext();
 
         pos(RectFloat2D.XYXY(boundsWin.x * ww, boundsWin.y * wh, boundsWin.w * ww, boundsWin.h * wh));
 

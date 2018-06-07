@@ -421,8 +421,8 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         vertical.normalize();
 
         float tanfov = (float) Math.tan(0.5f * fov);
-        float ww = space.getWidth();
-        float hh = space.getHeight();
+        float ww = space.getWidthNext();
+        float hh = space.getHeightNext();
 
         float aspect = hh / ww;
 

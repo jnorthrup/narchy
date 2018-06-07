@@ -1,5 +1,6 @@
 package nars.concept.dynamic;
 
+import com.google.common.collect.Iterators;
 import jcog.list.FasterList;
 import jcog.math.FloatSupplier;
 import nars.NAR;
@@ -53,7 +54,8 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         int size();
 
         default void forEach(long minT, long maxT, boolean exactRange, Consumer<? super Task> x) {
-            whileEach(minT, maxT, exactRange, (t) -> { x.accept(t); return true; } );
+            if (!isEmpty())
+                whileEach(minT, maxT, exactRange, (t) -> { x.accept(t); return true; } );
         }
 
         /** returns false if the predicate ever returns false; otherwise returns true even if empty.  this allows it to be chained recursively to other such iterators */
@@ -65,16 +67,16 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         int forEach(long start, long end, int limit, Consumer<Task> target);
 
-        default FasterList<Task> toList(long start, long end, int limit) {
-            int size = size();
-            if (size == 0)
-                return new FasterList(0);
-
-            FasterList<Task> l = new FasterList<>(Math.min(size, limit));
-            forEach(start, end, limit, l::add);
-            l.compact();
-            return l;
-        }
+//        default FasterList<Task> toList(long start, long end, int limit) {
+//            int size = size();
+//            if (size == 0)
+//                return new FasterList(0);
+//
+//            FasterList<Task> l = new FasterList<>(Math.min(size, limit));
+//            forEach(start, end, limit, l::add);
+//            l.compact();
+//            return l;
+//        }
 
         void forEach(Consumer<? super Task> action);
 
@@ -138,23 +140,38 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         @Override
         public boolean whileEach(final long minT, final long maxT, boolean exactRange, Predicate<? super Task> x) {
-            if (at.isEmpty())
-                return true;
+
 
             Long low, high;
-            low = at.lowerKey(minT);
-            if (low == null)
-                low = at.floorKey(minT); 
+                low = at.floorKey(minT);
+                high = at.ceilingKey(maxT);
+
+            if (high == null)
+                high = maxT;
             if (low == null)
                 low = minT;
 
-            high = at.higherKey(maxT);
-            if (high == null)
-                high = at.ceilingKey(maxT); 
-            if (high == null)
-                high = maxT;
 
-            Iterator<Task> ii = at.subMap(low, high).values().iterator();
+
+            //expand range to include tasks near the specified interval
+            Long lower = at.lowerKey(low);
+            if (lower != null)
+                low = lower;
+            Long higher = at.higherKey(high);
+            if (higher != null)
+                high = higher;
+
+
+            Iterator<Task> ii;
+            if (low!=high) {
+                ii = at.subMap(low, high).values().iterator();
+            } else {
+                Task the = at.get(low);
+                if (the == null)
+                    return true; //nothing
+                ii = Iterators.singletonIterator(the);
+            }
+
             while (ii.hasNext()) {
                 Task xx = ii.next();
                 if (exactRange && !xx.intersects(minT, maxT))
@@ -253,7 +270,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             if (size == 0)
                 return null;
 
-            DynTruth d = new DynTruth(MAX_TASKS_TRUTHPOLATED);
+            DynTruth d = new DynTruth(Math.min(size,MAX_TASKS_TRUTHPOLATED));
 
 
 

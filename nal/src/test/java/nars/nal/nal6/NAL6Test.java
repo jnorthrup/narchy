@@ -286,7 +286,7 @@ public class NAL6Test extends NALTest {
         test
                 .believe("((&&, flyer:$x, [chirping]:$x, food($x, worms)) ==> bird:$x)")
                 .believe("flyer:Tweety")
-                .mustBelieve(cycles * 4, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
+                .mustBelieve(cycles * 2, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
                         1.0f,
                         0.73f);
 
@@ -300,7 +300,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
         tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles * 3, "(($1 --> key) ==> open($1, {lock1}))", 1.00f, 0.73f);
+        tester.mustBelieve(cycles * 2, "(($1 --> key) ==> open($1, {lock1}))", 1.00f, 0.73f);
 
     }
 

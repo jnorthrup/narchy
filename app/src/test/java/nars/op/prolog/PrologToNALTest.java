@@ -1,9 +1,8 @@
-package nars.prolog;
+package nars.op.prolog;
 
 import alice.tuprolog.InvalidTheoryException;
 import alice.tuprolog.Theory;
 import com.google.common.base.Joiner;
-import nars.op.prolog.PrologToNAL;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

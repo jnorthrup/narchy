@@ -39,9 +39,7 @@ public class UniExec extends AbstractExec {
 
             n.onCycle(() -> {
                 revaluator.update(n);
-                for (int i = 0, canSize = can.size(); i < canSize; i++) {
-                    can.get(i).run(n, WORK_PER_CYCLE);
-                }
+                can.forEach(c -> c.run(n, WORK_PER_CYCLE));
             });
         }
     }

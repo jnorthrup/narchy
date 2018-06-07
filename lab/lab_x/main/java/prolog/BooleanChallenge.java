@@ -1,4 +1,4 @@
-package nars.prolog;
+package nars.op.prolog;
 
 import nars.Events.OUT;
 import nars.NAR;

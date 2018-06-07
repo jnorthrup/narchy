@@ -3,7 +3,6 @@ package nars.op.language;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.util.NLPGen;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

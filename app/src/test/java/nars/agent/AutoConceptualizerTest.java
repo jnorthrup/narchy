@@ -1,10 +1,9 @@
-package nars.op;
+package nars.agent;
 
 import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.util.signal.Bitmap2DSensor;
 import org.junit.jupiter.api.Test;
 
 public class AutoConceptualizerTest {

@@ -1,4 +1,4 @@
-package nars.nal.multistep;
+package nars.util;
 
 import jcog.data.ArrayHashSet;
 import jcog.io.arff.ARFF;
@@ -9,7 +9,6 @@ import nars.Narsese;
 import nars.Task;
 import nars.task.util.DialogTask;
 import nars.truth.Stamp;
-import nars.util.NALSchema;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;

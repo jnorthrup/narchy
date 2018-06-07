@@ -2,7 +2,7 @@ package nars.video;
 
 import jcog.Util;
 import nars.NAR;
-import nars.NAgent;
+import nars.agent.NAgent;
 import nars.concept.TaskConcept;
 import nars.concept.scalar.Scalar;
 import nars.control.DurService;
@@ -10,7 +10,7 @@ import nars.gui.NARui;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.TimeAware;
-import nars.util.signal.Bitmap2DSensor;
+import nars.agent.Bitmap2DSensor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;

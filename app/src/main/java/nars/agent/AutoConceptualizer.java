@@ -1,4 +1,4 @@
-package nars.op;
+package nars.agent;
 
 import jcog.learn.Autoencoder;
 import nars.NAR;
@@ -17,6 +17,7 @@ import static nars.Op.*;
 
 /**
  * decompiles a continuously trained autoencoding of an input concept vector
+ * TODO make DurService
  */
 public class AutoConceptualizer {
     public final Autoencoder ae;

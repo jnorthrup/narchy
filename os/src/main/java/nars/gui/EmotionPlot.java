@@ -2,7 +2,7 @@ package nars.gui;
 
 import jcog.event.Ons;
 import nars.NAR;
-import nars.NAgent;
+import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;

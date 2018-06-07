@@ -1,9 +1,8 @@
-package nars.test.agent;
+package nars.agent;
 
 import jcog.Util;
 import jcog.math.FloatRange;
 import nars.$;
-import nars.NAgent;
 import nars.concept.scalar.Scalar;
 
 

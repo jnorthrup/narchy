@@ -2,7 +2,6 @@ package nars.concept.action;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.NAct;
 import nars.Param;
 import nars.Task;
 import nars.concept.dynamic.ScalarBeliefTable;
@@ -32,9 +31,6 @@ public class GoalActionConcept extends ActionConcept {
     private final MotorFunction motor;
 
 
-    public GoalActionConcept(@NotNull Term c, @NotNull NAct act, @NotNull MotorFunction motor) {
-        this(c, act.nar(), act.curiosity(), motor);
-    }
 
     public GoalActionConcept(@NotNull Term c, @NotNull NAR n, @NotNull FloatRange curiosity, @NotNull MotorFunction motor) {
         super(c, n);

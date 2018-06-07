@@ -454,7 +454,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
 
             finger.posPixel.set(pmx, pmy);
-            finger.posScreen.set(w.getX() + pmx, e.getY() + w.getY());
+            finger.posScreen.set(w.getXNext() + pmx, e.getY() + w.getYNext());
             finger.pos.set(wmx, wmy);
         }
 

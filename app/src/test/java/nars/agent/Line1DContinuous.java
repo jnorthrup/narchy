@@ -1,4 +1,4 @@
-package nars.test.agent;
+package nars.agent;
 
 import nars.*;
 import nars.concept.action.ActionConcept;

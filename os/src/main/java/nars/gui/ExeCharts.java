@@ -8,7 +8,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import nars.$;
 import nars.NAR;
 import nars.NARLoop;
-import nars.NAgent;
+import nars.agent.NAgent;
 import nars.control.Cause;
 import nars.control.DurService;
 import nars.control.MetaGoal;

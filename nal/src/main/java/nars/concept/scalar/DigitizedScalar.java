@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static nars.Op.SETe;
 
@@ -22,6 +23,7 @@ import static nars.Op.SETe;
  * expects values which have been normalized to 0..1.0 range (ex: use NormalizedFloat)
  */
 public class DigitizedScalar extends DemultiplexedScalar {
+
 
     /**
      * decides the truth value of a 'digit'. returns frequency float
@@ -39,6 +41,9 @@ public class DigitizedScalar extends DemultiplexedScalar {
 
 
 
+    public final Stream<Scalar> stream() {
+        return sensors.stream();
+    }
 
 
     @Override
@@ -61,16 +66,16 @@ public class DigitizedScalar extends DemultiplexedScalar {
      */
     public final static ScalarEncoder Fluid = (v, i, indices) -> {
 
-        float vv = v * indices;
 
-        int which = (int) Math.floor(vv);
+        float vv = v * (indices);
+        int which = (int) Math.ceil(vv);
         float f;
         if (i < which) {
             f = 1f;
         } else if (i > which) {
             f = 0f;
         } else {
-            f = vv - which;
+            f = 1f-Math.max(0,(vv - which));
         }
 
         return f;

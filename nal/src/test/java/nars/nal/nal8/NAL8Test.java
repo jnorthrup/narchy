@@ -3,7 +3,6 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.Param;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -22,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 230;
+    public static final int cycles = 200;
 
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(14);
     }
 
     @Test
@@ -50,10 +49,10 @@ public class NAL8Test extends NALTest {
         test
 
                 .input("(open(t1) &&+5 opened(t1))! :|:")
-                .mustGoal(cycles, "open(t1)", 1.0f, 0.81f, 0) 
-                .mustNotOutput(cycles, "open(t1)", GOAL, t -> t == ETERNAL || t == 5) 
-                .mustGoal(cycles, "opened(t1)", 1.0f, 0.81f, 5) 
-                .mustNotOutput(cycles, "opened(t1)", GOAL, t -> t == ETERNAL || t == 0) 
+                .mustGoal(cycles, "open(t1)", 1.0f, 0.81f, 0)
+                .mustNotOutput(cycles, "open(t1)", GOAL, t -> t == ETERNAL || t == 5)
+                .mustGoal(cycles, "opened(t1)", 1.0f, 0.81f, 5)
+                .mustNotOutput(cycles, "opened(t1)", GOAL, t -> t == ETERNAL || t == 0)
         ;
     }
 
@@ -70,34 +69,12 @@ public class NAL8Test extends NALTest {
                 .input(new NALTask($.$("(a-->b)"), GOAL, $.t(1f, 0.9f), 5, 10, 20, new long[]{100}).pri(0.5f))
                 .input(new NALTask($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), 4, 5, 25, new long[]{101}).pri(0.5f))
                 .mustGoal(cycles, "(a-->c)", 1f, 0.4f,
-                        
-                        x -> x >=5 && x <= 25
+
+                        x -> x >= 5 && x <= 25
                 )
         ;
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
@@ -120,7 +97,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void subbelief_2() throws Narsese.NarseseException {
-        
+
         {
             Term t = $.$("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))");
             assertEquals(2, t.subs());
@@ -136,7 +113,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void subbelief_2easy() {
-        
+
 
         test
 
@@ -159,7 +136,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void subbelief_2medium() {
-        
+
 
         test
                 .input("(a:b &&+5 (c:d &&+5 x:y)). :|:")
@@ -216,9 +193,9 @@ public class NAL8Test extends NALTest {
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "x", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "x", GOAL, (t) -> t!=0 && t!=ETERNAL)
-                .mustNotOutput(cycles, "y", GOAL, (t) -> t!=0 && t!=ETERNAL)
-                ;
+                .mustNotOutput(cycles, "x", GOAL, (t) -> !(t != 0 && t != ETERNAL))
+                .mustNotOutput(cycles, "y", GOAL, (t) -> !(t != 0 && t != ETERNAL))
+        ;
     }
 
     @Test
@@ -252,7 +229,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void testStrongNegativePositiveInheritance() {
-        
+
         test
                 .goal("--(A-->B)")
                 .believe("(B-->C)")
@@ -262,27 +239,13 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void testStrongNegativeNegativeInheritance() {
-        
+
         test
                 .goal("--(A-->B)")
                 .believe("--(B-->C)")
                 .mustNotOutput(5, "(A-->C)", GOAL, 0f, 1f, 0f, 1f, ETERNAL)
         ;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
@@ -293,16 +256,9 @@ public class NAL8Test extends NALTest {
                 .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "x", 1f, 0.81f, 0)
                 .mustBelieve(cycles, "y", 1f, 0.81f, 3)
-        
+
         ;
     }
-
-
-
-
-
-
-
 
 
     @Test
@@ -325,7 +281,7 @@ public class NAL8Test extends NALTest {
                 .mustBelieve(cycles, "x", 0f, 0.81f, 0)
                 .mustBelieve(cycles, "y", 1f, 0.81f, 3)
         ;
-        
+
     }
 
     @Test
@@ -336,26 +292,26 @@ public class NAL8Test extends NALTest {
                 .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "x", 1f, 0.81f, 0)
                 .mustBelieve(cycles, "y", 1f, 0.81f, 3)
-        
+
         ;
     }
 
 
     @Test
     public void testConjSeqGoalDecomposeForward() {
-        
+
 
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t > 0)
-                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t > 3 + 0 /* earliest x goal */ )
+                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t > 3 + 0 /* earliest x goal */)
                 .mustNotOutput(cycles, "y", GOAL, ETERNAL);
     }
 
     @Test
     public void testConjParGoalDecomposeForward() {
-        
+
         test
                 .goal("(x &| y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
@@ -365,70 +321,20 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void testConjSeqGoalNegDecomposeForward() {
-        
+
         test
                 .goal("(--x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 0f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 3)
-                .mustNotOutput(cycles, "y", GOAL, ETERNAL);
+                .mustNotOutput(cycles, "y", GOAL, ETERNAL)
+                .mustNotOutput(cycles, "y", GOAL, 0)
+        ;
     }
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
 
     @Test
     public void testInhibition() {
-        
+
 
         test
                 .goal("reward")
@@ -450,7 +356,7 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "good", GOAL, 0f, 1f, 0.8f, 1f, ETERNAL)
         ;
     }
-    
+
 
     @Test
     public void testInhibition0() {
@@ -458,13 +364,13 @@ public class NAL8Test extends NALTest {
         test
                 .goal("reward")
                 .believe("(bad ==> --reward)", 1, 0.9f)
-                
+
                 .mustNotOutput(cycles, "bad", GOAL, 0.5f, 1f, 0f, 1f, ETERNAL);
     }
 
     @Test
     public void testInhibition1() {
-        
+
 
         test
                 .goal("(reward)")
@@ -472,8 +378,8 @@ public class NAL8Test extends NALTest {
 
                 .mustGoal(cycles, "(good)", 1.0f, 0.81f)
                 .mustNotOutput(cycles, "(good)", GOAL, 0.0f, 0.7f, 0.5f, 1f, ETERNAL)
-        
-        
+
+
         ;
     }
 
@@ -486,7 +392,7 @@ public class NAL8Test extends NALTest {
 
                 .mustGoal(cycles, "(good)", 1.0f, 0.45f)
                 .mustNotOutput(cycles, "(good)", GOAL, 0.0f, 0.5f, 0.0f, 1f, ETERNAL);
-        
+
     }
 
 
@@ -498,7 +404,8 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     public void testGoalSimilaritySpreadingNeg() {
         test
                 .input("R!")
@@ -514,7 +421,8 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     public void testGoalSimilaritySpreadingNegInsideNeg() {
         test
                 .input("--R!")
@@ -525,47 +433,16 @@ public class NAL8Test extends NALTest {
     @Test
     public void testGoalSimilaritySpreadingParameter() {
         test
-                .input("Rx!")
+                .input("R(x)!")
                 .input("(x <-> y).")
-                .mustGoal(cycles, "Ry", 1.0f, 0.4f);
+                .mustGoal(cycles, "R(y)", 1.0f, 0.4f);
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Disabled
     @Test
     public void testInheritanceDecompositionTemporalGoal() {
-        
-        
-        
+
 
         test
 
@@ -577,9 +454,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void testInheritanceDecompositionTemporalBelief() {
-        
-        
-        
+
 
         test
                 .inputAt(0, "(((in)|(left))-->cam). :|:")
@@ -588,34 +463,16 @@ public class NAL8Test extends NALTest {
 
     }
 
-    @Test @Disabled
+    @Test
+    @Disabled
     public void disjunctionBackwardsQuestionEternal() {
 
-        
+
         test
                 .inputAt(0, "(||, x, y)?")
                 .believe("x")
                 .mustBelieve(cycles, "(&&, (--,x), (--,y))", 0f, 0.81f, ETERNAL);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Disabled
@@ -637,6 +494,7 @@ public class NAL8Test extends NALTest {
                 .input("(a && b).")
                 .mustGoal(cycles, "b", 1f, 0.81f);
     }
+
     @Test
     public void testGoalConjunctionPos1Parallel() {
 
@@ -649,7 +507,7 @@ public class NAL8Test extends NALTest {
     @Test
     public void testGoalConjunctionNegative1N() {
 
-        Param.DEBUG = true;
+
         test
                 .input("--a!")
                 .input("(--a && b).")
@@ -666,20 +524,22 @@ public class NAL8Test extends NALTest {
     }
 
 
-    @ParameterizedTest @ValueSource(strings = {"&|","&&"})
+    @ParameterizedTest
+    @ValueSource(strings = {"&|", "&&"})
     public void testGoalImplComponentEternal(String conj) {
         test
-            .input("happy!")
-            .input("(in =|> (happy " + conj + " --out)).")
-            .mustBelieve(cycles, "(in=|>happy)", 1f, 0.81f)
-            .mustGoal(cycles, "in", 1f, 0.73f);
+                .input("happy!")
+                .input("(in =|> (happy " + conj + " --out)).")
+                .mustBelieve(cycles, "(in=|>happy)", 1f, 0.81f)
+                .mustGoal(cycles, "in", 1f, 0.73f);
     }
 
-    @ParameterizedTest @ValueSource(strings = {"&&","&|"})
+    @ParameterizedTest
+    @ValueSource(strings = {"&&", "&|"})
     public void testGoalImplComponentEternalSubjNeg(String conj) {
         test.input("happy!")
-            .input("(--in =|> (happy " + conj + " --out)).")
-            .mustGoal(cycles, "in", 0f, 0.42f);
+                .input("(--in =|> (happy " + conj + " --out)).")
+                .mustGoal(cycles, "in", 0f, 0.42f);
     }
 
     @Test
@@ -715,7 +575,6 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "out", 1f, 0.45f, 10);
 
 
-
     }
 
     @Test
@@ -726,6 +585,7 @@ public class NAL8Test extends NALTest {
                 .input("--x!")
                 .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, t -> t > 0);
     }
+
     @Test
     public void testConjDecomposeSequenceEmbedsAntiGoalPos() {
 
@@ -742,7 +602,7 @@ public class NAL8Test extends NALTest {
                 .inputAt(0, "(--(out) ==>-3 (happy)). :|:")
                 .inputAt(5, "(happy)! :|:")
                 .mustGoal(cycles, "(out)", 0f, 0.45f, /*~*/8);
-        
+
     }
 
 
@@ -758,7 +618,6 @@ public class NAL8Test extends NALTest {
     }
 
 
-
     @ParameterizedTest
     @ValueSource(ints = {-4, -3, +0, +3, +4})
     public void implDecomposeGoalPredicate1(int dt) {
@@ -772,7 +631,7 @@ public class NAL8Test extends NALTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = { -3, +0, +3 })
+    @ValueSource(ints = {-3, +0, +3})
     public void implDecomposeGoalPredicate2swap(int dt) {
         testImplSubjPredImmanentize(dt, "(a2 &&+1 a)/b");
     }
@@ -789,24 +648,24 @@ public class NAL8Test extends NALTest {
         testImplSubjPredImmanentize(dt, "(a &&+1 a)/b");
     }
 
-    
+
     void testImplSubjPredImmanentize(int dt, String sj) {
 
         int start = 1;
         int when = 6;
 
         int goalAt = Math.max(when,
-                when - dt - $.$$(sj).dtRange()); 
+                when - dt - $.$$(sj).dtRange());
 
         String[] subjPred = sj.split("\\/");
         assertEquals(2, subjPred.length);
 
         test
-            .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
-            .inputAt(when, "b! :|:")
-            .mustGoal(when*8, subjPred[0], 1f, 0.45f,
-                    (t) -> t >= goalAt) 
-            
+                .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
+                .inputAt(when, "b! |")
+                .mustGoal(when * 8, subjPred[0], 1f, 0.45f,
+                        (t) -> t >= goalAt)
+
         ;
     }
 
@@ -816,8 +675,8 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(1, "(a &&+3 b). :|:")
                 .inputAt(5, "b! :|:")
-                
-                .mustGoal(cycles, "a", 1f, 0.3f, 5) 
+
+                .mustGoal(cycles, "a", 1f, 0.3f, t -> (t >= 5))
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
 
@@ -827,9 +686,10 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(3, "(--a &&+3 b). :|:")
                 .inputAt(6, "b! :|:")
-                .mustGoal(cycles, "a", 0f, 0.81f, (t->t>=6))
+                .mustGoal(cycles, "a", 0f, 0.81f, (t -> t >= 6))
                 .mustNotOutput(cycles, "a", GOAL, ETERNAL);
     }
+
     @Test
     public void implDecomposeGoalAfterPosNeg() {
 
@@ -837,7 +697,7 @@ public class NAL8Test extends NALTest {
                 .inputAt(3, "(--a ==>+2 b). :|:")
                 .inputAt(5, "b! :|:")
                 .mustGoal(cycles, "a", 0f, 0.81f, 5 /* desired at same time as b since it precedes it */);
-                
+
     }
 
     @Test
@@ -846,13 +706,13 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(3, "(a &&+3 --b). :|:")
                 .inputAt(6, "--b! :|:")
-                .mustGoal(16, "a", 1f, 0.81f, (t) -> t >= 6) 
+                .mustGoal(16, "a", 1f, 0.5f, (t) -> t >= 6)
                 .mustNotOutput(16, "a", GOAL, ETERNAL);
     }
 
     @Test
     public void implDecomposeGoalBeforeTemporalEte() {
-        
+
         test
                 .inputAt(1, "(x ==>-1 y).")
                 .inputAt(2, "y! :|:")
@@ -878,9 +738,9 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void implDecomposeGoalBeforeTemporalImpl() {
-        
+
         test
-                .inputAt(1, "(x ==>-1 y). :|:") 
+                .inputAt(1, "(x ==>-1 y). :|:")
                 .inputAt(2, "y! :|:")
                 .mustGoal(cycles, "x", 1f, 0.81f, 3);
     }
@@ -889,9 +749,9 @@ public class NAL8Test extends NALTest {
     public void deriveNegInhGoal() {
 
         test
-                .input("b:a!") 
+                .input("b:a!")
                 .input("c:b.")
-                .input("--y:x!") 
+                .input("--y:x!")
                 .input("z:y.")
                 .mustGoal(cycles, "c:a", 1f, 0.81f)
                 .mustGoal(cycles, "z:x", 0f, 0.81f);
@@ -903,72 +763,69 @@ public class NAL8Test extends NALTest {
     public void questImplDt() {
 
         test
-                .inputAt(0, "(a,b).") 
+                .inputAt(0, "(a,b).")
                 .inputAt(0, "a. :|:")
                 .inputAt(4, "b@ :|:")
-                
-                .mustOutput( cycles, "(b ==>-4 a)", QUESTION, 0f, 1f, 0f, 1f, 4);
+
+                .mustOutput(cycles, "(b ==>-4 a)", QUESTION, 0f, 1f, 0f, 1f, 4);
     }
-
-
-
-
-
-
-
-
-
-
 
 
     @Test
     public void testConjPrior() {
         test.input("happy!")
-            .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
-            .mustGoal(cycles, "(y &&+2 (--,y))", 1f, 0.5f, (t) -> t >= 0);
+                .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
+                .mustGoal(cycles, "(y &&+2 (--,y))", 1f, 0.5f, (t) -> t >= 0);
     }
+
     @Test
     public void testSimilarityGoalPosBelief() {
         test.goal("(it<->here)")
-            .believe("(here<->near)")
-            .mustGoal(cycles, "(it<->near)", 1f, 0.45f);
+                .believe("(here<->near)")
+                .mustGoal(cycles, "(it<->near)", 1f, 0.45f);
     }
+
     @Test
     public void testSimilarityGoalNegBelief() {
         test.goal("--(it<->here)")
-            .believe("(here<->near)")
-            .mustGoal(cycles, "(it<->near)", 0f, 0.45f);
+                .believe("(here<->near)")
+                .mustGoal(cycles, "(it<->near)", 0f, 0.45f);
     }
 
-    @Test public void testGoalByConjAssociationPosPos() {
+    @Test
+    public void testGoalByConjAssociationPosPos() {
 
         test.goal("a")
                 .believe("(b &&+1 (a &&+1 c))")
                 .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x->true);
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
     }
 
-    @Test public void testGoalByConjAssociationNegPos() {
+    @Test
+    public void testGoalByConjAssociationNegPos() {
 
         test.goal("--a")
                 .believe("(b &&+1 (a &&+1 c))")
-                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t)->t > 0)
-                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x->true);
+                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t > 0)
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
     }
 
-@Test public void testGoalByConjAssociationPosNeg() {
+    @Test
+    public void testGoalByConjAssociationPosNeg() {
 
-    test.goal("a")
-            .believe("(b &&+1 (--a &&+1 c))")
-            .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t)->t > 0)
-            .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x->true);
-}
-    @Test public void testGoalByConjAssociationNegNeg() {
+        test.goal("a")
+                .believe("(b &&+1 (--a &&+1 c))")
+                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t > 0)
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
+    }
+
+    @Test
+    public void testGoalByConjAssociationNegNeg() {
 
         test.goal("--a")
                 .believe("(b &&+1 (--a &&+1 c))")
                 .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f)
-                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x->true);
+                .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
     }
 
 }

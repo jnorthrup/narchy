@@ -1,4 +1,4 @@
-package nars.util.signal;
+package nars.util;
 
 import nars.Narsese;
 import nars.Task;

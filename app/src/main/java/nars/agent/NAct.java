@@ -1,9 +1,12 @@
-package nars;
+package nars.agent;
 
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.util.FloatConsumer;
+import nars.$;
+import nars.NAR;
+import nars.Narsese;
 import nars.concept.action.ActionConcept;
 import nars.concept.action.BeliefActionConcept;
 import nars.concept.action.GoalActionAsyncConcept;
@@ -217,7 +220,7 @@ public interface NAct {
     @Nullable
     default GoalActionConcept actionTriStateContinuous(@NotNull Term s, @NotNull IntPredicate i) {
 
-        GoalActionConcept m = new GoalActionConcept(s, this, (b, d) -> {
+        GoalActionConcept m = new GoalActionConcept(s, nar(), curiosity(), (b, d) -> {
             
             
             
@@ -265,7 +268,7 @@ public interface NAct {
 
     @Nullable
     default ActionConcept actionTriStatePWM(@NotNull Term s, @NotNull IntConsumer i) {
-        ActionConcept m = new GoalActionConcept(s, this, (b, d) -> {
+        ActionConcept m = new GoalActionConcept(s, nar(), curiosity(), (b, d) -> {
 
 
             int ii;
@@ -494,7 +497,7 @@ public interface NAct {
 
 
     default GoalActionConcept action(@NotNull Term s, @NotNull GoalActionConcept.MotorFunction update) {
-        return addAction(new GoalActionConcept(s, this, update));
+        return addAction(new GoalActionConcept(s, nar(), curiosity(), update));
     }
 
     default BeliefActionConcept react(@NotNull Term s, @NotNull Consumer<Truth> update) {
@@ -781,8 +784,8 @@ public interface NAct {
         };
 
         CauseChannel<ITask> cause = nar().newChannel(s);
-        GoalActionAsyncConcept p = new GoalActionAsyncConcept(pt, this, cause, u);
-        GoalActionAsyncConcept n = new GoalActionAsyncConcept(nt, this, cause, u);
+        GoalActionAsyncConcept p = new GoalActionAsyncConcept(pt, nar(), cause, u);
+        GoalActionAsyncConcept n = new GoalActionAsyncConcept(nt, nar(),  cause, u);
 
         addAction(p);
         addAction(n);

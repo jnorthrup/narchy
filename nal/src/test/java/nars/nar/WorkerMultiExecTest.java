@@ -13,6 +13,7 @@ import nars.task.DerivedTask;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteIntHashMap;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class WorkerMultiExecTest {
 
 
+    @Disabled
     @Test
     public void test1() {
 

@@ -1,8 +1,12 @@
-package nars;
+package nars.agent;
 
 import jcog.Util;
 import jcog.event.On;
 import jcog.math.*;
+import nars.$;
+import nars.NAR;
+import nars.Narsese;
+import nars.Op;
 import nars.concept.scalar.DigitizedScalar;
 import nars.concept.scalar.Scalar;
 import nars.control.channel.CauseChannel;
@@ -31,18 +35,28 @@ public interface NSense {
     @NotNull Atomic MID = Atomic.the("mid");
     @NotNull Atomic HIH = Atomic.the("hih");
 
-    @NotNull Map<Scalar,CauseChannel<ITask>> sensors();
+    @NotNull
+    static Term switchTerm(String a, String b) throws Narsese.NarseseException {
+        return switchTerm($(a), $(b));
+    }
+
+    @NotNull
+    static Term switchTerm(Term a, Term b) {
+
+        return p(a, b);
+    }
+
+    @NotNull Map<Scalar, CauseChannel<ITask>> sensors();
 
     NAR nar();
 
-
     @NotNull
-    default Scalar sense(@NotNull Term term, @NotNull BooleanSupplier value)  {
+    default Scalar sense(@NotNull Term term, @NotNull BooleanSupplier value) {
         return sense(term, () -> value.getAsBoolean() ? 1f : 0f);
     }
 
     @NotNull
-    default Scalar sense(@NotNull Term term, FloatSupplier value)  {
+    default Scalar sense(@NotNull Term term, FloatSupplier value) {
         return sense(term, value, (x) -> $.t(x, nar().confDefault(Op.BELIEF)));
     }
 
@@ -52,6 +66,7 @@ public interface NSense {
         addSensor(s);
         return s;
     }
+
     @NotNull
     default Scalar sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
         Scalar s = new Scalar(term, value, nar());
@@ -61,7 +76,7 @@ public interface NSense {
 
     default void addSensor(Scalar s, CauseChannel cause) {
         CauseChannel<ITask> existing = sensors().put(s, cause);
-        assert(existing == null);
+        assert (existing == null);
     }
 
     default void addSensor(Scalar c) {
@@ -85,17 +100,6 @@ public interface NSense {
             Term t = switchTerm(term, e.toString());
             sense(t, () -> value.get() == e);
         }
-    }
-
-    @NotNull
-    static Term switchTerm(String a, String b) throws Narsese.NarseseException {
-        return switchTerm($(a), $(b));
-    }
-
-    @NotNull
-    static Term switchTerm(Term a, Term b) {
-        
-        return p(a, b);
     }
 
     default void senseSwitch(Term term, @NotNull IntSupplier value, int min, int max) {
@@ -133,48 +137,16 @@ public interface NSense {
     }
 
 
-
-
-
-
-
     default void sense(String id, Object o, @NotNull String exp) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
 
     @NotNull
     default List<Scalar> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
-        List<Scalar> l = newArrayList(to-from);
+        List<Scalar> l = newArrayList(to - from);
         for (int i = from; i < to; i++) {
-            l.add( senseNumber( id.apply(i), v.apply(i)) );
+            l.add(senseNumber(id.apply(i), v.apply(i)));
         }
         return l;
     }
@@ -182,13 +154,14 @@ public interface NSense {
 
     default Scalar senseNumberDifference(Term id, FloatSupplier v) {
         return senseNumber(id, new FloatPolarNormalized(
-                new FloatFirstOrderDifference(nar()::time, v)) );
+                new FloatFirstOrderDifference(nar()::time, v)));
     }
+
     default DigitizedScalar senseNumberDifferenceBi(Term id, FloatSupplier v) {
         FloatNormalized x = new FloatPolarNormalized(
                 new FloatFirstOrderDifference(nar()::time, v));
-        
-        return senseNumber(x, DigitizedScalar.FuzzyNeedle, inh(id,LOW), inh(id,HIH));
+
+        return senseNumber(x, DigitizedScalar.FuzzyNeedle, inh(id, LOW), inh(id, HIH));
     }
 
     default Scalar senseNumber(Term id, FloatSupplier v) {
@@ -201,7 +174,7 @@ public interface NSense {
     @NotNull
     default DigitizedScalar senseNumber(FloatSupplier v, DigitizedScalar.ScalarEncoder model, Term... states) {
 
-        assert(states.length > 1);
+        assert (states.length > 1);
 
         DigitizedScalar fs = new DigitizedScalar(
                 new FloatCached(v, nar()::time),
@@ -217,107 +190,27 @@ public interface NSense {
     On onFrame(Consumer r);
 
     @NotNull
-    default DigitizedScalar senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, DigitizedScalar.ScalarEncoder model)  {
-
-
-
+    default DigitizedScalar senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, DigitizedScalar.ScalarEncoder model) {
 
 
         return senseNumber(v, model,
                 Util.map(0, precision,
-                    levelTermizer, Term[]::new));
+                        levelTermizer, Term[]::new));
     }
 
     @NotNull
-    default DigitizedScalar senseNumberBi(Term id, FloatSupplier v)  {
+    default DigitizedScalar senseNumberBi(Term id, FloatSupplier v) {
         return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, HIH));
     }
+
     @NotNull
-    default DigitizedScalar senseNumberTri(Term id, FloatSupplier v)  {
-        return senseNumber(v, DigitizedScalar.Needle,  p(id, LOW), p(id, MID), p(id, HIH));
+    default DigitizedScalar senseNumberTri(Term id, FloatSupplier v) {
+        return senseNumber(v, DigitizedScalar.Needle, p(id, LOW), p(id, MID), p(id, HIH));
     }
 
     default Scalar senseNumber(String id, FloatSupplier v) throws Narsese.NarseseException {
         return senseNumber($(id), v);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

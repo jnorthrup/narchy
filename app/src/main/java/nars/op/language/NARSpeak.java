@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import nars.*;
+import nars.agent.NAgent;
 import nars.op.java.Opjects;
 import nars.term.Term;
 import nars.time.Tense;

@@ -1,7 +1,6 @@
 package nars.concept.action;
 
 import nars.NAR;
-import nars.NAct;
 import nars.Task;
 import nars.concept.dynamic.ScalarBeliefTable;
 import nars.control.channel.CauseChannel;
@@ -25,8 +24,8 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
     final CauseChannel<ITask> in;
 
-    public GoalActionAsyncConcept(@NotNull Term c, @NotNull NAct act, CauseChannel<ITask> cause, @NotNull BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor) {
-        super(c, act.nar());
+    public GoalActionAsyncConcept(@NotNull Term c, NAR nar, CauseChannel<ITask> cause, @NotNull BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor) {
+        super(c, nar);
 
         this.in = cause;
         

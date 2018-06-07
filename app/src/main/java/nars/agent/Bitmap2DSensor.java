@@ -1,10 +1,9 @@
-package nars.util.signal;
+package nars.agent;
 
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
-import nars.NAgent;
 import nars.Task;
 import nars.concept.scalar.Scalar;
 import nars.control.DurService;
@@ -13,6 +12,7 @@ import nars.exe.Causable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
+import nars.util.signal.Bitmap2DConcepts;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
         this(src.height() > 1 ?
                 /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
-                /* 1D default */ (x,y)->$.p(x)
+                /* 1D default */ (x,y)-> $.p(root, $.the(x))
                 , src, n);
     }
 

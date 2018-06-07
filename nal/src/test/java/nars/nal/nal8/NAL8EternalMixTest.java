@@ -141,7 +141,7 @@ public class NAL8EternalMixTest extends NALTest {
 
                 .input("goto({t003}). :|:")
                 .input("(goto(#1) &&+5 at(SELF,#1))!")
-                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, 5)
+                .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, (t)->t >= 5)
         ;
     }
 
@@ -365,9 +365,9 @@ public class NAL8EternalMixTest extends NALTest {
 
         test
 
-                .input("(hold). :|:")
-                .input("( (hold) &&+5 ((at) &&+5 (open)) )!")
-                .mustGoal(cycles, "((at) &&+5 (open))", 1.0f, 0.81f, 5, 10)
+                .input("hold. :|:")
+                .input("( hold &&+5 (at &&+5 open) )!")
+                .mustGoal(cycles, "(at &&+5 open)", 1.0f, 0.5f, 5, 10)
         
         ;
     }
@@ -377,8 +377,8 @@ public class NAL8EternalMixTest extends NALTest {
         
 
         test
-                .input("(hold)! :|:")
-                .inputAt(2, "( (hold) &&+5 (eat) ).") 
+                .input("hold! :|:")
+                .inputAt(2, "( hold &&+5 (eat) ).") 
                 .mustGoal(cycles, "(eat)", 1f, 0.81f, 5)
         ;
     }
@@ -388,10 +388,10 @@ public class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("(use)! :|:")
-                .inputAt(2, "( (hold) &&+5 (use) ).") 
-                .mustGoal(cycles, "(hold)", 1f, 0.81f, 0)
+                .inputAt(2, "( hold &&+5 (use) ).") 
+                .mustGoal(cycles, "hold", 1f, 0.81f, 0)
                 .mustNotOutput(cycles, "(use)", GOAL, ETERNAL) 
-                .mustNotOutput(cycles, "(hold)", GOAL, ETERNAL)
+                .mustNotOutput(cycles, "hold", GOAL, ETERNAL)
         ;
     }
 
@@ -400,8 +400,8 @@ public class NAL8EternalMixTest extends NALTest {
 
         test
                 .input("--(use)! :|:")
-                .inputAt(1, "( (hold) &&+5 --(use) ).")
-                .mustGoal(cycles, "(hold)", 1f, 0.81f, 0)
+                .inputAt(1, "( hold &&+5 --(use) ).")
+                .mustGoal(cycles, "hold", 1f, 0.81f, 0)
                 .mustNotOutput(cycles, "(use)", GOAL, ETERNAL) 
         ;
     }
@@ -485,7 +485,7 @@ public class NAL8EternalMixTest extends NALTest {
         test
                 .believe("(x)", Tense.Present, 1f, 0.9f)
                 .goal("((x) &&+3 (y))")
-                .mustGoal(cycles, "(y)", 1f, 0.81f, 3)
+                .mustGoal(cycles, "(y)", 1f, 0.81f, (t) -> t >= 3)
                 .mustNotOutput(cycles, "(y)", GOAL, ETERNAL);
     }
 

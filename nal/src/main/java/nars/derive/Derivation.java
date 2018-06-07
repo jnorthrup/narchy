@@ -589,7 +589,8 @@ public class Derivation extends PreDerivation {
     }
 
     public Occurrify occ(Term pattern) {
-        return occ.reset(pattern.hasAny(NEG));
+        occ.reset(pattern.hasAny(NEG));
+        return occ;
     }
 
 

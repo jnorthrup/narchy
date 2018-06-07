@@ -267,7 +267,7 @@
         //S, (||,(--,%S),A..+) |- (||,A..+), (Belief:DecomposePositivePositivePositive)
 
     //disjunction goal select
-    D, X, eventOfNeg(D,X) |- conjWithout(D,--X), (Goal:DecomposeNegativePositivePositive)
+    //D, X, eventOfNeg(D,X) |- conjWithout(D,--X), (Goal:DecomposeNegativePositivePositive)
        //D, X, eventOf(D,X) |- conjWithout(D,X), (Goal:DecomposeNegativeNegativePositive)
 
 

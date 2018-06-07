@@ -48,7 +48,7 @@ public class TaskProxy implements Task {
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        return Task.equal(this, (Task) obj);
+        return obj instanceof Task && Task.equal(this, (Task) obj);
     }
 
     @Override
@@ -64,8 +64,8 @@ public class TaskProxy implements Task {
     @Override
     public float priSet(float p) {
         
-        
-        return p;
+        throw new UnsupportedOperationException();
+        //return p;
     }
 
     @Override

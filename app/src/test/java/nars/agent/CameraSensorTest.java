@@ -1,4 +1,4 @@
-package nars.util.signal;
+package nars.agent;
 
 import jcog.signal.ArrayBitmap2D;
 import nars.$;
@@ -64,8 +64,9 @@ public class CameraSensorTest {
         
     }
 
+    static final float tolerance = 0.47f;
+
     static void assertEquals(Bitmap2DSensor c, float[][] f, long when, NAR n) {
-        final float tolerance = 0.47f;
         for (int i = 0; i < c.width; i++) {
             for (int j = 0; j < c.height; j++) {
                 Scalar p = c.get(i, j);

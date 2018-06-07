@@ -1,4 +1,4 @@
-package nars.op;
+package nars.agent;
 
 import com.google.common.collect.Iterables;
 import jcog.data.graph.AdjGraph;

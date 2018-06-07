@@ -8,7 +8,7 @@ import jcog.math.FloatSupplier;
 import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.NAgent;
+import nars.agent.NAgent;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.TimeAware;
