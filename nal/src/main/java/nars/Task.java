@@ -404,23 +404,26 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     @Nullable
     static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
-        return clone(x, newContent, newTruth, newPunc, x.creation(), x.start(), x.end());
+        return clone(x, newContent, newTruth, newPunc, (c, t) ->
+                new NALTask(c, newPunc, t,
+                        x.creation(), x.start(), x.end(),
+                        x.stamp()
+                ));
     }
 
     @Nullable
-    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, long creation, long start, long end) {
+    static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, BiFunction<Term, Truth, Task> taskBuilder) {
 
-        Task y = Task.tryTask(newContent, newPunc, newTruth, (c, t) ->
-                new NALTask(c, newPunc, t,
-                        creation, start, end,
-                        x.stamp())
-                        .cause(x.cause().clone()));
+        Task y = Task.tryTask(newContent, newPunc, newTruth, taskBuilder);
+
         if (y == null)
             return null;
 
         float xp = x.pri();
         if (xp == xp)
-            y.priSet(xp); 
+            y.priSet(xp);
+
+        ((NALTask)y).cause(x.cause().clone());
 
         return y;
     }
@@ -548,8 +551,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         @Nullable Task ete = Task.clone(x, x.term(),
                 x.truth().eternalized(eviFactor),
                 x.punc(),
-                /* TODO current time, from NAR */ x.creation(),
-                ETERNAL, ETERNAL
+                /* TODO current time, from NAR */
+                (c, t) ->
+                        new NALTask(c, x.punc(), t,
+                                x.creation(), ETERNAL, ETERNAL,
+                                x.stamp()
+                        )
         );
         if (ete.isDeleted())
             ete.pri(0); 
@@ -1182,12 +1189,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 }
                 
             }
+
+            if (cmd) {
+
+                n.out(term());
+            }
         }
 
-        if (cmd) {
-            
-            n.out(term());
-        }
 
     }
 

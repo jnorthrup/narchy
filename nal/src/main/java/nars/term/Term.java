@@ -244,15 +244,11 @@ public interface Term extends Termed, Comparable<Termed> {
 
     default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
         X ss = target.apply(this);
-        if (ss != null) {
-            if (!receiver.test(EmptyByteList, ss))
-                return false;
-        }
-        if (this.subs() > 0) {
-            return pathsTo(this, new ByteArrayList(0), descendIf, target, receiver);
-        } else {
-            return true;
-        }
+        if (ss != null && !receiver.test(EmptyByteList, ss))
+            return false;
+
+        return this.subs() <= 0 ||
+                pathsTo(this, new ByteArrayList(0), descendIf, target, receiver);
     }
 
     @Nullable

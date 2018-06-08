@@ -3,7 +3,6 @@ package nars.derive.premise;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.tree.perfect.TrieNode;
-import nars.$;
 import nars.Op;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -25,6 +24,7 @@ import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
@@ -42,11 +42,7 @@ public enum PremiseDeriverCompiler {
     ;
 
     private static final IntToFloatFunction throttleFlat =
-            (int choice)-> 1f;
-
-
-
-
+            (int choice) -> 1f;
 
 
     private static final float[] ONE_CHOICE = new float[]{Float.NaN};
@@ -68,18 +64,17 @@ public enum PremiseDeriverCompiler {
 
             assert (rule.POST != null) : "null POSTconditions:" + rule;
 
-            for (PostCondition p : rule.POST) {
 
-                int id = conclusions.size();
+            int id = conclusions.size();
 
-                Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> c = rule.build(p);
+            Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> c = rule.build(rule.POST);
 
-                c.getOne().forEach(k -> preconditionCount.addToValue(k, 1));
+            c.getOne().forEach(k -> preconditionCount.addToValue(k, 1));
 
-                conclusions.add(c.getTwo());
+            conclusions.add(c.getTwo());
 
-                post.computeIfAbsent(c.getOne(), x -> new RoaringBitmap()).add(id);
-            }
+            post.computeIfAbsent(c.getOne(), x -> new RoaringBitmap()).add(id);
+
         });
 
         Comparator<PrediTerm> sortPrecondition = PrediTerm.sort(preconditionCount::get);
@@ -92,42 +87,38 @@ public enum PremiseDeriverCompiler {
                     .map(i -> compileBranch(conclusions.get(i))).toArray(PrediTerm[]::new);
             assert (branches.length > 0);
 
-            
+
             Cause[] causes = Util.map(c -> c.channel, Cause[]::new, Util.map(b -> (Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
                     AndCondition.last(b)
             ).eachMatch), Taskify[]::new, branches));
 
 
-
             IntToFloatFunction throttle =
-                    i->causes[i].amp();
-                    
-                    
+                    i -> causes[i].amp();
 
 
             ValueFork f;
             if (branches.length > 1) {
                 f = new ValueFork(branches, causes,
 
-                        
+
                         d -> Util.map(causes.length, throttle, new float[causes.length]),
 
-                        
+
                         (d, choice) -> {
                             branches[choice].test(d);
                         }
                 );
             } else {
-                
+
                 f = new ValueFork(branches, causes, d -> ONE_CHOICE, (d, theOneChoice) -> {
                     branches[0].test(d);
                 });
             }
 
 
-            
             {
-                
+
                 pre.add(new Branchify(
                         /* branch ID */ postChoices.size(), v));
 
@@ -148,11 +139,11 @@ public enum PremiseDeriverCompiler {
 
         ValueFork[] rootBranches = postChoices.toArrayRecycled(ValueFork[]::new);
 
-        
+
         IntToFloatFunction branchThrottle = branch ->
                 Util.sum(
-                        
-                        Cause::amp, 
+
+                        Cause::amp,
                         rootBranches[branch].causes
                 );
 
@@ -160,23 +151,22 @@ public enum PremiseDeriverCompiler {
                 new ValueFork(rootBranches,
                         Stream.of(rootBranches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new),
 
-                        
+
                         d -> {
                             short[] will = d.will;
                             int n = will.length;
                             if (n == 1)
-                                return ONE_CHOICE; 
+                                return ONE_CHOICE;
                             else
                                 return Util.map(n, choice -> branchThrottle.valueOf(will[choice]), new float[n]);
                         },
 
-                        
+
                         (d, choice) ->
-                            rootBranches[d.will[choice]].test(d)
+                                rootBranches[d.will[choice]].test(d)
 
                 ));
     }
-
 
 
     static PrediTerm compileBranch(PrediTerm<Derivation> branch) {
@@ -260,140 +250,6 @@ public enum PremiseDeriverCompiler {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static void print(PrediTerm<Derivation> d) {
         print(d, System.out);
     }
@@ -402,16 +258,7 @@ public enum PremiseDeriverCompiler {
         PremiseDeriverCompiler.print(d, out, 0);
 
 
-
-
-
-
-
     }
-
-
-
-
 
 
     static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
@@ -430,7 +277,6 @@ public enum PremiseDeriverCompiler {
 
 
         SortedSet<PrediTerm<Derivation>> bb = new TreeSet();
-
 
 
         node.forEach(n -> {
@@ -474,7 +320,7 @@ public enum PremiseDeriverCompiler {
                 for (PrediTerm xx : ((AndCondition<PrediTerm>) p).cond)
                     SubCond.bumpCond(conds, xx, b);
             } else if (p instanceof Fork) {
-                
+
             } else {
                 SubCond.bumpCond(conds, p, b);
             }
@@ -482,7 +328,7 @@ public enum PremiseDeriverCompiler {
 
         SubCond fx = conds.maxBy(SubCond::costIfBranch);
         if (fx.size() < 2) {
-            
+
         } else {
             SortedSet<PrediTerm> bundle = new TreeSet();
             int i = 0;
@@ -526,8 +372,8 @@ public enum PremiseDeriverCompiler {
     @NotNull
     private static <D extends PreDerivation> SortedSet<PrediTerm<D>> factorSubOpToSwitch(SortedSet<PrediTerm<D>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
-            Map<TaskBeliefOp, PrediTerm<D>> cases = $.newHashMap(8);
-            List<PrediTerm<D>> removed = $.newArrayList(); 
+            Map<TaskBeliefOp, PrediTerm<D>> cases = new UnifiedMap(8);
+            Set<PrediTerm<D>> removed = new UnifiedSet(8);
             bb.removeIf(p -> {
                 if (p instanceof AndCondition) {
                     AndCondition ac = (AndCondition) p;
@@ -568,7 +414,7 @@ public enum PremiseDeriverCompiler {
                 });
                 bb.add(new OpSwitch<>(taskOrBelief, caseMap));
             } else {
-                bb.addAll(removed); 
+                bb.addAll(removed);
             }
         }
 
@@ -587,7 +433,7 @@ public enum PremiseDeriverCompiler {
         static void bumpCond(Map<PrediTerm, SubCond> conds, PrediTerm p, int branch) {
             float pc = p.cost();
             if (pc == Float.POSITIVE_INFINITY)
-                return; 
+                return;
 
             conds.compute(p, (xx, e) -> {
                 if (e == null) {

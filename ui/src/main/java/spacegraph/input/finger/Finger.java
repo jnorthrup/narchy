@@ -121,7 +121,6 @@ public class Finger {
 
 
 
-
     }
 
     /** call when finger enters the window */

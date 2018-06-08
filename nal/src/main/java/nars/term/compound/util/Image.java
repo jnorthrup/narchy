@@ -25,7 +25,7 @@ public enum Image { ;
         
         if (t.op()==INH) {
             Term p = t.sub(0);
-            if (p.op()==PROD && !p.contains(Op.imInt)) {
+            if (p.op()==PROD && !imaged(p)) {
                 Term r = p.replace(x, Op.imExt);
                 if (r!=p) {
                     Term i = t.sub(1);
@@ -36,12 +36,16 @@ public enum Image { ;
         return Null;
     }
 
+    public static boolean imaged(Term p) {
+        return p.hasAny(Op.VAR_DEP) && p.OR(x -> (x == Op.imInt || x == Op.imExt));
+    }
+
     public static Term imageInt(Term t, Term x) {
         
         
         if (t.op()==INH) {
             Term p = t.sub(1);
-            if (p.op()==PROD && !p.contains(Op.imExt)) {
+            if (p.op()==PROD && !imaged(p)) {
                 Term r = p.replace(x, Op.imInt);
                 if (r!=p) {
                     Term i = t.sub(0);

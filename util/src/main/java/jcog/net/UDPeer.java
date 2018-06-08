@@ -140,7 +140,7 @@ public class UDPeer extends UDP {
 
         this.logger = LoggerFactory.getLogger(getClass().getSimpleName() + ':' + name());
 
-        them = new HijackBag<>(3) {
+        them = new HijackBag<Integer, UDProfile>(3) {
 
             @Override
             public void onAdd(UDProfile p) {
@@ -191,7 +191,7 @@ public class UDPeer extends UDP {
 
         them.setCapacity(PEERS_CAPACITY);
 
-        seen = new PriorityHijackBag<>(SEEN_CAPACITY, 3) {
+        seen = new PriorityHijackBag<Msg, Msg>(SEEN_CAPACITY, 3) {
 
             @NotNull
             @Override
@@ -208,8 +208,9 @@ public class UDPeer extends UDP {
         discover = discovery ? new UDiscover<>(new Discoverability(me, addr)) {
             @Override
             protected void found(Discoverability who, InetAddress addr, int port) {
+                //TODO hard exclude the UDPeer itself (ie. if addr and port equal)
                 if (!them.contains(who.id)) {
-                    logger.info("discovered {} at {}:{}", who.id, who.addr);
+                    logger.debug("discovered {} at {}:{}", who.id, who.addr);
                     ping(who.addr);
                 }
             }

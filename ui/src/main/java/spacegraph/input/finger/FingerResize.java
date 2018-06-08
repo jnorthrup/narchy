@@ -41,13 +41,13 @@ public abstract class FingerResize extends FingerDragging {
                 float top, bottom;
                 float bh = before.h;
                 float ty = (fy - posStart.y);
-                if (!invY) {
-                    bottom = before.bottom();
-                    top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh + ty);
-                } else {
+//                if (!invY) {
+//                    bottom = before.bottom();
+//                    top = Math.min(bottom - aspectRatioRatioLimit * bh, bottom - bh + ty);
+//                } else {
                     top = before.top();
                     bottom = Math.max(top + aspectRatioRatioLimit * bh, top + bh - ty);
-                }
+//                }
                 resize(before.left(), top, before.right(), bottom );
                 break;
             }

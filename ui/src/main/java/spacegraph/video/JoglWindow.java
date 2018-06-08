@@ -65,7 +65,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         int ny = this.ny;
         int nw = this.nw;
         int nh = this.nh;
-        if (nx != w.getX() || ny != w.getY())
+        if (nx != getX() || ny != getY())
             w.setPosition(nx, ny);
 
         if (nw == 0 || nh == 0) {
@@ -77,7 +77,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 w.setVisible(true);
         }
 
-        if (nw != w.getSurfaceWidth() || nh != w.getSurfaceHeight()) {
+        if (nw != getWidth() || nh != getHeight()) {
             w.setSize(nw, nh);
         }
     };
@@ -166,13 +166,13 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public final int getWidth() {
-        return window.getWidth();
+        return window.getSurfaceWidth();
     }
     public final int getWidthNext() {
         return nw;
     }
     public final int getHeight() {
-        return window.getHeight();
+        return window.getSurfaceHeight();
     }
     public final int getHeightNext() {
         return nh;
@@ -317,14 +317,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void setVisible(boolean b) {
-        if (!b)
+        if (!b) {
             setSize(0, 0);
-        else {
-            int nw = this.nw, nh = this.nh;
-            if (nw == 0 || nh == 0) {
-                nw = nh = 100; 
-            }
-            setSize(nw, nh);
+        } else {
+            setSize(Math.max(1, getWidth()), Math.max(1, getHeight()));
         }
     }
 
@@ -336,7 +332,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         setPositionAndSize(nx, ny, w, h);
     }
 
-    public void setPositionAndSize(int x, int y, int w, int h) {
+    public synchronized void setPositionAndSize(int x, int y, int w, int h) {
 
         if (window == null) return; 
 
@@ -350,8 +346,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         if (change |= (nh != h))
             nh = h;
 
-        if (change)
-            pre(windowUpdater);
+        if (change) {
+            if (!preRenderTasks.contains(windowUpdater))
+                pre(windowUpdater);
+        }
 
     }
 
@@ -438,6 +436,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return window.getX();
     }public int getY() {
         return window.getY();
+    }
+
+    public float getScreenY() {
+        return window.getScreen().getHeight();
     }
 
 

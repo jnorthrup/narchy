@@ -87,7 +87,7 @@ public class AIMATests {
 
         n.questionPriDefault.set(1f);
 
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(22);
 
 
         n.believe(
@@ -111,7 +111,7 @@ public class AIMATests {
         });
 
 
-        n.run(3500);
+        n.run(5500);
         n.synch();
 
 

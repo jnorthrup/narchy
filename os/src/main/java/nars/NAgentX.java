@@ -217,13 +217,13 @@ abstract public class NAgentX extends NAgent {
         n.goalConfDefault.set(0.9f);
 
 
-        float priFactor = 0.25f;
-        n.beliefPriDefault.set(0.5f * priFactor);
-        n.goalPriDefault.set(1f * priFactor);
-        n.questionPriDefault.set(0.25f * priFactor);
-        n.questPriDefault.set(0.25f * priFactor);
 
-        n.forgetRate.set(0.85f);
+        n.beliefPriDefault.set(0.1f);
+        n.goalPriDefault.set(1f);
+        n.questionPriDefault.set(0.1f);
+        n.questPriDefault.set(0.25f);
+
+        n.forgetRate.set(0.8f);
 
         try {
             InterNAR i = new InterNAR(n, 8, 0);
@@ -307,7 +307,7 @@ abstract public class NAgentX extends NAgent {
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
-        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 8, 64);
+        ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 16);
 
         
 

@@ -62,8 +62,10 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         public final int subterm;
         public final PrediTerm<Derivation> eachMatch;
 
+        private static final Atomic UNIFY = Atomic.the("unify");
+
         public UnifySubtermThenConclude(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PrediTerm<Derivation> eachMatch) {
-            super($.func("unify", label(subterm), pattern, eachMatch), pattern);
+            super($.func(UNIFY, label(subterm), pattern, eachMatch), pattern);
             this.subterm = subterm;
             this.eachMatch = eachMatch;
             

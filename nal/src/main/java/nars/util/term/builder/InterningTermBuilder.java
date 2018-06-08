@@ -56,7 +56,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Subterms newSubterms(Op inOp, Term... s) {
-        if (inOp != PROD && s.length > 1 && internable(s)) {
+        if (inOp != PROD && internable(s)) {
 
             if (deepIntern) {
                 for (int i = 0, subtermsLength = s.length; i < subtermsLength; i++) {

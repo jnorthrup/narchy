@@ -55,7 +55,7 @@ public class ZoomOrtho extends Ortho {
         protected boolean startDrag(Finger f) {
 
 
-            windowStart.set(window.window.getX(), window.window.getY());
+            windowStart.set(window.getX(), window.getY());
             //System.out.println("window start=" + windowStart);
             return super.startDrag(f);
         }
@@ -72,7 +72,7 @@ public class ZoomOrtho extends Ortho {
 
             window.setPosition(
                     Math.round(windowStartX + dx),
-                    Math.round(windowStartY + dy));
+                    Math.round(windowStartY - dy));
         }
 
     };

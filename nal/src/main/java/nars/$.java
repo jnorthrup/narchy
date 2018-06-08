@@ -553,12 +553,16 @@ public enum $ {
         Util.map(Term::neg, array, array);
     }
 
-    public static Atomic the(byte[] id) {
-        return Atomic.the(new String(id));
+    public static Atomic theAtomic(byte[] string) {
+        return Atomic.the(new String(string));
+    }
+
+    public static Term the(byte[] array) {
+        return p(Util.bytesToInts(array));
     }
 
     public static Atomic the(byte c) {
-        return the(new byte[]{c});
+        return theAtomic(new byte[]{c});
     }
 
     public static Term[] the(int... i) {

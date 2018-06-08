@@ -15,10 +15,10 @@ public final class TaskBeliefHasOrHasnt extends AbstractPred<PreDerivation> {
     private final boolean belief;
     private final boolean includeOrExclude;
 
-    public TaskBeliefHasOrHasnt(Op o, boolean testTask, boolean testBelief, boolean includeExclude) {
-        this(o.bit, testTask, testBelief, includeExclude);
+    public TaskBeliefHasOrHasnt(boolean includeExclude, Op o, boolean testTask, boolean testBelief) {
+        this(includeExclude, o.bit, testTask, testBelief);
     }
-    public TaskBeliefHasOrHasnt(int structure, boolean testTask, boolean testBelief, boolean includeExclude) {
+    public TaskBeliefHasOrHasnt(boolean includeExclude, int structure, boolean testTask, boolean testBelief) {
         super($.func((includeExclude ? "OpHas" : "OpHasNot"), $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
         assert(testTask || testBelief);
         this.structure = structure;

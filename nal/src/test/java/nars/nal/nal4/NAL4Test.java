@@ -14,9 +14,13 @@ import static nars.time.Tense.ETERNAL;
 public class NAL4Test extends NALTest {
 
 
-    static final int CYCLES = 250;
+    static final int CYCLES = 350;
 
-    @Override protected NAR nar() { return NARS.tmp(6); }
+    @Override protected NAR nar() {
+        NAR n =  NARS.tmp(6);
+        n.termVolumeMax.set(12);
+        return n;
+    }
 
     @Test
     public void structural_transformationExt_forward() {
@@ -122,7 +126,9 @@ public class NAL4Test extends NALTest {
         test
                 .believe("f(x)", 1.0f, 0.9f)
                 .believe("f(y)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES, "f:((x)&(y))", 1.0f, 0.81f);
+                .mustBelieve(CYCLES*4, "f:((x)&(y))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*4, "f:((x)|(y))", 1.0f, 0.81f)
+                ;
     }
 
     @Test
@@ -131,9 +137,26 @@ public class NAL4Test extends NALTest {
         test
                 .believe("f(x,z)", 1.0f, 0.9f)
                 .believe("f(y,z)", 1.0f, 0.9f)
-                .mustBelieve(CYCLES , "f:((x,z)&(y,z))", 1.0f, 0.81f);
-    }
+                .mustBelieve(CYCLES*4 , "f((x|y),z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*4 , "f((x&y),z)", 1.0f, 0.81f)
+//                .mustBelieve(CYCLES*5 , "f((x,z)&(y,z))", 1.0f, 0.81f)
+//                .mustBelieve(CYCLES*5 , "f((x,z)|(y,z))", 1.0f, 0.81f)
+                ;
 
+    }
+    @Test
+    public void testIntersectionOfProductSubterms2Reverse() {
+
+        test
+                .believe("f((x|y),z)", 1.0f, 0.9f)
+                .mustBelieve(CYCLES , "((x|y)-->(f,/,z))", 1.0f, 0.9f)
+                .mustBelieve(CYCLES , "(x-->(f,/,z))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES , "(y-->(f,/,z))", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*4 , "f(x,z)", 1.0f, 0.81f)
+                .mustBelieve(CYCLES*4 , "f(y,z)", 1.0f, 0.81f)
+        ;
+
+    }
 
     @Test
     @Disabled

@@ -152,7 +152,7 @@ public class Occurrify extends TimeGraph {
         Termed bb = !single ? belief : d.beliefTerm;
 
 
-        if (!autoNeg && (task.term().hasAny(NEG) || bb.hasAny(NEG))) {
+        if (!autoNeg && (task.term().hasAny(NEG) || (!single && bb.hasAny(NEG)))) {
             autoNeg = true;
         }
 
@@ -183,8 +183,8 @@ public class Occurrify extends TimeGraph {
 
             if (single) {
                 know(task, taskAt);
-                if (!task.term().equals(bb))
-                    know((Term)bb);
+//                if (!task.term().equals(bb))
+//                    know((Term)bb);
             } else {
                 know(task, taskAt);
 

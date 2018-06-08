@@ -480,7 +480,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void testDeiredConjDelayed() {
+    public void testDesiredConjDelayed() {
 
         test
                 .believe("(x)", Tense.Present, 1f, 0.9f)

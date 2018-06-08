@@ -14,7 +14,7 @@ import java.util.function.IntFunction;
  */
 public class CachedTopN<X> implements Iterable<X> {
 
-    private UnifiedSet<X> seen = null;
+    public UnifiedSet<X> seen = null;
     protected final TopN<NLink<X>> top;
     private final FloatFunction<X> rank;
 

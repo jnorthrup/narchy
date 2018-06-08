@@ -3,6 +3,7 @@ package nars.unify.op;
 import nars.$;
 import nars.Op;
 import nars.derive.premise.PreDerivation;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 
 
@@ -19,12 +20,10 @@ public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
         this(op.bit, testTask, testBelief, true);
     }
 
-    public TaskBeliefOp(Op op, boolean testTask, boolean testBelief, boolean isOrIsNot) {
-        this(op.bit, testTask, testBelief, isOrIsNot);
-    }
+    final static private Atomic OP = Atomic.the("op");
 
     public TaskBeliefOp(int structure, boolean testTask, boolean testBelief, boolean isOrIsNot) {
-        super($.func("op", $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)).negIf(!isOrIsNot));
+        super($.func(OP, $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)).negIf(!isOrIsNot));
         this.isOrIsNot = isOrIsNot;
         this.structure = structure;
         this.task = testTask;

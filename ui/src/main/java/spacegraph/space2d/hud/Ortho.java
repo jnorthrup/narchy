@@ -449,12 +449,12 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
 
             JoglSpace w = this.window;
             int pmx = e.getX();
-            int pmy = w.window.getHeight() - e.getY();
+            int pmy = w.getHeight() - e.getY();
             float wmx = +cam.x + (-0.5f * w() + pmx) / scale.x;
             float wmy = +cam.y + (-0.5f * h() + pmy) / scale.y;
 
             finger.posPixel.set(pmx, pmy);
-            finger.posScreen.set(w.getXNext() + pmx, e.getY() + w.getYNext());
+            finger.posScreen.set(w.getX() + pmx, w.getScreenY() - (e.getY()+w.getY()));
             finger.pos.set(wmx, wmy);
         }
 
@@ -481,7 +481,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Mou
             off();
         } else {*/
 
-        assert (focused());
+        //assert (focused());
 
         finger.update();
 

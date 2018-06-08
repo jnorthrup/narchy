@@ -88,7 +88,7 @@ public enum MathFunc { ;
 
     abstract static class ArithmeticCommutiveBinaryBidiFunctor extends Functor.InlineCommutiveBinaryBidiFunctor {
 
-        ArithmeticCommutiveBinaryBidiFunctor(String name) {
+        public ArithmeticCommutiveBinaryBidiFunctor(String name) {
             super(name);
         }
 

@@ -2501,10 +2501,14 @@ public enum Util {
     }
 
 
-
-
-
-
-
-
+    public static int[] bytesToInts(byte[] array) {
+        int n = array.length;
+        if (n == 0)
+            return ArrayUtils.EMPTY_INT_ARRAY;
+        int[] t = new int[n];
+        for (int i = 0; i < n; i++) {
+            t[i] = array[i];
+        }
+        return t;
+    }
 }
