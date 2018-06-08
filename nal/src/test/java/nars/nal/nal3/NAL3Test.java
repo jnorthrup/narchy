@@ -211,6 +211,14 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
+    public void testArity1_Decomposition_IntersectExt2() {
+        test
+                .believe("(b-->a)", 0.25f, 0.9f)
+                .believe("((b&c)-->a)", 0.25f, 0.9f)
+                .mustBelieve(cycles, "(c-->a)", 0.19f, 0.15f, ETERNAL);
+    }
+
+    @Test
     public void testArity1_Decomposition_IntersectInt() {
         
 
@@ -219,7 +227,6 @@ public class NAL3Test extends NALTest {
                 .believe("(a-->(b|c))", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);
     }
-
 
     @Test public void testDisjoint2() {
         
