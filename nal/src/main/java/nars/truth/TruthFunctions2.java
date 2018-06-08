@@ -88,20 +88,14 @@ public enum TruthFunctions2 { ;
         } else {
             return null;
         }
-        
+    }
 
+    @Nullable
+    public static Truth analogy(Truth a, Truth b, float minConf) {
+        return analogyNew(a, b.freq(), b.conf(), minConf);
+    }
 
-
-
-
-        
-
-        
-        
-        
-
-
-        
-
+    static Truth desire(float f1, float f2, float c) {
+        return t(and(f1, f2), c);
     }
 }

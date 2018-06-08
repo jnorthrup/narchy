@@ -57,13 +57,13 @@ public class TruthWave {
 
     public TruthWave(@NotNull BeliefTable b, @NotNull TimeAware n) {
         this(b.size());
-        set(b, n.time(), n.dur(), Long.MIN_VALUE, Long.MAX_VALUE);
+        set(b, Long.MIN_VALUE, Long.MAX_VALUE);
     }
 
     /**
      * clears and fills this wave with the data from a table
      */
-    public void set(BeliefTable b, long now, int dur, long minT, long maxT) {
+    public void set(BeliefTable b, long minT, long maxT) {
         int s = b.size();
         if (s == 0) {
             this.current = null;

@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.TruthFunctions;
+import nars.truth.TruthFunctions2;
 import nars.truth.func.annotation.AllowOverlap;
 import nars.truth.func.annotation.SinglePremise;
 import org.jetbrains.annotations.Nullable;
@@ -292,7 +293,7 @@ public enum BeliefFunction implements TruthOperator {
     Analogy() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.analogy(T, B, minConf);
+            return TruthFunctions2.analogy(T, B, minConf);
         }
     },
     ReduceConjunction() {

@@ -33,8 +33,7 @@ public class TruthAccumulator extends AtomicReference<double[]> {
 
     @Nullable
     protected static Truth truth(double[] fc, boolean sumOrAverage) {
-        if (fc == null)
-            return null;
+
         double e = fc[1];
         if (e <= 0)
             return null;

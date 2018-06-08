@@ -727,9 +727,9 @@ public interface Term extends Termed, Comparable<Termed> {
             this.reason = reason;
         }
 
-        public InvalidTermException(String s, @NotNull Compound c) {
-            this(c.op(), c.dt(), c.subterms(), s);
-        }
+//        public InvalidTermException(String s, @NotNull Compound c) {
+//            this(c.op(), c.dt(), c.subterms(), s);
+//        }
 
         @NotNull
         @Override

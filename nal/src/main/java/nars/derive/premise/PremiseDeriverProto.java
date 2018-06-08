@@ -132,10 +132,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     pre.add(neqTaskBelief);
                     break;
 
-                case "neqUnneg":
-                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(X, Y));
-                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(Y, X));
-                    break;
+//                case "neqUnneg":
+//                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(X, Y));
+//                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(Y, X));
+//                    break;
 
                 case "neqAndCom":
                     neq(constraints, X, Y);
@@ -150,12 +150,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     constraints.add(new NoCommonSubtermConstraint(Y, X, true));
                     break;
 
-                case "opSECTe":
-                    termIs(pre, taskPattern, beliefPattern, constraints, X, Op.SECTe);
-                    break;
-                case "opSECTi":
-                    termIs(pre, taskPattern, beliefPattern, constraints, X, Op.SECTi);
-                    break;
+//                case "opSECTe":
+//                    termIs(pre, taskPattern, beliefPattern, constraints, X, Op.SECTe);
+//                    break;
+//                case "opSECTi":
+//                    termIs(pre, taskPattern, beliefPattern, constraints, X, Op.SECTi);
+//                    break;
 
 
                 case "subOf":
@@ -171,12 +171,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     }
                     break;
 
-                case "subOfNeg":
-
-                    neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, -1));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, -1));
-                    break;
+//                case "subOfNeg":
+//
+//                    neq(constraints, X, Y);
+//                    constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, -1));
+//                    constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, -1));
+//                    break;
 
                 case "subPosOrNeg":
 
@@ -192,12 +192,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     constraints.add(new SubOfConstraint(Y, X, true, false, Recursive));
                     break;
 
-                case "inNeg":
-
-                    neq(constraints, X, Y);
-                    constraints.add(new SubOfConstraint(X, Y, false, false, Recursive, -1));
-                    constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, -1));
-                    break;
+//                case "inNeg":
+//
+//                    neq(constraints, X, Y);
+//                    constraints.add(new SubOfConstraint(X, Y, false, false, Recursive, -1));
+//                    constraints.add(new SubOfConstraint(Y, X, true, false, Recursive, -1));
+//                    break;
 
                 case "eventOf":
                     neq(constraints, X, Y);
@@ -235,10 +235,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     constraints.add(new CommonSubEventConstraint(Y, X));
                     break;
 
-                case "eqOrIn":
-                    constraints.add(new SubOfConstraint(X, Y, false, true, Recursive));
-                    constraints.add(new SubOfConstraint(Y, X, true, true, Recursive));
-                    break;
+//                case "eqOrIn":
+//                    constraints.add(new SubOfConstraint(X, Y, false, true, Recursive));
+//                    constraints.add(new SubOfConstraint(Y, X, true, true, Recursive));
+//                    break;
 
 
                 case "subsMin":
@@ -264,9 +264,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
                     break;
 
-                case "notImplConj":
-                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit | Op.CONJ.bit);
-                    break;
+//                case "notImplConj":
+//                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit | Op.CONJ.bit);
+//                    break;
 
                 case "isNot": {
                     Op o = Op.the($.unquote(Y));
@@ -313,12 +313,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                             taskPunc = '!';
                             break;
 
-                        case "\"*\"":
-                            pre.add(new TaskBeliefOp(PROD, true, false));
-                            break;
-                        case "\"&&\"":
-                            pre.add(new TaskBeliefOp(CONJ, true, false));
-                            break;
+//                        case "\"*\"":
+//                            pre.add(new TaskBeliefOp(PROD, true, false));
+//                            break;
+//                        case "\"&&\"":
+//                            pre.add(new TaskBeliefOp(CONJ, true, false));
+//                            break;
 
 
                         default:

@@ -8,23 +8,20 @@ import org.jetbrains.annotations.Nullable;
  * Managed by a Versioning context
  */
 public class Versioned<X> extends
-        
+
         FasterList<X>
-        
+
 {
 
 
     protected final Versioning context;
 
 
-
-
-
-
     public Versioned(Versioning sharedContext, int initialCap) {
         super(initialCap);
         this.context = sharedContext;
     }
+
     public Versioned(Versioning sharedContext, X[] emptyArray) {
         super(0, emptyArray);
         this.context = sharedContext;
@@ -34,16 +31,6 @@ public class Versioned<X> extends
     public final boolean equals(Object otherVersioned) {
         return this == otherVersioned;
     }
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -62,14 +49,8 @@ public class Versioned<X> extends
      */
     @Nullable
     public Versioned<X> set(X nextValue) {
-
-
-
-
-
         if (context.add(this)) {
             add(nextValue);
-            
             return this;
         } else {
             return null;
@@ -89,9 +70,9 @@ public class Versioned<X> extends
         StringBuilder sb = new StringBuilder("(");
         int s = size();
         for (int i = 0; i < s; i++) {
-            
+
             sb.append(get(i));
-            
+
             if (i < s - 1)
                 sb.append(", ");
         }
@@ -100,29 +81,13 @@ public class Versioned<X> extends
     }
 
 
-
-
-
-
-
     public void pop() {
-
-            
-
 
 
         items[--size] = null;
 
 
-
-
-            
-
     }
-
-
-
-
 
 
 }

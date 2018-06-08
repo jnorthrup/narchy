@@ -196,10 +196,10 @@ public class BeliefTableChart extends DurSurface implements MetaFrame.Menu {
             long nowEnd = now + dur / 2;
             long nowStart = now - dur / 2;
             BeliefTable ccb = cc.beliefs();
-            this.beliefs.set(ccb, now, dur, minT, maxT);
+            this.beliefs.set(ccb, minT, maxT);
             this.beliefs.current = ccb.truth(nowStart, nowEnd, nar);
             BeliefTable ccg = cc.goals();
-            this.goals.set(ccg, now, dur, minT, maxT);
+            this.goals.set(ccg, minT, maxT);
             this.goals.current = ccg.truth(nowStart, nowEnd, nar);
 
             if (projections > 0 && minT != maxT) {

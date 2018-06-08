@@ -36,19 +36,16 @@ import static jcog.Util.*;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 
-/** scalar (1D) truth value "frequency", stored as a floating point value */
+/**
+ * scalar (1D) truth value "frequency", stored as a floating point value
+ */
 public interface Truth extends Truthed {
-    /**
-     * truth component resolution of a 16-bit encoding
-     * this maximally uses the positive half of short (16-bit)'s range of precision
-     */
-    short hashDiscreteness16 = Short.MAX_VALUE - 1;
 
     /**
      * truth component resolution corresponding to Param.TRUTH_EPSILON
      */
     short hashDiscretenessEpsilon = (short)
-            (Math.round(1f/(Param.TRUTH_EPSILON)));
+            (Math.round(1f / (Param.TRUTH_EPSILON)));
 
     /**
      * The hash code of a TruthValue, perfectly condensed,
@@ -91,43 +88,13 @@ public interface Truth extends Truthed {
         return intToFloat(h & 0xffff, hashDiscretenessEpsilon);
     }
 
-
-
-    @Override
-    float freq();
-
-    @Override
-    float evi();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * A simplified String representation of a TruthValue, where each factor is
      * accurate to 1%
      */
     static StringBuilder appendString(StringBuilder sb, int decimals, float freq, float conf) {
 
-        sb.ensureCapacity(3 + 2 * (2 + decimals) );
+        sb.ensureCapacity(3 + 2 * (2 + decimals));
 
         return sb
                 .append(Op.TRUTH_VALUE_MARK)
@@ -138,27 +105,86 @@ public interface Truth extends Truthed {
 
     }
 
+    static int compare(Truth a, Truth b) {
+        if (a == b) return 0;
+
+
+        return Integer.compare(b.hashCode(), a.hashCode());
+
+
+    }
+
+    @Nullable
+    static Truth stronger(@Nullable Truth a, @Nullable Truth b) {
+        if (b == null)
+            return a;
+        if (a == null)
+            return b;
+        return a.evi() >= b.evi() ? a : b;
+    }
+
+    static float freq(float f, float epsilon) {
+        assert (f == f) : "invalid freq: " + f;
+
+        Util.assertUnitized(f);
+        return Util.unitize(round(f, epsilon));
+    }
+
+    static float conf(float c, float epsilon) {
+        assert (c == c && c >= Param.TRUTH_EPSILON) : "invalid conf: " + c;
+        return confSafe(c, epsilon);
+    }
+
+    static float confSafe(float c, float epsilon) {
+        if (epsilon == 0)
+            return c;
+
+        return clamp(
+
+                round(c, epsilon),
+
+                0, 1f - epsilon);
+    }
+
+    @Nullable
+    static PreciseTruth theDithered(float f, float e, NAR nar) {
+        return theDithered(f, nar.freqResolution.floatValue(), e, nar.confResolution.floatValue(), nar.confMin.floatValue());
+    }
+
+    @Nullable
+    static PreciseTruth theDithered(float f, float fRes, float evi, float cRes, float confMin) {
+        float c = w2cDithered(evi, cRes);
+        return c >= confMin ? new PreciseTruth(freq(f, fRes), c) : null;
+    }
+
+    static float w2cDithered(float evi, float confRes) {
+        return confSafe(w2cSafe(evi), confRes);
+    }
+
+    static void write(Truth t, DataOutput out) throws IOException {
+        out.writeFloat(t.freq());
+        out.writeFloat(t.conf());
+    }
+
+    static Truth read(DataInput in) throws IOException {
+        float f = in.readFloat();
+        float c = in.readFloat();
+        return new PreciseTruth(f, c);
+    }
+
+    @Override
+    float freq();
+
+    @Override
+    float evi();
+
     @Nullable
     @Override
-    default Truth truth() { return this; }
-
-    /**
-     * Calculate the expectation value of the truth value
-     *
-     * @return The expectation value
-     */
-    @Override
-    default float expectation() {
-        return TruthFunctions.expectation(freq(), conf());
+    default Truth truth() {
+        return this;
     }
 
-    default float expectation(float factor) {
-        return TruthFunctions.expectation(freq(), conf()*factor);
-    }
 
-    default float expectationNeg() {
-        return TruthFunctions.expectation(1-freq(), conf());
-    }
 
 
     @NotNull
@@ -166,51 +192,21 @@ public interface Truth extends Truthed {
         return Truth.appendString(sb, 2, freq(), conf());
     }
 
-
-
     default String _toString() {
-        
-        
+
+
         return appendString(new StringBuilder(7)).toString();
     }
 
-    static int compare(Truth a, Truth b) {
-        if (a == b) return 0;
-
-        
-        return Integer.compare(b.hashCode(), a.hashCode());
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /** the negated (1 - freq) of this truth value */
+    /**
+     * the negated (1 - freq) of this truth value
+     */
     default Truth neg() {
         return new PreciseTruth(1f - freq(), conf());
     }
 
     default boolean equalsIn(@Nullable Truth x, float fTol, float cTol) {
-        return x == this || (x!=null
+        return x == this || (x != null
                 && Util.equals(conf(), x.conf(), cTol)
                 && Util.equals(freq(), x.freq(), fTol)
         );
@@ -228,119 +224,25 @@ public interface Truth extends Truthed {
         return negate ? neg() : this;
     }
 
-
-
-
-
-
-
-
-
     @Nullable
-    static Truth stronger(@Nullable Truth a, @Nullable Truth b) {
-        if (b == null)
-            return a;
-        if (a == null)
-            return b;
-        return a.evi() >= b.evi() ? a : b;
-    }
-
-    static float freq(float f, NAR n) {
-        return freq(f, n.freqResolution.floatValue());
-    }
-
-    static float freq(float f, float epsilon) {
-        assert(f==f): "invalid freq: " + f;
-        
-        Util.assertUnitized(f);
-        return Util.unitize(round(f, epsilon));
-    }
-
-    static float conf(float c, NAR n) {
-        return freq(c, n.confResolution.floatValue());
-    }
-
-    static float conf(float c, float epsilon) {
-        assert(c==c && c >= Param.TRUTH_EPSILON): "invalid conf: " + c;
-        return confSafe(c, epsilon);
-    }
-
-    static float confSafe(float c, float epsilon) {
-        if (epsilon == 0)
-            return c; 
-
-        return clamp(
-                
-                round(c, epsilon), 
-                
-                0, 1f - epsilon);
-    }
-
-
-    @Nullable default PreciseTruth dither(NAR nar) {
+    default PreciseTruth dither(NAR nar) {
         return theDithered(freq(), evi(), nar);
     }
 
+    @Deprecated
     @Nullable
-    static PreciseTruth theDithered(float f, float e, NAR nar) {
-        return theDithered(f, nar.freqResolution.floatValue(), e, nar.confResolution.floatValue(), nar.confMin.floatValue());
-    }
-
-    @Nullable static PreciseTruth theDithered(float f, float fRes, float evi, float cRes, float confMin) {
-        float c = w2cDithered(evi, cRes);
-        return c >= confMin ? new PreciseTruth(freq(f, fRes), c) : null;
-    }
-
-    @Nullable default PreciseTruth dither(NAR nar, float eviGain) {
-        return dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), nar.confMin.floatValue(), eviGain);
-    }
-
-    @Deprecated @Nullable default PreciseTruth dither(float freqRes, float confRes, float confMin, float eviGain) {
+    default PreciseTruth dither(float freqRes, float confRes, float confMin, float eviGain) {
         float c = w2cDithered(evi() * eviGain, confRes);
         return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
     }
 
-    @Nullable default PreciseTruth dither(float freqRes, float confRes, float confMin) {
-        float c = w2cDithered(evi(), confRes);
-        return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
+    @Nullable
+    default Truth ditherFreq(float freqRes) {
+        return freqRes != 0 ? new PreciseTruth(freq(freq(), freqRes), evi(), false) : this;
     }
-    @Nullable default Truth ditherFreq(float freqRes) {
-        return freqRes!=0 ? new PreciseTruth(freq(freq(), freqRes), evi(), false) : this;
-    }
-
-
-
-
-
-    static float w2cDithered(float evi, float confRes) {
-        return confSafe(w2cSafe(evi), confRes);
-    }
-
 
     default float freqTimesConf() {
         return freq() * conf();
-    }
-
-    default PreciseTruth withConf(float c) {
-        return new PreciseTruth(freq(), c);
-    }
-
-    default PreciseTruth withEvi(float e) {
-        if (e == 0)
-            return null;
-        return new PreciseTruth(freq(), e, false);
-    }
-
-
-    static void write(Truth t, DataOutput out) throws IOException {
-        out.writeFloat(t.freq());
-        out.writeFloat(t.conf());
-    }
-
-    static Truth read(DataInput in) throws IOException {
-        float f = in.readFloat();
-        float c = in.readFloat();
-        return new PreciseTruth(f, c);
     }
 
     default Truth eternalized(float factor) {
@@ -349,46 +251,6 @@ public interface Truth extends Truthed {
 //    default Truth eternalized() {
 //        return eternalized(1f);
 //    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

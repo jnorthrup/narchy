@@ -62,7 +62,8 @@ abstract public class Bool extends AtomicConst implements The {
 
     @Override
     public final Term concept() {
-        return Null;
+        //return Null;
+        throw new UnsupportedOperationException();
     }
 
 
@@ -73,8 +74,8 @@ abstract public class Bool extends AtomicConst implements The {
 
     @Override
     public final Term dt(int dt) {
-        return this; 
-        
+        //return this;
+        throw new UnsupportedOperationException();
     }
 
 

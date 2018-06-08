@@ -33,7 +33,7 @@ abstract public class CachedCompound implements Compound, The {
     private final short _volume;
     private final int _structure;
 
-    public static class SimpleCachedCompound extends CachedCompound {
+    public static final class SimpleCachedCompound extends CachedCompound {
 
         public SimpleCachedCompound(Op op, Subterms subterms) {
             super(op, DTERNAL, subterms);
@@ -84,11 +84,20 @@ abstract public class CachedCompound implements Compound, The {
             return equals(x) ? 0 : DTERNAL;
         }
 
-        
+        @Override
+        public boolean isCommutative() {
+            return op().commutative && subs() > 1;
+        }
+
+        @Override
+        public int dt() {
+            return DTERNAL;
+        }
+
     }
 
     /** caches a reference to the root for use in terms that are inequal to their root */
-    public static class TemporalCachedCompound extends CachedCompound  {
+    public static final  class TemporalCachedCompound extends CachedCompound  {
         private transient Term rooted = null;
         private transient Term concepted = null;
         final int dt;
@@ -96,30 +105,12 @@ abstract public class CachedCompound implements Compound, The {
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
             super(op, dt, subterms);
             this.dt = dt;
-
-
-
-
-
-
-
         }
 
         @Override
         public int dt() {
             return dt;
         }
-
-        
-
-
-
-
-
-
-
-
-
 
         @Override
         public Term root() {
@@ -161,6 +152,7 @@ abstract public class CachedCompound implements Compound, The {
         this._volume = (short)_volume;
     }
 
+
     /** since Neg compounds are disallowed for this impl */
     @Override public final Term unneg() {
         return this;
@@ -188,11 +180,7 @@ abstract public class CachedCompound implements Compound, The {
     }
 
 
-    @Override
-    public int dt() {
-        return DTERNAL;
-    }
-
+    abstract public int dt();
 
     @Override
     public final Op op() {
@@ -214,35 +202,6 @@ abstract public class CachedCompound implements Compound, The {
         if (!(that instanceof Compound) || hash != that.hashCode())
             return false;
         return Compound.equals(this, (Term) that);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -203,11 +203,13 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
             }
             return ()->m.asMap().entrySet().stream().map(e -> {
                 Collection<MatchConstraint> cc = e.getValue();
-                MatchConstraint[] d = cc.toArray(new MatchConstraint[cc.size()]);
-                assert(d.length > 0);
-                if (d.length == 1) {
-                    return (PrediTerm<Derivation>)d[0];
+                int ccn = cc.size();
+
+                assert(ccn > 0);
+                if (ccn == 1) {
+                    return (PrediTerm<Derivation>)(cc.iterator().next());
                 } else {
+                    MatchConstraint[] d = cc.toArray(new MatchConstraint[cc.size()]);
                     Arrays.sort(d, PrediTerm.sortByCost);
                     return new CompoundConstraint(d);
                 }
@@ -220,10 +222,8 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
             super($.func("unifyIf", c[0].x, SETe.the((Term[]) c)));
             this.cache = c;
             this.target = c[0].x;
-            for (int i = 1; i < c.length; i++) {
-                if (!c[i].x.equals(target))
-                    throw new RuntimeException();
-            }
+            for (int i = 1; i < c.length; i++)
+                assert(c[i].x.equals(target));
         }
 
         @Override

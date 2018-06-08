@@ -16,17 +16,8 @@ import static nars.Op.PROD;
 
 /**
  * Holds results of an ellipsis match and
-*/
+ */
 public class EllipsisMatch extends LightCompound {
-
-    
-
-
-
-
-
-
-
 
 
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
@@ -58,43 +49,26 @@ public class EllipsisMatch extends LightCompound {
         return z;
     }
 
-    @Override
-    public @Nullable Term transform(TermTransform t) {
-        
-        return this;
-    }
-
-    @Override
-    public Term neg() {
-        throw new UnsupportedOperationException();
-    }
-
-
-    @Override
-    public /*@NotNull*/ Term concept() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public @Nullable Term temporalize(Retemporalize r) {
-        throw new  UnsupportedOperationException();
-    }
-
-
     public static Term match(Term... matched) {
         switch (matched.length) {
-            case 0: return empty;
-            case 1: return matched[0]; 
-            default: return new EllipsisMatch(matched);
+            case 0:
+                return empty;
+            case 1:
+                return matched[0];
+            default:
+                return new EllipsisMatch(matched);
         }
     }
 
     public static Term match(SortedSet<Term> term) {
         int num = term.size();
         switch (num) {
-            case 0: return empty;
-            case 1: return term.first();
-            default: return new EllipsisMatch(term);
+            case 0:
+                return empty;
+            case 1:
+                return term.first();
+            default:
+                return new EllipsisMatch(term);
         }
     }
 
@@ -103,7 +77,8 @@ public class EllipsisMatch extends LightCompound {
         int ee = except.length;
         Term[] t = new Term[ll - ee];
         int j = 0;
-        main: for (int i = 0; i < ll; i++) {
+        main:
+        for (int i = 0; i < ll; i++) {
             for (int k = 0; k < ee; k++)
                 if (i == except[k])
                     continue main;
@@ -119,7 +94,8 @@ public class EllipsisMatch extends LightCompound {
         int ee = except.length;
         Term[] t = new Term[ll - ee];
         int j = 0;
-        main: for (int i = 0; i < ll; i++) {
+        main:
+        for (int i = 0; i < ll; i++) {
             for (int k = 0; k < ee; k++)
                 if (i == except[k])
                     continue main;
@@ -129,8 +105,6 @@ public class EllipsisMatch extends LightCompound {
         return new EllipsisMatch(t);
     }
 
-
-
     public static Term match(/*@NotNull*/ Subterms y, int from, int to) {
 
 
@@ -138,66 +112,45 @@ public class EllipsisMatch extends LightCompound {
             return EllipsisMatch.empty;
         }
 
-        return match( y.toArraySubRange(from, to));
-
-
-
-
+        return match(y.toArraySubRange(from, to));
 
 
     }
 
+    @Override
+    public @Nullable Term transform(TermTransform t) {
 
+        return this;
+    }
 
+    @Override
+    public Term neg() {
+        throw new UnsupportedOperationException();
+    }
 
+    @Override
+    public /*@NotNull*/ Term concept() {
+        throw new UnsupportedOperationException();
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public @Nullable Term temporalize(Retemporalize r) {
+        throw new UnsupportedOperationException();
+    }
 
     public boolean linearMatch(Subterms y, int from, /*@NotNull*/ Unify subst) {
         int s = subs();
 
         if (s + from > y.subs())
-            return false; 
+            return false;
 
         for (int i = 0; i < s; i++) {
-            if (!y.sub(i + from).unify(sub(i), subst)) 
+            if (!y.sub(i + from).unify(sub(i), subst))
                 return false;
         }
         return true;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
 
     @Override
     public boolean isCommutative() {
@@ -206,18 +159,18 @@ public class EllipsisMatch extends LightCompound {
 
 
     public boolean rematch(/*@NotNull*/ Subterms y, /*@NotNull*/ Collection<Term> yFree) {
-        /*@NotNull*/ Subterms x = subterms();
+        /*@NotNull*/
+        Subterms x = subterms();
         int xs = x.subs();
         for (int i = 0; i < xs; i++) {
             Term e = x.sub(i);
-            
-            
+
+
             if (!y.contains(e) || !yFree.remove(e))
                 return false;
         }
         return true;
     }
-
 
 
 }

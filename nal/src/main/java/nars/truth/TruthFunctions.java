@@ -42,7 +42,7 @@ public final class TruthFunctions {
      * @param t Truth value of the premise
      * @return Truth value of the conclusion
      */
-    public static Truth conversion(/*@NotNull*/ Truth t, float minConf) {
+    public static Truth conversion(Truth t, float minConf) {
         float c = w2cSafe(t.freqTimesConf());
         return c >= minConf ? t(1, c) : null;
     }
@@ -56,14 +56,10 @@ public final class TruthFunctions {
      * @param t Truth value of the premise
      * @return Truth value of the conclusion
      */
-    public static Truth contraposition(/*@NotNull*/ Truth t, float minConf) {
+    public static Truth contraposition(Truth t, float minConf) {
         float c = w2cSafe((1 - t.freq()) * t.conf());
         return c >= minConf ? t(0, c) : null;
     }
-    
-
-
-
 
 
     /**
@@ -74,7 +70,7 @@ public final class TruthFunctions {
      * @return AnalyticTruth value of the conclusion, because it is structural
      */
     @Nullable
-    public static Truth deductionR(/*@NotNull*/ Truth a, float reliance, float minConf) {
+    public static Truth deductionR(Truth a, float reliance, float minConf) {
         float f = a.freq();
         float c = and(f, a.conf(), reliance);
         return (c >= minConf) ? t(f, c) : null;
@@ -83,7 +79,7 @@ public final class TruthFunctions {
 
 
     @Nullable
-    public static Truth deduction(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
+    public static Truth deduction(Truth a, float bF, float bC, float minConf) {
 
         float f = and(a.freq(), bF);
         float c = and(f, a.conf(), bC);
@@ -100,29 +96,10 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth analogyOld(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
+    public static Truth analogy(Truth a, float bf, float bc, float minConf) {
         float c = and(a.conf(), bc, bf);
         return c >= minConf ? t(and(a.freq(), bf), c) : null;
     }
-
-    @Nullable
-    public static Truth analogy(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        return TruthFunctions2.analogyNew(a, b.freq(), b.conf(), minConf);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -132,21 +109,10 @@ public final class TruthFunctions {
      * @param b Truth value of the second premise
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
-    public static Truth induction(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float c = w2cSafe(a.conf() * b.freqTimesConf()); 
+    public static Truth induction(Truth a, Truth b, float minConf) {
+        float c = w2cSafe(a.conf() * b.freqTimesConf());
         return c >= minConf ? $.t(a.freq(), c) : null;
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -156,14 +122,14 @@ public final class TruthFunctions {
      * @param b Truth value of the second premise
      * @return Truth value of the conclusion
      */
-    public static Truth exemplification(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+    public static Truth exemplification(Truth a, Truth b, float minConf) {
         float c = w2cSafe(a.freqTimesConf() * b.freqTimesConf());
         return c >= minConf ? t(1, c) : null;
     }
 
 
     @Nullable
-    public static Truth comparison(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+    public static Truth comparison(Truth a, Truth b, float minConf) {
         return comparison(a, b, false, minConf);
     }
 
@@ -175,7 +141,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth comparison(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, boolean invertA, float minConf) {
+    public static Truth comparison(Truth a, Truth b, boolean invertA, float minConf) {
         float f1 = a.freq();
         if (invertA) f1 = 1 - f1;
 
@@ -193,116 +159,26 @@ public final class TruthFunctions {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * A function specially designed for desire value [To be refined]
      */
     @Nullable
-    public static Truth desireStrongOriginal(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+    public static Truth desireStrong(Truth a, Truth b, float minConf) {
         float bFreq = b.freq();
         float c = and(a.conf(), b.conf(), bFreq);
-        
-        return c < minConf ? null : desire(a.freq(), bFreq, c);
+
+        return c < minConf ? null : TruthFunctions2.desire(a.freq(), bFreq, c);
     }
 
 
     /**
      * A function specially designed for desire value [To be refined]
      */
-    public static Truth desireWeakOriginal(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+    public static Truth desireWeak(Truth a, Truth b, float minConf) {
         float bFreq = b.freq();
         float c = and(a.conf(), b.conf(), bFreq, w2c(1.0f));
-        return c < minConf ? null : desire(a.freq(), bFreq, c);
+        return c < minConf ? null : TruthFunctions2.desire(a.freq(), bFreq, c);
     }
-
-
-    /*@NotNull*/
-    static Truth desire(float f1, float f2, float c) {
-        return t(and(f1, f2), c);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /*In the confidence functions, each case for the conclusion to reach its
@@ -324,26 +200,13 @@ public final class TruthFunctions {
 
     static float compConf(float f1, float c1, boolean not1, float f2, float c2, boolean not2) {
         if (Param.STRONG_COMPOSITION) {
-            float F1 = not1 ? (1-f1) : f1;
-            float F2 = not2 ? (1-f2) : f2;
+            float F1 = not1 ? (1 - f1) : f1;
+            float F2 = not2 ? (1 - f2) : f2;
             return or(and(F1, c1), and(F2, c2)) + and((1 - F1), c1, (1 - F2), c2);
         } else {
-            return c1*c2;
+            return c1 * c2;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -354,26 +217,11 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth intersection(Truth v1, /*@NotNull*/ Truth v2, float minConf) {
+    public static Truth intersection(Truth v1, Truth v2, float minConf) {
         float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
         float c = compConf(f1, c1, false, f2, c2, false);
         return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -382,7 +230,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth reduceConjunction(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
+    public static Truth reduceConjunction(Truth v1, Truth v2, float minConf) {
 
         Truth i12 = intersection(v1.neg(), v2, minConf);
         if (i12 == null) return null;
@@ -390,28 +238,10 @@ public final class TruthFunctions {
         Truth v11 = deductionR(i12, 1.0f, minConf);
         if (v11 == null) return null;
 
-        return v11.neg(); 
-
-
-
-
-
-
-
-
+        return v11.neg();
 
 
     }
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -421,9 +251,9 @@ public final class TruthFunctions {
      * @param b Truth value of the second premise
      * @return Truth value of the conclusion
      */
-    public static Truth anonymousAnalogy(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+    public static Truth anonymousAnalogy(Truth a, Truth b, float minConf) {
         float v0c = w2c(a.conf());
-        
+
         return v0c < minConf ? null : TruthFunctions2.analogyNew(b, a.freq(), v0c, minConf);
     }
 
@@ -431,9 +261,7 @@ public final class TruthFunctions {
      * decompose positive / negative
      */
     @Nullable
-    public static Truth decompose(@Nullable Truth a, @Nullable Truth b, boolean x, boolean y, boolean z, float minConf) {
-        if (a == null || b == null) return null;
-
+    public static Truth decompose(Truth a, Truth b, boolean x, boolean y, boolean z, float minConf) {
         float c12 = and(a.conf(), b.conf());
         if (c12 < minConf) return null;
         float f1 = a.freq(), f2 = b.freq();
@@ -442,12 +270,6 @@ public final class TruthFunctions {
         float c = (c12);
         return c < minConf ? null : t(z ? f : 1 - f, c);
     }
-
-
-
-
-
-
 
 
     public static float c2w(float c) {
@@ -509,7 +331,7 @@ public final class TruthFunctions {
     }
 
     public static float eternalize(float evi) {
-        return w2cSafe(evi); 
+        return w2cSafe(evi);
     }
 }
 

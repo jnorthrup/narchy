@@ -249,12 +249,7 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     public boolean constrain(Variable target, MatchConstraint... mm) {
-        Versioned<Term> v = xy.getOrCreateIfAbsent(target);
-        for (MatchConstraint m : mm) {
-            if (!((ConstrainedVersionedTerm) v).constrain(m)) {
-                return false;
-            }
-        }
+        ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target)).constrain(mm);
         return true;
     }
 
@@ -303,13 +298,16 @@ public abstract class Unify extends Versioning implements Subst {
             return true;
         }
 
-        boolean constrain(MatchConstraint m) {
+        void constrain(MatchConstraint... mm) {
 
             Versioned<MatchConstraint> c = this.constraints;
             if (c == null)
                 c = constraints = new Versioned(Unify.this, 4);
 
-            return c.set(m) != null;
+            for (MatchConstraint m : mm) {
+                Versioned<MatchConstraint> wasSet = c.set(m);
+                assert (wasSet != null);
+            }
         }
 
     }

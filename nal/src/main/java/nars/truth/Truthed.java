@@ -10,8 +10,22 @@ public interface Truthed  {
     @Nullable
     Truth truth();
 
+    /**
+     * Calculate the expectation value of the truth value
+     *
+     * @return The expectation value
+     */
+    default float expectation() {
+        return TruthFunctions.expectation(freq(), conf());
+    }
+    
+    default float expectation(float factor) {
+        return TruthFunctions.expectation(freq(), conf() * factor);
+    }
 
-    default float expectation() { return truth().expectation(); }
+    default float expectationNeg() {
+        return TruthFunctions.expectation(1 - freq(), conf());
+    }
 
     /** value between 0 and 1 indicating how distant the frequency is from 0.5 (neutral) */
     default float polarity() {
@@ -40,34 +54,11 @@ public interface Truthed  {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     default float freq() {
-        Truth t = truth();
-        
-        return t.freq(); 
+        return truth().freq();
     }
+
     default float conf() {
-        
         return w2cSafe(evi()); 
     }
     /** weight of evidence ( confidence converted to weight, 'c2w()' )  */
