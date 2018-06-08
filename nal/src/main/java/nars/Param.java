@@ -45,11 +45,11 @@ public abstract class Param {
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 1.5f;
+    public static float TEST_TIME_MULTIPLIER = 1.25f;
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
 
     /** full causal feedback: applied as mult to every task on input */
     public static boolean CAUSE_MULTIPLY_EVERY_TASK = false;
@@ -71,7 +71,9 @@ public abstract class Param {
      * false: dt values will be chosen by weighted random decision
      */
     public final AtomicBoolean dtMergeOrChoose = new AtomicBoolean(false);
-
+    public final boolean dtMergeOrChoose() {
+        return dtMergeOrChoose.get();
+    }
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
     public static final boolean DEBUG_SIMILAR_DERIVATIONS = false;
