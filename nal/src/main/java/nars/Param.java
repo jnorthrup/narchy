@@ -164,7 +164,7 @@ public abstract class Param {
         }
 
         int f = Math.round(dur * timeFocus.floatValue());
-        int ditherCycles = dtDitherCycles();
+        int ditherCycles = dtDither();
         long from = Tense.dither(when - f, ditherCycles);
         long to = Tense.dither(when + f, ditherCycles);
         return new long[] {from, to};
@@ -249,10 +249,9 @@ public abstract class Param {
      */
     public final IntRange dtDither = new IntRange(1, 1, 1024);
 
-    public int dtDitherCycles() {
+    /** number of time units (cycles) to dither into */
+    public int dtDither() {
         return dtDither.intValue();
-
-
     }
 
     abstract int dur();

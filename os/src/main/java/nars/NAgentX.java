@@ -193,28 +193,20 @@ abstract public class NAgentX extends NAgent {
 
         new MatrixDeriver(Derivers.nal(1, 8, n));
 
-
-
-
-
-
-        
-
-        
         
 
         n.dtMergeOrChoose.set(true);
         
-        
-        n.timeFocus.set(4);
+        n.dtDither.set(10); //100fps base
+        n.timeFocus.set(5);
 
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(30);
 
-        n.beliefConfDefault.set(0.9f);
-        n.goalConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.98f);
+        n.goalConfDefault.set(0.98f);
 
 
 

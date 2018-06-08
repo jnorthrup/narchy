@@ -103,11 +103,11 @@ public enum Tense {
     }
 
     public static int dither(int dt, NAR nar) {
-        return dither(dt, nar.dtDitherCycles());
+        return dither(dt, nar.dtDither());
     }
 
     public static long dither(long t, NAR nar) {
-        return dither(t, nar.dtDitherCycles());
+        return dither(t, nar.dtDither());
     }
 
     public static int dither(int dt, int dither) {

@@ -26,7 +26,6 @@ import nars.unify.constraint.*;
 import nars.unify.match.Ellipsislike;
 import nars.unify.op.*;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
@@ -110,9 +109,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             Term X, Y;
 
 
-            Term[] args = ((Subterms) (predicate.sub(0))).arrayShared();
-            X = (args.length > 0) ? args[0] : null;
-            Y = (args.length > 1) ? args[1] : null;
+            Term[] args = ((Subterms) predicate.sub(0)).arrayShared();
+            X = args.length > 0 ? args[0] : null;
+            Y = args.length > 1 ? args[1] : null;
 
 
 
@@ -161,7 +160,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
                 case "subOf":
 
-                    if ((Y == Op.imExt) || (Y == Op.imInt)) {
+                    if (Y == Op.imExt || Y == Op.imInt) {
 
                         pre.add(new SubOf(Y, taskPattern, X, beliefPattern));
 
@@ -405,11 +404,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         TruthOperator beliefTruthOp = BeliefFunction.get(beliefTruth);
-        if ((beliefTruth != null) && (beliefTruthOp == null)) {
+        if (beliefTruth != null && beliefTruthOp == null) {
             throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
         }
         TruthOperator goalTruthOp = GoalFunction.get(goalTruth);
-        if ((goalTruth != null) && (goalTruthOp == null)) {
+        if (goalTruth != null && goalTruthOp == null) {
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
         }
         String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
@@ -420,22 +419,22 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         args.add(intern(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct, index));
         args.add(intern(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct, index));
         if (puncOverride != 0)
-            args.add($.quote(((char) puncOverride)));
+            args.add($.quote((char) puncOverride));
 
         Occurrify.BeliefProjection projection = time.projection();
         args.add($.func("BeliefProjection", Atomic.the(projection.name())));
 
         Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
-        Truthify truthify = (puncOverride == 0) ?
+        Truthify truthify = puncOverride == 0 ?
                 new Truthify.TruthifyPuncFromTask(ii, beliefTruthOp, goalTruthOp, projection) :
                 new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruthOp, goalTruthOp, projection);
 
 
         NAR nar1 = index.nar;
-        Taskify taskify = new Taskify(nar1.newCause((s) -> new RuleCause(this, s)));
+        Taskify taskify = new Taskify(nar1.newCause(s -> new RuleCause(this, s)));
 
         boolean introVars1;
-        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i) -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
+        Pair<Termed, Term> outerFunctor = Op.functor(pattern, i -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
         if (outerFunctor != null) {
             introVars1 = true;
             pattern = outerFunctor.getTwo().sub(0);
@@ -464,8 +463,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
         //if (taskFirst(taskPattern1, beliefPattern1)) {
 
-            post.add(new UnifyTerm.UnifySubterm(0, taskPattern1));
-            post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern1, conc));
+        post.add(new UnifyTerm.UnifySubterm(0, taskPattern1));
+        post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern1, conc));
 //        } else {
 //
 //            post.add(new UnifyTerm.UnifySubterm(1, beliefPattern1));
@@ -561,12 +560,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
             boolean b = false, g = true;
             //for (PostCondition x : POST) {
-                if (POST.puncOverride != 0) {
-                    throw new RuntimeException("puncOverride with no input punc specifier");
-                } else {
-                    b |= (POST.beliefTruth != null);
-                    g |= (POST.goalTruth != null);
-                }
+            if (POST.puncOverride != 0) {
+                throw new RuntimeException("puncOverride with no input punc specifier");
+            } else {
+                b |= POST.beliefTruth != null;
+                g |= POST.goalTruth != null;
+            }
             //}
 
             if (!b && !g) {
@@ -620,10 +619,6 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         boolean checkedTask = false, checkedBelief = false;
-//        boolean checkedTask = taskPattern.equals(x);
-//        boolean checkedBelief = beliefPattern.equals(x);
-//        if (checkedTask || checkedBelief)
-//            pres.add(new TaskBeliefOp(v, checkedTask, checkedBelief));
 
         final byte[] pt = !checkedTask && (taskPattern.equals(x) || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? onlyPathTo(taskPattern, x) : null;
         final byte[] pb = !checkedBelief && (beliefPattern.equals(x) || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? onlyPathTo(beliefPattern, x) : null;
@@ -632,15 +627,16 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 checkedTask = true;
             if (pb != null)
                 checkedBelief = true;
-            pres.add(new OpInTaskOrBeliefIsOrIsnt(true, x, struct.bit, pt, pb));
+            TaskBeliefOp.add(pres, true, x, struct.bit, pt, pb);
+
         }
 
         if (!checkedTask && !checkedBelief) {
             //non-exact filter
-            boolean inTask = (!checkedTask && taskPattern.containsRecursively(x));
-            boolean inBelief = (!checkedBelief && beliefPattern.containsRecursively(x));
+            boolean inTask = (taskPattern.equals(x) || taskPattern.containsRecursively(x));
+            boolean inBelief = (beliefPattern.equals(x) || beliefPattern.containsRecursively(x));
             if (inTask || inBelief) {
-                pres.add(new TaskBeliefHasOrHasnt(true, struct, checkedTask || inTask, checkedBelief || inBelief));
+                pres.add(new TaskBeliefHasOrHasnt(true, struct, inTask, inBelief));
             }
 
             constraints.add(OpIs.the(x, struct));
@@ -651,13 +647,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     private static void termIsNot(Set<PrediTerm<PreDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
 
 
-
         boolean checkedTask = false, checkedBelief = false;
-//        boolean isTask = taskPattern.equals(x);
-//        boolean isBelief = beliefPattern.equals(x);
-//        if (isTask || isBelief)
-//            pres.add(new TaskBeliefOp(struct, isTask, isBelief, false));
-
 
         final byte[] pt = !checkedTask && (taskPattern.equals(x) || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? onlyPathTo(taskPattern, x) : null;
         final byte[] pb = !checkedBelief && (beliefPattern.equals(x) || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? onlyPathTo(beliefPattern, x) : null;
@@ -666,16 +656,16 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 checkedTask = true;
             if (pb != null)
                 checkedBelief = true;
-            pres.add(new OpInTaskOrBeliefIsOrIsnt(false, x, struct, pt, pb));
+            TaskBeliefOp.add(pres,false, x, struct, pt, pb);
         }
 
         if (!checkedTask && !checkedBelief) {
             //non-exact filter
 
-            boolean inTask = (!checkedTask && taskPattern.containsRecursively(x));
-            boolean inBelief = (!checkedBelief && beliefPattern.containsRecursively(x));
+            boolean inTask = !checkedTask && (taskPattern.equals(x) || taskPattern.containsRecursively(x));
+            boolean inBelief = !checkedBelief && (beliefPattern.equals(x) || beliefPattern.containsRecursively(x));
             if (inTask || inBelief) {
-                pres.add(new TaskBeliefHasOrHasnt(false, struct, checkedTask || inTask, checkedBelief || inBelief));
+                pres.add(new TaskBeliefHasOrHasnt(false, struct, inTask, inBelief));
             }
 
             constraints.add(new OpIsNot(x, struct));
@@ -688,7 +678,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             throw new TODO("expected/tested occurrence in task pattern ");
 
         final byte[] pp = onlyPathTo(taskPattern, x);
-        assert (pp != null);
+        assert pp != null;
         pres.add(new NotImaged(x, pp));
     }
 
@@ -708,8 +698,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
     private static void termHasNot(Term task, Term belief, Set<PrediTerm<PreDerivation>> pres, SortedSet<MatchConstraint> constraints, Term t, int structure) {
-        boolean inTask = (task.equals(t) || task.containsRecursively(t));
-        boolean inBelief = (belief.equals(t) || belief.containsRecursively(t));
+        boolean inTask = task.equals(t) || task.containsRecursively(t);
+        boolean inBelief = belief.equals(t) || belief.containsRecursively(t);
         if (inTask || inBelief) {
             pres.add(new TaskBeliefHasOrHasnt(false, structure, inTask, inBelief));
         } else {
@@ -728,7 +718,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * the task-term pattern
      */
     public final Term getTask() {
-        return (build().sub(0));
+        return build().sub(0);
     }
 
     public Compound build() {
@@ -743,7 +733,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * the belief-term pattern
      */
     public final Term getBelief() {
-        return (build().sub(1));
+        return build().sub(1);
     }
 
     /**
@@ -808,7 +798,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         @Override
         public boolean test(PreDerivation preDerivation) {
-            if (this.punc == 0 /* any */ || (preDerivation.taskPunc == this.punc /* a specific one */))
+            /* a specific one */
+            if (this.punc == 0 /* any */ || preDerivation.taskPunc == this.punc)
                 return preDerivation.hasBeliefTruth();
             return true;
         }
@@ -831,7 +822,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
             task = taskPattern.containsRecursively(x);
             belief = beliefPattern.containsRecursively(y);
-            assert (task || belief);
+            assert task || belief;
         }
 
         @Override
@@ -869,58 +860,4 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
     }
 
-    private static class OpInTaskOrBeliefIsOrIsnt extends AbstractPred<PreDerivation> {
-
-        private final int struct;
-
-        @Nullable
-        private final byte[] pathInTask;
-        @Nullable
-        private final byte[] pathInBelief;
-        private final boolean isOrIsnt;
-
-        public OpInTaskOrBeliefIsOrIsnt(boolean isOrIsnt, Term x, int struct, byte[] pathInTask, byte[] pathInBelief) {
-            super($.func(isOrIsnt ? "opIs" : "opIsNot",
-                    x, $.the(struct),
-                    pathInTask != null ? $.func("inTask", $.the(pathInTask)) : Op.EmptyProduct,
-                    pathInBelief != null ? $.func("inBelief", $.the(pathInBelief)) : Op.EmptyProduct
-            ));
-            this.isOrIsnt = isOrIsnt;
-            this.struct = struct;
-            this.pathInTask = pathInTask;
-            this.pathInBelief = pathInBelief;
-        }
-
-        @Override
-        public float cost() {
-            return 0.2f;
-        }
-
-        @Override
-        public boolean test(PreDerivation o) {
-            if (pathInTask != null) {
-                Term T = o.taskTerm;
-                boolean Thas = T.hasAny(struct);
-                if (isOrIsnt && !Thas)
-                    return false;
-                if (isOrIsnt || Thas) {
-                    Term s = T.subPath(pathInTask);
-                    if (isOrIsnt != s.isAny(struct))
-                        return false;
-                }
-            }
-            if (pathInBelief != null) {
-                Term B = o.beliefTerm;
-                boolean Bhas = B.hasAny(struct);
-                if (isOrIsnt && !Bhas)
-                    return false;
-                if (isOrIsnt || Bhas) {
-                    Term s = B.subPath(pathInBelief);
-                    if (isOrIsnt != s.isAny(struct))
-                        return false;
-                }
-            }
-            return true;
-        }
-    }
 }

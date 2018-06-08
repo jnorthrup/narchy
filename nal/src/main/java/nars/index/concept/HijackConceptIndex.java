@@ -1,11 +1,9 @@
 package nars.index.concept;
 
-import jcog.Util;
 import jcog.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.PLink;
 import jcog.pri.PLinkHashCached;
 import nars.NAR;
-import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.control.DurService;
 import nars.term.Term;
@@ -16,8 +14,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static nars.truth.TruthFunctions.w2c;
-
 /**
  * Created by me on 2/20/17.
  */
@@ -26,7 +22,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     private final PLinkHijackBag<Termed> table;
     
 
-    int forgetEveryDurs = 16;
+    int forgetEveryDurs = 4;
     float forgetTemperature = 0.5f;
 
     /**
@@ -35,8 +31,8 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     private final float initial = 0.5f;
     private final float getBoost = 0.02f;
     
-    private long now;
-    private int dur;
+//    private long now;
+//    private int dur;
     private DurService onDur;
     
 
@@ -106,11 +102,6 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     public void commit() {
         table.commit(table.forget(forgetTemperature));
     }
-
-
-
-
-
 
     @Override
     public @Nullable Termed get( Term key, boolean createIfMissing) {
@@ -189,76 +180,21 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         return table.stream().map(Supplier::get);
     }
 
-    protected float score(Concept c) {
-        float beliefConf = w2c((float) c.beliefs().streamTasks().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
-        float goalConf = w2c((float) c.goals().streamTasks().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
-        float talCap = c.tasklinks().size() / (1f + c.tasklinks().capacity());
-        float telCap = c.termlinks().size() / (1f + c.termlinks().capacity());
-        return Util.or(((talCap + telCap) / 2f), (beliefConf + goalConf) / 2f) /
-                (1 + ((c.complexity() + c.volume()) / 2f) / nar.termVolumeMax.intValue());
-    }
-
-    protected void forget(PLink<Termed> x, Concept c, float amount) {
-        
-        c.tasklinks().setCapacity(Math.round(c.tasklinks().capacity() * (1f - amount)));
-        c.termlinks().setCapacity(Math.round(c.termlinks().capacity() * (1f - amount)));
-
-        x.priMult(1f - amount);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//    protected float score(Concept c) {
+//        float beliefConf = w2c((float) c.beliefs().streamTasks().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
+//        float goalConf = w2c((float) c.goals().streamTasks().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
+//        float talCap = c.tasklinks().size() / (1f + c.tasklinks().capacity());
+//        float telCap = c.termlinks().size() / (1f + c.termlinks().capacity());
+//        return Util.or(((talCap + telCap) / 2f), (beliefConf + goalConf) / 2f) /
+//                (1 + ((c.complexity() + c.volume()) / 2f) / nar.termVolumeMax.intValue());
+//    }
+//
+//    protected void forget(PLink<Termed> x, Concept c, float amount) {
+//
+//        c.tasklinks().setCapacity(Math.round(c.tasklinks().capacity() * (1f - amount)));
+//        c.termlinks().setCapacity(Math.round(c.termlinks().capacity() * (1f - amount)));
+//
+//        x.priMult(1f - amount);
+//    }
 
 }

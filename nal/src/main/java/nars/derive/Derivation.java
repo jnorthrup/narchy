@@ -500,7 +500,7 @@ public class Derivation extends PreDerivation {
         if (now != this.time) {
             this.time = now;
             this.dur = deri.dur();
-            this.ditherTime = nar.dtDitherCycles();
+            this.ditherTime = nar.dtDither();
             this.confMin = nar.confMin.floatValue();
             this.termVolMax = nar.termVolumeMax.intValue();
             this.random.setSeed(nar.random().nextLong());

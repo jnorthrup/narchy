@@ -188,7 +188,7 @@ public class Occurrify extends TimeGraph {
             } else {
                 know(task, taskAt);
 
-                if (!belief.equals(task)) {
+                if (!belief.equals(task) || (taskAt!=beliefAt)) {
                     know(belief, beliefAt);
                 }
             }

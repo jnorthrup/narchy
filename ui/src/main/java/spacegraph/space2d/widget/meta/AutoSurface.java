@@ -8,6 +8,7 @@ import jcog.list.FasterList;
 import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
+import jcog.util.Reflect;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -23,7 +24,6 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.windo.Widget;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -149,30 +149,40 @@ public class AutoSurface<X> extends Gridding {
 
     void collectFields(Object x, List<Surface> target, int depth) {
         Class cc = x.getClass();
-        for (Field f : cc.getFields()) {
-            
-            int mods = f.getModifiers();
-            if (Modifier.isStatic(mods))
-                continue;
-            if (!Modifier.isPublic(mods))
-                continue;
-            if (f.getType().isPrimitive())
-                continue;
-
+        Reflect.on(cc).fields(true,false,false).forEach((s,ff)->{
+            Field f = ff.get();
             try {
-
-                
-                f.trySetAccessible();
-
-
                 Object y = f.get(x);
-                if (y != null && y != x) 
+                if (y != null && y != x)
                     collect(y, target, depth, f.getName());
-
-            } catch (Throwable t) {
-                t.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-        }
+        });
+//        for (Field f : cc.getFields()) {
+//
+//            int mods = f.getModifiers();
+//            if (Modifier.isStatic(mods))
+//                continue;
+//            if (!Modifier.isPublic(mods))
+//                continue;
+//            if (f.getType().isPrimitive())
+//                continue;
+//
+//            try {
+//
+//
+//                f.trySetAccessible();
+//
+//
+//                Object y = f.get(x);
+//                if (y != null && y != x)
+//                    collect(y, target, depth, f.getName());
+//
+//            } catch (Throwable t) {
+//                t.printStackTrace();
+//            }
+//        }
 
 
     }

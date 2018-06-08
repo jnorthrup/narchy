@@ -425,14 +425,11 @@ public class Revision {
 
 
     public static float eviAvg(Task x, long start, long end, int dur) {
-
         if (start == ETERNAL) {
-            return x.isEternal() ? x.evi() : x.eviEternalized();
+            return x.evi(ETERNAL, dur);
+        } else {
+            return eviInteg(x, start, end, dur) / (end - start + 1);
         }
-
-        
-        return eviInteg(x, start, end, dur) / (end - start + 1);
-
     }
 
     /**

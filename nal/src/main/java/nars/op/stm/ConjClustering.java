@@ -106,7 +106,7 @@ public class ConjClustering extends Causable {
 
         this.now = nar.time();
         this.dur = nar.dur();
-        this.ditherTime = nar.dtDitherCycles();
+        this.ditherTime = nar.dtDither();
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
         this.taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));

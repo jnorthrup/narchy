@@ -30,7 +30,7 @@ public class Gradius extends NAgentX {
         g.updateMS = 20;
 
 
-        int dx = 4, dy = 4;
+        int dx = 2, dy = 2;
         int px = 12, py = 8;
 
         assert(px%dx==0 && py%dy ==0);
@@ -40,8 +40,8 @@ public class Gradius extends NAgentX {
                 int jj = j;
                 Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
-                                $.p(
-                                //$.inh(
+                                //$.p(
+                                $.inh(
                                         $.p(x, y),
                                         subSection
                                 ),

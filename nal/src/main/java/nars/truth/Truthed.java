@@ -80,25 +80,5 @@ public interface Truthed  {
         return TruthFunctions.eternalize(evi());
     }
 
-    default float confEternalized() {
-        return w2cSafe(eviEternalized());
-    }
-
-    default float eviEternalized(float horizon) {
-        return w2cSafe(conf(), horizon);
-    }
-
-
-    
-
-
-
-
-
-
-
-
-
-
 
 }

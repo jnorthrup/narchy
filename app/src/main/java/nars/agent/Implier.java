@@ -133,7 +133,7 @@ public class Implier extends DurService {
         beliefTruth.clear();
         goalTruth.clear();
 
-        int dtDither = nar.dtDitherCycles();
+        int dtDither = nar.dtDither();
 
         for (float relativeTargetDur : relativeTargetDurs) {
 

@@ -533,9 +533,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return new TaskWithNegatedTruth(t);
     }
 
-    static Task eternalized(Task tx) {
-        return eternalized(tx, 1);
-    }
+//    static Task eternalized(Task tx) {
+//        return eternalized(tx, 1);
+//    }
 
 
     

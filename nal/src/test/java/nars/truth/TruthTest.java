@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import static nars.$.t;
 import static nars.Param.TRUTH_EPSILON;
 import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -33,9 +34,9 @@ public class TruthTest {
     }
 
     @Test public void testEternalize() {
-        assertEquals(0.47f, t(1f, 0.9f).confEternalized(), 0.01f);
-        assertEquals(0.31f, t(1f, 0.45f).confEternalized(), 0.01f);
-        assertEquals(0.09f, t(1f, 0.10f).confEternalized(), 0.01f);
+        assertEquals(0.47f, w2cSafe(t(1f, 0.9f).eviEternalized()), 0.01f);
+        assertEquals(0.31f, w2cSafe(t(1f, 0.45f).eviEternalized()), 0.01f);
+        assertEquals(0.09f, w2cSafe(t(1f, 0.10f).eviEternalized()), 0.01f);
     }
 
     @Test
