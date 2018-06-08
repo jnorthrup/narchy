@@ -25,13 +25,7 @@ import static nars.Op.INH;
  */
 public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
-    Predicate<Term> validDynamicSubterm = x -> {
-        if (x != null) {
-            x = x.unneg();
-            return (x.op().conceptualizable && x.hasAny(Op.ATOM) && Task.validTaskTerm(x.unneg()));
-        }
-        return false;
-    };
+    Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
 
     static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);

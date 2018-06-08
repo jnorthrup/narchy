@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /** from: https:
@@ -326,9 +326,7 @@ public class Reflect {
      */
     public Map<String, Reflect> fields(boolean instance, boolean statik, boolean nonPublic) {
 
-        Map<String, Reflect> result =
-                
-                new HashMap<>(16);
+        Map<String, Reflect> result = new LinkedHashMap<>(16);
 
         Class<?> t = type();
 

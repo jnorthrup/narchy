@@ -19,9 +19,8 @@ import nars.term.compound.util.Image;
 import nars.term.control.AbstractPred;
 import nars.term.control.AndCondition;
 import nars.term.control.PrediTerm;
-import nars.truth.func.BeliefFunction;
-import nars.truth.func.GoalFunction;
-import nars.truth.func.TruthOperator;
+import nars.truth.func.NALTruth;
+import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.match.Ellipsislike;
 import nars.unify.op.*;
@@ -403,11 +402,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         pattern = intern(pattern, index);
 
 
-        TruthOperator beliefTruthOp = BeliefFunction.get(beliefTruth);
+        TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
         if (beliefTruth != null && beliefTruthOp == null) {
             throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
         }
-        TruthOperator goalTruthOp = GoalFunction.get(goalTruth);
+        TruthFunc goalTruthOp = NALTruth.get(goalTruth);
         if (goalTruth != null && goalTruthOp == null) {
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
         }

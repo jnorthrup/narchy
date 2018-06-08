@@ -18,7 +18,8 @@ import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.net.attn.HashMapTagSet;
 import jcog.pri.Priority;
-import org.HdrHistogram.AtomicHistogram;
+import org.HdrHistogram.ConcurrentHistogram;
+import org.HdrHistogram.Histogram;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
@@ -901,7 +902,7 @@ public class UDPeer extends UDP {
          * ping time, in ms
          * TODO find a lock-free sort of statistics class
          */
-        final AtomicHistogram pingTime = new AtomicHistogram(1, 16*1024, 0);
+        final Histogram pingTime = new ConcurrentHistogram(1, 16*1024, 0);
 
         /** caches the value of the mean pingtime */
         final AtomicLong latency = new AtomicLong(Long.MAX_VALUE);

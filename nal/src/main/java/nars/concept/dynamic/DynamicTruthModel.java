@@ -12,7 +12,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.compound.util.Conj;
 import nars.truth.Truth;
-import nars.truth.func.BeliefFunction;
+import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,7 +142,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
                 if (y == null) {
                     y = x;
                 } else {
-                    y = BeliefFunction.Intersection.apply(y, x, nar, Float.MIN_NORMAL);
+                    y = NALTruth.Intersection.apply(y, x, nar, Float.MIN_NORMAL);
                     if (y == null)
                         return null;
                 }
@@ -322,7 +322,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
             if (b == null)
                 return null;
 
-            return BeliefFunction.Difference.apply(a, b, n, Float.MIN_NORMAL);
+            return NALTruth.Difference.apply(a, b, n, Float.MIN_NORMAL);
         }
     }
 

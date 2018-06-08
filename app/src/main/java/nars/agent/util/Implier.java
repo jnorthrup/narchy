@@ -17,8 +17,8 @@ import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.TruthAccumulator;
-import nars.truth.func.BeliefFunction;
-import nars.truth.func.TruthOperator;
+import nars.truth.func.NALTruth;
+import nars.truth.func.TruthFunc;
 import nars.util.graph.TermGraph;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -61,8 +61,8 @@ public class Implier extends DurService {
     final Map<LongObjectPair<Term>, TruthAccumulator> beliefTruth = new HashMap();
     final Map<LongObjectPair<Term>, TruthAccumulator> goalTruth = new HashMap();
 
-    final static TruthOperator ded = BeliefFunction.get($.the("Deduction"));
-    final static TruthOperator ind = BeliefFunction.get($.the("Induction"));
+    final static TruthFunc ded = NALTruth.get($.the("Deduction"));
+    final static TruthFunc ind = NALTruth.get($.the("Induction"));
 
     private final FloatRange strength = new FloatRange(0.5f, 0f, 1f);
     private long then, now;

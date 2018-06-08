@@ -15,11 +15,11 @@ import java.util.function.Consumer;
  * TODO find any inherited methods which would return the proxied
  * bag instead of this instance
  */
-abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
+public class ProxyBag<X,Y> implements Bag<X,Y> {
 
-    @NotNull Bag<X,Y> bag;
+    Bag<X,Y> bag;
 
-    protected ProxyBag(Bag<X, Y> delegate) {
+    public ProxyBag(Bag<X, Y> delegate) {
         set(delegate);
     }
 
@@ -28,7 +28,18 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
     @Override
-    public @Nullable Y get(@NotNull Object key) {
+    public float pri(Y key) {
+        return bag.pri(key);
+    }
+
+    @Override
+    public X key(Y value) {
+        return bag.key(value);
+    }
+
+
+    @Override
+    public @Nullable Y get(Object key) {
         return bag.get(key);
     }
 
@@ -48,11 +59,6 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
 
-
-    public void forEach(int max, @NotNull Consumer<? super Y> action) {
-        throw new UnsupportedOperationException(); 
-    }
-
     @Override
     public void clear() {
         bag.clear();
@@ -60,19 +66,19 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
 
     @Nullable
     @Override
-    public Y remove(@NotNull X x) {
+    public Y remove(X x) {
         return bag.remove(x);
     }
 
     @Override
-    public Y put(@NotNull Y b, @Nullable MutableFloat overflowing) {
+    public Y put(Y b, @Nullable MutableFloat overflowing) {
         return bag.put(b, overflowing);
     }
 
 
     @NotNull
     @Override
-    public Iterable<Y> sample(Random rng, @NotNull Bag.BagCursor<? super Y> each) {
+    public Iterable<Y> sample(Random rng, Bag.BagCursor<? super Y> each) {
         bag.sample(rng, each);
         return this;
     }
@@ -120,12 +126,12 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
     }
 
     @Override
-    public void onRemove(@NotNull Y v) {
+    public void onRemove(Y v) {
         bag.onRemove(v);
     }
 
     @Override
-    public void onReject(@NotNull Y v) {
+    public void onReject(Y v) {
         bag.onReject(v);
     }
 
@@ -133,5 +139,10 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
     public Iterable<Y> commit() {
         bag.commit();
         return this;
+    }
+
+    @Override
+    public float mass() {
+        return bag.mass();
     }
 }

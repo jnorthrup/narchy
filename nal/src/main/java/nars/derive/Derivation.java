@@ -22,7 +22,7 @@ import nars.term.atom.Bool;
 import nars.term.control.PrediTerm;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.func.TruthOperator;
+import nars.truth.func.TruthFunc;
 import nars.util.TimeAware;
 import nars.util.term.TermHashMap;
 import org.eclipse.collections.api.map.ImmutableMap;
@@ -189,7 +189,7 @@ public class Derivation extends PreDerivation {
     /**
      * original non-anonymized tasks
      */
-    public TruthOperator truthFunction;
+    public TruthFunc truthFunction;
     public int ditherTime;
     public Deriver deriver;
     /**

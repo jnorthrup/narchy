@@ -5,7 +5,7 @@ import nars.derive.step.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.truth.Truth;
-import nars.truth.func.TruthOperator;
+import nars.truth.func.TruthFunc;
 
 import static nars.Op.*;
 
@@ -16,11 +16,11 @@ import static nars.Op.*;
  */
 abstract public class Truthify extends AbstractPred<Derivation>  {
 
-    private final TruthOperator belief;
-    private final TruthOperator goal;
+    private final TruthFunc belief;
+    private final TruthFunc goal;
     private final BeliefProjection beliefProjection;
 
-    Truthify(Term id, TruthOperator belief, TruthOperator goal, BeliefProjection beliefProjection) {
+    Truthify(Term id, TruthFunc belief, TruthFunc goal, BeliefProjection beliefProjection) {
         super(id);
         this.belief = belief;
         this.goal = goal;
@@ -44,7 +44,7 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
         switch (punc) {
             case BELIEF:
             case GOAL:
-                TruthOperator f = (punc == BELIEF) ? belief : goal;
+                TruthFunc f = (punc == BELIEF) ? belief : goal;
                 if (f == null)
                     return false; 
 
@@ -115,7 +115,7 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
         private final byte puncOverride;
 
 
-        public TruthifyPuncOverride(Term id, byte puncOverride, TruthOperator belief, TruthOperator desire, BeliefProjection projectBeliefToTask) {
+        public TruthifyPuncOverride(Term id, byte puncOverride, TruthFunc belief, TruthFunc desire, BeliefProjection projectBeliefToTask) {
             super(id, belief, desire, projectBeliefToTask);
             this.puncOverride = puncOverride;
         }
@@ -133,7 +133,7 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
      */
     public static final class TruthifyPuncFromTask extends Truthify {
 
-        public TruthifyPuncFromTask(Term i, TruthOperator belief, TruthOperator desire, BeliefProjection projectBeliefToTask) {
+        public TruthifyPuncFromTask(Term i, TruthFunc belief, TruthFunc desire, BeliefProjection projectBeliefToTask) {
             super(i, belief, desire, projectBeliefToTask);
         }
 

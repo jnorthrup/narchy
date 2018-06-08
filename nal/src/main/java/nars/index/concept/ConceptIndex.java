@@ -21,7 +21,6 @@ import java.util.stream.Stream;
 public abstract class ConceptIndex {
 
 
-
     public NAR nar;
 
     /**
@@ -46,13 +45,6 @@ public abstract class ConceptIndex {
     }
 
     abstract public void clear();
-
-
-
-
-
-
-
 
 
     public void init(NAR nar) {
@@ -92,19 +84,16 @@ public abstract class ConceptIndex {
     @Nullable
     public final Concept concept(Term x, boolean createIfMissing) {
         if (x instanceof Bool || x instanceof Variable)
-            return null; 
+            return null;
 
         if (x instanceof Concept && elideConceptGets() && !(((Concept) x).isDeleted()))
-            return ((Concept)x);
+            return ((Concept) x);
 
         Term xx = x.concept();
         if (!(xx.op().conceptualizable)) {
 
 
-
-
-
-            return null; 
+            return null;
         }
 
         return (Concept) get(xx, createIfMissing);
@@ -114,7 +103,7 @@ public abstract class ConceptIndex {
      * for performance, if lookup of a Concept instance is performed using
      * a supplied non-deleted Concept instance, return that Concept directly.
      * ie. it assumes that the known Concept is the active one.
-     *
+     * <p>
      * this can be undesirable if the concept index has an eviction mechanism
      * which counts lookup frequency, which would be skewed if elision is enabled.
      */
@@ -129,14 +118,14 @@ public abstract class ConceptIndex {
             Concept ct = (Concept) x;
             if (!ct.isDeleted()) {
                 with.accept(ct);
-                return; 
+                return;
             }
-            
+
             y = ct.term();
         } else {
             y = x.term().concept();
             if (!y.op().conceptualizable)
-                return; 
+                return;
         }
 
 
@@ -153,7 +142,7 @@ public abstract class ConceptIndex {
     protected final void onRemove(Termed value) {
         if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
-                
+
                 nar.runLater(() -> {
                     set(value);
                 });
@@ -171,24 +160,8 @@ public abstract class ConceptIndex {
 
     protected void forget(TaskConcept tc) {
         tc.tasks().forEach(t -> {
-            
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
             t.delete();
         });
     }

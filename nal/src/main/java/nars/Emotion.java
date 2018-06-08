@@ -389,9 +389,9 @@ public class Emotion implements Meter {
         float qPriBefore = questionTask.priElseZero();
         if (qPriBefore > Prioritized.EPSILON) {
             //float fraction = ansConf * (1 - qOrig);
-            float fraction = qOrig;
+            float fraction = qOrig/2f;
             answer.take(questionTask, fraction, false,
-                    true /*false*/);
+                    /*true */ false);
 
             //HACK append the question as a cause to the task.  ideally this would only happen for dynamic/revised tasks but for all tasks is ok for now
             ((NALTask)answer).causeMerge(questionTask);
