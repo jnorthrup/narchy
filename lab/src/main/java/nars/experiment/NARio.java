@@ -11,7 +11,7 @@ import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
 import nars.util.TimeAware;
-import nars.agent.Bitmap2DSensor;
+import nars.sensor.Bitmap2DSensor;
 import nars.video.PixelBag;
 
 import javax.swing.*;

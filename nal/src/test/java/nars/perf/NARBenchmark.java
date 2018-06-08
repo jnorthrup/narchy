@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.test.DeductiveMeshTest;
+import nars.test.impl.DeductiveMeshTest;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;

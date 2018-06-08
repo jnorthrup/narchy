@@ -2,7 +2,7 @@ package nars.nal.nal4;
 
 import nars.NAR;
 import nars.NARS;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

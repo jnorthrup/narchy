@@ -1,4 +1,4 @@
-package nars.agent;
+package nars.agent.util;
 
 import jcog.Util;
 import jcog.learn.Agent;
@@ -8,6 +8,7 @@ import jcog.math.IntIntToObjectFunc;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.agent.NAgent;
 import nars.concept.action.ActionConcept;
 import nars.concept.scalar.Scalar;
 import nars.control.channel.CauseChannel;

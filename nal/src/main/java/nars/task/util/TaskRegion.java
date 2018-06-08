@@ -176,7 +176,13 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     @Override
     default double range(final int dim) {
-        return /*Math.abs*/(coordF(true, dim) - coordF(false, dim));
+        switch (dim) {
+            case 0:
+                return end()-start();
+            default:
+                return /*Math.abs*/(coordF(true, dim) - coordF(false, dim));
+        }
+
     }
 
     @Override
@@ -307,12 +313,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
 
     @Override
-    default double coord(boolean maxOrMin, int dimension) {
-        return coordF(maxOrMin, dimension);
-    }
-
-    @Override
-    float coordF(boolean maxOrMin, int dimension);
+    double coord(boolean maxOrMin, int dimension);
 
     default boolean intersectsConf(float cMin, float cMax) {
         return (cMin <= confMax() && cMax >= confMin());

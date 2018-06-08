@@ -32,7 +32,7 @@ public class NARchy extends NARS {
 
                 .index(new CaffeineIndex(1000 * 128 * 1024))
 
-                .exe(new MixMultiExec(128, 1))
+                .exe(new MixMultiExec.PoolMultiExec(128, 1))
 
 
 

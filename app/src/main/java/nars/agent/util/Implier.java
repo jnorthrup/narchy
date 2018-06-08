@@ -1,10 +1,11 @@
-package nars.agent;
+package nars.agent.util;
 
 import com.google.common.collect.Iterables;
 import jcog.data.graph.AdjGraph;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import nars.*;
+import nars.agent.NAgent;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;

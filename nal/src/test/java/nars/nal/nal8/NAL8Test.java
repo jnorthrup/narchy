@@ -6,9 +6,9 @@ import nars.Op;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
-import nars.util.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -21,13 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 200;
-
+    public static final int cycles = 100;
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(14);
+        test.nar.termVolumeMax.set(12);
     }
 
     @Test
@@ -304,9 +303,8 @@ public class NAL8Test extends NALTest {
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
-                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t > 0)
-                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t > 3 + 0 /* earliest x goal */)
-                .mustNotOutput(cycles, "y", GOAL, ETERNAL);
+                .mustGoal(cycles, "y", 1f, 0.81f, (t) -> t == 3)
+                .mustNotOutput(cycles, "y", GOAL, t -> t != 3);
     }
 
     @Test
@@ -316,7 +314,7 @@ public class NAL8Test extends NALTest {
                 .goal("(x &| y)", Tense.Present, 1f, 0.9f)
                 .believe("x", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "y", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "y", GOAL, ETERNAL);
+                .mustNotOutput(cycles, "y", GOAL, t -> t != 0);
     }
 
     @Test
@@ -583,7 +581,7 @@ public class NAL8Test extends NALTest {
         test
                 .input("(a &&+1 (x &&+1 y)).")
                 .input("--x!")
-                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, t -> t > 0);
+                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, t -> t == ETERNAL);
     }
 
     @Test
@@ -592,7 +590,7 @@ public class NAL8Test extends NALTest {
         test
                 .input("(a &&+1 (--x &&+1 y)).")
                 .input("x!")
-                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, t -> t > 0);
+                .mustGoal(cycles, "(a &&+2 y)", 0f, 0.4f, t -> t == ETERNAL);
     }
 
     @Test
@@ -806,7 +804,7 @@ public class NAL8Test extends NALTest {
 
         test.goal("--a")
                 .believe("(b &&+1 (a &&+1 c))")
-                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t > 0)
+                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t == ETERNAL)
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
     }
 
@@ -815,7 +813,7 @@ public class NAL8Test extends NALTest {
 
         test.goal("a")
                 .believe("(b &&+1 (--a &&+1 c))")
-                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t > 0)
+                .mustGoal(cycles, "(b &&+2 c)", 0f, 0.45f, (t) -> t == ETERNAL)
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0.5f, 1f, 0f, 1f, x -> true);
     }
 
@@ -824,7 +822,7 @@ public class NAL8Test extends NALTest {
 
         test.goal("--a")
                 .believe("(b &&+1 (--a &&+1 c))")
-                .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f)
+                .mustGoal(cycles, "(b &&+2 c)", 1f, 0.45f, (t) -> t == ETERNAL)
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
     }
 

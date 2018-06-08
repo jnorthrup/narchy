@@ -2,11 +2,11 @@ package nars.nal.nal1;
 
 import nars.NAR;
 import nars.NARS;
-import nars.test.DeductiveChainTest;
-import nars.util.NALTest;
+import nars.test.impl.DeductiveChainTest;
+import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
 
-import static nars.test.DeductiveChainTest.*;
+import static nars.test.impl.DeductiveChainTest.*;
 
 public class NAL1MultistepTest extends NALTest {
 

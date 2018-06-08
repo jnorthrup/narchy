@@ -1,15 +1,10 @@
-package nars.util;
+package nars.test;
 
 import nars.NAR;
 import nars.NARS;
 import nars.control.MetaGoal;
-import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.Supplier;
-
 
 
 public abstract class NALTest {
@@ -20,25 +15,15 @@ public abstract class NALTest {
     public final TestNAR test;
     public final MetaGoal.Report metagoals = new MetaGoal.Report();
 
-    
 
     protected NALTest() {
         test = new TestNAR(nar());
-    }
-    protected NALTest(Supplier<NAR> s) {
-        test = new TestNAR(s.get());
-    }
-
-    @BeforeEach
-    void init() {
-        
     }
 
 
     protected NAR nar() {
         return NARS.tmp();
     }
-
 
 
     @AfterEach
@@ -51,15 +36,7 @@ public abstract class NALTest {
         test.nar.stop();
 
 
-
-
-        
-
-
-
-
     }
-
 
 
 }

@@ -18,6 +18,7 @@ public class Longerval implements LongInterval {
 	}
 
 	public Longerval(long a, long b) {
+
 		if (b >= a) {
 			this.a = a;
 			this.b = b;
@@ -47,10 +48,7 @@ public class Longerval implements LongInterval {
 
 	@Override
 	public int hashCode() {
-		long hash = 23;
-		hash = hash * 31 + a;
-		hash = hash * 31 + b;
-		return Long.hashCode(hash);
+		return Long.hashCode(((23 + a)*31)+b); //TODO is this good?
 	}
 
 	/** Does this start completely before other? Disjoint */
@@ -92,7 +90,8 @@ public class Longerval implements LongInterval {
 
 	/** Return the longerval computed from combining this and other */
 	public Longerval union(Longerval other) {
-		return new Longerval(min(a, other.a), max(b, other.b));
+		//return new Longerval(min(a, other.a), max(b, other.b));
+		return union(other.a, other.b);
 	}
 	public Longerval union(long oa, long ob) {
 		return new Longerval(min(a, oa), max(b, ob));
@@ -101,10 +100,19 @@ public class Longerval implements LongInterval {
 	/** Return the longerval in common between this and o */
 	@Nullable
 	public Longerval intersection(Longerval other) {
-		if (equals(other)) return this;
-		long a = max(this.a, other.a);
-		long b = min(this.b, other.b);
-		return a > b ? null : new Longerval(a, b);
+		return intersection(other.a, other.b);
+//		if (equals(other)) return this;
+//		long a = max(this.a, other.a);
+//		long b = min(this.b, other.b);
+//		return a > b ? null : new Longerval(a, b);
+	}
+
+	@Nullable
+	public Longerval intersection(long otherA, long otherB) {
+		long a = max(this.a, otherA);
+		long b = min(this.b, otherB);
+		if (a == this.a && b == this.b) return this;
+		else return a > b ? null : new Longerval(a, b);
 	}
 
 	/** Return the longerval with elements from this not in other;
@@ -139,26 +147,27 @@ public class Longerval implements LongInterval {
 		return a <= b ? b - a : -1;
 	}
 
-	/** returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common */
-	public static int intersectLength(int x1, int y1, int x2, int y2) {
-		int a = max(x1, x2);
-		int b = min(y1, y2);
-		return a <= b ? b - a : -1;
-	}
 
 	@Nullable public static Longerval intersect(long x1, long x2, long y1, long y2) {
-		return new Longerval(x1, x2).intersection(new Longerval(y1, y2));
+		assert(x1!=TIMELESS && x1!=ETERNAL && y1!=TIMELESS && y1!=ETERNAL);
+		return new Longerval(x1, x2).intersection(y1, y2);
 	}
 	public static Longerval union(long x1, long x2, long y1, long y2) {
-		return new Longerval(x1, x2).union(new Longerval(y1, y2));
+		assert(x1!=TIMELESS && x1!=ETERNAL && y1!=TIMELESS && y1!=ETERNAL);
+		return new Longerval(x1, x2).union(y1, y2);
 	}
 
 	public static long unionLength(long x1, long x2, long y1, long y2) {
-		
 		return max(x2, y2) - min(x1, y1);
 	}
 
 
+	/** returns -1 if no intersection; 0 = adjacent, > 0 = non-zero interval in common */
+	public static int intersectLength(int x1, int x2, int y1, int y2) {
+		int a = max(x1, x2);
+		int b = min(y1, y2);
+		return a <= b ? b - a : -1;
+	}
 
 
 

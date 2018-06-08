@@ -254,11 +254,6 @@ public class NALTask extends UnitPri implements Task {
 
     @Override
     public double coord(boolean maxOrMin, int dimension) {
-        return coordF(maxOrMin, dimension);
-    }
-
-    @Override
-    public float coordF(boolean maxOrMin, int dimension) {
         switch (dimension) {
             case 0:
                 return maxOrMin ? end() : start();
@@ -271,13 +266,13 @@ public class NALTask extends UnitPri implements Task {
         }
     }
 
+
     @Override
     public final double range(int dim) {
         switch (dim) {
             case 0:
                 return end() - start();
             case 1:
-                return 0;
             case 2:
                 return 0;
             default:

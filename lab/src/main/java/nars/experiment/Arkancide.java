@@ -8,7 +8,7 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.term.atom.Atomic;
 import nars.util.TimeAware;
-import nars.util.signal.Bitmap2DConcepts;
+import nars.sensor.Bitmap2DConcepts;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
 

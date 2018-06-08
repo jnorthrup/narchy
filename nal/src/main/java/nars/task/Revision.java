@@ -452,44 +452,56 @@ public class Revision {
 
             long tEnd = x.end();
 
-            LongHashSet points = new LongHashSet(4);
 
-            
-            @Nullable Longerval qt = Longerval.intersect(qStart, qEnd, tStart, x.end());
-            if (qt!=null) {
-                tStart = Math.max(qStart, tStart);
-                tEnd = Math.min(qEnd, tEnd);
 
-                points.add(tStart - 1);
-                points.add(tStart);
-                if (tEnd != tStart) {
-                    if (tStart + 1 != tEnd) {
-                        points.add((tStart + tEnd) / 2L); 
-                    }
-                    points.add(tEnd);
-                    points.add(tEnd + 1);
-                } else {
-                    points.add(tStart + 1);
+            long[] points;
+            if (qStart!=tStart || qEnd!=tEnd) {
+                LongHashSet pp = new LongHashSet(4);
+                pp.add(qStart);
+                if (qStart != qEnd) {
+                    pp.add(qEnd);
+                    if (qStart+1!=qEnd)
+                        pp.add((qStart+qEnd)/2L); //mid
                 }
 
+                @Nullable Longerval qt = Longerval.intersect(qStart, qEnd, tStart, tEnd);
+                if (qt != null) {
 
-                    points.add(qt.a);
-                    if (qt.a != qt.b)
-                        points.add(qt.b);
+                    //inner points
+                    long qta = qt.a;
+                    if (qta != qStart && qta != qEnd) { //quick test to avoid set add
+                        pp.add(qta);
+                    }
+                    long qtb = qt.b;
+                    if (qta != qtb) {
+                        if (qtb != qStart && qtb != qEnd) { //quick test to avoid set add
+                            pp.add(qtb);
+                        }
+                    }
 
+                }
+                points = pp.toSortedArray();
+            } else {
+                //quick points array determination
+                long d = qEnd - qStart;
+                if (d == 0) {
+                    points = new long[] { qStart };
+                } else if (d == 1) {
+                    points = new long[] { qStart, qEnd };
+//                } else if (d <= dur) {
+//                    points = new long[] { qStart, (qStart + qEnd)/2L, qEnd };
+                } else {
+                    //with midpoint supersample
+                    points = new long[] { qStart, (qStart + qEnd)/2L, qEnd };
+                }
             }
 
-            points.add(qStart);
-            if (qStart!=qEnd) {
-                points.add(qEnd);
-                if (qStart+1!=qEnd)
-                    points.add((qStart+qEnd)/2L);
-            }
 
 
 
 
-            return x.eviIntegRectMid(dur, points.toSortedArray());
+            //return x.eviIntegRectMid(dur, points);
+            return x.eviIntegTrapezoidal(dur, points);
             
 
         }

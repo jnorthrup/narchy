@@ -167,7 +167,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
         Task y = taskDynamic(start, end, template, nar);
 
-        if (y!=null &&dynamicOverrides())
+        if (y!=null && dynamicOverrides())
             return y;
 
         Task x = super.match(start, end, template, filter, nar);

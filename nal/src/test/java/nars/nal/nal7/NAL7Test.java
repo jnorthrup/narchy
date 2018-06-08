@@ -5,7 +5,7 @@ import nars.Narsese;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;

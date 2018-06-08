@@ -49,6 +49,10 @@ public class AtomicFloatFieldUpdater<X>  {
         return intBitsToFloat(updater.getAndSet(x, ZERO));
     }
 
+    public void zero(X x) {
+        updater.set(x, ZERO);
+    }
+
     public float get(X x) {
         return intBitsToFloat(updater.get(x));
     }

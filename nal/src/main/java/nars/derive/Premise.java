@@ -203,15 +203,16 @@ public class Premise {
                                 assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
                                 
-                                
-                                d.add(match);
-
-                                if (match.isBelief()) {
-                                    belief = match;
-                                }
 
                                 @Nullable Task answered = task.onAnswered(match, n);
                                 if (answered != null) {
+
+                                    d.add(answered);
+
+                                    if (answered.isBelief()) {
+                                        belief = answered;
+                                    }
+
                                     n.emotion.onAnswer(task, answered);
                                 }
 

@@ -5,6 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.concept.scalar.Scalar;
+import nars.sensor.Bitmap2DSensor;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

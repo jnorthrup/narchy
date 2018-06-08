@@ -1,6 +1,5 @@
-package nars.util.signal;
+package nars.sensor;
 
-import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.signal.Bitmap2D;
@@ -52,7 +51,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
 
                 int xx = x, yy = y;
 
-                FloatSupplier f = () -> Util.unitize(src.brightness(xx, yy));
+                FloatSupplier f = () -> src.brightness(xx, yy);
 
                 Scalar sss = new Scalar(pixelTerm.get(x, y), f, n)
                         .pri(pixelPri);

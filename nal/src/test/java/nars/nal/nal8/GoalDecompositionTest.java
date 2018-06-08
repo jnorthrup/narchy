@@ -1,16 +1,18 @@
 package nars.nal.nal8;
 
 import nars.nal.nal7.NAL7Test;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static nars.Op.GOAL;
 
 /**
  * tests goals involving &,|,~,-, etc..
  */
-public class NAL8DecomposedGoalTest extends NALTest {
+public class GoalDecompositionTest extends NALTest {
 
-    public static final int cycles = 50;
+    public static final int cycles = 150;
 
 
     @BeforeEach
@@ -36,13 +38,13 @@ public class NAL8DecomposedGoalTest extends NALTest {
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
     }
 
-    @Test
-    public void testUnionConditionalDecomposeGoalPosPos() {
-        test
-                .input("((a&b)-->g)!")
-                .input("(a-->g).")
-                .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
-    }
+//    @Test
+//    public void testUnionConditionalDecomposeGoalPosPos() {
+//        test
+//                .input("((a&b)-->g)!")
+//                .input("(a-->g).")
+//                .mustNotGoal(cycles, "(b-->g)", 1f, 0.81f);
+//    }
 
     @Test
     public void testUnionConditionalDecomposeGoalPosNeg() {
@@ -87,9 +89,11 @@ public class NAL8DecomposedGoalTest extends NALTest {
     @Test
     public void testDisj() {
         test
-                .input("(||,a,b)!")
-                .input("--a.")
-                .mustGoal(cycles, "b", 1f, 0.81f);
+            .input("(||,a,b)!")
+            .input("--a.")
+            .mustGoal(cycles, "b", 1f, 0.81f)
+            .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f, t->true)
+        ;
     }
 
     @Test
@@ -97,7 +101,10 @@ public class NAL8DecomposedGoalTest extends NALTest {
         test
                 .input("(||,a,--b)!")
                 .input("--a.")
-                .mustGoal(cycles, "b", 0f, 0.81f);
+                .mustGoal(cycles, "b", 0f, 0.81f)
+                .mustNotOutput(cycles, "b", GOAL, 0.5f, 1f, 0f, 1f, t->true)
+
+        ;
     }
 
     @Test
@@ -144,7 +151,7 @@ public class NAL8DecomposedGoalTest extends NALTest {
     @Test
     public void testIntersectSinglePremiseGoal1Neg() {
         test
-                .input("(--,((a|b)-->g))!")
+                .input("--((a|b)-->g)!")
 
                 .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
                 .mustGoal(cycles, "(b-->g)", 0f, 0.81f);

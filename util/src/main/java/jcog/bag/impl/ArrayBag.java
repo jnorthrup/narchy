@@ -123,7 +123,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         int s = size();
         if (s == 0) {
-            mass.set(this, 0);
+            mass.zero(this);
             if (toAdd == null)
                 return;
         } else {

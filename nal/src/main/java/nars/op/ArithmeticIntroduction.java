@@ -10,15 +10,12 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.bag.leak.LeakBack;
-import nars.task.ITask;
-import nars.task.NALTask;
-import nars.task.util.InvalidTaskException;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Int;
-import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
@@ -28,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -251,7 +247,7 @@ public class ArithmeticIntroduction extends LeakBack {
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             //Task yy = Task.clone(xx, y);
             Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) ->
-                    new ArithmeticIntroductionTask(c, xx, t));
+                    new UnevaluatedTask(c, xx, t));
             
             if (yy!=null) {
                 input(yy);
@@ -266,15 +262,4 @@ public class ArithmeticIntroduction extends LeakBack {
     }
 
 
-    private static class ArithmeticIntroductionTask extends NALTask {
-
-        ArithmeticIntroductionTask(Term c, Task xx, Truth t) throws InvalidTaskException {
-            super(c, xx.punc(), t, xx.creation(), xx.start(), xx.end(), xx.stamp());
-        }
-
-        @Override
-        public void preProcess(NAR n, Term y, Collection< ITask > queue) {
-            queue.add(inputStrategy(this)); //direct
-        }
-    }
 }

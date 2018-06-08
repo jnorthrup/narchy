@@ -10,6 +10,8 @@ import jcog.math.random.SplitMix64Random;
 import nars.NAR;
 import nars.time.clock.RealTime;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -28,7 +30,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
  *         have a specified preferred adjustable periodicity but no guarantees
  *             maintenance/metrics/resizing of concepts etc
  */
-public class MixMultiExec extends AbstractExec {
+abstract public class MixMultiExec extends AbstractExec {
 
     /** sharing context - to be integrated with the NAR's Services, this
      *  exec registers with it for it to manage compute resources
@@ -36,16 +38,12 @@ public class MixMultiExec extends AbstractExec {
     final Sharing sharing = new Sharing();
     private final TimeSlicing cpu;
 
-
-
-
-
     Revaluator revaluator;
 
-    public MixMultiExec(int conceptsCapacity, int threads) {
+    public MixMultiExec(int conceptsCapacity, int threads, Executor exe) {
         super(conceptsCapacity);
 
-        cpu = new TimeSlicing<>("CPU", threads) {
+        cpu = new TimeSlicing<>("CPU", threads, exe) {
             @Override
             public TimeSlicing commit() {
                 this.forEach((InstrumentedWork s) -> {
@@ -57,14 +55,15 @@ public class MixMultiExec extends AbstractExec {
                         double value = c.value();
                         if (!Double.isFinite(value))
                             value = 0;
-                        value = Math.max(value, 0);
+                        //value = Math.max(value, 0);
                         
                         double meanTimeNS = Math.max(1, s.iterTimeNS.getMean());
                         if (!Double.isFinite(meanTimeNS))
                             meanTimeNS = POSITIVE_INFINITY;
-                        double valuePerNano = (value / Math.log(meanTimeNS));
+                        //double valuePerNano = (value / Math.log(meanTimeNS));
+                        double valuePerNano = (value / meanTimeNS);
 
-                        s.need( 0.05f + (float) (valuePerNano));
+                        s.need(  (float) (valuePerNano));
                     }
                 });
 
@@ -76,22 +75,6 @@ public class MixMultiExec extends AbstractExec {
             }
         };
         sharing.can(cpu);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     @Override
@@ -102,13 +85,24 @@ public class MixMultiExec extends AbstractExec {
         sharing.commit();
     }
 
-    @Override
-    public void execute(Runnable async) {
-        ForkJoinPool.commonPool().execute(async);
+    public final void execute(Runnable async) {
+        cpu.queue(async);
+    }
 
+    public static class PoolMultiExec extends MixMultiExec {
 
+        public PoolMultiExec(int conceptsCapacity, int threads) {
+            super(conceptsCapacity, threads, ForkJoinPool.commonPool());
+        }
 
     }
+    public static class WorkerMultiExec extends MixMultiExec {
+
+        public WorkerMultiExec(int conceptsCapacity, int threads) {
+            super(conceptsCapacity, threads, Executors.newFixedThreadPool(threads));
+        }
+    }
+
 
 
     @Override
@@ -145,13 +139,11 @@ public class MixMultiExec extends AbstractExec {
             @Override
             public boolean next() {
                 int done = c.next(nar, 1);
-                if (done < 0)
-                    return false;
-                else
-                    return true;
+                return done >= 0;
             }
         });
     }
+
     protected void remove(Causable c) {
         throw new TODO();
     }

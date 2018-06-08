@@ -15,7 +15,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.agent.NAgent;
 import nars.experiment.PoleCart;
-import nars.agent.RLBooster;
+import nars.agent.util.RLBooster;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.Scale;
 import spacegraph.space2d.container.Splitting;

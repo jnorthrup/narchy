@@ -19,6 +19,7 @@ import nars.control.Activate;
 import nars.control.DurService;
 import nars.control.NARService;
 import nars.control.channel.CauseChannel;
+import nars.sensor.Bitmap2DSensor;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;

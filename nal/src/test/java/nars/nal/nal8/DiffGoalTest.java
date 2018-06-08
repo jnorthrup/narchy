@@ -73,7 +73,7 @@ public class DiffGoalTest {
         return new TestNAR(NARS.tmp(3))
                 .input(goalTask)
                 .input(beliefTask)
-                .mustGoal(NAL8DecomposedGoalTest.cycles, YY, f, c)
+                .mustGoal(GoalDecompositionTest.cycles, YY, f, c)
                 .run(16);
     }
 }

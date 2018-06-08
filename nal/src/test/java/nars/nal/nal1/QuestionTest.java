@@ -3,7 +3,7 @@ package nars.nal.nal1;
 import nars.*;
 import nars.task.util.TaskStatistics;
 import nars.term.Term;
-import nars.test.DeductiveMeshTest;
+import nars.test.impl.DeductiveMeshTest;
 import nars.test.TestNAR;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;

@@ -15,7 +15,7 @@ import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
 import nars.nal.nal7.NAL7Test;
 import nars.nal.nal8.NAL8Test;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.intelligentjava.machinelearning.decisiontree.DecisionTree;
 
 import java.lang.reflect.Field;

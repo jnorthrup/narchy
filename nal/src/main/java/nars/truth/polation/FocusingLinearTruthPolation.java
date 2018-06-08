@@ -34,7 +34,7 @@ public class FocusingLinearTruthPolation extends TruthPolation {
         if (durShrink) {
             if (dur > minDur) {
                 if (!t.isEternal()) {
-                    long dd = t.minDistanceTo(start, end);
+                    long dd = t.minTimeTo(start, end);
                     if (dd < dur)
                         dur = Math.max(minDur, (int) dd);
                 }

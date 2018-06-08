@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.test.TestNAR;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

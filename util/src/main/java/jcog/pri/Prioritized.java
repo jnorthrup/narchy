@@ -119,7 +119,7 @@ public interface Prioritized extends Deleteable {
 
     default float priElseZero() {
         float p = pri();
-        return p == p ? p : 0;
+        return p == p ? p : Prioritized.EPSILON;
         
     }
     default float priElseNeg1() {

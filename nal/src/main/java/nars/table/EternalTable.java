@@ -5,6 +5,7 @@ import jcog.list.FasterList;
 import jcog.pri.Priority;
 import jcog.sort.SortedArray;
 import jcog.util.ArrayIterator;
+import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -13,7 +14,6 @@ import nars.control.Cause;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -27,7 +27,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.table.BeliefTable.eternalTaskValue;
 import static nars.table.BeliefTable.eternalTaskValueWithOriginality;
 import static nars.time.Tense.ETERNAL;
 
@@ -94,7 +93,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
             Task y = a[i];
             if (y == null)
-                break; 
+                break;
             if (!y.isDeleted())
                 x.accept(y);
         }
@@ -108,7 +107,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         for (int i = 0, aLength = Math.min(size, a.length); i < aLength; i++) {
             Task x = a[i];
             if (x == null)
-                break; 
+                break;
             if (selector.test(x))
                 return x;
         }
@@ -119,14 +118,12 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     public Stream<Task> streamTasks() {
 
 
-
-
         Object[] list = this.list;
         int size = Math.min(list.length, this.size);
         if (size == 0)
             return Stream.empty();
         else {
-            
+
             return ArrayIterator.stream((Task[]) list, size);
         }
     }
@@ -143,12 +140,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             List<Task> trash = null;
             synchronized (this) {
 
-                wasCapacity = capacity(); 
+                wasCapacity = capacity();
 
                 int s = size;
                 if (s > c) {
 
-                    
 
                     trash = new FasterList(s - c);
                     while (c < s--) {
@@ -160,11 +156,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     resize(c);
             }
 
-            
+
             if (trash != null) {
-
-
-
 
 
                 trash.forEach(Task::delete);
@@ -177,16 +170,16 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
     @Override
     public Task[] toArray() {
-        
+
         int s = this.size;
         if (s == 0)
             return Task.EmptyArray;
         else {
             Task[] list = this.list;
             return Arrays.copyOf(list, Math.min(s, list.length), Task[].class);
-            
+
         }
-        
+
     }
 
 
@@ -207,13 +200,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         if (s == 0) return null;
         Object[] l = this.list;
         if (l.length == 0) return null;
-        return (Task) l[size-1];
-
-
-
-
-
-
+        return (Task) l[size - 1];
 
 
     }
@@ -223,22 +210,14 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
      */
     @Override
     public final float floatValueOf(/*@NotNull*/ Task w) {
-        
-        return -eternalTaskValue(w);
+
+        return -eternalTaskValueWithOriginality(w);
     }
-
-
 
 
     @Deprecated
     void removeTask(/*@NotNull*/ Task t, @Nullable String reason) {
-
-
-
-
-
-
-        
+        t.delete();
     }
 
     /**
@@ -248,15 +227,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
      */
     @Nullable
     private /*Revision*/Task tryRevision(/*@NotNull*/ Task y /* input */,
-                                                      @Nullable NAR nar) {
+                                                      NAR nar) {
 
         Object[] list = this.list;
         int bsize = list.length;
-        if (bsize == 0)
-            return null; 
 
-
-        
         Task oldBelief = null;
         Truth conclusion = null;
 
@@ -265,7 +240,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         for (int i = 0; i < bsize; i++) {
             Task x = (Task) list[i];
 
-            if (x == null) 
+            if (x == null)
                 break;
 
             if (x.equals(y)) {
@@ -274,51 +249,33 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 return x;
             }
 
-
-            
             float xconf = x.conf();
-            if ((!x.isCyclic() && !y.isCyclic()) &&
-                 Arrays.equals(x.stamp(), y.stamp()) &&
-                 Util.equals(xconf, y.conf(), nar.confResolution.floatValue())) {
+            if (Stamp.overlapsAny(y, x)) {
 
-                conclusion = new PreciseTruth(0.5f * (x.freq() + y.freq()), xconf);
+                //HACK interpolate truth if only freq differs
+                if ((!x.isCyclic() && !y.isCyclic()) &&
+                        Arrays.equals(x.stamp(), y.stamp()) &&
+                        Util.equals(xconf, y.conf(), nar.confResolution.floatValue())) {
 
-            } else if (Stamp.overlapsAny(y, x)) {
+                    conclusion = $.t((x.freq() + y.freq())/2, xconf).dither(nar);
 
+                } else {
 
-
-
-
-
-
-
-                continue; 
+                    continue;
+                }
 
             } else {
 
 
-                
-                
-                
-                
-                
-                
-
-                
-                
-                
-                
-
                 Truth xt = x.truth();
 
-                
 
                 Truth yt = Revision.revise(newBeliefTruth, xt, 1f, conclusion == null ? 0 : conclusion.evi());
                 if (yt == null)
                     continue;
 
                 yt = yt.dither(nar);
-                if (yt == null || yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar)) 
+                if (yt == null || yt.equalsIn(xt, nar) || yt.equalsIn(newBeliefTruth, nar))
                     continue;
 
                 conclusion = yt;
@@ -328,12 +285,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
         }
 
-        if (oldBelief == null)
+        if (oldBelief == null || conclusion == null)
             return null;
 
         final float newBeliefWeight = y.evi();
 
-        
 
         float aProp = newBeliefWeight / (newBeliefWeight + oldBelief.evi());
         Term t =
@@ -351,7 +307,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                         revisionTruth,
                         nar.time() /* creation time */,
                         ETERNAL, ETERNAL,
-                        Stamp.zip(y.stamp(),prevBelief.stamp(), aProp)
+                        Stamp.zip(y.stamp(), prevBelief.stamp(), aProp)
                 )
         );
         if (x != null) {
@@ -362,8 +318,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 x.log("Insertion Revision");
 
 
-
-
         }
 
         return x;
@@ -371,41 +325,35 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
     @Nullable
     private Task put(final Task incoming) {
-        Task displaced = null;
 
         synchronized (this) {
+            Task displaced = null;
+
             if (size == capacity()) {
                 Task weakestPresent = weakest();
                 if (weakestPresent != null) {
                     if (eternalTaskValueWithOriginality(weakestPresent)
                             <=
-                        eternalTaskValueWithOriginality(incoming)) {
+                            eternalTaskValueWithOriginality(incoming)) {
                         displaced = removeLast();
                     } else {
-                        return incoming; 
+                        return incoming; //rejected
                     }
                 }
             }
 
-            add(incoming, this);
+            int r = add(incoming, this);
+            assert (r != -1);
+
+            return displaced;
         }
 
-        return displaced;
     }
 
     public final Truth truth() {
         Task s = strongest();
         return s != null ? s.truth() : null;
     }
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -438,78 +386,37 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
 
 
+        Task revised = tryRevision(input, nar);
+        if (revised == null) {
 
 
+            return insert(input);
+        } else {
+
+            if (revised.equals(input)) {
 
 
-
-
-
-            Task revised = tryRevision(input, nar);
-            if (revised == null) {
-                
-
-
-                return insert(input);
+                return true;
             } else {
 
-                if (revised.equals(input)) {
-                    
+                if (insert(revised)) {
 
 
-                    return true;
-                } else {
+                    if (insert(input)) {
 
-                    if (insert(revised)) {
-                        
-                        
-
-                        if (input.equals(revised)) {
-                            System.out.println("input=revised");
-                        }
-
-                        if (insert(input)) {
-                            
-                        } /*else {
+                    } /*else {
                             input.delete(); 
                         }*/
 
-                    }
-
-                    nar.eventTask.emit(revised);
-
-                    return true; 
                 }
 
+                nar.eventTask.emit(revised);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                return true;
             }
+
+
+        }
 
 
     }
@@ -524,39 +431,20 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         Task displaced = put(input);
 
         if (displaced == input) {
-            
+
             return false;
         } else if (displaced != null) {
             removeTask(displaced,
                     "Displaced"
-                    
+
             );
         }
         return true;
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Nullable public Truth strongestTruth() {
+    @Nullable
+    public Truth strongestTruth() {
         Task e = strongest();
         return (e != null) ? e.truth() : null;
     }

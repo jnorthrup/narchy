@@ -4,6 +4,7 @@ import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.sensor.Bitmap2DSensor;
 import org.junit.jupiter.api.Test;
 
 public class AutoConceptualizerTest {

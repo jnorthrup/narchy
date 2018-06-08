@@ -14,7 +14,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.agent.Bitmap2DSensor;
+import nars.sensor.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import nars.video.PixelBag;
 import nars.video.Scale;

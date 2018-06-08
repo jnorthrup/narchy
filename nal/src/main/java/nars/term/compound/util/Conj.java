@@ -205,7 +205,7 @@ public class Conj extends AnonMap {
             return True;
 
         Conj x = Conj.from(include);
-        int edt = exclude.dt();
+        int edt = include.dt();
         boolean[] removed = new boolean[]{false};
         exclude.eventsWhile((when, what) -> {
             removed[0] |= x.remove(what, when);
@@ -384,19 +384,22 @@ public class Conj extends AnonMap {
         if (x == CONJ) {
             int dt = what.dt();
 
-            boolean atEternal = at == ETERNAL;
-
-            if ((dt != XTERNAL)
 
 
-                    && (!atEternal || (dt == DTERNAL))
+            if ((dt != XTERNAL) &&
+                  (
+                      (dt!=DTERNAL ^ at == ETERNAL)
+//                    (dt!=0 && dt!=DTERNAL) ||
+//                    (dt == DTERNAL && at == ETERNAL) ||
+//                    (dt == 0 && at != ETERNAL)
+                  )
 
             ) {
 
                 return what.eventsWhile(this::add,
                         at,
-                        true,
-                        true,
+                        true,//dt==0,
+                        dt==DTERNAL,
                         false, 0);
 
 

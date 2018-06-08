@@ -4,140 +4,38 @@ import jcog.math.ShuffledPermutations;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
 import java.util.Random;
 
 /**
  * proxy to a TermContainer providing access to its subterms via a shuffling order
- * warning: don't use as subterms of a Compound
  */
-public final class ShuffledSubterms extends ShuffledPermutations implements Subterms {
+public final class ShuffledSubterms extends ProxySubterms {
 
-    public final Subterms srcsubs;
-
-
-
+    final ShuffledPermutations shuffle;
 
 
     public ShuffledSubterms(Subterms subterms, Random rng) {
-        this.srcsubs = subterms;
+        super(subterms);
+        this.shuffle = new ShuffledPermutations();
         reset(rng);
-    }
-
-    @Override
-    public int structure() {
-        return srcsubs.structure();
-    }
-
-    @Override
-    public int volume() {
-        return srcsubs.volume();
-    }
-
-    @Override
-    public int complexity() {
-        return srcsubs.complexity();
-    }
-
-    @Override
-    public int subs() {
-        return srcsubs.subs();
     }
 
     @NotNull
     @Override
     public Term sub(int i) {
-        return srcsubs.sub(permute(i));
+        return super.sub(shuffle.permute(i));
     }
-
-
-
-
-
-
-
 
     @Override
     public String toString() {
         return Subterms.toString(this);
     }
 
-    @Override
-    public boolean impossibleSubTermVolume(int otherTermVolume) {
-        return srcsubs.impossibleSubTermVolume(otherTermVolume);
-    }
-
-
-
-
-
-
-
-
-    @Override
-    public int varDep() {
-        return srcsubs.varDep();
-    }
-
-    @Override
-    public int varIndep() {
-        return srcsubs.varIndep();
-    }
-
-    @Override
-    public int varQuery() {
-        return srcsubs.varQuery();
-    }
-
-    @Override
-    public int varPattern() {
-        return srcsubs.varPattern();
-    }
-
-    @Override
-    public int vars() {
-        return srcsubs.vars();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Subterms)) return false;
-
-        Subterms c = (Subterms) obj;
-
-        int s = subs();
-        if (s != c.subs())
-            return false;
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).equals(c.sub(i))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return Subterms.hash(this);
-    }
-
-    @NotNull
-    @Override
-    public Iterator iterator() {
-        throw new UnsupportedOperationException();
-    }
-
-
-
-
-
-
-
-
     protected void reset(Random rng) {
-        restart(srcsubs.subs(), rng);
+        shuffle.restart(subs(), rng);
     }
 
-
+    public boolean shuffle() {
+        return shuffle.hasNextThenNext();
+    }
 }

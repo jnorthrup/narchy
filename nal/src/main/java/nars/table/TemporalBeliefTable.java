@@ -34,7 +34,7 @@ public interface TemporalBeliefTable extends TaskTable {
         float absDistance =
 
 
-                t.midDistanceTo( start ) + ((start!=end) ? t.midDistanceTo(end) : 0); 
+                t.midTimeTo( start ) + ((start!=end) ? t.midTimeTo(end) : 0);
                 
                 
                 

@@ -276,7 +276,10 @@ public class ConjTest {
                 $$("(&|,c,d,e)")).toString());
 
 
-        assertEquals("(&&,a,b,c)", Conj.withoutAll(
+        assertEquals(
+                //"(&&,a,b,c)",
+                "(a&&b)",
+                Conj.withoutAll(
                 $$("(&&,a,b,c)"),
                 $$("(&|,c,d,e)")).toString());
 
@@ -287,9 +290,13 @@ public class ConjTest {
 
     @Test public void testConjWithoutAllMixEternalAndParallel() {
 
-        assertEquals("(x&&y)", Conj.withoutAll(
-                $$("(&|,(x&&y),(b&&c))"),
-                $$("(&|,(b&&c),x)")).toString());
+        Term x = $$("((b&&c)&|(x&&y))");
+        assertEquals("((b&&c)&|(x&&y))", x.toString());
+
+        Term y = $$("(&|,(b&&c),x)");
+        assertEquals("((b&&c)&|x)", y.toString());
+
+        assertEquals("(x&&y)", Conj.withoutAll(x, y).toString());
 
     }
 

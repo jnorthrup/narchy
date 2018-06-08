@@ -75,7 +75,7 @@ public interface TaskMatch {
                         TemporalBeliefTable.value(t, start, end, dur)
                         :
                         
-                        1 + (t.pri() / (1f + (t.minDistanceTo(start, end)/((float)dur))))
+                        1 + (t.pri() / (1f + (t.minTimeTo(start, end)/((float)dur))))
                 );
             }
         }

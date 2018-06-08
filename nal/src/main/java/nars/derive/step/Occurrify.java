@@ -460,7 +460,8 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveOccDTWithGoalOverride(d, x, d.occ(x));
+                //return solveOccDTWithGoalOverride(d, x, d.occ(x));
+                return solveOccDT(d, x, d.occ(x));
             }
 
             @Override
@@ -485,7 +486,8 @@ public class Occurrify extends TimeGraph {
         Union() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveOccDTWithGoalOverride(d, x, d.occ(x));
+                //return solveOccDTWithGoalOverride(d, x, d.occ(x));
+                return solveOccDT(d, x, d.occ(x));
             }
 
 

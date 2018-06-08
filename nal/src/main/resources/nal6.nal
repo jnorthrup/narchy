@@ -269,6 +269,7 @@
     //disjunction goal select
     //D, X, eventOfNeg(D,X) |- conjWithout(D,--X), (Goal:DecomposeNegativePositivePositive)
        //D, X, eventOf(D,X) |- conjWithout(D,X), (Goal:DecomposeNegativeNegativePositive)
+       D, X, eventOfNeg(D,X) |- conjWithout(D,--X), (Goal:DecomposeNegativeNegativeNegative, Time:Task)
 
 
 
@@ -330,8 +331,8 @@
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
     X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak, Time:TaskImmediate)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakN, Time:TaskImmediate)
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 

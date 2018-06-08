@@ -1,4 +1,4 @@
-package nars.util.signal;
+package nars.sensor;
 
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;

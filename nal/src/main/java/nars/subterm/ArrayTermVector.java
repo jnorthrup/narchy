@@ -104,18 +104,10 @@ public class ArrayTermVector extends TermVector {
 
     @Override
     public final void forEach(Consumer<? super Term> action, int start, int stop) {
-        assert(stop-start > 0);
         Term[] t = this.terms;
         for (int i = start; i < stop; i++) {
             action.accept(t[i]);
         }
-    }
-
-    @Override
-    public final void forEach(Consumer<? super Term> action) {
-        Term[] t = this.terms;
-        for (Term x : t)
-            action.accept(x);
     }
 
     @Override

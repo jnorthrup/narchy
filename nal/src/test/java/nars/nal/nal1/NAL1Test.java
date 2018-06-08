@@ -3,7 +3,7 @@ package nars.nal.nal1;
 import nars.NAR;
 import nars.NARS;
 import nars.test.TestNAR;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {

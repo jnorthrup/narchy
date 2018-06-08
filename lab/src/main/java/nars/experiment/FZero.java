@@ -12,7 +12,7 @@ import nars.concept.scalar.Scalar;
 import nars.concept.scalar.SwitchAction;
 import nars.gui.NARui;
 import nars.time.Tense;
-import nars.util.signal.Bitmap2DConcepts;
+import nars.sensor.Bitmap2DConcepts;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;

@@ -3,6 +3,7 @@ package nars.agent;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.agent.util.Implier;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
@@ -45,21 +46,6 @@ public class ImplierTest {
         
 
         n.run(15);
-
-        System.out.println(imp.impl);
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

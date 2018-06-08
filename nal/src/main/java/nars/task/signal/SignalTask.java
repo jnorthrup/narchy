@@ -1,16 +1,12 @@
 package nars.task.signal;
 
 
-import nars.NAR;
-import nars.task.ITask;
-import nars.task.NALTask;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.truth.Truth;
 
-import java.util.Collection;
 
-
-public class SignalTask extends NALTask {
+public class SignalTask extends UnevaluatedTask {
 
     public SignalTask(Term t, byte punct, Truth truth, long creation, long start, long end, long[] stamp) {
         super(t, punct, truth, creation, start, end,
@@ -41,8 +37,4 @@ public class SignalTask extends NALTask {
         return false;
     }
 
-    @Override
-    public void preProcess(NAR n, Term y, Collection<ITask> queue) {
-        queue.add(inputStrategy(this)); //direct
-    }
 }

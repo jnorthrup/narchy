@@ -9,7 +9,7 @@ import jcog.bag.util.Treadmill2;
 import jcog.decide.Roulette;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Prioritized;
-import jcog.util.AtomicFloat;
+import jcog.util.AtomicFloatFieldUpdater;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +41,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "size");
     private static final AtomicIntegerFieldUpdater<HijackBag> capUpdater =
             AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "capacity");
+    private static final AtomicFloatFieldUpdater<HijackBag> pressureUpdater =
+            new AtomicFloatFieldUpdater(AtomicIntegerFieldUpdater.newUpdater(HijackBag.class, "pressure"));
+
     private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> mapUpdater =
             AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
 
@@ -55,7 +58,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     private final int id;
 
-    volatile private int size, capacity;
+    volatile private int size, capacity, pressure;
 
     /**
      * TODO make non-public
@@ -80,10 +83,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
 
     public final int reprobes;
-
-    
-    public final AtomicFloat pressure = new AtomicFloat();
-
 
     public float mass;
     private float min;
@@ -122,7 +121,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     @Override
     public void pressurize(float f) {
-        pressure.add(f);
+        pressureUpdater.add(this, f);
     }
 
     public static <Y> void forEach(AtomicReferenceArray<Y> map,  Predicate<Y> accept,   Consumer<? super Y> e) {
@@ -195,7 +194,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public void clear() {
         AtomicReferenceArray<V> x = reset(reprobes);
-        pressure.set(0);
+        pressureUpdater.zero(this);
         if (x != null) {
             forEachActive(this, x, this::_onRemoved);
         }
@@ -729,7 +728,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     @Override
     public float depressurize() {
-        return Math.max(0, pressure.getAndSet(0.0f));  
+        return Math.max(0, pressureUpdater.getAndZero(this));
     }
 
 

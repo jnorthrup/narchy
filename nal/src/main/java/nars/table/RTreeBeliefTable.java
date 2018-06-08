@@ -156,7 +156,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             long regionTimeDist =
 
 
-                    r.midDistanceTo(when);
+                    r.midTimeTo(when);
 
             float timeDist = (regionTimeDist) / ((float) perceptDur);
 
@@ -569,7 +569,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     }
 
-    private void eternalize(Task x, NAR nar) {
+    protected void eternalize(Task x, NAR nar) {
         if ((x instanceof SignalTask)) {
 
             return;
@@ -585,7 +585,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //        if (c >= nar.confMin.floatValue()) {
 
 
-            Task eternalized = Task.eternalized(x, 1f / size());
+            //float factor = 1f / size();
+            float factor = Util.unitize((float) (x.range()/tableDur()));
+
+            Task eternalized = Task.eternalized(x, factor);
 
             if (eternalized != null) {
                 float xPri = x.priElseZero();
@@ -610,13 +613,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     }
 
-//    private double tableDur() {
-//        HyperRegion root = root().bounds();
-//        if (root == null)
-//            return 1;
-//        else
-//            return 1 + root.rangeIfFinite(0, 1);
-//    }
+    private double tableDur() {
+        HyperRegion root = root().bounds();
+        if (root == null)
+            return 1;
+        else
+            return 1 + root.rangeIfFinite(0, 1);
+    }
 
     @Override
     public int capacity() {

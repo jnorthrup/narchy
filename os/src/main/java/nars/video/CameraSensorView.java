@@ -10,7 +10,7 @@ import nars.gui.NARui;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.TimeAware;
-import nars.agent.Bitmap2DSensor;
+import nars.sensor.Bitmap2DSensor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;

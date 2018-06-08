@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
@@ -74,17 +75,18 @@ public class DeriverTest {
 
 
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(idx,
-                "Y, Y |- (?1 &&+0 Y), ()",
+                "Y, Y |- (?1 &| Y), ()",
                 "X, X |- (?1 &&+- X), ()"
         ), null);
 
-        System.out.println();
 
-        d.printRecursive();
 
-        System.out.println(d);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        d.printRecursive(new PrintStream(baos));
 
-        String ds = d.toString();
+
+        String ds = new String(baos.toByteArray());
+        System.out.println(ds);
         assertTrue(ds.contains("?2&|"));
         assertTrue(ds.contains("?2 &&+-"));
 

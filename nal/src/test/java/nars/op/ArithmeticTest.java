@@ -130,26 +130,21 @@ public class ArithmeticTest {
 
     @Test
     public void testCompleteAddInduction() {
-        NAR n = NARS.tmp();
+        NAR n = NARS.tmp(6);
         new ArithmeticIntroduction(8, n);
+
+        final int cycles = 1500;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
         n.termVolumeMax.set(12);
-        //t.log();
 
-
-//        t.believe("(a,1)");
-        t.believe("(a,2)");
-        t.believe("(a,3)");
-        t.believe("(a,4)");
-//        t.ask("(a,5)");
-//        t.mustBelieve(1000,
-//
-//
-//                "((a,add($1,1))==>(#1<->4))",
-//                1f, 0.81f);
-        t.mustBelieve(500, "(a,5)", 1f, 0.5f);
+        for (int a = 2; a <= 4; a++) {
+            t.believe("(a," + a + ")");
+        }
+        for (int x = 5; x <= 6; x++) {
+            t.mustBelieve(cycles, "(a," + x + ")", 1f, 0.5f);
+        }
         t.test();
     }
 

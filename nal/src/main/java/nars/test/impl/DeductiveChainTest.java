@@ -1,10 +1,11 @@
-package nars.test;
+package nars.test.impl;
 
 import nars.$;
 import nars.NAR;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.test.TestNAR;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

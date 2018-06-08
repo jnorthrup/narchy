@@ -155,7 +155,7 @@ public interface LongInterval {
         }
     }
 
-    default long minDistanceTo(long when) {
+    default long minTimeTo(long when) {
 
         long s = start();
         if (s == ETERNAL || s == when)
@@ -173,7 +173,7 @@ public interface LongInterval {
         }
     }
 
-    default long maxDistanceTo(long a, long b) {
+    default long maxTimeTo(long a, long b) {
         assert (b >= a): a + " > " + b;
 
         if (a == ETERNAL) {
@@ -207,8 +207,8 @@ public interface LongInterval {
     }
 
     /** if the task intersects (ex: occurrs during) the specified interval,
-     *  returned distance is zero, regardless of how far it may extend before or after it */
-    default long minDistanceTo(long a, long b) {
+     *  returned time distance is zero, regardless of how far it may extend before or after it */
+    default long minTimeTo(long a, long b) {
 
         assert (b >= a): a + " > " + b;
 
@@ -243,7 +243,7 @@ public interface LongInterval {
         }
     }
 
-    default long midDistanceTo(long x) {
+    default long midTimeTo(long x) {
         long start = start();
         if (start == ETERNAL) return 0;
         long end = end();

@@ -11,7 +11,7 @@ import jake2.sys.IN;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
-import nars.agent.Bitmap2DSensor;
+import nars.sensor.Bitmap2DSensor;
 import nars.video.PixelBag;
 
 import java.awt.*;

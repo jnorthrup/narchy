@@ -2,6 +2,7 @@ package nars.agent;
 
 import jcog.learn.ql.HaiQae;
 import nars.*;
+import nars.agent.util.RLBooster;
 import nars.control.MetaGoal;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;

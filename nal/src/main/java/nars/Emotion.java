@@ -15,6 +15,7 @@ import jcog.meter.MetricsMapper;
 import jcog.meter.event.AtomicMeanFloat;
 import jcog.pri.Prioritized;
 import nars.control.MetaGoal;
+import nars.task.NALTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -387,9 +388,13 @@ public class Emotion implements Meter {
 
         float qPriBefore = questionTask.priElseZero();
         if (qPriBefore > Prioritized.EPSILON) {
-            float costFraction = ansConf * (1 - qOrig);
-            answer.take(questionTask, costFraction, false, false);
+            //float fraction = ansConf * (1 - qOrig);
+            float fraction = qOrig;
+            answer.take(questionTask, fraction, false,
+                    true /*false*/);
 
+            //HACK append the question as a cause to the task.  ideally this would only happen for dynamic/revised tasks but for all tasks is ok for now
+            ((NALTask)answer).causeMerge(questionTask);
         }
 
         

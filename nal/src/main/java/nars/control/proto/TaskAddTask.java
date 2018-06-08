@@ -30,9 +30,8 @@ public class TaskAddTask extends NativeTask {
     public final ITask next(NAR n) {
 
         /* the tasks pri may change after starting insertion, so cache here */
-        float pri = task.pri();
-        if (pri!=pri)
-            return null; 
+        float pri = task.priElseZero();
+
 
         n.emotion.onInput(task, n);
 

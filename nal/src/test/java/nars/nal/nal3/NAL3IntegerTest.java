@@ -3,7 +3,7 @@ package nars.nal.nal3;
 import nars.$;
 import nars.term.atom.Int;
 import nars.time.Tense;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
 
 public class NAL3IntegerTest extends NALTest {

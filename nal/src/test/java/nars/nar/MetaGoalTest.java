@@ -3,7 +3,7 @@ package nars.nar;
 import nars.NAR;
 import nars.NARS;
 import nars.control.MetaGoal;
-import nars.test.DeductiveMeshTest;
+import nars.test.impl.DeductiveMeshTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.SortedMap;

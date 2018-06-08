@@ -6,7 +6,6 @@ import jcog.exe.Loop;
 import jcog.math.random.SplitMix64Random;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
-import nars.agent.Bitmap2DSensor;
 import nars.agent.NAgent;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
@@ -20,6 +19,7 @@ import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
+import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.time.clock.RealTime;
@@ -163,13 +163,26 @@ abstract public class NAgentX extends NAgent {
 
 
 
-
+//                .exe(new MixMultiExec.WorkerMultiExec(
+//                            1024,
+//                             Util.concurrencyDefault(2)) {
+//
+//                         {
+//                             Exe.setExecutor(this);
+//                         }
+//
+//
+//                     }
+//                )
                 .exe(new WorkerMultiExec(
-                             
+
                              new Focus.AERevaluator(new SplitMix64Random(1)),
                              Util.concurrencyDefault(2),
                              1024, 2048) {
 
+                        {
+                            Exe.setExecutor(this);
+                        }
 
 
                      }
@@ -185,7 +198,7 @@ abstract public class NAgentX extends NAgent {
                         
                         
                         
-                        new HijackConceptIndex(16 * 1024, 4)
+                        new HijackConceptIndex(64 * 1024, 4)
                         
                         
                 )

@@ -62,35 +62,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     .thenComparingInt((Premise a) -> System.identityHashCode(a.task));
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||
                 ((that instanceof Task && thiz.hashCode() == that.hashCode() && Task.equal(thiz, (Task) that)));
@@ -163,7 +134,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
-        
+
 
         for (int i = 0; i < indent; i++)
             sb.append("  ");
@@ -174,13 +145,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (task instanceof DerivedTask) {
             Task pt = ((DerivedTask) task).getParentTask();
             if (pt != null) {
-                
+
                 proof(pt, indent + 1, sb);
             }
 
             Task pb = ((DerivedTask) task).getParentBelief();
             if (pb != null) {
-                
+
                 proof(pb, indent + 1, sb);
             }
         }
@@ -204,10 +175,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (punc != COMMAND) {
 
 
-
-
             if (!t.isNormalized()) {
-                
+
                 @Nullable Term n = t.normalize();
                 if (!n.equals(t))
                     return fail(t, "task term not a normalized Compound", safe);
@@ -233,14 +202,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
 
 
-
-
-
-
-
-
-
-
         if ((punc == Op.GOAL || punc == Op.QUEST) && !goalable(t))
             return fail(t, "Goal/Quest task term may not be Implication", safe);
 
@@ -257,13 +218,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (xo.atomic) {
             if (xo.conceptualizable)
                 return true;
-            return false; 
+            return false;
         }
 
         /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
         switch (x.varIndep()) {
             case 0:
-                return true;  
+                return true;
             case 1:
                 return fail(x, "singular independent variable", safe);
             default:
@@ -282,7 +243,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     @Nullable
     static boolean validIndepBalanced(Term t, boolean safe) {
 
-        
+
         FasterList</* length, */ ByteList> statements = new FasterList<>(4);
         ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
 
@@ -294,7 +255,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
                 (ByteList path, Term indepVarOrStatement) -> {
                     if (path.isEmpty())
-                        return true; 
+                        return true;
 
                     if (indepVarOrStatement.op() == VAR_INDEP) {
                         indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(),
@@ -305,27 +266,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
                     return true;
                 });
 
         if (indepVarPaths.anySatisfy(p -> p.size() < 2))
-            return false; 
+            return false;
 
         if (statements.size() > 1) {
             statements.sortThisByInt(PrimitiveIterable::size);
-            
+
         }
 
 
@@ -335,7 +284,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             ByteByteHashMap count = new ByteByteHashMap();
 
 
-            
             int numVarPaths = varPaths.size();
             for (byte varPath = 0; varPath < numVarPaths; varPath++) {
 
@@ -344,7 +292,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 if (rootIsStatement) {
                     byte branch = p.get(0);
                     if (Util.branchOr((byte) -1, count, branch) == 3)
-                        return true; 
+                        return true;
                 }
 
                 int pSize = p.size();
@@ -357,19 +305,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     statementNum++;
                     int statementPathLength = statement.size();
                     if (statementPathLength > pSize)
-                        break; 
+                        break;
 
                     for (int i = 0; i < statementPathLength; i++) {
                         if (p.get(i) != statement.get(i))
-                            break nextStatement; 
+                            break nextStatement;
                     }
 
                     byte lastBranch = p.get(statementPathLength);
                     assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating term: " + t;
 
-                    
+
                     if (Util.branchOr(statementNum, count, lastBranch) == 3) {
-                        return true; 
+                        return true;
                     }
                 }
             }
@@ -419,11 +367,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (y == null)
             return null;
 
-        float xp = x.pri();
-        if (xp == xp)
-            y.priSet(xp);
+        float xp = x.priElseZero();
+        y.priSet(xp);
 
-        ((NALTask)y).cause(x.cause().clone());
+        ((NALTask) y).cause(x.cause().clone());
 
         return y;
     }
@@ -460,9 +407,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         boolean negated = false;
 
 
-
-
-
         if (o == NEG) {
             t = t.unneg();
             o = t.op();
@@ -473,31 +417,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             fail(t, "statement term containing boolean", safe);
             return null;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         t = t.normalize().the();
@@ -513,7 +432,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (!flexible && !(t.isEternal() || t.containedBy(subStart, subEnd))) {
             @Nullable Longerval intersection = Longerval.intersect(subStart, subEnd, t.start(), t.end());
             if (intersection != null) {
-                
+
                 subStart = intersection.a;
                 subEnd = intersection.b;
             }
@@ -523,7 +442,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, ttt.negIf(negated)) : null;
         }
 
-        return negated ? Task.negated(t) : t; 
+        return negated ? Task.negated(t) : t;
     }
 
     /**
@@ -537,39 +456,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //        return eternalized(tx, 1);
 //    }
 
-
-    
-
-
-
-
     static Task eternalized(Task x, float eviFactor) {
-        if (x == null)
-            return null;
-
-        
-        @Nullable Task ete = Task.clone(x, x.term(),
+        return Task.clone(x, x.term(),
                 x.truth().eternalized(eviFactor),
                 x.punc(),
                 /* TODO current time, from NAR */
                 (c, t) ->
-                        new NALTask(c, x.punc(), t,
+                        new UnevaluatedTask(c, x.punc(), t,
                                 x.creation(), ETERNAL, ETERNAL,
                                 x.stamp()
                         )
         );
-        if (ete.isDeleted())
-            ete.pri(0); 
-
-        return ete;
-
-
-
-
-
-
-
-
     }
 
     @Override
@@ -619,7 +516,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         } else {
 
 
-            long dist = minDistanceTo(when);
+            long dist = minTimeTo(when);
             if (dist == 0) {
                 return evi();
             } else {
@@ -635,12 +532,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
 
-
-
-
-
-
-
     @Override
     @NotNull
     default Task task() {
@@ -652,18 +543,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
 
-
-
-
-
     default boolean isBelief() {
         return (punc() == BELIEF);
     }
-
-
-
-
-
 
 
     default boolean isGoal() {
@@ -688,57 +570,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return n.concept(term(), conceptualize);
 
 
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     default boolean isQuestionOrQuest() {
@@ -764,36 +596,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     default @Nullable StringBuilder appendTo(@Nullable StringBuilder sb /**@Nullable*/) {
         return appendTo(sb, false);
     }
@@ -802,7 +604,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     @Deprecated
     default String toStringWithoutBudget() {
         return appendTo(new StringBuilder(64), true, false,
-                false, 
+                false,
                 false
         ).toString();
 
@@ -813,8 +615,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default StringBuilder appendTo(StringBuilder buffer, /**@Nullable*/boolean showStamp) {
         boolean notCommand = punc() != Op.COMMAND;
         return appendTo(buffer, true, showStamp && notCommand,
-                notCommand, 
-                showStamp 
+                notCommand,
+                showStamp
         );
     }
 
@@ -826,11 +628,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         CharSequence tenseString;
 
 
-
-        
         appendOccurrenceTime(
                 (StringBuilder) (tenseString = new StringBuilder()));
-
 
 
         CharSequence stampString = showStamp ? stampAsStringBuilder() : null;
@@ -845,7 +644,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             stringLength += stampString.length() + 1;
 
         /*if (showBudget)*/
-        
+
         stringLength += 1 + 6 + 1 + 6 + 1 + 6 + 1 + 1;
 
         String finalLog;
@@ -901,9 +700,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default boolean isInput() {
         return stamp().length <= 1 && !isCyclic();
 
-        
-        
-        
+
     }
 
     default boolean isEternal() {
@@ -913,30 +710,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default int dt() {
         return term().dt();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Nullable
@@ -949,11 +722,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             return new PreciseTruth(
                     freq() /* TODO interpolate frequency wave */,
                     eve, false);
-
-            
-
-
-
 
 
         }
@@ -984,7 +752,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     @Nullable
     default List log(boolean createIfMissing) {
-        return null; 
+        return null;
     }
 
     @Nullable
@@ -1062,7 +830,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             case 1:
                 return yy.iterator().next();
             default:
-                
+
                 return new NativeTask.NARTask((nn) -> yy.forEach(z -> z.run(nn)));
         }
     }
@@ -1076,39 +844,37 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         Term x = term();
         if (!x.equals(y)) {
 
-            
-
 
             if (Operator.func(y).equals(TRUE)) {
                 if (isQuestionOrQuest()) {
 
-                    y = Operator.arg(y, 0); 
+                    y = Operator.arg(y, 0);
 
-                    
+
                     byte p = isQuestion() ? BELIEF : GOAL;
 
                     @Nullable Task result = clone(this, y, $.t(1f, n.confDefault(p)), p);
 
 
                     if (result != null) {
-                        
+
                         float pBeforeDrain = priElseZero();
-                        pri(0); 
+                        pri(0);
                         queue.add(inputStrategy(result));
-                        
+
                         queue.add(new NativeTask.NARTask(nn -> {
                             Tasklinks.linkTask(
                                     new TaskLink.GeneralTaskLink(result, nn, pBeforeDrain / 2f),
                                     concept(nn, true).tasklinks(),
                                     null);
-                            
+
                         }));
                     } else {
-                        
+
                     }
 
                 } else {
-                    
+
                     y = Operator.arg(y, 0);
                     if (!y.equals(x)) {
                         Task tc = clone(this, y, truth(), punc());
@@ -1120,36 +886,25 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 }
             } else {
                 @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(),
-                        
+
                         !isInput() || !Param.DEBUG_EXTRA
                 );
                         /* the evaluated result here acts as a memoization of possibly many results
                            depending on whether the functor is purely static in which case
                            it would be the only one.
                          */
-                
+
                 if (yy != null) {
                     Term yyz = yy.getOne();
                     @Nullable Task result;
 
-                    
+
                     result = clone(this, yyz.negIf(yy.getTwo()));
 
 
-
-
-
-
                     if (result != null) {
-                        pri(0); 
+                        pri(0);
                         queue.add(inputStrategy(result));
-
-
-
-
-
-
-
 
 
                     }
@@ -1158,28 +913,26 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         }
 
         if (!cmd) {
-            queue.add(inputStrategy(this)); 
+            queue.add(inputStrategy(this));
         }
 
-        
 
         if (cmd || (isGoal() && !isEternal())) {
-            
-            
-            
+
+
             Pair<Operator, Term> o = Op.functor(y, (i) -> {
                 Concept operation = n.concept(i);
                 return operation instanceof Operator ? (Operator) operation : null;
             });
             if (o != null) {
                 try {
-                    
+
                     Task yy = o.getOne().execute.apply(this, n);
                     if (yy != null && !this.equals(yy)) {
                         queue.add(yy);
                     }
                 } catch (Throwable xtt) {
-                    
+
                     queue.add(Operator.error(this, xtt, n.time()));
                     return;
                 }
@@ -1187,7 +940,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                     n.eventTask.emit(this);
                     return;
                 }
-                
+
             }
 
             if (cmd) {
@@ -1202,18 +955,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default ITask inputStrategy(Task result) {
         return new TaskAddTask(result);
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -1241,11 +982,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     /** maybe */
 
 
-
-
-
-
-
     /**
      * https:
      * long[] points needs to be sorted, unique, and not contain any ETERNALs
@@ -1264,8 +1000,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         float X = 1 + (last - first);
         float dx = X / n;
 
-        
-        float e = 0; 
+
+        float e = 0;
         e += evi(first, dur) / 2;
         e += evi(last, dur) / 2;
         for (int i = 1, timesLength = times.length - 1; i < timesLength; i++) {
@@ -1296,23 +1032,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * computes the average frequency during the given interval
      */
     float freq(long start, long end);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

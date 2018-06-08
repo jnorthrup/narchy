@@ -1,10 +1,11 @@
-package nars.agent;
+package nars.sensor;
 
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.agent.NAgent;
 import nars.concept.scalar.Scalar;
 import nars.control.DurService;
 import nars.control.channel.CauseChannel;
@@ -12,7 +13,6 @@ import nars.exe.Causable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.signal.Bitmap2DConcepts;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;

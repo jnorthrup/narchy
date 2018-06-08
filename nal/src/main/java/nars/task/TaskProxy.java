@@ -81,8 +81,8 @@ public class TaskProxy implements Task {
     }
 
     @Override
-    public float coordF(boolean maxOrMin, int dimension) {
-        return task.coordF(maxOrMin, dimension);
+    public double coord(boolean maxOrMin, int dimension) {
+        return task.coord(maxOrMin, dimension);
     }
 
     @Override

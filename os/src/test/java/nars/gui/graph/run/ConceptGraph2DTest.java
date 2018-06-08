@@ -2,7 +2,7 @@ package nars.gui.graph.run;
 
 import nars.NAR;
 import nars.NARS;
-import nars.test.DeductiveMeshTest;
+import nars.test.impl.DeductiveMeshTest;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.windo.Windo;
 

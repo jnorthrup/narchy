@@ -49,7 +49,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
         ShuffledSubterms p = new ShuffledSubterms(x, f.random);
 
 
-        while (p.hasNextThenNext()) {
+        while (p.shuffle()) {
 
             if (p.unifyLinear(y, f)) {
                 if (!f.tryMutate(chain, current))

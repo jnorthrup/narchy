@@ -26,6 +26,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static nars.truth.TruthFunctions.w2cSafe;
+
 /**
  * dynamically computes matching truths and tasks according to
  * a lossy 1-D wave updated directly by a signal input
@@ -142,24 +144,28 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
         public boolean whileEach(final long minT, final long maxT, boolean exactRange, Predicate<? super Task> x) {
 
 
-            Long low, high;
-                low = at.floorKey(minT);
-                high = at.ceilingKey(maxT);
 
-            if (high == null)
-                high = maxT;
+            Long low = at.floorKey(minT);
             if (low == null)
                 low = minT;
 
+            if (!exactRange) {
+                Long lower = at.lowerKey(low);
+                if (lower != null)
+                    low = lower;
+            }
+
+            Long high = at.ceilingKey(maxT);
+            if (high == null)
+                high = maxT;
+
+            if (!exactRange) {
+                Long higher = at.higherKey(high);
+                if (higher != null)
+                    high = higher;
+            }
 
 
-            //expand range to include tasks near the specified interval
-            Long lower = at.lowerKey(low);
-            if (lower != null)
-                low = lower;
-            Long higher = at.higherKey(high);
-            if (higher != null)
-                high = higher;
 
 
             Iterator<Task> ii;
@@ -294,7 +300,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
                     }
                 } else {
                     long mid = (start+end)/2L;
-                    inner.sortThisByLong(x -> x.midDistanceTo(mid));
+                    inner.sortThisByLong(x -> x.midTimeTo(mid));
                     for (int i = 0; i < limit; i++) {
                         target.accept(inner.get(i));
                         n++;
@@ -350,9 +356,8 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             return null;
 
         float freqRes = taskOrJustTruth ? Math.max(nar.freqResolution.floatValue(), res.asFloat()) : 0;
-        float confRes =
-                0; 
-        float eviMin = Float.MIN_NORMAL;
+        float confRes = taskOrJustTruth ? nar.confResolution.floatValue() : 0;
+        float eviMin = taskOrJustTruth ? w2cSafe(nar.confMin.floatValue()) : Float.MIN_NORMAL;
         return d.eval(term, (dd, n) -> pp, taskOrJustTruth, beliefOrGoal, freqRes, confRes, eviMin, nar);
     }
 

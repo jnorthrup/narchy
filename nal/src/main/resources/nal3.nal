@@ -65,17 +65,18 @@
 
 
      //intersection conditional goal decompose
+     //TODO arity>2
      ((S|P) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositivePositivePositive)
-     ((S&P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeNegativeNegativeNegative)
+     ((S&P) --> M), (S --> M) |- (P --> M), (Goal:DecomposePositiveNegativePositive)
      (M --> (S&P)), (M --> S) |- (M --> P), (Goal:DecomposePositivePositivePositive)
-     (M --> (S|P)), (M --> S) |- (M --> P), (Goal:DecomposeNegativeNegativeNegative)
+     (M --> (S|P)), (M --> S) |- (M --> P), (Goal:DecomposePositiveNegativePositive)
 
 
 //NAL3 single premise decompose
-    (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction)
+    (M --> S), X, is(S,"&"), subOf(S,X) |- (M --> without(S,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(M --> S), X, is(S,"&"), subOfNeg(S,X) |- (M --> without(S,--X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    (S --> M), X, is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction)
+    (S --> M), X, is(S,"|"), subOf(S,X) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //(S --> M), X, is(S,"|"), subOfNeg(S,X) |- (without(S,--X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     (S --> (B - G)), B |- (S --> B), (Belief:StructuralDeduction)

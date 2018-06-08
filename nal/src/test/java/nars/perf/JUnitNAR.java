@@ -3,7 +3,7 @@ package nars.perf;
 import jcog.test.JUnitPlanetX;
 import nars.NAR;
 import nars.Param;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;

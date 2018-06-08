@@ -3,6 +3,7 @@ package nars.term;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.concept.util.DefaultConceptBuilder;
 import nars.util.term.transform.Retemporalize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -145,6 +146,19 @@ public class TemporalTermTest {
     public void testStableConceptualization1() throws Narsese.NarseseException {
         Term c1 = ceptualStable("((((#1,(2,true),true)-->#2)&|((gameOver,(),true)-->#2)) &&+29 tetris(#1,(11,true),true))");
         assertEquals("(&&,((#1,(2,true),true)-->#2),tetris(#1,(11,true),true),((gameOver,(),true)-->#2))", c1.toString());
+    }
+
+    @Test public void testStableNormalizationAndConceptualizationComplex() {
+        String s = "(((--,checkScore(#1))&|#1) &&+14540 ((--,((#1)-->$2)) ==>+17140 (isRow(#1,(0,false),true)&|((#1)-->$2))))";
+        Term t = $$(s);
+        assertEquals(s, t.toString());
+        assertEquals(s, t.normalize().toString());
+        assertEquals(s, t.normalize().normalize().toString());
+        String c = "(&&,((--,((#1)-->$2)) ==>+- (isRow(#1,(0,false),true)&&((#1)-->$2))),(--,checkScore(#1)),#1)";
+        assertEquals(c, t.concept().toString());
+        assertEquals(c, t.concept().concept().toString());
+        Concept x = new DefaultConceptBuilder().build(t);
+        assertTrue(x instanceof TaskConcept);
     }
 
 

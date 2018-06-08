@@ -12,7 +12,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Variable;
 import nars.test.TestNAR;
-import nars.util.NALTest;
+import nars.test.NALTest;
 import nars.util.graph.TermGraph;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

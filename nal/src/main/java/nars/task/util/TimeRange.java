@@ -53,10 +53,4 @@ public class TimeRange implements HyperRegion {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public final float coordF(boolean maxOrMin, int dimension) {
-        throw new UnsupportedOperationException();
-    }
-
-
 }
