@@ -2,18 +2,37 @@ package nars;
 
 import jcog.Util;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
 import static nars.$.$$;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by me on 7/8/16.
  */
 public class InterNARTest {
+
+    @ParameterizedTest
+    @ValueSource(ints={1,0})
+    public void testDiscoverDoesntSelfConnect(int pingSelf) {
+        NAR a = NARS.realtime(1f).get();
+        InterNAR x = new InterNAR(a, 4f);
+        a.synch();
+        x.runFPS(8f);
+        if (pingSelf==1) {
+            x.ping(x.addr());
+        }
+        for (int i = 0; i < 8; i++) {
+            assertFalse(x.peer.them.contains(x.peer.me));
+            assertFalse(x.peer.connected());
+            Util.sleep(100);
+        }
+        a.stop();
+    }
 
     static synchronized void testAB(BiConsumer<NAR, NAR> beforeConnect, BiConsumer<NAR, NAR> afterConnect) {
 
@@ -47,6 +66,7 @@ public class InterNARTest {
         InterNAR ai = new InterNAR(a, outRate, 0, false) {
             @Override
             protected void starting(NAR nar) {
+                super.starting(nar);
                 runFPS(NET_FPS);
             }
         };
@@ -54,6 +74,7 @@ public class InterNARTest {
 
             @Override
             protected void starting(NAR nar) {
+                super.starting(nar);
                 runFPS(NET_FPS);
             }
         };

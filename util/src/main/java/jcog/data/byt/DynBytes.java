@@ -15,7 +15,7 @@ import java.util.Arrays;
  */
 public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes {
 
-    static final int MIN_GROWTH_BYTES = 128;
+    static final int MIN_GROWTH_BYTES = 64;
     /**
      * must remain final for global consistency
      * might as well be 1.0, if it's already compressed to discover what this is, just keep it

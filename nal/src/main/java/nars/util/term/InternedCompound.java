@@ -1,6 +1,7 @@
 package nars.util.term;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.data.byt.DynBytes;
 import jcog.data.byt.HashCachedBytes;
 import jcog.memoize.HijackMemoize;
 import jcog.pri.UnitPri;
@@ -21,7 +22,7 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
 
     /** for look-up */
     public InternedCompound(Term x) {
-        HashCachedBytes key = new HashCachedBytes(4 * x.volume() /* ESTIMATE */);
+        DynBytes key = new DynBytes(4 * x.volume() /* ESTIMATE */);
         key.writeByte((this.op = x.op().id));
         key.writeInt((this.dt = x.dt()));
         for (Term s : x.subterms())
@@ -32,7 +33,7 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
     }
 
     public InternedCompound(Op o, int dt, Term... subs) {
-        HashCachedBytes key = new HashCachedBytes(4 * subs.length /* ESTIMATE */);
+        HashCachedBytes key = new HashCachedBytes(32 * subs.length /* ESTIMATE */);
         key.writeByte((this.op = o.id));
         key.writeInt((this.dt = dt));
         for (Term s : subs)

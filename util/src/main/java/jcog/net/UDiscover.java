@@ -38,7 +38,6 @@ abstract public class UDiscover<P>  {
 
 
     public UDiscover(P payloadID) {
-
         this.id = payloadID;
     }
 
@@ -57,7 +56,7 @@ abstract public class UDiscover<P>  {
 
                 ms.setBroadcast(true);
 
-                ms.setReuseAddress(true);
+                //ms.setReuseAddress(true);
 
                 
                 ms.setSoTimeout(TIMEOUT_MS);
@@ -105,7 +104,7 @@ abstract public class UDiscover<P>  {
 
                     int len = q.getLength();
                     byte[] qd = q.getData();
-                    if (!Arrays.equals(myID, 0, myID.length, qd, 0, len)) {
+                    if (!Arrays.equals(p.getData(),qd) && !Arrays.equals(myID, 0, myID.length, qd, 0, len)) {
                         theirPayload = (P) Util.fromBytes(qd, len, id.getClass());
                         found(theirPayload, q.getAddress(), q.getPort());
                         

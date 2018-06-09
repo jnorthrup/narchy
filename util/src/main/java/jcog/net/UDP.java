@@ -17,16 +17,16 @@ import java.nio.channels.SelectionKey;
 
 /**
  * generic UDP server & utilities
- * TODO Datagram TLS http:
+ * TODO Datagram TLS
  */
 public class UDP extends Loop {
 
 
     static {
-
-
-
-
+        System.setProperty("java.net.preferIPv6Addresses",
+            "true"
+            //"false"
+        );
     }
 
 
@@ -77,34 +77,20 @@ public class UDP extends Loop {
 
         c = DatagramChannel.open();
         c.configureBlocking(false);
-        c.socket().setBroadcast(true);
-        c.setOption(StandardSocketOptions.SO_RCVBUF, 1024 * 1024);
-        c.setOption(StandardSocketOptions.SO_SNDBUF, 1024 * 1024);
-        c.setOption(StandardSocketOptions.SO_BROADCAST, true);
+
+        c.setOption(StandardSocketOptions.SO_RCVBUF, 1024 * 128);
+        c.setOption(StandardSocketOptions.SO_SNDBUF, 1024 * 128);
+        //c.socket().setBroadcast(true);
+        //c.setOption(StandardSocketOptions.SO_BROADCAST, true);
         c.setOption(StandardSocketOptions.SO_REUSEADDR, true);
         c.setOption(StandardSocketOptions.SO_REUSEPORT, true);
         c.bind(new InetSocketAddress(a, port));
 
 
-
-
-
-
-
-
-
-
-
-
-        addr = (InetSocketAddress) c.getLocalAddress();
-
-
-
-        
-
-
-
+        this.addr = (InetSocketAddress) c.getLocalAddress();
         this.port = port;
+
+        logger.info("start {}" , addr);
     }
 
     public UDP(int port) throws IOException {
@@ -123,7 +109,12 @@ public class UDP extends Loop {
     @Override
     protected void onStop() {
         try {
-            c.close();
+            synchronized (c) {
+                c.configureBlocking(true);
+                c.disconnect();
+                c.configureBlocking(false);
+            }
+            logger.info("stop {}" , addr);
         } catch (IOException e) {
             logger.error("close {}", e);
         }
@@ -162,6 +153,8 @@ public class UDP extends Loop {
 
             SocketAddress from;
             while ((from = c.receive(b.rewind())) != null) {
+                if (!isRunning())
+                    return false;
                 in((InetSocketAddress) from, b.array(), b.position());
             }
         } catch (ClosedChannelException closed) {

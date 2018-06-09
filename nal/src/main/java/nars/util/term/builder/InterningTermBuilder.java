@@ -29,11 +29,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
     /** attempts to recursively intern the elements of a subterm being interned */
     final boolean deepIntern = false;
 
+    static final int cacheSizePerOp = 64 * 1024;
+
     {
         termCache = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
             if (Op.ops[i].atomic || Op.ops[i]==NEG) continue;
-            termCache[i] = newOpCache(32 * 1024);
+
+            termCache[i] = newOpCache(cacheSizePerOp);
         }
     }
 
@@ -57,9 +60,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 for (int i = 0, subtermsLength = s.length; i < subtermsLength; i++) {
                     Term x = s[i];
                     Term ux = x.unneg();
-                    Term y = resolve(ux);
+                    Term y = resolveInternable(ux); //already determined to be internable
                     if (y != null && y!=ux)
-                        s[i] = y.negIf(x != ux && x.op() == NEG); //use existing value
+                        s[i] = y.negIf(x != ux);
                 }
             }
 
@@ -70,8 +73,18 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
+    protected boolean internable(Term x) {
+        return (x instanceof The) &&
+                internable(x.op(), x.dt()) &&
+                x.AND(this::internable);
+    }
+
     protected boolean internable(Op op, int dt, Term[] u) {
-        return (!op.temporal || internable(dt)) && internable(u);
+        return internable(op, dt) && internable(u);
+    }
+
+    private boolean internable(Op op, int dt) {
+        return !op.atomic && (!op.temporal || internable(dt));
     }
 
     @Nullable
@@ -93,12 +106,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         for (Term x : subterms) {
 
-            if (
-                !(x instanceof The) ||
-                !internable(x.dt()) ||
-                !x.ANDrecurse(xx -> xx instanceof The)) { //first test is for ProxyTerm which may already proxy beyond themselves with the ANDrecurse
+            if (!internable(x))
                 return false;
-            }
 
         }
 
@@ -107,12 +116,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Override protected Term resolve(Term x){
-        if (!deepIntern)
-            return x;
+        return !internable(x) ? x : resolveInternable(x);
+    }
+
+    protected Term resolveInternable(Term x){
         HijackTermCache tc = termCache[x.op().id];
         if (tc == null)
             return x;
-        Term y = tc.getIfPresent(new InternedCompound(x));
+        Term y = tc.apply(new InternedCompound(x));
         if (y!=null)
             return y;
         return x;

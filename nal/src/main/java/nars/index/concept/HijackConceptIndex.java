@@ -22,7 +22,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     private final PLinkHijackBag<Termed> table;
     
 
-    int forgetEveryDurs = 4;
+    int forgetEveryDurs = 32;
     float forgetTemperature = 0.5f;
 
     /**

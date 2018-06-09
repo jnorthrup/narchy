@@ -9,11 +9,10 @@ public class HashCachedBytes extends DynBytes {
 
     public HashCachedBytes(int bufferSize) {
         super(bufferSize);
-        compact(); 
     }
 
-    @Override
-    public int hashCode() {
+    /** warning dont use this value until after compact()'ing */
+    @Override public int hashCode() {
         return hash;
     }
 

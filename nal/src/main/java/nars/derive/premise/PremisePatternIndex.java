@@ -15,11 +15,9 @@ import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
-import nars.util.term.InternedSubterms;
 import nars.util.term.transform.VariableNormalization;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -31,7 +29,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public class PremisePatternIndex extends MapConceptIndex {
 
-    final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
+    //final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
 
     public PremisePatternIndex() {
         super(new HashMap<>(1024));
@@ -121,7 +119,8 @@ public class PremisePatternIndex extends MapConceptIndex {
         if (!changed && Ellipsis.firstEllipsis(s) == null)
             return x;
 
-        Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
+        //Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
+        Subterms v = Op.terms.newSubterms(bb);
 
 
         Ellipsis e = Ellipsis.firstEllipsis(bb);

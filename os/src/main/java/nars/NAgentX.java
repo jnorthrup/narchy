@@ -228,14 +228,14 @@ abstract public class NAgentX extends NAgent {
         n.questionPriDefault.set(0.1f);
         n.questPriDefault.set(0.25f);
 
-        n.forgetRate.set(0.8f);
+        n.forgetRate.set(0.9f);
 
-        try {
-            InterNAR i = new InterNAR(n, 8, 0);
-            i.runFPS(4);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            InterNAR i = new InterNAR(n, 8, 0);
+//            i.runFPS(4);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
 
 

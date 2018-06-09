@@ -72,6 +72,7 @@ public class SplitMix64Random extends Random {
      * @param seed a nonzero seed for the generator (if zero, the generator will be seeded with -1).
      */
     public SplitMix64Random(long seed) {
+        if (seed == 0) seed = -1;
         setSeed(seed);
     }
 

@@ -220,7 +220,8 @@ public class Emotion implements Meter {
         float qPriBefore = questionTask.priElseZero();
         if (qPriBefore > Prioritized.EPSILON) {
             //float fraction = ansConf * (1 - qOrig);
-            float fraction = qOrig / 2f;
+            //float fraction = qOrig / 2f;
+            float fraction = 0.5f/(1+qOrig);
             answer.take(questionTask, fraction, false,
                     /*true */ false);
 

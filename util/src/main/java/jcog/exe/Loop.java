@@ -144,8 +144,8 @@ abstract public class Loop implements Runnable {
 
 
 
-    public final void stop() {
-        setPeriodMS(-1);
+    public final boolean stop() {
+        return setPeriodMS(-1);
     }
 
     /**

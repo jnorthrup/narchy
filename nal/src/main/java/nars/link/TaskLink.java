@@ -5,13 +5,15 @@ import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 
-import static nars.Op.NEG;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -81,17 +83,30 @@ public interface TaskLink extends Priority, Termed {
             return hash;
         }
 
-        public Task get(NAR n) {
+        public Task get(NAR n, Priority link) {
 
-            Term t = term;
-            Concept c = n.conceptualize(t);
-            if (c == null)
-                return null;
+            Term t = term.unneg();
+            Concept c = n.concept(t);
+            if (c != null) {
+                long[] se = n.timeFocus(when);
+                Task result = c.table(punc).sample(se[0], se[1], t, n);
 
-            long[] se = n.timeFocus(when);
-            Task result = c.table(punc).sample(se[0], se[1], t, n);
+                return result == null || result.isDeleted() ? null : result;
+            } else {
+                //TODO if term supports dynamic truth, then possibly conceptualize and then match as above?
 
-            return result == null || result.isDeleted() ? null : result;
+                //form a question/quest task for the missing concept
+                byte punc = this.punc;
+
+                if (punc == BELIEF) punc = QUESTION;
+                else if (punc == GOAL) punc = QUEST;
+
+                Task d = new UnevaluatedTask(term, punc, null, n.time(), when, when, n.evidence());
+                if (Param.DEBUG)
+                    d.log("Tasklinked");
+                d.pri(link.priElseZero());
+                return d;
+            }
 
         }
     }
@@ -166,13 +181,9 @@ public interface TaskLink extends Priority, Termed {
         }
 
 
-
-
-
-
         @Override
         public Task get(NAR n) {
-            Task t = get().get(n);
+            Task t = id.get(n, this);
             if (t == null) {
                 delete();
             }

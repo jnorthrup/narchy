@@ -23,7 +23,7 @@ public final class InternedSubterms extends UnitPri implements HijackMemoize.Com
     public InternedSubterms(Term... subs) {
         this.rawSubs = subs;
 
-        HashCachedBytes key = new HashCachedBytes(4 * subs.length);
+        HashCachedBytes key = new HashCachedBytes(32 * subs.length);
         for (Term s : subs)
             s.append((ByteArrayDataOutput) key);
 

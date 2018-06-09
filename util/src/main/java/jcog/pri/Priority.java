@@ -172,13 +172,7 @@ public interface Priority extends Prioritized {
         float taken = after - before;
 
         if (!copyOrMove) {
-            
-
-            
-            if (taken > Prioritized.EPSILON) {
-                
-                source.priSub(taken);
-            }
+            source.priSub(taken);
         }
 
         return taken;

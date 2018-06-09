@@ -1,18 +1,15 @@
 package nars.link;
 
 import jcog.bag.impl.CurveBag;
-import nars.Param;
+import jcog.pri.op.PriMerge;
 
 import java.util.Map;
 
 public class TaskLinkCurveBag extends CurveBag<TaskLink> {
 
 
-
-
-
-    public TaskLinkCurveBag(Map sharedMap) {
-        super(Param.tasklinkMerge, sharedMap, 0);
+    public TaskLinkCurveBag(PriMerge merge, Map map, int cap) {
+        super(merge, map, cap);
     }
 
 

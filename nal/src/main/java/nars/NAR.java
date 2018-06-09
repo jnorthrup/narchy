@@ -735,11 +735,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
         synchronized (exe) {
 
+            pause();
+
             services.stop();
-
-            loop.stop();
-
-            synch();
 
             exe.stop();
 
@@ -1407,7 +1405,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     public void pause() {
-        loop.stop();
+        if (loop.stop()) {
+            synch();
+        }
     }
 
     private class TaskChannel extends CauseChannel<ITask> {

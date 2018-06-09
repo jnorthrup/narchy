@@ -398,7 +398,7 @@ public class Conj extends AnonMap {
 
                 return what.eventsWhile(this::add,
                         at,
-                        true,//dt==0,
+                        dt!=DTERNAL,//dt==0,
                         dt==DTERNAL,
                         false, 0);
 

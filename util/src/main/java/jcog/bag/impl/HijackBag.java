@@ -91,20 +91,14 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     protected HijackBag(int initialCapacity, int reprobes) {
         this.id = serial.getAndIncrement();
-
-        this.rng =
-                new SplitMix64Random(id); 
-                
-                
+        this.rng = new SplitMix64Random(id);
 
         assert(reprobes < Byte.MAX_VALUE-1); 
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
 
-        setCapacity(initialCapacity);
-
-        int initialSpace = Math.min(reprobes, capacity);
-        resize(initialSpace);
+        if (initialCapacity > 0)
+            setCapacity(initialCapacity);
     }
 
     protected HijackBag(int reprobes) {
@@ -149,14 +143,13 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public void setCapacity(int _newCapacity) {
 
-        int newCapacity = Math.max(_newCapacity, reprobes);
+        int newCapacity = _newCapacity > 0 ? Math.max(_newCapacity, reprobes) : 0;
 
         if (capUpdater.getAndSet(this, newCapacity) != newCapacity) {
 
             int s = space();
-            if (newCapacity < s /* must shrink */) {
-                s = newCapacity;
-                resize(s);
+            if (s == 0 || newCapacity < s /* must shrink */) {
+                resize(newCapacity);
             }
 
 

@@ -402,7 +402,12 @@ public class TemporalTermTest {
                 $("a(x,(--,((--,((6-->ang) &&+1384 (6-->ang))) &&+- (6-->ang))))").temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).toString()
         );
     }
-
+    @Test
+    public void testConjEtePara() {
+        assertEquals("((a&|b)&&(b&|c))",
+                $$("((a&|b)&&(b&|c))").toString()
+        );
+    }
     @Test
     public void testCommutiveTemporalityConjEquiv() {
 

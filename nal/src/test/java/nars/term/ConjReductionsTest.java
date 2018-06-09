@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * TODO TO BE DECIDED */
 @Disabled
 public class ConjReductionsTest {
+
     @Test
     public void testConjParaEteReductionInvalid() {
         assertEquals(False,

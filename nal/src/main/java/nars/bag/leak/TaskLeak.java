@@ -60,7 +60,7 @@ public abstract class TaskLeak extends Causable {
 
     @Override
     protected void starting(NAR nar) {
-        ons.add(nar.onTask((t) -> accept(t)));
+        ons.add(nar.onTask(this::accept));
     }
 
 

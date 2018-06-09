@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.bag.Bag;
 import jcog.list.FasterList;
 import jcog.list.table.SortedListTable;
-import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.op.PriMerge;
@@ -44,11 +43,11 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         setCapacity(capacity);
     }
 
-    protected ArrayBag(PriMerge mergeFunction, /*@NotNull*/ Map<X, Y> map) {
+    protected ArrayBag(PriMerge mergeFunction, Map<X, Y> map) {
         this(0, mergeFunction, map);
     }
 
-    protected ArrayBag(@Deprecated int cap, PriMerge mergeFunction, /*@NotNull*/ Map<X, Y> map) {
+    protected ArrayBag(@Deprecated int cap, PriMerge mergeFunction, Map<X, Y> map) {
         super(new SortedPLinks(), map);
         this.mergeFunction = mergeFunction;
         setCapacity(cap);
@@ -245,7 +244,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 return;
         } else {
             s = update(toAdd != null, s, trash, update,
-                    commit || (s == capacity) && top() instanceof PLinkUntilDeleted);
+                    commit /*|| (s == capacity) && get(0) instanceof PLinkUntilDeleted*/);
         }
 
 
@@ -360,9 +359,9 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      * at the top of the list. so for large amounts of samples
      * it will be helpful to call this in batches << the size of the bag.
      */
-    /*@NotNull*/
+
     @Override
-    public Iterable<Y> sample(/*@NotNull*/ Random rng, BagCursor<? super Y> each) {
+    public Iterable<Y> sample(Random rng, BagCursor<? super Y> each) {
 
         newItemsArray:
         while (true) {
@@ -422,7 +421,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     @Nullable
     @Override
-    public Y remove(/*@NotNull*/ X x) {
+    public Y remove(X x) {
         Y removed;
         synchronized (items) {
             removed = super.remove(x);
@@ -434,7 +433,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     @Override
-    public final Y put(/*@NotNull*/ final Y incoming, @Nullable final MutableFloat overflow) {
+    public final Y put(final Y incoming, @Nullable final MutableFloat overflow) {
 
         final int capacity = this.capacity;
 
@@ -449,12 +448,35 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
         X key = key(incoming);
 
-        final @Nullable FasterList<Y> trash = new FasterList(4);
 
         Y inserted;
 
+        @Nullable FasterList<Y> trash = null;
+
         synchronized (items) {
 
+            Y existing = map.get(key);
+
+            if (existing != null) {
+                if (existing != incoming) {
+                    return merge(existing, incoming, overflow);
+                } else {
+                    if (overflow != null)
+                        overflow.add(p);
+                    return incoming; //exact same instance
+                }
+            } /* else { ...*/
+
+            trash = new FasterList<>(4);
+
+            if (insert(incoming, trash)) {
+                map.put(key, inserted = incoming);
+            } else {
+                inserted = null; //rejected
+            }
+
+
+            /*
             inserted = map.compute(key, (kk, existing) -> {
                 Y v;
                 if (existing != null) {
@@ -474,6 +496,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 }
                 return v;
             });
+            */
 
 
             trash.removeIf(x -> {
@@ -503,7 +526,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     }
 
-    private boolean insert(/*@NotNull*/ Y incoming, FasterList<Y> trash) {
+    private boolean insert(Y incoming, FasterList<Y> trash) {
 
 
         if (size() == capacity) {
@@ -571,7 +594,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     @Override
-    /*@NotNull*/
+
     public Bag<X, Y> commit(Consumer<Y> update) {
 
 
@@ -593,8 +616,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
     private void deleteAndRemove(Y y) {
-        y.delete();
         onRemove(y);
+        y.delete();
     }
 
     @Override
@@ -625,7 +648,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     @Override
     public void forEachKey(Consumer<? super X> each) {
-
         forEach(x -> each.accept(key(x)));
     }
 
@@ -633,14 +655,17 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     public void forEach(Consumer<? super Y> action) {
 
 
-        Object[] x = items.array();
-        for (int i = 0; i < Math.min(x.length, size()); i++) {
-            Object a = x[i];
-            if (a != null) {
-                Y b = (Y) a;
-                float p = pri(b);
-                if (p == p) {
-                    action.accept(b);
+        int s = size();
+        if (s > 0) {
+            Object[] x = items.array();
+            for (int i = 0; i < Math.min(x.length, s); i++) {
+                Object a = x[i];
+                if (a != null) {
+                    Y b = (Y) a;
+                    float p = pri(b);
+                    if (p == p) {
+                        action.accept(b);
+                    }
                 }
             }
         }
@@ -648,7 +673,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
     }
 
-    /*@NotNull*/
+
     @Override
     public String toString() {
         return super.toString() + '{' + items.getClass().getSimpleName() + '}';

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
+import jcog.Texts;
 import jcog.Util;
 import jcog.bag.Bag;
 import jcog.bag.impl.HijackBag;
@@ -210,7 +211,7 @@ public class UDPeer extends UDP {
             @Override
             protected void found(Discoverability who, InetAddress addr, int port) {
                 //TODO hard exclude the UDPeer itself (ie. if addr and port equal)
-                if (!them.contains(who.id)) {
+                if (!who.addr.equals(UDPeer.this.addr) && !them.contains(who.id)) {
                     logger.debug("discovered {} at {}:{}", who.id, who.addr);
                     ping(who.addr);
                 }
@@ -224,7 +225,7 @@ public class UDPeer extends UDP {
         public InetSocketAddress addr;
 
         public Discoverability() { }
-
+        
         public Discoverability(int id, InetSocketAddress addr) {
             this.id = id;
             this.addr = addr;
@@ -239,7 +240,7 @@ public class UDPeer extends UDP {
     }
 
 
-    public boolean connected() {
+    public final boolean connected() {
         return !them.isEmpty();
     }
 
@@ -332,9 +333,6 @@ public class UDPeer extends UDP {
      * send to a specific known recipient
      */
     public void send(Msg o, InetSocketAddress to) {
-
-
-
         outBytes(o.array(), to);
     }
 
@@ -507,6 +505,9 @@ public class UDPeer extends UDP {
     }
 
     public void ping(@Nullable InetSocketAddress to) {
+        if (to.equals(UDPeer.this.addr))
+            return;
+            //throw new UnsupportedOperationException("dont ping self");
         send(ping(), to);
     }
     public void ping(@Nullable UDPeer x) {
@@ -521,30 +522,34 @@ public class UDPeer extends UDP {
 
     protected @Nullable UDProfile onPong(InetSocketAddress p, Msg m, @Nullable UDProfile connected, long now) {
 
-        long sent = m.dataLong(0); 
-        long latency = now - sent; 
+        long sent = m.dataLong(0);
+        long latencyMS = now - sent;
+
+        logger.info("recv pong {} from {} ({})", m, connected, Texts.timeStr(1E6 * latencyMS));
+
         if (connected != null) {
-            connected.onPing(latency);
+            connected.onPing(latencyMS);
         } else {
             int pinger = m.dataInt(8, UNKNOWN_ID);
             if (pinger == me) {
-                connected = them.put(new UDProfile(m.id(), p, latency));
+                connected = them.put(new UDProfile(m.id(), p, latencyMS));
             }
         }
         return connected;
     }
 
     protected void sendPong(InetSocketAddress from, Msg ping) {
-        Msg p = 
+        Msg m =
                 new Msg(PONG.id, (byte) 1, me, from,
                         ArrayUtils.addAll(
                                 Longs.toByteArray(ping.dataLong(0)), 
                                 Ints.toByteArray(ping.id()) 
                         ));
 
-        
+        logger.info("send pong {} {} to {}", addr, m, from);
 
-        send(p, from);
+        seen(m, 1f);
+        send(m, from);
     }
 
 
@@ -670,8 +675,9 @@ public class UDPeer extends UDP {
 
         }
 
+        final static int INITIAL_CAPACITY = HEADER_SIZE * 2;
         public Msg(byte cmd, byte ttl, int id, InetSocketAddress origin, byte[] payload) {
-            super(HEADER_SIZE);
+            super(INITIAL_CAPACITY);
             init(cmd, ttl, id, origin);
 
             if (payload.length > 0)
@@ -682,7 +688,7 @@ public class UDPeer extends UDP {
 
 
         public Msg(byte cmd, byte ttl, int id, InetSocketAddress origin, long payload) {
-            super(HEADER_SIZE);
+            super(INITIAL_CAPACITY);
             init(cmd, ttl, id, origin);
 
             writeLong(payload);

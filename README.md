@@ -274,10 +274,6 @@ In keeping with a design preference for unity and balanced spectral continuity, 
 ### Deep Variable Introduction
 See VarIntroduction.java and subclasses, and which rules apply them.
 
-### Images (extensional and intensional) Removed
-Deep variable introduction, in and among Product terms, implement equivalent or 'better' results
-than what both types of Images were designed to generate. Please create an Issue with any contradictory evidence.
-
 ### _Many other changes remain to be documented._
  
 

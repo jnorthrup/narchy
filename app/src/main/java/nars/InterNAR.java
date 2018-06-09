@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import jcog.net.UDPeer;
 import jcog.util.TriConsumer;
 import nars.bag.leak.TaskLeak;
-import nars.control.TaskService;
 import nars.control.channel.CauseChannel;
 import nars.task.ActiveQuestionTask;
 import nars.task.ITask;
@@ -25,13 +24,13 @@ import static jcog.net.UDPeer.Command.TELL;
 /**
  * InterNARchy / InterNARS P2P Network Interface for a NAR
  */
-public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQuestionTask, Task> {
+public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestionTask, Task> {
 
     public static final Logger logger = LoggerFactory.getLogger(InterNAR.class);
 
-    public final TaskLeak buffer;
 
-    public final MyUDPeer peer;
+
+    public final UDPeer peer;
     protected final CauseChannel<ITask> recv;
 
     public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
@@ -46,6 +45,9 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
     public InterNAR(NAR nar, float outRate, int port) {
         this(nar, outRate, port, true);
     }
+    public InterNAR(NAR nar, float outRate) {
+        this(nar, outRate, 0);
+    }
 
     /**
      * @param nar
@@ -56,68 +58,87 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
      * @throws UnknownHostException
      */
     public InterNAR(NAR nar, float outRate, int port, boolean discover) {
-        super(nar);
+        super(256, outRate, nar);
 
         assert(nar.time instanceof RealTime.MS && ((RealTime.MS)nar.time).t0 !=0 );
 
         try {
-            peer = new MyUDPeer(port, discover);
+            peer = new UDPeer(port, discover);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         recv = nar.newChannel(this);
 
-        buffer = new TaskLeak(256, outRate, nar) {
+    }
+    @Override
+    public float value() {
+        return recv.value();
+    }
 
-            @Override
-            public float value() {
-                return recv.value();
-            }
+    @Override
+    protected int next(NAR nar, int work) {
+        if (!peer.connected())
+            return -1;
 
-            @Override
-            protected int next(NAR nar, int work) {
-                if (!peer.connected())
-                    return -1;
+        return super.next(nar, work);
+    }
 
-                return super.next(nar, work);
-            }
-
-            @Override
-            protected float leak(Task next) {
-
-
-                logger.debug("{} share {}", peer, next);
-
-                @Nullable byte[] msg = IO.taskToBytes(next);
-                assert (msg != null);
-                if (peer.tellSome(msg, ttl(next), true) > 0) {
-                    return 1;
-                }
+    @Override
+    protected float leak(Task next) {
 
 
-                return 0;
-            }
+        logger.debug("{} share {}", peer, next);
 
-            @Override
-            public boolean preFilter(Task next) {
-                if (next.isCommand() || !peer.connected())
-                    return false;
+        @Nullable byte[] msg = IO.taskToBytes(next);
+        assert (msg != null);
+        if (peer.tellSome(msg, ttl(next), true) > 0) {
+            return 1;
+        }
 
-                return super.preFilter(next);
-            }
-        };
+
+        return 0;
+    }
+
+    @Override
+    public boolean preFilter(Task next) {
+        if (next.isCommand() || !peer.connected())
+            return false;
+
+        return super.preFilter(next);
     }
 
     private static byte ttl(Task x) {
         return (byte) (1 + Util.lerp(x.priElseZero() /* * (1f + x.qua())*/, 2, 5));
     }
 
+
+
     @Override
-    public void accept(NAR nar, Task t) {
-        buffer.accept(t);
+    protected void starting(NAR nar) {
+        super.starting(nar);
+        ons.add(peer.receive.on(this::receive));
     }
 
+    protected void receive(UDPeer.MsgReceived m) {
+        try {
+            Task x = IO.taskFromBytes(m.data());
+            if (x.isQuestionOrQuest()) {
+
+                x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
+                ((NALTask.NALTaskX)x).meta("UDPeer", m);
+            }
+            x.budget(nar);
+
+            x.priMult(incomingPriMult.floatValue());
+
+            logger.debug("recv {} from {}", x, m.from);
+            recv.input(x);
+        } catch (Exception e) {
+            logger.warn("receive {} from {}: {}", m, m.from, e.getMessage());
+            return;
+        }
+    }
 
     @Override
     protected void stopping(NAR nar) {
@@ -167,37 +188,5 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         return peer.addr;
     }
 
-    void receive(UDPeer.UDProfile from, UDPeer.Msg m, Task x) {
-        if (x.isQuestionOrQuest()) {
-            
-            x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
-            ((NALTask.NALTaskX)x).meta("UDPeer", m);
-        }
-        x.budget(nar);
 
-        x.priMult(incomingPriMult.floatValue());
-        
-        logger.debug("recv {} from {}", x, from);
-        recv.input(x);
-    }
-
-    public class MyUDPeer extends UDPeer {
-
-        MyUDPeer(int port, boolean discovery) throws IOException {
-            super(port, discovery);
-        }
-
-        @Override
-        protected void receive(UDProfile from, Msg m) {
-
-            try {
-                Task x = IO.taskFromBytes(m.data());
-                InterNAR.this.receive(from, m, x);
-            } catch (Exception e) {
-                logger.warn("receive {} from {}: {}", m, from, e.getMessage());
-                return;
-            }
-
-        }
-    }
 }
