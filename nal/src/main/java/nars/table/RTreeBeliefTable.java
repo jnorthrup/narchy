@@ -817,6 +817,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 otherwise limit by the Leaf capacity */
             if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= TRUTHPOLATION_LIMIT)) {
                 table.forEachOptimistic(this::add);
+                //TODO this might be faster to add directly then sort the results after
+                //eliminating need for the Cache map
                 return this;
             }
 

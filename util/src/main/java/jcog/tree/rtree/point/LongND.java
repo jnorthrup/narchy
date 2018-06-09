@@ -2,7 +2,6 @@ package jcog.tree.rtree.point;
 
 
 import jcog.tree.rtree.HyperPoint;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -87,7 +86,7 @@ public class LongND implements HyperPoint, Serializable, Comparable<LongND> {
 
 
     @Override
-    public int compareTo(@NotNull LongND o) {
+    public int compareTo(LongND o) {
         return Arrays.compare(coord, o.coord);
     }
 }

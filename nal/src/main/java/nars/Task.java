@@ -13,6 +13,7 @@ import nars.control.proto.TaskAddTask;
 import nars.derive.Premise;
 import nars.link.TaskLink;
 import nars.link.Tasklinks;
+import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.TaskWithNegatedTruth;
 import nars.task.proxy.TaskWithTruthAndOccurrence;
@@ -21,11 +22,13 @@ import nars.task.util.TaskRegion;
 import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.Termlike;
 import nars.term.var.VarIndep;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import nars.truth.polation.TruthIntegration;
 import nars.util.TimeAware;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -221,6 +224,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             return false;
         }
 
+        return validIndep(x, safe);
+
+    }
+
+    static boolean validIndep(Term x, boolean safe) {
         /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
         switch (x.varIndep()) {
             case 0:
@@ -231,17 +239,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 if (!x.hasAny(Op.StatementBits)) {
                     return fail(x, "InDep variables must be subterms of statements", safe);
                 } else {
-                    if (xo.statement)
-                        return validIndepBalanced(x, safe);
-                    else
-                        return x.subterms().AND(s -> validTaskCompound(s, safe));
+                    Subterms xx = x.subterms();
+                    if (x.op().statement && xx.AND(Termlike::hasVarIndep)) {
+                        return validIndepBalance(x, safe); //indep appearing in both, test for balance
+                    } else {
+                        return xx.AND(s -> validIndep(s, safe));
+                    }
                 }
         }
 
     }
 
     @Nullable
-    static boolean validIndepBalanced(Term t, boolean safe) {
+    static boolean validIndepBalance(Term t, boolean safe) {
 
 
         FasterList</* length, */ ByteList> statements = new FasterList<>(4);
@@ -716,7 +726,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default Truth truth(long targetStart, long targetEnd, int dur) {
 
 
-        float eve = Revision.eviAvg(this, targetStart, targetEnd, dur);
+        float eve = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
         if (eve > Param.TRUTH_MIN_EVI) {
             return new PreciseTruth(
@@ -989,7 +999,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     default float eviIntegTrapezoidal(long dur, long... times) {
 
 
-        int n = times.length;
+        int n = times.length; assert(n > 1);
         long last = times[n - 1];
         long first = times[0];
 

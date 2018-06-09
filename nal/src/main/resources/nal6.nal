@@ -1,10 +1,10 @@
 //strong unification
-    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:Deduction)
-    //(Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionN)
-    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
-    //(--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionNN)
-
-    (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)
+//    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:Deduction)
+//    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionN)
+//    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
+//    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionNN)
+//
+//    (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)
 
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
@@ -12,14 +12,14 @@
 //    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
-    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction, Time:TaskPlusBeliefDT)
-    B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:InductionPN, Time:TaskPlusBeliefDT)
+    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
+    B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
 
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:InductionN, Time:TaskPlusBeliefDT)
-    B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:DeductionRecursive, Time:TaskMinusBeliefDT)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionRecursiveNN, Time:TaskMinusBeliefDT)
 
         Y, ((&&,X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y,strict), (Belief:Analogy)
         Y, ((&&,--X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==>+- Z), X,Y,strict), (Belief:AnalogyN)

@@ -38,6 +38,13 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+    @AllowOverlap DeductionRecursive() {
+        @Override
+        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+            return Deduction.apply(T, B, m, minConf);
+        }
+    },
+
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {

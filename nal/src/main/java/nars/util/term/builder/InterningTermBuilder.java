@@ -84,7 +84,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private boolean internable(Op op, int dt) {
-        return !op.atomic && (!op.temporal || internable(dt));
+        return !op.atomic && (op!=NEG) && (!op.temporal || internable(dt));
     }
 
     @Nullable

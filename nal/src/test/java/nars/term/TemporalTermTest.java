@@ -1197,9 +1197,12 @@ public class TemporalTermTest {
         Term xNeg = $$("(--(x&|y)~(y &&+1 x))");
         assertEquals(False, xNeg); 
 
+    }
+    @Test public void testValidTaskTerm() {
+        String s = "believe(x,(believe(x,(--,(cam(9,$1) ==>-78990 (ang,$1))))&|(cam(9,$1) ==>+570 (ang,$1))))";
+        Term ss = $$(s);
+        assertTrue(Task.validTaskCompound(ss, true));
+        assertTrue(Task.validTaskTerm(ss));
 
-
-
-        
     }
 }

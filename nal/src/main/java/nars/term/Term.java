@@ -700,12 +700,12 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     final class InvalidTermException extends SoftException {
 
-        @NotNull
+
         private final Op op;
         private final int dt;
-        @NotNull
+
         private final Term[] args;
-        @NotNull
+
         private final String reason;
 
 

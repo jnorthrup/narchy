@@ -369,30 +369,28 @@ public interface NAct {
     }
 
     default void actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
-        FloatSupplier thresh = () -> 0.66f;
+        FloatSupplier thresh = () ->
+                //0.66f;
+                0.5f;
 
         boolean[] lr = new boolean[2];
 
         actionPushButton(l, thresh, ll->{
             boolean x = ll;
+            lr[0] = x;
             if (x && lr[1]) {
-                L.value(lr[0] = false);
-                R.value(lr[1] = false);
-                return false;
-            } else {
-                lr[0] = x;
+                //R.value(false);
+                x = false;
             }
             L.value(x);
             return x;
         });
         actionPushButton(r, thresh, rr->{
             boolean x = rr;
+            lr[1] = x;
             if (x && lr[0]) {
-                L.value(lr[0] = false);
-                R.value(lr[1] = false);
-                return false;
-            } else {
-                lr[1] = x;
+                //L.value(false);
+                x = false;
             }
             R.value(x);
             return x;

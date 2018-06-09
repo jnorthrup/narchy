@@ -2,6 +2,7 @@ package nars.derive.step;
 
 import jcog.data.ArrayHashSet;
 import jcog.math.Longerval;
+import nars.$;
 import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
@@ -528,7 +529,8 @@ public class Occurrify extends TimeGraph {
                     o[0] += bdt;
                     o[1] += bdt;
 
-                    immediateIfPast(d, o);
+                    if (d.concPunc==GOAL)
+                        immediateIfPast(d, o);
                 }
             }
             return p;
@@ -538,9 +540,12 @@ public class Occurrify extends TimeGraph {
             if (o[0] != ETERNAL) {
                 long NOW = d.time;
                 if (o[0] < NOW) {
-                    long delta = o[1] - o[0];
+                    long delta = Math.abs(NOW-o[0]);
+                    //discount for projection
+                    d.concTruth = $.t(d.concTruth.freq(), (float)Param.evi(d.concTruth.evi(), delta, d.dur)); //TODO if below min, stop here
+                    long range = o[1] - o[0];
                     o[0] = NOW;
-                    o[1] = NOW + delta;
+                    o[1] = NOW + range;
                 }
             }
         }

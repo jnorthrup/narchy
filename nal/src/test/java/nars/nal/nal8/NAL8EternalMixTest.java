@@ -3,9 +3,9 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.nal.nal7.NAL7Test;
+import nars.test.NALTest;
 import nars.test.TestNAR;
 import nars.time.Tense;
-import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -645,10 +645,10 @@ public class NAL8EternalMixTest extends NALTest {
 
     @Test
     public void testStrongUnificationAbductionPN() {
-        
+
         test
-                .input("((--,X) ==>+1 (Y)).")
-                .input("(Y). :|:")
+                .input("(--X ==>+1 Y).")
+                .input("Y. :|:")
                 .mustBelieve(cycles, "X", 0f, 0.45f, -1);
     }
 

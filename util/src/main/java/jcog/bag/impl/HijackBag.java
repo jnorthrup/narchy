@@ -703,7 +703,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return stream().spliterator();
     }
 
-    @NotNull
     @Override
     public Iterator<V> iterator() {
         return stream().iterator();

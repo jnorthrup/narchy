@@ -184,10 +184,6 @@ public interface Truth extends Truthed {
         return this;
     }
 
-
-
-
-    @NotNull
     default StringBuilder appendString(StringBuilder sb) {
         return Truth.appendString(sb, 2, freq(), conf());
     }

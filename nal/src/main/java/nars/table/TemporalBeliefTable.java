@@ -10,6 +10,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.truth.polation.TruthIntegration;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
@@ -30,20 +31,21 @@ public interface TemporalBeliefTable extends TaskTable {
      */
     static float value(Task t, long start, long end, long dur) {
 
+        return TruthIntegration.eviInteg(t, start, end, dur);
 
-        float absDistance =
-
-
-                t.midTimeTo( start ) + ((start!=end) ? t.midTimeTo(end) : 0);
-                
-                
-                
-        float ownEvi =
-                Revision.eviInteg(t, t.start(), t.end(), dur);
-
-        
-
-        return  ( ownEvi / (1 + (/*Math.log(1+*/absDistance/ dur)));
+//        float absDistance =
+//
+//
+//                t.midTimeTo( start ) + ((start!=end) ? t.midTimeTo(end) : 0);
+//
+//
+//
+//        float ownEvi =
+//                Revision.eviInteg(t, t.start(), t.end(), dur);
+//
+//
+//
+//        return  ( ownEvi / (1 + (/*Math.log(1+*/absDistance/ dur)));
 
 
 

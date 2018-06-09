@@ -3,9 +3,9 @@ package nars.table;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
+import nars.truth.polation.TruthIntegration;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -126,8 +126,8 @@ public class DefaultBeliefTable implements BeliefTable {
         Task tmp = temporal.sample(start, end, template, nar); 
         if (ete == null) return tmp;
         if (tmp == null) return ete;
-        float e = Revision.eviInteg(ete,start,end,1);
-        float t = Revision.eviInteg(tmp,start,end,1);
+        float e = TruthIntegration.eviInteg(ete,start,end,1);
+        float t = TruthIntegration.eviInteg(tmp,start,end,1);
         return nar.random().nextFloat() < (t/Math.max(Float.MIN_NORMAL, (e+t))) ? tmp : ete;
     }
 

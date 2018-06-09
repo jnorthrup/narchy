@@ -20,7 +20,7 @@ public class UnenforcedConcatSet<X> extends AbstractSet<X> {
     final Set<X> a, b;
     final int size;
 
-    UnenforcedConcatSet(@NotNull Set<X> a, @NotNull Set<X> b) {
+    UnenforcedConcatSet(Set<X> a, Set<X> b) {
         this.a = a;
         this.b = b;
         this.size = a.size() + b.size();
@@ -73,7 +73,7 @@ public class UnenforcedConcatSet<X> extends AbstractSet<X> {
 
 
     /** if a or b are null, they are considered empty sets */
-    @NotNull public static <X> Set<X> concat(@Nullable Set<X> a, @Nullable Set<X> b) {
+    public static <X> Set<X> concat(@Nullable Set<X> a, @Nullable Set<X> b) {
         Set<X> nextFree;
         boolean aEmpty = a == null || a.isEmpty();
         boolean bEmpty = b == null || b.isEmpty();
