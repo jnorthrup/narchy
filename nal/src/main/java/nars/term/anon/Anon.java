@@ -2,7 +2,6 @@ package nars.term.anon;
 
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.compound.util.AnonMap;
@@ -59,7 +58,7 @@ public class Anon extends AnonMap {
 
         return new DirectTermTransform() {
             @Override
-            public final @Nullable Termed transformAtomic(Term atomic) {
+            public final @Nullable Term transformAtomic(Term atomic) {
                 return put(atomic);
             }
         };
@@ -69,7 +68,7 @@ public class Anon extends AnonMap {
 
         return new TermTransform.NegObliviousTermTransform() {
             @Override
-            public final @Nullable Termed transformAtomic(Term atomic) {
+            public final @Nullable Term transformAtomic(Term atomic) {
                 return get(atomic);
             }
         };

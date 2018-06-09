@@ -86,7 +86,7 @@ public final class STMLinkage extends TaskService {
 
         float p = strength * tPri;
         for (Task u : stm) {
-            if (u == null) continue; 
+//            if (u == null) continue;
             link(t, p * u.priElseZero(), u, cause.id, nar);
         }
 

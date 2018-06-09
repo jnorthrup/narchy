@@ -10,22 +10,11 @@ import java.util.Map;
 
 public final class MapSubst implements Subst {
 
-    @Nullable public static Subst the(Map<? extends Term, Term> m) {
-        switch (m.size()) {
-            case 0:
-                return null;
-            case 1:
-                throw new UnsupportedOperationException("use replace(X,Y)");
-                
-            
-            default:
-                return new MapSubst(m);
-        }
-    }
+
 
     public final Map<? extends Term, Term> xy;
 
-    private MapSubst(Map<? extends Term, Term> xy) {
+    public MapSubst(Map<? extends Term, Term> xy) {
         this.xy = xy;
     }
 

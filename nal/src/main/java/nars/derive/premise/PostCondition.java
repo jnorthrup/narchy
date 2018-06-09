@@ -33,15 +33,11 @@ public final class PostCondition implements Serializable
     }
 
 
-    public static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
+    static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
             Atomic.the("Belief"),
-            Atomic.the("Stamp"),
             Atomic.the("Goal"),
-            Atomic.the("Order"),
-            Atomic.the("Permute"),
-            Atomic.the("Info"),
-            Atomic.the("Event"),
-            Atomic.the("Punctuation")
+            Atomic.the("Punctuation"),
+            Atomic.the("Time")
     );
 
 
@@ -54,7 +50,7 @@ public final class PostCondition implements Serializable
      * if puncOverride == 0 (unspecified), then the default punctuation rule determines the
      * derived task's punctuation.  otherwise, its punctuation will be set to puncOverride's value
      */
-    public final transient byte puncOverride;
+    final transient byte puncOverride;
 
 
     /**

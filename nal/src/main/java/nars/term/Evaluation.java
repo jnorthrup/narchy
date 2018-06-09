@@ -407,7 +407,7 @@ public class Evaluation {
         }
 
         @Override
-        public @Nullable Termed transformAtomic(Term z) {
+        public @Nullable Term transformAtomic(Term z) {
             if (z instanceof Functor)
                 hasFunctor = true;
 

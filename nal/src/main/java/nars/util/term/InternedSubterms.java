@@ -48,17 +48,10 @@ public final class InternedSubterms extends UnitPri implements HijackMemoize.Com
         return hash == p.hash && Arrays.equals(subs, p.subs);
     }
 
-    public float value() {
-        return 0.5f;
-    }
 
     @Override
     public final InternedSubterms x() {
         return this;
-    }
-
-    public void set(Subterms y) {
-        this.y = y;
     }
 
     public Subterms compute() {

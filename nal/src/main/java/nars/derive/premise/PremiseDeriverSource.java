@@ -42,7 +42,7 @@ public class PremiseDeriverSource extends ProxyTerm {
         public UppercaseAtomsToPatternVariables() { super(8); }
 
         @Override
-        public Termed transformAtomic(Term atomic) {
+        public Term transformAtomic(Term atomic) {
             if (atomic instanceof Atom) {
                 if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { 
                     String name = atomic.toString();

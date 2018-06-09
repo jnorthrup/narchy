@@ -1,7 +1,6 @@
 package nars.term.anon;
 
 import nars.term.Term;
-import nars.term.Termed;
 import nars.util.term.transform.CachedTermTransform;
 import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
@@ -48,7 +47,7 @@ public class CachedAnon extends Anon {
     protected TermTransform newPut() {
         return internCache = new DirectTermTransform.CachedDirectTermTransform(0) {
             @Override
-            public final @Nullable Termed transformAtomic(Term atomic) {
+            public final @Nullable Term transformAtomic(Term atomic) {
                 return put(atomic);
             }
         };

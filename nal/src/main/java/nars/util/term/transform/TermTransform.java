@@ -22,14 +22,14 @@ public interface TermTransform extends Evaluation.TermContext {
      * general pathway. generally should not be overridden
      */
     @Override
-    default @Nullable Termed apply(Term x) {
+    default @Nullable Term apply(Term x) {
         return x instanceof Compound ? transformCompound((Compound) x) : transformAtomic(x);
     }
 
     /**
      * transform pathway for atomics
      */
-    default @Nullable Termed transformAtomic(Term atomic) {
+    default @Nullable Term transformAtomic(Term atomic) {
         assert (!(atomic instanceof Compound));
         return atomic;
     }

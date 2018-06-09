@@ -25,10 +25,196 @@ import static jcog.Texts.n4;
  */
 public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Computation<X, Y>> implements Memoize<X, Y> {
 
-    protected float DEFAULT_VALUE;
+    final Function<X, Y> func;
+    final AtomicLong
+            hit = new AtomicLong(),
+            miss = new AtomicLong(),
+            reject = new AtomicLong(),
+            evict = new AtomicLong();
     private final boolean soft;
+    protected float DEFAULT_VALUE;
+    float CACHE_HIT_BOOST;
 
-    
+    public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
+        this(f, initialCapacity, reprobes, true);
+    }
+
+
+    public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes, boolean soft) {
+        super(initialCapacity, reprobes);
+        resize(initialCapacity);
+        this.soft = soft;
+        this.func = f;
+        this.DEFAULT_VALUE = 0.5f / reprobes;
+    }
+
+    @Override
+    protected Computation<X, Y> merge(Computation<X, Y> existing, Computation<X, Y> incoming, @Nullable MutableFloat overflowing) {
+        if (existing.isDeleted())
+            return incoming;
+        return super.merge(existing, incoming, overflowing);
+    }
+
+    @Override
+    protected void resize(int newSpace) {
+        if (space() > newSpace)
+            return;
+
+        super.resize(newSpace);
+    }
+
+    public float statReset(ObjectLongProcedure<String> eachStat) {
+
+        long H, M, R, E;
+        eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
+        eachStat.accept("M" /* miss */, M = miss.getAndSet(0));
+        eachStat.accept("R" /* reject */, R = reject.getAndSet(0));
+        eachStat.accept("E" /* evict */, E = evict.getAndSet(0));
+        return (H / ((float) (H + M + R /* + E */)));
+    }
+
+    /**
+     * estimates the value of computing the input.
+     * easier/frequent items will introduce lower priority, allowing
+     * harder/infrequent items to sustain longer
+     */
+    public float value(X x) {
+        return DEFAULT_VALUE;
+
+    }
+
+    @Override
+    public void setCapacity(int i) {
+        super.setCapacity(i);
+
+        float boost = i > 0 ?
+                (float) (1f / Math.sqrt(capacity()))
+                : 0;
+
+
+        float cut = boost / (reprobes / 2f);
+
+        assert (cut > Prioritized.EPSILON);
+
+        this.CACHE_HIT_BOOST = boost;
+
+
+    }
+
+    @Override
+    protected boolean attemptRegrowForSize(int s) {
+        return false;
+    }
+
+    @Override
+    public void pressurize(float f) {
+
+    }
+
+    @Override
+    public float depressurize() {
+        return 0f;
+    }
+
+    @Override
+    public HijackBag<X, Computation<X, Y>> commit(@Nullable Consumer<Computation<X, Y>> update) {
+        return this;
+    }
+
+    @Nullable
+    public Y getIfPresent(Object k) {
+        Computation<X, Y> exists = get(k);
+        if (exists != null) {
+            Y e = exists.get();
+            if (e != null) {
+                exists.priAdd(CACHE_HIT_BOOST);
+                hit.incrementAndGet();
+                return e;
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public Y removeIfPresent(X x) {
+        @Nullable Computation<X, Y> exists = remove(x);
+        if (exists != null) {
+            return exists.get();
+        }
+        return null;
+    }
+
+    @Override
+    @Nullable
+    public Y apply(X x) {
+        Y y = getIfPresent(x);
+        if (y == null) {
+            y = func.apply(x);
+            Computation<X, Y> input = computation(x, y);
+            Computation<X, Y> output = put(input);
+            boolean interned = output == input;
+            (interned ? miss : reject).incrementAndGet();
+            if (interned) {
+                onIntern(x);
+            }
+        }
+        return y;
+    }
+
+    /**
+     * can be overridden in implementations to compact or otherwise react to the interning of an input key
+     */
+    protected void onIntern(X x) {
+
+    }
+
+    /**
+     * produces the memoized computation instance for insertion into the bag.
+     * here it can choose the implementation to use: strong, soft, weak, etc..
+     */
+    public Computation<X, Y> computation(X x, Y y) {
+        float vx = value(x);
+        return soft ?
+                new SoftPair<>(x, y, vx) :
+                new StrongPair<>(x, y, vx);
+    }
+
+    @Override
+    public X key(Computation<X, Y> value) {
+        return value.x();
+    }
+
+    @Override
+    protected boolean keyEquals(Object k, Computation<X, Y> p) {
+        return p.x().equals(k);
+    }
+
+    @Override
+    public Consumer<Computation<X, Y>> forget(float rate) {
+        return null;
+    }
+
+    @Override
+    public void onRemove(HijackMemoize.Computation<X, Y> value) {
+        value.delete();
+        evict.incrementAndGet();
+    }
+
+    /**
+     * clears the statistics
+     */
+    @Override
+    public String summary() {
+        StringBuilder sb = new StringBuilder(64);
+        sb.append(" N=").append(size()).append(' ');
+        float rate = statReset((k, v) -> {
+            sb.append(k).append('=').append(v).append(' ');
+        });
+        sb.setLength(sb.length() - 1);
+        sb.append(" D=").append(Texts.n2percent(density()));
+        sb.insert(0, Texts.n2percent(rate));
+        return sb.toString();
+    }
 
     public interface Computation<X, Y> extends Priority, Supplier<Y> {
         /**
@@ -65,7 +251,6 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             return x;
         }
     }
-
 
     final static class SoftPair<X, Y> extends SoftReference<Y> implements Computation<X, Y> {
 
@@ -133,11 +318,6 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             return pri;
 
 
-
-
-
-
-
         }
 
         @Override
@@ -146,220 +326,6 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             return p != p;
         }
 
-    }
-
-    float CACHE_HIT_BOOST;
-    
-
-    final Function<X, Y> func;
-
-    final AtomicLong
-            hit = new AtomicLong(),  
-            miss = new AtomicLong(),  
-            reject = new AtomicLong(), 
-            evict = new AtomicLong(); 
-
-
-    
-
-
-    public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
-        this(f, initialCapacity, reprobes, true);
-    }
-    public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes, boolean soft) {
-        super(initialCapacity, reprobes);
-        resize(initialCapacity);
-        this.soft = soft;
-        this.func = f;
-        this.DEFAULT_VALUE = 0.5f/reprobes;
-    }
-
-    @Override
-    protected Computation<X, Y> merge(Computation<X, Y> existing, Computation<X, Y> incoming, @Nullable MutableFloat overflowing) {
-        if (existing.isDeleted())
-            return incoming; 
-        return super.merge(existing, incoming, overflowing);
-    }
-
-    @Override
-    protected void resize(int newSpace) {
-        if (space() > newSpace)
-            return; 
-
-        super.resize(newSpace);
-    }
-
-    public float statReset(ObjectLongProcedure<String> eachStat) {
-        
-        long H, M, R, E;
-        eachStat.accept("H" /* hit */, H = hit.getAndSet(0));
-        eachStat.accept("M" /* miss */, M = miss.getAndSet(0));
-        eachStat.accept("R" /* reject */, R = reject.getAndSet(0));
-        eachStat.accept("E" /* evict */, E = evict.getAndSet(0));
-        return (H / ((float) (H + M + R /* + E */)));
-    }
-
-    /**
-     * estimates the value of computing the input.
-     * easier/frequent items will introduce lower priority, allowing
-     * harder/infrequent items to sustain longer
-     */
-    public float value(X x) {
-        return DEFAULT_VALUE;
-        
-    }
-
-    @Override
-    public void setCapacity(int i) {
-        super.setCapacity(i);
-
-        float boost = i > 0 ?
-                (float) (1f / Math.sqrt(capacity()))
-                : 0;
-
-        
-        
-        
-        
-        float cut = boost / (reprobes / 2f);
-
-        assert (cut > Prioritized.EPSILON);
-
-        this.CACHE_HIT_BOOST = boost;
-
-        
-
-        
-
-        
-    }
-
-    @Override
-    protected boolean attemptRegrowForSize(int s) {
-        return false;
-    }
-
-    @Override
-    public void pressurize(float f) {
-        
-    }
-
-
-
-
-
-
-    @Override
-    public float depressurize() {
-        return 0f; 
-    }
-
-    @Override
-    public HijackBag<X, Computation<X, Y>> commit(@Nullable Consumer<Computation<X, Y>> update) {
-        return this;
-    }
-
-    @Nullable
-    public Y getIfPresent(Object k) {
-        Computation<X, Y> exists = get(k);
-        if (exists != null) {
-            Y e = exists.get();
-            if (e != null) {
-                exists.priAdd(CACHE_HIT_BOOST);
-                hit.incrementAndGet();
-                return e;
-            }
-        }
-        return null;
-    }
-
-    @Nullable
-    public Y removeIfPresent(X x) {
-        @Nullable Computation<X, Y> exists = remove(x);
-        if (exists != null) {
-            return exists.get();
-        }
-        return null;
-    }
-
-    @Override
-    @Nullable
-    public Y apply(X x) {
-        Y y = getIfPresent(x);
-        if (y == null) {
-            y = func.apply(x);
-            Computation<X, Y> input = computation(x, y);
-            Computation<X, Y> output = put(input);
-            boolean interned = output==input;
-            (interned ? miss : reject).incrementAndGet();
-            if (interned) {
-                onIntern(x);
-            }
-        }
-        return y;
-    }
-
-    /** can be overridden in implementations to compact or otherwise react to the interning of an input key */
-    protected void onIntern(X x) {
-
-    }
-
-    /**
-     * produces the memoized computation instance for insertion into the bag.
-     * here it can choose the implementation to use: strong, soft, weak, etc..
-     */
-    public Computation<X, Y> computation(X x, Y y) {
-        float vx = value(x);
-        return soft ?
-                new SoftPair<>(x, y, vx) :
-                new StrongPair<>(x, y, vx);
-    }
-
-
-
-
-
-
-
-
-
-
-    @Override
-    public X key(Computation<X, Y> value) {
-        return value.x();
-    }
-
-    @Override
-    protected boolean keyEquals(Object k, Computation<X, Y> p) {
-        return p.x().equals(k);
-    }
-
-    @Override
-    public Consumer<Computation<X, Y>> forget(float rate) {
-        return null;
-    }
-
-    @Override
-    public void onRemove(HijackMemoize.Computation<X, Y> value) {
-        value.delete();
-        evict.incrementAndGet();
-    }
-
-
-    /**
-     * clears the statistics
-     */
-    @Override
-    public String summary() {
-        StringBuilder sb = new StringBuilder(64);
-        sb.append(" N=").append(size()).append(' ');
-        float rate = statReset((k, v) -> {
-            sb.append(k).append('=').append(v).append(' ');
-        });
-        sb.setLength(sb.length() - 1); 
-        sb.append(" D=").append(Texts.n2percent(density()));
-        sb.insert(0, Texts.n2percent(rate));
-        return sb.toString();
     }
 
 

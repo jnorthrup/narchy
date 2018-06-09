@@ -39,7 +39,6 @@ import nars.unify.Unify;
 import nars.util.SoftException;
 import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.Retemporalize;
-import nars.util.term.transform.Subst;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -198,8 +197,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
     @Nullable
     default Term transform(TermTransform t) {
-        Termed y = t.transformAtomic(this);
-        return y == null ? null : y.term();
+        return t.transformAtomic(this);
     }
 
     @Nullable
@@ -616,13 +614,16 @@ public interface Term extends Termed, Comparable<Termed> {
 
     @Nullable
     default Term replace(Map<? extends Term, Term> m) {
-        if (m.size() == 1) {
-            Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
-            return replace(e.getKey(), e.getValue());
+        switch (m.size()) {
+            case 0:
+                return this;
+            case 1: {
+                Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
+                return replace(e.getKey(), e.getValue());
+            }
+            default:
+                return transform(new MapSubst(m));
         }
-
-        Subst s = MapSubst.the(m);
-        return s != null ? transform(s) : this;
     }
 
     Term replace(Term from, Term to);

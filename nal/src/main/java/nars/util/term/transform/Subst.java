@@ -2,7 +2,6 @@ package nars.util.term.transform;
 
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -20,7 +19,7 @@ public interface Subst extends TermTransform {
     }
 
     @Override @Nullable
-    default Termed transformAtomic(Term atomic) {
+    default Term transformAtomic(Term atomic) {
         Term y = resolve(atomic);
         return y != null ? y : atomic;
     }

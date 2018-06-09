@@ -8,7 +8,6 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -38,10 +37,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
     }
 
-    @NotNull
-    public static String summary(HijackTermCache[] termCache) {
-        return Arrays.toString(Util.map(HijackMemoize::summary, new String[termCache.length], termCache));
-    }
 
     private HijackTermCache newOpCache(int capacity) {
         return new HijackTermCache(capacity, 4);
@@ -126,5 +121,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     public String summary() {
         return
                 summary(termCache);
+    }
+
+    public static String summary(HijackTermCache[] termCache) {
+        return Arrays.toString(Util.map(HijackMemoize::summary, new String[termCache.length], termCache));
     }
 }

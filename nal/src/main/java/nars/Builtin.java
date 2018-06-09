@@ -5,8 +5,10 @@ import jcog.User;
 import jcog.list.FasterList;
 import jcog.pri.PriReference;
 import nars.concept.Concept;
-import nars.concept.Operator;
-import nars.op.*;
+import nars.op.ListFunc;
+import nars.op.MathFunc;
+import nars.op.SetFunc;
+import nars.op.Subst;
 import nars.op.data.flat;
 import nars.op.data.reflect;
 import nars.subterm.Subterms;
@@ -22,7 +24,6 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import javax.script.ScriptException;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -328,7 +329,7 @@ public class Builtin {
         }));
 
         nar.on(Functor.f1("varIntro", (x) -> {
-            Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
+            Pair<Term, Map<Term, Term>> result = nars.op.DepIndepVarIntroduction.the.apply(x, nar.random());
             return result != null ? result.getOne() : Null;
         }));
 
@@ -612,18 +613,18 @@ public class Builtin {
                 assertEquals(/*msg,*/ x, y);
         });
 
-        nar.onOp1("js", (code, nn) -> {
-            if (code.op() == ATOM) {
-                String js = $.unquote(code);
-                Object result;
-                try {
-                    result = NARjs.the().eval(js);
-                } catch (ScriptException e) {
-                    result = e;
-                }
-                nn.input(Operator.log(nar.time(), $.p(code, $.the(result))));
-            }
-        });
+//        nar.onOp1("js", (code, nn) -> {
+//            if (code.op() == ATOM) {
+//                String js = $.unquote(code);
+//                Object result;
+//                try {
+//                    result = NARjs.the().eval(js);
+//                } catch (ScriptException e) {
+//                    result = e;
+//                }
+//                nn.input(Operator.log(nar.time(), $.p(code, $.the(result))));
+//            }
+//        });
 
         initMemoryOps(nar);
     }

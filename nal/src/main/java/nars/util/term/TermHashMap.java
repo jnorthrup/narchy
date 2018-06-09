@@ -38,15 +38,15 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             int sizeBeforeClear = id.size();
             id.clear();
             if (sizeBeforeClear > compactThreshold())
-                id.compact(); 
+                id.compact();
         }
-        
+
 
         if (other != null) other.clear();
     }
 
     public int compactThreshold() {
-        return initialHashCapacity()*2;
+        return initialHashCapacity() * 2;
     }
 
     @Override
@@ -54,17 +54,10 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         boolean hasID = id != null && !id.isEmpty();
         boolean hasOther = other != null && !other.isEmpty();
         if (!hasID) {
-            if (!hasOther)
-                return Collections.emptySet();
-            else
-                return other.entrySet();
+            return !hasOther ? Collections.emptySet() : other.entrySet();
         } else {
             Set<Entry<Term, X>> idEntries = new AnonMapEntrySet<>(id);
-            if (!hasOther) {
-                return idEntries;
-            } else {
-                return UnenforcedConcatSet.concat(idEntries, other.entrySet());
-            }
+            return !hasOther ? idEntries : UnenforcedConcatSet.concat(idEntries, other.entrySet());
         }
     }
 
@@ -74,19 +67,19 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             short a = ((AnonID) key).anonID();
             if (id == null) {
                 X next = f.apply(key, null);
-                if (next!=null) {
+                if (next != null) {
                     ensureIDMap().put(a, next);
                 }
                 return next;
             } else {
-                return id.updateValue(a, ()->f.apply(key,null), (p)->
+                return id.updateValue(a, () -> f.apply(key, null), (p) ->
                         f.apply(key, p));
             }
         } else {
-            
+
             if (other == null) {
                 X next = f.apply(key, null);
-                if (next!=null) {
+                if (next != null) {
                     ensureOtherMap().put(key, next);
                 }
                 return next;
@@ -100,20 +93,11 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
                              Function<? super Term, ? extends X> mappingFunction) {
 
 
-
-
-
-
-
-
-
-
-
         if (key instanceof AnonID) {
             short a = ((AnonID) key).anonID();
             if (id == null) {
                 X next = mappingFunction.apply(key);
-                if (next!=null) {
+                if (next != null) {
                     (id = newIDMap()).put(a, next);
                 }
                 return next;
@@ -122,10 +106,10 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
                         mappingFunction.apply(key));
             }
         } else {
-            
+
             if (other == null) {
                 X next = mappingFunction.apply(key);
-                if (next!=null) {
+                if (next != null) {
                     (other = newOtherMap()).put(key, next);
                 }
                 return next;
@@ -135,6 +119,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         }
 
     }
+
     private ShortObjectHashMap<X> ensureIDMap() {
         ShortObjectHashMap<X> o = this.id;
         if (o == null) {
@@ -143,13 +128,10 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
             return o;
         }
     }
+
     private Map<Term, X> ensureOtherMap() {
         Map<Term, X> o = this.other;
-        if (o == null) {
-            return this.other = newOtherMap();
-        } else {
-            return o;
-        }
+        return o == null ? (this.other = newOtherMap()) : o;
     }
 
     @Override
@@ -166,11 +148,9 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     @Override
     public X put(Term key, X value) {
-        if (key instanceof AnonID) {
-            return ensureIDMap().put(((AnonID) key).anonID(), value);
-        } else {
-            return ensureOtherMap().put(key, value);
-        }
+        return (key instanceof AnonID) ?
+                ensureIDMap().put(((AnonID) key).anonID(), value) :
+                ensureOtherMap().put(key, value);
     }
 
     @Override
@@ -197,7 +177,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     protected Map<Term, X> newOtherMap() {
         return new UnifiedMap<>(initialHashCapacity(), 0.99f);
-        
+
     }
 
     @Override
@@ -215,32 +195,6 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         id = null;
         other = null;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     static class AnonMapEntrySet<X> extends AbstractSet<Map.Entry<Term, X>> {

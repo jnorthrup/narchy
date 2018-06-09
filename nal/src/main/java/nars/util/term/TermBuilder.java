@@ -109,8 +109,8 @@ public abstract class TermBuilder {
         for (Term x : u) {
             if (!hasEllipsis && (x instanceof Ellipsislike))
                 hasEllipsis = true;
-            if (x == Null)
-                return Null;
+//            if (x == Null)
+//                return Null;
         }
 
         int s = u.length;

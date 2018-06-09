@@ -2,22 +2,17 @@ package nars.util.term.transform;
 
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static nars.Op.Null;
-
 public class CachedTermTransform implements TermTransform {
 
     final TermTransform proxy;
     final BiFunction<Term,Function<Term,Term>,Term> cache;
-    private final Logger logger = LoggerFactory.getLogger(CachedTermTransform.class);
+//    private final Logger logger = LoggerFactory.getLogger(CachedTermTransform.class);
 
     public CachedTermTransform(TermTransform proxy, Map<Term, Term> cache) {
         this(proxy, cache::computeIfAbsent);
@@ -29,7 +24,7 @@ public class CachedTermTransform implements TermTransform {
     }
 
     @Override
-    public final @Nullable Termed transformAtomic(Term atomic) {
+    public final @Nullable Term transformAtomic(Term atomic) {
         return proxy.transformAtomic(atomic);
     }
 
@@ -37,14 +32,15 @@ public class CachedTermTransform implements TermTransform {
     public Term transformCompound(Compound x) {
         return cache.apply(x, xx -> {
             Term y = proxy.transformCompound((Compound) xx);
-            return (y == null) ? nulled(xx) : y.term();
+            //return (y == null) ? nulled(xx) : y.term();
+            return y;
         });
     }
 
 
-    protected Term nulled(Term x) {
-        logger.warn("x transformed to null {}", x);
-        return Null;
-    }
+//    protected Term nulled(Term x) {
+//        logger.warn("x transformed to null {}", x);
+//        return Null;
+//    }
 
 }
