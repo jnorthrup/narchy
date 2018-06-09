@@ -20,6 +20,7 @@ import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.INH;
+import static nars.time.Tense.DTERNAL;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
@@ -109,10 +110,11 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         if (xo == CONJ && bb.hasAny(CONJ)) {
 
+            int xdt = x.dt();
             x.eventsWhile((when, what) -> {
                 templates(what.unneg(), tc, nextDepth, root, maxDepth);
                 return true;
-            }, 0, true, true, true, 0);
+            }, 0, xdt ==0, xdt ==DTERNAL, true, 0);
             return;
         }
 

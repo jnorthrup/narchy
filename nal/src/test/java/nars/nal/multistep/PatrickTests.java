@@ -122,11 +122,11 @@ public class PatrickTests extends NALTest {
 
         tt.confTolerance(0.5f);
 
-        tt.nar.freqResolution.set(0.1f);
-        tt.nar.confResolution.set(0.02f);
+        tt.nar.freqResolution.set(0.05f);
+        tt.nar.confResolution.set(0.01f);
 
         
-        int dur = 100;
+        int dur = cycles/2;
         tt.nar.time.dur(dur);
         tt.nar.termVolumeMax.set(28);
         

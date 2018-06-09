@@ -243,7 +243,7 @@ public class ArithmeticIntroduction extends LeakBack {
     @Override
     protected float leak(Task xx) {
         Term x = xx.term();
-        Term y = apply(x, xx.isEternal(), nar.random());
+        Term y = apply(x, true /*xx.isEternal()*/, nar.random());
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             //Task yy = Task.clone(xx, y);
             Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) ->

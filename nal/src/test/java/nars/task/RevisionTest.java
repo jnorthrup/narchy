@@ -355,8 +355,12 @@ public class RevisionTest {
         permuteChoose(a, b, expected);
     }
 
+    static void permuteChoose(Compound a, Compound b, int dur, boolean mergeOrChoose, String expected) {
+        assertEquals(expected, permuteIntermpolations(a, b, dur, mergeOrChoose).toString());
+    }
+
     static void permuteChoose(Compound a, Compound b, String expected) {
-        assertEquals(expected, permuteChooses(a, b).toString());
+        permuteChoose(a, b, 1, false, expected);
     }
 
     @Test public void testIntermpolationOrderMixDternal() throws Narsese.NarseseException {
@@ -402,7 +406,12 @@ public class RevisionTest {
     @Test public void testIntermpolationConj2OrderSwap() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 b)");
         Compound b = $.$("(b &&+1 a))");
-        permuteChoose(a, b, "[(b &&+1 a), (a&|b), (a &&+1 b)]");
+        Compound c = $.$("(b &&+2 a))");
+        permuteChoose(a, b, 1, false, "[(b &&+1 a), (a &&+1 b)]");
+        permuteChoose(a, b, 2, true, "[(a&|b)]");
+        permuteChoose(a, c, 1, true, "[(b &&+2 a), (a &&+1 b)]"); //not within dur
+        permuteChoose(a, c, 4, true, "[(a&|b)]");
+
     }
     @Test public void testIntermpolationImplDirectionMismatch() throws Narsese.NarseseException {
         Compound a = $.$("(a ==>+1 b)");
@@ -419,7 +428,7 @@ public class RevisionTest {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+1 b)");
         try {
-            Set<Term> p = permuteChooses(a, b);
+            Set<Term> p = permuteIntermpolations(a, b);
             fail("");
         } catch (Error  e) {
             assertTrue(true);
@@ -442,10 +451,15 @@ public class RevisionTest {
                 "[(x-->(a&|b)), (x-->(a &&+1 b))]");
     }
 
-    static Set<Term> permuteChooses(Term a, Term b) {
+    static Set<Term> permuteIntermpolations(Term a, Term b) {
+        return permuteIntermpolations(a, b, 1, false);
+    }
+
+    static Set<Term> permuteIntermpolations(Term a, Term b, int dur, boolean mergeOrChoose) {
 
         NAR s = NARS.shell();
-        s.dtMergeOrChoose.set(false);
+        s.time.dur(dur);
+        s.dtMergeOrChoose.set(mergeOrChoose);
 
         assertEquals(a.concept(), b.concept());
 

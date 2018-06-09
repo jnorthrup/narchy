@@ -326,8 +326,25 @@ public class Conj extends AnonMap {
     /**
      * similar to conjMerge but interpolates events so the resulting
      * intermpolation is not considerably more complex than either of the inputs
+     * assumes a and b are both conjunctions
      */
     public static Term conjIntermpolate(Term a, Term b, long bOffset, NAR nar) {
+
+        if (bOffset == 0 && a.subterms().equals(b.subterms())) {
+            //special case: equal subs
+            int adt, bdt;
+
+            if (nar.dtMergeOrChoose() && (adt=a.dt())!=DTERNAL && (bdt=b.dt())!=DTERNAL && adt!=XTERNAL && bdt!=XTERNAL && ((adt>0 == bdt>0) || (Math.abs(adt-bdt) <= nar.dur())) ) {
+                //merge if they are the same sign or within a duration
+                long abdt = (((long)adt) + (bdt))/2L;
+                assert(Math.abs(abdt) < Integer.MAX_VALUE);
+                return a.dt(Tense.dither((int)abdt, nar));
+            } else {
+                //choose
+                return nar.random().nextBoolean() ? a : b;
+            }
+
+        }
         return new Conjterpolate(a, b, bOffset, nar).term();
     }
 

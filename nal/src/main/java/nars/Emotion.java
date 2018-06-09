@@ -221,7 +221,7 @@ public class Emotion implements Meter {
         if (qPriBefore > Prioritized.EPSILON) {
             //float fraction = ansConf * (1 - qOrig);
             //float fraction = qOrig / 2f;
-            float fraction = 0.5f/(1+qOrig);
+            float fraction = 0.5f * (1f - qOrig);
             answer.take(questionTask, fraction, false,
                     /*true */ false);
 
@@ -230,7 +230,7 @@ public class Emotion implements Meter {
         }
 
 
-        float str = ansConf * qOrig;
+        float str = ansConf;
         MetaGoal.Answer.learn(answer.cause(), str, nar.causes);
     }
 

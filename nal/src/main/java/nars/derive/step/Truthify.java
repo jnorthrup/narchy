@@ -59,6 +59,7 @@ abstract public class Truthify extends AbstractPred<Derivation>  {
                     switch (beliefProjection) {
                         case Raw: beliefTruth = d.beliefTruth; break;
                         case Task: beliefTruth = d.beliefTruthDuringTask; break;
+                        //case Union: throw new TODO();
                         default:
                             throw new UnsupportedOperationException(beliefProjection + " unimplemented");
                     }

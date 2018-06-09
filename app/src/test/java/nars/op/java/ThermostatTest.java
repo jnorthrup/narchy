@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
+import nars.op.ArithmeticIntroduction;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
@@ -25,9 +26,11 @@ public class ThermostatTest {
         final int DUR = 3;
 
         final int subTrainings = 2;
-        final int thinkDurs = 2;
+        final int thinkDurs = 3;
 
         NAR n = NARS.tmp();
+
+        new ArithmeticIntroduction(8, n);
 
         n.time.dur(DUR);
         n.dtDither.set(0);
