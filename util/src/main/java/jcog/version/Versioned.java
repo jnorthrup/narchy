@@ -7,11 +7,7 @@ import org.jetbrains.annotations.Nullable;
  * Maintains a versioned snapshot history (stack) of a changing value.
  * Managed by a Versioning context
  */
-public class Versioned<X> extends
-
-        FasterList<X>
-
-{
+public class Versioned<X> extends FasterList<X> {
 
 
     protected final Versioning context;

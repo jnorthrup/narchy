@@ -1,6 +1,7 @@
 package nars;
 
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.primitives.Longs;
 import jcog.Service;
@@ -101,7 +102,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * cause->value table
      */
-    public final FasterList<Cause> causes = new FasterList<>(256) {
+    public final FasterList<Cause> causes = new FasterList<>(512) {
         @Override
         protected Cause[] newArray(int newCapacity) {
             return new Cause[newCapacity];
@@ -109,8 +110,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     };
     public final Evaluation.TermContext functors = new Functor.FunctorResolver() {
         @Override
-        public final Termed apply(Term term) {
-            return concepts.get(term, false);
+        public final Term apply(Term term) {
+            Termed x = concepts.get(term, false);
+            if (x instanceof Functor)
+                return (Term)x;
+            else
+                return term;
         }
     };
     protected final Random random;
@@ -210,10 +215,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
             concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
 
-
-                volume.recordValue(c.volume());
-                rootOp.add(c.op());
-                clazz.add(c.getClass().toString());
+                Term ct = c.term();
+                volume.recordValue(ct.volume());
+                rootOp.add(ct.op());
+                clazz.add(ct.getClass().toString());
 
                 ConceptState p = c.state();
                 policy.add(p != null ? p.toString() : "null");
@@ -980,7 +985,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
 
     @Nullable
     public final Concept concept(/**/Termed x, boolean createIfMissing) {
-        return concepts.concept(x.term(), createIfMissing);
+        return concepts.concept(x, createIfMissing);
     }
 
     public Stream<Activate> conceptsActive() {
@@ -1436,7 +1441,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
                     input(x[0]);
                     break;
                 default:
-                    NAR.this.input(() -> Iterators.filter(ArrayIterator.get(x), this::process));
+                    NAR.this.input(Iterables.filter(ArrayIterator.iterable(x), this::process));
                     break;
             }
         }

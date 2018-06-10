@@ -48,13 +48,13 @@ public class Anon extends AnonMap {
         return false;
     }
 
-    final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
+    private final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
         int s = idToTerm.addAndGetSize(next);
         assert (s < Byte.MAX_VALUE);
         return (byte) s;
     };
 
-    protected TermTransform newPut() {
+    TermTransform newPut() {
 
         return new DirectTermTransform() {
             @Override
@@ -68,7 +68,7 @@ public class Anon extends AnonMap {
         };
     }
 
-    protected TermTransform newGet() {
+    TermTransform newGet() {
 
         return new TermTransform.NegObliviousTermTransform() {
             @Override

@@ -16,7 +16,8 @@
 package jcog.io;
 
 /* buffers writes to a RandomAccessFile */
-/* flush() must be called after you're done writing a chunk. */
+/* flush() must be called after you're done writing a chunk.
+ * TODO needs Test */
 public class FastRandomFile implements java.io.DataOutput, java.io.DataInput
 {
   protected java.io.RandomAccessFile raf = null;

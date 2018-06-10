@@ -2,8 +2,8 @@ package nars.nal.nal1;
 
 import nars.NAR;
 import nars.NARS;
-import nars.test.impl.DeductiveChainTest;
 import nars.test.NALTest;
+import nars.test.impl.DeductiveChainTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.test.impl.DeductiveChainTest.*;

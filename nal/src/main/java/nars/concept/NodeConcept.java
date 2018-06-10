@@ -51,7 +51,7 @@ public class NodeConcept implements Concept {
 
         templates = buildTemplates(term);
         if (Param.DEBUG_EXTRA) {
-            for (Termed target : templates) {
+            for (Term target : templates) {
                 if (!target.term().equals(target.term().concept())) {
                     throw new RuntimeException("attempted non-root linkage: " + target);
                 }
@@ -146,55 +146,54 @@ public class NodeConcept implements Concept {
         return term.toString();
     }
 
-    @Override
-    public int subs() {
-        return term.subs();
-    }
-
-
-    @Override
-    public int varIndep() {
-        return term.varIndep();
-    }
-
-    @Override
-    public int varDep() {
-        return term.varDep();
-    }
-
-    @Override
-    public int varQuery() {
-        return term.varQuery();
-    }
-
-    @Deprecated
-    @Override
-    public int varPattern() {
-        return term.varPattern();
-    }
-
-    @Deprecated
-    @Override
-    public int complexity() {
-        return term.complexity();
-    }
-
-    @Deprecated
-    @Override
-    public int structure() {
-        return term.structure();
-    }
-
-    @Override
-    public int volume() {
-        return term.volume();
-    }
-
-
-    @Override
-    public boolean isNormalized() {
-        return term.isNormalized(); 
-    }
+//    @Override
+//    public int subs() {
+//        return term.subs();
+//    }
+//
+//    @Override
+//    public int varIndep() {
+//        return term.varIndep();
+//    }
+//
+//    @Override
+//    public int varDep() {
+//        return term.varDep();
+//    }
+//
+//    @Override
+//    public int varQuery() {
+//        return term.varQuery();
+//    }
+//
+//    @Deprecated
+//    @Override
+//    public int varPattern() {
+//        return term.varPattern();
+//    }
+//
+//    @Deprecated
+//    @Override
+//    public int complexity() {
+//        return term.complexity();
+//    }
+//
+//    @Deprecated
+//    @Override
+//    public int structure() {
+//        return term.structure();
+//    }
+//
+//    @Override
+//    public int volume() {
+//        return term.volume();
+//    }
+//
+//
+//    @Override
+//    public boolean isNormalized() {
+//        return term.isNormalized();
+//    }
 
     @Override
     public void delete( NAR nar) {

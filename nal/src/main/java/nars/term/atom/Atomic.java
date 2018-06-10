@@ -192,7 +192,7 @@ public interface Atomic extends Term {
     byte[] bytes();
 
     @Override
-    default void append(ByteArrayDataOutput out) {
+    default void appendTo(ByteArrayDataOutput out) {
         out.write(bytes());
     }
 
@@ -213,7 +213,7 @@ public interface Atomic extends Term {
     }
 
     @Override
-    default void append(Appendable w) throws IOException {
+    default void appendTo(Appendable w) throws IOException {
         w.append(toString());
     }
 
@@ -265,6 +265,9 @@ public interface Atomic extends Term {
         return false;
     }
 
+
+    @Override
+    default int complexity() { return 1; }
 
     /**
      * default volume = 1

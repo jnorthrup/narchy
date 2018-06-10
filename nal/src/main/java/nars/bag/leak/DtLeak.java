@@ -32,7 +32,6 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
     public float commit(NAR nar, float work) {
 
-        float forgetRate = nar.forgetRate.floatValue();
 
         long now = nar.time();
         int dur = nar.dur();
@@ -42,6 +41,7 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
             this.lastLeak = last = now;
         }
 
+        float forgetRate = nar.forgetRate.floatValue();
         if (!bag.commit(bag.forget(forgetRate)).isEmpty()) {
 
             

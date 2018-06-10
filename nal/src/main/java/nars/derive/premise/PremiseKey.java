@@ -40,8 +40,8 @@ public final class PremiseKey {
         
 
 
-        d.taskTerm.root().append((ByteArrayDataOutput)k);
-        d.beliefTerm.root().append((ByteArrayDataOutput)k);
+        d.taskTerm.root().appendTo((ByteArrayDataOutput)k);
+        d.beliefTerm.root().appendTo((ByteArrayDataOutput)k);
 
 
 
@@ -61,7 +61,7 @@ public final class PremiseKey {
     }
 
     /** TODO this can safely return short[] results */
-    public short[] solve(PrediTerm<Derivation> what) {
+    public static short[] solve(PrediTerm<Derivation> what) {
 
         Derivation derivation  = Deriver.derivation.get();
 

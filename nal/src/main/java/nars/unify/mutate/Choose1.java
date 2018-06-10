@@ -20,7 +20,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     private final Term xEllipsis;
     private final Term[] yy;
 
-    final static Atom CHOOSE_1 = $.the(Choose1.class);
+    private final static Atom CHOOSE_1 = $.the(Choose1.class);
 
     public Choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree) {
         this(xEllipsis, x, yFree.toArray(Op.EmptyTermArray));

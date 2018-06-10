@@ -1435,7 +1435,7 @@ public enum Op {
         return u;
     }
 
-    public boolean commute(int dt, int subterms) {
+    public static boolean commute(int dt, int subterms) {
         return subterms > 1 && Op.concurrent(dt);
     }
 
@@ -1539,7 +1539,7 @@ public enum Op {
         }
 
         @Override
-        public final void append(Appendable w) throws IOException {
+        public final void appendTo(Appendable w) throws IOException {
             w.append(symChar);
         }
 

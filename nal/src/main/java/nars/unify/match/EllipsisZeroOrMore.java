@@ -32,7 +32,7 @@ public class EllipsisZeroOrMore extends Ellipsis {
     }
 
 
-    final static int RANK = Term.opX(VAR_PATTERN, 4 /* different from normalized variables with a subOp of 0 */);
+    private final static int RANK = Term.opX(VAR_PATTERN, 4 /* different from normalized variables with a subOp of 0 */);
     @Override public int opX() { return RANK;    }
 
 }

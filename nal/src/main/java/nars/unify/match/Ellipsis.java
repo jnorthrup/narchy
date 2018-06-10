@@ -2,7 +2,6 @@ package nars.unify.match;
 
 import nars.$;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
@@ -14,11 +13,11 @@ import static nars.Op.VAR_PATTERN;
 
 public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsislike {
 
-    protected final byte num;
+    final byte num;
     private final int minArity;
 
 
-    protected Ellipsis(NormalizedVariable target, int minArity) {
+    Ellipsis(NormalizedVariable target, int minArity) {
         super(VAR_PATTERN, target.toString());
 
         assert (target.op() == VAR_PATTERN);

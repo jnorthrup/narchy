@@ -23,11 +23,11 @@ public class EllipsisMatch extends LightCompound {
     public final static EllipsisMatch empty = new EllipsisMatch(Op.EmptyTermArray);
 
 
-    protected EllipsisMatch(Term[] t) {
+    private EllipsisMatch(Term[] t) {
         super(PROD, t);
     }
 
-    public EllipsisMatch(Collection<Term> term) {
+    private EllipsisMatch(Collection<Term> term) {
         this(term.toArray(Op.EmptyTermArray));
     }
 
@@ -35,8 +35,7 @@ public class EllipsisMatch extends LightCompound {
         int n = xy.length;
         Term[] z = new Term[n + expectedEllipsisAdds - expectedEllipsisRemoves];
         int k = 0;
-        for (int i = 0; i < n; i++) {
-            Term x = xy[i];
+        for (Term x : xy) {
             if (x instanceof EllipsisMatch) {
                 Term[] xx = ((EllipsisMatch) x).arrayShared();
                 for (Term xxx : xx)
@@ -79,8 +78,8 @@ public class EllipsisMatch extends LightCompound {
         int j = 0;
         main:
         for (int i = 0; i < ll; i++) {
-            for (int k = 0; k < ee; k++)
-                if (i == except[k])
+            for (byte anExcept : except)
+                if (i == anExcept)
                     continue main;
 
 
@@ -96,8 +95,8 @@ public class EllipsisMatch extends LightCompound {
         int j = 0;
         main:
         for (int i = 0; i < ll; i++) {
-            for (int k = 0; k < ee; k++)
-                if (i == except[k])
+            for (byte anExcept : except)
+                if (i == anExcept)
                     continue main;
 
             t[j++] = matched[i];

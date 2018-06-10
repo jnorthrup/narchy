@@ -15,7 +15,7 @@ import static nars.time.Tense.DTERNAL;
 /**
  * on-heap, caches many commonly used methods for fast repeat access while it survives
  */
-abstract public class CachedCompound implements Compound, The {
+abstract public class CachedCompound implements SeparateSubtermsCompound, The {
 
     /**
      * subterm vector
@@ -28,7 +28,7 @@ abstract public class CachedCompound implements Compound, The {
      */
     private final int hash;
 
-    protected final byte op;
+    private final byte op;
 
     private final short _volume;
     private final int _structure;

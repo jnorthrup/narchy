@@ -79,11 +79,9 @@ public class Int implements Intlike, The {
 
     protected Int(int i) {
         this.id = i;
-
-        byte[] b = new byte[5];
-        b[0] = IO.opAndSubType(op(), (byte) (((opX()&0xffff)&0b111)>>5));
-        Util.int2Bytes(id, b, 1);
-        this.bytesCached = b;
+        this.bytesCached = Util.bytePlusIntToBytes(
+                IO.opAndSubType(op(), (byte) (((opX()&0xffff)&0b111)>>5)),
+                id);
     }
 
     @Override
@@ -97,7 +95,7 @@ public class Int implements Intlike, The {
     }
 
     @Override
-    public final void append(ByteArrayDataOutput out) {
+    public final void appendTo(ByteArrayDataOutput out) {
         out.write(bytesCached);
     }
 
@@ -193,8 +191,8 @@ public class Int implements Intlike, The {
             byte[] b = new byte[10];
             b[0] = INT.id;
             b[1] = 0; 
-            Util.int2Bytes(min, b, 2);
-            Util.int2Bytes(min, b, 6);
+            Util.intToBytes(min, b, 2);
+            Util.intToBytes(min, b, 6);
             this.bytesCached = b;
         }
 
@@ -721,7 +719,7 @@ public class Int implements Intlike, The {
     /**
      * unroll IntInterval's
      */
-    public static Iterator<Term> unroll(Term cc) {
+    static Iterator<Term> unroll(Term cc) {
         
         
 

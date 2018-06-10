@@ -62,7 +62,7 @@ public interface TaskLink extends Priority, Termed {
         @Override
         public String toString() {
             return term.toString() +
-                   Character.valueOf((char)punc) +
+                    (char) punc +
                    (when!=ETERNAL ? ("@" + when) : "");
         }
 

@@ -11,15 +11,15 @@ import java.util.function.Function;
 
 public class CachedTermTransform implements TermTransform {
 
-    final TermTransform proxy;
-    final BiFunction<Term,Function<Term,Term>,Term> cache;
+    private final TermTransform proxy;
+    private final BiFunction<Term,Function<Term,Term>,Term> cache;
 //    private final Logger logger = LoggerFactory.getLogger(CachedTermTransform.class);
 
     public CachedTermTransform(TermTransform proxy, Map<Term, Term> cache) {
         this(proxy, cache::computeIfAbsent);
     }
 
-    public CachedTermTransform(TermTransform proxy, BiFunction<Term,Function<Term,Term>,Term>  cache) {
+    private CachedTermTransform(TermTransform proxy, BiFunction<Term, Function<Term, Term>, Term> cache) {
         this.proxy = proxy;
         this.cache = cache;
     }

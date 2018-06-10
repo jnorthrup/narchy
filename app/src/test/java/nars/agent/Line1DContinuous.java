@@ -1,6 +1,9 @@
 package nars.agent;
 
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Param;
 import nars.concept.action.ActionConcept;
 import nars.concept.scalar.Scalar;
 import nars.term.atom.Atomic;

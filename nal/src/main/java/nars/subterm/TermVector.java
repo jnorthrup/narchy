@@ -1,6 +1,7 @@
 package nars.subterm;
 
 import com.google.common.base.Joiner;
+import nars.Op;
 import nars.The;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
@@ -66,6 +67,10 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
      */
     @Override public void setNormalized() {
         normalized = true;
+    }
+
+    @Override public boolean isTemporal() {
+        return hasAny(Op.Temporal) && super.isTemporal();
     }
 
     @Override

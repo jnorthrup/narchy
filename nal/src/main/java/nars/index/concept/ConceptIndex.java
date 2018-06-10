@@ -82,12 +82,14 @@ public abstract class ConceptIndex {
      * term should be conceptualizable prior to calling this
      */
     @Nullable
-    public final Concept concept(Term x, boolean createIfMissing) {
+    public final Concept concept(Termed _x, boolean createIfMissing) {
+        if (_x instanceof Concept && elideConceptGets() && !(((Concept) _x).isDeleted()))
+            return ((Concept) _x);
+
+        Term x = _x.term();
         if (x instanceof Bool || x instanceof Variable)
             return null;
 
-        if (x instanceof Concept && elideConceptGets() && !(((Concept) x).isDeleted()))
-            return ((Concept) x);
 
         Term xx = x.concept();
         if (!(xx.op().conceptualizable)) {

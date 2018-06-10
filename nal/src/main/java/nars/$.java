@@ -1,10 +1,6 @@
 package nars;
 
 
-
-
-
-
 import com.google.common.base.Strings;
 import jcog.TODO;
 import jcog.Texts;
@@ -24,6 +20,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.compound.LightCompound;
+import nars.term.compound.LighterCompound;
 import nars.term.control.LambdaPred;
 import nars.term.control.PrediTerm;
 import nars.term.obj.JsonTerm;
@@ -229,6 +226,10 @@ public enum $ {
     public static Term funcFast(Atomic opTerm, Term... arg) {
         return $.inhFast($.pFast(arg), opTerm);
     }
+    public static Term funcFast(String opTerm, Term... arg) {
+        return $.funcFast(Atomic.the(opTerm), arg);
+    }
+
     /** use with caution */
     public static Term inhFast(Term subj, Term pred) {
         return new LightCompound(INH, subj, pred);
@@ -865,12 +866,13 @@ public enum $ {
 
     public static Term pFast(Subterms x) {
         if (x.subs() == 0) return Op.EmptyProduct;
-        return new LightCompound(Op.PROD,x);
+        return new LightCompound(PROD,x);
     }
 
     public static Term pFast(Term... x) {
         if (x.length == 0) return Op.EmptyProduct;
-        return new LightCompound(Op.PROD,x);
+        //return new LightCompound(Op.PROD,x);
+        return new LighterCompound(PROD, x);
     }
 
     public static Term sFast(Subterms x) {

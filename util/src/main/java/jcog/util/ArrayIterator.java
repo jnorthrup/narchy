@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.stream.Stream;
 
 /** TODO optionally skip nulls */
@@ -47,6 +48,13 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
             return Collections.emptyIterator();
         else
             return ArrayIterator.get(e, e.length);
+    }
+
+    public static <E> Iterable<E> iterable(E... e) {
+        if (e == null)
+            return List.of();
+        else
+            return (Iterable) ArrayIterator.get(e, e.length);
     }
 
     public static <E> Iterator<E> get(E[] e, int size) {

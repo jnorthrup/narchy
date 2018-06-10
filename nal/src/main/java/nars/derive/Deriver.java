@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.math.FloatRange;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
@@ -155,10 +154,10 @@ abstract public class Deriver extends Causable {
     }
 
 
-    public final FloatRange sustain = new FloatRange(0f, 0f, 0.99f);
+    //public final FloatRange sustain = new FloatRange(0f, 0f, 0.99f);
     public int dur() {
-
-        return Math.round((nar.dur() * (1/(1- sustain.floatValue()))));
+        //return Math.round((nar.dur() * (1/(1- sustain.floatValue()))));
+        return nar.dur();
     }
 }
 

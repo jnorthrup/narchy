@@ -42,9 +42,6 @@ public abstract class NativeTask implements ITask, Priority {
 
     public abstract ITask next(NAR n);
 
-    public final boolean isInput() {
-        return false;
-    }
 
     /**
      * fluent form of setPri which returns this class
@@ -54,29 +51,29 @@ public abstract class NativeTask implements ITask, Priority {
         return this;
     }
 
-    /**
-     * wraps a Runnable
-     */
-    public static final class RunTask extends NativeTask {
-
-        public final Runnable run;
-
-        public RunTask(Runnable runnable) {
-            run = runnable;
-        }
-
-        @Override
-        public String toString() {
-            return run.toString();
-        }
-
-        @Override
-        public ITask next(NAR n) {
-            run.run();
-            return null;
-        }
-
-    }
+//    /**
+//     * wraps a Runnable
+//     */
+//    public static final class RunTask extends NativeTask {
+//
+//        public final Runnable run;
+//
+//        public RunTask(Runnable runnable) {
+//            run = runnable;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return run.toString();
+//        }
+//
+//        @Override
+//        public ITask next(NAR n) {
+//            run.run();
+//            return null;
+//        }
+//
+//    }
 
 
     public static final class SchedTask extends NativeTask implements Comparable<SchedTask> {

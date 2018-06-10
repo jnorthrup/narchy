@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.IO;
 import nars.Op;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Int;
 
 import static nars.Op.ATOM;
@@ -12,11 +11,11 @@ import static nars.Op.ATOM;
 /* indexed anonymous term */
 public final class Anom extends Int implements AnonID {
 
-    static final byte ANOM_SUBTYPE = 1;
-    static final int ANOM_OPX = Term.opX(ATOM, ANOM_SUBTYPE);
-    static final byte ANOM_HEADER = IO.opAndSubType(ATOM, ANOM_SUBTYPE);
+    private static final byte ANOM_SUBTYPE = 1;
+    private static final int ANOM_OPX = Term.opX(ATOM, ANOM_SUBTYPE);
+    private static final byte ANOM_HEADER = IO.opAndSubType(ATOM, ANOM_SUBTYPE);
 
-    Anom(byte i) {
+    private Anom(byte i) {
         super(i, new byte[] { ANOM_HEADER, i } );
     }
 
@@ -58,7 +57,7 @@ public final class Anom extends Int implements AnonID {
 
     
     @Override
-    public int compareTo(Termed yy) {
+    public int compareTo(Term yy) {
         if (this == yy) return 0;
 
         Term y = yy.term();

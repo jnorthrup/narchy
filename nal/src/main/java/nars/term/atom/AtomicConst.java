@@ -15,19 +15,19 @@ public abstract class AtomicConst implements Atomic {
 
 
     /*@Stable*/
-    final transient byte[] bytesCached;
-    protected final transient int hash;
+    private final transient byte[] bytesCached;
+    final transient int hash;
 
     protected AtomicConst(byte[] raw) {
         this.bytesCached = raw;
         this.hash = (int) Util.hashELF(raw, 1); 
     }
 
-    protected AtomicConst(Op op, String s) {
+    AtomicConst(Op op, String s) {
         this(bytes(op, s));
     }
 
-    protected static byte[] bytes(Op op, String str) {
+    private static byte[] bytes(Op op, String str) {
         return bytes(op.id, str);
     }
 
@@ -47,7 +47,7 @@ public abstract class AtomicConst implements Atomic {
     }
 
     @Override
-    public void append(ByteArrayDataOutput out) {
+    public void appendTo(ByteArrayDataOutput out) {
         out.write(bytesCached);
     }
 
@@ -67,13 +67,13 @@ public abstract class AtomicConst implements Atomic {
 
 
     @Override
-    public void append(Appendable w) throws IOException {
+    public void appendTo(Appendable w) throws IOException {
         
         if (bytesCached.length==3+1) {
             
             w.append((char)bytesCached[3]);
         } else {
-            Atomic.super.append(w);
+            Atomic.super.appendTo(w);
         }
     }
 

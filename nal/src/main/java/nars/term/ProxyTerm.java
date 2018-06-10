@@ -103,8 +103,8 @@ public class ProxyTerm implements Term, Compound {
     }
 
     @Override
-    public void append(ByteArrayDataOutput out) {
-        ref.append(out);
+    public void appendTo(ByteArrayDataOutput out) {
+        ref.appendTo(out);
     }
 
     @Override
@@ -133,8 +133,8 @@ public class ProxyTerm implements Term, Compound {
     }
 
     @Override
-    public void append(Appendable w) throws IOException {
-        ref.append(w);
+    public void appendTo(Appendable w) throws IOException {
+        ref.appendTo(w);
     }
 
 

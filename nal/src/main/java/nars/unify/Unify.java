@@ -6,6 +6,7 @@ import jcog.version.Versioned;
 import jcog.version.Versioning;
 import nars.Op;
 import nars.Param;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
@@ -228,7 +229,7 @@ public abstract class Unify extends Versioning implements Subst {
     /**
      * counts the number of variables are unifiable in the given term
      */
-    public int vars(Termlike x) {
+    public int vars(Subterms x) {
         if (type == null) {
             return x.vars();
         } else {

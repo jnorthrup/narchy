@@ -32,29 +32,22 @@ public class Taskify extends AbstractPred<Derivation> {
 
     public Taskify(PremiseDeriverProto.RuleCause channel) {
         super(
-                
+
                 $.the("taskify" + channel.id)
         );
         this.channel = channel;
     }
 
     public static boolean valid(Term x, byte punc) {
-        if ((x != null) && x.unneg().op().conceptualizable) {
-
-            if (!x.hasAny(PatternsOrBool)) {
-                if ((punc == BELIEF || punc == GOAL) && (x.hasXternal() || x.varQuery()>0))
-                    return false;
-
-                return true;
-            }
-        }
-
-        return false;
+        return x != null &&
+                x.unneg().op().conceptualizable &&
+                !x.hasAny(PatternsOrBool) &&
+                ((punc != BELIEF && punc != GOAL) || (!x.hasXternal() && x.varQuery() <= 0));
     }
 
     protected static boolean spam(Derivation p, int cost) {
         p.use(cost);
-        return true; 
+        return true;
     }
 
     /**
@@ -68,7 +61,7 @@ public class Taskify extends AbstractPred<Derivation> {
         Term x0 = d.derivedTerm;
 
         if (x0.hasAny(Op.VAR_INDEP)) {
-            if (!Task.validTaskCompound(x0, true)){
+            if (!Task.validTaskCompound(x0, true)) {
                 x0 = x0.transform(VariableTransform.indepToDepVar);
             }
         }
@@ -80,9 +73,9 @@ public class Taskify extends AbstractPred<Derivation> {
         byte punc = d.concPunc;
         assert (punc != 0) : "no punctuation assigned";
 
-        if (tru!=null && tru.conf() < d.confMin) {
-            
-            
+        if (tru != null && tru.conf() < d.confMin) {
+
+
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
@@ -93,16 +86,15 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
 
-
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
-            
+
             int dither = d.ditherTime;
             long start = occ[0], end = occ[1];
             int dur = d.dur;
             if (start != ETERNAL && dur > 1) {
                 assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
-                
+
                 if ((end - start < dur)) {
                     double mid = (end + start) / 2.0;
                     start = Tense.dither(mid - dur / 2.0, dither);
@@ -123,10 +115,6 @@ public class Taskify extends AbstractPred<Derivation> {
             d.nar.emotion.deriveFailTaskify.increment();
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
-
-
-
-
 
 
         if (d.single)
@@ -161,16 +149,16 @@ public class Taskify extends AbstractPred<Derivation> {
             return false;
 
         if (FILTER_SIMILAR_DERIVATIONS) {
-            
+
             if (parent.punc() == punc) {
                 if (parent.term().equals(derived.term())) {
                     if (Tense.dither(parent.start(), n) == Tense.dither(occ[0], n) &&
-                        Tense.dither(parent.end(), n) == Tense.dither(occ[1], n)) {
+                            Tense.dither(parent.end(), n) == Tense.dither(occ[1], n)) {
 
                         if ((punc == QUESTION || punc == QUEST) || (
                                 Util.equals(parent.freq(), truth.freq(), n.freqResolution.floatValue()) &&
-                                    parent.conf() <= truth.conf() - n.confResolution.floatValue() / 2 /* + epsilon to avid creeping confidence increase */
-                            )) {
+                                        parent.conf() <= truth.conf() - n.confResolution.floatValue() / 2 /* + epsilon to avid creeping confidence increase */
+                        )) {
 
                             if (Param.DEBUG_SIMILAR_DERIVATIONS)
                                 logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
@@ -185,29 +173,24 @@ public class Taskify extends AbstractPred<Derivation> {
         return false;
     }
 
-    @Deprecated protected boolean same(Task derived, Task parent, float truthResolution) {
+    @Deprecated
+    protected boolean same(Task derived, Task parent, float truthResolution) {
         if (parent.isDeleted())
             return false;
 
         if (derived.equals(parent)) return true;
 
         if (FILTER_SIMILAR_DERIVATIONS) {
-            
+
             if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() &&
                     parent.start() == derived.start() && parent.end() == derived.end()) {
                 /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
                 if (parent.isQuestionOrQuest() ||
                         (Util.equals(parent.freq(), derived.freq(), truthResolution) &&
                                 parent.evi() >= derived.evi())
-                        ) {
+                ) {
                     if (Param.DEBUG_SIMILAR_DERIVATIONS)
                         logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
-
-
-
-
-
-
 
 
                     return true;

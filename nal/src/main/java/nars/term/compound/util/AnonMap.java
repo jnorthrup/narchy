@@ -7,12 +7,12 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 public class AnonMap {
 
     /** term -> id */
-    public final ObjectByteHashMap<Term> termToId;
+    protected final ObjectByteHashMap<Term> termToId;
 
     /** id -> term */
-    public final FasterList<Term> idToTerm;
+    protected final FasterList<Term> idToTerm;
 
-    public AnonMap(int estSize) {
+    protected AnonMap(int estSize) {
         termToId = new ObjectByteHashMap<>(estSize);
         idToTerm = new FasterList(estSize/2 /* HEURISTIC */);
     }

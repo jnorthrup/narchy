@@ -49,21 +49,62 @@ public interface Termlike {
     default int sum(ToIntFunction<Term> value) {
         int x = 0;
         int s = subs();
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < s; i++)
             x += value.applyAsInt(sub(i));
-        }
         return x;
+    }
+
+    default void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            sub(i).recurseTerms(v);
     }
 
     default boolean hasXternal() {
         return hasAny(Op.Temporal) && OR(Term::hasXternal);
     }
 
+    /** recursive, visits only 1 layer deep, and not the current if compound */
+    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+        int n = subs();
+        for (int i = 0; i < n; i++)
+            v = reduce.intValueOf(v, sub(i));
+        return v;
+    }
+    /** recursive, visits each component */
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        int n = subs();
+        for (int i = 0; i < n; i++)
+            v = sub(i).intifyRecurse(reduce, v);
+        return v;
+    }
+
+    /**
+     * counts subterms matching the predicate
+     */
+    default int subs(Predicate<Term> match) {
+        return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
+    }
+    /**
+     * counts subterms matching the supplied op
+     */
+    default int subs(Op matchingOp) {
+        return hasAny(matchingOp) ? subs(x -> x.op() == matchingOp) : 0;
+    }
+
+    /**
+     * whether this term is or contains, as subterms, any temporal terms
+     */
+    default boolean isTemporal() {
+        return OR(Term::isTemporal);
+    }
+
     /**
      * structure hash bitvector
      */
     default int structure() {
-        return intifyShallow((s, x) -> x == null ? 0 : s | x.structure(), 0);
+        //return intifyShallow((s, x) -> x == null ? s : s | x.structure(), 0);
+        return intifyShallow((s, x) -> s | x.structure(), 0);
     }
 
     /**
@@ -122,6 +163,8 @@ public interface Termlike {
         return hasAny(checkStruct);
     }
 
+    Op op();
+
     default boolean hasAny(/*@NotNull*/ Op op) {
         return hasAny(op.bit);
     }
@@ -167,7 +210,9 @@ public interface Termlike {
      * or of is out of bounds or not a container,
      * returns the provided ifOutOfBounds
      */
-    Term sub(int i, Term ifOutOfBounds);
+    default Term sub(int i, Term ifOutOfBounds) {
+        return subs() <= i ? ifOutOfBounds : sub(i);
+    }
 
     default boolean impossibleSubTermVolume(int otherTermVolume) {
         return otherTermVolume > volume() - subs();
@@ -186,10 +231,9 @@ public interface Termlike {
      */
     default boolean OR(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
-        for (int i = 0; i < s; i++) {
+        for (int i = 0; i < s; i++)
             if (p.test(sub(i)))
                 return true;
-        }
         return false;
     }
 
@@ -240,18 +284,7 @@ public interface Termlike {
         return false;
     }
 
-    default boolean isSorted() {
-        int s = subs();
-        if (s < 2) return true;
 
-        
-        
-        for (int i = 1; i < s; i++) {
-            if (sub(i - 1).compareTo(sub(i)) >= 0)
-                return false;
-        }
-        return true;
-    }
 
     /**
      * stream of each subterm
@@ -272,7 +305,7 @@ public interface Termlike {
         }
     }
 
-    void recurseTerms(/*@NotNull*/Consumer<Term> v);
+
 
 
 
@@ -301,42 +334,19 @@ public interface Termlike {
      * # of contained dependent variables in subterms (1st layer only)
      */
     default int varDep() {
-        return hasAny(VAR_DEP) ? sum(Term::varDep) : 0;
+        return sum(Term::varDep);
     }
 
     default int varIndep() {
-        return hasAny(VAR_INDEP) ? sum(Term::varIndep) : 0;
+        return sum(Term::varIndep);
     }
 
     default int varQuery() {
-        return hasAny(VAR_QUERY) ? sum(Term::varQuery) : 0;
+        return sum(Term::varQuery);
     }
 
     default int varPattern() {
-        return hasAny(Op.VAR_PATTERN) ? sum(Term::varPattern) : 0;
-    }
-
-
-    /**
-     * counts subterms matching the predicate
-     */
-    default int subs(Predicate<Term> match) {
-        return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
-    }
-
-    /** recursive, visits each component */
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        int n = subs();
-        for (int i = 0; i < n; i++)
-            v = sub(i).intifyRecurse(reduce, v); 
-        return v;
-    }
-   /** recursive, visits only 1 layer deep, and not the current if compound */
-    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        int n = subs();
-        for (int i = 0; i < n; i++)
-            v = reduce.intValueOf(v, sub(i)); 
-        return v;
+        return sum(Term::varPattern);
     }
 
 
@@ -349,12 +359,10 @@ public interface Termlike {
 
 
 
-    /**
-     * counts subterms matching the supplied op
-     */
-    default int subs(Op matchingOp) {
-        return hasAny(matchingOp) ? subs(x -> x.op() == matchingOp) : 0;
-    }
+
+
+
+
 
     /**
      * return whether a subterm op at an index is an operator.
@@ -366,7 +374,6 @@ public interface Termlike {
     }
 
 
-    boolean isTemporal();
 
 }
 

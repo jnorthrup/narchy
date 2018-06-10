@@ -15,6 +15,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
 import nars.unify.match.EllipsisMatch;
+import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
@@ -31,20 +32,28 @@ import static nars.Op.*;
 
 public class Evaluation {
 
-    public static final Functor TRUE = new Functor.TheAbstractInlineFunctor1Inline("\"" + True + '"', x->null);
+    private static final Functor TRUE = new Functor.TheAbstractInlineFunctor1Inline("\"" + True + '"', x->null);
 
 //    static final ThreadLocal<Evaluation> eval = ThreadLocal.withInitial(Evaluation::new);
 
-    final List<Predicate<VersionMap<Term, Term>>[]> proc = new FasterList(1);
+    private List<Predicate<VersionMap<Term, Term>>[]> proc = null;
 
-    final Versioning v = new Versioning(16, 128);
+    Versioning v;
 
-    final VersionMap<Term, Term> subst = new VersionMap(v);
+    VersionMap<Term, Term> subst;
 
     boolean wrapBool = false;
 
     public Evaluation() {
 
+    }
+
+    protected void ensureReady() {
+        if (v == null) {
+             v = new Versioning<>(16, 128);
+             subst = new VersionMap<>(v);
+             proc = new FasterList<>(1);
+        }
     }
 
 
@@ -127,8 +136,7 @@ public class Evaluation {
     }
 
     protected Term eval(Term x) {
-        Term y = _eval(x);
-        return boolWrap(x, y);
+        return boolWrap(x, _eval(x));
     }
 
     protected Term boolWrap(Term x, Term y) {
@@ -250,15 +258,13 @@ public class Evaluation {
             if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
 
                 Term v = ((BiFunction<Evaluation, Subterms, Term>) pred).apply(this, subj.subterms());
-                if (v == null) {
-
-                } else {
+                if (v != null) {
                     if (v instanceof AbstractPred) {
                         u = $.the(((Predicate) v).test(null));
                     } else {
                         u = v;
                     }
-                }
+                } /* else v == null, no change */
             }
         }
 
@@ -273,35 +279,30 @@ public class Evaluation {
         return this;
     }
 
-    private Evaluation reset() {
-        proc.clear();
-        v.reset();
+    private Evaluation clear() {
+        if (v!=null) {
+            proc.clear();
+            v.reset();
+            subst.clear();
+        }
         return this;
     }
 
     public boolean get(Term _x, Predicate<Term> each) {
-        Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
 
         Term x = eval(_x);
 
-        int np = proc.size();
+        int np = procs();
+        if (np == 0)
+            return each.test(x); //done
 
-        switch (np) {
-            case 0:
+        Iterator<Predicate<VersionMap<Term, Term>>[]> pp;
 
-                return each.test(x);
+        Iterable[] aa = new Iterable[np];
+        for (int i = 0; i < np; i++)
+            aa[i] = ArrayIterator.iterable(proc.get(i));
 
-
-            default: {
-                Iterable[] aa = new Iterable[np];
-                for (int i = 0; i < np; i++) {
-                    Predicate<VersionMap<Term, Term>>[] pi = proc.get(i);
-                    aa[i] = () -> ArrayIterator.get(pi);
-                }
-                pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(Predicate[]::new, aa);
-                break;
-            }
-        }
+        pp = new CartesianIterator<Predicate<VersionMap<Term, Term>>>(Predicate[]::new, aa);
 
         int start = v.now();
 
@@ -328,7 +329,7 @@ public class Evaluation {
 
             Term z = eval(y);
 
-            int ps = proc.size();
+            int ps = procs();
             if (z != null && np == ps && !each.test(z))
                 return false;
 
@@ -345,6 +346,11 @@ public class Evaluation {
         return true;
     }
 
+    public int procs() {
+        List<Predicate<VersionMap<Term, Term>>[]> p = this.proc;
+        return p!=null ? p.size() : 0;
+    }
+
 
     public void replace(Term x, Term xx) {
         replace(subst(x, xx));
@@ -355,6 +361,7 @@ public class Evaluation {
     }
 
     public void replace(Predicate... r) {
+        ensureReady();
         proc.add(r);
     }
 
@@ -377,16 +384,14 @@ public class Evaluation {
     /**
      * interface necessary for evaluating terms
      */
-    public interface TermContext extends Function<Term, Termed> {
+    public interface TermContext extends Function<Term, Term> {
 
 
         /**
          * elides superfluous .term() call
          */
         default Term applyTermIfPossible(/*@NotNull*/ Term x, Op supertermOp, int subterm) {
-
-
-            Termed y = apply(x);
+            Term y = apply(x);
             return y != null ? y.term() : x;
         }
 
@@ -403,7 +408,7 @@ public class Evaluation {
             }
 
             @Override
-            public Termed apply(Term term) {
+            public Term apply(Term term) {
                 if (term.op() == ATOM) {
                     Term r = resolvedImm.get(term);
                     if (r != null)
@@ -414,12 +419,12 @@ public class Evaluation {
         }
     }
 
-    private static class MyFunctorResolver implements TermTransform {
+    private static final class MyFunctorResolver implements DirectTermTransform {
         private final TermContext context;
 
         public boolean hasFunctor;
 
-        public MyFunctorResolver(TermContext context) {
+        MyFunctorResolver(TermContext context) {
             this.context = context;
         }
 
@@ -430,8 +435,10 @@ public class Evaluation {
 
         @Override
         public @Nullable Term transformAtomic(Atomic z) {
-            if (z instanceof Functor)
+            if (z instanceof Functor) {
                 hasFunctor = true;
+                return z;
+            }
 
             if (z.op() == ATOM) {
                 Term zz = context.applyTermIfPossible(z, null, 0);

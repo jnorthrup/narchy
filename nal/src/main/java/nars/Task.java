@@ -213,16 +213,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      * these can all be tested prenormalization, because normalization will not affect the result
      */
     static boolean validTaskCompound(Term x, boolean safe) {
-
         Op xo = x.op();
-        if (xo.atomic) {
-            if (xo.conceptualizable)
-                return true;
-            return false;
-        }
-
-        return validIndep(x, safe);
-
+        return xo.atomic ? xo.conceptualizable : validIndep(x, safe);
     }
 
     static boolean validIndep(Term x, boolean safe) {

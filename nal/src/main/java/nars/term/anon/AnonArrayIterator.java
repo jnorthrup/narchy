@@ -4,7 +4,7 @@ import nars.term.Term;
 
 import java.util.Iterator;
 
-public class AnonArrayIterator implements Iterator<Term> {
+class AnonArrayIterator implements Iterator<Term> {
 
     private int current;
     private final short[] values;

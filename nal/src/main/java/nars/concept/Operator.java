@@ -7,7 +7,7 @@ import nars.Task;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.Termed;
+import nars.term.Termlike;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import org.apache.commons.lang3.ArrayUtils;
@@ -61,12 +61,12 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
     /**
      * returns the arguments of an operation (task or term)
      */
-    public static Subterms args(Termed operation) {
+    public static Subterms args(Termlike operation) {
         assert (operation.op() == INH && operation.subIs(1, ATOM));
         return operation.sub(0).subterms();
     }
 
-    public static Term func(Termed operation) {
+    public static Term func(Term operation) {
         return (operation.hasAll(Op.FuncBits) && operation.op()==INH && operation.sub(0).op()==PROD ) ? operation.sub(1) : Op.Null;
     }
 

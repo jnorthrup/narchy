@@ -54,7 +54,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
 
         @Override
-        public boolean add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
+        public boolean add(Task input, TaskConcept c, NAR nar) {
             return false;
         }
 
@@ -69,7 +69,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
         }
 
-        /*@NotNull*/
+
         @Override
         public Iterator<Task> iterator() {
             return Collections.emptyIterator();
@@ -199,24 +199,22 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         int s = size;
         if (s == 0) return null;
         Object[] l = this.list;
-        if (l.length == 0) return null;
-        return (Task) l[size - 1];
-
-
+        int ll = Math.min(s, l.length);
+        return ll == 0 ? null : (Task) l[ll - 1];
     }
 
     /**
      * for ranking purposes.  returns negative for descending order
      */
     @Override
-    public final float floatValueOf(/*@NotNull*/ Task w) {
+    public final float floatValueOf(Task w) {
 
         return -eternalTaskValueWithOriginality(w);
     }
 
 
     @Deprecated
-    void removeTask(/*@NotNull*/ Task t, @Nullable String reason) {
+    void removeTask(Task t, @Nullable String reason) {
         t.delete();
     }
 
@@ -226,8 +224,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
      * non-null: revised task
      */
     @Nullable
-    private /*Revision*/Task tryRevision(/*@NotNull*/ Task y /* input */,
-                                                      NAR nar) {
+    private /*Revision*/Task tryRevision(Task y /* input */,
+                                         NAR nar) {
 
         Object[] list = this.list;
         int bsize = list.length;
@@ -257,7 +255,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                         Arrays.equals(x.stamp(), y.stamp()) &&
                         Util.equals(xconf, y.conf(), nar.confResolution.floatValue())) {
 
-                    conclusion = $.t((x.freq() + y.freq())/2, xconf).dither(nar);
+                    conclusion = $.t((x.freq() + y.freq()) / 2, xconf).dither(nar);
 
                 } else {
 
@@ -375,7 +373,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
-    public boolean add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
+    public boolean add(Task input, TaskConcept c, NAR nar) {
 
         int cap = capacity();
         if (cap == 0) {
@@ -426,7 +424,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
      * try to insert but dont delete the input task if it wasn't inserted (but delete a displaced if it was)
      * returns true if it was inserted, false if not
      */
-    private boolean insert(/*@NotNull*/ Task input) {
+    private boolean insert(Task input) {
 
         Task displaced = put(input);
 

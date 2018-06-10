@@ -264,20 +264,12 @@ public enum Terms {
      */
     public static boolean hasAllExcept(Termlike requirer, Termlike required, int maskedBits) {
         int xStruct = requirer.structure() & ~(maskedBits);
-        if (xStruct != 0) {
-            int yStruct = required.structure() & ~(maskedBits);
-            if (!Op.hasAll(yStruct, xStruct))
-                return false;
-
-
-        }
-        return true;
+        return xStruct == 0 ||
+               Op.hasAll(required.structure() & ~(maskedBits), xStruct);
     }
 
     public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
-        if (u.varSymmetric)
-            return true;
-        return hasAllExcept(x, y, u.typeBits());
+        return u.varSymmetric || hasAllExcept(x, y, u.typeBits());
     }
 }
 

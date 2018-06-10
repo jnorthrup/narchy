@@ -1,4 +1,4 @@
-package nars.op.in;
+package nars.op;
 
 import com.google.common.io.Files;
 import jcog.io.FSWatch;

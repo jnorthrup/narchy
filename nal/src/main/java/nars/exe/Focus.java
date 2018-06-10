@@ -75,9 +75,7 @@ public class Focus extends AtomicRoulette<Causable> {
             }
         });
         
-        n.services().filter(x -> x instanceof Causable).forEach(x -> {
-           add((Causable) x);
-        });
+        n.services().filter(x -> x instanceof Causable).forEach(x -> add((Causable) x));
 
         n.onCycle(this::onCycle);
     }

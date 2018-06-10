@@ -17,6 +17,7 @@ import nars.unify.mutate.CommutivePermutations;
 import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -37,6 +38,12 @@ import java.util.function.Predicate;
 public interface Subterms extends Termlike, Iterable<Term> {
 
 
+    default Op op() {
+        return null;
+    }
+
+
+
     static int hash(List<Term> term) {
         int n = term.size();
         int h = 1;
@@ -44,7 +51,18 @@ public interface Subterms extends Termlike, Iterable<Term> {
             h = Util.hashCombine(h, term.get(i));
         return h;
     }
+    default boolean isSorted() {
+        int s = subs();
+        if (s < 2) return true;
 
+
+
+        for (int i = 1; i < s; i++) {
+            if (sub(i - 1).compareTo(sub(i)) >= 0)
+                return false;
+        }
+        return true;
+    }
     static int hash(Subterms container) {
         return container.intifyShallow(Util::hashCombine, 1);
     }
@@ -174,10 +192,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         throw new TODO();
     }
 
-    @Override
-    default Term sub(int i, Term ifOutOfBounds) {
-        return subs() <= i ? ifOutOfBounds : sub(i);
-    }
+
 
     default boolean subEquals(int i, /*@NotNull*/ Term x) {
         return subs() > i && sub(i).equals(x);
@@ -504,9 +519,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    default boolean isTemporal() {
-        return hasAny(Op.Temporal) && OR(Term::isTemporal);
-    }
 
 
     default boolean unifyLinearSimple(Subterms Y, /*@NotNull*/ Unify u) {
@@ -741,10 +753,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    @Override
-    default void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
-        forEach(s -> s.recurseTerms(v));
-    }
 
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
         return AND(s -> whileTrue.test(s) && s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
@@ -774,7 +782,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default void append(ByteArrayDataOutput out) {
         out.writeByte(subs());
-        forEach(t -> t.append(out));
+        forEach(t -> t.appendTo(out));
     }
 
     default Subterms replaceSubs(Term from, Term to) {

@@ -458,10 +458,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
             }
         }
 
-        if (super.add(x, concept, nar)) {
-            return true;
-        }
-        return false;
+        return super.add(x, concept, nar);
     }
 
     static final class ScalarSignalTask extends SignalTask {

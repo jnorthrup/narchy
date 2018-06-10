@@ -1,12 +1,10 @@
 package nars;
 
 
-import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import jcog.TODO;
 import jcog.data.byt.DynBytes;
-import jcog.data.string.Utf8Writer;
+import jcog.io.BytesInput;
 import jcog.pri.Prioritized;
 import nars.subterm.Subterms;
 import nars.task.CommandTask;
@@ -28,7 +26,6 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * Created by me on 5/29/16.
@@ -64,30 +61,8 @@ public class IO {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public static int readTasks(InputStream i, Consumer<Task> each) throws IOException {
-        
+
         DataInputStream ii = new DataInputStream(i);
         int count = 0;
         while (i.available() > 0 /*|| (i.available() > 0) || (ii.available() > 0)*/) {
@@ -113,7 +88,7 @@ public class IO {
         if (term == null)
             throw new IOException("un-normalizable task term");
 
-        if (punc!=COMMAND) {
+        if (punc != COMMAND) {
             Truth truth = hasTruth(punc) ? readTruth(in) : null;
 
             long start = in.readLong();
@@ -141,7 +116,7 @@ public class IO {
     }
 
     public static Truth readTruth(DataInput in) throws IOException {
-        
+
         return Truth.read(in);
     }
 
@@ -155,14 +130,11 @@ public class IO {
         byte p = t.punc();
         out.writeByte(p);
 
-        
-        t.term().append((ByteArrayDataOutput) out);
+
+        t.term().appendTo((ByteArrayDataOutput) out);
 
 
-
-
-
-        if (p!=COMMAND) {
+        if (p != COMMAND) {
             if (hasTruth(p))
                 Truth.write(t.truth(), out);
 
@@ -173,42 +145,10 @@ public class IO {
 
             writeBudget(out, t);
 
-            out.writeLong(t.creation()); 
+            out.writeLong(t.creation());
         }
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
 
 
     public static void writePriority(DataOutput out, Prioritized t) throws IOException {
@@ -222,8 +162,8 @@ public class IO {
     public static void writeEvidence(DataOutput out, long[] evi) throws IOException {
         int evil = evi.length;
         out.writeByte(evil);
-        for (int i = 0; i < evil; i++)
-            out.writeLong(evi[i]);
+        for (long anEvi : evi)
+            out.writeLong(anEvi);
     }
 
 
@@ -232,82 +172,17 @@ public class IO {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     static Atomic readAtomic(DataInput in, /*@NotNull*/ Op o, byte subType) throws IOException {
 
         switch (o) {
 
             case INT:
-                switch (subType) {
-                    case 0:
-                        return Int.the(in.readInt());
-                    case 1:
-                        return Int.range(in.readInt(), in.readInt());
-                    default:
-                        throw new TODO();
-                }
-            case ATOM: {
-                switch (subType) {
-                    case 0:
-                        return Atomic.the(in.readUTF());
-                    case 1:
-                        return Anom.the(in.readByte());
-                    default:
-                        throw new TODO();
 
-                }
+            case ATOM: {
+
             }
             default:
                 throw new UnsupportedEncodingException();
-
-
-
-
 
 
         }
@@ -321,20 +196,40 @@ public class IO {
     static Term readTerm(DataInput in) throws IOException {
 
         byte opByte = in.readByte();
-        if (opByte == SPECIAL_OP)
+        if (opByte != SPECIAL_OP) {
+            Op o = Op.ops[(byte) (opByte & 0b00011111)];
+            switch (o) {
+                case VAR_DEP:
+                case VAR_INDEP:
+                case VAR_PATTERN:
+                case VAR_QUERY:
+                    return readVariable(in, o);
+                case ATOM:
+                    switch (subType(opByte)) {
+                        case 0:
+                            return Atomic.the(in.readUTF());
+                        case 1:
+                            return Anom.the(in.readByte());
+                        default:
+                            throw new TODO();
+                    }
+                case INT:
+                    switch (subType(opByte)) {
+                        case 0:
+                            return Int.the(in.readInt());
+                        case 1:
+                            return Int.range(in.readInt(), in.readInt());
+                        default:
+                            throw new TODO();
+                    }
+                case NEG:
+                    return readNegated(in);
+                default:
+                    return readCompound(in, o);
+
+            }
+        } else {
             return readSpecialTerm(in);
-        else {
-            
-            byte op = (byte) (opByte & 0b00011111);
-            Op o = Op.ops[op];
-            if (o.var)
-                return readVariable(in, o);
-            else if (o.atomic)
-                return readAtomic(in, o, subType(opByte));
-            else if (o == NEG)
-                return readNegated(in);
-            else
-                return readCompound(in, o);
         }
     }
 
@@ -343,7 +238,7 @@ public class IO {
     }
 
     public static byte opAndSubType(byte op, byte subtype) {
-        return (byte) (op | (subtype<<5));
+        return (byte) (op | (subtype << 5));
     }
 
     static byte subType(byte opByte) {
@@ -409,8 +304,6 @@ public class IO {
             throw new Term.InvalidTermException(o, dt, v, "invalid term");
 
 
-
-
         return y;
     }
 
@@ -419,46 +312,14 @@ public class IO {
             return ((Atomic) t).bytes();
         } else {
             DynBytes d = new DynBytes(t.volume() * 6 /* estimate */);
-            t.append((ByteArrayDataOutput) d);
+            t.appendTo((ByteArrayDataOutput) d);
             return d.array();
         }
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Nullable
     public static byte[] taskToBytes(Task x) {
-
-
 
 
         DynBytes dos = new DynBytes(x.volume() * 8);
@@ -466,15 +327,13 @@ public class IO {
         return bytes(x, dos).array();
     }
 
-    @Nullable public static DynBytes bytes(Task x, DynBytes dos) {
+    @Nullable
+    public static DynBytes bytes(Task x, DynBytes dos) {
         try {
 
 
             dos.clear();
             IO.bytes(dos, x);
-
-
-
 
 
         } catch (IOException e) {
@@ -505,24 +364,8 @@ public class IO {
         }*/
     }
 
-    public static ByteArrayDataInput input(byte[] b) {
-        return input(b, 0);
-        
-        
-    }
-
-    public static ByteArrayDataInput input(byte[] b, int offset) {
-        return ByteStreams.newDataInput(b, offset);
-        
-    }
-
-    public static void writeUTF8WithPreLen(String s, DataOutput o) throws IOException {
-        DynBytes d = new DynBytes(s.length());
-
-        new Utf8Writer(d).write(s);
-
-        o.writeShort(d.length());
-        d.appendTo(o);
+    static DataInput input(byte[] b) {
+        return new BytesInput(b);
     }
 
     public static void mapSubTerms(byte[] term, EachTerm t) throws IOException {
@@ -532,7 +375,7 @@ public class IO {
 
         int level = 0;
         final int MAX_LEVELS = 16;
-        byte[][] levels = new byte[MAX_LEVELS][2]; 
+        byte[][] levels = new byte[MAX_LEVELS][2];
 
         do {
 
@@ -544,7 +387,7 @@ public class IO {
 
 
             if (o.var) {
-                i += 1; 
+                i += 1;
             } else if (o.atomic) {
 
                 int hi = term[i++] & 0xff;
@@ -566,15 +409,15 @@ public class IO {
                 byte[] ll = levels[level - 1];
                 byte subtermsRemain = ll[1];
                 if (subtermsRemain == 0) {
-                    
+
                     Op ol = Op.values()[ll[0]];
                     if (ol.temporal)
-                        i += 4; 
+                        i += 4;
                     level--;
-                    continue pop; 
+                    continue pop;
                 } else {
                     ll[1] = (byte) (subtermsRemain - 1);
-                    break; 
+                    break;
                 }
             }
 
@@ -586,10 +429,14 @@ public class IO {
     }
 
 
-
-
-
-
+//    public static void writeUTF8WithPreLen(String s, DataOutput o) throws IOException {
+//        DynBytes d = new DynBytes(s.length());
+//
+//        new Utf8Writer(d).write(s);
+//
+//        o.writeShort(d.length());
+//        d.appendTo(o);
+//    }
 
     public enum TaskSerialization {
         TermFirst,
@@ -597,143 +444,13 @@ public class IO {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public interface Printer {
 
-        static void compoundAppend(Compound c, Appendable p) throws IOException {
+        static void compoundAppend(Compound c, Appendable p, Op op) throws IOException {
 
             p.append(Op.COMPOUND_TERM_OPENER);
 
-            c.op().append(c, p);
+            op.append(c, p);
 
             Subterms cs = c.subterms();
             if (cs.subs() == 1)
@@ -769,7 +486,7 @@ public class IO {
                 if ((i != 0) || bb) {
                     p.append(Op.ARGUMENT_SEPARATOR);
                 }
-                c.sub(i).append(p);
+                c.sub(i).appendTo(p);
             }
         }
 
@@ -781,7 +498,7 @@ public class IO {
                 if ((i != 0) || bb) {
                     p.append(Op.ARGUMENT_SEPARATOR);
                 }
-                filter.apply(c.sub(i)).append(p);
+                filter.apply(c.sub(i)).appendTo(p);
             }
         }
 
@@ -798,20 +515,19 @@ public class IO {
                     productAppend(c.subterms(), p);
                     return;
 
-                
-                
 
                 case NEG:
                     /**
-                     * detects a negated conjunction of negated subterms:
+                     * detect a negated conjunction of negated subterms:
                      * (--, (&&, --A, --B, .., --Z) )
                      */
 
-                    if (c.op() == NEG) {
+                    if (c.hasAny(CONJ)) {
                         Term cx = c.unneg();
-                        if (cx.op() == CONJ && cx.dt() == DTERNAL) { 
-                            if (Terms.allNegated(cx.subterms())) {
-                                compoundAppend(Op.DISJstr, cx.subterms(), Term::neg, p);
+                        if (cx.op() == CONJ && cx.dt() == DTERNAL) {
+                            Subterms cxx = cx.subterms();
+                            if (Terms.allNegated(cxx)) {
+                                compoundAppend(Op.DISJstr, cxx, Term::unneg, p);
                                 return;
                             }
                         }
@@ -820,7 +536,7 @@ public class IO {
 
             if (op.statement || c.subs() == 2) {
 
-                
+
                 if (c.hasAll(Op.FuncBits)) {
                     Term subj = c.sub(0);
                     if (op == INH && subj.op() == Op.PROD) {
@@ -836,56 +552,26 @@ public class IO {
                 statementAppend(c, p, op);
 
             } else {
-                compoundAppend(c, p);
+                compoundAppend(c, p, op);
             }
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         static void statementAppend(Compound c, Appendable p, /*@NotNull*/ Op op) throws IOException {
-
-            Subterms cs = c.subterms();
-            Term a = cs.sub(0);
-            Term b = cs.sub(1);
 
 
             p.append(Op.COMPOUND_TERM_OPENER);
-            boolean reversedDT;
 
             int dt = c.dt();
-            if (c.op().commutative && dt != XTERNAL && dt != DTERNAL && dt < 0) {
-                reversedDT = true;
-                Term x = a;
-                a = b;
-                b = x;
-            } else {
-                reversedDT = false;
-            }
 
-            a.append(p);
+            boolean reversedDT = dt != DTERNAL && /*dt != XTERNAL && */ dt < 0 && op.commutative;
+
+            Subterms cs = c.subterms();
+            cs.sub(reversedDT ? 1 : 0).appendTo(p);
 
             op.append(dt, p, reversedDT);
 
-            b.append(p);
+            cs.sub(reversedDT ? 0 : 1).appendTo(p);
 
             p.append(Op.COMPOUND_TERM_CLOSER);
         }
@@ -896,9 +582,9 @@ public class IO {
             int s = product.subs();
             p.append(Op.COMPOUND_TERM_OPENER);
             for (int i = 0; i < s; i++) {
-                product.sub(i).append(p);
+                product.sub(i).appendTo(p);
                 if (i < s - 1) {
-                    p.append(",");
+                    p.append(',');
                 }
             }
             p.append(Op.COMPOUND_TERM_CLOSER);
@@ -909,7 +595,7 @@ public class IO {
 
             int len = set.subs();
 
-            
+
             char opener, closer;
             if (set.op() == Op.SETe) {
                 opener = Op.SETe.ch;
@@ -924,19 +610,12 @@ public class IO {
             Subterms setsubs = set.subterms();
             for (int i = 0; i < len; i++) {
                 if (i != 0) p.append(Op.ARGUMENT_SEPARATOR);
-                setsubs.sub(i).append(p);
+                setsubs.sub(i).appendTo(p);
             }
             p.append(closer);
         }
 
         static void operationAppend(Compound argsProduct, Atomic operator, Appendable p) throws IOException {
-
-            
-            
-            
-            
-            
-            
 
 
             Term[] xt = argsProduct.arrayShared();
@@ -953,7 +632,7 @@ public class IO {
                         p.append(' ');*/
                 }
 
-                t.append(p);
+                t.appendTo(p);
 
 
                 n++;
@@ -965,6 +644,7 @@ public class IO {
 
 
     }
+
 
     /**
      * visits each subterm of a compound and stores a tuple of integers for it

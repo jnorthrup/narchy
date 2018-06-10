@@ -6,9 +6,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.subterm.util.TermList;
 import nars.term.Term;
-import nars.util.term.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -24,7 +22,7 @@ import static nars.term.anon.AnonID.idToTermWithNegationTest;
 public class AnonVector extends TermVector {
 
     /*@Stable*/
-    final short[] subterms;
+    private final short[] subterms;
 
     /** assumes the array contains only AnonID instances */
     public AnonVector(Term... s) {
@@ -75,14 +73,14 @@ public class AnonVector extends TermVector {
         }
     }
 
-    @Override
-    public @Nullable Subterms transformSubs(TermTransform f) {
-        @Nullable Subterms s = super.transformSubs(f);
-//        if (s!=this && s instanceof AnonVector && equals(s))
-//            return this; //HACK
-//        else
-            return s;
-    }
+//    @Override
+//    public @Nullable Subterms transformSubs(TermTransform f) {
+//        @Nullable Subterms s = super.transformSubs(f);
+////        if (s!=this && s instanceof AnonVector && equals(s))
+////            return this; //HACK
+////        else
+//            return s;
+//    }
 
     @Override
     public Subterms replaceSubs(Term from, Term to) {
@@ -115,7 +113,7 @@ public class AnonVector extends TermVector {
                 out.writeByte(Op.NEG.id);
                 s = (short)-s;
             }
-            idToTerm(s).append(out);
+            idToTerm(s).appendTo(out);
         }
     }
 
@@ -124,10 +122,10 @@ public class AnonVector extends TermVector {
         return subterms.length;
     }
 
-    int indexOf(AnonID t, boolean neg) {
+    private int indexOf(AnonID t, boolean neg) {
         return ArrayUtils.indexOf(subterms, t.anonID(neg));
     }
-    int indexOf(AnonID t) {
+    private int indexOf(AnonID t) {
         return ArrayUtils.indexOf(subterms, t.anonID());
     }
 

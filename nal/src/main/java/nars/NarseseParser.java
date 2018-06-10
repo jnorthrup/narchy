@@ -399,7 +399,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             } else {
                 
                 QuantityTerm q = (QuantityTerm)timeDelta;
-                return $.func("term", o.strAtom, $.pFast(subj, pred), q);
+                return $.funcFast("term", o.strAtom, $.pFast(subj, pred), q);
             }
         }
     }

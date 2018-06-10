@@ -2,7 +2,6 @@ package jcog.data;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractSet;

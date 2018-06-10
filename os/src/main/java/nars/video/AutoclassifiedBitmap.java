@@ -2,7 +2,10 @@ package nars.video;
 
 import jcog.Util;
 import jcog.learn.Autoencoder;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
 import nars.agent.NAgent;
 import nars.control.channel.CauseChannel;
 import nars.task.ITask;

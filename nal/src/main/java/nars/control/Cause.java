@@ -193,8 +193,7 @@ public class Cause implements Comparable<Cause> {
         main:
         do {
             done = 0;
-            for (int i = 0; i < ss; i++) {
-                short[] c = s[i];
+            for (short[] c : s) {
                 int cl = c.length;
                 if (n < cl) {
                     if (ll.add/*adder.accept*/(c[cl - 1 - n])) {

@@ -44,7 +44,7 @@ public class Conj extends AnonMap {
     /**
      * state which will be set in a terminal condition, or upon term construction in non-terminal condition
      */
-    Term term = null;
+    private Term term = null;
 
     public Conj() {
         super(4);
@@ -693,9 +693,7 @@ public class Conj extends AnonMap {
             ci = eternal;
         } else {
             FasterList<LongObjectPair<Term>> temporals = new FasterList<>(numTimes - (eternal != null ? 1 : 0));
-            Iterator<LongObjectPair<Term>> ii = event.keyValuesView().iterator();
-            while (ii.hasNext()) {
-                LongObjectPair<Term> next = ii.next();
+            for (LongObjectPair<Term> next : (Iterable<LongObjectPair<Term>>) event.keyValuesView()) {
                 long when = next.getOne();
                 if (when == ETERNAL)
                     continue;
@@ -930,7 +928,7 @@ public class Conj extends AnonMap {
         private final Random rng;
         private final boolean mergeOrChoose;
 
-        public Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
+        Conjterpolate(Term a, Term b, long bOffset, NAR nar) {
 
             this.b = b;
             this.nar = nar;
@@ -1001,9 +999,9 @@ public class Conj extends AnonMap {
 
         long merge(long x, long y) {
             if (x == y) return x;
-            if (x == ETERNAL | y == ETERNAL)
+            if (x == ETERNAL || y == ETERNAL)
                 return ETERNAL;
-            if (x == XTERNAL | y == XTERNAL)
+            if (x == XTERNAL || y == XTERNAL)
                 throw new RuntimeException("xternal in conjtermpolate");
 
 

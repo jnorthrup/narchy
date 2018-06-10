@@ -10,8 +10,8 @@ import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
-import nars.util.TimeAware;
 import nars.sensor.Bitmap2DSensor;
+import nars.util.TimeAware;
 import nars.video.PixelBag;
 
 import javax.swing.*;

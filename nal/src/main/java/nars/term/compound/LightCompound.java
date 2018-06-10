@@ -6,14 +6,13 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 
-import static nars.time.Tense.DTERNAL;
-
 /** use with extreme caution when op is not PROD */
-public class LightCompound implements Compound {
+public class LightCompound implements SeparateSubtermsCompound, AbstractLightCompound {
 
     final Subterms subs;
-    private final byte op;
     private final int hash;
+    protected final byte op;
+
 
     public LightCompound(Op o, Term... s) {
         this(o, $.vFast(s));
@@ -24,7 +23,6 @@ public class LightCompound implements Compound {
         this.subs = s;
         this.hash = s.hashWith(o);
     }
-
     @Override
     public boolean equals(Object obj) {
         return (this == obj) ||
@@ -36,6 +34,7 @@ public class LightCompound implements Compound {
         return hash;
     }
 
+
     @Override
     public String toString() {
         return Compound.toString(this);
@@ -46,23 +45,11 @@ public class LightCompound implements Compound {
         return Op.ops[op];
     }
 
+
     @Override
     public final Subterms subterms() {
         return subs;
     }
-
-    @Override
-    public Term the() {
-        return op().compound(DTERNAL, arrayShared());
-
-    }
-
-    @Override
-    public final int dt() {
-        return DTERNAL;
-    }
-
-    
 
 
 

@@ -238,8 +238,8 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
      */
     final class InvalidConceptException extends SoftException {
 
-        public final Termed term;
-        public final String reason;
+        final Termed term;
+        final String reason;
 
         public InvalidConceptException(Termed term, String reason) {
             this.term = term;

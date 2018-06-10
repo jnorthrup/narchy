@@ -93,7 +93,7 @@ public class Derivation extends PreDerivation {
     /**
      * temporary un-transform map
      */
-    public Map<Term, Term> untransform = new UnifiedMap<>() {
+    public final Map<Term, Term> untransform = new UnifiedMap<>() {
         @Override
         public Term put(Term key, Term value) {
             if (key.equals(value))

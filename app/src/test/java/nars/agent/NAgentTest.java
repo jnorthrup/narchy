@@ -1,7 +1,9 @@
 package nars.agent;
 
 import jcog.learn.ql.HaiQae;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
 import nars.agent.util.RLBooster;
 import nars.control.MetaGoal;
 import nars.term.Term;

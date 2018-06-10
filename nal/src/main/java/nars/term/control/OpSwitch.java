@@ -4,11 +4,13 @@ import nars.$;
 import nars.Op;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.function.Function;
+
+import static nars.derive.Derivation.Belief;
+import static nars.derive.Derivation.Task;
 
 /**
  * TODO generify key/value
@@ -35,8 +37,8 @@ public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
         return 0.25f;
     }
 
-    public OpSwitch(boolean taskOrBelief, @NotNull EnumMap<Op, PrediTerm<D>> cases) {
-        super(/*$.impl*/ $.func("op", $.the(taskOrBelief ? "task" : "belief"), $.pFast(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
+    public OpSwitch(boolean taskOrBelief, EnumMap<Op, PrediTerm<D>> cases) {
+        super(/*$.impl*/ $.func("op", taskOrBelief ? Task  : Belief, $.pFast(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
 
         swtch = new PrediTerm[24]; 
         cases.forEach((k, v) -> swtch[k.id] = v);

@@ -31,10 +31,6 @@ public interface Variable extends Atomic {
     @Override
     Variable normalize(byte offset);
 
-    @Override
-    default Term conceptualizableOrNull() {
-        return Null;
-    }
 
     /**
      * The syntactic complexity of a variable is 0, because it does not refer to

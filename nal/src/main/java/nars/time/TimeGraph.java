@@ -822,15 +822,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
         }
 
-        if (x.dt() == XTERNAL) {
-
-            if (!solveDT(x, y -> {
-                return solveOccurrence(y.id, each); 
-            }))
-                return false;
-        }
-
-        return solveOccurrence(x, each); /* occurrence, with or without any xternal remaining */
+        /* occurrence, with or without any xternal remaining */
+        return (x.dt() != XTERNAL || solveDT(x, y -> solveOccurrence(y.id, each))) &&
+                solveOccurrence(x, each);
 
     }
 

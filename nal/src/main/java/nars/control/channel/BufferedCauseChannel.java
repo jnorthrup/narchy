@@ -2,23 +2,23 @@ package nars.control.channel;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import jcog.util.ArrayIterator;
+import jcog.data.ArrayHashSet;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class BufferedCauseChannel implements Consumer {
 
-    public final LinkedHashSet buffer;
+    public final Set buffer;
     private final CauseChannel target;
 
     public BufferedCauseChannel(CauseChannel c) {
         target = c;
-        buffer = new LinkedHashSet();
+        buffer = new ArrayHashSet();
     }
 
 
@@ -54,7 +54,7 @@ public class BufferedCauseChannel implements Consumer {
     public int commit() {
         int size = buffer.size();
         if (size > 0) {
-            target.input(ArrayIterator.get(buffer.toArray()));
+            target.input(buffer.iterator());
             buffer.clear();
         }
         return size;

@@ -7,7 +7,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.ProxyTerm;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.util.term.transform.TermTransform;

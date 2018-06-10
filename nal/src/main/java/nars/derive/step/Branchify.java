@@ -12,7 +12,7 @@ import org.roaringbitmap.RoaringBitmap;
  */
 public class Branchify extends AbstractPred<Derivation> {
 
-    public final int id;
+    private final int id;
 
 
 

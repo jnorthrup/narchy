@@ -35,7 +35,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
 
-    LongHashSet evi = null;
+    private LongHashSet evi = null;
 
     public DynTruth(int initialCap) {
         super(initialCap);

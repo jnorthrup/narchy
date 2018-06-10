@@ -982,7 +982,7 @@ public class Dyn2DSurface extends Wall implements Animated {
         }
 
         public void sproutBranch(String label, float scale, float childScale, Supplier<Surface[]> children) {
-            sproutBranch(label, scale, childScale, () -> ArrayIterator.get(children.get()));
+            sproutBranch(label, scale, childScale, ArrayIterator.iterable(children.get()));
         }
 
         @Override

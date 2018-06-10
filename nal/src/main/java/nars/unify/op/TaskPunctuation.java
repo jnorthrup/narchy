@@ -41,7 +41,7 @@ final public class TaskPunctuation extends AbstractPred<PreDerivation> {
     public static final PrediTerm<PreDerivation> Belief = new TaskPunctuation(BELIEF);
     public static final PrediTerm<PreDerivation> Goal = new TaskPunctuation(GOAL);
 
-    public static final PrediTerm<PreDerivation> BeliefOrGoal = new AbstractPred<>(INH.the($.quote(".!"), Derivation.Task)) {
+    public static final PrediTerm<PreDerivation> BeliefOrGoal = new AbstractPred<PreDerivation>(INH.the($.quote(".!"), Derivation.Task)) {
         @Override
         public boolean test(PreDerivation o) {
             byte c = o.taskPunc;

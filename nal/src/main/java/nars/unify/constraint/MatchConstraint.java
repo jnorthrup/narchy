@@ -209,7 +209,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
                 if (ccn == 1) {
                     return (PrediTerm<Derivation>)(cc.iterator().next());
                 } else {
-                    MatchConstraint[] d = cc.toArray(new MatchConstraint[cc.size()]);
+                    MatchConstraint[] d = cc.toArray(new MatchConstraint[ccn]);
                     Arrays.sort(d, PrediTerm.sortByCost);
                     return new CompoundConstraint(d);
                 }

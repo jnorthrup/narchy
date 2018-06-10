@@ -70,12 +70,14 @@ public interface Compound extends Term, IPair, Subterms {
     static StringBuilder toStringBuilder(Compound c) {
         StringBuilder sb = new StringBuilder(/* conservative estimate */ c.volume() * 2);
         try {
-            c.append(sb);
+            c.appendTo(sb);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return sb;
     }
+
+    Op op();
 
     /**
      * whether any subterms (recursively) have
@@ -85,7 +87,7 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean isTemporal() {
         return (dt() != DTERNAL && op().temporal)
                 ||
-                (subterms().isTemporal());
+                Term.super.isTemporal();
     }
 
     @Override
@@ -162,7 +164,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
 
-    default void append(ByteArrayDataOutput out) {
+    default void appendTo(ByteArrayDataOutput out) {
 
         Op o = op();
         out.writeByte(o.id);
@@ -252,7 +254,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default void append(/*@NotNull*/ Appendable p) throws IOException {
+    default void appendTo(/*@NotNull*/ Appendable p) throws IOException {
         IO.Printer.append(this, p);
     }
 
@@ -322,24 +324,13 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default int varDep() {
-        return subterms().varDep();
+    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+        return Term.super.intifyShallow(reduce, v);
     }
-
-    @Override
-    default int varIndep() {
-        return subterms().varIndep();
-    }
-
 
     @Override
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return subterms().intifyRecurse(reduce, Term.super.intifyRecurse(reduce, v));
-    }
-
-    @Override
-    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return subterms().intifyShallow(reduce, v);
+        return Term.super.intifyRecurse(reduce, v);
     }
 
     @Override
@@ -350,6 +341,15 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default int varPattern() {
         return subterms().varPattern();
+    }
+    @Override
+    default int varDep() {
+        return subterms().varDep();
+    }
+
+    @Override
+    default int varIndep() {
+        return subterms().varIndep();
     }
 
     @Override
@@ -381,16 +381,6 @@ public interface Compound extends Term, IPair, Subterms {
             return (OR(y -> y.root().equals(xr)));
         }
         return false;
-    }
-
-    @Override
-    default boolean OR(/*@NotNull*/ Predicate<Term> p) {
-        return subterms().OR(p);
-    }
-
-    @Override
-    default boolean AND(/*@NotNull*/ Predicate<Term> p) {
-        return subterms().AND(p);
     }
 
     /*@NotNull*/
@@ -773,16 +763,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default Term unneg() {
-        if (op() == NEG) {
-
-            Term u = sub(0);
-
-
-            return u;
-
-        } else {
-            return this;
-        }
+        return op() == NEG ? sub(0) : this;
     }
 
 

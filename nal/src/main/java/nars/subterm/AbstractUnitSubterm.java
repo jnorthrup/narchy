@@ -18,7 +18,7 @@ abstract public class AbstractUnitSubterm implements Subterms {
     @Override
     public final void append(ByteArrayDataOutput out) {
         out.writeByte(1);
-        sub().append(out);
+        sub().appendTo(out);
     }
 
     @Override
@@ -38,6 +38,10 @@ abstract public class AbstractUnitSubterm implements Subterms {
     @Override
     public boolean AND(Predicate<Term> p) {
         return p.test(sub());
+    }
+
+    @Override public boolean isTemporal() {
+        return hasAny(Op.Temporal) && sub().isTemporal();
     }
 
     @Override

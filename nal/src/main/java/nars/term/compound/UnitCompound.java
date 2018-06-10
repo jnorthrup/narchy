@@ -165,14 +165,14 @@ public abstract class UnitCompound implements Compound {
         return 0;
     }
 
-    @Override public void append(ByteArrayDataOutput out) {
+    @Override public void appendTo(ByteArrayDataOutput out) {
 
         Op o = op();
         out.writeByte(o.id);
 
         
         out.writeByte(1); 
-        sub().append(out);
+        sub().appendTo(out);
 
         if (o.temporal)
             out.writeInt(dt()); 

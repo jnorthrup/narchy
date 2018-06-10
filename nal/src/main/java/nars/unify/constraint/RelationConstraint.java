@@ -3,7 +3,6 @@ package nars.unify.constraint;
 import nars.$;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.control.PrediTerm;
 import nars.unify.Unify;
@@ -39,9 +38,7 @@ abstract public class RelationConstraint extends MatchConstraint {
 
     @Override
     public final boolean invalid(Term xx, Unify f) {
-        Termed yy =
-                
-                f.apply(yUnneg);
+        Term yy = f.apply(yUnneg);
         return yy != yUnneg
                 &&
                invalid(xx, yy.term().negIf(yNeg));

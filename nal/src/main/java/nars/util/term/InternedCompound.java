@@ -26,7 +26,7 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
         key.writeByte((this.op = x.op().id));
         key.writeInt((this.dt = x.dt()));
         for (Term s : x.subterms())
-            s.append((ByteArrayDataOutput) key);
+            s.appendTo((ByteArrayDataOutput) key);
         this.subs = key.array();
         this.hash = key.hashCode();
         this.rawSubs = null;
@@ -37,7 +37,7 @@ public final class InternedCompound extends UnitPri implements HijackMemoize.Com
         key.writeByte((this.op = o.id));
         key.writeInt((this.dt = dt));
         for (Term s : subs)
-            s.append((ByteArrayDataOutput) key);
+            s.appendTo((ByteArrayDataOutput) key);
 
         this.subs = key.array();
         this.hash = key.hashCode();

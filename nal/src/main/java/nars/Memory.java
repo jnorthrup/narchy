@@ -212,7 +212,6 @@ public class Memory {
                             return (Stream<Task> tt) -> {
                                 try (OutputStream out = Files.newOutputStream(Paths.get(u))) {
                                     formats.iterator().next().accept(tt, out);
-                                    out.close();
                                 } catch (IOException e) {
                                     logger.warn("{} {}", u, e);
                                 }

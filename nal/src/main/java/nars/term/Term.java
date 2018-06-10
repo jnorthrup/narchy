@@ -43,9 +43,7 @@ import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.factory.primitive.ByteLists;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
@@ -75,10 +73,7 @@ import static nars.time.Tense.XTERNAL;
  * Hence in terms of "in the language or phraseology peculiar to."
  * https://www.etymonline.com/word/term
  */
-public interface Term extends Termed, Comparable<Termed> {
-
-    ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
-
+public interface Term extends Termed, Termlike, Comparable<Termed> {
 
     static <X> boolean pathsTo(Term that, ByteArrayList p, Predicate<Term> descendIf, Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
         if (!descendIf.test(that))
@@ -136,12 +131,10 @@ public interface Term extends Termed, Comparable<Termed> {
         return opX(o, (short) subOp);
     }
 
-    @Override
     default Term term() {
         return this;
     }
 
-    @Override
     Op op();
 
     @Override
@@ -159,7 +152,7 @@ public interface Term extends Termed, Comparable<Termed> {
     boolean containsRoot(Term t);
 
 
-    void append(ByteArrayDataOutput out);
+    void appendTo(ByteArrayDataOutput out);
 
     @Override
     boolean equals(Object o);
@@ -178,21 +171,30 @@ public interface Term extends Termed, Comparable<Termed> {
         return whileTrue.test(this);
     }
 
-    @Override
+
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, this);
     }
 
 
-    /**
-     * whether this term is or contains, as subterms, any temporal terms
-     */
-    boolean isTemporal();
+
+
+    default boolean hasXternal() {
+        return (dt() == XTERNAL) || Termed.super.hasXternal();
+
+    }
+
+
 
     @Override
-    default boolean hasXternal() {
-        return (dt() == XTERNAL) ||
-                Termed.super.hasXternal();
+    default Term sub(int i) {
+        return subterms().sub(i);
+    }
+
+
+    @Override
+    default int subs() {
+        return subterms().subs();
     }
 
     @Nullable
@@ -240,7 +242,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
     default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
         X ss = target.apply(this);
-        if (ss != null && !receiver.test(EmptyByteList, ss))
+        if (ss != null && !receiver.test(Util.EmptyByteList, ss))
             return false;
 
         return this.subs() <= 0 ||
@@ -359,7 +361,7 @@ public interface Term extends Termed, Comparable<Termed> {
         return (bitsetOfOperators & s) > 0;
     }
 
-    void append(Appendable w) throws IOException;
+    void appendTo(Appendable w) throws IOException;
 
     default String structureString() {
         return String.format("%16s",
@@ -367,7 +369,6 @@ public interface Term extends Termed, Comparable<Termed> {
                 .replace(" ", "0");
     }
 
-    @Override
     default boolean isNormalized() {
         return true;
     }
@@ -430,6 +431,11 @@ public interface Term extends Termed, Comparable<Termed> {
         if (this == _y) return 0;
 
         Term y = _y.term();
+        return compareTo(y.term());
+    }
+
+    default int compareTo(Term y) {
+
         if (this == y) return 0;
 
 
@@ -470,7 +476,6 @@ public interface Term extends Termed, Comparable<Termed> {
         }
     }
 
-    @Override
     default Subterms subterms() {
         return EmptySubterms;
     }
@@ -478,8 +483,6 @@ public interface Term extends Termed, Comparable<Termed> {
     /**
      * unwraps any negation superterm
      */
-
-    @Override
     default Term unneg() {
         return this;
     }

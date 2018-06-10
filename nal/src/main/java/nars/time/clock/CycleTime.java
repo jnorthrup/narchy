@@ -77,23 +77,4 @@ public class CycleTime extends Time {
         return nextStamp.incrementAndGet();
     }
 
-    /** used to ensure that the next system stamp serial is beyond the range of any input */
-    protected final void validate(long s) {
-        if (s == Long.MAX_VALUE) 
-            return;
-        long nextStamp = this.nextStamp.longValue();
-        if (s == Long.MAX_VALUE) 
-            s = 0; 
-
-        if (nextStamp < s)
-            this.nextStamp.set(s+1);
-    }
-
-    public final void validate(@NotNull long[] s) {
-        
-        if (s.length > 1)
-            validate(s[s.length-1]);
-    }
-
-
 }

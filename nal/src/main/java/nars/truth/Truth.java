@@ -25,7 +25,6 @@ import jcog.Util;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInput;

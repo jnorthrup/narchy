@@ -24,7 +24,7 @@ public class EllipsisOneOrMore extends Ellipsis {
         return new EllipsisOneOrMore($.v(op(), vid));
     }
 
-    final static int RANK = Term.opX(VAR_PATTERN, 2 /* different from normalized variables with a subOp of 0 */);
+    private final static int RANK = Term.opX(VAR_PATTERN, 2 /* different from normalized variables with a subOp of 0 */);
     @Override public int opX() { return RANK;    }
 
 

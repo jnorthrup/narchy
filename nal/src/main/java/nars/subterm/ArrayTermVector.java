@@ -141,6 +141,6 @@ public class ArrayTermVector extends TermVector {
         Term[] t = this.terms;
         out.writeByte(t.length);
         for (Term x : t)
-            x.append(out);
+            x.appendTo(out);
     }
 }

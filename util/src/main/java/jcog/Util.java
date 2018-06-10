@@ -70,7 +70,8 @@ public enum Util {
     public static final int PRIME1 = 31;
     public static final float[] EmptyFloatArray = new float[0]; 
 
-    public static final int MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors();
+    //public static final int MAX_CONCURRENCY = Runtime.getRuntime().availableProcessors();
+    public static final ImmutableByteList EmptyByteList = ByteLists.immutable.empty();
 
 
     /**
@@ -497,7 +498,7 @@ public enum Util {
     /**
      * returns the next index
      */
-    public static int long2Bytes(long l, byte[] target, int offset) {
+    public static int longToBytes(long l, byte[] target, int offset) {
         for (int i = offset + 7; i >= offset; i--) {
             target[i] = (byte) (l & 0xFF);
             l >>= 8;
@@ -508,14 +509,21 @@ public enum Util {
     /**
      * returns the next index
      */
-    public static int int2Bytes(int l, byte[] target, int offset) {
+    public static int intToBytes(int l, byte[] target, int offset) {
         for (int i = offset + 3; i >= offset; i--) {
             target[i] = (byte) (l & 0xFF);
             l >>= 8;
         }
         return offset + 4;
     }
-
+    public static byte[] bytePlusIntToBytes(byte prefix, int l) {
+        byte[] target = new byte[/*5*/] { prefix, 0, 0, 0, 0 };
+        for (int i = 4; i >= 1; i--) {
+            target[i] = (byte) (l & 0xFF);
+            l >>= 8;
+        }
+        return target;
+    }
     /**
      * returns the next index
      */

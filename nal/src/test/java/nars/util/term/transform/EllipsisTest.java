@@ -118,7 +118,7 @@ public class EllipsisTest {
 
 
                         
-                        Term s = Termed.termOrNull(r.transform(this));
+                        Term s = r.transform(this);
                         if (s != null) {
                             
                             if (s.varPattern() == 0)

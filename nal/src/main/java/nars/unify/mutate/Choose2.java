@@ -20,7 +20,7 @@ import java.util.SortedSet;
 public class Choose2 extends Termutator.AbstractTermutator {
 
     /*@NotNull*/
-    final Combinations comb;
+    private final Combinations comb;
     
     /*@NotNull*/
     private final Term[] x;
@@ -31,7 +31,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     /*@NotNull*/
     private final ShuffledSubterms yy;
 
-    final static Atom CHOOSE_2 = $.the(Choose2.class);
+    private final static Atom CHOOSE_2 = $.the(Choose2.class);
 
     public Choose2(Ellipsis xEllipsis, Unify f, SortedSet<Term> x, SortedSet<Term> yFree) {
         this(xEllipsis, f,
@@ -39,7 +39,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
                 $.vFast(yFree.toArray(Op.EmptyTermArray)));
     }
 
-    Choose2(Ellipsis xEllipsis, Unify f, Term[] x, Subterms yFree) {
+    private Choose2(Ellipsis xEllipsis, Unify f, Term[] x, Subterms yFree) {
         super(CHOOSE_2, $.pFast(x), xEllipsis, $.sFast(yFree));
 
         this.f = f;

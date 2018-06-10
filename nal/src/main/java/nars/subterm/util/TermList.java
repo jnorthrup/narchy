@@ -12,9 +12,7 @@ import java.util.List;
 public class TermList extends FasterList<Term> implements Subterms {
 
 
-
-
-
+    public TermList() { super(); }
 
     public TermList(int initialCapacity) {
         super(0, new Term[initialCapacity]);
@@ -38,6 +36,7 @@ public class TermList extends FasterList<Term> implements Subterms {
         return Subterms.hash((List)this);
     }
 
+
     @Override
     public FasterList<Term> toList() {
         return clone();
@@ -54,7 +53,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     /** creates an immutable instance of this */
-    public Subterms the() {
+    public Subterms theSubterms() {
         return Op.terms.subterms(this);
     }
 

@@ -65,7 +65,7 @@ public class TermBytes extends HashCachedBytes {
         super(task.volume() * 4 + 64 /* ESTIMATE */);
         try {
 
-            task.term().append((ByteArrayDataOutput)this);
+            task.term().appendTo((ByteArrayDataOutput)this);
 
             byte punc = task.punc();
             this.writeByte(punc);

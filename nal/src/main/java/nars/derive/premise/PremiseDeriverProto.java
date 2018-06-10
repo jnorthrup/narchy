@@ -71,7 +71,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     /**
      * conditions which can be tested before unification
      */
-    private PrediTerm<PreDerivation>[] PRE;
+    private final PrediTerm<PreDerivation>[] PRE;
 
     public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
         super(raw, index);
@@ -791,7 +791,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         private final byte punc;
 
         DoublePremise(byte taskPunc) {
-            super($.func(key, $.quote(Character.valueOf((char) taskPunc))));
+            super($.func(key, $.quote((char) taskPunc)));
             this.punc = taskPunc;
         }
 

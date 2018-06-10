@@ -26,7 +26,7 @@ public final class PremiseDeriver {
     public PremiseDeriver(PrediTerm<Derivation> what, ValueFork can) {
         this.what = what;
         this.can = can;
-        this.whats = new HijackMemoize<>(k->k.solve(what),
+        this.whats = new HijackMemoize<>(k->PremiseKey.solve(what),
                 64 * 1024, 4, false);
     }
 

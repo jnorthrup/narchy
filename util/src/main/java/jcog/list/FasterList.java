@@ -165,9 +165,7 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public X get(int index) {
-        
         return items[index];
-        
     }
 
     @Nullable public X get(Random random) {

@@ -154,7 +154,7 @@ public class Occurrify extends TimeGraph {
         Termed bb = !single ? belief : d.beliefTerm;
 
 
-        if (!autoNeg && (task.term().hasAny(NEG) || (!single && bb.hasAny(NEG)))) {
+        if (!autoNeg && (task.term().hasAny(NEG) || (!single && bb.term().hasAny(NEG)))) {
             autoNeg = true;
         }
 
@@ -305,6 +305,14 @@ public class Occurrify extends TimeGraph {
     }
 
 
+    static final PrediTerm<Derivation> intersectFilter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
+        @Override
+        public boolean test(Derivation d) {
+            nars.Task b = d._belief;
+            return b == null || d._task.intersectsTime(b);
+        }
+    };
+
     public enum TaskTimeMerge {
 
         Task() {
@@ -453,14 +461,6 @@ public class Occurrify extends TimeGraph {
          */
         Intersect() {
 
-            final PrediTerm<Derivation> filter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
-                @Override
-                public boolean test(Derivation d) {
-                    nars.Task b = d._belief;
-                    return b == null || d._task.intersectsTime(b);
-                }
-            };
-
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
                 //return solveOccDTWithGoalOverride(d, x);
@@ -469,7 +469,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             public PrediTerm<Derivation> filter() {
-                return filter;
+                return intersectFilter;
             }
 
             @Override
