@@ -71,7 +71,7 @@ public enum TruthFunctions2 { ;
         float c = and(goal.conf(), belief.conf(), belief.freq());
         
         if (!strong)
-            c *= TruthFunctions.w2c(1.0f);
+            c *= TruthFunctions.w2cSafe(1.0f);
 
         if (c >= minConf) {
 
@@ -93,10 +93,13 @@ public enum TruthFunctions2 { ;
     /** goal deduction */
     @Nullable public static Truth goalduction(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
-        float c = and(goal.conf(), belief.conf());
+        float beliefFreq = belief.freq();
+        float c = and(goal.conf(), belief.conf()
+                * beliefFreq
+        );
 
         if (!strong)
-            c *= TruthFunctions.w2c(1.0f);
+            c *= TruthFunctions.w2cSafe(1.0f);
 
         if (c >= minConf) {
 
@@ -106,7 +109,7 @@ public enum TruthFunctions2 { ;
 
 
 
-            float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
+            float f = Util.lerp(beliefFreq, 0.5f, goal.freq());
 
             return $.t(f, c);
 

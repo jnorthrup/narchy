@@ -1,6 +1,8 @@
 package nars.task.signal;
 
 
+import nars.NAR;
+import nars.task.ITask;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -37,4 +39,8 @@ public class SignalTask extends UnevaluatedTask {
         return false;
     }
 
+    @Override
+    public ITask next(NAR n) {
+        return inputStrategy(this);
+    }
 }
