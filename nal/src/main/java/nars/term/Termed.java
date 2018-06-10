@@ -1,7 +1,6 @@
 package nars.term;
 
 import nars.Op;
-import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 import java.util.function.Predicate;
 
@@ -26,20 +25,14 @@ public interface Termed extends Termlike {
         return term().sub(i);
     }
 
-    @Override
-    default int complexity() {
-        return term().complexity();
-    }
 
-    @Override
-    default int volume() {
-        return term().volume();
-    }
 
     @Override
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return term().containsRecursively(t, root, inSubtermsOf);
-    }
+    }t add nal ui util app
+            git status
+                    git
     //
 //    default boolean isNormalized() {
 //        return term().isNormalized();

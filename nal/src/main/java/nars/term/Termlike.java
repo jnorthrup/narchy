@@ -349,7 +349,42 @@ public interface Termlike {
         return sum(Term::varPattern);
     }
 
+    /**
+     * an array of the subterms, which an implementation may allow
+     * direct access to its internal array which if modified will
+     * lead to disaster. by default, it will call 'toArray' which
+     * guarantees a clone. override with caution
+     */
+    default Term[] arrayShared() {
+        return arrayClone();
+    }
 
+    /**
+     * an array of the subterms
+     * this is meant to be a clone always
+     */
+    default Term[] arrayClone() {
+        int s = subs();
+        switch (s) {
+            case 0:
+                return Op.EmptyTermArray;
+            case 1:
+                return new Term[]{sub(0)};
+            case 2:
+                return new Term[]{sub(0), sub(1)};
+            default:
+                return arrayClone(new Term[s], 0, s);
+        }
+    }
+
+    default Term[] arrayClone(Term[] x, int from, int to) {
+
+
+        for (int i = from, j = 0; i < to; i++, j++)
+            x[j] = this.sub(i);
+
+        return x;
+    }
 
 
 

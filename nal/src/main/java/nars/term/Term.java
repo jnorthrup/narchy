@@ -40,7 +40,6 @@ import nars.util.SoftException;
 import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
-import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -137,17 +136,6 @@ public interface Term extends Termed, Termlike, Comparable<Termed> {
 
     Op op();
 
-    @Override
-    int volume();
-
-    @Override
-    int complexity();
-
-    @Override
-    int structure();
-
-    @Override
-    boolean contains(Term t);
 
     boolean containsRoot(Term t);
 
@@ -171,20 +159,9 @@ public interface Term extends Termed, Termlike, Comparable<Termed> {
         return whileTrue.test(this);
     }
 
-
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return reduce.intValueOf(v, this);
-    }
-
-
-
-
     default boolean hasXternal() {
         return (dt() == XTERNAL) || Termed.super.hasXternal();
-
     }
-
-
 
     @Override
     default Term sub(int i) {
@@ -566,7 +543,7 @@ public interface Term extends Termed, Termlike, Comparable<Termed> {
         printRecursive(System.out);
     }
 
-    default void printRecursive(@NotNull PrintStream out) {
+    default void printRecursive(PrintStream out) {
         Terms.printRecursive(out, this);
     }
 
@@ -646,6 +623,10 @@ public interface Term extends Termed, Termlike, Comparable<Termed> {
         return Anom.the(1);
     }
 
+    @Override
+    default int structure() {
+        return Termed.super.structure() | op().bit;
+    }
 
     default void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
 
@@ -710,26 +691,26 @@ public interface Term extends Termed, Termlike, Comparable<Termed> {
         private final String reason;
 
 
-        public InvalidTermException(Op op, @NotNull Term[] args, @NotNull String reason) {
+        public InvalidTermException(Op op, Term[] args, String reason) {
             this(op, DTERNAL, reason, args);
         }
 
-        public InvalidTermException(Op op, int dt, @NotNull Term[] args, @NotNull String reason) {
+        public InvalidTermException(Op op, int dt, Term[] args, String reason) {
             this(op, dt, reason, args);
         }
 
-        public InvalidTermException(Op op, int dt, @NotNull Subterms args, @NotNull String reason) {
+        public InvalidTermException(Op op, int dt, Subterms args, String reason) {
             this(op, dt, reason, args.arrayShared());
         }
 
-        public InvalidTermException(Op op, int dt, @NotNull String reason, @NotNull Term... args) {
+        public InvalidTermException(Op op, int dt, String reason, Term... args) {
             this.op = op;
             this.dt = dt;
             this.args = args;
             this.reason = reason;
         }
 
-//        public InvalidTermException(String s, @NotNull Compound c) {
+//        public InvalidTermException(String s, Compound c) {
 //            this(c.op(), c.dt(), c.subterms(), s);
 //        }
 

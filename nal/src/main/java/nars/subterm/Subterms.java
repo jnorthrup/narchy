@@ -17,7 +17,6 @@ import nars.unify.mutate.CommutivePermutations;
 import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -384,65 +383,32 @@ public interface Subterms extends Termlike, Iterable<Term> {
         forEach(target::add);
     }
 
-    /**
-     * an array of the subterms, which an implementation may allow
-     * direct access to its internal array which if modified will
-     * lead to disaster. by default, it will call 'toArray' which
-     * guarantees a clone. override with caution
-     */
-    default Term[] arrayShared() {
-        return arrayClone();
-    }
 
-    /**
-     * if subterms are already sorted, returns arrayShared().
-     * otherwise a sorted clone is returned.
-     */
-    default Term[] arraySharedSorted(boolean dedup) {
-        Term[] aa = arrayShared();
-        if (dedup) {
-            Term[] ss = Terms.sorted();
-            if (ss == aa)
-                return aa;
-            else
-                return ss;
-        } else {
-            if (Util.isSorted(aa))
-                return aa;
-            else {
-                Term[] ss = aa.clone();
-                Arrays.sort(ss);
-                return ss;
-            }
-        }
-    }
-
-    /**
-     * an array of the subterms
-     * this is meant to be a clone always
-     */
-    default Term[] arrayClone() {
-        int s = subs();
-        switch (s) {
-            case 0:
-                return Op.EmptyTermArray;
-            case 1:
-                return new Term[]{sub(0)};
-            case 2:
-                return new Term[]{sub(0), sub(1)};
-            default:
-                return arrayClone(new Term[s], 0, s);
-        }
-    }
-
-    default Term[] arrayClone(Term[] x, int from, int to) {
+//
+//    /**
+//     * if subterms are already sorted, returns arrayShared().
+//     * otherwise a sorted clone is returned.
+//     */
+//    default Term[] arraySharedSorted(boolean dedup) {
+//        Term[] aa = arrayShared();
+//        if (dedup) {
+//            Term[] ss = Terms.sorted();
+//            if (ss == aa)
+//                return aa;
+//            else
+//                return ss;
+//        } else {
+//            if (Util.isSorted(aa))
+//                return aa;
+//            else {
+//                Term[] ss = aa.clone();
+//                Arrays.sort(ss);
+//                return ss;
+//            }
+//        }
+//    }
 
 
-        for (int i = from, j = 0; i < to; i++, j++)
-            x[j] = this.sub(i);
-
-        return x;
-    }
 
 
     /*@NotNull*/

@@ -72,6 +72,16 @@ public interface Atomic extends Term {
     }
 
     @Override
+    default Term[] arrayShared() {
+        return Op.EmptyTermArray;
+    }
+
+    @Override
+    default Term[] arrayClone() {
+        return Op.EmptyTermArray;
+    }
+
+    @Override
     default int vars() {
         return 0;
     }
@@ -120,9 +130,13 @@ public interface Atomic extends Term {
 
     @Override
     default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return v; 
+        return reduce.intValueOf(v, this);
     }
 
+    @Override
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        return reduce.intValueOf(v, this);
+    }
 
     /*@NotNull*/
     static Atomic the(String id) {

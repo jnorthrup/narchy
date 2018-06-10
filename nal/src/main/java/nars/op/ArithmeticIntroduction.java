@@ -2,6 +2,7 @@ package nars.op;
 
 import jcog.Paper;
 import jcog.Util;
+import jcog.WTF;
 import jcog.decide.Roulette;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
@@ -235,6 +236,10 @@ public class ArithmeticIntroduction extends LeakBack {
         float p = super.pri(t);
         Term tt = t.term();
         int numInts = tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
+        if (numInts == 0) {
+            tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
+            throw new WTF();
+        }
         assert(numInts > 0);
         if (numInts < 2)
             return Float.NaN;

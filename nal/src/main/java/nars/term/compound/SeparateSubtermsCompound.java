@@ -10,9 +10,82 @@ import static nars.time.Tense.DTERNAL;
 
 public interface SeparateSubtermsCompound extends Compound {
 
+    /*@NotNull*/
+    @Override
+    default Term[] arrayClone() {
+        return subterms().arrayClone();
+    }
+
+    @Override
+    default Term[] arrayShared() {
+        return subterms().arrayShared();
+    }
+
+    @Override
+    default Term[] arrayClone(Term[] x, int from, int to) {
+        return subterms().arrayClone(x, from, to);
+    }
+
+
+
+    /*@NotNull*/
+    @Override
+    default Term sub(int i) {
+        return subterms().sub(i);
+    }
+
+    @Override
+    default boolean contains(Term t) {
+        return subterms().contains(t);
+    }
+
+    @Override
+    default boolean containsNeg(Term x) {
+        return subterms().containsNeg(x);
+    }
+
+    @Override
+    default int structure() {
+        return subterms().structure() | op().bit;
+    }
+
+    @Override
+    default int complexity() {
+        return subterms().complexity();
+    }
+
+    @Override
+    default int volume() {
+        return subterms().volume();
+    }
+
+    @Override
+    default int varQuery() {
+        return subterms().varQuery();
+    }
+
+    @Override
+    default int varPattern() {
+        return subterms().varPattern();
+    }
+    @Override
+    default int varDep() {
+        return subterms().varDep();
+    }
+
+    @Override
+    default int varIndep() {
+        return subterms().varIndep();
+    }
+
+    @Override
+    default int vars() {
+        return subterms().vars();
+    }
+
     @Override
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return subterms().intifyRecurse(reduce, reduce.intValueOf(v, this));
+        return subterms().intifyRecurse(reduce, v);
     }
 
     @Override

@@ -108,10 +108,10 @@ public class NARSpeak {
 
             try {
                 nar.goal($.$("say(ready)"), Tense.Present, 1f, 0.9f);
-                nar.believe($.$("(" + a.happy + " =|> say(happy))"));
-                nar.goal($.$("(" + a.happy + " &| say(happy))"));
-                nar.believe($.$("(" + a.happy.neg() + " =|> say(sad))"));
-                nar.goal($.$("(" + a.happy.neg() + " &| say(sad))"));
+                nar.believe($.$("(" + a.happy.id + " =|> say(happy))"));
+                nar.goal($.$("(" + a.happy.id + " &| say(happy))"));
+                nar.believe($.$("(" + a.happy.id.neg() + " =|> say(sad))"));
+                nar.goal($.$("(" + a.happy.id.neg() + " &| say(sad))"));
                 nar.goal($.$("(#x &| say(#x))"));
                 nar.believe($.$("($x =|> say($x))"));
                 nar.goal($.$("say(#1)"));

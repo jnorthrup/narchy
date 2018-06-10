@@ -49,7 +49,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     @Override
     public Term[] arrayClone() {
-        return toArray(new Term[size()]);
+        return toArray(Op.EmptyTermArray);
     }
 
     /** creates an immutable instance of this */

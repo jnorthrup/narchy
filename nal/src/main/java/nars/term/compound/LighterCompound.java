@@ -16,10 +16,6 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
         this.op = op;
     }
 
-    @Override
-    public int structure() {
-        return super.structure() | op().bit;
-    }
 
     public LighterCompound(Op op) {
         this(op.id);
@@ -34,6 +30,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
     public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         return super.intifyShallow(reduce, v);
     }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -57,29 +54,17 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
 
     @Override
     public int volume() {
-        return super.volume()+1;
+        return super.volume();
     }
 
     @Override
     public int complexity() {
-        return super.complexity()+1;
+        return super.complexity();
     }
 
     @Override
-    public int varPattern() {
-        return super.varPattern();
-    }
-    @Override
-    public int varQuery() {
-        return super.varQuery();
-    }
-    @Override
-    public int varDep() {
-        return super.varDep();
-    }
-    @Override
-    public int varIndep() {
-        return super.varIndep();
+    public Term[] arrayShared() {
+        return arraySharedKeep();
     }
 
     @Override

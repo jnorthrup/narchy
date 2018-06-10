@@ -53,8 +53,14 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     public static <E> Iterable<E> iterable(E... e) {
         if (e == null)
             return List.of();
-        else
-            return (Iterable) ArrayIterator.get(e, e.length);
+        else {
+            switch (e.length) {
+                case 1:
+                    return List.of(e);
+                default:
+                    return (Iterable) ArrayIterator.get(e, e.length);
+            }
+        }
     }
 
     public static <E> Iterator<E> get(E[] e, int size) {
