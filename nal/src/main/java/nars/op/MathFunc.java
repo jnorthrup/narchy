@@ -1,9 +1,11 @@
 package nars.op;
 
 import nars.$;
+import nars.subterm.Subterms;
 import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import org.jetbrains.annotations.Nullable;
@@ -90,6 +92,11 @@ public enum MathFunc { ;
 
         public ArithmeticCommutiveBinaryBidiFunctor(String name) {
             super(name);
+        }
+
+        @Override
+        public Term applyInline(Subterms args) {
+            return args.subs() == 2 && !args.OR(x -> x instanceof Variable) ? super.applyInline(args) : null;
         }
 
         abstract protected Term compute(int xx, int yy);

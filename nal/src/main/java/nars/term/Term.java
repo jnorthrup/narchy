@@ -196,9 +196,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    default Term transform(TermTransform t) {
-        return t.transformAtomic(this);
-    }
+    Term transform(TermTransform t);
 
     @Nullable
     default Term transform(ByteList path, Term replacement) {

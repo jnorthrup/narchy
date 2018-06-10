@@ -60,7 +60,7 @@ public final class Termify extends AbstractPred<Derivation> {
             return false;
 
         nar.emotion.deriveEval.increment();
-        c1 = c1.eval(eval, d, d.random);
+        //c1 = c1.eval(eval, d, d.random);
 
         if (!Taskify.valid(c1, (byte) 0 /* dont consider punc consequences until after temporalization */)) {
             Term c1e = c1;

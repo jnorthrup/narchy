@@ -5,6 +5,7 @@ import jcog.util.TriFunction;
 import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.The;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
@@ -136,19 +137,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     }
 
     public static Functor f1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
-        return new AbstractInlineFunctor1(termAtom) {
-            @Override public final Term apply(Term x) {
-                return ff.apply(x.sub(0));
-            }
-        };
+        return new MyAbstractInlineFunctor1Inline(termAtom, ff);
     }
 
     public static Functor f2Inline(@NotNull String termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
-        return new AbstractInlineFunctor2(termAtom) {
-            @Override protected final Term apply(Term a, Term b) {
-                return ff.apply(a, b);
-            }
-        };
+        return new MyAbstractInlineFunctor2Inline(termAtom, ff);
     }
 
     public static <X extends Term> LambdaFunctor f1Const(@NotNull String termAtom, @NotNull Function<X, Term> ff) {
@@ -264,12 +257,11 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
      */
     public interface InlineFunctor extends BiFunction<Evaluation, Subterms,Term> {
 
-        default Term applyArgs(Evaluation eval, Term args) {
-            return apply(eval, args.subterms());
+        default Term applyInline(Term args) {
+            return applyInline(args.subterms());
         }
-
-        default Term apply(Term args) {
-            return apply(null, args.subterms());
+        default Term applyInline(Subterms args) {
+            return apply(null, args);
         }
 
     }
@@ -287,14 +279,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
             super(atom);
         }
 
-        @Override
-        final public Term applyArgs(Evaluation eval, Term args) {
-            return args.subs()!=1 ? Null : apply(args.sub(0));
-        }
 
         @Override
         final public Term apply(Evaluation e, Subterms terms) {
-            return terms.subs() != 1 ? Null : apply(terms.sub(0));
+            return terms.subs() != 1 ? Null : applyInline(terms.sub(0));
         }
 
     }
@@ -597,10 +585,10 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
         @Override
         protected Term apply2(Evaluation e, Term x, Term y) {
-            
-            if ((x.op().var || y.op().var) && x.compareTo(y) > 0) {
+            if (!(x.op()==INT && y.op()==INT) && x.compareTo(y) > 0) {
                 return $.func((Atomic) term(), y, x);
             }
+
             return super.apply2(e, x, y);
         }
 
@@ -614,6 +602,45 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
         public InlineCommutiveBinaryBidiFunctor(String name) {
             super(name);
+        }
+    }
+
+    protected static class MyAbstractInlineFunctor1Inline extends AbstractInlineFunctor1 {
+        private @NotNull
+        final Function<Term, Term> ff;
+
+        public MyAbstractInlineFunctor1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
+            super(termAtom);
+            this.ff = ff;
+        }
+
+        @Override public final Term applyInline(Term x) {
+            return ff.apply(x.sub(0));
+        }
+
+        @Override
+        public Term applyInline(Subterms x) {
+            return ff.apply(x.sub(0));
+        }
+    }
+
+    protected static class TheAbstractInlineFunctor1Inline extends MyAbstractInlineFunctor1Inline implements The {
+        public TheAbstractInlineFunctor1Inline(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
+            super(termAtom, ff);
+        }
+    }
+
+    private static class MyAbstractInlineFunctor2Inline extends AbstractInlineFunctor2 {
+        private @NotNull
+        final BiFunction<Term, Term, Term> ff;
+
+        public MyAbstractInlineFunctor2Inline(@NotNull String termAtom, @NotNull BiFunction<Term, Term, Term> ff) {
+            super(termAtom);
+            this.ff = ff;
+        }
+
+        @Override protected final Term apply(Term a, Term b) {
+            return ff.apply(a, b);
         }
     }
 }

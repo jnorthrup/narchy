@@ -186,8 +186,9 @@ public enum $ {
      * returns a Term if the two inputs are equal to each other
      */
     public static <T extends Term> T inh(Term subj, Term pred) {
-        return (T) INH.compound(DTERNAL, new Term[]{subj, pred});
+        return (T) INH.compound(DTERNAL, subj, pred);
     }
+
 
     public static <T extends Term> T inh(Term subj, String pred) {
         return $.inh(subj, $.the(pred));
@@ -224,8 +225,14 @@ public enum $ {
         return INH.the(PROD.the(arg), opTerm);
     }
 
-
-
+    /** use with caution */
+    public static Term funcFast(Atomic opTerm, Term... arg) {
+        return $.inhFast($.pFast(arg), opTerm);
+    }
+    /** use with caution */
+    public static Term inhFast(Term subj, Term pred) {
+        return new LightCompound(INH, subj, pred);
+    }
 
     public static <T extends Term> T impl(Term a, Term b) {
         return (T) IMPL.the(a, b);

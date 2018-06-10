@@ -115,6 +115,11 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
     int dt(Compound x);
 
+    @Override
+    default boolean eval() {
+        return false;
+    }
+
     @Nullable
     @Override
     default Term transformCompound(final Compound x) {

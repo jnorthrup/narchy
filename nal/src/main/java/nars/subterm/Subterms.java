@@ -1217,11 +1217,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
             
             int ys = y.size();
             for (int i = 0; i < ys; i++) {
-                if (y.get(i)==null) {
+                if (y.get(i)==null)
                     y.set(i, sub(i));
-                } else {
-                    break;
-                }
+                else
+                    break; //stop at first non-null subterm
             }
             return y;
         } else

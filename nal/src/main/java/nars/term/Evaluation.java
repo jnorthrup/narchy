@@ -11,7 +11,6 @@ import nars.NAR;
 import nars.Op;
 import nars.concept.Operator;
 import nars.subterm.Subterms;
-import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.control.AbstractPred;
@@ -32,7 +31,7 @@ import static nars.Op.*;
 
 public class Evaluation {
 
-    public static final Atom TRUE = (Atom) Atomic.the("\"" + True + '"');
+    public static final Functor TRUE = new Functor.TheAbstractInlineFunctor1Inline("\"" + True + '"', x->null);
 
 //    static final ThreadLocal<Evaluation> eval = ThreadLocal.withInitial(Evaluation::new);
 
@@ -61,12 +60,25 @@ public class Evaluation {
         return solveAll(null, x, nar);
     }
 
-    public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, TermContext context, boolean wrapBool) {
-        ArrayHashSet<Term> all = new ArrayHashSet<>();
-        Evaluation.solve(e, x, wrapBool, context, (y) -> {
-            if (Operator.func(y).equals(TRUE)) {
-                y = Operator.arg(y, 0); //unwrap
+    static final TermTransform trueUnwrapper = new TermTransform.NegObliviousTermTransform() {
+        @Override
+        public @Nullable Term transformCompoundUnneg(Compound x) {
+            if (Operator.func(x).equals(TRUE)) {
+                return Operator.arg(x, 0).transform(this);
             }
+            return TermTransform.NegObliviousTermTransform.super.transformCompoundUnneg(x);
+        }
+
+        @Override
+        public boolean eval() {
+            return false;
+        }
+    };
+    public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, TermContext context, boolean wrapBool) {
+        ArrayHashSet<Term> all = new ArrayHashSet<>(1);
+        Evaluation.solve(e, x, wrapBool, context, (y) -> {
+            y = possiblyNeedsEval(y) ? y.transform(trueUnwrapper) : y;
+
 
             all.add(y);
 
@@ -80,7 +92,7 @@ public class Evaluation {
         if (y == null)
             return each.test(x);
         else
-            return (e!=null ? e.wrapBool(wrapBool) : Evaluation.start(wrapBool)).get(y, each);
+            return (e != null ? e.wrapBool(wrapBool) : Evaluation.start(wrapBool)).get(y, each);
     }
 
     @Nullable
@@ -116,7 +128,7 @@ public class Evaluation {
 
     protected Term eval(Term x) {
         Term y = _eval(x);
-        return boolWrap(x,y);
+        return boolWrap(x, y);
     }
 
     protected Term boolWrap(Term x, Term y) {
@@ -127,14 +139,14 @@ public class Evaluation {
         if (y == Null)
             return Null;
         else {
-           // if (y == True || y == False || y.hasAny(Op.BOOL)) {
+            // if (y == True || y == False || y.hasAny(Op.BOOL)) {
             {
 //                    boolean hasFalse = y == False; || y.ORrecurse(t -> t == False);
 //            if (hasFalse)
 //                z = False; //TODO maybe record what part causes the falsity
 
                 //determined absolutely true or false: implies that this is the answer to a question
-                return $.func(TRUE, y == False ? x.neg() : x);
+                return $.funcFast(TRUE, y == False ? x.neg() : x);
 
                 //return hasFalse ? False : True;
             }
@@ -143,10 +155,10 @@ public class Evaluation {
 
     protected Term _eval(Term c) {
         Op o = c.op();
-        if (o==NEG) {
+        if (o == NEG) {
             Term xu = c.unneg();
             Term yu = _eval(xu);
-            if (xu!=yu)
+            if (xu != yu)
                 return yu.neg();
             return c; //unchanged
         }
@@ -159,38 +171,35 @@ public class Evaluation {
         Term[] xy = null;
 
 
-
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
-        boolean evalConj = o==CONJ;
-        int conjPolarity = 0;
+        boolean evalConjOrImpl = wrapBool ? false : o == CONJ || o == IMPL;
+        int polarity = 0;
 
         for (int i = 0, n = uu.subs(); i < n; i++) {
             Term xi = xy != null ? xy[i] : uu.sub(i);
             Term yi = possiblyNeedsEval(xi) ? _eval(xi) : xi;
-            if (!evalConj) {
-                if (xi != yi)
-                    yi = boolWrap(xi, yi);
-            } else {
-                if (yi instanceof Bool) {
-                    if (yi == True) {
-                        conjPolarity = +1;
-                    } else if (yi == False) {
-                        conjPolarity = -1;
-                        break; //short circuit
-                    } else {
+            if (yi == Null)
+                return Null;
+            if (evalConjOrImpl && yi instanceof Bool && (i == 0 /* impl subj only */ || o == CONJ)) {
+                if (yi == True) {
+                    polarity = +1;
+                } else /*if (yi == False)*/ {
+                    if (o == IMPL)
                         return Null;
-                    }
+                    polarity = -1;
+                    break;
                 }
-
+            } else {
+                if (xi != yi) {
+                    yi = boolWrap(xi, yi);
+                }
             }
 
             if (xi != yi) {
                 if (yi == null) {
 
                 } else {
-                    if (yi == Null)
-                        return Null;
 
 
                     if (yi instanceof EllipsisMatch) {
@@ -199,7 +208,7 @@ public class Evaluation {
                         ellipsisRemoves++;
                     }
 
-                    if (xi.getClass() != yi.getClass() || !xi.equals(yi)) {
+                    if (xi!=yi) {
                         if (xy == null) {
                             xy = ((Compound) c).arrayClone();
                         }
@@ -209,9 +218,14 @@ public class Evaluation {
             }
         }
 
-        if (conjPolarity!=0) {
-            if (conjPolarity<0) {
-                return False; //short circuit
+        if (polarity != 0) {
+            if (o == CONJ) {
+                if (polarity < 0) {
+                    return False; //short circuit
+                }
+            } else if (o == IMPL) {
+                assert(polarity > 0); //False and Null already handled
+                return xy[1];
             }
         }
 
@@ -236,18 +250,20 @@ public class Evaluation {
             if ((pred = uu.sub(1)) instanceof Functor && (subj = uu.sub(0)).op() == PROD) {
 
                 Term v = ((BiFunction<Evaluation, Subterms, Term>) pred).apply(this, subj.subterms());
-                if (v instanceof AbstractPred) {
-                    u = $.the(((Predicate) v).test(null));
-                } else if (v == null) {
+                if (v == null) {
 
                 } else {
-                    u = v;
+                    if (v instanceof AbstractPred) {
+                        u = $.the(((Predicate) v).test(null));
+                    } else {
+                        u = v;
+                    }
                 }
             }
         }
 
-        if (u != c && (u.equals(c) && u.getClass() == c.getClass()))
-            return c;
+//        if (u != c && (u.equals(c) && u.getClass() == c.getClass()))
+//            return c;
 
         return u;
     }
@@ -312,10 +328,11 @@ public class Evaluation {
 
             Term z = eval(y);
 
-            if (z != null && !each.test(z))
+            int ps = proc.size();
+            if (z != null && np == ps && !each.test(z))
                 return false;
 
-            if (np < proc.size()) {
+            if (np < ps) {
                 int before = v.now();
                 if (!get(z, each))
                     return false;
@@ -407,7 +424,12 @@ public class Evaluation {
         }
 
         @Override
-        public @Nullable Term transformAtomic(Term z) {
+        public boolean eval() {
+            return false; //not at this stage
+        }
+
+        @Override
+        public @Nullable Term transformAtomic(Atomic z) {
             if (z instanceof Functor)
                 hasFunctor = true;
 

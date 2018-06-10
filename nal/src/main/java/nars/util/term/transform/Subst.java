@@ -2,11 +2,16 @@ package nars.util.term.transform;
 
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import org.jetbrains.annotations.Nullable;
 
 
 public interface Subst extends TermTransform {
 
+    @Override
+    default boolean eval() {
+        return false;
+    }
 
     /** completely dereferences a term (usually a variable)*/
     default Term resolve(final Term x) {
@@ -19,7 +24,7 @@ public interface Subst extends TermTransform {
     }
 
     @Override @Nullable
-    default Term transformAtomic(Term atomic) {
+    default Term transformAtomic(Atomic atomic) {
         Term y = resolve(atomic);
         return y != null ? y : atomic;
     }
@@ -27,8 +32,13 @@ public interface Subst extends TermTransform {
     @Override @Nullable
     default Term transformCompound(Compound x) {
         Term y = xy(x);
-        return y != null ? y : TermTransform.super.transformCompound((Compound)x);
+        if (y!=null) {
+            return y.transform(this);
+        } else {
+            return TermTransform.super.transformCompound((Compound) x);
+        }
     }
+
 
     /**
      * can be used to determine if this subst will have any possible effect on any transforms to any possible term,

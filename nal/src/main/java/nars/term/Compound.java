@@ -815,13 +815,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     @Nullable
     default Term transform(TermTransform t) {
-        Termed y = t.transformCompound(this);
-        if (y == this)
-            return this; 
-        else if (y != null)
-            return y.term();
-        else
-            return null;
+        return t.transformCompound(this);
     }
 
     @Override

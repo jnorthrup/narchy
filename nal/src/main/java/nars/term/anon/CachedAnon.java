@@ -1,6 +1,7 @@
 package nars.term.anon;
 
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.util.term.transform.CachedTermTransform;
 import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
@@ -27,10 +28,9 @@ public class CachedAnon extends Anon {
             return true;
         }
         if (super.rollback(uniques)) {
-            externCache.clear(); 
-            
+            if (externCache!=null)
+                externCache.clear();
 
-            
             return true;
         }
         return false;
@@ -38,8 +38,9 @@ public class CachedAnon extends Anon {
 
     @Override
     public void clear() {
-        
-        externCache.clear();
+        if (externCache!=null)
+            externCache.clear();
+
         super.clear();
     }
 
@@ -47,19 +48,30 @@ public class CachedAnon extends Anon {
     protected TermTransform newPut() {
         return internCache = new DirectTermTransform.CachedDirectTermTransform(0) {
             @Override
-            public final @Nullable Term transformAtomic(Term atomic) {
+            public final @Nullable Term transformAtomic(Atomic atomic) {
                 return put(atomic);
+            }
+
+            @Override
+            public boolean eval() {
+                return false;
             }
         };
     }
 
     protected TermTransform newGet() {
-        
-        if (externCache == null)
-            
-            externCache = new UnifiedMap<>();
+        if (cacheGet()) {
+            if (externCache == null)
+                externCache = new UnifiedMap<>();
 
-        return new CachedTermTransform(super.newGet(), externCache);
+            return new CachedTermTransform(super.newGet(), externCache);
+        } else {
+            return super.newGet();
+        }
+    }
+
+    protected boolean cacheGet() {
+        return true;
     }
 
 }

@@ -48,18 +48,42 @@ public class Builtin {
     public static final Functor.InlineCommutiveBinaryBidiFunctor EQUAL = new Functor.InlineCommutiveBinaryBidiFunctor("equal") {
 
         @Override
+        public Term applyInline(Subterms args) {
+            if (args.subs()==2) {
+                Term x = args.sub(0);
+                Term y = args.sub(1);
+                if (x.equals(y)) return True;
+                if (x instanceof Variable) return null;
+                if (y instanceof Variable) return null;
+                return False;
+            }
+            return null;
+        }
+
+        @Override
         protected Term apply2(Evaluation e, Term x, Term y) {
+            if (x.equals(y))
+                return True; //fast equality pre-test
+
+
             boolean xVar = x.op().var;
             boolean yVar = y.op().var;
             if (xVar ^ yVar) {
                 if (xVar) {
-                    e.replace(x, y);
+                    if (e != null) {
+                        e.replace(x, y);
+                        return True;
+                    }
                     return null;
                 } else {
-                    e.replace(y, x);
+                    if (e != null) {
+                        e.replace(y, x);
+                        return True;
+                    }
                     return null;
                 }
             }
+
 
             return super.apply2(e, x, y);
         }
@@ -70,8 +94,11 @@ public class Builtin {
             if (x.equals(y))
                 return True;
 
-            if (x.hasVars() || y.hasVars())
+            if (x.hasVars() || y.hasVars()) {
+                if (x.equalsNeg(y))
+                    return False; //experimental assumption: x!=--x
                 return null;
+            }
 
             return False;
         }
@@ -398,7 +425,7 @@ public class Builtin {
          *
          * this also filter a single variable (depvar) from being a result
          */
-        nar.on(Functor.f1((Atom) $.the("dropAnySet"), (Term t) -> {
+        nar.on(Functor.f1Inline("dropAnySet", (Term t) -> {
             Op oo = t.op();
 
             if (oo == INT) {
@@ -457,21 +484,21 @@ public class Builtin {
         }));
 
 
-        /** depvar cleaning from commutive conj */
-        nar.on(Functor.f1((Atom) $.the("ifConjCommNoDepVars"), (Term t) -> {
-            if (!t.hasAny(VAR_DEP))
-                return t;
-            Op oo = t.op();
-            if (oo != CONJ)
-                return t;
-
-
-            SortedSet<Term> s = t.subterms().toSetSorted();
-            if (!s.removeIf(x -> x.unneg().op() == VAR_DEP))
-                return t;
-
-            return CONJ.the(t.dt(), s);
-        }));
+//        /** depvar cleaning from commutive conj */
+//        nar.on(Functor.f1((Atom) $.the("ifConjCommNoDepVars"), (Term t) -> {
+//            if (!t.hasAny(VAR_DEP))
+//                return t;
+//            Op oo = t.op();
+//            if (oo != CONJ)
+//                return t;
+//
+//
+//            SortedSet<Term> s = t.subterms().toSetSorted();
+//            if (!s.removeIf(x -> x.unneg().op() == VAR_DEP))
+//                return t;
+//
+//            return CONJ.the(t.dt(), s);
+//        }));
 
         /** drops a random contained event, whether at first layer or below */
         nar.on(Functor.f1((Atom) $.the("dropAnyEvent"), (Term t) -> {

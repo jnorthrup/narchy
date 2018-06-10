@@ -135,10 +135,6 @@ public class LightDTCompound implements Compound {
     }
 
 
-    @Override
-    public final Term dt(int nextDT) {
-        return (nextDT == dt) ? this : Op.dt(this, nextDT);
-    }
 
     @Override
     public final int structure() {

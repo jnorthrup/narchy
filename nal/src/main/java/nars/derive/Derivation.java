@@ -19,6 +19,7 @@ import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.compound.util.Image;
 import nars.term.control.PrediTerm;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -63,16 +64,14 @@ public class Derivation extends PreDerivation {
     };
     private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     public final ArrayHashSet<Premise> premiseBuffer =
-
             new ArrayHashSet<>();
-    public final Anon anon =
 
-            new CachedAnon(ANON_INITIAL_CAPACITY, 16 * 1024);
+    public final Anon anon;
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
     private final Map<Task, Task> derivedTasks = new HashMap<>();
-    private final SubIfUnify uniSubAny = new SubIfUnify(this);
+    private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
     private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
         @Override
         protected Term apply(Term subterm, Term whichTask) {
@@ -83,25 +82,14 @@ public class Derivation extends PreDerivation {
             if (whichTask.equals(Task)) {
                 compared = taskTruth;
             } else {
+                //assert(whichTask.equals(Belief))
                 compared = beliefTruth;
             }
-            if (compared == null)
-                return Null;
-            else
-                return compared.isNegative() ? subterm.neg() : subterm;
+            return compared.isNegative() ? subterm.neg() : subterm;
         }
     };
     public NAR nar;
-    private final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
-        x = anon.get(x);
-        if (x == null)
-            return Null;
-
-        Term y = $.func(_tlRandom, x).eval(nar);
-        if (y != null && y.op().conceptualizable)
-            return anon.put(y);
-        return Null;
-    });
+    private final Functor.LambdaFunctor termlinkRandomProxy;
     /**
      * temporary un-transform map
      */
@@ -114,7 +102,7 @@ public class Derivation extends PreDerivation {
             return super.put(key, value);
         }
     };
-    private final Subst uniSub = new Subst("substitute") {
+    private final Subst mySubst = new Subst("substitute") {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {
@@ -196,6 +184,7 @@ public class Derivation extends PreDerivation {
      * precise time that the task and belief truth are sampled
      */
     public long taskAt, beliefAt;
+    private ImmutableMap<Term, Termed> staticFunctors;
     private ImmutableMap<Term, Termed> derivationFunctors;
     private Term _beliefTerm;
     private long[] evidenceDouble, evidenceSingle;
@@ -220,6 +209,40 @@ public class Derivation extends PreDerivation {
                 new SplitMix64Random(1);
 
 
+
+        this.anon = new CachedAnon(ANON_INITIAL_CAPACITY, 16 * 1024) {
+            @Override
+            protected boolean cacheGet() {
+                return false;
+            }
+
+            @Override
+            public Term put(Term x) {
+                if (x instanceof Atom) {
+                    Termed f = staticFunctors.get(x);
+                    if (f != null)
+                        x = (Term)f;
+                }
+                return super.put(x);
+            }
+
+        };
+
+        this.termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
+            x = anon.get(x);
+            if (x == null)
+                return Null;
+
+            Term y = $.func(_tlRandom, x).eval(nar);
+            if (y != null && y.op().conceptualizable)
+                return anon.put(y);
+            return Null;
+        });
+    }
+
+    @Override
+    public final boolean eval() {
+        return true;
     }
 
     private void init(NAR nar) {
@@ -228,21 +251,43 @@ public class Derivation extends PreDerivation {
 
         this.nar = nar;
 
-        Termed[] derivationFunctors = new Termed[]{
-                uniSubAny,
-                uniSub,
-                polarizeFunc,
-                termlinkRandomProxy
+        {
+            Termed[] derivationFunctors = new Termed[]{
+                    mySubIfUnify,
+                    mySubst,
+                    polarizeFunc,
+                    termlinkRandomProxy,
+                    Image.imageExt,
+                    Image.imageInt,
+                    Image.imageNormalize,
+                    nar.concept("union"),
+                    nar.concept("differ"),
+                    nar.concept("intersect"),
+                    nar.concept("equal"),
+                    nar.concept("conjWithout"),
+                    nar.concept("conjWithoutAll"),
+                    nar.concept("conjWithoutPosOrNeg"),
+                    nar.concept("conjDropIfEarliest"),
+                    nar.concept("conjDropIfLatest"),
+                    nar.concept("dropAnySet"),
+                    nar.concept("dropAnyEvent"),
+                    nar.concept("withoutPosOrNeg"),
+                    nar.concept("without"),
+            };
+            Map<Term, Termed> m = new HashMap<>(derivationFunctors.length);
+            for (Termed x : derivationFunctors) //override any statik's
+                m.put(x.term(), x);
+            this.derivationFunctors = Maps.immutable.ofMap(m);
+        }
 
-        };
-
-        Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
-
-        for (Termed x : derivationFunctors)
-            m.put(x.term(), x);
-
-
-        this.derivationFunctors = Maps.immutable.ofMap(m);
+        {
+            Map<Term, Termed> m = new HashMap<>(Builtin.statik.length);
+            for (Termed s : Builtin.statik) {
+                if (s instanceof Functor.InlineFunctor)
+                    m.put(s.term(), s);
+            }
+            this.staticFunctors = Maps.immutable.ofMap(m);
+        }
 
     }
 
@@ -437,39 +482,14 @@ public class Derivation extends PreDerivation {
 
     }
 
-    /**
-     * accelerated version that executes inline functors
-     */
-    @Override
-    public @Nullable Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
 
-        if (op == INH && yy.subs() == 2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit)) {
-            Term pred;
-            if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) {
-                Term args = yy.sub(0);
-                if (args.op() == PROD) {
-                    Term v = ((Functor.InlineFunctor) pred).apply(args);
-                    if (v != null)
-                        return v;
 
-                }
-            }
-        }
-
-        return super.transformedCompound(x, op, dt, xx, yy);
-    }
 
     /**
      * only returns derivation-specific functors.  other functors must be evaluated at task execution time
      */
     @Override
-    public final Term transformAtomic(Term atomic) {
-
-        if (atomic instanceof Atom) {
-            Termed f = derivationFunctors.get(atomic);
-            if (f != null)
-                return (Term) f;
-        }
+    public final Term transformAtomic(Atomic atomic) {
 
         if (atomic instanceof Bool)
             return atomic;
@@ -477,17 +497,20 @@ public class Derivation extends PreDerivation {
         if (atomic instanceof Functor)
             return atomic;
 
+        if (atomic instanceof Atom) {
+            Termed f = derivationFunctors.get(atomic);
+            if (f != null)
+                return (Term) f;
+        }
+
 
         if (atomic instanceof Variable) {
             Term y = xy(atomic);
             if (y != null)
                 return y;
-
         }
 
         return atomic;
-
-
     }
 
     public Derivation cycle(NAR nar, Deriver deri) {

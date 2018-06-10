@@ -19,13 +19,13 @@ import static nars.time.Tense.ETERNAL;
  */
 public class NAL8EternalMixTest extends NALTest {
 
-    final int cycles = 100;
+    final int cycles = 300;
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
-        test.nar.termVolumeMax.set(13);
+        test.nar.termVolumeMax.set(16);
     }
 
     @Test

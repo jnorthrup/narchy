@@ -3,6 +3,7 @@ package nars.util.term.transform;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.atom.Atomic;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class VariableNormalization extends VariableTransform {
 
 
     @Override
-    public final Term transformAtomic(Term atomic) {
+    public final Term transformAtomic(Atomic atomic) {
         if (normalizable(atomic)) {
 
             if (atomic.equals(Op.Imdex)) {

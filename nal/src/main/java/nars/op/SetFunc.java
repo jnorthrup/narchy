@@ -195,12 +195,12 @@ public class SetFunc {
         @Nullable
         @Override
         @Deprecated public final Term apply(Evaluation e, Subterms x) {
-            return apply(x);
+            return applyInline(x);
         }
 
         @Nullable
-        ///@Override
-        public final Term apply(Subterms x) {
+        @Override
+        public final Term applyInline(Subterms x) {
             if (x.subs() != 2)
                 throw new UnsupportedOperationException("# args must equal 2");
 

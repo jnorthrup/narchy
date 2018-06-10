@@ -131,18 +131,23 @@ public class ArithmeticTest {
     @Test
     public void testCompleteAddInduction() {
         NAR n = NARS.tmp(6);
-        new ArithmeticIntroduction(8, n);
+        new ArithmeticIntroduction(4, n);
 
-        final int cycles = 1500;
+        final int cycles = 3000;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
-        n.termVolumeMax.set(12);
+        //n.freqResolution.set(0.1f);
+        n.termVolumeMax.set(14);
+        t.log();
 
-        for (int a = 2; a <= 4; a++) {
-            t.believe("(a," + a + ")");
+
+        for (int a = 0; a <= 2; a++) {
+            t.believe(("(a," + a + ")"));
         }
-        for (int x = 5; x <= 6; x++) {
+
+        for (int x = 3; x <= 4; x++) {
+            //t.input("(a," + x + ")?");
             t.mustBelieve(cycles, "(a," + x + ")", 1f, 0.5f);
         }
         t.test();

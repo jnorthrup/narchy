@@ -6,8 +6,6 @@ import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.truth.Truth;
 
-import java.util.Collection;
-
 /** task which bypasses the evaluation procedure on input.
  *  this is faster but also necessary when
  *  something is specified in the task that evaluation
@@ -25,7 +23,7 @@ public class UnevaluatedTask extends NALTask {
     }
 
     @Override
-    public void preProcess(NAR n, Term y, Collection< ITask > queue) {
-        queue.add(inputStrategy(this)); //direct
+    public ITask next(NAR n) {
+        return inputStrategy(this); //direct
     }
 }

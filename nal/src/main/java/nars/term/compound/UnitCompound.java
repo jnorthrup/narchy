@@ -108,7 +108,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public Term dt(int nextDT) {
-        if (nextDT!=DTERNAL) throw new UnsupportedOperationException();
+        assert(nextDT == DTERNAL);
         return this;
     }
 

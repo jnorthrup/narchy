@@ -5,14 +5,11 @@ import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
-import jcog.pri.Pri;
 import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.proto.TaskAddTask;
 import nars.derive.Premise;
-import nars.link.TaskLink;
-import nars.link.Tasklinks;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.TaskWithNegatedTruth;
@@ -43,7 +40,6 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.term.Evaluation.TRUE;
 import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -373,7 +369,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     static Task clone(Task x, Term newContent, Truth newTruth, byte newPunc, BiFunction<Term, Truth, Task> taskBuilder) {
 
         Task y = Task.tryTask(newContent, newPunc, newTruth, taskBuilder);
-
         if (y == null)
             return null;
 
@@ -814,22 +809,21 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
     default ITask next(NAR n) {
 
-        if (Param.CAUSE_MULTIPLY_EVERY_TASK) {
-            float amp = n.amp(this);
-            priMult(amp, Pri.EPSILON);
-        }
-
+        Collection<ITask> yy;
 
         Term x = term();
-        Set<ITask> yy = new LinkedHashSet<>(4);
 
-        if (!Evaluation.possiblyNeedsEval(x)) {
+        boolean needEval = Evaluation.possiblyNeedsEval(x);
+        if (!needEval) {
+            yy = new FasterList<>(1);
             preProcess(n, x, yy);
         } else {
-
-            Evaluation.solve(null, x, true, n.functors,
+            yy = new LinkedHashSet<>(4);
+            Evaluation.solve(null, x, false, n.functors,
                     z -> {
-                        preProcess(n, z, yy);
+                        if (z.volume() < n.termVolumeMax.intValue()) {
+                            preProcess(n, z, yy);
+                        }
                         return true;
                     });
 
@@ -838,9 +832,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             case 0:
                 return null;
             case 1:
-                return yy.iterator().next();
+                return needEval ? yy.iterator().next() : ((List<ITask>)yy).get(0); /* avoid creating iterator */
             default:
-
                 return new NativeTask.NARTask((nn) -> yy.forEach(z -> z.run(nn)));
         }
     }
@@ -855,46 +848,49 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (!x.equals(y)) {
 
 
-            if (Operator.func(y).equals(TRUE)) {
-                if (isQuestionOrQuest()) {
-
-                    y = Operator.arg(y, 0);
-
-
-                    byte p = isQuestion() ? BELIEF : GOAL;
-
-                    @Nullable Task result = clone(this, y, $.t(1f, n.confDefault(p)), p);
-
-
-                    if (result != null) {
-
-                        float pBeforeDrain = priElseZero();
-                        pri(0);
-                        queue.add(inputStrategy(result));
-
-                        queue.add(new NativeTask.NARTask(nn -> {
-                            Tasklinks.linkTask(
-                                    new TaskLink.GeneralTaskLink(result, nn, pBeforeDrain / 2f),
-                                    concept(nn, true).tasklinks(),
-                                    null);
-
-                        }));
-                    } else {
-
-                    }
-
-                } else {
-
-                    y = Operator.arg(y, 0);
-                    if (!y.equals(x)) {
-                        Task tc = clone(this, y, truth(), punc());
-                        if (!equals(tc)) {
-                            queue.add(inputStrategy(tc));
-                        }
-                    }
-                    return;
-                }
-            } else {
+//            if (Operator.func(y).equals(TRUE)) {
+//                throw new UnsupportedOperationException();
+//                if (isQuestionOrQuest()) {
+//
+//                    y = Operator.arg(y, 0);
+//
+//
+//                    byte p = isQuestion() ? BELIEF : GOAL;
+//
+//                    @Nullable Task result = clone(this, y, $.t(1f, n.confDefault(p)), p);
+//
+//
+//                    if (result != null) {
+//
+//                        float pBeforeDrain = priElseZero();
+//                        pri(0);
+//                        queue.add(inputStrategy(result));
+//
+//                        queue.add(new NativeTask.NARTask(nn -> {
+//                            Tasklinks.linkTask(
+//                                    new TaskLink.GeneralTaskLink(result, nn, pBeforeDrain / 2f),
+//                                    concept(nn, true).tasklinks(),
+//                                    null);
+//
+//                        }));
+//                    } else {
+//
+//                    }
+//
+//                } else {
+//
+//                    y = Operator.arg(y, 0);
+//                    if (!y.equals(x)) {
+//                        Task tc = clone(this, y, truth(), punc());
+//                        if (!equals(tc)) {
+//                            //queue.add(inputStrategy(tc));
+//                            queue.add(tc);
+//                        }
+//                    }
+//
+//                }
+          /*  } else*/
+            {
                 @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(),
 
                         !isInput() || !Param.DEBUG_EXTRA
@@ -913,10 +909,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
 
                     if (result != null) {
-                        pri(0);
-                        queue.add(inputStrategy(result));
+                        //queue.add(inputStrategy(result));
+                        //pri(0);
 
-
+                        queue.add(result);
+                        return; //transformed
                     }
                 }
             }

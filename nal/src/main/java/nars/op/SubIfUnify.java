@@ -68,7 +68,7 @@ import static nars.Op.VAR_DEP;
  * <patham9_> in principle the restriction to have at least one dep-var unified could be skipped, but the additional weaker result doesn't add any value to the system
  *
  */
-public class SubIfUnify extends Functor  {
+public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
 
     final static Term INDEP_VAR = $.quote("$");

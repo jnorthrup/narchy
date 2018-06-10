@@ -9,6 +9,7 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
@@ -42,7 +43,7 @@ public class PremiseDeriverSource extends ProxyTerm {
         public UppercaseAtomsToPatternVariables() { super(8); }
 
         @Override
-        public Term transformAtomic(Term atomic) {
+        public Term transformAtomic(Atomic atomic) {
             if (atomic instanceof Atom) {
                 if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { 
                     String name = atomic.toString();

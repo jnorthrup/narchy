@@ -1,8 +1,10 @@
 package nars.exe;
 
 import jcog.event.On;
+import jcog.pri.Pri;
 import nars.NAR;
 import nars.Param;
+import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.task.ITask;
@@ -48,9 +50,13 @@ abstract public class Exec implements Executor {
     /** inline, synchronous */
     final void executeNow(Object t) {
         try {
-            if (t instanceof ITask)
-                ((ITask) t).run(nar);
-            else if (t instanceof Runnable)
+            if (t instanceof ITask) {
+                ITask tt = (ITask) t;
+                if (Param.CAUSE_MULTIPLY_EVERY_TASK && t instanceof Task) {
+                    tt.priMult(nar.amp((Task) tt), Pri.EPSILON);
+                }
+                tt.run(nar);
+            } else if (t instanceof Runnable)
                 ((Runnable) t).run();
             else 
                 ((Consumer) t).accept(nar);

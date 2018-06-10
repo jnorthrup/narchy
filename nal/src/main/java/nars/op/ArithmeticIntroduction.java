@@ -5,13 +5,11 @@ import jcog.Util;
 import jcog.decide.Roulette;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.bag.leak.LeakBack;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.Variable;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
@@ -29,7 +27,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.INT;
 import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -51,14 +50,14 @@ public class ArithmeticIntroduction extends LeakBack {
     }
 
     public static Term apply(Term x, boolean eternal, Random random) {
-        return apply(x, null, eternal, random);
+        return apply(x, null, eternal, Param.COMPOUND_VOLUME_MAX, random);
     }
 
-    public static Term apply(Term x, @Nullable Anon anon, boolean eternal, Random random) {
-        if (anon == null && !x.hasAny(INT) || x.complexity() < 3)
+    public static Term apply(Term x, @Nullable Anon anon, boolean eternal, int termVolMax, Random random) {
+        if (anon == null && !x.hasAny(INT))
             return x;
 
-        
+
         IntHashSet ints = new IntHashSet(4);
         x.recurseTerms(t->t.hasAny(Op.INT), t -> {
             if (t instanceof Anom) {
@@ -93,7 +92,10 @@ public class ArithmeticIntroduction extends LeakBack {
         if (anon!=null)
             baseTerm = anon.put(baseTerm);
 
-        Variable V = $.varDep("b");
+        Variable V =
+                $.varDep("b");
+                //$.varIndep("b");
+
         Term yy = x.replace(baseTerm, V);
 
         for (Pair<Term, Function<Term, Term>> s : m.getTwo()) {
@@ -105,18 +107,14 @@ public class ArithmeticIntroduction extends LeakBack {
         }
 
         Term equality =
-                SIM.the(baseTerm, V);
-                /** $.func(Builtin.EQUAL, Terms.sorted(baseTerm, V)); */
+                //SIM.the(baseTerm, V);
+                $.func(Builtin.EQUAL, Terms.sorted(baseTerm, V));
 
-        Term y =
-                CONJ.the(yy, eternal ? DTERNAL : 0, equality);
-                
-                
+        Term y = CONJ.the(equality, eternal ? DTERNAL : 0, yy);
+        if (y.op()!=CONJ) return null;
 
-        if (y.op()!=CONJ) {
-        
-            return null; 
-        }
+//        Term y = IMPL.the(equality, eternal ? DTERNAL : 0, yy);
+//        if (y.op()!=IMPL) return null;
 
         if (x.isNormalized()) {
             y = y.normalize();
@@ -225,8 +223,13 @@ public class ArithmeticIntroduction extends LeakBack {
 
     @Override
     protected boolean preFilter(Task next) {
-        return next.term().hasAny(Op.INT);
+        Term x = next.term();
+        return
+            x.hasAny(Op.INT) &&
+            x.complexity() >= 3 &&
+            nar.termVolumeMax.intValue() >= x.volume() + 5 /* for &&equals(x,y)) */;
     }
+
     @Override
     protected float pri(Task t) {
         float p = super.pri(t);
@@ -243,7 +246,7 @@ public class ArithmeticIntroduction extends LeakBack {
     @Override
     protected float leak(Task xx) {
         Term x = xx.term();
-        Term y = apply(x, true /*xx.isEternal()*/, nar.random());
+        Term y = apply(x, null, true /*xx.isEternal()*/, nar.termVolumeMax.intValue(), nar.random());
         if (y!=null && !y.equals(x) && y.op().conceptualizable) {
             //Task yy = Task.clone(xx, y);
             Task yy = Task.clone(xx, y, xx.truth(), xx.punc(), (c, t) ->

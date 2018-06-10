@@ -4,15 +4,12 @@ import jcog.Texts;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
-import nars.term.Compound;
-import nars.term.Evaluation;
-import nars.term.Term;
-import nars.term.Termed;
+import nars.term.*;
+import nars.term.atom.Atomic;
 import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
 
 /**
  * I = input term type, T = transformable subterm type
@@ -23,14 +20,14 @@ public interface TermTransform extends Evaluation.TermContext {
      */
     @Override
     default @Nullable Term apply(Term x) {
-        return x instanceof Compound ? transformCompound((Compound) x) : transformAtomic(x);
+        return x.transform(this);
     }
 
     /**
      * transform pathway for atomics
      */
-    default @Nullable Term transformAtomic(Term atomic) {
-        assert (!(atomic instanceof Compound));
+    default @Nullable Term transformAtomic(Atomic atomic) {
+        //assert (!(atomic instanceof Compound));
         return atomic;
     }
 
@@ -50,21 +47,45 @@ public interface TermTransform extends Evaluation.TermContext {
         Subterms xx = x.subterms();
 
         Subterms yy = xx.transformSubs(this);
-        if (yy == null)
-            return Null; 
+        return yy == null ? Null : transformedCompound(x, op, dt, xx, yy);
 
-        return transformedCompound(x, op, dt, xx, yy);
     }
 
     /** called after subterms transform has been applied */
     @Nullable default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
-        if (yy != xx || op != x.op()) {
-            return the(op, op.temporal ? dt : DTERNAL, (TermList)yy);
+        Term y;
+        if (yy != xx) {
+            y = the(op, dt, (TermList)yy); //transformed subterms
+        } else if (op != x.op()) {
+            y = the(op, dt, xx); //same subterms
         } else {
-            return x.dt(dt);
+            y = x.dt(dt);
         }
+
+        if (eval()) {
+            if ((op = y.op()) == INH) {
+                yy = y.subterms();
+                if (yy.subs() == 2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit)) {
+                    Term pred;
+                    if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) {
+                        Term args = yy.sub(0);
+                        if (args.op() == PROD) {
+                            Term v = ((Functor.InlineFunctor) pred).applyInline(args);
+                            if (v != null)
+                                return v;
+
+                        }
+                    }
+                }
+            }
+        }
+
+        return y;
     }
 
+    default boolean eval() {
+        return true;
+    }
 
 
 
@@ -72,12 +93,16 @@ public interface TermTransform extends Evaluation.TermContext {
      * constructs a new term for a result
      */
     default Term the(Op op, int dt, TermList t) {
-        
-        
-        return op.compound(dt, t.arrayShared());
+        return the(op, dt, (Subterms)t);
     }
 
+    default Term the(Op op, int dt, Subterms t) {
+        return the(op, dt, t.arrayShared());
+    }
 
+    default Term the(Op op, int dt, Term[] subterms) {
+        return op.compound(dt, subterms);
+    }
     /**
      * change all query variables to dep vars by use of Op.imdex
      */
@@ -88,7 +113,7 @@ public interface TermTransform extends Evaluation.TermContext {
     variableTransform(Op from, Op to) {
         return new TermTransform() {
             @Override
-            public Term transformAtomic(Term atomic) {
+            public Term transformAtomic(Atomic atomic) {
                 if (atomic.op() != from)
                     return atomic;
                 else

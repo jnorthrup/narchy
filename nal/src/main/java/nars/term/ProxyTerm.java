@@ -166,11 +166,6 @@ public class ProxyTerm implements Term, Compound {
     }
 
 
-    @Override
-    public Term dt(int dt) {
-        return ref.dt(dt);
-    }
-
 
     @Override
     public int subs() {
