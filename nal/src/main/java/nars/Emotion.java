@@ -230,7 +230,7 @@ public class Emotion implements Meter {
         }
 
 
-        float str = ansConf;
+        float str = ansConf * qOrig;
         MetaGoal.Answer.learn(answer.cause(), str, nar.causes);
     }
 

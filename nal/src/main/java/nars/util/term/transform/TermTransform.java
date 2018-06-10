@@ -143,18 +143,13 @@ public interface TermTransform extends Evaluation.TermContext {
             Op op = x.op();
             if (op == NEG) {
                 Term xx = x.unneg();
-                Termed y = apply(xx);
-                if (y == null)
+                Term yy = apply(xx);
+                if (yy == null)
                     return null;
-                Term yy = y.term();
-                if (yy.equals(xx))
+                if (yy==xx)
                     return x; 
                 else {
-                    Term y2 = yy.neg(); 
-                    if (y2.equals(x))
-                        return x;
-                    else
-                        return y2;
+                    return yy.neg();
                 }
             } else {
                 return transformCompoundUnneg(x);

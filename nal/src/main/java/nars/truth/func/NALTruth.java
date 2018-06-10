@@ -333,10 +333,20 @@ public enum NALTruth implements TruthFunc {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return TruthFunctions2.desireNew(T, B, minConf, true);
-
         }
     },
-
+    Goalduction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions2.goalduction(T, B, minConf, true);
+        }
+    },
+    GoalductionWeak() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions2.goalduction(T, B, minConf, false);
+        }
+    },
 
     Weak() {
         @Override

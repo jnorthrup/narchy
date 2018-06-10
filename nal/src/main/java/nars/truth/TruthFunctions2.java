@@ -90,6 +90,30 @@ public enum TruthFunctions2 { ;
         }
     }
 
+    /** goal deduction */
+    @Nullable public static Truth goalduction(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
+
+        float c = and(goal.conf(), belief.conf());
+
+        if (!strong)
+            c *= TruthFunctions.w2c(1.0f);
+
+        if (c >= minConf) {
+
+
+
+
+
+
+
+            float f = Util.lerp(belief.freq(), 0.5f, goal.freq());
+
+            return $.t(f, c);
+
+        } else {
+            return null;
+        }
+    }
     @Nullable
     public static Truth analogy(Truth a, Truth b, float minConf) {
         return analogyNew(a, b.freq(), b.conf(), minConf);

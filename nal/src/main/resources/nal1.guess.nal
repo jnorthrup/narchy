@@ -1,18 +1,18 @@
     //(X --> Y), (Z --> W), subOf(Y,Z), task(".") |- (X --> W),   (Punctuation:Question)
 
-    (X --> Q), (Y --> Z), task("?"), is(Q,"?"), neq(X,Y) |- (X <-> Y),   (Punctuation:Question)
-        (X --> Q), (Y --> Z), task("?"), is(Q,"?"), neq(X,Y) |- (X --> Z),   (Punctuation:Question)
-    (Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (X <-> Y),   (Punctuation:Question)
-        (Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (Z --> X),   (Punctuation:Question)
+    //(X --> Q), (Y --> Z), task("?"), is(Q,"?"), neq(X,Y) |- (X <-> Y),   (Punctuation:Question)
+        //(X --> Q), (Y --> Z), task("?"), is(Q,"?"), neq(X,Y) |- (X --> Z),   (Punctuation:Question)
+    //(Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (X <-> Y),   (Punctuation:Question)
+        //(Q --> X), (Z --> Y), task("?"), is(Q,"?"), neq(X,Y), neq(Q,Z) |- (Z --> X),   (Punctuation:Question)
 
-    (X --> Y), X, task("."), isNot(X,"?") |- (?1 --> Y),   (Punctuation:Question)
-        (X --> Y), X, task("!"), isNot(X,"?") |- (?1 --> Y),   (Punctuation:Quest)
-    (X --> Y), Y, task("?"), isNot(X,"?") |- (?1 --> Y),   (Punctuation:Question)
-        (X --> Y), Y, task("@"), isNot(X,"?") |- (?1 --> Y),   (Punctuation:Quest)
-    (Y --> X), X, task("."), isNot(X,"?") |- (Y --> ?1),   (Punctuation:Question)
-        (Y --> X), X, task("!"), isNot(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
-    (Y --> X), Y, task("?"), isNot(X,"?") |- (Y --> ?1),   (Punctuation:Question)
-        (Y --> X), Y, task("@"), isNot(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
+    //(X --> Y), X, task("."), isNot(X,"?") |- (?1 --> Y),   (Punctuation:Question)
+        //(X --> Y), X, task("!"), isNot(X,"?") |- (?1 --> Y),   (Punctuation:Quest)
+    (X --> Y), Y, task("?"), isNot(X,"?"), isNot(Y,"?") |- (?1 --> Y),   (Punctuation:Question)
+        (X --> Y), Y, task("@"), isNot(X,"?"), isNot(Y,"?") |- (?1 --> Y),   (Punctuation:Quest)
+    //(Y --> X), X, task("."), isNot(X,"?") |- (Y --> ?1),   (Punctuation:Question)
+        //(Y --> X), X, task("!"), isNot(X,"?") |- (Y --> ?1),   (Punctuation:Quest)
+    (Y --> X), Y, task("?"), isNot(X,"?"), isNot(Y,"?") |- (Y --> ?1),   (Punctuation:Question)
+        (Y --> X), Y, task("@"), isNot(X,"?"), isNot(Y,"?") |- (Y --> ?1),   (Punctuation:Quest)
 
 //NAL1-------------
 //Conversion

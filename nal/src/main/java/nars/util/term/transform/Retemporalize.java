@@ -46,8 +46,9 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
         Term xternalIfNecessary(Compound x, Term y, int dtNext) {
             if (corrupted(x, y, dtNext)) {
-                
-                return Retemporalize.super.transformCompound(x, x.op(), dtNext == DTERNAL ? XTERNAL : DTERNAL);
+
+                Op xo = x.op();
+                return Retemporalize.super.transformCompound(x, xo, xo.temporal && dtNext == DTERNAL ? XTERNAL : DTERNAL);
             }
             return y;
         }

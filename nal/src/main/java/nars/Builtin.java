@@ -72,13 +72,13 @@ public class Builtin {
                 if (xVar) {
                     if (e != null) {
                         e.replace(x, y);
-                        return True;
+                        //return True;
                     }
                     return null;
                 } else {
                     if (e != null) {
                         e.replace(y, x);
-                        return True;
+                        //return True;
                     }
                     return null;
                 }
