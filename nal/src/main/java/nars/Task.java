@@ -16,10 +16,8 @@ import nars.task.proxy.TaskWithNegatedTruth;
 import nars.task.proxy.TaskWithTruthAndOccurrence;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
-import nars.term.Evaluation;
-import nars.term.Term;
-import nars.term.Termed;
-import nars.term.Termlike;
+import nars.term.*;
+import nars.term.atom.Bool;
 import nars.term.var.VarIndep;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
@@ -170,6 +168,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
         if (t == null)
             return fail(t, "null content", false /* FORCE */);
+
+        if (t instanceof Bool || t instanceof Variable)
+            return fail(t, "bool or variable", safe);
 
         if (punc != COMMAND) {
 

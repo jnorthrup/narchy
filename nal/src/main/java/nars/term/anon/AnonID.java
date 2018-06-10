@@ -61,6 +61,10 @@ public interface AnonID extends Term, The {
         return (i & 0xff00) == ATOM_MASK;
     }
 
+    static int isVariable(short i, int ifNot) {
+        return ((i & 0xff00) != ATOM_MASK) ? (i & 0xff) : ifNot;
+    }
+
     /** assumes non-negative */
     static Term idToTerm(short /* short */ i) {
         byte num = (byte) (i & 0xff);

@@ -2,7 +2,6 @@ package nars.nal.nal7;
 
 import nars.$;
 import nars.Narsese;
-import nars.Param;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -161,8 +160,6 @@ public class NAL7Test extends NALTest {
 
     @Test
     public void testShiftPlus() {
-
-        Param.DEBUG = true;
         test
                 .inputAt(1, "((x &&+1 y) ==>+1 z).")
                 .inputAt(3, "z. :|:")

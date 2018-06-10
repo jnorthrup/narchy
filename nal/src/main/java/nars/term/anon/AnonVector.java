@@ -6,7 +6,9 @@ import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.subterm.util.TermList;
 import nars.term.Term;
+import nars.util.term.transform.TermTransform;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -46,8 +48,41 @@ public class AnonVector extends TermVector {
             t[i] = tt;
         }
 
+        //HACK normalized if the only variable is #1, $1 etc
+        if (vars()>0) {
+            boolean normalized = true;
+            int mustMatch = 0xffffffff;
+            for (short x : subterms) {
+                if (x < 0) x = (short) -x;
+                int varID = AnonID.isVariable(x, -1);
+                if (varID == -1) continue; //anom
+                else if (varID != 1) {
+                    normalized = false; //cant be sure
+                    break;
+                } else {
+                    if (mustMatch == 0xffffffff)
+                        mustMatch = x;
+                    else {
+                        if (mustMatch != x) { //TODO allow if monotonically increasing id's
+                            normalized = false;
+                            break;
+                        } /* else: same  */
+                    }
+                }
+            }
+            if (normalized)
+                setNormalized();
+        }
     }
 
+    @Override
+    public @Nullable Subterms transformSubs(TermTransform f) {
+        @Nullable Subterms s = super.transformSubs(f);
+//        if (s!=this && s instanceof AnonVector && equals(s))
+//            return this; //HACK
+//        else
+            return s;
+    }
 
     @Override
     public Subterms replaceSubs(Term from, Term to) {

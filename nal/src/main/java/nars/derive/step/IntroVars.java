@@ -1,7 +1,6 @@
 package nars.derive.step;
 
 import nars.$;
-import nars.Task;
 import nars.derive.Derivation;
 import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
@@ -28,22 +27,16 @@ public final class IntroVars extends AbstractPred<Derivation> {
         if (xy == null)
             return false;
 
-        final Term y = xy.getOne();
+        Term y = xy.getOne();
 
         if (!y.unneg().op().conceptualizable ||
-            y.equals(x) || /* keep only if it differs */
-            
-            !Task.validTaskTerm(y, d.concPunc, true)
+            y.equals(x)  /* keep only if it differs */
         )
             return false;
-
 
         Map<Term, Term> changes = xy.getTwo();
         changes.forEach((cx,cy)->d.untransform.put(cy, cx));
         d.derivedTerm = y;
-
-
-
 
         return true;
     }

@@ -78,14 +78,13 @@ public class ValueFork extends Fork<Derivation> {
                         if (subBudget < Param.TTL_MIN)
                             return false;
 
-                        d.ttl = subBudget;
+                        int dTtl = subBudget;
 
                         branchChoice.value(d, b); 
 
-                        int spent = subBudget - d.ttl;
-                        d.ttl = beforeTTL - Math.max(spent, 0);
+                        int spent = subBudget - dTtl;
 
-                        return d.revertLive(before, Param.TTL_BRANCH);
+                        return d.revertLive(before, Param.TTL_BRANCH + Math.max(spent, 0));
                     }
             );
             return true;

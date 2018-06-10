@@ -1,6 +1,5 @@
 package nars.util.term;
 
-import jcog.WTF;
 import nars.Op;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
@@ -141,9 +140,9 @@ public abstract class TermBuilder {
     public Compound theCompound(Op op, int dt, Subterms subterms) {
         
         if (!op.temporal && !subterms.isTemporal()) {
-            if (dt!=DTERNAL) {
-                throw new WTF();
-            }
+//            if (dt!=DTERNAL) {
+//                throw new WTF();
+//            }
             assert(dt == DTERNAL);
             return new CachedCompound.SimpleCachedCompound(op, subterms);
         } else {

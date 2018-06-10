@@ -47,7 +47,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
                 Op po = pred.op();
 
                 if (dmt == null /*&& (so.atomic || so == PROD || so.isSet())*/) {
-                    if ((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi)) {
+                    if (((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi))) {
                         
                         
                         
@@ -93,7 +93,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
                 if (dmt == null /* && (po.atomic || po == PROD || po.isSet()) */) {
                     if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)
-                        
+
                             ) {
                         
                         

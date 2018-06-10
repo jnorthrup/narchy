@@ -50,35 +50,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * returns sorted ready for commutive; null if nothing in common
      */
     static @Nullable MutableSet<Term> intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
         if ((a.structure() & b.structure()) > 0) {
-            
+
             Set<Term> as = a.toSet();
-            MutableSet<Term> ab = b.toSet(as::contains); 
+            MutableSet<Term> ab = b.toSet(as::contains);
             if (ab != null)
                 return ab;
         }
@@ -96,7 +75,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int commonStructure = aa.structure() & bb.structure();
         if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.VariableBits); 
+            commonStructure = commonStructure & ~(Op.VariableBits);
 
         if (commonStructure == 0)
             return false;
@@ -111,7 +90,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int commonStructure = a.structure() & b.structure();
         if (excludeVariables)
-            commonStructure = commonStructure & ~(Op.VariableBits); 
+            commonStructure = commonStructure & ~(Op.VariableBits);
 
         if (commonStructure == 0)
             return false;
@@ -121,26 +100,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return b.termsToSet(commonStructure, scratch, false);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     static String toString(/*@NotNull*/ Iterable<? extends Term> subterms) {
@@ -160,7 +119,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if ((diff = Integer.compare(a.structure(), b.structure())) != 0)
             return diff;
 
-        
+
         Term inequalVariableX = null, inequalVariableY = null;
 
         for (int i = 0; i < s; i++) {
@@ -168,7 +127,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             Term y = b.sub(i);
             if (x instanceof Variable && y instanceof Variable) {
                 if (inequalVariableX == null && !x.equals(y)) {
-                    
+
                     inequalVariableX = x;
                     inequalVariableY = y;
                 }
@@ -180,7 +139,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
 
-        
+
         if (inequalVariableX != null) {
             return inequalVariableX.compareTo(inequalVariableY);
         } else {
@@ -193,8 +152,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     /*@NotNull*/
     static Term[] except(/*@NotNull*/ Subterms input, Term a, Term b, /*@NotNull*/ Term[] output) {
-
-
 
 
         int j = 0;
@@ -227,12 +184,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-
-
-
-
-
-
     default /*@NotNull*/ SortedSet<Term> toSetSorted() {
         TreeSet u = new TreeSet();
         forEach(u::add);
@@ -241,7 +192,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default /*@NotNull*/ SortedSet<Term> toSetSortedExcept(Predicate<Term> t) {
         TreeSet u = new TreeSet();
-        forEach(x -> { if (!t.test(x)) u.add(x); } );
+        forEach(x -> {
+            if (!t.test(x)) u.add(x);
+        });
         return u;
     }
 
@@ -259,15 +212,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         UnifiedSet u = new UnifiedSet(s * 2);
         if (s > 0) {
             forEach(u::add);
-            
+
         }
         return u;
-
-        
-
-
-
-
 
 
     }
@@ -286,18 +233,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 }
             }
             if (u != null) {
-                
+
                 return u;
             }
         }
 
         return null;
-
-
-
-
-
-
 
 
     }
@@ -329,43 +270,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         Set<Term> t = new HashSet(volume());
 
-        
+
         recurseTerms(
                 tt -> tt.hasAny(onlyType),
                 tt -> {
-                    if (tt.op() == onlyType) 
+                    if (tt.op() == onlyType)
                         t.add(tt);
                     return true;
                 }, null);
         return t;
     }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -381,7 +295,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             Term s = sub(i);
             if (inStructure == -1 || ((s.structure() & inStructure) > 0)) {
                 r |= (addOrRemoved) ? t.add(s) : t.remove(s);
-                if (!addOrRemoved && r) 
+                if (!addOrRemoved && r)
                     return true;
             }
         }
@@ -393,7 +307,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         final boolean[] r = {false};
         Predicate<Term> selector = s -> {
 
-            if (!addOrRemoved && r[0]) 
+            if (!addOrRemoved && r[0])
                 return false;
 
             if (inStructure == -1 || ((s.structure() & inStructure) > 0)) {
@@ -509,25 +423,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Term[] arrayClone(Term[] x, int from, int to) {
 
 
-
-
-
-
-
         for (int i = from, j = 0; i < to; i++, j++)
             x[j] = this.sub(i);
 
         return x;
     }
-
-
-
-
-
-
-
-
-
 
 
     /*@NotNull*/
@@ -544,20 +444,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return added == 0 ? Op.EmptyTermArray : l.toArray(new Term[added]);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     default void forEach(Consumer<? super Term> action, int start, int stop) {
@@ -585,72 +471,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * of all the matches to the predicate, chooses one at random and returns its index
      */
@@ -664,7 +484,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     @Nullable
     default IntArrayList indicesOf(Predicate<Term> t) {
-        IntArrayList a = null; 
+        IntArrayList a = null;
         int s = subs();
         for (int i = 0; i < s; i++) {
             if (t.test(sub(i))) {
@@ -683,127 +503,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return hashCode();
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     default boolean isTemporal() {
         return hasAny(Op.Temporal) && OR(Term::isTemporal);
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     default boolean unifyLinearSimple(Subterms Y, /*@NotNull*/ Unify u) {
-        
-        
+
 
         int s = subs();
         for (int i = 0; i < s; i++) {
@@ -820,7 +527,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
         int s = subs();
 
-        
+
         Term[] deferredPairs = null;
         int dynPairs = 0;
         for (int i = 0; i < s; i++) {
@@ -828,27 +535,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
             Term yi = Y.sub(i);
 
             if (xi == yi)
-                continue; 
+                continue;
 
-            boolean now = (i==s-1) || (u.constant(xi) && u.constant(yi));
+            boolean now = (i == s - 1) || (u.constant(xi) && u.constant(yi));
 
             if (now) {
-                
+
                 if (!xi.unify(yi, u))
                     return false;
             } else {
                 if (deferredPairs == null)
                     deferredPairs = new Term[(s - i) * 2];
-                
+
                 deferredPairs[dynPairs++] = yi;
                 deferredPairs[dynPairs++] = xi;
             }
         }
 
-        
 
-        if (deferredPairs!=null) {
-            
+        if (deferredPairs != null) {
+
             do {
                 if (!deferredPairs[--dynPairs].unify(deferredPairs[--dynPairs], u))
                     return false;
@@ -870,26 +576,25 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (yCommutative) {
             if (xv == 0 && yv == 0) {
                 if (u.constant(this) && u.constant(y))
-                    return y.equals(this); 
+                    return y.equals(this);
             }
         }
 
         int s = subs();
         final int originalS = s;
         if ((xv == 0 && yv == s) || (xv == s && yv == 0)) {
-            
-            
+
+
             u.termutes.add(new CommutivePermutations(this, y));
             return true;
         }
 
-        
 
         final SortedSet<Term> xx = toSetSorted();
 
         if (!yCommutative) {
-            
-            assert (s == 2); 
+
+            assert (s == 2);
             Term y0 = y.sub(0);
             boolean y0inX = xx.contains(y0);
             Term y1 = y.sub(1);
@@ -899,22 +604,22 @@ public interface Subterms extends Termlike, Iterable<Term> {
             boolean y1c = u.constant(y1);
 
             if (y0inX && y1inX && (y0c && y1c)) {
-                return true; 
+                return true;
             }
 
             if ((!y0inX && !y1inX) || (!y0c && !y1c)) {
 
                 if (u.constant(this) && (y0c && y1c))
-                    return false; 
+                    return false;
 
 
-                
-                
                 u.termutes.add(new CommutivePermutations(this, y));
                 return true;
             } else {
                 if (y0c && y0inX) {
                     xx.remove(y0);
+                    //re: java.util.NoSuchElementException
+                    //if xx.isempty then return y0.equals(y1) //removed both so must match unified both
                     return xx.first().unify(y1, u);
                 }
                 if (y1c && y1inX) {
@@ -923,9 +628,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 }
 
                 if (u.constant(sub(0)) && u.constant(sub(1)))
-                    return false; 
+                    return false;
                 else {
-                    
+
                     u.termutes.add(new CommutivePermutations(this, y));
                     return true;
                 }
@@ -937,10 +642,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
             MutableSet<Term> xy = Sets.intersect(xx, (Set) yy);
             if (!xy.isEmpty()) {
 
-                
+
                 xy.removeIf(z -> !u.constant(z));
                 if (!xy.isEmpty()) {
-                    
+
                     xx.removeAll(xy);
                     yy.removeAll(xy);
                     s = xx.size();
@@ -952,18 +657,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
             if (s == 1) {
-                
-                
-                
-                
-                
-                
 
 
                 return xx.first().unify(yy.first(), u);
 
             } else if (originalS == s) {
-                
+
                 u.termutes.add(new CommutivePermutations(this, y));
                 return true;
             } else {
@@ -976,11 +675,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             }
         }
-
-        
-
-
-
 
 
     }
@@ -1022,48 +716,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * match a range of subterms of Y.
      * WARNING: provides a shared (non-cloned) copy if the entire range is selected
@@ -1072,7 +724,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Term[] toArraySubRange(int from, int to) {
         if (from == 0 && to == subs()) {
             return arrayShared();
-            
+
         } else {
 
             int s = to - from;
@@ -1087,16 +739,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return l;
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -1137,7 +779,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default Subterms replaceSubs(Term from, Term to) {
         if (!impossibleSubTerm(from)) {
-            
+
             return transformSubs(new MapSubst.MapSubst1(from, to));
         } else {
             return this;
@@ -1149,6 +791,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * returns 'y' if changes
      * returns null if untransformable
      */
+    @Nullable
     default Subterms transformSubs(TermTransform f) {
         int s = subs();
 
@@ -1168,16 +811,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 int xes = xe.subs();
 
                 if (y == null) {
-                    y = new DisposableTermList(s - 1 + xes /*estimate */); 
-                    if (i > 0) {
-                        y.addAll(this, 0, i); 
-                    }
+                    y = new DisposableTermList(s - 1 + xes /*estimate */, i);
                 }
 
                 if (xes > 0) {
                     for (int j = 0; j < xes; j++) {
                         @Nullable Term k = xe.sub(j).transform(f);
-                        if (k==null) {
+                        if (k == null) {
                             return null;
                         } else {
                             y.add(k);
@@ -1189,16 +829,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
                 if (xi != yi /*&& (yi.getClass() != xi.getClass() || !xi.equals(yi))*/) {
 
-
-
-
-
-
-
-
-
-
-
+//                    if (!(yi instanceof Functor) && xi.equals(yi))
+//                        System.err.println(xi + " " + yi);
 
                     if (y == null) {
                         y = new DisposableTermList(s, i);
@@ -1213,11 +845,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
 
         if (y != null) {
-            
-            
+
+
             int ys = y.size();
             for (int i = 0; i < ys; i++) {
-                if (y.get(i)==null)
+                if (y.get(i) == null)
                     y.set(i, sub(i));
                 else
                     break; //stop at first non-null subterm
@@ -1226,23 +858,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         } else
             return this;
     }
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

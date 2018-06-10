@@ -19,9 +19,9 @@ import static java.lang.Float.MIN_NORMAL;
  * <p>
  * when no choices remain, it exits automatically.
  */
-public class MutableRoulette {
+public final class MutableRoulette {
 
-    final static float EPSILON = MIN_NORMAL;
+    private final static float EPSILON = MIN_NORMAL;
     /**
      * weights of each choice
      */
@@ -34,7 +34,7 @@ public class MutableRoulette {
     /**
      * current index (roulette ball position)
      */
-    int i;
+    private int i;
     /**
      * current weight sum
      */
@@ -98,7 +98,7 @@ public class MutableRoulette {
         }
     }
 
-    public boolean next(IntPredicate select) {
+    private boolean next(IntPredicate select) {
         int n = next();
         return n >= 0 && select.test(n) && remaining > 0;
     }

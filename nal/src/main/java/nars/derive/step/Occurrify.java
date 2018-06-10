@@ -515,7 +515,6 @@ public class Occurrify extends TimeGraph {
             if (start != ETERNAL || d.belief == null || d.belief.isEternal())
                 return new long[]{start, d.task.end()};
             else {
-
                 return d.nar.timeFocus();
             }
         }
@@ -572,11 +571,14 @@ public class Occurrify extends TimeGraph {
                         if (delta > 0) {
                             //discount for projection
                             d.concTruth = $.t(d.concTruth.freq(), (float) Param.evi(d.concTruth.evi(), delta, d.dur)); //TODO if below min, stop here
-                            System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
-//                            long range = o[1] - o[0];
-//                            o[0] = NOW;
-//                            o[1] = NOW + range;
                         }
+
+                        //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
+
+                        long range = o[1] - o[0];
+                        o[0] = NOW;
+                        o[1] = NOW + range;
+
 //                    }
                 }
             }

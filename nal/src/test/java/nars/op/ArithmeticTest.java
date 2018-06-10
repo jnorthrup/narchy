@@ -139,7 +139,7 @@ public class ArithmeticTest {
         t.confTolerance(0.8f);
         //n.freqResolution.set(0.1f);
         n.termVolumeMax.set(14);
-        t.log();
+//        t.log();
 
 
         for (int a = 0; a <= 2; a++) {

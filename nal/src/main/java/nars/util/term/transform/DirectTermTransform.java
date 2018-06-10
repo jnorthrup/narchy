@@ -13,7 +13,7 @@ import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /** bypasses interning and */
-public interface DirectTermTransform extends TermTransform {
+public interface DirectTermTransform extends TermTransform.NegObliviousTermTransform {
 
     TermBuilder localBuilder = new HeapTermBuilder();
 
