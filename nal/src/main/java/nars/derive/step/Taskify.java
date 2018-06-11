@@ -7,6 +7,7 @@ import nars.derive.premise.PremiseDeriverProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -30,11 +31,10 @@ public class Taskify extends AbstractPred<Derivation> {
      */
     public final PremiseDeriverProto.RuleCause channel;
 
-    public Taskify(PremiseDeriverProto.RuleCause channel) {
-        super(
+    private static final Atomic TASKIFY = Atomic.the("taskify");
 
-                $.the("taskify" + channel.id)
-        );
+    public Taskify(PremiseDeriverProto.RuleCause channel) {
+        super(  $.func(TASKIFY, $.the(channel.id)) );
         this.channel = channel;
     }
 

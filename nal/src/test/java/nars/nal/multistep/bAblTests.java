@@ -46,17 +46,18 @@ public class bAblTests extends NALTest {
 
         
         t.nar.freqResolution.set(0.1f);
-        t.nar.termVolumeMax.set(40);
+        t.nar.termVolumeMax.set(17);
 
-        t.believe("((pick(#Person,$Object) &&+1 inside(#Person,$Place)) ==>+1 inside($Object,$Place))")
-                .inputAt(1,"pick(john,football). :|:") 
+        t
+                .inputAt(0, "((holds(#who,$what) &&+1 inside(#who,$where)) ==>+1 inside($what,$where)).")
+                .inputAt(1,"holds(john,football). :|:") 
                 .inputAt(2,"inside(john,playground). :|:") 
-                .input("inside(bob,office).") 
-                .input("inside(bob,kitchen).") 
-                .input("$0.9 inside(football,?where)?") 
-                .mustOutput( 1400,
+                //.inputAt(2,"inside(bob,office).")
+                //.inputAt(2,"inside(bob,kitchen).")
+                .inputAt(2,"inside(football,?where)?")
+                .mustOutput( 400,
                         "inside(football,playground)", BELIEF,
-                        1f, 1f, 0.5f, 0.99f, 0); 
+                        1f, 1f, 0.5f, 0.99f, 3);
 
     }
 

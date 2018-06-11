@@ -4,12 +4,10 @@ import com.google.common.collect.ImmutableSet;
 import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
-import nars.NAR;
 import nars.Op;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.step.*;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -33,6 +31,8 @@ import static nars.$.newHashSet;
 import static nars.Op.*;
 import static nars.derive.step.IntroVars.VAR_INTRO;
 import static nars.subterm.util.Contains.*;
+import static nars.unify.op.TaskPunctuation.Belief;
+import static nars.unify.op.TaskPunctuation.Goal;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -45,14 +45,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     /**
      * requires double premise belief task evidence if deriving
      */
-    private static final AbstractPred<PreDerivation> DoublePremise = new DoublePremise((byte) 0);
-    private static final AbstractPred<PreDerivation> DoublePremiseIfBelief = new DoublePremise(BELIEF);
-    private static final AbstractPred<PreDerivation> DoublePremiseIfGoal = new DoublePremise(GOAL);
+//    private static final AbstractPred<PreDerivation> DoublePremise = new DoublePremise((byte) 0);
     private static final AbstractPred<PreDerivation> neqTaskBelief = new AbstractPred<PreDerivation>($.the("neqTaskBelief")) {
 
         @Override
         public float cost() {
-            return 0.2f;
+            return 0.1f;
         }
 
         @Override
@@ -64,6 +62,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     final Set<PrediTerm<PreDerivation>> pre = new HashSet<>(8);
     final List<PrediTerm<Derivation>> post = new FasterList<>(8);
     private final PrediTerm<Derivation> truthify;
+
     /**
      * consequences applied after unification
      */
@@ -82,8 +81,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
          */
 
 
-        Term[] precon = ((Subterms) ref.sub(0)).arrayShared();
-        Term[] postcons = ((Subterms) ref.sub(1)).arrayShared();
+        Term[] precon = ref.sub(0).arrayShared();
+        Term[] postcons = ref.sub(1).arrayShared();
 
 
         Term taskPattern = getTask();
@@ -108,7 +107,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             Term X, Y;
 
 
-            Term[] args = ((Subterms) predicate.sub(0)).arrayShared();
+            Term[] args = predicate.sub(0).arrayShared();
             X = args.length > 0 ? args[0] : null;
             Y = args.length > 1 ? args[1] : null;
 
@@ -304,11 +303,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                             taskPunc = '@';
                             break;
                         case "\".\"":
-                            pre.add(TaskPunctuation.Belief);
+                            pre.add(Belief);
                             taskPunc = '.';
                             break;
                         case "\"!\"":
-                            pre.add(TaskPunctuation.Goal);
+                            pre.add(Goal);
                             taskPunc = '!';
                             break;
 
@@ -336,7 +335,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         byte puncOverride = 0;
         Occurrify.TaskTimeMerge time = Occurrify.mergeDefault;
 
-        Term[] modifiers = Terms.sorted(((Subterms) postcons[1]).arrayShared());
+        Term[] modifiers = Terms.sorted(postcons[1].arrayShared());
         for (Term m : modifiers) {
             if (m.op() != Op.INH)
                 throw new RuntimeException("Unknown postcondition format: " + m);
@@ -388,7 +387,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         }
 
-        Term pattern = conclusion().sub(0);
+        Term pattern = intern(conclusion().sub(0), index);
 
         final Term taskPattern1 = getTask();
         final Term beliefPattern1 = getBelief();
@@ -399,7 +398,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         boolean belIsPatVar = bo == Op.VAR_PATTERN;
 
 
-        pattern = intern(pattern, index);
+
 
 
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
@@ -415,22 +414,22 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         FasterList<Term> args = new FasterList(4);
-        args.add(intern(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct, index));
-        args.add(intern(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct, index));
+        args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
+        args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
         if (puncOverride != 0)
             args.add($.quote((char) puncOverride));
 
         Occurrify.BeliefProjection projection = time.projection();
-        args.add($.func("BeliefProjection", Atomic.the(projection.name())));
+        args.add($.func("beliefAt", Atomic.the(projection.name())));
 
-        Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
+        Term ii = intern($.func("truth", args.toArrayRecycled(Term[]::new)), index);
         Truthify truthify = puncOverride == 0 ?
                 new Truthify.TruthifyPuncFromTask(ii, beliefTruthOp, goalTruthOp, projection) :
                 new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruthOp, goalTruthOp, projection);
 
 
-        NAR nar1 = index.nar;
-        Taskify taskify = new Taskify(nar1.newCause(s -> new RuleCause(this, s)));
+        RuleCause cause = index.nar.newCause(s -> new RuleCause(this, s));
+        Taskify taskify = new Taskify(cause);
 
         boolean introVars1;
         Pair<Termed, Term> outerFunctor = Op.functor(pattern, i -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
@@ -440,7 +439,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         } else {
             introVars1 = false;
         }
-        PrediTerm<Derivation> conc = AndCondition.<Derivation>the(
+        PrediTerm<Derivation> conc = AndCondition.the(
                 new Termify(pattern, this, truthify, time),
                 introVars1 ?
                         AndCondition.the(introVars, taskify)
@@ -451,7 +450,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         PrediTerm<Derivation> timeFilter = time.filter();
         if (timeFilter != null) {
-            this.truthify = AndCondition.<Derivation>the(timeFilter, truthify);
+            this.truthify = AndCondition.the(timeFilter, truthify);
         } else {
             this.truthify = truthify;
         }
@@ -485,24 +484,18 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
 
 
-        if (beliefTruthOp != null && !beliefTruthOp.single() && (puncOverride == 0 || puncOverride == BELIEF)) {
-            if (taskPunc == BELIEF) {
-                pre.add(DoublePremise);
-            } else {
 
-
-                pre.add(DoublePremiseIfBelief);
+        if (beliefTruthOp != null && !beliefTruthOp.single()) {
+            if (puncOverride == 0 && (taskPunc == 0 || taskPunc == BELIEF)) {
+                pre.add(new DoublePremiseRequired(true, false, false));
             }
         }
-        if (goalTruthOp != null && !goalTruthOp.single() && (puncOverride == 0 || puncOverride == GOAL)) {
-            if (taskPunc == GOAL) {
-                pre.add(DoublePremise);
-            } else {
-
-
-                pre.add(DoublePremiseIfGoal);
+        if (goalTruthOp != null && !goalTruthOp.single()) {
+            if (puncOverride == 0 && (taskPunc == 0 || taskPunc == GOAL)) {
+                pre.add(new DoublePremiseRequired(false, true, false));
             }
         }
+
 
 
 
@@ -576,11 +569,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
             } else if (b) {
 
-                pre.add(TaskPunctuation.Belief);
+                pre.add(Belief);
 
 
             } else /* if (g) */ {
-                pre.add(TaskPunctuation.Goal);
+                pre.add(Goal);
             }
 
         } else if (taskPunc == ' ') {
@@ -781,26 +774,39 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         @Override
         public String toString() {
-            return $.p(rule.ref, $.the(id)).toString();
+            return $.pFast(rule.ref, $.the(id)).toString();
         }
     }
 
-    private static class DoublePremise extends AbstractPred<PreDerivation> {
+    private static class DoublePremiseRequired extends AbstractPred<PreDerivation> {
 
         final static Atomic key = (Atomic) $.the("DoublePremise");
-        private final byte punc;
+        final boolean ifBelief, ifGoal,ifQuestionOrQuest;
 
-        DoublePremise(byte taskPunc) {
-            super($.func(key, $.quote((char) taskPunc)));
-            this.punc = taskPunc;
+        DoublePremiseRequired(boolean ifBelief, boolean ifGoal, boolean ifQuestionOrQuest) {
+            super($.func(key,
+                    ifBelief ? Op.BELIEF_TERM : Op.EmptyProduct,
+                    ifGoal ? Op.GOAL_TERM : Op.EmptyProduct,
+                    ifQuestionOrQuest? Op.QUE_TERM : Op.EmptyProduct));
+            this.ifBelief = ifBelief;
+            this.ifGoal = ifGoal;
+            this.ifQuestionOrQuest = ifQuestionOrQuest;
         }
 
         @Override
         public boolean test(PreDerivation preDerivation) {
-            /* a specific one */
-            if (this.punc == 0 /* any */ || preDerivation.taskPunc == this.punc)
-                return preDerivation.hasBeliefTruth();
-            return true;
+            byte x = preDerivation.taskPunc;
+            boolean requireDouble;
+            switch (x) {
+                case BELIEF: requireDouble = ifBelief; break;
+                case GOAL: requireDouble = ifGoal; break;
+                case QUESTION:
+                case QUEST:
+                        requireDouble = ifQuestionOrQuest; break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            return !requireDouble || preDerivation.hasBeliefTruth();
         }
 
         @Override

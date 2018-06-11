@@ -24,6 +24,7 @@ import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,13 +51,16 @@ public enum PremiseDeriverCompiler {
     public static PremiseDeriver the(Set<PremiseDeriverProto> r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
         assert (!r.isEmpty());
 
+        /** indexed by local (deriver-specific) id */
+        int rules = r.size();
 
-        final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path = new TermTrie<>();
+        List<PrediTerm<Derivation>> conclusions = new FasterList<>(rules);
 
-        final FasterList<ValueFork> postChoices = new FasterList(128);
+        /** map preconditions to conclusions by local conclusion id */
+        @Deprecated Map<Set<PrediTerm<PreDerivation>>, RoaringBitmap> post = new HashMap<>(rules);
 
-        Map<Set<PrediTerm<PreDerivation>>, RoaringBitmap> post = new HashMap<>(r.size());
-        List<PrediTerm<Derivation>> conclusions = new FasterList<>(r.size() * 2);
+        /** local conclusion id requiring this precondition */
+        Map<PrediTerm<PreDerivation>, RoaringBitmap> reach = new HashMap<>(r.size());
 
         ObjectIntHashMap<Term> preconditionCount = new ObjectIntHashMap<>(256);
 
@@ -64,27 +68,34 @@ public enum PremiseDeriverCompiler {
 
             assert (rule.POST != null) : "null POSTconditions:" + rule;
 
-
-            int id = conclusions.size();
-
             Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> c = rule.build(rule.POST);
 
-            c.getOne().forEach(k -> preconditionCount.addToValue(k, 1));
+            int id = conclusions.size();
+            conclusions.add(compileBranch(c.getTwo()));
 
-            conclusions.add(c.getTwo());
+            c.getOne().forEach(k -> {
+                preconditionCount.addToValue(k, 1);
+                reach.computeIfAbsent(k, x -> new RoaringBitmap()).add(id);
+            });
 
             post.computeIfAbsent(c.getOne(), x -> new RoaringBitmap()).add(id);
 
+
         });
 
-        Comparator<PrediTerm> sortPrecondition = PrediTerm.sort(preconditionCount::get);
+        final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path = new TermTrie<>();
+        final FasterList<ValueFork> postChoices = new FasterList(rules);
+
+        preconditionCount.compact();
 
         post.forEach((k, v) -> {
 
-            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1).sortThis(sortPrecondition);
+            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
+            pre.sortThisByFloat(x -> -preconditionCount.get(x) / x.cost());
+
 
             PrediTerm<Derivation>[] branches = StreamSupport.stream(v.spliterator(), false)
-                    .map(i -> compileBranch(conclusions.get(i))).toArray(PrediTerm[]::new);
+                    .map(conclusions::get).toArray(PrediTerm[]::new);
             assert (branches.length > 0);
 
 
@@ -169,7 +180,7 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PrediTerm compileBranch(PrediTerm<Derivation> branch) {
+    static PrediTerm compileBranch(@NotNull PrediTerm<Derivation> branch) {
         return branch instanceof AndCondition ?
                 ((AndCondition) branch).transform(y -> y instanceof AndCondition ?
                                 MatchConstraint.combineConstraints((AndCondition) y)

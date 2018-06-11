@@ -556,6 +556,8 @@ public enum Op {
     public static final Atom GOAL_TERM = (Atom) Atomic.the(String.valueOf((char) GOAL));
     public static final Atom QUESTION_TERM = (Atom) Atomic.the(String.valueOf((char) QUESTION));
     public static final Atom QUEST_TERM = (Atom) Atomic.the(String.valueOf((char) QUEST));
+    public static final Atom QUE_TERM = (Atom) Atomic.the(String.valueOf((char) QUESTION) + String.valueOf((char) QUEST));
+
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Term EmptyProduct = new CachedCompound.SimpleCachedCompound(Op.PROD, EmptySubterms);

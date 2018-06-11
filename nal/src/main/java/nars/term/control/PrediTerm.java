@@ -30,18 +30,6 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
     };
     PrediTerm[] EmptyPrediTermArray = new PrediTerm[0];
 
-    static Comparator<PrediTerm> sort(ToIntFunction<PrediTerm> count) {
-        return (a, b) -> {
-
-            
-
-            float ac = count.applyAsInt(a) / a.cost();
-            float bc = count.applyAsInt(b) / b.cost();
-            if (ac > bc) return -1;
-            else if (ac < bc) return +1;
-            else return a.compareTo(b);
-        };
-    }
 
     static <X> PrediTerm<X>[] transform(Function<PrediTerm<X>, PrediTerm<X>> f, PrediTerm[] cache) {
         return Util.map(x -> x.transform(f), new PrediTerm[cache.length], cache);

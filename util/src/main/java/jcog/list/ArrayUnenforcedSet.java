@@ -1,6 +1,9 @@
 package jcog.list;
 
-import java.util.*;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Helper for efficiently representing small sets whose elements are known to be unique by
@@ -11,22 +14,17 @@ import java.util.*;
  * Note that for equals/hashCode, the class implements the Set behavior (unordered), not the list
  * behavior (ordered); the fact that it subclasses ArrayList should be considered an implementation
  * detail.
- * 
- * @param <E> the element type
  *
+ * @param <E> the element type
  * @author John V. Sichi
  */
-public class ArrayUnenforcedSet<E>
-    extends ArrayList<E>
-    implements Set<E>
-{
+public class ArrayUnenforcedSet<E> extends FasterList<E> implements Set<E> {
     private static final long serialVersionUID = -7413250161201811238L;
 
     /**
      * Constructs a new empty set
      */
-    public ArrayUnenforcedSet()
-    {
+    public ArrayUnenforcedSet() {
         super();
     }
 
@@ -36,9 +34,8 @@ public class ArrayUnenforcedSet<E>
      * @param c the collection whose elements are to be placed into this set
      * @throws NullPointerException if the specified collection is null
      */
-    public ArrayUnenforcedSet(Collection<? extends E> c)
-    {
-        super(c);
+    public ArrayUnenforcedSet(Collection<? extends E> c) {
+        super((Iterable)c);
     }
 
     /**
@@ -47,37 +44,31 @@ public class ArrayUnenforcedSet<E>
      * @param n the initial capacity of the set
      * @throws IllegalArgumentException if the specified initial capacity is negative
      */
-    public ArrayUnenforcedSet(int n)
-    {
+    public ArrayUnenforcedSet(int n) {
         super(n);
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         return new SetForEquality().equals(o);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return new SetForEquality().hashCode();
     }
 
     /**
      * Multiple inheritance helper.
      */
-    private class SetForEquality extends AbstractSet<E>
-    {
+    private class SetForEquality extends AbstractSet<E> {
         @Override
-        public Iterator<E> iterator()
-        {
+        public Iterator<E> iterator() {
             return ArrayUnenforcedSet.this.iterator();
         }
 
         @Override
-        public int size()
-        {
+        public int size() {
             return ArrayUnenforcedSet.this.size();
         }
     }

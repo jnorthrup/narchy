@@ -3,6 +3,7 @@ package nars.unify.op;
 import nars.$;
 import nars.Op;
 import nars.derive.premise.PreDerivation;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 
 
@@ -18,8 +19,11 @@ public final class TaskBeliefHasOrHasnt extends AbstractPred<PreDerivation> {
     public TaskBeliefHasOrHasnt(boolean includeExclude, Op o, boolean testTask, boolean testBelief) {
         this(includeExclude, o.bit, testTask, testBelief);
     }
+    final static private Atomic has = Atomic.the("OpHas");
+    final static private Atomic hasNot = Atomic.the("OpHasNot");
+
     public TaskBeliefHasOrHasnt(boolean includeExclude, int structure, boolean testTask, boolean testBelief) {
-        super($.func((includeExclude ? "OpHas" : "OpHasNot"), $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
+        super($.func(includeExclude ? has: hasNot, $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
         assert(testTask || testBelief);
         this.structure = structure;
         this.task = testTask;
@@ -44,7 +48,7 @@ public final class TaskBeliefHasOrHasnt extends AbstractPred<PreDerivation> {
 
     @Override
     public float cost() {
-        return 0.1f;
+        return 0.2f;
     }
 }
 

@@ -2,6 +2,7 @@ package nars.derive.step;
 
 import nars.$;
 import nars.derive.Derivation;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -14,15 +15,11 @@ public class Branchify extends AbstractPred<Derivation> {
 
     private final int id;
 
-
-
-
-
+    private static final Atomic CAN = Atomic.the("can");
 
     public Branchify(int id, RoaringBitmap downstream) {
-        super($.func("can", /*$.the(id),*/ $.sFast(downstream)));
+        super($.func(CAN, $.sFast(downstream)));
         this.id = id;
-
     }
 
     @Override
