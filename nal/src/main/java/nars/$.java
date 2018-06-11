@@ -20,7 +20,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.compound.LightCompound;
-import nars.term.compound.LighterCompound;
 import nars.term.control.LambdaPred;
 import nars.term.control.PrediTerm;
 import nars.term.obj.JsonTerm;
@@ -232,6 +231,7 @@ public enum $ {
 
     /** use with caution */
     public static Term inhFast(Term subj, Term pred) {
+        //return new LighterCompound(INH, subj, pred);
         return new LightCompound(INH, subj, pred);
     }
 
@@ -852,10 +852,7 @@ public enum $ {
     }
 
     public static int intValue(Term intTerm, int ifNotInt) {
-        if (intTerm instanceof Int && intTerm.op()==INT)
-            return ((Int) intTerm).id;
-        else
-            return ifNotInt;
+        return intTerm instanceof Int && intTerm.op() == INT ? ((Int) intTerm).id : ifNotInt;
     }
 
     public static Term fromJSON(String j) {
@@ -871,8 +868,8 @@ public enum $ {
 
     public static Term pFast(Term... x) {
         if (x.length == 0) return Op.EmptyProduct;
-        //return new LightCompound(Op.PROD,x);
-        return new LighterCompound(PROD, x);
+        return new LightCompound(Op.PROD,x);
+        //return new LighterCompound(PROD, x);
     }
 
     public static Term sFast(Subterms x) {
@@ -889,6 +886,7 @@ public enum $ {
         if (x.length > 1 && sort)
             x = Terms.sorted(x);
         return new LightCompound(Op.SETe, x);
+        //return new LighterCompound(Op.SETe, x);
     }
 
     public static Term sFast(RoaringBitmap b) {

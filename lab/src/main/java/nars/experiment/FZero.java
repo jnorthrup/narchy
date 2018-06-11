@@ -69,10 +69,11 @@ public class FZero extends NAgentX {
 
         Bitmap2DConcepts<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 
-                24, 24
+                //24, 24
+                16,16
                 
                 
-        )/*.blur()*/).resolution(0.05f);
+        )/*.blur()*/).diff().resolution(0.05f);
         
 
 

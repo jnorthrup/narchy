@@ -26,7 +26,9 @@ public class LightCompound implements SeparateSubtermsCompound, AbstractLightCom
     @Override
     public boolean equals(Object obj) {
         return (this == obj) ||
-                (obj instanceof Compound) && Compound.equals(this, (Term) obj);
+                ((obj instanceof Compound) &&
+                        hash == obj.hashCode() &&
+                        Compound.equals(this, (Term) obj));
     }
 
     @Override

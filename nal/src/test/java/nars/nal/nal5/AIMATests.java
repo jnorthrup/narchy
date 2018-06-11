@@ -80,14 +80,14 @@ public class AIMATests {
 
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
-        final NAR n = NARS.tmp(6);
+        final NAR n = NARS.tmp(7);
 
-        n.freqResolution.set(0.02f);
+        n.freqResolution.set(0.04f);
         //n.confResolution.set(0.1f);
 
         //n.questionPriDefault.set(1f);
 
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(22);
 
 
         n.believe(

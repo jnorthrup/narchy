@@ -3,6 +3,7 @@ package nars.nal.nal8;
 import nars.nal.nal7.NAL7Test;
 import nars.test.NALTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.GOAL;
@@ -87,6 +88,41 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
+    public void testConjBeliefPos() {
+//        Param.DEBUG = true;
+//        test.log();
+        test
+                .input("(&&,a,b). %0.75;0.9%")
+                .input("a. %0.80;0.9%")
+                .mustBelieve(cycles, "b", 0.60f, 0.49f);
+    }
+
+    @Test
+    public void testConjBeliefNeg() {
+        test
+                .input("(&&,--a,b).")
+                .input("--a.")
+                .mustBelieve(cycles, "b", 1f, 0.81f);
+    }
+
+    @Test
+    public void testDisjBeliefPos() {
+
+        test
+                .input("(||,a,b). %0.9;0.9%")
+                .input("--a. %0.9;0.9%")
+                .mustBelieve(cycles, "b", 0.81f, 0.66f);
+    }
+    @Test
+    public void testDisjBeliefNeg() {
+
+        test
+                .input("(||,--a,b).  %0.9;0.9%")
+                .input("a.  %0.9;0.9%")
+                .mustBelieve(cycles, "b", 0.81f, 0.66f);
+    }
+
+    @Test
     public void testDisj() {
         test
             .input("(||,a,b)!")
@@ -96,6 +132,18 @@ public class GoalDecompositionTest extends NALTest {
         ;
     }
 
+    @Disabled
+    @Test
+    public void testDisjOpposite() {
+//        Param.DEBUG = true;
+//        test.log();
+        //produces output from structural deduction
+        test
+                .input("(||,a,--b)!")
+                .input("a.")
+                .mustNotOutput(cycles, "b", GOAL, 0f, 1f, 0f, 1f, t->true)
+                ;
+    }
     @Test
     public void testDisjNeg() {
         test
@@ -123,13 +171,7 @@ public class GoalDecompositionTest extends NALTest {
                 .mustGoal(cycles, "b", 0f, 0.81f);
     }
 
-    @Test
-    public void testDisjOpposite() {
-        test
-                .input("(||,a,--b)!")
-                .input("a.")
-                .mustGoal(cycles, "b", 1f, 0.81f);
-    }
+
 
     @Test
     public void testAndConj() {

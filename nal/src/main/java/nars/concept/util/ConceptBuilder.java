@@ -46,6 +46,60 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
                 Op so = subj.op();
                 Op po = pred.op();
 
+                if (dmt == null /* && (po.atomic || po == PROD || po.isSet()) */) {
+                    if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)
+
+                    ) {
+
+
+
+
+
+                        Subterms subjsubs = subj.subterms();
+                        int s = subjsubs.subs();
+                        Term[] x = new Term[s];
+                        for (int i = 0; i < s; i++) {
+                            Term y;
+
+
+
+
+
+
+                            if (!validDynamicSubterm.test(y = INH.the(subjsubs.sub(i), pred)))
+                                return null;
+                            x[i] = y;
+                        }
+
+
+
+
+
+
+
+
+                        /*if (so != PROD)*/
+
+
+                        switch (so) {
+
+
+                            case SECTi:
+                                dmt = new DynamicTruthModel.SectIntersection(x);
+                                break;
+                            case SECTe:
+                                dmt = new DynamicTruthModel.Union(x);
+                                break;
+                            case DIFFe:
+                                dmt = new DynamicTruthModel.Difference(x[0], x[1]);
+                                break;
+                        }
+
+
+                    }
+
+                }
+
                 if (dmt == null /*&& (so.atomic || so == PROD || so.isSet())*/) {
                     if (((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi))) {
                         
@@ -91,59 +145,6 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
                 }
 
-                if (dmt == null /* && (po.atomic || po == PROD || po.isSet()) */) {
-                    if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)
-
-                            ) {
-                        
-                        
-                        
-
-
-                        Subterms subjsubs = subj.subterms();
-                        int s = subjsubs.subs();
-                        Term[] x = new Term[s];
-                        for (int i = 0; i < s; i++) {
-                            Term y;
-                            
-                            
-                            
-                            
-                            
-                            
-                            if (!validDynamicSubterm.test(y = INH.the(subjsubs.sub(i), pred)))
-                                return null;
-                            x[i] = y;
-                        }
-
-
-
-
-
-
-
-
-                        /*if (so != PROD)*/
-
-
-                        switch (so) {
-
-
-                            case SECTi:
-                                dmt = new DynamicTruthModel.SectIntersection(x);
-                                break;
-                            case SECTe:
-                                dmt = new DynamicTruthModel.Union(x);
-                                break;
-                            case DIFFe:
-                                dmt = new DynamicTruthModel.Difference(x[0], x[1]);
-                                break;
-                        }
-
-
-                    }
-
-                }
 
 
                 break;

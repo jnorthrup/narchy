@@ -2,7 +2,6 @@ package nars.unify.constraint;
 
 import nars.subterm.util.Contains;
 import nars.term.Term;
-import nars.term.Variable;
 
 public class SubOfConstraint extends RelationConstraint {
     private final boolean forward;
@@ -20,11 +19,11 @@ public class SubOfConstraint extends RelationConstraint {
     }
 
     public SubOfConstraint(Term x, Term y, /* HACK change to forward semantics */ boolean reverse, boolean canEqual, Contains contains, int polarityCompare) {
-        super((Variable)x, y,
+        super(x, y,
             contains.name() +
             (!reverse ? "->" : "<-") +
             (canEqual ? "|=" : "") +
-            (polarityCompare!=0 ? (polarityCompare==-1 ? "--" : "++") : "+-"));
+            (polarityCompare!=0 ? (polarityCompare==-1 ? "(-)" : "(+)") : "(+|-)"));
 
         
         this.forward = !reverse;
@@ -43,20 +42,18 @@ public class SubOfConstraint extends RelationConstraint {
         Term contentP = (forward ? yy : xx).negIf(polarityCompare < 0);
         Term container = forward ? xx : yy;
 
-        if (!canEqual && (container.impossibleSubTerm(contentP)))
-            return true;
-
         if (canEqual) {
-            if (polarityCompare != 0) {
-                if (container.equals(contentP))
+            if (polarityCompare == 0) {
+                if (container.unneg().equals(contentP.unneg()))
                     return false;
             } else {
-                if (container.unneg().equals(contentP.unneg()))
+                if (container.equals(contentP))
                     return false;
             }
         }
 
-        
-        return !containment.test( container, contentP, polarityCompare==0);
+        return container.impossibleSubTerm(contentP) ||
+                !containment.test(container, contentP, polarityCompare == 0);
+
     }
 }

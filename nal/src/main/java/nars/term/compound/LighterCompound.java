@@ -5,7 +5,8 @@ import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.Compound;
 import nars.term.Term;
-import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+
+import java.util.function.Predicate;
 
 /** mutable, use with caution; hashCode is dynamically computed */
 public class LighterCompound extends TermList implements AbstractLightCompound {
@@ -25,12 +26,15 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
         super(subs);
         this.op = op.id;
     }
-
     @Override
-    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return super.intifyShallow(reduce, v);
+    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
+        return !impossibleSubTerm(t) && inSubtermsOf.test(this)
+                && super.containsRecursively(t, root, inSubtermsOf);
     }
-
+    @Override
+    public boolean isNormalized() {
+        return super.isNormalized();
+    }
 
     @Override
     public boolean equals(Object obj) {

@@ -72,7 +72,7 @@ import static nars.time.Tense.XTERNAL;
  * Hence in terms of "in the language or phraseology peculiar to."
  * https://www.etymonline.com/word/term
  */
-public interface Term extends Termed, Termlike, Comparable<Termed> {
+public interface Term extends Termlike, Termed, Comparable<Termed> {
 
     static <X> boolean pathsTo(Term that, ByteArrayList p, Predicate<Term> descendIf, Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
         if (!descendIf.test(that))
@@ -468,15 +468,15 @@ public interface Term extends Termed, Termlike, Comparable<Termed> {
      * for safety, dont override this method. override evalSafe
      */
 
-    default Term eval(Evaluation e, Evaluation.TermContext context, Random rng) {
+    default Term eval(Evaluation e, Function<Term, Functor> resolver, Random rng) {
         if (!Evaluation.possiblyNeedsEval(this))
             return this;
-        return Evaluation.solveAny(this, e, context, rng);
+        return Evaluation.solveAny(this, e, resolver, rng);
     }
 
 
     default Term eval(NAR nar) {
-        return eval(null, nar.functors, nar.random());
+        return eval(null, nar::functor, nar.random());
     }
 
 

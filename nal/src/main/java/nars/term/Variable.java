@@ -6,7 +6,6 @@ import nars.term.var.CommonVariable;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.Null;
 import static nars.Op.VAR_PATTERN;
 
 /**

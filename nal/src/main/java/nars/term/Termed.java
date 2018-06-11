@@ -30,9 +30,7 @@ public interface Termed extends Termlike {
     @Override
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return term().containsRecursively(t, root, inSubtermsOf);
-    }t add nal ui util app
-            git status
-                    git
+    }
     //
 //    default boolean isNormalized() {
 //        return term().isNormalized();

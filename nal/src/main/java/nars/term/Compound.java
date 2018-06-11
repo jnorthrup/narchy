@@ -31,7 +31,6 @@ import nars.term.anon.Anon;
 import nars.unify.Unify;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
-import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
@@ -323,15 +322,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    @Override
-    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
-        return Term.super.intifyShallow(reduce, v);
-    }
 
-    @Override
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return Term.super.intifyRecurse(reduce, v);
-    }
 
 
 

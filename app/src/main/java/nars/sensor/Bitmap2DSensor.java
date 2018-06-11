@@ -29,6 +29,7 @@ import static nars.Op.BELIEF;
 public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> implements Iterable<Scalar> {
 
     private final NAR nar;
+    private FloatFloatToObjectFunction<Truth> mode;
 
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
         this(src.height() > 1 ?
@@ -50,11 +51,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
                 Scalar.DIFF.apply(() ->
                         nar.confDefault(BELIEF)).value(p, v);
 
+        mode = SET;
     }
 
 
+
     public void input() {
-        input(dur(), SET);
+        input(dur(), mode);
     }
 
     /** manually inputs the contents of the current frame */
@@ -64,7 +67,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
     /** attaches a reading service to the NAR */
     public Bitmap2DReader readAdaptively() {
-        return new Bitmap2DReader();
+        return new Bitmap2DReader(mode);
     }
 
     protected int dur() {
@@ -72,7 +75,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     }
 
     public Bitmap2DReader readAdaptively(NAgent agent) {
-        return new Bitmap2DReader() {
+        return new Bitmap2DReader(mode) {
             protected int dur() {
                 return Math.max(super.dur(), agent.sensorDur);
             }
@@ -80,7 +83,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     }
 
     public DurService readDirectEachDuration() {
-        return readDirectEachDuration(SET);
+        return readDirectEachDuration(mode);
     }
 
     public DurService readDirectEachDuration(FloatFloatToObjectFunction<Truth> mode) {
@@ -171,6 +174,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
         return $.radixArray(n, radix, max);
     }
 
+    public Bitmap2DSensor<P> diff() {
+        mode = DIFF;
+        return this;
+    }
 
 
     /** service for progressively (AIKR) reading this sensor */
@@ -204,14 +211,15 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
         FloatFloatToObjectFunction<Truth> mode;
 
-        public Bitmap2DReader() {
+        public Bitmap2DReader(FloatFloatToObjectFunction<Truth> mode) {
             super(Bitmap2DSensor.this.nar);
             lastUpdate = Bitmap2DSensor.this.nar.time();
             pixelsRemainPerUpdate = area;
             in = nar.newChannel(Bitmap2DSensor.this);
             pixelsProcessed = new DescriptiveStatistics(8);
             conf = nar.confDefault(BELIEF);
-            mode = (p, v) -> Scalar.SET.apply(() -> conf).value(p, v);
+            this.mode = mode;
+                    //(p, v) -> mode.apply(() -> conf).value(p, v);
         }
 
         @Override

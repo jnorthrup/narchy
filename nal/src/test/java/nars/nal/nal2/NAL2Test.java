@@ -7,6 +7,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.test.NALTest;
 import nars.test.TestNAR;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.DIFFe;
@@ -53,7 +54,7 @@ public class NAL2Test extends NALTest {
     }
 */
 
-    @Test
+    @Disabled @Test
     public void setDefinition() {
 
         TestNAR tester = test;
@@ -64,6 +65,7 @@ public class NAL2Test extends NALTest {
 
     }
 
+    @Disabled
     @Test
     public void setDefinition2() {
 

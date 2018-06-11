@@ -17,8 +17,6 @@ import nars.term.control.AbstractPred;
 import nars.unify.match.EllipsisMatch;
 import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
-import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.api.map.MutableMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -62,7 +60,7 @@ public class Evaluation {
     }
 
     public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, NAR nar) {
-        return solveAll(e, x, nar.functors, true);
+        return solveAll(e, x, nar::functor, true);
     }
 
     public static ArrayHashSet<Term> solveAll(Term x, NAR nar) {
@@ -83,21 +81,18 @@ public class Evaluation {
             return false;
         }
     };
-    public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, TermContext context, boolean wrapBool) {
+    public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term,Functor> resolver, boolean wrapBool) {
         ArrayHashSet<Term> all = new ArrayHashSet<>(1);
-        Evaluation.solve(e, x, wrapBool, context, (y) -> {
+        Evaluation.solve(e, x, wrapBool, resolver, (y) -> {
             y = possiblyNeedsEval(y) ? y.transform(trueUnwrapper) : y;
-
-
             all.add(y);
-
             return true;
         });
         return !all.isEmpty() ? all : ArrayHashSet.EMPTY;
     }
 
-    public static boolean solve(@Nullable Evaluation e, Term x, boolean wrapBool, TermContext context, Predicate<Term> each) {
-        Term y = needsEvaluation(x, context);
+    public static boolean solve(@Nullable Evaluation e, Term x, boolean wrapBool, Function<Term,Functor> resolver, Predicate<Term> each) {
+        Term y = needsEvaluation(x, resolver);
         if (y == null)
             return each.test(x);
         else
@@ -105,7 +100,7 @@ public class Evaluation {
     }
 
     @Nullable
-    private static Term needsEvaluation(Term x, TermContext context) {
+    private static Term needsEvaluation(Term x, Function<Term,Functor> context) {
 
         if (!possiblyNeedsEval(x))
             return null;
@@ -130,8 +125,8 @@ public class Evaluation {
         return x.hasAll(Op.FuncBits);
     }
 
-    public static Term solveAny(Term x, Evaluation e, TermContext context, Random random) {
-        ArrayHashSet<Term> results = solveAll(e, x, context, false);
+    public static Term solveAny(Term x, Evaluation e, Function<Term,Functor> resolver, Random random) {
+        ArrayHashSet<Term> results = solveAll(e, x, resolver, false);
         return results.get(random);
     }
 
@@ -396,36 +391,36 @@ public class Evaluation {
         }
 
 
-        class MapTermContext implements TermContext {
-            private final ImmutableMap<Term, Term> resolvedImm;
-
-            public MapTermContext(MutableMap<Term, Term> resolved) {
-                this(resolved.toImmutable());
-            }
-
-            public MapTermContext(ImmutableMap<Term, Term> resolvedImm) {
-                this.resolvedImm = resolvedImm;
-            }
-
-            @Override
-            public Term apply(Term term) {
-                if (term.op() == ATOM) {
-                    Term r = resolvedImm.get(term);
-                    if (r != null)
-                        return r;
-                }
-                return term;
-            }
-        }
+//        class MapTermContext implements TermContext {
+//            private final ImmutableMap<Term, Term> resolvedImm;
+//
+//            public MapTermContext(MutableMap<Term, Term> resolved) {
+//                this(resolved.toImmutable());
+//            }
+//
+//            public MapTermContext(ImmutableMap<Term, Term> resolvedImm) {
+//                this.resolvedImm = resolvedImm;
+//            }
+//
+//            @Override
+//            public Term apply(Term term) {
+//                if (term.op() == ATOM) {
+//                    Term r = resolvedImm.get(term);
+//                    if (r != null)
+//                        return r;
+//                }
+//                return term;
+//            }
+//        }
     }
 
     private static final class MyFunctorResolver implements DirectTermTransform {
-        private final TermContext context;
 
+        private final Function<Term, Functor> resolver;
         public boolean hasFunctor;
 
-        MyFunctorResolver(TermContext context) {
-            this.context = context;
+        MyFunctorResolver(Function<Term,Functor> resolver) {
+            this.resolver = resolver;
         }
 
         @Override
@@ -434,19 +429,20 @@ public class Evaluation {
         }
 
         @Override
-        public @Nullable Term transformAtomic(Atomic z) {
-            if (z instanceof Functor) {
+        public @Nullable Term transformAtomic(Atomic x) {
+            if (x instanceof Functor) {
                 hasFunctor = true;
-                return z;
+                return x;
             }
 
-            if (z.op() == ATOM) {
-                Term zz = context.applyTermIfPossible(z, null, 0);
-                if (zz instanceof Functor)
+            if (x.op() == ATOM) {
+                Functor f = resolver.apply(x);
+                if (f!=null) {
                     hasFunctor = true;
-                return zz;
+                    return f;
+                }
             }
-            return z;
+            return x;
         }
 
     }

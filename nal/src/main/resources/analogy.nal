@@ -10,9 +10,13 @@
   Z, (X <-> Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:GoalductionWeak, Time:TaskImmediate)
   Z, (--X <-> Y), neq(Z,X), neq(Z,Y)  |- subIfUnifiesAny(Y, X, Z, strict), (Belief:AnalogyN, Goal:GoalductionWeakN, Time:TaskImmediate)
 
-  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Time:Task)
+  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,strict), (Belief:StructuralDeduction, Goal:StructuralStrong, Time:Task)
   //chain:
-  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y), neq(X,Z) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Time:Task)
+  (&&,(X<->Y),(Y<->Z),A..+), (X<->Y), neq(X,Z) |- substitute(substitute((&&,A..+),X,Z,strict),Y,Z,strict), (Belief:StructuralDeduction, Goal:StructuralStrong, Time:Task)
+
+
+  //Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
+  (X ==> Z), (Y ==> Z), neq(X,Y) |- (X<->Y), (Belief:ComparisonSymmetric)
 
   //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Goalduction)
   //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Goalduction)

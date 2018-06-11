@@ -8,8 +8,8 @@ import static nars.time.Tense.DTERNAL;
 
 public interface AbstractLightCompound extends Compound {
 
-    @Override boolean equals(Object obj);
-
+    @Override
+    boolean equals(Object obj);
 
     @Override
     int hashCode();

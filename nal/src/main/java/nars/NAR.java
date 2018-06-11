@@ -35,7 +35,6 @@ import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
-import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -108,16 +107,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return new Cause[newCapacity];
         }
     };
-    public final Evaluation.TermContext functors = new Functor.FunctorResolver() {
-        @Override
-        public final Term apply(Term term) {
-            Termed x = concepts.get(term, false);
-            if (x instanceof Functor)
-                return (Term)x;
-            else
-                return term;
-        }
-    };
+
+    /** resolves functor by its term */
+    public final Functor functor(Term term) {
+        Termed x = concepts.get(term, false);
+        if (x instanceof Functor)
+            return (Functor)x;
+        else
+            return null;
+    }
+
     protected final Random random;
     private final AtomicBoolean busy = new AtomicBoolean(false);
     /**

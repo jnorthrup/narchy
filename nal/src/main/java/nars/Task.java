@@ -812,7 +812,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
             preProcess(n, x, yy);
         } else {
             yy = new LinkedHashSet<>(4);
-            Evaluation.solve(null, x, false, n.functors,
+            Evaluation.solve(null, x, false, n::functor,
                     z -> {
                         if (z.volume() < n.termVolumeMax.intValue()) {
                             preProcess(n, z, yy);

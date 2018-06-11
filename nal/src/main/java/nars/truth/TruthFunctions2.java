@@ -125,4 +125,10 @@ public enum TruthFunctions2 { ;
     static Truth desire(float f1, float f2, float c) {
         return t(and(f1, f2), c);
     }
+
+    public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
+        float c = t.conf() * b.conf();
+        if (c < minConf) return null;
+        return $.t( 1f - Math.abs(t.expectation()-b.expectation()), c );
+    }
 }

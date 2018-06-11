@@ -197,7 +197,7 @@ abstract public class NAgentX extends NAgent {
 
                         
                         
-                        
+                        //newCaffeineIndex()
                         new HijackConceptIndex(64 * 1024, 4)
                         
                         

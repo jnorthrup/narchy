@@ -143,7 +143,7 @@ public class SetFunc {
                     return Null; 
 
                 l.sort(cmp);
-                return $.pFast(l);
+                return $.p(l);
             }
 
             private Term eval(Term t, Atomic atom) {

@@ -14,6 +14,7 @@ import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,20 +30,17 @@ public class ImageTexture extends Tex {
     static  {
         synchronized (fa_prefix) {
             MutableMap<String, byte[]> fontAwesomeIcons = new UnifiedMap(1024);
-            try {
-                ClassLoader classLoader = ImageTexture.class.getClassLoader();
-                InputStream cin =
-                        classLoader.getResourceAsStream("fontawesome_128.bzip2");
-                TarInputStream fa = new TarInputStream(new BZip2InputStream(true, cin));
+            final int bufferSize = 512 * 1024;
+            ClassLoader classLoader = ImageTexture.class.getClassLoader();
+            try(TarInputStream fa = new TarInputStream(new BufferedInputStream(new BZip2InputStream(true, classLoader.getResourceAsStream("fontawesome_128.bzip2")), bufferSize))) {
                 TarEntry e;
                 while ((e = fa.getNextEntry()) != null) {
-                    if (e.isDirectory()) continue;
-                    fontAwesomeIcons.put(e.getName(), fa.readAllBytes());
+                    if (!e.isDirectory())
+                        fontAwesomeIcons.put(e.getName(), fa.readAllBytes());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             ImageTexture.fontAwesomeIcons = fontAwesomeIcons.toImmutable();
         }
     }

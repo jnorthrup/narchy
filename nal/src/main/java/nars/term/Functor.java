@@ -320,23 +320,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
 
 
-    public abstract static class FunctorResolver implements Evaluation.TermContext {
 
-        @Override
-        public Term applyTermIfPossible(Term x, @Nullable Op superTermOp, int subterm) {
-            
-            if ((superTermOp == null || (subterm==1 && superTermOp==INH)) && x.op()==ATOM) {
-                Termed y = apply(x);
-                if (y != null) {
-                    Term yt = y.term();
-                    if (yt instanceof Functor)
-                        return yt;
-                }
-            }
-
-            return x;
-        }
-    }
 
     /** (potentially) reversible function */
     public abstract static class UnaryBidiFunctor extends Functor {

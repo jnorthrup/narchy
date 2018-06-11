@@ -58,7 +58,7 @@ public interface TermTransform extends Evaluation.TermContext {
     @Nullable default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         Term y;
         if (yy != xx) {
-            y = the(op, dt, (TermList)yy); //transformed subterms
+            y = the(op, dt, ((TermList)yy).arraySharedKeep()); //transformed subterms
         } else if (op != x.op()) {
             y = the(op, dt, xx); //same subterms
         } else {

@@ -3,21 +3,15 @@ package nars.term;
 import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.unify.Unify;
-import nars.util.term.transform.Retemporalize;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 
-public class ProxyTerm implements Term, Compound {
+public class ProxyTerm implements Compound {
 
     public final /*HACK make unpublic */ Term ref;
 
     public ProxyTerm(Term t) {
-        
         this.ref = t;
     }
 
@@ -32,24 +26,9 @@ public class ProxyTerm implements Term, Compound {
     }
 
     @Override
-    public @Nullable Term temporalize(Retemporalize r) {
-        return ref.temporalize(r);
-    }
-
-    @Override
-    public boolean isTemporal() {
-        return ref.isTemporal();
-    }
-
-    @Override
     public final int dt() {
         return ref.dt();
     }
-
-
-
-
-
 
     @Override
     public Op op() {
@@ -107,65 +86,16 @@ public class ProxyTerm implements Term, Compound {
         ref.appendTo(out);
     }
 
-    @Override
-    public boolean unify(Term y, Unify subst) {
-        return ref.unify(y, subst);
-    }
-
-    @Override
-    public boolean isAny(int bitsetOfOperators) {
-        return ref.isAny(bitsetOfOperators);
-    }
-
-    @Override
-    public boolean hasVarIndep() {
-        return ref.hasVarIndep();
-    }
-
-    @Override
-    public boolean hasVarDep() {
-        return ref.hasVarDep();
-    }
-
-    @Override
-    public boolean hasVarQuery() {
-        return ref.hasVarQuery();
-    }
 
     @Override
     public void appendTo(Appendable w) throws IOException {
         ref.appendTo(w);
     }
 
-
-
     @Override
     public boolean isNormalized() {
         return ref.isNormalized();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Override
-    public int opX() {
-        return ref.opX();
-    }
-
-
 
     @Override
     public int subs() {
@@ -177,55 +107,6 @@ public class ProxyTerm implements Term, Compound {
         return ref.contains(t);
     }
 
-
-
-
-
-
-
-
-
-
-
-    @Override
-    public Term sub(int i, Term ifOutOfBounds) {
-        return ref.sub(i, ifOutOfBounds);
-    }
-
-    @Override
-    public boolean impossibleSubTermVolume(int otherTermVolume) {
-        return ref.impossibleSubTermVolume(otherTermVolume);
-    }
-
-    @Override
-    public boolean impossibleSubTermOrEquality(Term target) {
-        return ref.impossibleSubTermOrEquality(target);
-    }
-
-    @Override
-    public boolean AND(Predicate<Term> v) {
-        return ref.AND(v);
-    }
-
-    @Override
-    public boolean ANDrecurse(Predicate<Term> v) {
-        return ref.ANDrecurse(v);
-    }
-
-    @Override
-    public void recurseTerms(Consumer<Term> v) {
-        ref.recurseTerms(v);
-    }
-
-    @Override
-    public boolean OR(Predicate<Term> v) {
-        return ref.OR(v);
-    }
-
-    @Override
-    public boolean ORrecurse(Predicate<Term> v) {
-        return ref.ORrecurse(v);
-    }
 
     @Override
     public int vars() {
@@ -251,16 +132,6 @@ public class ProxyTerm implements Term, Compound {
     public int varPattern() {
         return ref.varPattern();
     }
-
-
-
-
-
-
-
-
-
-
 
 
 }

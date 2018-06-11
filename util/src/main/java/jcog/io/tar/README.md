@@ -1,6 +1,8 @@
 # Overview
 JTar is a simple Java Tar library, that provides an easy way to create and read tar files using IO streams. The API is very simple to use and similar to the _java.util.zip_ package and also __supports UStar format__.
 
+NOTE: https://github.com/snyk/zip-slip-vulnerability
+
 [![Build Status](https://travis-ci.org/kamranzafar/jtar.png?branch=master)](https://travis-ci.org/kamranzafar/jtar)
 
 ## Usage

@@ -12,8 +12,7 @@ import nars.unify.Unify;
 public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
 
-    private final Subterms y;
-    private final Subterms x;
+    private final Subterms x, y;
 
     final static Atom COMMUTIVE_PERMUTATIONS = $.the(CommutivePermutations.class);
 

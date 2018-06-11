@@ -6,7 +6,6 @@ import nars.term.Term;
 import nars.unify.Unify;
 
 import static nars.Op.BOOL;
-import static nars.Op.Null;
 
 
 /** special/reserved/keyword representing fundamental absolute boolean truth states:

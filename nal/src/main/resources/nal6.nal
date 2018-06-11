@@ -107,11 +107,12 @@
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
+    (P ==> M), (S ==> M) |- --((S ==>+- P) && (P ==>+- S)), (Belief:ComparisonSymmetric)
+    (M ==> P), (M ==> S) |- --((S ==>+- P) && (P ==>+- S)), (Belief:ComparisonSymmetric)
 //    (P ==> M), (S ==> M) |- (S ==>+- P), (Belief:Comparison)
 //        (P ==> M), (S ==> M) |- (P ==>+- S), (Belief:Comparison)
 //    (M ==> P), (M ==> S) |- (S ==>+- P), (Belief:Comparison)
 //        (M ==> P), (M ==> S) |- (P ==>+- S), (Belief:Comparison)
-
 
 // Contraposition (structural)
 // (A ==> B) |-   (--B ==> --A)
@@ -258,19 +259,12 @@
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
 
-
-    S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositiveNegativeNegative)
-        //disj
-        //S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposePositivePositivePositive)
-        //S, (||,S,A..+) |- (||,A..+), (Belief:DecomposeNegativePositivePositive)
-    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative)
-        //S, (||,(--,%S),A..+) |- (||,A..+), (Belief:DecomposePositivePositivePositive)
-
-    //disjunction goal select
-    //D, X, eventOfNeg(D,X) |- conjWithout(D,--X), (Goal:DecomposeNegativePositivePositive)
-       //D, X, eventOf(D,X) |- conjWithout(D,X), (Goal:DecomposeNegativeNegativePositive)
-       D, X, eventOfNeg(D,X) |- conjWithout(D,--X), (Goal:DecomposeNegativeNegativeNegative, Time:Task)
-
+    //CONJ
+    S, C, eventOf(C,S) |- conjWithout(C,S), (Belief:DecomposePositivePositivePositive)
+    S, C, eventOfNeg(C,S) |- conjWithout(C,--S), (Belief:DecomposeNegativePositivePositive)
+    //DISJ
+    S, D, eventOfNeg(D,S) |- conjWithout(D,--S), (Belief:DecomposeNegativeNegativeNegative, Goal:DecomposeNegativeNegativeNegative)
+    S, D, eventOf(D,S) |- conjWithout(D,S), (Belief:DecomposePositiveNegativeNegative, Goal:DecomposePositiveNegativeNegative)
 
 
 
@@ -331,8 +325,8 @@
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
     X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Weak)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:WeakPN)
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Strong)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
@@ -360,7 +354,7 @@
 
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
     //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)
@@ -368,27 +362,11 @@
         //C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN, Time:Task)
 
     //Conj and Disj Question Decomposition
-    X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
-       C, X, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
-    X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
-       C, X, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
+    C, X, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
+        //X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
+    C, X, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
+        //X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
 
-    //C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-
-    //C, X, task("&&"), eventOfPosOrNeg(X,C)  |- conjWithout(C,X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-
-
-    //C, X, task(negative), task("&&"), in(X,C)  |- (--,dropAnyEvent(C)), (Goal:StructuralDeduction)
-
-
-    //for goal: if eternal and paral (goal seq must be decomposed sequentially use &&| and add separate rule
-    //C, X, task("&&") |- dropAnyEvent(C), (Goal:StructuralDeduction)
-
-
-    //(&&,A_1..n), A_i |- A_i, (Truth:StructuralDeduction, Desire:Strong)
-    //SUSPECT:
-        //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
-        //(&&,(--,%X),A..+), X, task("!") |- (--,%X), (Goal:StrongPN)
 
 
 //Anonymous Analogy (NAL5)

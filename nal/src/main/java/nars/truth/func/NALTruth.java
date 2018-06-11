@@ -51,6 +51,11 @@ public enum NALTruth implements TruthFunc {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
         }
     },
+    StructuralStrong() {
+        public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {
+            return T != null ? NALTruth.Analogy.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
+        }
+    },
 
 
     /**
@@ -138,7 +143,12 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions.comparison(T, B, minConf);
         }
     },
-
+    ComparisonSymmetric() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions2.comparisonSymmetric(T, B, minConf);
+        }
+    },
 
     Conversion() {
         @Override
@@ -377,6 +387,7 @@ public enum NALTruth implements TruthFunc {
     }
 
     private static float confDefault( NAR m) {
+        //TODO choose this according to belief/goal
         return m.confDefault(BELIEF);
     }
 

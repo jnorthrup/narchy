@@ -5,6 +5,7 @@ import jcog.memoize.HijackMemoize;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
@@ -123,7 +124,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         HijackTermCache tc = termCache[x.op().id];
         if (tc == null)
             return x;
-        Term y = tc.apply(new InternedCompound(x));
+        Term y = tc.apply(new InternedCompound((Compound)x));
         if (y!=null)
             return y;
         return x;

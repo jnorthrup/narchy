@@ -3,10 +3,10 @@
     ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity)
 
 //Nothing is more specific than a instance, so its similar
-    (S --> {P}),  {P}  |- (S <-> {P}), (Belief:Identity)
+    (S <-> {P}),  {P}  |- (S --> {P}), (Belief:Identity)
 
 //nothing is more general than a property, so its similar
-    ([S] --> P),  [S]  |- ([S] <-> P), (Belief:Identity)
+    ([S] <-> P),  [S]  |- ([S] --> P), (Belief:Identity)
 
 
 //Set Composition

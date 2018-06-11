@@ -316,13 +316,13 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
                             
-                            pair($.func("happy", id, $.the("chronic")), compose(
+                            pair($.func("chronic", id), compose(
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE),
                                 new FloatExpMovingAverage(0.02f)
                             )),
 
                             
-                            pair($.func("happy", id, $.the("acute")), compose(
+                            pair($.func("acute", id), compose(
                                 new FloatExpMovingAverage(0.1f, false),
                                 new FloatPolarNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE_FAST)
                             ))
