@@ -39,7 +39,7 @@ public class TermlinkTemplates extends FasterList<Term> {
         super(terms.length, terms);
 
         if (size > 1)
-            sortThisByBoolean((t) -> !conceptualizable(t));
+            sortThisByBoolean(t -> !conceptualizable(t));
 
 
         int lastConcept = size - 1;
@@ -91,41 +91,41 @@ public class TermlinkTemplates extends FasterList<Term> {
      */
     static void templates(Term x, Set<Term> tc, int depth, Term root, int maxDepth) {
 
+        if (x == Op.imExt || x == Op.imInt)
+            return;
 
         Op xo = x.op();
-
-
         if (depth > 0) {
-            if (x == Op.imExt || x == Op.imInt)
-                return;
-
             tc.add(x);
         }
 
-        if ((++depth >= maxDepth + extraDepth(depth, root, x)) || xo.atomic || !xo.conceptualizable)
+        maxDepth += extraDepth(depth, root, x);
+
+        if ((++depth >= maxDepth) || xo.atomic || !xo.conceptualizable)
             return;
 
         Subterms bb = x.subterms();
         int nextDepth = depth;
+        int nextMaxDepth = maxDepth;
 
         if (xo == CONJ && bb.hasAny(CONJ)) {
 
             int xdt = x.dt();
             x.eventsWhile((when, what) -> {
-                templates(what.unneg(), tc, nextDepth, root, maxDepth);
+                templates(what.unneg(), tc, nextDepth, root, nextMaxDepth);
                 return true;
             }, 0, xdt ==0, xdt ==DTERNAL, true, 0);
             return;
         }
 
 
-        bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
+        bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, nextMaxDepth));
 
     }
 
     /** depth extensions */
     private static int extraDepth(int depth, Term root, Term x) {
-        if (depth == 2) {
+        if (depth >= 1 && depth <= 2) {
             switch (root.op()) {
                 case SIM:
                 case INH:
@@ -133,12 +133,12 @@ public class TermlinkTemplates extends FasterList<Term> {
                         return +1;
                     break;
                 case CONJ:
-                    if (x.op().statement)
-                    //if (x.op()==IMPL || x.op()==INH)
-                        return +1;
+//                    if (x.op().statement)
+//                    //if (x.op()==IMPL || x.op()==INH)
+//                        return +1;
                     break;
                 case IMPL:
-                    if (x.op()==INH)
+                    if (x.op()==INH || x.op()==CONJ)
                         return +1;
                     break;
             }

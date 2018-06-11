@@ -2,6 +2,7 @@ package nars.unify.op;
 
 import nars.$;
 import nars.Op;
+import nars.derive.Derivation;
 import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -26,6 +27,8 @@ public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
     }
 
     final static private Atomic OP = Atomic.the("op");
+    final static private Atomic OpIs = Atomic.the("opIs");
+    final static private Atomic OpIsNot = Atomic.the("opIsNot");
 
     public TaskBeliefOp(int structure, boolean testTask, boolean testBelief, boolean isOrIsNot) {
         super($.func(OP, $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)).negIf(!isOrIsNot));
@@ -54,18 +57,18 @@ public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
 
     }
 
-    public static void add(Collection<PrediTerm<PreDerivation>> pres, boolean isOrIsnt, Term x, int struct, byte[] pt, byte[] pb) {
+    public static void add(Collection<PrediTerm<PreDerivation>> pres, boolean isOrIsnt, int struct, byte[] pt, byte[] pb) {
         if (pt != null) {
-            pres.add(add(isOrIsnt, x, struct, true, pt));
+            pres.add(add(isOrIsnt, struct, true, pt));
         }
         if (pb != null) {
-            pres.add(add(isOrIsnt, x, struct, false, pb));
+            pres.add(add(isOrIsnt, struct, false, pb));
         }
     }
 
-    static PrediTerm<PreDerivation> add(boolean isOrIsnt, Term x, int struct, boolean taskOrBelief, byte[] path) {
+    static PrediTerm<PreDerivation> add(boolean isOrIsnt, int struct, boolean taskOrBelief, byte[] path) {
         if (path.length > 0) {
-            return new OpInTaskOrBeliefIsOrIsnt(isOrIsnt, x, struct,
+            return new OpInTaskOrBeliefIsOrIsnt(isOrIsnt, struct,
                     taskOrBelief ? path : null, taskOrBelief ? null : path);
         } else {
             return new TaskBeliefOp(struct, taskOrBelief, !taskOrBelief, isOrIsnt);
@@ -82,11 +85,11 @@ public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
         private final byte[] pathInBelief;
         private final boolean isOrIsnt;
 
-        private OpInTaskOrBeliefIsOrIsnt(boolean isOrIsnt, Term x, int struct, byte[] pathInTask, byte[] pathInBelief) {
-            super($.func(isOrIsnt ? "opIs" : "opIsNot",
-                    x, $.the(struct),
-                    pathInTask != null ? $.func("inTask", $.the(pathInTask)) : Op.EmptyProduct,
-                    pathInBelief != null ? $.func("inBelief", $.the(pathInBelief)) : Op.EmptyProduct
+        private OpInTaskOrBeliefIsOrIsnt(boolean isOrIsnt, int struct, byte[] pathInTask, byte[] pathInBelief) {
+            super($.func(isOrIsnt ? OpIs : OpIsNot,
+                    $.the(struct),
+                    pathInTask != null ? $.inhFast($.pFast(pathInTask), Derivation.Task) : Op.EmptyProduct,
+                    pathInBelief != null ? $.inhFast($.pFast(pathInBelief), Derivation.Belief) : Op.EmptyProduct
             ));
             this.isOrIsnt = isOrIsnt;
             this.struct = struct;

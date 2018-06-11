@@ -2,8 +2,10 @@ package jcog.list;
 
 import jcog.Util;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
+import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.utility.ArrayIterate;
 import org.jetbrains.annotations.Nullable;
@@ -117,9 +119,41 @@ public class FasterList<X> extends FastList<X> {
 
 
     @Override
+    public FastList<X> toSortedList() {
+        //TODO size=2 simple case
+        return size > 1 ? super.toSortedList() : this;
+    }
+
+    @Override
+    public <V extends Comparable<? super V>> MutableList<X> toSortedListBy(Function<? super X, ? extends V> function) {
+        //TODO size=2 simple case
+        return size > 1 ? super.toSortedListBy(function) : this;
+    }
+
+    @Override
+    public FastList<X> toSortedList(Comparator<? super X> comparator) {
+        //TODO size=2 simple case
+        return size > 1 ? super.toSortedList(comparator) : this;
+    }
+
+    @Override
     public FasterList<X> sortThis(Comparator<? super X> comparator) {
         if (size > 1)
             super.sortThis(comparator);
+        return this;
+    }
+
+    @Override
+    public MutableList<X> sortThisByFloat(FloatFunction<? super X> function) {
+        if (size > 1)
+            super.sortThisByFloat(function);
+        return this;
+    }
+
+    @Override
+    public MutableList<X> sortThisByInt(org.eclipse.collections.api.block.function.primitive.IntFunction<? super X> function) {
+        if (size > 1)
+            super.sortThisByInt(function);
         return this;
     }
 

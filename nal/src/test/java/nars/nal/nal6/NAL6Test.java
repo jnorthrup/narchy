@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    static final int cycles = 450;
+    static final int cycles = 350;
 
     @BeforeEach
     void setup() {
@@ -25,7 +25,8 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(18);
+        n.termVolumeMax.set(22);
+        //n.termlinkBalance.set(0.25f);
 
         return n;
     }
@@ -280,6 +281,19 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
+    public void variable_elimination6simplerReverse() {
+
+
+        test
+                .believe("(bird:$x ==> (&&, flyer:$x, chirping:$x, food:worms))")
+                .believe("flyer:Tweety")
+                .mustBelieve(cycles, "(bird:Tweety ==> (chirping:Tweety && food:worms))",
+                        1.0f,
+                        0.73f);
+
+
+    }
+    @Test
     public void variable_elimination6() {
 
 
@@ -471,11 +485,12 @@ public class NAL6Test extends NALTest {
     public void second_level_variable_unificationNoImgAndAsPrecondition() {
 
         TestNAR tester = test;
+        tester.log();
         tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
 
 
         tester.believe("<{key1} --> key>", 1.00f, 0.90f);
-        tester.mustBelieve(cycles * 2, "((#1-->lock)==>open(#1,{key1}))", 1.00f,
+        tester.mustBelieve(cycles , "((#1-->lock)==>open(#1,{key1}))", 1.00f,
                 0.73f
                 /*0.81f*/);
     }

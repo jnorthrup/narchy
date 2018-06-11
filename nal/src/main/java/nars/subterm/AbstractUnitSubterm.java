@@ -76,7 +76,7 @@ abstract public class AbstractUnitSubterm implements Subterms {
 
     @Override
     public final Term sub(int i) {
-        if (i!=0) throw new ArrayIndexOutOfBoundsException();
+        if (i!=0) return null; //throw new ArrayIndexOutOfBoundsException();
         return sub();
     }
 

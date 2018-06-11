@@ -25,7 +25,7 @@ abstract public class RelationConstraint extends MatchConstraint {
     }
 
     @Override
-    public @Nullable PrediTerm<PreDerivation> asPredicate(Term taskPattern, Term beliefPattern) {
+    public @Nullable PrediTerm<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
         
         if (x.equals(taskPattern) && y.equals(beliefPattern)) {
             return new ConstraintAsPredicate(this, true);

@@ -12,22 +12,24 @@
 //    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
+
     B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
     B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
 
     B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
     B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:DeductionRecursive, Time:TaskMinusBeliefDT)
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionRecursiveNN, Time:TaskMinusBeliefDT)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
 
-        Y, ((&&,X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y,strict), (Belief:Analogy)
-        Y, ((&&,--X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny(((&&,--X,A..+) ==>+- Z), X,Y,strict), (Belief:AnalogyN)
-            Y, (--(&&,X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny((--(&&,X,A..+) ==>+- Z), X,Y,strict), (Belief:Analogy)
-            Y, (--(&&,--X,A..+) ==> Z), neqRCom(X,Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==>+- Z), X,Y,strict), (Belief:AnalogyN)
 
-        Y, (Z ==> (&&,X,A..+)), neqRCom(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,X,A..+)), X,Y,strict), (Belief:Analogy)
-        Y, (Z ==> (&&,--X,A..+)), neqRCom(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--X,A..+)), X,Y,strict), (Belief:AnalogyN)
+        Y, ((&&,X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y), (Belief:Deduction)
+        Y, ((&&,--X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny(((&&,--X,A..+) ==>+- Z), X,Y), (Belief:DeductionN)
+            Y, (--(&&,X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny((--(&&,X,A..+) ==>+- Z), X,Y), (Belief:Deduction)
+            Y, (--(&&,--X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==>+- Z), X,Y), (Belief:DeductionN)
+
+        Y, (Z ==> (&&,X,A..+)), notImpl(Y) |- subIfUnifiesAny((Z ==>+- (&&,X,A..+)), X,Y), (Belief:Abduction)
+        Y, (Z ==> (&&,--X,A..+)), notImpl(Y) |- subIfUnifiesAny((Z ==>+- (&&,--X,A..+)), X,Y), (Belief:AbductionN)
 
 //            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:Abduction)
 //            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:AbductionN)
@@ -288,13 +290,13 @@
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
-    (A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
+    (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
         //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
         //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:InductionPB)
-    ((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)) && ((--,conjWithoutAll(B,A)) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
+    ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)) && ((--,conjWithoutAll(B,A)) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- (--,conjWithoutAll(A,B))), (Belief:InductionPB)
-    (X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:AbductionPB)
+    (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:AbductionPB)
         //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:AbductionPB)
         //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:AbductionPB)
 

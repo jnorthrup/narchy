@@ -24,6 +24,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static nars.Op.SETe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -183,7 +184,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
     }
 
     @Nullable
-    public PrediTerm<PreDerivation> asPredicate(Term taskPattern, Term beliefPattern) {
+    public PrediTerm<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
         return null;
     }
 
@@ -194,27 +195,28 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         private final MatchConstraint[] cache;
         final Variable target;
 
+        static final MultimapBuilder.ListMultimapBuilder<Object, Object> matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
+
         /** groups the constraints into their respective targets */
-        public static Iterable<PrediTerm<Derivation>> the(MatchConstraint[] c) {
+        public static Stream<PrediTerm<Derivation>> the(MatchConstraint[] c) {
             assert(c.length > 1);
-            ListMultimap<Term, MatchConstraint> m = MultimapBuilder.hashKeys().arrayListValues().build();
+            ListMultimap<Term, MatchConstraint> m = matchConstraintMapBuilder.build();
             for (MatchConstraint x : c) {
                 m.put(x.x, x);
             }
-            return ()->m.asMap().entrySet().stream().map(e -> {
+            return m.asMap().entrySet().stream().map(e -> {
                 Collection<MatchConstraint> cc = e.getValue();
                 int ccn = cc.size();
 
                 assert(ccn > 0);
                 if (ccn == 1) {
-                    return (PrediTerm<Derivation>)(cc.iterator().next());
+                    return (cc.iterator().next());
                 } else {
                     MatchConstraint[] d = cc.toArray(new MatchConstraint[ccn]);
-                    Arrays.sort(d, PrediTerm.sortByCost);
+                    Arrays.sort(d, PrediTerm.sortByCostIncreasing);
                     return new CompoundConstraint(d);
                 }
-            }).iterator();
-
+            });
 
         }
 

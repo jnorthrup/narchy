@@ -22,6 +22,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -80,6 +81,7 @@ public class Occurrify extends TimeGraph {
     private Task curTask;
     private long curTaskAt = XTERNAL, curBeliefAt = XTERNAL;
     private Termed curBelief;
+    private Map<Term, Term> prevUntransform;
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -169,8 +171,10 @@ public class Occurrify extends TimeGraph {
         }
 
         //determine re-usability:
+        Map<Term, Term> untransform = d.untransform;
         boolean reUse =
-                autoNeg == this.autoNeg && this.curBeliefAt == beliefAt && this.curTaskAt == taskAt && Objects.equals(d.task, curTask) && Objects.equals(bb, curBelief);
+                autoNeg == this.autoNeg && this.curBeliefAt == beliefAt && this.curTaskAt == taskAt && Objects.equals(d.task, curTask) && Objects.equals(bb, curBelief) &&
+                        untransform.equals(prevUntransform);
 
         this.curTask = task; //update to current instance, even if equal
         this.curBelief = bb; //update to current instance, even if equal
@@ -182,6 +186,7 @@ public class Occurrify extends TimeGraph {
             this.autoNeg(autoNeg);
             this.curBeliefAt = beliefAt;
             this.curTaskAt = taskAt;
+            this.prevUntransform = untransform.isEmpty() ? Map.of() : Map.copyOf(untransform);
 
             if (single) {
                 know(task, taskAt);

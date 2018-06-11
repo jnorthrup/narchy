@@ -275,7 +275,9 @@ public enum $ {
     public static Term p(int... t) {
         return $.p((Term[]) $.the(t));
     }
-
+    public static Term pFast(int... t) {
+        return $.pFast((Term[]) $.the(t));
+    }
     /** encodes a boolean bitvector as an Int term, or if larger than 31 bits, as an Atom string */
     public static Term p(boolean... t) {
         if (t.length < 31) {
@@ -565,8 +567,11 @@ public enum $ {
         return Atomic.the(new String(string));
     }
 
-    public static Term the(byte[] array) {
+    public static Term p(byte[] array) {
         return p(Util.bytesToInts(array));
+    }
+    public static Term pFast(byte[] array) {
+        return pFast(Util.bytesToInts(array));
     }
 
     public static Atomic the(byte c) {

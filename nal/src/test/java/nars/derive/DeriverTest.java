@@ -1,10 +1,14 @@
-package nars.derive.premise;
+package nars.derive;
 
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.deriver.MatrixDeriver;
+import nars.derive.premise.PremiseDeriver;
+import nars.derive.premise.PremiseDeriverCompiler;
+import nars.derive.premise.PremiseDeriverRuleSet;
+import nars.derive.premise.PremisePatternIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.test.TestNAR;
@@ -26,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DeriverTest {
 
+    private final List<TestNAR> tests = $.newArrayList();
+
     public static void print(NAR n, PrintStream p) {
         derivers(n).forEach(d -> {
             p.println(d);
@@ -34,25 +40,33 @@ public class DeriverTest {
         });
     }
 
+    static PremiseDeriverRuleSet testCompile(String... rules) {
+        return testCompile(false, rules);
+    }
+
+    static PremiseDeriverRuleSet testCompile(boolean debug, String... rules) {
+
+        assertNotEquals(0, rules.length);
+
+
+        PremiseDeriverRuleSet src = new PremiseDeriverRuleSet(NARS.shell(), rules);
+        assertNotEquals(0, src.size());
+        PremiseDeriver d = PremiseDeriverCompiler.the(src, null);
+
+        if (debug) {
+
+
+        }
+
+
+        return src;
+    }
 
     @Test
     public void printTrie() {
 
         print(NARS.tmp(), System.out);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     public void testConclusionWithXTERNAL() {
@@ -73,12 +87,10 @@ public class DeriverTest {
         };
 
 
-
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(idx,
-                "Y, Y |- (?1 &| Y), ()",
-                "X, X |- (?1 &&+- X), ()"
+                "Y, Y, task(\"?\") |- (?1 &| Y), (Punctuation:Question)",
+                "X, X, task(\"?\") |- (?1 &&+- X), (Punctuation:Question)"
         ), null);
-
 
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -91,58 +103,15 @@ public class DeriverTest {
         assertTrue(ds.contains("?2 &&+-"));
 
 
-        
-
-        
-        
     }
 
-
-    static PremiseDeriverRuleSet testCompile(String... rules) {
-        return testCompile(false, rules);
-    }
-
-    static PremiseDeriverRuleSet testCompile(boolean debug, String... rules) {
-
-        assertNotEquals(0, rules.length);
-
-
-        PremiseDeriverRuleSet src = new PremiseDeriverRuleSet(NARS.shell(), rules);
-        assertNotEquals(0, src.size());
-        PremiseDeriver d = PremiseDeriverCompiler.the(src, null);
-
-        if (debug) {
-            
-            
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        return src;
+    @Test
+    public void testAmbiguousPunctuation() {
+        assertThrows(Exception.class, () -> {
+            PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(new PremisePatternIndex(NARS.shell()),
+                    "Y, Y |- (?1 &| Y), ()"
+            ), null);
+        });
     }
 
     @Test
@@ -171,7 +140,6 @@ public class DeriverTest {
         );
 
 
-
         t.ask("(a-->b)").mustQuestion(64, "(a==>b)");
 
     }
@@ -184,19 +152,8 @@ public class DeriverTest {
                 .believe("a:b")
                 .mustOutput(16, "b:a", QUEST);
 
-        
-
-
-
 
     }
-
-
-
-
-
-
-    private final List<TestNAR> tests = $.newArrayList();
 
     protected TestNAR test(String... rules) {
         NAR n = new NARS().get();
@@ -210,321 +167,6 @@ public class DeriverTest {
     public void runTests() {
         tests.forEach(TestNAR::test);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

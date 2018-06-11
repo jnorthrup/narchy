@@ -46,20 +46,22 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * requires double premise belief task evidence if deriving
      */
 //    private static final AbstractPred<PreDerivation> DoublePremise = new DoublePremise((byte) 0);
-    private static final AbstractPred<PreDerivation> neqTaskBelief = new AbstractPred<PreDerivation>($.the("neqTaskBelief")) {
-
-        @Override
-        public float cost() {
-            return 0.1f;
-        }
-
-        @Override
-        public boolean test(PreDerivation preDerivation) {
-            return !preDerivation.taskTerm.equals(preDerivation.beliefTerm);
-        }
-    };
-    final SortedSet<MatchConstraint> constraints = new TreeSet<>(PrediTerm.sortByCost);
-    final Set<PrediTerm<PreDerivation>> pre = new HashSet<>(8);
+//    private static final AbstractPred<PreDerivation> neqTaskBelief = new AbstractPred<PreDerivation>($.the("neqTaskBelief")) {
+//
+//        @Override
+//        public float cost() {
+//            return 0.1f;
+//        }
+//
+//        @Override
+//        public boolean test(PreDerivation preDerivation) {
+//            return !preDerivation.taskTerm.equals(preDerivation.beliefTerm);
+//        }
+//    };
+    private static final Atomic TRUTH = Atomic.the("truth");
+    private static final Atomic BELIEF_AT = Atomic.the("beliefAt");
+    final SortedSet<MatchConstraint> constraints = new TreeSet<>(PrediTerm.sortByCostIncreasing);
+    final SortedSet<PrediTerm<PreDerivation>> pre = new TreeSet<>(PrediTerm.sortByCostIncreasing);
     final List<PrediTerm<Derivation>> post = new FasterList<>(8);
     private final PrediTerm<Derivation> truthify;
 
@@ -126,9 +128,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                     neq(constraints, X, Y);
                     break;
 
-                case "neqTaskBelief":
-                    pre.add(neqTaskBelief);
-                    break;
+//                case "neqTaskBelief":
+//                    pre.add(neqTaskBelief);
+//                    break;
 
 //                case "neqUnneg":
 //                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(X, Y));
@@ -413,19 +415,33 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
 
 
-        FasterList<Term> args = new FasterList(4);
-        args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
-        args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
-        if (puncOverride != 0)
-            args.add($.quote((char) puncOverride));
+
 
         Occurrify.BeliefProjection projection = time.projection();
-        args.add($.func("beliefAt", Atomic.the(projection.name())));
 
-        Term ii = intern($.func("truth", args.toArrayRecycled(Term[]::new)), index);
+        Term truthMode;
+        if (beliefLabel!=null || goalLabel!=null) {
+            FasterList<Term> args = new FasterList(4);
+            if (puncOverride != 0)
+                args.add($.quote((char) puncOverride));            args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
+            args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
+            args.add($.func(BELIEF_AT, Atomic.the(projection.name())));
+
+            truthMode = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
+        } else {
+            if (puncOverride != 0) {
+                truthMode = $.func(TRUTH, $.quote((char) puncOverride));
+            } else {
+                //truthMode = Op.EmptyProduct; //auto
+                throw new UnsupportedOperationException("ambiguous truth/punctuation");
+            }
+        }
+
+        truthMode = intern(truthMode, index);
+
         Truthify truthify = puncOverride == 0 ?
-                new Truthify.TruthifyPuncFromTask(ii, beliefTruthOp, goalTruthOp, projection) :
-                new Truthify.TruthifyPuncOverride(ii, puncOverride, beliefTruthOp, goalTruthOp, projection);
+                new Truthify.TruthifyPuncFromTask(truthMode, beliefTruthOp, goalTruthOp, projection) :
+                new Truthify.TruthifyPuncOverride(truthMode, puncOverride, beliefTruthOp, goalTruthOp, projection);
 
 
         RuleCause cause = index.nar.newCause(s -> new RuleCause(this, s));
@@ -486,13 +502,17 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         if (beliefTruthOp != null && !beliefTruthOp.single()) {
-            if (puncOverride == 0 && (taskPunc == 0 || taskPunc == BELIEF)) {
+            if ((taskPunc == 0 || taskPunc == BELIEF)) {
                 pre.add(new DoublePremiseRequired(true, false, false));
+            } else if (puncOverride == BELIEF && (taskPunc == QUESTION || taskPunc == QUEST)) {
+                pre.add(new DoublePremiseRequired(false, false, true));
             }
         }
         if (goalTruthOp != null && !goalTruthOp.single()) {
-            if (puncOverride == 0 && (taskPunc == 0 || taskPunc == GOAL)) {
+            if ((taskPunc == 0 || taskPunc == GOAL)) {
                 pre.add(new DoublePremiseRequired(false, true, false));
+            }else if (puncOverride == GOAL && (taskPunc == QUESTION || taskPunc == QUEST)) {
+                pre.add(new DoublePremiseRequired(false, false, true));
             }
         }
 
@@ -535,7 +555,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         constraints.forEach(c -> {
-            PrediTerm<PreDerivation> p = c.asPredicate(taskPattern, beliefPattern);
+            PrediTerm<PreDerivation> p = c.preFilter(taskPattern, beliefPattern);
             if (p != null) {
                 pre.add(p);
             }
@@ -548,9 +568,9 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         //this.POST = postConditions.toArray(new PostCondition[pcs]);
 
         if (taskPunc == 0) {
+            //no override, determine automaticaly by presence of belief or truth
 
-
-            boolean b = false, g = true;
+            boolean b = false, g = false;
             //for (PostCondition x : POST) {
             if (POST.puncOverride != 0) {
                 throw new RuntimeException("puncOverride with no input punc specifier");
@@ -563,26 +583,16 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             if (!b && !g) {
                 throw new RuntimeException("can not assume this applies only to questions");
             } else if (b && g) {
-
-
                 pre.add(TaskPunctuation.BeliefOrGoal);
-
             } else if (b) {
-
                 pre.add(Belief);
-
-
             } else /* if (g) */ {
                 pre.add(Goal);
             }
 
-        } else if (taskPunc == ' ') {
-
         }
 
-
         this.PRE = pre.toArray(new PrediTerm[0]);
-
     }
 
     static private Term intern(Term pattern, PremisePatternIndex index) {
@@ -619,7 +629,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 checkedTask = true;
             if (pb != null)
                 checkedBelief = true;
-            TaskBeliefOp.add(pres, true, x, struct.bit, pt, pb);
+            TaskBeliefOp.add(pres, true, struct.bit, pt, pb);
 
         }
 
@@ -631,7 +641,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 pres.add(new TaskBeliefHasOrHasnt(true, struct, inTask, inBelief));
             }
 
-            constraints.add(OpIs.the(x, struct));
+
+            constraints.add(new OpIs(x, struct));
         }
     }
 
@@ -648,7 +659,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 checkedTask = true;
             if (pb != null)
                 checkedBelief = true;
-            TaskBeliefOp.add(pres,false, x, struct, pt, pb);
+            TaskBeliefOp.add(pres,false, struct, pt, pb);
         }
 
         if (!checkedTask && !checkedBelief) {

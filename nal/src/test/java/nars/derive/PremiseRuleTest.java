@@ -146,13 +146,51 @@ public class PremiseRuleTest {
     }
 
     @Test
-    public void testDoubleOnlyTruthAddsRequiresBeliefPredicate() {
+    public void testDoubleOnlyTruthAddsRequiresDoubleBelief() {
 
-        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)"), null);
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "X,Y |- (X&&Y), (Belief:Intersection)"), null);
 
         d.printRecursive();
-        assertEquals("(DoublePremise(\".\"),(\".!\"-->task),can({0}))", d.what.toString());
+        assertEquals("((\".\"-->task),DoublePremise(\".\",(),()),can({0}))", d.what.toString());
     }
+    @Test
+    public void testDoubleOnlyTruthAddsRequiresDoubleGoal() {
+
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "X,Y |- (X&&Y), (Goal:Intersection)"), null);
+
+        d.printRecursive();
+        assertEquals("((\"!\"-->task),DoublePremise((),\"!\",()),can({0}))", d.what.toString());
+    }
+    @Test
+    public void testDoubleOnlyTruthAddsRequiresDoubleBeliefOrGoal() {
+
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "X,Y |- (X&&Y), (Belief:Intersection,Goal:Intersection)"), null);
+
+        d.printRecursive();
+        assertEquals("((\".!\"-->task),DoublePremise(\".\",(),()),DoublePremise((),\"!\",()),can({0}))", d.what.toString());
+    }
+    @Test
+    public void testDoubleOnlyTruthAddsRequiresDoubleQuestionOverride() {
+
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "X,Y,task(\"?\") |- (X&&Y), (Punctuation:Belief,Belief:Intersection)"), null);
+
+        d.printRecursive();
+        assertEquals("(DoublePremise((),(),\"?@\"),(\"?\"-->task),can({0}))", d.what.toString());
+    }
+    @Test
+    public void testInferQuestionPunctuationFromTaskRequirement() {
+
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+            "Y, Y, task(\"?\") |- (?1 &| Y), (Punctuation:Question)"
+                ));
+        d.printRecursive();
+        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
+    }
+
 
     @Test
     public void testTryFork() {

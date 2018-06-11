@@ -1,16 +1,17 @@
 package nars.term.control;
 
+import com.google.common.collect.Iterables;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
-import java.util.stream.Stream;
 
 /**
  * a term representing a predicate (boolean-returning) function of a state
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
 public interface PrediTerm<X> extends Term, Predicate<X> {
 
 
-    Comparator<PrediTerm> sortByCost = (a, b) -> {
+    Comparator<PrediTerm> sortByCostIncreasing = (a, b) -> {
         if (a.equals(b)) return 0;
         float ac = a.cost();
         float bc = b.cost();
@@ -40,25 +41,19 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
             case 0: return null;
             case 1: return p[0];
             default:
-                
                 FasterList<PrediTerm<X>> pp = new FasterList<>(p);
-                pp.removeIf(prediTerm -> !prediTerm.remainInAND(p));
-                if (pp.size() > 1)
-                    pp.sort(sortByCost);
-
+                pp.removeIf(x -> !x.remainInAND(p));
                 return AndCondition.the(pp);
         }
     }
 
     @Nullable
-    static <X> PrediTerm<X> compileAnd(Stream<PrediTerm<X>> cond, @Nullable PrediTerm<X> conseq) {
-        return
-            
-            compileAnd(
-                    (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond)
-                        .toArray(PrediTerm[]::new)
-            )
-        ;
+    static <X> PrediTerm<X> compileAnd(Collection<PrediTerm<X>> cond, @Nullable PrediTerm<X> conseq) {
+        return compileAnd(
+                    Iterables.toArray(
+                            (conseq != null ? Iterables.concat(cond, List.of(conseq)) : cond),
+                            PrediTerm.class)
+            );
     }
 
     default PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {

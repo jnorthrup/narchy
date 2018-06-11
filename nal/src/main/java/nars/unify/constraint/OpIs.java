@@ -10,14 +10,7 @@ public final class OpIs extends MatchConstraint {
 
     private final Op op;
 
-    public static OpIs the(Term target, /*@NotNull*/ Op o) {
-
-
-
-            return new OpIs(target, o);
-    }
-
-    private OpIs(Term target, /*@NotNull*/ Op o) {
+    public OpIs(Term target, /*@NotNull*/ Op o) {
         super(target, "OpIs", $.quote(o.toString()));
         op = o;
     }

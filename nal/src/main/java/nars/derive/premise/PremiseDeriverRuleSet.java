@@ -27,7 +27,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
         this(new PremisePatternIndex(nar), rules);
     }
 
-    PremiseDeriverRuleSet(PremisePatternIndex index, String... rules) {
+    public PremiseDeriverRuleSet(PremisePatternIndex index, String... rules) {
         this(index, PremiseDeriverSource.parse(rules));
     }
 

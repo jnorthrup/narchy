@@ -34,7 +34,7 @@ public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
 
     @Override
     public float cost() {
-        return 0.25f;
+        return 0.2f;
     }
 
     public OpSwitch(boolean taskOrBelief, EnumMap<Op, PrediTerm<D>> cases) {

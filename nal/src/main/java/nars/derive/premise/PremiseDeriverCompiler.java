@@ -48,6 +48,10 @@ public enum PremiseDeriverCompiler {
 
     private static final float[] ONE_CHOICE = new float[]{Float.NaN};
 
+    public static PremiseDeriver the(Set<PremiseDeriverProto> r) {
+        return the(r, null);
+    }
+
     public static PremiseDeriver the(Set<PremiseDeriverProto> r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
         assert (!r.isEmpty());
 
@@ -59,10 +63,9 @@ public enum PremiseDeriverCompiler {
         /** map preconditions to conclusions by local conclusion id */
         @Deprecated Map<Set<PrediTerm<PreDerivation>>, RoaringBitmap> post = new HashMap<>(rules);
 
-        /** local conclusion id requiring this precondition */
-        Map<PrediTerm<PreDerivation>, RoaringBitmap> reach = new HashMap<>(r.size());
+        ///** local conclusion id requiring this precondition */
+        //Map<PrediTerm<PreDerivation>, RoaringBitmap> reach = new HashMap<>(r.size());
 
-        ObjectIntHashMap<Term> preconditionCount = new ObjectIntHashMap<>(256);
 
         r.forEach(rule -> {
 
@@ -73,10 +76,9 @@ public enum PremiseDeriverCompiler {
             int id = conclusions.size();
             conclusions.add(compileBranch(c.getTwo()));
 
-            c.getOne().forEach(k -> {
-                preconditionCount.addToValue(k, 1);
-                reach.computeIfAbsent(k, x -> new RoaringBitmap()).add(id);
-            });
+//            c.getOne().forEach(k -> {
+//                reach.computeIfAbsent(k, x -> new RoaringBitmap()).add(id);
+//            });
 
             post.computeIfAbsent(c.getOne(), x -> new RoaringBitmap()).add(id);
 
@@ -86,12 +88,9 @@ public enum PremiseDeriverCompiler {
         final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path = new TermTrie<>();
         final FasterList<ValueFork> postChoices = new FasterList(rules);
 
-        preconditionCount.compact();
 
         post.forEach((k, v) -> {
 
-            FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
-            pre.sortThisByFloat(x -> -preconditionCount.get(x) / x.cost());
 
 
             PrediTerm<Derivation>[] branches = StreamSupport.stream(v.spliterator(), false)
@@ -128,8 +127,8 @@ public enum PremiseDeriverCompiler {
             }
 
 
-            {
 
+                FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
                 pre.add(new Branchify(
                         /* branch ID */ postChoices.size(), v));
 
@@ -138,7 +137,7 @@ public enum PremiseDeriverCompiler {
                 postChoices.add(f);
 
                 assert (prev == null);
-            }
+
 
 
         });
@@ -297,7 +296,7 @@ public enum PremiseDeriverCompiler {
             int nStart = n.start();
             int nEnd = n.end();
             PrediTerm<Derivation> branch = PrediTerm.compileAnd(
-                    n.seq().stream().skip(nStart).limit(nEnd - nStart),
+                    n.seq().subList(nStart, nEnd),
                     branches != null /* && !branches.isEmpty() */ ?
                             factorFork(branches, Fork::new)
                             : null

@@ -1,4 +1,4 @@
-package nars.derive.premise;
+package nars.derive;
 
 import nars.$;
 import nars.NARS;
