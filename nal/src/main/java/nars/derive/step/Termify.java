@@ -4,7 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.derive.Derivation;
 import nars.derive.premise.PremiseDeriverProto;
-import nars.term.Evaluation;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.util.term.transform.Retemporalize;
@@ -41,9 +40,6 @@ public final class Termify extends AbstractPred<Derivation> {
 
     }
 
-
-    /** re-usable local evaluator instance */
-    final Evaluation eval = new Evaluation();
 
     @Override
     public final boolean test(Derivation d) {

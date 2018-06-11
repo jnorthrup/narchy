@@ -51,6 +51,8 @@ public enum NALTruth implements TruthFunc {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
         }
     },
+
+    @SinglePremise @AllowOverlap
     StructuralStrong() {
         public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {
             return T != null ? NALTruth.Analogy.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;

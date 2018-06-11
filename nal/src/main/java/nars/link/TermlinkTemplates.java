@@ -19,12 +19,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Set;
 
 import static nars.Op.CONJ;
-import static nars.Op.INH;
-import static nars.time.Tense.DTERNAL;
 
 public class TermlinkTemplates extends FasterList<Term> {
 
-    static final TermlinkTemplates EMPTY = new TermlinkTemplates(Op.EmptyTermArray) {
+    public static final TermlinkTemplates EMPTY = new TermlinkTemplates(Op.EmptyTermArray) {
         {
             concepts = 0;
         }
@@ -110,11 +108,11 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         if (xo == CONJ && bb.hasAny(CONJ)) {
 
-            int xdt = x.dt();
+//            int xdt = x.dt();
             x.eventsWhile((when, what) -> {
                 templates(what.unneg(), tc, nextDepth, root, nextMaxDepth);
                 return true;
-            }, 0, xdt ==0, xdt ==DTERNAL, true, 0);
+            }, 0, true, true, true, 0);
             return;
         }
 
@@ -129,16 +127,19 @@ public class TermlinkTemplates extends FasterList<Term> {
             switch (root.op()) {
                 case SIM:
                 case INH:
-                    if (x.isAny(Op.SectBits | Op.SetBits | Op.PROD.bit))
+                    if (depth == 1 && x.isAny(Op.SectBits | Op.SetBits | Op.DiffBits |
+                            Op.PROD.bit
+                    ))
                         return +1;
                     break;
                 case CONJ:
-//                    if (x.op().statement)
+                    if (depth == 1 && x.op().statement)
 //                    //if (x.op()==IMPL || x.op()==INH)
-//                        return +1;
+                        return +1;
                     break;
                 case IMPL:
-                    if (x.op()==INH || x.op()==CONJ)
+                    Op xo = x.op();
+                    if (xo.statement || (depth == 1 && xo==CONJ))
                         return +1;
                     break;
             }

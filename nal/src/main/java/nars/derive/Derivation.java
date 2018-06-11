@@ -184,6 +184,7 @@ public class Derivation extends PreDerivation {
      * precise time that the task and belief truth are sampled
      */
     public long taskAt, beliefAt;
+    public boolean taskBeliefTimeIntersects;
     private ImmutableMap<Term, Termed> staticFunctors;
     private ImmutableMap<Term, Termed> derivationFunctors;
     private Term _beliefTerm;
@@ -395,6 +396,9 @@ public class Derivation extends PreDerivation {
         this._beliefStruct = beliefTerm.structure();
         this._beliefOp = beliefTerm.op().id;
 
+
+        this.taskBeliefTimeIntersects = this._belief == null || this._task.intersectsTime(this._belief);
+
         this.forEachMatch = null;
         this.concTruth = null;
         this.concPunc = 0;
@@ -591,8 +595,6 @@ public class Derivation extends PreDerivation {
     }
 
     public Term untransform(Term t) {
-
-
         return t.replace(untransform);
     }
 

@@ -15,22 +15,19 @@ public enum AbstractPatternOp  {
 
 
 
-   public static final class TaskBeliefOpEqual extends AbstractPred<PreDerivation> {
-
-        public TaskBeliefOpEqual() {
-            super($.the(TaskBeliefOpEqual.class.getSimpleName()));
-        }
+   public static final AbstractPred<PreDerivation> TaskBeliefOpEqual = new AbstractPred<PreDerivation>($.the("TaskBeliefOpEqual")) {
 
        @Override
-        public boolean test(PreDerivation ff) {
-            return ff._taskOp == ff._beliefOp;
-        }
+       public boolean test(PreDerivation ff) {
+           return ff._taskOp == ff._beliefOp;
+       }
 
-        @Override
-        public float cost() {
-            return 0.1f;
-        }
-    }
+       @Override
+       public float cost() {
+           return 0.1f;
+       }
+
+   };
 
 
 

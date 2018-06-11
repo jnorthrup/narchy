@@ -108,7 +108,9 @@ public class TermLinkTest {
 
     @Test public void testConjEventsNotInternalDternals() {
         testTemplates("((a&&b) &&+- (b&&c))",
-                "[(a&&b), (b&&c)]");
+                //"[(a&&b), (b&&c)]"
+                "[a,b,c]"
+        );
     }
 
     @Test public void testConjEventsNotInternalDternals2() {
@@ -119,12 +121,12 @@ public class TermLinkTest {
     @Test
     public void testTemplateConjInsideConj() {
         testTemplates("(x && (y &&+1 z))",
-                "[(y&&z), x]");
+                "[x, y, z]");
     }
     @Test
     public void testTemplateConjInsideConjInsideImpl() {
         testTemplates("(a ==> (x && y))",
-                "[(x&&y), a]");
+                "[(x&&y), a, x, y]");
     }
 
     @Test

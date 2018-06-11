@@ -4,6 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
+import nars.link.TermlinkTemplates;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -41,7 +42,10 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         this.execute = execute;
     }
 
-
+    @Override
+    protected TermlinkTemplates buildTemplates(Term term) {
+        return TermlinkTemplates.EMPTY;
+    }
 
     @Override
     public Term term() {

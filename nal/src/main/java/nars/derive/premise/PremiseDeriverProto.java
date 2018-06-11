@@ -492,7 +492,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
         if (!belIsPatVar) {
             if (to == bo) {
-                pre.add(new AbstractPatternOp.TaskBeliefOpEqual());
+                pre.add(AbstractPatternOp.TaskBeliefOpEqual);
             } else {
                 pre.add(new TaskBeliefOp(bo, false, true));
                 pre.addAll(SubTermStructure.get(1, beliefPattern1.structure()));

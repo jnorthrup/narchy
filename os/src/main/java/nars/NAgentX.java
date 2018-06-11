@@ -336,7 +336,7 @@ abstract public class NAgentX extends NAgent {
 
 
         
-        Inperience inp = new Inperience(n, 64);
+        Inperience inp = new Inperience(n, 16);
 
 
         
@@ -384,7 +384,7 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        new Abbreviation(n, "z", 5, 9, 0.1f, 32);
+        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
 
         

@@ -73,6 +73,7 @@ public class Occurrify extends TimeGraph {
      * temporary set for filtering duplicates
      */
     final Set<Event> seen = new UnifiedSet(Param.TEMPORAL_SOLVER_ITERATIONS * 2);
+    final Set<Term> expandedUntransforms = new UnifiedSet<>();
     final Set<Term> expanded = new UnifiedSet<>();
 
     final Derivation d;
@@ -81,7 +82,7 @@ public class Occurrify extends TimeGraph {
     private Task curTask;
     private long curTaskAt = XTERNAL, curBeliefAt = XTERNAL;
     private Termed curBelief;
-    private Map<Term, Term> prevUntransform;
+    private Map<Term, Term> prevUntransform = Map.of();
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -146,6 +147,7 @@ public class Occurrify extends TimeGraph {
 
 
     public void reset(boolean autoNeg) {
+
         seen.clear();
 
         Task task = d.task;
@@ -170,11 +172,19 @@ public class Occurrify extends TimeGraph {
             }
         }
 
-        //determine re-usability:
-        Map<Term, Term> untransform = d.untransform;
+
         boolean reUse =
-                autoNeg == this.autoNeg && this.curBeliefAt == beliefAt && this.curTaskAt == taskAt && Objects.equals(d.task, curTask) && Objects.equals(bb, curBelief) &&
-                        untransform.equals(prevUntransform);
+                autoNeg == this.autoNeg && this.curBeliefAt == beliefAt && this.curTaskAt == taskAt && Objects.equals(d.task, curTask) && Objects.equals(bb, curBelief);
+
+        //determine re-usability:
+        Map<Term, Term> nextUntransform = d.untransform;
+
+        if (reUse) {
+            if (expandedUntransforms.isEmpty())
+                prevUntransform = Map.of(); //if expanded was empty then the previous usage's untransforms had no effect, so pretend like they are empty in case they are empty this time then we can re-use the graph
+
+            reUse &= nextUntransform.equals(prevUntransform);
+        }
 
         this.curTask = task; //update to current instance, even if equal
         this.curBelief = bb; //update to current instance, even if equal
@@ -183,10 +193,10 @@ public class Occurrify extends TimeGraph {
         if (!reUse) {
             clear();
             expanded.clear();
+            expandedUntransforms.clear();
             this.autoNeg(autoNeg);
             this.curBeliefAt = beliefAt;
             this.curTaskAt = taskAt;
-            this.prevUntransform = untransform.isEmpty() ? Map.of() : Map.copyOf(untransform);
 
             if (single) {
                 know(task, taskAt);
@@ -199,6 +209,16 @@ public class Occurrify extends TimeGraph {
                     know(belief, beliefAt);
                 }
             }
+            if (!nextUntransform.isEmpty()) {
+                this.prevUntransform = Map.copyOf(nextUntransform);
+
+                nextUntransform.forEach((x, y) -> {
+                    link(shadow(x), 0, shadow(y)); //weak
+                });
+            } else {
+                this.prevUntransform = Map.of();
+            }
+
         }
     }
 
@@ -213,12 +233,13 @@ public class Occurrify extends TimeGraph {
         Event tt = shadow(t);
 
         Term u = d.untransform(t);
-        if (u != null && !(u instanceof Bool) && !u.equals(t)) {
+        if (u!=t && u != null && !(u instanceof Bool) && !u.equals(t)) {
+            expandedUntransforms.add(u);
             expanded.add(u);
             link(tt, 0, shadow(u));
         }
         Term v = Image.imageNormalize(t);
-        if (!v.equals(t)) {
+        if (v!=t && !v.equals(t)) {
             expanded.add(v);
             link(tt, 0, shadow(v));
         }
@@ -313,8 +334,7 @@ public class Occurrify extends TimeGraph {
     static final PrediTerm<Derivation> intersectFilter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
         @Override
         public boolean test(Derivation d) {
-            nars.Task b = d._belief;
-            return b == null || d._task.intersectsTime(b);
+            return d.single || d.taskBeliefTimeIntersects;
         }
     };
 

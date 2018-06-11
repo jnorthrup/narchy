@@ -14,11 +14,9 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     final T[] emptyArray;
 
-    final Map<X, T> map =
-            
-            new ConcurrentOpenHashMap<>();
+    final Map<X, T> map = new ConcurrentOpenHashMap<>();
 
-    volatile T[] list = null;
+    private volatile T[] list = null;
 
 
     public ConcurrentFastIteratingHashMap(T[] emptyArray) {
@@ -149,8 +147,7 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
     @Override
     public Collection<T> values() {
-        
-        return new FasterList(list);
+        return new FasterList(valueArray());
     }
 
     @Override
@@ -179,9 +176,6 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
     }
 
     public T[] updateValues() {
-        
-
-        
         return ((FasterList<T>)(((ConcurrentOpenHashMap<?, T>)map)
                 .values(this.emptyArray)))
                 .toArrayRecycled(i -> Arrays.copyOf(emptyArray, i));
@@ -206,7 +200,7 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
         return true;
     }
 
-    private class MyAbstractList extends AbstractList {
+    private final class MyAbstractList extends AbstractList {
 
         @Override
         public int size() {
@@ -215,11 +209,15 @@ public class ConcurrentFastIteratingHashMap<X, T> extends AbstractMap<X, T>  {
 
         @Override
         public T get(int i) {
-            T[] l = ConcurrentFastIteratingHashMap.this.list;
-            if (l!=null && l.length > i)
-                return l[i];
-            else
-                return null;
+           return getIndex(i);
         }
+    }
+
+    public T getIndex(int i) {
+        T[] l = valueArray();
+        if (l!=null && l.length > i)
+            return l[i];
+        else
+            return null;
     }
 }

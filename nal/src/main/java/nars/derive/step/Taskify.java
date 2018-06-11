@@ -60,14 +60,15 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Term x0 = d.derivedTerm;
 
-        if (x0.hasAny(Op.VAR_INDEP)) {
-            if (!Task.validTaskCompound(x0, true)) {
-                x0 = x0.transform(VariableTransform.indepToDepVar);
+        Term x1 = d.anon.get(x0);
+        Term x = x1.normalize();
+
+        if (x.hasAny(Op.VAR_INDEP)) {
+            if (!Task.validTaskCompound(x, true)) {
+                x = x.transform(VariableTransform.indepToDepVar);
             }
         }
 
-        Term x1 = d.anon.get(x0);
-        Term x = x1.normalize();
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;

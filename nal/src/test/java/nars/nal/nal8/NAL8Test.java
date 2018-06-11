@@ -26,7 +26,7 @@ public class NAL8Test extends NALTest {
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(12);
+        test.nar.termVolumeMax.set(22);
     }
 
     @Test
@@ -112,13 +112,10 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void subbelief_2easy() {
-
-
         test
-
                 .input("(a:b &&+5 x:y). :|:")
-                .mustBelieve(cycles, "a:b", 1.0f, 0.81f, 0)
-                .mustBelieve(cycles, "x:y", 1.0f, 0.81f, 5)
+                .mustBelieve(cycles, "a:b", 1.0f, 0.81f, (t->t==0))
+                .mustBelieve(cycles, "x:y", 1.0f, 0.81f, (t->t==5))
         ;
     }
 
