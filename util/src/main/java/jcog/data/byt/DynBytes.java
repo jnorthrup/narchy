@@ -230,6 +230,10 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         return Arrays.toString(ArrayUtils.subarray(bytes, 0, length()));
     }
 
+    public String toStringFromBytes() {
+        return new String(bytes, 0, length());
+    }
+
 
     @Override
     public final void writeBoolean(boolean v) {
@@ -361,23 +365,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     }
 
+    //final UTF8Writer utf8 = new UTF8Writer();
     @Override
     public void writeUTF(String s) {
 
-        throw new UnsupportedOperationException("yet");
-
-        
-
-
-
-        
-
-
-
-
-
-
-
+        write(s.getBytes());
 
     }
 
