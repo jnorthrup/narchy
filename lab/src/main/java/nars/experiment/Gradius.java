@@ -5,7 +5,7 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.scalar.DigitizedScalar;
-import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
@@ -38,13 +38,14 @@ public class Gradius extends NAgentX {
             for (int j = 0; j < dy; j++) {
                 int ii = i;
                 int jj = j;
-                Term subSection = $.p(id, $.the(ii), $.the(jj));
+                //Term subSection = $.p(id, $.the(ii), $.the(jj));
                 senseCamera((x, y) ->
+                        $.func((Atomic)id, $.p($.the(ii), $.the(jj)), $.p($.the(x), $.the(y)) ),
                                 //$.p(
-                                $.inh(
-                                        $.p(x, y),
-                                        subSection
-                                ),
+                                //$.inh(
+//                                        $.p(x, y),
+//                                        subSection
+//                                ),
                         new Scale(() -> g.image, px, py)
                                 .window(
                                         (((float)i) / dx), (((float)j) / dy),

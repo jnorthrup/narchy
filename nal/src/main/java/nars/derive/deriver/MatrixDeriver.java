@@ -196,7 +196,7 @@ public class MatrixDeriver extends Deriver {
                 if (!termlinks.isEmpty()) {
                     termlinks.sample(rng, Math.min(nTermLinks, _termlinksPerTasklink), termlink -> {
                         if (!continueHypothesizing.test(task, termlink)) {
-                            conceptTTL[0] = 0;
+                            //conceptTTL[0] = 0;
                             return false;
                         } else {
                             return (--conceptTTL[0] > 0);

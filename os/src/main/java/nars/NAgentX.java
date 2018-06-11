@@ -17,6 +17,7 @@ import nars.gui.graph.DynamicConceptSpace;
 import nars.index.concept.CaffeineIndex;
 import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
+import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -316,7 +317,7 @@ abstract public class NAgentX extends NAgent {
 
         
 
-        ArithmeticIntroduction arith = new ArithmeticIntroduction(32, n);
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
 
 
@@ -335,7 +336,7 @@ abstract public class NAgentX extends NAgent {
 
 
         
-        Inperience inp = new Inperience(n, 32);
+        Inperience inp = new Inperience(n, 64);
 
 
         
@@ -383,6 +384,7 @@ abstract public class NAgentX extends NAgent {
 
 
 
+        new Abbreviation(n, "z", 5, 9, 0.1f, 32);
 
 
         
@@ -390,7 +392,7 @@ abstract public class NAgentX extends NAgent {
 
 
         NAgent a = init.apply(n);
-        a.motivation.set(0.5f);
+        a.motivation.set(0.75f);
 
         n.on(a);
         n.synch();
