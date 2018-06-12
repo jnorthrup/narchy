@@ -96,22 +96,22 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
     }
 
-    public static class ConstraintAsPredicate extends AbstractPred<PreDerivation> {
+    final static class ConstraintAsPredicate extends AbstractPred<Derivation> {
 
-        final static Term TASK_BELIEF = $.the("task_belief");
-        final static Term BELIEF_TASK = $.the("belief_task");
+        final static Term TASK_BELIEF = $.p(Derivation.Task, Derivation.Belief);
+        final static Term BELIEF_TASK = $.p(Derivation.Belief, Derivation.Task);
 
         private final RelationConstraint constraint;
         private final boolean taskFirst;
 
-        public ConstraintAsPredicate(RelationConstraint m, boolean taskFirst) {
+        ConstraintAsPredicate(RelationConstraint m, boolean taskFirst) {
             super($.p(taskFirst ? TASK_BELIEF : BELIEF_TASK, m.term()));
             this.constraint = m;
             this.taskFirst = taskFirst;
         }
 
         @Override
-        public boolean test(PreDerivation preDerivation) {
+        public boolean test(Derivation preDerivation) {
             Term x, y;
             if (taskFirst) {
                 x = preDerivation.taskTerm;
@@ -184,7 +184,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
     }
 
     @Nullable
-    public PrediTerm<PreDerivation> preFilter(Term taskPattern, Term beliefPattern) {
+    public PrediTerm<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
         return null;
     }
 

@@ -80,7 +80,6 @@ public class ArrayTermVector extends TermVector {
     @Override
     /*@NotNull*/ public final Term sub(int i) {
         return terms[i];
-        
     }
 
     @Override public final Term[] arrayClone() {

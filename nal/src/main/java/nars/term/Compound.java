@@ -94,6 +94,7 @@ public interface Compound extends Term, IPair, Subterms {
         return !impossibleSubTerm(t) && inSubtermsOf.test(this) && subterms().containsRecursively(t, root, inSubtermsOf);
     }
 
+    /** deprecated; TODO move to SeparateSubtermsCompound interface and allow Compounds which do not have to generate this.  this sums up many of xjrn's suggestions  */
     @Override
     Subterms subterms();
 
@@ -237,9 +238,6 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (xs > 1 && isCommutative()) {
             
-            
-            
-            
             boolean yCommutive = ty.isCommutative() && (ty.dt() != XTERNAL || ys != 2);
             return xsubs.unifyCommute(ysubs, yCommutive, u);
         } else {
@@ -256,17 +254,6 @@ public interface Compound extends Term, IPair, Subterms {
     default void appendTo(/*@NotNull*/ Appendable p) throws IOException {
         IO.Printer.append(this, p);
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -336,25 +323,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-
-
-    @Override
-    default void forEach(/*@NotNull*/ Consumer<? super Term> c) {
-        subterms().forEach(c);
-    }
-
-
-
-    @Override
-    default int subs() {
-        return subterms().subs();
-    }
-
-
-//    @Override
-//    default boolean impossibleSubTermVolume(int otherTermVolume) {
-//        return subterms().impossibleSubTermVolume(otherTermVolume);
-//    }
 
 
     @Override

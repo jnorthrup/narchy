@@ -293,8 +293,12 @@ public interface Atomic extends Term {
 
     @Override
     default Term sub(int i, Term ifOutOfBounds) {
-        
         return ifOutOfBounds;
+    }
+
+    @Override
+    default Term sub(int i) {
+        throw new ArrayIndexOutOfBoundsException();
     }
 
     @Override

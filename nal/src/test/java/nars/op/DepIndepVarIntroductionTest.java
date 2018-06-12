@@ -21,16 +21,16 @@ public class DepIndepVarIntroductionTest {
     @Test
     public void testIntroduceIndepVar() throws Narsese.NarseseException {
 
-        assertEquals("[((a-->$1)==>(b-->$1))]",
+        assertEquals("[((a-->$X)==>(b-->$X))]",
                 introduce("((a-->c)==>(b-->c))", 16).toString());
 
-        assertEquals("[((a-->$1)=|>(b-->$1))]",
+        assertEquals("[((a-->$X)=|>(b-->$X))]",
                 introduce("((a-->c)=|>(b-->c))", 16).toString());
     }
 
     @Test
     public void testIntroduceIndepVar2() throws Narsese.NarseseException {
-        assertEquals("[((a-->($1,#2))=|>(b-->($1,#2))), ((a-->$1)=|>(b-->$1))]",
+        assertEquals("[((a-->($X,#2))=|>(b-->($X,#2))), ((a-->$X)=|>(b-->$X))]",
                 introduce("((a-->(x,#1))=|>(b-->(x,#1)))", 16).toString());
     }
 

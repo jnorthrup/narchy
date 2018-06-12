@@ -180,7 +180,7 @@ public class PremiseRuleTest {
                 "X,Y,task(\"?\") |- (X&&Y), (Punctuation:Belief,Belief:Intersection)"));
 
         d.printRecursive();
-        assertEquals("(DoublePremise((),(),\"?@\"),(\"?\"-->task),can({0}))", d.what.toString());
+        assertEquals("((\"?\"-->task),DoublePremise((),(),\"?@\"),can({0}))", d.what.toString());
     }
     @Test
     public void testInferQuestionPunctuationFromTaskRequirement() {

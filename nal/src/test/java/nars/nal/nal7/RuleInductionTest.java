@@ -39,7 +39,7 @@ public class RuleInductionTest {
 
         MatrixDeriver d = new MatrixDeriver(new PremiseDeriverRuleSet(n,
             
-        "B, A, notImpl(A),notImpl(B)                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:TaskRelative)"
+        "B, A, --is(A,\"==>\"),--is(B,\"==>\")                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:TaskRelative)"
             
 
             

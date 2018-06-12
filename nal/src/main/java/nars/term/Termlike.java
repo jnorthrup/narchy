@@ -22,8 +22,25 @@ import static nars.Op.*;
 public interface Termlike {
 
 
+    /** fast subterm access;
+     *  should not return Null (unless it really is Null) or null;
+     *  throw runtime exception if there is a problem  */
     Term sub(int i);
 
+    /** returns Null if the index is out of bounds;
+     *  also dont expect a negative index, just >=0 */
+    default Term subSafe(int i) {
+        return sub(i, Null);
+    }
+
+    /**
+     * tries to get the ith subterm (if this is a TermContainer),
+     * or of is out of bounds or not a container,
+     * returns the provided ifOutOfBounds
+     */
+    default Term sub(int i, Term ifOutOfBounds) {
+        return i >= subs() ? ifOutOfBounds : sub(i);
+    }
 
     /**
      * number of subterms. if atomic, size=0
@@ -205,14 +222,6 @@ public interface Termlike {
 
 
 
-    /**
-     * tries to get the ith subterm (if this is a TermContainer),
-     * or of is out of bounds or not a container,
-     * returns the provided ifOutOfBounds
-     */
-    default Term sub(int i, Term ifOutOfBounds) {
-        return subs() <= i ? ifOutOfBounds : sub(i);
-    }
 
     default boolean impossibleSubTermVolume(int otherTermVolume) {
         return otherTermVolume > volume() - subs();

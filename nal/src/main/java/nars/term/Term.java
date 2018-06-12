@@ -164,15 +164,13 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     @Override
-    default Term sub(int i) {
-        return subterms().sub(i);
-    }
+    Term sub(int i);
 
 
     @Override
-    default int subs() {
-        return subterms().subs();
-    }
+    int subs();
+
+
 
     @Nullable
     Term transform(TermTransform t);
@@ -191,11 +189,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         if (ps < depth)
             throw new RuntimeException("path overflow");
 
-        if (!(src instanceof Compound))
-            return src;
-
-        Compound csrc = (Compound) src;
-        Subterms css = csrc.subterms();
+        Subterms css = src.subterms();
 
         int n = css.subs();
         if (n == 0) return src;
@@ -214,7 +208,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
         }
 
-        return csrc.op().compound(csrc.dt(), target);
+        return src.op().compound(src.dt(), target);
     }
 
     default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
@@ -232,7 +226,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         assert (subpathsSize > 1);
 
         int shortest = Integer.MAX_VALUE;
-        for (ByteList subpath : subpaths) {
+        for (int i = 0; i < subpathsSize; i++) {
+            ByteList subpath = subpaths.get(i);
             shortest = Math.min(shortest, subpath.size());
         }
 
@@ -242,8 +237,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         for (i = 0; i < shortest; i++) {
             byte needs = 0;
             for (int j = 0; j < subpathsSize; j++) {
-                ByteList p = subpaths.get(j);
-                byte pi = p.get(i);
+                byte pi = subpaths.get(j).get(i);
                 if (j == 0) {
                     needs = pi;
                 } else if (needs != pi) {
@@ -261,8 +255,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         Term ptr = this;
         int s = path.size();
         for (int i = 0; i < s; i++)
-            if ((ptr = ptr.sub(path.get(i))) == Null)
-                return Null;
+            if ((ptr = ptr.subSafe(path.get(i))) == Null)
+                return null;
         return ptr;
     }
 
@@ -272,16 +266,16 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      */
     @Nullable
     default Term subPath(byte... path) {
-        return subPath(path.length, path);
+        int p = path.length;
+        return p > 0 ? subPath(p, path) : this;
     }
 
     @Nullable
     default Term subPath(int subPathLen, byte... path) {
         Term ptr = this;
         for (int i = 0; i < subPathLen; i++) {
-            byte b = path[i];
-            if ((ptr = ptr.sub(b)) == Null)
-                return Null;
+            if ((ptr = ptr.subSafe(path[i])) == Null)
+                return null;
         }
         return ptr;
     }
@@ -290,8 +284,8 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     default Term subPath(int subPathLen, ByteList path) {
         Term ptr = this;
         for (int i = 0; i < subPathLen; i++) {
-            if ((ptr = ptr.sub(path.get(i))) == Null)
-                return Null;
+            if ((ptr = ptr.subSafe(path.get(i))) == Null)
+                return null;
         }
         return ptr;
     }

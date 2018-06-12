@@ -5,6 +5,8 @@ import nars.$;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Function;
 
 
@@ -38,13 +40,13 @@ public class Fork<X> extends AbstractPred<X> {
 
     @Override
     public float cost() {
-        return Integer.MAX_VALUE; 
+        return Float.POSITIVE_INFINITY;
     }
 
     @Override
     public PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
         throw new TODO();
-        
+
     }
 
 
@@ -79,7 +81,14 @@ public class Fork<X> extends AbstractPred<X> {
 
 
     @Nullable
-    public static <X> PrediTerm<X> fork(PrediTerm<X>[] n, Function<PrediTerm<X>[], PrediTerm<X>> builder) {
+    public static <X> PrediTerm<X> fork(Collection<PrediTerm<X>> x, Function<PrediTerm[], PrediTerm<X>> builder) {
+        PrediTerm[] xx = x.toArray(PrediTerm.EmptyPrediTermArray);
+        Arrays.sort(xx);
+        return fork(xx, builder);
+    }
+
+    @Nullable
+    public static <X> PrediTerm<X>  fork(PrediTerm[] n, Function<PrediTerm[], PrediTerm<X>> builder) {
         switch (n.length) {
             case 0:
                 return null;

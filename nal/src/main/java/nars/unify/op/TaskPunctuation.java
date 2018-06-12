@@ -14,6 +14,7 @@ import static nars.Op.*;
  */
 final public class TaskPunctuation extends AbstractPred<PreDerivation> {
 
+    public static final float COST = 0.05f;
     public final byte punc;
 
 
@@ -35,7 +36,7 @@ final public class TaskPunctuation extends AbstractPred<PreDerivation> {
 
     @Override
     public float cost() {
-        return 0.05f;
+        return COST;
     }
 
     public static final PrediTerm<PreDerivation> Belief = new TaskPunctuation(BELIEF);
@@ -51,7 +52,7 @@ final public class TaskPunctuation extends AbstractPred<PreDerivation> {
 
         @Override
         public float cost() {
-            return 0.1f;
+            return COST;
         }
     };
 

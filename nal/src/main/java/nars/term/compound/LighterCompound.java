@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import jcog.TODO;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
@@ -90,7 +91,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
 
     @Override
     public Subterms subterms() {
-        return this;
+        throw new TODO(); //must use a separate view instance for correctness, ex: distinguish between structure of the compound and the structure of the subterms
     }
 
     @Override

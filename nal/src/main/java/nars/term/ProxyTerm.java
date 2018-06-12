@@ -98,6 +98,11 @@ public class ProxyTerm implements Compound {
     }
 
     @Override
+    public Term sub(int i) {
+        return ref.sub(i);
+    }
+
+    @Override
     public int subs() {
         return ref.subs();
     }

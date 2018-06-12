@@ -9,24 +9,20 @@ import nars.derive.Derivation;
 import nars.derive.control.ValueFork;
 import nars.derive.step.Branchify;
 import nars.derive.step.Taskify;
-import nars.term.Term;
 import nars.term.control.AndCondition;
 import nars.term.control.Fork;
 import nars.term.control.OpSwitch;
 import nars.term.control.PrediTerm;
 import nars.unify.constraint.MatchConstraint;
-import nars.unify.op.TaskBeliefOp;
+import nars.unify.op.TaskBeliefIs;
 import nars.unify.op.UnifyTerm;
 import nars.util.term.TermTrie;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.jetbrains.annotations.NotNull;
+import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -60,39 +56,42 @@ public enum PremiseDeriverCompiler {
 
         List<PrediTerm<Derivation>> conclusions = new FasterList<>(rules);
 
-        /** map preconditions to conclusions by local conclusion id */
-        @Deprecated Map<Set<PrediTerm<PreDerivation>>, RoaringBitmap> post = new HashMap<>(rules);
+        /** map preconditions to conclusions by local conclusion id.
+         * the key is an array with a null placeholder at the end to be completed later in this stage
+         * */
+        final List<Pair<PrediTerm<Derivation>[], RoaringBitmap>> pairs = new FasterList<>(rules);
 
         ///** local conclusion id requiring this precondition */
-        //Map<PrediTerm<PreDerivation>, RoaringBitmap> reach = new HashMap<>(r.size());
+        //Map<PrediTerm<Derivation>, RoaringBitmap> reach = new HashMap<>(r.size());
 
 
         r.forEach(rule -> {
 
             assert (rule.POST != null) : "null POSTconditions:" + rule;
 
-            Pair<Set<PrediTerm<PreDerivation>>, PrediTerm<Derivation>> c = rule.build(rule.POST);
+            Pair<PrediTerm<Derivation>[], PrediTerm<Derivation>> c = rule.build(rule.POST);
 
             int id = conclusions.size();
-            conclusions.add(compileBranch(c.getTwo()));
+            boolean unique = conclusions.add(compileBranch(c.getTwo()));
+            assert(unique);
 
 //            c.getOne().forEach(k -> {
 //                reach.computeIfAbsent(k, x -> new RoaringBitmap()).add(id);
 //            });
 
-            post.computeIfAbsent(c.getOne(), x -> new RoaringBitmap()).add(id);
-
-
+            RoaringBitmap b = new RoaringBitmap();
+            b.add(id);
+            pairs.add(Tuples.pair(c.getOne(), b));
         });
 
         final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path = new TermTrie<>();
         final FasterList<ValueFork> postChoices = new FasterList(rules);
 
 
-        post.forEach((k, v) -> {
+        pairs.forEach((pair) -> {
 
 
-
+            RoaringBitmap v = pair.getTwo();
             PrediTerm<Derivation>[] branches = StreamSupport.stream(v.spliterator(), false)
                     .map(conclusions::get).toArray(PrediTerm[]::new);
             assert (branches.length > 0);
@@ -127,18 +126,14 @@ public enum PremiseDeriverCompiler {
             }
 
 
+            PrediTerm<Derivation>[] pre = pair.getOne();
+            assert (pre[pre.length - 1] == null); //null placeholder left for this
+            pre[pre.length - 1] = new Branchify(/* branch ID */ postChoices.size(), v);
 
-                FasterList<PrediTerm<Derivation>> pre = new FasterList(k, PrediTerm[]::new, +1);
-                pre.add(new Branchify(
-                        /* branch ID */ postChoices.size(), v));
+            PrediTerm added = path.put(new FasterList(pre), f);
+            assert(added==null);
 
-                PrediTerm<Derivation> prev = path.put(pre, f);
-
-                postChoices.add(f);
-
-                assert (prev == null);
-
-
+            postChoices.add(f);
 
         });
 
@@ -179,7 +174,7 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PrediTerm compileBranch(@NotNull PrediTerm<Derivation> branch) {
+    static PrediTerm compileBranch(PrediTerm<Derivation> branch) {
         return branch instanceof AndCondition ?
                 ((AndCondition) branch).transform(y -> y instanceof AndCondition ?
                                 MatchConstraint.combineConstraints((AndCondition) y)
@@ -272,9 +267,9 @@ public enum PremiseDeriverCompiler {
 
 
     static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
-        SortedSet<PrediTerm<Derivation>> bb = compile(trie.root);
+        Collection<PrediTerm<Derivation>> bb = compile(trie.root);
 
-        PrediTerm<Derivation> tf = Fork.fork(bb.toArray(PrediTerm.EmptyPrediTermArray), Fork::new);
+        PrediTerm<Derivation> tf = Fork.fork(bb, (f) -> new Fork(f));
         if (each != null)
             tf = tf.transform(each);
 
@@ -283,22 +278,23 @@ public enum PremiseDeriverCompiler {
 
 
     @Nullable
-    static SortedSet<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, PrediTerm<Derivation>> node) {
+    static Set<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, PrediTerm<Derivation>> node) {
 
 
-        SortedSet<PrediTerm<Derivation>> bb = new TreeSet();
+        Set<PrediTerm<Derivation>> bb = new HashSet();
 
 
         node.forEach(n -> {
 
-            SortedSet<PrediTerm<Derivation>> branches = compile(n);
+            Set<PrediTerm<Derivation>> branches = compile(n);
 
             int nStart = n.start();
             int nEnd = n.end();
             PrediTerm<Derivation> branch = PrediTerm.compileAnd(
                     n.seq().subList(nStart, nEnd),
+                    //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
                     branches != null /* && !branches.isEmpty() */ ?
-                            factorFork(branches, Fork::new)
+                            factorFork(branches, (f)->new Fork(f))
                             : null
             );
 
@@ -308,22 +304,24 @@ public enum PremiseDeriverCompiler {
 
         if (bb.isEmpty())
             return null;
-        else
-            return compileSwitch(bb);
+        else {
+            return compileSwitch(bb, 3);
+            //return bb;
+        }
     }
 
-    private static <X> PrediTerm<X> factorFork(SortedSet<PrediTerm<X>> _x, Function<PrediTerm<X>[], PrediTerm<X>> builder) {
+    private static PrediTerm<Derivation> factorFork(Set<PrediTerm<Derivation>> _x, Function<PrediTerm[], PrediTerm<Derivation>> builder) {
 
         int n = _x.size();
         if (n == 0)
             return null;
 
         if (n == 1)
-            return _x.first();
+            return _x.iterator().next();
 
-        FasterList<PrediTerm<X>> x = new FasterList<>(_x);
+        FasterList<PrediTerm<Derivation>> x = new FasterList<>(_x);
 
-        MutableMap<PrediTerm, SubCond> conds = new UnifiedMap(x.size());
+        Map<PrediTerm, SubCond> conds = new HashMap(x.size());
         for (int b = 0, xSize = n; b < xSize; b++) {
             PrediTerm p = x.get(b);
             if (p instanceof AndCondition) {
@@ -336,73 +334,95 @@ public enum PremiseDeriverCompiler {
             }
         }
 
-        SubCond fx = conds.maxBy(SubCond::costIfBranch);
-        if (fx.size() < 2) {
+        if (!conds.isEmpty()) {
+            SubCond fx = conds.values().stream().max(Comparator.comparingDouble(zz -> zz.costIfBranch())).get();
+            if (fx.size() < 2) {
 
-        } else {
-            SortedSet<PrediTerm> bundle = new TreeSet();
-            int i = 0;
-            Iterator<PrediTerm<X>> xx = x.iterator();
-            while (xx.hasNext()) {
-                PrediTerm<X> px = xx.next();
-                if (fx.branches.contains(i)) {
-                    xx.remove();
+            } else {
+                Collection<PrediTerm<Derivation>> bundle = new HashSet();
+                int i = 0;
+                Iterator<PrediTerm<Derivation>> xx = x.iterator();
+                while (xx.hasNext()) {
+                    PrediTerm px = xx.next();
+                    if (fx.branches.contains(i)) {
+                        xx.remove();
 
-                    if (px instanceof AndCondition) {
-                        px = AndCondition.the(ArrayUtils.removeAllOccurences(((AndCondition) px).cond, fx.p));
-                        bundle.add(px);
-                    } else {
+                        if (px instanceof AndCondition) {
+                            px = AndCondition.the(ArrayUtils.removeAllOccurences(((AndCondition) px).cond, fx.p));
+                            bundle.add(px);
+                        } else {
 
+                        }
                     }
+                    i++;
                 }
-                i++;
-            }
-            if (!bundle.isEmpty()) {
-                assert (bundle.size() > 1);
-                x.add(AndCondition.the(fx.p, Fork.fork(bundle.toArray(new PrediTerm[bundle.size()]), builder)));
+                if (!bundle.isEmpty()) {
+                    assert (bundle.size() > 1);
+                    x.add(AndCondition.the(fx.p, Fork.fork(bundle, builder)));
 
-                if (x.size() == 1)
-                    return x.get(0);
+                    if (x.size() == 1)
+                        return x.get(0);
+                }
+            }
+
+        }
+
+        //HACK
+        //force merge
+
+        if (x.size() > 1) {
+            RoaringBitmap r = new RoaringBitmap();
+            x.removeIf(zz -> {
+                if (zz instanceof Branchify) {
+                    r.or(((Branchify) zz).can);
+                    return true;
+                }
+                return false;
+            });
+            if (!r.isEmpty()) {
+                Branchify bb = new Branchify(-1, r);
+                if (x.isEmpty()) {
+                    return bb;
+                } else {
+                    x.add(bb);
+                }
             }
         }
 
-
-        return Fork.fork(x.toSortedSet().toArray(PrediTerm.EmptyPrediTermArray), builder);
+        return Fork.fork(x, builder);
     }
 
-    protected static SortedSet<PrediTerm<Derivation>> compileSwitch(SortedSet<PrediTerm<Derivation>> branches) {
+    protected static Set<PrediTerm<Derivation>> compileSwitch(Set<PrediTerm<Derivation>> branches, int minCases) {
 
+        if (branches.size() < minCases)
+            return branches; //dont bother
 
-        branches = factorSubOpToSwitch(branches, true, 2);
-        branches = factorSubOpToSwitch(branches, false, 2);
+        branches = factorSubOpToSwitch(branches, true, minCases);
+        branches = factorSubOpToSwitch(branches, false, minCases);
 
         return branches;
     }
 
-    @NotNull
-    private static <D extends PreDerivation> SortedSet<PrediTerm<D>> factorSubOpToSwitch(SortedSet<PrediTerm<D>> bb, boolean taskOrBelief, int minToCreateSwitch) {
+    private static Set<PrediTerm<Derivation>> factorSubOpToSwitch(Set<PrediTerm<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
-            Map<TaskBeliefOp, PrediTerm<D>> cases = new UnifiedMap(8);
-            Set<PrediTerm<D>> removed = new UnifiedSet(8);
-            bb.removeIf(p -> {
+            Map<TaskBeliefIs, PrediTerm<Derivation>> cases = new UnifiedMap(8);
+            Set<PrediTerm<Derivation>> removed = new UnifiedSet(8);
+            bb.forEach(p -> {
                 if (p instanceof AndCondition) {
                     AndCondition ac = (AndCondition) p;
-                    return ac.OR(x -> {
-                        if (x instanceof TaskBeliefOp) {
-                            TaskBeliefOp so = (TaskBeliefOp) x;
+                    ac.forEach(x -> {
+                        if (x instanceof TaskBeliefIs) {
+                            TaskBeliefIs so = (TaskBeliefIs) x;
                             if (so.isOrIsNot && so.task == taskOrBelief && so.belief == !taskOrBelief) {
                                 PrediTerm acw = ac.without(so);
                                 if (null == cases.putIfAbsent(so, acw)) {
                                     removed.add(p);
-                                    return true;
                                 }
                             }
                         }
-                        return false;
                     });
 
                 }
-                return false;
             });
 
 
@@ -412,19 +432,18 @@ public enum PremiseDeriverCompiler {
                     throw new RuntimeException("switch fault");
                 }
 
-                EnumMap<Op, PrediTerm<D>> caseMap = new EnumMap(Op.class);
+                EnumMap<Op, PrediTerm<Derivation>> caseMap = new EnumMap(Op.class);
                 cases.forEach((c, p) -> {
                     int cs = c.structure;
                     Op[] opVals = Op.values();
                     for (int i = 0; i < opVals.length; i++) {
-                        if ((cs & (1 << i)) > 0)
+                        if ((cs & (1 << i)) != 0)
                             caseMap.put(opVals[i], p);
                     }
 
                 });
+                bb.removeAll(removed);
                 bb.add(new OpSwitch<>(taskOrBelief, caseMap));
-            } else {
-                bb.addAll(removed);
             }
         }
 
@@ -442,7 +461,7 @@ public enum PremiseDeriverCompiler {
 
         static void bumpCond(Map<PrediTerm, SubCond> conds, PrediTerm p, int branch) {
             float pc = p.cost();
-            if (pc == Float.POSITIVE_INFINITY)
+            if (!Float.isFinite(pc))
                 return;
 
             conds.compute(p, (xx, e) -> {

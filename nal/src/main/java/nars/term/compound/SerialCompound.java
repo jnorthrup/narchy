@@ -72,6 +72,11 @@ public class SerialCompound extends DynBytes implements Compound, The {
     }
 
     @Override
+    public Term sub(int i) {
+        return subterms().sub(i); //HACK TODO slow
+    }
+
+    @Override
     public int subs() {
         return bytes[1];
     }

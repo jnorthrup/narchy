@@ -13,13 +13,13 @@ import org.roaringbitmap.RoaringBitmap;
  */
 public class Branchify extends AbstractPred<Derivation> {
 
-    private final int id;
+    public final RoaringBitmap can;
 
     private static final Atomic CAN = Atomic.the("can");
 
-    public Branchify(int id, RoaringBitmap downstream) {
-        super($.func(CAN, $.sFast(downstream)));
-        this.id = id;
+    public Branchify(int id, RoaringBitmap can) {
+        super($.func(CAN, $.sete(can)));
+        this.can = can;
     }
 
     @Override
@@ -28,8 +28,8 @@ public class Branchify extends AbstractPred<Derivation> {
     }
 
     @Override
-    public boolean test(Derivation derivation) {
-        derivation.can.add(id);
+    public boolean test(/*Pre*/Derivation derivation) {
+        derivation.can.or(can);
         return true;
     }
 }

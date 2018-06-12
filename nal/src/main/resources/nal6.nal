@@ -13,23 +13,23 @@
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
 
-    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
-    B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
+    B, (A ==> C),  --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursive, Goal:Induction, Time:TaskPlusBeliefDT)
+    B, (A ==> C),  --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursivePN, Goal:InductionPN, Time:TaskPlusBeliefDT)
 
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
-    B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C),  --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursiveN, Goal:InductionN, Time:TaskPlusBeliefDT)
+    B, (--A ==> C),  --is(B,"==>") |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionRecursiveNN, Goal:InductionNN, Time:TaskPlusBeliefDT)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction, Time:TaskMinusBeliefDT)
+    B, (C ==> A), --is(B,"==>") |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN, Time:TaskMinusBeliefDT)
 
 
-        Y, ((&&,X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y), (Belief:Deduction)
-        Y, ((&&,--X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny(((&&,--X,A..+) ==>+- Z), X,Y), (Belief:DeductionN)
-            Y, (--(&&,X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny((--(&&,X,A..+) ==>+- Z), X,Y), (Belief:Deduction)
-            Y, (--(&&,--X,A..+) ==> Z), notImpl(Y) |- subIfUnifiesAny((--(&&,--X,A..+) ==>+- Z), X,Y), (Belief:DeductionN)
+        Y, ((&&,X,A..+) ==> Z), --is(Y,"==>") |- subIfUnifiesAny(((&&,X,A..+) ==>+- Z), X,Y), (Belief:Deduction)
+        Y, ((&&,--X,A..+) ==> Z), --is(Y,"==>") |- subIfUnifiesAny(((&&,--X,A..+) ==>+- Z), X,Y), (Belief:DeductionN)
+            Y, (--(&&,X,A..+) ==> Z), --is(Y,"==>") |- subIfUnifiesAny((--(&&,X,A..+) ==>+- Z), X,Y), (Belief:Deduction)
+            Y, (--(&&,--X,A..+) ==> Z), --is(Y,"==>") |- subIfUnifiesAny((--(&&,--X,A..+) ==>+- Z), X,Y), (Belief:DeductionN)
 
-        Y, (Z ==> (&&,X,A..+)), notImpl(Y) |- subIfUnifiesAny((Z ==>+- (&&,X,A..+)), X,Y), (Belief:Abduction)
-        Y, (Z ==> (&&,--X,A..+)), notImpl(Y) |- subIfUnifiesAny((Z ==>+- (&&,--X,A..+)), X,Y), (Belief:AbductionN)
+        Y, (Z ==> (&&,X,A..+)), --is(Y,"==>") |- subIfUnifiesAny((Z ==>+- (&&,X,A..+)), X,Y), (Belief:Abduction)
+        Y, (Z ==> (&&,--X,A..+)), --is(Y,"==>") |- subIfUnifiesAny((Z ==>+- (&&,--X,A..+)), X,Y), (Belief:AbductionN)
 
 //            B, (X ==> (&&,C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:Abduction)
 //            B, (X ==> (&&,--C,A..+)), neq(B,C), notImpl(B) |- subIfUnifiesAny((X ==>+- (&&,A..+)),C,B), (Belief:AbductionN)
@@ -374,9 +374,9 @@
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
     (&&,X,A..+), Y, neq(X,Y)   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-            //, isNot(X,"#")
+            //, --is(X,"#")
     (&&,--X,A..+), Y, neq(X,Y)   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
-            //, isNot(X,"#")
+            //, --is(X,"#")
 
    // Y, (&&,X,A..+), neqRCom(X,Y) |- subIfUnifiesAny((&&,X,A..+), X,Y,strict), (Belief:Deduction)
    // Y, (&&,--X,A..+), neqRCom(X,Y) |- subIfUnifiesAny((&&,--X,A..+), X,Y,strict), (Belief:DeductionN)

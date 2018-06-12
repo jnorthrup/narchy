@@ -26,6 +26,13 @@ public abstract class UnitCompound implements Compound {
 
     abstract public Term sub();
 
+
+    @Override
+    public final Term sub(int i) {
+        if (i!=0) throw new ArrayIndexOutOfBoundsException();
+        return sub();
+    }
+
     @Override
     public int hashCode() {
          return Util.hashCombine(

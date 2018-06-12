@@ -4,6 +4,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.time.Tense.DTERNAL;
@@ -26,12 +27,20 @@ public interface SeparateSubtermsCompound extends Compound {
         return subterms().arrayClone(x, from, to);
     }
 
+    @Override
+    default int subs() {
+        return subterms().subs();
+    }
 
-
-    /*@NotNull*/
     @Override
     default Term sub(int i) {
         return subterms().sub(i);
+    }
+
+
+    @Override
+    default void forEach(/*@NotNull*/ Consumer<? super Term> c) {
+        subterms().forEach(c);
     }
 
     @Override

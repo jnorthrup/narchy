@@ -103,6 +103,7 @@ public class AnonVector extends TermVector {
         return idToTermWithNegationTest(subterms[i]);
     }
 
+
     @Override
     public void append(ByteArrayDataOutput out) {
         short[] ss = subterms;

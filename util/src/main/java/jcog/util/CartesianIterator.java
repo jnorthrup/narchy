@@ -69,7 +69,8 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 		for (cursor = size-1; cursor >= 0; cursor--)
 			if (iterators[cursor].hasNext()) break;
 		
-		for (int i = cursor+1; i < size; i++) iterators[i] = iterables[i].iterator();
+		for (int i = cursor+1; i < size; i++)
+			iterators[i] = iterables[i].iterator();
 		
 		
 		for (int i = cursor; i < size; i++) setNextValue(i);

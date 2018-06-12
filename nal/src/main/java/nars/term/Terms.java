@@ -7,6 +7,7 @@ import jcog.decide.Roulette;
 import jcog.sort.SortedList;
 import nars.IO;
 import nars.Op;
+import nars.derive.premise.PremisePatternIndex;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
@@ -276,11 +277,14 @@ public enum Terms {
     /** finds the shortest deterministic subterm path for extracting a subterm in a compound.
      *  paths in subterms of commutive terms are excluded also because the
      *  position is undeterministic. */
-    @Nullable public static byte[] extractor(Term container, Term subterm) {
+    @Nullable public static byte[] extractFixedPath(Term container, Term subterm) {
+        if (!canExtractFixedPath(container))
+            return null;
+
         final byte[][] p = new byte[1][];
         container.pathsTo(subterm,
 
-            (superterm) -> !superterm.op().commutative,
+            Terms::canExtractFixedPath,
 
             (path, xx) -> {
                 if (p[0] == null || p[0].length > path.size()) {
@@ -290,6 +294,12 @@ public enum Terms {
                 return true; //continue
         });
         return p[0];
+    }
+
+    private static boolean canExtractFixedPath(Term container) {
+        return !container.isCommutative()
+                && !(container instanceof PremisePatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisCommutive)
+                && !(container instanceof PremisePatternIndex.PremisePatternCompound.PremisePatternCompoundWithEllipsisLinear);
     }
 }
 

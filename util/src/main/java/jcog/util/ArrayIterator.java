@@ -39,7 +39,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     @Override
     public Iterator<E> iterator() {
         if (index != 0)
-            throw new RuntimeException("iterator() method can only be called once");
+            return new ArrayIterator(array); //already started, so return a fresh copy
         return this;
     }
 

@@ -205,11 +205,10 @@ abstract public class FastCompound implements Compound /* The */ {
         }
     }
 
-
-
-
-
-
+    @Override
+    public Term sub(int i) {
+        return subterms().sub(i); //HACK TODO slow
+    }
 
     protected abstract boolean containsAtomic(Atomic t);
 
@@ -224,7 +223,7 @@ abstract public class FastCompound implements Compound /* The */ {
     }
 
     @Override
-    public Subterms subterms() {
+    @Deprecated public Subterms subterms() {
         return new SubtermView(this, 0);
     }
 

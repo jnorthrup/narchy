@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Iterator;
 import java.util.function.Consumer;
 
-import static nars.Op.Null;
-
 /**
  * Size 2 TermVector
  */
@@ -37,7 +35,7 @@ public final class TermVector2 extends TermVector {
             case 0: return x;
             case 1: return y;
             default:
-                return Null; 
+                throw new ArrayIndexOutOfBoundsException();
         }
     }
 

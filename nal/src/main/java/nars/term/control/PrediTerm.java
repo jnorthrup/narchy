@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 public interface PrediTerm<X> extends Term, Predicate<X> {
 
 
+    /** suspect */
     Comparator<PrediTerm> sortByCostIncreasing = (a, b) -> {
         if (a.equals(b)) return 0;
         float ac = a.cost();
