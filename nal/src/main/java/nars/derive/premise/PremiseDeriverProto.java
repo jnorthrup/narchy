@@ -21,8 +21,12 @@ import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.match.Ellipsislike;
-import nars.unify.op.*;
+import nars.unify.op.TaskBeliefHas;
+import nars.unify.op.TaskBeliefIs;
+import nars.unify.op.TaskPunctuation;
+import nars.unify.op.UnifyTerm;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 
 import java.util.Collection;
@@ -694,21 +698,21 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 checkedTask = true;
             if (pb != null)
                 checkedBelief = true;
-            TaskBeliefIs.add(pres, true, struct.bit, pt, pb);
 
+            TaskBeliefIs.add(pres, true, struct.bit, pt, pb);
         }
 
         if (!checkedTask && !checkedBelief) {
-            throw new TODO();
-//            //non-exact filter
-//            boolean inTask = (taskPattern.equals(x) || taskPattern.containsRecursively(x));
-//            boolean inBelief = (beliefPattern.equals(x) || beliefPattern.containsRecursively(x));
-//            if (inTask || inBelief) {
-//                pres.add(new TaskBeliefHasOrHasnt(true, struct, inTask, inBelief));
-//            }
-//
-//
-//            constraints.add(new OpIs(x, struct));
+            //non-exact filter
+            boolean inTask = (taskPattern.equals(x) || taskPattern.containsRecursively(x));
+            boolean inBelief = (beliefPattern.equals(x) || beliefPattern.containsRecursively(x));
+            if (inTask)
+                pres.addAll(TaskBeliefHas.get(true, struct.bit, true));
+            if (inBelief)
+                pres.addAll(TaskBeliefHas.get(false, struct.bit, true));
+
+
+            constraints.add(new OpIs(x, struct));
         }
     }
 
@@ -777,10 +781,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * the task-term pattern
      */
     public final Term getTask() {
-        return build().sub(0);
+        return task().sub(0);
     }
 
-    public Compound build() {
+    public Compound task() {
         return (Compound) ref.sub(0);
     }
 
@@ -792,31 +796,30 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * the belief-term pattern
      */
     public final Term getBelief() {
-        return build().sub(1);
+        return task().sub(1);
     }
 
     /**
      * compiles the conditions which are necessary to activate this rule
      */
-    public Pair<PrediTerm<Derivation>[], PrediTerm<Derivation>> build(PostCondition post) {
-
-
-
+    public Pair<PrediTerm<Derivation>[], PremiseDeriverCompiler.DeriveAction> build() {
 
         int n = 1 + this.constraints.size() + this.post.size();
 
 
-        PrediTerm[] suff = new PrediTerm[n];
+        PrediTerm[] post = new PrediTerm[n];
         int k = 0;
-        suff[k++] = this.truthify;
+        post[k++] = this.truthify;
         for (PrediTerm p : this.constraints) {
-            suff[k++] = p;
+            post[k++] = p;
         }
         for (PrediTerm p : this.post) {
-            suff[k++] = p;
+            post[k++] = p;
         }
 
-        return pair(PRE, AndCondition.<PrediTerm<Derivation>>the(suff));
+        PremiseDeriverCompiler.DeriveAction POST = PremiseDeriverCompiler.DeriveAction.the(AndCondition.<PrediTerm<Derivation>>the(post));
+
+        return pair(PRE, POST);
     }
 
     /**
@@ -824,7 +827,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      * derivation inputs are batched for input by another method
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
-    public static class RuleCause extends Cause {
+    public static class RuleCause extends Cause implements IntToFloatFunction {
         public final PremiseDeriverSource rule;
         public final String ruleString;
 
@@ -837,6 +840,11 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         @Override
         public String toString() {
             return $.pFast(rule.ref, $.the(id)).toString();
+        }
+
+        /** throttle */
+        @Override public float valueOf(int intParameter) {
+            return amp();
         }
     }
 

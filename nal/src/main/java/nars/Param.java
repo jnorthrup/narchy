@@ -94,11 +94,11 @@ public abstract class Param {
             
 
     public static final PriMerge termlinkMerge =
-            
             PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
+            //PriMerge.plus;
             
 
     /**
@@ -116,7 +116,9 @@ public abstract class Param {
      */
     public static final FloatToFloatFunction TaskToDerivation = (t) -> t;
 
-    public static final PriMerge taskMerge = PriMerge.max;
+    public static final PriMerge taskMerge =
+            PriMerge.max;
+            //PriMerge.plus;
 
 
     /**

@@ -19,28 +19,28 @@ import static nars.Op.VAR_PATTERN;
 public final class TaskBeliefHas extends AbstractPred<PreDerivation> {
 
     /** higher number means a stucture with more enabled bits will be decomposed to its components */
-    public static final int SPLIT_THRESHOLD = 4;
+    public static final int SPLIT_THRESHOLD = 3;
 
     public final boolean taskOrBelief;
-    public final int structure;
+    public final int struct;
     private final boolean inclOrExclude;
 
-    public static List<TaskBeliefHas> get(boolean taskOrBelief, int bits, boolean inclOrExcl) {
+    public static List<TaskBeliefHas> get(boolean taskOrBelief, int struct, boolean inclOrExcl) {
 
         
-        bits &= ~VAR_PATTERN.bit;
+        struct &= ~VAR_PATTERN.bit;
 
-        int numBits = Integer.bitCount(bits);
+        int numBits = Integer.bitCount(struct);
         assert (numBits > 0);
         if ((numBits == 1) || (numBits > SPLIT_THRESHOLD)) {
-            return Collections.singletonList(new TaskBeliefHas(taskOrBelief, bits, inclOrExcl));
+            return Collections.singletonList(new TaskBeliefHas(taskOrBelief, struct, inclOrExcl));
         } else {
             List<TaskBeliefHas> components = $.newArrayList(numBits);
             for (Op o : Op.values()) {
 
 
                 int b = o.bit;
-                if ((bits & b) != 0) { 
+                if ((struct & b) != 0) {
                     components.add(new TaskBeliefHas(taskOrBelief, b, inclOrExcl));
                 }
             }
@@ -50,17 +50,17 @@ public final class TaskBeliefHas extends AbstractPred<PreDerivation> {
 
     final static Atomic has = Atomic.the("has");
 
-    private TaskBeliefHas(boolean taskOrBelief, int structure, boolean includeOrExclude) {
-        super($.func(has,
-                taskOrBelief ? Derivation.Task : Derivation.Belief,
-                Op.strucTerm(structure)).negIf(!includeOrExclude)
+    private TaskBeliefHas(boolean taskOrBelief, int struct, boolean includeOrExclude) {
+        super($.func(has, Op.strucTerm(struct),
+                taskOrBelief ? Derivation.Task : Derivation.Belief
+                ).negIf(!includeOrExclude)
         );
 
         this.inclOrExclude = includeOrExclude;
-        this.structure = structure;
+        this.struct = struct;
         this.taskOrBelief = taskOrBelief;
 
-        assert(this.structure > 0): "no filter effected";
+        assert(this.struct > 0): "no filter effected";
     }
 
     @Override
@@ -68,30 +68,45 @@ public final class TaskBeliefHas extends AbstractPred<PreDerivation> {
         boolean subsumed = false;
         for (PrediTerm x : p) {
             if (x==this) continue;
+            if (x instanceof SubtermIs) {
+                //the path subterm op test is more specific, so remove this if it covers this
+                SubtermIs t = (SubtermIs) x;
+                byte[] target = taskOrBelief ? t.pathInTask : t.pathInBelief;
+                if (target != null) {
+                    subsumed |= testSubsumption(t.isOrIsnt, t.struct);
+                }
+            }
+
             if (x instanceof TaskBeliefIs) {
-                //is is more specific than has, so subsume if redundant
+                //is is more specific than has, so remove this if it covers this
 
                 TaskBeliefIs t = (TaskBeliefIs)x;
                 if (((taskOrBelief && t.task) || (!taskOrBelief && t.belief))) {
-                    if (t.isOrIsNot == inclOrExclude) {
-                        if (!subsumed && (t.isOrIsNot) &&((t.structure | structure) == t.structure)){
-                            subsumed = true;
-                        }
-                    } else {
-                        if ((t.structure & structure) != 0)
-                            throw new RuntimeException("conflict: " + t + " " + this);
-                    }
+                    subsumed |= testSubsumption(t.isOrIsnt, t.struct);
                 }
             }
         }
         return !subsumed;
     }
 
+    public boolean testSubsumption(boolean isOrIsnt, int otherStruct) {
+        boolean subsumed = false;
+        if (isOrIsnt == inclOrExclude) {
+            if ((otherStruct | struct) == otherStruct) {
+                subsumed = true;
+            }
+        } else {
+            if ((otherStruct & struct) != 0)
+                throw new RuntimeException("conflict");
+        }
+        return subsumed;
+    }
+
     @Override
     public final boolean test(PreDerivation d) {
         return inclOrExclude == Op.hasAll(
                 taskOrBelief ? d._taskStruct : d._beliefStruct,
-                structure);
+                struct);
     }
 
 

@@ -467,7 +467,7 @@ public class Derivation extends PreDerivation {
 
         deriver.prioritize.premise(this);
 
-        deriver.rules.can.test(this);
+        deriver.rules.test(this);
 
 
     }

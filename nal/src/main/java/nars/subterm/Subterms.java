@@ -595,13 +595,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return true;
             } else {
                 if (y0c && y0inX) {
-                    xx.remove(y0);
+                    if (xx.remove(y0))
+                        if (xx.isEmpty())
+                            throw new TODO();
                     //re: java.util.NoSuchElementException
                     //if xx.isempty then return y0.equals(y1) //removed both so must match unified both
                     return xx.first().unify(y1, u);
                 }
                 if (y1c && y1inX) {
-                    xx.remove(y1);
+                    if (xx.remove(y1))
+                        if (xx.isEmpty())
+                            throw new TODO();
                     return xx.first().unify(y0, u);
                 }
 

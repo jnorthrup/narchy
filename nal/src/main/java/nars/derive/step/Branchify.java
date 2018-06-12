@@ -17,7 +17,8 @@ public class Branchify extends AbstractPred<Derivation> {
 
     private static final Atomic CAN = Atomic.the("can");
 
-    public Branchify(int id, RoaringBitmap can) {
+
+    public Branchify(RoaringBitmap can) {
         super($.func(CAN, $.sete(can)));
         this.can = can;
     }

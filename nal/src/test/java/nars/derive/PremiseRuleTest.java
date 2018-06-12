@@ -206,28 +206,31 @@ public class PremiseRuleTest {
     public void testOpIsPreFilter() {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "X,Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
-        assertTrue( d.what.toString().contains("opIs(\"*\",task)"));
+        String s = d.what.toString();
+        assertTrue( s.contains("is(\"*\",task)"), ()->s);
     }
 
     @Test
     public void testOpIsPreFilterSubPath() {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
-        assertTrue( d.what.toString().contains("opIs(\"*\",task,(1))"));
+        String s = d.what.toString();
+        assertTrue( s.contains("has(\"*\",task,(1))"), ()->s);
+        assertEquals("((\".\"-->task),DoublePremise(\".\",(),()),is(\"*\",task),has(\"*\",task,(1)),can({0}))", s.toString());
     }
     @Test
     public void testOpIsPreFilterSubPathNot() {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((Z),X),Y, --is(X,\"{\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("(--,opIs(\"{\",task,(1)))"));
+        assertTrue( s.contains("(--,has(\"{\",task,(1)))"), ()->s);
     }
     @Test
     public void testOpIsPreFilterSubPathRepeatIsOKButChooseShortestPath() {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((X),X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("opIs(\"*\",task,(1))")); //and not: (0,0)
+        assertTrue( s.contains("has(\"*\",task,(1))"), ()->s); //and not: (0,0)
     }
 
     @Test

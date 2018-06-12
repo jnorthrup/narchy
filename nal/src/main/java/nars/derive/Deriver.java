@@ -1,6 +1,5 @@
 package nars.derive;
 
-import jcog.Util;
 import jcog.bag.Bag;
 import jcog.pri.PriReference;
 import nars.$;
@@ -8,7 +7,6 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
-import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -17,7 +15,6 @@ import nars.derive.premise.PremiseDeriverRuleSet;
 import nars.exe.Causable;
 import nars.link.TaskLink;
 import nars.link.Tasklinks;
-import nars.link.TermlinkTemplates;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -132,12 +129,7 @@ abstract public class Deriver extends Causable {
     }
 
     protected Concept[] templates(Concept concept, NAR nar) {
-        TermlinkTemplates t = concept.templates();
-
-        Concept[] templates = t.concepts(nar, true);
-        
-
-        return templates;
+        return concept.templates().concepts(nar, true);
     }
 
 
@@ -150,7 +142,10 @@ abstract public class Deriver extends Causable {
 
     @Override
     public float value() {
-        return Util.sum(Cause::value, rules.causes());
+        //TODO cache this between cycles
+        //return Util.sum(Cause::value, rules.causes());
+
+        return 0;
     }
 
 

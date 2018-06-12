@@ -1,5 +1,6 @@
 package nars.unify.op;
 
+import jcog.TODO;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
@@ -14,24 +15,24 @@ import java.util.Collection;
  * Created by me on 5/19/17.
  */
 public final class TaskBeliefIs extends AbstractPred<Derivation> {
-    public final int structure;
+    public final int struct;
     public final boolean task;
     public final boolean belief;
-    public final boolean isOrIsNot;
+    public final boolean isOrIsnt;
 
     public TaskBeliefIs(Op op, boolean testTask, boolean testBelief) {
         this(op.bit, testTask, testBelief, true);
     }
 
-    final static private Atomic OP = Atomic.the("is");
+    final static private Atomic is = Atomic.the("is");
 
 
 
-    public TaskBeliefIs(int structure, boolean testTask, boolean testBelief, boolean isOrIsNot) {
-        super($.func(OP, Op.strucTerm(structure), testTask ? Derivation.Task : Op.EmptyProduct, testBelief ? Derivation.Belief : Op.EmptyProduct)
-                .negIf(!isOrIsNot));
-        this.isOrIsNot = isOrIsNot;
-        this.structure = structure;
+    public TaskBeliefIs(int struct, boolean testTask, boolean testBelief, boolean isOrIsnt) {
+        super($.func(is, Op.strucTerm(struct), testTask ? Derivation.Task : Derivation.Belief).negIf(!isOrIsnt));
+        if (testTask == testBelief) throw new TODO("easy to impl");
+        this.isOrIsnt = isOrIsnt;
+        this.struct = struct;
         this.task = testTask;
         this.belief = testBelief;
     }
@@ -42,17 +43,10 @@ public final class TaskBeliefIs extends AbstractPred<Derivation> {
     }
 
     @Override
-    public boolean test(Derivation derivation) {
-
-        return (!task || (isOrIsNot ?
-                        (((1<<derivation._taskOp) & structure) > 0) :
-                        (((1<<derivation._taskOp) & structure) == 0)))
+    public boolean test(Derivation d) {
+        return (!task || (isOrIsnt == (((1 << d._taskOp) & struct) != 0)))
                &&
-               (!belief || (isOrIsNot ?
-                       (((1<<derivation._beliefOp) & structure) > 0) :
-                       (((1<<derivation._beliefOp) & structure) == 0)));
-
-
+               (!belief || (isOrIsnt == (((1 << d._beliefOp) & struct) != 0)));
     }
 
     public static void add(Collection<PrediTerm> pres, boolean isOrIsnt, int struct, byte[] pt, byte[] pb) {
@@ -65,11 +59,13 @@ public final class TaskBeliefIs extends AbstractPred<Derivation> {
     }
 
     static PrediTerm<Derivation> add(boolean isOrIsnt, int struct, boolean taskOrBelief, byte[] path) {
-        if (path.length > 0) {
-            return new PathStructure(isOrIsnt, struct,
-                    taskOrBelief ? path : null, taskOrBelief ? null : path);
-        } else {
+        if (path.length == 0) {
+            //root
             return new TaskBeliefIs(struct, taskOrBelief, !taskOrBelief, isOrIsnt);
+        } else {
+            //subterm
+            return new SubtermIs(isOrIsnt, struct,
+                    taskOrBelief ? path : null, taskOrBelief ? null : path);
         }
     }
 

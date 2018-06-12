@@ -133,8 +133,9 @@ public class Premise {
 
             beliefTerm = beliefTerm.unneg();
 
-            if (beliefTerm instanceof Bool)
+            if (beliefTerm instanceof Bool) {
                 throw new RuntimeException("beliefTerm boolean; termLink=" + termLink + ", belief=" + belief);
+            }
         }
 
         return d.reset(task, belief, beliefTerm);

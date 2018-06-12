@@ -771,7 +771,7 @@ public interface Compound extends Term, IPair, Subterms {
             if (term2 == null)
                 return Null;
 
-            assert (term2.op() == op);
+            assert (term2.op() == op): term2 + " not a normal normalization of " + term;
 
 
 

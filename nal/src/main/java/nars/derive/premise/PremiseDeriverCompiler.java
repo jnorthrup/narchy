@@ -4,9 +4,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import jcog.tree.perfect.TrieNode;
 import nars.Op;
-import nars.control.Cause;
 import nars.derive.Derivation;
-import nars.derive.control.ValueFork;
 import nars.derive.step.Branchify;
 import nars.derive.step.Taskify;
 import nars.term.control.AndCondition;
@@ -22,15 +20,12 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -42,8 +37,6 @@ public enum PremiseDeriverCompiler {
             (int choice) -> 1f;
 
 
-    private static final float[] ONE_CHOICE = new float[]{Float.NaN};
-
     public static PremiseDeriver the(Set<PremiseDeriverProto> r) {
         return the(r, null);
     }
@@ -54,123 +47,55 @@ public enum PremiseDeriverCompiler {
         /** indexed by local (deriver-specific) id */
         int rules = r.size();
 
-        List<PrediTerm<Derivation>> conclusions = new FasterList<>(rules);
 
         /** map preconditions to conclusions by local conclusion id.
          * the key is an array with a null placeholder at the end to be completed later in this stage
          * */
-        final List<Pair<PrediTerm<Derivation>[], RoaringBitmap>> pairs = new FasterList<>(rules);
+        final List<Pair<PrediTerm<Derivation>[], DeriveAction>> pairs = new FasterList<>(rules);
 
         ///** local conclusion id requiring this precondition */
         //Map<PrediTerm<Derivation>, RoaringBitmap> reach = new HashMap<>(r.size());
 
 
-        r.forEach(rule -> {
+        r.forEach(rule -> pairs.add(rule.build()));
 
-            assert (rule.POST != null) : "null POSTconditions:" + rule;
-
-            Pair<PrediTerm<Derivation>[], PrediTerm<Derivation>> c = rule.build(rule.POST);
-
-            int id = conclusions.size();
-            boolean unique = conclusions.add(compileBranch(c.getTwo()));
-            assert(unique);
-
-//            c.getOne().forEach(k -> {
-//                reach.computeIfAbsent(k, x -> new RoaringBitmap()).add(id);
-//            });
-
-            RoaringBitmap b = new RoaringBitmap();
-            b.add(id);
-            pairs.add(Tuples.pair(c.getOne(), b));
-        });
-
-        final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path = new TermTrie<>();
-        final FasterList<ValueFork> postChoices = new FasterList(rules);
+        final TermTrie<PrediTerm<Derivation>, ThrottledAction<Derivation>> path = new TermTrie<>();
 
 
-        pairs.forEach((pair) -> {
+        ThrottledAction<Derivation>[] rootBranches = new ThrottledAction[rules];
+
+        for (int i = 0; i < rules; i++) {
+            Pair<PrediTerm<Derivation>[], DeriveAction> pair = pairs.get(i);
+
+            ThrottledAction<Derivation> POST = pair.getTwo();
 
 
-            RoaringBitmap v = pair.getTwo();
-            PrediTerm<Derivation>[] branches = StreamSupport.stream(v.spliterator(), false)
-                    .map(conclusions::get).toArray(PrediTerm[]::new);
-            assert (branches.length > 0);
-
-
-            Cause[] causes = Util.map(c -> c.channel, Cause[]::new, Util.map(b -> (Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
-                    AndCondition.last(b)
-            ).eachMatch), Taskify[]::new, branches));
-
-
-            IntToFloatFunction throttle =
-                    i -> causes[i].amp();
-
-
-            ValueFork f;
-            if (branches.length > 1) {
-                f = new ValueFork(branches, causes,
-
-
-                        d -> Util.map(causes.length, throttle, new float[causes.length]),
-
-
-                        (d, choice) -> {
-                            branches[choice].test(d);
-                        }
-                );
-            } else {
-
-                f = new ValueFork(branches, causes, d -> ONE_CHOICE, (d, theOneChoice) -> {
-                    branches[0].test(d);
-                });
-            }
+//            Cause[] causes = Util.map(c -> c.channel, Cause[]::new, Util.map(b -> (Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
+//                    AndCondition.last(b)
+//            ).eachMatch), Taskify[]::new, branches));
 
 
             PrediTerm<Derivation>[] pre = pair.getOne();
+
+            RoaringBitmap idR = new RoaringBitmap();
+            idR.add(i);
+
             assert (pre[pre.length - 1] == null); //null placeholder left for this
-            pre[pre.length - 1] = new Branchify(/* branch ID */ postChoices.size(), v);
+            pre[pre.length - 1] = new Branchify(/* branch ID */  idR);
 
-            PrediTerm added = path.put(new FasterList(pre), f);
-            assert(added==null);
+            ThrottledAction added = path.put(new FasterList(pre), POST);
+            assert (added == null);
 
-            postChoices.add(f);
-
-        });
+            rootBranches[i] = POST;
+        }
 
         assert (!path.isEmpty());
 
 
         PrediTerm<Derivation> compiledPaths = PremiseDeriverCompiler.compile(path, each);
 
-        ValueFork[] rootBranches = postChoices.toArrayRecycled(ValueFork[]::new);
 
-
-        IntToFloatFunction branchThrottle = branch ->
-                Util.sum(
-
-                        Cause::amp,
-                        rootBranches[branch].causes
-                );
-
-        return new PremiseDeriver(compiledPaths,
-                new ValueFork(rootBranches,
-                        Stream.of(rootBranches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new),
-
-
-                        d -> {
-                            short[] will = d.will;
-                            int n = will.length;
-                            if (n == 1)
-                                return ONE_CHOICE;
-                            else
-                                return Util.map(n, choice -> branchThrottle.valueOf(will[choice]), new float[n]);
-                        },
-
-
-                        (d, choice) ->
-                                rootBranches[d.will[choice]].test(d)
-
-                ));
+        return new PremiseDeriver(rootBranches, compiledPaths);
     }
 
 
@@ -266,7 +191,7 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
+    static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, ThrottledAction<Derivation>> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
         Collection<PrediTerm<Derivation>> bb = compile(trie.root);
 
         PrediTerm<Derivation> tf = Fork.fork(bb, (f) -> new Fork(f));
@@ -278,7 +203,7 @@ public enum PremiseDeriverCompiler {
 
 
     @Nullable
-    static Set<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, PrediTerm<Derivation>> node) {
+    static Set<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, ThrottledAction<Derivation>> node) {
 
 
         Set<PrediTerm<Derivation>> bb = new HashSet();
@@ -294,7 +219,7 @@ public enum PremiseDeriverCompiler {
                     n.seq().subList(nStart, nEnd),
                     //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
                     branches != null /* && !branches.isEmpty() */ ?
-                            factorFork(branches, (f)->new Fork(f))
+                            factorFork(branches, (f) -> new Fork(f))
                             : null
             );
 
@@ -305,7 +230,7 @@ public enum PremiseDeriverCompiler {
         if (bb.isEmpty())
             return null;
         else {
-            return compileSwitch(bb, 3);
+            return compileSwitch(bb, 2);
             //return bb;
         }
     }
@@ -380,7 +305,7 @@ public enum PremiseDeriverCompiler {
                 return false;
             });
             if (!r.isEmpty()) {
-                Branchify bb = new Branchify(-1, r);
+                Branchify bb = new Branchify(r);
                 if (x.isEmpty()) {
                     return bb;
                 } else {
@@ -413,7 +338,7 @@ public enum PremiseDeriverCompiler {
                     ac.forEach(x -> {
                         if (x instanceof TaskBeliefIs) {
                             TaskBeliefIs so = (TaskBeliefIs) x;
-                            if (so.isOrIsNot && so.task == taskOrBelief && so.belief == !taskOrBelief) {
+                            if (so.isOrIsnt && so.task == taskOrBelief && so.belief == !taskOrBelief) {
                                 PrediTerm acw = ac.without(so);
                                 if (null == cases.putIfAbsent(so, acw)) {
                                     removed.add(p);
@@ -434,7 +359,7 @@ public enum PremiseDeriverCompiler {
 
                 EnumMap<Op, PrediTerm<Derivation>> caseMap = new EnumMap(Op.class);
                 cases.forEach((c, p) -> {
-                    int cs = c.structure;
+                    int cs = c.struct;
                     Op[] opVals = Op.values();
                     for (int i = 0; i < opVals.length; i++) {
                         if ((cs & (1 << i)) != 0)
@@ -498,6 +423,32 @@ public enum PremiseDeriverCompiler {
     }
 
 
+    protected static class DeriveAction extends ThrottledAction<Derivation> {
+
+        private final PrediTerm<Derivation> POST;
+
+        private DeriveAction(PremiseDeriverProto.RuleCause cause, @Deprecated PrediTerm<Derivation> POST) {
+            super(cause);
+
+            this.POST = POST;
+        }
+
+        static DeriveAction the(PrediTerm<Derivation> rawPost) {
+            PrediTerm<Derivation> POST = compileBranch(rawPost);
+            PremiseDeriverProto.RuleCause cause = ((Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
+                    AndCondition.last(POST)
+            ).eachMatch)).channel;
+            return new DeriveAction(cause, POST);
+        }
+
+        @Override
+        public boolean test(Derivation d, float power) {
+            //d.use(power) //d's own powerToTTL function, temporarily subtract TTL for the fork
+            POST.test(d);
+            //return the remaining TTL change or quit
+            return false;
+        }
+    }
 }
 
 

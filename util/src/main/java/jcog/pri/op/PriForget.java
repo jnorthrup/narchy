@@ -2,7 +2,7 @@ package jcog.pri.op;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.pri.Prioritized;
+import jcog.pri.Pri;
 import jcog.pri.Priority;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -18,7 +18,7 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
 
     
-    public final float priMult;
+    final float priMult;
 
     public PriForget(float priRemovedPct) {
         this.priMult = Util.unitize(1f - priRemovedPct);
@@ -38,23 +38,16 @@ public class PriForget<P extends Priority> implements Consumer<P> {
      * @return the update function to apply to a bag
      */
     @Nullable
-    public static Consumer forget(int s, int c, float pressure, float mass, float temperature, float priEpsilon, FloatToObjectFunction<Consumer> f) {
+    public static Consumer forget(int s, int cap, float pressure, float mass, float temperature, float priEpsilon, FloatToObjectFunction<Consumer> f) {
 
-        if ((s > 0) && (pressure > 0) && (c > 0) && (mass > 0) && temperature > 0) {
+        if ((s > 0) && (pressure > 0) && (cap > 0) && (mass > 0) && temperature > 0) {
 
             float eachMustForgetPct =
                     temperature * 
-                    pressure / (pressure + mass) 
-                    
-                    
+                        Math.min(1f, pressure / (pressure + mass))
             ;
 
-
-
-
-
-
-            if (eachMustForgetPct > Prioritized.EPSILON) {
+            if (eachMustForgetPct > cap * Pri.EPSILON) {
                 return f.valueOf(eachMustForgetPct);
             }
 
@@ -78,24 +71,7 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     @Override
     public void accept(P b) {
 
-        
-        
-
-        b.priMult(priMult);
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
+        b.priMult(priMult, Pri.EPSILON);
 
     }
 
