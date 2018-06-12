@@ -21,37 +21,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class NARTest {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Test @Disabled
+    @Test
+    @Disabled
     public void testMemoryTransplant() throws Narsese.NarseseException {
 
-        
-        NAR nar = NARS.tmp();
-        
 
-        
+        NAR nar = NARS.tmp();
+
 
         nar.input("<a-->b>.", "<b-->c>.").run(25);
 
@@ -64,50 +40,45 @@ public class NARTest {
         assertTrue((nc = nar.concepts.size()) > 0);
 
 
-        
-        
-        
         NAR nar2 = NARS.tmp();
 
         assertTrue(nar.time() > 1);
 
-        
+
         assertEquals(nc, nar2.concepts.size());
 
 
     }
 
-
     @Test
     public void testFluentBasics() throws Exception {
         int frames = 32;
         AtomicInteger cycCount = new AtomicInteger(0);
-        StringWriter sw = new StringWriter( );
+        StringWriter sw = new StringWriter();
 
         NAR m = NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
                 .stopIf(() -> false);
-                m.onCycle(nn -> cycCount.incrementAndGet() );
-                m.trace(sw).run(frames);
+        m.onCycle(nn -> cycCount.incrementAndGet());
+        m.trace(sw).run(frames);
 
         NAR n = NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")
                 .stopIf(() -> false);
-                n.onCycle(nn -> cycCount.incrementAndGet());
-                n.trace(sw);
-                
+        n.onCycle(nn -> cycCount.incrementAndGet());
+        n.trace(sw);
+
         ;
 
-        
+
         assertTrue(sw.toString().length() > 16);
         assertEquals(frames, cycCount.get());
 
 
     }
 
-
-
-    @Test public void testBeforeNextFrameOnlyOnce() {
+    @Test
+    public void testBeforeNextFrameOnlyOnce() {
         AtomicInteger b = new AtomicInteger(0);
         NAR n = NARS.shell();
 
@@ -116,20 +87,6 @@ public class NARTest {
         assertEquals(1, b.get());
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Test
     public void testConceptInstancing() throws Narsese.NarseseException {
@@ -163,7 +120,8 @@ public class NARTest {
 
     }
 
-    @Test public void testCycleScheduling() {
+    @Test
+    public void testCycleScheduling() {
         NAR n = NARS.tmp();
 
         final int[] runs = {0};
@@ -176,10 +134,12 @@ public class NARTest {
             });
         }
 
-        n.run(1); assertEquals(0, runs[0]); /* nothing yet in that 1st cycle */
+        n.run(1);
+        assertEquals(0, runs[0]); /* nothing yet in that 1st cycle */
 
 
-        n.run((int)Longs.max(events) ); assertEquals(events.length, runs[0]);
+        n.run((int) Longs.max(events));
+        assertEquals(events.length, runs[0]);
     }
 
 }

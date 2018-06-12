@@ -2,6 +2,7 @@ package jcog.tree.radix;
 
 import jcog.data.byt.AbstractBytes;
 import jcog.data.byt.ArrayBytes;
+import jcog.data.byt.ProxyBytes;
 import jcog.list.FasterList;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.tuple.Pair;
@@ -97,19 +98,19 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     static public ByteArrayNodeDefault inner(AbstractBytes in, Object value, FasterList<Node> outs) {
         if (outs.size() > 1)
             Collections.sort(outs, NODE_COMPARATOR);
-        return new ByteArrayNodeDefault(in.array(), value, outs);
+        return new ByteArrayNodeDefault(in, value, outs);
     }
 
     static public ByteArrayNodeNonLeafVoidValue innerVoid(AbstractBytes in, FasterList<Node> outs) {
         if (outs.size() > 1)
             Collections.sort(outs, NODE_COMPARATOR);
-        return new ByteArrayNodeNonLeafVoidValue(in.array(), outs);
+        return new ByteArrayNodeNonLeafVoidValue(in, outs);
     }
 
     static public ByteArrayNodeNonLeafNullValue innerNull(AbstractBytes in, FasterList<Node> outs) {
         if (outs.size() > 1)
             Collections.sort(outs, NODE_COMPARATOR);
-        return new ByteArrayNodeNonLeafNullValue(in.array(), outs);
+        return new ByteArrayNodeNonLeafNullValue(in, outs);
     }
 
     final static Comparator<? super Prefixed> NODE_COMPARATOR = Comparator.comparingInt(Prefixed::getIncomingEdgeFirstCharacter);
@@ -177,7 +178,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     static final class ByteArrayNodeDefault extends NonLeafNode {
         private final Object value;
 
-        public ByteArrayNodeDefault(byte[] edgeCharSequence, Object value, FasterList<Node> outgoingEdges) {
+        public ByteArrayNodeDefault(AbstractBytes edgeCharSequence, Object value, FasterList<Node> outgoingEdges) {
             super(edgeCharSequence, outgoingEdges);
             this.value = value;
         }
@@ -189,11 +190,11 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
     }
 
-    static class ByteArrayNodeLeafVoidValue extends ArrayBytes implements Node {
+    static class ByteArrayNodeLeafVoidValue extends ProxyBytes implements Node {
         
 
         public ByteArrayNodeLeafVoidValue(AbstractBytes edgeCharSequence) {
-            super(edgeCharSequence.array());
+            super(edgeCharSequence);
             
         }
 
@@ -204,12 +205,12 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
         @Override
         public final byte getIncomingEdgeFirstCharacter() {
-            return this.bytes[0];
+            return this.at(0);
         }
 
         @Override
         public Object getValue() {
-            return VoidValue.SINGLETON;
+            return VoidValue.the;
         }
 
         @Override
@@ -228,35 +229,30 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Node{");
-            sb.append("edge=").append(this.getIncomingEdge());
-            sb.append(", value=").append(VoidValue.SINGLETON);
-            sb.append(", edges=[]");
-            sb.append("}");
-            return sb.toString();
+            return new StringBuilder().append(ref)
+                    /*.append('=').append(VoidValue.the)*/.toString();
         }
     }
 
 
     abstract static class NonLeafNode extends FasterList /*CopyOnWriteArrayList*/<Node> implements Node {
-        public final byte[] incomingEdgeCharArray;
+        public final AbstractBytes incomingEdgeCharArray;
         
         
 
-        protected NonLeafNode(@NotNull byte[] incomingEdgeCharArray, @NotNull FasterList<Node> outs) {
+        protected NonLeafNode(AbstractBytes incomingEdgeCharArray, FasterList<Node> outs) {
             super(outs.size(), outs.array());
             this.incomingEdgeCharArray = incomingEdgeCharArray;
         }
 
-        @NotNull @Override
+        @Override
         public AbstractBytes getIncomingEdge() {
-            return new ArrayBytes(this.incomingEdgeCharArray);
+            return this.incomingEdgeCharArray;
         }
 
         @Override
         public byte getIncomingEdgeFirstCharacter() {
-            return this.incomingEdgeCharArray[0];
+            return this.incomingEdgeCharArray.at(0);
         }
 
         @Nullable @Override
@@ -272,7 +268,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
 
         @Override
-        public final void updateOutgoingEdge(@NotNull Node childNode) {
+        public final void updateOutgoingEdge(Node childNode) {
             
             
 
@@ -290,18 +286,13 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Node{");
-            sb.append("edge=").append(this.getIncomingEdge());
-            sb.append(", value=" + getValue());
-            sb.append("}");
-            return sb.toString();
+            return new StringBuilder().append(this.getIncomingEdge()).append('=').append(getValue()).toString();
         }
     }
 
     static final class ByteArrayNodeNonLeafNullValue extends NonLeafNode {
 
-        protected ByteArrayNodeNonLeafNullValue(byte[] incomingEdgeCharArray, FasterList<Node> outgoingEdges) {
+        protected ByteArrayNodeNonLeafNullValue(AbstractBytes incomingEdgeCharArray, FasterList<Node> outgoingEdges) {
             super(incomingEdgeCharArray, outgoingEdges);
         }
 
@@ -339,13 +330,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Node{");
-            sb.append("edge=").append(new String(this.bytes));
-            sb.append(", value=").append(this.value);
-            sb.append(", edges=[]");
-            sb.append("}");
-            return sb.toString();
+            return new StringBuilder().append(ref).append('=').append(this.value).toString();
         }
     }
 
@@ -361,26 +346,21 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append("Node{");
-            sb.append("edge=").append(this.getIncomingEdge());
-            sb.append(", value=null");
-            sb.append(", edges=[]");
-            sb.append("}");
-            return sb.toString();
+            return new StringBuilder().append(ref)
+                    .append("=null").toString();
         }
     }
 
     static final class ByteArrayNodeNonLeafVoidValue extends NonLeafNode {
 
 
-        public ByteArrayNodeNonLeafVoidValue(byte[] edgeCharSequence, FasterList<Node> outgoingEdges) {
+        public ByteArrayNodeNonLeafVoidValue(AbstractBytes edgeCharSequence, FasterList<Node> outgoingEdges) {
             super(edgeCharSequence, outgoingEdges);
         }
 
         @Override
         public Object getValue() {
-            return VoidValue.SINGLETON;
+            return VoidValue.the;
         }
 
     }
@@ -428,12 +408,22 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         clear();
     }
 
-    private final static FasterList<Node> emptyList = new FasterList(0, new Node[] {});
+    private final static FasterList<Node> emptyList = new FasterList<>(0, new Node[] {}) {
+        @Override
+        public boolean add(Node newItem) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int size() {
+            return 0;
+        }
+    };
 
     public void clear() {
         acquireWriteLock();
         try {
-            this.root = createNode(AbstractBytes.EMPTY, null, emptyList, true);
+            this.root = createNode(AbstractBytes.EMPTY, VoidValue.the, emptyList, true);
         } finally {
             releaseWriteLock();
         }
@@ -496,8 +486,12 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         );
     }
 
-    @NotNull
-    public final X putIfAbsent(@NotNull AbstractBytes key, @NotNull Supplier<X> newValue) {
+
+    public final X putIfAbsent(byte[] key, Supplier<X> newValue) {
+        return putIfAbsent(new ArrayBytes(key), newValue);
+    }
+
+    public final X putIfAbsent(AbstractBytes key, Supplier<X> newValue) {
         return compute(key, newValue, (k, r, existing, v) ->
                 existing != null ? existing : v.get()
         );
@@ -611,7 +605,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     /**
      * {@inheritDoc}
      */
-    public boolean remove(@NotNull AbstractBytes key) {
+    public boolean remove(AbstractBytes key) {
         acquireWriteLock();
         try {
             SearchResult searchResult = searchTree(key);
@@ -621,7 +615,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         }
     }
 
-    public boolean remove(@NotNull SearchResult searchResult, boolean recurse) {
+    public boolean remove(SearchResult searchResult, boolean recurse) {
         acquireWriteLock();
         try {
             return removeHavingAcquiredWriteLock(searchResult, recurse);
@@ -646,7 +640,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                 Node parent = searchResult.parentNode;
 
                 Object v = found.getValue();
-                if (!recurse && ((v == null) || (v == VoidValue.SINGLETON))) {
+                if (!recurse && ((v == null) || (v == VoidValue.the))) {
                     
                     
                     return false;
@@ -654,7 +648,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
                 List<X> reinsertions = new FasterList<>(0);
 
-                if (v != null && v != VoidValue.SINGLETON) {
+                if (v != null && v != VoidValue.the) {
                     X xv = (X) v;
                     boolean removed = tryRemove(xv);
                     if (!recurse) {
@@ -1017,7 +1011,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     }
 
     public static boolean aValue(Object v) {
-        return (v != null) && v != VoidValue.SINGLETON;
+        return (v != null) && v != VoidValue.the;
     }
 
     
@@ -1036,7 +1030,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     }
 
     @NotNull
-    public SearchResult random(@NotNull SearchResult at, float descendProb, Random rng) {
+    public SearchResult random(SearchResult at, float descendProb, Random rng) {
         Node current, parent, parentParent;
         
         current = at.found;
@@ -1087,7 +1081,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
      * @param overwrite If true, should replace any existing value, if false should not replace any existing value
      * @return The existing value for this key, if there was one, otherwise null
      */
-    <V> X compute(@NotNull AbstractBytes key, V value, QuadFunction<AbstractBytes, SearchResult, X, V, X> computeFunc) {
+    <V> X compute(AbstractBytes key, V value, QuadFunction<AbstractBytes, SearchResult, X, V, X> computeFunc) {
 
 
 
@@ -1110,7 +1104,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
             found = result.found;
             matched = result.charsMatched;
             foundValue = found != null ? found.getValue() : null;
-            foundX = ((matched == key.length()) && (foundValue != VoidValue.SINGLETON)) ? ((X) foundValue) : null;
+            foundX = ((matched == key.length()) && (foundValue != VoidValue.the)) ? ((X) foundValue) : null;
         } finally {
             releaseReadLockIfNecessary();
         }
@@ -1128,7 +1122,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
                     found = result.found;
                     matched = result.charsMatched;
                     foundValue = found != null ? found.getValue() : null;
-                    foundX = ((matched == key.length()) && (foundValue != VoidValue.SINGLETON)) ? ((X) foundValue) : null;
+                    foundX = ((matched == key.length()) && (foundValue != VoidValue.the)) ? ((X) foundValue) : null;
                     if (foundX == newValue)
                         return newValue; 
                 }
@@ -1661,8 +1655,8 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
 
 
     public String prettyPrint() {
-        StringBuilder sb = new StringBuilder();
-        prettyPrint(root, sb, "", true, true);
+        StringBuilder sb = new StringBuilder(4096);
+        prettyPrint(root.getOutgoingEdges().size() == 1 ? root.getOutgoingEdges().get(0) : root, sb, "", true, true);
         return sb.toString();
     }
 
@@ -1674,16 +1668,16 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
         try {
             StringBuilder ioException = new StringBuilder();
             if (isRoot) {
-                ioException.append("○");
+                ioException.append('○');
                 if (node.getIncomingEdge().length() > 0) {
-                    ioException.append(" ");
+                    ioException.append(' ');
                 }
             }
 
             ioException.append(node.getIncomingEdge());
-            if (node.getValue() != null) {
-                ioException.append(" (").append(node.getValue()).append(")");
-            }
+//            if (node.getValue() != null) {
+//                ioException.append(" (").append(node.getValue()).append(")");
+//            }
 
             sb.append(prefix).append(isTail ? (isRoot ? "" : "└── ○ ") : "├── ○ ").append(ioException).append("\n");
             List children = node.getOutgoingEdges();

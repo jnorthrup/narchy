@@ -21,11 +21,11 @@ public class VoidValue {
 
     @Override
     public String toString() {
-        return "-";
+        return "";
     }
 
-    VoidValue() {
+    private VoidValue() {
     }
 
-    public static final VoidValue SINGLETON = new VoidValue();
+    public static final VoidValue the = new VoidValue();
 }

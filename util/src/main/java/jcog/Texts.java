@@ -4,7 +4,7 @@ import com.google.common.escape.Escapers;
 import org.HdrHistogram.AbstractHistogram;
 import org.HdrHistogram.DoubleHistogram;
 
-import java.io.PrintStream;
+import java.io.IOException;
 import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -178,41 +178,14 @@ public enum Texts {
 
     static final ThreadLocal<Format> oneDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0"));
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     static final ThreadLocal<Format> threeDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.000"));
     static final ThreadLocal<Format> fourDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.0000"));
 
-    
-
 
     @Deprecated
     static final ThreadLocal<DecimalFormat> twoDecimal = ThreadLocal.withInitial(() -> new DecimalFormat("0.00"));
+    static final Escapers.Builder quoteEscaper = Escapers.builder().addEscape('\"', "\\\"");
 
     /**
      * @author http:
@@ -272,14 +245,6 @@ public enum Texts {
         return fourDecimal.get().format(x);
     }
 
-
-
-
-
-
-
-
-
     public static long hundredths(float d) {
         return (long) ((d * 100.0f + 0.5f));
     }
@@ -290,14 +255,14 @@ public enum Texts {
 
     public static String n2(float x) {
         if (x != x)
-            return "NaN"; 
+            return "NaN";
 
         if ((x < 0) || (x > 1.0f))
             return twoDecimal.get().format(x);
 
         int hundredths = (int) hundredths(x);
         switch (hundredths) {
-            
+
             case 100:
                 return "1.0";
             case 99:
@@ -322,16 +287,14 @@ public enum Texts {
         }
     }
 
-    
-
     /**
      * 1 character representing a 1 decimal of a value between 0..1.0;
-     * representation; 0..9 
+     * representation; 0..9
      */
     public static char n1char(float x) {
         int i = tens(x);
         if (i >= 10)
-            i = 9; 
+            i = 9;
         return (char) ('0' + i);
     }
 
@@ -366,7 +329,6 @@ public enum Texts {
     public static String n2(double p) {
         return n2((float) p);
     }
-
 
     /**
      * character to a digit, or -1 if it wasnt a digit
@@ -442,9 +404,9 @@ public enum Texts {
                 return i3(s, ifMissing);
             default:
 
-                
+
                 for (int i = 0; i < s.length(); i++)
-                    if (i(s.charAt(i)) == -1) 
+                    if (i(s.charAt(i)) == -1)
                         return ifMissing;
 
 
@@ -452,7 +414,7 @@ public enum Texts {
                     return Integer.parseInt(s);
                 } catch (NumberFormatException e) {
                     return ifMissing;
-                    
+
                 }
         }
     }
@@ -627,7 +589,7 @@ public enum Texts {
         int s = v.length;
         for (int i = 0; i < s; i++) {
             sb.append(n4(v[i]));
-            if (i != s - 1) sb.append('\t'); 
+            if (i != s - 1) sb.append('\t');
         }
         return sb.toString();
     }
@@ -644,32 +606,6 @@ public enum Texts {
         return sb.toString();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * Return formatted Date String: yyyy.MM.dd HH:mm:ss
      * Based on Unix's time() input in seconds
@@ -684,7 +620,6 @@ public enum Texts {
         return formatter.format(date);
     }
 
-
     /**
      * string repr of an amount of nanoseconds
      * from: https:
@@ -693,7 +628,7 @@ public enum Texts {
         if (ns < 1000) return n4(ns) + "ns";
         if (ns < 1_000_000) return n4(ns / 1_000d) + "us";
         if (ns < 1_000_000_000) return n4(ns / 1_000_000d) + "ms";
-        
+
         if (ns < 1_000_000_000_000d) return n2(ns / 1_000_000_000d) + "s";
         long sec = Math.round(ns / 1_000_000_000d);
         if (sec < 5 * 60) return (sec / 60) + "m" + (sec % 60) + 's';
@@ -722,7 +657,7 @@ public enum Texts {
 
         if (s.length() == 1) {
             char c = s.charAt(0);
-            if (c < 0xff) { 
+            if (c < 0xff) {
                 byte[] bb = new byte[n];
                 Arrays.fill(bb, (byte) c);
                 return new String(bb);
@@ -750,7 +685,7 @@ public enum Texts {
     }
 
     public static void histogramDecode(AbstractHistogram h, String header, int linearStep, BiConsumer<String, Object> x) {
-        int digits = (int) (1 + Math.log10(h.getMaxValue())); 
+        int digits = (int) (1 + Math.log10(h.getMaxValue()));
         h.linearBucketValues(linearStep).forEach((p) -> {
             x.accept(header + " [" +
                             iPad(p.getValueIteratedFrom(), digits) + ".." + iPad(p.getValueIteratedTo(), digits) + ']',
@@ -775,14 +710,35 @@ public enum Texts {
         });
     }
 
-    public static void histogramPrint(AbstractHistogram h, PrintStream out) {
-        out.println("mean=" + h.getMean() + ", min=" + h.getMinValue() + ", max=" + h.getMaxValue() + ", stdev=" + h.getStdDeviation());
-        histogramDecode(h, "", (label, value) -> {
-            out.println(label + " " + value);
-        });
+    public static String histogramString(AbstractHistogram h, boolean percentiles) {
+        StringBuilder sb = new StringBuilder(256);
+        histogramPrint(h, percentiles, sb);
+        return sb.toString();
     }
 
-    static final Escapers.Builder quoteEscaper = Escapers.builder().addEscape('\"', "\\\"");
+    public static void histogramPrint(AbstractHistogram h, Appendable out) {
+        histogramPrint(h, true, out);
+    }
+
+    public static void histogramPrint(AbstractHistogram h, boolean percentiles, Appendable out) {
+        try {
+            out.append("{n=" + h.getTotalCount() + " avg=" + n4(h.getMean()) + ", min=" + n4(h.getMinValue()) + ", max=" + n4(h.getMaxValue()) + ", stdev=" + n4(h.getStdDeviation()) + '}');
+            if (percentiles) {
+                out.append('\n');
+            }
+        } catch (IOException e) {
+            throw new WTF(e);
+        }
+        if (percentiles) {
+            histogramDecode(h, "", (label, value) -> {
+                try {
+                    out.append(label + " " + value + "\n");
+                } catch (IOException e) {
+                    throw new WTF(e);
+                }
+            });
+        }
+    }
 
     public static String quote(String s) {
         int length = s.length();
@@ -794,7 +750,7 @@ public enum Texts {
             if (length == 1) {
                 s = "\"\\\"\"";
             } else {
-                
+
             }
         } else {
             s = ("\"" + quoteEscaper.build().escape(s) + '"');

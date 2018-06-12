@@ -1,7 +1,6 @@
 package nars.op.java;
 
 import com.google.common.collect.Sets;
-import com.google.common.primitives.Primitives;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
@@ -640,7 +639,7 @@ public class Opjects extends DefaultTermizer {
                     types = Collections.emptyList();
                 } else {
                     instanceAndArgs = object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
-                    types = typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
+                    types = Util.typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
                 }
 
 
@@ -773,7 +772,7 @@ public class Opjects extends DefaultTermizer {
                             classLoadingStrategy
                     )
                     .getLoaded();
-            T instWrapped = (T) cl.getConstructor(typesOfArray(args)).newInstance(args);
+            T instWrapped = (T) cl.getConstructor(Util.typesOfArray(args)).newInstance(args);
 
             register(id, instWrapped);
 
@@ -870,7 +869,7 @@ public class Opjects extends DefaultTermizer {
 
 
         try {
-            T inst = (T) ccc.getConstructor(typesOfArray(args)).newInstance(args);
+            T inst = (T) ccc.getConstructor(Util.typesOfArray(args)).newInstance(args);
             return register(id, inst);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -991,26 +990,6 @@ public class Opjects extends DefaultTermizer {
         if (!Modifier.isPublic(mm))
             return false;
         return !Modifier.isStatic(mm);
-    }
-
-
-
-
-    public Class[] typesOfArray(Object[] orgs) {
-        return typesOfArray(orgs, 0, orgs.length);
-    }
-
-    public Class[] typesOfArray(Object[] orgs, int from, int to) {
-        if (orgs.length == 0)
-            return ArrayUtils.EMPTY_CLASS_ARRAY;
-        else {
-            return Util.map(x -> Primitives.unwrap(x.getClass()),
-                    new Class[to-from], 0, orgs, from, to);
-        }
-    }
-
-    protected FasterList<Class<?>> typesOf(Object[] orgs, int from, int to) {
-        return new FasterList<>(typesOfArray(orgs, from, to));
     }
 
 

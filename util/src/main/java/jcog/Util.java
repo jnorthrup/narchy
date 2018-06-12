@@ -13,7 +13,9 @@ import com.google.common.io.CharStreams;
 import com.google.common.io.Closeables;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Longs;
+import com.google.common.primitives.Primitives;
 import jcog.io.BinTxt;
+import jcog.list.FasterList;
 import jcog.math.NumberException;
 import jcog.math.OneDHaar;
 import org.apache.commons.lang3.ArrayUtils;
@@ -2518,5 +2520,22 @@ public enum Util {
             t[i] = array[i];
         }
         return t;
+    }
+
+    public static Class[] typesOfArray(Object[] orgs) {
+        return typesOfArray(orgs, 0, orgs.length);
+    }
+
+    public static Class[] typesOfArray(Object[] orgs, int from, int to) {
+        if (orgs.length == 0)
+            return ArrayUtils.EMPTY_CLASS_ARRAY;
+        else {
+            return map(x -> Primitives.unwrap(x.getClass()),
+                    new Class[to-from], 0, orgs, from, to);
+        }
+    }
+
+    public static FasterList<Class<?>> typesOf(Object[] orgs, int from, int to) {
+        return new FasterList<>(typesOfArray(orgs, from, to));
     }
 }

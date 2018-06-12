@@ -8,6 +8,7 @@ import org.iq80.snappy.Snappy;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.BufferUnderflowException;
 import java.util.Arrays;
 
 /**
@@ -118,7 +119,14 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     @Override
     public final int length() {
         return len;
+    }
 
+    public DynBytes rewind(int num) {
+        if (num > 0) {
+            len -= num;
+            if (len < 0) throw new BufferUnderflowException();
+        }
+        return this;
     }
 
     @Override
@@ -134,7 +142,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         if (start == 0 && end == length())
             return this; 
 
-        return new WindowBytes(bytes, start, end);
+        return new ArrayBytes(bytes, start, end); //not window since this is mutable
     }
 
     @Override
@@ -197,6 +205,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     public final byte[] array() {
         compact();
         return bytes;
+    }
+
+
+    public final byte[] arrayClone() {
+        return array().clone();
     }
 
     public byte[] compact() {

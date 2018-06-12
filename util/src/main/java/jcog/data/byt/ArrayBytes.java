@@ -1,6 +1,7 @@
 package jcog.data.byt;
 
 import jcog.Util;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -14,6 +15,10 @@ public class ArrayBytes implements AbstractBytes, Serializable, Comparable<Array
 
     public ArrayBytes(byte... bytes) {
         this.bytes = bytes;
+    }
+
+    public ArrayBytes(byte[] bytes, int start, int end) {
+        this(ArrayUtils.subarray(bytes, start, end));
     }
 
     @Override
@@ -58,7 +63,7 @@ public class ArrayBytes implements AbstractBytes, Serializable, Comparable<Array
         if (start == 0 && end == length())
             return this; 
 
-        return new WindowBytes(bytes, start, end);
+        return new WindowBytes(this, start, end);
     }
 
     public String toString() {

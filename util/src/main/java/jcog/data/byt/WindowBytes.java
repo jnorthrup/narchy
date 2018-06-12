@@ -9,6 +9,10 @@ public class WindowBytes extends ArrayBytes /*implements CharSequence*/ {
     final int start;
     final int end;
 
+    protected WindowBytes(ArrayBytes a, int start, int end) {
+        this(a.bytes, start, end);
+    }
+
     protected WindowBytes(byte[] bytes, int start, int end) {
         super(bytes);
         if (start < 0) {
@@ -55,7 +59,7 @@ public class WindowBytes extends ArrayBytes /*implements CharSequence*/ {
         } else if (end < start) {
             throw new IllegalArgumentException("end " + end + " < start " + start);
         } else {
-            return new WindowBytes(this.bytes, this.start + start, this.start + end);
+            return new WindowBytes(this, this.start + start, this.start + end);
         }
     }
 

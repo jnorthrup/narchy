@@ -5,6 +5,11 @@ public interface AbstractBytes {
     AbstractBytes EMPTY = new AbstractBytes() {
 
         @Override
+        public String toString() {
+            return "";
+        }
+
+        @Override
         public boolean equals(Object obj) {
             return this == obj || ((AbstractBytes)obj).length() == 0;
         }
