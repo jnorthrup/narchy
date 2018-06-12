@@ -802,12 +802,12 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
     /**
      * compiles the conditions which are necessary to activate this rule
      */
-    public Pair<PrediTerm<Derivation>[], PremiseDeriverCompiler.DeriveAction> build() {
+    public Pair<PrediTerm<Derivation>[], DeriveAction> build() {
 
         int n = 1 + this.constraints.size() + this.post.size();
 
 
-        PrediTerm[] post = new PrediTerm[n];
+        PrediTerm<Derivation>[] post = new PrediTerm[n];
         int k = 0;
         post[k++] = this.truthify;
         for (PrediTerm p : this.constraints) {
@@ -817,7 +817,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             post[k++] = p;
         }
 
-        PremiseDeriverCompiler.DeriveAction POST = PremiseDeriverCompiler.DeriveAction.the(AndCondition.<PrediTerm<Derivation>>the(post));
+        DeriveAction POST =
+                DeriveAction.action((AndCondition<Derivation>)AndCondition.the(post));
 
         return pair(PRE, POST);
     }

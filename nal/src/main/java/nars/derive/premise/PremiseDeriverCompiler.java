@@ -6,12 +6,10 @@ import jcog.tree.perfect.TrieNode;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.step.Branchify;
-import nars.derive.step.Taskify;
 import nars.term.control.AndCondition;
 import nars.term.control.Fork;
 import nars.term.control.OpSwitch;
 import nars.term.control.PrediTerm;
-import nars.unify.constraint.MatchConstraint;
 import nars.unify.op.TaskBeliefIs;
 import nars.unify.op.UnifyTerm;
 import nars.util.term.TermTrie;
@@ -59,15 +57,15 @@ public enum PremiseDeriverCompiler {
 
         r.forEach(rule -> pairs.add(rule.build()));
 
-        final TermTrie<PrediTerm<Derivation>, ThrottledAction<Derivation>> path = new TermTrie<>();
+        final TermTrie<PrediTerm<Derivation>, DeriveAction> path = new TermTrie<>();
 
 
-        ThrottledAction<Derivation>[] rootBranches = new ThrottledAction[rules];
+        DeriveAction[] rootBranches = new DeriveAction[rules];
 
         for (int i = 0; i < rules; i++) {
             Pair<PrediTerm<Derivation>[], DeriveAction> pair = pairs.get(i);
 
-            ThrottledAction<Derivation> POST = pair.getTwo();
+            DeriveAction POST = pair.getTwo();
 
 
 //            Cause[] causes = Util.map(c -> c.channel, Cause[]::new, Util.map(b -> (Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
@@ -98,17 +96,6 @@ public enum PremiseDeriverCompiler {
         return new PremiseDeriver(rootBranches, compiledPaths);
     }
 
-
-    static PrediTerm compileBranch(PrediTerm<Derivation> branch) {
-        return branch instanceof AndCondition ?
-                ((AndCondition) branch).transform(y -> y instanceof AndCondition ?
-                                MatchConstraint.combineConstraints((AndCondition) y)
-                                :
-                                y
-                        , null)
-                :
-                branch;
-    }
 
     public static void print(Object p, PrintStream out, int indent) {
 
@@ -146,6 +133,8 @@ public enum PremiseDeriverCompiler {
             TermTrie.indent(indent);
             out.println("}");
         } */ else if (p instanceof Fork) {
+
+            //TODO 
             out.println(Util.className(p) + " {");
             Fork ac = (Fork) p;
             for (PrediTerm b : ac.branch) {
@@ -191,7 +180,7 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, ThrottledAction<Derivation>> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
+    static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, DeriveAction> trie, Function<PrediTerm<Derivation>, @Nullable PrediTerm<Derivation>> each) {
         Collection<PrediTerm<Derivation>> bb = compile(trie.root);
 
         PrediTerm<Derivation> tf = Fork.fork(bb, (f) -> new Fork(f));
@@ -203,7 +192,7 @@ public enum PremiseDeriverCompiler {
 
 
     @Nullable
-    static Set<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, ThrottledAction<Derivation>> node) {
+    static Set<PrediTerm<Derivation>> compile(TrieNode<List<PrediTerm<Derivation>>, DeriveAction> node) {
 
 
         Set<PrediTerm<Derivation>> bb = new HashSet();
@@ -423,32 +412,6 @@ public enum PremiseDeriverCompiler {
     }
 
 
-    protected static class DeriveAction extends ThrottledAction<Derivation> {
-
-        private final PrediTerm<Derivation> POST;
-
-        private DeriveAction(PremiseDeriverProto.RuleCause cause, @Deprecated PrediTerm<Derivation> POST) {
-            super(cause);
-
-            this.POST = POST;
-        }
-
-        static DeriveAction the(PrediTerm<Derivation> rawPost) {
-            PrediTerm<Derivation> POST = compileBranch(rawPost);
-            PremiseDeriverProto.RuleCause cause = ((Taskify) AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
-                    AndCondition.last(POST)
-            ).eachMatch)).channel;
-            return new DeriveAction(cause, POST);
-        }
-
-        @Override
-        public boolean test(Derivation d, float power) {
-            //d.use(power) //d's own powerToTTL function, temporarily subtract TTL for the fork
-            POST.test(d);
-            //return the remaining TTL change or quit
-            return false;
-        }
-    }
 }
 
 

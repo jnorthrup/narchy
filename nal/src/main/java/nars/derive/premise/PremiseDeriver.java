@@ -43,11 +43,13 @@ public class PremiseDeriver implements Predicate<Derivation> {
      * choice id to branch mapping function
      */
     private final ObjectIntProcedure<Derivation> branchChoice;
-    private final ThrottledAction<Derivation>[] can;
+
+    /** repertoire */
+    private final DeriveAction[] can;
 
     private static final float[] ONE_CHOICE = new float[]{Float.NaN};
 
-    public PremiseDeriver(ThrottledAction<Derivation>[] actions, PrediTerm<Derivation> what) {
+    public PremiseDeriver(DeriveAction[] actions, PrediTerm<Derivation> what) {
 
         this.what = what;
         this.can = actions;

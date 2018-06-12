@@ -12,7 +12,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 
-public final class AndCondition<D> extends AbstractPred<D> {
+public class AndCondition<D> extends AbstractPred<D> {
 
     /*@Stable*/
     public final PrediTerm[] cond;
@@ -27,7 +27,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
         return true;
     }
 
-    AndCondition(PrediTerm<D>[] p) {
+    protected AndCondition(PrediTerm<D>[] p) {
         super($.pFast( p));
         assert (p.length >= 2) : "unnecessary use of AndCondition";
         this.cond = p;
