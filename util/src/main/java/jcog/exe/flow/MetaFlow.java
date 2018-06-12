@@ -34,11 +34,15 @@ public class MetaFlow {
     final Random rng = new XoRoShiRo128PlusRandom(1);
 
     public void good(float value, Object... args) {
-        value(cursor().reset(2).append(args).arrayClone(), GOOD.id, value);
+        value(cursor().reset(2).append(args).arrayCopy(), GOOD.id, value);
     }
     public void bad(float value, Object... args) {
-        value(cursor().reset(2).append(args).arrayClone(), BAD.id, value);
+        value(cursor().reset(2).append(args).arrayCopy(), BAD.id, value);
     }
+
+//    public void value(String quality, float value, Object[] args) {
+//        value(cursor().reset().arrayCopy(), quality(quality).id, value);
+//    }
 
     public MetaFlow forkWhile(BooleanSupplier kontinue, Runnable... options) {
         while (kontinue.getAsBoolean()) {
@@ -75,9 +79,6 @@ public class MetaFlow {
     }
 
 
-    public void value(String quality, float value, Object[] args) {
-        value(cursor().reset().arrayClone(), quality(quality).id, value);
-    }
 
     final int digitResolution = 3;
     final float ditherScale = (float) Math.pow(10, digitResolution);

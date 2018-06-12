@@ -342,7 +342,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
     default String structureString() {
         return String.format("%16s",
-                Integer.toBinaryString(structure()))
+                Op.strucTerm(structure()))
                 .replace(" ", "0");
     }
 
@@ -393,7 +393,12 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
                 x -> !x.impossibleSubTerm(target),
                 receiver);
     }
-
+    default boolean pathsTo(Term target, Predicate<Term> superTermFilter, BiPredicate<ByteList, Term> receiver) {
+        return pathsTo(
+                x -> target.equals(x) ? x : null,
+                x -> superTermFilter.test(x) && !x.impossibleSubTerm(target),
+                receiver);
+    }
     /**
      * operator extended:
      * operator << 8 | sub-operator type rank for determing compareTo ordering

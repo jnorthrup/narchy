@@ -567,10 +567,13 @@ public enum $ {
         return Atomic.the(new String(string));
     }
 
-    public static Term p(byte[] array) {
+    public static Term p(@Nullable byte[] array) {
+        if (array == null) return Op.EmptySet;
         return p(Util.bytesToInts(array));
     }
-    public static Term pFast(byte[] array) {
+
+    public static Term pFast(@Nullable byte[] array) {
+        if (array == null) return Op.EmptySet;
         return pFast(Util.bytesToInts(array));
     }
 

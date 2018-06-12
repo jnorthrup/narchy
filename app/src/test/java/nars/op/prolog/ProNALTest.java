@@ -5,8 +5,8 @@ import alice.tuprolog.Theory;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Op;
 import nars.concept.Operator;
+import nars.term.Functor;
 import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ public class ProNALTest {
         
         Set<String> answers = new TreeSet();
         for (nars.term.Term xx : PrologToNAL.N(t)) {
-            if (Op.functor(xx, (xt)->xt.equals(PrologToNAL.QUESTION_GOAL) ? xt : null)!=null) {
+            if (Functor.ifFunc(xx, (xt)->xt.equals(PrologToNAL.QUESTION_GOAL) ? xt : null)!=null) {
                 Term qTerm = Operator.args(xx).sub(0).normalize();
                 
                 n.question(qTerm, ETERNAL,(q, a) -> {

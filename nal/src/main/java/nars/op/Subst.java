@@ -18,7 +18,7 @@ import static nars.Op.Null;
 public class Subst extends Functor implements Functor.InlineFunctor {
 
     
-    final static Term STRICT = Atomic.the("strict");
+    public final static Term STRICT = Atomic.the("strict");
 
 
     public static final Subst replace = new Subst("replace");

@@ -10,6 +10,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.unify.Unify;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
@@ -270,6 +271,25 @@ public enum Terms {
 
     public static boolean commonStructureTest(Termlike x, Termlike y, Unify u) {
         return u.varSymmetric || hasAllExcept(x, y, u.typeBits());
+    }
+
+    /** finds the shortest deterministic subterm path for extracting a subterm in a compound.
+     *  paths in subterms of commutive terms are excluded also because the
+     *  position is undeterministic. */
+    @Nullable public static byte[] extractor(Term container, Term subterm) {
+        final byte[][] p = new byte[1][];
+        container.pathsTo(subterm,
+
+            (superterm) -> !superterm.op().commutative,
+
+            (path, xx) -> {
+                if (p[0] == null || p[0].length > path.size()) {
+                    //found first or shorter
+                    p[0] = path.isEmpty() ? ArrayUtils.EMPTY_BYTE_ARRAY : path.toArray();
+                }
+                return true; //continue
+        });
+        return p[0];
     }
 }
 

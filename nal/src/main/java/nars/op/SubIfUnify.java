@@ -9,6 +9,7 @@ import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -73,11 +74,12 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
 
     final static Term INDEP_VAR = $.quote("$");
     final static Term DEP_VAR = $.quote("#");
+    public static final Atom SubIfUnify = (Atom) Atomic.the("subIfUnifiesAny");
 
     private final Derivation parent;
 
     public SubIfUnify(Derivation parent) {
-        super((Atom)$.the("subIfUnifiesAny"));
+        super(SubIfUnify);
         this.parent = parent;
     }
 

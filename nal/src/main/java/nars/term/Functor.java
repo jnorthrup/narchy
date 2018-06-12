@@ -8,6 +8,7 @@ import nars.Op;
 import nars.The;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
+import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptBuilder;
 import nars.link.TermlinkTemplates;
@@ -16,6 +17,8 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.control.AbstractPred;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,6 +43,36 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
 
     protected Functor(@NotNull Atom atom) {
         super(atom, ConceptBuilder.Null);
+    }
+
+    public static Term funcName(Term operation) {
+        return (operation.hasAll(Op.FuncBits) && operation.op()==INH && operation.sub(0).op()==PROD ) ? operation.sub(1) : Op.Null;
+    }
+
+    public static Term[] funcArgsArray(Term x) {
+        return Operator.args(x).arrayShared();
+    }
+
+    /**
+     * decode a term which may be a functor, return null if it isnt
+     */
+    @Nullable
+    public static <X> Pair<X, Term> ifFunc(Term maybeOperation, Function<Term, X> invokes) {
+        if (maybeOperation.hasAll(Op.FuncBits)) {
+            Term c = maybeOperation;
+            if (c.op() == INH) {
+                Term s0 = c.sub(0);
+                if (s0.op() == PROD) {
+                    Term s1 = c.sub(1);
+                    if (s1 instanceof Atomic /*&& s1.op() == ATOM*/) {
+                        X i = invokes.apply(s1);
+                        if (i != null)
+                            return Tuples.pair(i, s0);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override

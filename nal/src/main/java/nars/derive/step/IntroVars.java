@@ -1,9 +1,9 @@
 package nars.derive.step;
 
-import nars.$;
 import nars.derive.Derivation;
 import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -12,10 +12,8 @@ import java.util.Map;
 
 public final class IntroVars extends AbstractPred<Derivation> {
 
-    public static final Term VAR_INTRO = $.the("varIntro");
-
     public IntroVars() {
-        super(VAR_INTRO);
+        super(Atomic.the("varIntro"));
     }
 
     @Override

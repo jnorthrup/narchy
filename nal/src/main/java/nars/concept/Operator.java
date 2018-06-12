@@ -70,10 +70,6 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         return operation.sub(0).subterms();
     }
 
-    public static Term func(Term operation) {
-        return (operation.hasAll(Op.FuncBits) && operation.op()==INH && operation.sub(0).op()==PROD ) ? operation.sub(1) : Op.Null;
-    }
-
     public static Task error(Task x, Throwable error, long when) {
         
         
@@ -99,17 +95,6 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
     public static Term arg(Term operation, int sub) {
         return operation.sub(0).subterms().sub(sub);
     }
-
-    public static Term[] argsArray(Term x) {
-        return args(x).arrayShared();
-    }
-
-
-
-
-
-
-
 
 
 }

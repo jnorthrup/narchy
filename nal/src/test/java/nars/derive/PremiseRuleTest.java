@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by me on 7/7/15.
@@ -149,7 +150,7 @@ public class PremiseRuleTest {
     public void testDoubleOnlyTruthAddsRequiresDoubleBelief() {
 
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
-                "X,Y |- (X&&Y), (Belief:Intersection)"), null);
+                "X,Y |- (X&&Y), (Belief:Intersection)"));
 
         d.printRecursive();
         assertEquals("((\".\"-->task),DoublePremise(\".\",(),()),can({0}))", d.what.toString());
@@ -158,7 +159,7 @@ public class PremiseRuleTest {
     public void testDoubleOnlyTruthAddsRequiresDoubleGoal() {
 
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
-                "X,Y |- (X&&Y), (Goal:Intersection)"), null);
+                "X,Y |- (X&&Y), (Goal:Intersection)"));
 
         d.printRecursive();
         assertEquals("((\"!\"-->task),DoublePremise((),\"!\",()),can({0}))", d.what.toString());
@@ -167,7 +168,7 @@ public class PremiseRuleTest {
     public void testDoubleOnlyTruthAddsRequiresDoubleBeliefOrGoal() {
 
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
-                "X,Y |- (X&&Y), (Belief:Intersection,Goal:Intersection)"), null);
+                "X,Y |- (X&&Y), (Belief:Intersection,Goal:Intersection)"));
 
         d.printRecursive();
         assertEquals("((\".!\"-->task),DoublePremise(\".\",(),()),DoublePremise((),\"!\",()),can({0}))", d.what.toString());
@@ -176,7 +177,7 @@ public class PremiseRuleTest {
     public void testDoubleOnlyTruthAddsRequiresDoubleQuestionOverride() {
 
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
-                "X,Y,task(\"?\") |- (X&&Y), (Punctuation:Belief,Belief:Intersection)"), null);
+                "X,Y,task(\"?\") |- (X&&Y), (Punctuation:Belief,Belief:Intersection)"));
 
         d.printRecursive();
         assertEquals("(DoublePremise((),(),\"?@\"),(\"?\"-->task),can({0}))", d.what.toString());
@@ -191,6 +192,51 @@ public class PremiseRuleTest {
         assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
     }
 
+    @Test
+    public void testSubIfUnifyPrefilter() {
+
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "X,Y |- subIfUnifiesAny(what,X,Y), (Belief:Intersection)"));
+
+        d.printRecursive();
+        assertTrue(d.what.toString().contains("unifyPreFilter(")); //TODO this and other cases
+    }
+
+    @Test
+    public void testOpIsPreFilter() {
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "X,Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
+        assertTrue( d.what.toString().contains("opIs(\"*\",task)"));
+    }
+
+    @Test
+    public void testOpIsPreFilterSubPath() {
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
+        assertTrue( d.what.toString().contains("opIs(\"*\",task,(1))"));
+    }
+    @Test
+    public void testOpIsPreFilterSubPathNot() {
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "((Z),X),Y, --is(X,\"{\") |- (X,Y), (Belief:Intersection)"));
+        String s = d.what.toString();
+        assertTrue( s.contains("(--,opIs(\"{\",task,(1)))"));
+    }
+    @Test
+    public void testOpIsPreFilterSubPathRepeatIsOKButChooseShortestPath() {
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "((X),X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
+        String s = d.what.toString();
+        assertTrue( s.contains("opIs(\"*\",task,(1))")); //and not: (0,0)
+    }
+
+    @Test
+    public void testOpIsCantPreFilterCommutive() {
+        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
+                "{Z,X},Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
+        assertTrue( !d.what.toString().contains("opIs("));
+        //TODO test that constraint was added in conclusion
+    }
 
     @Test
     public void testTryFork() {

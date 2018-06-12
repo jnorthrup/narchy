@@ -208,7 +208,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     }
 
 
-    public final byte[] arrayClone() {
+    public final byte[] arrayCopy() {
         return array().clone();
     }
 

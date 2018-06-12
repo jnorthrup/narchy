@@ -920,7 +920,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         if (cmd || (isGoal() && !isEternal())) {
 
 
-            Pair<Operator, Term> o = Op.functor(y, (i) -> {
+            Pair<Operator, Term> o = Functor.ifFunc(y, (i) -> {
                 Concept operation = n.concept(i);
                 return operation instanceof Operator ? (Operator) operation : null;
             });

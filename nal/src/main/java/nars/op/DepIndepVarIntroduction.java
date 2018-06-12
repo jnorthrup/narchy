@@ -5,6 +5,7 @@ import nars.$;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Terms;
+import nars.term.Variable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
@@ -33,12 +34,14 @@ public class DepIndepVarIntroduction extends VarIntroduction {
      */
     private static final ToIntFunction<Term> depIndepFilter = t -> {
         if (t.op().var) return 0;
+
         return t.hasAny(
                 Op.VAR_INDEP.bit
-
-
         ) ? 0 : 1;
     };
+
+    private static final Variable MyIntroducedVarIndep = $.varIndep("X");
+    private static final Variable MyIntroducedVarDep = $.varDep("Y");
 
     private static boolean validDepVarSuperterm(Op o) {
         return /*o.statement ||*/ o == CONJ;
@@ -66,19 +69,16 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     @Override
     protected Term introduce(Term input, Term selected, byte order) {
 
-        if (selected == Imdex || selected == imInt || selected == imExt)
-            return null;
-
         Op inOp = input.op();
-        List<ByteList> paths = new FasterList(1);
+        List<ByteList> paths = new FasterList<>(4);
         int minPathLength = inOp.statement ? 2 : 0;
         input.pathsTo(selected, (path, t) -> {
             if (path.size() >= minPathLength)
                 paths.add(path.toImmutable());
             return true;
         });
-        int pSize = paths.size();
 
+        int pSize = paths.size();
         if (pSize <= 1)
             return null;
 
@@ -100,7 +100,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         }
 
 
-        ObjectByteHashMap<Term> m = new ObjectByteHashMap<>(0);
+        ObjectByteHashMap<Term> m = new ObjectByteHashMap<>(4);
         for (int path = 0; path < pSize; path++) {
             ByteList p = paths.get(path);
             Term t = null;
@@ -111,7 +111,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
                 if (!depOrIndep && validIndepVarSuperterm(o)) {
                     byte inside = (byte) (1 << p.get(i + 1));
-                    m.updateValue(t, inside, (previous) -> (byte) ((previous) | inside));
+                    m.updateValue(t, inside, (previous) -> (byte) (previous | inside));
                 } else if (depOrIndep && validDepVarSuperterm(o)) {
                     m.addToValue(t, (byte) 1);
                 }
@@ -119,16 +119,13 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         }
 
 
-        if (!depOrIndep) {
-
-            return (m.anySatisfy(b -> b == 0b11)) ?
-                    $.v(VAR_INDEP, order) /*varIndep(order)*/ : null;
-
-        } else {
-
-            return m.anySatisfy(b -> b >= 2) ?
-                    $.v(VAR_DEP, order)  /* $.varDep(order) */ : null;
-        }
+        return (!depOrIndep) ?
+            ((m.anySatisfy(b -> b == 0b11)) ?
+                MyIntroducedVarIndep /*varIndep(order)*/ : null)
+                        :
+            (m.anySatisfy(b -> b >= 2) ?
+                MyIntroducedVarDep  /* $.varDep(order) */ : null)
+        ;
 
     }
 

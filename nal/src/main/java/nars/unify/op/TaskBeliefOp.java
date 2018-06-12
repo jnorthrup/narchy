@@ -28,7 +28,7 @@ public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
 
     final static private Atomic OP = Atomic.the("op");
     final static private Atomic OpIs = Atomic.the("opIs");
-    final static private Atomic OpIsNot = Atomic.the("opIsNot");
+
 
     public TaskBeliefOp(int structure, boolean testTask, boolean testBelief, boolean isOrIsNot) {
         super($.func(OP, $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)).negIf(!isOrIsNot));
@@ -86,11 +86,12 @@ public final class TaskBeliefOp extends AbstractPred<PreDerivation> {
         private final boolean isOrIsnt;
 
         private OpInTaskOrBeliefIsOrIsnt(boolean isOrIsnt, int struct, byte[] pathInTask, byte[] pathInBelief) {
-            super($.func(isOrIsnt ? OpIs : OpIsNot,
-                    $.the(struct),
-                    pathInTask != null ? $.inhFast($.pFast(pathInTask), Derivation.Task) : Op.EmptyProduct,
-                    pathInBelief != null ? $.inhFast($.pFast(pathInBelief), Derivation.Belief) : Op.EmptyProduct
-            ));
+            super($.func(OpIs,
+                    Op.strucTerm(struct),
+                    pathInBelief == null ? Derivation.Task : Derivation.Belief,
+                    $.pFast(pathInBelief == null ? pathInTask : pathInBelief)
+            ).negIf(!isOrIsnt));
+            assert(pathInBelief==null ^ pathInTask==null): "only one should be used the other remain null"; //HACK
             this.isOrIsnt = isOrIsnt;
             this.struct = struct;
             this.pathInTask = pathInTask;

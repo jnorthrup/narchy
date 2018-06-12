@@ -26,20 +26,18 @@ import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.TermBuilder;
 import nars.util.term.builder.InterningTermBuilder;
+import org.apache.lucene.util.MathUtil;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Arrays.copyOfRange;
@@ -482,38 +480,6 @@ public enum Op {
         }
     };
     /**
-     * tautological absolute true
-     */
-    public static final Bool True = new Bool(String.valueOf(Op.TrueSym)) {
-
-        final int rankBoolTrue = Term.opX(BOOL, (short) 2);
-
-        @Override
-        public final int opX() {
-            return rankBoolTrue;
-        }
-
-        @Override
-        public Term neg() {
-            return False;
-        }
-
-        @Override
-        public boolean equalsNeg(Term t) {
-            return t == False;
-        }
-
-        @Override
-        public boolean equalsNegRoot(Term t) {
-            return t == False;
-        }
-
-        @Override
-        public Term unneg() {
-            return True;
-        }
-    };
-    /**
      * tautological absolute false
      */
     public static final Bool False = new Bool(String.valueOf(Op.FalseSym)) {
@@ -538,6 +504,38 @@ public enum Op {
         @Override
         public Term neg() {
             return True;
+        }
+
+        @Override
+        public Term unneg() {
+            return True;
+        }
+    };
+    /**
+     * tautological absolute true
+     */
+    public static final Bool True = new Bool(String.valueOf(Op.TrueSym)) {
+
+        final int rankBoolTrue = Term.opX(BOOL, (short) 2);
+
+        @Override
+        public final int opX() {
+            return rankBoolTrue;
+        }
+
+        @Override
+        public Term neg() {
+            return False;
+        }
+
+        @Override
+        public boolean equalsNeg(Term t) {
+            return t == False;
+        }
+
+        @Override
+        public boolean equalsNegRoot(Term t) {
+            return t == False;
         }
 
         @Override
@@ -584,7 +582,7 @@ public enum Op {
     private static final int InvalidImplicationSubj = or(IMPL);
     public static TermBuilder terms =
             new InterningTermBuilder();
-    public static int ConstantAtomics = Op.ATOM.bit | Op.INT.bit;
+    public static int AtomicConstants = Op.ATOM.bit | Op.INT.bit;
 
     static {
         for (Op o : Op.values()) {
@@ -803,7 +801,7 @@ public enum Op {
                 Op o1 = et1.op();
 
                 //((--,X)~(--,Y)) reduces to (Y~X)
-                if (o0 == NEG && o1==NEG) {
+                if (o0 == NEG && o1 == NEG) {
                     //un-neg and swap order
                     Term x = et0.unneg();
                     et0 = et1.unneg();
@@ -811,7 +809,6 @@ public enum Op {
                     et1 = x;
                     o1 = et1.op();
                 }
-
 
 
                 if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
@@ -915,29 +912,6 @@ public enum Op {
             return o.the(DTERNAL, terms);
         }
 
-    }
-
-
-    /**
-     * decode a term which may be a functor, return null if it isnt
-     */
-    @Nullable
-    public static <X> Pair<X, Term> functor(Term maybeOperation, Function<Term, X> invokes) {
-        if (maybeOperation.hasAll(Op.FuncBits)) {
-            Term c = maybeOperation;
-            if (c.op() == INH) {
-                Term s0 = c.sub(0);
-                if (s0.op() == PROD) {
-                    Term s1 = c.sub(1);
-                    if (s1 instanceof Atomic /*&& s1.op() == ATOM*/) {
-                        X i = invokes.apply(s1);
-                        if (i != null)
-                            return Tuples.pair(i, s0);
-                    }
-                }
-            }
-        }
-        return null;
     }
 
 
@@ -1359,6 +1333,31 @@ public enum Op {
         return terms.compound(o, dt, u);
     }
 
+    /**
+     * encodes a structure vector as a human-readable term.
+     * if only one bit is set then the Op's strAtom is used instead of the binary
+     * representation.
+     * TODO make an inverse decoder
+     */
+    public static Term strucTerm(int struct) {
+        int bits = Integer.bitCount(struct);
+        switch (bits) {
+            case 0:
+                throw new UnsupportedOperationException("no bits");
+            case 1: {
+                Op op = ops[MathUtil.log(Integer.highestOneBit(struct), 2)];
+                return op.strAtom;
+            }
+            default: {
+                return $.quote( Integer.toBinaryString(struct)/*.substring(Op.ops.length)*/ );
+            }
+        }
+    }
+
+    public static boolean commute(int dt, int subterms) {
+        return subterms > 1 && Op.concurrent(dt);
+    }
+
     public final Term the(Subterms s) {
         return the(s.arrayShared());
     }
@@ -1435,10 +1434,6 @@ public enum Op {
             return sorted(u);
         }
         return u;
-    }
-
-    public static boolean commute(int dt, int subterms) {
-        return subterms > 1 && Op.concurrent(dt);
     }
 
     public final Term the(/*@NotNull*/ Collection<Term> sub) {

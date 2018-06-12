@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.COMMAND;
-import static nars.concept.Operator.argsArray;
+import static nars.term.Functor.funcArgsArray;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -83,7 +83,7 @@ public class OperatorTest {
         NAR n = NARS.tmp();
         n.time.dur(10);
         n.onOp("x", new AtomicExec((x, nar) -> {
-            Term[] args = argsArray(x);
+            Term[] args = funcArgsArray(x);
             if (args.length > 0) {
                 Term r;
                 if ($.the(1).equals(args[0])) {
@@ -112,7 +112,7 @@ public class OperatorTest {
         NAR n = NARS.tmp();
         n.onOp("x", new AtomicExec((t, nar) -> {
             Term x = t.term();
-            Term[] args = argsArray(t);
+            Term[] args = funcArgsArray(t);
             Term y = $.func("args", args);
             Term xy = $.impl(x, y);
             n.believe(xy, Tense.Present);

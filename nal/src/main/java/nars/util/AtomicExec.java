@@ -78,7 +78,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
      */
     protected Task exePrefilter(Task x) {
         Subterms a = Operator.args(x);
-        return a.hasAny(Op.ConstantAtomics) ? x : null; 
+        return a.hasAny(Op.AtomicConstants) ? x : null;
     }
 
 

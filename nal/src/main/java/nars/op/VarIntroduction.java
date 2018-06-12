@@ -18,31 +18,23 @@ public abstract class VarIntroduction {
 
 
         Term u = select(x, r);
-        if (u == null)
-            return null;
+        if (u != null) {
 
-        int vars = x.vars();
-        assert (vars < 127 - 1);
-        
-        Term v = introduce(x, u, (byte)(vars+1));
-        if (v == null || v instanceof Bool)
-            return null;
 
-        Term y = x.replace(u, v);
-        if (y != null && !y.equals(x)) {
-            if (x.isNormalized()) {
+            int vars = x.vars();
+            assert (vars < 127 - 1);
 
-                Term yy = y.normalize();
-                if (yy == null)
-                    throw new RuntimeException("could not normalize result of variable introduction: " + y);
-
-                y = yy;
+            Term v = introduce(x, u, (byte) (vars + 1));
+            if (v != null && !(v instanceof Bool)) {
+                Term y = x.replace(u, v);
+                if (y != null && y.op().conceptualizable && !y.equals(x)) {
+                    return Tuples.pair(y, Map.of(u, v));
+                }
             }
-
-            return Tuples.pair(y, Map.of(u, v));
-        } else {
-            return null;
         }
+
+        return null;
+
     }
 
 
