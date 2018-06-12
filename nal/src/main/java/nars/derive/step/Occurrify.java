@@ -598,11 +598,11 @@ public class Occurrify extends TimeGraph {
                             d.concTruth = $.t(d.concTruth.freq(), (float) Param.evi(d.concTruth.evi(), delta, d.dur)); //TODO if below min, stop here
                         }
 
-                        //System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
+                        System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
 
-                        long range = o[1] - o[0];
-                        o[0] = NOW;
-                        o[1] = NOW + range;
+//                        long range = o[1] - o[0];
+//                        o[0] = NOW;
+//                        o[1] = NOW + range;
 
 //                    }
                 }

@@ -423,7 +423,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     public void clear() {
         acquireWriteLock();
         try {
-            this.root = createNode(AbstractBytes.EMPTY, VoidValue.the, emptyList, true);
+            this.root = createNode(AbstractBytes.EMPTY, null, emptyList, true);
         } finally {
             releaseWriteLock();
         }
@@ -1271,34 +1271,29 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
      */
     @SuppressWarnings("JavaDoc")
     <O> Iterable<O> getDescendantValues(final AbstractBytes startKey, final Node startNode) {
-        return new Iterable<O>() {
+        return () -> new LazyIterator<O>() {
+            Iterator<NodeKeyPair> descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
+
             @Override
-            public Iterator<O> iterator() {
-                return new LazyIterator<O>() {
-                    Iterator<NodeKeyPair> descendantNodes = lazyTraverseDescendants(startKey, startNode).iterator();
+            protected O computeNext() {
 
-                    @Override
-                    protected O computeNext() {
-                        
-                        while (descendantNodes.hasNext()) {
-                            NodeKeyPair nodeKeyPair = descendantNodes.next();
-                            Object value = nodeKeyPair.node.getValue();
-                            if (value != null) {
-                                
+                while (descendantNodes.hasNext()) {
+                    NodeKeyPair nodeKeyPair = descendantNodes.next();
+                    Object value = nodeKeyPair.node.getValue();
+                    if (value != null) {
 
-                                
-                                
-                                
-                                
-                                @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-                                O valueTyped = (O) value;
-                                return valueTyped;
-                            }
-                        }
-                        
-                        return endOfData();
+
+
+
+
+
+                        @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
+                        O valueTyped = (O) value;
+                        return valueTyped;
                     }
-                };
+                }
+
+                return endOfData();
             }
         };
     }
