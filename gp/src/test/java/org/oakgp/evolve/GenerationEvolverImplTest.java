@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -59,14 +60,14 @@ public class GenerationEvolverImplTest {
         
         NodeSelector selector = mock(NodeSelector.class);
         when(selectorFactory.getSelector(input)).thenReturn(selector);
-        when(generator1.evolve(selector)).thenReturn(expectedOutput[3], expectedOutput[4], expectedOutput[5]);
+        when(generator1.apply(selector)).thenReturn(expectedOutput[3], expectedOutput[4], expectedOutput[5]);
         
         
-        when(generator2.evolve(selector)).thenReturn(expectedOutput[6], expectedOutput[7], expectedOutput[8], expectedOutput[7], expectedOutput[9]);
+        when(generator2.apply(selector)).thenReturn(expectedOutput[6], expectedOutput[7], expectedOutput[8], expectedOutput[7], expectedOutput[9]);
 
         
         GenerationEvolverImpl evolver = new GenerationEvolverImpl(elitismSize, selectorFactory, operators);
-        Collection<Node> actualOutput = evolver.evolve(input);
+        Collection<Node> actualOutput = evolver.apply(input).collect(toList());
 
         
         assertEquals(expectedOutput.length, actualOutput.size());

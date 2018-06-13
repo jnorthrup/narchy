@@ -59,7 +59,7 @@ public final class TestDataFitnessFunction<T> implements FitnessFunction {
      * @return the accumulative difference between the expected and actual outputs of evaluating {@code node} using each of the inputs of the test data
      */
     @Override
-    public double evaluate(Node node) {
+    public double doubleValueOf(Node node) {
         
         double diff = 0;
         for (Map.Entry<Assignments, T> test : tests.entrySet()) {

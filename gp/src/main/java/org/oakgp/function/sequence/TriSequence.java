@@ -13,39 +13,49 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.oakgp.examples.ant;
+package org.oakgp.function.sequence;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.ImpureFunction;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.util.Void;
 
-import static org.oakgp.examples.ant.AntMovement.*;
+import static org.oakgp.function.sequence.BiSequence.BISEQUENCE;
 import static org.oakgp.util.Void.VOID_TYPE;
 import static org.oakgp.util.Void.isVoid;
 
 /**
  * Executes three nodes in sequence.
  */
-class TriSequence implements ImpureFunction {
-    static final TriSequence TRISEQUENCE = new TriSequence();
+public class TriSequence implements AbstractSequence {
 
-    private TriSequence() {
+    public static final TriSequence TRISEQUENCE = new TriSequence(BISEQUENCE);
+
+    static final Signature TriSig = new Signature(VOID_TYPE, VOID_TYPE, VOID_TYPE, VOID_TYPE);
+
+    final BiSequence bi;
+
+    public TriSequence() {
+        this(BISEQUENCE);
+    }
+
+    public TriSequence(BiSequence bi) {
+        this.bi = bi;
+        if (bi != BISEQUENCE) {
+            //TODO register with that function as a supplier of TriSequences
+        }
     }
 
     @Override
     public Signature sig() {
-        return new Signature(VOID_TYPE, VOID_TYPE, VOID_TYPE, VOID_TYPE);
+        return TriSig;
     }
 
     @Override
     public Void evaluate(Arguments arguments, Assignments assignments) {
-        arguments.firstArg().eval(assignments);
-        arguments.secondArg().eval(assignments);
-        arguments.thirdArg().eval(assignments);
+        arguments.evalEach(assignments);
         return Void.VOID;
     }
 
@@ -60,20 +70,21 @@ class TriSequence implements ImpureFunction {
             return createBiSequence(first, third);
         } else if (isVoid(third)) {
             return createBiSequence(first, second);
-        } else if (isLeftAndRight(first, second)) {
+        } else if (isMutex(first, second)) {
             return third;
-        } else if (isLeftAndRight(second, third)) {
+        } else if (isMutex(second, third)) {
             return first;
-        } else if (areAllSame(LEFT, first, second, third)) {
-            return new FunctionNode(RIGHT, ((FunctionNode) first).args());
-        } else if (areAllSame(RIGHT, first, second, third)) {
-            return new FunctionNode(LEFT, ((FunctionNode) first).args());
         } else {
             return null;
         }
     }
 
+    @Override
+    public boolean isMutex(Node firstArg, Node secondArg) {
+        return bi.isMutex(firstArg, secondArg);
+    }
+
     private Node createBiSequence(Node arg1, Node arg2) {
-        return new FunctionNode(BiSequence.BISEQUENCE, arg1, arg2);
+        return new FunctionNode(bi, arg1, arg2);
     }
 }

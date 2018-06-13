@@ -40,7 +40,7 @@ public final class HoistMutation implements GeneticOperator {
     }
 
     @Override
-    public Node evolve(NodeSelector selector) {
+    public Node apply(NodeSelector selector) {
         Node root = selector.next();
         Predicate<Node> treeWalkerStrategy = n -> n.returnType() == root.returnType();
         int nodeCount = StrategyWalk.getNodeCount(root, treeWalkerStrategy);

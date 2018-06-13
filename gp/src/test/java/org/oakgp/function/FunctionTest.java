@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.Type;
+import org.oakgp.util.Signature;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;

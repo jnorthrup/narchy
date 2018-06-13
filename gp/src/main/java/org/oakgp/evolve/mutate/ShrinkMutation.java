@@ -45,7 +45,7 @@ public final class ShrinkMutation implements GeneticOperator {
     }
 
     @Override
-    public Node evolve(NodeSelector selector) {
+    public Node apply(NodeSelector selector) {
         Node root = selector.next();
         int nodeCount = StrategyWalk.getNodeCount(root, NodeType::isFunction);
         if (nodeCount == 0) {

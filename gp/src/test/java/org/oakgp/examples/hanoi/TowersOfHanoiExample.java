@@ -61,7 +61,7 @@ public class TowersOfHanoiExample {
 
         Node best = output.best().node;
         System.out.println(best);
-        new TowersOfHanoiFitnessFunction(true).evaluate(best);
+        new TowersOfHanoiFitnessFunction(true).doubleValueOf(best);
     }
 
     private static List<ConstantNode> createConstants() {

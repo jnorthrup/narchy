@@ -47,12 +47,12 @@ public class FitnessFunctionCacheTest {
         final FitnessFunctionCache cache = new FitnessFunctionCache(3, mockFitnessFunction);
 
         
-        assertEquals(fitness1, cache.evaluate(n1), 0.001f);
+        assertEquals(fitness1, cache.doubleValueOf(n1), 0.001f);
         assertEquals(1, evaluateCtr.get());
-        assertEquals(fitness2, cache.evaluate(n2), 0.001f);
+        assertEquals(fitness2, cache.doubleValueOf(n2), 0.001f);
         assertEquals(2, evaluateCtr.get());
-        assertEquals(fitness1, cache.evaluate(n1), 0.001f);
-        assertEquals(fitness2, cache.evaluate(n2), 0.001f);
+        assertEquals(fitness1, cache.doubleValueOf(n1), 0.001f);
+        assertEquals(fitness2, cache.doubleValueOf(n2), 0.001f);
         assertEquals(2, evaluateCtr.get());
     }
 }

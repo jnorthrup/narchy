@@ -15,10 +15,7 @@
  */
 package org.oakgp.rank;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -35,15 +32,21 @@ public final class Candidates implements Iterable<RankedCandidate> {
      *
      * @see RankedCandidate#compareTo(RankedCandidate)
      */
-    public Candidates(RankedCandidate[] candidates) {
+    @Deprecated public Candidates(RankedCandidate[] candidates) {
+        this(Stream.of(candidates), COMPARE_TO);
+    }
+    public Candidates(Stream<RankedCandidate> candidates) {
         this(candidates, COMPARE_TO);
     }
+
 
     /**
      * Constructs a new collection of candidates sorted according to the given comparator.
      */
-    public Candidates(RankedCandidate[] candidates, Comparator<RankedCandidate> comparator) {
-        this.sortedCandidates = Arrays.copyOf(candidates, candidates.length);
+    public Candidates(Stream<RankedCandidate> candidates, Comparator<RankedCandidate> comparator) {
+        this.sortedCandidates =
+                candidates.sorted(comparator).toArray(RankedCandidate[]::new);
+                //Arrays.copyOf(candidates, candidates.length);
         Arrays.sort(sortedCandidates, comparator);
     }
 

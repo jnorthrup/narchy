@@ -25,6 +25,7 @@ import org.oakgp.node.Node;
 import org.oakgp.primitive.VariableSet;
 import org.oakgp.serialize.NodeReader;
 import org.oakgp.util.NodeSimplifier;
+import org.oakgp.util.Signature;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

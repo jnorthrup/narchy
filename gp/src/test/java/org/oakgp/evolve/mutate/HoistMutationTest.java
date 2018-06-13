@@ -50,15 +50,15 @@ public class HoistMutationTest {
         DummyRandom random = nextInt(9).returns(3, 4, 5, 2, 1, 8, 6, 7, 0);
         HoistMutation mutator = new HoistMutation(random);
 
-        assertNodeEquals("v1", mutator.evolve(selector));
-        assertNodeEquals("v0", mutator.evolve(selector));
-        assertNodeEquals("7", mutator.evolve(selector));
-        assertNodeEquals("(+ 9 v2)", mutator.evolve(selector));
-        assertNodeEquals("v2", mutator.evolve(selector));
-        assertNodeEquals("(+ v1 (if (zero? v0) 7 8))", mutator.evolve(selector));
-        assertNodeEquals("8", mutator.evolve(selector));
-        assertNodeEquals("(if (zero? v0) 7 8)", mutator.evolve(selector));
-        assertNodeEquals("9", mutator.evolve(selector));
+        assertNodeEquals("v1", mutator.apply(selector));
+        assertNodeEquals("v0", mutator.apply(selector));
+        assertNodeEquals("7", mutator.apply(selector));
+        assertNodeEquals("(+ 9 v2)", mutator.apply(selector));
+        assertNodeEquals("v2", mutator.apply(selector));
+        assertNodeEquals("(+ v1 (if (zero? v0) 7 8))", mutator.apply(selector));
+        assertNodeEquals("8", mutator.apply(selector));
+        assertNodeEquals("(if (zero? v0) 7 8)", mutator.apply(selector));
+        assertNodeEquals("9", mutator.apply(selector));
 
         selector.assertEmpty();
         random.assertEmpty();
@@ -66,7 +66,7 @@ public class HoistMutationTest {
 
     private Node hoistMutate(GPRandom random, Node input) {
         DummyNodeSelector selector = new DummyNodeSelector(input);
-        Node result = new HoistMutation(random).evolve(selector);
+        Node result = new HoistMutation(random).apply(selector);
         selector.assertEmpty();
         return result;
     }

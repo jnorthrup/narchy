@@ -73,6 +73,13 @@ public class Arguments {
             return new SortedArguments(a);
     }
 
+    /** note: return values of each evaluation are ignored */
+    public void evalEach(Assignments assignments) {
+        for (Node n : args) {
+            n.eval(assignments);
+        }
+    }
+
     public static class SortedArguments extends Arguments {
 
         SortedArguments(Node[] knownToBeSorted) {

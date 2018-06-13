@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,7 +94,7 @@ public class CandidatesTest {
     @Test
     public void testCustomComparator() {
         Candidates defaultOrderedCandidates = new Candidates(input);
-        Candidates reverseOrderedCandidates = new Candidates(input, Collections.reverseOrder());
+        Candidates reverseOrderedCandidates = new Candidates(Stream.of(input), Collections.reverseOrder());
         assertEquals(5, defaultOrderedCandidates.size());
         assertEquals(5, reverseOrderedCandidates.size());
         assertSame(defaultOrderedCandidates.get(0), reverseOrderedCandidates.get(4));
@@ -106,7 +107,7 @@ public class CandidatesTest {
     @Test
     public void testBest() {
         Candidates defaultOrderedCandidates = new Candidates(input);
-        Candidates reverseOrderedCandidates = new Candidates(input, Collections.reverseOrder());
+        Candidates reverseOrderedCandidates = new Candidates(Stream.of(input), Collections.reverseOrder());
         assertSame(element1, defaultOrderedCandidates.best());
         assertSame(element5, reverseOrderedCandidates.best());
     }

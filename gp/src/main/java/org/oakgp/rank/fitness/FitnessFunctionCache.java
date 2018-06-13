@@ -35,7 +35,7 @@ public final class FitnessFunctionCache implements FitnessFunction {
     }
 
     @Override
-    public double evaluate(Node n) {
-        return cache.get(n, fitnessFunction::evaluate);
+    public double doubleValueOf(Node n) {
+        return cache.get(n, fitnessFunction::doubleValueOf);
     }
 }

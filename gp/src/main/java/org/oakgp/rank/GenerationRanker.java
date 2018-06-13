@@ -17,18 +17,19 @@ package org.oakgp.rank;
 
 import org.oakgp.node.Node;
 
-import java.util.Collection;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * Ranks and sorts the fitness of {@code Node} instances.
  */
 @FunctionalInterface
-public interface GenerationRanker {
+public interface GenerationRanker extends Function<Stream<Node>,Candidates> {
     /**
      * Returns the sorted result of evaluating the fitness of each of the specified nodes.
      *
      * @param input the {@code Node} instances to evaluate the fitness of
      * @return a collection of {@code RankedCandidate} - one for each {@code Node} specified in {@code input} - sorted by fitness
      */
-    Candidates rank(Collection<Node> input);
+//    Candidates apply(Collection<Node> input);
 }

@@ -19,7 +19,7 @@ import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.Type;
 import org.oakgp.function.ImpureFunction;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 
 /**
  * Returns {@code true} if the square the ant is facing contains food, else {@code false}.

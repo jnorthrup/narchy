@@ -19,7 +19,7 @@ import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.function.Function;
 import org.oakgp.function.ImpureFunction;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
@@ -55,13 +55,7 @@ final class AntMovement implements ImpureFunction {
     static boolean isLeftAndRight(Node firstArg, Node secondArg) {
         Function f1 = getFunction(firstArg);
         Function f2 = getFunction(secondArg);
-        if (f1 == LEFT && f2 == RIGHT) {
-            return true;
-        } else if (f1 == RIGHT && f2 == LEFT) {
-            return true;
-        } else {
-            return false;
-        }
+        return f1 == LEFT && f2 == RIGHT || f1 == RIGHT && f2 == LEFT;
     }
 
     static boolean areAllSame(AntMovement function, Node firstArg, Node secondArg, Node thirdArg) {

@@ -20,6 +20,7 @@ import org.oakgp.Assignments;
 import org.oakgp.Type;
 import org.oakgp.node.Node;
 import org.oakgp.util.NodeSimplifier;
+import org.oakgp.util.Signature;
 
 /**
  * Represents an operation.

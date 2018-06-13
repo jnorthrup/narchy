@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.oakgp.function;
+package org.oakgp.util;
 
 import org.oakgp.Type;
 
@@ -26,9 +26,9 @@ import java.util.List;
  * A signature includes the return type, the number of arguments and the type of each argument.
  */
 public final class Signature {
-    private final Type returnType;
-    private final Type[] argumentTypes;
-    private final int hashCode;
+    public final Type returnType;
+    public final Type[] argumentTypes;
+    public final int hashCode;
 
     public Signature(Type returnType, Type... userSuppliedArgumentTypes) {
         this.returnType = returnType;

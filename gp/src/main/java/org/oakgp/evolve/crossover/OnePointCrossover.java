@@ -42,7 +42,7 @@ public final class OnePointCrossover implements GeneticOperator {
     }
 
     @Override
-    public Node evolve(NodeSelector selector) {
+    public Node apply(NodeSelector selector) {
         Node parent1 = selector.next();
         Node parent2 = selector.next();
         int commonRegionSize = CommonRegion.getNodeCount(parent1, parent2);

@@ -64,7 +64,8 @@ public class TestUtils {
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void assertUnmodifiable(List list) {
-        assertEquals("java.util.Collections$UnmodifiableRandomAccessList", list.getClass().getName());
+        String ln = list.getClass().getName();
+        assertTrue( ln.startsWith("java.util.ImmutableCollections$List") || ln.equals("java.util.Collections$UnmodifiableRandomAccessList"));
         try {
             list.add(new Object());
             fail("");

@@ -18,7 +18,7 @@ package org.oakgp.examples.hanoi;
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 
 import static org.oakgp.Type.integerType;
 import static org.oakgp.examples.hanoi.TowersOfHanoiExample.POLE_TYPE;

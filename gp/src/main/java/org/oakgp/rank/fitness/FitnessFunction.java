@@ -15,15 +15,13 @@
  */
 package org.oakgp.rank.fitness;
 
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 import org.oakgp.node.Node;
 
 /**
  * Calculates the fitness of a potential solution.
+ * Returns the fitness of the solution represented by the given {@code Node}.
  */
 @FunctionalInterface
-public interface FitnessFunction {
-    /**
-     * Returns the fitness of the solution represented by the given {@code Node}.
-     */
-    double evaluate(Node n);
+public interface FitnessFunction extends DoubleFunction<Node> {
 }

@@ -42,7 +42,7 @@ public final class SubTreeMutation implements GeneticOperator {
     }
 
     @Override
-    public Node evolve(NodeSelector selector) {
+    public Node apply(NodeSelector selector) {
         Node root = selector.next();
         int mutationPoint = Utils.selectSubNodeIndex(random, root);
         return NodeWalk.replaceAt(root, mutationPoint, node -> treeGenerator.generate(node.returnType(), node.depth()));

@@ -26,7 +26,7 @@ class ArtificialAntFitnessFunction implements FitnessFunction {
     private static final int MAX_MOVES = 600;
 
     @Override
-    public double evaluate(Node candidate) {
+    public double doubleValueOf(Node candidate) {
         MutableState state = new MutableState(GridReader.copyGrid());
         evaluate(candidate, state);
         return calculateFitness(state);

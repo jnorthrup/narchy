@@ -19,12 +19,11 @@ import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.Type;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.walk.NodeWalk;
 import org.oakgp.util.Utils;
-
+import org.oakgp.util.Signature;
 import java.util.function.Predicate;
 
 import static java.lang.Boolean.TRUE;
@@ -54,13 +53,13 @@ public final class If implements Function {
         signature = new Signature(type, booleanType(), type, type);
     }
 
-    private static int getOutcomeArgumentIndex(Arguments arguments, Assignments assignments) {
+    private static int outcomeIndex(Arguments arguments, Assignments assignments) {
         return TRUE.equals(arguments.firstArg().eval(assignments)) ? TRUE_IDX : FALSE_IDX;
     }
 
     @Override
     public Object evaluate(Arguments arguments, Assignments assignments) {
-        int index = getOutcomeArgumentIndex(arguments, assignments);
+        int index = outcomeIndex(arguments, assignments);
         return arguments.get(index).eval(assignments);
     }
 
@@ -70,17 +69,17 @@ public final class If implements Function {
     }
 
     @Override
-    public Node simplify(Arguments arguments) {
-        Node trueBranch = arguments.secondArg();
-        Node falseBranch = arguments.thirdArg();
+    public Node simplify(Arguments args) {
+        Node trueBranch = args.secondArg();
+        Node falseBranch = args.thirdArg();
         if (trueBranch.equals(falseBranch)) {
             return trueBranch;
         }
 
-        Node condition = arguments.firstArg();
+        Node condition = args.firstArg();
         if (isConstant(condition)) {
-            int index = getOutcomeArgumentIndex(arguments, null);
-            return index == TRUE_IDX ? trueBranch : falseBranch;
+            return outcomeIndex(args, null) == TRUE_IDX ?
+                    trueBranch : falseBranch;
         }
 
         Predicate<Node> criteria = n -> n.equals(condition);

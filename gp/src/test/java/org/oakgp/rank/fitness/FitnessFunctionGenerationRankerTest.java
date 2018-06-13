@@ -20,8 +20,7 @@ import org.oakgp.node.Node;
 import org.oakgp.rank.Candidates;
 import org.oakgp.rank.GenerationRanker;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -38,17 +37,16 @@ public class FitnessFunctionGenerationRankerTest {
         double bFitness = 12;
         Node c = integerConstant(3);
         double cFitness = 8;
-        List<Node> input = Arrays.asList(a, b, c);
 
         
         FitnessFunction mockFitnessFunction = mock(FitnessFunction.class);
-        given(mockFitnessFunction.evaluate(a)).willReturn(aFitness);
-        given(mockFitnessFunction.evaluate(b)).willReturn(bFitness);
-        given(mockFitnessFunction.evaluate(c)).willReturn(cFitness);
+        given(mockFitnessFunction.doubleValueOf(a)).willReturn(aFitness);
+        given(mockFitnessFunction.doubleValueOf(b)).willReturn(bFitness);
+        given(mockFitnessFunction.doubleValueOf(c)).willReturn(cFitness);
 
         
         GenerationRanker generationRanker = new FitnessFunctionGenerationRanker.SingleThread(mockFitnessFunction);
-        Candidates output = generationRanker.rank(input);
+        Candidates output = generationRanker.apply(Stream.of(a,b,c));
 
         
         assertRankedCandidate(output.get(0), c, cFitness);

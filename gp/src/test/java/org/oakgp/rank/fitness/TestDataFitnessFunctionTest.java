@@ -46,7 +46,7 @@ public class TestDataFitnessFunctionTest {
 
         
         FitnessFunction fitnessFunction = TestDataFitnessFunction.createIntegerTestDataFitnessFunction(testData);
-        double result = fitnessFunction.evaluate(mockNode);
+        double result = fitnessFunction.doubleValueOf(mockNode);
 
         
         assertEquals(8d, result, 0.001d);
@@ -79,7 +79,7 @@ public class TestDataFitnessFunctionTest {
             }
             return ctr;
         });
-        double result = fitnessFunction.evaluate(mockNode);
+        double result = fitnessFunction.doubleValueOf(mockNode);
 
         
         assertEquals(4d, result, 0.001d);

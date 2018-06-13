@@ -48,7 +48,7 @@ public class PointMutationTest {
         };
         GeneticOperator pointMutation = new PointMutation(DummyRandom.EMPTY, primitiveSet);
 
-        Node offspring = pointMutation.evolve(dummySelector);
+        Node offspring = pointMutation.apply(dummySelector);
 
         assertSame(output, offspring);
 
@@ -82,9 +82,9 @@ public class PointMutationTest {
         };
         GeneticOperator pointMutation = new PointMutation(dummyRandom, primitiveSet);
 
-        assertEquals(new FunctionNode(rootFunction, new FunctionNode(inputFunction, inputArg1, outputArg2)), pointMutation.evolve(dummySelector));
-        assertEquals(new FunctionNode(rootFunction, new FunctionNode(outputFunction, inputArg1, inputArg2)), pointMutation.evolve(dummySelector));
-        assertEquals(new FunctionNode(rootFunction, new FunctionNode(inputFunction, outputArg1, inputArg2)), pointMutation.evolve(dummySelector));
+        assertEquals(new FunctionNode(rootFunction, new FunctionNode(inputFunction, inputArg1, outputArg2)), pointMutation.apply(dummySelector));
+        assertEquals(new FunctionNode(rootFunction, new FunctionNode(outputFunction, inputArg1, inputArg2)), pointMutation.apply(dummySelector));
+        assertEquals(new FunctionNode(rootFunction, new FunctionNode(inputFunction, outputArg1, inputArg2)), pointMutation.apply(dummySelector));
 
         dummyRandom.assertEmpty();
         dummySelector.assertEmpty();

@@ -49,7 +49,7 @@ public final class SubtreeCrossover implements GeneticOperator {
     }
 
     @Override
-    public Node evolve(NodeSelector selector) {
+    public Node apply(NodeSelector selector) {
         Node parent1 = selector.next();
         Node parent2 = selector.next();
         int to = Utils.selectSubNodeIndex(random, parent1);

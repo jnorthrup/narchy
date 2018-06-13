@@ -13,56 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.oakgp.examples.ant;
+package org.oakgp.function.sequence;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.ImpureFunction;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.util.Void;
 
-import static org.oakgp.examples.ant.AntMovement.isLeftAndRight;
 import static org.oakgp.util.Void.*;
 
 /**
  * Executes two nodes in sequence.
  */
-class BiSequence implements ImpureFunction {
-    static final BiSequence BISEQUENCE = new BiSequence();
+public class BiSequence implements AbstractSequence {
 
-    private BiSequence() {
+    public static final BiSequence BISEQUENCE = new BiSequence();
+
+    static final Signature BiSig = new Signature(VOID_TYPE, VOID_TYPE, VOID_TYPE);
+
+    protected BiSequence() {
     }
 
     @Override
     public Signature sig() {
-        return new Signature(VOID_TYPE, VOID_TYPE, VOID_TYPE);
+        return BiSig;
     }
 
     @Override
     public Void evaluate(Arguments arguments, Assignments assignments) {
-        arguments.firstArg().eval(assignments);
-        arguments.secondArg().eval(assignments);
+        arguments.evalEach(assignments);;
         return Void.VOID;
     }
 
     @Override
     public Node simplify(Arguments arguments) {
-        Node firstArg = arguments.firstArg();
-        Node secondArg = arguments.secondArg();
-        if (isVoid(firstArg)) {
-            return secondArg;
-        } else if (isVoid(secondArg)) {
-            return firstArg;
-        } else if (isLeftAndRight(firstArg, secondArg)) {
+        Node x = arguments.firstArg();
+        Node y = arguments.secondArg();
+        if (isVoid(x)) {
+            return y;
+        } else if (isVoid(y)) {
+            return x;
+        } else if (isMutex(x, y)) {
             return VOID_CONSTANT;
-        } else if (isBiSequence(firstArg)) {
-            Arguments firstArgArgs = ((FunctionNode) firstArg).args();
-            return createTriSequence(firstArgArgs.firstArg(), firstArgArgs.secondArg(), secondArg);
-        } else if (isBiSequence(secondArg)) {
-            Arguments secondArgArgs = ((FunctionNode) secondArg).args();
-            return createTriSequence(firstArg, secondArgArgs.firstArg(), secondArgArgs.secondArg());
+        } else if (isBiSequence(x)) {
+            Arguments firstArgArgs = ((FunctionNode) x).args();
+            return createTriSequence(firstArgArgs.firstArg(), firstArgArgs.secondArg(), y);
+        } else if (isBiSequence(y)) {
+            Arguments secondArgArgs = ((FunctionNode) y).args();
+            return createTriSequence(x, secondArgArgs.firstArg(), secondArgArgs.secondArg());
         } else {
             return null;
         }
@@ -70,10 +70,10 @@ class BiSequence implements ImpureFunction {
 
     private boolean isBiSequence(Node firstArg) {
         FunctionNode fn = (FunctionNode) firstArg;
-        return fn.func() == BISEQUENCE;
+        return fn.func()==this;
     }
 
-    private Node createTriSequence(Node arg1, Node arg2, Node arg3) {
+    @Deprecated private Node createTriSequence(Node arg1, Node arg2, Node arg3) {
         return new FunctionNode(TriSequence.TRISEQUENCE, arg1, arg2, arg3);
     }
 }

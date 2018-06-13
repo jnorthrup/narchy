@@ -39,7 +39,7 @@ class TowersOfHanoiFitnessFunction implements FitnessFunction {
      * @return the fitness of {@code n}
      */
     @Override
-    public double evaluate(Node n) {
+    public double doubleValueOf(Node n) {
         TowersOfHanoi towersOfHanoi = START_STATE;
         Set<TowersOfHanoi> previousStates = new HashSet<>();
         previousStates.add(towersOfHanoi);

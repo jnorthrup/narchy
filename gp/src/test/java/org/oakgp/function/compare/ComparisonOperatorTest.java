@@ -18,7 +18,7 @@ package org.oakgp.function.compare;
 import org.junit.jupiter.api.Test;
 import org.oakgp.Type;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;

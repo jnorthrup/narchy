@@ -18,7 +18,7 @@ package org.oakgp.function.choice;
 import org.junit.jupiter.api.Test;
 import org.oakgp.function.AbstractFunctionTest;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.function.compare.GreaterThan;
 import org.oakgp.function.compare.LessThan;
 import org.oakgp.function.math.IntFunc;

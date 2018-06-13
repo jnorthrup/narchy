@@ -18,22 +18,25 @@ package org.oakgp.util;
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
 
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.readNode;
+import static org.oakgp.util.NodeSimplifier.simplify;
 
 public class NodeSetTest {
     @Test
     public void testAdd() {
-        Set<Node> s = new NodeSet();
+        Set<Node> s = new HashSet();
 
         Node n1 = readNode("(+ v0 (+ 3 1))");
         Node n2 = readNode("(+ v0 (- 7 3))");
 
-        assertTrue(s.add(n1));
-        assertFalse(s.add(n2));
+        assertTrue(s.add(simplify(n1)));
+        assertFalse(s.add(simplify(n2)));
         assertEquals(1, s.size());
         assertFalse(s.contains(n1));
         assertFalse(s.contains(n2));
@@ -61,8 +64,8 @@ public class NodeSetTest {
         Node n3 = readNode("(* 4 v0)");
         Node n4 = readNode("(+ 5 v0)");
 
-        Set<Node> s = new NodeSet();
-        s.addAll(Arrays.asList(n1, n2, n3, n4));
+        Set<Node> s = Stream.of(n1, n2, n3, n4).
+                map(NodeSimplifier::simplify).collect(toSet());;
 
         Node simplifiedVersion = readNode("(+ 4 v0)");
         assertEquals(3, s.size());

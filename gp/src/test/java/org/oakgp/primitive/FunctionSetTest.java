@@ -17,7 +17,7 @@ package org.oakgp.primitive;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.function.choice.If;
 import org.oakgp.function.classify.IsNegative;
 import org.oakgp.function.classify.IsPositive;

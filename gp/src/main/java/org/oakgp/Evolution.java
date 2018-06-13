@@ -44,15 +44,17 @@ import org.oakgp.terminate.MaxGenerationsTerminator;
 import org.oakgp.terminate.MaxGenerationsWithoutImprovementTerminator;
 import org.oakgp.terminate.TargetFitnessTerminator;
 import org.oakgp.util.GPRandom;
-import org.oakgp.util.NodeSet;
+import org.oakgp.util.NodeSimplifier;
 import org.oakgp.util.StdRandom;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 import static org.oakgp.util.NodeSimplifier.simplify;
 
 /**
@@ -75,20 +77,20 @@ public final class Evolution {
     /**
      * Performs a Genetic Programming run.
      *
-     * @param generationRanker  ranks a generation by their fitness
+     * @param eval  ranks a generation by their fitness
      * @param generationEvolver creates a new generation based on the previous generation
      * @param terminator        a function that determines if the run should finish
      * @param initialPopulation the initial population that will be used as a basis for generating future generations
      * @return the final generation produced as part of this run - the best candidate of this generation can be retrieved using {@link Candidates#best()}
      */
-    public static Candidates process(GenerationRanker generationRanker, GenerationEvolver generationEvolver, Predicate<Candidates> terminator,
-                                     Collection<Node> initialPopulation) {
-        Candidates rankedCandidates = generationRanker.rank(initialPopulation);
-        while (!terminator.test(rankedCandidates)) {
-            Collection<Node> newGeneration = generationEvolver.evolve(rankedCandidates);
-            rankedCandidates = generationRanker.rank(newGeneration);
+    public static Candidates process(GenerationRanker eval, GenerationEvolver generationEvolver, Predicate<Candidates> terminator,
+                                     Stream<Node> initialPopulation) {
+        Candidates population = eval.apply(initialPopulation);
+        while (!terminator.test(population)) {
+            Stream<Node> born = generationEvolver.apply(population);
+            population = eval.apply(born);
         }
-        return rankedCandidates;
+        return population;
     }
 
     /**
@@ -398,15 +400,15 @@ public final class Evolution {
         /**
          * Set the contents of the initial population.
          */
-        public GenerationEvolverSetter setInitialPopulation(final java.util.function.Function<Config, Collection<Node>> initialPopulation) {
+        public GenerationEvolverSetter setInitialPopulation(final java.util.function.Function<Config, Stream<Node>> initialPopulation) {
             return setInitialPopulation(initialPopulation.apply(new Config()));
         }
 
         /**
          * Set the contents of the initial population.
          */
-        private GenerationEvolverSetter setInitialPopulation(Collection<Node> initialPopulation) {
-            _initialPopulation = requireNonNull(initialPopulation);
+        private GenerationEvolverSetter setInitialPopulation(Stream<Node> initialPopulation) {
+            _initialPopulation = initialPopulation.collect(toList());
             return new GenerationEvolverSetter();
         }
 
@@ -436,12 +438,15 @@ public final class Evolution {
 
             
             
-            NodeSet initialPopulation = new NodeSet();
+
             TreeGenerator treeGenerator = TreeGeneratorImpl.grow(_primitiveSet, _random);
-            while (initialPopulation.size() < generationSize) {
-                initialPopulation.add( treeGenerator.generate(_returnType, treeDepth) );
-            }
-            return new InitialPopulationSetter().setInitialPopulation(initialPopulation);
+
+            return new InitialPopulationSetter().setInitialPopulation(
+                    Stream.generate(()->
+                        NodeSimplifier.simplify( treeGenerator.generate(_returnType, treeDepth))
+                    ).distinct().limit(generationSize)
+            );
+
         }
 
         private int requiresPositive(final int i) {
@@ -577,7 +582,7 @@ public final class Evolution {
                 _generationEvolver = createDefaultGenerationEvolver();
             }
 
-            Candidates rankedCandidates = process(_generationRanker, _generationEvolver, terminator, _initialPopulation);
+            Candidates rankedCandidates = process(_generationRanker, _generationEvolver, terminator, _initialPopulation.stream());
             RankedCandidate best = rankedCandidates.best();
             Node simplifiedBestNode = simplify(best.node);
             Logger.getGlobal().info("Best candidate: Fitness: " + best.fitness + " Structure: " + simplifiedBestNode);

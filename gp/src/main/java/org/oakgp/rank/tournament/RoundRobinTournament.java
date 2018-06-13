@@ -20,8 +20,8 @@ import org.oakgp.rank.Candidates;
 import org.oakgp.rank.GenerationRanker;
 import org.oakgp.rank.RankedCandidate;
 
-import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 /**
  * Ranks and sorts the fitness of {@code Node} instances using a {@code TwoPlayerGame} in a round-robin tournament.
@@ -42,12 +42,12 @@ public final class RoundRobinTournament implements GenerationRanker {
         for (int i = 0; i < size; i++) {
             output[i] = new RankedCandidate(input[i], fitness[i]);
         }
-        return new Candidates(output, Collections.reverseOrder());
+        return new Candidates(Stream.of(output), Collections.reverseOrder());
     }
 
     @Override
-    public Candidates rank(Collection<Node> input) {
-        Node[] inputAsArray = input.toArray(new Node[0]);
+    public Candidates apply(Stream<Node> input) {
+        Node[] inputAsArray = input.toArray(Node[]::new);
         double[] fitness = evaluateFitness(inputAsArray);
         return toRankedCandidates(inputAsArray, fitness);
     }

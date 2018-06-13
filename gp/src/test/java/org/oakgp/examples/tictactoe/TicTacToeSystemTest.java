@@ -153,7 +153,7 @@ public class TicTacToeSystemTest {
         }};
 
         @Override
-        public double evaluate(Node candidate) {
+        public double doubleValueOf(Node candidate) {
             int result = 0;
             for (Node ai : ais) {
                 result += ticTacToe.evaluate(ai, candidate);

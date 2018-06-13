@@ -22,6 +22,7 @@ import org.oakgp.util.DummyRandom;
 import org.oakgp.util.GPRandom;
 
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.oakgp.TestUtils.integerConstant;
@@ -32,7 +33,7 @@ public class FitnessProportionateSelectionTest {
         RankedCandidate c1 = new RankedCandidate(integerConstant(1), 4);
         RankedCandidate c2 = new RankedCandidate(integerConstant(2), 2);
         RankedCandidate c3 = new RankedCandidate(integerConstant(3), 1);
-        Candidates candidates = new Candidates(new RankedCandidate[]{c1, c2, c3}, Collections.reverseOrder());
+        Candidates candidates = new Candidates(Stream.of(c1, c2, c3), Collections.reverseOrder());
 
         DummyRandom r = new DummyRandom(.0, .57, .58, .85, .86, .999, .25, .65, .93);
         NodeSelector s = createFitnessProportionateSelection(r, candidates);

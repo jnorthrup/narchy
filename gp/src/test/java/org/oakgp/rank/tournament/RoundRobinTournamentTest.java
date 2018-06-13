@@ -20,8 +20,7 @@ import org.oakgp.node.Node;
 import org.oakgp.rank.Candidates;
 import org.oakgp.rank.GenerationRanker;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.stream.Stream;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -35,7 +34,6 @@ public class RoundRobinTournamentTest {
         Node a = integerConstant(1);
         Node b = integerConstant(2);
         Node c = integerConstant(3);
-        List<Node> input = Arrays.asList(a, b, c);
 
         
         TwoPlayerGame mockGame = mock(TwoPlayerGame.class);
@@ -45,7 +43,7 @@ public class RoundRobinTournamentTest {
 
         
         GenerationRanker tournament = new RoundRobinTournament(mockGame);
-        Candidates output = tournament.rank(input);
+        Candidates output = tournament.apply(Stream.of(a,b,c));
 
         
         assertRankedCandidate(output.get(0), a, 2);

@@ -18,7 +18,7 @@ package org.oakgp.serialize;
 import org.oakgp.Arguments;
 import org.oakgp.Type;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
@@ -102,6 +102,7 @@ public final class NodeReader implements Closeable {
     }
 
     private static ConstantNode createIntegerConstant(String token) {
+        //TODO check if it is 0 or 1, and use the interned global
         return new ConstantNode(Integer.valueOf(token), integerType());
     }
 

@@ -65,10 +65,10 @@ public class ShrinkMutationTest {
         DummyRandom random = nextInt(4).returns(1, 3, 0, 2);
         ShrinkMutation mutator = new ShrinkMutation(random, primitiveSet);
 
-        assertNodeEquals("(+ (+ 9 v2) (+ v1 (if 42 7 8)))", mutator.evolve(selector));
-        assertNodeEquals("(+ 42 (+ 9 v2))", mutator.evolve(selector));
-        assertNodeEquals("(+ 42 (+ v1 (if (zero? v0) 7 8)))", mutator.evolve(selector));
-        assertNodeEquals("(+ (+ 42 v1) (+ 9 v2))", mutator.evolve(selector));
+        assertNodeEquals("(+ (+ 9 v2) (+ v1 (if 42 7 8)))", mutator.apply(selector));
+        assertNodeEquals("(+ 42 (+ 9 v2))", mutator.apply(selector));
+        assertNodeEquals("(+ 42 (+ v1 (if (zero? v0) 7 8)))", mutator.apply(selector));
+        assertNodeEquals("(+ (+ 42 v1) (+ 9 v2))", mutator.apply(selector));
 
         selector.assertEmpty();
         random.assertEmpty();
@@ -76,7 +76,7 @@ public class ShrinkMutationTest {
 
     private Node shrinkMutate(GPRandom random, PrimitiveSet primitiveSet, Node input) {
         DummyNodeSelector selector = new DummyNodeSelector(input);
-        Node result = new ShrinkMutation(random, primitiveSet).evolve(selector);
+        Node result = new ShrinkMutation(random, primitiveSet).apply(selector);
         selector.assertEmpty();
         return result;
     }

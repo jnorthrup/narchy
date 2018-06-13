@@ -30,6 +30,6 @@ public class SubTreeMutationTest {
         DummyNodeSelector selector = new DummyNodeSelector(input);
         ConstantNode result = integerConstant(42);
         SubTreeMutation mutator = new SubTreeMutation(nextInt(10).returns(3), (t, d) -> result);
-        assertNodeEquals("(+ (+ 9 v2) (+ 42 (if (zero? v0) 7 8)))", mutator.evolve(selector));
+        assertNodeEquals("(+ (+ 9 v2) (+ 42 (if (zero? v0) 7 8)))", mutator.apply(selector));
     }
 }

@@ -26,13 +26,8 @@ import java.util.function.Predicate;
 /**
  * Provides a mechanism for recursively visiting <i>all</i> nodes in a tree structure.
  */
-public final class NodeWalk {
-    /**
-     * Private constructor as all methods are static.
-     */
-    private NodeWalk() {
-        
-    }
+public enum NodeWalk { ;
+
 
     /**
      * Returns a {@code Node} from the tree structure represented by the given {@code Node}.

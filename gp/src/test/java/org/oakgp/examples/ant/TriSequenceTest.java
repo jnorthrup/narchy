@@ -23,8 +23,8 @@ import org.oakgp.node.VariableNode;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.examples.ant.AntMovement.*;
-import static org.oakgp.examples.ant.BiSequence.BISEQUENCE;
-import static org.oakgp.examples.ant.TriSequence.TRISEQUENCE;
+import static org.oakgp.function.sequence.BiSequence.BISEQUENCE;
+import static org.oakgp.function.sequence.TriSequence.TRISEQUENCE;
 import static org.oakgp.util.Void.VOID_CONSTANT;
 
 public class TriSequenceTest {

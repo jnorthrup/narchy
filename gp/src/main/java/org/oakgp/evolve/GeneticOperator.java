@@ -18,16 +18,19 @@ package org.oakgp.evolve;
 import org.oakgp.node.Node;
 import org.oakgp.select.NodeSelector;
 
+import java.util.function.Function;
+
 /**
  * Creates new {@code Node} instances evolved from existing instances.
+ *
+ *
+ *      * Returns a new {@code Node} evolved from existing instances.
+ *      *
+ *      * @param selector used to select the existing instances to use as a basis for evolving a new instance
+ *      * @return a new {@code Node} evolved from existing instances obtained from {@code selector}
+ *
  */
 @FunctionalInterface
-public interface GeneticOperator {
-    /**
-     * Returns a new {@code Node} evolved from existing instances.
-     *
-     * @param selector used to select the existing instances to use as a basis for evolving a new instance
-     * @return a new {@code Node} evolved from existing instances obtained from {@code selector}
-     */
-    Node evolve(NodeSelector selector);
+public interface GeneticOperator extends Function<NodeSelector,Node> {
+
 }

@@ -17,7 +17,7 @@ package org.oakgp.generate;
 
 import org.oakgp.Type;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 import org.oakgp.primitive.PrimitiveSet;
@@ -81,8 +81,7 @@ public final class TreeGeneratorImpl implements TreeGenerator {
             Node[] args = new Node[signature.size()];
             for (int i = 0; i < args.length; i++) {
                 Type argType = signature.argType(i);
-                Node arg = generate(argType, depth - 1);
-                args[i] = arg;
+                args[i] = generate(argType, depth - 1);
             }
             return new FunctionNode(function, args);
         } else {

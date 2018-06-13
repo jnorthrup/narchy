@@ -19,7 +19,7 @@ import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.Type;
 import org.oakgp.function.Function;
-import org.oakgp.function.Signature;
+import org.oakgp.util.Signature;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
 
