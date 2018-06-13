@@ -17,17 +17,17 @@ package org.oakgp.examples.hanoi;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 import static org.oakgp.examples.hanoi.TowersOfHanoiExample.POLE_TYPE;
 import static org.oakgp.examples.hanoi.TowersOfHanoiExample.STATE_TYPE;
 
 /**
  * Returns the ID of the next disc that would be returned from a particular pole for a particular game state.
  */
-class Next implements Function {
+class Next implements Fn {
     private static final Signature SIGNATURE = new Signature(integerType(), STATE_TYPE, POLE_TYPE);
 
     @Override

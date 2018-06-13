@@ -18,8 +18,9 @@ package org.oakgp.evolve.crossover;
 import org.oakgp.evolve.GeneticOperator;
 import org.oakgp.node.Node;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
+
+import java.util.Random;
 
 /**
  * Replaces a subtree in one parent with the subtree at the corresponding position of another parent.
@@ -32,19 +33,19 @@ import org.oakgp.util.Utils;
  * Mutation</a>
  */
 public final class OnePointCrossover implements GeneticOperator {
-    private final GPRandom random;
+    private final Random random;
 
     /**
      * Creates a {@code OnePointCrossover} that uses the given {@code Random} to select crossover points.
      */
-    public OnePointCrossover(GPRandom random) {
+    public OnePointCrossover(Random random) {
         this.random = random;
     }
 
     @Override
     public Node apply(NodeSelector selector) {
-        Node parent1 = selector.next();
-        Node parent2 = selector.next();
+        Node parent1 = selector.get();
+        Node parent2 = selector.get();
         int commonRegionSize = CommonRegion.getNodeCount(parent1, parent2);
         if (commonRegionSize < 2) {
             return parent2;

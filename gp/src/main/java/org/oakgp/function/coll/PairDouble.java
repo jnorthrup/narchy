@@ -17,14 +17,14 @@ package org.oakgp.function.coll;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.arrayType;
-import static org.oakgp.Type.doubleType;
+import static org.oakgp.NodeType.arrayType;
+import static org.oakgp.NodeType.doubleType;
 
 
-public final class PairDouble implements Function {
+public final class PairDouble implements Fn {
     private final Signature signature;
 
 

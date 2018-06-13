@@ -17,15 +17,15 @@ package org.oakgp.function.math;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 
-abstract class ArithmeticOperator implements Function {
+abstract class ArithmeticOperator implements Fn {
     private final Signature signature;
 
-    protected ArithmeticOperator(Type type) {
+    protected ArithmeticOperator(NodeType type) {
         signature = new Signature(type, type, type);
     }
 

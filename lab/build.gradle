@@ -10,7 +10,7 @@ repositories {
 dependencies {
 //    compile 'com.github.kotlin-graphics:imgui:-SNAPSHOT'
 
-    //compile project(':gp')
+    compile project(':gp')
     compile project(':os')
     compile(group: 'org.reflections', name: 'reflections', version: '0.9.11') {
         exclude(module: 'guava')

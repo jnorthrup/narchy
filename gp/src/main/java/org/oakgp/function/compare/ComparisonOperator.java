@@ -17,19 +17,19 @@ package org.oakgp.function.compare;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 import org.oakgp.util.Utils;
 
-import static org.oakgp.Type.booleanType;
+import static org.oakgp.NodeType.booleanType;
 
-abstract class ComparisonOperator implements Function {
+abstract class ComparisonOperator implements Fn {
     private final Signature signature;
     private final boolean equalsIsTrue;
 
-    protected ComparisonOperator(Type type, boolean equalsIsTrue) {
+    protected ComparisonOperator(NodeType type, boolean equalsIsTrue) {
         this.signature = new Signature(booleanType(), type, type);
         this.equalsIsTrue = equalsIsTrue;
     }

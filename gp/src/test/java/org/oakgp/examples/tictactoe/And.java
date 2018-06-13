@@ -17,14 +17,14 @@ package org.oakgp.examples.tictactoe;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 
 import static java.lang.Boolean.TRUE;
-import static org.oakgp.Type.booleanType;
+import static org.oakgp.NodeType.booleanType;
 
-class And implements Function {
+class And implements Fn {
     private static final Signature SIGNATURE = new Signature(booleanType(), booleanType(), booleanType());
 
     @Override

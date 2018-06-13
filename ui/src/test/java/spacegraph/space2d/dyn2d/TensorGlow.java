@@ -130,32 +130,36 @@ public class TensorGlow {
 
         p.put(new TogglePort(), 0.25f, 0.25f);
 
-        Dyn2DSurface.PhyWindow qw = p.put(
-                new Gridding(
-                        new Label("HaiQ"),
-                        new AutoSurface<>(q),
-                        new LabeledPane("input", new Port((float[] i) -> {
-                            System.arraycopy(i, 0, in, 0, i.length);
-                        })),
-                        new Gridding(VERTICAL,
-                                new AutoUpdateMatrixView(in),
-                                new AutoUpdateMatrixView(q.ae.x),
-                                new AutoUpdateMatrixView(q.ae.W),
-                                new AutoUpdateMatrixView(q.ae.y)
-                        ),
-                        new Gridding(VERTICAL,
-                                new AutoUpdateMatrixView(q.q),
-                                new AutoUpdateMatrixView(q.et)
-                        )
-
-                ),
-                1, 1);
+        Gridding hw = haiQWindow(q, in);
+        hw.add(new LabeledPane("input", new Port((float[] i) -> {
+                    System.arraycopy(i, 0, in, 0, i.length);
+                })));
+        Dyn2DSurface.PhyWindow qw = p.put(hw, 1, 1);
 
         Loop.of(() -> {
             lerpVector.update();
             q.act((((float) Math.random()) - 0.5f) * 2, in);
         }).runFPS(25);
 
+    }
+
+
+    public static Gridding haiQWindow(HaiQae q, float[] in) {
+        return new Gridding(
+                new Label("HaiQ"),
+                new AutoSurface<>(q),
+                new Gridding(VERTICAL,
+                        new AutoUpdateMatrixView(in),
+                        new AutoUpdateMatrixView(q.ae.x),
+                        new AutoUpdateMatrixView(q.ae.W),
+                        new AutoUpdateMatrixView(q.ae.y)
+                ),
+                new Gridding(VERTICAL,
+                        new AutoUpdateMatrixView(q.q),
+                        new AutoUpdateMatrixView(q.et)
+                )
+
+        );
     }
 
 }

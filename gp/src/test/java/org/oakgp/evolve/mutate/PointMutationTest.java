@@ -17,10 +17,10 @@ package org.oakgp.evolve.mutate;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.evolve.GeneticOperator;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.function.classify.IsZero;
 import org.oakgp.function.math.IntFunc;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.primitive.DummyPrimitiveSet;
 import org.oakgp.primitive.PrimitiveSet;
@@ -42,7 +42,7 @@ public class PointMutationTest {
         DummyValuesMap<Node, Node> alternativeTerminals = new DummyValuesMap.Builder<Node, Node>().put(input, output).build();
         PrimitiveSet primitiveSet = new DummyPrimitiveSet() {
             @Override
-            public Node nextAlternativeTerminal(Node current) {
+            public Node nextTerminal(Node current) {
                 return alternativeTerminals.next(current);
             }
         };
@@ -58,33 +58,33 @@ public class PointMutationTest {
     @Test
     public void testFunctionSubNodes() {
         DummyRandom dummyRandom = nextInt(3).returns(1, 2, 0);
-        Function rootFunction = new IsZero();
-        Function inputFunction = IntFunc.the.add;
-        Function outputFunction = IntFunc.the.subtract;
+        Fn rootFunction = new IsZero();
+        Fn inputFunction = IntFunc.the.add;
+        Fn outputFunction = IntFunc.the.subtract;
         Node inputArg1 = integerConstant(3);
         Node inputArg2 = integerConstant(7);
-        Node input = new FunctionNode(rootFunction, new FunctionNode(inputFunction, inputArg1, inputArg2));
+        Node input = new FnNode(rootFunction, new FnNode(inputFunction, inputArg1, inputArg2));
         DummyNodeSelector dummySelector = new DummyNodeSelector(input, input, input);
         Node outputArg1 = integerConstant(9);
         Node outputArg2 = integerConstant(2);
-        DummyValuesMap<Function, Function> alternativeFunctions = new DummyValuesMap<>(inputFunction, outputFunction);
+        DummyValuesMap<Fn, Fn> alternativeFunctions = new DummyValuesMap<>(inputFunction, outputFunction);
         DummyValuesMap<Node, Node> alternativeTerminals = new DummyValuesMap.Builder<Node, Node>().put(inputArg1, outputArg1).put(inputArg2, outputArg2).build();
         PrimitiveSet primitiveSet = new DummyPrimitiveSet() {
             @Override
-            public Function nextAlternativeFunction(Function current) {
+            public Fn next(Fn current) {
                 return alternativeFunctions.next(current);
             }
 
             @Override
-            public Node nextAlternativeTerminal(Node current) {
+            public Node nextTerminal(Node current) {
                 return alternativeTerminals.next(current);
             }
         };
         GeneticOperator pointMutation = new PointMutation(dummyRandom, primitiveSet);
 
-        assertEquals(new FunctionNode(rootFunction, new FunctionNode(inputFunction, inputArg1, outputArg2)), pointMutation.apply(dummySelector));
-        assertEquals(new FunctionNode(rootFunction, new FunctionNode(outputFunction, inputArg1, inputArg2)), pointMutation.apply(dummySelector));
-        assertEquals(new FunctionNode(rootFunction, new FunctionNode(inputFunction, outputArg1, inputArg2)), pointMutation.apply(dummySelector));
+        assertEquals(new FnNode(rootFunction, new FnNode(inputFunction, inputArg1, outputArg2)), pointMutation.apply(dummySelector));
+        assertEquals(new FnNode(rootFunction, new FnNode(outputFunction, inputArg1, inputArg2)), pointMutation.apply(dummySelector));
+        assertEquals(new FnNode(rootFunction, new FnNode(inputFunction, outputArg1, inputArg2)), pointMutation.apply(dummySelector));
 
         dummyRandom.assertEmpty();
         dummySelector.assertEmpty();

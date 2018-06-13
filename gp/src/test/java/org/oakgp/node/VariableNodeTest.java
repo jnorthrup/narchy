@@ -17,12 +17,12 @@ package org.oakgp.node;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.createVariable;
 import static org.oakgp.TestUtils.integerConstant;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 
 public class VariableNodeTest {
     @Test
@@ -51,8 +51,8 @@ public class VariableNodeTest {
 
     @Test
     public void testEqualsAndHashCode() {
-        final VariableNode n1 = new VariableNode(1, Type.integerType());
-        final VariableNode n2 = new VariableNode(1, Type.integerType());
+        final VariableNode n1 = new VariableNode(1, NodeType.integerType());
+        final VariableNode n2 = new VariableNode(1, NodeType.integerType());
         assertNotSame(n1, n2);
         assertEquals(n1, n1);
         assertEquals(n2, n2);

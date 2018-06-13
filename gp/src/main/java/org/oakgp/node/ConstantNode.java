@@ -16,7 +16,7 @@
 package org.oakgp.node;
 
 import org.oakgp.Assignments;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 
 import java.util.Objects;
 
@@ -27,7 +27,7 @@ import java.util.Objects;
  */
 public final class ConstantNode extends TerminalNode {
     public final Object value;
-    public final Type type;
+    public final NodeType type;
 
     /**
      * Constructs a new {@code ConstantNode} that represents the specified value.
@@ -35,7 +35,7 @@ public final class ConstantNode extends TerminalNode {
      * @param value the value to be represented by the {@code ConstantNode}
      * @param type  the {@code Type} that the value represented by this node is of
      */
-    public ConstantNode(Object value, Type type) {
+    public ConstantNode(Object value, NodeType type) {
         this.value = value;
         this.type = type;
     }
@@ -49,13 +49,13 @@ public final class ConstantNode extends TerminalNode {
     }
 
     @Override
-    public Type returnType() {
+    public NodeType returnType() {
         return type;
     }
 
     @Override
-    public NodeType nodeType() {
-        return NodeType.CONSTANT;
+    public final org.oakgp.node.NodeType nodeType() {
+        return org.oakgp.node.NodeType.CONSTANT;
     }
 
     @Override

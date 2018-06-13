@@ -17,8 +17,8 @@ package org.oakgp.function.math;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
@@ -29,14 +29,14 @@ import static org.oakgp.node.NodeType.isConstant;
 /**
  * Performs multiplication.
  */
-final class Multiply extends ArithmeticOperator {
+public final class Multiply extends ArithmeticOperator {
     private final NumFunc<?> numberUtils;
 
     /**
      * @see NumFunc#getMultiply()
      */
     Multiply(NumFunc<?> numberUtils) {
-        super(numberUtils.getType());
+        super(numberUtils.type);
         this.numberUtils = numberUtils;
     }
 
@@ -79,17 +79,17 @@ final class Multiply extends ArithmeticOperator {
 
         if (NodeType.func(y, "*")) {
             //verify commutive ordering
-            Arguments yy = ((FunctionNode) y).args();
+            Arguments yy = ((FnNode) y).args();
             Node[] mults = new Node[] { x, yy.get(0), yy.get(1) } ;
             Node[] original = mults.clone();
             Arrays.sort(mults);
             if (!Arrays.equals(original, mults)) {
                 if (isConstant(mults[0]) && isConstant(mults[1])) {
 
-                    return new FunctionNode(numberUtils.multiply, numberUtils.multiply(mults[0], mults[1]), mults[2] );
+                    return new FnNode(numberUtils.multiply, numberUtils.multiply(mults[0], mults[1]), mults[2] );
                 } else {
-                    return new FunctionNode(numberUtils.multiply, mults[0],
-                            new FunctionNode(numberUtils.multiply, mults[1], mults[2]));
+                    return new FnNode(numberUtils.multiply, mults[0],
+                            new FnNode(numberUtils.multiply, mults[1], mults[2]));
                 }
             }
 
@@ -97,16 +97,16 @@ final class Multiply extends ArithmeticOperator {
 
         {
             if (isConstant(x) && numberUtils.isArithmeticExpression(y)) {
-                FunctionNode fn = (FunctionNode) y;
-                Function f = fn.func();
+                FnNode fn = (FnNode) y;
+                Fn f = fn.func();
                 Arguments args = fn.args();
                 Node fnArg1 = args.firstArg();
                 Node fnArg2 = args.secondArg();
                 if (isConstant(fnArg1)) {
                     if (numberUtils.isAddOrSubtract(f)) {
-                        return new FunctionNode(f, numberUtils.multiply(x, fnArg1), new FunctionNode(this, x, fnArg2));
+                        return new FnNode(f, numberUtils.multiply(x, fnArg1), new FnNode(this, x, fnArg2));
                     } else if (numberUtils.isMultiply(f)) {
-                        return new FunctionNode(this, numberUtils.multiply(x, fnArg1), fnArg2);
+                        return new FnNode(this, numberUtils.multiply(x, fnArg1), fnArg2);
                     } else if (numberUtils.isDivide(f)) {
                         
                         return null;
@@ -114,7 +114,7 @@ final class Multiply extends ArithmeticOperator {
                         throw new IllegalArgumentException();
                     }
                 } else if (numberUtils.isAddOrSubtract(f)) {
-                    return new FunctionNode(f, new FunctionNode(this, x, fnArg1), new FunctionNode(this, x, fnArg2));
+                    return new FnNode(f, new FnNode(this, x, fnArg1), new FnNode(this, x, fnArg2));
                 }
             }
 

@@ -15,17 +15,17 @@
  */
 package org.oakgp.function.hof;
 
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 import org.oakgp.function.classify.IsNegative;
 import org.oakgp.function.classify.IsPositive;
 import org.oakgp.function.classify.IsZero;
 
 import static org.oakgp.TestUtils.createArguments;
-import static org.oakgp.Type.booleanType;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.booleanType;
+import static org.oakgp.NodeType.integerType;
 
-public class MapTest extends AbstractFunctionTest {
+public class MapTest extends AbstractFnTest {
     @Override
     protected Map getFunction() {
         return new Map(integerType(), booleanType());
@@ -48,7 +48,7 @@ public class MapTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), new IsPositive(), new IsNegative(), new IsZero()};
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), new IsPositive(), new IsNegative(), new IsZero()};
     }
 }

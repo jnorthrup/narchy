@@ -17,8 +17,8 @@ package org.oakgp.function.math;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
@@ -35,9 +35,9 @@ public final class Subtract extends ArithmeticOperator {
      * @see NumFunc#getSubtract()
      */
     Subtract(NumFunc<?> numberUtils) {
-        super(numberUtils.getType());
+        super(numberUtils.type);
         this.numberUtils = numberUtils;
-        this.simplifier = numberUtils.getSimplifier();
+        this.simplifier = numberUtils.simplifier;
     }
 
     /**
@@ -62,43 +62,43 @@ public final class Subtract extends ArithmeticOperator {
             return x;
         }
         if (numberUtils.zero.equals(x) && numberUtils.isSubtract(y)) {
-            FunctionNode fn2 = (FunctionNode) y;
+            FnNode fn2 = (FnNode) y;
             Arguments fn2Arguments = fn2.args();
-            return new FunctionNode(this, fn2Arguments.secondArg(), fn2Arguments.firstArg());
+            return new FnNode(this, fn2Arguments.secondArg(), fn2Arguments.firstArg());
         }
         if (isConstant(y) && numberUtils.isNegative(y)) {
-            return new FunctionNode(numberUtils.add, numberUtils.negate(y), x);
+            return new FnNode(numberUtils.add, numberUtils.negate(y), x);
         }
 
 
         {
             if (numberUtils.isArithmeticExpression(y)) {
-                FunctionNode fn = (FunctionNode) y;
-                Function f = fn.func();
+                FnNode fn = (FnNode) y;
+                Fn f = fn.func();
                 Arguments args = fn.args();
                 Node fnArg1 = args.firstArg();
                 Node fnArg2 = args.secondArg();
                 if (numberUtils.isMultiply(f) && isConstant(fnArg1)) {
                     if (numberUtils.zero.equals(x)) {
 
-                        return new FunctionNode(f, numberUtils.negateConstant(fnArg1), fnArg2);
+                        return new FnNode(f, numberUtils.negateConstant(fnArg1), fnArg2);
                     } else if (numberUtils.isNegative(fnArg1)) {
 
-                        return new FunctionNode(numberUtils.add, x, new FunctionNode(f, numberUtils.negateConstant(fnArg1), fnArg2));
+                        return new FnNode(numberUtils.add, x, new FnNode(f, numberUtils.negateConstant(fnArg1), fnArg2));
                     }
                 } else if (numberUtils.isAdd(f) && numberUtils.zero.equals(x)) {
 
-                    return new FunctionNode(f, numberUtils.negate(fnArg1), numberUtils.negate(fnArg2));
+                    return new FnNode(f, numberUtils.negate(fnArg1), numberUtils.negate(fnArg2));
                 } else if (numberUtils.isSubtract(fn) && isConstant(x) && isConstant(fnArg1)) {
                     if (numberUtils.zero.equals(x)) {
 
                         throw new IllegalArgumentException();
                     } else if (numberUtils.zero.equals(fnArg1)) {
 
-                        return new FunctionNode(numberUtils.add, x, fnArg2);
+                        return new FnNode(numberUtils.add, x, fnArg2);
                     } else {
 
-                        return new FunctionNode(numberUtils.add, numberUtils.subtract(x, fnArg1), fnArg2);
+                        return new FnNode(numberUtils.add, numberUtils.subtract(x, fnArg1), fnArg2);
                     }
                 }
             }
@@ -107,11 +107,11 @@ public final class Subtract extends ArithmeticOperator {
             //  == (a - b) - (c - d) == (a - b) + (d - c) == (a + d) -b  -c =
             // (a+d) - (b + c) = (+ a ( - d ( + b c )
             if (NodeType.func(x, "-") && NodeType.func(y, "-")) {
-                Arguments xx = ((FunctionNode) x).args();
+                Arguments xx = ((FnNode) x).args();
                 Node a = xx.firstArg();
                 Node b = xx.secondArg();
 
-                Arguments yy = ((FunctionNode) y).args();
+                Arguments yy = ((FnNode) y).args();
                 Node c = yy.firstArg();
                 Node d = yy.secondArg();
 
@@ -129,9 +129,9 @@ public final class Subtract extends ArithmeticOperator {
 //                return new FunctionNode(numberUtils.subtract,
 //                        new FunctionNode(numberUtils.add, a, d),
 //                        new FunctionNode(numberUtils.add, b, c));
-                return new FunctionNode(numberUtils.add, a,
-                        new FunctionNode(numberUtils.subtract, d,
-                                new FunctionNode(numberUtils.add, b, c)
+                return new FnNode(numberUtils.add, a,
+                        new FnNode(numberUtils.subtract, d,
+                                new FnNode(numberUtils.add, b, c)
                         )
                 );
             }

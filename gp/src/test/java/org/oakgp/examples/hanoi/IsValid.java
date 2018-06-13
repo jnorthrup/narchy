@@ -17,17 +17,17 @@ package org.oakgp.examples.hanoi;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.booleanType;
+import static org.oakgp.NodeType.booleanType;
 import static org.oakgp.examples.hanoi.TowersOfHanoiExample.MOVE_TYPE;
 import static org.oakgp.examples.hanoi.TowersOfHanoiExample.STATE_TYPE;
 
 /**
  * Determines if a move is a valid move for a particular game state.
  */
-class IsValid implements Function {
+class IsValid implements Fn {
     private static final Signature SIGNATURE = new Signature(booleanType(), STATE_TYPE, MOVE_TYPE);
 
     @Override

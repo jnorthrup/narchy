@@ -15,15 +15,15 @@
  */
 package org.oakgp.evolve.crossover;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.evolve.GeneticOperator;
 import org.oakgp.node.Node;
 import org.oakgp.node.walk.DepthWalk;
 import org.oakgp.node.walk.StrategyWalk;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
 
+import java.util.Random;
 import java.util.function.Predicate;
 
 /**
@@ -34,7 +34,7 @@ import java.util.function.Predicate;
  * </p>
  */
 public final class SubtreeCrossover implements GeneticOperator {
-    private final GPRandom random;
+    private final Random random;
     private final int maxDepth;
 
     /**
@@ -43,19 +43,19 @@ public final class SubtreeCrossover implements GeneticOperator {
      * @param random   used to randomly select subtrees to replace and the subtrees to replace them with
      * @param maxDepth used to enforce a maximum depth of any offspring
      */
-    public SubtreeCrossover(GPRandom random, int maxDepth) {
+    public SubtreeCrossover(Random random, int maxDepth) {
         this.random = random;
         this.maxDepth = maxDepth;
     }
 
     @Override
     public Node apply(NodeSelector selector) {
-        Node parent1 = selector.next();
-        Node parent2 = selector.next();
+        Node parent1 = selector.get();
+        Node parent2 = selector.get();
         int to = Utils.selectSubNodeIndex(random, parent1);
         return DepthWalk.replaceAt(parent1, to, (t, d) -> {
             int maxHeightParent2 = maxDepth - d;
-            Type toType = t.returnType();
+            NodeType toType = t.returnType();
             Predicate<Node> treeWalkerStrategy = n -> n.returnType() == toType && n.depth() <= maxHeightParent2 + 1;
             int nodeCount = StrategyWalk.getNodeCount(parent2, treeWalkerStrategy);
             if (nodeCount == 0) {

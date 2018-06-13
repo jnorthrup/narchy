@@ -17,7 +17,7 @@ package org.oakgp.node.walk;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 
@@ -79,7 +79,7 @@ public class NodeWalkTest {
 
     @Test
     public void testReplaceAt_FunctionNode() {
-        FunctionNode n = createFunctionNode();
+        FnNode n = createFunctionNode();
         java.util.function.Function<Node, Node> replacement = t -> integerConstant(9);
 
         assertEquals("(+ (* 9 v1) (+ 1 v2))", NodeWalk.replaceAt(n, 0, replacement).toString());
@@ -103,14 +103,14 @@ public class NodeWalkTest {
         assertNodeEquals("(- (- (* -1 42) 0) (- 13 42))", NodeWalk.replaceAll(input, n -> isVariable(n), replacement));
         assertNodeEquals("(- (- (* 42 v3) 42) (- 42 v1))", NodeWalk.replaceAll(input, n -> isConstant(n), replacement));
 
-        Predicate<Node> criteria = n -> isFunction(n) && ((FunctionNode) n).func() == the.subtract;
+        Predicate<Node> criteria = n -> isFunction(n) && ((FnNode) n).func() == the.subtract;
         assertNodeEquals("(+ (+ 13 v1) (+ 0 (* -1 v3)))",
-                NodeWalk.replaceAll(input, criteria, n -> new FunctionNode(the.add, ((FunctionNode) n).args())));
+                NodeWalk.replaceAll(input, criteria, n -> new FnNode(the.add, ((FnNode) n).args())));
     }
 
     @Test
     public void testGetAt_FunctionNode() {
-        FunctionNode n = createFunctionNode();
+        FnNode n = createFunctionNode();
 
         assertEquals("v0", NodeWalk.getAt(n, 0).toString());
         assertEquals("v1", NodeWalk.getAt(n, 1).toString());
@@ -124,8 +124,8 @@ public class NodeWalkTest {
     /**
      * Returns representation of: {@code (x*y)+z+1}
      */
-    private FunctionNode createFunctionNode() {
-        return new FunctionNode(the.add, new FunctionNode(the.getMultiply(), createVariable(0), createVariable(1)), new FunctionNode(
+    private FnNode createFunctionNode() {
+        return new FnNode(the.add, new FnNode(the.multiply, createVariable(0), createVariable(1)), new FnNode(
                 the.add, createVariable(2), integerConstant(1)));
     }
 }

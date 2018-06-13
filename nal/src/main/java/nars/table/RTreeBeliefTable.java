@@ -256,7 +256,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             if (!temporalTasks.isEmpty()) {
 
-                TruthPolation t = Param.truth(start, end, dur).add(temporalTasks);
+                TruthPolation t = Param.truth(start, end, dur);
+                temporalTasks.forEachItem(t::add);
 
                 LongSet temporalStamp = t.filterCyclic();
                 if (eternal != null && !eternal.isEmpty()) {
@@ -775,14 +776,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
 
         @Override
-        public boolean add(TaskRegion taskRegion) {
+        public boolean accept(TaskRegion taskRegion) {
 
-            return (!(taskRegion instanceof Task)) || super.add(taskRegion);
+            return (!(taskRegion instanceof Task)) || super.accept(taskRegion);
         }
 
         @Override
         public boolean test(TaskRegion x) {
-            add(x);
+            accept(x);
             return --attemptsRemain > 0;
         }
 
@@ -792,7 +793,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         }
 
         boolean continueScan(TimeRange t) {
-            return top.size() < minResults && attemptsRemain > 0;
+            return size() < minResults && attemptsRemain > 0;
         }
 
         /**
@@ -816,7 +817,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             /* if eternal is being calculated, include up to the maximum number of truthpolated terms.
                 otherwise limit by the Leaf capacity */
             if ((!eternal && s <= COMPLETE_SCAN_SIZE_THRESHOLD) || (eternal && s <= TRUTHPOLATION_LIMIT)) {
-                table.forEachOptimistic(this::add);
+                table.forEachOptimistic(this::accept);
                 //TODO this might be faster to add directly then sort the results after
                 //eliminating need for the Cache map
                 return this;
@@ -945,8 +946,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 rightMid = rs0 + 1;
                 expand *= 2;
             } while (true);
-
-            seen.clear(); //GC relief
 
             return this;
         }

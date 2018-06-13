@@ -17,12 +17,12 @@ package org.oakgp.function.math;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.function.choice.If;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.*;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 
 public class NumberUtilsTest {
     private static final IntFunc NUMBER_UTILS = IntFunc.the;
@@ -80,8 +80,8 @@ public class NumberUtilsTest {
 
     private void assertIsAdd(String input, boolean expectedResult) {
         Node n = readNode(input);
-        if (n instanceof FunctionNode) {
-            assertEquals(expectedResult, NUMBER_UTILS.isAdd(((FunctionNode) n).func()));
+        if (n instanceof FnNode) {
+            assertEquals(expectedResult, NUMBER_UTILS.isAdd(((FnNode) n).func()));
         } else {
             assertFalse(expectedResult);
         }
@@ -99,9 +99,9 @@ public class NumberUtilsTest {
     private void assertIsSubtract(String input, boolean expectedResult) {
         Node n = readNode(input);
         assertEquals(expectedResult, NUMBER_UTILS.isSubtract(n));
-        if (n instanceof FunctionNode) {
-            assertEquals(expectedResult, NUMBER_UTILS.isSubtract((FunctionNode) n));
-            assertEquals(expectedResult, NUMBER_UTILS.isSubtract(((FunctionNode) n).func()));
+        if (n instanceof FnNode) {
+            assertEquals(expectedResult, NUMBER_UTILS.isSubtract((FnNode) n));
+            assertEquals(expectedResult, NUMBER_UTILS.isSubtract(((FnNode) n).func()));
         } else {
             assertFalse(expectedResult);
         }
@@ -118,9 +118,9 @@ public class NumberUtilsTest {
 
     private void assertIsMultiply(String input, boolean expectedResult) {
         Node n = readNode(input);
-        if (n instanceof FunctionNode) {
-            assertEquals(expectedResult, NUMBER_UTILS.isMultiply((FunctionNode) n));
-            assertEquals(expectedResult, NUMBER_UTILS.isMultiply(((FunctionNode) n).func()));
+        if (n instanceof FnNode) {
+            assertEquals(expectedResult, NUMBER_UTILS.isMultiply((FnNode) n));
+            assertEquals(expectedResult, NUMBER_UTILS.isMultiply(((FnNode) n).func()));
         } else {
             assertFalse(expectedResult);
         }
@@ -130,7 +130,7 @@ public class NumberUtilsTest {
     public void testIsAddOrSubtract() {
         assertTrue(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.add));
         assertTrue(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.subtract));
-        assertFalse(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.getMultiply()));
+        assertFalse(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.multiply));
         assertFalse(NUMBER_UTILS.isAddOrSubtract(new If(integerType())));
     }
 

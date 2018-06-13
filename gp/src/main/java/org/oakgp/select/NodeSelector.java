@@ -16,18 +16,25 @@
 package org.oakgp.select;
 
 import org.oakgp.node.Node;
+import org.oakgp.rank.Ranking;
+
+import java.util.function.Supplier;
 
 /**
  * Used to obtain {@code Node} instances.
  * <p>
  * The strategy to determine what is returned, and in what order, will depend on the specific implementation of {@code NodeSelector} that is being used.
  */
-@FunctionalInterface
-public interface NodeSelector {
-    /**
-     * Returns a {@code Node}.
-     *
-     * @return a {@code Node}
-     */
-    Node next();
+public interface NodeSelector extends Supplier<Node> {
+
+    /** called before the selector is utilized on a new population distribution */
+    void reset(Ranking living);
+
+
+//    /**
+//     * Returns a {@code Node}.
+//     *
+//     * @return a {@code Node}
+//     */
+//    Node apply(Ranking pop);
 }

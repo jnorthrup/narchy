@@ -16,19 +16,19 @@
 package org.oakgp.function.choice;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 import org.oakgp.function.compare.GreaterThan;
 import org.oakgp.function.compare.LessThan;
 import org.oakgp.function.math.IntFunc;
+import org.oakgp.util.Signature;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.oakgp.Type.booleanType;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.booleanType;
+import static org.oakgp.NodeType.integerType;
 
-public class IfTest extends AbstractFunctionTest {
+public class IfTest extends AbstractFnTest {
     @Override
     protected If getFunction() {
         return new If(integerType());
@@ -75,8 +75,8 @@ public class IfTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.getMultiply(), LessThan.create(integerType()),
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), IntFunc.the.add, IntFunc.the.multiply, LessThan.create(integerType()),
                 new GreaterThan(integerType())};
     }
 }

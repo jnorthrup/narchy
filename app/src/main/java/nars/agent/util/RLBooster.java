@@ -67,6 +67,7 @@ public class RLBooster implements Consumer<NAR> {
 
 
 
+        env.sensors.keySet().forEach(sc::add);
         env.senseNums.forEach(c -> c.forEach(sc::add));
         env.sensorCam.forEach(c -> c.forEach(sc::add));
 
@@ -80,6 +81,8 @@ public class RLBooster implements Consumer<NAR> {
         this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * actionDiscretization /* pos/neg for each action */;
 
         logger.info("{} {} in={} out={}", rl, env, inD, outD);
+        assert(inD > 0);
+        assert(outD > 0);
 
 
 

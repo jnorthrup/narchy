@@ -21,13 +21,14 @@ import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 import org.oakgp.node.walk.StrategyWalk;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.GPRandom;
+
+import java.util.Random;
 
 /**
  * Replaces a randomly selected terminal node of the parent with a newly generated subtree.
  */
 public final class ConstantToFunctionMutation implements GeneticOperator {
-    private final GPRandom random;
+    private final Random random;
     private final TreeGenerator treeGenerator;
 
     /**
@@ -36,14 +37,14 @@ public final class ConstantToFunctionMutation implements GeneticOperator {
      * @param random        used to randomly select terminal nodes to mutate
      * @param treeGenerator used to generate new subtrees to replace terminal nodes selected for mutation
      */
-    public ConstantToFunctionMutation(GPRandom random, TreeGenerator treeGenerator) {
+    public ConstantToFunctionMutation(Random random, TreeGenerator treeGenerator) {
         this.random = random;
         this.treeGenerator = treeGenerator;
     }
 
     @Override
     public Node apply(NodeSelector selector) {
-        Node root = selector.next();
+        Node root = selector.get();
         int nodeCount = StrategyWalk.getNodeCount(root, NodeType::isTerminal);
         int index = random.nextInt(nodeCount);
         return StrategyWalk.replaceAt(root, index, n -> treeGenerator.generate(n.returnType(), 2), NodeType::isTerminal);

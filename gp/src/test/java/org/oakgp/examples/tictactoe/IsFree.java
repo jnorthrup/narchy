@@ -17,13 +17,13 @@ package org.oakgp.examples.tictactoe;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.booleanType;
-import static org.oakgp.Type.type;
+import static org.oakgp.NodeType.booleanType;
+import static org.oakgp.NodeType.type;
 
-public class IsFree implements Function {
+public class IsFree implements Fn {
     private static final Signature SIGNATURE = new Signature(booleanType(), type("board"), type("possibleMove"));
 
     @Override

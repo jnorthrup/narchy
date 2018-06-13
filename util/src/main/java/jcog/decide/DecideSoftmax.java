@@ -5,13 +5,13 @@ import jcog.Util;
 import java.util.Random;
 
 /**
- *  https:
- *  For high temperatures ( {\displaystyle \tau \to \infty } \tau \to \infty ),
- *  all actions have nearly the same probability and the lower the temperature,
- *  the more expected rewards affect the probability.
- *
- *  For a low temperature ( {\displaystyle \tau \to 0^{+}} \tau \to 0^{+}),
- *  the probability of the action with the highest expected reward tends to 1.
+ * https:
+ * For high temperatures ( {\displaystyle \tau \to \infty } \tau \to \infty ),
+ * all actions have nearly the same probability and the lower the temperature,
+ * the more expected rewards affect the probability.
+ * <p>
+ * For a low temperature ( {\displaystyle \tau \to 0^{+}} \tau \to 0^{+}),
+ * the probability of the action with the highest expected reward tends to 1.
  */
 public class DecideSoftmax implements Deciding {
 
@@ -19,16 +19,15 @@ public class DecideSoftmax implements Deciding {
     private final float temperatureDecay;
     private final Random random;
     /**
+     * whether to exclude negative values
+     */
+    boolean onlyPositive;
+    boolean normalize;
+    float temperature;
+    /**
      * normalized motivation
      */
     private float[] mot, motProb;
-
-
-    /** whether to exclude negative values */
-    boolean onlyPositive;
-    boolean normalize;
-
-    float temperature;
     private float decisiveness;
 
     public DecideSoftmax(float constantTemp, Random random) {
@@ -45,58 +44,67 @@ public class DecideSoftmax implements Deciding {
     @Override
     public int decide(float[] vector, int lastAction) {
 
-        temperature = Math.max(minTemperature,temperature * temperatureDecay);
+        try {
+            temperature = Math.max(minTemperature, temperature * temperatureDecay);
 
-        int actions = vector.length;
-        if (mot == null) {
-            mot = new float[actions];
-            motProb = new float[actions];
-        }
+            int actions = vector.length;
+            if (mot == null) {
+                mot = new float[actions];
+                motProb = new float[actions];
+            }
 
-        
-        if (onlyPositive) {
-            for (int i = 0; i < vector.length; i++)
-                vector[i] = Math.max(0, vector[i]);
-        }
 
-        float sumMotivation = Util.sum(vector);
-        if (sumMotivation < Float.MIN_VALUE) {
+            if (onlyPositive) {
+                for (int i = 0; i < vector.length; i++)
+                    vector[i] = Math.max(0, vector[i]);
+            }
+
+            float sumMotivation = Util.sum(vector);
+            if (sumMotivation > Float.MIN_VALUE * actions) {
+
+
+                if (normalize) {
+                    float[] minmax = Util.minmax(vector);
+                    float min = minmax[0];
+                    float max = minmax[1];
+                    for (int i = 0; i < actions; i++) {
+                        mot[i] = Util.normalize(vector[i], min, max);
+                    }
+                } else {
+                    System.arraycopy(vector, 0, mot, 0, actions);
+                }
+
+                /* http://www.cse.unsw.edu.au/~cs9417ml/RL1/source/RLearner.java */
+                float sumProb = 0;
+                for (int i = 0; i < actions; i++) {
+                    sumProb += (motProb[i] = Util.softmax(mot[i], temperature));
+                }
+
+                float r = random.nextFloat() * sumProb;
+
+                int i;
+                for (i = actions - 1; i >= 1; i--) {
+                    float m = motProb[i];
+                    r -= m;
+                    if (r <= 0) {
+                        break;
+                    }
+                }
+
+                decisiveness = vector[i] / sumMotivation;
+
+                return i;
+            }
+
+        } catch (Exception e) {
+            //logger.error
+            System.err.println(e.getMessage());
+        } finally {
             decisiveness = 0;
             return random.nextInt(vector.length);
         }
 
-        if (normalize) {
-            float[] minmax = Util.minmax(vector);
-            float min = minmax[0];
-            float max = minmax[1];
-            for (int i = 0; i < actions; i++) {
-                mot[i] = Util.normalize(vector[i], min, max);
-            }
-        } else {
-            System.arraycopy(vector, 0, mot, 0, actions);
-        }
 
-        /* http://www.cse.unsw.edu.au/~cs9417ml/RL1/source/RLearner.java */
-        float sumProb = 0;
-        for (int i = 0; i < actions; i++) {
-            sumProb += (motProb[i]  = Util.softmax(mot[i], temperature));
-        }
-
-        float r = random.nextFloat() * sumProb;
-
-        int i;
-        for (i = actions - 1; i >= 1; i--) {
-            float m = motProb[i];
-            r -= m;
-            if (r <= 0) {
-                break;
-            }
-        }
-
-        decisiveness = vector[i] / sumMotivation;
-        
-
-        return i;
     }
 
     public float decisiveness() {

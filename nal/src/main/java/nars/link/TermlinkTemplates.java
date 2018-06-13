@@ -77,7 +77,7 @@ public class TermlinkTemplates extends FasterList<Term> {
 
         int tcs = tc.size();
         if (tcs > 0) {
-            return new TermlinkTemplates(tc.list.toArrayRecycled(Term[]::new));
+            return new TermlinkTemplates(((FasterList<Term>)tc.list).toArrayRecycled(Term[]::new));
         }
 
 

@@ -17,10 +17,10 @@ package org.oakgp.serialize;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.Arguments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.function.classify.IsPositive;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 import org.oakgp.primitive.VariableSet;
@@ -32,13 +32,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.*;
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 import static org.oakgp.util.Void.VOID;
 
 public class NodeReaderTest {
     @Test
     public void testIsEndOfStream() throws IOException {
-        try (NodeReader nr = new NodeReader("1 2 3", new Function[0], new ConstantNode[0], VariableSet.createVariableSet())) {
+        try (NodeReader nr = new NodeReader("1 2 3", new Fn[0], new ConstantNode[0], VariableSet.Empty)) {
             assertFalse(nr.isEndOfStream());
             nr.readNode();
 
@@ -226,7 +226,8 @@ public class NodeReaderTest {
     public void testConstantNode() throws IOException {
         String input = "TEST";
         ConstantNode expected = new ConstantNode(input, type("testConstantNode"));
-        try (NodeReader r = new NodeReader(input, new Function[0], new ConstantNode[]{expected}, VariableSet.createVariableSet())) {
+        try (NodeReader r = new NodeReader(input, new Fn[0],
+                new ConstantNode[]{expected}, VariableSet.Empty)) {
             Node actual = r.readNode();
             assertSame(expected, actual);
         }
@@ -235,7 +236,7 @@ public class NodeReaderTest {
     @Test
     public void testUnknown() throws IOException {
         String input = "TEST";
-        try (NodeReader r = new NodeReader(input, new Function[0], new ConstantNode[0], VariableSet.createVariableSet())) {
+        try (NodeReader r = new NodeReader(input, new Fn[0], new ConstantNode[0], VariableSet.Empty)) {
             r.readNode();
             fail("");
         } catch (IllegalArgumentException e) {
@@ -311,7 +312,7 @@ public class NodeReaderTest {
         assertEquals(expected, output.eval(null));
     }
 
-    private void assertParseFunction(String input, Class<? extends Function> expected) {
+    private void assertParseFunction(String input, Class<? extends Fn> expected) {
         Node output = readConstant(input);
         assertSame(integerToBooleanFunctionType(), output.returnType());
         assertEquals(expected, ((ConstantNode) output).eval(null).getClass());
@@ -327,7 +328,7 @@ public class NodeReaderTest {
 
     private void assertParseFunction(String input) {
         Node output = readNode(input);
-        assertSame(FunctionNode.class, output.getClass());
+        assertSame(FnNode.class, output.getClass());
         assertEquals(input, output.toString());
     }
 

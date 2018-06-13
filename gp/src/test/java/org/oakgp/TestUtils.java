@@ -15,7 +15,7 @@
  */
 package org.oakgp;
 
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.function.choice.If;
 import org.oakgp.function.choice.OrElse;
 import org.oakgp.function.classify.IsNegative;
@@ -27,12 +27,12 @@ import org.oakgp.function.hof.Filter;
 import org.oakgp.function.hof.Reduce;
 import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 import org.oakgp.primitive.VariableSet;
-import org.oakgp.rank.Candidates;
-import org.oakgp.rank.RankedCandidate;
+import org.oakgp.rank.Ranking;
+import org.oakgp.rank.Evolved;
 import org.oakgp.serialize.NodeReader;
 import org.oakgp.serialize.NodeWriter;
 
@@ -45,12 +45,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 import static org.oakgp.util.Utils.intArrayType;
 
 public class TestUtils {
-    public static final VariableSet VARIABLE_SET = VariableSet.createVariableSet(intArrayType(100));
-    private static final Function[] FUNCTIONS = createDefaultFunctions();
+    public static final VariableSet VARIABLE_SET = VariableSet.of(intArrayType(100));
+    private static final Fn[] FUNCTIONS = createDefaultFunctions();
 
     public static void assertVariable(int expectedId, Node node) {
         assertTrue(node instanceof VariableNode);
@@ -78,8 +78,8 @@ public class TestUtils {
         return new NodeWriter().writeNode(input);
     }
 
-    public static FunctionNode readFunctionNode(String input) {
-        return (FunctionNode) readNode(input);
+    public static FnNode readFunctionNode(String input) {
+        return (FnNode) readNode(input);
     }
 
     public static Node readNode(String input) {
@@ -92,7 +92,7 @@ public class TestUtils {
         return readNodes(input, FUNCTIONS, VARIABLE_SET);
     }
 
-    private static List<Node> readNodes(String input, Function[] functions, VariableSet variableSet) {
+    private static List<Node> readNodes(String input, Fn[] functions, VariableSet variableSet) {
         List<Node> outputs = new ArrayList<>();
         try (NodeReader nr = new NodeReader(input, functions, new ConstantNode[0], variableSet)) {
             while (!nr.isEndOfStream()) {
@@ -104,13 +104,13 @@ public class TestUtils {
         return outputs;
     }
 
-    private static Function[] createDefaultFunctions() {
-        List<Function> functions = new ArrayList<>();
+    private static Fn[] createDefaultFunctions() {
+        List<Fn> functions = new ArrayList<>();
 
         functions.add(IntFunc.the.add);
         functions.add(IntFunc.the.subtract);
-        functions.add(IntFunc.the.getMultiply());
-        functions.add(IntFunc.the.getDivide());
+        functions.add(IntFunc.the.multiply);
+        functions.add(IntFunc.the.divide);
 
         functions.add(LessThan.create(integerType()));
         functions.add(LessThanOrEqual.create(integerType()));
@@ -134,7 +134,7 @@ public class TestUtils {
         functions.add(new Count(integerType()));
         functions.add(new Count(booleanType()));
 
-        return functions.toArray(new Function[functions.size()]);
+        return functions.toArray(new Fn[functions.size()]);
     }
 
     public static Arguments createArguments(String... expressions) {
@@ -166,39 +166,41 @@ public class TestUtils {
     }
 
     public static ConstantNode booleanConstant(Boolean value) {
-        return new ConstantNode(value, Type.booleanType());
+        return new ConstantNode(value, NodeType.booleanType());
     }
 
     public static ConstantNode stringConstant(String value) {
-        return new ConstantNode(value, Type.stringType());
+        return new ConstantNode(value, NodeType.stringType());
     }
 
     public static VariableNode createVariable(int id) {
-        return VARIABLE_SET.getById(id);
+        return VARIABLE_SET.get(id);
     }
 
-    public static void assertRankedCandidate(RankedCandidate actual, Node expectedNode, double expectedFitness) {
-        assertSame(expectedNode, actual.node);
-        assertEquals(expectedFitness, actual.fitness, 0.001f);
+    public static void assertRankedCandidate(Evolved actual, Node expectedNode, double expectedFitness) {
+        assertSame(expectedNode, actual.id);
+        assertEquals(expectedFitness, actual.pri(), 0.001f);
     }
 
     public static void assertNodeEquals(String expected, Node actual) {
         assertEquals(expected, writeNode(actual));
     }
 
-    public static Candidates singletonRankedCandidates() {
+    public static Ranking singletonRankedCandidates() {
         return singletonRankedCandidates(1);
     }
 
-    public static Candidates singletonRankedCandidates(double fitness) {
-        return new Candidates(new RankedCandidate[]{new RankedCandidate(mockNode(), fitness)});
+    public static Ranking singletonRankedCandidates(double fitness) {
+        Ranking r = new Ranking(1);
+        r.add(new Evolved(mockNode(), fitness));
+        return r;
     }
 
     public static Node mockNode() {
         return mockNode(integerType());
     }
 
-    public static Node mockNode(Type type) {
+    public static Node mockNode(NodeType type) {
         Node mockNode = mock(Node.class);
         given(mockNode.returnType()).willReturn(type);
         return mockNode;

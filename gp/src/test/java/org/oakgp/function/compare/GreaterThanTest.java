@@ -15,15 +15,15 @@
  */
 package org.oakgp.function.compare;
 
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.oakgp.Type.integerType;
-import static org.oakgp.Type.stringType;
+import static org.oakgp.NodeType.integerType;
+import static org.oakgp.NodeType.stringType;
 
-public class GreaterThanTest extends AbstractFunctionTest {
+public class GreaterThanTest extends AbstractFnTest {
     @Override
     protected GreaterThan getFunction() {
         return new GreaterThan(integerType());
@@ -56,7 +56,7 @@ public class GreaterThanTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), new GreaterThan(stringType()), LessThan.create(integerType())};
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), new GreaterThan(stringType()), LessThan.create(integerType())};
     }
 }

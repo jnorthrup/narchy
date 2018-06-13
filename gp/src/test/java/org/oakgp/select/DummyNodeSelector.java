@@ -16,6 +16,7 @@
 package org.oakgp.select;
 
 import org.oakgp.node.Node;
+import org.oakgp.rank.Ranking;
 
 import java.util.Arrays;
 
@@ -52,6 +53,11 @@ public class DummyNodeSelector implements NodeSelector {
         }
     }
 
+    @Override
+    public void reset(Ranking living) {
+
+    }
+
     public static DummyNodeSelector repeat(int count, String... nodes) {
         return repeat(count, Arrays.stream(nodes).map(s -> readNode(s)).toArray(Node[]::new));
     }
@@ -65,7 +71,7 @@ public class DummyNodeSelector implements NodeSelector {
     }
 
     @Override
-    public Node next() {
+    public Node get() {
         if (ctr == nodes.length) {
             throw new ArrayIndexOutOfBoundsException("Trying to access element: " + ctr + " of: " + Arrays.toString(nodes));
         }

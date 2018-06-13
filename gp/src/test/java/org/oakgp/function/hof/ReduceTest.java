@@ -15,13 +15,13 @@
  */
 package org.oakgp.function.hof;
 
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 import org.oakgp.function.math.IntFunc;
 
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 
-public class ReduceTest extends AbstractFunctionTest {
+public class ReduceTest extends AbstractFnTest {
     @Override
     protected Reduce getFunction() {
         return new Reduce(integerType());
@@ -44,7 +44,7 @@ public class ReduceTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.getMultiply()};
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), IntFunc.the.add, IntFunc.the.multiply};
     }
 }

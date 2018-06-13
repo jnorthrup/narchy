@@ -15,18 +15,18 @@
  */
 package org.oakgp.function.math;
 
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 
-public class MultiplyTest extends AbstractFunctionTest {
+public class MultiplyTest extends AbstractFnTest {
     @Override
     protected Multiply getFunction() {
-        return IntFunc.the.getMultiply();
+        return IntFunc.the.multiply;
     }
 
     @Override
@@ -84,8 +84,8 @@ public class MultiplyTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.subtract, LongFunc.the.getMultiply(),
-                DoubleFunc.the.getMultiply(), BigIntegerFunc.the.getMultiply(), BigDecimalFunc.the.getMultiply()};
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), IntFunc.the.add, IntFunc.the.subtract, LongFunc.the.multiply,
+                DoubleFunc.the.multiply, BigIntegerFunc.the.multiply, BigDecimalFunc.the.multiply};
     }
 }

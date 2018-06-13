@@ -93,7 +93,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
             return Collections.emptyIterator();
         }
     };
-    public final FasterList<X> list;
+
+    public final List<X> list;
     private Set<X> set = Set.of();
 
 
@@ -103,18 +104,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     public ArrayHashSet(int capacity) {
-
-
-
-        this.list =
-                
-                new FasterList<>(capacity);
+        this(new FasterList<>(capacity));
     }
 
-    public ArrayHashSet(Collection<X> collection) {
-        this();
-        collection.forEach(this::add);
+    public ArrayHashSet(List<X> list) {
+        this.list = list;
     }
+
 
     
 
@@ -140,11 +136,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     public boolean OR(org.eclipse.collections.api.block.predicate.Predicate<? super X> test) {
-        return list.anySatisfy(test);
+        return jcog.Util.or(test, list);
     }
 
     public boolean AND(org.eclipse.collections.api.block.predicate.Predicate<? super X> test) {
-        return list.allSatisfy(test);
+        return jcog.Util.and(test, list);
     }
 
 
@@ -235,8 +231,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     public void clear() {
 
 
-        if (list.clearIfChanged()) {
-            
+        if (!list.isEmpty()) {
+            list.clear();
             set = Set.of();
         }
 

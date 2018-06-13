@@ -16,10 +16,10 @@
 package org.oakgp.function.math;
 
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import static org.oakgp.node.NodeType.isConstant;
@@ -32,7 +32,7 @@ import static org.oakgp.node.NodeType.isFunction;
  */
 abstract class NumFunc<T extends Comparable<T>> {
 
-    public final Type type;
+    public final NodeType type;
     public final T rawZero;
     public final T rawOne;
     public final ConstantNode zero;
@@ -53,7 +53,7 @@ abstract class NumFunc<T extends Comparable<T>> {
      * @param one  the value {@code 1} of type {@link #T}
      * @param two  the value {@code 2} of type {@link #T}
      */
-    protected NumFunc(Type type, T zero, T one, T two) {
+    protected NumFunc(NodeType type, T zero, T one, T two) {
         this.type = type;
         this.rawZero = zero;
         this.rawOne = one;
@@ -70,33 +70,6 @@ abstract class NumFunc<T extends Comparable<T>> {
         this.divide = new Divide(this);
     }
 
-    /**
-     * Returns the {@code Type} associated with the numeric values this instance is concerned with.
-     */
-    public final Type getType() {
-        return type;
-    }
-
-    /**
-     * Returns a {@code ArithmeticExpressionSimplifier} for the numeric type this instance is concerned with.
-     */
-    public final ArithmeticExpressionSimplifier getSimplifier() {
-        return simplifier;
-    }
-
-    /**
-     * Returns a multiplication operator for the numeric type this instance is concerned with.
-     */
-    public final Multiply getMultiply() {
-        return multiply;
-    }
-
-    /**
-     * Returns a division operator for the numeric type this instance is concerned with.
-     */
-    public final Divide getDivide() {
-        return divide;
-    }
 
     /**
      * Returns the result of adding the result of evaluating the given {@code Node}s with the given {@code Assignments}.
@@ -164,7 +137,7 @@ abstract class NumFunc<T extends Comparable<T>> {
         if (isConstant(arg)) {
             return negateConstant(arg);
         } else {
-            return new FunctionNode(subtract, zero, arg);
+            return new FnNode(subtract, zero, arg);
         }
     }
 
@@ -197,8 +170,8 @@ abstract class NumFunc<T extends Comparable<T>> {
     /**
      * Returns a new expression which multiplies the given {@code Node} by two.
      */
-    public final FunctionNode multiplyByTwo(Node arg) {
-        return new FunctionNode(multiply, two, arg);
+    public final FnNode multiplyByTwo(Node arg) {
+        return new FnNode(multiply, two, arg);
     }
 
     /**
@@ -222,14 +195,14 @@ abstract class NumFunc<T extends Comparable<T>> {
     /**
      * Returns {@code true} if the given {@code Function} is the same as the values returned from {@link #getAdd()} or {@link #getSubtract()}.
      */
-    public final boolean isAddOrSubtract(Function f) {
+    public final boolean isAddOrSubtract(Fn f) {
         return isAdd(f) || isSubtract(f);
     }
 
     /**
      * Returns {@code true} if the given {@code Function} is the same as returned from {@link #getAdd()}.
      */
-    public final boolean isAdd(Function f) {
+    public final boolean isAdd(Fn f) {
         return f == add;
     }
 
@@ -237,34 +210,34 @@ abstract class NumFunc<T extends Comparable<T>> {
      * Returns {@code true} if the given {@code Node} is a {@code FunctionNode} with the same {@code Function} as returned from {@link #getSubtract()}.
      */
     public final boolean isSubtract(Node n) {
-        return isFunction(n) && isSubtract((FunctionNode) n);
+        return isFunction(n) && isSubtract((FnNode) n);
     }
 
     /**
      * Returns {@code true} if the {@code Function} of the given {@code FunctionNode} is the same as returned from {@link #getSubtract()}.
      */
-    public final boolean isSubtract(FunctionNode n) {
+    public final boolean isSubtract(FnNode n) {
         return isSubtract(n.func());
     }
 
     /**
      * Returns {@code true} if the given {@code Function} is the same as returned from {@link #getSubtract()}.
      */
-    public final boolean isSubtract(Function f) {
+    public final boolean isSubtract(Fn f) {
         return f == subtract;
     }
 
     /**
      * Returns {@code true} if the {@code Function} of the given {@code FunctionNode} is the same as returned from {@link #getMultiply()}.
      */
-    public final boolean isMultiply(FunctionNode n) {
+    public final boolean isMultiply(FnNode n) {
         return isMultiply(n.func());
     }
 
     /**
      * Returns {@code true} if the given {@code Function} is the same as returned from {@link #getMultiply()}.
      */
-    public final boolean isMultiply(Function f) {
+    public final boolean isMultiply(Fn f) {
         return f == multiply;
     }
 
@@ -272,7 +245,7 @@ abstract class NumFunc<T extends Comparable<T>> {
     /**
      * Returns {@code true} if the given {@code Function} is the same as returned from {@link #getDivide()}.
      */
-    public boolean isDivide(Function f) {
+    public boolean isDivide(Fn f) {
         return f == divide;
     }
 
@@ -282,8 +255,8 @@ abstract class NumFunc<T extends Comparable<T>> {
      */
     public final boolean isArithmeticExpression(Node n) {
         if (isFunction(n)) {
-            FunctionNode fn = (FunctionNode) n;
-            Function f = fn.func();
+            FnNode fn = (FnNode) n;
+            Fn f = fn.func();
             return isAdd(f) || isSubtract(f) || isMultiply(f) || isDivide(f);
         } else {
             return false;

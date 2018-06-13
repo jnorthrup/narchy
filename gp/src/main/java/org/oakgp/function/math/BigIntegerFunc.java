@@ -17,7 +17,7 @@ package org.oakgp.function.math;
 
 import java.math.BigInteger;
 
-import static org.oakgp.Type.bigIntegerType;
+import static org.oakgp.NodeType.bigIntegerType;
 
 /**
  * Provides support for working with instances of {@code java.math.BigInteger}.

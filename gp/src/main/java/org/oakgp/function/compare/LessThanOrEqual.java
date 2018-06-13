@@ -15,7 +15,7 @@
  */
 package org.oakgp.function.compare;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,12 +23,12 @@ import java.util.concurrent.ConcurrentHashMap;
  * Determines if the object represented by the first argument is less than or equal to the object represented by the second.
  */
 public final class LessThanOrEqual extends ComparisonOperator {
-    private static final ConcurrentHashMap<Type, LessThanOrEqual> CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<NodeType, LessThanOrEqual> CACHE = new ConcurrentHashMap<>();
 
     /**
      * Constructs a function that compares two arguments of the specified type.
      */
-    private LessThanOrEqual(Type type) {
+    private LessThanOrEqual(NodeType type) {
         super(type, true);
     }
 
@@ -38,7 +38,7 @@ public final class LessThanOrEqual extends ComparisonOperator {
      * If this is the first call to {@code #create(Type)} with the specified {@code Type} then a new instance will be created and returned. If there has
      * previously been calls to {@code #create(Type)} for the specified {@code Type} then the existing instance will be returned.
      */
-    public static LessThanOrEqual create(Type t) {
+    public static LessThanOrEqual create(NodeType t) {
         return CACHE.computeIfAbsent(t, LessThanOrEqual::new);
     }
 

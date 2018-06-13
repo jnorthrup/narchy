@@ -1,6 +1,8 @@
 package jcog.decide;
 
+import jcog.Util;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -44,7 +46,16 @@ public final class MutableRoulette {
      */
     private int remaining;
 
-    private MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
+    /** with no weight modification */
+    public MutableRoulette(int count, IntToFloatFunction initialWeights, Random rng) {
+        this(count, initialWeights, (x -> x), rng);
+    }
+
+    public MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
+        this(Util.map(count, initialWeights), weightUpdate, rng );
+    }
+
+    public MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
         this.w = w;
         int n = w.length;
         this.remaining = n;
@@ -98,12 +109,12 @@ public final class MutableRoulette {
         }
     }
 
-    private boolean next(IntPredicate select) {
+    public boolean next(IntPredicate select) {
         int n = next();
         return n >= 0 && select.test(n) && remaining > 0;
     }
 
-    private int next() {
+    public int next() {
 
         assert (remaining > 0);
 

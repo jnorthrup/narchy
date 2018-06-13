@@ -16,18 +16,16 @@
 package org.oakgp.util;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.oakgp.NodeType.*;
 import static org.oakgp.TestUtils.*;
-import static org.oakgp.Type.*;
 import static org.oakgp.util.DummyRandom.GetIntExpectation.nextInt;
 
 public class UtilsTest {
@@ -39,21 +37,21 @@ public class UtilsTest {
         Node n4 = mockNode(integerType());
         Node n5 = mockNode(booleanType());
         Node[] values = {n1, n2, n3, n4, n5};
-        Map<Type, List<Node>> groups = Utils.groupByType(values);
+        Map<NodeType, Node[]> groups = Utils.groupByType(values);
         assertEquals(3, groups.size());
-        assertEquals(asList(n1, n3, n4), groups.get(integerType()));
-        assertEquals(asList(n2), groups.get(stringType()));
-        assertEquals(asList(n5), groups.get(booleanType()));
+        assertArrayEquals(new Node[]{n1, n3, n4}, groups.get(integerType()));
+        assertArrayEquals(new Node[]{n2}, groups.get(stringType()));
+        assertArrayEquals(new Node[]{n5}, groups.get(booleanType()));
     }
 
     @Test
     public void testGroupBy() {
         String[] values = {"aardvark", "apple", "bag", "cat", "cake", "caterpillar"};
-        Map<Character, List<String>> groups = Utils.groupBy(values, s -> s.charAt(0));
+        Map<Character, String[]> groups = Utils.groupBy(values, s -> s.charAt(0));
         assertEquals(3, groups.size());
-        assertEquals(asList("aardvark", "apple"), groups.get('a'));
-        assertEquals(asList("bag"), groups.get('b'));
-        assertEquals(asList("cat", "cake", "caterpillar"), groups.get('c'));
+        assertArrayEquals(new String[] {"aardvark", "apple"}, groups.get('a'));
+        assertArrayEquals(new String[] {"bag"}, groups.get('b'));
+        assertArrayEquals(new String[] {"cat", "cake", "caterpillar"}, groups.get('c'));
     }
 
     @Test
@@ -105,9 +103,9 @@ public class UtilsTest {
     }
 
     private void assertIntegerTypeArray(int size) {
-        Type[] t = Utils.intArrayType(size);
+        NodeType[] t = Utils.intArrayType(size);
         assertEquals(size, t.length);
-        for (Type element : t) {
+        for (NodeType element : t) {
             assertSame(integerType(), element);
         }
     }
@@ -122,7 +120,7 @@ public class UtilsTest {
 
     @Test
     public void testCreateEnumConstants() {
-        Type type = Type.type("testCreateEnumConstants");
+        NodeType type = NodeType.type("testCreateEnumConstants");
         TestCreateEnumConstantsEnum[] input = TestCreateEnumConstantsEnum.values();
 
         ConstantNode[] result = Utils.enumConsts(TestCreateEnumConstantsEnum.class, type);

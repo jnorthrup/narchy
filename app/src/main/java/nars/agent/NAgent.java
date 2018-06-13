@@ -111,8 +111,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
 
-    public final FloatRange motivation = new FloatRange(1f, 0f, 2f);
-    protected List<Task> always = $.newArrayList();
+    //public final FloatRange motivation = new FloatRange(1f, 0f, 2f);
+    public List<Task> always = $.newArrayList();
 
     /** non-null if an independent loop process has started */
     private volatile Loop loop = null;
@@ -328,7 +328,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                             ))
                     );
 
-            happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));
+            //happy.pri(()->motivation.floatValue()*nar.priDefault(BELIEF));
 
             alwaysWant(happy.filter[0].term, nar.confDefault(GOAL));
             alwaysWant(happy.filter[1].term, nar.confDefault(GOAL)/2);
@@ -401,17 +401,18 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         frame.emit(nar);
 
+
         happy.update(last, now, sensorDur, nar);
 
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(Util.unitize(next), nar.confDefault(BELIEF));
         sensors.forEach((key, value) -> value.input(key.update(last, now, truther, sensorDur, nar)));
 
         
-        always( motivation.floatValue() );
+        always( 1f /* motivation.floatValue()*/ );
 
         
         Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
-        ArrayUtils.shuffle(aa, random()); 
+        ArrayUtils.shuffle(aa, random());
         for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
             Stream<ITask> s = ac.getKey().update(last, now, sensorDur, NAgent.this.nar);
             if (s != null)
@@ -420,7 +421,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         Truth happynowT = nar.beliefTruth(happy, last, now);
         float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;
-        nar.emotion.happy(motivation.floatValue() * dexterity(last, now) * happynow /* /nar.confDefault(GOAL) */);
+        nar.emotion.happy(/* motivation.floatValue() * */ dexterity(last, now) * happynow /* /nar.confDefault(GOAL) */);
 
         if (trace)
             logger.info(summary());

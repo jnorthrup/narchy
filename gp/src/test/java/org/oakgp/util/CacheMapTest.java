@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.oakgp.rank.fitness.FitnessRanker.createCache;
 
 @Disabled
 public class CacheMapTest {
@@ -32,7 +33,7 @@ public class CacheMapTest {
     @Test
     public void testSizeThree() {
         final int maxSize = 3;
-        Cache<String, Integer> m = CacheMap.createCache(maxSize);
+        Cache<String, Integer> m = createCache(maxSize*10);
 
         m.put("a", 1);
         m.put("b", 1);

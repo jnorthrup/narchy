@@ -16,14 +16,15 @@
 package org.oakgp.evolve.mutate;
 
 import org.oakgp.evolve.GeneticOperator;
-import org.oakgp.function.Function;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.walk.NodeWalk;
 import org.oakgp.primitive.PrimitiveSet;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
+
+import java.util.Random;
 
 import static org.oakgp.node.NodeType.isFunction;
 
@@ -37,7 +38,7 @@ import static org.oakgp.node.NodeType.isFunction;
  * </p>
  */
 public final class PointMutation implements GeneticOperator {
-    private final GPRandom random;
+    private final Random random;
     private final PrimitiveSet primitiveSet;
 
     /**
@@ -46,22 +47,22 @@ public final class PointMutation implements GeneticOperator {
      * @param random       used to randomly select nodes to mutate
      * @param primitiveSet used to select replacements for nodes selected for mutation
      */
-    public PointMutation(GPRandom random, PrimitiveSet primitiveSet) {
+    public PointMutation(Random random, PrimitiveSet primitiveSet) {
         this.random = random;
         this.primitiveSet = primitiveSet;
     }
 
     @Override
     public Node apply(NodeSelector selector) {
-        Node root = selector.next();
+        Node root = selector.get();
         int mutationPoint = Utils.selectSubNodeIndex(random, root);
         return NodeWalk.replaceAt(root, mutationPoint, node -> {
             if (isFunction(node)) {
-                FunctionNode functionNode = (FunctionNode) node;
-                Function function = primitiveSet.nextAlternativeFunction(functionNode.func());
-                return new FunctionNode(function, functionNode.args());
+                FnNode functionNode = (FnNode) node;
+                Fn function = primitiveSet.next(functionNode.func());
+                return new FnNode(function, functionNode.args());
             } else {
-                return primitiveSet.nextAlternativeTerminal(node);
+                return primitiveSet.nextTerminal(node);
             }
         });
     }

@@ -15,15 +15,15 @@
  */
 package org.oakgp.function.compare;
 
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static org.oakgp.Type.integerType;
-import static org.oakgp.Type.stringType;
+import static org.oakgp.NodeType.integerType;
+import static org.oakgp.NodeType.stringType;
 
-public class NotEqualTest extends AbstractFunctionTest {
+public class NotEqualTest extends AbstractFnTest {
     @Override
     protected NotEqual getFunction() {
         return new NotEqual(integerType());
@@ -57,7 +57,7 @@ public class NotEqualTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), new NotEqual(stringType())};
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), new NotEqual(stringType())};
     }
 }

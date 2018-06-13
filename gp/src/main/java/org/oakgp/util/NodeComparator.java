@@ -66,8 +66,8 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
                 int iDepth = Integer.compare(o1.depth(), o2.depth());
                 if (iDepth != 0) return iDepth;
 
-                int iName = ((FunctionNode)o1).func().name().compareTo(
-                        ((FunctionNode)o2).func().name()
+                int iName = ((FnNode)o1).func().name().compareTo(
+                        ((FnNode)o2).func().name()
                 );
                 if (iName != 0) return iName;
             }

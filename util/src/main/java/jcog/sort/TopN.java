@@ -3,28 +3,30 @@ package jcog.sort;
 import jcog.list.FasterList;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
-public class TopN<E> extends SortedArray<E> implements Consumer<E> {
+/** warning: this keeps duplicate insertions */
+public class TopN<X> extends SortedArray<X> implements Consumer<X> {
 
-    private final FloatFunction<E> rank;
+    protected final FloatFunction<X> rank;
 
-    public TopN(E[] target, FloatFunction<E> rank) {
+    public TopN(X[] target, FloatFunction<X> rank) {
         this.list = target;
         this.rank = rank; 
     }
 
-    public final float rank(E x) {
+    public final float rank(X x) {
         return rank.floatValueOf(x); 
     }
 
-    public final float rankNeg(E x) {
+    public final float rankNeg(X x) {
         return -rank.floatValueOf(x); 
     }
 
-    public void clear(int newCapacity, IntFunction<E[]> newArray) {
+    public void clear(int newCapacity, IntFunction<X[]> newArray) {
         if (list == null || list.length != newCapacity) {
             list = newArray.apply(newCapacity);
             size = 0;
@@ -34,7 +36,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     }
 
     @Override
-    public int add(E element, float elementRank, FloatFunction<E> cmp) {
+    public int add(X element, float elementRank, FloatFunction<X> cmp) {
 
         if (this.size == list.length) {
             if (elementRank >= minValueIfFull()) {
@@ -46,17 +48,17 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         return super.add(element, elementRank, cmp);
     }
 
-    protected void rejectOnEntry(E e) {
+    protected void rejectOnEntry(X e) {
 
     }
 
     @Override
-    public boolean add(E e) {
+    public boolean add(X e) {
         int r = add(e, this::rankNeg);
         return r >= 0;
     }
     
-    protected boolean add(E e, float elementRank) {
+    protected boolean add(X e, float elementRank) {
         return add(e, elementRank, this::rankNeg)!=-1;
     }
 
@@ -66,16 +68,16 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     }
 
     @Override
-    protected E[] newArray(int oldSize) {
+    protected X[] newArray(int oldSize) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public final void accept(E e) {
+    public final void accept(X e) {
         add(e);
     }
 
-    public E pop() {
+    public X pop() {
         int s = size();
         if (s == 0) return null;
         return removeFirst();
@@ -86,18 +88,18 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         throw new UnsupportedOperationException();
     }
 
-    public List<E> drain(int count) {
+    public List<X> drain(int count) {
         count = Math.min(count, size);
-        List<E> x = new FasterList(count);
+        List<X> x = new FasterList(count);
         for (int i = 0; i < count; i++) {
             x.add(pop());
         }
         return x;
     }
 
-    public E[] drain(E[] next) {
+    public X[] drain(X[] next) {
 
-        E[] current = this.list;
+        X[] current = this.list;
 
         this.list = next;
         this.size = 0;
@@ -107,7 +109,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
 
     public float maxValue() {
-        E f = first();
+        X f = first();
         if (f != null)
             return rankNeg(f);
         else
@@ -115,7 +117,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     }
 
     public float minValue() {
-        E f = last();
+        X f = last();
         return f != null ? rank(f) : Float.NaN;
     }
 
@@ -123,4 +125,33 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         return size() == capacity() ? minValue() : Float.NEGATIVE_INFINITY;
     }
 
+    public X top() { return isEmpty() ? null : get(0); }
+
+    /** what % to remain; ex: rate of 25% removes the lower 75% */
+    public void removePercentage(float below, boolean ofExistingOrCapacity) {
+        assert(below >= 0 && below <= 1.0f);
+        int belowIndex = (int) Math.floor(ofExistingOrCapacity ? size(): capacity() * below);
+        if (belowIndex < size) {
+            size = belowIndex;
+            Arrays.fill(list, size, list.length-1, null);
+        }
+    }
+
+//    public Set<X> removePercentageToSet(float below) {
+//        assert(below >= 0 && below <= 1.0f);
+//        int belowIndex = (int) Math.floor(size() * below);
+//        if (belowIndex == size)
+//            return Set.of();
+//
+//        int toRemove = size - belowIndex;
+//        Set<X> removed = new HashSet();
+//        for (int i = 0; i < toRemove; i++) {
+//            removed.add(removeLast());
+//        }
+//        return removed;
+//    }
+
+    public boolean isFull() {
+        return size()>=capacity();
+    }
 }

@@ -16,7 +16,7 @@
 package org.oakgp.node.walk;
 
 import org.oakgp.Arguments;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
@@ -43,7 +43,7 @@ public final class DepthWalk {
     private static int getNodeCount(Node node, DepthWalkStrategy treeWalkerStrategy, int currentDepth) {
         if (NodeType.isFunction(node)) {
             int total = treeWalkerStrategy.test(node, currentDepth) ? 1 : 0;
-            FunctionNode functionNode = (FunctionNode) node;
+            FnNode functionNode = (FnNode) node;
             Arguments arguments = functionNode.args();
             for (int i = 0; i < arguments.length(); i++) {
                 total += getNodeCount(arguments.get(i), treeWalkerStrategy, currentDepth + 1);
@@ -66,7 +66,7 @@ public final class DepthWalk {
         while (true) {
             if (NodeType.isFunction(current)) {
                 int total = 0;
-                FunctionNode functionNode = (FunctionNode) current;
+                FnNode functionNode = (FnNode) current;
                 Arguments arguments = functionNode.args();
                 for (int i = 0; i < arguments.length(); i++) {
                     Node child = arguments.get(i);
@@ -103,13 +103,13 @@ public final class DepthWalk {
     private static Node replaceAt(Node current, int index, DepthWalkReplacement replacement, int currentDepth) {
         if (NodeType.isFunction(current)) {
             int total = 0;
-            final FunctionNode functionNode = (FunctionNode) current;
+            final FnNode functionNode = (FnNode) current;
             Arguments arguments = functionNode.args();
             for (int i = 0; i < arguments.length(); i++) {
                 Node child = arguments.get(i);
                 int c = child.size();
                 if (total + c > index) {
-                    return new FunctionNode(functionNode.func(), arguments.replaceAt(i, replaceAt(child, index - total, replacement, currentDepth + 1)));
+                    return new FnNode(functionNode.func(), arguments.replaceAt(i, replaceAt(child, index - total, replacement, currentDepth + 1)));
                 } else {
                     total += c;
                 }

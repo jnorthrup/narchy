@@ -14,7 +14,11 @@ public class NLink<X> extends Pri implements PriReference<X> {
     }
     @Override
     public boolean equals(Object that) {
-        return (this == that) || id.equals(((NLink) that).get());
+        return (this == that) || id.equals(
+                (that instanceof NLink) ?  ((NLink) that).get()
+                        :
+                      that
+                );
     }
     @Override
     public boolean isDeleted() {

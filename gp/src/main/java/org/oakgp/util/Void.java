@@ -15,10 +15,9 @@
  */
 package org.oakgp.util;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
-import org.oakgp.node.NodeType;
 
 /**
  * Represents a dummy value to return from functions that do not produce a result.
@@ -27,7 +26,7 @@ public final class Void {
     /**
      * Returns the type associated with instances of {@link #VOID}.
      */
-    public static final Type VOID_TYPE = Type.type("void");
+    public static final NodeType VOID_TYPE = NodeType.type("void");
     /**
      * Singleton representing a {@code void} value.
      */
@@ -47,7 +46,7 @@ public final class Void {
      * Returns {@code true} if the given node is a constant node containing {@link #VOID}.
      */
     public static boolean isVoid(Node n) {
-        return NodeType.isConstant(n) && n.eval(null) == Void.VOID;
+        return org.oakgp.node.NodeType.isConstant(n) && n.eval(null) == Void.VOID;
     }
 
     @Override

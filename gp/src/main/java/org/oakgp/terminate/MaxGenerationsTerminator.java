@@ -15,7 +15,7 @@
  */
 package org.oakgp.terminate;
 
-import org.oakgp.rank.Candidates;
+import org.oakgp.rank.Ranking;
 
 import java.util.function.Predicate;
 
@@ -24,7 +24,7 @@ import java.util.function.Predicate;
  * <p>
  * Also known as the <i>generational predicate</i>.
  */
-public final class MaxGenerationsTerminator implements Predicate<Candidates> {
+public final class MaxGenerationsTerminator implements Predicate<Ranking> {
     private final int maxGenerations;
     private int ctr;
 
@@ -36,7 +36,7 @@ public final class MaxGenerationsTerminator implements Predicate<Candidates> {
     }
 
     @Override
-    public boolean test(Candidates t) {
+    public boolean test(Ranking t) {
         /*if (ctr % 100 == 0) {
             Logger.getGlobal().info("Generation: " + ctr + " Best: " + t.best());
         }*/

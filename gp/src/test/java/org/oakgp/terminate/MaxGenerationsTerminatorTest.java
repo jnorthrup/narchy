@@ -16,7 +16,7 @@
 package org.oakgp.terminate;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.rank.Candidates;
+import org.oakgp.rank.Ranking;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,7 +26,7 @@ public class MaxGenerationsTerminatorTest {
     @Test
     public void test() {
         MaxGenerationsTerminator t = new MaxGenerationsTerminator(3);
-        Candidates candidates = singletonRankedCandidates();
+        Ranking candidates = singletonRankedCandidates();
         assertFalse(t.test(candidates));
         assertFalse(t.test(candidates));
         assertFalse(t.test(candidates));

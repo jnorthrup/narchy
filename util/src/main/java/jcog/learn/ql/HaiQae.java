@@ -20,7 +20,7 @@ public class HaiQae extends HaiQ {
 
     public @NotNull Autoencoder ae;
     float perceptionAlpha;
-    float perceptionNoise;
+    float perceptionNoise = 0.01f;
     float perceptionCorruption = 0.01f;
     float perceptionForget;
     public FloatSupplier perceptionError;
@@ -46,14 +46,14 @@ public class HaiQae extends HaiQ {
         super(states, outputs);
         
         this.perceptionAlpha =
-                
-                0.1f;
+                0.02f;
         this.perceptionError =
                 ()->0.01f;
                 
 
-        decideState =
+        this.decideState =
                 DecideEpsilonGreedy.ArgMax;
+                //new DecideSoftmax(0.1f, rng);
                 
 
         this.ae = perception(inputs, states);

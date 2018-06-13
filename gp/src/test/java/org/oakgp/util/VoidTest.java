@@ -16,7 +16,7 @@
 package org.oakgp.util;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.node.ConstantNode;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +30,7 @@ public class VoidTest {
 
     @Test
     public void testType() {
-        assertSame(Type.type("void"), Void.VOID_TYPE);
+        assertSame(NodeType.type("void"), Void.VOID_TYPE);
     }
 
     @Test
@@ -41,13 +41,13 @@ public class VoidTest {
     @Test
     public void testIsVoid() {
         assertTrue(Void.isVoid(Void.VOID_CONSTANT));
-        assertTrue(Void.isVoid(new ConstantNode(Void.VOID, Type.type("void"))));
-        assertTrue(Void.isVoid(new ConstantNode(Void.VOID, Type.type("dummy"))));
+        assertTrue(Void.isVoid(new ConstantNode(Void.VOID, NodeType.type("void"))));
+        assertTrue(Void.isVoid(new ConstantNode(Void.VOID, NodeType.type("dummy"))));
     }
 
     @Test
     public void testIsNotVoid() {
-        assertFalse(Void.isVoid(new ConstantNode(new Object(), Type.type("void"))));
-        assertFalse(Void.isVoid(new ConstantNode(1, Type.integerType())));
+        assertFalse(Void.isVoid(new ConstantNode(new Object(), NodeType.type("void"))));
+        assertFalse(Void.isVoid(new ConstantNode(1, NodeType.integerType())));
     }
 }

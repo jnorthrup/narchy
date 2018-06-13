@@ -186,7 +186,7 @@ public class TrackXY extends NAgent {
 
         n.runLater(() -> {
             window(NARui.top(n), 800, 250);
-            NAgentX.chart(t);
+            NARui.agentWindow(t);
             window(new CameraSensorView(t.cam, n) {
                 @Override
                 protected void paint(GL2 gl, SurfaceRender surfaceRender) {
@@ -373,7 +373,9 @@ public class TrackXY extends NAgent {
             });
         }
 
-        cam.input();
+        if (cam!=null) {
+            cam.input();
+        }
 
 
         float maxDist = (float) Math.sqrt(width() * width() + height() * height());

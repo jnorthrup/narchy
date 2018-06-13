@@ -17,14 +17,14 @@ package org.oakgp.function.choice;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.walk.NodeWalk;
+import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.isNullable;
+import static org.oakgp.NodeType.isNullable;
 import static org.oakgp.node.NodeType.isFunction;
 
 /**
@@ -32,7 +32,7 @@ import static org.oakgp.node.NodeType.isFunction;
  * <p>
  * This behaviour is similar to a Java {@code switch} statement that uses an enum.
  */
-public final class SwitchEnum implements Function {
+public final class SwitchEnum implements Fn {
     private final Signature signature;
     private final Enum<?>[] enumConstants;
 
@@ -43,9 +43,9 @@ public final class SwitchEnum implements Function {
      * @param enumType   the type associated with {@code enumClass}
      * @param returnType the type associated with values returned from the evaluation of this function
      */
-    public SwitchEnum(Class<? extends Enum<?>> enumClass, Type enumType, Type returnType) {
+    public SwitchEnum(Class<? extends Enum<?>> enumClass, NodeType enumType, NodeType returnType) {
         this.enumConstants = enumClass.getEnumConstants();
-        Type[] types = new Type[enumConstants.length + (isNullable(enumType) ? 2 : 1)];
+        NodeType[] types = new NodeType[enumConstants.length + (isNullable(enumType) ? 2 : 1)];
         types[0] = enumType;
         for (int i = 1; i < types.length; i++) {
             types[i] = returnType;
@@ -70,7 +70,7 @@ public final class SwitchEnum implements Function {
         for (int i = 1; i < arguments.length(); i++) {
             Node arg = arguments.get(i);
             final int idx = i;
-            Node replacedArg = NodeWalk.replaceAll(arg, n -> isFunction(n) && ((FunctionNode) n).func() == this, n -> ((FunctionNode) n).args()
+            Node replacedArg = NodeWalk.replaceAll(arg, n -> isFunction(n) && ((FnNode) n).func() == this, n -> ((FnNode) n).args()
                     .get(idx));
             if (arg != replacedArg) {
                 updated = true;
@@ -78,7 +78,7 @@ public final class SwitchEnum implements Function {
             replacementArgs[i] = replacedArg;
         }
         if (updated) {
-            return new FunctionNode(this, new Arguments(replacementArgs));
+            return new FnNode(this, new Arguments(replacementArgs));
         } else {
             return null;
         }

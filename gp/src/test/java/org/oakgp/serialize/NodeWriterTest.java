@@ -21,12 +21,12 @@ import org.oakgp.function.classify.IsPositive;
 import org.oakgp.function.hof.Filter;
 import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.oakgp.TestUtils.*;
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 import static org.oakgp.util.Void.VOID_CONSTANT;
 
 public class NodeWriterTest {
@@ -82,16 +82,16 @@ public class NodeWriterTest {
     @Test
     public void testFunctionNode() {
         NodeWriter writer = new NodeWriter();
-        String output = writer.writeNode(new FunctionNode(IntFunc.the.add, integerConstant(5), createVariable(0)));
+        String output = writer.writeNode(new FnNode(IntFunc.the.add, integerConstant(5), createVariable(0)));
         assertEquals("(+ 5 v0)", output);
     }
 
     @Test
     public void testFunctionNodeWithFunctionNodeArguments() {
         NodeWriter writer = new NodeWriter();
-        FunctionNode arg1 = new FunctionNode(IntFunc.the.subtract, integerConstant(5), createVariable(0));
-        FunctionNode arg2 = new FunctionNode(IntFunc.the.getMultiply(), createVariable(1), integerConstant(-6876));
-        String output = writer.writeNode(new FunctionNode(IntFunc.the.add, arg1, arg2));
+        FnNode arg1 = new FnNode(IntFunc.the.subtract, integerConstant(5), createVariable(0));
+        FnNode arg2 = new FnNode(IntFunc.the.multiply, createVariable(1), integerConstant(-6876));
+        String output = writer.writeNode(new FnNode(IntFunc.the.add, arg1, arg2));
         assertEquals("(+ (* -6876 v1) (- 5 v0))", output);
     }
 
@@ -106,7 +106,7 @@ public class NodeWriterTest {
     public void testFunctionAsArgument() {
         ConstantNode criteria = new ConstantNode(new IsPositive(), integerToBooleanFunctionType());
         ConstantNode args = new ConstantNode(new Arguments(new Node[]{integerConstant(6), integerConstant(-2), integerConstant(17)}), arrayType(integerType()));
-        FunctionNode input = new FunctionNode(new Filter(integerType()), criteria, args);
+        FnNode input = new FnNode(new Filter(integerType()), criteria, args);
 
         String output = new NodeWriter().writeNode(input);
 

@@ -16,14 +16,14 @@
 package org.oakgp.serialize;
 
 import org.oakgp.Arguments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 import org.oakgp.primitive.VariableSet;
+import org.oakgp.util.Signature;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -34,7 +34,7 @@ import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 import static org.oakgp.util.Utils.FALSE_NODE;
 import static org.oakgp.util.Utils.TRUE_NODE;
 import static org.oakgp.util.Void.VOID_CONSTANT;
@@ -68,7 +68,7 @@ public final class NodeReader implements Closeable {
 
     private final Map<Predicate<String>, java.util.function.Function<String, Node>> readers;
     private final CharReader cr;
-    private final Function[] functions;
+    private final Fn[] functions;
     private final ConstantNode[] constants;
     private final VariableSet variableSet;
 
@@ -80,7 +80,7 @@ public final class NodeReader implements Closeable {
      * @param constants   a collection of {@code ConstantNode}s to use to represent constants read from {@code input}
      * @param variableSet the variable set to use to represent variables read from {@code input}
      */
-    public NodeReader(String input, Function[] functions, ConstantNode[] constants, VariableSet variableSet) {
+    public NodeReader(String input, Fn[] functions, ConstantNode[] constants, VariableSet variableSet) {
         StringReader sr = new StringReader(input);
         this.cr = new CharReader(new BufferedReader(sr));
         this.functions = functions.clone();
@@ -93,7 +93,7 @@ public final class NodeReader implements Closeable {
         return !FUNCTION_END_STRING.equals(token);
     }
 
-    private static boolean isMatch(String functionName, List<Type> types, Function f) {
+    private static boolean isMatch(String functionName, List<NodeType> types, Fn f) {
         return functionName.equals(f.name()) && types.equals(f.sig().argTypes());
     }
 
@@ -128,14 +128,14 @@ public final class NodeReader implements Closeable {
         }
     }
 
-    private static Type getFunctionType(Function function) {
+    private static NodeType getFunctionType(Fn function) {
         Signature signature = function.sig();
-        Type[] types = new Type[signature.size() + 1];
+        NodeType[] types = new NodeType[signature.size() + 1];
         types[0] = signature.returnType();
         for (int i = 1; i < types.length; i++) {
             types[i] = signature.argType(i - 1);
         }
-        return Type.functionType(types);
+        return NodeType.functionType(types);
     }
 
     private static boolean isVariable(String token) {
@@ -174,7 +174,7 @@ public final class NodeReader implements Closeable {
     /**
      * Returns {@code true} if the given {@code String} is suitable for use as the display name of a {@code Function}, else {code false}.
      * <p>
-     * A {@code String} is considered suitable as a display name for a {@code Function} - as returned from {@link Function#name()} - if it can be
+     * A {@code String} is considered suitable as a display name for a {@code Function} - as returned from {@link Fn#name()} - if it can be
      * successfully parsed by a {@code NodeReader}. Suitable function names do not start with a number or contain any of the special characters used to represent
      * the start or end of functions (i.e. {@code (} and {@code )}), arrays (i.e. {@code [} and {@code ]}) or strings (i.e. {@code "}).
      */
@@ -287,21 +287,21 @@ public final class NodeReader implements Closeable {
     private Node createFunctionNode() throws IOException {
         String functionName = nextToken();
         List<Node> arguments = new ArrayList<>();
-        List<Type> types = new ArrayList<>();
+        List<NodeType> types = new ArrayList<>();
         String nextToken;
         while (notFunctionEnd(nextToken = nextToken())) {
             Node n = nextNode(nextToken);
             arguments.add(n);
             types.add(n.returnType());
         }
-        Function f = getFunction(functionName, types);
-        return new FunctionNode(
+        Fn f = getFunction(functionName, types);
+        return new FnNode(
                 f,
                 Arguments.get(f, arguments));
     }
 
-    private Function getFunction(String functionName, List<Type> types) {
-        for (Function f : functions) {
+    private Fn getFunction(String functionName, List<NodeType> types) {
+        for (Fn f : functions) {
             if (isMatch(functionName, types, f)) {
                 return f;
             }
@@ -322,7 +322,7 @@ public final class NodeReader implements Closeable {
     private Node createArrayConstantNode() throws IOException {
         List<Node> arguments = new ArrayList<>();
         String nextToken;
-        Type t = null;
+        NodeType t = null;
         while (notArrayEnd(nextToken = nextToken())) {
             Node n = nextNode(nextToken);
             if (t == null) {
@@ -355,16 +355,16 @@ public final class NodeReader implements Closeable {
 
     private VariableNode getVariable(String firstToken) {
         int id = Integer.parseInt(firstToken.substring(1));
-        return variableSet.getById(id);
+        return variableSet.get(id);
     }
 
     private ConstantNode createFunctionConstant(String token) {
-        Function function = getFunction(token);
+        Fn function = getFunction(token);
         return new ConstantNode(function, getFunctionType(function));
     }
 
-    private Function getFunction(String token) {
-        for (Function f : functions) {
+    private Fn getFunction(String token) {
+        for (Fn f : functions) {
             if (token.equals(f.name())) {
                 return f;
             }

@@ -16,19 +16,19 @@
 package org.oakgp.function.compare;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.oakgp.Type.booleanType;
+import static org.oakgp.NodeType.booleanType;
 
 public class ComparisonOperatorTest {
     @Test
     public void testGetSignature() {
-        Type type = Type.type("ComparisonOperatorTest");
-        Function f = new ComparisonOperator(type, true) {
+        NodeType type = NodeType.type("ComparisonOperatorTest");
+        Fn f = new ComparisonOperator(type, true) {
             @Override
             protected boolean evaluate(int diff) {
                 throw new UnsupportedOperationException();

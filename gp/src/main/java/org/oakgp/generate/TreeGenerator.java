@@ -15,7 +15,7 @@
  */
 package org.oakgp.generate;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.node.Node;
 
 /**
@@ -32,5 +32,5 @@ public interface TreeGenerator {
      * @param depth the maximum depth of any nodes of the tree
      * @return the newly created tree data structure
      */
-    Node generate(Type type, int depth);
+    Node generate(NodeType type, int depth);
 }

@@ -26,11 +26,11 @@ public class Tetris extends NAgentX implements Bitmap2D {
     private final Bitmap2DSensor<Bitmap2D> pixels;
     private TetrisState state;
 
-    public Tetris(NAR nar) throws Narsese.NarseseException {
+    public Tetris(NAR nar) {
         this(nar, Tetris.tetris_width, Tetris.tetris_height);
     }
 
-    public Tetris(NAR nar, int width, int height) throws Narsese.NarseseException {
+    public Tetris(NAR nar, int width, int height) {
         this(nar, width, height, 1);
     }
 
@@ -84,19 +84,14 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
         TimeAware nn = NAgentX.runRT((n) -> {
             Tetris a = null;
-            try {
 
 
                 a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
 
 
-                Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
-                n.freqResolution.set(0.1f);
+//                Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
+//                n.freqResolution.set(0.1f);
 
-
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
 
 
             return a;
@@ -285,7 +280,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
     }
 
     public static class OfflineTetris {
-        public static void main(String[] args) throws Narsese.NarseseException {
+        public static void main(String[] args) {
 
 
             NAR n = NARS.tmp();

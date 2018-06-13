@@ -17,23 +17,23 @@ package org.oakgp.function.coll;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.arrayType;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.arrayType;
+import static org.oakgp.NodeType.integerType;
 
 /**
  * Determines the number of elements contained in a collection.
  */
-public final class Count implements Function {
+public final class Count implements Fn {
     private final Signature signature;
 
     /**
      * Constructs a function to return the number of items in collections of the specified type.
      */
-    public Count(Type t) {
+    public Count(NodeType t) {
         signature = new Signature(integerType(), arrayType(t));
     }
 

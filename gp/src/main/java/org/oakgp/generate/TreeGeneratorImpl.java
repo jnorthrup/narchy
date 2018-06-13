@@ -15,15 +15,15 @@
  */
 package org.oakgp.generate;
 
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.primitive.PrimitiveSet;
-import org.oakgp.util.GPRandom;
+import org.oakgp.util.Signature;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.IntPredicate;
 
 /**
@@ -32,7 +32,7 @@ import java.util.function.IntPredicate;
  * Can be used to create randomly generate the initial population of a genetic programming run.
  *
  * @see #full(PrimitiveSet)
- * @see #grow(PrimitiveSet, GPRandom)
+ * @see #grow(PrimitiveSet, Random)
  */
 public final class TreeGeneratorImpl implements TreeGenerator {
     private final PrimitiveSet primitiveSet;
@@ -40,7 +40,7 @@ public final class TreeGeneratorImpl implements TreeGenerator {
 
     /**
      * @see #full(PrimitiveSet)
-     * @see #grow(PrimitiveSet, GPRandom)
+     * @see #grow(PrimitiveSet, Random)
      */
     private TreeGeneratorImpl(PrimitiveSet primitiveSet, IntPredicate strategy) {
         Objects.requireNonNull(primitiveSet);
@@ -69,27 +69,27 @@ public final class TreeGeneratorImpl implements TreeGenerator {
      * @param random       used to randomly determine the structure of the generated trees
      * @return a {@code TreeGenerator} that uses the "grow" approach to creating trees.
      */
-    public static TreeGenerator grow(PrimitiveSet primitiveSet, GPRandom random) {
+    public static TreeGenerator grow(PrimitiveSet primitiveSet, Random random) {
         return new TreeGeneratorImpl(primitiveSet, d -> d > 0 && random.nextBoolean());
     }
 
     @Override
-    public Node generate(Type type, int depth) {
+    public Node generate(NodeType type, int depth) {
         if (shouldCreateFunction(type, depth)) {
-            Function function = primitiveSet.nextFunction(type);
+            Fn function = primitiveSet.next(type);
             Signature signature = function.sig();
             Node[] args = new Node[signature.size()];
             for (int i = 0; i < args.length; i++) {
-                Type argType = signature.argType(i);
+                NodeType argType = signature.argType(i);
                 args[i] = generate(argType, depth - 1);
             }
-            return new FunctionNode(function, args);
+            return new FnNode(function, args);
         } else {
             return primitiveSet.nextTerminal(type);
         }
     }
 
-    private boolean shouldCreateFunction(Type type, int depth) {
+    private boolean shouldCreateFunction(NodeType type, int depth) {
         if (!primitiveSet.hasTerminals(type)) {
             return true;
         } else if (!primitiveSet.hasFunctions(type)) {

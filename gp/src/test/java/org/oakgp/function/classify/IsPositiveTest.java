@@ -15,9 +15,9 @@
  */
 package org.oakgp.function.classify;
 
-import org.oakgp.function.AbstractFunctionTest;
+import org.oakgp.function.AbstractFnTest;
 
-public class IsPositiveTest extends AbstractFunctionTest {
+public class IsPositiveTest extends AbstractFnTest {
     @Override
     protected IsPositive getFunction() {
         return new IsPositive();

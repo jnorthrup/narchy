@@ -22,7 +22,7 @@ import org.oakgp.node.Node;
 /**
  * Performs division.
  */
-final class Divide extends ArithmeticOperator {
+public final class Divide extends ArithmeticOperator {
     private final NumFunc<?> numberUtils;
 
 
@@ -30,7 +30,7 @@ final class Divide extends ArithmeticOperator {
      * @see NumFunc#getDivide()
      */
     Divide(NumFunc<?> numberUtils) {
-        super(numberUtils.getType());
+        super(numberUtils.type);
         this.numberUtils = numberUtils;
     }
 

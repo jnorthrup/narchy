@@ -20,7 +20,8 @@ import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
 import org.oakgp.select.DummyNodeSelector;
 import org.oakgp.util.DummyRandom;
-import org.oakgp.util.GPRandom;
+
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.oakgp.TestUtils.*;
@@ -64,7 +65,7 @@ public class HoistMutationTest {
         random.assertEmpty();
     }
 
-    private Node hoistMutate(GPRandom random, Node input) {
+    private Node hoistMutate(Random random, Node input) {
         DummyNodeSelector selector = new DummyNodeSelector(input);
         Node result = new HoistMutation(random).apply(selector);
         selector.assertEmpty();

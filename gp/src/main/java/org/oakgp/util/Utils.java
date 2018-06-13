@@ -15,20 +15,20 @@
  */
 package org.oakgp.util;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Function;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.util.Collections.unmodifiableList;
 import static java.util.stream.Collectors.groupingBy;
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 
 /**
  * Utility methods that support the functionality provided by the rest of the framework.
@@ -51,7 +51,7 @@ public enum Utils { ;
      * @param e the enum that the {@code ConstantNode} instances should wrap
      * @param t the {@code Type} that should be associated with the {@code ConstantNode} instances
      */
-    public static ConstantNode[] enumConsts(Class<? extends Enum<?>> e, Type t) {
+    public static ConstantNode[] enumConsts(Class<? extends Enum<?>> e, NodeType t) {
         Enum<?>[] enumConstants = e.getEnumConstants();
         ConstantNode[] constants = new ConstantNode[enumConstants.length];
         for (int i = 0; i < enumConstants.length; i++) {
@@ -82,11 +82,11 @@ public enum Utils { ;
     }
 
     /**
-     * Creates an array of the specified size and assigns the result of {@link Type#integerType()} to each element.
+     * Creates an array of the specified size and assigns the result of {@link NodeType#integerType()} to each element.
      */
-    public static Type[] intArrayType(int size) {
-        Type[] array = new Type[size];
-        Type type = integerType();
+    public static NodeType[] intArrayType(int size) {
+        NodeType[] array = new NodeType[size];
+        NodeType type = integerType();
         Arrays.fill(array, type);
         return array;
     }
@@ -94,7 +94,7 @@ public enum Utils { ;
     /**
      * Returns a map grouping the specified nodes by their {@code Type}.
      */
-    public static <T extends Node> Map<Type, List<T>> groupByType(T[] nodes) {
+    public static <T extends Node> Map<NodeType, T[]> groupByType(T[] nodes) {
         return groupBy(nodes, Node::returnType);
     }
 
@@ -104,25 +104,19 @@ public enum Utils { ;
      * @param values     the values to group
      * @param valueToKey the classification function used to group values
      */
-    public static <K, V> Map<K, List<V>> groupBy(V[] values, Function<V, K> valueToKey) {
-        Map<K, List<V>> nodesByType = Arrays.stream(values).collect(groupingBy(valueToKey));
-        makeValuesImmutable(nodesByType);
-        return nodesByType;
-    }
-
-    /**
-     * Replaces each {@code List} stored as a value in the specified {@code Map} with an immutable version.
-     */
-    private static <K, V> void makeValuesImmutable(Map<K, List<V>> map) {
-        for (Map.Entry<K, List<V>> e : map.entrySet()) {
-            map.put(e.getKey(), unmodifiableList(e.getValue()));
+    public static <K, V> Map<K, V[]> groupBy(V[] values, Function<V, K> valueToKey) {
+        Map nodesByType = Arrays.stream(values).collect(groupingBy(valueToKey));
+        for (Map.Entry e : (Iterable<Map.Entry<K, ?>>)nodesByType.entrySet()) {
+            List<V> l = (List<V>) (e.getValue());
+            e.setValue(l.toArray(Arrays.copyOfRange(values, 0, l.size())));
         }
+        return Map.copyOf(nodesByType);
     }
 
     /**
      * Returns randomly selected index of a node from the specified tree.
      */
-    public static int selectSubNodeIndex(GPRandom random, Node tree) {
+    public static int selectSubNodeIndex(Random random, Node tree) {
         int nodeCount = tree.size();
         if (nodeCount == 1) {
             
@@ -135,7 +129,7 @@ public enum Utils { ;
     /**
      * Returns a int value between 0 (inclusive) and the specified {@code nodeCount} value minus 1 (exclusive).
      */
-    public static int selectSubNodeIndex(GPRandom random, int nodeCount) {
+    public static int selectSubNodeIndex(Random random, int nodeCount) {
         
         return random.nextInt(nodeCount - 1);
     }

@@ -17,13 +17,13 @@ package org.oakgp.examples.tictactoe;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.nullableType;
-import static org.oakgp.Type.type;
+import static org.oakgp.NodeType.nullableType;
+import static org.oakgp.NodeType.type;
 
-public class IfValidMove implements Function {
+public class IfValidMove implements Fn {
     private static final Signature SIGNATURE = new Signature(nullableType(type("move")), type("board"), type("possibleMove"));
 
     @Override

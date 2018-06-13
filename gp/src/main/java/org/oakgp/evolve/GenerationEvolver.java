@@ -16,7 +16,7 @@
 package org.oakgp.evolve;
 
 import org.oakgp.node.Node;
-import org.oakgp.rank.Candidates;
+import org.oakgp.rank.Ranking;
 
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
  * Creates a new generation of {@code Node} instances evolved from an existing generation.
  */
 @FunctionalInterface
-public interface GenerationEvolver extends Function<Candidates,Stream<Node>> {
+public interface GenerationEvolver extends Function<Ranking, Stream<Node>> {
     /**
      * Returns a new generation of {@code Node} instances evolved from the specified existing generation.
      *

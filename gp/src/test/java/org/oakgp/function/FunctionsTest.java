@@ -29,10 +29,10 @@ public class FunctionsTest {
     @Disabled
     @Test
     public void test() throws Exception {
-        List<Class<?>> functionClasses = SubClassFinder.find(Function.class, "src/main/java");
-        List<Class<?>> functionTestClasses = SubClassFinder.find(AbstractFunctionTest.class, "src/test/java");
+        List<Class<?>> functionClasses = SubClassFinder.find(Fn.class, "src/main/java");
+        List<Class<?>> functionTestClasses = SubClassFinder.find(AbstractFnTest.class, "src/test/java");
         for (Class<?> functionTest : functionTestClasses) {
-            AbstractFunctionTest t = (AbstractFunctionTest) functionTest.newInstance();
+            AbstractFnTest t = (AbstractFnTest) functionTest.newInstance();
             Class<?> functionClass = t.getFunction().getClass();
             assertTrue(functionClasses.contains(functionClass), "Tested more than once: " + functionClass);
             functionClasses.remove(functionClass);

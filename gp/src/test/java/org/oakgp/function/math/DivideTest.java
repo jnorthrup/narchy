@@ -15,18 +15,18 @@
  */
 package org.oakgp.function.math;
 
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 
-public class DivideTest extends AbstractFunctionTest {
+public class DivideTest extends AbstractFnTest {
     @Override
     protected Divide getFunction() {
-        return IntFunc.the.getDivide();
+        return IntFunc.the.divide;
     }
 
     @Override
@@ -76,8 +76,8 @@ public class DivideTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.subtract, LongFunc.the.getDivide(), DoubleFunc.the.getDivide(),
-                BigIntegerFunc.the.getDivide(), BigDecimalFunc.the.getDivide()};
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), IntFunc.the.subtract, LongFunc.the.divide, DoubleFunc.the.divide,
+                BigIntegerFunc.the.divide, BigDecimalFunc.the.divide};
     }
 }

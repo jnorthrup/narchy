@@ -16,7 +16,7 @@
 package org.oakgp.node.walk;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.node.*;
 
 import java.util.function.Predicate;
@@ -55,10 +55,10 @@ public class StrategyWalkTest {
         VariableNode v1 = createVariable(1);
         VariableNode v2 = createVariable(2);
         ConstantNode c1 = integerConstant(0);
-        Function f = the.add;
-        FunctionNode branch1 = new FunctionNode(f, v0, c1);
-        FunctionNode branch2 = new FunctionNode(f, v2, v1);
-        FunctionNode tree = new FunctionNode(f, branch1, branch2);
+        Fn f = the.add;
+        FnNode branch1 = new FnNode(f, v0, c1);
+        FnNode branch2 = new FnNode(f, v2, v1);
+        FnNode tree = new FnNode(f, branch1, branch2);
 
         assertSame(v0, StrategyWalk.getAt(tree, 0, NodeType::isVariable));
         assertSame(v1, StrategyWalk.getAt(tree, 1, NodeType::isVariable));

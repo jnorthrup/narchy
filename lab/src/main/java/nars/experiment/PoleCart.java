@@ -10,10 +10,8 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.agent.NAgent;
 import nars.concept.Concept;
-import nars.gui.NARui;
 import nars.util.signal.BeliefPredict;
 import org.jetbrains.annotations.NotNull;
-import spacegraph.SpaceGraph;
 
 import javax.swing.*;
 import java.awt.*;
@@ -230,9 +228,9 @@ public class PoleCart extends NAgentX {
 
 
 
-        SpaceGraph.window(NARui.beliefCharts(512,
-                sensors,
-                nar), 900, 900);
+//        SpaceGraph.window(NARui.beliefCharts(512,
+//                sensors,
+//                nar), 900, 900);
 
         
 

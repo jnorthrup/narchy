@@ -17,14 +17,13 @@ package org.oakgp.examples.ant;
 
 import org.oakgp.Arguments;
 import org.oakgp.Evolution;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.function.choice.If;
 import org.oakgp.function.sequence.BiSequence;
 import org.oakgp.function.sequence.TriSequence;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
-import org.oakgp.rank.Candidates;
-import org.oakgp.rank.fitness.FitnessFunction;
+import org.oakgp.rank.Ranking;
 
 import static org.oakgp.examples.ant.AntMovement.*;
 import static org.oakgp.examples.ant.MutableState.STATE_TYPE;
@@ -33,8 +32,8 @@ import static org.oakgp.util.Void.VOID_TYPE;
 
 public class ArtificialAntExample {
     private static final int TARGET_FITNESS = 0;
-    private static final int NUM_GENERATIONS = 1000;
-    private static final int INITIAL_POPULATION_SIZE = 100;
+    private static final int NUM_GENERATIONS = 500;
+    private static final int INITIAL_POPULATION_SIZE = 90;
     private static final int INITIAL_POPULATION_MAX_DEPTH = 4;
 
 
@@ -61,16 +60,16 @@ public class ArtificialAntExample {
             if (n == null) {
                 Node first = arg.firstArg(), second = arg.secondArg(), third = arg.thirdArg();
                 if (areAllSame(LEFT, first, second, third))
-                    return new FunctionNode(RIGHT, ((FunctionNode) first).args());
+                    return new FnNode(RIGHT, ((FnNode) first).args());
                 if (areAllSame(RIGHT, first, second, third))
-                    return new FunctionNode(LEFT, ((FunctionNode) first).args());
+                    return new FnNode(LEFT, ((FnNode) first).args());
             }
             return n;
         }
     };
 
     public static void main(String[] args) {
-        Function[] functions = {
+        Fn[] functions = {
             new If(VOID_TYPE),
             new IsFoodAhead(),
             FORWARD,
@@ -78,12 +77,24 @@ public class ArtificialAntExample {
             antBiSequence,
             antTriSequence
         };
-        FitnessFunction fitnessFunction = new ArtificialAntFitnessFunction();
 
-        Candidates output = new Evolution().returns(VOID_TYPE).constants(VOID_CONSTANT).variables(STATE_TYPE).functions(functions)
-                .goal(fitnessFunction).population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH)
-                .goalTarget(TARGET_FITNESS).setMaxGenerations(NUM_GENERATIONS).get();
-        Node best = output.best().node;
+        Ranking output = Evolution
+                .of(VOID_TYPE)
+                .constants(VOID_CONSTANT)
+                .variables(STATE_TYPE)
+                .functions(functions)
+                .goal(new ArtificialAntFitFn())
+                .populationSize(INITIAL_POPULATION_SIZE)
+                .populationDepth(INITIAL_POPULATION_MAX_DEPTH)
+                .stopFitness(TARGET_FITNESS)
+                .stopGenerations(NUM_GENERATIONS)
+                .get();
+
+        output.forEach(System.out::println);
+
+        System.out.println();
+
+        Node best = output.top().id;
         System.out.println(best);
 
 

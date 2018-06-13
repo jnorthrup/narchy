@@ -15,7 +15,7 @@
  */
 package org.oakgp.util;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,11 +26,11 @@ import java.util.List;
  * A signature includes the return type, the number of arguments and the type of each argument.
  */
 public final class Signature {
-    public final Type returnType;
-    public final Type[] argumentTypes;
+    public final NodeType returnType;
+    public final NodeType[] argumentTypes;
     public final int hashCode;
 
-    public Signature(Type returnType, Type... userSuppliedArgumentTypes) {
+    public Signature(NodeType returnType, NodeType... userSuppliedArgumentTypes) {
         this.returnType = returnType;
         this.argumentTypes = userSuppliedArgumentTypes.clone();
         this.hashCode = (returnType.hashCode() * 31) * Arrays.hashCode(argumentTypes);
@@ -39,7 +39,7 @@ public final class Signature {
     /**
      * Returns the type associated with values returned by the evaluation of functions that have this signature.
      */
-    public Type returnType() {
+    public NodeType returnType() {
         return returnType;
     }
 
@@ -50,7 +50,7 @@ public final class Signature {
      * @return the {@code Type} at the specified position in the arguments of this signature.
      * @throws ArrayIndexOutOfBoundsException if the index is out of range (<tt>index &lt; 0 || index &gt;= getArgumentTypesLength()</tt>)
      */
-    public Type argType(int index) {
+    public NodeType argType(int index) {
         return argumentTypes[index];
     }
 
@@ -64,7 +64,7 @@ public final class Signature {
     /**
      * Returns an unmodifiable list containing the type of each argument associated with this signature.
      */
-    public List<Type> argTypes() {
+    public List<NodeType> argTypes() {
         return List.of(argumentTypes);
     }
 
@@ -79,7 +79,7 @@ public final class Signature {
             return true;
         } else if (o instanceof Signature) {
             Signature s = (Signature) o;
-            return this.returnType == s.returnType && Type.equal(this.argumentTypes, s.argumentTypes);
+            return this.returnType == s.returnType && NodeType.equal(this.argumentTypes, s.argumentTypes);
         } else {
             return false;
         }

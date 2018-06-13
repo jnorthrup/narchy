@@ -15,13 +15,13 @@
  */
 package org.oakgp.examples.ant;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 
 /**
  * Represents the grid and the ant's position within it.
  */
 class MutableState {
-    static final Type STATE_TYPE = Type.type("state");
+    static final NodeType STATE_TYPE = NodeType.type("state");
 
     private boolean[][] grid;
     private int incX = 0;

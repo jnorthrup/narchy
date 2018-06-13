@@ -20,12 +20,11 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.oakgp.TestUtils;
 import org.oakgp.evolve.GeneticOperator;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.select.DummyNodeSelector;
 import org.oakgp.select.NodeSelector;
 import org.oakgp.util.DummyRandom;
-import org.oakgp.util.StdRandom;
 
 import java.util.Arrays;
 import java.util.List;
@@ -106,7 +105,7 @@ public class SubtreeCrossoverTest {
                     //nextInt(7).returns(2);
                     new XoRoShiRo128PlusRandom(i);
             NodeSelector s = new DummyNodeSelector(input, output);
-            GeneticOperator c = new SubtreeCrossover(new StdRandom(rng), DEFAULT_DEPTH);
+            GeneticOperator c = new SubtreeCrossover(rng, DEFAULT_DEPTH);
             Node evolve = c.apply(s);
             System.out.println(evolve);
             //assertNodeEquals(input, evolve);
@@ -136,7 +135,7 @@ public class SubtreeCrossoverTest {
                 "(+ (+ (* 9 (* 7 8)) (+ 3 4)) 5)",
                 "(+ (+ 6 (+ 3 4)) 5)",
                 "(+ (+ (* (* 9 (* 7 8)) 6) (+ 3 4)) 5)"};
-        List<FunctionNode> f = Arrays.stream(possibilities).map(TestUtils::readFunctionNode).filter(n -> n.depth() <= maxDepth).collect(Collectors.toList());
+        List<FnNode> f = Arrays.stream(possibilities).map(TestUtils::readFunctionNode).filter(n -> n.depth() <= maxDepth).collect(Collectors.toList());
         int numPossibilities = f.size();
         assertTrue(numPossibilities > 0);
         for (int i = 0; i < numPossibilities; i++) {

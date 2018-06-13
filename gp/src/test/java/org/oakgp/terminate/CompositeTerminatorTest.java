@@ -17,7 +17,7 @@ package org.oakgp.terminate;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.oakgp.rank.Candidates;
+import org.oakgp.rank.Ranking;
 
 import java.util.function.Predicate;
 
@@ -27,11 +27,11 @@ import static org.mockito.Mockito.*;
 import static org.oakgp.TestUtils.singletonRankedCandidates;
 
 public class CompositeTerminatorTest {
-    private final Candidates candidates = singletonRankedCandidates();
+    private final Ranking candidates = singletonRankedCandidates();
 
-    private Predicate<Candidates> t1;
-    private Predicate<Candidates> t2;
-    private Predicate<Candidates> t3;
+    private Predicate<Ranking> t1;
+    private Predicate<Ranking> t2;
+    private Predicate<Ranking> t3;
 
     @SuppressWarnings("unchecked")
     @BeforeEach
@@ -83,7 +83,7 @@ public class CompositeTerminatorTest {
         verifyExecuted(t3);
     }
 
-    private void returnTrue(Predicate<Candidates> t) {
+    private void returnTrue(Predicate<Ranking> t) {
         when(t.test(candidates)).thenReturn(true);
     }
 
@@ -100,15 +100,15 @@ public class CompositeTerminatorTest {
         return composite.test(candidates);
     }
 
-    private void verifyExecuted(Predicate<Candidates> t) {
+    private void verifyExecuted(Predicate<Ranking> t) {
         verifyExecuted(t, 1);
     }
 
-    private void verifyNotExecuted(Predicate<Candidates> t) {
+    private void verifyNotExecuted(Predicate<Ranking> t) {
         verifyExecuted(t, 0);
     }
 
-    private void verifyExecuted(Predicate<Candidates> t, int times) {
+    private void verifyExecuted(Predicate<Ranking> t, int times) {
         verify(t, times(times)).test(candidates);
     }
 

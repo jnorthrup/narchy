@@ -186,6 +186,8 @@ public class BitmapMatrixView extends Surface {
      */
     public void update() {
         if (buf == null) {
+            if (w == 0 || h == 0) return;
+
             buf = new BufferedImage(w, h, TYPE_INT_ARGB);
             this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
         }

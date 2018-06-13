@@ -15,9 +15,9 @@
  */
 package org.oakgp.function.classify;
 
-import org.oakgp.function.AbstractFunctionTest;
+import org.oakgp.function.AbstractFnTest;
 
-public class IsZeroTest extends AbstractFunctionTest {
+public class IsZeroTest extends AbstractFnTest {
     @Override
     protected IsZero getFunction() {
         return new IsZero();

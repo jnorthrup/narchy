@@ -17,14 +17,14 @@ package org.oakgp.rank;
 
 import org.oakgp.node.Node;
 
-import java.util.function.Function;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 /**
  * Ranks and sorts the fitness of {@code Node} instances.
  */
 @FunctionalInterface
-public interface GenerationRanker extends Function<Stream<Node>,Candidates> {
+public interface GenerationRanker extends BiConsumer<Stream<Node>, Ranking> {
     /**
      * Returns the sorted result of evaluating the fitness of each of the specified nodes.
      *

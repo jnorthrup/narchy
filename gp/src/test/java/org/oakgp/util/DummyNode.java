@@ -15,9 +15,8 @@
  */
 package org.oakgp.util;
 
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.node.Node;
-import org.oakgp.node.NodeType;
 
 public abstract class DummyNode implements Node {
 
@@ -32,12 +31,12 @@ public abstract class DummyNode implements Node {
     }
 
     @Override
-    public Type returnType() {
+    public NodeType returnType() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public NodeType nodeType() {
+    public org.oakgp.node.NodeType nodeType() {
         throw new UnsupportedOperationException();
     }
 }

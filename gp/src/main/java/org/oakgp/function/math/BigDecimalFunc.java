@@ -17,7 +17,7 @@ package org.oakgp.function.math;
 
 import java.math.BigDecimal;
 
-import static org.oakgp.Type.bigDecimalType;
+import static org.oakgp.NodeType.bigDecimalType;
 
 /**
  * Provides support for working with instances of {@code java.math.BigDecimal}.

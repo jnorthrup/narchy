@@ -16,21 +16,22 @@
 package org.oakgp.primitive;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.function.choice.If;
 import org.oakgp.function.compare.*;
 import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.VariableNode;
 import org.oakgp.util.DummyRandom;
-import org.oakgp.util.GPRandom;
+
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.oakgp.NodeType.*;
 import static org.oakgp.TestUtils.*;
-import static org.oakgp.Type.*;
 import static org.oakgp.util.Utils.intArrayType;
 
 public class PrimitiveSetImplTest {
@@ -38,9 +39,9 @@ public class PrimitiveSetImplTest {
 
     private static final double VARIABLE_RATIO = .6;
     private static final ConstantNode[] CONSTANTS = {integerConstant(7), integerConstant(8), integerConstant(9)};
-    private static final Type[] VARIABLE_TYPES = intArrayType(3);
-    private static final Function[] FUNCTIONS = new Function[]{IntFunc.the.add, IntFunc.the.subtract,
-            IntFunc.the.getMultiply(), new If(integerType()), LessThan.create(integerType()), LessThanOrEqual.create(integerType()),
+    private static final NodeType[] VARIABLE_TYPES = intArrayType(3);
+    private static final Fn[] FUNCTIONS = new Fn[]{IntFunc.the.add, IntFunc.the.subtract,
+            IntFunc.the.multiply, new If(integerType()), LessThan.create(integerType()), LessThanOrEqual.create(integerType()),
             new GreaterThan(integerType()), new GreaterThanOrEqual(integerType()), new Equal(integerType()), new NotEqual(integerType())};
 
     @Test
@@ -59,7 +60,7 @@ public class PrimitiveSetImplTest {
 
     @Test
     public void testNextFunction() {
-        GPRandom mockRandom = mock(GPRandom.class);
+        Random mockRandom = mock(Random.class);
         
         given(mockRandom.nextInt(4)).willReturn(1, 0, 2, 1, 2, 0, 3);
         
@@ -68,50 +69,50 @@ public class PrimitiveSetImplTest {
         PrimitiveSet functionSet = createWithFunctions(mockRandom);
 
         
-        assertSame(FUNCTIONS[1], functionSet.nextFunction(integerType()));
-        assertSame(FUNCTIONS[0], functionSet.nextFunction(integerType()));
-        assertSame(FUNCTIONS[2], functionSet.nextFunction(integerType()));
-        assertSame(FUNCTIONS[1], functionSet.nextFunction(integerType()));
-        assertSame(FUNCTIONS[2], functionSet.nextFunction(integerType()));
-        assertSame(FUNCTIONS[0], functionSet.nextFunction(integerType()));
-        assertSame(FUNCTIONS[3], functionSet.nextFunction(integerType()));
+        assertSame(FUNCTIONS[1], functionSet.next(integerType()));
+        assertSame(FUNCTIONS[0], functionSet.next(integerType()));
+        assertSame(FUNCTIONS[2], functionSet.next(integerType()));
+        assertSame(FUNCTIONS[1], functionSet.next(integerType()));
+        assertSame(FUNCTIONS[2], functionSet.next(integerType()));
+        assertSame(FUNCTIONS[0], functionSet.next(integerType()));
+        assertSame(FUNCTIONS[3], functionSet.next(integerType()));
 
-        assertSame(FUNCTIONS[5], functionSet.nextFunction(booleanType()));
-        assertSame(FUNCTIONS[4], functionSet.nextFunction(booleanType()));
-        assertSame(FUNCTIONS[9], functionSet.nextFunction(booleanType()));
-        assertSame(FUNCTIONS[8], functionSet.nextFunction(booleanType()));
+        assertSame(FUNCTIONS[5], functionSet.next(booleanType()));
+        assertSame(FUNCTIONS[4], functionSet.next(booleanType()));
+        assertSame(FUNCTIONS[9], functionSet.next(booleanType()));
+        assertSame(FUNCTIONS[8], functionSet.next(booleanType()));
     }
 
     @Test
     public void testNextAlternativeFunction() {
-        GPRandom mockRandom = mock(GPRandom.class);
+        Random mockRandom = mock(Random.class);
         PrimitiveSet functionSet = createWithFunctions(mockRandom);
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 2, 0);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        assertSame(FUNCTIONS[1], functionSet.nextAlternativeFunction(FUNCTIONS[0]));
-        assertSame(FUNCTIONS[1], functionSet.nextAlternativeFunction(FUNCTIONS[0]));
-        assertSame(FUNCTIONS[2], functionSet.nextAlternativeFunction(FUNCTIONS[0]));
-        assertSame(FUNCTIONS[2], functionSet.nextAlternativeFunction(FUNCTIONS[0]));
+        assertSame(FUNCTIONS[1], functionSet.next(FUNCTIONS[0]));
+        assertSame(FUNCTIONS[1], functionSet.next(FUNCTIONS[0]));
+        assertSame(FUNCTIONS[2], functionSet.next(FUNCTIONS[0]));
+        assertSame(FUNCTIONS[2], functionSet.next(FUNCTIONS[0]));
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 1, 2);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        assertSame(FUNCTIONS[0], functionSet.nextAlternativeFunction(FUNCTIONS[1]));
-        assertSame(FUNCTIONS[0], functionSet.nextAlternativeFunction(FUNCTIONS[1]));
-        assertSame(FUNCTIONS[2], functionSet.nextAlternativeFunction(FUNCTIONS[1]));
-        assertSame(FUNCTIONS[2], functionSet.nextAlternativeFunction(FUNCTIONS[1]));
+        assertSame(FUNCTIONS[0], functionSet.next(FUNCTIONS[1]));
+        assertSame(FUNCTIONS[0], functionSet.next(FUNCTIONS[1]));
+        assertSame(FUNCTIONS[2], functionSet.next(FUNCTIONS[1]));
+        assertSame(FUNCTIONS[2], functionSet.next(FUNCTIONS[1]));
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 2, 2);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        assertSame(FUNCTIONS[0], functionSet.nextAlternativeFunction(FUNCTIONS[2]));
-        assertSame(FUNCTIONS[1], functionSet.nextAlternativeFunction(FUNCTIONS[2]));
-        assertSame(FUNCTIONS[0], functionSet.nextAlternativeFunction(FUNCTIONS[2]));
-        assertSame(FUNCTIONS[1], functionSet.nextAlternativeFunction(FUNCTIONS[2]));
+        assertSame(FUNCTIONS[0], functionSet.next(FUNCTIONS[2]));
+        assertSame(FUNCTIONS[1], functionSet.next(FUNCTIONS[2]));
+        assertSame(FUNCTIONS[0], functionSet.next(FUNCTIONS[2]));
+        assertSame(FUNCTIONS[1], functionSet.next(FUNCTIONS[2]));
     }
 
     @Test
     public void testNextTerminal() {
-        GPRandom mockRandom = mock(GPRandom.class);
+        Random mockRandom = mock(Random.class);
         given(mockRandom.nextDouble()).willReturn(0.0, VARIABLE_RATIO, VARIABLE_RATIO + .01, .9, VARIABLE_RATIO - .01, .7);
         given(mockRandom.nextInt(3)).willReturn(1, 0, 2, 1, 0, 2);
 
@@ -128,85 +129,85 @@ public class PrimitiveSetImplTest {
 
     @Test
     public void testNextAlternativeConstant() {
-        GPRandom mockRandom = mock(GPRandom.class);
+        Random mockRandom = mock(Random.class);
         given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO); 
 
         PrimitiveSet terminalSet = createWithTerminals(mockRandom);
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 2, 0);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        assertConstant(8, terminalSet.nextAlternativeTerminal(CONSTANTS[0]));
-        assertConstant(8, terminalSet.nextAlternativeTerminal(CONSTANTS[0]));
-        assertConstant(9, terminalSet.nextAlternativeTerminal(CONSTANTS[0]));
-        assertConstant(9, terminalSet.nextAlternativeTerminal(CONSTANTS[0]));
+        assertConstant(8, terminalSet.nextTerminal(CONSTANTS[0]));
+        assertConstant(8, terminalSet.nextTerminal(CONSTANTS[0]));
+        assertConstant(9, terminalSet.nextTerminal(CONSTANTS[0]));
+        assertConstant(9, terminalSet.nextTerminal(CONSTANTS[0]));
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 1, 2);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        assertConstant(7, terminalSet.nextAlternativeTerminal(CONSTANTS[1]));
-        assertConstant(7, terminalSet.nextAlternativeTerminal(CONSTANTS[1]));
-        assertConstant(9, terminalSet.nextAlternativeTerminal(CONSTANTS[1]));
-        assertConstant(9, terminalSet.nextAlternativeTerminal(CONSTANTS[1]));
+        assertConstant(7, terminalSet.nextTerminal(CONSTANTS[1]));
+        assertConstant(7, terminalSet.nextTerminal(CONSTANTS[1]));
+        assertConstant(9, terminalSet.nextTerminal(CONSTANTS[1]));
+        assertConstant(9, terminalSet.nextTerminal(CONSTANTS[1]));
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 2, 2);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        assertConstant(7, terminalSet.nextAlternativeTerminal(CONSTANTS[2]));
-        assertConstant(8, terminalSet.nextAlternativeTerminal(CONSTANTS[2]));
-        assertConstant(7, terminalSet.nextAlternativeTerminal(CONSTANTS[2]));
-        assertConstant(8, terminalSet.nextAlternativeTerminal(CONSTANTS[2]));
+        assertConstant(7, terminalSet.nextTerminal(CONSTANTS[2]));
+        assertConstant(8, terminalSet.nextTerminal(CONSTANTS[2]));
+        assertConstant(7, terminalSet.nextTerminal(CONSTANTS[2]));
+        assertConstant(8, terminalSet.nextTerminal(CONSTANTS[2]));
 
         given(mockRandom.nextInt(3)).willReturn(2, 0, 1);
-        assertConstant(9, terminalSet.nextAlternativeTerminal(createVariable(9)));
-        assertConstant(7, terminalSet.nextAlternativeTerminal(createVariable(9)));
-        assertConstant(8, terminalSet.nextAlternativeTerminal(createVariable(9)));
+        assertConstant(9, terminalSet.nextTerminal(createVariable(9)));
+        assertConstant(7, terminalSet.nextTerminal(createVariable(9)));
+        assertConstant(8, terminalSet.nextTerminal(createVariable(9)));
     }
 
     @Test
     public void testNextAlternativeVariable() {
-        GPRandom mockRandom = mock(GPRandom.class);
+        Random mockRandom = mock(Random.class);
         given(mockRandom.nextDouble()).willReturn(VARIABLE_RATIO - .01); 
 
-        ConstantSet constantSet = new ConstantSet(CONSTANTS);
-        VariableSet variableSet = VariableSet.createVariableSet(VARIABLE_TYPES);
+        NodeSet constantSet = NodeSet.byType(CONSTANTS);
+        VariableSet variableSet = VariableSet.of(VARIABLE_TYPES);
         PrimitiveSet terminalSet = new PrimitiveSetImpl(null, constantSet, variableSet, mockRandom, VARIABLE_RATIO);
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 2, 0);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        VariableNode firstVariable = variableSet.getById(0);
-        assertVariable(1, terminalSet.nextAlternativeTerminal(firstVariable));
-        assertVariable(1, terminalSet.nextAlternativeTerminal(firstVariable));
-        assertVariable(2, terminalSet.nextAlternativeTerminal(firstVariable));
-        assertVariable(2, terminalSet.nextAlternativeTerminal(firstVariable));
+        VariableNode firstVariable = variableSet.get(0);
+        assertVariable(1, terminalSet.nextTerminal(firstVariable));
+        assertVariable(1, terminalSet.nextTerminal(firstVariable));
+        assertVariable(2, terminalSet.nextTerminal(firstVariable));
+        assertVariable(2, terminalSet.nextTerminal(firstVariable));
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 1, 2);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        VariableNode secondVariable = variableSet.getById(1);
-        assertVariable(0, terminalSet.nextAlternativeTerminal(secondVariable));
-        assertVariable(0, terminalSet.nextAlternativeTerminal(secondVariable));
-        assertVariable(2, terminalSet.nextAlternativeTerminal(secondVariable));
-        assertVariable(2, terminalSet.nextAlternativeTerminal(secondVariable));
+        VariableNode secondVariable = variableSet.get(1);
+        assertVariable(0, terminalSet.nextTerminal(secondVariable));
+        assertVariable(0, terminalSet.nextTerminal(secondVariable));
+        assertVariable(2, terminalSet.nextTerminal(secondVariable));
+        assertVariable(2, terminalSet.nextTerminal(secondVariable));
 
         given(mockRandom.nextInt(3)).willReturn(0, 1, 2, 2);
         given(mockRandom.nextInt(2)).willReturn(0, 1);
-        VariableNode thirdVariable = variableSet.getById(2);
-        assertVariable(0, terminalSet.nextAlternativeTerminal(thirdVariable));
-        assertVariable(1, terminalSet.nextAlternativeTerminal(thirdVariable));
-        assertVariable(0, terminalSet.nextAlternativeTerminal(thirdVariable));
-        assertVariable(1, terminalSet.nextAlternativeTerminal(thirdVariable));
+        VariableNode thirdVariable = variableSet.get(2);
+        assertVariable(0, terminalSet.nextTerminal(thirdVariable));
+        assertVariable(1, terminalSet.nextTerminal(thirdVariable));
+        assertVariable(0, terminalSet.nextTerminal(thirdVariable));
+        assertVariable(1, terminalSet.nextTerminal(thirdVariable));
 
         given(mockRandom.nextInt(3)).willReturn(2, 0, 1);
         ConstantNode constantNode = integerConstant(9);
-        assertVariable(2, terminalSet.nextAlternativeTerminal(constantNode));
-        assertVariable(0, terminalSet.nextAlternativeTerminal(constantNode));
-        assertVariable(1, terminalSet.nextAlternativeTerminal(constantNode));
+        assertVariable(2, terminalSet.nextTerminal(constantNode));
+        assertVariable(0, terminalSet.nextTerminal(constantNode));
+        assertVariable(1, terminalSet.nextTerminal(constantNode));
     }
 
-    private PrimitiveSet createWithTerminals(GPRandom random) {
-        ConstantSet constantSet = new ConstantSet(CONSTANTS);
-        VariableSet variableSet = VariableSet.createVariableSet(VARIABLE_TYPES);
+    private PrimitiveSet createWithTerminals(Random random) {
+        NodeSet constantSet = NodeSet.byType(CONSTANTS);
+        VariableSet variableSet = VariableSet.of(VARIABLE_TYPES);
         return new PrimitiveSetImpl(null, constantSet, variableSet, random, VARIABLE_RATIO);
     }
 
-    private PrimitiveSet createWithFunctions(GPRandom random) {
-        return new PrimitiveSetImpl(new FunctionSet(FUNCTIONS), null, null, random, .1);
+    private PrimitiveSet createWithFunctions(Random random) {
+        return new PrimitiveSetImpl(new FnSet(FUNCTIONS), null, null, random, .1);
     }
 }

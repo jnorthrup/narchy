@@ -17,9 +17,9 @@ package org.oakgp.function.sequence;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.util.Signature;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 import org.oakgp.util.Void;
 
 import static org.oakgp.function.sequence.BiSequence.BISEQUENCE;
@@ -85,6 +85,6 @@ public class TriSequence implements AbstractSequence {
     }
 
     private Node createBiSequence(Node arg1, Node arg2) {
-        return new FunctionNode(bi, arg1, arg2);
+        return new FnNode(bi, arg1, arg2);
     }
 }

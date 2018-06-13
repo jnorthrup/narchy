@@ -15,19 +15,19 @@
  */
 package org.oakgp.function.choice;
 
-import org.oakgp.Type;
-import org.oakgp.function.AbstractFunctionTest;
+import org.oakgp.NodeType;
+import org.oakgp.function.AbstractFnTest;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 import org.oakgp.util.NodeSimplifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.oakgp.Type.nullableType;
-import static org.oakgp.Type.stringType;
+import static org.oakgp.NodeType.nullableType;
+import static org.oakgp.NodeType.stringType;
 
-public class OrElseTest extends AbstractFunctionTest {
+public class OrElseTest extends AbstractFnTest {
     private static final OrElse EXAMPLE = new OrElse(stringType());
 
     @Override
@@ -50,20 +50,20 @@ public class OrElseTest extends AbstractFunctionTest {
     public void testCanSimplify() {
         ConstantNode arg1 = new ConstantNode("hello", nullableType(stringType()));
         ConstantNode arg2 = new ConstantNode("world!", stringType());
-        simplify(new FunctionNode(getFunction(), arg1, arg2), new ConstantNode("hello", stringType()));
+        simplify(new FnNode(getFunction(), arg1, arg2), new ConstantNode("hello", stringType()));
 
-        VariableNode v0 = new VariableNode(0, Type.stringType());
-        FunctionNode fn = new FunctionNode(getFunction(), v0, arg2);
-        simplify(new FunctionNode(getFunction(), v0, fn), fn);
+        VariableNode v0 = new VariableNode(0, NodeType.stringType());
+        FnNode fn = new FnNode(getFunction(), v0, arg2);
+        simplify(new FnNode(getFunction(), v0, fn), fn);
 
-        simplify(new FunctionNode(getFunction(), v0, new FunctionNode(getFunction(), v0, new FunctionNode(getFunction(), v0, fn))), fn);
+        simplify(new FnNode(getFunction(), v0, new FnNode(getFunction(), v0, new FnNode(getFunction(), v0, fn))), fn);
 
-        VariableNode v1 = new VariableNode(1, Type.stringType());
-        simplify(new FunctionNode(getFunction(), v0, new FunctionNode(getFunction(), v1, new FunctionNode(getFunction(), v0, fn))), new FunctionNode(
-                getFunction(), v0, new FunctionNode(getFunction(), v1, arg2)));
+        VariableNode v1 = new VariableNode(1, NodeType.stringType());
+        simplify(new FnNode(getFunction(), v0, new FnNode(getFunction(), v1, new FnNode(getFunction(), v0, fn))), new FnNode(
+                getFunction(), v0, new FnNode(getFunction(), v1, arg2)));
     }
 
-    private void simplify(FunctionNode input, Node expected) {
+    private void simplify(FnNode input, Node expected) {
         assertEquals(expected, NodeSimplifier.simplify(input));
     }
 

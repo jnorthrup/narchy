@@ -16,7 +16,7 @@
 package org.oakgp.node;
 
 import org.oakgp.Assignments;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 
 /**
  * Represents a variable.
@@ -25,7 +25,7 @@ import org.oakgp.Type;
  */
 public final class VariableNode extends TerminalNode {
     public final int id;
-    public final Type type;
+    public final NodeType type;
     public final int hashCode;
 
     /**
@@ -34,7 +34,7 @@ public final class VariableNode extends TerminalNode {
      * @param id   represents the index to specify when getting the value for this variable from an {@link Assignments}
      * @param type the {@code Type} that the values represented by this node are of
      */
-    public VariableNode(int id, Type type) {
+    public VariableNode(int id, NodeType type) {
         this.id = id;
         this.type = type;
         
@@ -62,13 +62,13 @@ public final class VariableNode extends TerminalNode {
     }
 
     @Override
-    public Type returnType() {
+    public NodeType returnType() {
         return type;
     }
 
     @Override
-    public NodeType nodeType() {
-        return NodeType.VARIABLE;
+    public final org.oakgp.node.NodeType nodeType() {
+        return org.oakgp.node.NodeType.VARIABLE;
     }
 
     @Override
@@ -81,8 +81,6 @@ public final class VariableNode extends TerminalNode {
      */
     @Override
     public boolean equals(Object o) {
-        
-        
         return this == o;
     }
 

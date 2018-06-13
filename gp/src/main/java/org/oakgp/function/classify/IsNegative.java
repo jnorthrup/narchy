@@ -17,16 +17,16 @@ package org.oakgp.function.classify;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.booleanType;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.booleanType;
+import static org.oakgp.NodeType.integerType;
 
 /**
  * Determines if a number is negative.
  */
-public final class IsNegative implements Function {
+public final class IsNegative implements Fn {
     private static final Signature SIGNATURE = new Signature(booleanType(), integerType());
 
     @Override

@@ -15,22 +15,21 @@
  */
 package org.oakgp.primitive;
 
-import org.oakgp.Type;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
-import org.oakgp.util.GPRandom;
 
-import java.util.List;
+import java.util.Random;
 
 /**
  * Represents the range of possible functions and terminal nodes to use during a genetic programming run.
  */
 public final class PrimitiveSetImpl implements PrimitiveSet {
-    private final FunctionSet functionSet;
-    private final ConstantSet constantSet;
+    private final FnSet functionSet;
+    private final NodeSet constantSet;
     private final VariableSet variableSet;
-    private final GPRandom random;
-    private final double ratioVariables;
+    private final Random random;
+    private final double varCreationProbability;
 
     /**
      * Constructs a new primitive set consisting of the specified components.
@@ -39,24 +38,24 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
      * @param constantSet    the set of possible constants to use in the construction of programs
      * @param variableSet    the set of possible variables to use in the construction of programs
      * @param random         used to randomly select components to use in the construction of programs
-     * @param ratioVariables a value in the range 0 to 1 (inclusive) which specifies the proportion of terminal nodes that should represent variables, rather than constants
+     * @param varCreationProbability a value in the range 0 to 1 (inclusive) which specifies the proportion of terminal nodes that should represent variables, rather than constants
      */
-    public PrimitiveSetImpl(FunctionSet functionSet, ConstantSet constantSet, VariableSet variableSet, GPRandom random, double ratioVariables) {
+    public PrimitiveSetImpl(FnSet functionSet, NodeSet constantSet, VariableSet variableSet, Random random, double varCreationProbability) {
         this.functionSet = functionSet;
         this.constantSet = constantSet;
         this.variableSet = variableSet;
         this.random = random;
-        this.ratioVariables = ratioVariables;
+        this.varCreationProbability = varCreationProbability;
     }
 
     @Override
-    public boolean hasTerminals(Type type) {
-        return variableSet.getByType(type) != null || constantSet.getByType(type) != null;
+    public boolean hasTerminals(NodeType type) {
+        return variableSet.hasType(type) || constantSet.hasType(type);
     }
 
     @Override
-    public boolean hasFunctions(Type type) {
-        return functionSet.getByType(type) != null;
+    public boolean hasFunctions(NodeType type) {
+        return functionSet.hasType(type);
     }
 
     /**
@@ -65,8 +64,8 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
      * @return a randomly selected terminal node
      */
     @Override
-    public Node nextTerminal(Type type) {
-        boolean doCreateVariable = doCreateVariable();
+    public Node nextTerminal(NodeType type) {
+        boolean doCreateVariable = shouldCreateVariable();
         Node next = nextTerminal(type, doCreateVariable);
         if (next == null) {
             next = nextTerminal(type, !doCreateVariable);
@@ -78,9 +77,11 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
         }
     }
 
-    private Node nextTerminal(Type type, boolean doCreateVariable) {
-        List<? extends Node> possibilities = doCreateVariable ? variableSet.getByType(type) : constantSet.getByType(type);
-        return randomlySelectAlternative(null, possibilities);
+    private Node nextTerminal(NodeType type, boolean createVariable) {
+
+        return (Node) (createVariable ? variableSet : constantSet)
+                .randomAlternate(type, random);
+
     }
 
     /**
@@ -90,25 +91,19 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
      * @return a randomly selected terminal node that is not the same as the specified {@code Node}
      */
     @Override
-    public Node nextAlternativeTerminal(Node current) {
-        boolean doCreateVariable = doCreateVariable();
-        Node next = nextAlternativeNode(current, doCreateVariable);
-        if (next == current) {
-            return nextAlternativeNode(current, !doCreateVariable);
-        } else {
-            return next;
-        }
+    public Node nextTerminal(Node current) {
+        boolean doCreateVariable = shouldCreateVariable();
+        Node next = next(current, doCreateVariable);
+        return next == current ? next(current, !doCreateVariable) : next;
     }
 
-    private boolean doCreateVariable() {
-        return random.nextDouble() < ratioVariables;
+    private boolean shouldCreateVariable() {
+        return random.nextDouble() < varCreationProbability;
     }
 
-    private Node nextAlternativeNode(Node current, boolean doCreateVariable) {
-        Type type = current.returnType();
-        List<? extends Node> possibilities =
-                doCreateVariable ? variableSet.getByType(type) : constantSet.getByType(type);
-        return randomlySelectAlternative(current, possibilities);
+    private Node next(Node current, boolean doCreateVariable) {
+        return (Node) (doCreateVariable ? variableSet : constantSet)
+                .randomAlternate(current.returnType(), current, random);
     }
 
     /**
@@ -118,13 +113,12 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
      * @return a randomly selected {@code Function} with a return type of {@code type}
      */
     @Override
-    public Function nextFunction(Type type) {
-        List<Function> typeFunctions = functionSet.getByType(type);
-        if (typeFunctions == null) {
+    public Fn next(NodeType type) {
+        Fn f= functionSet.random(type, random);
+        if (f == null) {
             throw new IllegalArgumentException("No functions with return type: " + type);
         }
-        int index = nextInt(typeFunctions.size());
-        return typeFunctions.get(index);
+        return f;
     }
 
     /**
@@ -134,32 +128,8 @@ public final class PrimitiveSetImpl implements PrimitiveSet {
      * @return a randomly selected {@code Function} that is not the same as the specified {@code Function}
      */
     @Override
-    public Function nextAlternativeFunction(Function current) {
-        List<Function> functions = functionSet.getBySignature(current.sig());
-        return randomlySelectAlternative(current, functions);
+    public Fn next(Fn current) {
+        return functionSet.randomAlternate(current, random);
     }
 
-    private <C, P extends C> C randomlySelectAlternative(C currentVersion, List<P> possibilities) {
-        if (possibilities == null) {
-            return currentVersion;
-        }
-
-        int possibilitiesSize = possibilities.size();
-        int randomIndex = nextInt(possibilitiesSize);
-        C next = possibilities.get(randomIndex);
-        if (next == currentVersion) {
-            if (possibilitiesSize == 1) {
-                return currentVersion;
-            } else {
-                int secondRandomIndex = nextInt(possibilitiesSize - 1);
-                return possibilities.get(secondRandomIndex + ((secondRandomIndex >= randomIndex) ? 1 : 0));
-            }
-        } else {
-            return next;
-        }
-    }
-
-    private int nextInt(int bound) {
-        return bound == 1 ? 0 : random.nextInt(bound);
-    }
 }

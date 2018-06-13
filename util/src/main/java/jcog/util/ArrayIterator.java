@@ -2,17 +2,19 @@ package jcog.util;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Streams;
+import jcog.TODO;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 /** TODO optionally skip nulls */
 public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
-    private final E[] array;
+    protected final E[] array;
     int index;
 
     public ArrayIterator(E[] array) {
@@ -27,7 +29,9 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     @Override
     public E next() {
-        return index < array.length ? array[index++] : null;
+        if (index < array.length)
+            return array[index++];
+        throw new NoSuchElementException();
     }
 
     @Override
@@ -39,8 +43,12 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     @Override
     public Iterator<E> iterator() {
         if (index != 0)
-            return new ArrayIterator(array); //already started, so return a fresh copy
+            return clone(); //already started, so return a fresh copy
         return this;
+    }
+
+    public ArrayIterator<E> clone() {
+        return new ArrayIterator(array);
     }
 
     public static <E> Iterator<E> get(E... e) {
@@ -61,6 +69,10 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
                     return (Iterable) ArrayIterator.get(e, e.length);
             }
         }
+    }
+
+    public static <E> Iterator<E> get(E[] e, int from, int to) {
+        throw new TODO();
     }
 
     public static <E> Iterator<E> get(E[] e, int size) {
@@ -104,6 +116,10 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         @Override
         public boolean hasNext() {
             return index < size;
+        }
+
+        public ArrayIterator<E> clone() {
+            return new PartialArrayIterator<>(array, size);
         }
     }
 

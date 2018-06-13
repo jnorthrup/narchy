@@ -16,7 +16,7 @@
 package org.oakgp.node;
 
 import org.jetbrains.annotations.Nullable;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 
 /**
  * Defines the node types used to construct tree structures.
@@ -27,7 +27,7 @@ public enum NodeType {
     /**
      * Indicates that a node is a function node.
      *
-     * @see FunctionNode
+     * @see FnNode
      */
     FUNCTION,
     /**
@@ -54,14 +54,14 @@ public enum NodeType {
      * Returns {@code true} if the specified node is a function node, else {@code false}.
      */
     public static boolean isFunction(Node n) {
-        return n.nodeType() == FUNCTION;
+        //return n.nodeType() == FUNCTION;
+        return n instanceof FnNode;
     }
 
     @Nullable
-    public static org.oakgp.function.Function func(Node n) {
-        return n.nodeType() == FUNCTION ? ((FunctionNode)n).func() : null;
+    public static Fn func(Node n) {
+        return isFunction(n) ? ((FnNode)n).func() : null;
     }
-
 
     /**
      * Returns {@code true} if both of the specified nodes are terminal nodes, else {@code false}.
@@ -74,25 +74,25 @@ public enum NodeType {
      * Returns {@code true} if the specified node is a terminal node, else {@code false}.
      */
     public static boolean isTerminal(Node n) {
-        return n.nodeType() != FUNCTION;
+        return !isFunction(n);
     }
 
     /**
      * Returns {@code true} if the specified node is a constant node, else {@code false}.
      */
     public static boolean isConstant(Node n) {
-        return n.nodeType() == CONSTANT;
+        return n instanceof ConstantNode;
     }
 
     /**
      * Returns {@code true} if the specified node is a variable node, else {@code false}.
      */
     public static boolean isVariable(Node n) {
-        return n.nodeType() == VARIABLE;
+        return n instanceof VariableNode;
     }
 
     public static boolean func(Node arg1, String fName) {
-        Function f = func(arg1);
+        Fn f = func(arg1);
         if (f!=null) {
             return f.name().equals(fName);
         }

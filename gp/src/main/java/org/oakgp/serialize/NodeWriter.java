@@ -16,9 +16,10 @@
 package org.oakgp.serialize;
 
 import org.oakgp.Arguments;
-import org.oakgp.function.Function;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
+import org.oakgp.node.VariableNode;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -50,11 +51,11 @@ public final class NodeWriter {
         writers.put(Long.class, o -> o + "L");
         writers.put(BigInteger.class, o -> o + "I");
         writers.put(BigDecimal.class, o -> o + "D");
-        writers.put(Function.class, o -> ((Function) o).name());
+        writers.put(Fn.class, o -> ((Fn) o).name());
         writers.put(Arguments.class, o -> writeArguments((Arguments) o));
     }
 
-    private static String writeVariableNode(Node node) {
+    private static String writeVariableNode(VariableNode node) {
         return node.toString();
     }
 
@@ -66,7 +67,7 @@ public final class NodeWriter {
             case FUNCTION:
                 return writeFunctionNode(node);
             case VARIABLE:
-                return writeVariableNode(node);
+                return writeVariableNode((VariableNode)node);
             case CONSTANT:
                 return writeConstantNode(node);
             default:
@@ -75,10 +76,10 @@ public final class NodeWriter {
     }
 
     private String writeFunctionNode(Node node) {
-        FunctionNode functionNode = (FunctionNode) node;
-        Function function = functionNode.func();
+        FnNode functionNode = (FnNode) node;
+        Fn function = functionNode.func();
         Arguments arguments = functionNode.args();
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(64);
         sb.append('(').append(function.name());
         for (int i = 0; i < arguments.length(); i++) {
             sb.append(' ').append(writeNode(arguments.get(i)));
@@ -92,7 +93,7 @@ public final class NodeWriter {
     }
 
     private String writeArguments(Arguments args) {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder(64);
         sb.append('[');
         for (int i = 0; i < args.length(); i++) {
             if (i != 0) {

@@ -16,7 +16,7 @@
 package org.oakgp.node;
 
 import org.oakgp.Assignments;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 
 import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
 
@@ -52,14 +52,14 @@ public interface Node extends Comparable<Node> {
      * <p>
      * This indicates the type of the value returned when {@code #evaluate(Assignments)} is called on this {@code Node}.
      */
-    Type returnType();
+    NodeType returnType();
 
     /**
      * Returns the {@code NodeType} of this {@code Node}.
      * <p>
      * This can be used to determine if the node is a function, constant or variable node.
      */
-    NodeType nodeType();
+    @Deprecated org.oakgp.node.NodeType nodeType();
 
     /** default impl: not entirely */
     @Override default int compareTo(Node o) {

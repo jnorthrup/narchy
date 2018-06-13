@@ -16,8 +16,8 @@
 package org.oakgp.node.walk;
 
 import org.oakgp.Arguments;
-import org.oakgp.function.Function;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
@@ -42,7 +42,7 @@ public final class StrategyWalk {
     public static int getNodeCount(Node node, Predicate<Node> treeWalkerStrategy) {
         int total = treeWalkerStrategy.test(node) ? 1 : 0;
         if (NodeType.isFunction(node)) {
-            FunctionNode functionNode = (FunctionNode) node;
+            FnNode functionNode = (FnNode) node;
             Arguments arguments = functionNode.args();
             int n = arguments.length();
             for (int i = 0; i < n; i++) {
@@ -59,7 +59,7 @@ public final class StrategyWalk {
         getAt:
         while (true) {
             if (NodeType.isFunction(node)) {
-                FunctionNode functionNode = (FunctionNode) node;
+                FnNode functionNode = (FnNode) node;
                 Arguments arguments = functionNode.args();
                 int total = 0;
                 int n = arguments.length();
@@ -92,7 +92,7 @@ public final class StrategyWalk {
      */
     public static Node replaceAt(Node node, int index, java.util.function.Function<Node, Node> replacement, Predicate<Node> treeWalkerStrategy) {
         if (NodeType.isFunction(node)) {
-            FunctionNode functionNode = (FunctionNode) node;
+            FnNode functionNode = (FnNode) node;
             Arguments args = functionNode.args();
             int total = 0;
             int n = args.length();
@@ -100,8 +100,8 @@ public final class StrategyWalk {
                 Node child = args.get(i);
                 int c = getNodeCount(child, treeWalkerStrategy);
                 if (total + c > index) {
-                    Function f = functionNode.func();
-                    return new FunctionNode(f,
+                    Fn f = functionNode.func();
+                    return new FnNode(f,
                             args.replaceAt(i, replaceAt(child, index - total, replacement, treeWalkerStrategy)));
                 } else {
                     total += c;

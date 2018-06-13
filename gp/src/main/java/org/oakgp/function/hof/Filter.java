@@ -17,15 +17,15 @@ package org.oakgp.function.hof;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 
 /**
  * Uses a function to filter the elements of a collection.
@@ -35,7 +35,7 @@ import static org.oakgp.Type.*;
  *
  * @see <a href="http:
  */
-public final class Filter implements Function {
+public final class Filter implements Fn {
     private final Signature signature;
 
     /**
@@ -43,13 +43,13 @@ public final class Filter implements Function {
      *
      * @param type the type of the elements contained in the collection
      */
-    public Filter(Type type) {
+    public Filter(NodeType type) {
         signature = new Signature(arrayType(type), functionType(booleanType(), type), arrayType(type));
     }
 
     @Override
     public Object evaluate(Arguments arguments, Assignments assignments) {
-        Function f = arguments.firstArg().eval(assignments);
+        Fn f = arguments.firstArg().eval(assignments);
         Arguments candidates = arguments.secondArg().eval(assignments);
         List<Node> result = new ArrayList<>();
         for (int i = 0; i < candidates.length(); i++) {

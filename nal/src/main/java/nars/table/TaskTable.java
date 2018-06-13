@@ -76,8 +76,8 @@ public interface TaskTable {
                     target.accept(the);
             } else {
                 CachedTopN<Task> q = new CachedTopN<>(limit, m.value());
-                forEachTask(q::add);
-                q.forEach(target);
+                forEachTask(q::accept);
+                q.forEachItem(target);
             }
         } else {
 

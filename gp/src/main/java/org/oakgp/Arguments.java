@@ -15,7 +15,7 @@
  */
 package org.oakgp;
 
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
 
 import java.util.Arrays;
@@ -40,7 +40,7 @@ public class Arguments {
         this.depth = calcDepth(args);
     }
 
-    public static Arguments get(Function f, Node... aa) {
+    public static Arguments get(Fn f, Node... aa) {
         if (aa.length > 1 && f.argsSorted()) {
             aa = aa.clone();
             Arrays.sort(aa);
@@ -50,7 +50,7 @@ public class Arguments {
         }
     }
 
-    public static Arguments get(Function f, List<Node> a) {
+    public static Arguments get(Fn f, List<Node> a) {
         if (f.argsSorted() && a.size() > 1) {
             Node[] aa = a.toArray(Node.EmptyArray);
             Arrays.sort(aa);

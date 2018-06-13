@@ -18,7 +18,7 @@ package org.oakgp.function.math;
 import org.junit.jupiter.api.Test;
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.util.NodeSimplifier;
 
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.*;
 
 public class ArithmeticExpressionSimplifierTest {
-    private static final ArithmeticExpressionSimplifier SIMPLIFIER = IntFunc.the.getSimplifier();
+    private static final ArithmeticExpressionSimplifier SIMPLIFIER = IntFunc.the.simplifier;
 
     @Test
     public void testCombineWithChildNodes() {
@@ -135,7 +135,7 @@ public class ArithmeticExpressionSimplifierTest {
     }
 
     private void assertSimplify(String input, String expectedOutput) {
-        FunctionNode in = readFunctionNode(input);
+        FnNode in = readFunctionNode(input);
         Arguments args = in.args();
         Node simplifiedVersion = NodeSimplifier.simplify(in); 
         assertNodeEquals(expectedOutput, simplifiedVersion);
@@ -150,7 +150,7 @@ public class ArithmeticExpressionSimplifierTest {
         }
     }
 
-    private Optional<Node> simplify(FunctionNode in, Arguments args) {
+    private Optional<Node> simplify(FnNode in, Arguments args) {
         return Optional.ofNullable(SIMPLIFIER.simplify(in.func(), args.firstArg(), args.secondArg()));
     }
 

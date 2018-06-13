@@ -16,8 +16,8 @@
 package org.oakgp.function.compare;
 
 import org.oakgp.Arguments;
-import org.oakgp.Type;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.NodeType;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 /**
@@ -29,7 +29,7 @@ public final class GreaterThanOrEqual extends ComparisonOperator {
     /**
      * Constructs a function that compares two arguments of the specified type.
      */
-    public GreaterThanOrEqual(Type type) {
+    public GreaterThanOrEqual(NodeType type) {
         super(type, true);
         lessThanOrEqual = LessThanOrEqual.create(type);
     }
@@ -43,7 +43,7 @@ public final class GreaterThanOrEqual extends ComparisonOperator {
     public Node simplify(Arguments arguments) {
         Node simplifiedVersion = super.simplify(arguments);
         if (simplifiedVersion == null) {
-            return new FunctionNode(lessThanOrEqual, arguments.secondArg(), arguments.firstArg());
+            return new FnNode(lessThanOrEqual, arguments.secondArg(), arguments.firstArg());
         } else {
             return simplifiedVersion;
         }

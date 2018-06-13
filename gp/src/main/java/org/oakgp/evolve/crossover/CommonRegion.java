@@ -16,8 +16,8 @@
 package org.oakgp.evolve.crossover;
 
 import org.oakgp.Arguments;
-import org.oakgp.function.Function;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import static org.oakgp.node.NodeType.areFunctions;
@@ -33,8 +33,8 @@ final class CommonRegion {
 
     static Node crossoverAt(Node n1, Node n2, int crossOverPoint) {
         if (areFunctions(n1, n2)) {
-            FunctionNode f1 = (FunctionNode) n1;
-            FunctionNode f2 = (FunctionNode) n2;
+            FnNode f1 = (FnNode) n1;
+            FnNode f2 = (FnNode) n2;
             Arguments arguments = f1.args();
             int argCount = arguments.length();
             if (argCount == f2.args().length()) {
@@ -44,8 +44,8 @@ final class CommonRegion {
                     Node a2 = f2.args().get(i);
                     int c = getNodeCount(a1, a2);
                     if (total + c > crossOverPoint) {
-                        Function f = f1.func();
-                        return new FunctionNode(f,
+                        Fn f = f1.func();
+                        return new FnNode(f,
                                 arguments.replaceAt(i, crossoverAt(a1, a2, crossOverPoint - total)));
                     } else {
                         total += c;
@@ -60,8 +60,8 @@ final class CommonRegion {
     static int getNodeCount(Node n1, Node n2) {
         if (areFunctions(n1, n2)) {
             int total = sameType(n1, n2) ? 1 : 0;
-            FunctionNode f1 = (FunctionNode) n1;
-            FunctionNode f2 = (FunctionNode) n2;
+            FnNode f1 = (FnNode) n1;
+            FnNode f2 = (FnNode) n2;
             int argCount = f1.args().length();
             if (argCount == f2.args().length()) {
                 for (int i = 0; i < argCount; i++) {

@@ -134,43 +134,7 @@ public interface Prioritized extends Deleteable {
         return p!=p; 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    default float priNeg() {
+        return pri()*-1;
+    }
 }

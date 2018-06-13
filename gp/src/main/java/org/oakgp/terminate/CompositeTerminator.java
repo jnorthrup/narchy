@@ -15,7 +15,7 @@
  */
 package org.oakgp.terminate;
 
-import org.oakgp.rank.Candidates;
+import org.oakgp.rank.Ranking;
 
 import java.util.function.Predicate;
 
@@ -24,20 +24,20 @@ import java.util.function.Predicate;
  * <p>
  * A composite of multiple termination criteria.
  */
-public final class CompositeTerminator implements Predicate<Candidates> {
-    private final Predicate<Candidates>[] terminators;
+public final class CompositeTerminator implements Predicate<Ranking> {
+    private final Predicate<Ranking>[] terminators;
 
     /**
      * Constructs a new {@code Predicate} consisting of the specified component predicates.
      */
     @SafeVarargs
-    public CompositeTerminator(Predicate<Candidates>... terminators) {
+    public CompositeTerminator(Predicate<Ranking>... terminators) {
         this.terminators = terminators;
     }
 
     @Override
-    public boolean test(Candidates candidates) {
-        for (Predicate<Candidates> t : terminators) {
+    public boolean test(Ranking candidates) {
+        for (Predicate<Ranking> t : terminators) {
             if (t.test(candidates)) {
                 return true;
             }

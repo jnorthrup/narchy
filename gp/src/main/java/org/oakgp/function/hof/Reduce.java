@@ -17,14 +17,14 @@ package org.oakgp.function.hof;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 
-import static org.oakgp.Type.arrayType;
-import static org.oakgp.Type.functionType;
+import static org.oakgp.NodeType.arrayType;
+import static org.oakgp.NodeType.functionType;
 
 /**
  * Combines the elements of a collection by recursively applying a function.
@@ -38,7 +38,7 @@ import static org.oakgp.Type.functionType;
  *
  * @see <a href="http:
  */
-public final class Reduce implements Function {
+public final class Reduce implements Fn {
     private final Signature signature;
 
     /**
@@ -46,13 +46,13 @@ public final class Reduce implements Function {
      *
      * @param type the type of the elements contained in the collection - this will also be the type associated with the value produced by evaluating this function
      */
-    public Reduce(Type type) {
+    public Reduce(NodeType type) {
         signature = new Signature(type, functionType(type, type, type), type, arrayType(type));
     }
 
     @Override
     public Object evaluate(Arguments arguments, Assignments assignments) {
-        Function f = arguments.firstArg().eval(assignments);
+        Fn f = arguments.firstArg().eval(assignments);
         Node result = arguments.secondArg();
         Arguments candidates = arguments.thirdArg().eval(assignments);
         for (int i = 0; i < candidates.length(); i++) {

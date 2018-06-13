@@ -3,30 +3,35 @@ package nars.gui;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
+import nars.NAgentX;
 import nars.Narsese;
+import nars.Task;
+import nars.agent.NAgent;
+import nars.gui.graph.DynamicConceptSpace;
 import nars.gui.graph.run.ConceptGraph2D;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
+import nars.video.CameraSensorView;
+import org.HdrHistogram.DoubleHistogram;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Bordering;
-import spacegraph.space2d.container.MutableContainer;
-import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.*;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueModel;
 import spacegraph.space2d.container.grid.ScrollGrid;
+import spacegraph.space2d.hud.SubOrtho;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.console.ConsoleTerminal;
 import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.meta.AutoSurface;
-import spacegraph.space2d.widget.meta.MetaFrame;
-import spacegraph.space2d.widget.meta.OmniBox;
-import spacegraph.space2d.widget.meta.ServicesTable;
+import spacegraph.space2d.widget.meta.*;
 import spacegraph.space2d.widget.tab.TabPane;
 import spacegraph.space2d.widget.text.Label;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space3d.SpaceGraphPhys3D;
 import spacegraph.util.math.Color3f;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +41,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * SpaceGraph-based visualization utilities for NARchy
@@ -139,6 +145,149 @@ public class NARui {
 
     public static void conceptWindow(Termed t, NAR n) {
         SpaceGraph.window(new ConceptSurface(t, n), 500, 500, true);
+    }
+
+    public static void agentWindow(NAgent a) {
+        NAR nar = a.nar();
+        nar.runLater(() -> {
+            SpaceGraph.window(
+                    grid(
+                            new AutoSurface(a),
+
+                            beliefCharts(nar.dur() * 64, a.actions.keySet(), a.nar()),
+
+                            new EmotionPlot(64, a),
+                            grid(
+
+                                    new TextEdit() {
+                                        @Override
+                                        protected void onKeyEnter() {
+                                            String s = text();
+                                            text("");
+                                            try {
+                                                nar.conceptualize(s);
+                                            } catch (Narsese.NarseseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            conceptWindow(s, nar);
+                                        }
+                                    }.surface(),
+
+
+                                    new PushButton("dump", () -> {
+                                        try {
+                                            nar.output(Files.createTempFile(a.toString(), "" + System.currentTimeMillis()).toFile(), false);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }),
+
+                                    new PushButton("clear", () -> {
+                                        nar.runLater(NAR::clear);
+                                    }),
+
+                                    new PushButton("prune", () -> {
+                                        nar.runLater(() -> {
+                                            DoubleHistogram i = new DoubleHistogram(2);
+                                            nar.tasks(true, false, false, false).forEach(t ->
+                                                    i.recordValue(t.conf())
+                                            );
+                                            float confThresh = (float) i.getValueAtPercentile(25);
+                                            nar.tasks(true, false, false, false).filter(t ->
+                                                    t.conf() < confThresh
+                                            ).forEach(Task::delete);
+                                        });
+                                    }),
+
+                                    new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
+
+                                    new WindowToggleButton("concept graph", () -> {
+                                        DynamicConceptSpace sg;
+                                        SpaceGraphPhys3D s = new SpaceGraphPhys3D<>(
+                                                sg = new DynamicConceptSpace(nar, () -> nar.exe.active().iterator(),
+                                                        128, 16)
+                                        );
+                                        EdgeDirected3D fd = new EdgeDirected3D();
+                                        s.dyn.addBroadConstraint(fd);
+                                        fd.attraction.set(fd.attraction.get() * 8);
+
+                                        s.add(new SubOrtho(
+
+                                                grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
+
+                                        }.posWindow(0, 0, 1f, 0.2f));
+
+
+
+
+                                        s.camPos(0, 0, 90);
+                                        return s;
+                                    }),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                    a instanceof NAgentX ?
+                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(
+                                                    new CameraSensorView(cs, a).withControls(), AspectAlign.Align.Center, cs.width, cs.height))
+                                                    .toArray(Surface[]::new))
+                                            ) : grid()
+                            )
+                    ),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    900, 600);
+        });
     }
 
 

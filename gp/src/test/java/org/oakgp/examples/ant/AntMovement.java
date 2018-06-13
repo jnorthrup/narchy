@@ -17,12 +17,12 @@ package org.oakgp.examples.ant;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.function.Function;
-import org.oakgp.function.ImpureFunction;
-import org.oakgp.util.Signature;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.function.ImpureFn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
+import org.oakgp.util.Signature;
 import org.oakgp.util.Void;
 
 import java.util.function.Consumer;
@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 /**
  * Mutates the state of a {@code MutableState} object.
  */
-final class AntMovement implements ImpureFunction {
+final class AntMovement implements ImpureFn {
     /**
      * Move the ant forward one square.
      */
@@ -53,21 +53,21 @@ final class AntMovement implements ImpureFunction {
     }
 
     static boolean isLeftAndRight(Node firstArg, Node secondArg) {
-        Function f1 = getFunction(firstArg);
-        Function f2 = getFunction(secondArg);
+        Fn f1 = getFunction(firstArg);
+        Fn f2 = getFunction(secondArg);
         return f1 == LEFT && f2 == RIGHT || f1 == RIGHT && f2 == LEFT;
     }
 
     static boolean areAllSame(AntMovement function, Node firstArg, Node secondArg, Node thirdArg) {
-        Function f1 = getFunction(firstArg);
-        Function f2 = getFunction(secondArg);
-        Function f3 = getFunction(thirdArg);
+        Fn f1 = getFunction(firstArg);
+        Fn f2 = getFunction(secondArg);
+        Fn f3 = getFunction(thirdArg);
         return f1 == function && f2 == function && f3 == function;
     }
 
-    private static Function getFunction(Node n) {
+    private static Fn getFunction(Node n) {
         if (NodeType.isFunction(n)) {
-            return ((FunctionNode) n).func();
+            return ((FnNode) n).func();
         } else {
             throw new IllegalStateException(n.toString());
         }

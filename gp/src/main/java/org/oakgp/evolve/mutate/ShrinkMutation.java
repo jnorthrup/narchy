@@ -21,8 +21,9 @@ import org.oakgp.node.NodeType;
 import org.oakgp.node.walk.StrategyWalk;
 import org.oakgp.primitive.PrimitiveSet;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
+
+import java.util.Random;
 
 /**
  * Replaces a randomly selected function node of the parent with a terminal node.
@@ -30,7 +31,7 @@ import org.oakgp.util.Utils;
  * The resulting offspring will be smaller than the parent.
  */
 public final class ShrinkMutation implements GeneticOperator {
-    private final GPRandom random;
+    private final Random random;
     private final PrimitiveSet primitiveSet;
 
     /**
@@ -39,14 +40,14 @@ public final class ShrinkMutation implements GeneticOperator {
      * @param random       used to randomly select function nodes
      * @param primitiveSet used to select terminal nodes to replace function nodes with
      */
-    public ShrinkMutation(GPRandom random, PrimitiveSet primitiveSet) {
+    public ShrinkMutation(Random random, PrimitiveSet primitiveSet) {
         this.random = random;
         this.primitiveSet = primitiveSet;
     }
 
     @Override
     public Node apply(NodeSelector selector) {
-        Node root = selector.next();
+        Node root = selector.get();
         int nodeCount = StrategyWalk.getNodeCount(root, NodeType::isFunction);
         if (nodeCount == 0) {
             
@@ -55,10 +56,10 @@ public final class ShrinkMutation implements GeneticOperator {
         } else if (nodeCount == 1) {
             
             
-            return primitiveSet.nextAlternativeTerminal(root);
+            return primitiveSet.nextTerminal(root);
         } else {
             int index = Utils.selectSubNodeIndex(random, nodeCount);
-            return StrategyWalk.replaceAt(root, index, primitiveSet::nextAlternativeTerminal, NodeType::isFunction);
+            return StrategyWalk.replaceAt(root, index, primitiveSet::nextTerminal, NodeType::isFunction);
         }
     }
 }

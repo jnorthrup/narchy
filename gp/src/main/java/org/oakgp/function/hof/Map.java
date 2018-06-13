@@ -17,17 +17,17 @@ package org.oakgp.function.hof;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.oakgp.Type.arrayType;
-import static org.oakgp.Type.functionType;
+import static org.oakgp.NodeType.arrayType;
+import static org.oakgp.NodeType.functionType;
 
 /**
  * Returns the result of applying a function to each element of a collection.
@@ -37,7 +37,7 @@ import static org.oakgp.Type.functionType;
  *
  * @see <a href="http:
  */
-public final class Map implements Function {
+public final class Map implements Fn {
     private final Signature signature;
 
     /**
@@ -46,14 +46,14 @@ public final class Map implements Function {
      * @param from the type of the elements contained in the collection provided as an argument to the function
      * @param to   the type of the elements contained in the collection returned by the function
      */
-    public Map(Type from, Type to) {
+    public Map(NodeType from, NodeType to) {
         signature = new Signature(arrayType(to), functionType(to, from), arrayType(from));
     }
 
     @Override
     public Object evaluate(Arguments arguments, Assignments assignments) {
-        Function f = arguments.firstArg().eval(assignments);
-        Type returnType = f.sig().returnType();
+        Fn f = arguments.firstArg().eval(assignments);
+        NodeType returnType = f.sig().returnType();
         Arguments candidates = arguments.secondArg().eval(assignments);
         int args = candidates.length();
 

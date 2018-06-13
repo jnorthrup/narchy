@@ -17,14 +17,14 @@ package org.oakgp.node.walk;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.walk.DepthWalk.DepthWalkStrategy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.oakgp.TestUtils.*;
 
 public class DepthWalkTest {
-    private static final FunctionNode INPUT =
+    private static final FnNode INPUT =
             readFunctionNode("(+ (+ 6 (+ 7 8)) 9)");
 
     @Test

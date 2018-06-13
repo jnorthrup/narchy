@@ -17,7 +17,7 @@ package org.oakgp.function.math;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
@@ -37,9 +37,9 @@ public final class Add extends ArithmeticOperator {
      * @see NumFunc#getAdd()
      */
     Add(NumFunc<?> numberUtils) {
-        super(numberUtils.getType());
+        super(numberUtils.type);
         this.numberUtils = numberUtils;
-        this.simplifier = numberUtils.getSimplifier();
+        this.simplifier = numberUtils.simplifier;
     }
 
     @Override
@@ -78,7 +78,7 @@ public final class Add extends ArithmeticOperator {
         if (isConstant(x) && numberUtils.isNegative(x)) {
 
 
-            return new FunctionNode(numberUtils.subtract, y, numberUtils.negateConstant(x));
+            return new FnNode(numberUtils.subtract, y, numberUtils.negateConstant(x));
         }
 //        } else if (isConstant(arg2) && numberUtils.isNegative(arg2)) {
 //
@@ -88,23 +88,23 @@ public final class Add extends ArithmeticOperator {
 //            throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
 //        } 
         if (isConstant(x) && isFunction(y)) {
-            FunctionNode fn2 = (FunctionNode) y;
+            FnNode fn2 = (FnNode) y;
             if (isConstant(fn2.args().firstArg()) && numberUtils.isAddOrSubtract(fn2.func())) {
-                return new FunctionNode(fn2.func(), numberUtils.add(x, fn2.args().firstArg()), fn2.args().secondArg());
+                return new FnNode(fn2.func(), numberUtils.add(x, fn2.args().firstArg()), fn2.args().secondArg());
             }
         }
         if (NodeType.func(y, "+")) {
             //verify commutive ordering
-            Arguments yy = ((FunctionNode) y).args();
+            Arguments yy = ((FnNode) y).args();
             Node[] adds = new Node[] { x, yy.get(0), yy.get(1) } ;
             Node[] original = adds.clone();
             Arrays.sort(adds);
             if (!Arrays.equals(original, adds)) {
                 if (isConstant(adds[0]) && isConstant(adds[1])) {
-                    return new FunctionNode(numberUtils.add, numberUtils.add(adds[0], adds[1]), adds[2] );
+                    return new FnNode(numberUtils.add, numberUtils.add(adds[0], adds[1]), adds[2] );
                 } else {
-                    return new FunctionNode(numberUtils.add, adds[0],
-                            new FunctionNode(numberUtils.add, adds[1], adds[2]));
+                    return new FnNode(numberUtils.add, adds[0],
+                            new FnNode(numberUtils.add, adds[1], adds[2]));
                 }
             }
 
@@ -114,11 +114,11 @@ public final class Add extends ArithmeticOperator {
         //(+ (- a b) (- c d))
         //  == (a - b) + (c - d) == (a + c) - (b + d) == (+ a (- c (+ b d )))
         if (NodeType.func(x, "-") && NodeType.func(y, "-")) {
-            Arguments xx = ((FunctionNode) x).args();
+            Arguments xx = ((FnNode) x).args();
             Node a = xx.firstArg();
             Node b = xx.secondArg();
 
-            Arguments yy = ((FunctionNode) y).args();
+            Arguments yy = ((FnNode) y).args();
             Node c = yy.firstArg();
             Node d = yy.secondArg();
 
@@ -139,9 +139,9 @@ public final class Add extends ArithmeticOperator {
             }
 
             //(+ a (- c (+ b d )))
-            return new FunctionNode(numberUtils.add, a,
-                    new FunctionNode(numberUtils.subtract, c,
-                        new FunctionNode(numberUtils.add, b, d)
+            return new FnNode(numberUtils.add, a,
+                    new FnNode(numberUtils.subtract, c,
+                        new FnNode(numberUtils.add, b, d)
                     )
             );
 

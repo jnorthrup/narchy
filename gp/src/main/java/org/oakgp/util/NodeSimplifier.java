@@ -16,9 +16,9 @@
 package org.oakgp.util;
 
 import org.oakgp.Arguments;
-import org.oakgp.function.Function;
+import org.oakgp.function.Fn;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import java.util.HashSet;
@@ -42,7 +42,7 @@ import static org.oakgp.node.NodeType.isFunction;
  * 25
  * </pre>
  * <p>
- * <b>Note:</b> relies on {@link org.oakgp.function.Function#isPure()} to identify if a function is referentially transparent and therefore suitable for
+ * <b>Note:</b> relies on {@link Fn#isPure()} to identify if a function is referentially transparent and therefore suitable for
  * replacement with the result of evaluating it.
  */
 public final class NodeSimplifier {
@@ -104,7 +104,7 @@ public final class NodeSimplifier {
 
     private static Node simplifyOnce(Node input) {
         if (isFunction(input)) {
-            Node n = simplifyFunctionNode((FunctionNode) input);
+            Node n = simplifyFunctionNode((FnNode) input);
             if (n == null)
                 return input; //HACK
 
@@ -117,7 +117,7 @@ public final class NodeSimplifier {
         }
     }
 
-    private static Node simplifyFunctionNode(final FunctionNode input) {
+    private static Node simplifyFunctionNode(final FnNode input) {
         
 
         
@@ -138,10 +138,10 @@ public final class NodeSimplifier {
 
         
         Arguments arguments;
-        FunctionNode output;
-        Function f = input.func();
+        FnNode output;
+        Fn f = input.func();
         if (haveAnyArgumentsBeenSimplified) {
-            output = new FunctionNode(f, Arguments.get(f, simplifiedArgs));
+            output = new FnNode(f, Arguments.get(f, simplifiedArgs));
             arguments = output.args();
         } else {
             arguments = inputArgs;

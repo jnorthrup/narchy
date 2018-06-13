@@ -15,15 +15,15 @@
  */
 package org.oakgp.function.math;
 
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 
-public class SubtractTest extends AbstractFunctionTest {
+public class SubtractTest extends AbstractFnTest {
     @Override
     protected Subtract getFunction() {
         return IntFunc.the.subtract;
@@ -135,8 +135,8 @@ public class SubtractTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.getMultiply(), LongFunc.the.subtract,
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{getFunction(), IntFunc.the.add, IntFunc.the.multiply, LongFunc.the.subtract,
                 DoubleFunc.the.subtract, BigIntegerFunc.the.subtract, BigDecimalFunc.the.subtract};
     }
 }

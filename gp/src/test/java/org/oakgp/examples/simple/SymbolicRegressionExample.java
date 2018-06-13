@@ -15,47 +15,53 @@
  */
 package org.oakgp.examples.simple;
 
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.oakgp.Assignments;
 import org.oakgp.Evolution;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.Node;
-import org.oakgp.rank.Candidates;
+import org.oakgp.rank.Ranking;
 import org.oakgp.util.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.oakgp.rank.fitness.TestDataFitnessFunction.createIntegerTestDataFitnessFunction;
+import static org.oakgp.rank.fitness.TestDataFitFn.createIntegerTestDataFitnessFunction;
 
 /**
  * An example of using symbolic regression to evolve a program that best fits a given data set for the function {@code x2 + x + 1}.
  */
 public class SymbolicRegressionExample {
     private static final int TARGET_FITNESS = 0;
-    private static final int INITIAL_POPULATION_SIZE = 50;
+    private static final int INITIAL_POPULATION_SIZE = 30;
     private static final int INITIAL_POPULATION_MAX_DEPTH = 4;
 
     public static void main(String[] args) {
 
 
-        Candidates o = new Evolution()
-                .returns(Type.integerType())
+        Ranking o = new Evolution()
+                .returns(NodeType.integerType())
+                .setRandom(new XoRoShiRo128PlusRandom(1))
                 .constants(Utils.intConsts(0, 10)) 
-                .variables(Type.integerType()) 
+                .variables(NodeType.integerType())
                 .functions(
                         IntFunc.the.add,
                         IntFunc.the.subtract,
                         IntFunc.the.multiply
                 )
                 .goal(createIntegerTestDataFitnessFunction(createDataSet())) 
-                .population(INITIAL_POPULATION_SIZE)
-                .depth(INITIAL_POPULATION_MAX_DEPTH)
-                .goalTarget(TARGET_FITNESS)
+                .populationSize(INITIAL_POPULATION_SIZE)
+                .populationDepth(INITIAL_POPULATION_MAX_DEPTH)
+                .stopFitness(TARGET_FITNESS)
                 .get();
 
-        System.out.println(o);
-        Node best = o.best().node;
+        //System.out.println(o);
+        o.forEach(x -> {
+            System.out.println(x);
+        });
+
+        Node best = o.top().id;
         System.out.println(best);
     }
 

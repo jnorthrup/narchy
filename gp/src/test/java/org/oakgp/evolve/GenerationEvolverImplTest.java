@@ -15,16 +15,19 @@
  */
 package org.oakgp.evolve;
 
+import jcog.bag.impl.CurveBag;
+import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.pri.PLink;
+import jcog.pri.op.PriMerge;
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
-import org.oakgp.rank.Candidates;
-import org.oakgp.rank.RankedCandidate;
+import org.oakgp.rank.Evolved;
+import org.oakgp.rank.Ranking;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.select.NodeSelectorFactory;
+import org.oakgp.select.RankSelector;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,16 +37,18 @@ import static org.mockito.Mockito.when;
 import static org.oakgp.TestUtils.mockNode;
 
 public class GenerationEvolverImplTest {
+
+
     @Test
     public void test() {
         
-        int elitismSize = 3;
-        NodeSelectorFactory selectorFactory = mock(NodeSelectorFactory.class);
-        Map<GeneticOperator, Integer> operators = new HashMap<>();
+        float elitismRate = 0.5f;
+
+        CurveBag<PLink<GeneticOperator>> operators = new CurveBag<>(PriMerge.plus, new HashMap(), 2);
         GeneticOperator generator1 = mock(GeneticOperator.class);
         GeneticOperator generator2 = mock(GeneticOperator.class);
-        operators.put(generator1, 3);
-        operators.put(generator2, 5);
+        operators.put(new PLink(generator1, 0.3f));
+        operators.put(new PLink(generator2, 0.5f));
 
         
         
@@ -53,20 +58,21 @@ public class GenerationEvolverImplTest {
         }
 
         
-        Candidates input = new Candidates(new RankedCandidate[]{new RankedCandidate(expectedOutput[0], 1),
-                new RankedCandidate(expectedOutput[1], 2), new RankedCandidate(expectedOutput[2], elitismSize), new RankedCandidate(mockNode(), 4),
-                new RankedCandidate(mockNode(), 5)});
+        Ranking input = new Ranking(new Evolved[]{new Evolved(expectedOutput[0], 1),
+                new Evolved(expectedOutput[1], 2), new Evolved(expectedOutput[2], 3), new Evolved(mockNode(), 4),
+                new Evolved(mockNode(), 5)});
 
         
         NodeSelector selector = mock(NodeSelector.class);
-        when(selectorFactory.getSelector(input)).thenReturn(selector);
         when(generator1.apply(selector)).thenReturn(expectedOutput[3], expectedOutput[4], expectedOutput[5]);
         
         
         when(generator2.apply(selector)).thenReturn(expectedOutput[6], expectedOutput[7], expectedOutput[8], expectedOutput[7], expectedOutput[9]);
 
-        
-        GenerationEvolverImpl evolver = new GenerationEvolverImpl(elitismSize, selectorFactory, operators);
+
+        XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(1);
+        GenerationEvolverImpl evolver = new GenerationEvolverImpl(elitismRate, new RankSelector(rng), operators,
+                rng);
         Collection<Node> actualOutput = evolver.apply(input).collect(toList());
 
         

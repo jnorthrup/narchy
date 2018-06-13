@@ -17,17 +17,18 @@ package org.oakgp.function.choice;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.walk.NodeWalk;
-import org.oakgp.util.Utils;
 import org.oakgp.util.Signature;
+import org.oakgp.util.Utils;
+
 import java.util.function.Predicate;
 
 import static java.lang.Boolean.TRUE;
-import static org.oakgp.Type.booleanType;
+import static org.oakgp.NodeType.booleanType;
 import static org.oakgp.node.NodeType.isConstant;
 
 /**
@@ -40,7 +41,7 @@ import static org.oakgp.node.NodeType.isConstant;
  * <li>Value to evaluate to if the conditional statement is {@code false}.</li>
  * </ol>
  */
-public final class If implements Function {
+public final class If implements Fn {
     private static final int TRUE_IDX = 1;
     private static final int FALSE_IDX = 2;
 
@@ -49,7 +50,7 @@ public final class If implements Function {
     /**
      * Constructs a selection operator that returns values of the specified type.
      */
-    public If(Type type) {
+    public If(NodeType type) {
         signature = new Signature(type, booleanType(), type, type);
     }
 
@@ -86,7 +87,7 @@ public final class If implements Function {
         Node simplifiedTrueBranch = NodeWalk.replaceAll(trueBranch, criteria, n -> Utils.TRUE_NODE);
         Node simplifiedFalseBranch = NodeWalk.replaceAll(falseBranch, criteria, n -> Utils.FALSE_NODE);
         if (trueBranch != simplifiedTrueBranch || falseBranch != simplifiedFalseBranch) {
-            return new FunctionNode(this, condition, simplifiedTrueBranch, simplifiedFalseBranch);
+            return new FnNode(this, condition, simplifiedTrueBranch, simplifiedFalseBranch);
         } else {
             return null;
         }

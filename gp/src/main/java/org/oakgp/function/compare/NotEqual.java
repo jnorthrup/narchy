@@ -16,8 +16,8 @@
 package org.oakgp.function.compare;
 
 import org.oakgp.Arguments;
-import org.oakgp.Type;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.NodeType;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
@@ -31,7 +31,7 @@ public final class NotEqual extends ComparisonOperator {
     /**
      * Constructs a function that compares two arguments of the specified type.
      */
-    public NotEqual(Type type) {
+    public NotEqual(NodeType type) {
         super(type, false);
     }
 
@@ -45,7 +45,7 @@ public final class NotEqual extends ComparisonOperator {
         Node simplifiedVersion = super.simplify(arguments);
         if (simplifiedVersion == null && NODE_COMPARATOR.compare(arguments.firstArg(), arguments.secondArg()) > 0) {
             
-            return new FunctionNode(this, arguments.secondArg(), arguments.firstArg());
+            return new FnNode(this, arguments.secondArg(), arguments.firstArg());
         } else {
             return simplifiedVersion;
         }

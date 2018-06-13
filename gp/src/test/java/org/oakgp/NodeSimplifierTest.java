@@ -18,12 +18,12 @@ package org.oakgp;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.function.Fn;
 import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.util.NodeSimplifier;
+import org.oakgp.util.Signature;
 import org.opentest4j.AssertionFailedError;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -71,7 +71,7 @@ public class NodeSimplifierTest {
     public void testDeeplyNestedTreeSimplifedToFunction1() {
         Node input = readNode("(+ (- 5 6) (* v0 (- (* 6 7) (+ 2 3))))");
         Node output = NodeSimplifier.simplify(input);
-        assertSame(FunctionNode.class, output.getClass());
+        assertSame(FnNode.class, output.getClass());
         assertEquals("(- (* 37 v0) 1)", output.toString());
         assertEquals(73, (int) output.eval(new Assignments(2)));
     }
@@ -216,10 +216,10 @@ public class NodeSimplifierTest {
     @Test
     public void testPureFunctionSimplified() {
         final int evaluationResult = 87687;
-        Function f = new Function() {
+        Fn f = new Fn() {
             @Override
             public Signature sig() {
-                return new Signature(Type.integerType(), Type.integerType());
+                return new Signature(NodeType.integerType(), NodeType.integerType());
             }
 
             @Override
@@ -233,14 +233,14 @@ public class NodeSimplifierTest {
             }
         };
 
-        FunctionNode fn = new FunctionNode(f, integerConstant(1));
+        FnNode fn = new FnNode(f, integerConstant(1));
         Node output = NodeSimplifier.simplify(fn);
         assertEquals(integerConstant(evaluationResult), output);
     }
 
     @Test
     public void testImpureFunctionNotSimplified() {
-        Function f = new Function() {
+        Fn f = new Fn() {
             @Override
             public Signature sig() {
                 throw new UnsupportedOperationException();
@@ -257,7 +257,7 @@ public class NodeSimplifierTest {
             }
         };
 
-        FunctionNode fn = new FunctionNode(f, integerConstant(1));
+        FnNode fn = new FnNode(f, integerConstant(1));
         Node output = NodeSimplifier.simplify(fn);
         assertSame(fn, output);
     }

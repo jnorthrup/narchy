@@ -17,7 +17,8 @@ package org.oakgp.rank.tournament;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import org.oakgp.node.Node;
-import org.oakgp.util.CacheMap;
+
+import static org.oakgp.rank.fitness.FitnessRanker.createCache;
 
 /**
  * Wraps a {@code TwoPlayerGame} to provide caching of results.
@@ -31,7 +32,7 @@ public final class TwoPlayerGameCache implements TwoPlayerGame {
      */
     public TwoPlayerGameCache(int maxSize, TwoPlayerGame twoPlayerGame) {
         this.twoPlayerGame = twoPlayerGame;
-        this.cache = CacheMap.createCache(maxSize);
+        this.cache = createCache(maxSize);
     }
 
     @Override

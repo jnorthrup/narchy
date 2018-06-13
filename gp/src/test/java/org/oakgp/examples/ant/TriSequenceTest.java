@@ -17,7 +17,7 @@ package org.oakgp.examples.ant;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.Arguments;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 
@@ -29,10 +29,10 @@ import static org.oakgp.util.Void.VOID_CONSTANT;
 
 public class TriSequenceTest {
     private final Node stateVariable = new VariableNode(0, MutableState.STATE_TYPE);
-    private final Node forward = new FunctionNode(FORWARD, stateVariable);
-    private final Node left = new FunctionNode(LEFT, stateVariable);
-    private final Node right = new FunctionNode(RIGHT, stateVariable);
-    private final Node forwardTwice = new FunctionNode(BISEQUENCE, forward, forward);
+    private final Node forward = new FnNode(FORWARD, stateVariable);
+    private final Node left = new FnNode(LEFT, stateVariable);
+    private final Node right = new FnNode(RIGHT, stateVariable);
+    private final Node forwardTwice = new FnNode(BISEQUENCE, forward, forward);
 
     @Test
     public void testSimplifyWhenLeftAndRight() {
@@ -56,7 +56,7 @@ public class TriSequenceTest {
 
     @Test
     public void testSimplifyWhenVoid() {
-        Node expected = new FunctionNode(BISEQUENCE, forward, forwardTwice);
+        Node expected = new FnNode(BISEQUENCE, forward, forwardTwice);
 
         Node a = simplify(VOID_CONSTANT, forward, forwardTwice);
         Node b = simplify(forward, VOID_CONSTANT, forwardTwice);

@@ -17,17 +17,17 @@ package org.oakgp.examples.ant;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.ImpureFunction;
+import org.oakgp.NodeType;
+import org.oakgp.function.ImpureFn;
 import org.oakgp.util.Signature;
 
 /**
  * Returns {@code true} if the square the ant is facing contains food, else {@code false}.
  */
-class IsFoodAhead implements ImpureFunction {
+class IsFoodAhead implements ImpureFn {
     @Override
     public Signature sig() {
-        return new Signature(Type.booleanType(), MutableState.STATE_TYPE);
+        return new Signature(NodeType.booleanType(), MutableState.STATE_TYPE);
     }
 
     @Override

@@ -15,59 +15,73 @@
  */
 package org.oakgp.evolve;
 
+import jcog.bag.impl.CurveBag;
+import jcog.pri.PLink;
 import org.oakgp.node.Node;
-import org.oakgp.rank.Candidates;
+import org.oakgp.rank.Ranking;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.select.NodeSelectorFactory;
-import org.oakgp.util.NodeSimplifier;
 
-import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
-
-import static java.lang.Math.min;
 
 /**
  * Uses a user-defined collection of {@code GeneticOperator} instances to evolve new generations from existing generations.
  */
 public final class GenerationEvolverImpl implements GenerationEvolver {
-    private final int elitismSize;
-    private final NodeSelectorFactory selectorFactory;
-    private final Map<GeneticOperator, Integer> operators;
+    private final float eliteRate;
+    private final NodeSelector selector;
+    private final Supplier<GeneticOperator> operators;
+
+
 
     /**
      * Creates a {@code GenerationEvolverImpl} that uses the given values to evolve new generations.
-     *
-     * @param elitismSize     the number of best candidates from an existing generation to automatically include "as-is" in the next generation
-     * @param selectorFactory used to select candidates from an existing generation to be used as a basis for evolving candidates for the next generation
+     *  @param elitismSize     the number of best candidates from an existing generation to automatically include "as-is" in the next generation
+     * @param selector used to select candidates from an existing generation to be used as a basis for evolving candidates for the next generation
      * @param operators       the genetic operators to be used to evolve new candidates where the key = a genetic operator and the value = the number of times that genetic
-     *                        operator should be applied during each single invocation of {@link #apply(Candidates)}
+ *                        operator should be applied during each single invocation of {@link #apply(Ranking)}
+     * @param _random
      */
-    public GenerationEvolverImpl(int elitismSize, NodeSelectorFactory selectorFactory, Map<GeneticOperator, Integer> operators) {
-        this.elitismSize = elitismSize;
-        this.selectorFactory = selectorFactory;
-        this.operators = operators;
+
+
+
+    public GenerationEvolverImpl(float eliteRate, NodeSelector selector, CurveBag<PLink<GeneticOperator>> operators, Random random) {
+        this(eliteRate, selector,
+                //TODO: if operators.size()==1 ?
+                ()->operators.sample(random).get()
+        );
+        assert(!operators.isEmpty());
     }
+
+    public GenerationEvolverImpl(float eliteRate, NodeSelector selector, Supplier<GeneticOperator> operatorSupplier) {
+        this.eliteRate = eliteRate;
+        this.selector = selector;
+        this.operators = operatorSupplier;
+    }
+
 
     /**
      * Returns a new generation of {@code Node} instances evolved from the specified existing generation.
      *
-     * @param oldGeneration the existing generation to use as a basis for evolving a new generation
+     * @param living the existing generation to use as a basis for evolving a new generation
      * @return a new generation of {@code Node} instances evolved from the existing generation specified by {@code oldGeneration}
      */
-    @Override
-    public Stream<Node> apply(Candidates oldGeneration) {
-        NodeSelector selector = selectorFactory.getSelector(oldGeneration);
+    @Override public Stream<Node> apply(Ranking living) {
+        NodeSelector selector = this.selector;
 
-        final int elitismSizeForGeneration = min(elitismSize, oldGeneration.size());
-        return Stream.concat(
 
-            oldGeneration.stream().limit(elitismSizeForGeneration).map(oldGenerationIndividual -> oldGenerationIndividual.node),
 
-            operators.entrySet().stream().flatMap(e->{
-                GeneticOperator operator = e.getKey();
-                int count = e.getValue();
-                return Stream.generate(()->operator.apply(selector)).limit(count);
-            }).map( NodeSimplifier::simplify )
-        ).distinct();
+        int popBefore = living.size();
+        living.removePercentage(eliteRate, false);
+        int after = living.size();
+        assert(popBefore < living.capacity() || popBefore!=after);
+
+        selector.reset(living);
+
+        return Stream.generate(()->
+            operators.get().apply(selector)
+        ).filter(Objects::nonNull);
     }
 }

@@ -1,6 +1,7 @@
 package nars.derive.step;
 
 import jcog.data.ArrayHashSet;
+import jcog.list.FasterList;
 import jcog.math.Longerval;
 import nars.$;
 import nars.Param;
@@ -314,7 +315,7 @@ public class Occurrify extends TimeGraph {
     private int filterOnlyNonXternal(ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
         if (ss > 1) {
-            int occurrenceSolved = solutions.list.count(t -> t instanceof Absolute);
+            int occurrenceSolved = ((FasterList)solutions.list).count(t -> t instanceof Absolute);
             if (occurrenceSolved > 0 && occurrenceSolved < ss) {
                 if (solutions.removeIf(t -> t instanceof Relative))
                     ss = solutions.size();

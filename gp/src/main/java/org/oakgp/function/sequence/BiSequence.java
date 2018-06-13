@@ -17,9 +17,9 @@ package org.oakgp.function.sequence;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.util.Signature;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 import org.oakgp.util.Void;
 
 import static org.oakgp.util.Void.*;
@@ -58,10 +58,10 @@ public class BiSequence implements AbstractSequence {
         } else if (isMutex(x, y)) {
             return VOID_CONSTANT;
         } else if (isBiSequence(x)) {
-            Arguments firstArgArgs = ((FunctionNode) x).args();
+            Arguments firstArgArgs = ((FnNode) x).args();
             return createTriSequence(firstArgArgs.firstArg(), firstArgArgs.secondArg(), y);
         } else if (isBiSequence(y)) {
-            Arguments secondArgArgs = ((FunctionNode) y).args();
+            Arguments secondArgArgs = ((FnNode) y).args();
             return createTriSequence(x, secondArgArgs.firstArg(), secondArgArgs.secondArg());
         } else {
             return null;
@@ -69,11 +69,11 @@ public class BiSequence implements AbstractSequence {
     }
 
     private boolean isBiSequence(Node firstArg) {
-        FunctionNode fn = (FunctionNode) firstArg;
+        FnNode fn = (FnNode) firstArg;
         return fn.func()==this;
     }
 
     @Deprecated private Node createTriSequence(Node arg1, Node arg2, Node arg3) {
-        return new FunctionNode(TriSequence.TRISEQUENCE, arg1, arg2, arg3);
+        return new FnNode(TriSequence.TRISEQUENCE, arg1, arg2, arg3);
     }
 }

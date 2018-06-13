@@ -20,14 +20,15 @@ import org.oakgp.generate.TreeGenerator;
 import org.oakgp.node.Node;
 import org.oakgp.node.walk.NodeWalk;
 import org.oakgp.select.NodeSelector;
-import org.oakgp.util.GPRandom;
 import org.oakgp.util.Utils;
+
+import java.util.Random;
 
 /**
  * Randomly replaces a subtree of the parent with a newly generated subtree.
  */
 public final class SubTreeMutation implements GeneticOperator {
-    private final GPRandom random;
+    private final Random random;
     private final TreeGenerator treeGenerator;
 
     /**
@@ -36,14 +37,14 @@ public final class SubTreeMutation implements GeneticOperator {
      * @param random        used to randomly select nodes to mutate
      * @param treeGenerator used to generate new subtrees to replace nodes selected for mutation
      */
-    public SubTreeMutation(GPRandom random, TreeGenerator treeGenerator) {
+    public SubTreeMutation(Random random, TreeGenerator treeGenerator) {
         this.random = random;
         this.treeGenerator = treeGenerator;
     }
 
     @Override
     public Node apply(NodeSelector selector) {
-        Node root = selector.next();
+        Node root = selector.get();
         int mutationPoint = Utils.selectSubNodeIndex(random, root);
         return NodeWalk.replaceAt(root, mutationPoint, node -> treeGenerator.generate(node.returnType(), node.depth()));
     }

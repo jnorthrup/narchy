@@ -15,16 +15,16 @@
  */
 package org.oakgp.function.choice;
 
-import org.oakgp.Type;
-import org.oakgp.function.AbstractFunctionTest;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.AbstractFnTest;
+import org.oakgp.function.Fn;
 import org.oakgp.node.ConstantNode;
 
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 
-public class SwitchEnumTest extends AbstractFunctionTest {
-    private static final Type ENUM_TYPE = type("exampleEnum");
-    private static final Type NULLABLE_ENUM_TYPE = nullableType(ENUM_TYPE);
+public class SwitchEnumTest extends AbstractFnTest {
+    private static final NodeType ENUM_TYPE = type("exampleEnum");
+    private static final NodeType NULLABLE_ENUM_TYPE = nullableType(ENUM_TYPE);
     private static final SwitchEnum SWITCH_ENUM = new SwitchEnum(ExampleEnum.class, ENUM_TYPE, integerType());
     private static final SwitchEnum SWITCH_NULLABLE_ENUM = new SwitchEnum(ExampleEnum.class, NULLABLE_ENUM_TYPE, integerType());
     private static final ConstantNode A = new ConstantNode(ExampleEnum.A, ENUM_TYPE);
@@ -65,8 +65,8 @@ public class SwitchEnumTest extends AbstractFunctionTest {
     }
 
     @Override
-    protected Function[] getFunctionSet() {
-        return new Function[]{SWITCH_ENUM, SWITCH_NULLABLE_ENUM};
+    protected Fn[] getFunctionSet() {
+        return new Fn[]{SWITCH_ENUM, SWITCH_NULLABLE_ENUM};
     }
 
     private static enum ExampleEnum {

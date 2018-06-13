@@ -11,9 +11,7 @@ import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.Focus;
 import nars.exe.WorkerMultiExec;
-import nars.gui.EmotionPlot;
 import nars.gui.NARui;
-import nars.gui.graph.DynamicConceptSpace;
 import nars.index.concept.CaffeineIndex;
 import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
@@ -31,28 +29,16 @@ import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
-import org.HdrHistogram.DoubleHistogram;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.AspectAlign;
-import spacegraph.space2d.container.EdgeDirected3D;
-import spacegraph.space2d.hud.SubOrtho;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.console.ConsoleTerminal;
-import spacegraph.space2d.widget.console.TextEdit;
-import spacegraph.space2d.widget.meta.AutoSurface;
-import spacegraph.space2d.widget.meta.WindowToggleButton;
-import spacegraph.space3d.SpaceGraphPhys3D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -392,7 +378,7 @@ abstract public class NAgentX extends NAgent {
 
 
         NAgent a = init.apply(n);
-        a.motivation.set(0.75f);
+        //a.motivation.set(0.75f);
 
         n.on(a);
         n.synch();
@@ -407,7 +393,7 @@ abstract public class NAgentX extends NAgent {
 
         n.runLater(() -> {
 
-            chart(a);
+            NARui.agentWindow(a);
 
             SpaceGraph.window(NARui.top(n), 800, 800);
 
@@ -456,239 +442,6 @@ abstract public class NAgentX extends NAgent {
                 }
         );
     }
-
-    public static void chart(NAgent a) {
-        NAR nar = a.nar();
-        nar.runLater(() -> {
-            SpaceGraph.window(
-                    grid(
-                            new AutoSurface(a),
-
-                            NARui.beliefCharts(nar.dur() * 64, a.actions.keySet(), a.nar()),
-
-                            new EmotionPlot(64, a),
-                            grid(
-                                    
-                                    new TextEdit() {
-                                        @Override
-                                        protected void onKeyEnter() {
-                                            String s = text();
-                                            text("");
-                                            try {
-                                                nar.conceptualize(s);
-                                            } catch (Narsese.NarseseException e) {
-                                                e.printStackTrace();
-                                            }
-                                            NARui.conceptWindow(s, nar);
-                                        }
-                                    }.surface(),
-
-                                    
-                                    new PushButton("dump", () -> {
-                                        try {
-                                            nar.output(Files.createTempFile(a.toString(), "" + System.currentTimeMillis()).toFile(), false);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    }),
-
-                                    new PushButton("clear", () -> {
-                                        nar.runLater(NAR::clear);
-                                    }),
-
-                                    new PushButton("prune", () -> {
-                                        nar.runLater(() -> {
-                                            DoubleHistogram i = new DoubleHistogram(2);
-                                            nar.tasks(true, false, false, false).forEach(t ->
-                                                    i.recordValue(t.conf())
-                                            );
-                                            float confThresh = (float) i.getValueAtPercentile(25);
-                                            nar.tasks(true, false, false, false).filter(t ->
-                                                    t.conf() < confThresh
-                                            ).forEach(Task::delete);
-                                        });
-                                    }),
-
-                                    new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
-
-                                    new WindowToggleButton("concept graph", () -> {
-                                        DynamicConceptSpace sg;
-                                        SpaceGraphPhys3D s = new SpaceGraphPhys3D<>(
-                                                sg = new DynamicConceptSpace(nar, () -> nar.exe.active().iterator(),
-                                                        128, 16)
-                                        );
-                                        EdgeDirected3D fd = new EdgeDirected3D();
-                                        s.dyn.addBroadConstraint(fd);
-                                        fd.attraction.set(fd.attraction.get() * 8);
-
-                                        s.add(new SubOrtho(
-                                                
-                                                grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
-
-                                        }.posWindow(0, 0, 1f, 0.2f));
-
-                                        
-                                        
-
-                                        s.camPos(0, 0, 90);
-                                        return s;
-                                    }),
-
-
-                                    
-
-                                    
-
-
-
-
-
-
-                                    
-                                    
-                                    
-
-                                    a instanceof NAgentX ?
-                                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(
-                                                    new CameraSensorView(cs, a).withControls(), AspectAlign.Align.Center, cs.width, cs.height))
-                                                    .toArray(Surface[]::new))
-                                            ) : grid()
-                            )
-                    ),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    900, 600);
-        });
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**

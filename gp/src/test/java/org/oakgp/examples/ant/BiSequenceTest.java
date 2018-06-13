@@ -17,7 +17,7 @@ package org.oakgp.examples.ant;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.Arguments;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 
@@ -30,9 +30,9 @@ import static org.oakgp.util.Void.VOID_CONSTANT;
 
 public class BiSequenceTest {
     private final Node stateVariable = new VariableNode(0, MutableState.STATE_TYPE);
-    private final Node forward = new FunctionNode(FORWARD, stateVariable);
-    private final Node left = new FunctionNode(LEFT, stateVariable);
-    private final Node right = new FunctionNode(RIGHT, stateVariable);
+    private final Node forward = new FnNode(FORWARD, stateVariable);
+    private final Node left = new FnNode(LEFT, stateVariable);
+    private final Node right = new FnNode(RIGHT, stateVariable);
 
     @Test
     public void testSimplifyWhenLeftAndRight() {
@@ -46,25 +46,25 @@ public class BiSequenceTest {
 
     @Test
     public void testFirstArgBi() {
-        Node firstArg = new FunctionNode(BISEQUENCE, left, forward);
+        Node firstArg = new FnNode(BISEQUENCE, left, forward);
         Node secondArg = right;
-        Node expected = new FunctionNode(TRISEQUENCE, left, forward, secondArg);
+        Node expected = new FnNode(TRISEQUENCE, left, forward, secondArg);
         assertEquals(expected, simplify(firstArg, secondArg));
     }
 
     @Test
     public void testSecondArgBi() {
         Node firstArg = right;
-        Node secondArg = new FunctionNode(BISEQUENCE, forward, left);
-        Node expected = new FunctionNode(TRISEQUENCE, firstArg, forward, left);
+        Node secondArg = new FnNode(BISEQUENCE, forward, left);
+        Node expected = new FnNode(TRISEQUENCE, firstArg, forward, left);
         assertEquals(expected, simplify(firstArg, secondArg));
     }
 
     @Test
     public void testBothArgsBi() {
-        Node firstArg = new FunctionNode(BISEQUENCE, left, forward);
-        Node secondArg = new FunctionNode(BISEQUENCE, forward, right);
-        Node expected = new FunctionNode(TRISEQUENCE, left, forward, secondArg);
+        Node firstArg = new FnNode(BISEQUENCE, left, forward);
+        Node secondArg = new FnNode(BISEQUENCE, forward, right);
+        Node expected = new FnNode(TRISEQUENCE, left, forward, secondArg);
         assertEquals(expected, simplify(firstArg, secondArg));
     }
 

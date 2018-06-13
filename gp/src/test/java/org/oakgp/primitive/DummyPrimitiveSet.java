@@ -15,38 +15,38 @@
  */
 package org.oakgp.primitive;
 
-import org.oakgp.Type;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
 
 public class DummyPrimitiveSet implements PrimitiveSet {
     @Override
-    public boolean hasTerminals(Type type) {
+    public boolean hasTerminals(NodeType type) {
         return true;
     }
 
     @Override
-    public boolean hasFunctions(Type type) {
+    public boolean hasFunctions(NodeType type) {
         return true;
     }
 
     @Override
-    public Node nextTerminal(Type type) {
+    public Node nextTerminal(NodeType type) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Node nextAlternativeTerminal(Node current) {
+    public Node nextTerminal(Node current) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Function nextFunction(Type type) {
+    public Fn next(NodeType type) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Function nextAlternativeFunction(Function current) {
+    public Fn next(Fn current) {
         throw new UnsupportedOperationException();
     }
 }

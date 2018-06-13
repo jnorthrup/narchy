@@ -16,8 +16,8 @@
 package org.oakgp.examples.hanoi;
 
 import org.oakgp.Evolution;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.function.choice.If;
 import org.oakgp.function.choice.SwitchEnum;
 import org.oakgp.function.compare.Equal;
@@ -26,21 +26,21 @@ import org.oakgp.function.compare.LessThan;
 import org.oakgp.function.math.IntFunc;
 import org.oakgp.node.ConstantNode;
 import org.oakgp.node.Node;
-import org.oakgp.rank.Candidates;
-import org.oakgp.rank.fitness.FitnessFunction;
+import org.oakgp.rank.Ranking;
+import org.oakgp.rank.fitness.FitFn;
 import org.oakgp.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Collections.addAll;
-import static org.oakgp.Type.*;
+import static org.oakgp.NodeType.*;
 import static org.oakgp.util.Utils.enumConsts;
 
 public class TowersOfHanoiExample {
-    static final Type STATE_TYPE = type("gameState");
-    static final Type MOVE_TYPE = type("move");
-    static final Type POLE_TYPE = type("pole");
+    static final NodeType STATE_TYPE = type("gameState");
+    static final NodeType MOVE_TYPE = type("move");
+    static final NodeType POLE_TYPE = type("pole");
 
     private static final int TARGET_FITNESS = 0;
     private static final int NUM_GENERATIONS = 1000;
@@ -48,20 +48,21 @@ public class TowersOfHanoiExample {
     private static final int INITIAL_POPULATION_MAX_DEPTH = 4;
 
     public static void main(String[] args) {
-        Function[] functions = {new If(MOVE_TYPE), new Equal(MOVE_TYPE), new IsValid(), new SwitchEnum(Move.class, nullableType(MOVE_TYPE), MOVE_TYPE),
+        Fn[] functions = {new If(MOVE_TYPE), new Equal(MOVE_TYPE), new IsValid(), new SwitchEnum(Move.class, nullableType(MOVE_TYPE), MOVE_TYPE),
                 new GreaterThan(integerType()), LessThan.create(integerType()), new Equal(integerType()), new Next()};
         List<ConstantNode> constants = createConstants();
-        Type[] variables = {STATE_TYPE, nullableType(MOVE_TYPE)};
-        FitnessFunction fitnessFunction = new TowersOfHanoiFitnessFunction(false);
+        NodeType[] variables = {STATE_TYPE, nullableType(MOVE_TYPE)};
+        FitFn fitnessFunction = new TowersOfHanoiFitFn(false);
 
-        Candidates output = new Evolution().returns(MOVE_TYPE).constants(constants).variables(variables).functions(functions)
-                .goal(fitnessFunction).population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH)
-                .goalTarget(TARGET_FITNESS).setMaxGenerations(NUM_GENERATIONS).get();
+        Ranking output = new Evolution().returns(MOVE_TYPE).constants(constants).variables(variables).functions(functions)
+                .goal(fitnessFunction).populationSize(INITIAL_POPULATION_SIZE).populationDepth(INITIAL_POPULATION_MAX_DEPTH)
+                .stopFitness(TARGET_FITNESS).stopGenerations(NUM_GENERATIONS).get();
 
+        output.forEach(System.out::println);
 
-        Node best = output.best().node;
+        Node best = output.top().id;
         System.out.println(best);
-        new TowersOfHanoiFitnessFunction(true).doubleValueOf(best);
+        new TowersOfHanoiFitFn(true).doubleValueOf(best);
     }
 
     private static List<ConstantNode> createConstants() {

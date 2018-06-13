@@ -17,10 +17,10 @@ package org.oakgp.function.math;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.oakgp.TestUtils.readNode;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.integerType;
 import static org.oakgp.function.math.ArithmeticExpressionSimplifier.assertEvaluateToSameResult;
 import static org.oakgp.util.NodeSimplifier.simplify;
 
@@ -52,7 +52,7 @@ public class ArithmeticOperatorTest {
 
     @Test
     public void testGetSignature() {
-        Function f = new ArithmeticOperator(Type.integerType()) {
+        Fn f = new ArithmeticOperator(NodeType.integerType()) {
             @Override
             protected Object evaluate(Node arg1, Node arg2, Assignments assignments) {
                 throw new UnsupportedOperationException();

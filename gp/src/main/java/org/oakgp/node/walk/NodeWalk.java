@@ -16,7 +16,8 @@
 package org.oakgp.node.walk;
 
 import org.oakgp.Arguments;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.NodeType;
 
@@ -39,7 +40,7 @@ public enum NodeWalk { ;
         getAt:
         while (true) {
             if (NodeType.isFunction(node)) {
-                FunctionNode functionNode = (FunctionNode) node;
+                FnNode functionNode = (FnNode) node;
                 Arguments arguments = functionNode.args();
                 int total = 0;
                 int a = arguments.length();
@@ -69,8 +70,8 @@ public enum NodeWalk { ;
      */
     public static Node replaceAt(Node node, int index, Function<Node, Node> replacement) {
         if (NodeType.isFunction(node)) {
-            FunctionNode functionNode = (FunctionNode) node;
-            org.oakgp.function.Function f = functionNode.func();
+            FnNode functionNode = (FnNode) node;
+            Fn f = functionNode.func();
             Arguments args = functionNode.args();
             int total = 0;
             int a = args.length();
@@ -79,7 +80,7 @@ public enum NodeWalk { ;
                 int c = child.size();
                 if (total + c > index) {
 
-                    return new FunctionNode(f,
+                    return new FnNode(f,
                             args.replaceAt(i, replaceAt(child, index - total, replacement)));
                 } else {
                     total += c;
@@ -102,7 +103,7 @@ public enum NodeWalk { ;
                 if (criteria.test(node)) {
                     node = replacement.apply(node);
                 } else {
-                    FunctionNode functionNode = (FunctionNode) node;
+                    FnNode functionNode = (FnNode) node;
                     Arguments arguments = functionNode.args();
                     boolean updated = false;
                     Node[] replacementArgs = new Node[arguments.length()];
@@ -115,8 +116,8 @@ public enum NodeWalk { ;
                         replacementArgs[i] = replacedArg;
                     }
                     if (updated) {
-                        org.oakgp.function.Function f = functionNode.func();
-                        return new FunctionNode(f, Arguments.get(f, replacementArgs));
+                        Fn f = functionNode.func();
+                        return new FnNode(f, Arguments.get(f, replacementArgs));
                     } else {
                         return node;
                     }

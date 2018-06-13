@@ -17,11 +17,11 @@ package org.oakgp.function.choice;
 
 import org.oakgp.Arguments;
 import org.oakgp.Assignments;
-import org.oakgp.Type;
-import org.oakgp.function.Function;
-import org.oakgp.util.Signature;
-import org.oakgp.node.FunctionNode;
+import org.oakgp.NodeType;
+import org.oakgp.function.Fn;
+import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
+import org.oakgp.util.Signature;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,14 +31,14 @@ import static org.oakgp.node.NodeType.isFunction;
 /**
  * Returns the first argument if not {@code null}, else returns the second argument.
  */
-public final class OrElse implements Function {
+public final class OrElse implements Fn {
     private final Signature signature;
 
     /**
      * Constructs a selection operator that returns values of the specified type.
      */
-    public OrElse(Type type) {
-        signature = new Signature(type, Type.nullableType(type), type);
+    public OrElse(NodeType type) {
+        signature = new Signature(type, NodeType.nullableType(type), type);
     }
 
     @Override
@@ -63,8 +63,8 @@ public final class OrElse implements Function {
         Node next = arguments.secondArg();
         int indexOfLastDuplicate = 0;
         Node nodeAfterLastDuplicate = null;
-        while (isFunction(next) && ((FunctionNode) next).func() == this) {
-            FunctionNode fn = ((FunctionNode) next);
+        while (isFunction(next) && ((FnNode) next).func() == this) {
+            FnNode fn = ((FnNode) next);
             Arguments args = fn.args();
             if (nodes.contains(args.firstArg())) {
                 indexOfLastDuplicate = nodes.size();
@@ -81,7 +81,7 @@ public final class OrElse implements Function {
 
         Node n = nodeAfterLastDuplicate;
         for (int i = indexOfLastDuplicate - 1; i > -1; i--) {
-            n = new FunctionNode(this, nodes.get(i), n);
+            n = new FnNode(this, nodes.get(i), n);
         }
         return n;
     }

@@ -17,13 +17,15 @@ package org.oakgp.util;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Random;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StdRandomTest {
     @Test
     public void test() {
         int seed = 0;
-        GPRandom adapter = new StdRandom(seed);
+        Random adapter = new Random(seed);
         java.util.Random javaUtilRandom = new java.util.Random(seed);
 
         assertEquals(javaUtilRandom.nextInt(5), adapter.nextInt(5));

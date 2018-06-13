@@ -16,15 +16,15 @@
 package org.oakgp.function;
 
 import org.junit.jupiter.api.Test;
-import org.oakgp.Type;
+import org.oakgp.NodeType;
 import org.oakgp.util.Signature;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.oakgp.TestUtils.assertUnmodifiable;
-import static org.oakgp.Type.booleanType;
-import static org.oakgp.Type.integerType;
+import static org.oakgp.NodeType.booleanType;
+import static org.oakgp.NodeType.integerType;
 
 public class SignatureTest {
     @Test
@@ -50,7 +50,7 @@ public class SignatureTest {
     @Test
     public void testGetArgumemntTypes() {
         Signature signature = new Signature(integerType(), booleanType(), integerType(), booleanType());
-        List<Type> types = signature.argTypes();
+        List<NodeType> types = signature.argTypes();
         assertEquals(3, types.size());
         assertSame(booleanType(), types.get(0));
         assertSame(integerType(), types.get(1));
