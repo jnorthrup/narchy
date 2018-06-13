@@ -76,7 +76,7 @@ public class IfTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.getAdd(), IntFunc.the.getMultiply(), LessThan.create(integerType()),
+        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.getMultiply(), LessThan.create(integerType()),
                 new GreaterThan(integerType())};
     }
 }

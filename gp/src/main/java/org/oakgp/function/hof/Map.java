@@ -64,7 +64,7 @@ public final class Map implements Function {
             ConstantNode outputNode = new ConstantNode(evaluateResult, returnType);
             result.add(outputNode);
         }
-        Node[] args1 = result.toArray(new Node[result.size()]);
+        Node[] args1 = result.toArray(new Node[0]);
         return new Arguments(args1);
     }
 

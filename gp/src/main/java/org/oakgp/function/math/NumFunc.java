@@ -85,20 +85,6 @@ abstract class NumFunc<T extends Comparable<T>> {
     }
 
     /**
-     * Returns an addition operator for the numeric type this instance is concerned with.
-     */
-    public final Add getAdd() {
-        return add;
-    }
-
-    /**
-     * Returns a subtraction operator for the numeric type this instance is concerned with.
-     */
-    public final Subtract getSubtract() {
-        return subtract;
-    }
-
-    /**
      * Returns a multiplication operator for the numeric type this instance is concerned with.
      */
     public final Multiply getMultiply() {

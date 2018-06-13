@@ -106,8 +106,8 @@ public class TestUtils {
     private static Function[] createDefaultFunctions() {
         List<Function> functions = new ArrayList<>();
 
-        functions.add(IntFunc.the.getAdd());
-        functions.add(IntFunc.the.getSubtract());
+        functions.add(IntFunc.the.add);
+        functions.add(IntFunc.the.subtract);
         functions.add(IntFunc.the.getMultiply());
         functions.add(IntFunc.the.getDivide());
 

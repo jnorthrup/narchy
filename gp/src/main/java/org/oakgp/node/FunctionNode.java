@@ -59,7 +59,7 @@ public final class FunctionNode implements Node {
         this.arguments = arguments;
         this.nodeCount = calculateNodeCount(arguments);
         
-        this.hash = Util.hashCombine(function.getClass().hashCode(), arguments.hashCode());
+        this.hash = Util.hashCombine(function.hashCode(), arguments.hashCode());
     }
 
     private static int calculateNodeCount(Arguments arguments) {

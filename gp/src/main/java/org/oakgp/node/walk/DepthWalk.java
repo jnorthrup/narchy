@@ -103,18 +103,13 @@ public final class DepthWalk {
     private static Node replaceAt(Node current, int index, DepthWalkReplacement replacement, int currentDepth) {
         if (NodeType.isFunction(current)) {
             int total = 0;
-            FunctionNode functionNode = (FunctionNode) current;
-            Arguments args = functionNode.args();
-            int n = args.length();
-            for (int i = 0; i < n; i++) {
-                Node child = args.get(i);
+            final FunctionNode functionNode = (FunctionNode) current;
+            Arguments arguments = functionNode.args();
+            for (int i = 0; i < arguments.length(); i++) {
+                Node child = arguments.get(i);
                 int c = child.size();
                 if (total + c > index) {
-                    Arguments newArgs = args.replaceAt(i, replaceAt(child, index - total, replacement, currentDepth + 1));
-                    if (newArgs.equals(args))
-                        return functionNode; 
-                    else
-                        return new FunctionNode(functionNode.func(), newArgs);
+                    return new FunctionNode(functionNode.func(), arguments.replaceAt(i, replaceAt(child, index - total, replacement, currentDepth + 1)));
                 } else {
                     total += c;
                 }

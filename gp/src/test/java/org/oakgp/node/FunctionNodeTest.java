@@ -106,7 +106,7 @@ public class FunctionNodeTest {
 
     @Test
     public void testNotEquals() {
-        Function add = the.getAdd();
+        Function add = the.add;
 
         final FunctionNode n = new FunctionNode(add, createVariable(0), integerConstant(7));
 
@@ -223,7 +223,7 @@ public class FunctionNodeTest {
      * Returns representation of: {@code (x*y)+z+1}
      */
     private FunctionNode createFunctionNode() {
-        return new FunctionNode(the.getAdd(), new FunctionNode(the.getMultiply(), createVariable(0), createVariable(1)), new FunctionNode(
-                the.getAdd(), createVariable(2), integerConstant(1)));
+        return new FunctionNode(the.add, new FunctionNode(the.getMultiply(), createVariable(0), createVariable(1)), new FunctionNode(
+                the.add, createVariable(2), integerConstant(1)));
     }
 }

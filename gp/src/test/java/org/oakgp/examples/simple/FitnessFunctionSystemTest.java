@@ -52,7 +52,7 @@ public class FitnessFunctionSystemTest {
     private static final int NUM_GENERATIONS = 50;
     private static final int INITIAL_POPULATION_SIZE = 50;
     private static final int INITIAL_POPULATION_MAX_DEPTH = 4;
-    private static final Function[] ARITHMETIC_FUNCTIONS = {IntFunc.the.getAdd(), IntFunc.the.getSubtract(),
+    private static final Function[] ARITHMETIC_FUNCTIONS = {IntFunc.the.add, IntFunc.the.subtract,
             IntFunc.the.getMultiply()};
 
     private static Map<Assignments, Integer> createTests(int numVariables, java.util.function.Function<Assignments, Integer> f) {
@@ -124,7 +124,7 @@ public class FitnessFunctionSystemTest {
     public void testTwoVariableBooleanLogicExpression() {
         ConstantNode[] constants = intConsts(0, 5);
         Type[] variableTypes = intArrayType(2);
-        Function[] functions = {IntFunc.the.getAdd(), IntFunc.the.getSubtract(), IntFunc.the.getMultiply(),
+        Function[] functions = {IntFunc.the.add, IntFunc.the.subtract, IntFunc.the.getMultiply(),
                 LessThan.create(integerType()), LessThanOrEqual.create(integerType()), new GreaterThan(integerType()), new GreaterThanOrEqual(integerType()),
                 new Equal(integerType()), new NotEqual(integerType()), new If(integerType())};
 

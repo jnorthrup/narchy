@@ -35,8 +35,8 @@ import static org.oakgp.TestUtils.assertUnmodifiable;
 import static org.oakgp.Type.*;
 
 public class FunctionSetTest {
-    private static final Function ADD = IntFunc.the.getAdd();
-    private static final Function SUBTRACT = IntFunc.the.getSubtract();
+    private static final Function ADD = IntFunc.the.add;
+    private static final Function SUBTRACT = IntFunc.the.subtract;
     private static final Function MULTIPLY = IntFunc.the.getMultiply();
 
     private static FunctionSet createFunctionSet() {

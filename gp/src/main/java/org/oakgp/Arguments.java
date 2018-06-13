@@ -52,7 +52,7 @@ public class Arguments {
 
     public static Arguments get(Function f, List<Node> a) {
         if (f.argsSorted() && a.size() > 1) {
-            Node[] aa = a.toArray(new Node[0]);
+            Node[] aa = a.toArray(Node.EmptyArray);
             Arrays.sort(aa);
             return new SortedArguments(aa);
         } else {
@@ -86,14 +86,14 @@ public class Arguments {
     }
 
     public Arguments(List<? extends Node> args) {
-        this(args.toArray(new Node[args.size()]));
+        this(args.toArray(new Node[0]));
     }
 
     static int calcDepth(Node[] arguments) {
         int height = 0;
         int n = arguments.length;
-        for (int i = 0; i < n; i++) {
-            height = Math.max(height, arguments[i].depth());
+        for (Node argument : arguments) {
+            height = Math.max(height, argument.depth());
         }
         return height + 1;
     }

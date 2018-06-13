@@ -15,13 +15,13 @@
  */
 package org.oakgp.util;
 
-import org.oakgp.node.ConstantNode;
-import org.oakgp.node.FunctionNode;
-import org.oakgp.node.Node;
-import org.oakgp.node.NodeType;
+import org.oakgp.node.*;
 
 import java.io.Serializable;
 import java.util.Comparator;
+
+import static org.oakgp.node.NodeType.CONSTANT;
+import static org.oakgp.node.NodeType.FUNCTION;
 
 /**
  * An implementation of {@code Comparator} for comparing instances of {@link Node}.
@@ -48,34 +48,44 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
         NodeType t2 = o2.nodeType();
 
         if (t1 == t2) {
+            switch (t1) {
+                case VARIABLE:
+                    int i = Integer.compare(
+                            ((VariableNode)o1).id,
+                            ((VariableNode)o2).id
+                    );
+                    if (i!=0)
+                        return i;
+                    break;
+            }
             int i = o1.returnType().compareTo(o2.returnType());
             if (i != 0) return i;
 
-            int iDepth = Integer.compare(o1.depth(), o2.depth());
-            if (iDepth!=0) return iDepth;
+            if (t1 == FUNCTION) {
+                //only function (non-terminal) nodes have depth > 1
+                int iDepth = Integer.compare(o1.depth(), o2.depth());
+                if (iDepth != 0) return iDepth;
 
-            if (t1 == NodeType.CONSTANT) {
-                ConstantNode c1 = (ConstantNode) o1;
-                ConstantNode c2 = (ConstantNode) o2;
-                int ii = c1.type.compareTo(c2.type);
-                if (ii!=0) return ii;
-                else return compareValue(c1.value, ((ConstantNode)o2).value);
-            } else if (t1 == NodeType.FUNCTION) {
-                FunctionNode f1 = (FunctionNode)o1;
-                FunctionNode f2 = (FunctionNode)o2;
-                
+                int iName = ((FunctionNode)o1).func().name().compareTo(
+                        ((FunctionNode)o2).func().name()
+                );
+                if (iName != 0) return iName;
             }
 
-            
-            return o1.toString().compareTo(o2.toString());  
+            if (t1 == CONSTANT) {
+                return compareValue(((ConstantNode)o1).value, ((ConstantNode)o2).value);
+            }
 
-        } else if (t1 == NodeType.CONSTANT) {
+
+            return o1.toString().compareTo(o2.toString());
+
+        } else if (t1 == CONSTANT) {
             return -1;
-        } else if (t2 == NodeType.CONSTANT) {
+        } else if (t2 == CONSTANT) {
             return 1;
-        } else if (t1 == NodeType.FUNCTION) {
+        } else if (t1 == FUNCTION) {
             return 1;
-        } else if (t2 == NodeType.FUNCTION) {
+        } else if (t2 == FUNCTION) {
             return -1;
         } else {
             throw new IllegalStateException();
@@ -83,6 +93,8 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
     }
 
     static private int compareValue(Object x, Object y) {
+        if (x.equals(y))
+            return 0;
         if (x instanceof Comparable) {
             return ((Comparable)x).compareTo(y);
         } else {

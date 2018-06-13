@@ -46,7 +46,7 @@ import static org.oakgp.node.NodeType.isFunction;
  * replacement with the result of evaluating it.
  */
 public final class NodeSimplifier {
-    private static final int MAX_RETRIES = 100;
+    private static final int MAX_SIMPLIFICATION_ITER = 32;
 
     /**
      * Private constructor as all methods are static.
@@ -66,30 +66,52 @@ public final class NodeSimplifier {
      * @see org.oakgp.function.Function#simplify(Arguments)
      */
     public static Node simplify(Node input) {
+
         int ctr = 0;
-        Set<Node> s = new HashSet<>();
-        Node previous;
-        Node output = input;
-        do {
+
+        Node previous, output = input;
+
+        //if simplification is done carefully and deterministically then cyclic checking like this shouldnt be necessary
+        Set<Node> s = null;
+        //System.out.println();
+        while (isFunction(output)) {
             previous = output;
             output = simplifyOnce(output);
 
-            
-            
-            if (!output.equals(previous) && !s.add(output)) {
-                return output;
+
+            //System.out.println(previous + " -> " + output);
+
+            if (output==(previous)) {
+                return previous; //stable unchanged; done
+            } else {
+                if (s == null)
+                    s = new HashSet<>(MAX_SIMPLIFICATION_ITER); //lazy alloc
+
+                if (!s.add(output)) //cyclic repeat encountered
+                    return output;
             }
             
-            if (ctr++ > MAX_RETRIES) {
+//            if (!output.equals(previous) /*&& !s.add(output)*/) {
+//                return output;
+//            }
+            
+            if (ctr++ > MAX_SIMPLIFICATION_ITER) {
                 throw new IllegalArgumentException(input.toString());
             }
-        } while (isFunction(output) && !output.equals(previous));
+        }
         return output;
     }
 
     private static Node simplifyOnce(Node input) {
         if (isFunction(input)) {
-            return simplifyFunctionNode((FunctionNode) input);
+            Node n = simplifyFunctionNode((FunctionNode) input);
+            if (n == null)
+                return input; //HACK
+
+            if (n!=input) return n.equals(input) ? input : n;
+
+            return input;
+
         } else {
             return input;
         }
@@ -106,7 +128,7 @@ public final class NodeSimplifier {
         for (int i = 0; i < simplifiedArgs.length; i++) {
             Node originalArg = inputArgs.get(i);
             simplifiedArgs[i] = simplifyOnce(originalArg);
-            if (originalArg != simplifiedArgs[i]) {
+            if (originalArg != (simplifiedArgs[i])) {
                 haveAnyArgumentsBeenSimplified = true;
             }
             if (!isConstant(simplifiedArgs[i])) {

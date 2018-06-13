@@ -19,15 +19,17 @@ import org.oakgp.Arguments;
 import org.oakgp.Assignments;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
+import org.oakgp.node.NodeType;
+
+import java.util.Arrays;
 
 import static org.oakgp.node.NodeType.isConstant;
 import static org.oakgp.node.NodeType.isFunction;
-import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
 
 /**
  * Performs addition.
  */
-final class Add extends ArithmeticOperator {
+public final class Add extends ArithmeticOperator {
     private final NumFunc<?> numberUtils;
     private final ArithmeticExpressionSimplifier simplifier;
 
@@ -57,42 +59,97 @@ final class Add extends ArithmeticOperator {
 
     @Override
     public Node simplify(Arguments arguments) {
-        Node arg1 = arguments.firstArg();
-        Node arg2 = arguments.secondArg();
+        Node x = arguments.firstArg();
+        Node y = arguments.secondArg();
 
-        if (NODE_COMPARATOR.compare(arg1, arg2) > 0) {
-            
-            
-            return new FunctionNode(this, arg2, arg1);
-        } else if (numberUtils.zero.equals(arg1)) {
-            
-            
-            return arg2;
-        } else if (numberUtils.zero.equals(arg2)) {
-            
-            throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
-        } else if (arg1.equals(arg2)) {
-            
-            
-            return numberUtils.multiplyByTwo(arg1);
-        } else if (isConstant(arg1) && numberUtils.isNegative(arg1)) {
-            
-            
-            return new FunctionNode(numberUtils.getSubtract(), arg2, numberUtils.negateConstant(arg1));
-        } else if (isConstant(arg2) && numberUtils.isNegative(arg2)) {
-            
-            
-            
-            
-            throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
-        } else if (isConstant(arg1) && isFunction(arg2)) {
-            FunctionNode fn2 = (FunctionNode) arg2;
-            if (isConstant(fn2.args().firstArg()) && numberUtils.isAddOrSubtract(fn2.func())) {
-                return new FunctionNode(fn2.func(), numberUtils.add(arg1, fn2.args().firstArg()), fn2.args().secondArg());
-            }
+        if (numberUtils.zero.equals(x)) {
+            return y;
+        }
+        if (numberUtils.zero.equals(y)) {
+            //throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
+            return x;
         }
 
-        return simplifier.simplify(this, arg1, arg2);
+
+        if (x.equals(y)) {
+            return numberUtils.multiplyByTwo(x);
+        }
+//
+        if (isConstant(x) && numberUtils.isNegative(x)) {
+
+
+            return new FunctionNode(numberUtils.subtract, y, numberUtils.negateConstant(x));
+        }
+//        } else if (isConstant(arg2) && numberUtils.isNegative(arg2)) {
+//
+//
+//
+//
+//            throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
+//        } 
+        if (isConstant(x) && isFunction(y)) {
+            FunctionNode fn2 = (FunctionNode) y;
+            if (isConstant(fn2.args().firstArg()) && numberUtils.isAddOrSubtract(fn2.func())) {
+                return new FunctionNode(fn2.func(), numberUtils.add(x, fn2.args().firstArg()), fn2.args().secondArg());
+            }
+        }
+        if (NodeType.func(y, "+")) {
+            //verify commutive ordering
+            Arguments yy = ((FunctionNode) y).args();
+            Node[] adds = new Node[] { x, yy.get(0), yy.get(1) } ;
+            Node[] original = adds.clone();
+            Arrays.sort(adds);
+            if (!Arrays.equals(original, adds)) {
+                if (isConstant(adds[0]) && isConstant(adds[1])) {
+                    return new FunctionNode(numberUtils.add, numberUtils.add(adds[0], adds[1]), adds[2] );
+                } else {
+                    return new FunctionNode(numberUtils.add, adds[0],
+                            new FunctionNode(numberUtils.add, adds[1], adds[2]));
+                }
+            }
+
+        }
+
+
+        //(+ (- a b) (- c d))
+        //  == (a - b) + (c - d) == (a + c) - (b + d) == (+ a (- c (+ b d )))
+        if (NodeType.func(x, "-") && NodeType.func(y, "-")) {
+            Arguments xx = ((FunctionNode) x).args();
+            Node a = xx.firstArg();
+            Node b = xx.secondArg();
+
+            Arguments yy = ((FunctionNode) y).args();
+            Node c = yy.firstArg();
+            Node d = yy.secondArg();
+
+//            return new FunctionNode(numberUtils.subtract,
+//                    new FunctionNode(numberUtils.add, a, c),
+//                    new FunctionNode(numberUtils.add, b, d)
+//            );
+
+            if (a.compareTo(c) > 0) {
+                Node t = c;
+                c = a;
+                a = t;
+            }
+            if (b.compareTo(d) > 0) {
+                Node t = d;
+                d = b;
+                b = t;
+            }
+
+            //(+ a (- c (+ b d )))
+            return new FunctionNode(numberUtils.add, a,
+                    new FunctionNode(numberUtils.subtract, c,
+                        new FunctionNode(numberUtils.add, b, d)
+                    )
+            );
+
+        }
+
+
+
+        return simplifier.simplify(this, x, y);
     }
 
     @Override

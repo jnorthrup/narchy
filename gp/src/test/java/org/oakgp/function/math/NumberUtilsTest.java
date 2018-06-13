@@ -128,8 +128,8 @@ public class NumberUtilsTest {
 
     @Test
     public void testIsAddOrSubtract() {
-        assertTrue(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.getAdd()));
-        assertTrue(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.getSubtract()));
+        assertTrue(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.add));
+        assertTrue(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.subtract));
         assertFalse(NUMBER_UTILS.isAddOrSubtract(NUMBER_UTILS.getMultiply()));
         assertFalse(NUMBER_UTILS.isAddOrSubtract(new If(integerType())));
     }

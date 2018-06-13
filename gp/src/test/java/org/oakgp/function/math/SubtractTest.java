@@ -26,7 +26,7 @@ import static org.oakgp.Type.integerType;
 public class SubtractTest extends AbstractFunctionTest {
     @Override
     protected Subtract getFunction() {
-        return IntFunc.the.getSubtract();
+        return IntFunc.the.subtract;
     }
 
     @Override
@@ -136,7 +136,7 @@ public class SubtractTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.getAdd(), IntFunc.the.getMultiply(), LongFunc.the.getSubtract(),
-                DoubleFunc.the.getSubtract(), BigIntegerFunc.the.getSubtract(), BigDecimalFunc.the.getSubtract()};
+        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.getMultiply(), LongFunc.the.subtract,
+                DoubleFunc.the.subtract, BigIntegerFunc.the.subtract, BigDecimalFunc.the.subtract};
     }
 }

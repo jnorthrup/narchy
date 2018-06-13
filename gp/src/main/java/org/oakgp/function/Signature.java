@@ -18,7 +18,6 @@ package org.oakgp.function;
 import org.oakgp.Type;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -66,7 +65,7 @@ public final class Signature {
      * Returns an unmodifiable list containing the type of each argument associated with this signature.
      */
     public List<Type> argTypes() {
-        return Collections.unmodifiableList(Arrays.asList(argumentTypes));
+        return List.of(argumentTypes);
     }
 
     @Override

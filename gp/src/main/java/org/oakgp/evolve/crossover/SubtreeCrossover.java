@@ -52,8 +52,6 @@ public final class SubtreeCrossover implements GeneticOperator {
     public Node evolve(NodeSelector selector) {
         Node parent1 = selector.next();
         Node parent2 = selector.next();
-        if (parent1.equals(parent2))
-            return parent1;
         int to = Utils.selectSubNodeIndex(random, parent1);
         return DepthWalk.replaceAt(parent1, to, (t, d) -> {
             int maxHeightParent2 = maxDepth - d;

@@ -47,7 +47,7 @@ public final class RoundRobinTournament implements GenerationRanker {
 
     @Override
     public Candidates rank(Collection<Node> input) {
-        Node[] inputAsArray = input.toArray(new Node[input.size()]);
+        Node[] inputAsArray = input.toArray(new Node[0]);
         double[] fitness = evaluateFitness(inputAsArray);
         return toRankedCandidates(inputAsArray, fitness);
     }
@@ -61,7 +61,7 @@ public final class RoundRobinTournament implements GenerationRanker {
                 Node player2 = input[i2];
                 double result = game.evaluate(player1, player2);
                 fitness[i1] += result;
-                fitness[i2] += -result;
+                fitness[i2] -= result;
             }
         }
         return fitness;

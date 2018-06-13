@@ -15,6 +15,9 @@
  */
 package org.oakgp.node;
 
+import org.jetbrains.annotations.Nullable;
+import org.oakgp.function.Function;
+
 /**
  * Defines the node types used to construct tree structures.
  *
@@ -54,6 +57,12 @@ public enum NodeType {
         return n.nodeType() == FUNCTION;
     }
 
+    @Nullable
+    public static org.oakgp.function.Function func(Node n) {
+        return n.nodeType() == FUNCTION ? ((FunctionNode)n).func() : null;
+    }
+
+
     /**
      * Returns {@code true} if both of the specified nodes are terminal nodes, else {@code false}.
      */
@@ -80,5 +89,13 @@ public enum NodeType {
      */
     public static boolean isVariable(Node n) {
         return n.nodeType() == VARIABLE;
+    }
+
+    public static boolean func(Node arg1, String fName) {
+        Function f = func(arg1);
+        if (f!=null) {
+            return f.name().equals(fName);
+        }
+        return false;
     }
 }

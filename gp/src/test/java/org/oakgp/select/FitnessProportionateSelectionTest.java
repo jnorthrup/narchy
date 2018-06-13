@@ -51,7 +51,6 @@ public class FitnessProportionateSelectionTest {
     }
 
     private FitnessProportionateSelection createFitnessProportionateSelection(GPRandom random, Candidates candidates) {
-        FitnessProportionateSelectionFactory f = new FitnessProportionateSelectionFactory(random);
-        return f.getSelector(candidates);
+        return new FitnessProportionateSelectionFactory(random).getSelector(candidates);
     }
 }

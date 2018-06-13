@@ -58,7 +58,7 @@ public final class Filter implements Function {
                 result.add(candidate);
             }
         }
-        Node[] args = result.toArray(new Node[result.size()]);
+        Node[] args = result.toArray(new Node[0]);
         return new Arguments(args);
     }
 

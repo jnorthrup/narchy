@@ -134,7 +134,7 @@ public enum PremiseDeriverCompiler {
             out.println("}");
         } */ else if (p instanceof Fork) {
 
-            //TODO 
+            //TODO
             out.println(Util.className(p) + " {");
             Fork ac = (Fork) p;
             for (PrediTerm b : ac.branch) {

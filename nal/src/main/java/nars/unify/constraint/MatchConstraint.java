@@ -7,7 +7,6 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.$;
 import nars.derive.Derivation;
-import nars.derive.premise.PreDerivation;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.control.AbstractPred;

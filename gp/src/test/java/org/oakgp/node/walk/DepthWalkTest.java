@@ -57,8 +57,8 @@ public class DepthWalkTest {
     @Test
     public void testReplaceAt() {
         assertReplaceAt(0, "(+ 2 (+ 6 (+ 7 8)))");
-        assertReplaceAt(1, "(+ (+ 6 (+ 4 8)) 9)");
-        assertReplaceAt(2, "(+ (+ 6 (+ 7 4)) 9)");
+        assertReplaceAt(1, "(+ 9 (+ 3 (+ 7 8)))");
+        assertReplaceAt(2, "(+ 9 (+ 6 (+ 4 8)))");
         assertReplaceAt(3, "(+ (+ 6 3) 9)");
         assertReplaceAt(4, "(+ 2 9)");
         assertReplaceAt(5, "(+ (+ 6 (+ 7 8)) 2)");

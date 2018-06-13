@@ -20,13 +20,14 @@ import org.oakgp.Assignments;
 import org.oakgp.function.Function;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
+import org.oakgp.node.NodeType;
 
 import static org.oakgp.node.NodeType.isConstant;
 
 /**
  * Performs subtraction.
  */
-final class Subtract extends ArithmeticOperator {
+public final class Subtract extends ArithmeticOperator {
     private final NumFunc<?> numberUtils;
     private final ArithmeticExpressionSimplifier simplifier;
 
@@ -51,61 +52,93 @@ final class Subtract extends ArithmeticOperator {
 
     @Override
     public Node simplify(Arguments arguments) {
-        Node arg1 = arguments.firstArg();
-        Node arg2 = arguments.secondArg();
+        Node x = arguments.firstArg();
+        Node y = arguments.secondArg();
 
-        if (arg1.equals(arg2)) {
-            
-            
+        if (x.equals(y)) {
             return numberUtils.zero;
-        } else if (numberUtils.zero.equals(arg2)) {
-            
-            
-            return arg1;
-        } else if (numberUtils.zero.equals(arg1) && numberUtils.isSubtract(arg2)) {
-            
-            
-            FunctionNode fn2 = (FunctionNode) arg2;
+        }
+        if (numberUtils.zero.equals(y)) {
+            return x;
+        }
+        if (numberUtils.zero.equals(x) && numberUtils.isSubtract(y)) {
+            FunctionNode fn2 = (FunctionNode) y;
             Arguments fn2Arguments = fn2.args();
             return new FunctionNode(this, fn2Arguments.secondArg(), fn2Arguments.firstArg());
-        } else if (isConstant(arg2) && numberUtils.isNegative(arg2)) {
-            
-            
-            return new FunctionNode(numberUtils.getAdd(), numberUtils.negate(arg2), arg1);
-        } else {
-            if (numberUtils.isArithmeticExpression(arg2)) {
-                FunctionNode fn = (FunctionNode) arg2;
+        }
+        if (isConstant(y) && numberUtils.isNegative(y)) {
+            return new FunctionNode(numberUtils.add, numberUtils.negate(y), x);
+        }
+
+
+        {
+            if (numberUtils.isArithmeticExpression(y)) {
+                FunctionNode fn = (FunctionNode) y;
                 Function f = fn.func();
                 Arguments args = fn.args();
                 Node fnArg1 = args.firstArg();
                 Node fnArg2 = args.secondArg();
                 if (numberUtils.isMultiply(f) && isConstant(fnArg1)) {
-                    if (numberUtils.zero.equals(arg1)) {
-                        
+                    if (numberUtils.zero.equals(x)) {
+
                         return new FunctionNode(f, numberUtils.negateConstant(fnArg1), fnArg2);
                     } else if (numberUtils.isNegative(fnArg1)) {
-                        
-                        return new FunctionNode(numberUtils.getAdd(), arg1, new FunctionNode(f, numberUtils.negateConstant(fnArg1), fnArg2));
+
+                        return new FunctionNode(numberUtils.add, x, new FunctionNode(f, numberUtils.negateConstant(fnArg1), fnArg2));
                     }
-                } else if (numberUtils.isAdd(f) && numberUtils.zero.equals(arg1)) {
-                    
+                } else if (numberUtils.isAdd(f) && numberUtils.zero.equals(x)) {
+
                     return new FunctionNode(f, numberUtils.negate(fnArg1), numberUtils.negate(fnArg2));
-                } else if (numberUtils.isSubtract(fn) && isConstant(arg1) && isConstant(fnArg1)) {
-                    if (numberUtils.zero.equals(arg1)) {
-                        
+                } else if (numberUtils.isSubtract(fn) && isConstant(x) && isConstant(fnArg1)) {
+                    if (numberUtils.zero.equals(x)) {
+
                         throw new IllegalArgumentException();
                     } else if (numberUtils.zero.equals(fnArg1)) {
-                        
-                        return new FunctionNode(numberUtils.getAdd(), arg1, fnArg2);
+
+                        return new FunctionNode(numberUtils.add, x, fnArg2);
                     } else {
-                        
-                        return new FunctionNode(numberUtils.getAdd(), numberUtils.subtract(arg1, fnArg1), fnArg2);
+
+                        return new FunctionNode(numberUtils.add, numberUtils.subtract(x, fnArg1), fnArg2);
                     }
                 }
             }
 
-            return simplifier.simplify(this, arg1, arg2);
+            //(- (- a b) (- c d))
+            //  == (a - b) - (c - d) == (a - b) + (d - c) == (a + d) -b  -c =
+            // (a+d) - (b + c) = (+ a ( - d ( + b c )
+            if (NodeType.func(x, "-") && NodeType.func(y, "-")) {
+                Arguments xx = ((FunctionNode) x).args();
+                Node a = xx.firstArg();
+                Node b = xx.secondArg();
+
+                Arguments yy = ((FunctionNode) y).args();
+                Node c = yy.firstArg();
+                Node d = yy.secondArg();
+
+                if (a.compareTo(d) > 0) {
+                    Node t = d;
+                    d = a;
+                    a = t;
+                }
+                if (b.compareTo(c) > 0) {
+                    Node t = c;
+                    c = b;
+                    b = t;
+                }
+                // (a+d) - (b + c) = (+ a ( - d ( + b c )
+//                return new FunctionNode(numberUtils.subtract,
+//                        new FunctionNode(numberUtils.add, a, d),
+//                        new FunctionNode(numberUtils.add, b, c));
+                return new FunctionNode(numberUtils.add, a,
+                        new FunctionNode(numberUtils.subtract, d,
+                                new FunctionNode(numberUtils.add, b, c)
+                        )
+                );
+            }
+
+            return simplifier.simplify(this, x, y);
         }
+
     }
 
     @Override

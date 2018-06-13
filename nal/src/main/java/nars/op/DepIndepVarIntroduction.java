@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.ToIntFunction;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
 
 /**
  * 1-iteration DepVar and IndepVar introduction that emulates and expands the original NAL6 Variable Introduction Rules

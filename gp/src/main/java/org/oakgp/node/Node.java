@@ -25,6 +25,8 @@ import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
  */
 public interface Node extends Comparable<Node> {
 
+    Node[] EmptyArray = new Node[0];
+
     /**
      * Returns the result of evaluating this {@code Node} using the values of the specified {@code Assignments}.
      *

@@ -24,9 +24,9 @@ import org.oakgp.Type;
  * The result of evaluating this node will vary based on the {@link Assignments} specified.
  */
 public final class VariableNode extends TerminalNode {
-    private final int id;
-    private final Type type;
-    private final int hashCode;
+    public final int id;
+    public final Type type;
+    public final int hashCode;
 
     /**
      * Constructs a new {@code VariableNode} with the specified ID.

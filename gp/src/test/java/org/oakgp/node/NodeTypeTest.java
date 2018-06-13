@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class NodeTypeTest {
     private static final ConstantNode CONSTANT_NODE = TestUtils.integerConstant(7);
     private static final VariableNode VARIABLE_NODE = TestUtils.createVariable(1);
-    private static final FunctionNode FUNCTION_NODE = new FunctionNode(IntFunc.the.getAdd(), CONSTANT_NODE, VARIABLE_NODE);
+    private static final FunctionNode FUNCTION_NODE = new FunctionNode(IntFunc.the.add, CONSTANT_NODE, VARIABLE_NODE);
 
     @Test
     public void testIsConstant() {

@@ -20,9 +20,11 @@ import org.oakgp.Assignments;
 import org.oakgp.function.Function;
 import org.oakgp.node.FunctionNode;
 import org.oakgp.node.Node;
+import org.oakgp.node.NodeType;
+
+import java.util.Arrays;
 
 import static org.oakgp.node.NodeType.isConstant;
-import static org.oakgp.util.NodeComparator.NODE_COMPARATOR;
 
 /**
  * Performs multiplication.
@@ -59,39 +61,52 @@ final class Multiply extends ArithmeticOperator {
 
     @Override
     public Node simplify(Arguments arguments) {
-        Node arg1 = arguments.firstArg();
-        Node arg2 = arguments.secondArg();
+        Node x = arguments.firstArg();
+        Node y = arguments.secondArg();
 
-        if (NODE_COMPARATOR.compare(arg1, arg2) > 0) {
-            
-            
-            return new FunctionNode(this, arg2, arg1);
-        } else if (numberUtils.zero.equals(arg1)) {
-            
-            
+         if (numberUtils.zero.equals(x)) {
             return numberUtils.zero;
-        } else if (numberUtils.zero.equals(arg2)) {
-            
-            throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
-        } else if (numberUtils.one.equals(arg1)) {
-            
-            
-            return arg2;
-        } else if (numberUtils.one.equals(arg2)) {
-            
-            throw new IllegalArgumentException("arg1 " + arg1 + " arg2 " + arg2);
-        } else {
-            if (isConstant(arg1) && numberUtils.isArithmeticExpression(arg2)) {
-                FunctionNode fn = (FunctionNode) arg2;
+        }
+        if (numberUtils.zero.equals(y)) {
+            return numberUtils.zero;
+        }
+        if (numberUtils.one.equals(x)) {
+            return y;
+        }
+        if (numberUtils.one.equals(y)) {
+            return x;
+        }
+
+        if (NodeType.func(y, "*")) {
+            //verify commutive ordering
+            Arguments yy = ((FunctionNode) y).args();
+            Node[] mults = new Node[] { x, yy.get(0), yy.get(1) } ;
+            Node[] original = mults.clone();
+            Arrays.sort(mults);
+            if (!Arrays.equals(original, mults)) {
+                if (isConstant(mults[0]) && isConstant(mults[1])) {
+
+                    return new FunctionNode(numberUtils.multiply, numberUtils.multiply(mults[0], mults[1]), mults[2] );
+                } else {
+                    return new FunctionNode(numberUtils.multiply, mults[0],
+                            new FunctionNode(numberUtils.multiply, mults[1], mults[2]));
+                }
+            }
+
+        }
+
+        {
+            if (isConstant(x) && numberUtils.isArithmeticExpression(y)) {
+                FunctionNode fn = (FunctionNode) y;
                 Function f = fn.func();
                 Arguments args = fn.args();
                 Node fnArg1 = args.firstArg();
                 Node fnArg2 = args.secondArg();
                 if (isConstant(fnArg1)) {
                     if (numberUtils.isAddOrSubtract(f)) {
-                        return new FunctionNode(f, numberUtils.multiply(arg1, fnArg1), new FunctionNode(this, arg1, fnArg2));
+                        return new FunctionNode(f, numberUtils.multiply(x, fnArg1), new FunctionNode(this, x, fnArg2));
                     } else if (numberUtils.isMultiply(f)) {
-                        return new FunctionNode(this, numberUtils.multiply(arg1, fnArg1), fnArg2);
+                        return new FunctionNode(this, numberUtils.multiply(x, fnArg1), fnArg2);
                     } else if (numberUtils.isDivide(f)) {
                         
                         return null;
@@ -99,9 +114,10 @@ final class Multiply extends ArithmeticOperator {
                         throw new IllegalArgumentException();
                     }
                 } else if (numberUtils.isAddOrSubtract(f)) {
-                    return new FunctionNode(f, new FunctionNode(this, arg1, fnArg1), new FunctionNode(this, arg1, fnArg2));
+                    return new FunctionNode(f, new FunctionNode(this, x, fnArg1), new FunctionNode(this, x, fnArg2));
                 }
             }
+
 
             return null;
         }

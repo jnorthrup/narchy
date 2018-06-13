@@ -39,7 +39,7 @@ public class PrimitiveSetImplTest {
     private static final double VARIABLE_RATIO = .6;
     private static final ConstantNode[] CONSTANTS = {integerConstant(7), integerConstant(8), integerConstant(9)};
     private static final Type[] VARIABLE_TYPES = intArrayType(3);
-    private static final Function[] FUNCTIONS = new Function[]{IntFunc.the.getAdd(), IntFunc.the.getSubtract(),
+    private static final Function[] FUNCTIONS = new Function[]{IntFunc.the.add, IntFunc.the.subtract,
             IntFunc.the.getMultiply(), new If(integerType()), LessThan.create(integerType()), LessThanOrEqual.create(integerType()),
             new GreaterThan(integerType()), new GreaterThanOrEqual(integerType()), new Equal(integerType()), new NotEqual(integerType())};
 

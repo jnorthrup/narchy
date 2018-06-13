@@ -85,7 +85,7 @@ public class MultiplyTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.getAdd(), IntFunc.the.getSubtract(), LongFunc.the.getMultiply(),
+        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.subtract, LongFunc.the.getMultiply(),
                 DoubleFunc.the.getMultiply(), BigIntegerFunc.the.getMultiply(), BigDecimalFunc.the.getMultiply()};
     }
 }

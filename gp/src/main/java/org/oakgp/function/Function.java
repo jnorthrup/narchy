@@ -34,6 +34,7 @@ public interface Function {
      */
     Object evaluate(Arguments arguments, Assignments assignments);
 
+
     /**
      * Returns the return type and argument types associated with this function.
      */

@@ -178,7 +178,7 @@ public final class NodeReader implements Closeable {
      * the start or end of functions (i.e. {@code (} and {@code )}), arrays (i.e. {@code [} and {@code ]}) or strings (i.e. {@code "}).
      */
     public static boolean isValidDisplayName(String displayName) {
-        if (displayName == null || displayName.length() == 0 || isNumber(displayName)) {
+        if (displayName == null || displayName.isEmpty() || isNumber(displayName)) {
             return false;
         }
 

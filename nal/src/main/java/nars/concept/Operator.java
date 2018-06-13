@@ -16,7 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
-import static nars.Op.*;
+import static nars.Op.ATOM;
+import static nars.Op.INH;
 
 /**
  * Operator interface specifically for goal and command punctuation

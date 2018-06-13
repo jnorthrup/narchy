@@ -45,6 +45,6 @@ public class ReduceTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.getAdd(), IntFunc.the.getMultiply()};
+        return new Function[]{getFunction(), IntFunc.the.add, IntFunc.the.getMultiply()};
     }
 }

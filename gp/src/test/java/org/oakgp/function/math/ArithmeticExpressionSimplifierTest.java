@@ -97,9 +97,9 @@ public class ArithmeticExpressionSimplifierTest {
 
         assertAdditionSimplification("v0", "(+ 1 v0)", "(+ 1 (* 2 v0))");
 
-        assertAdditionSimplification("v0", "(+ v1 (+ v1 (+ v0 9)))", "(+ (* 2 v1) (+ 9 (* 2 v0)))");
+        assertAdditionSimplification("v0", "(+ v1 (+ v1 (+ v0 9)))", "(+ 9 (+ (* 2 v0) (* 2 v1)))");
 
-        assertAdditionSimplification("v1", "(+ v1 (+ v1 (+ v0 9)))", "(+ (* 3 v1) (+ 9 v0))");
+        assertAdditionSimplification("v1", "(+ v1 (+ v1 (+ v0 9)))", "(+ 9 (+ v0 (* 3 v1)))");
 
         assertAdditionSimplification("v0", "(* 1 v0)", "(* 2 v0)");
 

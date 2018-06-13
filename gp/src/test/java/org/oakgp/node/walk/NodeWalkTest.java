@@ -103,10 +103,9 @@ public class NodeWalkTest {
         assertNodeEquals("(- (- (* -1 42) 0) (- 13 42))", NodeWalk.replaceAll(input, n -> isVariable(n), replacement));
         assertNodeEquals("(- (- (* 42 v3) 42) (- 42 v1))", NodeWalk.replaceAll(input, n -> isConstant(n), replacement));
 
-        Predicate<Node> criteria = n -> isFunction(n) && ((FunctionNode) n).func() == the.getSubtract();
+        Predicate<Node> criteria = n -> isFunction(n) && ((FunctionNode) n).func() == the.subtract;
         assertNodeEquals("(+ (+ 13 v1) (+ 0 (* -1 v3)))",
-                NodeWalk.replaceAll(input, criteria, n ->
-                        new FunctionNode(the.getAdd(), ((FunctionNode) n).args())));
+                NodeWalk.replaceAll(input, criteria, n -> new FunctionNode(the.add, ((FunctionNode) n).args())));
     }
 
     @Test
@@ -126,7 +125,7 @@ public class NodeWalkTest {
      * Returns representation of: {@code (x*y)+z+1}
      */
     private FunctionNode createFunctionNode() {
-        return new FunctionNode(the.getAdd(), new FunctionNode(the.getMultiply(), createVariable(0), createVariable(1)), new FunctionNode(
-                the.getAdd(), createVariable(2), integerConstant(1)));
+        return new FunctionNode(the.add, new FunctionNode(the.getMultiply(), createVariable(0), createVariable(1)), new FunctionNode(
+                the.add, createVariable(2), integerConstant(1)));
     }
 }

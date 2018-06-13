@@ -74,7 +74,7 @@ public class TreeGeneratorTest {
 
             @Override
             public Function nextFunction(Type type) {
-                return the.getAdd();
+                return the.add;
             }
 
             @Override

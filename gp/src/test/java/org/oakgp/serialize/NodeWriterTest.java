@@ -82,16 +82,16 @@ public class NodeWriterTest {
     @Test
     public void testFunctionNode() {
         NodeWriter writer = new NodeWriter();
-        String output = writer.writeNode(new FunctionNode(IntFunc.the.getAdd(), integerConstant(5), createVariable(0)));
+        String output = writer.writeNode(new FunctionNode(IntFunc.the.add, integerConstant(5), createVariable(0)));
         assertEquals("(+ 5 v0)", output);
     }
 
     @Test
     public void testFunctionNodeWithFunctionNodeArguments() {
         NodeWriter writer = new NodeWriter();
-        FunctionNode arg1 = new FunctionNode(IntFunc.the.getSubtract(), integerConstant(5), createVariable(0));
+        FunctionNode arg1 = new FunctionNode(IntFunc.the.subtract, integerConstant(5), createVariable(0));
         FunctionNode arg2 = new FunctionNode(IntFunc.the.getMultiply(), createVariable(1), integerConstant(-6876));
-        String output = writer.writeNode(new FunctionNode(IntFunc.the.getAdd(), arg1, arg2));
+        String output = writer.writeNode(new FunctionNode(IntFunc.the.add, arg1, arg2));
         assertEquals("(+ (* -6876 v1) (- 5 v0))", output);
     }
 

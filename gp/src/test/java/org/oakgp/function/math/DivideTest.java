@@ -77,7 +77,7 @@ public class DivideTest extends AbstractFunctionTest {
 
     @Override
     protected Function[] getFunctionSet() {
-        return new Function[]{getFunction(), IntFunc.the.getSubtract(), LongFunc.the.getDivide(), DoubleFunc.the.getDivide(),
+        return new Function[]{getFunction(), IntFunc.the.subtract, LongFunc.the.getDivide(), DoubleFunc.the.getDivide(),
                 BigIntegerFunc.the.getDivide(), BigDecimalFunc.the.getDivide()};
     }
 }

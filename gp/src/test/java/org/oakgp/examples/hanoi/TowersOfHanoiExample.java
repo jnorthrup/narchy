@@ -57,6 +57,8 @@ public class TowersOfHanoiExample {
         Candidates output = new Evolution().returns(MOVE_TYPE).constants(constants).variables(variables).functions(functions)
                 .goal(fitnessFunction).population(INITIAL_POPULATION_SIZE).depth(INITIAL_POPULATION_MAX_DEPTH)
                 .goalTarget(TARGET_FITNESS).setMaxGenerations(NUM_GENERATIONS).get();
+
+
         Node best = output.best().node;
         System.out.println(best);
         new TowersOfHanoiFitnessFunction(true).evaluate(best);

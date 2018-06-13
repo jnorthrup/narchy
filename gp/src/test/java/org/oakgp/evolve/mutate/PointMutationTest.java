@@ -59,8 +59,8 @@ public class PointMutationTest {
     public void testFunctionSubNodes() {
         DummyRandom dummyRandom = nextInt(3).returns(1, 2, 0);
         Function rootFunction = new IsZero();
-        Function inputFunction = IntFunc.the.getAdd();
-        Function outputFunction = IntFunc.the.getSubtract();
+        Function inputFunction = IntFunc.the.add;
+        Function outputFunction = IntFunc.the.subtract;
         Node inputArg1 = integerConstant(3);
         Node inputArg2 = integerConstant(7);
         Node input = new FunctionNode(rootFunction, new FunctionNode(inputFunction, inputArg1, inputArg2));

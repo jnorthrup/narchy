@@ -55,7 +55,7 @@ public class StrategyWalkTest {
         VariableNode v1 = createVariable(1);
         VariableNode v2 = createVariable(2);
         ConstantNode c1 = integerConstant(0);
-        Function f = the.getAdd();
+        Function f = the.add;
         FunctionNode branch1 = new FunctionNode(f, v0, c1);
         FunctionNode branch2 = new FunctionNode(f, v2, v1);
         FunctionNode tree = new FunctionNode(f, branch1, branch2);
