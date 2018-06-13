@@ -1,12 +1,16 @@
 package nars.table;
 
+import jcog.Util;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.map.MRUCache;
+import jcog.pri.Priority;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.task.NALTask;
 import nars.term.Term;
+import org.apache.commons.lang3.mutable.MutableFloat;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -206,9 +210,21 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public void priAdd(Task entry, float amount) {
-            
+        protected Task merge(Task existing, Task incoming, @Nullable MutableFloat overflowing) {
+            float i = incoming.priElseZero();
+            float e = existing.priElseZero();
+            if (!Util.equals(i, e, Priority.EPSILON)) {
+                float ie = (i + e) / 2f;
+                existing.priSet(ie);
+                if (overflowing!=null) overflowing.add(i - ie);
+            }
+            return existing;
         }
+
+//        @Override
+//        public void priAdd(Task entry, float amount) {
+//
+//        }
 
         @Override
         public Task key(Task value) {
@@ -243,6 +259,19 @@ public interface QuestionTable extends TaskTable {
         @Override
         public Stream<Task> streamTasks() {
             return stream();
+        }
+
+        @Override
+        public Task sample(long start, long end, Term template, NAR nar) {
+            commit();
+            switch (size()) {
+                case 0:
+                    return null;
+                case 1:
+                    return next(0, (xx)->false); //first one
+                default:
+                    return QuestionTable.super.sample(start, end, template, nar);
+            }
         }
     }
 

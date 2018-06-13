@@ -710,7 +710,26 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public Stream<V> stream() {
         final AtomicReferenceArray<V> map = this.map;
-        return IntStream.range(0, map.length()).mapToObj(map::get).filter(Objects::nonNull);
+        return IntStream.range(0, map.length())
+                .mapToObj(map::get).filter(Objects::nonNull);
+    }
+
+    /** linear scan through the map with kontinue callback. returns the last value
+     *  encountered or null if totally empty
+     * */
+    public V next(int offset, Predicate<V> each) {
+        final AtomicReferenceArray<V> map = this.map;
+        int n = map.length();
+        V xx = null;
+        for (int i = offset; i < n; i++) {
+            V x = map.get(i);
+            if (x != null) {
+                if (!each.test(xx = x)) {
+                    break;
+                }
+            }
+        }
+        return xx;
     }
 
 

@@ -312,7 +312,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         ExpandingScan tt = new ExpandingScan(SAMPLE_MATCH_LIMIT, SAMPLE_MATCH_LIMIT,
                 task(m.value()),
                 (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)),
-                null)
+                m::filter)
                 .scan(this, m.start(), m.end());
 
         int tts = tt.size();
@@ -329,6 +329,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 });
             }
         }
+
 
     }
 

@@ -1,5 +1,6 @@
 package nars.derive.step;
 
+import jcog.WTF;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
@@ -501,6 +502,11 @@ public class Occurrify extends TimeGraph {
             @Override
             long[] occurrence(Derivation d) {
                 Longerval i = Longerval.intersect(d.task.start(), d.task.end(), d.belief.start(), d.belief.end());
+                if (i == null) {
+                    if (Param.DEBUG)
+                        throw new WTF("shouldnt happen");
+                    return null;
+                }
                 return new long[]{i.a, i.b};
             }
             @Override

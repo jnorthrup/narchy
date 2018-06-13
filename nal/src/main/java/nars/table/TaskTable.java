@@ -103,8 +103,9 @@ public interface TaskTable {
     default int match(TaskMatch m, NAR nar, Task[] target) {
         final int[] i = {0};
         match(m, nar, x->{
-            if (x!=null) 
-                target[i[0]++] = x;
+            //if (x!=null)
+            assert(x!=null);
+            target[i[0]++] = x;
         });
         return i[0];
     }
@@ -114,10 +115,7 @@ public interface TaskTable {
         assert(m.limit()==1);
         Task[] x = new Task[1];
         int r = match(m, nar, x);
-        if (r == 0)
-            return null;
-        else
-            return x[0];
+        return r == 0 ? null : x[0];
     }
 
 
@@ -130,12 +128,8 @@ public interface TaskTable {
         if (isEmpty())
             return null;
 
-        TaskMatch m =
-                template == null || (!template.isTemporal()) ?
-                    TaskMatch.best(start, end) :
-                    TaskMatch.best(start, end, template);
 
-        return matchThe(m, nar);
+        return matchThe(TaskMatch.sampled(start, end, template, nar.random()), nar);
     }
 
     default Task sample(long start, long end, Term template, NAR nar) {
@@ -144,6 +138,6 @@ public interface TaskTable {
             return null;
 
         
-        return matchThe(TaskMatch.sampled(start, end, nar.random()), nar);
+        return matchThe(TaskMatch.sampled(start, end, template, nar.random()), nar);
     }
 }

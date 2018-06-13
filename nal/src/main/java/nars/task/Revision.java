@@ -483,37 +483,31 @@ public class Revision {
 
                 for (int i = 0; i < len; i++)
                     d += dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+            } else {
+
+                int adt = a.dt();
+                int bdt = b.dt();
+                if (adt != bdt) {
+
+
+                    boolean ax = adt == XTERNAL;
+                    boolean bx = bdt == XTERNAL;
+                    boolean ad = adt == DTERNAL;
+                    boolean bd = bdt == DTERNAL;
+                    if (!ad && !bd && !bx && !ax) {
+                        d += Math.abs(adt - bdt);
+                    } else if (ax)
+                        d += 1+Math.abs(bdt); //one is xternal the other is not, record maximum difference
+                    else if (bx)
+                        d += 1+Math.abs(adt); //one is xternal the other is not, record maximum difference
+                    else if (adt==DTERNAL)
+                        d += 1+Math.abs(bdt)/2; //one is dternal the other is not, record at least some difference
+                    else if (bdt==DTERNAL)
+                        d += 1+Math.abs(adt)/2; //one is dternal the other is not, record at least some difference
+
+                }
+
             }
-
-            int adt = a.dt();
-            int bdt = b.dt();
-
-            
-            if (adt == DTERNAL) adt =
-                    
-                    bdt; 
-            if (bdt == DTERNAL) bdt =
-                    
-                    adt; 
-
-            if (adt == XTERNAL) adt = bdt;
-            if (bdt == XTERNAL) bdt = adt;
-
-            if (adt != bdt/* && adt != DTERNAL && bdt != DTERNAL*/) {
-
-
-
-
-
-
-
-
-
-
-                d += Math.abs(adt - bdt);
-            }
-
-
         }
 
         return d / depth;

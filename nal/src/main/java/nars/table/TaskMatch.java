@@ -11,7 +11,7 @@ import java.util.Random;
 import static nars.time.Tense.ETERNAL;
 
 /** query object used for selecting tasks */
-public interface TaskMatch {
+public interface TaskMatch  {
 
     /** max values to return */
     int limit();
@@ -31,18 +31,32 @@ public interface TaskMatch {
     static TaskMatch best(long start, long end) {
         return new Best(start, end);
     }
-    static TaskMatch best(long start, long end, Term template) {
-        return best(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.term())));
+
+    static TaskMatch best(long start, long end, Term template, Random rng) {
+        assert(template!=null);
+        return best(start, end, t-> 1 / (1 + Revision.dtDiff(template, t.term())), rng);
     }
 
-    static TaskMatch best(long start, long end, FloatFunction<Task> factor) {
-        return new BestWithFactor(start, end, factor);
+    static TaskMatch best(long start, long end, Random rng) {
+        return best(start, end, t-> 1, rng);
+    }
+    static TaskMatch best(long start, long end, FloatFunction<Task> factor, Random rng) {
+        return new BestWithFactor(start, end, factor, rng);
     }
 
     /** gets one task, sampled fairly from the available tasks in the
      * given range according to strength */
-    static TaskMatch sampled(long start, long end, Random random) {
-        return new Sampled(start, end, random);
+    static TaskMatch sampled(long start, long end, @Nullable Term template, @Nullable Random random) {
+        return
+                template == null || (!template.isTemporal()) ?
+                        TaskMatch.best(start, end, random) :
+                        TaskMatch.best(start, end, template, random);
+
+    }
+
+    /** prefilter */
+    default boolean filter(Task task) {
+        return true;
     }
 
     class Best implements TaskMatch, FloatFunction<Task> {
@@ -107,12 +121,19 @@ public interface TaskMatch {
 
     }
 
-    /** TODO add custom value function */
-    class Sampled extends Best {
-        private final Random random;
+    class BestWithFactor extends Best {
 
-        public Sampled(long start, long end, Random random) {
+        private final FloatFunction<Task> factor;
+        @Nullable private final Random random;
+        private float lowerLimit = Float.NEGATIVE_INFINITY;
+
+        public BestWithFactor(long start, long end, FloatFunction<Task> factor) {
+            this(start, end, factor, null);
+        }
+
+        public BestWithFactor(long start, long end, FloatFunction<Task> factor, @Nullable Random random) {
             super(start, end);
+            this.factor = factor;
             this.random = random;
         }
 
@@ -120,27 +141,15 @@ public interface TaskMatch {
         public @Nullable Random random() {
             return random;
         }
-    }
-
-    class BestWithFactor extends Best {
-
-        private final FloatFunction<Task> factor;
-        private float max;
-
-        public BestWithFactor(long start, long end, FloatFunction<Task> factor) {
-            super(start, end);
-            this.factor = factor;
-            max = Float.NEGATIVE_INFINITY;
-        }
 
         @Override
         public float floatValueOf(Task x) {
 
             float p = super.floatValueOf(x);
             if (limit()==1) {
-                if (p > max)
-                    max = p;
-                else if (p < max) {
+                if (p > lowerLimit)
+                    lowerLimit = p;
+                else if (p < lowerLimit) {
                     
                     return Float.NEGATIVE_INFINITY;
                 }

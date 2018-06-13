@@ -114,7 +114,7 @@ public abstract class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Override
     public Task sample(long start, long end, Term template, NAR nar) {
-        return matchThe(TaskMatch.sampled(start, end, nar.random()), nar);
+        return matchThe(TaskMatch.sampled(start, end, null, nar.random()), nar);
     }
 
     abstract public void sampleDynamic(long start, long end, Consumer<Task> n, NAR nar);
