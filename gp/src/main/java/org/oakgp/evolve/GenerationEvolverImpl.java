@@ -50,7 +50,7 @@ public final class GenerationEvolverImpl implements GenerationEvolver {
     public GenerationEvolverImpl(float eliteRate, NodeSelector selector, CurveBag<PLink<GeneticOperator>> operators, Random random) {
         this(eliteRate, selector,
                 //TODO: if operators.size()==1 ?
-                ()->operators.sample(random).get()
+                () -> operators.sample(random).id
         );
         assert(!operators.isEmpty());
     }
@@ -80,8 +80,17 @@ public final class GenerationEvolverImpl implements GenerationEvolver {
 
         selector.reset(living);
 
-        return Stream.generate(()->
-            operators.get().apply(selector)
-        ).filter(Objects::nonNull);
+        final int[] nullLimit = {living.capacity()};
+
+        return Stream.generate(()-> {
+            Node result = operators.get().apply(selector);
+            return result;
+        }).takeWhile((j)->{
+            if (j == null) {
+                return --nullLimit[0] > 0;
+            } else {
+                return true;
+            }
+        }).filter(Objects::nonNull);
     }
 }

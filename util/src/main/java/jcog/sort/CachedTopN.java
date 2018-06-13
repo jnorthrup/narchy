@@ -1,7 +1,6 @@
 package jcog.sort;
 
 import jcog.data.ArrayHashSet;
-import jcog.list.FasterList;
 import jcog.pri.NLink;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
@@ -62,14 +61,18 @@ public class CachedTopN<X> extends ArrayHashSet<NLink<X>>  {
         return size() == 0;
     }
 
-    /** for now this only works if the internal list is FasterList */
-    @Deprecated public X[] array(IntFunction<X[]> arrayBuilder) {
+    public X[] array(IntFunction<X[]> arrayBuilder) {
         int s = size();
         X[] x = arrayBuilder.apply(s);
-        NLink<X>[] l = (NLink<X>[]) ((FasterList)list).array();
-        for (int i = 0; i < s; i++) {
-            x[i] = l[i].id;
-        }
+//        if (list instanceof FasterList) {
+//            NLink<X>[] l = (NLink<X>[]) ((FasterList) list).array();
+//            for (int i = 0; i < s; i++) {
+//                x[i] = l[i].id;
+//            }
+//        } else {
+            for (int i = 0; i < s; i++)
+                x[i] = get(i).id;
+//        }
         return x;
     }
 

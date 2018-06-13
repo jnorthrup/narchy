@@ -285,7 +285,7 @@ public class MarkovChain<T> {
             
             WLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new WLink<>(nn, 0));
             e.priAdd(strength);
-            return e.get();
+            return e.id;
         }
 
         /**
@@ -296,7 +296,7 @@ public class MarkovChain<T> {
          */
         protected Chain next(Random rng) {
             if (edges.isEmpty()) return null;
-            return selectRoulette(rng, edges.values()).get();
+            return selectRoulette(rng, edges.values()).id;
         }
 
 

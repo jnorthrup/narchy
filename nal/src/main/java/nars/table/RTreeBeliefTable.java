@@ -318,13 +318,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         int tts = tt.size();
         if (tts > 0) {
             if (tts == 1) {
-                target.accept((Task) tt.get(0));
+                target.accept((Task) (tt.get(0).id));
             } else {
 
                 final int[] limit = {m.limit()};
                 float[] ww = Util.map(tt::pri, new float[tts]);
                 MutableRoulette.run(ww, m.random(), t -> 0, y -> {
-                    target.accept((Task) tt.get(y));
+                    target.accept((Task) (tt.get(y).id));
                     return --limit[0] > 0;
                 });
             }

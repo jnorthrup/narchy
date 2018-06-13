@@ -39,16 +39,16 @@ public final class Ranking extends TopN<Evolved> {
 
     @Override
     public boolean add(Evolved e) {
-        if (!isSorted(rank)) {
-            throw new RuntimeException("not sorted");
-        }
+//        if (!isSorted(rank)) {
+//            throw new RuntimeException("not sorted");
+//        }
 
         boolean b = super.add(e);
 
-        if (!isSorted(rank)) {
-            System.out.println(this);
-            throw new RuntimeException("not sorted" );
-        }
+//        if (!isSorted(rank)) {
+//            System.out.println(this);
+//            throw new RuntimeException("not sorted" );
+//        }
 
         return b;
     }

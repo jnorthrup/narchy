@@ -96,9 +96,9 @@ public abstract class ChainClustering extends DurService {
             if (y.centroid!=current) {
                 current = y.centroid;
             } else {
-                
-                Task tx = x.get();
-                Task ty = y.get();
+
+                Task tx = x.id;
+                Task ty = y.id;
                 link(tx, ty);
 
             }

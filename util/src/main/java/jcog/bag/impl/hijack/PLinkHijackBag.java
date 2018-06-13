@@ -27,13 +27,13 @@ public class PLinkHijackBag<X> extends HijackBag<X, PLinkHashCached<X>> {
 
     @Override
     public X key(PLinkHashCached<X> value) {
-        return value.get();
+        return value.id;
     }
 
     /** optimized for PLink */
     @Override
     public void forEachKey( Consumer<? super X> each) {
-        forEach(x -> each.accept(x.get()));
+        forEach(x -> each.accept(x.id));
     }
 
 

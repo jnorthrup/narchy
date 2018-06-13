@@ -58,7 +58,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
         @Nullable
         @Override
         public Term key(PLink<Concept> x) {
-            return x.get().term();
+            return x.id.term();
         }
     }
 
@@ -116,7 +116,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
 
                                     System.err.println("evicting " + kill + " victims (" + bad.size() + " remain;\ttotal concepts=" + super.size());
                                     bad.pop(nar.random(), kill, (t) -> {
-                                        Concept x = t.get();
+                                        Concept x = t.id;
                                         if (x != null)
                                             removeGenocidally(x);
                                     });

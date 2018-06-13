@@ -92,7 +92,7 @@ public class Tasklinks {
         {
 
             TaskLink.Tasklike tlSeed =
-                    ((TaskLink.GeneralTaskLink)tasklink).get();
+                    ((TaskLink.GeneralTaskLink) tasklink).id;
 
             final float headRoom = 1f - pEach;
             MutableFloat overflow = new MutableFloat();

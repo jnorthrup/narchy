@@ -97,7 +97,7 @@ public class SimpleDeriver extends Deriver {
             if (a == null)
                 return true;
 
-            Concept concept = a.get();
+            Concept concept = a.id;
 
             Concept[] templates = templates(concept, nar);
 

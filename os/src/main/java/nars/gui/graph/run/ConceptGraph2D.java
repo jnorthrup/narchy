@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL2;
 import jcog.bag.util.Bagregate;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.pri.PLink;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.concept.Concept;
@@ -52,7 +51,7 @@ public class ConceptGraph2D extends Graph2D<Concept> {
 
     public ConceptGraph2D(NAR n) {
         this(new Bagregate<>(() -> n.conceptsActive().iterator(), 128, 0.001f).
-                        iterable(PLink::get),
+                        iterable(activate -> activate.id),
                 n);
     }
 

@@ -84,10 +84,15 @@ abstract public class FitnessRanker implements GenerationRanker {
         @Override
         public void accept(Stream<Node> nodeStream, Ranking evolveds) {
             Iterator<Evolved> ii = nodeStream.map(this::rank).filter(Objects::nonNull).iterator();
+
+            int limit = evolveds.capacity() * 2;
+            int attempts = 0;
             while (!evolveds.isFull()) {
                 Evolved e = ii.next();
                 if (e != null)
                     evolveds.add(e);
+                if (attempts++ > limit)
+                    break; //?
             }
         }
     }

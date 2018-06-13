@@ -1,59 +1,49 @@
 package nars.experiment;
 
-import jcog.exe.Loop;
 import jcog.learn.ql.HaiQae;
 import nars.NAR;
 import nars.NARS;
-import nars.agent.NAgent;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
 import nars.exe.MixMultiExec;
 import nars.gui.NARui;
-import org.oakgp.Evolution;
-import org.oakgp.function.Fn;
-import org.oakgp.function.compare.Equal;
-import org.oakgp.function.compare.GreaterThan;
-import org.oakgp.function.compare.LessThan;
-import org.oakgp.rank.Ranking;
-import org.oakgp.rank.fitness.FitFn;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.meta.AutoSurface;
 import spacegraph.space2d.widget.meter.AutoUpdateMatrixView;
 import spacegraph.space2d.widget.text.Label;
 
-import static org.oakgp.NodeType.integerType;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 
 public class PoleCartGP {
 
-    /** online GP learning controller - tries series of potential candiates on a live NAgent instance */
-    public static class GPAgent extends Loop {
-        public final NAgent agent;
-
-        public GPAgent(NAgent agent) {
-            this.agent = agent;
-            Fn[] functions = {
-                    //new If(MOVE_TYPE), new Equal(MOVE_TYPE), new IsValid(), new SwitchEnum(Move.class, nullableType(MOVE_TYPE), MOVE_TYPE),
-                    new GreaterThan(integerType()), LessThan.create(integerType()), new Equal(integerType()),
-                    //new Next()
-                    };
-            //List<ConstantNode> constants = createConstants();
-            //NodeType[] variables = {STATE_TYPE, nullableType(MOVE_TYPE)};
-            FitFn fitnessFunction = new TowersOfHanoiFitnessFunction(false);
-
-            Ranking output = new Evolution().returns(MOVE_TYPE).constants(constants).variables(variables).functions(functions)
-                    .goal(fitnessFunction).populationSize(INITIAL_POPULATION_SIZE).populationDepth(INITIAL_POPULATION_MAX_DEPTH)
-                    .stopFitness(TARGET_FITNESS).stopGenerations(NUM_GENERATIONS).get();
-
-
-        }
-
-        @Override
-        protected void onStart() {
-            super.onStart();
-        }
-    }
+//    /** online GP learning controller - tries series of potential candiates on a live NAgent instance */
+//    public static class GPAgent extends Loop {
+//        public final NAgent agent;
+//
+//        public GPAgent(NAgent agent) {
+//            this.agent = agent;
+//            Fn[] functions = {
+//                    //new If(MOVE_TYPE), new Equal(MOVE_TYPE), new IsValid(), new SwitchEnum(Move.class, nullableType(MOVE_TYPE), MOVE_TYPE),
+//                    new GreaterThan(integerType()), LessThan.create(integerType()), new Equal(integerType()),
+//                    //new Next()
+//                    };
+//            //List<ConstantNode> constants = createConstants();
+//            //NodeType[] variables = {STATE_TYPE, nullableType(MOVE_TYPE)};
+//            FitFn fitnessFunction = new TowersOfHanoiFitnessFunction(false);
+//
+//            Ranking output = new Evolution().returns(MOVE_TYPE).constants(constants).variables(variables).functions(functions)
+//                    .goal(fitnessFunction).populationSize(INITIAL_POPULATION_SIZE).populationDepth(INITIAL_POPULATION_MAX_DEPTH)
+//                    .stopFitness(TARGET_FITNESS).stopGenerations(NUM_GENERATIONS).get();
+//
+//
+//        }
+//
+//        @Override
+//        protected void onStart() {
+//            super.onStart();
+//        }
+//    }
 
     public static void main(String[] args) {
 

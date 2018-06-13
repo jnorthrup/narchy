@@ -15,7 +15,7 @@ public class NLink<X> extends Pri implements PriReference<X> {
     @Override
     public boolean equals(Object that) {
         return (this == that) || id.equals(
-                (that instanceof NLink) ?  ((NLink) that).get()
+                (that instanceof NLink) ? ((NLink) that).id
                         :
                       that
                 );
@@ -62,7 +62,7 @@ public class NLink<X> extends Pri implements PriReference<X> {
 
     @Override
     public String toString() {
-        return n4(pri()) + " " + get();
+        return n4(pri()) + " " + id;
     }
 
 

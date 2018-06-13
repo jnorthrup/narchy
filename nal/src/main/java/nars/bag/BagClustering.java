@@ -170,7 +170,7 @@ public class BagClustering<X> {
                 
                 
                 bag.commit(t -> {
-                    X tt = t.get();
+                    X tt = t.id;
                     if ((tt instanceof Prioritized) && ((Prioritized)tt).isDeleted())
                         t.delete();
                     

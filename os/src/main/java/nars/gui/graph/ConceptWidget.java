@@ -145,8 +145,10 @@ public class ConceptWidget extends SpaceWidget<Concept> {
             this.pri = pri;
         }
 
-        public ConceptWidget src() { return get().getOne().getOne(); }
-        public ConceptWidget tgt() { return get().getOne().getTwo(); }
+        public ConceptWidget src() {
+            return id.getOne().getOne(); }
+        public ConceptWidget tgt() {
+            return id.getOne().getTwo(); }
 
         @Override
         public boolean isDeleted() {

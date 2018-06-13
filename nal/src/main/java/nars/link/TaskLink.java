@@ -205,7 +205,7 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public Term term() {
-            Task t = get();
+            Task t = id;
             if (t == null)
                 return null;
             return t.term();
@@ -213,8 +213,8 @@ public interface TaskLink extends Priority, Termed {
 
         @Override
         public Task get(NAR n) {
-            
-            return get();
+
+            return id;
         }
 
 

@@ -49,7 +49,7 @@ public abstract class TaskLeak extends Causable {
 
             @Override
             protected float receive(PLink<Task> b) {
-                Task t = b.get();
+                Task t = b.id;
                 if (t.isDeleted())
                     return 0f;
                 else

@@ -350,9 +350,10 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         }
     }
 
+    /** tests for descending sort */
     public boolean isSorted(FloatFunction<X> f) {
         for (int i= 1; i < size; i++)
-            if (f.floatValueOf(list[i-1]) < f.floatValueOf(list[i]))
+            if (f.floatValueOf(list[i-1]) > f.floatValueOf(list[i]))
                 return false;
         return true;
     }
@@ -588,26 +589,26 @@ public abstract class SortedArray<X> extends AbstractList<X> {
         float ev = cmp.floatValueOf(midleE);
         final int comparedValue = Util.fastCompare(ev, elementRank);
         if (comparedValue == 0) {
-            //scan until the next element weaker than midlE/ev
+//            //scan until the next element weaker than midlE/ev
             int index = midle;
-            int max = capacity();
-            for (; index < max; index++) {
-                final X e = list[index];
-                if (e == null) {
-                    rightBorder[0] = index;
-                    return index;
-                }
-                int i = Util.fastCompare(cmp.floatValueOf(e), elementRank);
-                if (0 != i) {
-                    assert(i > 0); //must be weaker if table is consistent
-                    break;
-                }
-            }
-            if (index < max) {
+//            int max = capacity();
+//            for (; index < max; index++) {
+//                final X e = list[index];
+//                if (e == null) {
+//                    rightBorder[0] = index;
+//                    return index;
+//                }
+//                int i = Util.fastCompare(cmp.floatValueOf(e), elementRank);
+//                if (0 != i) {
+//                    assert(i > 0); //must be weaker if table is consistent
+//                    break;
+//                }
+//            }
+//            if (index < max) {
                 rightBorder[0] = index;
                 return index;
-            } else
-                return -1; //table full
+//            } else
+//                return -1; //table full
         }
 
         boolean c = (0 < comparedValue);

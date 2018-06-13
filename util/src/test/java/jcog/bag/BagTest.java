@@ -118,7 +118,7 @@ public class BagTest {
         for (int i = 0; i < batches; i++) {
             b.sample(rng, batchSize, x -> {
                 f.data[Util.bin(b.pri(x), bins)]++;
-                String s = x.get();
+                String s = x.id;
                 hits.addValue(s);
                 hit.add(s);
             });
@@ -131,7 +131,7 @@ public class BagTest {
 
             System.out.println(hits.getUniqueCount() + " != " + b.size());
 
-            Set<String> items = b.stream().map(PLink::get).collect(Collectors.toSet());
+            Set<String> items = b.stream().map(stringPLink -> stringPLink.id).collect(Collectors.toSet());
             items.removeAll(hit);
             System.out.println("not hit: " + items);
 
