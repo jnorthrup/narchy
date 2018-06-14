@@ -33,6 +33,9 @@ import java.util.stream.Stream;
  * specified by a set of premise rules.
  * <p>
  * runtime intensity is metered and throttled by causal feedback
+ *
+ * this is essentially a Function<Premise, Stream<DerivedTask>> but
+ * the current level of code complexity makes this non-obvious
  */
 abstract public class Deriver extends Causable {
 
@@ -95,11 +98,18 @@ abstract public class Deriver extends Causable {
 
         Derivation d = derivation.get().cycle(n, this);
 
+
         derive(n, iterations, d);
 
         int derived = d.flush(target);
-        return iterations; 
+
+        //System.out.println(derivations + " -> " + iterations + " -> " + derived);
+        //io.out(derived);
+
+        return derived;
     }
+
+
 
     abstract protected void derive(NAR n, int iterations, Derivation d);
 

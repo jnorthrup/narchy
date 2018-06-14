@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 /**
  * compiled derivation rules
  * what -> can
+ *
  */
 public class PremiseDeriver implements Predicate<Derivation> {
 

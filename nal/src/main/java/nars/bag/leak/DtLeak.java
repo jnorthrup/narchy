@@ -30,7 +30,7 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
         this.rate = rate;
     }
 
-    public float commit(NAR nar, float work) {
+    public float commit(NAR nar, int iterations) {
 
 
         long now = nar.time();
@@ -47,7 +47,7 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
             
             float durDT = Math.max(0, (now - last) / ((float) dur));
 
-            float nextBudget = work * rate.floatValue() * durDT + lastBudget;
+            float nextBudget = iterations * rate.floatValue() * durDT + lastBudget;
             
 
             if (nextBudget >= RATE_THRESH) {
@@ -59,6 +59,11 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
 
         return 0;
+    }
+
+    /** override to implement backpressure stop switch */
+    protected boolean full() {
+        return false;
     }
 
     protected float commit(float nextBudget) {
@@ -79,7 +84,7 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
                     return Bag.BagSample.RemoveAndStop;
             }
 
-            return Bag.BagSample.Remove; 
+            return !full() ? Bag.BagSample.Remove : Bag.BagSample.RemoveAndStop;
         }));
 
         this.lastBudget = Math.min(0, budget[0]); 

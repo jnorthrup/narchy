@@ -131,7 +131,7 @@ public class WorkerMultiExec extends AbstractExec {
     @Override
     public void start(NAR nar) {
         synchronized (this) {
-            this.focus = new Focus(nar, revaluator);
+            this.focus = new Focus(nar, revaluator, threads);
 
             super.start(nar);
 

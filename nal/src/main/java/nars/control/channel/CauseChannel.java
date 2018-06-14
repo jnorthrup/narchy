@@ -63,9 +63,13 @@ abstract public class CauseChannel<X extends Priority> implements Consumer<X> {
         return new BufferedCauseChannel(this);
     }
 
-    public ThreadBufferedCauseChannel<X> threadBuffered() {
-        return new ThreadBufferedCauseChannel<>(this);
+    public BufferedCauseChannel buffered(int capacity) {
+        return new BufferedCauseChannel(this, capacity);
     }
+
+//    public ThreadBufferedCauseChannel<X> threadBuffered() {
+//        return new ThreadBufferedCauseChannel<>(this);
+//    }
 
     public float value() {
         return cause.value();

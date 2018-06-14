@@ -3,7 +3,7 @@ package nars.bag.leak;
 import jcog.Paper;
 import jcog.Skill;
 import nars.NAR;
-import nars.control.channel.ThreadBufferedCauseChannel;
+import nars.control.channel.BufferedCauseChannel;
 import nars.task.ITask;
 
 /** LeakBack generates new tasks through its CauseChannel -
@@ -15,25 +15,31 @@ abstract public class LeakBack extends TaskLeak {
 
     final static float INITIAL_RATE = 1f;
 
-    public final ThreadBufferedCauseChannel<ITask> in;
+    public final BufferedCauseChannel in;
 
 
     protected LeakBack(int capacity, NAR nar) {
         super(capacity, INITIAL_RATE, nar);
-        this.in = nar.newChannel(this).threadBuffered();
+        this.in = nar.newChannel(this).buffered();
     }
 
     @Override
-    protected int next(NAR nar, int work) {
-        int i = super.next(nar, work);
+    protected boolean full() {
+        boolean full = in.full();
+        return full;
+    }
+
+    @Override
+    protected int next(NAR nar, int iterations) {
+        int i = super.next(nar, iterations);
         if (i > 0) {
-            in.get().commit();
+            in.commit();
         }
         return i;
     }
 
     public void input(ITask x) {
-        in.get().input(x);
+        in.input(x);
     }
 
     @Override public float value() {

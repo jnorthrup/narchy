@@ -144,7 +144,7 @@ public abstract class ChainClustering extends DurService {
         
 
         
-        bag.commitGroups(1, nar, nar.forgetRate.floatValue(), this::linkClustersChain);
+        bag.commitGroups(nar, nar.forgetRate.floatValue(), this::linkClustersChain);
 
 
     }

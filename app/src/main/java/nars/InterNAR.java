@@ -77,11 +77,11 @@ public class InterNAR extends TaskLeak implements TriConsumer<NAR, ActiveQuestio
     }
 
     @Override
-    protected int next(NAR nar, int work) {
+    protected int next(NAR nar, int iterations) {
         if (!peer.connected())
             return -1;
 
-        return super.next(nar, work);
+        return super.next(nar, iterations);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class BagClusteringTest {
         b.put("z", 0.5f);
         assertEquals(8, b.size());
 
-        b.commit(1, 1f, (x) -> { });
+        b.commit(1f, (x) -> { });
 
         assertEquals(8, b.size());
 

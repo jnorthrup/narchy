@@ -1,67 +1,97 @@
 package nars.control.channel;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import jcog.data.ArrayHashSet;
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import com.google.common.collect.AbstractIterator;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 public class BufferedCauseChannel implements Consumer {
 
-    public final Set buffer;
+    final MultithreadConcurrentQueue buffer;
     private final CauseChannel target;
 
     public BufferedCauseChannel(CauseChannel c) {
+        this(c, 256);
+    }
+    public BufferedCauseChannel(CauseChannel c, int capacity) {
         target = c;
-        buffer = new ArrayHashSet();
+        buffer = new MultithreadConcurrentQueue<>(capacity);
     }
 
 
     public final void input(Object x) {
-        boolean uniqueAdded = buffer.add(x);
-
-
-
+        while (!buffer.offer(x)) {
+            buffer.poll(); //OVERFLOW
+        }
     }
 
+    /** returns false if the input was denied */
+    public final boolean inputUntilBlocked(Object x) {
+        return buffer.offer(x);
+    }
+
+    /** returns # input */
+    public long input(Stream x) {
+        return //Math.min(buffer.capacity(),
+                x.filter(Objects::nonNull).peek(this::input).count()
+                //)
+        ;
+    }
 
     public void input(Object... xx) {
-        Collections.addAll(buffer, xx);
+        for (Object x :xx)
+            input(x);
     }
 
 
-    public void input(Stream x) {
-        x.forEach(buffer::add);
-    }
+
 
     public void input(Iterator xx) {
-        Iterators.addAll(buffer, xx);
+        xx.forEachRemaining(this::input);
     }
 
     public void input(Iterable xx) {
-        Iterables.addAll(buffer, xx);
+        xx.forEach(this::input);
     }
 
-    public void input(Collection xx) {
-        Collections.addAll(buffer, xx);
-    }
-
-    public int commit() {
-        int size = buffer.size();
-        if (size > 0) {
-            target.input(buffer.iterator());
-            buffer.clear();
+    public void commit() {
+        if (inputPending.compareAndSet(false, true)) {
+            target.input(inputDrainer);
         }
-        return size;
     }
 
     @Override
     public final void accept(Object o) {
         input(o);
+    }
+
+    public final float value() {
+        return target.value();
+    }
+
+    final AtomicBoolean inputPending = new AtomicBoolean(false);
+    private final Iterable inputDrainer = ()->{
+        return new AbstractIterator() {
+            @Override
+            protected Object computeNext() {
+                inputPending.set(false);
+                Object t = buffer.poll();
+                if (t == null)
+                    endOfData();
+                return t;
+            }
+        };
+    };
+
+    public final boolean full() {
+        return buffer.size() >= buffer.capacity();
+    }
+
+    public final short id() {
+        return target.id;
     }
 }

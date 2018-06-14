@@ -8,12 +8,10 @@ import nars.Task;
 import nars.agent.NAgent;
 import nars.concept.scalar.Scalar;
 import nars.control.DurService;
-import nars.control.channel.CauseChannel;
+import nars.control.channel.BufferedCauseChannel;
 import nars.exe.Causable;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -188,23 +186,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
         private int pixelsRemainPerUpdate; 
 
-        final CauseChannel<ITask> in;
+        final BufferedCauseChannel in;
 
         static final int minUpdateDurs = 1;
-
-
-        /** to calculate avg number pixels processed per duration */
-        private final DescriptiveStatistics pixelsProcessed;
-
-        
-
-
-
-
-
-
-
-
 
 
         float conf;
@@ -215,8 +199,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
             super(Bitmap2DSensor.this.nar);
             lastUpdate = Bitmap2DSensor.this.nar.time();
             pixelsRemainPerUpdate = area;
-            in = nar.newChannel(Bitmap2DSensor.this);
-            pixelsProcessed = new DescriptiveStatistics(8);
+            in = nar.newChannel(Bitmap2DSensor.this).buffered(width*height /* plus extra? */);
             conf = nar.confDefault(BELIEF);
             this.mode = mode;
                     //(p, v) -> mode.apply(() -> conf).value(p, v);
@@ -232,6 +215,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
             return Bitmap2DSensor.this.dur();
         }
 
+
+
         @Override
         protected int next(NAR nar, int work) {
 
@@ -242,8 +227,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
             long now = nar.time();
             if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
-                int pixelsProcessedInLastDur = totalPixels - pixelsRemainPerUpdate;
-                pixelsProcessed.addValue(pixelsProcessedInLastDur);
                 Bitmap2DSensor.this.update();
                 pixelsRemainPerUpdate = totalPixels;
                 this.lastUpdate = now;
@@ -306,18 +289,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
                 this.lastPixel = end;
             }
 
+            //TODO stop using Stream<> its not necessary here
+            int pixelsGenerated = (int) in.input(s);
+            if (pixelsGenerated > 0)
+                in.commit();
 
-
-
-
-
-
-            in.input(s);
-
-            
-
-
-            return pixelsToProcess;
+            return pixelsGenerated;
         }
 
         /**

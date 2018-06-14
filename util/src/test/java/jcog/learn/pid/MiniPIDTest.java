@@ -10,7 +10,7 @@ public class MiniPIDTest {
     public void test1() {
 
         MiniPID miniPID = new MiniPID(0.25, 0.01, 0.4);
-        miniPID.setOutputLimits(10);
+        miniPID.outLimit(10);
         
         
         
@@ -21,8 +21,8 @@ public class MiniPIDTest {
         double actual = 0;
         double output = 0;
 
-        miniPID.setSetpoint(0);
-        miniPID.setSetpoint(target);
+        miniPID.setpoint(0);
+        miniPID.setpoint(target);
 
         
 

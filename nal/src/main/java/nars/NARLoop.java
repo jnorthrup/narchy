@@ -15,7 +15,7 @@ public class NARLoop extends InstrumentedLoop {
     public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
 
     /** scheduler temporal granularity (in sec) */
-    public final FloatRange jiffy = new FloatRange(0.05f, 0.001f, 1f);
+    public final FloatRange jiffy = new FloatRange(0.5f, 0.001f, 1f);
 
     /**
      * starts paused; thread is not automatically created

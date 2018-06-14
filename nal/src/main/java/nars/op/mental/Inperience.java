@@ -221,39 +221,9 @@ public class Inperience extends LeakBack {
             float fm = freqMax.floatValue();
             return f <= fm || f >= (1f - fm);
         } else {
-            
 
-            
             return true;
         }
-
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     @Override

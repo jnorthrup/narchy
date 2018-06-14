@@ -7,12 +7,13 @@ import jcog.decide.AtomicRoulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.list.FasterList;
+import jcog.math.MutableInteger;
 import nars.NAR;
 import nars.control.Cause;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.eclipse.collections.api.block.procedure.primitive.LongIntProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -40,27 +41,31 @@ public class Focus extends AtomicRoulette<Causable> {
 
     /** note: more granularity increases the potential dynamic range
      * (ratio of high to low prioritization). */
-    protected static final int PRI_GRANULARITY = 32;
+    protected static final int PRI_GRANULARITY = 512;
+    protected static final int TIME_GRANULARITY_ns = 250; //0.25uS
 
     /**
      * how quickly the iteration demand can grow from previous (max) values
      */
     
-    static final double IterGrowthRate = 1.25f;
+    static final float workGrowthRate = 1.01f;
 
 
     private final Exec.Revaluator revaluator;
 
 
     private final NAR nar;
+    private final MutableInteger concurrency;
 
     double timesliceNS = 1;
 
 
-    public Focus(NAR n, Exec.Revaluator r) {
+    public Focus(NAR n, Exec.Revaluator r, MutableInteger concurrency) {
         super(32, Causable[]::new);
 
         this.nar = n;
+
+        this.concurrency = concurrency;
 
         this.revaluator = r;
 
@@ -101,16 +106,17 @@ public class Focus extends AtomicRoulette<Causable> {
     }
 
     final static int WINDOW = 8;
-    private final long[] committed = new long[2];
-    private final LongIntProcedure commiter = (timeNS, iter) -> {
+    private final long[] committed = new long[3];
+    private final LongObjectProcedure<int[]> commiter = (timeNS, iterAndWork) -> {
         committed[0] = timeNS;
-        committed[1] = iter;
+        committed[1] = iterAndWork[0];
+        committed[2] = iterAndWork[1];
     };
 
 
 
     /**
-     * next value, while being computed
+     * absolute expectation of value
      */
     protected float[] value = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
@@ -121,14 +127,14 @@ public class Focus extends AtomicRoulette<Causable> {
     /**
      * short history of iter spent in the corresponding times
      */
-    public DescriptiveStatistics[] done = null;
+    public DescriptiveStatistics[] iter = null;
+
+    public DescriptiveStatistics[] workDone = null;
     /**
      * cache for iter.getMean() and time.getMean()
      */
-    double[] doneMean = null;
-    long[] doneMax = null;
-    double[] timeMean = null;
-    int[] sliceIters = new int[0];
+    double[] timePerWorkMean = null;
+    int[] sliceWork = new int[0];
 
     final AtomicBoolean updating = new AtomicBoolean(false);
 
@@ -144,7 +150,7 @@ public class Focus extends AtomicRoulette<Causable> {
             if (n == 0)
                 return;
 
-            if (sliceIters.length != n)
+            if (sliceWork.length != n)
                 realloc(n);
 
             revaluator.update(nar);
@@ -153,7 +159,7 @@ public class Focus extends AtomicRoulette<Causable> {
             double throttle = nar.loop.throttle.floatValue();
 
             
-            double timePerSlice = this.timesliceNS = nar.loop.periodNS() * jiffy * throttle;
+            double timePerSlice = this.timesliceNS = nar.loop.periodNS() * (jiffy * concurrency.intValue()) * throttle;
 
             for (int i = 0; i < n; i++) {
                 Causable c = choice.get(i);
@@ -169,23 +175,19 @@ public class Focus extends AtomicRoulette<Causable> {
                     DescriptiveStatistics time = this.time[i];
                     time.addValue(timeNS);
 
-                    DescriptiveStatistics done = this.done[i];
-                    done.addValue(committed[1]);
+                    DescriptiveStatistics iter = this.iter[i];
+                    iter.addValue(committed[1]); //unused currently.  the PID handles the conversion from work to iterations entirely within the Cause
 
-                    double timeMeanNS = this.timeMean[i] = time.getMean();
+                    DescriptiveStatistics done = this.workDone[i];
+                    done.addValue(committed[2]);
 
-                    this.doneMean[i] = done.getMean();
-                    this.doneMax[i] = Math.round(done.getMax());
+                    this.timePerWorkMean[i] = Math.max(TIME_GRANULARITY_ns, time.getMean()/done.getMean());
 
-                    
-                    
-
-                    
-                    value[i] = c.value();
+                    value[i] = (c.value());
 
                 } else {
                     
-                    value[i] *= 0.99f; 
+                    value[i] *= 0.9f;
                 }
 
             }
@@ -195,30 +197,31 @@ public class Focus extends AtomicRoulette<Causable> {
             float vMin = vRange[0];
             float vMax = vRange[1];
             float vSum = vRange[2];
-            if (vSum < Float.MIN_NORMAL) vSum = 1; 
+            if (vSum < Float.MIN_NORMAL)
+                vSum = 1;
 
             for (int i = 0; i < n; i++) {
                 double vNorm = normalize(value[i], vMin, vMax)/vSum;
 
-                int pri = (int) Util.clampI((PRI_GRANULARITY * vNorm), 1, PRI_GRANULARITY);
-
-
-
-                
-                long doneMost = doneMax[i];
-                double timePerIter = timeMean[i]/Math.max(0.5f, doneMean[i]);
-                int iterLimit;
-                if (doneMost < 1 || !Double.isFinite(timePerIter)) {
-                    
-                    iterLimit = 1;
+                //double timePerIter = timeMean[i]/Math.max(0.5f, doneMean[i]);
+                double timePerWork = timePerWorkMean[i];
+                int workLimit;
+                if (!Double.isFinite(timePerWork)) {
+                    workLimit = 1;
                 } else {
-                    iterLimit = Math.max(1,
-                        (int) Math.ceil(Math.min(doneMost * IterGrowthRate, timePerSlice / timePerIter))
+                    workLimit = Math.max(1,
+                        //(int) Math.ceil(Math.min(doneMost * IterGrowthRate, timePerSlice / timePerIter))
+                        (int) Math.floor(timePerSlice / timePerWork * workGrowthRate)
                     );
                 }
 
-                priGetAndSet(i, pri);
-                sliceIters[i] = iterLimit;
+                int pri = (int) Util.clampI((PRI_GRANULARITY * vNorm), 1, PRI_GRANULARITY);
+
+                sliceWork[i] = workLimit;
+                if (-1 == priGetAndSet(i, pri)) {
+                    singletonBusy.compareAndSet(i, true, false); //awake
+                }
+                //System.out.println(this.choice.get(i) + " " + pri + " x " + iterLimit);
             }
             
         } finally {
@@ -230,22 +233,21 @@ public class Focus extends AtomicRoulette<Causable> {
         
 
         time = new DescriptiveStatistics[n];
-        timeMean = new double[n];
-        done = new DescriptiveStatistics[n];
+        timePerWorkMean = new double[n];
+        iter = new DescriptiveStatistics[n];
+        workDone = new DescriptiveStatistics[n];
 
 
         for (int i = 0; i < n; i++) {
             time[i] = new DescriptiveStatistics(WINDOW);
-            done[i] = new DescriptiveStatistics(WINDOW);
+            iter[i] = new DescriptiveStatistics(WINDOW);
+            workDone[i] = new DescriptiveStatistics(WINDOW);
         }
 
         
         value = new float[n];
 
-
-        doneMean = new double[n];
-        doneMax = new long[n];
-        sliceIters = new int[n]; 
+        sliceWork = new int[n];
     }
 
 
@@ -283,17 +285,18 @@ public class Focus extends AtomicRoulette<Causable> {
         int completed = -1;
         try {
 
-            completed = cx.run(nar, this.sliceIters[x]);
+            completed = cx.run(nar, this.sliceWork[x]);
         } finally {
             if (singleton) {
 
                 if (completed >= 0) {
-                    priGetAndSetIfEquals(x, 0, pri); 
+                    priGetAndSetIfEquals(x, 0, pri);
+                    singletonBusy.clear(x); //will be uncleared next cycle
                 } else {
-                    
+                    priGetAndSet(x, -1); //sleep until next cycle
                 }
 
-                singletonBusy.clear(x);
+
 
             } else {
                 if (completed < 0) {

@@ -598,7 +598,7 @@ public class Derivation extends PreDerivation {
         return t.replace(untransform);
     }
 
-    public int flush(Consumer<Collection<Task>> target) {
+    public int  flush(Consumer<Collection<Task>> target) {
         int s = derivedTasks.size();
         if (s > 0) {
             nar.emotion.deriveTask.increment(s);

@@ -45,7 +45,7 @@ public class Can extends AtomicLongGuage {
     }
 
     public Can(String id) {
-        super();
+        super(2);
         this.id = id;
     }
 

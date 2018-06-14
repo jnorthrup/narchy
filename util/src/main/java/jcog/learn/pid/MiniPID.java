@@ -1,5 +1,7 @@
 package jcog.learn.pid;
 
+import jcog.Util;
+
 /**
  * Small, easy to use PID implementation with advanced controller capability.<br>
  * Minimal usage:<br>
@@ -15,29 +17,29 @@ public class MiniPID {
     
     
 
-    private double P = 0;
-    private double I = 0;
-    private double D = 0;
+    private double P;
+    private double I;
+    private double D;
     private double F = 0;
 
     private double maxIOutput = 0;
-    private double maxError = 0;
-    private double errorSum = 0;
+    private double errMax = 0;
+    private double errSum = 0;
 
-    private double maxOutput = 0;
-    private double minOutput = 0;
+    private double outMax = 0;
+    private double outMin = 0;
 
     private double setpoint = 0;
 
     private double lastActual = 0;
 
-    private boolean firstRun = true;
+    private boolean initialIter = true;
     private boolean reversed = false;
 
-    private double outputRampRate = 0;
-    private double lastOutput = 0;
+    private double outRampRate = 0;
+    private double outPrev = 0;
 
-    private double outputFilter = 0;
+    private double outFilter = 0;
 
     private double setpointRange = 0;
 
@@ -107,10 +109,10 @@ public class MiniPID {
      */
     public void setI(double i) {
         if (I != 0) {
-            errorSum = errorSum * I / i;
+            errSum = errSum * I / i;
         }
         if (maxIOutput != 0) {
-            maxError = maxIOutput / i;
+            errMax = maxIOutput / i;
         }
         I = i;
         checkSigns();
@@ -202,7 +204,7 @@ public class MiniPID {
         
         maxIOutput = maximum;
         if (I != 0) {
-            maxError = maxIOutput / I;
+            errMax = maxIOutput / I;
         }
     }
 
@@ -213,27 +215,27 @@ public class MiniPID {
      *
      * @param output
      */
-    public void setOutputLimits(double output) {
-        setOutputLimits(-output, output);
+    public MiniPID outLimit(double output) {
+        return outLimit(-output, output);
     }
 
     /**
      * Specify a  maximum output.
      * When two inputs specified, output range is configured to
      * <b>[minimum, maximum]</b>
-     *
-     * @param minimum possible output value
+     *  @param minimum possible output value
      * @param maximum possible output value
      */
-    public void setOutputLimits(double minimum, double maximum) {
-        if (maximum < minimum) return;
-        maxOutput = maximum;
-        minOutput = minimum;
+    public MiniPID outLimit(double minimum, double maximum) {
+        if (maximum < minimum) return null;
+        outMax = maximum;
+        outMin = minimum;
 
         
         if (maxIOutput == 0 || maxIOutput > (maximum - minimum)) {
             setMaxIOutput(maximum - minimum);
         }
+        return this;
     }
 
     /**
@@ -257,8 +259,9 @@ public class MiniPID {
      * @param setpoint
      * @see MiniPID#getOutput(actual) <br>
      */
-    public void setSetpoint(double setpoint) {
+    public MiniPID setpoint(double setpoint) {
         this.setpoint = setpoint;
+        return this;
     }
 
     /**
@@ -269,89 +272,10 @@ public class MiniPID {
      * @return calculated output value for driving the system
      */
     public double out(double actual, double setpoint) {
-        double output;
-        double Poutput;
-        double Ioutput;
-        double Doutput;
-        double Foutput;
 
-        this.setpoint = setpoint;
+        setpoint(this.setpoint = setpoint);
 
-        
-        if (setpointRange != 0) {
-            setpoint = constrain(setpoint, actual - setpointRange, actual + setpointRange);
-        }
-
-        
-        double error = setpoint - actual;
-
-        
-        Foutput = F * setpoint;
-
-        
-        Poutput = P * error;
-
-        
-        
-        
-        if (firstRun) {
-            lastActual = actual;
-            lastOutput = Poutput + Foutput;
-            firstRun = false;
-        }
-
-        
-        
-        
-        Doutput = -D * (actual - lastActual);
-        lastActual = actual;
-
-        
-        
-        
-        
-        Ioutput = I * errorSum;
-        if (maxIOutput != 0) {
-            Ioutput = constrain(Ioutput, -maxIOutput, maxIOutput);
-        }
-
-        
-        output = Foutput + Poutput + Ioutput + Doutput;
-
-        
-        if (minOutput != maxOutput && !bounded(output, minOutput, maxOutput)) {
-            errorSum = error;
-            
-            
-            
-            
-        } else if (outputRampRate != 0 && !bounded(output, lastOutput - outputRampRate, lastOutput + outputRampRate)) {
-            errorSum = error;
-        } else if (maxIOutput != 0) {
-            errorSum = constrain(errorSum + error, -maxError, maxError);
-            
-            
-        } else {
-            errorSum += error;
-        }
-
-        
-        if (outputRampRate != 0) {
-            output = constrain(output, lastOutput - outputRampRate, lastOutput + outputRampRate);
-        }
-        if (minOutput != maxOutput) {
-            output = constrain(output, minOutput, maxOutput);
-        }
-        if (outputFilter != 0) {
-            output = lastOutput * outputFilter + output * (1 - outputFilter);
-        }
-
-        
-        
-        
-        
-
-        return (lastOutput = output);
+        return out(actual);
     }
 
     /**
@@ -376,7 +300,84 @@ public class MiniPID {
      * @see MiniPID#setSetpoint()
      */
     public double out(double actual) {
-        return out(actual, setpoint);
+
+        double output;
+        double Poutput;
+        double Ioutput;
+        double Doutput;
+        double Foutput;
+
+        if (setpointRange != 0) {
+            setpoint = Util.clamp(setpoint, actual - setpointRange, actual + setpointRange);
+        }
+
+
+        double error = setpoint - actual;
+
+
+        Foutput = F * setpoint;
+
+
+        Poutput = P * error;
+
+
+
+
+        if (initialIter) {
+            lastActual = actual;
+            outPrev = Poutput + Foutput;
+            initialIter = false;
+        }
+
+
+
+
+        Doutput = -D * (actual - lastActual);
+        lastActual = actual;
+
+
+
+
+
+        Ioutput = I * errSum;
+        if (maxIOutput != 0) {
+            Ioutput = Util.clamp(Ioutput, -maxIOutput, maxIOutput);
+        }
+
+
+        output = Foutput + Poutput + Ioutput + Doutput;
+
+
+        if (outMin != outMax && !isInclusive(output, outMin, outMax)) {
+            errSum = error;
+
+
+
+
+        } else if (outRampRate != 0 && !isInclusive(output, outPrev - outRampRate, outPrev + outRampRate)) {
+            errSum = error;
+        } else if (maxIOutput != 0) {
+            double min = -errMax;
+            errSum = Util.clamp(errSum + error, min, errMax);
+
+
+        } else {
+            errSum += error;
+        }
+
+
+        if (outRampRate != 0) {
+            output = Util.clamp(output, outPrev - outRampRate, outPrev + outRampRate);
+        }
+        if (outMin != outMax) {
+            output = Util.clamp(output, outMin, outMax);
+        }
+        if (outFilter != 0) {
+            output = outPrev * outFilter + output * (1 - outFilter);
+        }
+
+
+        return (outPrev = output);
     }
 
     /**
@@ -387,8 +388,8 @@ public class MiniPID {
      * external forces.
      */
     public void reset() {
-        firstRun = true;
-        errorSum = 0;
+        initialIter = true;
+        errSum = 0;
     }
 
     /**
@@ -401,8 +402,8 @@ public class MiniPID {
      *
      * @param rate, with units being the same as the output
      */
-    public void setOutputRampRate(double rate) {
-        outputRampRate = rate;
+    public void setOutRampRate(double rate) {
+        outRampRate = rate;
     }
 
     /**
@@ -429,33 +430,12 @@ public class MiniPID {
      *
      * @param output valid between [0..1), meaning [current output only.. historical output only)
      */
-    public void setOutputFilter(double strength) {
-        if (strength == 0 || bounded(strength, 0, 1)) {
-            outputFilter = strength;
+    public void setOutFilter(double strength) {
+        if (strength == 0 || isInclusive(strength, 0, 1)) {
+            outFilter = strength;
         }
     }
 
-    
-    
-    
-
-    /**
-     * Forces a value into a specific range
-     *
-     * @param value input value
-     * @param min   maximum returned value
-     * @param max   minimum value in range
-     * @return Value if it's within provided range, min or max otherwise
-     */
-    private double constrain(double value, double min, double max) {
-        if (value > max) {
-            return max;
-        }
-        if (value < min) {
-            return min;
-        }
-        return value;
-    }
 
     /**
      * Test if the value is within the min and max, inclusive
@@ -465,11 +445,7 @@ public class MiniPID {
      * @param max   Maximum value of range
      * @return true if value is within range, false otherwise
      */
-    private boolean bounded(double value, double min, double max) {
-        
-        
-        
-        
+    private static boolean isInclusive(double value, double min, double max) {
         return (min < value) && (value < max);
     }
 

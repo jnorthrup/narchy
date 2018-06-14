@@ -119,6 +119,7 @@ public class AtomicRoulette<X> {
         return x;
     }
 
+
     public boolean priGetAndSetIfEquals(int i, int x0, int y) {
         if (pri.compareAndSet(i, x0, y)) {
             int t = priTotal.addAndGet(y - x0);

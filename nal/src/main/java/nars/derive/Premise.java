@@ -21,6 +21,7 @@ import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
@@ -36,19 +37,31 @@ import static nars.Op.VAR_QUERY;
 public class Premise {
 
     public final Task task;
-    public final PriReference<Term> termLink;
+    /**
+     * sloppy pre-sort of premises by task/task_term,
+     * to maximize sequential repeat of derived task term
+     */
+    public static final Comparator<? super Premise> sortByTaskSloppy =
+            Comparator
+                    .comparingInt((Premise a) -> a.task.hashCode())
+                    .thenComparingLong((Premise a) -> (a.task.term().hashCode() << 32) | a.term().hashCode()  )
+                    //.thenComparingInt((Premise a) -> System.identityHashCode(a.task))
+            ;
+
+    final PriReference<Term> termLink;
+
     private final int hash;
-
-    
-
-
 
     public Premise(Task task, PriReference<Term> termLink) {
         super();
 
-
         this.task = task;
+
         this.termLink = termLink;
+        if (termLink.get() instanceof Bool) {
+            throw new RuntimeException("beliefTerm boolean; termLink=" + termLink);
+        }
+
         this.hash = Util.hashCombine(task, termLink /* should have same hash as: term()*/);
     }
 

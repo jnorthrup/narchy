@@ -3,12 +3,10 @@ package nars.util.signal;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
-import jcog.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.control.DurService;
 import nars.control.channel.BufferedCauseChannel;
-import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
@@ -16,8 +14,6 @@ import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 import static jcog.Util.map;
 import static nars.Op.BELIEF;
@@ -31,7 +27,7 @@ public class BeliefPredict {
     final MutableFloat conf = new MutableFloat(0.5f);
 
     final DurService on;
-    final List<ITask> currentPredictions = new FasterList<>();
+    //final List<ITask> currentPredictions = new FasterList<>();
     private final BufferedCauseChannel predict;
     private final LivePredictor predictor;
     private final NAR nar;
@@ -88,11 +84,11 @@ public class BeliefPredict {
             believe(now, p);
         }
 
-        
-        currentPredictions.forEach(ITask::delete);
-        currentPredictions.clear();
 
-        currentPredictions.addAll(predict.buffer); 
+//        currentPredictions.forEach(ITask::delete); //disarm last cycles predictions
+//        currentPredictions.clear();
+//
+//        predict.input(currentPredictions);
 
         predict.commit();
 

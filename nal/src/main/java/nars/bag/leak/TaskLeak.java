@@ -55,7 +55,18 @@ public abstract class TaskLeak extends Causable {
                 else
                     return TaskLeak.this.leak(t);
             }
+
+            @Override
+            protected boolean full() {
+                return TaskLeak.this.full();
+            }
         };
+    }
+
+
+    /** override to implement backpressure stop switch */
+    protected boolean full() {
+        return false;
     }
 
     @Override
@@ -70,15 +81,13 @@ public abstract class TaskLeak extends Causable {
     }
 
     @Override
-    protected int next(NAR nar, int work) {
-
-
+    protected int next(NAR nar, int iterations) {
 
         if (queue.isEmpty())
             return -1; 
 
-        float done = queue.commit(nar, work);
-        return (int) Math.floor(done);
+        float done = queue.commit(nar, iterations);
+        return (int) Math.ceil(done);
     }
 
     public final void accept(Task t) {

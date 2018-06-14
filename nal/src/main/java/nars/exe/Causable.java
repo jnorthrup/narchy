@@ -2,6 +2,7 @@ package nars.exe;
 
 import jcog.exe.Can;
 import jcog.exe.Exe;
+import jcog.learn.pid.MiniPID;
 import nars.NAR;
 import nars.Param;
 import nars.control.NARService;
@@ -59,14 +60,27 @@ abstract public class Causable extends NARService {
         return true;
     }
 
-    public final int run(NAR n, int iterations) {
+
+
+    final ThreadLocal<MiniPID> rate = ThreadLocal.withInitial(()->
+        new MiniPID(0.5, 0.3, 0.4)
+                .outLimit(1, Double.MAX_VALUE)
+    );
+
+    public final int run(NAR n, int workRequested) {
 
         Throwable error = null;
-        int completed = 0;
+
+        MiniPID r = rate.get();
+
+        int iterations = Math.max(1, (int)Math.round(r.setpoint(workRequested).out()));
+
         long start = System.nanoTime(), end;
+        int workDone = 0;
 
         try {
-            completed = next(n, iterations);
+
+            workDone = next(n, iterations);
 
         } catch (Throwable t) {
             error = t;
@@ -74,23 +88,33 @@ abstract public class Causable extends NARService {
             end = System.nanoTime();
         }
 
-        if (completed >= 0) 
-            can.add((end - start), completed);
-
-        Exe.profiled(can, start, end);
+        record(iterations, workDone, start, end, r);
 
         if (error != null) {
-            if (Param.DEBUG) {
-                if (error instanceof RuntimeException) {
-                    throw ((RuntimeException) error);
-                } else {
-                    throw new RuntimeException(error);
-                }
-            } else
-                logger.error("{} {}", this, error);
+            report(error);
         }
 
-        return completed;
+        return workDone;
+    }
+
+    public void record(int iterations, int workDone, long start, long end, MiniPID r) {
+        if (workDone >= 0) {
+            can.add((end - start), iterations, workDone);
+            r.out(workDone);
+        }
+
+        Exe.profiled(can, start, end);
+    }
+
+    public void report(Throwable error) {
+        if (Param.DEBUG) {
+            if (error instanceof RuntimeException) {
+                throw ((RuntimeException) error);
+            } else {
+                throw new RuntimeException(error);
+            }
+        } else
+            logger.error("{} {}", this, error);
     }
 
 

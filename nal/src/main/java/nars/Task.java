@@ -48,16 +48,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 
 
     Task[] EmptyArray = new Task[0];
-    /**
-     * sloppy pre-sort of premises by task/task_term,
-     * to maximize sequential repeat of derived task term
-     */
-    Comparator<? super Premise> sortByTaskSloppy =
-            Comparator
-                    .comparingInt((Premise a) -> a.task.hashCode())
-                    .thenComparingInt((Premise a) -> a.task.term().hashCode())
-                    .thenComparingInt((Premise a) -> System.identityHashCode(a.task));
-
 
     static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||
