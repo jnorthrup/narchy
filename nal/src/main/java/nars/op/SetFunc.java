@@ -143,12 +143,12 @@ public class SetFunc {
                     return Null; 
 
                 l.sort(cmp);
-                return $.p(l);
+                return $.pFast(l);
             }
 
             private Term eval(Term t, Atomic atom) {
                 Term tt = $.func(atom, t);
-                return tt.eval(nar);
+                return tt.eval(nar, false);
             }
 
             @Override

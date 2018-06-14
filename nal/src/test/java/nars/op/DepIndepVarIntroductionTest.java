@@ -55,7 +55,7 @@ public class DepIndepVarIntroductionTest {
     private TreeSet<Term> introduce(String term, int iterations) {
         TreeSet<Term> s = new TreeSet();
         for (int i = 0; i < iterations; i++) {
-            Term u = $.func("varIntro", $.$$(term).normalize()).eval(n);
+            Term u = $.func("varIntro", $.$$(term).normalize()).eval(n, false);
             if (u!=null)
                 s.add(u);
         }

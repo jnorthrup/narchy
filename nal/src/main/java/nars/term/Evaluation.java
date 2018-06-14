@@ -84,7 +84,7 @@ public class Evaluation {
     public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term,Functor> resolver, boolean wrapBool) {
         ArrayHashSet<Term> all = new ArrayHashSet<>(1);
         Evaluation.solve(e, x, wrapBool, resolver, (y) -> {
-            y = possiblyNeedsEval(y) ? y.transform(trueUnwrapper) : y;
+            y = (wrapBool && possiblyNeedsEval(y)) ? y.transform(trueUnwrapper) : y;
             all.add(y);
             return true;
         });
@@ -125,8 +125,8 @@ public class Evaluation {
         return x.hasAll(Op.FuncBits);
     }
 
-    public static Term solveAny(Term x, Evaluation e, Function<Term,Functor> resolver, Random random) {
-        ArrayHashSet<Term> results = solveAll(e, x, resolver, false);
+    public static Term solveAny(Term x, Evaluation e, Function<Term,Functor> resolver, Random random, boolean wrapBool) {
+        ArrayHashSet<Term> results = solveAll(e, x, resolver, wrapBool);
         return results.get(random);
     }
 

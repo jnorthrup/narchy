@@ -38,17 +38,13 @@ public class Inperience extends LeakBack {
     public static final Logger logger = LoggerFactory.getLogger(Inperience.class);
     public static final Atomic believe = the("believe");
     public static final Atomic want = the("want");
-    
-    
+
+
     public static final Atomic wonder = the("wonder");
-    public static final Atomic evaluate = the("plan"); 
+    public static final Atomic evaluate = the("plan");
     public static final Atomic reflect = the("reflect");
     public static final ImmutableSet<Atomic> operators = Sets.immutable.of(
             believe, want, wonder, evaluate, reflect);
-
-
-
-
 
 
     /**
@@ -64,60 +60,23 @@ public class Inperience extends LeakBack {
     private final float priFactor = 0.5f;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public Inperience(@NotNull NAR n, int capacity) {
         super(capacity, n);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
-    /** compute current value of the truth for the task's time;
-     *  dont just regurgitate what the task says. the truth may differ
-     *  at some point after the task was created so we get a more
-     *  updated result.
+    /**
+     * compute current value of the truth for the task's time;
+     * dont just regurgitate what the task says. the truth may differ
+     * at some point after the task was created so we get a more
+     * updated result.
      */
     static Term reify(Task t, NAR nar) {
         byte punc = t.punc();
         if (punc == QUEST || punc == QUESTION) {
             return reifyQuestion(t.term(), punc, nar);
-        } else{
+        } else {
             return reifyBelief(t, nar);
         }
     }
@@ -130,7 +89,7 @@ public class Inperience extends LeakBack {
         Task belief = ((BeliefTable) c.table(BELIEF))
                 .answer(t.start(), t.end(), t.term(), null, nar);
 
-        Term bb = belief!=null ? belief.term() : t.term();
+        Term bb = belief != null ? belief.term() : t.term();
 
         Term self = nar.self();
         if (t.punc() == BELIEF) {
@@ -138,50 +97,28 @@ public class Inperience extends LeakBack {
                 return Null;
             return $.func(believe, self, bb.negIf(belief.isNegative()));
         } else {
-            Task goal = ((BeliefTable)c.table(GOAL))
+            Task goal = ((BeliefTable) c.table(GOAL))
                     .answer(t.start(), t.end(), bb, null, nar);
 
-            Term want = goal!=null ? $.func(Inperience.want, self, goal.term().negIf(goal.isNegative())) : Null;
+            Term want = goal != null ? $.func(Inperience.want, self, goal.term().negIf(goal.isNegative())) : Null;
 
             if (belief == null)
                 return want;
             else {
-                
+
                 return CONJ.the(want, $.func(believe, self, bb.negIf(belief.isNegative())));
             }
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
+
     private static Term reifyQuestion(Term x, byte punc, NAR nar) {
         x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         x = x.hasAny(VAR_QUERY) ? x.transform(TermTransform.queryToDepVar) : x;
         if (x == Null) return Null;
 
-       return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), x);
+        return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), x);
     }
 
 //    @Override
@@ -199,23 +136,20 @@ public class Inperience extends LeakBack {
 
 
         if (next.isCommand() || next.isInput()
-            /*|| task instanceof InperienceTask*/) 
+            /*|| task instanceof InperienceTask*/)
             return false;
-
-
-
 
 
         Term nextTerm = next.term();
         if (nextTerm.op() == INH) {
             Term nextTermInh = Image.imageNormalize(nextTerm);
             Term pred = nextTermInh.sub(1);
-            if (pred.op()==ATOM && operators.contains(pred))
-                return false; 
+            if (pred.op() == ATOM && operators.contains(pred))
+                return false;
         }
 
         if (next.isBeliefOrGoal()) {
-            
+
 
             float f = next.freq();
             float fm = freqMax.floatValue();
@@ -234,6 +168,10 @@ public class Inperience extends LeakBack {
         Term c = reify(x, nar).normalize();
         if (!c.op().conceptualizable)
             return 0;
+        Term d = c.eval(nar, true);
+        if (c!=d && !d.op().conceptualizable)
+            return 0;
+        c = d;
 
         long start = x.start();
         long end;
@@ -246,10 +184,8 @@ public class Inperience extends LeakBack {
             end = Tense.dither(x.end(), nar);
         }
 
-        
 
-        
-        float polarity = x.isQuestionOrQuest() ? 0.5f : Math.abs(x.freq()-0.5f)*2f;
+        float polarity = x.isQuestionOrQuest() ? 0.5f : Math.abs(x.freq() - 0.5f) * 2f;
 
         SignalTask y = new SignalTask(c, BELIEF,
                 $.t(1, Util.lerp(polarity, nar.confMin.floatValue(), nar.confDefault(Op.BELIEF))),
@@ -261,196 +197,6 @@ public class Inperience extends LeakBack {
 
         return 1;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

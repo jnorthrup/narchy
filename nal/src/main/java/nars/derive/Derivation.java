@@ -40,6 +40,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
+import static nars.Param.TTL_UNIFY;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -116,6 +117,8 @@ public class Derivation extends PreDerivation {
 
             Term y = super.apply(xx, input, replaced, replacement);
 
+            use(TTL_UNIFY); //substitute actually
+
             if (y != null && !(y instanceof Bool)) {
 
 
@@ -164,7 +167,7 @@ public class Derivation extends PreDerivation {
      */
     public float pri;
     public short[] parentCause;
-    public boolean single;
+    public boolean concSingle;
     public float parentComplexitySum;
     public float premiseEviSingle;
     public float premiseEviDouble;
@@ -234,7 +237,7 @@ public class Derivation extends PreDerivation {
             if (x == null)
                 return Null;
 
-            Term y = $.func(_tlRandom, x).eval(nar);
+            Term y = $.func(_tlRandom, x).eval(nar, false);
             if (y != null && y.op().conceptualizable)
                 return anon.put(y);
             return Null;
@@ -403,7 +406,7 @@ public class Derivation extends PreDerivation {
         this.concTruth = null;
         this.concPunc = 0;
         this.truthFunction = null;
-        this.single = false;
+        this.concSingle = false;
         this.evidenceDouble = evidenceSingle = null;
 
 

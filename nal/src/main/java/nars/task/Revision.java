@@ -488,23 +488,19 @@ public class Revision {
                 int adt = a.dt();
                 int bdt = b.dt();
                 if (adt != bdt) {
+                    if (adt == XTERNAL || bdt ==XTERNAL) {
+                        //zero, match
+                    } else {
 
-
-                    boolean ax = adt == XTERNAL;
-                    boolean bx = bdt == XTERNAL;
-                    boolean ad = adt == DTERNAL;
-                    boolean bd = bdt == DTERNAL;
-                    if (!ad && !bd && !bx && !ax) {
-                        d += Math.abs(adt - bdt);
-                    } else if (ax)
-                        d += 1+Math.abs(bdt); //one is xternal the other is not, record maximum difference
-                    else if (bx)
-                        d += 1+Math.abs(adt); //one is xternal the other is not, record maximum difference
-                    else if (adt==DTERNAL)
-                        d += 1+Math.abs(bdt)/2; //one is dternal the other is not, record at least some difference
-                    else if (bdt==DTERNAL)
-                        d += 1+Math.abs(adt)/2; //one is dternal the other is not, record at least some difference
-
+                        boolean ad = adt == DTERNAL;
+                        boolean bd = bdt == DTERNAL;
+                        if (!ad && !bd)
+                            d += Math.abs(adt - bdt);
+                        else if (adt == DTERNAL)
+                            d += 1 + Math.abs(bdt) / 2; //one is dternal the other is not, record at least some difference
+                        else if (bdt == DTERNAL)
+                            d += 1 + Math.abs(adt) / 2; //one is dternal the other is not, record at least some difference
+                    }
                 }
 
             }

@@ -467,15 +467,15 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      * for safety, dont override this method. override evalSafe
      */
 
-    default Term eval(Evaluation e, Function<Term, Functor> resolver, Random rng) {
+    default Term eval(Evaluation e, Function<Term, Functor> resolver, Random rng, boolean wrapBool) {
         if (!Evaluation.possiblyNeedsEval(this))
             return this;
-        return Evaluation.solveAny(this, e, resolver, rng);
+        return Evaluation.solveAny(this, e, resolver, rng, wrapBool);
     }
 
 
-    default Term eval(NAR nar) {
-        return eval(null, nar::functor, nar.random());
+    default Term eval(NAR nar, boolean wrapBool) {
+        return eval(null, nar::functor, nar.random(), wrapBool);
     }
 
 

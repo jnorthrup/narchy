@@ -28,6 +28,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static nars.Op.*;
+
 /**
  * an individual deriver process: executes a particular Deriver model
  * specified by a set of premise rules.
@@ -142,14 +144,16 @@ abstract public class Deriver extends Causable {
 
     /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */
     public float puncFactor(byte conclusion) {
-        return 1f;
 
-//        switch (conclusion) {
-//            case BELIEF: return 0f;
-//            case GOAL: return 1f;
-//            default:
-//                return 0.01f;
-//        }
+
+        switch (conclusion) {
+            case BELIEF: return 1f;
+            case GOAL: return 1f;
+            case QUESTION: return 1f;
+            case QUEST: return 1f;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     protected Concept[] templates(Concept concept, NAR nar) {

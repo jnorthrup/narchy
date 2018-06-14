@@ -109,7 +109,7 @@ public class TermLinkTest {
     @Test public void testConjEventsNotInternalDternals() {
         testTemplates("((a&&b) &&+- (b&&c))",
                 //"[(a&&b), (b&&c)]"
-                "[a,b,c]"
+                "[a, b, c]"
         );
     }
 

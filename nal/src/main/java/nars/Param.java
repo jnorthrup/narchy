@@ -177,13 +177,16 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange deriveTTL = new IntRange(120, 0, 2048);
+    public final IntRange deriveTTL = new IntRange(100, 0, 2048);
 
 
     /** estimate */
-    public static final int TTL_MIN =
+    @Deprecated public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +
-                    Param.TTL_DERIVE_TASK_SUCCESS + (Param.TTL_BRANCH * 2);
+                    (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
+
+    public static final int TTL_MAX_BRANCH = 40;
+    public static final int TTL_MIN_BRANCH = TTL_MIN;
 
     /**
      * cost of attempting a unification
@@ -204,22 +207,22 @@ public abstract class Param {
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 4;
+    public static int TTL_DERIVE_TASK_SUCCESS = 5;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_REPEAT = 5;
+    public static int TTL_DERIVE_TASK_REPEAT = 3;
 
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_UNPRIORITIZABLE = 5;
+    public static int TTL_DERIVE_TASK_UNPRIORITIZABLE = 3;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SAME = 5;
+    public static int TTL_DERIVE_TASK_SAME = 3;
 
 
 
@@ -303,7 +306,7 @@ public abstract class Param {
 
 
     static Atom randomSelf() {
-        return (Atom) $.quote("I_" + Util.uuid64());
+        return (Atom) $.quote(/*"I_" + */Util.uuid64());
     }
 
     /**
@@ -328,7 +331,7 @@ public abstract class Param {
      */
     public static final int STAMP_CAPACITY = 16;
 
-    public static final IntRange causeCapacity = new IntRange(64, 0, 128);
+    public static final IntRange causeCapacity = new IntRange(32, 0, 128);
 
     /**
      * hard limit for cause capacity in case the runtime parameter otherwise disobeyed

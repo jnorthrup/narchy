@@ -1,8 +1,9 @@
 package nars.perf;
 
 import jcog.Util;
-import jcog.optimize.Optimizing;
-import jcog.optimize.Tweaks;
+import jcog.lab.Lab;
+import jcog.lab.Sensor;
+import jcog.lab.Variables;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
@@ -49,7 +50,7 @@ public class NARTestOptimize {
 
 
 
-        Optimizing<NAR,NALTest> opt = new Tweaks<>(NARS::tmp).discover(new Tweaks.DiscoveryFilter() {
+        Lab<NAR,NALTest> opt = new Variables<>(NARS::tmp).discover(new Variables.DiscoveryFilter() {
 
             final Set<Class> excludeClasses = Set.of(NARLoop.class);
             final Set<String> excludeFields = Set.of(
@@ -94,9 +95,9 @@ public class NARTestOptimize {
                         NAL6Test.class,
                         NAL7Test.class,
                         NAL8Test.class
-                ))), new Optimizing.Score<>("completeFast", 1f, t->
+                ))), new Sensor.FloatSensor<>("completeFast", 1f, t->
                     t!=null ? t.test.score : 0
-                ), new Optimizing.Score<>("deriveUniquely", 0.25f, t ->
+                ), new Sensor.FloatSensor<>("deriveUniquely", 0.25f, t ->
                 {
                     if (t == null)
                         return 0;
@@ -119,7 +120,7 @@ public class NARTestOptimize {
         ExecutorService pool = Executors.newFixedThreadPool(threads);
 
         while (true) {
-            Optimizing.Result r = opt.run( /*32*1024*/ 16, 32, pool);
+            Lab.Result r = opt.run( /*32*1024*/ 16, 32, pool);
 
             System.out.println();
             System.out.println();

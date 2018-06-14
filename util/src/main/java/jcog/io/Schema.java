@@ -40,6 +40,37 @@ public class Schema {
         );
     }
 
+    /**
+     * Get the number of attributes.
+     */
+    public int attrCount() {
+        return attribute_names.size();
+    }
+
+    /**
+     * Get the name of an attribute.
+     */
+    public String attrName(int idx) {
+        return attribute_names.get(idx);
+    }
+
+    public boolean hasAttr(String name) { return attribute_names.contains(name); }
+
+    /**
+     * Get the type of an attribute. Currently, the attribute types are
+     * "numeric", "string", and "nominal". For nominal attributes, use getAttributeData()
+     * to retrieve the possible values for the attribute.
+     */
+    public ARFF.AttributeType attrType(String name) {
+        return attrTypes.get(name);
+    }
+
+    public ARFF.AttributeType attrType(int n) {
+        return attrTypes.get(attrName(n));
+    }
+    public String[] attrNames() {
+        return attribute_names.toArray(new String[0]);
+    }
 
     /**
      * Define a new attribute. Type must be one of "numeric", "string", and
@@ -72,7 +103,4 @@ public class Schema {
         return this;
     }
 
-    public String[] attrNames() {
-        return attribute_names.toArray(new String[0]);
-    }
 }

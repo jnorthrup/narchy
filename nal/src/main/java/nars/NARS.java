@@ -253,10 +253,10 @@ public class NARS {
         protected void init(NAR nar) {
 
             nar.termlinkBalance.set(0.5f);
-            nar.termVolumeMax.set(23);
+            nar.termVolumeMax.set(20);
 
 
-            nar.forgetRate.set(0.5f);
+            nar.forgetRate.set(0.75f);
             nar.beliefPriDefault.set(0.5f);
             nar.goalPriDefault.set(0.5f);
             nar.questionPriDefault.set(0.25f);

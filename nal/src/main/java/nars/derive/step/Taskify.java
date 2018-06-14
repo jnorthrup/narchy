@@ -75,8 +75,6 @@ public class Taskify extends AbstractPred<Derivation> {
         assert (punc != 0) : "no punctuation assigned";
 
         if (tru != null && tru.conf() < d.confMin) {
-
-
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
@@ -120,23 +118,24 @@ public class Taskify extends AbstractPred<Derivation> {
         }
 
 
-        if (d.single)
-            t.setCyclic(true);
-
         float priority = d.deriver.prioritize.pri(t, d);
         if (priority != priority) {
             d.nar.emotion.deriveFailPrioritize.increment();
             return spam(d, Param.TTL_DERIVE_TASK_UNPRIORITIZABLE);
         }
 
-        t.priSet(priority);
-
-        t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
 
         if (d.add(t) != t) {
             d.nar.emotion.deriveFailDerivationDuplicate.increment();
             spam(d, Param.TTL_DERIVE_TASK_REPEAT);
         } else {
+
+            if (d.concSingle)
+                t.setCyclic(true);
+
+            t.priSet(priority);
+
+            t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
 
             if (Param.DEBUG)
                 t.log(channel.ruleString);

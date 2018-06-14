@@ -18,6 +18,7 @@ import java.util.Random;
 
 import static nars.Op.Null;
 import static nars.Op.VAR_DEP;
+import static nars.Param.TTL_UNIFY;
 
 /**
  * substituteIfUnifies....(term, varFrom, varTo)
@@ -145,7 +146,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
             } else {
                 SubUnify su = new MySubUnify(op, strict);
                 output = su.tryMatch(c, x, y);
-                parent.use(parent.ttl - su.ttl);
+                parent.use(TTL_UNIFY + (parent.ttl - su.ttl));
             }
 
             if (output == null) {

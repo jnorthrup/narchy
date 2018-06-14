@@ -195,24 +195,24 @@ abstract public class NAgentX extends NAgent {
         n.dtMergeOrChoose.set(true);
         
         n.dtDither.set(10); //100fps base
-        n.timeFocus.set(5);
+        n.timeFocus.set(4);
 
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(30);
+        n.termVolumeMax.set(32);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
 
 
-        n.beliefPriDefault.set(0.1f);
-        n.goalPriDefault.set(1f);
+        n.beliefPriDefault.set(0.25f);
+        n.goalPriDefault.set(0.5f);
         n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.25f);
+        n.questPriDefault.set(0.2f);
 
-        n.forgetRate.set(0.9f);
+        n.forgetRate.set(0.85f);
 
 //        try {
 //            InterNAR i = new InterNAR(n, 8, 0);

@@ -296,12 +296,13 @@ public class Premise {
 
     @Override
     public boolean equals(Object obj) {
-        return hash == obj.hashCode() && ((Premise)obj).task.equals(task) && ((Premise)obj).term().equals(term());
+        return this == obj ||
+                (hashCode() == obj.hashCode() && ((Premise)obj).task.equals(task) && ((Premise)obj).term().equals(term()));
     }
 
     @Override
-    public int hashCode() {
-        return (int) hash;
+    public final int hashCode() {
+        return (int) (hash>>10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */  ;
     }
 
     /**

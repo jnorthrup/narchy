@@ -10,11 +10,6 @@ public class NAL1Test extends NALTest {
 
     final int cycles = 150;
 
-    static {
-        
-        
-    }
-
     @Override protected NAR nar() {
         return NARS.tmp(1);
     }

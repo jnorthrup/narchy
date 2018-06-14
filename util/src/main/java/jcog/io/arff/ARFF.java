@@ -35,9 +35,9 @@
 
 package jcog.io.arff;
 
-import com.google.common.collect.Sets;
 import com.google.common.primitives.Primitives;
 import jcog.TODO;
+import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.util.Reflect;
 import org.eclipse.collections.api.list.ImmutableList;
@@ -157,7 +157,8 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     }
 
     static Collection<ImmutableList> newDefaultDataCollection() {
-        return Sets.newConcurrentHashSet();
+        //return Sets.newConcurrentHashSet();
+        return new ArrayHashSet();
     }
 
     /**
@@ -476,32 +477,11 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         this.comment = comment;
     }
 
-    /**
-     * Get the number of attributes.
-     */
-    public int attrCount() {
-        return attribute_names.size();
+    /** TODO use StringBuilder or something */
+    public void addComment(String s) {
+        this.comment += s;
     }
 
-    /**
-     * Get the name of an attribute.
-     */
-    public String attrName(int idx) {
-        return attribute_names.get(idx);
-    }
-
-    /**
-     * Get the type of an attribute. Currently, the attribute types are
-     * "numeric", "string", and "nominal". For nominal attributes, use getAttributeData()
-     * to retrieve the possible values for the attribute.
-     */
-    public AttributeType attrType(String name) {
-        return attrTypes.get(name);
-    }
-
-    public AttributeType attrType(int n) {
-        return attrTypes.get(attrName(n));
-    }
 
     /**
      * Get additional information on the attribute. This data is used for

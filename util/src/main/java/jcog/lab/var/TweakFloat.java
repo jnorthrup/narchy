@@ -1,7 +1,7 @@
-package jcog.optimize.tweak;
+package jcog.lab.var;
 
 import jcog.list.FasterList;
-import jcog.optimize.Tweak;
+import jcog.lab.Tweak;
 import jcog.util.ObjectFloatToFloatFunction;
 
 import java.util.List;

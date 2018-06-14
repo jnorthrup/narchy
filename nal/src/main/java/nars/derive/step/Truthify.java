@@ -102,15 +102,14 @@ public class Truthify extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
-        d.truthFunction = null;
 
-        byte punc = preFilter(d.taskPunc);
+        byte punc = punc(d.taskPunc);
         boolean single;
         Truth t;
         switch (punc) {
             case BELIEF:
             case GOAL:
-                boolean overlap;
+                boolean allowsOverlap;
                 if (punc == BELIEF) {
                     switch (beliefSingle) {
                         case -1:
@@ -122,7 +121,7 @@ public class Truthify extends AbstractPred<Derivation> {
                             single = false;
                             break;
                     }
-                    overlap = beliefOverlap == 1;
+                    allowsOverlap = beliefOverlap == 1;
                 } else {
                     switch (goalSingle) {
                         case -1:
@@ -134,10 +133,10 @@ public class Truthify extends AbstractPred<Derivation> {
                             single = false;
                             break;
                     }
-                    overlap = goalOverlap == 1;
+                    allowsOverlap = goalOverlap == 1;
                 }
 
-                if (!overlap && (single ? d.overlapSingle : d.overlapDouble))
+                if (!allowsOverlap && (single ? d.overlapSingle : d.overlapDouble))
                     return false;
 
                 TruthFunc f = punc == BELIEF ? belief : goal;
@@ -145,17 +144,7 @@ public class Truthify extends AbstractPred<Derivation> {
                 if (single) {
                     beliefTruth = null;
                 } else {
-                    switch (beliefProjection) {
-                        case Raw:
-                            beliefTruth = d.beliefTruth;
-                            break;
-                        case Task:
-                            beliefTruth = d.beliefTruthDuringTask;
-                            break;
-                        //case Union: throw new TODO();
-                        default:
-                            throw new UnsupportedOperationException(beliefProjection + " unimplemented");
-                    }
+                    beliefTruth = beliefProjection(d);
                     if (beliefTruth == null)
                         return false;
                 }
@@ -190,12 +179,30 @@ public class Truthify extends AbstractPred<Derivation> {
 
         d.concTruth = t;
         d.concPunc = punc;
-        d.single = single;
+        d.concSingle = single;
+
+
         return true;
     }
 
+    public Truth beliefProjection(Derivation d) {
 
-    public byte preFilter(byte punc) {
+        switch (beliefProjection) {
+            case Raw:
+                return d.beliefTruth;
+
+            case Task:
+                return d.beliefTruthDuringTask;
+
+            //case Union: throw new TODO();
+            default:
+                throw new UnsupportedOperationException(beliefProjection + " unimplemented");
+        }
+
+    }
+
+
+    public byte punc(byte punc) {
         return puncOverride == 0 ? punc : puncOverride;
     }
 
@@ -204,55 +211,68 @@ public class Truthify extends AbstractPred<Derivation> {
      */
     public final byte preFilter(Derivation d) {
 
-        if (timeFilter!=null && !timeFilter.test(d))
-            return 0;
 
         byte i = d.taskPunc;
-        boolean singleOnly = d.single, overlapSingle = d.overlapSingle, overlapDouble = d.overlapDouble;
 
-
-        byte o = preFilter(i);
+        boolean single;
+        byte o = punc(i);
         switch (o) {
             case BELIEF: {
-                boolean ts;
                 switch (beliefSingle) {
                     case -1:
                         return 0;
                     case 0: //double
-                        if (singleOnly) return 0;
-                        ts = false; //if task is not single and premise is, fail
+                        single = false; //if task is not single and premise is, fail
                         break;
                     default:
-                        ts = true;
+                        single = true;
                         break;
                 }
                 //if belief does not allow overlap and there is overlap for given truth type, fail
-                if (beliefOverlap != 1 && ((ts ? overlapSingle : overlapDouble)))
+                if (beliefOverlap != 1 && ((single ? d.overlapSingle : d.overlapDouble)))
                     return 0;
                 break;
             }
             case GOAL: {
-                boolean ts;
                 switch (goalSingle) {
                     case -1:
                         return 0;
                     case 0:
-                        if (singleOnly) return 0;
-                        ts = false; //if task is not single and premise is, fail
+                        single = false; //if task is not single and premise is, fail
                         break;
                     default:
-                        ts = true;
+                        single = true;
                         break;
                 }
                 //if goal does not allow overlap and there is overlap for given truth type, fail
-                if (goalOverlap != 1 && ((ts ? overlapSingle : overlapDouble)))
+                if (goalOverlap != 1 && ((single ? d.overlapSingle : d.overlapDouble)))
                     return 0;
                 break;
             }
+
+            case QUEST:
             case QUESTION:
-                if (overlapSingle) return 0;
+                single = true;
+                if (d.overlapSingle)
+                    return 0;
                 break;
+
+            default:
+                throw new UnsupportedOperationException();
         }
+
+        if (!single) {
+            if (beliefProjection(d) == null)
+                return 0;
+        }
+
+        if (timeFilter!=null) {
+            d.concSingle = single; //HACK set this temporarily because timeFilter needs it
+            if (!timeFilter.test(d)) {
+                return 0;
+            }
+        }
+
         return o;
     }
 

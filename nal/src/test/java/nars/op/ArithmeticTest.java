@@ -22,26 +22,26 @@ public class ArithmeticTest {
     public void testAdd() throws Narsese.NarseseException {
         NAR t = NARS.shell();
         assertEquals("2",
-                $.$("add(1,1)").eval(t).toString());
+                $.$("add(1,1)").eval(t, false).toString());
         assertEquals("1",
-                $.$("add(2,-1)").eval(t).toString());
+                $.$("add(2,-1)").eval(t, false).toString());
         assertEquals("#1",
-                $.$("add(#1,0)").eval(t).toString());
+                $.$("add(#1,0)").eval(t, false).toString());
     }
     @Test
     public void testMul() throws Narsese.NarseseException {
         NAR t = NARS.shell();
         assertEquals("0",
-                $.$("mul(x,0)").eval(t).toString());
+                $.$("mul(x,0)").eval(t, false).toString());
         assertEquals("x",
-                $.$("mul(x,1)").eval(t).toString());
+                $.$("mul(x,1)").eval(t, false).toString());
     }
 
     @Test
     public void testAddCommutive() throws Narsese.NarseseException {
         NAR t = NARS.shell();
-        String fwd = $.$("add(#x,1)").eval(t).toString();
-        String rev = $.$("add(1,#x)").eval(t).toString();
+        String fwd = $.$("add(#x,1)").eval(t, false).toString();
+        String rev = $.$("add(1,#x)").eval(t, false).toString();
         assertEquals(
                 "add(#1,1)",
                 fwd);
@@ -55,13 +55,13 @@ public class ArithmeticTest {
     public void testAddMulIdentity() throws Narsese.NarseseException {
         NAR t = NARS.shell();
         assertEquals("#1",
-                $.$("add(#1,0)").eval(t).toString());
+                $.$("add(#1,0)").eval(t, false).toString());
         assertEquals("#1",
-                $.$("add(0,#1)").eval(t).toString());
+                $.$("add(0,#1)").eval(t, false).toString());
         assertEquals("#1",
-                $.$("mul(1,#1)").eval(t).toString());
+                $.$("mul(1,#1)").eval(t, false).toString());
         assertEquals("#1",
-                $.$("mul(#1,1)").eval(t).toString());
+                $.$("mul(#1,1)").eval(t, false).toString());
 
     }
 
@@ -95,7 +95,7 @@ public class ArithmeticTest {
     public void testContradictionResultsInFalse() {
         assertEquals(
                 False,
-                $$("(add(1,1,#2) && add(#2,1,1))").eval(NARS.shell())
+                $$("(add(1,1,#2) && add(#2,1,1))").eval(NARS.shell(), false)
         );
     }
 

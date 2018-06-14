@@ -1,4 +1,4 @@
-package jcog.optimize;
+package jcog.lab;
 
 import jcog.io.Schema;
 

@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    static final int cycles = 650;
+    static final int cycles = 200;
 
     @BeforeEach
     void setup() {
@@ -25,7 +25,7 @@ public class NAL6Test extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6);
-        n.termVolumeMax.set(19);
+        n.termVolumeMax.set(22);
         //n.termlinkBalance.set(0.25f);
 
         return n;

@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
+import static nars.truth.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -153,7 +154,7 @@ public class Occurrify extends TimeGraph {
         seen.clear();
 
         Task task = d.task;
-        boolean single = d.single;
+        boolean single = d.concSingle;
         Task belief = !single ? d.belief : null;
         long beliefAt = single ? TIMELESS : d.beliefAt;
         long taskAt = d.taskAt;
@@ -336,7 +337,7 @@ public class Occurrify extends TimeGraph {
     static final PrediTerm<Derivation> intersectFilter = new AbstractPred<Derivation>(Atomic.the("TimeIntersects")) {
         @Override
         public boolean test(Derivation d) {
-            return d.single || d.taskBeliefTimeIntersects;
+            return d.concSingle || d.taskBeliefTimeIntersects;
         }
     };
 
@@ -361,7 +362,8 @@ public class Occurrify extends TimeGraph {
                 Pair<Term, long[]> p = Task.solve(d, x);
                 if (p != null) {
                     if (d.concPunc == GOAL) {
-                        immediateIfPast(d, p.getTwo());
+                        if (!immediateIfPast(d, p.getTwo()))
+                            return null;
                     }
                 }
                 return p;
@@ -575,26 +577,31 @@ public class Occurrify extends TimeGraph {
                     o[1] += bdt;
 
                     if (d.concPunc==GOAL)
-                        immediateIfPast(d, o);
+                        if (!immediateIfPast(d, o))
+                            return null;
                 }
             }
             return p;
         }
 
-        private static void immediateIfPast(Derivation d, long[] o) {
+        private static boolean immediateIfPast(Derivation d, long[] o) {
             if (o[0] != ETERNAL) {
                 long NOW = d.time;
                 if (o[0] < NOW) {
                     if (NOW <= o[1]) {
                         //NOW is contained in the interval
                     } else {
-                        //shift and project, "as-if" past-perfect/subjunctive tense
+                        //entirely within the past:
+                        // shift and project to present, "as-if" past-perfect/subjunctive tense
                         long deltaToStart = Math.abs(NOW - o[0]);
                         long deltaToEnd = Math.abs(NOW - o[1]);
                         long delta = Math.min(deltaToStart, deltaToEnd);
                         if (delta > 0) {
                             //discount for projection
-                            d.concTruth = $.t(d.concTruth.freq(), (float) Param.evi(d.concTruth.evi(), delta, d.dur)); //TODO if below min, stop here
+                            float e = (float) Param.evi(d.concTruth.evi(), delta, d.dur);
+                            if (w2cSafe(e) < d.confMin)
+                                return false;
+                            d.concTruth = $.t(d.concTruth.freq(), e); //TODO if below min, stop here
                         }
 
                         System.arraycopy(d.nar.timeFocus(), 0, o, 0, 2);
@@ -606,6 +613,7 @@ public class Occurrify extends TimeGraph {
                     }
                 }
             }
+            return true;
         }
 
         /**
@@ -665,7 +673,7 @@ public class Occurrify extends TimeGraph {
                 return null;
 
             Task task = d.task;
-            Task belief = d.single ?  null : d.belief;
+            Task belief = d.concSingle ?  null : d.belief;
             long s, e;
         /*if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
             

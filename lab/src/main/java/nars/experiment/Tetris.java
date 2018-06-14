@@ -19,8 +19,8 @@ import static nars.experiment.Tetris.TetrisState.*;
  */
 public class Tetris extends NAgentX implements Bitmap2D {
 
-    public static final int tetris_width = 8;
-    public static final int tetris_height = 16;
+    private static final int tetris_width = 8;
+    private static final int tetris_height = 16;
     static boolean easy;
     public final FloatRange timePerFall = new FloatRange(2f, 1f, 32f);
     private final Bitmap2DSensor<Bitmap2D> pixels;

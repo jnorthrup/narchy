@@ -26,7 +26,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
      */
     public final FloatRange evidenceImportance = new FloatRange(1f, 0f, 1f);
 
-    public final FloatRange relGrowthExponent = new FloatRange(2f, 0f, 8f);
+    public final FloatRange relGrowthExponent = new FloatRange(1.5f, 0f, 8f);
 
     @Override
     public float pri(Task t, Derivation d) {
@@ -47,7 +47,7 @@ public class DefaultDeriverBudgeting implements DeriverBudgeting {
         if (/*BELIEF OR GOAL*/derivedTruth != null) {
 
 
-            boolean single = d.single;
+            boolean single = d.concSingle;
             float pEvi = single ? d.premiseEviSingle : d.premiseEviDouble;
             if (pEvi > 0) {
                 float pConf = w2cSafe(pEvi);
