@@ -51,15 +51,13 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
      */
     @Deprecated
     static final IntroVars introVars = new IntroVars();
-    private static final Atomic TRUTH = Atomic.the("truth");
-    private static final Atomic BELIEF_AT = Atomic.the("beliefAt");
     /**
      * conditions which can be tested before unification
      */
     private final PrediTerm<Derivation>[] PRE;
     private final Set<MatchConstraint> constraints = new HashSet<>();
     private final List<PrediTerm<Derivation>> post = new FasterList<>(8);
-    private final PrediTerm<Derivation> truthify;
+    private final Truthify truthify;
     /**
      * consequences applied after unification
      */
@@ -94,7 +92,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
             Term p = precon[i];
 
-            boolean negated = p.op()==NEG;
+            boolean negated = p.op() == NEG;
             boolean negationApplied = false; //safety check to make sure semantic of negation was applied by the handler
             if (negated)
                 p = p.unneg();
@@ -320,7 +318,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
             }
 
-            if (negationApplied!=negated)
+            if (negationApplied != negated)
                 throw new RuntimeException("unhandled negation: " + p);
         }
 
@@ -380,7 +378,7 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         }
 
-        Term pattern = intern(conclusion().sub(0), index);
+        Term pattern = index.intern(conclusion().sub(0));
 
         final Term taskPattern1 = getTask();
         final Term beliefPattern1 = getBelief();
@@ -392,43 +390,14 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
         TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
-        if (beliefTruth != null && beliefTruthOp == null) {
+        if (beliefTruth != null && beliefTruthOp == null)
             throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
-        }
-        TruthFunc goalTruthOp = NALTruth.get(goalTruth);
-        if (goalTruth != null && goalTruthOp == null) {
-            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
-        }
-        String beliefLabel = beliefTruthOp != null ? beliefTruthOp.toString() : null;
-        String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
 
+        TruthFunc goalTruthOp = NALTruth.get(goalTruth);
+        if (goalTruth != null && goalTruthOp == null)
+            throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
         Occurrify.BeliefProjection projection = time.projection();
-
-        Term truthMode;
-        if (beliefLabel != null || goalLabel != null) {
-            FasterList<Term> args = new FasterList(4);
-            if (puncOverride != 0)
-                args.add($.quote((char) puncOverride));
-            args.add(beliefLabel != null ? Atomic.the(beliefLabel) : Op.EmptyProduct);
-            args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
-            args.add($.func(BELIEF_AT, Atomic.the(projection.name())));
-
-            truthMode = $.func(TRUTH, args.toArrayRecycled(Term[]::new));
-        } else {
-            if (puncOverride != 0) {
-                truthMode = $.func(TRUTH, $.quote((char) puncOverride));
-            } else {
-                //truthMode = Op.EmptyProduct; //auto
-                throw new UnsupportedOperationException("ambiguous truth/punctuation");
-            }
-        }
-
-        truthMode = intern(truthMode, index);
-
-        Truthify truthify = puncOverride == 0 ?
-                new Truthify.TruthifyPuncFromTask(truthMode, beliefTruthOp, goalTruthOp, projection) :
-                new Truthify.TruthifyPuncOverride(truthMode, puncOverride, beliefTruthOp, goalTruthOp, projection);
 
 
         RuleCause cause = index.nar.newCause(s -> new RuleCause(this, s));
@@ -458,21 +427,21 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                 //some structure exists that can be used to prefilter
                 byte[] xpInT = Terms.extractFixedPath(taskPattern, x);
                 byte[] xpInB = Terms.extractFixedPath(beliefPattern, x); //try the belief
-                if (xpInT != null || xpInB!=null) {
+                if (xpInT != null || xpInB != null) {
                     byte[] ypInT = Terms.extractFixedPath(taskPattern, y);
                     byte[] ypInB = Terms.extractFixedPath(beliefPattern, y); //try the belief
-                    if (ypInT != null || ypInB!=null) {
+                    if (ypInT != null || ypInB != null) {
                         //the unifying terms are deterministicaly extractable from the task or belief
                         pre.add(new AbstractPred<Derivation>($.func("unifyPreFilter", $.p(xpInT), $.p(xpInB), $.p(ypInT), $.p(ypInB))) {
 
                             @Override
                             public boolean test(Derivation d) {
-                                Term x = xpInT!=null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB);
-                                assert(x!=Null);
+                                Term x = xpInT != null ? d.taskTerm.subPath(xpInT) : d.beliefTerm.subPath(xpInB);
+                                assert (x != Null);
                                 if (x == null)
                                     return false; //ex: seeking a negation but wasnt negated
-                                Term y = ypInT!=null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
-                                assert(y!=Null);
+                                Term y = ypInT != null ? d.taskTerm.subPath(ypInT) : d.beliefTerm.subPath(ypInB);
+                                assert (y != Null);
                                 if (y == null)
                                     return false; //ex: seeking a negation but wasnt negated
 
@@ -517,6 +486,10 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             }
         }
 
+        {
+            truthify = Truthify.the(index, puncOverride, beliefTruthOp, goalTruthOp, projection, time);
+        }
+
         PrediTerm<Derivation> conc = AndCondition.the(
                 new Termify(pattern, this, truthify, time),
                 doIntroVars ?
@@ -524,15 +497,6 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
                         :
                         taskify
         );
-
-
-        PrediTerm<Derivation> timeFilter = time.filter();
-        if (timeFilter != null) {
-            this.truthify = AndCondition.the(timeFilter, truthify);
-        } else {
-            this.truthify = truthify;
-        }
-
 
         if (taskPattern1.equals(beliefPattern1)) {
             post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern1, conc));
@@ -662,13 +626,6 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
             assert(PRE[0].cost() <= PRE[rules-2].cost()); //increasing cost
     }
 
-    static private Term intern(Term pattern, PremisePatternIndex index) {
-        return index.get(pattern, true).term();
-    }
-
-//    private static boolean taskFirst(Term task, Term belief) {
-//        return true;
-//    }
 
     void eventPrefilter(Collection<PrediTerm> pres, Term conj, Term taskPattern, Term beliefPattern, Set<MatchConstraint> constraints) {
 

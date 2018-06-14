@@ -4,7 +4,6 @@
  */
 package nars.derive;
 
-import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.NAR;
@@ -21,7 +20,6 @@ import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
@@ -37,20 +35,17 @@ import static nars.Op.VAR_QUERY;
 public class Premise {
 
     public final Task task;
-    /**
-     * sloppy pre-sort of premises by task/task_term,
-     * to maximize sequential repeat of derived task term
-     */
-    public static final Comparator<? super Premise> sortByTaskSloppy =
-            Comparator
-                    .comparingInt((Premise a) -> a.task.hashCode())
-                    .thenComparingLong((Premise a) -> (a.task.term().hashCode() << 32) | a.term().hashCode()  )
-                    //.thenComparingInt((Premise a) -> System.identityHashCode(a.task))
-            ;
 
     final PriReference<Term> termLink;
 
-    private final int hash;
+    /** specially constructed hash that is useful for sorting premises by:
+     *  a) task equivalency (hash)
+     *  a) task term equivalency (hash)
+     *  b) belief term equivalency (hash)
+     *
+     *  designed to maximize sequential repeat of derived task term
+     */
+    public final long hash;
 
     public Premise(Task task, PriReference<Term> termLink) {
         super();
@@ -62,7 +57,13 @@ public class Premise {
             throw new RuntimeException("beliefTerm boolean; termLink=" + termLink);
         }
 
-        this.hash = Util.hashCombine(task, termLink /* should have same hash as: term()*/);
+        this.hash =
+                //task's lower 23 bits in bits 40..64
+                (((long)task.hashCode()) << (64-24))
+                | //task term's lower 20 bits in bits 20..40
+                (((long)(task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
+                | //termlink's lower 20 bits in bits 0..20
+                ((termLink.hashCode() & 0b00000000000011111111111111111111));
     }
 
     public Term term() {
@@ -300,7 +301,7 @@ public class Premise {
 
     @Override
     public int hashCode() {
-        return hash;
+        return (int) hash;
     }
 
     /**

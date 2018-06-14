@@ -76,14 +76,15 @@ public final class MutableRoulette {
             }
         }
 
-        if (remaining == 0 || s < (n * n) * EPSILON) {
+        if (remaining == 0 || s < (n) * EPSILON) {
             
             Arrays.fill(w, 1);
             s = remaining = n;
         }
 
         this.weightSum = s;
-        this.i = (this.rng = rng).nextInt(n); 
+        this.rng = rng;
+        this.i = n == 1 ? 0 : rng.nextInt(n);
     }
 
     /**

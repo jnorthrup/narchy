@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -94,7 +95,15 @@ public class AndCondition<D> extends AbstractPred<D> {
             b = ((AndCondition)b).first();
         return b;
     }
-
+    @Nullable public static PrediTerm first(AndCondition b, Predicate<PrediTerm> test) {
+        int s = b.subs();
+        for (int i = 0; i < s; i++) {
+            PrediTerm x = (PrediTerm) b.sub(i);
+            if (test.test(x))
+                return x;
+        }
+        return null;
+    }
 
     @Override
     public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {

@@ -2,6 +2,7 @@ package nars.derive.deriver;
 
 import jcog.bag.Bag;
 import jcog.data.ArrayHashSet;
+import jcog.list.FasterList;
 import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.pri.PriReference;
@@ -37,7 +38,7 @@ public class MatrixDeriver extends Deriver {
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 2;
+    public int premisesPerConcept = 4;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
@@ -46,7 +47,7 @@ public class MatrixDeriver extends Deriver {
 
     /** max # premises per batch; dont make too large.  allow the reasoner to incrementally digest results */
     @Range(min = 1, max = 1024)
-    public int burstMax = 16;
+    public int burstMax = 64;
 
     public MatrixDeriver(PremiseDeriverRuleSet rules) {
         this(rules, rules.nar);
@@ -97,7 +98,7 @@ public class MatrixDeriver extends Deriver {
                 break;
 
             if (s > 2)
-                premiseBurst.list.sort(Premise.sortByTaskSloppy);
+                ((FasterList<Premise>)(premiseBurst.list)).sortThis((a,b)->Long.compareUnsigned(a.hash,b.hash));
 
             
             premiseBurst.forEach(premise -> {

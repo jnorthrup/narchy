@@ -137,6 +137,10 @@ public class PremisePatternIndex extends MapConceptIndex {
         return get(x.transform(new PremiseRuleVariableNormalization()), true).term();
     }
 
+    public final Term intern(Term x) {
+        return get(x, true).term();
+    }
+
     public static final class PremiseRuleVariableNormalization extends VariableNormalization {
 
         /*@NotNull*/

@@ -81,7 +81,7 @@ public enum PremiseDeriverCompiler {
             assert (pre[pre.length - 1] == null); //null placeholder left for this
             pre[pre.length - 1] = new Branchify(/* branch ID */  idR);
 
-            ThrottledAction added = path.put(new FasterList(pre), POST);
+            DeriveAction added = path.put(new FasterList(pre), POST);
             assert (added == null);
 
             rootBranches[i] = POST;

@@ -585,18 +585,10 @@ public class Occurrify extends TimeGraph {
             if (o[0] != ETERNAL) {
                 long NOW = d.time;
                 if (o[0] < NOW) {
-//                    if (NOW <= o[1]) {
-//                        //NOW is contained in the interval
-//
-//                        ////truncate
-//                        //o[0] = NOW;
-//
-//                        //shift (inflates a bit)
-//                        //TODO LERP the deduction against the overlapping part
-//                        o[0] = NOW;
-//                        o[1] = NOW + range;
-//                    } else {
-                        //shift
+                    if (NOW <= o[1]) {
+                        //NOW is contained in the interval
+                    } else {
+                        //shift and project, "as-if" past-perfect/subjunctive tense
                         long deltaToStart = Math.abs(NOW - o[0]);
                         long deltaToEnd = Math.abs(NOW - o[1]);
                         long delta = Math.min(deltaToStart, deltaToEnd);
@@ -611,7 +603,7 @@ public class Occurrify extends TimeGraph {
 //                        o[0] = NOW;
 //                        o[1] = NOW + range;
 
-//                    }
+                    }
                 }
             }
         }

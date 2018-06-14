@@ -8,24 +8,19 @@ import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.term.control.PrediTerm;
-import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 
 import java.io.PrintStream;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
  * compiled derivation rules
  * what -> can
- *
  */
 public class PremiseDeriver implements Predicate<Derivation> {
 
+    private static final float[] ONE_CHOICE = new float[]{Float.NaN};
     public final PrediTerm<Derivation> what;
-
-
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
@@ -37,18 +32,10 @@ public class PremiseDeriver implements Predicate<Derivation> {
      */
     public final Memoize<PremiseKey, short[]> whats;
     /**
-     * weight vector generation function
+     * repertoire
      */
-    private final Function<Derivation, float[]> value;
-    /**
-     * choice id to branch mapping function
-     */
-    private final ObjectIntProcedure<Derivation> branchChoice;
-
-    /** repertoire */
     private final DeriveAction[] can;
 
-    private static final float[] ONE_CHOICE = new float[]{Float.NaN};
 
     public PremiseDeriver(DeriveAction[] actions, PrediTerm<Derivation> what) {
 
@@ -57,26 +44,18 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
         assert (actions.length > 0);
 
-        this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new);
+        this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
 
-        IntToFloatFunction branchThrottle = branch ->
-                Util.sum(
-                        Cause::amp,
-                        can[branch].causes
-                );
-        this.value = d -> {
-            short[] will = d.will;
-            int n = will.length;
-            if (n == 1)
-                return ONE_CHOICE;
-            else
-                return Util.map(n, choice -> branchThrottle.valueOf(will[choice]), new float[n]);
-        };
-        this.branchChoice = (d, choice) ->
-                actions[d.will[choice]].test(d);
 
         this.whats = new HijackMemoize<>(k -> PremiseKey.solve(what),
                 64 * 1024, 4, false);
+    }
+
+    /**
+     * choice id to branch id mapping
+     */
+    final boolean test(Derivation d, int branch) {
+        return can[branch].test(d);
     }
 
     @Override
@@ -86,42 +65,52 @@ public class PremiseDeriver implements Predicate<Derivation> {
             return false;
 
 
-        float[] paths = value.apply(d);
-        int fanOut = paths.length;
-        assert (fanOut > 0);
+        /**
+         * weight vector generation
+         */
+        short[] will = d.will;
+        int fanOut = will.length;
 
-        int before = d.now();
+        float[] paths;
+        if (fanOut > 1) {
+            paths = Util.remove(
+                            Util.map(fanOut, choice -> can[will[choice]].value(d), new float[fanOut]),
+                            w -> w <= 0
+                    );
+        } else
+            paths = null;
 
-        if (fanOut == 1) {
+        switch (fanOut) {
+            case 0:
+                return true;
+            case 1:
+                return test(d, will[0]);
+            default: {
 
+                int before = d.now();
 
-            branchChoice.value(d, 0);
+                MutableRoulette.run(paths, d.random,
 
-            return d.revertLive(before, Param.TTL_BRANCH);
+                        wi -> 0
 
-        } else {
+                        , b -> {
 
-            MutableRoulette.run(paths, d.random,
+                            int beforeTTL = d.ttl;
+                            int subBudget = beforeTTL / fanOut;
+                            if (subBudget < Param.TTL_MIN)
+                                return false;
 
-                    wi -> 0
+                            int dTtl = subBudget;
 
-                    , b -> {
+                            test(d, will[b]);
 
-                        int beforeTTL = d.ttl;
-                        int subBudget = beforeTTL / fanOut;
-                        if (subBudget < Param.TTL_MIN)
-                            return false;
+                            int spent = subBudget - dTtl;
 
-                        int dTtl = subBudget;
-
-                        branchChoice.value(d, b);
-
-                        int spent = subBudget - dTtl;
-
-                        return d.revertLive(before, Param.TTL_BRANCH + Math.max(spent, 0));
-                    }
-            );
-            return true;
+                            return d.revertLive(before, Param.TTL_BRANCH + Math.max(spent, 0));
+                        }
+                );
+                return true;
+            }
         }
     }
 

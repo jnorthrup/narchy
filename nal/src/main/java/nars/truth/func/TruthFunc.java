@@ -14,11 +14,11 @@ public interface TruthFunc {
     static void permuteTruth(TruthFunc[] values, Map<Term, TruthFunc> table) {
         for (TruthFunc tm : values) {
             table.put(Atomic.the(tm.toString()), tm);
-            table.put(Atomic.the(tm.toString() + 'X'), new SwappedTruth(tm));
+            //table.put(Atomic.the(tm.toString() + 'X'), new SwappedTruth(tm));
             table.put(Atomic.the(tm.toString() + 'N'), new NegatedTaskTruth(tm)); 
             table.put(Atomic.the(tm + "PN"), new NegatedBeliefTruth(tm));
             table.put(Atomic.the(tm + "NN"), new NegatedTruths(tm));
-            table.put(Atomic.the(tm + "NX"), new NegatedTaskTruth(new SwappedTruth(tm)));
+            //table.put(Atomic.the(tm + "NX"), new NegatedTaskTruth(new SwappedTruth(tm)));
             table.put(Atomic.the(tm + "Depolarized"), new DepolarizedTruth(tm));
 //            table.put(Atomic.the(tm + "DepolarizedTask"), new DepolarizedTaskTruth(tm));
         }

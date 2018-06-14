@@ -140,6 +140,18 @@ abstract public class Deriver extends Causable {
 
     }
 
+    /** punctuation equalizer: value factor for the conclusion punctuation type [0..1.0] */
+    public float puncFactor(byte conclusion) {
+        return 1f;
+
+//        switch (conclusion) {
+//            case BELIEF: return 0f;
+//            case GOAL: return 1f;
+//            default:
+//                return 0.01f;
+//        }
+    }
+
     protected Concept[] templates(Concept concept, NAR nar) {
         return concept.templates().concepts(nar, true);
     }
