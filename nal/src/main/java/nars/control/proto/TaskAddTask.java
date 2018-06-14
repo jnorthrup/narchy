@@ -1,5 +1,6 @@
 package nars.control.proto;
 
+import jcog.TODO;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -48,9 +49,9 @@ public class TaskAddTask extends NativeTask {
         if (c == null) {
             return null; 
         } else if (!(c instanceof TaskConcept)) {
-            if (task.isBeliefOrGoal() || Param.DEBUG_EXTRA) {
-                task.delete();
-                throw new RuntimeException(task + " does not resolve a TaskConcept");
+            task.delete();
+            if (Param.DEBUG_EXTRA && task.isBeliefOrGoal()) {
+                throw new TODO("why?: " + task + " does not resolve a TaskConcept:\n" + c);
             } else
                 return null;
         }

@@ -4,7 +4,6 @@ import jcog.lab.util.ExperimentRun;
 import jcog.lab.util.Optimization;
 import jcog.math.FloatRange;
 import jcog.math.Range;
-import org.eclipse.collections.api.list.ImmutableList;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -19,7 +18,7 @@ class LabTest {
     }
 
     @Test
-    public void testSimple() {
+    public void testExperimentRun() {
         Lab<Dummy> lab = new Lab<>(()->new Dummy());
         ExperimentRun<Dummy> t = lab.run((m, trial) -> {
             for (int i = 0; i < 10; i++) {
@@ -36,7 +35,7 @@ class LabTest {
         t.data.print();
     }
 
-    public static class Model {
+    static class Model {
         public final SubModel sub = new SubModel();
 
         public final FloatRange floatRange = new FloatRange(0.5f, 0, 10);
@@ -63,7 +62,7 @@ class LabTest {
 
     }
 
-    public static class SubModel {
+    static class SubModel {
         @Range(min=0, max=3, step=0.05f)
         public float tweakFloatSub;
     }
@@ -77,16 +76,22 @@ class LabTest {
         assertTrue(a.vars.size() >= 4);
 
 
-        Optimization<Model> r = a.optimize((m)->m.score()); //.run(25);
-        assertEquals(5, r.data.attrCount());
+        Goal<Model> goal = new Goal<>(Model::score);
+
+        Optimization<Model> r = a.optimize((e)->{ }, goal);
+        r.run();
+
+        assertEquals(7, r.data.get(0).attrCount());
 
         r.print();
-        r.tree(3, 4).print();
-        ImmutableList best = r.best();
-        assertTrue(((Number) best.get(0)).doubleValue() >= 5f);
-
-        r.data.print();
     }
+
+//    @Test public void testDecisionTree() {
+//        r.tree(3, 4).print();
+//        ImmutableList best = r.best();
+//        assertTrue(((Number) best.get(0)).doubleValue() >= 5f);
+//    }
+
 //
 //    @Test
 //    public void testMultiObjective() {

@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class VarFloat<X> extends Var<X,Float> {
+public class FloatVar<X> extends Var<X,Float> {
 
     private float min, max;
     private float inc;
 
-    public VarFloat(String id, float min, float max, float inc, Function<X, Float> get, ObjectFloatToFloatFunction<X> set) {
+    final List<String> unknown = new FasterList();
+
+    public FloatVar(String id, float min, float max, float inc, Function<X, Float> get, ObjectFloatToFloatFunction<X> set) {
         super(id, get, set::value);
         this.min = min;
         this.max = max;
@@ -65,4 +67,8 @@ public class VarFloat<X> extends Var<X,Float> {
         }
     }
 
+    @Override
+    public boolean ready() {
+        return unknown.isEmpty();
+    }
 }

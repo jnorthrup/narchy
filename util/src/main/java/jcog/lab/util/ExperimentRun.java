@@ -28,10 +28,10 @@ public class ExperimentRun<E> implements Runnable {
 
     /** data specific to this experiment; can be merged with multi-experiment
      * data collections later */
-    public final ARFF data = new ARFF();
+    public final ARFF data;
 
     /** enabled sensors */
-    private final List<Sensor<E,?>> sensors = new FasterList();
+    private final List<Sensor<E,?>> sensors;
     private long startTime;
     private long startNano;
     private long endTime;
@@ -39,13 +39,22 @@ public class ExperimentRun<E> implements Runnable {
     public ExperimentRun(BiConsumer<E, ExperimentRun<E>> procedure, E model, Iterable<Sensor<E,?>> sensors) {
         this.experiment = model;
         this.procedure = procedure;
+
+        data = newData(sensors);
+        this.sensors = new FasterList(sensors);
+    }
+
+
+    /** creates a new ARFF data with the headers appropriate for the sensors */
+    public static <X> ARFF newData(Iterable<Sensor<X,?>> sensors) {
+        ARFF data = new ARFF();
         data.defineNumeric("time");
         data.defineText("context");
 
         sensors.forEach(s -> {
-            this.sensors.add(s);
             s.addToSchema(data);
         });
+        return data;
     }
 
     @Override public void run() {

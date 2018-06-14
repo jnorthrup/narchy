@@ -32,7 +32,7 @@ abstract public class Sensor<E, S> implements Function<E,S> {
 
     /** general-purpose numeric scalar value observation
      *  32-bit float.  may be NaN if unknown or N/A */
-    public static final class FloatSensor<E> extends Sensor<E,Float> {
+    public static class FloatSensor<E> extends Sensor<E,Float> {
 
         private final FloatFunction<E> func;
 

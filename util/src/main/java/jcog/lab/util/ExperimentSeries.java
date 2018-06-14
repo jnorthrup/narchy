@@ -7,29 +7,25 @@ package jcog.lab.util;
  *  continuously untli it is stopped manually.
  */
 abstract public class ExperimentSeries<E> implements Runnable {
+
     final Thread thread;
+    private boolean shutdown = false;
 
     public ExperimentSeries() {
         this.thread = new Thread(this);
     }
 
-    @Override
-    public void run() {
-        ExperimentRun<E> next;
-        while ((next = next())!=null) {
-            next.run();
-            sense(next);
-        }
+    public void start() {
+        thread.start();
     }
 
-    /** collect results after an experiment has finished */
-    protected void sense(ExperimentRun<E> next) {
-
+    public void stop() {
+        shutdown = true;
+        thread.stop();
     }
 
-    /** return null to terminate before the next iteration */
-    abstract protected ExperimentRun<E> next();
-
-
+    public final boolean isShutdown() {
+        return shutdown;
+    }
 
 }

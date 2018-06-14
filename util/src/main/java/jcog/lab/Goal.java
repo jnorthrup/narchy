@@ -1,5 +1,7 @@
 package jcog.lab;
 
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+
 /**
  * an "objective function"
  * the float value provided by the goal represents the degree to which
@@ -8,26 +10,34 @@ package jcog.lab;
  * NaN is unknown or not applicable
  * @param E experiment
  */
-abstract public class Goal<E, S> extends Sensor<E,Float> {
+public class Goal<E> extends Sensor.FloatSensor<E> {
 
-    /** left-hand side is the variable, right-hand side is the desired value.
-     * resembles Pascal assignment operator */
-    public static final String GOAL_SYMBOL = ":=";
-
-    /** the id of the goal, describing what 'what' should be */
-    final String id;
-
-    /** concerning the sensor by this ID */
-    final String sensor;
-
-    public Goal(String sensor, String shouldBe) {
-        super(sensor + GOAL_SYMBOL + shouldBe);
-        this.sensor = sensor;
-        this.id = shouldBe;
+    public Goal(FloatFunction<E> f) {
+        this("goal", f);
     }
 
-    public Goal(Sensor<E, S> sensor, String shouldBe) {
-        this(sensor.id, shouldBe);
+    public Goal(String name, FloatFunction<E> f) {
+        super(name, f);
     }
+
+//    /** left-hand side is the variable, right-hand side is the desired value.
+//     * resembles Pascal assignment operator */
+//    public static final String GOAL_SYMBOL = ":=";
+//
+//    /** the id of the goal, describing what 'what' should be */
+//    final String id;
+//
+//    /** concerning the sensor by this ID */
+//    final String sensor;
+
+//    public Goal(String sensor, String desc) {
+//        super(sensor + GOAL_SYMBOL + desc);
+//        this.sensor = sensor;
+//        this.id = desc;
+//    }
+//
+//    public Goal(Sensor<E, S> sensor, String desc) {
+//        this(sensor.id, desc);
+//    }
 
 }

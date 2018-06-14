@@ -36,7 +36,6 @@
 package jcog.io.arff;
 
 import com.google.common.primitives.Primitives;
-import jcog.TODO;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.util.Reflect;
@@ -524,8 +523,11 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     public boolean addAll(ARFF incoming) {
         if (this == incoming)
             return false;
-        if (!equalSchema(incoming))
-            throw new TODO("schemas differe");
+        if (!equalSchema(incoming)) {
+            print();
+            incoming.print();
+            throw new RuntimeException("schemas differ");
+        }
         final boolean[] changed = {false};
         incoming.forEach(p -> {
             changed[0] |= add(p);

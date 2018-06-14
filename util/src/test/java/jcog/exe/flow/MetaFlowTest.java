@@ -11,12 +11,18 @@ import net.bytebuddy.implementation.bind.annotation.SuperCall;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import static jcog.exe.flow.MetaFlow.exe;
 import static jcog.exe.flow.MetaFlow.stack;
+import static org.objectweb.asm.Opcodes.ASM7_EXPERIMENTAL;
 
 class MetaFlowTest {
 
@@ -125,6 +131,27 @@ class MetaFlowTest {
         public float test(float param) {
             return param;
         }
+    }
+
+    @Test public void testASMClassReader() throws IOException {
+        ClassReader cr = new ClassReader(MyClass.class.getName());
+        cr.accept(new ClassVisitor(ASM7_EXPERIMENTAL) {
+            @Override
+            public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+                super.visit(version, access, name, signature, superName, interfaces);
+                System.out.println(name);
+            }
+
+            @Override
+            public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
+                System.out.println(name);
+                return super.visitMethod(access, name, descriptor, signature, exceptions);
+            }
+        },0);
+        ClassWriter cw = new ClassWriter(cr, 0);
+        byte[] b = cw.toByteArray();
+        System.out.println(b.length + " "  + new String(b));
+
     }
 
 }
