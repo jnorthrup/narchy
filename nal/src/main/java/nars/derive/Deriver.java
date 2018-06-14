@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.Util;
 import jcog.bag.Bag;
 import jcog.pri.PriReference;
 import nars.$;
@@ -7,6 +8,7 @@ import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
+import nars.control.Cause;
 import nars.derive.budget.DefaultDeriverBudgeting;
 import nars.derive.premise.PremiseDeriver;
 import nars.derive.premise.PremiseDeriverCompiler;
@@ -143,9 +145,7 @@ abstract public class Deriver extends Causable {
     @Override
     public float value() {
         //TODO cache this between cycles
-        //return Util.sum(Cause::value, rules.causes());
-
-        return 0;
+        return Util.sum(Cause::value, rules.causes());
     }
 
 

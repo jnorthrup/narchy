@@ -425,7 +425,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     /**
      * creates lazily computing proxy task which facades the task to the target time range
      */
-    static Task project(boolean flexible, @Nullable Task t, long subStart, long subEnd, TimeAware n, boolean negated) {
+    static Task project(boolean flexible, @Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
 
         if (!flexible && !(t.isEternal() || t.containedBy(subStart, subEnd))) {
             @Nullable Longerval intersection = Longerval.intersect(subStart, subEnd, t.start(), t.end());
@@ -435,7 +435,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 subEnd = intersection.b;
             }
 
-            Truth ttt = t.truth(subStart, subEnd, n.dur());
+            Truth ttt = t.truth(subStart, subEnd, n.dur()).dither(n);
             return (ttt != null) ?
                     new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, ttt.negIf(negated)) : null;
         }
@@ -801,6 +801,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
     }
 
     default ITask next(NAR n) {
+
 
         Collection<ITask> yy;
 

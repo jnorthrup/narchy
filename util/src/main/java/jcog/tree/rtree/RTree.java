@@ -191,7 +191,8 @@ public class RTree<T> implements Space<T> {
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
-        root.forEach(consumer);
+        if (root!=null)
+            root.forEach(consumer);
     }
 
     @Override

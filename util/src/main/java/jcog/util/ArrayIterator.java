@@ -1,7 +1,6 @@
 package jcog.util;
 
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Streams;
 import jcog.TODO;
 import org.jetbrains.annotations.NotNull;
 
@@ -100,7 +99,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
             case 2: return Stream.of(list[0], list[1]);
             
             default:
-                return Streams.stream(ArrayIterator.get(list, size));
+                return Stream.of(list).limit(size);
         }
     }
 

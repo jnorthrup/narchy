@@ -36,19 +36,6 @@ public final class VLink<X> extends PLink<X> {
         Arrays.fill(this.coord = new double[dims], Double.NaN);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-    @NotNull
     @Override
     public String toString() {
         return toBudgetString() + " " + id + "<" + Arrays.toString(coord) + '@' + centroid+ ">";

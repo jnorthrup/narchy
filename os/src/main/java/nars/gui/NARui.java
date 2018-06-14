@@ -1,18 +1,17 @@
 package nars.gui;
 
+import jcog.math.Quantiler;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
-import nars.Task;
 import nars.agent.NAgent;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.gui.graph.run.ConceptGraph2D;
 import nars.term.Termed;
 import nars.util.MemorySnapshot;
 import nars.video.CameraSensorView;
-import org.HdrHistogram.DoubleHistogram;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.*;
@@ -41,6 +40,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
+import static nars.truth.TruthFunctions.w2cSafe;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
@@ -188,14 +188,35 @@ public class NARui {
 
                                     new PushButton("prune", () -> {
                                         nar.runLater(() -> {
-                                            DoubleHistogram i = new DoubleHistogram(2);
+                                            nar.logger.info("Belief prune start");
+                                            final long scaleFactor = 1_000_000;
+                                            //Histogram i = new Histogram(1<<20, 5);
+                                            Quantiler q = new Quantiler(16*1024);
+                                            long now = nar.time();
+                                            int dur = nar.dur();
                                             nar.tasks(true, false, false, false).forEach(t ->
-                                                    i.recordValue(t.conf())
+                                                    {
+                                                        try {
+                                                            float c = w2cSafe(t.evi(now, dur));
+                                                            //i.recordValue(Math.round(c * scaleFactor));
+                                                            q.add(c);
+                                                        } catch (Throwable e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
                                             );
-                                            float confThresh = (float) i.getValueAtPercentile(25);
-                                            nar.tasks(true, false, false, false).filter(t ->
-                                                    t.conf() < confThresh
-                                            ).forEach(Task::delete);
+                                            //System.out.println("Belief evidence Distribution:");
+                                            //Texts.histogramPrint(i, System.out);
+
+                                            //float confThresh = i.getValueAtPercentile(50)/ scaleFactor;
+                                            float confThresh = q.quantile(0.9f);
+                                            if (confThresh > 0) {
+                                                nar.tasks(true, false, false, false, (c, t) -> {
+                                                    try { if (w2cSafe(t.evi(now, dur)) < confThresh)
+                                                        c.remove(t); } catch (Throwable e) { e.printStackTrace(); }
+                                                });
+                                            }
+                                            nar.logger.info("Belief prune finish");
                                         });
                                     }),
 

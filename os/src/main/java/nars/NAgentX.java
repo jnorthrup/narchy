@@ -13,9 +13,7 @@ import nars.exe.Focus;
 import nars.exe.WorkerMultiExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
-import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
-import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -46,7 +44,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -184,8 +181,8 @@ abstract public class NAgentX extends NAgent {
 
                         
                         
-                        //newCaffeineIndex()
-                        new HijackConceptIndex(64 * 1024, 4)
+                        newCaffeineIndex()
+                        //new HijackConceptIndex(64 * 1024, 4)
                         
                         
                 )
@@ -205,8 +202,8 @@ abstract public class NAgentX extends NAgent {
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(30);
 
-        n.beliefConfDefault.set(0.98f);
-        n.goalConfDefault.set(0.98f);
+        n.beliefConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.9f);
 
 
 
@@ -370,7 +367,7 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        new Abbreviation(n, "z", 5, 9, 0.01f, 8);
+        //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
 
         
@@ -410,7 +407,7 @@ abstract public class NAgentX extends NAgent {
     public static CaffeineIndex newCaffeineIndex() {
         return new CaffeineIndex(
                 
-                1500 * 1024,
+                700 * 1024,
                 
                 
                 

@@ -8,6 +8,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
@@ -59,8 +60,7 @@ public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Te
 
     @Override
     public Stream<Termed> stream() {
-        return concepts.asMap().values().stream()
-                
+        return concepts.asMap().values().stream().filter(Objects::nonNull)
                 ;
     }
 

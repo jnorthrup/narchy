@@ -105,7 +105,9 @@ public class Taskify extends AbstractPred<Derivation> {
                     end = Tense.dither(end, dither);
                 }
             }
-
+            if (tr!=null) {
+                tr = tr.dither(d.nar);
+            }
 
             return Param.DEBUG ?
                     new DebugDerivedTask(C, punc, tr, start, end, d) :

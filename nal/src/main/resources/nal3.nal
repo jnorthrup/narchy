@@ -44,8 +44,8 @@
      //DIFFe
      (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositiveNegativePositive)
      (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativeNegativeNegative)
-        (S --> M), ((S - P) --> M) |- (P --> M), (Belief:DecomposePositivePositiveNegative)
-        (P --> M), ((S - P) --> M) |- (S --> M), (Belief:DecomposeNegativePositivePositive)
+        (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositivePositiveNegative)
+        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativePositivePositive)
 
     //Raw DIFFe
     S, (S ~ P) |- P, (Belief:DecomposePositiveNegativePositive)

@@ -107,24 +107,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
             return new Cause[newCapacity];
         }
     };
-
-    /** resolves functor by its term */
-    public final Functor functor(Term term) {
-        Termed x = concepts.get(term, false);
-        if (x instanceof Functor)
-            return (Functor)x;
-        else
-            return null;
-    }
-
     protected final Random random;
     private final AtomicBoolean busy = new AtomicBoolean(false);
     /**
      * atomic for thread-safe schizophrenia
      */
     private final AtomicReference<Term> self = new AtomicReference<>(null);
-    protected volatile Logger logger;
-
+    public volatile Logger logger;
     public NAR(ConceptIndex concepts, Exec exe, Time time, Random rng, ConceptBuilder conceptBuilder) {
 
         this.random = rng;
@@ -185,6 +174,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         }
 
         out.append(v.toString()).append('\n');
+    }
+
+    /**
+     * resolves functor by its term
+     */
+    public final Functor functor(Term term) {
+        Termed x = concepts.get(term, false);
+        if (x instanceof Functor)
+            return (Functor) x;
+        else
+            return null;
     }
 
     /**
@@ -863,13 +863,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         time.runAt(time(), t);
     }
 
-    
+
     @Override
     public String toString() {
         return self() + ":" + getClass().getSimpleName();
     }
 
-    
+
     public NAR input(String... ss) throws NarseseException {
         for (String s : ss)
             input(s);
@@ -950,13 +950,22 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * tasks in concepts
      */
-    
+
     public Stream<Task> tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests) {
         return concepts().flatMap(c ->
-                c.tasks(includeConceptBeliefs, includeConceptQuestions, includeConceptGoals, includeConceptQuests).filter(Objects::nonNull));
+                c.tasks(includeConceptBeliefs, includeConceptQuestions, includeConceptGoals, includeConceptQuests));
     }
 
-    
+    public void tasks(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests, BiConsumer<Concept, Task> each) {
+        concepts().forEach(c ->
+
+            c.tasks(includeConceptBeliefs,
+                    includeConceptQuestions,
+                    includeConceptGoals,
+                    includeConceptQuests).forEach(t -> each.accept(c, t))
+        );
+    }
+
     public Stream<Task> tasks() {
         return tasks(true, true, true, true);
     }
@@ -1029,7 +1038,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return eventTask.on(listener);
     }
 
-    
+
     public TimeAware trace() {
         trace(System.out);
         return this;
@@ -1078,12 +1087,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     /**
      * registers a term rewrite functor
      */
-    
+
     public final Concept on(String termAtom, Function<Subterms, Term> f) {
         return on(f(termAtom, f));
     }
 
-    
+
     public final Concept on1(String termAtom, Function<Term, Term> f) {
         return on(termAtom, (Subterms s) -> s.subs() == 1 ? f.apply(s.sub(0)) : null);
     }
@@ -1189,12 +1198,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return this;
     }
 
-    
+
     public NAR output(File o, boolean binary) throws FileNotFoundException {
         return output(new FileOutputStream(o), binary);
     }
 
-    
+
     public NAR output(File o, Function<Task, Task> f) throws FileNotFoundException {
         return outputBinary(new FileOutputStream(o), f);
     }

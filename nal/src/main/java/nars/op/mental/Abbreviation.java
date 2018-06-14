@@ -72,6 +72,7 @@ public class Abbreviation/*<S extends Term>*/ {
                 Concept abbreviable = t.concept(nar, true);
                 if (abbreviable != null &&
                         !(abbreviable instanceof PermanentConcept) &&
+                        !(abbreviable instanceof AliasConcept) &&
                         abbreviable.term().equals(t.term()) && /* identical to its conceptualize */
                         abbreviable.meta(Abbreviation.class.getName()) == null) {
 

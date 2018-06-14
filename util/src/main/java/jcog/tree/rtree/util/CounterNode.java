@@ -42,6 +42,7 @@ public final class CounterNode<T> implements Node<T, Object> {
         this.node = node;
     }
 
+
     @Override
     public Object get(int i) {
         return node.get(i);
@@ -50,6 +51,11 @@ public final class CounterNode<T> implements Node<T, Object> {
     @Override
     public Stream<T> stream() {
         return node.stream();
+    }
+
+    @Override
+    public Stream<Object> streamNodes() {
+        return node.streamNodes();
     }
 
     @Override

@@ -61,9 +61,9 @@ abstract public class MixMultiExec extends AbstractExec {
                         if (!Double.isFinite(meanTimeNS))
                             meanTimeNS = POSITIVE_INFINITY;
                         //double valuePerNano = (value / Math.log(meanTimeNS));
-                        double valuePerNano = (value / meanTimeNS);
+                        double valuePerSecond = (value / (1.0E-9 * meanTimeNS));
 
-                        s.need(  (float) (valuePerNano));
+                        s.need(  (float) (valuePerSecond));
                     }
                 });
 

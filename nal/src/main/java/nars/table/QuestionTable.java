@@ -263,7 +263,7 @@ public interface QuestionTable extends TaskTable {
 
         @Override
         public Task sample(long start, long end, Term template, NAR nar) {
-            commit();
+            //commit();
             switch (size()) {
                 case 0:
                     return null;

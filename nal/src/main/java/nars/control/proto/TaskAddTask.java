@@ -7,7 +7,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.task.ITask;
 import nars.task.NativeTask;
-import org.jetbrains.annotations.NotNull;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -17,7 +17,7 @@ public class TaskAddTask extends NativeTask {
 
     private final Task task;
 
-    public TaskAddTask(@NotNull Task task) {
+    public TaskAddTask(Task task) {
         this.task = task;
     }
 
@@ -28,6 +28,15 @@ public class TaskAddTask extends NativeTask {
 
     @Override
     public final ITask next(NAR n) {
+
+
+        //verify dithering
+        if (Param.DEBUG) {
+            Truth t = task.truth();
+            if (t != null)
+                t.ensureDithered(n);
+        }
+
 
         /* the tasks pri may change after starting insertion, so cache here */
         float pri = task.priElseZero();

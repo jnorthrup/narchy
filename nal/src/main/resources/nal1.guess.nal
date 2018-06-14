@@ -1,3 +1,7 @@
+    X, X, task("!") |-          (?1 ==>+- X), (Punctuation:Quest)
+    X, X, task("!") |-          (?1 &&+- X), (Punctuation:Quest)
+    X, X, task("!") |-          (?1 &&+- --X), (Punctuation:Quest)
+
     //(X --> Y), (Z --> W), subOf(Y,Z), task(".") |- (X --> W),   (Punctuation:Question)
 
     //(X --> Q), (Y --> Z), task("?"), is(Q,"?"), neq(X,Y) |- (X <-> Y),   (Punctuation:Question)

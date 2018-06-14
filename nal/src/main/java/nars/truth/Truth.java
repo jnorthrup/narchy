@@ -22,6 +22,7 @@ package nars.truth;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -243,6 +244,13 @@ public interface Truth extends Truthed {
     default Truth eternalized(float factor) {
         return new PreciseTruth(freq(), factor * eviEternalized(), false);
     }
+
+    default void ensureDithered(NAR n) {
+        Truth d = dither(n);
+        if (!equals(d))
+            throw new WTF("not dithered");
+    }
+
 //    default Truth eternalized() {
 //        return eternalized(1f);
 //    }

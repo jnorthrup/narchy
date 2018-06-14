@@ -27,6 +27,7 @@ import jcog.tree.rtree.util.Stats;
 import jcog.util.ArrayIterator;
 
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -55,7 +56,10 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
         this.size = 2;
         this.bounds = a.bounds.mbr(b.bounds);
     }
-
+    @Override
+    public Stream<Node<T,?>> streamNodes() {
+        return data!=null ? ArrayIterator.stream(data, Math.min(data.length, size)).filter(Objects::nonNull) : Stream.empty();
+    }
     @Override
     public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
 
@@ -317,12 +321,14 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
-        Node<T, ?>[] cc = this.data;
         short s = this.size;
-        for (int i = 0; i < s; i++) {
-            Node<T, ?> x = cc[i];
-            if (x!=null) 
-                x.forEach(consumer);
+        if (s > 0) {
+            Node<T, ?>[] cc = this.data;
+            for (int i = 0; i < s; i++) {
+                Node<T, ?> x = cc[i];
+                if (x != null)
+                    x.forEach(consumer);
+            }
         }
     }
 

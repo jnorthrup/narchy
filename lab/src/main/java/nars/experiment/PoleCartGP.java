@@ -52,7 +52,7 @@ public class PoleCartGP {
 
         NAR n = NARS.realtime(systemFPS).exe(new MixMultiExec.WorkerMultiExec(512, 4)).get();
         n.beliefPriDefault.set(0.01f);
-        n.goalPriDefault.set(0.5f);
+        n.goalPriDefault.set(0.02f);
         n.questionPriDefault.set(0.005f);
         n.questPriDefault.set(0.005f);
         //n.log();
@@ -65,7 +65,7 @@ public class PoleCartGP {
 
         new MatrixDeriver( Derivers.nal(1,8, n) );
 
-        a.always.clear(); //HACK
+        //a.always.clear(); //HACK
 
 
         n.startFPS(systemFPS);

@@ -27,6 +27,7 @@ import jcog.util.ArrayIterator;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -55,6 +56,11 @@ public class Leaf<T> extends AbstractNode<T, T> {
     @Override
     public Stream<T> stream() {
         return streamNodes();
+    }
+
+    @Override
+    public Stream<T> streamNodes() {
+        return ArrayIterator.stream(data, Math.min(data.length, size)).filter(Objects::nonNull);
     }
 
     @Override
@@ -271,12 +277,14 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
-        T[] data = this.data;
         short s = this.size;
-        for (int i = 0; i < s; i++) {
-            T d = data[i];
-            if (d != null)
-                consumer.accept(d);
+        if (s > 0) {
+            T[] data = this.data;
+            for (int i = 0; i < s; i++) {
+                T d = data[i];
+                if (d != null)
+                    consumer.accept(d);
+            }
         }
     }
 

@@ -42,7 +42,7 @@ public class DefaultBeliefTable implements BeliefTable {
 
     @Override
     public Stream<Task> streamTasks() {
-        return Stream.concat(eternal.streamTasks(), temporal.streamTasks()).filter(x -> !x.isDeleted());
+        return Stream.concat(eternal.streamTasks(), temporal.streamTasks());
     }
 
     /**

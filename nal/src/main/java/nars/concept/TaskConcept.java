@@ -1,6 +1,7 @@
 package nars.concept;
 
 import jcog.bag.Bag;
+import jcog.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -8,11 +9,12 @@ import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
+import nars.table.TaskTable;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -183,16 +185,16 @@ public class TaskConcept extends NodeConcept implements Concept {
         if (includeQuests) c++;
         assert(c>0);
 
-        Stream[] s = new Stream[c];
-        int j = 0;
-        if (includeBeliefs) s[j++] = (beliefs().streamTasks());
-        if (includeGoals) s[j++] = (goals().streamTasks());
-        if (includeQuestions) s[j++] = (questions().streamTasks());
-        if (includeQuests) s[j++] = (quests().streamTasks());
+        List<TaskTable> tables = new FasterList(c);
 
-        
-        return (j == 1 ? s[0] : Stream.of(s).flatMap(x -> x))
-                .filter(Objects::nonNull);
+        if (includeBeliefs) tables.add(beliefs());
+        if (includeGoals) tables.add(goals());
+        if (includeQuestions) tables.add(questions());
+        if (includeQuests) tables.add(quests());
+
+        return tables.stream().flatMap(TaskTable::streamTasks)
+                //.filter(Objects::nonNull)
+        ;
     }
 
 

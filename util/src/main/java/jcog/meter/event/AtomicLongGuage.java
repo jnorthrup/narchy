@@ -32,6 +32,12 @@ public class AtomicLongGuage extends AtomicLong  {
 
         taker.value(total, c[0]);
     }
+    public void commit() {
+        this.sumPrev = getAndUpdate((v)->{
+            count = 0;
+            return 0;
+        });
+    }
 
     public void add(long x) {
         add(x, 1);

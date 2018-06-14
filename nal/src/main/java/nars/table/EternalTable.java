@@ -19,10 +19,7 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -123,8 +120,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         if (size == 0)
             return Stream.empty();
         else {
-
-            return ArrayIterator.stream((Task[]) list, size);
+            return ArrayIterator.stream((Task[]) list, size).filter(Objects::nonNull);
         }
     }
 

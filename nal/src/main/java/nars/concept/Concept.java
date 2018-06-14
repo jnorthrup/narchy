@@ -231,6 +231,9 @@ public interface Concept extends Termed, MetaMap, Iterable<Concept> {
         );
     }
 
+    default void remove(Task t) {
+        table(t.punc()).removeTask(t);
+    }
 
 
     /**

@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -46,9 +45,10 @@ public interface Node<L, V> extends Nodelike<L> {
         return stream().iterator();
     }
 
-    default Stream<V> streamNodes() {
-        return IntStream.range(0, size()).mapToObj(this::get);
-    }
+    Stream<V> streamNodes();
+    //{
+      //  return IntStream.range(0, size()).mapToObj(this::get);
+    //}
 
     java.util.Iterator<V> iterateNodes();
 
