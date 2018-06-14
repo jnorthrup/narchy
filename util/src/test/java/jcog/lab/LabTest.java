@@ -24,6 +24,7 @@ class LabTest {
 
         FasterList<Sensor<Dummy,?>> sensors = new FasterList<>();
         sensors.add(Sensor.unixtime);
+        sensors.add(Sensor.nanotime());
         sensors.add(ctx = Sensor.label("ctx"));
         sensors.add(Sensor.floatLambda("a", (m) -> m.a));
 

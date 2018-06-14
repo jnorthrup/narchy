@@ -26,9 +26,9 @@ abstract public class Sensor<E, S> implements Function<E,S> {
         };
 
     /** relative to start */
-    public static final NumberSensor nanotime() {
+    public static NumberSensor nanotime() {
         return new NumberSensor("time_ns") {
-            long start = System.nanoTime();
+            final long start = System.nanoTime();
 
             @Override
             public Long apply(Object o) {

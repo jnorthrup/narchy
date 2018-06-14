@@ -17,13 +17,13 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * automatically discovers Varable fields for use in Optimize
@@ -54,7 +54,7 @@ public class VarDiscovery<X> {
 
     private static final int DEFAULT_DEPTH = 7;
     private final Supplier<X> subject;
-    private final Map<String, Float> hints = new HashMap();
+    public final Map<String, Float> hints = new HashMap();
 
     /**
      * set of all partially or fully ready Vars
@@ -203,7 +203,7 @@ public class VarDiscovery<X> {
 
     }
 
-    private static String key(List<Pair<Class, ObjectGraph.Accessor>> path) {
+    private static String key(Iterable<Pair<Class, ObjectGraph.Accessor>> path) {
         return Joiner.on(':').join(Iterables.transform(path, e ->
                 e.getOne().getName() + '.' + e.getTwo()));
     }
@@ -248,34 +248,6 @@ public class VarDiscovery<X> {
     }
 
 
-    public Pair<List<Var<X, ?>>, SortedSet<String>> get(Map<String, Float> additionalHints) {
-        Map<String, Float> h;
-        if (!this.hints.isEmpty()) {
-            if (additionalHints.isEmpty()) {
-                h = this.hints;
-            } else {
-
-                h = new HashMap();
-                h.putAll(this.hints);
-                h.putAll(additionalHints);
-            }
-        } else {
-            h = additionalHints;
-        }
-        final List<Var<X, ?>> ready = new FasterList();
-
-        TreeSet<String> unknowns = new TreeSet<>();
-        for (Var<X, ?> t : vars) {
-            List<String> u = t.unknown(h);
-            if (u.isEmpty()) {
-                ready.add(t);
-            } else {
-                unknowns.addAll(u);
-            }
-        }
-
-        return pair(ready, unknowns);
-    }
 
     private boolean contains(Class<?> t) {
         return byClass.containsKey(Primitives.wrap(t));

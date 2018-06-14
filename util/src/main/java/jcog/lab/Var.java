@@ -38,7 +38,7 @@ abstract public class Var<X,Y> {
     }
 
     /** returns any unknown meta-parameters necessary for this tweak to be used */
-    public List<String> unknown(Map<String,Float> hints) {
+    public List<String> unknown(Map<String,Object> hints) {
         return Collections.emptyList();
     }
 
