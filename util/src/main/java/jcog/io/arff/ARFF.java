@@ -693,7 +693,17 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             }
             return add(o);
         }
+    }
 
-        
+
+    public void saveOnShutdown(String file) {
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            try {
+                writeToFile(file);
+                System.out.println("saved " + data.size() + " experiment results to: " + file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 }

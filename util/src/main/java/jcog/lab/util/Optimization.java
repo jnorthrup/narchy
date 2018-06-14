@@ -1,3 +1,98 @@
+package jcog.lab.util;
+
+import jcog.TODO;
+import jcog.io.arff.ARFF;
+import jcog.list.FasterList;
+import jcog.math.Quantiler;
+import org.eclipse.collections.api.list.ImmutableList;
+import org.intelligentjava.machinelearning.decisiontree.DecisionTree;
+import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
+
+import java.util.List;
+
+public class Optimization<E> extends ExperimentSeries<E> {
+
+    public final ARFF data = new ARFF();
+
+    public ImmutableList best() {
+        double bestScore = Double.NEGATIVE_INFINITY;
+        ImmutableList best = null;
+        for (ImmutableList e : data.data) {
+            double s = ((Number) e.get(0)).doubleValue();
+            if (s > bestScore) {
+                best = e;
+                bestScore = s;
+            }
+        }
+        return best;
+    }
+
+    public void print() {
+        data.print();
+    }
+
+    public RealDecisionTree tree(int discretization, int maxDepth) {
+        return data.isEmpty() ? null :
+            new RealDecisionTree(data.toFloatTable(),
+                0 /* score */, maxDepth, discretization);
+    }
+
+
+    /** remove entries below a given percentile */
+    public void cull(float minPct, float maxPct) {
+
+        int n = data.data.size();
+        if (n < 6)
+            return;
+
+        Quantiler q = new Quantiler((int) Math.ceil((n-1)/2f));
+        data.forEach(r -> {
+            q.add( ((Number)r.get(0)).floatValue() );
+        });
+        float minValue = q.quantile(minPct);
+        float maxValue = q.quantile(maxPct);
+        data.data.removeIf(r -> {
+            float v = ((Number) r.get(0)).floatValue();
+            return (v <= maxValue && v >= minValue);
+        });
+    }
+
+    public List<DecisionTree> forest(int discretization, int maxDepth) {
+        if (data.isEmpty())
+            return null;
+
+        List<DecisionTree> l = new FasterList();
+        int attrCount = data.attrCount();
+        for (int i = 1; i < attrCount; i++) {
+            l.add(
+                    new RealDecisionTree(data.toFloatTable(0, i),
+                            0 /* score */, maxDepth, discretization));
+        }
+        return l;
+    }
+
+    @Override
+    protected ExperimentRun<E> next() {
+        throw new TODO();
+    }
+
+    abstract public static class OptimizationStrategy {
+
+    }
+
+    public static class SimplexOptimizationStrategy extends OptimizationStrategy {
+        //TODO
+    }
+
+    public static class CMAESOptimizationStrategy extends OptimizationStrategy {
+        //TODO
+    }
+
+    public static class GPOptimizationStrategy extends OptimizationStrategy {
+        //TODO
+    }
+}
+
 //package jcog.lab;
 //
 //import jcog.io.arff.ARFF;

@@ -1,6 +1,8 @@
 package jcog.lab;
 
-/** the float value provided by the goal represents the degree to which
+/**
+ * an "objective function"
+ * the float value provided by the goal represents the degree to which
  * the condition is satisfied in the provided experiment at the given time point.
  * positive value = satisfied, negative value = dissatisfied.  neutral=0
  * NaN is unknown or not applicable

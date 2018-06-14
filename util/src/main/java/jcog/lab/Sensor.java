@@ -19,7 +19,7 @@ abstract public class Sensor<E, S> implements Function<E,S> {
 //        @Nullable
 //        abstract S apply(E x);
 
-    protected void addToSchema(Schema data) {
+    public void addToSchema(Schema data) {
         if (data.hasAttr(id))
             throw new RuntimeException(id + " already defined in " + data);
 

@@ -1,19 +1,19 @@
 package jcog.lab.var;
 
 import jcog.list.FasterList;
-import jcog.lab.Tweak;
+import jcog.lab.Var;
 import jcog.util.ObjectFloatToFloatFunction;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class TweakFloat<X> extends Tweak<X,Float> {
+public class VarFloat<X> extends Var<X,Float> {
 
     private float min, max;
     private float inc;
 
-    public TweakFloat(String id, float min, float max, float inc, Function<X, Float> get, ObjectFloatToFloatFunction<X> set) {
+    public VarFloat(String id, float min, float max, float inc, Function<X, Float> get, ObjectFloatToFloatFunction<X> set) {
         super(id, get, set::value);
         this.min = min;
         this.max = max;
