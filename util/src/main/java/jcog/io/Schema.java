@@ -78,9 +78,14 @@ public class Schema {
      * must also be given. This variant of defineAttribute allows to set this data.
      */
     public Schema define(String name, ARFF.AttributeType type) {
+
         assert (type != Nominal);
-        attribute_names.add(name);
+        if (attrTypes.put(name, type)!=null)
+            throw new RuntimeException("column name collision");
+
         attrTypes.put(name, type);
+        attribute_names.add(name);
+
         return this;
     }
 

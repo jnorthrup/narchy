@@ -23,34 +23,29 @@ import java.util.function.Supplier;
 
 public class Optimization<E> extends ExperimentSeries<E> {
 
+    static final int goalColumn = 0;
     private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
-
-    /** history of experiments. TODO use ranking like TopN etc */
-    public final List<ARFF> data = new FasterList();
-
+    /**
+     * history of experiments. TODO use ranking like TopN etc
+     */
+    public final ARFF data;
     private final Goal<E> goal;
-    private final List<Sensor<E,?>> sensors;
+    private final List<Sensor<E, ?>> sensors;
     private final List<Var<E, ?>> vars;
     private final OptimizationStrategy strategy;
     private final Supplier<E> subj;
-
     private final Consumer<E> procedure;
     private final double[] inc, min, max, mid;
-    private final FasterList<Sensor<E,?>> varsAndSensors;
-
-
-    static final int timeColumn = 0;
-    static final int ctxColumn = 1;
-    static final int goalColumn = 2;
+    private final FasterList<Sensor<E, ?>> varsAndSensors;
 
     public Optimization(Supplier<E> subj,
                         Consumer<E> procedure, Goal<E> goal,
-                        List<Var<E, ?>> vars,
-                        List<Sensor<E, ?>> sensors,
+                        List<Var<E,?>> vars,
+                        List<Sensor<E,?>> sensors,
                         OptimizationStrategy strategy) {
         this.subj = subj;
 
-        this.goal= goal;
+        this.goal = goal;
 
         this.vars = vars;
 
@@ -58,11 +53,12 @@ public class Optimization<E> extends ExperimentSeries<E> {
 
         this.varsAndSensors = new FasterList<>();
         this.varsAndSensors.add(goal);
-        for (Var v : vars) {
+        for (Var v: vars) {
             varsAndSensors.add(v.sense());
         }
         this.varsAndSensors.addAll(sensors);
 
+        data = ExperimentRun.newData(varsAndSensors);
 
         this.procedure = procedure;
         assert !vars.isEmpty();
@@ -102,20 +98,24 @@ public class Optimization<E> extends ExperimentSeries<E> {
     }
 
     protected double run(double[] point) {
-        ExperimentRun<E> ee = new ExperimentRun<>((e, r) -> {
-            procedure.accept(e);
-        }, Optimization.this.subject(point), varsAndSensors);
+        ExperimentRun<E> ee = new ExperimentRun<E>(
+                subject(point), data,
+                varsAndSensors,
+            (e, r) -> procedure.accept(e)
+        );
 
         ee.run();
 
-        sense(ee);
+        ee.record();
 
         return goal.apply(ee.experiment);
     }
 
 
-    /** collect results after an experiment has finished */
-    protected void sense(ExperimentRun<E> next) {
+    /**
+     * collect results after an experiment has finished
+     */
+    protected void record(ExperimentRun<E> next) {
         data.add(next.data);
     }
 
@@ -136,8 +136,7 @@ public class Optimization<E> extends ExperimentSeries<E> {
     public ImmutableList best() {
         double bestScore = Double.NEGATIVE_INFINITY;
         ImmutableList best = null;
-        for (ARFF ee : data) {
-            ImmutableList e = ee.data.iterator().next(); //HACK
+        for (ImmutableList e: data.data) {
             double s = ((Number) e.get(goalColumn)).doubleValue();
             if (s > bestScore) {
                 best = e;
@@ -148,7 +147,7 @@ public class Optimization<E> extends ExperimentSeries<E> {
     }
 
     public void print() {
-        data.forEach(ARFF::print);
+        data.print();
     }
 
 //    public RealDecisionTree tree(int discretization, int maxDepth) {

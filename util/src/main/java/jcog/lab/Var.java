@@ -78,5 +78,10 @@ abstract public class Var<X,Y> {
         public String toString() {
             return "var(" + id + ")";
         }
+
+        @Override
+        public void addToSchema(Schema data) {
+            data.defineNumeric(id);
+        }
     }
 }

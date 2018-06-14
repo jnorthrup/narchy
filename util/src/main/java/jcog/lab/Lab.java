@@ -2,6 +2,7 @@ package jcog.lab;
 
 import jcog.lab.util.ExperimentRun;
 import jcog.lab.util.Optimization;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,14 +43,8 @@ public class Lab<E> {
     public Lab<E> discover() {
         VarDiscovery<E> d = new VarDiscovery<>(subj).discover();
         d.vars.forEach(this::add);
-        return this;
-    }
 
-
-    public Lab(Supplier<E> subj) {
-        this.subj = subj;
-
-//        final float autoInc_default = 5f;
+        //        final float autoInc_default = 5f;
 //        Map<String, Float> hints = Map.of("autoInc", autoInc_default);
 //
 //        Pair<List<Tweak<X, ?>>, SortedSet<String>> uu = vars.get(hints);
@@ -73,22 +68,23 @@ public class Lab<E> {
 //            for (Sensor o : sensors)
 //                o.addToSchema(data);
 //        }
+
+        return this;
     }
 
-//    public Trial<E> get(Function<X, E> model, String... sensors) {
-//        List<Sensor<E, ?>> s = Stream.of(sensors).map(this.sensors::get).collect(toList());
-//        return get(model, s);
-//    }
 
-    public ExperimentRun<E> run(BiConsumer<E, ExperimentRun<E>> proc, List<Sensor<E, ?>> sensors) {
-        return new ExperimentRun<>(proc, subj.get(), sensors);
+    public Lab(Supplier<E> subj) {
+        this.subj = subj;
+    }
+
+    public ExperimentRun<E> run(Iterable<Sensor<E,?>> sensors, BiConsumer<E, ExperimentRun<E>> proc) {
+        return new ExperimentRun<E>(subj.get(), sensors, proc);
     }
 
     /** score is an objective function that the optimization process tries to
      *  maximize.
      */
-    public Optimization<E> optimize(Consumer<E> procedure, Goal<E> goal, List<Var<E, ?>> vars, List<Sensor<E, ?>> sensors,
-                                    Optimization.OptimizationStrategy strategy) {
+    public Optimization<E> optimize(Goal<E> goal, List<Var<E,?>> vars, List<Sensor<E,?>> sensors, Optimization.OptimizationStrategy strategy, Consumer<E> procedure) {
 
         if (vars.isEmpty())
             throw new UnsupportedOperationException("no Var's provided");
@@ -99,36 +95,24 @@ public class Lab<E> {
     /** defaults:
      *      optimizing using all ready variables
      *      the default optimization strategy and its parameters
-     * @param procedure
-     * @param goal
      * @param score
+     * @param goal
+     * @param procedure
      */
-    public Optimization<E> optimize(Consumer<E> procedure, Goal<E> goal) {
-        return optimize(procedure, goal,
+    public Optimization<E> optimize(Goal<E> goal, Consumer<E> procedure) {
+        return optimize(goal,
                 vars.values().stream().filter(Var::ready).collect(toList()),
-                sensors.values().stream().collect(toList()),
-                newDefaultOptimizer());
+                sensors.values().stream().collect(toList()), newDefaultOptimizer(), procedure
+        );
+    }
+
+    /** simple creation method */
+    public Optimization<E> optimize(FloatFunction<E> goal, Consumer<E> procedure) {
+        return optimize(new Goal(goal), procedure);
     }
 
     private Optimization.OptimizationStrategy newDefaultOptimizer() {
         return new Optimization.SimplexOptimizationStrategy(64);
     }
-
-
-//    public Result run(int iterations) {
-//        return run(iterations, 1);
-//    }
-//    public Result run(int iterations, int repeats) {
-//        return run(iterations, repeats, Executors.newSingleThreadExecutor());
-//    }
-//
-//    public Result run(int iterations, int repeats, ExecutorService exe) {
-//        return run(iterations, repeats, exe::submit);
-//    }
-//
-//    public Result run(int iterations, int repeats, Function<Callable,Future> exe) {
-//        return new Optimize<>(subjectBuilder, vars).run(data, iterations, repeats, experimentBuilder, sensors, exe);
-//    }
-
 
 }

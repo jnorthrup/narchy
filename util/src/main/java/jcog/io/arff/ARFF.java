@@ -36,6 +36,7 @@
 package jcog.io.arff;
 
 import com.google.common.primitives.Primitives;
+import jcog.Texts;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.util.Reflect;
@@ -278,7 +279,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     private void readAttributeDefinition(int lineno, String line) throws ARFFParseError {
         Scanner s = new Scanner(line);
         Pattern p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^\\}]+\\}|\\'[^\\']+\\'|\\\"[^\\\"]+\\\"");
-        String keyword = s.findInLine(p);
+//        String keyword = s.findInLine(p);
         String name = s.findInLine(p);
         String type = s.findInLine(p);
 
@@ -362,10 +363,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         StringBuilder s = new StringBuilder();
 
         try {
-            s.append("Relation " + relation);
-            s.append(NEW_LINE);
-            s.append("with attributes");
-            s.append(NEW_LINE);
+            s.append("Relation " + relation).append(NEW_LINE).append("with attributes").append(NEW_LINE);
             for (String n : attribute_names) {
                 s.append("   " + n + " of type " + attrTypes.get(n));
                 if (attrTypes.get(n) == Nominal) {
@@ -375,9 +373,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
                 s.append(NEW_LINE);
             }
 
-            s.append(NEW_LINE);
-            s.append("Data (first 10 lines of " + data.size() + "):");
-            s.append(NEW_LINE);
+            s.append(NEW_LINE).append("Data (first 10 lines of " + data.size() + "):").append(NEW_LINE);
 
             int i = 0;
             for (ImmutableList row : data) {
@@ -398,18 +394,13 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     public void write(Appendable s) throws IOException {
 
         if (comment != null) {
-            s.append("% ");
-            s.append(comment.replaceAll(NEW_LINE, NEW_LINE + "% "));
-            s.append(NEW_LINE);
+            s.append("% ").append(comment.replaceAll(NEW_LINE, NEW_LINE + "% ")).append(NEW_LINE);
         }
 
-        s.append("@relation ").append(relation);
-        s.append(NEW_LINE);
+        s.append("@relation ").append(relation).append(NEW_LINE);
 
         for (String name : attribute_names) {
-            s.append("@attribute ");
-            s.append(name);
-            s.append(" ");
+            s.append("@attribute ").append(quoteIfNecessary(name)).append(" ");
 
             switch (attrTypes.get(name)) {
                 case Numeric:
@@ -427,8 +418,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             s.append(NEW_LINE);
         }
 
-        s.append("@data");
-        s.append(NEW_LINE);
+        s.append("@data").append(NEW_LINE);
 
         for (ImmutableList datum : data) {
             joinWith(datum, s, ",");
@@ -436,6 +426,10 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         }
 
 
+    }
+
+    public String quoteIfNecessary(String name) {
+        return isQuoteNecessary(name) ? Texts.quote(name) : name;
     }
 
     /**

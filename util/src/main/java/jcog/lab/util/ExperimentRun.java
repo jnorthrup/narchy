@@ -21,8 +21,6 @@ import java.util.function.BiConsumer;
  */
 public class ExperimentRun<E> implements Runnable {
 
-    static final String blankContext = " ";
-
     final E experiment;
     private final BiConsumer<E, ExperimentRun<E>> procedure;
 
@@ -33,64 +31,49 @@ public class ExperimentRun<E> implements Runnable {
     /** enabled sensors */
     private final List<Sensor<E,?>> sensors;
     private long startTime;
-    private long startNano;
     private long endTime;
 
-    public ExperimentRun(BiConsumer<E, ExperimentRun<E>> procedure, E model, Iterable<Sensor<E,?>> sensors) {
+    public ExperimentRun(E model, ARFF data, List<Sensor<E, ?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
         this.experiment = model;
         this.procedure = procedure;
+        this.data = data;
+        this.sensors = sensors;
+    }
 
-        data = newData(sensors);
-        this.sensors = new FasterList(sensors);
+    public ExperimentRun(E model, Iterable<Sensor<E,?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
+        this(model, newData(sensors), new FasterList(sensors), procedure);
     }
 
 
     /** creates a new ARFF data with the headers appropriate for the sensors */
-    public static <X> ARFF newData(Iterable<Sensor<X,?>> sensors) {
+    public static <E> ARFF newData(Iterable<Sensor<E,?>> sensors) {
         ARFF data = new ARFF();
-        data.defineNumeric("time");
-        data.defineText("context");
-
-        sensors.forEach(s -> {
-            s.addToSchema(data);
-        });
+        sensors.forEach(s -> s.addToSchema(data));
         return data;
     }
 
     @Override public void run() {
         startTime = System.currentTimeMillis();
-        startNano = System.nanoTime();
-
-        sense("start");
 
         try {
             procedure.accept(experiment, this);
         } catch (Throwable t) {
-            sense(t.getMessage());
+            //sense(t.getMessage());
+            t.printStackTrace();
         }
 
         endTime = System.currentTimeMillis();
-
-        sense("end");
 
         data.setComment(experiment + ": " + procedure +
                 "\t@" + startTime + ".." + endTime + " (" + new Date(startTime) + " .. " + new Date(endTime) + ")");
     }
 
-    /** records all sensors (blank context)*/
-    public void sense() {
 
-        sense(blankContext);
-    }
-
-    public void sense(String context) {
+    /** records all sensors ()*/
+    public void record() {
         synchronized (experiment) {
-            long whenNano = System.nanoTime();
-
-            Object row[] = new Object[sensors.size() + 2];
+            Object row[] = new Object[sensors.size()];
             int c = 0;
-            row[c++] = whenNano - startNano;
-            row[c++] = context;
             for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
                 row[c++] = sensors.get(i).apply(experiment);
             }

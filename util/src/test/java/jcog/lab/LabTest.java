@@ -2,11 +2,10 @@ package jcog.lab;
 
 import jcog.lab.util.ExperimentRun;
 import jcog.lab.util.Optimization;
+import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.Range;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -19,18 +18,30 @@ class LabTest {
 
     @Test
     public void testExperimentRun() {
-        Lab<Dummy> lab = new Lab<>(()->new Dummy());
-        ExperimentRun<Dummy> t = lab.run((m, trial) -> {
+        Lab<Dummy> lab = new Lab<>(Dummy::new);
+        Sensor.LabelSensor<Dummy> ctx;
+
+
+        FasterList<Sensor<Dummy,?>> sensors = new FasterList<>();
+        sensors.add(Sensor.unixtime);
+        sensors.add(ctx = Sensor.label("ctx"));
+        sensors.add(Sensor.floatLambda("a", (m) -> m.a));
+
+        ExperimentRun<Dummy> t = lab.run(sensors, (m, trial) -> {
+            ctx.record("start", trial).set("running");
+
+
             for (int i = 0; i < 10; i++) {
                 m.a = (float) Math.sin(i);
-                trial.sense();
+                trial.record();
             }
 
             m.a = 0.5f;
             m.a = 0.2f;
-        }, List.of(
-            Sensor.numeric("a", (Dummy m) -> m.a)
-        ) );
+
+            ctx.record("end", trial);
+        });
+
         t.run();
         t.data.print();
     }
@@ -70,18 +81,16 @@ class LabTest {
     @Test
     public void testSingleObjective() {
         Lab<Model> a = new Lab<>(Model::new).discover();
-        a.vars.values().forEach(
-                System.out::println
-        );
+//        a.vars.values().forEach(
+//                System.out::println
+//        );
         assertTrue(a.vars.size() >= 4);
 
 
-        Goal<Model> goal = new Goal<>(Model::score);
-
-        Optimization<Model> r = a.optimize((e)->{ }, goal);
+        Optimization<Model> r = a.optimize(Model::score, (e)->{ /* ... */ });
         r.run();
 
-        assertEquals(7, r.data.get(0).attrCount());
+        assertEquals(5, r.data.attrCount());
 
         r.print();
     }

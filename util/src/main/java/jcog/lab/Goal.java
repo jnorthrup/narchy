@@ -10,7 +10,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
  * NaN is unknown or not applicable
  * @param E experiment
  */
-public class Goal<E> extends Sensor.FloatSensor<E> {
+public class Goal<E> extends Sensor.FloatLambdaSensor<E> {
 
     public Goal(FloatFunction<E> f) {
         this("goal", f);
