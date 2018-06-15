@@ -30,7 +30,7 @@ public class Lab<E> {
     private final static Logger logger = LoggerFactory.getLogger(Lab.class);
     final Supplier<E> subj;
     final Map<String, Sensor<E, ?>> sensors = new ConcurrentHashMap<>();
-    final Map<String, Var<E, ?>> vars = new ConcurrentHashMap<>();
+    public final Map<String, Var<E, ?>> vars = new ConcurrentHashMap<>();
     final Map<String, Object> hints = new HashMap();
 
     public Lab(Supplier<E> subj) {
@@ -46,8 +46,7 @@ public class Lab<E> {
     }
 
     public Lab<E> discover() {
-        VarDiscovery<E> d = new VarDiscovery<>(subj).discover();
-        d.vars.forEach(this::add);
+        Variables<E> d = new Variables<>(subj, vars).discover();
         hints.putAll(d.hints);
 
 
@@ -101,7 +100,8 @@ public class Lab<E> {
      * score is an objective function that the optimization process tries to
      * maximize.
      */
-    public Optimization<E> optimize(Goal<E> goal, List<Var<E, ?>> vars, List<Sensor<E, ?>> sensors, Optimization.OptimizationStrategy strategy, Consumer<E> procedure) {
+    public Optimization<E> optimize(List<Var<E, ?>> vars, List<Sensor<E, ?>> sensors, Optimization.OptimizationStrategy strategy,
+                                    Consumer<E>  procedure, Goal<E> goal) {
 
         if (vars.isEmpty())
             throw new UnsupportedOperationException("no Var's provided");
@@ -113,27 +113,31 @@ public class Lab<E> {
      * defaults:
      * optimizing using all ready variables
      * the default optimization strategy and its parameters
-     *
-     * @param score
-     * @param goal
+     *  @param score
      * @param procedure
+     * @param goal
      */
-    public Optimization<E> optimize(Goal<E> goal, Consumer<E> procedure) {
-        return optimize(goal,
-                vars.values().stream().filter(Var::ready).collect(toList()),
-                new FasterList<>(sensors.values()), newDefaultOptimizer(), procedure
+    public Optimization<E> optimize(Consumer<E>  procedure, Goal<E> goal) {
+        return optimize(vars.values().stream().filter(Var::ready).collect(toList()),
+                new FasterList<>(sensors.values()), newDefaultOptimizer(), procedure, goal
         );
+    }
+    public Optimization<E> optimize(Goal<E> goal) {
+        return optimize(e->{}, goal);
     }
 
     /**
      * simple creation method
      */
-    public Optimization<E> optimize(FloatFunction<E> goal, Consumer<E> procedure) {
-        return optimize(new Goal(goal), procedure);
+    public Optimization<E> optimize(Consumer<E>  procedure, FloatFunction<E> goal) {
+        return optimize(procedure, new Goal(goal));
     }
 
     private Optimization.OptimizationStrategy newDefaultOptimizer() {
         return new Optimization.SimplexOptimizationStrategy(64);
     }
 
+    public Variables<E> var() {
+        return new Variables<>(subj, vars);
+    }
 }

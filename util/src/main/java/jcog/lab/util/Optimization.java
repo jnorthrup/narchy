@@ -1,5 +1,7 @@
 package jcog.lab.util;
 
+import jcog.Util;
+import jcog.WTF;
 import jcog.io.arff.ARFF;
 import jcog.lab.Goal;
 import jcog.lab.Sensor;
@@ -17,6 +19,7 @@ import org.eclipse.collections.api.list.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -80,11 +83,18 @@ public class Optimization<E> extends ExperimentSeries<E> {
 
 
                 Object guess = s.get(example);
-                mid[i] = guess != null ? (float) guess : (s.getMax() + s.getMin()) / 2f;
+
 
                 min[i] = s.getMin();
                 max[i] = s.getMax();
+                mid[i] = guess != null ? Util.clamp((float) guess,min[i],max[i]) : (max[i] + min[i]) / 2f;
                 inc[i] = s.getInc();
+
+                if (!(mid[i] >= min[i]))
+                    throw new WTF();
+                if (!(max[i] >= mid[i]))
+                    throw new WTF();
+
 
                 i++;
             }
@@ -98,17 +108,24 @@ public class Optimization<E> extends ExperimentSeries<E> {
     }
 
     protected double run(double[] point) {
-        ExperimentRun<E> ee = new ExperimentRun<E>(
-                subject(point), data,
+        System.out.println(Arrays.toString(point));
+
+        E x = subject(subj.get(), point);
+        ExperimentRun<E> ee = new ExperimentRun<>(
+            x, data,
                 varsAndSensors,
-            (e, r) -> procedure.accept(e)
+            (ssubj, r) -> {
+
+                procedure.accept(x);
+                r.record();
+            }
         );
 
         ee.run();
 
-        ee.record();
+        ee.data.print();
 
-        return goal.apply(ee.experiment);
+        return ((Number)ee.data.data.iterator().next().get(0)).doubleValue();
     }
 
 
@@ -116,6 +133,7 @@ public class Optimization<E> extends ExperimentSeries<E> {
      * collect results after an experiment has finished
      */
     protected void record(ExperimentRun<E> next) {
+        System.out.println(next.data);
         data.add(next.data);
     }
 
@@ -123,8 +141,8 @@ public class Optimization<E> extends ExperimentSeries<E> {
      * builds an experiment subject (input)
      * TODO handle non-numeric point entries
      */
-    private E subject(double[] point) {
-        E x = subj.get();
+    private E subject(E x, double[] point) {
+
 
         for (int i = 0, dim = point.length; i < dim; i++) {
             point[i] = ((Var<E, Float>) vars.get(i)).set(x, (float) point[i]);

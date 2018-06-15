@@ -88,7 +88,7 @@ class LabTest {
         assertTrue(a.vars.size() >= 4);
 
 
-        Optimization<Model> r = a.optimize(Model::score, (e)->{ /* ... */ });
+        Optimization<Model> r = a.optimize((e)->{ /* ... */ }, Model::score);
         r.run();
 
         assertEquals(5, r.data.attrCount());

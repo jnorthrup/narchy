@@ -12,12 +12,16 @@ public abstract class NALTest {
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
-    public final TestNAR test;
+    public TestNAR test;
     public final MetaGoal.Report metagoals = new MetaGoal.Report();
 
 
     protected NALTest() {
         test = new TestNAR(nar());
+    }
+
+    public NALTest(TestNAR t) {
+        test = t;
     }
 
 

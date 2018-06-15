@@ -18,7 +18,6 @@ import org.eclipse.collections.impl.list.mutable.FastList;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
@@ -50,20 +49,26 @@ import java.util.function.Supplier;
  * <p>
  * - probes for runtime optimization
  */
-public class VarDiscovery<X> {
+public class Variables<E> {
+
+    private final Supplier<E> subject;
+    private final Map<String, Var<E, ?>> vars;
 
     private static final int DEFAULT_DEPTH = 7;
-    private final Supplier<X> subject;
+
     public final Map<String, Float> hints = new HashMap();
+
+    public Variables(Supplier<E> subject) {
+        this.subject = subject;
+        this.vars = new HashMap<>();
+    }
 
     /**
      * set of all partially or fully ready Vars
      */
-    final List<Var<X, ?>> vars = new FasterList();
-
-
-    public VarDiscovery(Supplier<X> subject) {
+    public Variables(Supplier<E> subject, Map<String, Var<E, ?>> vars) {
         this.subject = subject;
+        this.vars = vars;
     }
 
 
@@ -71,11 +76,11 @@ public class VarDiscovery<X> {
      * learns how to modify the possibility space of the parameters of a subject
      * (generates accessors via reflection)
      */
-    public VarDiscovery<X> discover() {
+    public Variables<E> discover() {
         return discover(DiscoveryFilter.all);
     }
 
-    public VarDiscovery<X> discover(DiscoveryFilter filter) {
+    public Variables<E> discover(DiscoveryFilter filter) {
         return discover(filter, (root, path, targetType) -> {
             FastList<Pair<Class, ObjectGraph.Accessor>> p = path.clone();
             String key = key(p);
@@ -110,10 +115,10 @@ public class VarDiscovery<X> {
     /**
      * auto discovers Vars by reflecting a sample of the subject
      */
-    public VarDiscovery<X> discover(DiscoveryFilter filter, Discovery<X> each) {
+    public Variables<E> discover(DiscoveryFilter filter, Discovery<E> each) {
 
 
-        X x = (this.subject.get());
+        E x = (this.subject.get());
 
         ObjectGraph o = new ObjectGraph() {
 
@@ -127,7 +132,7 @@ public class VarDiscovery<X> {
                     return false;
 
                 if (contains(targetType)) {
-                    each.discovered((X) root, path.clone(), targetType);
+                    each.discovered((E) root, path.clone(), targetType);
                 }
 
                 return !Primitives.unwrap(target.getClass()).isPrimitive();
@@ -210,26 +215,26 @@ public class VarDiscovery<X> {
 
 
 
-    public VarDiscovery<X> add(String key, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
-        return add(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (X x, float v) -> {
+    public Variables<E> add(String key, Function<E, Integer> get, ObjectIntProcedure<E> apply) {
+        return add(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (E x, float v) -> {
             int i = Math.round(v);
             apply.accept(x, i);
             return i;
         });
     }
 
-    public VarDiscovery<X> add(String key, int min, int max, int inc, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
+    public Variables<E> add(String key, int min, int max, int inc, Function<E, Integer> get, ObjectIntProcedure<E> apply) {
         return add(key, min, max, inc < 0 ? Float.NaN : inc,
             (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
-            (X x, float v) -> {
+            (E x, float v) -> {
             int i = Math.round(v);
             apply.accept(x, i);
             return i;
         });
     }
 
-    public VarDiscovery<X> add(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-        vars.add(new FloatVar<>(id, min, max, inc, (x)->null, (X x, float v) -> {
+    public Variables<E> add(String id, float min, float max, float inc, ObjectFloatProcedure<E> apply) {
+        vars.put(id, new FloatVar<>(id, min, max, inc, (x)->null, (E x, float v) -> {
             apply.value(x, v);
             return v;
         }));
@@ -238,12 +243,12 @@ public class VarDiscovery<X> {
 
 
     @Deprecated
-    public VarDiscovery<X> add(String id, float min, float max, float inc, ObjectFloatToFloatFunction<X> set) {
+    public Variables<E> add(String id, float min, float max, float inc, ObjectFloatToFloatFunction<E> set) {
         return add(id, min, max, inc, null, set);
     }
 
-    public VarDiscovery<X> add(String id, float min, float max, float inc, Function<X, Float> get, ObjectFloatToFloatFunction<X> set) {
-        vars.add(new FloatVar<>(id, min, max, inc, get, set));
+    public Variables<E> add(String id, float min, float max, float inc, Function<E, Float> get, ObjectFloatToFloatFunction<E> set) {
+        vars.put(id, new FloatVar<>(id, min, max, inc, get, set));
         return this;
     }
 
@@ -253,11 +258,11 @@ public class VarDiscovery<X> {
         return byClass.containsKey(Primitives.wrap(t));
     }
 
-    final Map<Class, VarAccess<X>> byClass = Map.of(
+    final Map<Class, VarAccess<E>> byClass = Map.of(
 
-            Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
-                Function<X, Boolean> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
+            Boolean.class, (E sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
+                Function<E, Boolean> get = ObjectGraph.getter(p);
+                final BiConsumer<E, Boolean> set = ObjectGraph.setter(p);
                 add(k, 0, 1, 0.5f,
                         (x)->get.apply(x) ? 1f : 0f,
                         (x, v) -> {
@@ -268,7 +273,7 @@ public class VarDiscovery<X> {
             },
 
             AtomicBoolean.class, (sample, k, p) -> {
-                final Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
+                final Function<E, AtomicBoolean> get = ObjectGraph.getter(p);
                 AtomicBoolean fr = get.apply(sample);
                 add(k, 0, 1, 0.5f, (x, v) -> {
                     boolean b = v >= 0.5f;
@@ -277,24 +282,24 @@ public class VarDiscovery<X> {
                 });
             },
 
-            Integer.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
-                final Function<X, Integer> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Integer> set = ObjectGraph.setter(p);
+            Integer.class, (E sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
+                final Function<E, Integer> get = ObjectGraph.getter(p);
+                final BiConsumer<E, Integer> set = ObjectGraph.setter(p);
                 add(k, get, set::accept);
             },
             IntRange.class, (sample, k, p) -> {
-                final Function<X, IntRange> get = ObjectGraph.getter(p);
+                final Function<E, IntRange> get = ObjectGraph.getter(p);
                 IntRange fr = get.apply(sample);
-                add(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> {
+                add(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<E>) (x, v) -> {
                     get.apply(x).set(v);
                 });
             },
 
 
 
-            Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
-                Function<X, Float> get = ObjectGraph.getter(p);
-                final BiConsumer<X, Float> set = ObjectGraph.setter(p);
+            Float.class, (E sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
+                Function<E, Float> get = ObjectGraph.getter(p);
+                final BiConsumer<E, Float> set = ObjectGraph.setter(p);
                 add(k, Float.NaN, Float.NaN, Float.NaN,
                         get,
                         (x,v)->{ set.accept(x,v); return v; });
@@ -303,7 +308,7 @@ public class VarDiscovery<X> {
 
 
             FloatRange.class, (sample, k, p) -> {
-                final Function<X, FloatRange> get = ObjectGraph.getter(p);
+                final Function<E, FloatRange> get = ObjectGraph.getter(p);
                 FloatRange fr = get.apply(sample);
                 add(k, fr.min, fr.max, Float.NaN,
                         (x)-> get.apply(x).floatValue(),

@@ -182,25 +182,13 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
     private static void joinWith(ImmutableList objects, Appendable s, CharSequence del) throws IOException {
         boolean first = true;
         for (Object o : objects) {
-            if (!first) {
+            if (!first)
                 s.append(del);
-            }
 
-            String oo = o.toString();
-            boolean quote;
-            if (o instanceof Number) {
-                quote = false;
-            } else {
-                quote = isQuoteNecessary(oo);
-            }
+            String oo = o!=null ? o.toString() : "null";
 
-            if (quote)
-                s.append('\"');
+            s.append(quoteIfNecessary(oo));
 
-            s.append(oo);
-
-            if (quote)
-                s.append('\"');
             first = false;
         }
     }
@@ -428,7 +416,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
     }
 
-    public String quoteIfNecessary(String name) {
+    public static String quoteIfNecessary(String name) {
         return isQuoteNecessary(name) ? Texts.quote(name) : name;
     }
 
