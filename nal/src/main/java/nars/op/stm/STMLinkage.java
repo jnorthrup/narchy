@@ -2,12 +2,13 @@ package nars.op.stm;
 
 import jcog.Util;
 import jcog.math.FloatRange;
+import jcog.pri.PLink;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.Cause;
 import nars.control.TaskService;
-import nars.link.CauseLink;
+import nars.term.Termed;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -39,26 +40,27 @@ public final class STMLinkage extends TaskService {
         cause = nar.newCause(this);
     }
 
-    protected static void link(Task ta, float pri, Task tb, short cid, NAR nar) {
+    public static void link(Termed ta, float pri, Termed tb/*, short cid*/, NAR nar) {
 
 
         /** current task's... */
-        Concept ca = ta.concept(nar, true);
+        Concept ca = nar.conceptualize(ta);
         if (ca != null) {
-            Concept cb = tb.concept(nar, true);
+            Concept cb = nar.conceptualize(tb);
             if (cb != null) {
                 if (!cb.equals(ca)) { 
 
                     
-                    cb.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
-                    ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), pri, cid));
+                    cb.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(ca.term(), pri/*, cid*/));
+                    ca.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(cb.term(), pri/*, cid*/));
+                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), pri, cid));
 
 
 
 
                 } else {
-                    
-                    ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
+                    ca.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink(ca.term(), pri/*, cid*/));
+                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), pri, cid));
                 }
             }
         }
@@ -87,7 +89,7 @@ public final class STMLinkage extends TaskService {
         float p = strength * tPri;
         for (Task u : stm) {
 //            if (u == null) continue;
-            link(t, p * u.priElseZero(), u, cause.id, nar);
+            link(t, p * u.priElseZero(), u/*, cause.id*/, nar);
         }
 
         stm.poll();
