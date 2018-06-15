@@ -24,7 +24,7 @@ public class NARTestBenchmark {
             x.warmupIterations(0);
             
             x.forks(1);
-            x.threads(1);
+            x.threads(0);
         });
     }
 
@@ -50,9 +50,9 @@ public class NARTestBenchmark {
     public void testIterning() {
         Op.terms = new InterningTermBuilder();
         runTests();
-        System.err.println(
-                ((InterningTermBuilder)Op.terms).summary()
-        );
+//        System.err.println(
+//                ((InterningTermBuilder)Op.terms).summary()
+//        );
     }
 
 

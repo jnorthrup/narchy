@@ -14,10 +14,11 @@ import java.util.Set;
 
 import static nars.time.Tense.ETERNAL;
 
-/** TODO abstract edge() for different relation types:
- *      similarity
- *      implication
- *      etc
+/**
+ * TODO abstract edge() for different relation types:
+ * similarity
+ * implication
+ * etc
  */
 public class DeductiveMeshTest {
 
@@ -38,14 +39,14 @@ public class DeductiveMeshTest {
 
     public DeductiveMeshTest(@NotNull TestNAR n, @NotNull int[] dims, int timeLimit) {
 
-        if (dims.length!=2)
+        if (dims.length != 2)
             throw new UnsupportedOperationException("2-D only implemented");
 
         coords = $.newArrayList();
         Set<Term> edges = new HashSet();
         for (int x = 0; x < dims[0]; x++) {
             for (int y = 0; y < dims[1]; y++) {
-                
+
 
                 if (x > y) {
                     if (x > 0)
@@ -65,7 +66,7 @@ public class DeductiveMeshTest {
         Term term = q = edge(0, 0, dims[0] - 1, dims[1] - 1);
         ask(n, term);
 
-        if (timeLimit>0)
+        if (timeLimit > 0)
             n.mustBelieve(timeLimit, q.toString(), 1f, 1f, 0.01f, 1f);
 
         this.test = n;
@@ -75,119 +76,14 @@ public class DeductiveMeshTest {
         n.nar.question(term, ETERNAL, (q, a) -> System.out.println(a.proof()));
     }
 
-    @Nullable private Term edge(int x1, int y1, int x2, int y2) {
+    @Nullable
+    private Term edge(int x1, int y1, int x2, int y2) {
         return $.sim(vertex(x1, y1), vertex(x2, y2));
     }
 
     private Term vertex(int x1, int y1) {
         return $.p($.the(x1), $.the(y1));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

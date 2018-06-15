@@ -15,6 +15,9 @@ abstract public class Var<X,Y> {
     public final Function<X,Y> get;
     public final String id;
 
+    /** last set value */
+    private Y value;
+
     /** transduces a generic floating point value to a change in a property of the experiment subject */
     public Var(String id, Function<X,Y> get, BiFunction<X,Y,Y> set) {
         this.id = id;
@@ -43,19 +46,18 @@ abstract public class Var<X,Y> {
     }
 
     public final Y get(X example) {
-        return get == null ? null : get.apply(example);
+        return get == null ? value : get.apply(example);
     }
 
     public Y set(X subject, Y value) {
-        return set.apply(subject, value);
+        value = filter(value);
+        return set.apply(subject, this.value = value);
     }
 
-
-    /** add this tweak to a schema that will collect its values */
-    public void addToSchema(Schema data) {
-        
-        data.defineNumeric(id);
+    public Y filter(Y value) {
+        return value;
     }
+
 
     abstract public boolean ready();
 

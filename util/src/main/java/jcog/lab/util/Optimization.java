@@ -1,5 +1,6 @@
 package jcog.lab.util;
 
+import jcog.Texts;
 import jcog.Util;
 import jcog.WTF;
 import jcog.io.arff.ARFF;
@@ -8,6 +9,7 @@ import jcog.lab.Sensor;
 import jcog.lab.Var;
 import jcog.lab.var.FloatVar;
 import jcog.list.FasterList;
+import jcog.math.Quantiler;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
@@ -16,10 +18,10 @@ import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalSimplex;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.eclipse.collections.api.list.ImmutableList;
+import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -107,35 +109,37 @@ public class Optimization<E> extends ExperimentSeries<E> {
         strategy.run(this);
     }
 
+
     protected double run(double[] point) {
-        System.out.println(Arrays.toString(point));
 
         E x = subject(subj.get(), point);
+
+        logger.info("run: {}", Texts.n4(point));
+
         ExperimentRun<E> ee = new ExperimentRun<>(
-            x, data,
+            x,
                 varsAndSensors,
             (ssubj, r) -> {
 
-                procedure.accept(x);
+                try {
+                    procedure.accept(x);
+                } catch (Throwable t) {
+                    System.err.println(t.getMessage());
+                }
+
                 r.record();
             }
         );
 
         ee.run();
 
-        ee.data.print();
+        data.addAll(ee.data);
 
         return ((Number)ee.data.data.iterator().next().get(0)).doubleValue();
     }
 
 
-    /**
-     * collect results after an experiment has finished
-     */
-    protected void record(ExperimentRun<E> next) {
-        System.out.println(next.data);
-        data.add(next.data);
-    }
+
 
     /**
      * builds an experiment subject (input)
@@ -168,31 +172,31 @@ public class Optimization<E> extends ExperimentSeries<E> {
         data.print();
     }
 
-//    public RealDecisionTree tree(int discretization, int maxDepth) {
-//        return data.isEmpty() ? null :
-//            new RealDecisionTree(data.toFloatTable(),
-//                0 /* score */, maxDepth, discretization);
-//    }
+    public RealDecisionTree tree(int discretization, int maxDepth) {
+        return data.isEmpty() ? null :
+            new RealDecisionTree(data.toFloatTable(),
+                0 /* score */, maxDepth, discretization);
+    }
 
 
-//    /** remove entries below a given percentile */
-//    public void cull(float minPct, float maxPct) {
-//
-//        int n = data.data.size();
-//        if (n < 6)
-//            return;
-//
-//        Quantiler q = new Quantiler((int) Math.ceil((n-1)/2f));
-//        data.forEach(r -> {
-//            q.add( ((Number)r.get(0)).floatValue() );
-//        });
-//        float minValue = q.quantile(minPct);
-//        float maxValue = q.quantile(maxPct);
-//        data.data.removeIf(r -> {
-//            float v = ((Number) r.get(0)).floatValue();
-//            return v <= maxValue && v >= minValue;
-//        });
-//    }
+    /** remove entries below a given percentile */
+    public void cull(float minPct, float maxPct) {
+
+        int n = data.data.size();
+        if (n < 6)
+            return;
+
+        Quantiler q = new Quantiler((int) Math.ceil((n-1)/2f));
+        data.forEach(r -> {
+            q.add( ((Number)r.get(0)).floatValue() );
+        });
+        float minValue = q.quantile(minPct);
+        float maxValue = q.quantile(maxPct);
+        data.data.removeIf(r -> {
+            float v = ((Number) r.get(0)).floatValue();
+            return v <= maxValue && v >= minValue;
+        });
+    }
 
 //    public List<DecisionTree> forest(int discretization, int maxDepth) {
 //        if (data.isEmpty())
@@ -240,12 +244,17 @@ public class Optimization<E> extends ExperimentSeries<E> {
         protected void run() {
 
             try {
+                int dim = o.inc.length;
+                double[] steps = new double[dim];
+                for (int i = 0; i < dim; i++)
+                    steps[i] = Math.max(2, (o.max[i] - o.min[i])/o.inc[i]);
+
                 new SimplexOptimizer(1e-10, 1e-30).optimize(
                         new MaxEval(maxIter),
                         func,
                         GoalType.MAXIMIZE,
                         new InitialGuess(o.mid),
-                        new MultiDirectionalSimplex(o.inc)
+                        new MultiDirectionalSimplex(steps)
                 );
             } catch (TooManyEvaluationsException e) {
 

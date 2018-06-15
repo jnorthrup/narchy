@@ -227,20 +227,29 @@ public class Variables<E> {
         return add(key, min, max, inc < 0 ? Float.NaN : inc,
             (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
             (E x, float v) -> {
-            int i = Math.round(v);
-            apply.accept(x, i);
-            return i;
+                int i = Math.round(v);
+                apply.accept(x, i);
+                return i;
         });
     }
 
     public Variables<E> add(String id, float min, float max, float inc, ObjectFloatProcedure<E> apply) {
-        vars.put(id, new FloatVar<>(id, min, max, inc, (x)->null, (E x, float v) -> {
+        vars.put(id, new FloatVar<>(id, min, max, inc, null, (E x, float v) -> {
             apply.value(x, v);
             return v;
         }));
         return this;
     }
 
+    /** TODO use an IntVar impl */
+    public Variables<E> add(String id, int min, int max, int inc, ObjectIntProcedure<E> apply) {
+        vars.put(id, new FloatVar<>(id, min, max, inc, null, (E x, float v) -> {
+            int vv = Math.round(v);
+            apply.value(x, vv);
+            return vv;
+        }));
+        return this;
+    }
 
     @Deprecated
     public Variables<E> add(String id, float min, float max, float inc, ObjectFloatToFloatFunction<E> set) {

@@ -185,7 +185,7 @@ public abstract class Param {
             Param.TTL_UNIFY * 2 +
                     (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
-    public static final int TTL_MAX_BRANCH = 15;
+    //public static final int TTL_MAX_BRANCH = 15;
     public static final int TTL_MIN_BRANCH = TTL_MIN;
 
     /**

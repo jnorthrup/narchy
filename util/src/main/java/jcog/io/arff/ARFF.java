@@ -187,7 +187,7 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
 
             String oo = o!=null ? o.toString() : "null";
 
-            s.append(quoteIfNecessary(oo));
+            s.append(o instanceof Number ? oo : quoteIfNecessary(oo));
 
             first = false;
         }

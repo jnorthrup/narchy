@@ -87,15 +87,15 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
         if (fanOut > 0) {
 
-            int totalTTL = d.ttl;
-            int maxTTL = Param.TTL_MAX_BRANCH;
             int minTTL = Param.TTL_MIN_BRANCH;
+            int totalTTL = Math.max(minTTL, d.ttl);
+            //int maxTTL = Param.TTL_MAX_BRANCH;
             assert(totalTTL > minTTL);
 
 
             switch (fanOut) {
                 case 1: {
-                    d.setTTL(Math.min(maxTTL, totalTTL));
+                    d.setTTL(totalTTL); //Math.min(maxTTL, totalTTL));
                     return test(d, can[0]);
                 }
                 default: {
@@ -105,7 +105,7 @@ public class PremiseDeriver implements Predicate<Derivation> {
                     final int[] ttlRemain = {totalTTL};
                     /**  depth  vs. breadth factor:  1 = fairly distributed among banches, >1..fanOut = depth concentrated */
                     float depth = 2;
-                    int branchTTL = Util.clamp(Math.round(ttlRemain[0] / (fanOut / depth )), minTTL, maxTTL);
+                    int branchTTL = Util.clamp(Math.round(ttlRemain[0] / (fanOut / depth )), minTTL, totalTTL);
 
                     d.ttl = 0;
 

@@ -14,6 +14,7 @@ import nars.exe.WorkerMultiExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
+import nars.op.Spider;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -57,29 +58,12 @@ abstract public class NAgentX extends NAgent {
         super(id, nar);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     public static TimeAware runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                fps * 2, 
-                
+                fps * 2,
+
                 fps);
     }
 
@@ -92,59 +76,19 @@ abstract public class NAgentX extends NAgent {
             e.printStackTrace();
         }
 
-        
-        
-        
-
-        
-
-
-
-
-
 
         float clockFPS =
-                
+
                 narFPS;
 
         RealTime clock =
                 new RealTime.MS(false);
 
 
-
-
         clock.durFPS(clockFPS);
 
 
-
-
-
-
-
-        
-
-        
-
-
-
-
-
-
-
-
-
         NAR n = new NARS()
-
-
-
-
-
-
-
-
-
-
-
 
 
 //                .exe(new MixMultiExec.WorkerMultiExec(
@@ -164,36 +108,31 @@ abstract public class NAgentX extends NAgent {
                              Util.concurrencyDefault(2),
                              1024, 2048) {
 
-                        {
-                            Exe.setExecutor(this);
-                        }
+                         {
+                             Exe.setExecutor(this);
+                         }
 
 
                      }
                 )
 
 
-
                 .time(clock)
                 .index(
 
-                        
 
-                        
-                        
                         newCaffeineIndex()
                         //new HijackConceptIndex(64 * 1024, 4)
-                        
-                        
+
+
                 )
                 .get();
 
         new MatrixDeriver(Derivers.nal(1, 8, n));
 
-        
 
         n.dtMergeOrChoose.set(true);
-        
+
         n.dtDither.set(10); //100fps base
         n.timeFocus.set(4);
 
@@ -204,7 +143,6 @@ abstract public class NAgentX extends NAgent {
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
-
 
 
         n.beliefPriDefault.set(0.25f);
@@ -222,83 +160,9 @@ abstract public class NAgentX extends NAgent {
 //        }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 8, 64);
         ConjClustering conjClusterBany = new ConjClustering(n, BELIEF, (t -> true), 2, 16);
 
-        
 
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
@@ -306,71 +170,12 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        
-
-
-
-
-
-
-
-
-
-
-
-        
         Inperience inp = new Inperience(n, 16);
-
-
-        
-
-        
-        
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-        
-
-        
-
-
-
-
-
-
-
-
-
 
 
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
 
-        
         System.gc();
 
 
@@ -379,11 +184,6 @@ abstract public class NAgentX extends NAgent {
 
         n.on(a);
         n.synch();
-
-
-
-
-
 
 
         Loop loop = n.startFPS(narFPS);
@@ -395,9 +195,9 @@ abstract public class NAgentX extends NAgent {
             SpaceGraph.window(NARui.top(n), 800, 800);
 
 
-            
             Loop aLoop = a.startFPS(agentFPS);
 
+            new Spider(n, java.util.List.of(a.id, n.self(), a.happy.id));
         });
 
         return n;
@@ -406,34 +206,14 @@ abstract public class NAgentX extends NAgent {
     @NotNull
     public static CaffeineIndex newCaffeineIndex() {
         return new CaffeineIndex(
-                
+
                 700 * 1024,
-                
-                
-                
-                
-                
+
+
                 c -> {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     return (int) Math.ceil(c.voluplexity());
-
-
-
 
 
                 }
@@ -449,38 +229,6 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     protected Bitmap2DSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) {
         return senseCamera(id, new Scale(w, pw, ph));
     }
@@ -491,17 +239,10 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-
-
-
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
             Narsese.NarseseException {
         return senseCameraRetina($(id), w, pw, ph);
     }
-
-
-
-
 
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
@@ -572,20 +313,20 @@ abstract public class NAgentX extends NAgent {
             }
             assert (f.size() > 1);
             return new StepController(update, f.toArray());
-            
+
         }
 
         private void set(int i) {
             if (i < 0) i = 0;
             if (i >= v.length) i = v.length - 1;
-            
+
             update.value(v[x = i]);
-            
+
         }
 
         @Override
         public void accept(int aa) {
-            
+
 
             switch (aa) {
                 case 0:
@@ -621,30 +362,6 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private static class Metronome {
         public Metronome(Clock cc, NAR n) {
             cc.on(new Auvent<Clock>() {
@@ -653,7 +370,7 @@ abstract public class NAgentX extends NAgent {
                 AudioContext ac = cc.getContext();
 
                 {
-                    kickEnv = new Envelope(ac, 0.0f); 
+                    kickEnv = new Envelope(ac, 0.0f);
 
                     UGen kickGain = new Gain(ac, 1, kickEnv).in(
                             new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f).in(
@@ -665,18 +382,18 @@ abstract public class NAgentX extends NAgent {
 
                 {
                     snareEnv = new Envelope(ac, 0.0f);
-                    
+
                     WavePlayer snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
                     WavePlayer snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
-                    
+
                     IIRFilter snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
                     snareFilter.in(snareNoise);
                     snareFilter.in(snareTone);
-                    
+
                     Gain snareGain = new Gain(ac, 1, snareEnv);
                     snareGain.in(snareFilter);
 
-                    
+
                     ac.out.in(snareGain);
                 }
 
@@ -690,19 +407,10 @@ abstract public class NAgentX extends NAgent {
                     }
                     if (c.isBeat(4)) {
 
-                        kickEnv.add(0.5f, 2.0f); 
-                        kickEnv.add(0.2f, 5.0f); 
-                        kickEnv.add(0.0f, 50.0f);  
+                        kickEnv.add(0.5f, 2.0f);
+                        kickEnv.add(0.2f, 5.0f);
+                        kickEnv.add(0.0f, 50.0f);
                         n.believe($.the("kick"), Tense.Present);
-
-
-
-
-
-
-
-
-
 
 
                     }
@@ -710,20 +418,6 @@ abstract public class NAgentX extends NAgent {
             });
         }
     }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

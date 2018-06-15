@@ -35,6 +35,13 @@ public class FloatVar<X> extends Var<X,Float> {
     }
 
     @Override
+    public Float filter(Float value) {
+        if (min == min) value = Math.max(min, value);
+        if (max == max) value = Math.min(max, value);
+        return super.filter(value);
+    }
+
+    @Override
     public List<String> unknown(Map<String,Object> hints) {
         FasterList<String> unknown = new FasterList<>(3);
         this.min = unknown(this.min, "min", hints, unknown);

@@ -5,11 +5,7 @@ import jcog.lab.Goal;
 import jcog.lab.Lab;
 import jcog.lab.util.Optimization;
 import nars.NARS;
-import nars.nal.nal2.NAL2Test;
-import nars.test.TestNAR;
-
-import static nars.perf.JUnitNAR.test;
-import static nars.perf.JUnitNAR.tests;
+import nars.test.impl.DeductiveMeshTest;
 
 public class NARTestOptimize {
 
@@ -17,38 +13,39 @@ public class NARTestOptimize {
             Util.concurrencyDefault(1);
 
 
-    public static void main(String[] args) {
-        Lab<TestNAR> l = new Lab<>(() -> new TestNAR(NARS.tmp()));
-
 //        l.discover();
 //        l.vars.values().forEach(x -> System.out.println(x));
 
-        l.var().add("ttlMAX", 6, 12, 2,
-                (x) -> x.nar.deriveTTL.intValue(),
-                (x, i) -> {
-                    x.nar.deriveTTL.set(i);
-                });
+    public static void main(String[] args) {
+        Lab<DeductiveMeshTest> l = new Lab<>(() ->
+        {
+            DeductiveMeshTest d = new DeductiveMeshTest(NARS.tmp(), new int[]{4, 3}, 2000);
+            d.test.quiet = true;
+            return d;
+        });
 
-        Optimization<TestNAR> o = l.optimize(t -> {
-                    float total = test(t, tests(NAL2Test.class));
-                    t.score = total;
+        l.var()
+            .add("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
+                t.test.nar.deriveTTL.set(i);
+            })
+            .add("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
+                t.test.nar.forgetRate.set(f);
+            });
+
+
+        Optimization<DeductiveMeshTest> o = l.optimize(d -> {
+                    try {
+                        d.test.test();
+                    } catch (Throwable t) {
+
+                    }
                 },
-//                test(e, randomTest(
-//                NAL1Test.class,
-//                NAL1MultistepTest.class,
-//                NAL2Test.class,
-//                NAL3Test.class,
-//                NAL5Test.class,
-//                NAL6Test.class,
-//                NAL7Test.class,
-//                NAL8Test.class
-//            )),
-                new Goal<>("testFast", t -> t.score)
+
+                new Goal<>("testFast", d -> d.test.score)
+                //new Goal<>("lessConcepts", d -> 1f/(1+d.test.nar.concepts.size()))
         );
         o.run();
         o.print();
-
-
     }
 
 //    public static void _main(String[] args) {

@@ -78,7 +78,7 @@ public class ExperimentRun<E> implements Runnable {
     /**
      * records all sensors ()
      */
-    public void record() {
+    public Object[] record() {
         synchronized (data) {
             Object row[] = new Object[sensors.size()];
             int c = 0;
@@ -86,6 +86,7 @@ public class ExperimentRun<E> implements Runnable {
                 row[c++] = sensors.get(i).apply(experiment);
             }
             data.add(row);
+            return row;
         }
     }
 }
