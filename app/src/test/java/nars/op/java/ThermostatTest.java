@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
+import nars.control.MetaGoal;
 import nars.op.ArithmeticIntroduction;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -30,18 +31,19 @@ public class ThermostatTest {
 
         NAR n = NARS.tmp();
 
-        new ArithmeticIntroduction(8, n);
+        new ArithmeticIntroduction(16, n);
 
         n.time.dur(DUR);
-        n.dtDither.set(0);
-        n.timeFocus.set(2);
-        n.termVolumeMax.set(22);
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.01f);
-        n.activateConceptRate.set(0.1f);
+        n.dtDither.set(5);
+        n.timeFocus.set(6);
+
+        n.termVolumeMax.set(25);
+        n.freqResolution.set(0.05f);
+        n.confResolution.set(0.02f);
+        //n.activateConceptRate.set(0.1f);
 
         n.goalPriDefault.set(0.5f);
-
+        n.emotion.want(MetaGoal.Believe, -0.1f);
 
         float exeThresh = 0.51f;
 

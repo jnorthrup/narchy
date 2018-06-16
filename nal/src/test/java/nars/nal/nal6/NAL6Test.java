@@ -485,7 +485,6 @@ public class NAL6Test extends NALTest {
     public void second_level_variable_unificationNoImgAndAsPrecondition() {
 
         TestNAR tester = test;
-        tester.log();
         tester.believe("((<#1 --> lock>&&<$2 --> key>) ==> open(#1,$2))", 1.00f, 0.90f);
 
 

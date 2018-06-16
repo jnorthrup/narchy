@@ -45,7 +45,7 @@ public class DiscretizedScalarFeature {
         return arity;
     }
 
-    class CentroidMatch implements Predicate<Function<Integer,Float>> {
+    public class CentroidMatch implements Predicate<Function<Integer,Float>> {
 
         private final int v;
         private final String label;
@@ -57,17 +57,47 @@ public class DiscretizedScalarFeature {
 
         @Override
         public String toString() {
-            double estimate = value();
-            return name + "=" + ((label != null ? (label + "~") : "") + Texts.n4(estimate));
+            double[] interval = value();
+            return name + '=' + ((label != null ? (label + '[') : "") + Texts.n4(interval[0]) + ".." + Texts.n4(interval[1]) + ']');
         }
 
-        public double value() {
+        /** computes a bounded estimate interval */
+        public double[] value() {
             return discretizer.value(v);
         }
 
         @Override
         public boolean test(Function<Integer, Float> rr) {
             return discretizer.index(rr.apply(num)) == v;
+        }
+
+        public String condition(boolean isTrue) {
+
+            String var = name;
+            double[] range = value();
+            if (isTrue) {
+                if (range[0] == Double.NEGATIVE_INFINITY && range[1] == Double.POSITIVE_INFINITY)
+                    return "true";
+                if (range[0] == Double.NEGATIVE_INFINITY)
+                    return var + " <= " + range[1];
+                else if (range[1] == Double.POSITIVE_INFINITY)
+                    return var + " >= " + range[0];
+                else
+                    return var + " >= " + range[0] + " && " + var + " <= " + range[1];
+
+            } else {
+                //return var + " < " + range[0] + " || " + var + " > " + range[1];
+
+                if (range[0] == Double.NEGATIVE_INFINITY && range[1] == Double.POSITIVE_INFINITY)
+                    return "false";
+                if (range[0] == Double.NEGATIVE_INFINITY)
+                    return "false"; //var + " <= " + range[1];
+                else if (range[1] == Double.POSITIVE_INFINITY)
+                    return "false"; //var + " >= " + range[0];
+                else
+                    return var + " < " + range[0] + " || " + var + " > " + range[1];
+            }
+
         }
     }
 

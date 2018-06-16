@@ -11,10 +11,10 @@ public interface Discretize1D  {
     /** trains a value */
     void put(double value);
 
-    /** calculates the closest index of a value */
+    /** calculates the (current) associated index of a value */
     int index(double value);
 
-    /** estimates the value of an index */
-    double value(int v);
+    /** estimates the (current) interval range of an index */
+    double[] value(int v);
 
 }

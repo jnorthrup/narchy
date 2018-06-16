@@ -2,6 +2,8 @@ package jcog.lab;
 
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
+import java.util.function.ToDoubleFunction;
+
 /**
  * an "objective function"
  * the float value provided by the goal represents the degree to which
@@ -21,6 +23,9 @@ public class Goal<X> extends ProxySensor<X,Number> {
     }
 
     public Goal(FloatFunction<X> goal) {
+        super(NumberSensor.of("goal", goal));
+    }
+    public Goal(ToDoubleFunction<X> goal) {
         super(NumberSensor.of("goal", goal));
     }
 }

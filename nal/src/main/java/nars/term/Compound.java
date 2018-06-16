@@ -584,52 +584,58 @@ public interface Compound extends Term, IPair, Subterms {
     /* collects any contained events within a conjunction*/
     @Override
     default boolean eventsWhile(LongObjectPredicate<Term> events, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
+
         Op o = op();
+
         if (o == CONJ) {
+
             int dt = dt();
+            boolean decompose = true;
+            switch (dt) {
+                case 0:
+                    if (!decomposeConjParallel)
+                        decompose = false;
+                    break;
+                case DTERNAL:
+                    if (!decomposeConjDTernal)
+                        decompose = false;
+                    else
+                        dt = 0;
+                    break;
+                case XTERNAL:
+                    if (!decomposeXternal)
+                        decompose = false;
+                    else
+                        dt = 0;
+                    break;
 
-            if ((decomposeConjDTernal || dt != DTERNAL) && (decomposeConjParallel || dt != 0) && (decomposeXternal || dt != XTERNAL)) {
+            }
 
-                if (dt == DTERNAL)
-                    dt = 0;
-                else if (dt == XTERNAL) 
-                    dt = 0;
+            if (decompose) {
 
                 Subterms tt = subterms();
                 int s = tt.subs();
                 long t = offset;
 
-
                 boolean changeDT = t != ETERNAL && t != TIMELESS;
 
                 level++;
 
-                if (dt >= 0) {
-                    
-                    for (int i = 0; i < s; i++) {
-                        Term st = tt.sub(i);
-                        if (!st.eventsWhile(events, t,
-                                decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
-                                level)) 
-                            return false;
+                boolean fwd  = dt >= 0;
+                if (!fwd)
+                    dt = -dt;
 
-                        if (changeDT)
-                            t += dt + st.dtRange();
-                    }
-                } else {
-                    
-                    for (int i = s - 1; i >= 0; i--) {
-                        Term st = tt.sub(i);
-                        if (!st.eventsWhile(events, t,
-                                decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
-                                level)) 
-                            return false;
+                for (int i = 0; i < s; i++) {
+                    Term st = tt.sub(fwd ? i : (s-1)-i);
+                    if (!st.eventsWhile(events, t,
+                            decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
+                            level))
+                        return false;
 
-                        if (changeDT)
-                            t += -dt + st.dtRange();
-                    }
-
+                    if (changeDT)
+                        t += dt + st.dtRange();
                 }
+
 
                 return true;
             }

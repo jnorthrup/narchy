@@ -180,7 +180,8 @@ public class TermReductionsTest extends NarseseTest {
         
         assertReduction(False, "(((b &&+4 a)&|(--,b))&|((--,c) &&+6 a))");
 
-        assertReduction("((&|,a,b2,b3) &&+1 (c&|b1))", "(((a &&+1 b1)&|b2)&|(b3 &&+1 c))");
+        assertReduction("((&|,a,b2,b3) &&+1 (c&|b1))",
+                "(((a &&+1 b1)&|b2)&|(b3 &&+1 c))");
         assertReduction("((a &&+1 (b1&|b2)) &&+1 c)", "((a &&+1 (b1&|b2)) &&+1 c)");
 
 

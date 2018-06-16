@@ -125,7 +125,7 @@ public class TemporalStabilityTests {
     }
 
     @Test public void testTemporalStabilityLinkedProd_easy() {
-        new T1(linkedproductor, 1, 2).test(500, NARS.tmp().log());
+        new T1(linkedproductor, 1, 2).test(500, NARS.tmp());
     }
 
     @Test public void testTemporalStabilityLinkedProd() {

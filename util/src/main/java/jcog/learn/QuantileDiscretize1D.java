@@ -15,7 +15,7 @@ public class QuantileDiscretize1D implements Discretize1D {
 //        assert(levels>1);
         q = new Quantiler(8);
         updated = false;
-        this.thresh = new float[levels];
+        this.thresh = new float[levels-1];
     }
 
     @Override
@@ -68,7 +68,13 @@ public class QuantileDiscretize1D implements Discretize1D {
     }
 
     @Override
-    public double value(int v) {
-        return thresh[v];
+    public double[] value(int v) {
+        if (v == 0) {
+            return new double[] { Double.NEGATIVE_INFINITY, thresh[0] };
+        } else if (v == thresh.length) {
+            return new double[] { thresh[thresh.length-1], Double.POSITIVE_INFINITY  };
+        } else {
+            return new double[] { thresh[v-1], thresh[v] };
+        }
     }
 }

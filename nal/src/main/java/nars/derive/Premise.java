@@ -14,7 +14,6 @@ import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
@@ -174,8 +173,12 @@ public class Premise {
 
 
 
-            long taskStart = Tense.dither(task.start(), n);
-            long taskEnd = Tense.dither(task.end(), n);
+            long taskStart =
+                    //Tense.dither(task.start(), n);
+                    task.start();
+            long taskEnd =
+                    //Tense.dither(task.end(), n);
+                    task.end();
 
             if (!beliefTerm.hasVarQuery()) { 
 

@@ -31,7 +31,6 @@ import static nars.time.Tense.XTERNAL;
  */
 abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Truth> {
 
-
     public static final DynamicTruthModel UnionSubj = new SectIntersection(true, true);
     public static final DynamicTruthModel IsectSubj = new SectIntersection(false, true);
     public static final DynamicTruthModel UnionPred = new SectIntersection(true, false);
@@ -109,7 +108,34 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     }
 
     @Nullable
-    public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean timeFlexible, NAR n) {
+    static public Term inhReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred) {
+        Term superSect = superterm.sub(subjOrPred ? 0 : 1);
+
+        if (!Param.DEBUG) {
+            //elide reconstruction when superterm will not differ by temporal terms
+            //TODO improve
+            if (superSect.subs() == components.size() && ((FasterList<TaskRegion>) components).allSatisfy(t -> t != null && !((Task) t).term().sub(subjOrPred ? 0 : 1).isTemporal())) {
+                if (!superSect.isTemporal())
+                    return superterm;
+            }
+        }
+
+
+        Term[] subs = inhReconstruct(subjOrPred, components);
+        if (subs == null)
+            return null;
+
+
+        Term sect = superSect.op().the(subs);
+        Term common = superterm.sub(subjOrPred ? 1 : 0);
+        Term x = subjOrPred ? INH.the(sect, common) : INH.the(common, sect);
+        if (x.op() != INH)
+            return null;
+        return x;
+    }
+
+    @Nullable
+    public final DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean timeFlexible, NAR n) {
 
         assert (superterm.op() != NEG);
 
@@ -121,42 +147,36 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                 concept = concept.unneg();
 
             Concept subConcept =
-
                     n.conceptualizeDynamic(concept);
 
-            @Nullable Task bt;
+
             if (!(subConcept instanceof TaskConcept)) {
-
-
                 return false;
-            } else {
-
-                BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
-
-
-                bt = table.match(subStart, subEnd, concept, x ->
-                        /* x.intersects(subStart, subEnd) && */ d.doesntOverlap(x), n
-                );
-                if (bt != null) {
-
-                    /** project to a specific time, and apply negation if necessary */
-                    bt = Task.project(timeFlexible, bt, subStart, subEnd, n, negated);
-
-                } else {
-
-                    return false;
-                }
-
             }
+
+
+            BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
+
+
+            Task bt = table.match(subStart, subEnd, concept, x ->
+                    /* x.intersects(subStart, subEnd) && */ d.doesntOverlap(x), n
+            );
+            if (bt == null)
+                return false;
+
+            /** project to a specific time, and apply negation if necessary */
+            bt = Task.project(timeFlexible, bt, subStart, subEnd, n, negated);
+            if (bt == null)
+                return false;
 
             return add(bt, d);
 
         }) ? d : null;
     }
 
-    abstract public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
-
     ;
+
+    abstract public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each);
 
     protected boolean add(@Nullable Task bt, DynTruth d) {
         return d.add(bt);
@@ -255,7 +275,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public Term reconstruct(Term superterm, List<TaskRegion> components) {
             return inhReconstruct(superterm, components, subjOrPred);
         }
-
 
 
         protected final boolean subjOrPred() {
@@ -376,33 +395,6 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         public Term reconstruct(Term superterm, List<TaskRegion> c) {
             return inhReconstruct(superterm, c, subjOrPred);
         }
-    }
-
-    @Nullable
-    static public Term inhReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred) {
-        Term superSect = superterm.sub(subjOrPred ? 0 : 1);
-
-        if (!Param.DEBUG) {
-            //elide reconstruction when superterm will not differ by temporal terms
-            //TODO improve
-            if (superSect.subs() == components.size() && ((FasterList<TaskRegion>) components).allSatisfy(t -> t != null && !((Task)t).term().sub(subjOrPred ? 0 : 1).isTemporal())) {
-                if (!superSect.isTemporal())
-                    return superterm;
-            }
-        }
-
-
-        Term[] subs = inhReconstruct(subjOrPred, components);
-        if (subs == null)
-            return null;
-
-
-        Term sect = superSect.op().the(subs);
-        Term common = superterm.sub(subjOrPred ? 1 : 0);
-        Term x = subjOrPred ? INH.the(sect, common) : INH.the(common, sect);
-        if (x.op() != INH)
-            return null;
-        return x;
     }
 
 }

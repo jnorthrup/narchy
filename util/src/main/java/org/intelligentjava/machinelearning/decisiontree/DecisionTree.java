@@ -1,13 +1,15 @@
 package org.intelligentjava.machinelearning.decisiontree;
 
 import jcog.StreamReplay;
+import jcog.TODO;
 import jcog.list.FasterList;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
+import org.intelligentjava.machinelearning.decisiontree.feature.DiscretizedScalarFeature.CentroidMatch;
 import org.intelligentjava.machinelearning.decisiontree.impurity.GiniIndexImpurityCalculation;
 import org.intelligentjava.machinelearning.decisiontree.impurity.ImpurityCalculator;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -50,27 +52,88 @@ public class DecisionTree<K, V> {
      */
     private DecisionNode<V> root;
 
-
-    public DecisionTree maxDepth(int d) {
-        this.maxDepth = d;
-        return this;
-    }
-
     /**
      * Returns Label if data is homogeneous.
      */
     protected static <K, V> V label(K value, Stream<Function<K, V>> data, float homogenityPercentage) {
-        
+
         Map<V, Long> labelCount = data.collect(groupingBy((x) -> x.apply(value), counting()));
 
         long totalCount = labelCount.values().stream().mapToLong(x -> x).sum();
-        for (Map.Entry<V, Long> e : labelCount.entrySet()) {
+        for (Map.Entry<V, Long> e: labelCount.entrySet()) {
             long nbOfLabels = e.getValue();
             if ((nbOfLabels / (double) totalCount) >= homogenityPercentage) {
                 return e.getKey();
             }
         }
         return null;
+    }
+
+    protected static <K, V> Stream<List<Function<K, V>>> split(Predicate<Function<K, V>> p, List<Function<K, V>> data) {
+        return split(p, data::stream);
+    }
+
+    /**
+     * Split data according to if it has this feature.
+     *
+     * @param data Data to by split by this feature.
+     * @return Sublists of split data samples.
+     */
+    static <K, V> Stream<List<Function<K, V>>> split(Predicate<Function<K, V>> p, Supplier<Stream<Function<K, V>>> data) {
+
+        Map<Boolean, List<Function<K, V>>> split = data.get().collect(partitioningBy(p));
+        List<Function<K, V>> ifTrue = split.get(true);
+        List<Function<K, V>> ifFalse = split.get(false);
+
+        return Stream.of(ifTrue, ifFalse);
+
+    }
+
+    /**
+     * Differs from getLabel() that it always return some label and does not look at homogenityPercentage parameter. It
+     * is used when tree growth is stopped and everything what is left must be classified so it returns majority label for the data.
+     */
+    static <K, V> V majority(K value, Stream<Function<K, V>> data) {
+
+        return data.collect(groupingBy(x -> x.apply(value), counting()))
+                .entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
+    }
+
+    private static void printSubtree(DecisionNode<?> node, PrintStream o) {
+        if (!node.isEmpty() && node.get(0) != null) {
+            print(node.get(0), true, "", o);
+        }
+        print(node, o);
+        if (node.size() > 1 && node.get(1) != null) {
+            print(node.get(1), false, "", o);
+        }
+    }
+
+    private static void print(DecisionNode node, PrintStream o) {
+        o.print(node);
+        o.println();
+    }
+
+    private static <K> void print(DecisionNode<?> node, boolean isRight, K indent, PrintStream o) {
+        if (!node.isEmpty() && node.get(0) != null) {
+            print(node.get(0), true, indent + (isRight ? "        " : " |      "), o);
+        }
+        o.print(indent);
+        if (isRight) {
+            o.print(" /");
+        } else {
+            o.print(" \\");
+        }
+        o.print("----- ");
+        print(node, o);
+        if (node.size() > 1 && node.get(1) != null) {
+            print(node.get(1), false, indent + (isRight ? " |      " : "        "), o);
+        }
+    }
+
+    public DecisionTree maxDepth(int d) {
+        this.maxDepth = d;
+        return this;
     }
 
     /**
@@ -118,26 +181,6 @@ public class DecisionTree<K, V> {
         return put(value, data, features, DEFAULT_PRECISION);
     }
 
-    protected static <K, V> Stream<List<Function<K, V>>> split(Predicate<Function<K, V>> p, List<Function<K, V>> data) {
-        return split(p, data::stream);
-    }
-
-    /**
-     * Split data according to if it has this feature.
-     *
-     * @param data Data to by split by this feature.
-     * @return Sublists of split data samples.
-     */
-    static <K, V> Stream<List<Function<K, V>>> split(Predicate<Function<K, V>> p, Supplier<Stream<Function<K, V>>> data) {
-
-        Map<Boolean, List<Function<K, V>>> split = data.get().collect(partitioningBy(p::test));
-        List<Function<K, V>> ifTrue = split.get(true);
-        List<Function<K, V>> ifFalse = split.get(false);
-
-        return Stream.of(ifTrue, ifFalse);
-
-    }
-
     /**
      * Grow tree during training by splitting data recusively on best feature.
      *
@@ -147,10 +190,10 @@ public class DecisionTree<K, V> {
      */
     protected DecisionNode<V> put(K key, Supplier<Stream<Function<K, V>>> d, Stream<Predicate<Function<K, V>>> features, int currentDepth, IntToFloatFunction depthToPrecision) {
 
-        
+
         V currentNodeLabel;
         if ((currentNodeLabel = label(key, d.get(), depthToPrecision.valueOf(currentDepth))) != null) {
-            return leaf(currentNodeLabel); 
+            return leaf(currentNodeLabel);
         }
 
         boolean stoppingCriteriaReached = currentDepth >= maxDepth;
@@ -191,8 +234,8 @@ public class DecisionTree<K, V> {
      */
     public V get(Function<K, V> value) {
         DecisionNode<V> node = root;
-        while (!node.isLeaf()) { 
-            
+        while (!node.isLeaf()) {
+
             node = node.get(node.feature.test(value) ? 0 : 1);
         }
         return node.label;
@@ -216,29 +259,6 @@ public class DecisionTree<K, V> {
         });
     }
 
-    /**
-     * Differs from getLabel() that it always return some label and does not look at homogenityPercentage parameter. It
-     * is used when tree growth is stopped and everything what is left must be classified so it returns majority label for the data.
-     */
-    static <K, V> V majority(K value, Stream<Function<K, V>> data) {
-        
-        return data.collect(groupingBy((x) -> x.apply(value), counting()))
-                .entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
-    }
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
     public void explain(BiConsumer<List<ObjectBooleanPair<DecisionNode<V>>>, DecisionNode.LeafNode<V>> c) {
         root.explain(c, new FasterList());
     }
@@ -251,45 +271,27 @@ public class DecisionTree<K, V> {
         printSubtree(root, o);
     }
 
-    private static void printSubtree(DecisionNode<?> node, PrintStream o) {
-        if (!node.isEmpty() && node.get(0) != null) {
-            print(node.get(0), true, "", o);
-        }
-        print(node, o);
-        if (node.size() > 1 && node.get(1) != null) {
-            print(node.get(1), false, "", o);
-        }
-    }
-
-    private static void print(DecisionNode node, PrintStream o) {
-        o.print(node);
-        o.println();
-    }
-
-    private static <K> void print(DecisionNode<?> node, boolean isRight, K indent, PrintStream o) {
-        if (!node.isEmpty() && node.get(0) != null) {
-            print(node.get(0), true, indent + (isRight ? "        " : " |      "), o);
-        }
-        o.print(indent);
-        if (isRight) {
-            o.print(" /");
-        } else {
-            o.print(" \\");
-        }
-        o.print("----- ");
-        print(node, o);
-        if (node.size() > 1 && node.get(1) != null) {
-            print(node.get(1), false, indent + (isRight ? " |      " : "        "), o);
-        }
-    }
-
-    /** requires V to be Comparable */
+    /**
+     * requires V to be Comparable
+     */
     public SortedMap<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> explanations() {
         SortedMap<DecisionNode.LeafNode<V>, List<ObjectBooleanPair<DecisionNode<V>>>> explanations = new TreeMap();
-        explain((path, result) -> {
-            explanations.put(result, new FasterList(path) /* clone it */);
-        });
+        explain((path, result) -> explanations.put(result, new FasterList(path) /* clone it */));
         return explanations;
+    }
+
+    /** var is the name of the target value */
+    public SortedMap<DecisionNode.LeafNode<V>, List<String>> explainedConditions() {
+        SortedMap<DecisionNode.LeafNode<V>, List<String>> map = new TreeMap<>();
+        explanations().entrySet().stream().forEach((e) -> {
+            DecisionNode.LeafNode<V> result = e.getKey();
+            List<String> cond = e.getValue().stream().map(c ->
+                c.getOne().condition(c.getTwo())
+            ).filter(x -> !x.equals("false")).collect(toList());
+            if (!cond.isEmpty())
+                map.put(result, cond);
+        });
+        return map;
     }
 
     public static class DecisionNode<V> extends FasterList<DecisionNode<V>> implements Comparable<V> {
@@ -307,23 +309,15 @@ public class DecisionTree<K, V> {
             this(feature, null);
         }
 
-        private DecisionNode(Predicate feature, V label) {
+        DecisionNode(V label) {
+            this(null, label);
+        }
+
+        private DecisionNode(@Nullable Predicate feature, @Nullable V label) {
             super(0);
             this.label = label;
             this.feature = feature;
             this.hash = Objects.hash(label, feature);
-        }
-
-
-        @Override
-        public boolean add(DecisionNode<V> newItem) {
-            return !contains(newItem) && super.add(newItem);
-        }
-
-
-        public Stream<DecisionNode<V>> recurse() {
-            return isEmpty() ? Stream.of(this) :
-                    Stream.concat(Stream.of(this), stream().flatMap(DecisionNode::recurse));
         }
 
         public static <V> DecisionNode<V> feature(Predicate feature) {
@@ -332,6 +326,16 @@ public class DecisionTree<K, V> {
 
         public static <V> DecisionNode<V> leaf(V label) {
             return new LeafNode<>(label);
+        }
+
+        @Override
+        public boolean add(DecisionNode<V> newItem) {
+            return !contains(newItem) && super.add(newItem);
+        }
+
+        public Stream<DecisionNode<V>> recurse() {
+            return isEmpty() ? Stream.of(this) :
+                    Stream.concat(Stream.of(this), stream().flatMap(DecisionNode::recurse));
         }
 
         public boolean isLeaf() {
@@ -343,7 +347,7 @@ public class DecisionTree<K, V> {
         }
 
         @Override
-        public int hashCode() {
+        public final int hashCode() {
             return hash;
         }
 
@@ -359,67 +363,59 @@ public class DecisionTree<K, V> {
         }
 
         @Override
-        public int compareTo(@NotNull Object o) {
+        public int compareTo(Object o) {
             if (o == this) return 0;
             DecisionNode n = (DecisionNode) o;
             if (feature != null) {
-                int f = Integer.compare(feature.hashCode(), n.feature.hashCode()); 
+                int f = Integer.compare(feature.hashCode(), n.feature.hashCode());
                 if (f != 0)
                     return f;
             }
-            return ((Comparable) label).compareTo(n.label); 
+            return ((Comparable) label).compareTo(n.label);
         }
 
         public void explain(BiConsumer<List<ObjectBooleanPair<DecisionNode<V>>>, LeafNode<V>> c, FasterList<ObjectBooleanPair<DecisionNode<V>>> path) {
 
 
-
             int s = size();
-            if (s ==2) {
+            if (s == 2) {
 
                 explain(c, path, 0);
                 explain(c, path, 1);
 
             } else if (s == 0) {
-                
-            } else {
+//
+//            } else {
                 throw new UnsupportedOperationException("predicate?");
             }
 
         }
 
+        /** compose an expression that matches the condition of the decision of this node */
+        public String condition(boolean isTrue) {
+            assert(feature!=null);
+
+            if (feature instanceof CentroidMatch) {
+                return ((CentroidMatch)feature).condition(isTrue);
+            } else {
+                throw new TODO();
+            }
+        }
+
         public void explain(BiConsumer<List<ObjectBooleanPair<DecisionNode<V>>>, LeafNode<V>> c, FasterList<ObjectBooleanPair<DecisionNode<V>>> path, int child) {
-            assert(child == 0 || child == 1);
-            path.add(PrimitiveTuples.pair(this, child == 0));
+
+            assert (size()==2 && (child == 0 || child == 1)); //TODO n-ary split
+
+            boolean isTrue = child == 0;
+            path.add(PrimitiveTuples.pair(this, isTrue));
             get(child).explain(c, path);
             path.removeLast();
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         public static class LeafNode<V> extends DecisionNode<V> {
             public LeafNode(V label) {
-                super(null, label);
+                super(label);
             }
 
             @Override
@@ -429,15 +425,15 @@ public class DecisionTree<K, V> {
 
             @Override
             public boolean equals(Object that) {
-                return this==that;
+                return this == that;
             }
 
             @Override
-            public int compareTo(@NotNull Object o) {
+            public int compareTo(Object o) {
                 if (this == o) return 0;
                 if (!(o instanceof LeafNode)) return -1;
-                int x = ((Comparable)label).compareTo( ((LeafNode<V>)o).label );
-                if (x!=0) return x;
+                int x = ((Comparable) label).compareTo(((DecisionNode) o).label);
+                if (x != 0) return x;
                 return Integer.compare(System.identityHashCode(this), System.identityHashCode(o));
             }
 
@@ -446,7 +442,6 @@ public class DecisionTree<K, V> {
                 return label.toString();
             }
 
-            
 
             @Override
             public boolean add(DecisionNode newItem) {
@@ -458,5 +453,13 @@ public class DecisionTree<K, V> {
                 throw new UnsupportedOperationException();
             }
         }
+    }
+
+    public void printExplanations() {
+        printExplanations(System.out);
+    }
+
+    public void printExplanations(PrintStream out) {
+        explainedConditions().forEach((leaf, path) -> out.println(leaf + "\n\t" + path));
     }
 }

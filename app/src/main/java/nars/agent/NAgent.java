@@ -336,10 +336,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             actions.keySet().forEach(a -> {
                 alwaysQuest(a);
-                
-                
-                alwaysQuestion(Op.CONJ.the(happy.term, a.term));
-                alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
+                //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
+                //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
             });
 
             this.in = nar.newChannel(this);

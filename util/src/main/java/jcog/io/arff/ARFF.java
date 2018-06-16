@@ -538,30 +538,32 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
         return data;
     }
 
-    public FloatTable<String> toFloatTable(int... columns) {
+//    public FloatTable<String> toFloatTable(int... columns) {
+//
+//        Arrays.sort(columns);
+//
+//        int n = columns.length;
+//        String[] names = new String[n];
+//        int i = 0;
+//        for (int c : columns) {
+//            names[i++] = attrName(c);
+//        }
+//        FloatTable<String> data = new FloatTable<>(names);
+//
+//
+//        for (ImmutableList exp : this.data) {
+//            float[] r = new float[n];
+//            int k = 0;
+//            for (int c : columns)
+//                r[k++] = ((Number) exp.get(c)).floatValue();
+//            data.add(r);
+//        }
+//
+//        return data;
+//
+//    }
 
-        Arrays.sort(columns);
 
-        int n = columns.length;
-        String[] names = new String[n];
-        int i = 0;
-        for (int c : columns) {
-            names[i++] = attrName(c);
-        }
-        FloatTable<String> data = new FloatTable<>(names);
-
-
-        for (ImmutableList exp : this.data) {
-            float[] r = new float[n];
-            int k = 0;
-            for (int c : columns)
-                r[k++] = ((Number) exp.get(c)).floatValue();
-            data.add(r);
-        }
-
-        return data;
-
-    }
 
     public enum AttributeType {
         /*

@@ -18,6 +18,7 @@ import nars.task.util.TaskRegion;
 import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.var.VarIndep;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -423,7 +424,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
                 subEnd = intersection.b;
             }
 
+            subStart = Tense.dither(subStart, n);
+            subEnd = Tense.dither(subEnd, n);
             Truth ttt = t.truth(subStart, subEnd, n.dur()).dither(n);
+
             return (ttt != null) ?
                     new TaskWithTruthAndOccurrence(t, subStart, subEnd, negated, ttt.negIf(negated)) : null;
         }

@@ -6,9 +6,12 @@ import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
 import nars.nal.nal1.NAL1Test;
+import nars.nal.nal2.NAL2Test;
+import nars.nal.nal3.NAL3Test;
 import nars.nal.nal4.NAL4Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
+import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 
 import java.util.function.Supplier;
 
@@ -17,24 +20,29 @@ public class NARTestOptimize {
     static class NAL1Optimize {
         public static void main(String[] args) {
             int nalLevel = 4;
-            Class[] testClasses = new Class[] {  NAL1Test.class, NAL4Test.class };
+            Class[] testClasses = new Class[] {
+                    NAL1Test.class, NAL2Test.class, NAL3Test.class, NAL4Test.class
+                    //NAL6Test.class
+            };
 
             Lab<NAR> l = new Lab<>(() -> NARS.tmp(nalLevel))
-                .var("ttlMax", 6, 100, 20,
-                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
-                .var("termVolumeMax", 5, 30, 2,
-                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+//                .var("ttlMax", 6, 50, 3,
+//                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
                 .var("forgetRate", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.forgetRate.set(f))
                 .var("activationRate", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.activateConceptRate.set(f));
+                        (NAR n, float f) -> n.activateConceptRate.set(f))
+            ;
+
 
 
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);
-                t.run();
+                t.run(true);
                 return t;
-            }, t -> (float) t.score());
+            },
+                (TestNARSuite t) -> (float) t.score()
+            );
 
             o
             .sense("numConcepts",
@@ -42,9 +50,13 @@ public class NARTestOptimize {
             .sense("derivedTask",
                 (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()));
 
-            o.runSync()
-            .print()
-            .tree(3, 5).print();
+            o.runSync().print();
+
+            RealDecisionTree t = o.tree(4, 8);
+            t.print();
+            t.printExplanations();
+
+
         }
     }
 
@@ -74,6 +86,7 @@ public class NARTestOptimize {
             );
             o.run();
             o.print();
+            o.tree(4, 6).print();
             System.out.println(o.best());
         }
     }

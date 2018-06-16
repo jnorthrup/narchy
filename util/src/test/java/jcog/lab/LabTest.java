@@ -5,6 +5,7 @@ import jcog.lab.util.Opti;
 import jcog.math.FloatRange;
 import jcog.math.Range;
 import org.eclipse.collections.api.list.ImmutableList;
+import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,12 +25,13 @@ class LabTest {
         r.print();
 
         System.out.println("\ndisc=1");
-        r.tree(1, 4).print();
-        System.out.println("\ndisc=1");
         r.tree(2, 4).print();
-        System.out.println("\ndisc=1");
+        System.out.println("\ndisc=2");
         r.tree(3, 4).print();
-
+        System.out.println("\ndisc=3");
+        RealDecisionTree t = r.tree(4, 4);
+        t.print();
+        t.printExplanations();
 
         assertTrue(((Number) best.get(0)).doubleValue() >= 5f);
         assertTrue(a.vars.size() >= 4);

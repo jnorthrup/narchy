@@ -5,7 +5,7 @@ package org.intelligentjava.machinelearning.decisiontree.label;
  *
  * @author Ignas
  */
-public class BooleanLabel  {
+public final class BooleanLabel  {
 
     public static final BooleanLabel TRUE_LABEL = BooleanLabel.newLabel(true);
 

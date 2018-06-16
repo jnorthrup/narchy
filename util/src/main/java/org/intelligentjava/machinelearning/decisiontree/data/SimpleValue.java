@@ -11,7 +11,7 @@ import java.util.function.Function;
  *
  * @author Ignas
  */
-public class SimpleValue<L> implements Function<String,L> {
+public final class SimpleValue<L> implements Function<String,L> {
 
     private final Map<String, L> values = Maps.newHashMap();
 

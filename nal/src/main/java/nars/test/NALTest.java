@@ -34,32 +34,33 @@ public abstract class NALTest {
             t = (NALTest) ((Class) m.getDeclaringClass())
                     .getConstructor().newInstance();
             t.test = (tt);
-        } catch (Exception e) {
-            return null;
+
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return t;
         }
 
         t.test.quiet = true;
-        t.test.nar.random().setSeed(
-                System.nanoTime()
-
-        );
-
+//        t.test.nar.random().setSeed(
+//                System.nanoTime()
+//        );
 
         try {
             m.invoke(t);
-        } catch (Throwable ee) {
-            return null;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return t;
         }
 
-        Param.DEBUG = false;
-
         try {
+
+            Param.DEBUG = false;
+
+
             t.test.test();
 
         } catch (Throwable ee) {
-
-
-            return null;
+            t.test.score = -1;
         }
         return t;
 
@@ -70,7 +71,7 @@ public abstract class NALTest {
         return Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getMethods())
                         .filter(x -> x.getAnnotation(Test.class) != null))
-                        .collect(toList()).parallelStream();
+                        .collect(toList()).stream();
     }
 
 

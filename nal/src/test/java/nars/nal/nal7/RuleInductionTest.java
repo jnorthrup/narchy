@@ -65,7 +65,7 @@ public class RuleInductionTest {
 
         n.time.dur(dur);
 
-        n.log();
+        //n.log();
 
         Term aConjB = $$("(a &&+" + dutyPeriod + " b)");
         Term aConjB_root = aConjB.concept();

@@ -2,6 +2,7 @@ package jcog.lab.util;
 
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.ArrayHashSet;
 import jcog.io.arff.ARFF;
 import jcog.lab.Goal;
 import jcog.lab.Lab;
@@ -16,7 +17,7 @@ import org.apache.commons.math3.optim.MaxEval;
 import org.apache.commons.math3.optim.SimpleBounds;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
-import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalSimplex;
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
@@ -134,8 +135,14 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         sensors.forEach(s -> s.addToSchema(data));
 
         strategy.run(this);
+
+        finish();
     }
 
+    protected void finish() {
+        //sort data
+        ((FasterList<ImmutableList>)((ArrayHashSet<ImmutableList>)data.data).list).sortThisByDouble(r -> -((Double)r.get(goalColumn)));
+    }
 
     protected double run(double[] point) {
 
@@ -146,26 +153,29 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
          * since all generated subjects should be identical
          * it wont matter which one.
          */
-        Object[] copy = new Object[1];
-        E y = null;
+
         try {
-            y = procedure.apply(() -> {
+            Object[] copy = new Object[1];
+            E y = procedure.apply(() -> {
                 S s = subject(subj.get(), point);
                 copy[0] = s; //for measurement
                 return s;
             });
+
+            double score = goal.apply(y).doubleValue();
+
+            Object[] row = row(copy[0], y, score);
+
+            System.out.println(Arrays.toString(row));
+            data.add(row);
+            return score;
+
         } catch (Throwable t) {
-            System.err.println(t.getMessage());
+            //System.err.println(t.getMessage());
+            t.printStackTrace();
+            return Double.NEGATIVE_INFINITY;
         }
 
-        double score = goal.apply(y).doubleValue();
-
-        Object[] row = row(copy[0], y, score);
-
-        System.out.println(Arrays.toString(row));
-        data.add(row);
-
-        return score;
     }
 
     private Object[] row(Object o, E y, double score) {
@@ -279,19 +289,20 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
 
             try {
                 int dim = o.inc.length;
-                double[] steps = new double[dim];
+                double[] range = new double[dim];
                 for (int i = 0; i < dim; i++)
-                    steps[i] = (o.max[i] - o.min[i]) / o.inc[i];
+                    range[i] = o.inc[i]; //(o.max[i] - o.min[i]);
 
                 new SimplexOptimizer(1e-10, 1e-30).optimize(
                         new MaxEval(maxIter),
                         func,
                         GoalType.MAXIMIZE,
                         new InitialGuess(o.mid),
-                        new MultiDirectionalSimplex(steps)
+                        //new MultiDirectionalSimplex(steps)
+                        new NelderMeadSimplex(range, 1.1f, 1.1f, 0.8f, 0.8f)
                 );
             } catch (TooManyEvaluationsException e) {
-
+                e.printStackTrace();
             }
         }
 
@@ -311,7 +322,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
                     (int) Math.ceil(4 + 3 * Math.log(o.vars.size()));
 
 
-            double[] sigma = MathArrays.scale(0.5f, o.inc);
+            double[] sigma = MathArrays.scale(1f, o.inc);
 
             MyCMAESOptimizer m = new MyCMAESOptimizer(maxIter, Double.NaN,
                     true, 0,

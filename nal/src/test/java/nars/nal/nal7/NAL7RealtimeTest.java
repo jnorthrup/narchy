@@ -23,7 +23,7 @@ public class NAL7RealtimeTest {
     public void test2() throws Narsese.NarseseException {
         NAR n = NARS.realtime(1f).withNAL(1,8).get();
 
-        n.log();
+        //n.log();
         n.input("(a &&+1min b).");
         n.input("(b &&+1min c).");
         n.input("(c &&+1min a).");

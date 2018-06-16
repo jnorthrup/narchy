@@ -46,10 +46,10 @@ public class TemporalTermTest {
 
     @Test
     public void testCoNegatedSubtermConceptConj() throws Narsese.NarseseException {
-        assertEquals("((x) &&+- (x))", n.conceptualize($("((x) &&+10 (x))")).toString());
+        assertEquals("(x &&+- x)", n.conceptualize($("(x &&+10 x)")).toString());
 
-        assertEquals("((--,(x)) &&+- (x))", n.conceptualize($("((x) &&+10 (--,(x)))")).toString());
-        assertEquals("((--,(x)) &&+- (x))", n.conceptualize($("((x) &&-10 (--,(x)))")).toString());
+        assertEquals("((--,x) &&+- x)", n.conceptualize($("(x &&+10 (--,x))")).toString());
+        assertEquals("((--,x) &&+- x)", n.conceptualize($("(x &&-10 (--,x))")).toString());
 
 
 
@@ -57,13 +57,13 @@ public class TemporalTermTest {
 
     @Test
     public void testCoNegatedSubtermConceptImpl() throws Narsese.NarseseException {
-        assertEquals("((x) ==>+- (x))", n.conceptualize($("((x) ==>+10 (x))")).toString());
-        assertEquals("((--,(x)) ==>+- (x))", n.conceptualize($("((--,(x)) ==>+10 (x))")).toString());
+        assertEquals("(x ==>+- x)", n.conceptualize($("(x ==>+10 x)")).toString());
+        assertEquals("((--,x) ==>+- x)", n.conceptualize($("((--,x) ==>+10 x)")).toString());
 
-        Term xThenNegX = $("((x) ==>+10 (--,(x)))");
-        assertEquals("((x) ==>+- (x))", n.conceptualize(xThenNegX).toString());
+        Term xThenNegX = $("(x ==>+10 (--,x))");
+        assertEquals("(x ==>+- x)", n.conceptualize(xThenNegX).toString());
 
-        assertEquals("((x) ==>+- (x))", n.conceptualize($("((x) ==>-10 (--,(x)))")).toString());
+        assertEquals("(x ==>+- x)", n.conceptualize($("(x ==>-10 (--,x))")).toString());
 
     }
 
@@ -71,11 +71,11 @@ public class TemporalTermTest {
     public void testCoNegatedSubtermTask() throws Narsese.NarseseException {
 
         
-        assertNotNull(Narsese.the().task("((x) &&+1 (--,(x))).", n));
+        assertNotNull(Narsese.the().task("(x &&+1 (--,x)).", n));
 
         
-        assertInvalidTask("((x) && (--,(x))).");
-        assertInvalidTask("((x) &&+0 (--,(x))).");
+        assertInvalidTask("(x && (--,x)).");
+        assertInvalidTask("(x &&+0 (--,x)).");
     }
 
     @Test
@@ -236,9 +236,9 @@ public class TemporalTermTest {
 
     @Test
     public void testAtemporalization() throws Narsese.NarseseException {
-        Term t = $("((x) ==>+10 (y))");
+        Term t = $("(x ==>+10 y)");
         Concept c = n.conceptualize(t);
-        assertEquals("((x)==>(y))", c.toString());
+        assertEquals("(x==>y)", c.toString());
     }
 
     @Test
@@ -331,9 +331,9 @@ public class TemporalTermTest {
     @Test
     public void testAtemporalizationSharesNonTemporalSubterms() throws Narsese.NarseseException {
 
-        Task a = n.inputTask("((x) ==>+10 (y)).");
-        Task c = n.inputTask("((x) ==>+9 (y)).");
-        Task b = n.inputTask("((x) <-> (y)).");
+        Task a = n.inputTask("(x ==>+10 y).");
+        Task c = n.inputTask("(x ==>+9 y).");
+        Task b = n.inputTask("(x <-> y).");
         n.run();
 
         @NotNull Term aa = a.term();
@@ -815,59 +815,61 @@ public class TemporalTermTest {
 
     @Test
     public void testSubtermConjInConj() throws Narsese.NarseseException {
-        String g0 = "(((x) &&+1 (y)) &&+1 (z))";
+        String g0 = "((x &&+1 y) &&+1 z)";
         Compound g = $(g0);
         assertEquals(g0, g.toString());
-        assertEquals(0, g.subTime($("(x)")));
-        assertEquals(1, g.subTime($("(y)")));
-        assertEquals(2, g.subTime($("(z)")));
+        assertEquals(0, g.subTime($("x")));
+        assertEquals(1, g.subTime($("y")));
+        assertEquals(2, g.subTime($("z")));
 
-        Compound h = $("((z) &&+1 ((x) &&+1 (y)))");
-        assertEquals(0, h.subTime($("(z)")));
-        assertEquals(1, h.subTime($("(x)")));
-        assertEquals(2, h.subTime($("(y)")));
+        Compound h = $("(z &&+1 (x &&+1 y))");
+        assertEquals(0, h.subTime($("z")));
+        assertEquals(1, h.subTime($("x")));
+        assertEquals(2, h.subTime($("y")));
 
-        Compound i = $("((y) &&+1 ((z) &&+1 (x)))");
-        assertEquals(0, i.subTime($("(y)")));
-        assertEquals(1, i.subTime($("(z)")));
-        assertEquals(2, i.subTime($("(x)")));
+        Compound i = $("(y &&+1 (z &&+1 x))");
+        assertEquals(0, i.subTime($("y")));
+        assertEquals(1, i.subTime($("z")));
+        assertEquals(2, i.subTime($("x")));
 
-        Compound j = $("((x) &&+1 ((z) &&+1 (y)))");
-        assertEquals(0, j.subTime($("(x)")));
-        assertEquals(1, j.subTime($("(z)")));
-        assertEquals(2, j.subTime($("(y)")));
+        Compound j = $("(x &&+1 (z &&+1 y))");
+        assertEquals(0, j.subTime($("x")));
+        assertEquals(1, j.subTime($("z")));
+        assertEquals(2, j.subTime($("y")));
     }
 
     @Test
     public void testDTRange() throws Narsese.NarseseException {
-        assertEquals(1, $("((z) &&+1 (y))").dtRange());
+        assertEquals(1, $("(z &&+1 y)").dtRange());
     }
 
     @Test
     public void testDTRange2() throws Narsese.NarseseException {
-        Term t = $("((x) &&+1 ((z) &&+1 (y)))");
-        assertEquals(2, t.dtRange());
+        String x = "(x &&+1 (z &&+1 y))";
+        Term t = $(x);
+        assertEquals("((x &&+1 z) &&+1 y)", t.toString());
+        assertEquals(2, t.dtRange(), ()->t + " incorrect dtRange");
     }
 
     @Test
     public void testDTRange3() throws Narsese.NarseseException {
-        assertEquals(4, $("((x) &&+1 ((z) &&+1 ((y) &&+2 (w))))").dtRange());
-        assertEquals(4, $("(((z) &&+1 ((y) &&+2 (w))) &&+1 (x))").dtRange());
+        assertEquals(4, $("(x &&+1 (z &&+1 (y &&+2 w)))").dtRange());
+        assertEquals(4, $("((z &&+1 (y &&+2 w)) &&+1 x)").dtRange());
     }
 
     @Test
     public void testNonCommutivityImplConcept() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
-        n.input("((x) ==>+5 (y)).", "((y) ==>-5 (x)).");
+        n.input("(x ==>+5 y).", "(y ==>-5 x).");
         n.run(5);
 
         TreeSet d = new TreeSet(Comparator.comparing(Object::toString));
         n.conceptsActive().forEach(x -> d.add(x.id));
 
         
-        assertTrue(d.contains($("((x)==>(y))")));
-        assertTrue(d.contains($("((y)==>(x))")));
+        assertTrue(d.contains($("(x==>y)")));
+        assertTrue(d.contains($("(y==>x)")));
     }
 
     @Test

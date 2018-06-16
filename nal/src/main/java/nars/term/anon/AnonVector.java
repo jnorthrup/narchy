@@ -13,9 +13,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import static nars.Op.NEG;
-import static nars.term.anon.AnonID.idToTerm;
-import static nars.term.anon.AnonID.idToTermWithNegationTest;
-import static nars.term.anon.AnonID.idtoMask;
+import static nars.term.anon.AnonID.*;
 
 /**
  * a vector which consists purely of AnonID terms

@@ -133,7 +133,7 @@ public class BooleanTest {
     @Test
     public void testEternalcept() throws Narsese.NarseseException {
 
-        NAR n = NARS.tmp().log();
+        NAR n = NARS.tmp();
         n.believe("((&&,(0,x),(1,x),(2,x),(3,x))==>a)");
         n.believe("((&&,(0,y),(1,y),(2,y),(3,y))==>b)");
         n.believe("((&&,(0,x),(1,x),(2,x),(3,y))==>c)");

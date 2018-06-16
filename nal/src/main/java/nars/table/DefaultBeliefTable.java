@@ -35,10 +35,6 @@ public class DefaultBeliefTable implements BeliefTable {
         return table(x).add(x, concept, nar);
     }
 
-    protected final boolean add(Task x, NAR nar) {
-        TaskConcept concept = (TaskConcept) x.concept(nar, true);
-        return concept!=null && table(x).add(x, concept, nar);
-    }
 
     @Override
     public Stream<Task> streamTasks() {

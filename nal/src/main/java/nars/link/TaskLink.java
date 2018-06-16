@@ -103,7 +103,8 @@ public interface TaskLink extends Priority, Termed {
                 if (punc == BELIEF) punc = QUESTION;
                 else if (punc == GOAL) punc = QUEST;
 
-                Task d = new UnevaluatedTask(term, punc, null, n.time(), when, when, n.evidence());
+                long[] se = n.timeFocus(when);
+                Task d = new UnevaluatedTask(term, punc, null, n.time(), se[0], se[1], n.evidence());
                 if (Param.DEBUG)
                     d.log("Tasklinked");
                 d.pri(link.priElseZero());

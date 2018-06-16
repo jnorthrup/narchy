@@ -16,7 +16,7 @@
 
 
   //Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
-  (X ==> Z), (Y ==> Z), neq(X,Y) |- (X<->Y), (Belief:ComparisonSymmetric)
+//  (X ==> Z), (Y ==> Z), neq(X,Y) |- (X<->Y), (Belief:ComparisonSymmetric)
 
   //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Goalduction)
   //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Goalduction)

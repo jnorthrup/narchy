@@ -44,12 +44,14 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
 
     public RealDecisionTree(FloatTable<String> table, int predictCol, int maxDepth, int discretization) {
-        this(table, predictCol, maxDepth, IntStream.range(0, discretization).mapToObj(String::valueOf).toArray(String[]::new));
+        this(table, predictCol, maxDepth,
+                IntStream.range(0, discretization).mapToObj(String::valueOf).toArray(String[]::new));
     }
 
     public RealDecisionTree(FloatTable<String> table, int predictCol, int maxDepth, String... rangeLabels) {
         super();
 
+        assert(rangeLabels!=null && rangeLabels.length>1);
         assert(maxDepth > 1);
         assert(table.size() > 0);
 
@@ -59,16 +61,11 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
         assert (table.cols.length > 1);
         maxDepth(maxDepth);
 
-        depthToPrecision = (i) -> {
-            float p = (0.9f / (1 + (i - 1) / ((float) maxDepth)));
-            return p;
-        };
+        depthToPrecision = (i) -> (0.9f / (1 + (i - 1) / ((float) maxDepth)));
 
         this.cols = IntStream.range(0, table.cols.length).mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x], discretization,
-                
                 new QuantileDiscretize1D()
-        ))
-                .toArray(DiscretizedScalarFeature[]::new);
+        )).toArray(DiscretizedScalarFeature[]::new);
 
         switch (discretization) {
             case 2:
@@ -121,5 +118,6 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
 
     static final Comparator<DecisionNode<Float>> centroidComparator = (a, b) -> Float.compare(a.label, b.label);
+
 
 }

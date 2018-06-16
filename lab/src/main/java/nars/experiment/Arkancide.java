@@ -266,8 +266,8 @@ public class Arkancide extends NAgentX {
     }
     private void initToggle() {
         actionPushButtonMutex(Atomic.the("L"), Atomic.the("R"),
-                (b) -> { noid.paddle.move(-paddleSpeed); },
-                (b) -> { noid.paddle.move(+paddleSpeed); }
+                (b) -> { if (b) noid.paddle.move(-paddleSpeed); },
+                (b) -> { if (b) noid.paddle.move(+paddleSpeed); }
                 );
 
 

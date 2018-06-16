@@ -186,6 +186,9 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             if (tr == null)
                 return null; //TODO see if this can be detected earlier, by comparing evi before term construction
 
+            start = Tense.dither(start, nar);
+            end = Tense.dither(end, nar);
+
             NALTask dyn = new DynamicTruthTask(
                     r.getOne(), beliefOrGoal,
                     tr,
@@ -279,7 +282,6 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             if (c.op() == NEG)
                 throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
         }
-
 
         @Override
         public boolean isInput() {

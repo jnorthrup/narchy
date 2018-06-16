@@ -10,7 +10,7 @@ import java.util.function.Predicate;
  * @param <L> Feature data type (string, number)
  * @author Ignas
  */
-public class PredicateFeature<L> implements Predicate<Function<String,L>> {
+public final class PredicateFeature<L> implements Predicate<Function<String,L>> {
 
     /**
      * Data column used by feature.
