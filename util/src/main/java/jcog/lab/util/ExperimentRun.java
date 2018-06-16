@@ -44,15 +44,15 @@ public class ExperimentRun<E> implements Runnable {
         this.sensors = sensors;
     }
 
-    public ExperimentRun(E experiment, Iterable<Sensor<?,?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
-        this(experiment, newData(sensors), new FasterList(sensors), procedure);
+    public ExperimentRun(E experiment, Iterable<Sensor<E,?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
+        this(experiment, newData(sensors), new FasterList<>(sensors), procedure);
     }
 
 
     /**
      * creates a new ARFF data with the headers appropriate for the sensors
      */
-    public static ARFF newData(Iterable<Sensor<?,?>> sensors) {
+    public static <X> ARFF newData(Iterable<Sensor<X,?>> sensors) {
         ARFF data = new ARFF();
         sensors.forEach(s -> s.addToSchema(data));
         return data;

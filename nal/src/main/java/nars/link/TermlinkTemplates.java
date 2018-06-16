@@ -128,13 +128,14 @@ public class TermlinkTemplates extends FasterList<Term> {
             switch (root.op()) {
                 case SIM:
                 case INH:
-                    if (depth == 1 && x.isAny(Op.SectBits | Op.SetBits | Op.DiffBits |
-                            Op.PROD.bit
+                    if (depth == 1 && x.isAny(Op.SectBits | Op.SetBits | Op.DiffBits
+                            | Op.PROD.bit
                     ))
                         return +1;
                     break;
                 case CONJ:
                     if (depth == 1 && x.op().statement)
+                    //if (depth == 1 && x.op().statement)
 //                    //if (x.op()==IMPL || x.op()==INH)
                         return +1;
                     break;

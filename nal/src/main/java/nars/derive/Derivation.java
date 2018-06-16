@@ -275,8 +275,8 @@ public class Derivation extends PreDerivation {
                     nar.concept("conjDropIfLatest"),
                     nar.concept("dropAnySet"),
                     nar.concept("dropAnyEvent"),
-                    nar.concept("withoutPosOrNeg"),
                     nar.concept("without"),
+                    nar.concept("withoutPosOrNeg"),
             };
             Map<Term, Termed> m = new HashMap<>(derivationFunctors.length);
             for (Termed x : derivationFunctors) //override any statik's

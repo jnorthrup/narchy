@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.io.arff.ARFF;
 import jcog.lab.Goal;
+import jcog.lab.Lab;
 import jcog.lab.Sensor;
 import jcog.lab.Var;
 import jcog.lab.var.FloatVar;
@@ -36,7 +37,7 @@ import static java.util.stream.Collectors.toList;
  *          <p>
  *          in simple cases, S and E may be the same type
  */
-public class Optimization<S, E> implements Runnable {
+public class Optimization<S, E> extends Lab<E> implements Runnable {
 
     static final int goalColumn = 0;
     private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
@@ -53,7 +54,10 @@ public class Optimization<S, E> implements Runnable {
     private final List<Sensor<E, ?>> sensors;
 
     private final OptimizationStrategy strategy;
-    private final double[] inc, min, max, mid;
+    private double[] inc;
+    private double[] min;
+    private double[] max;
+    private double[] mid;
     private final List<Sensor<S, ?>> varSensors;
 
     public Optimization(Supplier<S> subj,
@@ -72,8 +76,14 @@ public class Optimization<S, E> implements Runnable {
 
 
         this.procedure = procedure;
-        assert !vars.isEmpty();
+
         this.strategy = strategy;
+
+        this.data = new ARFF();
+    }
+
+    @Override
+    public void run() {
 
         //initialize numeric or numeric-able variables
         final int numVars = vars.size();
@@ -105,14 +115,11 @@ public class Optimization<S, E> implements Runnable {
             i++;
         }
 
-        data = new ARFF();
+
         goal.addToSchema(data);
         varSensors.forEach(s -> s.addToSchema(data));
         sensors.forEach(s -> s.addToSchema(data));
-    }
 
-    @Override
-    public void run() {
         strategy.run(this);
     }
 
@@ -138,7 +145,7 @@ public class Optimization<S, E> implements Runnable {
             System.err.println(t.getMessage());
         }
 
-        double score = goal.apply(y);
+        double score = goal.apply(y).doubleValue();
 
         Object[] row = row(copy[0], y, score);
 
@@ -176,16 +183,7 @@ public class Optimization<S, E> implements Runnable {
     }
 
     public ImmutableList best() {
-        double bestScore = Double.NEGATIVE_INFINITY;
-        ImmutableList best = null;
-        for (ImmutableList e: data.data) {
-            double s = ((Number) e.get(goalColumn)).doubleValue();
-            if (s > bestScore) {
-                best = e;
-                bestScore = s;
-            }
-        }
-        return best;
+        return data.maxBy(goalColumn);
     }
 
     public void print() {
@@ -193,6 +191,10 @@ public class Optimization<S, E> implements Runnable {
     }
 
     public RealDecisionTree tree(int discretization, int maxDepth) {
+        return Optimization.tree(data, discretization, maxDepth);
+    }
+
+    public static RealDecisionTree tree(ARFF data, int discretization, int maxDepth) {
         return data.isEmpty() ? null :
                 new RealDecisionTree(data.toFloatTable(),
                         0 /* score */, maxDepth, discretization);
@@ -312,7 +314,9 @@ public class Optimization<S, E> implements Runnable {
 
         }
     }
-//
+
+
+    //
 //    public static class GPOptimizationStrategy extends OptimizationStrategy {
 //        //TODO
 //    }

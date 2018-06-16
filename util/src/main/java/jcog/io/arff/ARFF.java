@@ -43,6 +43,7 @@ import jcog.util.Reflect;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.eclipse.collections.impl.factory.Lists;
 import org.intelligentjava.machinelearning.decisiontree.FloatTable;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -690,4 +691,19 @@ public class ARFF extends jcog.io.Schema implements Iterable<ImmutableList> {
             }
         }));
     }
+
+    @Nullable
+    public ImmutableList maxBy(int column) {
+        double bestScore = Double.NEGATIVE_INFINITY;
+        ImmutableList best = null;
+        for (ImmutableList e: data) {
+            double s = ((Number) e.get(column)).doubleValue();
+            if (s > bestScore) {
+                best = e;
+                bestScore = s;
+            }
+        }
+        return best;
+    }
+
 }

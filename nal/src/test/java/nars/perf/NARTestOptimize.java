@@ -5,7 +5,9 @@ import jcog.lab.Lab;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
+import nars.nal.nal1.NAL1Test;
 import nars.nal.nal4.NAL4Test;
+import nars.test.TestNAR;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 
@@ -15,29 +17,35 @@ public class NARTestOptimize {
 
     static class NAL1Optimize {
         public static void main(String[] args) {
-            Lab<NAR> l = new Lab<>(() -> {
-                return NARS.tmp();
-            });
-            l.var()
-            .add("ttlMax", 6, 100, 20, (NAR n, int i) -> {
-                n.deriveBranchTTL.set(i);
-            }).add("termVolumeMax", 5, 30, 2, (NAR n, int i) -> {
-                n.deriveBranchTTL.set(i);
-            }).add("forgetRate", 0, 1f, 0.1f, (NAR n, float f) -> {
-                n.forgetRate.set(f);
-            }).add("activationRate", 0, 1f, 0.1f, (NAR n, float f) -> {
-                n.activateConceptRate.set(f);
-            });
+            Lab<NAR> l = new Lab<>(() -> NARS.tmp());
+            l
+                .var("ttlMax", 6, 100, 20,
+                    (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("termVolumeMax", 5, 30, 2,
+                    (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("forgetRate", 0, 1f, 0.1f,
+                    (NAR n, float f) -> n.forgetRate.set(f))
+                .var("activationRate", 0, 1f, 0.1f,
+                    (NAR n, float f) -> n.activateConceptRate.set(f));
+
+
+
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
-                TestNARSuite t = new TestNARSuite(s, NAL4Test.class);
+                TestNARSuite t = new TestNARSuite(s, NAL1Test.class, NAL4Test.class);
                 t.run();
                 return t;
-            }, (e) -> (float)e.score());
+            }, t -> (float)t.score());
+
+
+            o.sense("numConcepts", (TestNARSuite t) -> t.sumOfLong((TestNAR tt) -> tt.nar.concepts.size()));
+
+
             o.run();
             o.print();
-            o.tree(3,3).print();
+            o.tree(3,5).print();
         }
     }
+
     static class DeductiveMeshOptimize {
         public static void main(String[] args) {
             Lab<DeductiveMeshTest> l = new Lab<>(() ->
@@ -47,11 +55,11 @@ public class NARTestOptimize {
                 return d;
             });
 
-            l.var()
-                    .add("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
+            l
+                    .var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
                         t.test.nar.deriveBranchTTL.set(i);
                     })
-                    .add("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
+                    .var("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
                         t.test.nar.forgetRate.set(f);
                     });
 

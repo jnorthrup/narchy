@@ -145,14 +145,14 @@
 
 
 
-    (X ==> Y), ((&&,Y,A..+) ==> C) |- ((&&,X,A..+) ==> C), (Belief:Deduction)
-        (X ==> Y), ((&&,Y,A..+) ==> C) |- --((&&,X,A..+) ==> C), (Belief:DeductionPN)
-    (X ==> Y), ((&&,--Y,A..+) ==> C) |- ((&&,X,A..+) ==> C), (Belief:DeductionN)
-        (X ==> Y), ((&&,--Y,A..+) ==> C) |- --((&&,X,A..+) ==> C), (Belief:DeductionNN)
+    (X ==> Y), ((&&,Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:Deduction)
+        (X ==> Y), ((&&,Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionPN)
+    (X ==> Y), ((&&,--Y,A..+) ==> Z) |- ((&&,X,A..+) ==> Z), (Belief:DeductionN)
+        (X ==> Y), ((&&,--Y,A..+) ==> Z) |- --((&&,X,A..+) ==> Z), (Belief:DeductionNN)
 
-    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C) |- (Y ==> X), (Belief:InductionPB)
+    ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB)
 
-    (X ==> Y), ((&&,X,A..+) ==> C) |- ((&&,Y,A..+) ==> C), (Belief:AbductionPB)
+    (X ==> Y), ((&&,X,A..+) ==> Z) |- ((&&,Y,A..+) ==> Z), (Belief:AbductionPB)
 
 
 

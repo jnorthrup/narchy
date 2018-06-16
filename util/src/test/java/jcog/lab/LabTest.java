@@ -1,10 +1,10 @@
 package jcog.lab;
 
 import jcog.lab.util.ExperimentRun;
-import jcog.lab.util.Optimization;
-import jcog.list.FasterList;
+import jcog.lab.util.Opti;
 import jcog.math.FloatRange;
 import jcog.math.Range;
+import org.eclipse.collections.api.list.ImmutableList;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,23 +12,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class LabTest {
 
-    static class Dummy {
-        public float a = 0;
-    }
+    @Test
+    public void testSimplest() {
 
+        Lab<Model> a = new Lab<>(Model::new).varAuto();
+
+        Opti<Model> r = a.optimize(Model::score).run();
+
+        ImmutableList best = r.best();
+
+        r.print();
+
+        r.tree(3, 4).print();
+
+
+        assertTrue(((Number) best.get(0)).doubleValue() >= 5f);
+        assertTrue(a.vars.size() >= 4);
+        assertEquals(5, r.data().attrCount());
+
+
+    }
     @Test
     public void testExperimentRun() {
-        Lab<Dummy> lab = new Lab<>(Dummy::new);
-        Sensor.LabelSensor<Dummy> ctx;
 
+        LabelSensor<Dummy> ctx;
 
-        FasterList<Sensor<Dummy,?>> sensors = new FasterList<>();
-        sensors.add(Sensor.unixtime);
-        sensors.add(Sensor.nanotime());
-        sensors.add(ctx = Sensor.label("ctx"));
-        sensors.add(Sensor.floatLambda("a", (m) -> m.a));
+        Lab<Dummy> lab = new Lab<>(Dummy::new)
+                .sense(Sensor.unixtime)
+                .sense(Sensor.nanotime())
+                .sense(ctx = Sensor.label("ctx"))
+                .sense("a", (Dummy m) -> m.a);
 
-        ExperimentRun<Dummy> t = lab.run(sensors, (m, trial) -> {
+        ExperimentRun<Dummy> t = lab.run((m, trial) -> {
             ctx.record("start", trial).set("running");
 
 
@@ -45,6 +60,10 @@ class LabTest {
 
         t.run();
         t.data.print();
+    }
+
+    static class Dummy {
+        public float a = 0;
     }
 
     static class Model {
@@ -79,28 +98,8 @@ class LabTest {
         public float tweakFloatSub;
     }
 
-    @Test
-    public void testSingleObjective() {
-        Lab<Model> a = new Lab<>(Model::new).discover();
-//        a.vars.values().forEach(
-//                System.out::println
-//        );
-        assertTrue(a.vars.size() >= 4);
 
 
-        Optimization<Model> r = a.optimize((e)->{ /* ... */ }, Model::score);
-        r.run();
-
-        assertEquals(5, r.data.attrCount());
-
-        r.print();
-    }
-
-//    @Test public void testDecisionTree() {
-//        r.tree(3, 4).print();
-//        ImmutableList best = r.best();
-//        assertTrue(((Number) best.get(0)).doubleValue() >= 5f);
-//    }
 
 //
 //    @Test

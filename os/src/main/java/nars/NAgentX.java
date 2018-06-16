@@ -206,7 +206,7 @@ abstract public class NAgentX extends NAgent {
     public static CaffeineIndex newCaffeineIndex() {
         return new CaffeineIndex(
 
-                700 * 1024,
+                400 * 1024,
 
 
                 c -> {

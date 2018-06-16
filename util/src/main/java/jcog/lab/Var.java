@@ -64,21 +64,20 @@ abstract public class Var<X,Y> {
 
     /** creates a (read-only) sensor proxy to the current value of this variable */
     public Sensor<X, Y> sense() {
-        return new ProxySensor();
+        return new VarProxySensor<>(this);
     }
 
-    private final class ProxySensor extends Sensor<X,Y> {
-        ProxySensor() {
-            super(Var.this.id);
+    final static class VarProxySensor<X,Y> extends Sensor<X,Y> {
+
+        private final Var<X,Y> var;
+
+        public VarProxySensor(Var v) {
+            super(v.id);
+            this.var = v;
         }
 
         @Override public Y apply(X x) {
-            return get(x);
-        }
-
-        @Override
-        public String toString() {
-            return "var(" + id + ")";
+            return var.get(x);
         }
 
         @Override
@@ -86,4 +85,5 @@ abstract public class Var<X,Y> {
             data.defineNumeric(id);
         }
     }
+
 }

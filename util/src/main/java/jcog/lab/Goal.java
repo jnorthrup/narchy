@@ -10,34 +10,17 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
  * NaN is unknown or not applicable
  * @param E experiment
  */
-public class Goal<E> extends Sensor.FloatLambdaSensor<E> {
+public class Goal<X> extends ProxySensor<X,Number> {
 
-    public Goal(FloatFunction<E> f) {
+    public Goal(NumberSensor<X> f) {
         this("goal", f);
     }
 
-    public Goal(String name, FloatFunction<E> f) {
-        super(name, f);
+    public Goal(String id, NumberSensor<X> goal) {
+        super(id, goal);
     }
 
-//    /** left-hand side is the variable, right-hand side is the desired value.
-//     * resembles Pascal assignment operator */
-//    public static final String GOAL_SYMBOL = ":=";
-//
-//    /** the id of the goal, describing what 'what' should be */
-//    final String id;
-//
-//    /** concerning the sensor by this ID */
-//    final String sensor;
-
-//    public Goal(String sensor, String desc) {
-//        super(sensor + GOAL_SYMBOL + desc);
-//        this.sensor = sensor;
-//        this.id = desc;
-//    }
-//
-//    public Goal(Sensor<E, S> sensor, String desc) {
-//        this(sensor.id, desc);
-//    }
-
+    public Goal(FloatFunction<X> goal) {
+        super(NumberSensor.of("goal", goal));
+    }
 }
