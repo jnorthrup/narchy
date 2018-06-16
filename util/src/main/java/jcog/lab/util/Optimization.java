@@ -8,6 +8,7 @@ import jcog.lab.Lab;
 import jcog.lab.Sensor;
 import jcog.lab.Var;
 import jcog.lab.var.FloatVar;
+import jcog.list.FasterList;
 import jcog.math.Quantiler;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
@@ -51,7 +52,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
     private final List<Var<S, ?>> vars;
     private final Function<Supplier<S>, E> procedure;
     private final Goal<E> goal;
-    private final List<Sensor<E, ?>> sensors;
+    private final List<Sensor<E, ?>> sensors = new FasterList();
 
     private final OptimizationStrategy strategy;
     private double[] inc;
@@ -72,7 +73,7 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         this.vars = vars;
         this.varSensors = vars.stream().map(Var::sense).collect(toList());
 
-        this.sensors = sensors;
+        this.sensors.addAll( sensors );
 
 
         this.procedure = procedure;
@@ -80,6 +81,18 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         this.strategy = strategy;
 
         this.data = new ARFF();
+    }
+
+    @Override
+    public Optimization<S,E> sense(Sensor sensor) {
+        super.sense(sensor);
+        sensors.add(sensor); //HACK
+        return this;
+    }
+
+    public Optimization<S,E> runSync() {
+        run();
+        return this;
     }
 
     @Override
@@ -186,8 +199,9 @@ public class Optimization<S, E> extends Lab<E> implements Runnable {
         return data.maxBy(goalColumn);
     }
 
-    public void print() {
+    public Optimization<S, E> print() {
         data.print();
+        return this;
     }
 
     public RealDecisionTree tree(int discretization, int maxDepth) {

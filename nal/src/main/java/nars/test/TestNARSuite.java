@@ -2,9 +2,14 @@ package nars.test;
 
 import jcog.list.FasterList;
 import nars.NAR;
+import org.eclipse.collections.api.block.function.primitive.DoubleFunction;
 
 import java.lang.reflect.Method;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
@@ -28,6 +33,38 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
             add(t);
             NALTest.test(t, m);
         });
+    }
+
+
+    public long sum(ToIntFunction<NAR> n) {
+        return intStream(n).sum();
+    }
+    public double avg(ToIntFunction<NAR> n) {
+        return intStream(n).average().getAsDouble();
+    }
+    public double sum(Function<NAR,Number> n) {
+        return doubleStream(n).sum();
+    }
+    public double sum(DoubleFunction<NAR> n) {
+        return doubleStream(n).sum();
+    }
+    public double avg(DoubleFunction<NAR> n) {
+        return doubleStream(n).average().getAsDouble();
+    }
+
+    public DoubleStream doubleStream(DoubleFunction<NAR> n) {
+        return narStream().mapToDouble(n);
+    }
+
+    public Stream<NAR> narStream() {
+        return stream().map(x -> x.nar);
+    }
+
+    public DoubleStream doubleStream(Function<NAR,Number> n) {
+        return narStream().map(n).mapToDouble(Number::doubleValue);
+    }
+    public IntStream intStream(ToIntFunction<NAR> n) {
+        return narStream().mapToInt(n);
     }
 
     static class MyTestNAR extends TestNAR {

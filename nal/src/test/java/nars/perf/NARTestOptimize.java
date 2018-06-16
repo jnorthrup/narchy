@@ -1,13 +1,12 @@
 package nars.perf;
 
-import jcog.lab.Goal;
 import jcog.lab.Lab;
+import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal4.NAL4Test;
-import nars.test.TestNAR;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 
@@ -17,32 +16,35 @@ public class NARTestOptimize {
 
     static class NAL1Optimize {
         public static void main(String[] args) {
-            Lab<NAR> l = new Lab<>(() -> NARS.tmp());
-            l
-                .var("ttlMax", 6, 100, 20,
-                    (NAR n, int i) -> n.deriveBranchTTL.set(i))
-                .var("termVolumeMax", 5, 30, 2,
-                    (NAR n, int i) -> n.deriveBranchTTL.set(i))
-                .var("forgetRate", 0, 1f, 0.1f,
-                    (NAR n, float f) -> n.forgetRate.set(f))
-                .var("activationRate", 0, 1f, 0.1f,
-                    (NAR n, float f) -> n.activateConceptRate.set(f));
+            int nalLevel = 4;
+            Class[] testClasses = new Class[] {  NAL1Test.class, NAL4Test.class };
 
+            Lab<NAR> l = new Lab<>(() -> NARS.tmp(nalLevel))
+                .var("ttlMax", 6, 100, 20,
+                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("termVolumeMax", 5, 30, 2,
+                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
+                .var("forgetRate", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.forgetRate.set(f))
+                .var("activationRate", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.activateConceptRate.set(f));
 
 
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
-                TestNARSuite t = new TestNARSuite(s, NAL1Test.class, NAL4Test.class);
+                TestNARSuite t = new TestNARSuite(s, testClasses);
                 t.run();
                 return t;
-            }, t -> (float)t.score());
+            }, t -> (float) t.score());
 
+            o
+            .sense("numConcepts",
+                (TestNARSuite t) -> t.sum((NAR n) -> n.concepts.size()))
+            .sense("derivedTask",
+                (TestNARSuite t) -> t.sum((NAR n)->n.emotion.deriveTask.getValue()));
 
-            o.sense("numConcepts", (TestNARSuite t) -> t.sumOfLong((TestNAR tt) -> tt.nar.concepts.size()));
-
-
-            o.run();
-            o.print();
-            o.tree(3,5).print();
+            o.runSync()
+            .print()
+            .tree(3, 5).print();
         }
     }
 
@@ -53,18 +55,14 @@ public class NARTestOptimize {
                 DeductiveMeshTest d = new DeductiveMeshTest(NARS.tmp(), new int[]{4, 3}, 2000);
                 d.test.quiet = true;
                 return d;
+            }).var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
+                t.test.nar.deriveBranchTTL.set(i);
+            }).var("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
+                t.test.nar.forgetRate.set(f);
             });
 
-            l
-                    .var("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
-                        t.test.nar.deriveBranchTTL.set(i);
-                    })
-                    .var("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
-                        t.test.nar.forgetRate.set(f);
-                    });
 
-
-            Optimization<DeductiveMeshTest,DeductiveMeshTest> o = l.optimize(d -> {
+            Opti<DeductiveMeshTest> o = l.optimize(d -> {
                         try {
                             d.test.test();
                         } catch (Throwable t) {
@@ -72,11 +70,11 @@ public class NARTestOptimize {
                         }
                     },
 
-                    new Goal<>("testFast", d -> d.test.score)
-                    //new Goal<>("lessConcepts", d -> 1f/(1+d.test.nar.concepts.size()))
+                    d -> d.test.score
             );
             o.run();
             o.print();
+            System.out.println(o.best());
         }
     }
 
