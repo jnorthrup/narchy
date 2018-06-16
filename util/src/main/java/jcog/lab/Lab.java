@@ -1,5 +1,6 @@
 package jcog.lab;
 
+import jcog.io.arff.ARFF;
 import jcog.lab.util.ExperimentRun;
 import jcog.lab.util.Optimization;
 import jcog.list.FasterList;
@@ -11,6 +12,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
@@ -25,28 +27,55 @@ import static java.util.stream.Collectors.toList;
  * @param E experiment type. may be the same as X in some cases but other times
  *          there is a reason to separate the subject from the experiment
  */
-public class Lab<E> {
+public class Lab<S> {
 
     private final static Logger logger = LoggerFactory.getLogger(Lab.class);
-    final Supplier<E> subj;
-    final Map<String, Sensor<E, ?>> sensors = new ConcurrentHashMap<>();
-    public final Map<String, Var<E, ?>> vars = new ConcurrentHashMap<>();
+    final Supplier<S> subj;
+    final Map<String, Sensor<S,?>> sensors = new ConcurrentHashMap<>();
+    public final Map<String, Var<S, ?>> vars = new ConcurrentHashMap<>();
     final Map<String, Object> hints = new HashMap();
 
-    public Lab(Supplier<E> subj) {
+    public Lab(Supplier<S> subj) {
         this.subj = subj;
 
         final float autoInc_default = 5f;
         hints.put("autoInc", autoInc_default);
     }
 
-    protected void add(Var<E, ?> v) {
+    /**
+     * records all sensors ()
+     */
+    public static <X> Object[] record(X x, ARFF data, List<Sensor<X, ?>> sensors) {
+        synchronized (data) {
+            Object[] row = row(x, sensors);
+            data.add(row);
+            return row;
+        }
+    }
+
+    public static <X> Object[] rowVars(X x, List<Var<X, ?>> vars) {
+        List<Sensor<X, ?>> sensors = new FasterList(vars.size());
+        for (int i = 0; i < vars.size(); i++)
+            sensors.add(vars.get(i).sense());
+        return row(x, sensors);
+    }
+
+    public static <X> Object[] row(X x, List<Sensor<X, ?>> sensors) {
+        Object row[] = new Object[sensors.size()];
+        int c = 0;
+        for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
+            row[c++] = sensors.get(i).apply(x);
+        }
+        return row;
+    }
+
+    protected void add(Var<S, ?> v) {
         if (vars.put(v.id, v) != null)
             throw new UnsupportedOperationException(v.id + " already present in variables");
     }
 
-    public Lab<E> discover() {
-        Variables<E> d = new Variables<>(subj, vars).discover();
+    public Lab<S> discover() {
+        Variables<S> d = new Variables<>(subj, vars).discover();
         hints.putAll(d.hints);
 
 
@@ -84,7 +113,7 @@ public class Lab<E> {
 //
 //
         TreeSet<String> unknowns = new TreeSet<>();
-        for (Var<E, ?> t: vars.values()) {
+        for (Var<S, ?> t: vars.values()) {
             List<String> u = t.unknown(hints);
             if (!u.isEmpty())
                 unknowns.addAll(u);
@@ -92,21 +121,21 @@ public class Lab<E> {
         return unknowns;
     }
 
-    public ExperimentRun<E> run(Iterable<Sensor<E, ?>> sensors, BiConsumer<E, ExperimentRun<E>> proc) {
-        return new ExperimentRun<E>(subj.get(), sensors, proc);
+    public ExperimentRun<S> run(Iterable<Sensor<?, ?>> sensors, BiConsumer<S, ExperimentRun<S>> proc) {
+        return new ExperimentRun<S>(subj.get(), sensors, proc);
     }
 
     /**
      * score is an objective function that the optimization process tries to
      * maximize.
      */
-    public Optimization<E> optimize(List<Var<E, ?>> vars, List<Sensor<E, ?>> sensors, Optimization.OptimizationStrategy strategy,
-                                    Consumer<E>  procedure, Goal<E> goal) {
+    public static <S,E> Optimization<S,E> optimize(Supplier<S> subj, List<Var<S, ?>> vars, List<Sensor<E, ?>> sensors, Optimization.OptimizationStrategy strategy,
+                                    Function<Supplier<S>,E>  procedure, Goal<E> goal) {
 
         if (vars.isEmpty())
             throw new UnsupportedOperationException("no Var's provided");
 
-        return new Optimization<E>(subj, procedure, goal, vars, sensors, strategy);
+        return new Optimization<>(subj, procedure, goal, vars, sensors, strategy);
     }
 
     /**
@@ -117,27 +146,41 @@ public class Lab<E> {
      * @param procedure
      * @param goal
      */
-    public Optimization<E> optimize(Consumer<E>  procedure, Goal<E> goal) {
-        return optimize(vars.values().stream().filter(Var::ready).collect(toList()),
-                new FasterList<>(sensors.values()), newDefaultOptimizer(), procedure, goal
-        );
+    public Optimization<S, S> optimize(Consumer<S> procedure, Goal<S> goal) {
+        return optimize(subj, vars.values().stream().filter(Var::ready).collect(toList()),
+                new FasterList<>(sensors.values()), newDefaultOptimizer(), (s -> {
+                    S ss = s.get();
+                    procedure.accept(ss);
+                    return ss;
+                }), goal);
     }
-    public Optimization<E> optimize(Goal<E> goal) {
+
+    public <X> Optimization<S,X> optimize(Function<Supplier<S>,X> procedure, Goal<X> goal) {
+        return optimize(subj, vars.values().stream().filter(Var::ready).collect(toList()),
+                List.of(), newDefaultOptimizer(), procedure,
+                goal);
+    }
+
+    public Optimization<S, S> optimize(Goal<S> goal) {
         return optimize(e->{}, goal);
     }
 
     /**
      * simple creation method
      */
-    public Optimization<E> optimize(Consumer<E>  procedure, FloatFunction<E> goal) {
+    public Optimization<S, S> optimize(Consumer<S> procedure, FloatFunction<S> goal) {
+        return optimize(procedure, new Goal(goal));
+    }
+
+    public <E> Optimization<S, E> optimize(Function<Supplier<S>, E> procedure, FloatFunction<E> goal) {
         return optimize(procedure, new Goal(goal));
     }
 
     private Optimization.OptimizationStrategy newDefaultOptimizer() {
-        return new Optimization.SimplexOptimizationStrategy(64);
+        return new Optimization.SimplexOptimizationStrategy(128);
     }
 
-    public Variables<E> var() {
+    public Variables<S> var() {
         return new Variables<>(subj, vars);
     }
 }

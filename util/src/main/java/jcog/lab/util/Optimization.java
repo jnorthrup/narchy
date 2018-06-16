@@ -8,7 +8,6 @@ import jcog.lab.Goal;
 import jcog.lab.Sensor;
 import jcog.lab.Var;
 import jcog.lab.var.FloatVar;
-import jcog.list.FasterList;
 import jcog.math.Quantiler;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
@@ -23,29 +22,41 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class Optimization<E> extends ExperimentSeries<E> {
+import static java.util.stream.Collectors.toList;
+
+/**
+ *
+ * @param S subject of the experiment
+ * @param E experiment containing the subject
+ *
+ * in simple cases, S and E may be the same type
+ */
+public class Optimization<S,E> implements Runnable {
 
     static final int goalColumn = 0;
     private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
+
     /**
      * history of experiments. TODO use ranking like TopN etc
      */
     public final ARFF data;
+
+    private final Supplier<S> subj;
+    private final List<Var<S, ?>> vars;
+    private final Function<Supplier<S>,E> procedure;
     private final Goal<E> goal;
     private final List<Sensor<E, ?>> sensors;
-    private final List<Var<E, ?>> vars;
-    private final OptimizationStrategy strategy;
-    private final Supplier<E> subj;
-    private final Consumer<E> procedure;
-    private final double[] inc, min, max, mid;
-    private final FasterList<Sensor<E, ?>> varsAndSensors;
 
-    public Optimization(Supplier<E> subj,
-                        Consumer<E> procedure, Goal<E> goal,
-                        List<Var<E,?>> vars,
+    private final OptimizationStrategy strategy;
+    private final double[] inc, min, max, mid;
+    private final List<Sensor<S, ?>> varSensors;
+
+    public Optimization(Supplier<S> subj,
+                        Function<Supplier<S>,E> procedure, Goal<E> goal,
+                        List<Var<S,?>> vars,
                         List<Sensor<E,?>> sensors,
                         OptimizationStrategy strategy) {
         this.subj = subj;
@@ -53,55 +64,49 @@ public class Optimization<E> extends ExperimentSeries<E> {
         this.goal = goal;
 
         this.vars = vars;
+        this.varSensors = vars.stream().map(Var::sense).collect(toList());
 
         this.sensors = sensors;
 
-        this.varsAndSensors = new FasterList<>();
-        this.varsAndSensors.add(goal);
-        for (Var v: vars) {
-            varsAndSensors.add(v.sense());
-        }
-        this.varsAndSensors.addAll(sensors);
-
-        data = ExperimentRun.newData(varsAndSensors);
 
         this.procedure = procedure;
         assert !vars.isEmpty();
         this.strategy = strategy;
 
-        {
-            //initialize numeric or numeric-able variables
-            final int numVars = vars.size();
+        //initialize numeric or numeric-able variables
+        final int numVars = vars.size();
 
-            mid = new double[numVars];
-            min = new double[numVars];
-            max = new double[numVars];
-            inc = new double[numVars];
+        mid = new double[numVars];
+        min = new double[numVars];
+        max = new double[numVars];
+        inc = new double[numVars];
 
-            E example = subj.get();
-            int i = 0;
-            for (Var w: vars) {
-                FloatVar s = (FloatVar) w;
-
-
-                Object guess = s.get(example);
+        S example = subj.get();
+        int i = 0;
+        for (Var w: vars) {
+            FloatVar s = (FloatVar) w;
 
 
-                min[i] = s.getMin();
-                max[i] = s.getMax();
-                mid[i] = guess != null ? Util.clamp((float) guess,min[i],max[i]) : (max[i] + min[i]) / 2f;
-                inc[i] = s.getInc();
-
-                if (!(mid[i] >= min[i]))
-                    throw new WTF();
-                if (!(max[i] >= mid[i]))
-                    throw new WTF();
+            Object guess = s.get(example);
 
 
-                i++;
-            }
+            min[i] = s.getMin();
+            max[i] = s.getMax();
+            mid[i] = guess != null ? Util.clamp((float) guess,min[i],max[i]) : (max[i] + min[i]) / 2f;
+            inc[i] = s.getInc();
+
+            if (!(mid[i] >= min[i]))
+                throw new WTF();
+            if (!(max[i] >= mid[i]))
+                throw new WTF();
+
+            i++;
         }
 
+        data = new ARFF();
+        goal.addToSchema(data);
+        varSensors.forEach(s -> s.addToSchema(data));
+        sensors.forEach(s -> s.addToSchema(data));
     }
 
     @Override
@@ -112,30 +117,38 @@ public class Optimization<E> extends ExperimentSeries<E> {
 
     protected double run(double[] point) {
 
-        E x = subject(subj.get(), point);
-
         logger.info("run: {}", Texts.n4(point));
 
-        ExperimentRun<E> ee = new ExperimentRun<>(
-            x,
-                varsAndSensors,
-            (ssubj, r) -> {
+        /**
+         * the only or last produced copy of the experiment input.
+         * since all generated subjects should be identical
+         * it wont matter which one.
+         */
+        Object[] copy = new Object[1];
+        E y = null;
+        try {
+            y = procedure.apply(()-> {
+                S s= subject(subj.get(), point);
+                copy[0] = s; //for measurement
+                return s;
+            });
+        } catch (Throwable t) {
+            System.err.println(t.getMessage());
+        }
 
-                try {
-                    procedure.accept(x);
-                } catch (Throwable t) {
-                    System.err.println(t.getMessage());
-                }
+        Object[] row = new Object[1+vars.size()+sensors.size()];
+        int j = 0;
+        double score = goal.apply(y);
+        row[j++] = score;
+        S x = (S)copy[0];
+        for (Sensor v : varSensors)
+            row[j++] = v.apply(x);
+        for (Sensor s : sensors)
+            row[j++] = s.apply(y);
 
-                r.record();
-            }
-        );
+        data.add(row);
 
-        ee.run();
-
-        data.addAll(ee.data);
-
-        return ((Number)ee.data.data.iterator().next().get(0)).doubleValue();
+        return score;
     }
 
 
@@ -145,11 +158,11 @@ public class Optimization<E> extends ExperimentSeries<E> {
      * builds an experiment subject (input)
      * TODO handle non-numeric point entries
      */
-    private E subject(E x, double[] point) {
+    private S subject(S x, double[] point) {
 
 
         for (int i = 0, dim = point.length; i < dim; i++) {
-            point[i] = ((Var<E, Float>) vars.get(i)).set(x, (float) point[i]);
+            point[i] = ((Var<S, Float>) vars.get(i)).set(x, (float) point[i]);
         }
 
         return x;

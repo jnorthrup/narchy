@@ -1,51 +1,69 @@
 package nars.perf;
 
-import jcog.Util;
 import jcog.lab.Goal;
 import jcog.lab.Lab;
 import jcog.lab.util.Optimization;
+import nars.NAR;
 import nars.NARS;
+import nars.nal.nal1.NAL1Test;
+import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
+
+import java.util.function.Supplier;
 
 public class NARTestOptimize {
 
-    static final int threads =
-            Util.concurrencyDefault(1);
-
-
-//        l.discover();
-//        l.vars.values().forEach(x -> System.out.println(x));
-
-    public static void main(String[] args) {
-        Lab<DeductiveMeshTest> l = new Lab<>(() ->
-        {
-            DeductiveMeshTest d = new DeductiveMeshTest(NARS.tmp(), new int[]{4, 3}, 2000);
-            d.test.quiet = true;
-            return d;
-        });
-
-        l.var()
-            .add("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
-                t.test.nar.deriveTTL.set(i);
-            })
-            .add("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
-                t.test.nar.forgetRate.set(f);
+    static class NAL1Optimize {
+        public static void main(String[] args) {
+            Lab<NAR> l = new Lab<>(() -> {
+                return NARS.tmp(1);
+            });
+            l.var().add("ttlMax", 6, 100, 20, (NAR n, int i) -> {
+                n.deriveBranchTTL.set(i);
+            }).add("forgetRate", 0, 1f, 0.2f, (NAR n, float f) -> {
+                n.forgetRate.set(f);
+            });
+            Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
+                TestNARSuite t = new TestNARSuite(s, NAL1Test.class);
+                t.run();
+                return t;
+            }, (e) -> (float)e.score());
+            o.run();
+            o.print();
+        }
+    }
+    static class DeductiveMeshOptimize {
+        public static void main(String[] args) {
+            Lab<DeductiveMeshTest> l = new Lab<>(() ->
+            {
+                DeductiveMeshTest d = new DeductiveMeshTest(NARS.tmp(), new int[]{4, 3}, 2000);
+                d.test.quiet = true;
+                return d;
             });
 
+            l.var()
+                    .add("ttlMax", 6, 100, 20, (DeductiveMeshTest t, int i) -> {
+                        t.test.nar.deriveBranchTTL.set(i);
+                    })
+                    .add("forgetRate", 0, 1f, 0.2f, (DeductiveMeshTest t, float f) -> {
+                        t.test.nar.forgetRate.set(f);
+                    });
 
-        Optimization<DeductiveMeshTest> o = l.optimize(d -> {
-                    try {
-                        d.test.test();
-                    } catch (Throwable t) {
 
-                    }
-                },
+            Optimization<DeductiveMeshTest,DeductiveMeshTest> o = l.optimize(d -> {
+                        try {
+                            d.test.test();
+                        } catch (Throwable t) {
 
-                new Goal<>("testFast", d -> d.test.score)
-                //new Goal<>("lessConcepts", d -> 1f/(1+d.test.nar.concepts.size()))
-        );
-        o.run();
-        o.print();
+                        }
+                    },
+
+                    new Goal<>("testFast", d -> d.test.score)
+                    //new Goal<>("lessConcepts", d -> 1f/(1+d.test.nar.concepts.size()))
+            );
+            o.run();
+            o.print();
+        }
     }
 
 //    public static void _main(String[] args) {

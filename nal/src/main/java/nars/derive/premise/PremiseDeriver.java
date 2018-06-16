@@ -72,9 +72,9 @@ public class PremiseDeriver implements Predicate<Derivation> {
         float[] maybe;
         if (can.length > 1) {
             maybe = Util.remove(
-                            Util.map(choice -> this.could[can[choice]].value(d), new float[can.length]),
-                            w -> w <= 0
-                    );
+                    Util.map(choice -> this.could[can[choice]].value(d), new float[can.length]),
+                    w -> w <= 0
+            );
             fanOut = maybe.length;
         } else {
             if (can.length == 1 && this.could[can[0]].value(d) > EPSILON) {
@@ -87,50 +87,34 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
         if (fanOut > 0) {
 
-            int minTTL = Param.TTL_MIN_BRANCH;
-            int totalTTL = Math.max(minTTL, d.ttl);
-            //int maxTTL = Param.TTL_MAX_BRANCH;
-            assert(totalTTL > minTTL);
 
+            int branchTTL = d.nar.deriveBranchTTL.intValue();
 
             switch (fanOut) {
                 case 1: {
-                    d.setTTL(totalTTL); //Math.min(maxTTL, totalTTL));
+                    d.setTTL(Math.max(Param.TTL_MIN, branchTTL));
                     return test(d, can[0]);
                 }
                 default: {
 
-                    @Deprecated int before = d.now(); assert(d.now()==0);
+                    @Deprecated int before = d.now();
+                    assert (d.now() == 0);
 
-                    final int[] ttlRemain = {totalTTL};
-                    /**  depth  vs. breadth factor:  1 = fairly distributed among banches, >1..fanOut = depth concentrated */
-                    float depth = 2;
-                    int branchTTL = Util.clamp(Math.round(ttlRemain[0] / (fanOut / depth )), minTTL, totalTTL);
 
-                    d.ttl = 0;
+                    d.ttl = Math.max(Param.TTL_MIN, (int)Math.round(branchTTL
+                            //* Math.log(2+fanOut)
+                            * (fanOut*0.5f)
+                    ));
 
                     MutableRoulette.run(maybe, d.random, wi -> 0, b -> {
 
-                            d.ttl += Math.min(ttlRemain[0], branchTTL);
+                        if (d.ttl < Param.TTL_MIN)
+                            return false;
 
-                            int ttlBefore = d.ttl;
+                        test(d, can[b]);
 
-                            test(d, can[b]);
-
-                            int ttlAfter = d.ttl;
-                            int spent = Param.TTL_BRANCH + (ttlBefore - ttlAfter);
-
-                            ttlRemain[0] -= spent;
-
-
-                            if (ttlRemain[0] <= 0) {
-                                return false;
-                            } else {
-                                d.revertLive(before);
-                                return true;
-                            }
-                        }
-                    );
+                        return d.revertLive(before, 1);
+                    });
                 }
             }
         }

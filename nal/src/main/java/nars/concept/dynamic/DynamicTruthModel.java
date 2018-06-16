@@ -186,16 +186,14 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         @Override
         public Term reconstruct(Term superterm, List<TaskRegion> components) {
-            //quick test: if the components are all non-temporal the term will remain the same
-            int n;
-            if (superterm.subs() == (n = components.size()) && !superterm.hasAny(Op.Temporal))
-                return superterm;
-
+            int n = components.size();
             if (n == 1) {
                 return components.get(0).task().term();
             }
 
             Term[] subs = inhReconstruct(subjOrPred, components);
+            if (subs == null)
+                return null;
             return superterm.op().the(subs);
         }
 
@@ -335,7 +333,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
         @Override
         public Term reconstruct(Term superterm, List<TaskRegion> c) {
-            return superterm.op().the(DynamicTruthModel.inhReconstruct(subjOrPred, c));
+            @Nullable Term[] u = DynamicTruthModel.inhReconstruct(subjOrPred, c);
+            if (u == null)
+                return null;
+            return superterm.op().the(u);
         }
     }
 
@@ -356,10 +357,10 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
     static Term inhCommonComponent(boolean subjOrPred, Term superterm) {
         return subjOrPred ? superterm.sub(1) : superterm.sub(0);
     }
-    static Term[] inhReconstruct(boolean subjOrPred, List<TaskRegion> components) {
+    @Nullable static Term[] inhReconstruct(boolean subjOrPred, List<TaskRegion> components) {
 
         //extract passive term and verify they all match (could differ temporally, for example)
-        Term[] common = new Term[0];
+        Term[] common = new Term[1];
         boolean extOrInh = subjOrPred;
         if (!((FasterList<TaskRegion>)components).allSatisfy(tr -> {
             Term t = tr.task().term();

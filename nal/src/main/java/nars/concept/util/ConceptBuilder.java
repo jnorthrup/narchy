@@ -89,6 +89,10 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
             case INH:
                 return dynamicInh(t);
 
+            case SIM:
+                //TODO NAL2 set identities?
+                break;
+
             case IMPL:
                 /* TODO:
                     ((&&,x,y,z,...) ==> z) from (x ==> z) and (y ==> z) //intersect pre

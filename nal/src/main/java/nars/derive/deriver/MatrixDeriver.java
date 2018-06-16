@@ -32,13 +32,13 @@ import java.util.function.Predicate;
  */
 public class MatrixDeriver extends Deriver {
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 512);
+    public final IntRange conceptsPerIteration = new IntRange(4, 1, 512);
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 4;
+    public int premisesPerConcept = 2;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
@@ -47,7 +47,7 @@ public class MatrixDeriver extends Deriver {
 
     /** max # premises per batch; dont make too large.  allow the reasoner to incrementally digest results */
     @Range(min = 1, max = 1024)
-    public int burstMax = 64;
+    public int burstMax = 32;
 
     public MatrixDeriver(PremiseDeriverRuleSet rules) {
         this(rules, rules.nar);
@@ -63,7 +63,7 @@ public class MatrixDeriver extends Deriver {
 
     @Override protected void derive(NAR n, int iterations, Derivation d) {
         int matchTTL = Param.TTL_MIN * 2;
-        int deriveTTL = n.deriveTTL.intValue();
+        int deriveTTL = n.deriveBranchTTL.intValue();
 
 
         int iterMult = premisesPerConcept * conceptsPerIteration.intValue();

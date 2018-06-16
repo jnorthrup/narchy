@@ -1,6 +1,7 @@
 package jcog.lab.util;
 
 import jcog.io.arff.ARFF;
+import jcog.lab.Lab;
 import jcog.lab.Sensor;
 import jcog.list.FasterList;
 
@@ -43,7 +44,7 @@ public class ExperimentRun<E> implements Runnable {
         this.sensors = sensors;
     }
 
-    public ExperimentRun(E experiment, Iterable<Sensor<E, ?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
+    public ExperimentRun(E experiment, Iterable<Sensor<?,?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
         this(experiment, newData(sensors), new FasterList(sensors), procedure);
     }
 
@@ -51,7 +52,7 @@ public class ExperimentRun<E> implements Runnable {
     /**
      * creates a new ARFF data with the headers appropriate for the sensors
      */
-    public static <E> ARFF newData(Iterable<Sensor<E, ?>> sensors) {
+    public static ARFF newData(Iterable<Sensor<?,?>> sensors) {
         ARFF data = new ARFF();
         sensors.forEach(s -> s.addToSchema(data));
         return data;
@@ -74,19 +75,8 @@ public class ExperimentRun<E> implements Runnable {
                 "\t@" + startTime + ".." + endTime + " (" + new Date(startTime) + " .. " + new Date(endTime) + ")");
     }
 
-
-    /**
-     * records all sensors ()
-     */
     public Object[] record() {
-        synchronized (data) {
-            Object row[] = new Object[sensors.size()];
-            int c = 0;
-            for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
-                row[c++] = sensors.get(i).apply(experiment);
-            }
-            data.add(row);
-            return row;
-        }
+        return Lab.record(experiment, data, sensors);
     }
+
 }

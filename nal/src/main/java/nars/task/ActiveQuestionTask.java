@@ -67,7 +67,7 @@ public class ActiveQuestionTask extends NALTask.NALTaskX implements Consumer<Tas
     public ITask next(NAR nar) {
         ITask next = super.next(nar);
         this.random = nar.random();
-        this.ttl = nar.deriveTTL.intValue();
+        this.ttl = nar.deriveBranchTTL.intValue();
         this.onTask = nar.onTask(this);
         return next;
     }

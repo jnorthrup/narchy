@@ -1,6 +1,7 @@
 package nars.test;
 
 import jcog.event.Topic;
+import jcog.list.FasterList;
 import nars.*;
 import nars.task.ITask;
 import nars.task.Tasked;
@@ -27,8 +28,26 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 public class TestNAR {
 
-    static final Logger logger = LoggerFactory.getLogger(TestNAR.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(TestNAR.class);
+    public final NAR nar;
+    /**
+     * holds must (positive) conditions
+     */
+    private final FasterList<NARCondition> succeedsIfAll = new FasterList();
+    /**
+     * holds mustNot (negative) conditions which are tested at the end
+     */
+    private final List<NARCondition> failsIfAny = $.newArrayList();
+    public boolean quiet = false;
+    public boolean trace = true;
+    public boolean requireConditions = true;
+    /**
+     * -1 = failure,
+     * 0 = hasnt been determined yet by the end of the test,
+     * (0..1) = success in > 1 cycles,
+     * +1 = success in <= 1 cycles
+     */
+    public float score;
     /**
      * enable this to print reports even if the test was successful.
      * it can cause a lot of output that can be noisy and slow down
@@ -36,62 +55,22 @@ public class TestNAR {
      * TODO separate way to generate a test report containing
      * both successful and unsuccessful tests
      */
-    public boolean collectTrace = false;
-
-    public int temporalTolerance;
-    public boolean quiet = false;
-    float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
-    float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
-
-    public NAR nar;
-
-    public boolean trace = true;
-
-
-
-    /**
-     * holds must (positive) conditions
-     */
-    public final List<NARCondition> succeedsIfAll = $.newArrayList();
-    /**
-     * holds mustNot (negative) conditions which are tested at the end
-     */
-    public final List<NARCondition> failsIfAny = $.newArrayList();
-    
-
-    
+    private boolean collectTrace = false;
+    private int temporalTolerance = 0;
+    private float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
+    private float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
     private Topic<Tasked>[] outputEvents;
-    
-
-
-    boolean finished;
+    private boolean finished;
     private boolean exitOnAllSuccess = true;
-    public boolean requireConditions = true;
-
-    /** -1 = failure,
-     * 0 = hasnt been determined yet by the end of the test,
-     * (0..1) = success in > 1 cycles,
-     * +1 = success in <= 1 cycles */
-    public float score;
-
-    public boolean reportStats = false;
+    private boolean reportStats = false;
 
     public TestNAR(NAR nar) {
-        set(nar);
-    }
-
-    public void set(NAR nar) {
-        this.outputEvents = new Topic[]{
-                
-                
-                nar.eventTask,
-                
-                
-        };
-
         this.nar = nar;
 
-        
+        this.outputEvents = new Topic[]{
+                nar.eventTask,
+        };
+
     }
 
     public TestNAR confTolerance(float t) {
@@ -99,43 +78,20 @@ public class TestNAR {
         return this;
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public TestNAR run(long finalCycle  /* for use with JUnit */) {
-
 
 
         if (requireConditions)
             assertTrue(!succeedsIfAll.isEmpty() || !failsIfAny.isEmpty(), "no conditions tested");
 
 
-        
         String id = succeedsIfAll.toString();
 
-        for (NARCondition oc : succeedsIfAll) {
+        for (NARCondition oc: succeedsIfAll) {
             long oce = oc.getFinalCycle();
             if (oce > finalCycle) finalCycle = oce + 1;
         }
-        for (NARCondition oc : failsIfAny) {
+        for (NARCondition oc: failsIfAny) {
             long oce = oc.getFinalCycle();
             if (oce > finalCycle) finalCycle = oce + 1;
         }
@@ -153,17 +109,16 @@ public class TestNAR {
         long startTime = nar.time();
 
 
-
         runUntil(finalCycle);
 
         boolean success = true;
-        for (NARCondition t : succeedsIfAll) {
+        for (NARCondition t: succeedsIfAll) {
             if (!t.isTrue()) {
                 success = false;
                 break;
             }
         }
-        for (NARCondition t : failsIfAny) {
+        for (NARCondition t: failsIfAny) {
             if (t.isTrue()) {
 
                 if (!quiet) {
@@ -179,27 +134,15 @@ public class TestNAR {
 
 
         long time = nar.time();
-        int runtime = (int)(time - startTime);
+        int runtime = (int) (time - startTime);
 
         this.score = success ?
-                
-                (+1f / (1f + ((1f+runtime)/(1f+finalCycle-startTime))))
+
+                (+1f / (1f + ((1f + runtime) / (1f + finalCycle - startTime))))
                 :
                 0;
 
         {
-
-            
-            
-
-
-            
-
-
-
-            
-
-
 
 
             if (!quiet && reportStats) {
@@ -221,10 +164,6 @@ public class TestNAR {
             }
 
 
-
-
-
-
         }
 
 
@@ -238,30 +177,24 @@ public class TestNAR {
         return this;
     }
 
-    protected void assertSuccess(boolean success) {
+    private void assertSuccess(boolean success) {
 
         /** if success is false, the test will end here, throwing the appropriate JUnit exception */
         assertTrue(success);
     }
 
-    
-    public TestNAR runUntil(long finalCycle) {
 
-        
+    private TestNAR runUntil(long finalCycle) {
 
 
-
-
-
-        
         nar.synch();
 
-        
-        int frames = Math.max(0,(int) (finalCycle - time()));
+
+        int frames = Math.max(0, (int) (finalCycle - time()));
         while (frames-- > 0 && !finished)
             nar.run();
 
-        
+
         nar.synch();
 
         /*}
@@ -273,10 +206,9 @@ public class TestNAR {
     }
 
 
-    
-    public TestNAR input( String... s) {
+    public TestNAR input(String... s) {
         finished = false;
-        for (String x : s)
+        for (String x: s)
             try {
                 nar.input(x);
             } catch (Narsese.NarseseException e) {
@@ -285,10 +217,10 @@ public class TestNAR {
         return this;
     }
 
-    
-    public TestNAR input( ITask... s) {
+
+    public TestNAR input(ITask... s) {
         finished = false;
-        for (ITask x : s) {
+        for (ITask x: s) {
             if (x.pri() == 0 || x.isDeleted())
                 throw new RuntimeException("input task has zero or deleted priority");
             nar.input(x);
@@ -299,29 +231,29 @@ public class TestNAR {
     /**
      * warning may not work with time=0
      */
-    
+
     public TestNAR inputAt(long time, String s) {
         finished = false;
         nar.inputAt(time, s);
         return this;
     }
 
-    
+
     public TestNAR inputAt(long time, Task... t) {
         finished = false;
         nar.inputAt(time, t);
         return this;
     }
 
-    
-    public TestNAR believe( String t,  Tense tense, float f, float c) {
+
+    public TestNAR believe(String t, Tense tense, float f, float c) {
         finished = false;
         nar.believe(t, tense, f, c);
         return this;
     }
 
-    
-    public TestNAR goal( String t,  Tense tense, float f, float c) {
+
+    public TestNAR goal(String t, Tense tense, float f, float c) {
         finished = false;
         try {
             nar.goal($.$(t), tense, f, c);
@@ -331,13 +263,13 @@ public class TestNAR {
         return this;
     }
 
-    
-    public TestNAR goal( String s) {
+
+    public TestNAR goal(String s) {
         nar.goal(s);
         return this;
     }
 
-    
+
     public TestNAR log() {
         nar.log();
         return this;
@@ -346,10 +278,10 @@ public class TestNAR {
     /**
      * fails if anything non-input is processed
      */
-    
+
     public TestNAR mustNotOutputAnything() {
         exitOnAllSuccess = false;
-        requireConditions = false; 
+        requireConditions = false;
         nar.onTask(c -> {
             if (!c.isInput())
                 fail(c + " output, but must not output anything");
@@ -366,24 +298,24 @@ public class TestNAR {
         finished = true;
     }
 
-    
-    public TestNAR mustOutput(long cyclesAhead,  String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occTimeAbsolute) {
+
+    public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occTimeAbsolute) {
         return mustOutput(cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, occTimeAbsolute, occTimeAbsolute);
     }
-    
-    public TestNAR mustOutput(long cyclesAhead,  String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate occ) {
-        mustEmit(outputEvents,  cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, occ, occ);
+
+    public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate occ) {
+        mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, occ, occ);
         return this;
     }
 
-    
-    public TestNAR mustOutput(long cyclesAhead,  String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long start, long end) {
+
+    public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, long start, long end) {
         mustEmit(outputEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (l) -> l == start, (l) -> l == end);
         return this;
     }
 
-    
-    public TestNAR mustOutput(long cyclesAhead,  String task) {
+
+    public TestNAR mustOutput(long cyclesAhead, String task) {
         try {
             return mustEmit(outputEvents, cyclesAhead, task);
         } catch (Narsese.NarseseException e) {
@@ -392,11 +324,7 @@ public class TestNAR {
     }
 
 
-
-
-
-
-    TestNAR mustEmit( Topic<Tasked>[] c, long cyclesAhead,  String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) {
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end) {
         try {
             return mustEmit(c, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax,
                     start, end, true);
@@ -406,13 +334,13 @@ public class TestNAR {
     }
 
 
-    TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end, boolean must) throws Narsese.NarseseException {
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end, boolean must) throws Narsese.NarseseException {
         long now = time();
         cyclesAhead = Math.round(cyclesAhead * Param.TEST_TIME_MULTIPLIER);
         return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, start, end, must);
     }
 
-    TestNAR mustEmit(Topic<Tasked>[] c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end, boolean must) throws Narsese.NarseseException {
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate start, LongPredicate end, boolean must) throws Narsese.NarseseException {
 
 
         if (freqMin == -1)
@@ -430,7 +358,7 @@ public class TestNAR {
                         sentenceTerm, punc, freqMin - hf, freqMax + hf, confMin - hc, confMax + hc, start, end);
 
 
-        for (Topic<Tasked> cc : c) {
+        for (Topic<Tasked> cc: c) {
             cc.on(tc);
         }
 
@@ -439,15 +367,11 @@ public class TestNAR {
         if (must) {
             succeedsIfAll.add(tc);
         } else {
-            exitOnAllSuccess = false; 
+            exitOnAllSuccess = false;
             failsIfAny.add(tc);
         }
 
         return this;
-
-
-
-
 
 
     }
@@ -456,10 +380,9 @@ public class TestNAR {
         return nar.time();
     }
 
-    
-    private TestNAR mustEmit( Topic<Tasked>[] c, long cyclesAhead,  String task) throws Narsese.NarseseException {
+
+    private TestNAR mustEmit(Topic<Tasked>[] c, long cyclesAhead, String task) throws Narsese.NarseseException {
         Task t = Narsese.the().task(task, nar);
-        
 
 
         String termString = t.term().toString();
@@ -475,52 +398,52 @@ public class TestNAR {
         return mustEmit(c, cyclesAhead, termString, t.punc(), freq, freq, conf, conf, (l) -> l == t.start(), (l) -> l == t.end());
     }
 
-    
-    public TestNAR mustOutput(long cyclesAhead,  String term, byte punc, float freq, float conf) {
+
+    public TestNAR mustOutput(long cyclesAhead, String term, byte punc, float freq, float conf) {
         return mustOutput(cyclesAhead, term, punc, freq, freq, conf, conf, ETERNAL);
     }
 
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String term, float freqMin, float freqMax, float confMin, float confMax) {
+
+    public TestNAR mustBelieve(long cyclesAhead, String term, float freqMin, float freqMax, float confMin, float confMax) {
         return mustBelieve(cyclesAhead, term, freqMin, freqMax, confMin, confMax, ETERNAL);
     }
 
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String term, float freqMin, float freqMax, float confMin, float confMax, long when) {
+
+    public TestNAR mustBelieve(long cyclesAhead, String term, float freqMin, float freqMax, float confMin, float confMax, long when) {
         return mustOutput(cyclesAhead, term, BELIEF, freqMin, freqMax, confMin, confMax, when);
     }
 
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String term, float freq, float confidence,  Tense t) {
+
+    public TestNAR mustBelieve(long cyclesAhead, String term, float freq, float confidence, Tense t) {
         return mustOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, nar.time(t));
     }
 
     /**
      * tests for any truth value at the given occurrences
      */
-    
-    public TestNAR mustNotOutput(long cyclesAhead,  String term, byte punc, long occ) {
-        
-        
-        mustNotOutput(cyclesAhead, term, punc, 0f, 1f, 0f, 1f, occ);
-        return this;
-    }
-    
-    public TestNAR mustNotOutput(long cyclesAhead,  String term, byte punc,  LongPredicate occ) {
-        
-        
+
+    public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, long occ) {
+
+
         mustNotOutput(cyclesAhead, term, punc, 0f, 1f, 0f, 1f, occ);
         return this;
     }
 
-    
-    public TestNAR mustNotOutput(long cyclesAhead,  String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occ) {
+    public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, LongPredicate occ) {
+
+
+        mustNotOutput(cyclesAhead, term, punc, 0f, 1f, 0f, 1f, occ);
+        return this;
+    }
+
+
+    public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, long occ) {
         LongPredicate badTime = (l) -> l == occ;
         return mustNotOutput(cyclesAhead, term, punc, freqMin, freqMax, confMin, confMax, badTime);
     }
 
-    
-    public TestNAR mustNotOutput(long cyclesAhead,  String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate badTimes) {
+
+    public TestNAR mustNotOutput(long cyclesAhead, String term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate badTimes) {
         if (freqMin < 0 || freqMin > 1f || freqMax < 0 || freqMax > 1f || confMin < 0 || confMin > 1f || confMax < 0 || confMax > 1f || freqMin != freqMin || freqMax != freqMax)
             throw new UnsupportedOperationException();
 
@@ -535,74 +458,74 @@ public class TestNAR {
 
     }
 
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String term, float freq, float confidence, long occTimeAbsolute) {
-        return mustOutput( cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, occTimeAbsolute);
+
+    public TestNAR mustBelieve(long cyclesAhead, String term, float freq, float confidence, long occTimeAbsolute) {
+        return mustOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, occTimeAbsolute);
     }
 
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String term, float freq, float confidence, long start, long end) {
+
+    public TestNAR mustBelieve(long cyclesAhead, String term, float freq, float confidence, long start, long end) {
         return mustOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, start, end);
     }
 
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String term, float freq, float confidence) {
+
+    public TestNAR mustBelieve(long cyclesAhead, String term, float freq, float confidence) {
         return mustBelieve(cyclesAhead, term, freq, confidence, ETERNAL);
     }
 
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String term, float confidence) {
+
+    public TestNAR mustBelieve(long cyclesAhead, String term, float confidence) {
         return mustBelieve(cyclesAhead, term, 1.0f, confidence);
     }
 
-    
-    public TestNAR mustGoal(long cyclesAhead,  String goalTerm, float freq, float conf) {
+
+    public TestNAR mustGoal(long cyclesAhead, String goalTerm, float freq, float conf) {
         return mustOutput(cyclesAhead, goalTerm, GOAL, freq, conf);
     }
 
-    
-    public TestNAR mustQuestion(long cyclesAhead,  String qt) {
+
+    public TestNAR mustQuestion(long cyclesAhead, String qt) {
         return mustOutput(cyclesAhead, qt, QUESTION);
     }
 
-    
-    public TestNAR mustQuest(long cyclesAhead,  String qt) {
+
+    public TestNAR mustQuest(long cyclesAhead, String qt) {
         return mustOutput(cyclesAhead, qt, QUEST);
     }
 
-    public TestNAR mustOutput(long cyclesAhead,  String qt, byte question) {
+    public TestNAR mustOutput(long cyclesAhead, String qt, byte question) {
         return mustOutput(cyclesAhead, qt, question, NaN, NaN);
     }
 
-    
-    public TestNAR mustGoal(long cyclesAhead,  String goalTerm, float freq, float conf, long occ) {
-        return mustOutput(cyclesAhead, goalTerm, GOAL, freq, freq, conf, conf, occ);
-    }
-    
-    public TestNAR mustGoal(long cyclesAhead,  String goalTerm, float freq, float conf, LongPredicate occ) {
+
+    public TestNAR mustGoal(long cyclesAhead, String goalTerm, float freq, float conf, long occ) {
         return mustOutput(cyclesAhead, goalTerm, GOAL, freq, freq, conf, conf, occ);
     }
 
-    
-    public TestNAR mustGoal(long cyclesAhead,  String goalTerm, float freq, float conf, long start, long end) {
+    public TestNAR mustGoal(long cyclesAhead, String goalTerm, float freq, float conf, LongPredicate occ) {
+        return mustOutput(cyclesAhead, goalTerm, GOAL, freq, freq, conf, conf, occ);
+    }
+
+
+    public TestNAR mustGoal(long cyclesAhead, String goalTerm, float freq, float conf, long start, long end) {
         return mustOutput(cyclesAhead, goalTerm, GOAL, freq, freq, conf, conf, start, end);
     }
-    
-    public TestNAR mustBelieve(long cyclesAhead,  String goalTerm, float freq, float conf, LongPredicate occ) {
-        return mustOutput( cyclesAhead, goalTerm, BELIEF, freq, freq, conf, conf, occ);
+
+    public TestNAR mustBelieve(long cyclesAhead, String goalTerm, float freq, float conf, LongPredicate occ) {
+        return mustOutput(cyclesAhead, goalTerm, BELIEF, freq, freq, conf, conf, occ);
     }
 
-    public TestNAR ask( String termString) throws Narsese.NarseseException {
+    public TestNAR ask(String termString) throws Narsese.NarseseException {
         nar.question(termString);
         return this;
     }
 
-    public TestNAR quest( String termString) throws Narsese.NarseseException {
+    public TestNAR quest(String termString) throws Narsese.NarseseException {
         nar.quest($.$(termString));
         return this;
     }
 
-    
+
     public TestNAR askAt(int i, String term) {
         try {
             nar.inputAt(i, term + '?');
@@ -615,8 +538,8 @@ public class TestNAR {
     /**
      * TODO make this throw NarseseException
      */
-    
-    public TestNAR believe( String termString) {
+
+    public TestNAR believe(String termString) {
         try {
             nar.believe(termString);
         } catch (Narsese.NarseseException e) {
@@ -627,8 +550,8 @@ public class TestNAR {
         return this;
     }
 
-    
-    public TestNAR believe( String termString, float freq, float conf) {
+
+    public TestNAR believe(String termString, float freq, float conf) {
         try {
             nar.believe(termString, freq, conf);
         } catch (Narsese.NarseseException e) {
@@ -640,59 +563,20 @@ public class TestNAR {
     }
 
 
-
-    
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public TestNAR test(/* for use with JUnit */) {
         return run(0);
     }
 
-    
     public TestNAR test(long cycles) {
         return run(cycles);
     }
 
     final class EarlyExit implements Consumer<NAR> {
 
-        final int checkResolution; 
+        final int checkResolution;
         int cycle;
 
-        public EarlyExit(int checkResolution) {
+        EarlyExit(int checkResolution) {
             this.checkResolution = checkResolution;
             nar.onCycle(this);
         }
@@ -702,145 +586,10 @@ public class TestNAR {
 
             if (++cycle % checkResolution == 0 && !succeedsIfAll.isEmpty()) {
 
-                boolean finished = true;
-
-
-                for (int i = 0, requiresSize = succeedsIfAll.size(); i < requiresSize; i++) {
-                    if (!succeedsIfAll.get(i).isTrue()) {
-                        finished = false;
-                        break;
-                    }
-                }
-
-                if (finished) {
+                if (succeedsIfAll.allSatisfy(NARCondition::isTrue))
                     stop();
-                }
-
             }
+
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

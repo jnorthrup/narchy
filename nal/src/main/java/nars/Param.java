@@ -175,18 +175,13 @@ public abstract class Param {
     }
 
     /**
-     * 'time to live', unification steps until unification is stopped
+     * TTL = 'time to live'
      */
-    public final IntRange deriveTTL = new IntRange(30, 0, 2048);
+
+    public final IntRange deriveBranchTTL = new IntRange(TTL_MIN, 0, 2048);
 
 
-    /** estimate */
-    @Deprecated public static final int TTL_MIN =
-            Param.TTL_UNIFY * 2 +
-                    (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
-    //public static final int TTL_MAX_BRANCH = 15;
-    public static final int TTL_MIN_BRANCH = TTL_MIN;
 
     /**
      * cost of attempting a unification
@@ -234,8 +229,12 @@ public abstract class Param {
     @Range(min=0, max=64)
     public static int TTL_DERIVE_TASK_FAIL = 5;
 
-    
 
+
+    /** estimate */
+    @Deprecated public static final int TTL_MIN =
+            (Param.TTL_UNIFY * 2) +
+                    (Param.TTL_BRANCH * 1) + Param.TTL_DERIVE_TASK_SUCCESS;
 
 
 

@@ -2,19 +2,20 @@ package nars.test;
 
 import nars.NAR;
 import nars.NARS;
-import nars.control.MetaGoal;
+import nars.Param;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Method;
+import java.util.stream.Stream;
 
 
 public abstract class NALTest {
 
-
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
     public TestNAR test;
-    public final MetaGoal.Report metagoals = new MetaGoal.Report();
-
 
     protected NALTest() {
         test = new TestNAR(nar());
@@ -22,6 +23,51 @@ public abstract class NALTest {
 
     public NALTest(TestNAR t) {
         test = t;
+    }
+
+    public static NALTest test(TestNAR tt, Method m) {
+        NALTest t = null;
+        try {
+//            t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
+            t = (NALTest) ((Class) m.getDeclaringClass())
+                    .getConstructor().newInstance();
+            t.test = (tt);
+        } catch (Exception e) {
+            return null;
+        }
+
+        t.test.quiet = true;
+        t.test.nar.random().setSeed(
+                System.nanoTime()
+
+        );
+
+
+        try {
+            m.invoke(t);
+        } catch (Throwable ee) {
+            return null;
+        }
+
+        Param.DEBUG = false;
+
+        try {
+            t.test.test();
+
+        } catch (Throwable ee) {
+
+
+            return null;
+        }
+        return t;
+
+    }
+
+    public static Stream<Method> tests(Class<? extends NALTest>... c) {
+
+        return Stream.of(c)
+                .flatMap(cc -> Stream.of(cc.getMethods())
+                        .filter(x -> x.getAnnotation(Test.class) != null));
     }
 
 

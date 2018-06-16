@@ -90,7 +90,7 @@ public class SimpleDeriver extends Deriver {
         final int[] ii = {iterations * power.intValue()};
 
 
-        int deriveTTL = n.deriveTTL.intValue();
+        int deriveTTL = n.deriveBranchTTL.intValue();
         int matchTTL = deriveTTL / 4;
 
         source.accept(a -> {
