@@ -22,24 +22,24 @@ public class DecisionTreeGetMajorityLabelTest {
     
     @Test
     public void testGetMajorityLabel() {
-        DecisionTree<Object, Object> tree = new DecisionTree();
+//        DecisionTree<Object, Object> tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
-        assertEquals("false", DecisionTree.majority(null, data).toString());
+        assertEquals("false", DecisionTree.majority(null, data.stream()).toString());
     }
 
     @Test
     public void testGetMajorityLabelWhenEqualCounts() {
-        DecisionTree<Object, Object> tree = new DecisionTree();
+//        DecisionTree<Object, Object> tree = new DecisionTree();
         List<Function<Object,Object>> data = Lists.newArrayList();
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
         data.add(new TestValue(TRUE_LABEL));
         data.add(new TestValue(FALSE_LABEL));
-        assertEquals("false", DecisionTree.majority(null, data).toString());
+        assertEquals("false", DecisionTree.majority(null, data.stream()).toString());
     }
 }

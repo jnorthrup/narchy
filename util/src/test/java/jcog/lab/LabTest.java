@@ -23,6 +23,11 @@ class LabTest {
 
         r.print();
 
+        System.out.println("\ndisc=1");
+        r.tree(1, 4).print();
+        System.out.println("\ndisc=1");
+        r.tree(2, 4).print();
+        System.out.println("\ndisc=1");
         r.tree(3, 4).print();
 
 

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.intelligentjava.machinelearning.decisiontree.data.SimpleValue.classification;
 import static org.intelligentjava.machinelearning.decisiontree.data.SimpleValue.data;
@@ -51,9 +50,9 @@ public class DecisionTreeTrainingTest {
         Predicate<Function<String, Object>> feature3 = feature("x2", Boolean.TRUE);
         Predicate<Function<String, Object>> feature4 = feature("x2", Boolean.FALSE);
 
-        tree.put("answer", asList(data1, data2, data3, data4), asList(feature1, feature2, feature3, feature4));
+        tree.put("answer", List.of(data1, data2, data3, data4), List.of(feature1, feature2, feature3, feature4));
 
-        DecisionTree.Node<?> root = tree.root();
+        DecisionTree.DecisionNode<?> root = tree.root();
 
         assertEquals("x1 = true", root.toString()); 
         assertEquals(null, root.label); 
@@ -99,9 +98,9 @@ public class DecisionTreeTrainingTest {
         Predicate<Function<String, Object>> feature3 = feature("x2", Boolean.TRUE);
         Predicate<Function<String, Object>> feature4 = feature("x2", Boolean.FALSE);
 
-        tree.put("answer", asList(data1, data2, data3, data4), asList(feature1, feature2, feature3, feature4));
+        tree.put("answer", List.of(data1, data2, data3, data4), List.of(feature1, feature2, feature3, feature4));
 
-        DecisionTree.Node<?> root = tree.root();
+        DecisionTree.DecisionNode<?> root = tree.root();
         assertEquals("x1 = true", root.toString()); 
         assertEquals(null, root.label); 
 
@@ -146,10 +145,12 @@ public class DecisionTreeTrainingTest {
         Predicate<Function<String, Object>> feature3 = feature("x2", Boolean.TRUE);
         Predicate<Function<String, Object>> feature4 = feature("x2", Boolean.FALSE);
 
-        tree.put("answer", asList(data1, data2, data3, data4), asList(feature1, feature2, feature3, feature4));
+        tree.put("answer",
+                List.of(data1, data2, data3, data4),
+                List.of(feature1, feature2, feature3, feature4));
         tree.print();
 
-        DecisionTree.Node root = tree.root();
+        DecisionTree.DecisionNode root = tree.root();
         assertEquals("x2 = true", root.toString()); 
         assertNull(root.label); 
 
@@ -164,12 +165,12 @@ public class DecisionTreeTrainingTest {
 
         tree.put(
                 "answer",
-                asList(
+                List.of(
                         data(header, 1, BooleanLabel.FALSE_LABEL),
                         data(header, 2, BooleanLabel.FALSE_LABEL),
                         data(header, 3, BooleanLabel.TRUE_LABEL),
                         data(header, 4, BooleanLabel.TRUE_LABEL)),
-                asList(
+                List.of(
                         feature("x1", P.moreThan(0), "> 0"),
                         feature("x1", P.moreThan(1), "> 1"),
                         feature("x1", P.moreThan(2), "> 2"))
@@ -177,7 +178,7 @@ public class DecisionTreeTrainingTest {
 
         tree.print();
 
-        DecisionTree.Node<?> root = tree.root();
+        DecisionTree.DecisionNode<?> root = tree.root();
         assertEquals("x1 > 2", root.toString()); 
         assertEquals(null, root.label); 
 
@@ -212,8 +213,8 @@ public class DecisionTreeTrainingTest {
         Predicate<Function<String, Object>> feature4 = feature("x2", Boolean.FALSE);
 
         tree.put("answer",
-                asList(data1, data2, data3, data4),
-                asList(feature1, feature2, feature3, feature4));
+                List.of(data1, data2, data3, data4),
+                List.of(feature1, feature2, feature3, feature4));
 
         
         String[] classificationHeader = {"x1", "x2"};
@@ -266,7 +267,7 @@ public class DecisionTreeTrainingTest {
 
         tr.print();
 
-        List<DecisionTree.Node.LeafNode<Float>> leavesList = tr.leaves().collect(toList());
+        List<DecisionTree.DecisionNode.LeafNode<Float>> leavesList = tr.leaves().collect(toList());
         assertEquals("[1.0, 1.0, 1.0, 1.0, 0.0]", leavesList.toString());
 
     }

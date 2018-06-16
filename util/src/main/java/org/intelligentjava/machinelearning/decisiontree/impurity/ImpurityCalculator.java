@@ -1,7 +1,8 @@
 package org.intelligentjava.machinelearning.decisiontree.impurity;
 
-import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 /**
  * Impurity calculation method of decision tree. It is used during training while trying to find best split. For example
@@ -16,6 +17,8 @@ import java.util.function.Function;
 @FunctionalInterface
 public interface ImpurityCalculator {
 
+
+
     /**
      * Calculates impurity value. High impurity implies low information gain and more random labels of data which in
      * turn means that split is not very good.
@@ -25,7 +28,7 @@ public interface ImpurityCalculator {
      * @param splitData Data subset on which impurity is calculated.
      * @return Impurity.
      */
-    <K, V> double impurity(K value, List<Function<K, V>> splitData);
+    <K, V> double impurity(K value, Supplier<Stream<Function<K, V>>> splitData);
 
 
     /**
@@ -34,8 +37,12 @@ public interface ImpurityCalculator {
      * @param splitData Data on which positive label probability is calculated.
      * @return Empirical probability.
      */
-    static <K, V> double getEmpiricalProbability(K value, List<Function<K, V>> splitData, V positive, V negative) {
-        
-        return (double) splitData.stream().filter(d -> d.apply(value).equals(positive)).count() / splitData.size();
+    static <K, V> double empiricalProb(K value, Stream<Function<K, V>> splitData, V positive) {
+        int[] ratio = new int[2];
+        splitData.map(d -> d.apply(value)).forEach(v -> {
+            boolean eqP = v.equals(positive);
+            ratio[eqP ? 1 : 0]++;
+        });
+        return ratio[1] / ((double)(ratio[0] + ratio[1]));
     }
 }

@@ -10,8 +10,6 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * row x column matrices of real-number values
  * <p>
@@ -58,7 +56,6 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
         this.table = table;
 
         int discretization = rangeLabels.length;
-        assert (discretization > 1);
         assert (table.cols.length > 1);
         maxDepth(maxDepth);
 
@@ -102,28 +99,27 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
         
 
-        put(column, rows.map((r) -> (Function<Integer,Float>) i -> r[i]).collect(toList()),
+        put(column, rows.map((r) -> (Function<Integer,Float>) i -> r[i]),
 
                 
                 Stream.of(cols).
                         filter(x -> x.num != column).
-                        flatMap(f -> f.classifiers(rangeLabels)).
-                        collect(toList()),
+                        flatMap(f -> f.classifiers(rangeLabels)),
 
                 depthToPrecision
         );
     }
 
-    public Node<Float> min() {
+    public DecisionNode<Float> min() {
         return leaves().min(centroidComparator).get();
     }
 
-    public Node<Float> max() {
+    public DecisionNode<Float> max() {
         return leaves().max(centroidComparator).get();
     }
 
 
 
-    static final Comparator<Node<Float>> centroidComparator = (a, b) -> Float.compare(a.label, b.label);
+    static final Comparator<DecisionNode<Float>> centroidComparator = (a, b) -> Float.compare(a.label, b.label);
 
 }

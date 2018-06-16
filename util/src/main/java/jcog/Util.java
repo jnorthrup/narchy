@@ -1891,9 +1891,9 @@ public enum Util {
         return 0;
     }
 
-    public static <X> Stream<X> buffer(Stream<X> x) {
+    public static <X> Supplier<Stream<X>> buffer(Stream<X> x) {
         List<X> buffered = x.collect(toList());
-        return buffered.stream();
+        return buffered::stream;
     }
 
     /**

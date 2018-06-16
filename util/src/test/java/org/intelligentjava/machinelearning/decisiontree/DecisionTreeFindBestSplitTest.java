@@ -28,14 +28,15 @@ public class DecisionTreeFindBestSplitTest {
         dataSet.add(data(headers, FALSE_LABEL, false, true));
         dataSet.add(data(headers, FALSE_LABEL, false, false));
         
-        List<Predicate<Function<String,Object>>> features = Lists.newArrayList();
-        features.add(feature("x1", true));
-        features.add(feature("x2", true));
-        features.add(feature("x1", false));
-        features.add(feature("x2", false));
+        List<Predicate<Function<String,Object>>> features = List.of(
+            feature("x1", true),
+            feature("x2", true),
+            feature("x1", false),
+            feature("x2", false)
+        );
         
         
-        Predicate<Function<String,Object>> bestSplit = tree.bestSplit(labelColumnName,dataSet, features);
+        Predicate<Function<String,Object>> bestSplit = tree.bestSplit(labelColumnName, ()->dataSet.stream(), features.stream());
         assertEquals("x1 = true", bestSplit.toString());
         
         List<List<Function<String,Object>>> split = DecisionTree.split(bestSplit, dataSet).collect(toList());
@@ -47,7 +48,7 @@ public class DecisionTreeFindBestSplitTest {
         assertEquals(FALSE_LABEL, split.get(1).get(1).apply(labelColumnName));
 
         
-        Predicate<Function<String,Object>> newBestSplit = tree.bestSplit(labelColumnName,split.get(0), features);
+        Predicate<Function<String,Object>> newBestSplit = tree.bestSplit(labelColumnName,()->split.get(0).stream(), features.stream());
         assertEquals("x2 = true", newBestSplit.toString());
 
         List<List<Function<String,Object>>> newSplit = DecisionTree.split(newBestSplit, split.get(0)).collect(toList());
