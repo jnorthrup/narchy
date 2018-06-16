@@ -38,8 +38,8 @@
 package jcog.data;
 
 import jcog.list.FasterList;
-import org.eclipse.collections.impl.set.immutable.AbstractImmutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -95,8 +95,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     };
 
     public final List<X> list;
-    private Set<X> set = Set.of();
-
+    private Set<X> set = emptySet();
 
 
     public ArrayHashSet() {
@@ -111,8 +110,6 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         this.list = list;
     }
 
-
-    
 
     public static <X> ArrayHashSet<X> of(X... x) {
         ArrayHashSet a = new ArrayHashSet(x.length);
@@ -139,20 +136,14 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         return jcog.Util.or(test, list);
     }
 
+    protected int setSize() {
+        return set.size();
+    }
+
     public boolean AND(org.eclipse.collections.api.block.predicate.Predicate<? super X> test) {
         return jcog.Util.and(test, list);
     }
 
-
-
-
-
-
-
-
-    
-
-    
 
     @Override
     public X get(int index) {
@@ -162,19 +153,28 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public boolean add(X element) {
         switch (list.size()) {
-            case 0: 
-                set = new UnifiedSet(1);
+            case 0:
+                set = newSet();
                 set.add(element);
-                list.add(element);
+                addUnique(element);
                 return true;
+            default:
+                if (set.add(element)) {
+                    addUnique(element);
+                    return true;
+                }
+                return false;
         }
 
-        
-        if (set.add(element)) {
-            list.add(element);
-            return true;
-        }
-        return false;
+    }
+
+    protected void addUnique(X element) {
+        list.add(element);
+    }
+
+    @NotNull
+    public UnifiedSet newSet() {
+        return new UnifiedSet(1);
     }
 
     @Override
@@ -182,9 +182,6 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         return new ArrayHashSetIterator();
     }
 
-    
-
-    
 
     @Override
     public int size() {
@@ -214,17 +211,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
             switch (size()) {
                 case 0:
-                    set = Set.of();
-                    break; 
+                    set = emptySet();
+                    break;
             }
         }
 
         return removed;
     }
-
-
-
-
 
 
     @Override
@@ -233,11 +226,10 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
         if (!list.isEmpty()) {
             list.clear();
-            set = Set.of();
+            set = emptySet();
         }
 
     }
-
 
 
     @Override
@@ -254,9 +246,6 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     public void shuffle(Random random) {
         Collections.shuffle(list, random);
     }
-
-
-    
 
     private class ArrayHashSetIterator implements ListIterator<X> {
 
@@ -310,24 +299,22 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
         @Override
         public void remove() {
-            if (set instanceof AbstractImmutableSet)
-                set = new UnifiedSet(set);
             boolean removed = set.remove(lastElementProvided);
             assert (removed);
+            if (set.isEmpty()) {
+                set = emptySet();
+            }
 
             arrayListIterator.remove();
-
-
-
         }
 
         @Override
         public void set(X element) {
             if (element.equals(lastElementProvided)) {
-                
+
             } else {
                 if (set.contains(element)) {
-                    
+
                     throw new IllegalArgumentException("Cannot set already-present element in a different position in ArrayHashSet.");
                 } else {
                     arrayListIterator.set(element);
@@ -336,5 +323,10 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
                 }
             }
         }
+    }
+
+
+    static Set emptySet() {
+        return Set.of();
     }
 }

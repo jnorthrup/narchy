@@ -12,6 +12,7 @@ import nars.table.TemporalBeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.compound.util.Image;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
@@ -26,159 +27,9 @@ import static nars.Op.INH;
 public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
     Predicate<Term> validDynamicSubterm = x -> Task.validTaskTerm(x.unneg());
-
-    static boolean validDynamicSubterms(Subterms subterms) {
-        return subterms.AND(validDynamicSubterm);
-    }
-
-    @Nullable
-    static DynamicTruthModel unroll(Term t) {
-        DynamicTruthModel dmt = null;
-
-        final Subterms ts = t.subterms();
-        switch (t.op()) {
-
-            case INH:
-
-                Term subj = ts.sub(0);
-                Term pred = ts.sub(1);
-
-                Op so = subj.op();
-                Op po = pred.op();
-
-                if (dmt == null /* && (po.atomic || po == PROD || po.isSet()) */) {
-                    if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)
-
-                    ) {
-
-
-
-
-
-                        Subterms subjsubs = subj.subterms();
-                        int s = subjsubs.subs();
-                        Term[] x = new Term[s];
-                        for (int i = 0; i < s; i++) {
-                            Term y;
-
-
-
-
-
-
-                            if (!validDynamicSubterm.test(y = INH.the(subjsubs.sub(i), pred)))
-                                return null;
-                            x[i] = y;
-                        }
-
-
-
-
-
-
-
-
-                        /*if (so != PROD)*/
-
-
-                        switch (so) {
-
-
-                            case SECTi:
-                                dmt = new DynamicTruthModel.SectIntersection(x);
-                                break;
-                            case SECTe:
-                                dmt = new DynamicTruthModel.Union(x);
-                                break;
-                            case DIFFe:
-                                dmt = new DynamicTruthModel.Difference(x[0], x[1]);
-                                break;
-                        }
-
-
-                    }
-
-                }
-
-                if (dmt == null /*&& (so.atomic || so == PROD || so.isSet())*/) {
-                    if (((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi))) {
-                        
-                        
-                        
-                        Compound cpred = (Compound) pred;
-                        int s = cpred.subs();
-                        Term[] x = new Term[s];
-                        for (int i = 0; i < s; i++) {
-                            Term y;
-                            if (!validDynamicSubterm.test(y = INH.the(subj, cpred.sub(i))))
-                                return null;
-                            x[i] = y;
-                        }
-
-                        switch (po) {
-                            case SECTi:
-                                dmt = new DynamicTruthModel.Union(x);
-                                break;
-                            case SECTe:
-                                dmt = new DynamicTruthModel.SectIntersection(x);
-                                break;
-                            case DIFFi:
-                                dmt = new DynamicTruthModel.Difference(x[0], x[1]);
-                                break;
-                        }
-                    } /*else if (so.image) {
-                        Compound img = (Compound) subj;
-                        Term[] ee = new Term[img.size()];
-
-                        int relation = img.dt();
-                        int s = ee.length;
-                        for (int j = 1, i = 0; i < s; ) {
-                            if (j == relation)
-                                ee[i++] = pred;
-                            if (i < s)
-                                ee[i++] = img.sub(j++);
-                        }
-                        Compound b = compoundOrNull(INH.the(DTERNAL, img.sub(0), $.p(ee)));
-                        if (b != null)
-                            dmt = new DynamicTruthModel.Identity(t, b);
-                    }*/
-
-                }
-
-
-
-                break;
-
-            case CONJ:
-                
-                if (validDynamicSubterms(ts)) {
-                    dmt = DynamicTruthModel.Intersection.ConjIntersection.the;
-                }
-                break;
-
-            case DIFFe:
-                
-                if (validDynamicSubterms(ts))
-                    dmt = new DynamicTruthModel.Difference(ts.arrayShared());
-                break;
-
-            case NEG:
-                throw new RuntimeException("negation terms can not be conceptualized as something separate from that which they negate");
-        }
-        return dmt;
-    }
-
-    ConceptState init();
-    ConceptState awake();
-    ConceptState sleep();
-
-    QuestionTable questionTable(Term term, boolean questionOrQuest);
-    BeliefTable newTable(Term t, boolean beliefOrGoal);
-    TemporalBeliefTable newTemporalTable(Term c);
-
-
-
-    /** passes through terms without creating any concept anything */
+    /**
+     * passes through terms without creating any concept anything
+     */
     ConceptBuilder Null = new ConceptBuilder() {
 
         @Override
@@ -219,10 +70,137 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
         @Override
         public Bag[] newLinkBags(Term term) {
-            return new Bag[] { Bag.EMPTY, Bag.EMPTY };
+            return new Bag[]{Bag.EMPTY, Bag.EMPTY};
         }
     };
 
+    static boolean validDynamicSubterms(Subterms subterms) {
+        return subterms.AND(validDynamicSubterm);
+    }
+
+    /**
+     * returns the builder for the term, or null if the term is not dynamically truthable
+     */
+    @Nullable
+    static DynamicTruthModel dynamicModel(Term t) {
+
+        switch (t.op()) {
+
+            case INH:
+                return dynamicInh(t);
+
+            case IMPL:
+                /* TODO:
+                    ((&&,x,y,z,...) ==> z) from (x ==> z) and (y ==> z) //intersect pre
+                    (--(--x && --y) ==> z) from (x ==> z) and (y ==> z) //union pre
+                    (z ==> (x && y))  //intersect conc
+                    (z ==> --(--x && --y))  //union conc
+                 */
+                break;
+
+            case CONJ:
+                if (validDynamicSubterms(t.subterms()))
+                    return DynamicTruthModel.Intersection.ConjIntersection.the;
+                break;
+
+            case DIFFe:
+                if (validDynamicSubterms(t.subterms()))
+                    return DynamicTruthModel.DiffRoot;
+                break;
+
+            case NEG:
+                throw new RuntimeException("negation terms can not be conceptualized as something separate from that which they negate");
+        }
+        return null;
+    }
+
+    static DynamicTruthModel dynamicInh(Term t) {
+
+        //quick pre-test
+        Subterms tt = t.subterms();
+        if (!tt.hasAny(Op.SectBits | Op.DiffBits | Op.PROD.bit))
+            return null;
+
+        if ((tt.OR(s -> s.isAny(Op.SectBits | Op.DiffBits)))) {
+
+
+            DynamicTruthModel dmt = null;
+            Term subj = tt.sub(0);
+            Term pred = tt.sub(1);
+
+            Op so = subj.op();
+            Op po = pred.op();
+
+
+            if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe)
+
+            ) {
+
+                //TODO move this to impl-specific test function
+                Subterms subjsubs = subj.subterms();
+                int s = subjsubs.subs();
+                Term[] x = new Term[s];
+                for (int i = 0; i < s; i++) {
+                    Term y;
+                    if (!validDynamicSubterm.test(y = INH.the(subjsubs.sub(i), pred)))
+                        return null;
+                    x[i] = y;
+                }
+
+                switch (so) {
+                    case SECTi:
+                        return DynamicTruthModel.IsectSubj;
+                    case SECTe:
+                        return DynamicTruthModel.UnionSubj;
+                    case DIFFe:
+                        return DynamicTruthModel.DiffSubj;
+                }
+
+
+            }
+
+
+            if (((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi))) {
+
+
+                Compound cpred = (Compound) pred;
+                int s = cpred.subs();
+                Term[] x = new Term[s];
+                for (int i = 0; i < s; i++) {
+                    Term y;
+                    if (!validDynamicSubterm.test(y = INH.the(subj, cpred.sub(i))))
+                        return null;
+                    x[i] = y;
+                }
+
+                switch (po) {
+                    case SECTi:
+                        return DynamicTruthModel.UnionPred;
+                    case SECTe:
+                        return DynamicTruthModel.IsectPred;
+                    case DIFFi:
+                        return DynamicTruthModel.DiffPred;
+                }
+            }
+        }
+        Term iNorm = Image.imageNormalize(t);
+        if (!iNorm.equals(t)) {
+            return DynamicTruthModel.ImageIdentity;
+        }
+        return null;
+    }
+
+    ConceptState init();
+
+    ConceptState awake();
+
+    ConceptState sleep();
+
+    QuestionTable questionTable(Term term, boolean questionOrQuest);
+
+    BeliefTable newTable(Term t, boolean beliefOrGoal);
+
+    TemporalBeliefTable newTemporalTable(Term c);
 
     Bag[] newLinkBags(Term term);
 
@@ -231,11 +209,11 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
     @Override
     default Termed apply(Term x, Termed prev) {
         if (prev != null) {
-            
-                Concept c = ((Concept) prev);
-                if (!c.isDeleted())
-                    return c;
-            
+
+            Concept c = ((Concept) prev);
+            if (!c.isDeleted())
+                return c;
+
         }
 
         return apply(x);
@@ -259,5 +237,6 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
         return c;
     }
+
 
 }

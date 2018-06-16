@@ -1,6 +1,7 @@
 package nars.concept.dynamic;
 
 import jcog.Util;
+import jcog.list.FasterList;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
@@ -11,6 +12,7 @@ import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.compound.util.Conj;
+import nars.term.compound.util.Image;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -20,7 +22,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Created by me on 12/4/16.
@@ -42,7 +45,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
             Concept subConcept =
                     
-                    n.conceptualize(concept); 
+                    n.conceptualizeDynamic(concept);
 
             @Nullable Task bt;
             if (!(subConcept instanceof TaskConcept)) {
@@ -94,7 +97,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
     /**
      * used to reconstruct a dynamic term from some or all components
      */
-    abstract public Term construct(Term superterm, List<TaskRegion> c);
+    abstract public Term reconstruct(Term superterm, List<TaskRegion> c);
 
 
 
@@ -167,56 +170,65 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
     }
 
-    public static class SectIntersection extends Intersection {
-        /** ahead of time computed components */
-        private final Term[] comp;
+    final static class SectIntersection extends Intersection {
 
-        public SectIntersection(Term[] comp) {
-            this.comp = comp;
-        }
+        final boolean union, subjOrPred;
 
-        @Override
-        public Term construct(Term superterm, List<TaskRegion> components) {
-            
-            int n = components.size();
-            if (n == 1) {
-                return components.get(0).task().term();
-            }
-            Term[] ct = Util.map(0, n, c -> components.get(c).task().term(), Term[]::new);
-            if (n == 2) {
-                return inhConstruct2(superterm, SECTe.bit | SECTi.bit, ct);
-            } else {
-                return inhConstructN(superterm, SECTe.bit | SECTi.bit, ct);
-            }
-        }
-
-        @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            for (Term x : comp) {
-                if (!each.accept(x, start, end)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    /**
-     * conf is multiplied, freq is OR'd
-     */
-    public static final class Union extends SectIntersection {
-
-        public Union(Term... comp) {
-            super(comp);
-            assert (comp.length > 1);
+        private SectIntersection(boolean union, boolean subjOrPred) {
+            this.union = union;
+            this.subjOrPred = subjOrPred;
         }
 
         @Override
         protected boolean negateFreq() {
-            return true;
+            return union;
         }
 
+        @Override
+        public Term reconstruct(Term superterm, List<TaskRegion> components) {
+            //quick test: if the components are all non-temporal the term will remain the same
+            int n;
+            if (superterm.subs() == (n = components.size()) && !superterm.hasAny(Op.Temporal))
+                return superterm;
+
+            if (n == 1) {
+                return components.get(0).task().term();
+            }
+
+            Term[] subs = inhReconstruct(subjOrPred, components);
+            return superterm.op().the(subs);
+        }
+
+
+        protected final boolean subjOrPred() {
+            return subjOrPred;
+        }
+
+        public final boolean union() {
+            return union;
+        }
+
+
+
+
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            Term common = inhCommonComponent(subjOrPred, superterm);
+            Term decomposed = inhCommonComponent(!subjOrPred, superterm);
+            return decomposed.subterms().AND(y ->
+                each.accept(inhComponent(subjOrPred, y, common), start, end)
+            );
+        }
+
+
     }
+
+    public static final DynamicTruthModel UnionSubj = new SectIntersection(true, true);
+    public static final DynamicTruthModel IsectSubj = new SectIntersection(false, true);
+    public static final DynamicTruthModel UnionPred = new SectIntersection(true, false);
+    public static final DynamicTruthModel IsectPred = new SectIntersection(false, false);
+
+
 
     public static class ConjIntersection extends Intersection {
 
@@ -227,7 +239,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         }
 
         @Override
-        public Term construct(Term superterm, List<TaskRegion> components) {
+        public Term reconstruct(Term superterm, List<TaskRegion> components) {
             Conj c = new Conj();
             
             
@@ -241,76 +253,39 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
         @Override
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
             int superDT = superterm.dt();
-            boolean xternal = superDT ==XTERNAL;
-            boolean dternal = superDT ==DTERNAL;
-            LongObjectPredicate<Term> sub;
-            if (xternal || dternal) {
-                
-                sub = (whenIgnored, event) -> each.accept(event, start, end);
-            } else {
-                
-                long range = start!=ETERNAL ? end-start : 0;
-                sub = (when, event) -> each.accept(event, when, when+range);
-            }
 
-            return superterm.eventsWhile((when,event)->{
-                if (event!=superterm) 
-                    return sub.accept(when, event);
-                else
-                    return false; 
-                }, start, !xternal && !dternal, dternal, xternal, 0);
+
+            if ((superDT==DTERNAL || superDT == XTERNAL) && !superterm.hasAny(CONJ)) {
+                /* simple case: */
+                return superterm.subterms().AND(event ->
+                    each.accept(event, start, end)
+                );
+            } else {
+
+                boolean xternal = superDT == XTERNAL;
+                boolean dternal = superDT == DTERNAL;
+                LongObjectPredicate<Term> sub;
+                if (xternal || dternal) {
+                    //propagate start,end to each subterm.  allowing them to match freely inside
+                    sub = (whenIgnored, event) -> each.accept(event, start, end);
+                } else {
+                    //subterm refrences a specific point as a result of event time within the term. so start/end range gets collapsed at this point
+                    sub = (when, event) -> each.accept(event, when, when/*+range*/);
+                }
+
+                return superterm.eventsWhile((when, event) -> {
+                            //if (event!=superterm)
+                            return sub.accept(when, event);
+                            //else
+                            //return false;
+                        }, start, superDT == 0, superDT == DTERNAL,
+                        true /* always decompose xternal */, 0);
+            }
         }
     }
 
-    public static class Difference extends DynamicTruthModel {
-        private final Term[] comp;
+    abstract static class Difference extends DynamicTruthModel  {
 
-        public Difference(Term[] xy) {
-
-
-
-
-
-            this.comp = xy;
-        }
-
-        public Difference(Term x, Term y) {
-            this(new Term[]{x, y});
-        }
-
-        @Override
-        protected boolean add(@Nullable Task bt, DynTruth d) {
-            if (bt == null)
-                return false;
-
-            return super.add(bt, d);
-        }
-
-        @Override
-        public Term construct(Term superterm, List<TaskRegion> components) {
-
-            Term a = components.get(0).task().term();
-            Term b = components.get(1).task().term();
-
-            if (superterm.op() == INH) {
-                return inhConstruct2(superterm, DIFFe.bit | DIFFi.bit, a, b);
-            } else if (superterm.op() == DIFFe) {
-                
-                return Op.DIFFe.compound(DTERNAL, new Term[]{a, b});
-            }
-
-            throw new RuntimeException();
-        }
-
-        @Override
-        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            for (Term x : comp) {
-                if (!each.accept(x, start, end)) {
-                    return false;
-                }
-            }
-            return true;
-        }
 
         @Override
         public Truth apply(DynTruth d, NAR n) {
@@ -324,47 +299,102 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth,NAR,Truth
 
             return NALTruth.Difference.apply(a, b, n, Float.MIN_NORMAL);
         }
+
+
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            return each.accept(superterm.sub(0), start, end) && each.accept(superterm.sub(1), start, end);
+        }
+    };
+
+    public static final Difference DiffRoot = new Difference() {
+
+        @Override
+        public Term reconstruct(Term superterm, List<TaskRegion> components) {
+            return Op.DIFFe.compound(DTERNAL, new Term[]{
+                    components.get(0).task().term(),
+                    components.get(1).task().term()});
+        }
+
+    };
+
+    static class DiffInh extends Difference {
+        final boolean subjOrPred;
+
+        DiffInh(boolean subjOrPred) {
+            this.subjOrPred = subjOrPred;
+        }
+
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            Term common = inhCommonComponent(subjOrPred, superterm);
+            Term decomposed = inhCommonComponent(!subjOrPred, superterm);
+            return each.accept(inhComponent(subjOrPred, decomposed.sub(0), common), start, end) &&
+                    each.accept(inhComponent(subjOrPred, decomposed.sub(1), common), start, end);
+        }
+
+        @Override
+        public Term reconstruct(Term superterm, List<TaskRegion> c) {
+            return superterm.op().the(DynamicTruthModel.inhReconstruct(subjOrPred, c));
+        }
     }
 
-    private static Term inhConstruct2(Term superterm, int bits, Term... components) {
-        {
-            Term subj = superterm.sub(0);
-            Op so = subj.op();
-            if (so.isAny(bits))
-                return INH.the(so.the(components[0].sub(0), components[1].sub(0)), superterm.sub(1));
-        }
+    public static final Difference DiffSubj = new DiffInh(true);
+    public static final Difference DiffPred = new DiffInh(false);
 
-        {
-            Term pred = superterm.sub(1);
-            Op po = pred.op();
-            if (po.isAny(bits))
-                return INH.the(superterm.sub(0), po.the(components[0].sub(1), components[1].sub(1)));
+    static Term inhComponent(boolean subjOrPred, Term subterm, Term common) {
+        Term s, p;
+        if (subjOrPred) {
+            s = subterm;
+            p = common;
+        } else {
+            s = common;
+            p = subterm;
         }
+        return INH.the(s, p);
+    }
+    static Term inhCommonComponent(boolean subjOrPred, Term superterm) {
+        return subjOrPred ? superterm.sub(1) : superterm.sub(0);
+    }
+    static Term[] inhReconstruct(boolean subjOrPred, List<TaskRegion> components) {
 
-        throw new UnsupportedOperationException();
+        //extract passive term and verify they all match (could differ temporally, for example)
+        Term[] common = new Term[0];
+        boolean extOrInh = subjOrPred;
+        if (!((FasterList<TaskRegion>)components).allSatisfy(tr -> {
+            Term t = tr.task().term();
+            Term p = common[0];
+            if (p == null) {
+                common[0] = t.sub(extOrInh ? 1 : 0 /* reverse */);
+                return true;
+            } else {
+                return p.equals(t.sub(extOrInh ? 1 : 0 /* reverse */));
+            }
+        }))
+            return null; //differing passive component; TODO this can be detected earlier, before truth evaluation starts
+
+        Term[] subs = Util.map(0, components.size(), c -> {
+            Term active = components.get(c).task().term().sub(extOrInh ? 0 : 1);
+            return extOrInh ? INH.the(active, common[0]) : INH.the(common[0], active);
+        }, Term[]::new);
+        return subs;
     }
 
-    private static Term inhConstructN(Term superterm, int bits, Term[] components) {
-        {
-            Term subj = superterm.sub(0);
-            Op so = subj.op();
-            if (so.isAny(bits))
-                return INH.the(
-                        so.the(Util.map(x -> x.sub(0), new Term[components.length], components)),
-                        superterm.sub(1));
+    public static final DynamicTruthModel ImageIdentity = new DynamicTruthModel()  {
+
+        @Override
+        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+            return each.accept(Image.imageNormalize(superterm), start, end);
         }
 
-        {
-            Term pred = superterm.sub(1);
-            Op po = pred.op();
-            if (po.isAny(bits))
-                return INH.the(
-                        superterm.sub(0),
-                        po.the(Util.map(x -> x.sub(1), new Term[components.length], components))
-                );
+        @Override
+        public Term reconstruct(Term superterm, List<TaskRegion> c) {
+            return superterm; //exact
         }
 
-        throw new UnsupportedOperationException();
-    }
-
+        @Override
+        public Truth apply(DynTruth taskRegions, NAR nar) {
+            return ((Task)taskRegions.get(0)).truth();
+        }
+    };
 }

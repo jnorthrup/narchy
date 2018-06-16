@@ -1,17 +1,19 @@
 package nars.op;
 
+import jcog.bag.Bag;
 import jcog.bag.impl.CurveBag;
+import jcog.data.ArrayHashRing;
 import jcog.data.ArrayHashSet;
 import jcog.math.random.SplitMix64Random;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.exe.Causable;
 import nars.link.TaskLink;
-import nars.op.stm.STMLinkage;
 import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
 import nars.table.TaskTable;
@@ -40,10 +42,13 @@ public class Spider extends Causable {
     final SplitMix64Random rng = new SplitMix64Random(1);
     final CurveBag<SpiderAction> actions = new CurveBag<>(PriMerge.replace, new HashMap());
     /**
+     * leaky novelty buffer
+     */
+    final ArrayHashRing<Term> visited = new ArrayHashRing(256);
+    /**
      * location currently centered upon
      */
     Concept at = null;
-
 
     public Spider(NAR n, Iterable<Term> initialRoots) {
         super(n);
@@ -56,10 +61,10 @@ public class Spider extends Causable {
         actions.put(new TravelAnon(0.1f));
         actions.put(new DeleteConcept(0.01f));
 
+        actions.put(new SqueezeTaskLinks(0.1f, 0.9f)); //soft
         for (byte p: new byte[]{BELIEF, GOAL, QUESTION, QUEST}) {
-            actions.put(new ClearTaskTable(0.02f, p));
-            actions.put(new SqueezeTaskTable(0.1f, p, 0.9f)); //soft
-            actions.put(new SqueezeTaskTable(0.1f, p, 0.7f)); //strong
+            actions.put(new ClearTaskTable(0.002f, p));
+            actions.put(new SqueezeTaskTable(0.025f, p, 0.9f)); //soft
         }
 
     }
@@ -80,6 +85,7 @@ public class Spider extends Causable {
             return -1; //no option
 
         actions.sample(rng, iterations, (a) -> {
+            //System.out.println(a);
             a.accept(this);
         });
 
@@ -92,9 +98,9 @@ public class Spider extends Causable {
     }
 
     public void go(Concept c) {
-        logger.info("@{}", at);
         at = c;
-
+        visited.add(c.term());
+        logger.info("@{}", at);
     }
 
     /**
@@ -115,12 +121,31 @@ public class Spider extends Causable {
         return null;
     }
 
+    public boolean recentlyVisited(Term x) {
+        return visited.contains(x);
+    }
+
+    protected boolean tryGo(Term t) {
+        if (t != null) {
+            Concept d = nar.concept(t); //ualize?
+            if (d != null) {
+                go(d);
+                return true;
+            }
+        }
+        return false;
+    }
+
     abstract static class SpiderAction extends Pri implements Consumer<Spider> {
 
         public SpiderAction(float p) {
             super(p);
         }
 
+        @Override
+        public String toString() {
+            return super.toString() + " " + getClass().getSimpleName();
+        }
     }
 
     private class TravelHome extends SpiderAction {
@@ -155,12 +180,20 @@ public class Spider extends Causable {
             Term anon = ct.anon();
             if (anon.equals(ct))
                 return; //already at anon
+            if (recentlyVisited(anon))
+                return;
 
 
             Concept d = nar.conceptualize(anon);
-            if (d!=null) {
+            if (d != null) {
                 go(d);
-                STMLinkage.link(c, nar.priDefault(BELIEF), d, nar);
+                if (anon.hasVarQuery() || anon.hasXternal()) {
+                    nar.question(anon);
+                } else {
+                    Term i = INH.the(ct, anon);
+                    if (Task.validTaskTerm(i))
+                        nar.believe(i);
+                }
             }
 
         }
@@ -177,17 +210,28 @@ public class Spider extends Causable {
             Concept c = at;
             if (c == null)
                 return;
-            Term t = sample(c);
-            if (t != null) {
-                Concept d = nar.conceptualize(t);
-                if (d != null && c != d)
-                    go(d);
-            }
+            sampleAndVisitUnique(4, c);
         }
 
-        protected Term sample(Concept c) {
-            PriReference<Term> tl = c.termlinks().sample(rng);
-            return tl != null ? tl.get() : null;
+
+        protected void sampleAndVisitUnique(int maxTries, Concept c) {
+            bag(c).sample(rng, maxTries, x -> {
+                Term t = term(x);
+                if (!recentlyVisited(t)) {
+                    if (tryGo(t)) {
+                        return false; //done
+                    }
+                }
+                return true; //keep trying
+            });
+        }
+
+        protected Term term(Object x) {
+            return ((PriReference<Term>) x).get();
+        }
+
+        protected Bag bag(Concept c) {
+            return c.termlinks();
         }
     }
 
@@ -197,11 +241,14 @@ public class Spider extends Causable {
             super(p);
         }
 
-        @Override
-        protected Term sample(Concept c) {
-            TaskLink tl = c.tasklinks().sample(rng);
-            return tl != null ? tl.term() : null;
+        protected Term term(Object x) {
+            return ((TaskLink) x).term();
         }
+
+        protected Bag bag(Concept c) {
+            return c.tasklinks();
+        }
+
     }
 
     private class DeleteConcept extends SpiderAction {
@@ -263,9 +310,36 @@ public class Spider extends Causable {
                 if (s > 0) {
                     int ss = (int) Math.max(1, Math.floor(ratio * s));
                     if (ss != s) {
-                        tt.setCapacity(((DefaultBeliefTable) tt).eternal.capacity() /* dont affect eternal */,
+                        tt.setCapacity(
+                                ((DefaultBeliefTable) tt).eternal.capacity() /* dont affect eternal */,
                                 ss);
                     }
+                }
+            }
+        }
+
+
+    }
+
+    private class SqueezeTaskLinks extends SpiderAction /* squeeze bag */ {
+
+        private final float ratio;
+
+        public SqueezeTaskLinks(float p, float capacityRatio) {
+            super(p);
+            this.ratio = capacityRatio;
+        }
+
+        @Override
+        public void accept(Spider spider) {
+            Concept c = at;
+
+            Bag table = c.tasklinks();
+            int s = table.size();
+            if (s > 0) {
+                int ss = (int) Math.max(1, Math.floor(ratio * s));
+                if (ss != s) {
+                    table.setCapacity(ss);
                 }
             }
         }

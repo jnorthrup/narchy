@@ -69,6 +69,7 @@ public class NAL4Test extends NALTest {
         .mustBelieve(CYCLES, "((neutralization,acid,\\) --> base)", 1.0f, 0.9f) 
         ;
     }
+
     @Test
     public void structural_transformationInt_reverse() {
         test

@@ -265,16 +265,37 @@ public class Premise {
             }
 
 
-            if (unifiedBelief) {
-                Concept originalBeliefConcept = n.conceptualize(term());
-                if (originalBeliefConcept != null) {
-                    Concept taskConcept = task.concept(n, true);
-                    linkVariable(taskConcept, originalBeliefConcept, beliefConcept);
-                }
-            }
+            //linkVariable(unifiedBelief, n, beliefConcept);
 
         }
         return belief;
+    }
+
+    private void linkVariable(boolean unifiedBelief, NAR n, Concept beliefConcept) {
+        if (unifiedBelief) {
+            Concept originalBeliefConcept = n.conceptualize(term());
+            if (originalBeliefConcept != null) {
+                Concept taskConcept = task.concept(n, true);
+
+
+                float pri = termLink.priElseZero();
+
+
+                Term moreConstantTerm = beliefConcept.term();
+                Term lessConstantTerm = originalBeliefConcept.term();
+
+
+                beliefConcept.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2f));
+
+                originalBeliefConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2f));
+
+
+                if (taskConcept !=null)
+                    taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+
+
+            }
+        }
     }
 
     private boolean validMatch(@Nullable Task x) {
@@ -303,40 +324,6 @@ public class Premise {
     @Override
     public final int hashCode() {
         return (int) (hash>>10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */  ;
-    }
-
-    /**
-     * x has variables, y unifies with x and has less or no variables
-     */
-    private void linkVariable(Concept taskConcept, Concept lessConstant, Concept moreConstant) {
-
-        
-        float pri = termLink.priElseZero(); 
-        
-
-
-
-
-
-
-        Term moreConstantTerm = moreConstant.term();
-        Term lessConstantTerm = lessConstant.term();
-
-
-
-
-        
-        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2f));
-
-        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2f));
-
-
-        if (taskConcept!=null)
-            taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
-
-
-
-
     }
 
     @Override

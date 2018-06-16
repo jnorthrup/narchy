@@ -5,7 +5,6 @@ import jcog.pri.PLink;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Priority;
 import nars.NAR;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
@@ -88,11 +87,8 @@ public interface TaskLink extends Priority, Termed {
 
             Term t = term.unneg();
 
-            //quick test for conceptualization since dynamic truth model can provide a result even without any stored beliefs
-            boolean conceptualize = t.isAny(Op.CONJ.bit|Op.DIFFe.bit) ||
-                    (t.op()==INH && (t.subterms().OR(s -> s.isAny(Op.SectBits | Op.DiffBits))));
 
-            Concept c = n.concept(t, conceptualize);
+            Concept c = n.conceptualizeDynamic(t);
             if (c != null) {
                 long[] se = n.timeFocus(when);
                 Task result = c.table(punc).sample(se[0], se[1], t, n);

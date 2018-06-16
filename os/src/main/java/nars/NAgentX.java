@@ -14,7 +14,6 @@ import nars.exe.WorkerMultiExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
-import nars.op.Spider;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -197,7 +196,7 @@ abstract public class NAgentX extends NAgent {
 
             Loop aLoop = a.startFPS(agentFPS);
 
-            new Spider(n, java.util.List.of(a.id, n.self(), a.happy.id));
+            //new Spider(n, Iterables.concat(java.util.List.of(a.id, n.self(), a.happy.id), Iterables.transform(a.always, Task::term)));
         });
 
         return n;

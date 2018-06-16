@@ -12,6 +12,7 @@ import nars.Param;
 import nars.concept.Concept;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
@@ -249,13 +250,13 @@ public class TermlinkTemplates extends FasterList<Term> {
         MutableFloat refund = new MutableFloat(0);
 
         Term srcTerm = src.term();
-        Iterable<PriReference<Term>> srcTermLinks = src.termlinks();
 
         float balance = nar.termlinkBalance.floatValue();
         float budgetedForward = concepts == 0 ? 0 :
                 Math.max(Prioritized.EPSILON, pri * (1f - balance) / concepts);
         float budgetedReverse = Math.max(Prioritized.EPSILON, pri * balance / n);
 
+        Iterable<PriReference<Term>> srcTermLinks = src.termlinks();
         for (int i = 0; i < n; i++) {
             Term tgtTerm = get(i);
 
@@ -279,6 +280,9 @@ public class TermlinkTemplates extends FasterList<Term> {
             } else {
                 refund.add(budgetedForward);
             }
+
+            if (tgtTerm instanceof Bool)
+                throw new RuntimeException("should not exist a Bool termlink");
 
             ((Bag) srcTermLinks).put(new PLink<>(tgtTerm, budgetedReverse), refund);
 

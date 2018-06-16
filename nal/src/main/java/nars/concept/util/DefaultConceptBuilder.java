@@ -49,9 +49,9 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         return new NodeConcept(t, newLinkBags(t));
     }
 
-    private TaskConcept taskConcept(final Term t) {
-        DynamicTruthModel dmt = ConceptBuilder.unroll(t);
 
+    private TaskConcept taskConcept(final Term t) {
+        DynamicTruthModel dmt = ConceptBuilder.dynamicModel(t);
         if (dmt != null) {
             return new TaskConcept(t,
                     new DynamicTruthBeliefTable(t, newTemporalTable(t), dmt, true),

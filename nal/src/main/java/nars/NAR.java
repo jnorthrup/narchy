@@ -4,10 +4,7 @@ package nars;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.primitives.Longs;
-import jcog.Service;
-import jcog.Services;
-import jcog.Texts;
-import jcog.Util;
+import jcog.*;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
@@ -1421,6 +1418,21 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         if (loop.stop()) {
             synch();
         }
+    }
+
+    /** conceptualize a term if dynamic truth is possible; otherwise return concept if exists */
+    public final Concept conceptualizeDynamic(Term concept) {
+
+        concept = concept.unneg();
+
+        Concept x = concept(concept);
+        if (x==null) {
+            if (ConceptBuilder.dynamicModel(concept)!=null) {
+                //try conceptualizing the dynamic
+                return conceptualize(concept);
+            }
+        }
+        return x;
     }
 
     private class TaskChannel extends CauseChannel<ITask> {

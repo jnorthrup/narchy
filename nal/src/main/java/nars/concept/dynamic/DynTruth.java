@@ -171,7 +171,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
 
             Term content = truthModel instanceof DynamicTruthModel ?
-                    ((DynamicTruthModel) truthModel).construct(superterm, this) :
+                    ((DynamicTruthModel) truthModel).reconstruct(superterm, this) :
                     superterm;
 
 
@@ -228,6 +228,10 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
     @Override
     public boolean add(TaskRegion newItem) {
+
+        if (newItem == null)
+            throw new NullPointerException();
+
         super.add(newItem);
 
         if (newItem != null) {
