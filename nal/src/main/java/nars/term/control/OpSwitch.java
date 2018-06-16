@@ -38,7 +38,8 @@ public final class OpSwitch<D extends PreDerivation> extends AbstractPred<D> {
     }
 
     public OpSwitch(boolean taskOrBelief, EnumMap<Op, PrediTerm<D>> cases) {
-        super(/*$.impl*/ $.func("op", taskOrBelief ? Task  : Belief, $.pFast(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
+        super(/*$.impl*/ $.func("op", taskOrBelief ? Task  : Belief,
+                $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
 
         swtch = new PrediTerm[24]; 
         cases.forEach((k, v) -> swtch[k.id] = v);

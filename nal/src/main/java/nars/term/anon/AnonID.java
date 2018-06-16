@@ -68,7 +68,7 @@ public interface AnonID extends Term, The {
     /** assumes non-negative */
     static Term idToTerm(short /* short */ i) {
         byte num = (byte) (i & 0xff);
-        int m = (i & 0xff00);
+        int m = idtoMask(i);
         switch (m) {
             case ATOM_MASK:
                 return Anom.the[num];
@@ -83,6 +83,10 @@ public interface AnonID extends Term, The {
             default:
                 throw new UnsupportedOperationException();
         }
+    }
+
+    static int idtoMask(short i) {
+        return i & 0xff00;
     }
 
     @Override

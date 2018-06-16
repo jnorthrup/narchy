@@ -173,7 +173,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             Term content = truthModel instanceof DynamicTruthModel ?
                     ((DynamicTruthModel) truthModel).reconstruct(superterm, this) :
                     superterm;
-
+            if (content == null)
+                return null;
 
             @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
                     content,

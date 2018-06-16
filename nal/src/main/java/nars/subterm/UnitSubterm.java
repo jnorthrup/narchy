@@ -12,6 +12,7 @@ public final class UnitSubterm extends AbstractUnitSubterm implements The {
         this.the = the;
     }
 
+
     @Override public Term sub() {
         return the;
     }

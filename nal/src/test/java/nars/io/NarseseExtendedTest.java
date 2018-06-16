@@ -190,6 +190,15 @@ public class NarseseExtendedTest extends NarseseTest {
         assertEquals("(--,(before-->x))", term("--x:before").toString());
     }
 
+    @Test public void testNegationShortHandOnVars() throws Narsese.NarseseException {
+        for (char n : new char[] { '1', 'x' } )
+            for (char t : new char[] { '%', '$', '#', '?' } ) {
+                assertEquals("(--," + t + n + ')', term("--" + t + n).toString());
+                assertEquals("(a,(--," + t + n + "))", term("(a, --" + t + n +")").toString());
+            }
+
+    }
+
     @Test public void testNegationShortHandOnFunc() throws Narsese.NarseseException {
         assertEquals("(--,sentence(x))", term("--sentence(x)").toString());
     }

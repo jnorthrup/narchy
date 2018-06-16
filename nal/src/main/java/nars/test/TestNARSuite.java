@@ -22,7 +22,7 @@ public class TestNARSuite extends FasterList<TestNARSuite.MyTestNAR> {
     }
 
     public void run() {
-        testMethods.parallel().forEach(m -> {
+        testMethods.forEach(m -> {
             String testName = m.getDeclaringClass().getName() + " " + m.getName();
             MyTestNAR t = new MyTestNAR(narBuilder.get(), testName);
             add(t);

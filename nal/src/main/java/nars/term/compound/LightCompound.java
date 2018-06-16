@@ -17,12 +17,20 @@ public class LightCompound implements SeparateSubtermsCompound, AbstractLightCom
     public LightCompound(Op o, Term... s) {
         this(o, $.vFast(s));
     }
+    public LightCompound(byte o, Term... s) {
+        this(o, $.vFast(s));
+    }
 
     public LightCompound(Op o, Subterms s) {
-        this.op = o.id;
+        this(o.id, s);
+    }
+
+    public LightCompound(byte o, Subterms s) {
+        this.op = o;
         this.subs = s;
         this.hash = s.hashWith(o);
     }
+
     @Override
     public boolean equals(Object obj) {
         return (this == obj) ||

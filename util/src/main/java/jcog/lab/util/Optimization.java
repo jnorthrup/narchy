@@ -1,6 +1,5 @@
 package jcog.lab.util;
 
-import jcog.Texts;
 import jcog.Util;
 import jcog.WTF;
 import jcog.io.arff.ARFF;
@@ -12,15 +11,19 @@ import jcog.math.Quantiler;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
+import org.apache.commons.math3.optim.SimpleBounds;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalSimplex;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.list.ImmutableList;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -28,13 +31,12 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 
 /**
- *
  * @param S subject of the experiment
  * @param E experiment containing the subject
- *
- * in simple cases, S and E may be the same type
+ *          <p>
+ *          in simple cases, S and E may be the same type
  */
-public class Optimization<S,E> implements Runnable {
+public class Optimization<S, E> implements Runnable {
 
     static final int goalColumn = 0;
     private final static Logger logger = LoggerFactory.getLogger(Optimization.class);
@@ -46,7 +48,7 @@ public class Optimization<S,E> implements Runnable {
 
     private final Supplier<S> subj;
     private final List<Var<S, ?>> vars;
-    private final Function<Supplier<S>,E> procedure;
+    private final Function<Supplier<S>, E> procedure;
     private final Goal<E> goal;
     private final List<Sensor<E, ?>> sensors;
 
@@ -55,9 +57,9 @@ public class Optimization<S,E> implements Runnable {
     private final List<Sensor<S, ?>> varSensors;
 
     public Optimization(Supplier<S> subj,
-                        Function<Supplier<S>,E> procedure, Goal<E> goal,
-                        List<Var<S,?>> vars,
-                        List<Sensor<E,?>> sensors,
+                        Function<Supplier<S>, E> procedure, Goal<E> goal,
+                        List<Var<S, ?>> vars,
+                        List<Sensor<E, ?>> sensors,
                         OptimizationStrategy strategy) {
         this.subj = subj;
 
@@ -92,7 +94,7 @@ public class Optimization<S,E> implements Runnable {
 
             min[i] = s.getMin();
             max[i] = s.getMax();
-            mid[i] = guess != null ? Util.clamp((float) guess,min[i],max[i]) : (max[i] + min[i]) / 2f;
+            mid[i] = guess != null ? Util.clamp((float) guess, min[i], max[i]) : (max[i] + min[i]) / 2f;
             inc[i] = s.getInc();
 
             if (!(mid[i] >= min[i]))
@@ -117,7 +119,7 @@ public class Optimization<S,E> implements Runnable {
 
     protected double run(double[] point) {
 
-        logger.info("run: {}", Texts.n4(point));
+        //logger.info("run: {}", Texts.n4(point));
 
         /**
          * the only or last produced copy of the experiment input.
@@ -127,8 +129,8 @@ public class Optimization<S,E> implements Runnable {
         Object[] copy = new Object[1];
         E y = null;
         try {
-            y = procedure.apply(()-> {
-                S s= subject(subj.get(), point);
+            y = procedure.apply(() -> {
+                S s = subject(subj.get(), point);
                 copy[0] = s; //for measurement
                 return s;
             });
@@ -136,22 +138,27 @@ public class Optimization<S,E> implements Runnable {
             System.err.println(t.getMessage());
         }
 
-        Object[] row = new Object[1+vars.size()+sensors.size()];
-        int j = 0;
         double score = goal.apply(y);
-        row[j++] = score;
-        S x = (S)copy[0];
-        for (Sensor v : varSensors)
-            row[j++] = v.apply(x);
-        for (Sensor s : sensors)
-            row[j++] = s.apply(y);
 
+        Object[] row = row(copy[0], y, score);
+
+        System.out.println(Arrays.toString(row));
         data.add(row);
 
         return score;
     }
 
-
+    private Object[] row(Object o, E y, double score) {
+        Object[] row = new Object[1 + vars.size() + sensors.size()];
+        int j = 0;
+        row[j++] = score;
+        S x = (S) o;
+        for (Sensor v: varSensors)
+            row[j++] = v.apply(x);
+        for (Sensor s: sensors)
+            row[j++] = s.apply(y);
+        return row;
+    }
 
 
     /**
@@ -187,21 +194,23 @@ public class Optimization<S,E> implements Runnable {
 
     public RealDecisionTree tree(int discretization, int maxDepth) {
         return data.isEmpty() ? null :
-            new RealDecisionTree(data.toFloatTable(),
-                0 /* score */, maxDepth, discretization);
+                new RealDecisionTree(data.toFloatTable(),
+                        0 /* score */, maxDepth, discretization);
     }
 
 
-    /** remove entries below a given percentile */
+    /**
+     * remove entries below a given percentile
+     */
     public void cull(float minPct, float maxPct) {
 
         int n = data.data.size();
         if (n < 6)
             return;
 
-        Quantiler q = new Quantiler((int) Math.ceil((n-1)/2f));
+        Quantiler q = new Quantiler((int) Math.ceil((n - 1) / 2f));
         data.forEach(r -> {
-            q.add( ((Number)r.get(0)).floatValue() );
+            q.add(((Number) r.get(0)).floatValue());
         });
         float minValue = q.quantile(minPct);
         float maxValue = q.quantile(maxPct);
@@ -233,17 +242,13 @@ public class Optimization<S,E> implements Runnable {
 
     abstract public static class ApacheCommonsMathOptimizationStrategy extends OptimizationStrategy {
 
-        protected ObjectiveFunction func;
-        protected Optimization o;
 
         @Override
         public void run(Optimization o) {
-            this.func = new ObjectiveFunction(o::run);
-            this.o = o;
-            run();
+            run(o, new ObjectiveFunction(o::run));
         }
 
-        abstract protected void run();
+        abstract protected void run(Optimization o, ObjectiveFunction func);
     }
 
     public static class SimplexOptimizationStrategy extends ApacheCommonsMathOptimizationStrategy {
@@ -254,13 +259,13 @@ public class Optimization<S,E> implements Runnable {
         }
 
         @Override
-        protected void run() {
+        protected void run(Optimization o, ObjectiveFunction func) {
 
             try {
                 int dim = o.inc.length;
                 double[] steps = new double[dim];
                 for (int i = 0; i < dim; i++)
-                    steps[i] = Math.max(2, (o.max[i] - o.min[i])/o.inc[i]);
+                    steps[i] = (o.max[i] - o.min[i]) / o.inc[i];
 
                 new SimplexOptimizer(1e-10, 1e-30).optimize(
                         new MaxEval(maxIter),
@@ -276,9 +281,37 @@ public class Optimization<S,E> implements Runnable {
 
     }
 
-//    public static class CMAESOptimizationStrategy extends ApacheCommonsMathOptimizationStrategy {
-//
-//    }
+    public static class CMAESOptimizationStrategy extends ApacheCommonsMathOptimizationStrategy {
+        private final int maxIter;
+
+        public CMAESOptimizationStrategy(int maxIter) {
+            this.maxIter = maxIter;
+        }
+
+        @Override
+        protected void run(Optimization o, ObjectiveFunction func) {
+
+            int popSize =
+                    (int) Math.ceil(4 + 3 * Math.log(o.vars.size()));
+
+
+            double[] sigma = MathArrays.scale(0.5f, o.inc);
+
+            MyCMAESOptimizer m = new MyCMAESOptimizer(maxIter, Double.NaN,
+                    true, 0,
+                    1, new MersenneTwister(System.nanoTime()),
+                    true, null, popSize, sigma);
+            m.optimize(
+                    func,
+                    GoalType.MAXIMIZE,
+                    new MaxEval(maxIter),
+                    new SimpleBounds(o.min, o.max),
+                    new InitialGuess(o.mid)
+            );
+
+
+        }
+    }
 //
 //    public static class GPOptimizationStrategy extends OptimizationStrategy {
 //        //TODO
@@ -372,25 +405,6 @@ public class Optimization<S,E> implements Runnable {
 //        if (dim == 1) {
 //
 //        } else {
-//
-//            int popSize =
-//
-//                    (int) Math.ceil(4 + 3 * Math.log(tweaks.size()));
-//
-//
-//            double[] sigma = MathArrays.scale(1f, inc);
-//
-//            MyCMAESOptimizer m = new MyCMAESOptimizer(maxIterations, Double.NaN,
-//                    true, 0,
-//                    1, new MersenneTwister(System.nanoTime()),
-//                    true, null, popSize, sigma);
-//            m.optimize(
-//                    func,
-//                    GoalType.MAXIMIZE,
-//                    new MaxEval(maxIterations),
-//                    new SimpleBounds(min, max),
-//                    new InitialGuess(mid)
-//            );
 //
 //
 //

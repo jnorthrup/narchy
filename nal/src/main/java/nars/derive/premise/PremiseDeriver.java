@@ -66,17 +66,21 @@ public class PremiseDeriver implements Predicate<Derivation> {
         /**
          * weight vector generation
          */
-        short[] can = d.will;
+        short[] _can = d.will;
 
         int fanOut;
         float[] maybe;
-        if (can.length > 1) {
+        short[] can;
+        if (_can.length > 1) {
+            can = _can.clone(); //dont modify the short[] stored in the premise key cache
             maybe = Util.remove(
                     Util.map(choice -> this.could[can[choice]].value(d), new float[can.length]),
+                    can,
                     w -> w <= 0
             );
             fanOut = maybe.length;
         } else {
+            can = _can;
             if (can.length == 1 && this.could[can[0]].value(d) > EPSILON) {
                 fanOut = 1;
             } else {

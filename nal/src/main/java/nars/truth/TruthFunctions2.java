@@ -126,9 +126,12 @@ public enum TruthFunctions2 { ;
         return t(and(f1, f2), c);
     }
 
+    /** strong frequency and confidence the closer in frequency they are */
     public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
         float c = t.conf() * b.conf();
         if (c < minConf) return null;
-        return $.t( 1f - Math.abs(t.expectation()-b.expectation()), c );
+        float dF = Math.abs(t.freq() - b.freq());
+        float sim = 1f - dF;
+        return $.t(sim, c * sim );
     }
 }

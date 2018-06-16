@@ -171,4 +171,42 @@ public class AnonTest {
 //        assertAnon("(_1,_1,_2)", "(1,1,2)");
 //        assertAnon("(_2,_1,_1)", "(1,2,2)");
 //    }
+
+    @Test public void testTermSubs() {
+        Term x = $$("(%1,%2)").normalize();
+        assertEquals(AnonVector.class, x.subterms().getClass());
+        for (Termlike t : new Termlike[] { x, x.subterms() }) {
+            assertEquals(2, t.subs(Op.VAR_PATTERN));
+            assertEquals(0, t.subs(Op.VAR_DEP));
+        }
+
+        Term y = $$("(%1,%2,(--,$3))").normalize();
+        assertEquals(AnonVector.class, y.subterms().getClass());
+        for (Termlike t : new Termlike[] { y, y.subterms() }) {
+            assertEquals(2, t.subs(Op.VAR_PATTERN));
+            assertEquals(2, t.subs(Op.VAR_PATTERN));
+            assertEquals(0, t.subs(Op.VAR_INDEP));
+            assertEquals(1, t.subs(Op.NEG));
+        }
+    }
+
+    @Test public void testAutoNormalization() throws Narsese.NarseseException {
+        for (String s : new String[] { "($1)", "($1,$2)", "($1,#2)", "(%1,%1,%2)" }) {
+            Term t = $$(s);
+            assertEquals(s, t.toString());
+            assertTrue(
+                    UnitSubterm.class == t.subterms().getClass() ||
+                    AnonVector.class == t.subterms().getClass());
+            assertTrue(t.isNormalized(), ()->t + " not auto-normalized but it could be");
+        }
+        for (String s : new String[] { "($2)", "($2,$1)", "($1,#3)", "(%1,%3,%2)" }) {
+            Term t = Narsese.term(s, false);
+            assertEquals(s, t.toString());
+            assertTrue(
+                    UnitSubterm.class == t.subterms().getClass() ||
+                            AnonVector.class == t.subterms().getClass(),
+                    ()-> t.getClass().toString() + " " + t.subterms().getClass());
+            assertFalse(t.isNormalized(), ()->t + " auto-normalized but should not be" );
+        }
+    }
 }

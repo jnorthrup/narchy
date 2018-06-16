@@ -1,5 +1,6 @@
 package nars.truth.func;
 
+import jcog.Util;
 import jcog.util.Reflect;
 import nars.$;
 import nars.NAR;
@@ -205,17 +206,25 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    UnionSym() {
+    /** special truth function for implication composition */
+    Implsition() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (T.isPositive() && B.isPositive()) {
-                return Union.apply(T, B, m, minConf);
-            } else if (T.isNegative() && B.isNegative()) {
-                Truth C = Union.apply(T.neg(), B.neg(), m, minConf);
-                return C != null ? C.neg() : null;
-            } else {
-                return null;
-            }
+            float tc = T.conf();
+            float bc = B.conf();
+            float c = tc * bc;
+            if (c < minConf) return null;
+            float f = Util.lerp(bc/(tc+bc), T.freq(), B.freq());
+            return $.t(f, c);
+
+//            if (T.isPositive() && B.isPositive()) {
+//                return Union.apply(T, B, m, minConf);
+//            } else if (T.isNegative() && B.isNegative()) {
+//                Truth C = Union.apply(T.neg(), B.neg(), m, minConf);
+//                return C != null ? C.neg() : null;
+//            } else {
+//                return null;
+//            }
         }
     },
 

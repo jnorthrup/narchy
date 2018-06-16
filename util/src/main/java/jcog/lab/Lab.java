@@ -173,11 +173,18 @@ public class Lab<S> {
     }
 
     public <E> Optimization<S, E> optimize(Function<Supplier<S>, E> procedure, FloatFunction<E> goal) {
-        return optimize(procedure, new Goal(goal));
+        return optimize(procedure, new Goal<>(goal));
     }
 
     private Optimization.OptimizationStrategy newDefaultOptimizer() {
-        return new Optimization.SimplexOptimizationStrategy(128);
+        return newDefaultOptimizer(128);
+    }
+
+    private Optimization.OptimizationStrategy newDefaultOptimizer(int maxIter) {
+        return
+                vars.size() == 1 ?
+                    new Optimization.SimplexOptimizationStrategy(maxIter) :
+                    new Optimization.CMAESOptimizationStrategy(maxIter);
     }
 
     public Variables<S> var() {

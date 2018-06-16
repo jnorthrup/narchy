@@ -9,7 +9,6 @@ import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.proto.TaskAddTask;
-import nars.derive.Premise;
 import nars.subterm.Subterms;
 import nars.task.*;
 import nars.task.proxy.TaskWithNegatedTruth;
@@ -388,7 +387,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
      */
     @Nullable
     static ObjectBooleanPair<Term> tryContent(/*@NotNull*/Term t, byte punc, boolean safe) {
-
 
         Op o = t.op();
 

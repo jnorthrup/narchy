@@ -136,11 +136,24 @@
     //Same as for inheritance
 
 
-    (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
-    (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
+    //(P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
+    (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:Implsition)
+            //(Belief:UnionSym)
 
     (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized)
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
+    //(M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
+
+
+
+    (X ==> Y), ((&&,Y,A..+) ==> C) |- ((&&,X,A..+) ==> C), (Belief:Deduction)
+        (X ==> Y), ((&&,Y,A..+) ==> C) |- --((&&,X,A..+) ==> C), (Belief:DeductionPN)
+    (X ==> Y), ((&&,--Y,A..+) ==> C) |- ((&&,X,A..+) ==> C), (Belief:DeductionN)
+        (X ==> Y), ((&&,--Y,A..+) ==> C) |- --((&&,X,A..+) ==> C), (Belief:DeductionNN)
+
+    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C) |- (Y ==> X), (Belief:InductionPB)
+
+    (X ==> Y), ((&&,X,A..+) ==> C) |- ((&&,Y,A..+) ==> C), (Belief:AbductionPB)
+
 
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
@@ -270,14 +283,6 @@
 
 
 
-//Can be derived by NAL7 rules so this won't be necessary there (Order:ForAllSame left out here)
-
-//the first rule does not have Order:ForAllSame because it would be invalid, see: https://groups.google.com/forum/#!topic/open-nars/r5UJo64Qhrk
-    //the strange composition of && is to preserve temporality
-
-    ((&&,M,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- B) ==>+- C), (Belief:Deduction)
-    ((&&,B,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
-    //(X ==> C), Y,  notImpl(M) |- ((X &&+- Y) ==>+- C), (Belief:Induction)
 
     //Conjunction Anti-Contradiction: ((X&&A)==>C) and ((--X&&A)==>C)  |-  (A==>C), since X or --X doesnt make a difference
     ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==>+- C), (Belief:InductionPB)

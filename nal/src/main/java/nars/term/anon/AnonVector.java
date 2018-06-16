@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import static nars.Op.NEG;
 import static nars.term.anon.AnonID.idToTerm;
 import static nars.term.anon.AnonID.idToTermWithNegationTest;
+import static nars.term.anon.AnonID.idtoMask;
 
 /**
  * a vector which consists purely of AnonID terms
@@ -46,26 +47,24 @@ public class AnonVector extends TermVector {
             t[i] = tt;
         }
 
-        //HACK normalized if the only variable is #1, $1 etc
+        /* checks for monotonically increasing variable numbers starting from 1,
+         which will indicate that the subterms is normalized
+         */
         if (vars()>0) {
             boolean normalized = true;
-            int mustMatch = 0xffffffff;
+            int minID = 0;
             for (short x : subterms) {
                 if (x < 0) x = (short) -x;
                 int varID = AnonID.isVariable(x, -1);
                 if (varID == -1) continue; //anom
-                else if (varID != 1) {
+                else if (varID == minID) {
+                    //same order, ok
+                } else if (varID == minID+1) {
+                    //increase the order, ok
+                    minID++;
+                } else if (varID > minID + 1) {
                     normalized = false; //cant be sure
                     break;
-                } else {
-                    if (mustMatch == 0xffffffff)
-                        mustMatch = x;
-                    else {
-                        if (mustMatch != x) { //TODO allow if monotonically increasing id's
-                            normalized = false;
-                            break;
-                        } /* else: same  */
-                    }
                 }
             }
             if (normalized)
@@ -103,6 +102,34 @@ public class AnonVector extends TermVector {
         return idToTermWithNegationTest(subterms[i]);
     }
 
+    @Override
+    public int subs(Op matchingOp) {
+        short match;
+        switch (matchingOp) {
+            case NEG: return subsNeg();
+            case ATOM: match = AnonID.ATOM_MASK; break;
+            case VAR_PATTERN: match = AnonID.VARPATTERN_MASK; break;
+            case VAR_QUERY: match = AnonID.VARQUERY_MASK; break;
+            case VAR_DEP: match = AnonID.VARDEP_MASK; break;
+            case VAR_INDEP: match = AnonID.VARINDEP_MASK; break;
+            default: return 0;
+        }
+        int count = 0;
+        for (short s : subterms) {
+            if (s > 0 && idtoMask(s) == match)
+                count++;
+        }
+        return count;
+    }
+
+    private int subsNeg() {
+        int count = 0;
+        for (short s : subterms) {
+            if (s < 0)
+                count++;
+        }
+        return count;
+    }
 
     @Override
     public void append(ByteArrayDataOutput out) {

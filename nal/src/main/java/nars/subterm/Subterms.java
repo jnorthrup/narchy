@@ -741,7 +741,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default int hashWith(Op op) {
-        return Util.hashCombine(this.hashCodeSubterms(), op.id);
+        return hashWith(op.id);
+    }
+    default int hashWith(byte op) {
+        return Util.hashCombine(this.hashCodeSubterms(), op);
     }
 
     @Nullable

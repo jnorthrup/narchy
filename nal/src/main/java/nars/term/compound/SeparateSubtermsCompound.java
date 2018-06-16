@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -35,6 +36,16 @@ public interface SeparateSubtermsCompound extends Compound {
     @Override
     default Term sub(int i) {
         return subterms().sub(i);
+    }
+
+    @Override
+    default int subs(Op matchingOp) {
+        return subterms().subs(matchingOp);
+    }
+
+    @Override
+    default int subs(Predicate<Term> match) {
+        return subterms().subs(match);
     }
 
 

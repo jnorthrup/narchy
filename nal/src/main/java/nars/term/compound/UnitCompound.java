@@ -2,6 +2,7 @@ package nars.term.compound;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
+import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
@@ -152,7 +153,15 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean isNormalized() {
-        return sub().isNormalized();
+        Term s = sub();
+        switch (s.op()) {
+            case ATOM: return true;
+            case VAR_PATTERN: return s == $.varPattern(1);
+            case VAR_DEP: return s == $.varDep(1);
+            case VAR_INDEP: return s == $.varIndep(1);
+            case VAR_QUERY: return s == $.varQuery(1);
+        }
+        return s.isNormalized();
     }
 
 

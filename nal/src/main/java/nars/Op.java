@@ -66,7 +66,7 @@ public enum Op {
     INH("-->", 1, OpType.Statement, Args.Two) {
         @Override
         public Term compound(int dt, Term[] u) {
-            assert (u.length == 2);
+            assert (u.length == 2): " requires 2 arguments, but got: " + Arrays.toString(u);
             return statement(this, dt, u[0], u[1]);
         }
     },
@@ -77,7 +77,7 @@ public enum Op {
                 assert (this == SIM);
                 return u[0] == Null ? Null : True;
             } else {
-                assert (u.length == 2);
+                assert (u.length == 2): " requires 2 arguments, but got: " + Arrays.toString(u);
                 return statement(this, dt, u[0], u[1]);
             }
         }

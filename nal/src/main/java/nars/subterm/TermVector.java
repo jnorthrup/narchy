@@ -19,19 +19,6 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
 
     protected transient boolean normalized;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     protected TermVector(Term... terms) {
         super(terms);
         this.normalized = Subterms.super.isNormalized();

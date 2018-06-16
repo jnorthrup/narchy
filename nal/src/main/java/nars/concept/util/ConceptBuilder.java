@@ -84,6 +84,9 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
     @Nullable
     static DynamicTruthModel dynamicModel(Term t) {
 
+        if (t.hasAny(Op.VAR_QUERY.bit))
+            return null;
+
         switch (t.op()) {
 
             case INH:

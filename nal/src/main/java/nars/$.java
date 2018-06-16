@@ -7,7 +7,6 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
-import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
 import nars.subterm.util.TermList;
@@ -16,6 +15,8 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
+import nars.term.anon.AnonID;
+import nars.term.anon.AnonVector;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
@@ -42,6 +43,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static java.lang.Character.isDigit;
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 
@@ -63,74 +65,10 @@ import static nars.time.Tense.DTERNAL;
 public enum $ {
     ;
 
+    static final Atom emptyQuote = (Atom) Atomic.the("\"\"");
+
     static {
         Thread.currentThread().setName("$");
-
-        
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     }
@@ -139,7 +77,9 @@ public enum $ {
         return (T) Narsese.term(term, true);
     }
 
-    /** doesnt throw exception, but may throw RuntimeException */
+    /**
+     * doesnt throw exception, but may throw RuntimeException
+     */
     public static <T extends Term> T $$(String term) {
         try {
             return $(term);
@@ -147,12 +87,6 @@ public enum $ {
             throw new RuntimeException(e);
         }
     }
-
-
-
-
-
-    static final Atom emptyQuote = (Atom) Atomic.the("\"\"");
 
     public static Atomic quote(Object text) {
         String s = text.toString();
@@ -221,15 +155,20 @@ public enum $ {
         return INH.the(PROD.the(arg), opTerm);
     }
 
-    /** use with caution */
+    /**
+     * use with caution
+     */
     public static Term funcFast(Atomic opTerm, Term... arg) {
         return $.inhFast($.pFast(arg), opTerm);
     }
+
     public static Term funcFast(String opTerm, Term... arg) {
         return $.funcFast(Atomic.the(opTerm), arg);
     }
 
-    /** use with caution */
+    /**
+     * use with caution
+     */
     public static Term inhFast(Term subj, Term pred) {
         //return new LighterCompound(INH, subj, pred);
         return new LightCompound(INH, subj, pred);
@@ -275,10 +214,14 @@ public enum $ {
     public static Term p(int... t) {
         return $.p((Term[]) $.the(t));
     }
+
     public static Term pFast(int... t) {
         return $.pFast((Term[]) $.the(t));
     }
-    /** encodes a boolean bitvector as an Int term, or if larger than 31 bits, as an Atom string */
+
+    /**
+     * encodes a boolean bitvector as an Int term, or if larger than 31 bits, as an Atom string
+     */
     public static Term p(boolean... t) {
         if (t.length < 31) {
             int b = 0;
@@ -296,13 +239,22 @@ public enum $ {
      * warning: generic variable
      */
     public static Variable v(/*@NotNull*/ Op type, String name) {
-
-
-
-
-
-
-
+        //special case: interpret normalized variables
+        switch (name.length()) {
+            case 1:
+                char c0 = name.charAt(0);
+                if (isDigit(c0))
+                    return $.v(type, (byte)(c0-'0') );
+                break;
+            case 2:
+                char d0 = name.charAt(0);
+                if (isDigit(d0)) {
+                    char d1 = name.charAt(1);
+                    if (isDigit(d1))
+                        return $.v(type, (byte) ((d0 - '0') * 10 + (d1 - '0')));
+                }
+                break;
+        }
         return new UnnormalizedVariable(type, type.ch + name);
     }
 
@@ -323,7 +275,7 @@ public enum $ {
         return v(VAR_INDEP, s);
     }
 
-    
+
     public static Variable varQuery(int i) {
         return v(VAR_QUERY, (byte) i);
     }
@@ -358,10 +310,6 @@ public enum $ {
         return (T) INH.the(subject, SETi.the(predicate));
     }
 
-    
-
-
-
 
     @NotNull
     public static TaskBuilder task(@NotNull String term, byte punct, float freq, float conf) throws Narsese.NarseseException {
@@ -381,16 +329,6 @@ public enum $ {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
         Term[] x = new Term[c.length];
         for (int i = 0; i < c.length; i++) {
@@ -406,13 +344,6 @@ public enum $ {
     public static <X> Term[] terms(@NotNull X[] map, @NotNull Function<X, Term> toTerm) {
         return Stream.of(map).map(toTerm).toArray(Term[]::new);
     }
-
-
-
-
-
-
-
 
 
     private static Term[] array(Collection<? extends Term> t) {
@@ -433,7 +364,7 @@ public enum $ {
     }
 
     public static Term sete(RoaringBitmap b) {
-        return SETe.the(ints(b)); 
+        return SETe.the(ints(b));
     }
 
     public static Term p(RoaringBitmap b) {
@@ -450,7 +381,6 @@ public enum $ {
         }
         return t;
     }
-
 
 
     /**
@@ -474,7 +404,7 @@ public enum $ {
         Term[] ca = new Term[cs + append.length];
         collection.toArray(ca);
         int i = cs;
-        for (Term t : append) {
+        for (Term t: append) {
             ca[i++] = t;
         }
         return CONJ.compound(DTERNAL, ca);
@@ -526,28 +456,14 @@ public enum $ {
 
     public static Atomic the(float v) {
         if (Util.equals((float) Math.floor(v), v, Float.MIN_VALUE * 2)) {
-            
+
             return the((int) v);
         }
-        
+
 
         return quote(Float.toString(v));
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
     }
 
 
@@ -595,7 +511,7 @@ public enum $ {
     }
 
     public static Term the(double x) {
-        int rx = (int)Util.round(x, 1);
+        int rx = (int) Util.round(x, 1);
         if (Util.equals(rx, x, Double.MIN_NORMAL)) {
             return Int.the(rx);
         } else {
@@ -604,9 +520,9 @@ public enum $ {
     }
 
     public static double doubleValue(Term x) {
-        if (x.op()==INT) {
-            return ((Int)x).id;
-        } else if (x.op()==ATOM) {
+        if (x.op() == INT) {
+            return ((Int) x).id;
+        } else if (x.op() == ATOM) {
             return Double.parseDouble($.unquote(x));
         } else {
             throw new TODO();
@@ -622,35 +538,35 @@ public enum $ {
             return ((Term) x);
 
         if (x instanceof Number) {
-            return the((Number)x);
+            return the((Number) x);
         }
 
-        return Atomic.the(x.toString()); 
+        return Atomic.the(x.toString());
     }
 
     public static Term the(Number n) {
         if (n instanceof Integer) {
-            return Int.the((Integer) n); 
+            return Int.the((Integer) n);
         } else if (n instanceof Long) {
-            return Atomic.the(Long.toString((Long)n)); 
+            return Atomic.the(Long.toString((Long) n));
         } else if (n instanceof Short) {
             return Int.the((Short) n);
         } else if (n instanceof Byte) {
             return Int.the((Byte) n);
         } else if (n instanceof Float) {
             float d = n.floatValue();
-            int id = (int)d;
+            int id = (int) d;
             if (d == d && Util.equals(d, id, Float.MIN_NORMAL))
-                return Int.the(id); 
+                return Int.the(id);
 
-            return Atomic.the(n.toString()); 
+            return Atomic.the(n.toString());
         } else {
             double d = n.doubleValue();
-            int id = (int)d;
+            int id = (int) d;
             if (d == d && Util.equals(d, id, Double.MIN_NORMAL))
-                return Int.the(id); 
+                return Int.the(id);
 
-            return Atomic.the(n.toString()); 
+            return Atomic.the(n.toString());
         }
     }
 
@@ -658,7 +574,7 @@ public enum $ {
      * conjunction sequence (2-ary)
      */
     public static Term seq(Term x, int dt, Term y) {
-        
+
         return CONJ.compound(dt, new Term[]{x, y});
     }
 
@@ -670,83 +586,26 @@ public enum $ {
     public static <K, V> Map<K, V> newHashMap(int capacity) {
         return new HashMap<>(capacity);
 
-        
-        
 
-        
-        
-
-        
     }
 
     public static <X> List<X> newArrayList() {
         return new FasterList<>(0);
-        
+
     }
 
     public static <X> List<X> newArrayList(int capacity) {
         return new FasterList(capacity);
-        
+
     }
 
     public static <X> Set<X> newHashSet(int capacity) {
 
 
-
-        
-        
         return new HashSet(capacity);
-        
+
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static Term pRadix(int x, int radix, int maxX) {
@@ -769,7 +628,7 @@ public enum $ {
         for (int i = 0; i < ttl; i++) {
             Term n;
             if (p-- > 0) {
-                n = $.the(0); 
+                n = $.the(0);
             } else {
                 n = $.the(xs.charAt(j++) - '0');
             }
@@ -787,7 +646,7 @@ public enum $ {
     public static @NotNull Term pRecurse(@NotNull Term... t) {
         int tl = t.length;
         Term inner = t[--tl];
-        Term nextInner = inner.op() != PROD ? $.p(inner) : inner; 
+        Term nextInner = inner.op() != PROD ? $.p(inner) : inner;
         while (tl > 0) {
             Term next = t[--tl];
             nextInner = next.op() != PROD ? $.p(next, nextInner) : $.p(ArrayUtils.add(next.subterms().arrayShared(), nextInner));
@@ -798,29 +657,12 @@ public enum $ {
     public static @Nullable Compound inhRecurse(@NotNull Term... t) {
         int tl = t.length;
         @NotNull Term bottom = t[--tl];
-        Compound nextInner = $.inh(t[--tl], bottom); 
+        Compound nextInner = $.inh(t[--tl], bottom);
         while (nextInner != null && tl > 0) {
             nextInner = $.inh(t[--tl], nextInner);
         }
         return nextInner;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @NotNull
@@ -849,14 +691,12 @@ public enum $ {
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {
-        if (intTerm instanceof Int && intTerm.op()==INT)
+        if (intTerm instanceof Int && intTerm.op() == INT)
             return ((Int) intTerm).id;
 
 
-
-
         throw new NumberFormatException();
-        
+
     }
 
     public static int intValue(Term intTerm, int ifNotInt) {
@@ -868,15 +708,14 @@ public enum $ {
     }
 
 
-
     public static Term pFast(Subterms x) {
         if (x.subs() == 0) return Op.EmptyProduct;
-        return new LightCompound(PROD,x);
+        return new LightCompound(PROD, x);
     }
 
     public static Term pFast(Term... x) {
         if (x.length == 0) return Op.EmptyProduct;
-        return new LightCompound(Op.PROD,x);
+        return new LightCompound(Op.PROD, x);
         //return new LighterCompound(PROD, x);
     }
 
@@ -898,32 +737,35 @@ public enum $ {
     }
 
     public static Term sFast(RoaringBitmap b) {
-        return sFast(true, ints(b)); 
+        return sFast(true, ints(b));
     }
 
     public static Term pFast(Collection<? extends Term> x) {
         return pFast(x.toArray(EmptyTermArray));
     }
 
-    /** on-stack/on-heap cheaply constructed Subterms */
+    /**
+     * on-stack/on-heap cheaply constructed Subterms
+     */
     public static Subterms vFast(Term[] t) {
         switch (t.length) {
             case 0:
                 return Op.EmptySubterms;
             case 1:
-                return new UnitSubterm(t[0]);
+                Term tt = t[0];
+                if (tt.unneg() instanceof AnonID)
+                    return new AnonVector(tt);
+
+                return new UnitSubterm(tt);
             default:
-                if (t.length < 3)
-                    return new ArrayTermVector(t);
-                else
+//                if (t.length < 3)
+//                    return new ArrayTermVector(t);
+//                else
                     return new TermList(t);
         }
 
-        
+
     }
-
-
-
 
 
     public static Term[] $(String[] s) {
@@ -937,7 +779,7 @@ public enum $ {
     }
 
 
-    
+
 
     /*
      * Copyright 2006-2009 Odysseus Software GmbH
@@ -954,54 +796,6 @@ public enum $ {
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

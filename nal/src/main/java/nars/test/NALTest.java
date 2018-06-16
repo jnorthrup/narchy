@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toList;
+
 
 public abstract class NALTest {
 
@@ -67,7 +69,8 @@ public abstract class NALTest {
 
         return Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getMethods())
-                        .filter(x -> x.getAnnotation(Test.class) != null));
+                        .filter(x -> x.getAnnotation(Test.class) != null))
+                        .collect(toList()).parallelStream();
     }
 
 

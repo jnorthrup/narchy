@@ -12,8 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
-import static nars.Op.PROD;
-
 /**
  * Holds results of an ellipsis match and
  */
@@ -24,7 +22,7 @@ public class EllipsisMatch extends LightCompound {
 
 
     private EllipsisMatch(Term[] t) {
-        super(PROD, t);
+        super(((byte)0), t);
     }
 
     private EllipsisMatch(Collection<Term> term) {
@@ -47,6 +45,12 @@ public class EllipsisMatch extends LightCompound {
         assert (k == z.length);
         return z;
     }
+
+    /** the ellipsis itself contributes no op */
+    @Override public int structure() {
+        return subterms().structure();
+    }
+
 
     public static Term match(Term... matched) {
         switch (matched.length) {

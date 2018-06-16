@@ -53,9 +53,6 @@ public class Premise {
         this.task = task;
 
         this.termLink = termLink;
-        if (termLink.get() instanceof Bool) {
-            throw new RuntimeException("beliefTerm boolean; termLink=" + termLink);
-        }
 
         this.hash =
                 //task's lower 23 bits in bits 40..64

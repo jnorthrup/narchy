@@ -100,8 +100,9 @@ public class MatrixDeriver extends Deriver {
             if (s > 2)
                 ((FasterList<Premise>)(premiseBurst.list)).sortThis((a,b)->Long.compareUnsigned(a.hash,b.hash));
 
-            
+
             premiseBurst.forEach(premise -> {
+
 
                 if (premise.match(d, matchTTL)) {
 

@@ -139,9 +139,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
 
         assert(op!=NEG); 
 
-        this.op = op.id;
-
-        int h = (this.subterms = subterms).hashWith(op);
+        int h = (this.subterms = subterms).hashWith(this.op = op.id);
         this.hash = (dt == DTERNAL) ? h : Util.hashCombine(h, dt);
 
 

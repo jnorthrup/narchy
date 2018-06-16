@@ -81,24 +81,23 @@ public class NAL5Test extends NALTest {
     }
 
 
+
+
     @Test
     public void induction() {
         /*
-         <<robin --> bird> ==> <robin --> animal>>. 
-         <<robin --> [flying]> ==> <robin --> animal>>. %0.8%  
-         OUT: <<robin --> bird> ==> <robin --> [flying]>>. %1.00;0.39% 
-         OUT: <<robin --> [flying]> ==> <robin --> bird>>. %0.80;0.45% 
+         <<robin --> bird> ==> <robin --> animal>>.
+         <<robin --> [flying]> ==> <robin --> animal>>. %0.8%
+         OUT: <<robin --> bird> ==> <robin --> [flying]>>. %1.00;0.39%
+         OUT: <<robin --> [flying]> ==> <robin --> bird>>. %0.80;0.45%
          */
         TestNAR tester = test;
-        tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
-        tester.believe("<<robin --> [flying]> ==> <robin --> animal>>", 0.8f, 0.9f); 
-        tester.mustBelieve(cycles, "<<robin --> bird> ==> <robin --> [flying]>>", 1.00f, 0.39f); 
-        tester.mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> bird>>", 0.80f, 0.45f); 
+        tester.believe("<<robin --> bird> ==> <robin --> animal>>");
+        tester.believe("<<robin --> [flying]> ==> <robin --> animal>>", 0.8f, 0.9f);
+        tester.mustBelieve(cycles, "<<robin --> bird> ==> <robin --> [flying]>>", 1.00f, 0.39f);
+        tester.mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> bird>>", 0.80f, 0.45f);
 
     }
-
-
-
 
 
 
@@ -234,10 +233,18 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
         tester.believe("<<robin --> bird> ==> <robin --> [flying]>>", 0.9f, 0.9f); 
-        tester.mustBelieve(cycles, " <<robin --> bird> ==> (&&,<robin --> [flying]>,<robin --> animal>)>", 0.90f, 0.81f); 
-        
-        
-        
+        tester.mustBelieve(cycles, " <<robin --> bird> ==> (&&,<robin --> [flying]>,<robin --> animal>)>",
+                0.90f, 0.81f);
+
+    }
+    @Test
+    public void compound_composition_PredPosNeg() {
+
+        TestNAR tester = test;
+        tester.believe("(a ==> b)");
+        tester.believe("--(a==>c)");
+        tester.mustBelieve(cycles, "(a ==> (b && --c))",
+                1f, 0.81f);
 
     }
 
@@ -370,7 +377,7 @@ public class NAL5Test extends NALTest {
     public void compound_decomposition_one_premises() {
 
         test
-                
+
                 .believe("(&&,<robin --> swimmer>,<robin --> [flying]>)", 0.9f, 0.9f) 
                 .mustBelieve(cycles, "<robin --> swimmer>", 0.9f, 0.73f) 
                 .mustBelieve(cycles, "<robin --> [flying]>", 0.9f, 0.73f); 

@@ -12,10 +12,10 @@ import jcog.Texts;
 import jcog.list.FasterList;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.obj.QuantityTerm;
-import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.unify.match.Ellipsis;
@@ -563,21 +563,11 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 Variable(), "..",
                 firstOf(
 
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
                         seq("+",
-                                push(new Ellipsis.EllipsisPrototype(Op.VAR_PATTERN, (UnnormalizedVariable) pop(), 1))
+                                push(new Ellipsis.EllipsisPrototype(Op.VAR_PATTERN, (Variable) pop(), 1))
                         ),
                         seq("*",
-                                push(new Ellipsis.EllipsisPrototype(Op.VAR_PATTERN, (UnnormalizedVariable) pop(), 0))
+                                push(new Ellipsis.EllipsisPrototype(Op.VAR_PATTERN, (Variable) pop(), 0))
                         )
                 )
         );
@@ -603,10 +593,12 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     }
 
     Rule Variable(Op varType) {
-        return seq(
-            AtomStr(),
-            push($.v(varType, (String) pop()))
-        );
+        return
+            seq(
+                //unnormalized
+                AtomStr(),
+                push($.v(varType, (String) pop()))
+            );
     }
 
     

@@ -61,7 +61,7 @@ abstract public class NAgentX extends NAgent {
 
     public static TimeAware runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                fps * 2,
+                fps ,
 
                 fps);
     }
@@ -175,7 +175,6 @@ abstract public class NAgentX extends NAgent {
         //new Abbreviation(n, "z", 5, 9, 0.01f, 8);
 
 
-        System.gc();
 
 
         NAgent a = init.apply(n);
@@ -193,6 +192,7 @@ abstract public class NAgentX extends NAgent {
 
             SpaceGraph.window(NARui.top(n), 800, 800);
 
+            System.gc();
 
             Loop aLoop = a.startFPS(agentFPS);
 

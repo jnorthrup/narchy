@@ -35,8 +35,8 @@ abstract public class TermMetadata implements Termlike {
 
     public static final class SubtermMetadataCollector {
         public int structure = 0;
-        public int vol = 1;
-        public int varPattern = 0, varQuery = 0, varDep = 0, varIndep = 0;
+        public short vol = 1;
+        public byte varPattern = 0, varQuery = 0, varDep = 0, varIndep = 0;
         public int hash = 1;
 
         public void collectNonVar(Op type, int hash) {
@@ -56,24 +56,12 @@ abstract public class TermMetadata implements Termlike {
         this.hash = s.hash;
         this.structure = s.structure;
         int varTot =
-                (this.varPattern = (byte) s.varPattern) +
-                (this.varQuery = (byte) s.varQuery) +
-                (this.varDep = (byte) s.varDep) +
-                (this.varIndep = (byte) s.varIndep);
-        this.complexity = (short) ((this.volume = (short) s.vol) - varTot);
+                (this.varPattern = s.varPattern) +
+                (this.varQuery = s.varQuery) +
+                (this.varDep = s.varDep) +
+                (this.varIndep = s.varIndep);
+        this.complexity = (short) ((this.volume = s.vol) - varTot);
     }
-
-
-
-
-
-
-
-
-
-
-
-
     public final int vars() {
         return varDep + varIndep + varQuery + varPattern;
     }
