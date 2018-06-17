@@ -78,28 +78,32 @@ public class TemporalTermTest {
         assertInvalidTask("(x &&+0 (--,x)).");
     }
 
+
     @Test
-    @Disabled
-    public void testInvalidInheritanceOfEternalAndItsTemporal() throws Narsese.NarseseException {
-        assertEquals(
-                Op.True,
-                $("((a &&+1 b)-->(a && b))")
-        );
+    public void testMaintainParallelAmongEternal() {
+        assertEquals("((x&|y)&&e)", $$("((x&|y)&&e)").toString());
+    }
 
-        assertEquals(
-                Op.True,
-                $("(--(a &&+1 b) --> --(a && b))")
-        );
+    @Test
+    public void testValidInheritanceOfEternalAndItsTemporal() throws Narsese.NarseseException {
+        String[] cases = {
+                "((a &&+1 b)-->(a&&b))",
+                "((--,(a &&+1 b))-->(--,(a&&b)))",
+                "((a&&b)-->(a &&+1 b))",
 
-        assertEquals(
-                Op.True,
-                $("((a && b)-->(a &&+1 b))")
-        );
+                "((a&&b)<->(a &&+1 b))"
 
-        assertEquals(
-                Op.True,
-                $("((a && b)<->(a &&+1 b))")
-        );
+//                "((a==>b)==>(a ==>+2 b))",
+//                "((a ==>+1 b)==>(a ==>+2 b))"
+        };
+
+        for (String s : cases) {
+            assertEquals(
+                s,
+                $(s).toString()
+            );
+        }
+
     }
 
     @Test

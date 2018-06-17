@@ -75,7 +75,7 @@ public class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Revision, Goal:Weak)");
+            PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
             
             assertEquals(vv, x.ref.volume());
             
@@ -86,7 +86,7 @@ public class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Revision, Goal:Weak)");
+            PremiseDeriverSource x = PremiseDeriverSource.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
             
             assertEquals(vv, x.ref.volume()); 
             

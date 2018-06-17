@@ -14,7 +14,7 @@ public class AnonMap {
 
     protected AnonMap(int estSize) {
         termToId = new ObjectByteHashMap<>(estSize);
-        idToTerm = new FasterList(estSize/2 /* HEURISTIC */);
+        idToTerm = new FasterList(estSize);
     }
 
     public void clear() {

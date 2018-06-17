@@ -1434,6 +1434,22 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
         return x;
     }
 
+    public final Task matchBelief(Term x, long when) {
+        return matchBelief(x, when, when);
+    }
+
+    public final Task matchBelief(Term x, long start, long end) {
+        return match(x, BELIEF, start, end);
+    }
+
+    public final Task matchGoal(Term x, long when) {
+        return matchGoal(x, when, when);
+    }
+
+    public final Task matchGoal(Term x, long start, long end) {
+        return match(x, GOAL, start, end);
+    }
+
     private class TaskChannel extends CauseChannel<ITask> {
 
         private final short ci;

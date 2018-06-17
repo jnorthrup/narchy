@@ -62,13 +62,24 @@ public enum NALTruth implements TruthFunc {
 
 
     /**
-     * keeps the same input frequency but reduces confidence
+     * maintains input frequency but reduces confidence
      */
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
             float c = T.conf() * NALTruth.confDefault(m);
             return c >= minConf ? $.t(T.freq(), c) : null;
+        }
+    },
+
+    /**
+     * maintains input frequency but reduces confidence
+     */
+    @AllowOverlap @SinglePremise BeliefStructuralReduction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            if (B == null) return null;
+            return BeliefStructuralDeduction.apply(B, null, m, minConf);
         }
     },
 

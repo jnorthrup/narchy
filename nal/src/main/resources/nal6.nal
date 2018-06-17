@@ -186,7 +186,7 @@
         //(C ==> M), X, eventOfNeg(C,X) |- (conjWithout(C,--X) ==>+- M), (Belief:StructuralReduction)
             //(C ==> M), X, task("?"), eventOfNeg(C,X) |- (conjWithout(C,--X) ==>+- M), (Punctuation:Question)
     (--C ==> M), X, eventOfPosOrNeg(C,X) |- ((--,conjWithoutPosOrNeg(C,X)) ==>+- M), (Belief:StructuralReduction)
-            (--C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- ((--,conjWithoutPosOrNeg(C,X)) ==>+- M), (Punctuation:Question)
+            (--C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==>+- M), (Punctuation:Question)
         //(--C ==> M), X, eventOfNeg(C,X) |- ((--,conjWithout(C,--X)) ==>+- M), (Belief:StructuralReduction)
             //(--C ==> M), X, task("?"), eventOfNeg(C,X) |- ((--,conjWithout(C,--X)) ==>+- M), (Punctuation:Question)
 
@@ -201,18 +201,6 @@
 
 
 
-    //answering
-    //Z, (X==>Y), task("?") |- subIfUnifiesAny((X ==>+- Z), Y, Z, "$", strict), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-        //Z, (X==>Y), task("?") |- subIfUnifiesAny(Y, X, Z, strict), (Belief:BeliefStructuralDeduction, Punctuation:Belief)
-    //Z, (X==>Y), task("?") |- subIfUnifiesAny((Z ==>+- Y), X, Z, "$", strict), (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-    //Z, (--X==>Y), task("?") |- subIfUnifiesAny((--Z ==>+- Y), X, Z, "$", strict), (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-        //Z, (X==>Y), task("?") |- subIfUnifiesAny(X, Y, Z, strict), (Belief:BeliefStructuralAbduction, Punctuation:Belief)
-
-
-    //B, (C && A), task("!"), time(urgent) |- subIfUnifiesAny(C,A,B), (Goal:Strong)
-    //B, (C && (--,%A)), task("!"), time(urgent) |- subIfUnifiesAny(C,A,B), (Goal:StrongN)
-        //B, (C && A) |- (--,subIfUnifiesAny(C,A,B)), (Goal:StrongN)
-        //B, (C && (--,%A)) |- subIfUnifiesAny(C,A,B), (Goal:StrongN)
 
 
 
@@ -369,11 +357,6 @@
     //D, X, eventOfPosOrNeg(D,X) |- (--,conjWithoutPosOrNeg(D,X)),  (Belief:StructuralDeductionWeakN, Goal:StructuralDeductionWeakN)
         //C, X, eventOfNeg(C,X)  |- --conjWithout(C,--X), (Belief:StructuralDeductionNN, Goal:StructuralDeductionNN, Time:Task)
 
-    //Conj and Disj Question Decomposition
-    C, X, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
-        //X, C, eventOfPosOrNeg(C,X), task("?") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Question)
-    C, X, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
-        //X, C, eventOfPosOrNeg(C,X), task("@") |- conjWithoutPosOrNeg(C,X),  (Punctuation:Quest)
 
 
 

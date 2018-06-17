@@ -115,7 +115,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
             case CONJ:
                 if (validDynamicSubterms(t.subterms()))
-                    return DynamicTruthModel.Intersection.ConjIntersection.the;
+                    return DynamicTruthModel.ConjIntersection;
                 break;
 
             case DIFFe:

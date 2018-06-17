@@ -1,5 +1,6 @@
 package nars.concept.dynamic;
 
+import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.LongInterval;
@@ -23,8 +24,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 
 /**
  * Created by me on 12/4/16.
@@ -138,14 +138,15 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     static public Term stmtReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred) {
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
 
-        if (!Param.DEBUG) {
-            //elide reconstruction when superterm will not differ by temporal terms
-            //TODO improve
-            if (superSect.subs() == components.size() && ((FasterList<TaskRegion>) components).allSatisfy(t -> t != null && !((Task) t).term().sub(subjOrPred ? 0 : 1).isTemporal())) {
-                if (!superSect.isTemporal())
-                    return superterm;
-            }
-        }
+        //may not be correct TODO
+//        if (!Param.DEBUG) {
+//            //elide reconstruction when superterm will not differ by temporal terms
+//            //TODO improve
+//            if (superSect.subs() == components.size() && ((FasterList<TaskRegion>) components).allSatisfy(t -> t != null && !((Task) t).term().sub(subjOrPred ? 0 : 1).isTemporal())) {
+//                if (!superSect.isTemporal())
+//                    return superterm;
+//            }
+//        }
 
 
         Term[] subs = stmtReconstruct(subjOrPred, components);
@@ -341,20 +342,16 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
     }
 
-    public static class ConjIntersection extends Intersection {
-
-        public static final DynamicTruthModel the = new ConjIntersection();
-
-        private ConjIntersection() {
-
-        }
+    public static final DynamicTruthModel ConjIntersection = new Intersection() {
 
         @Override
         public Term reconstruct(Term superterm, List<TaskRegion> components) {
-            Conj c = new Conj();
 
+            int n = components.size();
+            Conj c = new Conj(n);
 
-            for (TaskRegion t: components) {
+            for (int i = 0, componentsSize = n; i < componentsSize; i++) {
+                TaskRegion t = components.get(i);
                 if (!c.add(((Task) t).term(), t.start(), t.end(), 1, 1))
                     break;
             }
@@ -394,7 +391,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                         true /* always decompose xternal */, 0);
             }
         }
-    }
+    };
 
     abstract static class Difference extends DynamicTruthModel {
 

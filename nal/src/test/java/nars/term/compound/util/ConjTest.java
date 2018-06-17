@@ -44,17 +44,23 @@ public class ConjTest {
         assertEquals(1, c.shift());
         assertEquals(2, c.event.size());
     }
+
     @Test public void testRoaringBitmapNeededManyEventsAtSameTime() {
+        Conj b = new Conj();
+        for (int i = 0; i < Conj.ROARING_UPGRADE_THRESH-1; i++)
+            b.add(1, $.the(String.valueOf((char)('a' + i))));
+        assertEquals("(&|,a,b,c,d,e,f,g)", b.term().toString());
+        assertEquals(1, b.event.size());
+        assertEquals(byte[].class, b.event.get(1).getClass());
+
         Conj c = new Conj();
-        c.add(1, $.the("a"));
-        c.add(1, $.the("b"));
-        c.add(1, $.the("c"));
-        c.add(1, $.the("d"));
-        c.add(1, $.the("e"));
-        assertEquals("(&|,a,b,c,d,e)", c.term().toString());
+        for (int i = 0; i < Conj.ROARING_UPGRADE_THRESH+1; i++)
+            c.add(1, $.the(String.valueOf((char)('a' + i))));
+        assertEquals("(&|,a,b,c,d,e,f,g,h,i)", c.term().toString());
         assertEquals(1, c.event.size());
         assertEquals(RoaringBitmap.class, c.event.get(1).getClass());
     }
+
     @Test public void testSimpleEventsNeg() {
         Conj c = new Conj();
         c.add(1, $.the("x"));

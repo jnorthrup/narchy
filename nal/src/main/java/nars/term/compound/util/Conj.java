@@ -35,10 +35,10 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public class Conj extends AnonMap {
 
 
-    private static final int ROARING_UPGRADE_THRESH = 4;
+    public static final int ROARING_UPGRADE_THRESH = 8;
 
 
-    public final LongObjectHashMap event = new LongObjectHashMap<>(2);
+    public final LongObjectHashMap event;
 
 
     /**
@@ -47,13 +47,12 @@ public class Conj extends AnonMap {
     private Term term = null;
 
     public Conj() {
-        super(4);
+        this(4);
     }
 
-    public void clear() {
-        super.clear();
-        event.clear();
-        term = null;
+    public Conj(int n) {
+        super(n);
+        event = new LongObjectHashMap<>(n);
     }
 
     public static int eventCount(Object what) {
@@ -75,6 +74,9 @@ public class Conj extends AnonMap {
         a.eventsWhile((when, what) -> {
             int step = Math.round(when * factor);
             sb.append((char) step);
+
+            if (what.op()==NEG)
+                sb.append('-'); //since x.add(what) will store the unneg id
             sb.append(((char) x.add(what)));
             return true;
         }, 0, true, true, false, 0);
@@ -149,7 +151,7 @@ public class Conj extends AnonMap {
                 return events.get(0).getTwo();
         }
 
-        Conj ce = new Conj();
+        Conj ce = new Conj(eventsSize);
 
         for (int i = 0; i < eventsSize; i++) {
             LongObjectPair<Term> o = events.get(i);
@@ -172,7 +174,7 @@ public class Conj extends AnonMap {
 
         Conj ce = new Conj();
 
-        for (LongObjectPair<Term> o : events) {
+        for (LongObjectPair<Term> o: events) {
             if (!ce.add(o.getOne(), o.getTwo())) {
                 break;
             }
@@ -232,11 +234,10 @@ public class Conj extends AnonMap {
     static int indexOfZeroTerminated(byte[] b, byte val) {
         for (int i = 0; i < b.length; i++) {
             byte bi = b[i];
-            if (val == bi) {
+            if (val == bi)
                 return i;
-            } else if (bi == 0) {
+            else if (bi == 0)
                 return -1;
-            }
         }
         return -1;
     }
@@ -334,11 +335,11 @@ public class Conj extends AnonMap {
             //special case: equal subs
             int adt, bdt;
 
-            if (nar.dtMergeOrChoose() && (adt=a.dt())!=DTERNAL && (bdt=b.dt())!=DTERNAL && adt!=XTERNAL && bdt!=XTERNAL && ((adt>0 == bdt>0) || (Math.abs(adt-bdt) <= nar.dur())) ) {
+            if (nar.dtMergeOrChoose() && (adt = a.dt()) != DTERNAL && (bdt = b.dt()) != DTERNAL && adt != XTERNAL && bdt != XTERNAL && ((adt > 0 == bdt > 0) || (Math.abs(adt - bdt) <= nar.dur()))) {
                 //merge if they are the same sign or within a duration
-                long abdt = (((long)adt) + (bdt))/2L;
-                assert(Math.abs(abdt) < Integer.MAX_VALUE);
-                return a.dt(Tense.dither((int)abdt, nar));
+                long abdt = (((long) adt) + (bdt)) / 2L;
+                assert (Math.abs(abdt) < Integer.MAX_VALUE);
+                return a.dt(Tense.dither((int) abdt, nar));
             } else {
                 //choose
                 return nar.random().nextBoolean() ? a : b;
@@ -346,6 +347,12 @@ public class Conj extends AnonMap {
 
         }
         return new Conjterpolate(a, b, bOffset, nar).term();
+    }
+
+    public void clear() {
+        super.clear();
+        event.clear();
+        term = null;
     }
 
 //    static int conflictOrSame(Object e, int id) {
@@ -378,18 +385,39 @@ public class Conj extends AnonMap {
         if (term != null)
             throw new RuntimeException("already term-inated to: " + term);
 
-        if (what == True)
-            return true;
-        else if (what == False) {
-            this.term = False;
-            return false;
-        } else if (what == Null) {
-            this.term = Null;
-            return false;
+        if (what instanceof Bool) {
+            //short circuits
+            if (what == True)
+                return true;
+            else if (what == False) {
+                this.term = False;
+                return false;
+            } else if (what == Null) {
+                this.term = Null;
+                return false;
+            }
         }
 
 
         Op x = what.op();
+        if (x == CONJ) {
+            int dt = what.dt();
+            if ((dt != XTERNAL) &&
+                    (
+                            (dt != DTERNAL ^ at == ETERNAL)
+//                    (dt!=0 && dt!=DTERNAL) ||
+//                    (dt == DTERNAL && at == ETERNAL) ||
+//                    (dt == 0 && at != ETERNAL)
+                    )
+            ) {
+                return what.eventsWhile(this::add,
+                        at,
+                        dt != DTERNAL,
+                        dt == DTERNAL,
+                        false, 0);
+            }
+        }
+
         boolean polarity;
         if (x == NEG) {
             what = what.unneg();
@@ -398,37 +426,8 @@ public class Conj extends AnonMap {
             polarity = true;
         }
 
-        if (x == CONJ) {
-            int dt = what.dt();
-
-
-
-            if ((dt != XTERNAL) &&
-                  (
-                      (dt!=DTERNAL ^ at == ETERNAL)
-//                    (dt!=0 && dt!=DTERNAL) ||
-//                    (dt == DTERNAL && at == ETERNAL) ||
-//                    (dt == 0 && at != ETERNAL)
-                  )
-
-            ) {
-
-                return what.eventsWhile(this::add,
-                        at,
-                        dt!=DTERNAL,//dt==0,
-                        dt==DTERNAL,
-                        false, 0);
-
-
-            }
-        }
-
-
-        int id = add(what);
-        if (!polarity)
-            id = -id;
-
-        if (!addIfValid(at, id)) {
+        byte id = add(what);
+        if (!addIfValid(at, polarity ? id : (byte)-id)) {
             term = False;
             return false;
         } else {
@@ -457,47 +456,45 @@ public class Conj extends AnonMap {
         }
     }
 
-    protected boolean addIfValid(long at, int id) {
+    protected boolean addIfValid(long at, byte id) {
 
+        Object what = event.getIfAbsentPut(at, () -> new byte[ROARING_UPGRADE_THRESH]);
+        if (what instanceof byte[]) {
+            byte[] b = (byte[]) what;
+            for (int i = 0; i < b.length; i++) {
+                byte bi = b[i];
+                if (id == -bi)
+                    return false; //contradiction
+                if (id == bi)
+                    return true; //found existing
+                else if (bi == 0) {
+                    //empty slot, take
+                    b[i] = id;
+                    return true;
+                }
+            }
 
-        Object what = event.get(at);
-        if (what == null) {
-            byte[] bwhat = new byte[ROARING_UPGRADE_THRESH];
-            bwhat[0] = (byte) id;
-            event.put(at, bwhat);
+            //no capacity, upgrade to RoaringBitmap
+
+            RoaringBitmap rb = new RoaringBitmap();
+            for (byte bb: b)
+                rb.add(bb);
+            rb.add(id);
+            event.put(at, rb);
+
             return true;
-        }
-        if (what instanceof RoaringBitmap) {
+        } else {
             RoaringBitmap r = (RoaringBitmap) what;
             if (!r.contains(-id)) {
                 r.add(id);
-                return true;
-            }
-        } else {
-            byte[] ii = (byte[]) what;
-            if (indexOfZeroTerminated(ii, ((byte) id)) != -1) {
-
-                return true;
-            }
-            if (indexOfZeroTerminated(ii, ((byte) -id)) == -1) {
-                int nextSlot = indexOfZeroTerminated(ii, (byte) 0);
-                if (nextSlot != -1) {
-                    ii[nextSlot] = (byte) id;
-                } else {
-
-                    RoaringBitmap rb = new RoaringBitmap();
-                    for (byte b : ii)
-                        rb.add(b);
-                    rb.add(id);
-                    event.put(at, rb);
-                }
                 return true;
             }
         }
         return false;
     }
 
-    public int add(Term t) {
+    /** @return non-zero byte value */
+    public byte add(Term t) {
         assert (t != null && !(t instanceof Bool));
         return termToId.getIfAbsentPutWithKey(t.unneg(), tt -> {
             //int s = termToId.size();
@@ -557,7 +554,7 @@ public class Conj extends AnonMap {
         if (o instanceof RoaringBitmap) {
             boolean b = false;
             RoaringBitmap oo = (RoaringBitmap) o;
-            for (int ii : i)
+            for (int ii: i)
                 b |= oo.checkedRemove(ii);
             if (!b) return 0;
             if (oo.isEmpty()) {
@@ -574,7 +571,7 @@ public class Conj extends AnonMap {
             if (num == -1) num = b.length;
 
             int removals = 0;
-            for (int ii : i) {
+            for (int ii: i) {
                 int bi = ArrayUtils.indexOf(b, (byte) ii);
                 if (bi != -1) {
                     if (b[bi] != 0) {
@@ -693,7 +690,7 @@ public class Conj extends AnonMap {
             ci = eternal;
         } else {
             FasterList<LongObjectPair<Term>> temporals = new FasterList<>(numTimes - (eternal != null ? 1 : 0));
-            for (LongObjectPair<Term> next : (Iterable<LongObjectPair<Term>>) event.keyValuesView()) {
+            for (LongObjectPair<Term> next: (Iterable<LongObjectPair<Term>>) event.keyValuesView()) {
                 long when = next.getOne();
                 if (when == ETERNAL)
                     continue;
@@ -828,14 +825,14 @@ public class Conj extends AnonMap {
         final boolean[] negatives = {false};
         MutableSet<Term> t = new UnifiedSet(4);
         if (b != null) {
-            for (byte x : b) {
+            for (byte x: b) {
                 if (x == 0)
                     break;
                 t.add(sub(x, negatives, validator));
             }
         } else {
             rb.forEach((int termIndex) ->
-                t.add(sub(termIndex, negatives, validator))
+                    t.add(sub(termIndex, negatives, validator))
             );
         }
 
@@ -849,7 +846,7 @@ public class Conj extends AnonMap {
                 if (x.hasAll(NEG.bit | CONJ.bit)) {
                     if (x.op() == NEG) {
                         Term x0 = x.sub(0);
-                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) {
+                        if (x0.op() == CONJ && commute(x0.dt(), x0.subs())) {
                             Term disj = x.unneg();
                             SortedSet<Term> disjSubs = disj.subterms().toSetSortedExcept(t::contains);
 
