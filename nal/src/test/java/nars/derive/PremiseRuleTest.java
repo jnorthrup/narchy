@@ -62,7 +62,7 @@ public class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse("A, A |- A, (Belief:Revision)");
+            PremiseDeriverSource x = PremiseDeriverSource.parse("A, A |- A, (Belief:Intersection)");
             assertNotNull(x);
             
             

@@ -10,6 +10,8 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
+import nars.control.proto.TaskAddTask;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
@@ -281,6 +283,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
             if (c.op() == NEG)
                 throw new UnsupportedOperationException(c + " has invalid task content op (NEG)");
+        }
+
+        @Override
+        public ITask inputStrategy(Task result) {
+            return new TaskAddTask.OnlyLink(this);
         }
 
         @Override

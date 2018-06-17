@@ -1,7 +1,10 @@
 package nars.derive.step;
 
 import jcog.Util;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Param;
+import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.premise.PremiseDeriverProto;
 import nars.task.DebugDerivedTask;
@@ -11,7 +14,6 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.term.transform.VariableTransform;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +63,9 @@ public class Taskify extends AbstractPred<Derivation> {
         Term x0 = d.derivedTerm;
 
         Term x1 = d.anon.get(x0);
-        Term x = x1.normalize();
-
-        if (x.hasAny(Op.VAR_INDEP)) {
-            if (!Task.validTaskCompound(x, true)) {
-                x = x.transform(VariableTransform.indepToDepVar);
-            }
+        Term x = Term.forceNormalizeForBelief(x1);
+        if (!x.op().conceptualizable) {
+            return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
 
@@ -84,25 +83,20 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
-
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
-
-            int dither = d.ditherTime;
             long start = occ[0], end = occ[1];
-            int dur = d.dur;
-            if (start != ETERNAL && dur > 1) {
-                assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
 
-                if ((end - start < dur)) {
-                    double mid = (end + start) / 2.0;
-                    start = Tense.dither(mid - dur / 2.0, dither);
-                    end = Tense.dither(mid + dur / 2.0, dither);
-                } else {
-                    start = Tense.dither(start, dither);
-                    end = Tense.dither(end, dither);
-                }
+            assert (end >= start) : "task has reversed occurrence: " + start + ".." + end;
+
+            //dither time
+            if (start != ETERNAL) {
+                int dither = d.ditherTime;
+                start = Tense.dither(start, dither);
+                end = Tense.dither(end, dither);
             }
+
+            //dither truth
             if (tr!=null) {
                 tr = tr.dither(d.nar);
             }

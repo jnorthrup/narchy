@@ -13,6 +13,7 @@ import nars.exe.Focus;
 import nars.exe.WorkerMultiExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
+import nars.index.concept.HijackConceptIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -120,8 +121,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
 
 
-                        newCaffeineIndex()
-                        //new HijackConceptIndex(64 * 1024, 4)
+                        //newCaffeineIndex()
+                        new HijackConceptIndex(64 * 1024, 4)
 
 
                 )

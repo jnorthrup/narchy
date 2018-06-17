@@ -25,7 +25,7 @@ import nars.unify.Unify;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.match.Ellipsislike;
 import nars.util.term.TermBuilder;
-import nars.util.term.builder.HeapTermBuilder;
+import nars.util.term.builder.InterningTermBuilder;
 import org.apache.lucene.util.MathUtil;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.MutableSet;
@@ -581,8 +581,8 @@ public enum Op {
     private static final int ANY_LEVEL = 0;
     private static final int InvalidImplicationSubj = or(IMPL);
     public static TermBuilder terms =
-            new HeapTermBuilder();
-            //new InterningTermBuilder();
+            //new HeapTermBuilder();
+            new InterningTermBuilder();
 
     public static int AtomicConstants = Op.ATOM.bit | Op.INT.bit;
 

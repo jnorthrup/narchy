@@ -33,17 +33,16 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
 
-    private final BufferedCauseChannel in;
-
-    final BagClustering.Dimensionalize<Task> ConjClusterModel;
     protected final BagClustering<Task> bag;
+    final BagClustering.Dimensionalize<Task> ConjClusterModel;
+    private final BufferedCauseChannel in;
     private final byte punc;
+    private final float termVolumeMaxFactor = 0.9f;
     private long now;
     private int dur;
     private float confMin;
     private int volMax;
     private int ditherTime;
-    private final float termVolumeMaxFactor = 0.9f;
     private int taskLimitPerCentroid;
 
     //temporary to the current singleton
@@ -59,20 +58,20 @@ public class ConjClustering extends Causable {
             @Override
             public void coord(Task t, double[] c) {
                 c[0] = t.start();
-                c[3] = t.priElseZero(); 
+                c[3] = t.priElseZero();
                 Truth tt = t.truth();
-                c[1] = tt.polarity(); 
-                c[2] = tt.conf(); 
+                c[1] = tt.polarity();
+                c[2] = tt.conf();
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return (1 + Math.abs(a[0] - b[0]) / dur)    
+                return (1 + Math.abs(a[0] - b[0]) / dur)
                         *
                         (
-                          Math.abs(a[1] - b[1])  
-                        + Math.abs(a[2] - b[2])  
-                        + Math.abs(a[3] - b[3])*0.1f  
+                                Math.abs(a[1] - b[1])
+                                        + Math.abs(a[2] - b[2])
+                                        + Math.abs(a[3] - b[3]) * 0.1f
                         );
             }
         };
@@ -85,32 +84,31 @@ public class ConjClustering extends Causable {
         nar.onTask(t -> {
             if (!t.isEternal()
                     && t.punc() == punc
-                    && !t.hasVars() 
+                    //&& !t.hasVars()
                     && filter.test(t)) {
                 bag.put(t,
-                        
+
                         t.priElseZero()
-                        
+
                 );
-                
+
             }
         });
     }
-
 
 
     @Override
     protected int next(NAR nar, int iterations /* max tasks generated per centroid, >=1 */) {
 
         if (bag.bag.isEmpty())
-            return -1; 
+            return -1;
 
         this.now = nar.time();
         this.dur = nar.dur();
         this.ditherTime = nar.dtDither();
         this.confMin = nar.confMin.floatValue();
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
-        this.taskLimitPerCentroid = iterations;
+        this.taskLimitPerCentroid = Math.max(1, Math.round(((float) iterations) / bag.net.centroids.length));
 
         tasksGenerated = 0;
 
@@ -121,46 +119,6 @@ public class ConjClustering extends Causable {
         }
         return tasksGenerated;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
@@ -200,11 +158,10 @@ public class ConjClustering extends Causable {
 
                 Task t =
                         gg.next().id;
-                
+
                 Term xt = t.term();
 
                 long zs = Tense.dither(t.start(), ditherTime);
-                
 
 
                 Truth tx = t.truth();
@@ -216,13 +173,12 @@ public class ConjClustering extends Causable {
                 int xtv = xt.volume();
                 maxVolume = Math.max(maxVolume, xt.volume());
                 if (vol + xtv + 1 >= volMax || conf * tx.conf() < confMin) {
-                    continue; 
+                    continue;
                 }
 
                 boolean involved = false;
                 LongObjectPair<Term> ps = pair(zs, xt);
                 Term xtNeg = xt.neg();
-
 
 
                 if (!Stamp.overlapsAny(actualStamp, t.stamp())) {
@@ -231,17 +187,6 @@ public class ConjClustering extends Causable {
                         involved = true;
                     }
                 }
-
-
-
-
-
-
-
-
-
-
-
 
 
                 if (involved) {
@@ -256,14 +201,14 @@ public class ConjClustering extends Causable {
                     conf *= tx.conf();
 
                     float tf = tx.freq();
-                    freq *= tx.isNegative() ? (1f - tf) : tf; 
+                    freq *= tx.isNegative() ? (1f - tf) : tf;
 
                     float p = t.priElseZero();
                     if (p < priMin) priMin = p;
                     if (p > priMax) priMax = p;
 
                     if (actualTasks.size() >= Param.STAMP_CAPACITY)
-                        break; 
+                        break;
                 }
             } while (vol < volMax - 1 && conf > confMin);
 
@@ -271,12 +216,9 @@ public class ConjClustering extends Causable {
             if (vs < 2)
                 continue;
 
-            
-
 
             Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
 
-            
 
             float e = c2w(conf);
             if (e > 0) {
@@ -286,28 +228,24 @@ public class ConjClustering extends Causable {
                     Term cj = Conj.conj(vv.keySet());
                     if (cj != null) {
 
-                        cj = cj.normalize();
 
 
-                        if (Math.abs(cj.dtRange() - (end - start)) < ditherTime) { 
 
 
-                            ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, true);
+                            ObjectBooleanPair<Term> cp = Task.tryContent( Term.forceNormalizeForBelief(cj), punc, true);
                             if (cp != null) {
 
 
-                                NALTask m = new STMClusterTask(cp, t, start, start, actualStamp.toArray(), punc, now); 
-                                
+                                NALTask m = new STMClusterTask(cp, t, start, start, actualStamp.toArray(), punc, now);
+
 
                                 m.cause = Cause.sample(Param.causeCapacity.intValue(), uu);
 
                                 float p =
-                                        
-                                        priMin;
-                                
 
-                                
-                                
+                                        priMin;
+
+
                                 int v = cp.getOne().volume();
                                 float cmplFactor =
                                         ((float) v) / (v + maxVolume);
@@ -321,10 +259,8 @@ public class ConjClustering extends Causable {
                                     return;
                                 }
                             }
-                        } else {
-                            
                         }
-                    }
+
 
                 }
             }
@@ -338,35 +274,6 @@ public class ConjClustering extends Causable {
     public float value() {
         return in.value();
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static class STMClusterTask extends NALTask {

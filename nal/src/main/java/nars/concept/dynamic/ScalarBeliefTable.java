@@ -472,7 +472,7 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
         @Override
         public ITask inputStrategy(Task result) {
-            return new TaskAddTaskAuto(result);
+            return new TaskAddTask.OnlyLink(result);
         }
 
         
@@ -490,18 +490,6 @@ public class ScalarBeliefTable extends DynamicBeliefTable {
 
 
 
-    }
-
-    private static final class TaskAddTaskAuto extends TaskAddTask {
-
-        TaskAddTaskAuto(Task result) {
-            super(result);
-        }
-
-        @Override
-        protected boolean add(NAR n, TaskConcept c) {
-            return true; 
-        }
     }
 
     @Override

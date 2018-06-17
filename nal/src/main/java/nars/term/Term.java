@@ -26,6 +26,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.Op;
+import nars.Task;
 import nars.The;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
@@ -40,6 +41,7 @@ import nars.util.SoftException;
 import nars.util.term.transform.MapSubst;
 import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
+import nars.util.term.transform.VariableTransform;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -128,6 +130,16 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     static int opX(Op o, int subOp) {
         assert (subOp < Short.MAX_VALUE - 1);
         return opX(o, (short) subOp);
+    }
+
+    static Term forceNormalizeForBelief(Term x) {
+        x = x.normalize();
+
+        if (x.hasAny(Op.VAR_INDEP) && !Task.validTaskCompound(x, true)) {
+            x = x.transform(VariableTransform.indepToDepVar);
+        }
+
+        return x;
     }
 
     default Term term() {

@@ -121,7 +121,7 @@ public class NARui {
                         ))
                 )
                         .north(ExeCharts.runPanel(n))
-                        .south(new OmniBox(new NarseseJShellModel(n)))
+                        //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
                 ;
     }
 

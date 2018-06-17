@@ -69,4 +69,17 @@ public class TaskAddTask extends NativeTask {
     protected boolean add(NAR n, TaskConcept c) {
         return c.add(task, n);
     }
+
+    /** skips storage but proceeds with linking */
+    public static final class OnlyLink extends TaskAddTask {
+
+        public OnlyLink(Task result) {
+            super(result);
+        }
+
+        @Override
+        protected boolean add(NAR n, TaskConcept c) {
+            return true;
+        }
+    }
 }
