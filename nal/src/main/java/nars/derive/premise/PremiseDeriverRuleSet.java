@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProto> {
 
-    public final NAR nar;
+    public NAR nar;
 
     public PremiseDeriverRuleSet(NAR nar, String... rules) {
         this(new PremisePatternIndex(nar), rules);
@@ -34,7 +34,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
     private PremiseDeriverRuleSet(PremisePatternIndex patterns, Stream<PremiseDeriverSource> parsed) {
         assert (patterns.nar != null);
         this.nar = patterns.nar;
-        parsed.distinct().forEach(rule -> super.add(new PremiseDeriverProto(rule, patterns)));
+        parsed.distinct().map(x -> x.apply(patterns)).forEach(super::add);
     }
 
     final static Memoize<String, Collection<PremiseDeriverSource>> ruleCache = CaffeineMemoize.build((String n) -> {
@@ -83,16 +83,6 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
         });
 
 
-    }
-
-    @Override
-    public boolean add(PremiseDeriverProto rule) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends PremiseDeriverProto> c) {
-        throw new UnsupportedOperationException();
     }
 
 

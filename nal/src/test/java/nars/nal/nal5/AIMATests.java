@@ -63,7 +63,7 @@ public class AIMATests {
     public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(13);
+        n.termVolumeMax.set(14);
         n.freqResolution.set((float) truthRes);
 
         n.believe("(P ==> Q)",

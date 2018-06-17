@@ -8,7 +8,6 @@ import jcog.Util;
 import jcog.list.FasterList;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import nars.subterm.Subterms;
-import nars.subterm.UnitSubterm;
 import nars.subterm.util.TermList;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
@@ -755,14 +754,15 @@ public enum $ {
                 Term tt = t[0];
                 if (tt.unneg() instanceof AnonID)
                     return new AnonVector(tt);
-
-                return new UnitSubterm(tt);
-            default:
+                break;
+        }
+//                return new UnitSubterm(tt);
+//            default:
 //                if (t.length < 3)
 //                    return new ArrayTermVector(t);
 //                else
                     return new TermList(t);
-        }
+        //}
 
 
     }

@@ -25,7 +25,7 @@ public final class PostCondition implements Serializable
     public final Term goalTruth;
 
 
-    private PostCondition(@NotNull Term pattern, @Nullable Term beliefTruth, @Nullable Term goalTruth, byte puncOverride) {
+    protected PostCondition(@NotNull Term pattern, @Nullable Term beliefTruth, @Nullable Term goalTruth, byte puncOverride) {
         this.pattern = pattern;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
@@ -53,32 +53,7 @@ public final class PostCondition implements Serializable
     final transient byte puncOverride;
 
 
-    /**
-     * @param rule      rule which contains and is constructing this postcondition
-     * @param pattern
-     * @param modifiers
-     * @throws RuntimeException
-     */
-    public static PostCondition the(PremiseDeriverProto rule, Term pattern,
-                                    byte puncOverride,
-                                    Term beliefTruth, Term goalTruth) throws RuntimeException {
-
-
-
-        PostCondition pc = new PostCondition(pattern, beliefTruth, goalTruth, puncOverride);
-
-        if (!pc.modifiesPunctuation() && pattern instanceof Compound) {
-            assert !rule.getTask().equals(pattern) :
-                    "punctuation not modified yet rule task equals pattern: " + rule;
-//            assert !rule.getBelief().equals(pattern) :
-//                    "punctuation not modified yet rule belief equals pattern: " + rule + "\n\t" + rule.getBelief() + "\n\t" + pattern;
-        }
-
-        return pc;
-    }
-
-
-    private boolean modifiesPunctuation() {
+    protected boolean modifiesPunctuation() {
         return puncOverride > 0;
     }
 

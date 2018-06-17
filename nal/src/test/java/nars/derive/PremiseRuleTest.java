@@ -62,7 +62,7 @@ public class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse("A, A |- A, (Belief:Revision, Goal:Weak)");
+            PremiseDeriverSource x = PremiseDeriverSource.parse("A, A |- A, (Belief:Revision)");
             assertNotNull(x);
             
             
@@ -280,7 +280,7 @@ TODO - share unification state for different truth/conclusions
 
 
 
-        Compound y = (Compound) PremiseDeriverSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion, Info:SeldomUseful)").ref;
+        Compound y = (Compound) PremiseDeriverSource.parse("(S --> P), --%S |- (P --> S), (Belief:Conversion)").ref;
         Terms.printRecursive(System.out, y);
     }
 

@@ -4,7 +4,6 @@ import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.premise.PremisePatternIndex;
 import nars.derive.step.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -59,7 +58,7 @@ public class Truthify extends AbstractPred<Derivation> {
     private static final Atomic TRUTH = Atomic.the("truth");
     private static final Atomic BELIEF_AT = Atomic.the("beliefAt");
 
-    public static Truthify the(PremisePatternIndex index, byte puncOverride, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, BeliefProjection projection, Occurrify.TaskTimeMerge time) {
+    public static Truthify the(byte puncOverride, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, BeliefProjection projection, Occurrify.TaskTimeMerge time) {
         Term truthMode;
 
         if (beliefTruthOp != null || goalTruthOp != null) {
@@ -87,7 +86,7 @@ public class Truthify extends AbstractPred<Derivation> {
             }
         }
 
-        return new Truthify(index.intern(truthMode),
+        return new Truthify(truthMode,
                 puncOverride,
                 beliefTruthOp, goalTruthOp,
                 projection, time.filter());

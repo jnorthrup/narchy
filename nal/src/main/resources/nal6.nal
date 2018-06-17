@@ -136,7 +136,7 @@
     //Same as for inheritance
 
 
-    //(P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
+    (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
     (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:Implsition)
             //(Belief:UnionSym)
 

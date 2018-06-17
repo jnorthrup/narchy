@@ -23,7 +23,8 @@ public interface Termutator {
     abstract class AbstractTermutator extends ProxyTerm implements Termutator {
 
         AbstractTermutator(Atom klass, Term... keyComponents) {
-            super($.pFast(klass, keyComponents.length == 1 ? keyComponents[0] : $.pFast(keyComponents)));
+            super($.pFast(klass, keyComponents.length == 1 ? keyComponents[0] :
+                    $.pFast(keyComponents)));
         }
 
     }
