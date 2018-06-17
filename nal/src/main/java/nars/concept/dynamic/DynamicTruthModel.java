@@ -65,7 +65,26 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
     };
 
-    static Term inhComponent(boolean subjOrPred, Term subterm, Term common) {
+//    public static final DynamicTruthModel ImplConjSubj = new Intersection() {
+//
+//        @Override
+//        public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
+//            return false;
+//        }
+//
+//        @Override
+//        public Term reconstruct(Term superterm, List<TaskRegion> c) {
+//            return null;
+//        }
+//    };
+
+    /** statement component */
+    static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common) {
+        return stmtDecompose(superOp, subjOrPred, subterm, common, DTERNAL);
+    }
+
+    /** statement component (temporal) */
+    static Term stmtDecompose(Op superOp, boolean subjOrPred, Term subterm, Term common, int dt) {
         Term s, p;
         if (subjOrPred) {
             s = subterm;
@@ -76,15 +95,23 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
         if (s == null || p == null)
             throw new NullPointerException();
-        return INH.the(s, p);
+
+        if (dt == DTERNAL) {
+            return superOp.the(s, p);
+        }  else {
+            assert(superOp == IMPL);
+            return superOp.the(s, dt, p);
+        }
+
     }
 
-    static Term inhCommonComponent(boolean subjOrPred, Term superterm) {
+    /** statement common component */
+    static Term stmtCommon(boolean subjOrPred, Term superterm) {
         return subjOrPred ? superterm.sub(1) : superterm.sub(0);
     }
 
     @Nullable
-    static Term[] inhReconstruct(boolean subjOrPred, List<TaskRegion> components) {
+    static Term[] stmtReconstruct(boolean subjOrPred, List<TaskRegion> components) {
 
         //extract passive term and verify they all match (could differ temporally, for example)
         Term[] common = new Term[1];
@@ -108,7 +135,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
     }
 
     @Nullable
-    static public Term inhReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred) {
+    static public Term stmtReconstruct(Term superterm, List<TaskRegion> components, boolean subjOrPred) {
         Term superSect = superterm.sub(subjOrPred ? 0 : 1);
 
         if (!Param.DEBUG) {
@@ -121,17 +148,19 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
         }
 
 
-        Term[] subs = inhReconstruct(subjOrPred, components);
+        Term[] subs = stmtReconstruct(subjOrPred, components);
         if (subs == null)
             return null;
 
 
         Term sect = superSect.op().the(subs);
         Term common = superterm.sub(subjOrPred ? 1 : 0);
-        Term x = subjOrPred ? INH.the(sect, common) : INH.the(common, sect);
-        if (x.op() != INH)
+        Op op = superterm.op();
+        Term x = subjOrPred ? op.the(sect, common) : op.the(common, sect);
+        if (x.op() != op)
             return null;
-        return x;
+        else
+            return x;
     }
 
     @Nullable
@@ -273,7 +302,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         @Override
         public Term reconstruct(Term superterm, List<TaskRegion> components) {
-            return inhReconstruct(superterm, components, subjOrPred);
+            return stmtReconstruct(superterm, components, subjOrPred);
         }
 
 
@@ -288,10 +317,24 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         @Override
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            Term common = inhCommonComponent(subjOrPred, superterm);
-            Term decomposed = inhCommonComponent(!subjOrPred, superterm);
-            return decomposed.subterms().AND(y ->
-                    each.accept(inhComponent(subjOrPred, y, common), start, end)
+            Term common = stmtCommon(subjOrPred, superterm);
+            Term decomposed = stmtCommon(!subjOrPred, superterm);
+            Op op = superterm.op();
+
+            if (op.temporal && decomposed.op()==CONJ /* NEG , union ?  */) {
+                int outerDT = superterm.dt();
+                if ((outerDT !=DTERNAL && outerDT !=XTERNAL)) {
+                    int totalDT = outerDT; //check direction, may need neg
+                    int innerDT = decomposed.dt();
+                    int decRange = decomposed.dtRange();
+                    return decomposed.eventsWhile((when, y)->
+                        each.accept(stmtDecompose(op, subjOrPred, y, common, (int) ((decRange - when)+outerDT)), start+when, end)
+                    , 0, innerDT == DTERNAL, innerDT == 0, false, 0);
+                }
+            }
+
+            return decomposed.subterms().AND(
+                y -> each.accept(stmtDecompose(op, subjOrPred, y, common), start, end)
             );
         }
 
@@ -385,15 +428,15 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         @Override
         public boolean components(Term superterm, long start, long end, ObjectLongLongPredicate<Term> each) {
-            Term common = inhCommonComponent(subjOrPred, superterm);
-            Term decomposed = inhCommonComponent(!subjOrPred, superterm);
-            return each.accept(inhComponent(subjOrPred, decomposed.sub(0), common), start, end) &&
-                    each.accept(inhComponent(subjOrPred, decomposed.sub(1), common), start, end);
+            Term common = stmtCommon(subjOrPred, superterm);
+            Term decomposed = stmtCommon(!subjOrPred, superterm);
+            return each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(0), common), start, end) &&
+                    each.accept(stmtDecompose(superterm.op(), subjOrPred, decomposed.sub(1), common), start, end);
         }
 
         @Override
         public Term reconstruct(Term superterm, List<TaskRegion> c) {
-            return inhReconstruct(superterm, c, subjOrPred);
+            return stmtReconstruct(superterm, c, subjOrPred);
         }
     }
 

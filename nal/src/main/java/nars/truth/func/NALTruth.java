@@ -22,7 +22,7 @@ import static nars.Op.BELIEF;
 /**
  * NAL Truth Functions
  * the original set of NAL truth functions, preserved as much as possible
- * 
+ *
  * <patham9> only strong rules are allowing overlap
  * <patham9> except union and revision
  * <patham9> if you look at the graph you see why
@@ -48,14 +48,14 @@ public enum NALTruth implements TruthFunc {
 
     @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
         }
     },
 
     @SinglePremise @AllowOverlap
     StructuralStrong() {
-        public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return T != null ? NALTruth.Analogy.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
         }
     },
@@ -66,7 +66,7 @@ public enum NALTruth implements TruthFunc {
      */
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
-        public Truth apply(final Truth T, final Truth Bignored,  NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth Bignored, NAR m, float minConf) {
             float c = T.conf() * NALTruth.confDefault(m);
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
@@ -206,7 +206,9 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    /** special truth function for implication composition */
+    /**
+     * special truth function for implication composition
+     */
     Implsition() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -214,20 +216,25 @@ public enum NALTruth implements TruthFunc {
             float bc = B.conf();
             float c = tc * bc;
             if (c < minConf) return null;
-            float f = Util.lerp(bc/(tc+bc), T.freq(), B.freq());
+            float f = Util.lerp(bc / (tc + bc), T.freq(), B.freq());
             return $.t(f, c);
 
-//            if (T.isPositive() && B.isPositive()) {
-//                return Union.apply(T, B, m, minConf);
-//            } else if (T.isNegative() && B.isNegative()) {
-//                Truth C = Union.apply(T.neg(), B.neg(), m, minConf);
-//                return C != null ? C.neg() : null;
-//            } else {
-//                return null;
-//            }
         }
     },
+    UnionSym() {
+        @Override
+        public @Nullable Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
 
+            if (T.isPositive() && B.isPositive()) {
+                return Union.apply(T, B, m, minConf);
+            } else if (T.isNegative() && B.isNegative()) {
+                Truth C = Union.apply(T.neg(), B.neg(), m, minConf);
+                return C != null ? C.neg() : null;
+            } else {
+                return null;
+            }
+        }
+    },
     Difference() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -332,7 +339,7 @@ public enum NALTruth implements TruthFunc {
     @AllowOverlap
     BeliefStructuralDeduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             if (B == null) return null;
             return StructuralDeduction.apply(B, null, m, minConf);
         }
@@ -341,7 +348,7 @@ public enum NALTruth implements TruthFunc {
     @AllowOverlap
     BeliefStructuralAbduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
 
             return Abduction.apply($.t(1f, confDefault(m)), B, m, minConf);
         }
@@ -351,7 +358,7 @@ public enum NALTruth implements TruthFunc {
     @AllowOverlap
     BeliefStructuralDifference() {
         @Override
-        public Truth apply(final Truth T, final Truth B,  NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             if (B == null) return null;
             Truth res = BeliefStructuralDeduction.apply(T, B, m, minConf);
             return (res != null) ? res.neg() : null;
@@ -383,7 +390,7 @@ public enum NALTruth implements TruthFunc {
 
         }
     },
-;
+    ;
 
 
     static final ImmutableMap<Term, TruthFunc> funcs;
@@ -404,7 +411,7 @@ public enum NALTruth implements TruthFunc {
         this.overlap = f.isAnnotationPresent(AllowOverlap.class);
     }
 
-    private static float confDefault( NAR m) {
+    private static float confDefault(NAR m) {
         //TODO choose this according to belief/goal
         return m.confDefault(BELIEF);
     }

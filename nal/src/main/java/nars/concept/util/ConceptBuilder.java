@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import static nars.Op.CONJ;
 import static nars.Op.DIFFi;
 import static nars.Op.INH;
 
@@ -96,14 +97,21 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
                 //TODO NAL2 set identities?
                 break;
 
-            case IMPL:
-                /* TODO:
-                    ((&&,x,y,z,...) ==> z) from (x ==> z) and (y ==> z) //intersect pre
-                    (--(--x && --y) ==> z) from (x ==> z) and (y ==> z) //union pre
-                    (z ==> (x && y))  //intersect conc
-                    (z ==> --(--x && --y))  //union conc
-                 */
-                break;
+                //TODO not done yet
+//            case IMPL:
+//                Term subj = t.sub(0);
+//                /* TODO:
+//                    ((&&,x,y,z,...) ==> z) from (x ==> z) and (y ==> z) //intersect pre
+//                    (--(--x && --y) ==> z) from (x ==> z) and (y ==> z) //union pre
+//                    (z ==> (x && y))  //intersect conc
+//                    (z ==> --(--x && --y))  //union conc
+//                 */
+//                Term su = subj;
+//                if (su.op() == CONJ && validDynamicSubterms(su.subterms())) {
+//                    return DynamicTruthModel.IsectSubj;
+//                }
+//                //TODO if subj is negated
+//                break;
 
             case CONJ:
                 if (validDynamicSubterms(t.subterms()))

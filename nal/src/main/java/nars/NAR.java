@@ -685,7 +685,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     @Nullable
     public final BeliefTable truths(Termed concept, byte punc) {
         assert (punc == BELIEF || punc == GOAL);
-        @Nullable Concept c = conceptualize(concept);
+        @Nullable Concept c = conceptualizeDynamic(concept);
         if (c == null)
             return null;
         return (BeliefTable) c.table(punc);
@@ -696,20 +696,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
      */
     @Nullable
     public Truth truth(Termed concept, byte punc, long start, long end) {
-
-
-        @Nullable Concept c = conceptualize(concept);
+        @Nullable Concept c = conceptualizeDynamic(concept);
         return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, concept.term(), this) : null;
     }
 
     @Nullable
     public final Truth beliefTruth(String concept, long when) throws NarseseException {
-        return truth(conceptualize(concept), BELIEF, when);
+        return truth($(concept), BELIEF, when);
     }
 
     @Nullable
     public final Truth goalTruth(String concept, long when) throws NarseseException {
-        return truth(conceptualize(concept), GOAL, when);
+        return truth($(concept), GOAL, when);
     }
 
     @Nullable
@@ -1284,17 +1282,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     @Nullable
-    public Task match(Termed c, byte punc, long start, long end) {
+    public Task match(Termed t, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
         Concept concept =
-                conceptualize(c);
+                conceptualizeDynamic(t);
 
 
         if (!(concept instanceof TaskConcept))
             return null;
 
         Task answer = ((BeliefTable) concept.table(punc)).answer(start, end,
-                c.term(), null, this);
+                t.term(), null, this);
         if (answer != null && !answer.isDeleted()) {
             input(answer);
         }
@@ -1424,13 +1422,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycled
     }
 
     /** conceptualize a term if dynamic truth is possible; otherwise return concept if exists */
-    public final Concept conceptualizeDynamic(Term concept) {
-
-        concept = concept.unneg();
+    public final Concept conceptualizeDynamic(Termed concept) {
 
         Concept x = concept(concept);
         if (x==null) {
-            if (ConceptBuilder.dynamicModel(concept)!=null) {
+            if (ConceptBuilder.dynamicModel(concept.term())!=null) {
                 //try conceptualizing the dynamic
                 return conceptualize(concept);
             }
