@@ -134,10 +134,10 @@ public class TrackXY extends NAgent {
 
 
             Deriver d = new MatrixDeriver(Derivers.nal(
-                    
-                    1,
-                    8, n,
-                    
+
+                    n, 1,
+                    8,
+
                     "motivation.nal"));
 
             ((MatrixDeriver)d).conceptsPerIteration.set(32);

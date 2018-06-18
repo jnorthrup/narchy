@@ -101,7 +101,7 @@ public class NARS {
      */
     @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
         postInit.add((n)->
-                new MatrixDeriver(Derivers.nal(minLevel, maxLevel, n))
+                new MatrixDeriver(Derivers.nal(n, minLevel, maxLevel))
         );
         return this;
     }

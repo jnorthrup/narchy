@@ -97,7 +97,7 @@ public class SimpleConceptGraph3D extends DynamicConceptSpace {
 
         
         NAR n = NARS.threadSafe();
-        new MatrixDeriver(Derivers.nal(1, 8, n));
+        new MatrixDeriver(Derivers.nal(n, 1, 8));
 
 
 

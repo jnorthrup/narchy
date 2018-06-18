@@ -1,0 +1,8 @@
+
+X, X, task("@"), --has(X,"?") |- X,       (Goal:Curiosity, Punctuation:Goal, Time:TaskImmediate)
+
+X, Y, task("@"), --has(X,"?"), --has(Y,"?") |- (X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskImmediate)
+X, Y, task("@"), --has(X,"?"), --has(Y,"?") |- (X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskImmediate)
+
+X, Y, task("!"), --has(X,"?"), --has(Y,"?") |- (X &| Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskImmediate)
+X, Y, task("!"), --has(X,"?"), --has(Y,"?") |- (X &| --Y),  (Goal:Curiosity, Punctuation:Goal, Time:TaskImmediate)

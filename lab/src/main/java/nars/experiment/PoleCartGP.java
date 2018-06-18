@@ -63,7 +63,7 @@ public class PoleCartGP {
         //Arkancide a = new Arkancide(n, false, true);
         Tetris a = new Tetris(n);
 
-        new MatrixDeriver( Derivers.nal(1,8, n) );
+        new MatrixDeriver( Derivers.nal(n, 1,8) );
 
         //a.always.clear(); //HACK
 

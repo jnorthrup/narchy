@@ -72,7 +72,7 @@ public class Derivers {
 
 
     /** standard ruleset */
-    public static PremiseDeriverRuleSet nal(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
+    public static PremiseDeriverRuleSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {
         return files(nar, standard(minLevel, maxLevel, extraFiles)        );
     }
 

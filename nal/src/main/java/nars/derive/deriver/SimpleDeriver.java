@@ -66,7 +66,7 @@ public class SimpleDeriver extends Deriver {
                 return;
             while (x.test(new Activate(c, 1f))) ;
         };
-        PremiseDeriverRuleSet rules = Derivers.nal(1, 8, n);
+        PremiseDeriverRuleSet rules = Derivers.nal(n, 1, 8);
 
         return new SimpleDeriver(forEach, target, rules, GlobalTermLinker);
     }
@@ -78,7 +78,7 @@ public class SimpleDeriver extends Deriver {
         Consumer<Predicate<Activate>> forEach = x -> {
             while (x.test(new Activate(tasks.get(rng.nextInt(tt)).concept(n, true), 1f))) ;
         };
-        PremiseDeriverRuleSet rules = Derivers.nal(1, 8, n);
+        PremiseDeriverRuleSet rules = Derivers.nal(n, 1, 8);
 
         return new SimpleDeriver(forEach, n::input, rules, GlobalTermLinker);
     }

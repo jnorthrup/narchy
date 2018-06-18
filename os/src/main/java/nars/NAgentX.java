@@ -8,6 +8,7 @@ import jcog.util.Int2Function;
 import nars.agent.NAgent;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
+import nars.derive.deriver.SimpleDeriver;
 import nars.exe.MixMultiExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
@@ -126,13 +127,14 @@ abstract public class NAgentX extends NAgent {
                 )
                 .get();
 
-        new MatrixDeriver(Derivers.nal(1, 8, n));
+        new MatrixDeriver(Derivers.nal(n, 1, 8));
+
 
 
         n.dtMergeOrChoose.set(true);
 
         n.dtDither.set(10); //100fps base
-        n.timeFocus.set(4);
+        n.timeFocus.set(8);
 
 
         n.confMin.set(0.01f);
@@ -179,9 +181,12 @@ abstract public class NAgentX extends NAgent {
         NAgent a = init.apply(n);
         //a.motivation.set(0.75f);
 
+
         n.on(a);
         n.synch();
 
+        new SimpleDeriver(a.fire(), n::input, Derivers.nal(n, 0,0, "curiosity.nal"));
+        a.curiosity.set(0);
 
         Loop loop = n.startFPS(narFPS);
 

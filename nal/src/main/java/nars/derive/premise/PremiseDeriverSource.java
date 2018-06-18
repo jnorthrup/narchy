@@ -200,14 +200,12 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 //                    break;
 
                 case "subPosOrNeg":
-
                     neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Subterm, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Subterm, 0));
                     break;
 
                 case "in":
-
                     neq(constraints, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Recursive));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Recursive));
@@ -277,14 +275,15 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
                 case "is": {
-                    Op o = Op.the($.unquote(Y));
-                    if (!negated) {
-                        is(X, o);
-                    } else {
-                        isNot(X, o.bit);
+                    is(X, Op.the($.unquote(Y)), !negated);
+                    if (negated)
                         negationApplied = true;
-                    }
-
+                    break;
+                }
+                case "has": {
+                    has(X, Op.the($.unquote(Y)), !negated);
+                    if (negated)
+                        negationApplied = true;
                     break;
                 }
 
@@ -612,7 +611,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     void eventPrefilter(Collection<PrediTerm> pres, Term conj, Term taskPattern, Term beliefPattern) {
 
 
-        is(conj, CONJ);
+        is(conj, CONJ, true);
 
 //        boolean isTask = taskPattern.equals(conj);
 //        boolean isBelief = beliefPattern.equals(conj);
@@ -655,8 +654,11 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
 
-    private void is(Term x, Op struct) {
-        filter(x, new TermMatch.Is(struct), true);
+    private void is(Term x, Op struct, boolean trueOrFalse) {
+        filter(x, new TermMatch.Is(struct), trueOrFalse);
+    }
+    private void has(Term x, Op struct, boolean trueOrFalse) {
+        filter(x, new TermMatch.Has(struct), trueOrFalse);
     }
     private void isNot(Term x, int struct) {
         filter(x, new TermMatch.Is(struct), false);
