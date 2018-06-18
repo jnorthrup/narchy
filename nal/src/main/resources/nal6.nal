@@ -134,15 +134,27 @@
 
 //// implication-based composition ////////////////////////////////////////////////////////////////////////////////////
     //Same as for inheritance
+    //union/intersection assymmetry: union if subj, intersect if pred
+
+     //Union and frequency maintained
+     (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:Implsition, Also:VarIntro)
+
+        ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,--(--P &&+- --S),A..+) ==>+- X), (Belief:Implsition, Also:VarIntro)
+        (--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,--(--P &&+- --S),A..+) ==>+- X), (Belief:Implsition, Also:VarIntro)
+
+        //contradiction anonymizer
+        //TODO make inv(A,B) predicate which is true if A == --B
+        (Y ==> X), (--Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==>+- X), (Belief:Implsition)
+        (--Y ==> X), (Y ==> X), neq(P,S), --is(Y,"#"), --is(X,"#") |- (#1 ==>+- X), (Belief:Implsition)
+
+     //Intersection but Depolarized
+     (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized, Also:VarIntro)
 
 
-    (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
-    (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
-            //(Belief:Implsition)
-            //(Belief:UnionSym)
+    //(P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
+    //(P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
+    //(M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
 
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized)
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
 
 
 
@@ -321,8 +333,8 @@
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
     X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Strong)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN)
+    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Strong, Time:TaskImmediate)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN, Time:TaskImmediate)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 

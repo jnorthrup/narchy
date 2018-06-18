@@ -444,7 +444,11 @@ public class Occurrify extends TimeGraph {
 
                 Pair<Term, long[]> p = Task.solve(d, x);
                 if (p != null) {
-                    System.arraycopy(d.nar.timeFocus(), 0, p.getTwo(), 0, 2);
+
+                    //immediate future, dont interfere with present
+                    long[] when = d.nar.timeFocus(d.nar.time() + d.dur*2);
+
+                    System.arraycopy(when, 0, p.getTwo(), 0, 2);
                 }
                 return p;
             }

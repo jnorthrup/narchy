@@ -2,22 +2,6 @@
 //  When P and then S happened according to an observation, by induction (weak) it may be that alyways after P, usually S happens.
 //      According to reductions: For implications, the predicate may be allowed an implication, but not subject
 
-
-//    A, B, after(Task,Belief),  |- ((&/,B,I) =/> A), (Truth:Induction),
-//                                   (A =\> (&/,B,I)), (Truth:Abduction),
-//                                   ((&/,B,I) </> A), (Truth:Comparison),
-//                                  (&/,B,I,A), (Truth:Intersection)
-
-    //B=before, A=after
-//    B, A, task("."), time(dtEvents)                          --is(B,"==>") |- (B ==>+- A), (Belief:Abduction)
-//    B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B),         --is(B,"==>") |- varIntro((B ==>+- A)), (Belief:Abduction)
-//    B, A, task("."), time(dtEvents)                       --is(A,"==>") |- (A ==>+- B), (Belief:Induction)
-//    B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B),       --is(A,"==>") |- varIntro((A ==>+- B)), (Belief:Induction)
-
-
-   //GOAL induction/propagation - (goal intentionally remains subjunctive speculation, not fact)
-   //G, X, neqRCom(G,X),neqRCom(G,X) |- (G&|X), (Goal:Induction)
-
    B, A, --is(B,"==>") |- (A ==>+- B), (Belief:Induction, Time:BeliefRelative, Also:VarIntro)
         B, A, --is(B,"==>") |- (--A ==>+- B), (Belief:InductionPN, Time:BeliefRelative, Also:VarIntro)
 
@@ -25,6 +9,10 @@
         B, A, --is(A,"==>") |- (--B ==>+- A), (Belief:AbductionN, Time:TaskRelative, Also:VarIntro)
 
     B, A                  |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Relative, Also:VarIntro)
+
+    B, A, --is(A,"~"), --is(B,"~"), neqRCom(A,B) |- (B ~ A), (Belief:Difference, Also:VarIntro)
+    B, A, --is(A,"~"), --is(B,"~"), neqRCom(A,B) |- (A ~ B), (Belief:DifferenceReverse, Also:VarIntro)
+
         //B, A, task("."), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(dtEvents), --is(A,"==>"),--is(B,"==>")                            |- (B &&+- A), (Belief:Intersection)
@@ -48,8 +36,6 @@
 
 
 //NAL3 difference comparator
-    B, A, neqRCom(A,B) |- (B ~ A), (Belief:Difference)
-    B, A, neqRCom(A,B) |- (A ~ B), (Belief:DifferenceReverse)
 
         //the hasNoDiffs constraint is not entirely necessary;
         //for now it is just meant to prevent derivations like:

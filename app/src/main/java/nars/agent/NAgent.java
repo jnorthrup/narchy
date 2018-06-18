@@ -86,7 +86,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     /**
      * action exploration rate; analogous to epsilon in QLearning
      */
-    public FloatRange curiosity;
+    @Deprecated public FloatRange curiosity;
 
     /** dampens the dynamically normalized happiness range toward sadness as a motivation strategy */
     public final FloatRange depress = new FloatRange(0f, 0f, 1f);
@@ -152,7 +152,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     @Deprecated public Task alwaysWant(Termed x, float conf) {
         Task t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
-                Stamp.UNSTAMPED
+                nar.evidence() //Stamp.UNSTAMPED
                 
         );
 
@@ -160,17 +160,18 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         return t;
     }
 
-    public Task alwaysQuestion(Termed x) {
-        return alwaysQuestion(x, true);
+    public Task alwaysQuestion(Termed x, boolean stamped) {
+        return alwaysQuestion(x, true, stamped );
     }
-    public Task alwaysQuest(Termed x) {
-        return alwaysQuestion(x, false);
+    public Task alwaysQuest(Termed x, boolean stamped) {
+        return alwaysQuestion(x, false, stamped);
     }
-    public Task alwaysQuestion(Termed x, boolean questionOrQuest) {
+
+    private Task alwaysQuestion(Termed x, boolean questionOrQuest, boolean stamped) {
         Task t = new NALTask(x.term(), questionOrQuest ? QUESTION : QUEST, null, now,
                 ETERNAL, ETERNAL,
                 
-                Stamp.UNSTAMPED
+                stamped ? nar.evidence() : Stamp.UNSTAMPED
         ) {
             @Override
             public boolean isInput() {
@@ -335,7 +336,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             alwaysWant(happy.filter[2].term, nar.confDefault(GOAL)/2);
 
             actions.keySet().forEach(a -> {
-                alwaysQuest(a);
+                alwaysQuest(a, true);
                 //alwaysQuestion(Op.CONJ.the(happy.term, a.term));
                 //alwaysQuestion(Op.CONJ.the(happy.term, a.term.neg()));
             });

@@ -402,13 +402,14 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    @SinglePremise Curiosity() {
+    @SinglePremise @AllowOverlap Curiosity() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            float conf = m.confMin.floatValue() + m.confResolution.floatValue();
             if (T==null)
-                return $.t(m.random().nextFloat(), 2 * m.confMin.floatValue());
+                return $.t(m.random().nextFloat(), conf);
             else
-                return $.t(T.freq(), 2 * m.confMin.floatValue());
+                return $.t(T.freq(), conf);
         }
     },
 

@@ -86,12 +86,12 @@ public class Tetris extends NAgentX implements Bitmap2D {
             Tetris a = null;
 
 
-                a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
+            a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
 
 
-//                Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
-//                n.freqResolution.set(0.1f);
-
+            Param.ETERNALIZE_FORGOTTEN_TEMPORALS = true;
+            n.freqResolution.set(0.02f);
+            n.confResolution.set(0.05f);
 
 
             return a;
@@ -628,7 +628,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             Arrays.fill(target, -1);
 
             int x = 0;
-            for (double i : worldState) {
+            for (double i: worldState) {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else

@@ -33,7 +33,7 @@ public class SimpleDeriver extends Deriver {
     /**
      * iterations -> premises multiplier
      */
-    public final IntRange power = new IntRange(2, 1, 512);
+    public final IntRange power = new IntRange(1, 1, 512);
     /**
      * controls concentration per concept
      */

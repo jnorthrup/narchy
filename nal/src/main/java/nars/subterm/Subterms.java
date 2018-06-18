@@ -37,12 +37,6 @@ import java.util.function.Predicate;
 public interface Subterms extends Termlike, Iterable<Term> {
 
 
-    default Op op() {
-        return null;
-    }
-
-
-
     static int hash(List<Term> term) {
         int n = term.size();
         int h = 1;
@@ -50,28 +44,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
             h = Util.hashCombine(h, term.get(i));
         return h;
     }
-    default boolean isSorted() {
-        int s = subs();
-        if (s < 2) return true;
 
-
-
-        for (int i = 1; i < s; i++) {
-            if (sub(i - 1).compareTo(sub(i)) >= 0)
-                return false;
-        }
-        return true;
-    }
     static int hash(Subterms container) {
         return container.intifyShallow(Util::hashCombine, 1);
     }
-
 
     /**
      * returns sorted ready for commutive; null if nothing in common
      */
     static @Nullable MutableSet<Term> intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
-        if ((a.structure() & b.structure()) > 0) {
+        if ((a.structure() & b.structure()) != 0) {
 
             Set<Term> as = a.toSet();
             MutableSet<Term> ab = b.toSet(as::contains);
@@ -118,7 +100,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     }
 
-
     static String toString(/*@NotNull*/ Iterable<? extends Term> subterms) {
         return '(' + Joiner.on(',').join(subterms) + ')';
     }
@@ -136,18 +117,44 @@ public interface Subterms extends Termlike, Iterable<Term> {
             return a.sub(0).compareTo(b.sub(0));
         } else {
 
-//            Term inequalVariableX = null, inequalVariableY = null;
+            Term inequalVariableX = null, inequalVariableY = null;
 
             for (int i = 0; i < s; i++) {
                 Term x = a.sub(i);
                 Term y = b.sub(i);
-                int d = x.compareTo(y);
-                if (d != 0) {
-                    return d;
+                if (x instanceof Variable && y instanceof Variable) {
+                    if (inequalVariableX == null && !x.equals(y)) {
+
+                        inequalVariableX = x;
+                        inequalVariableY = y;
+                    }
+                } else {
+                    int d = x.compareTo(y);
+                    if (d != 0) {
+                        return d;
+                    }
                 }
             }
-            return 0;
+
+
+            return inequalVariableX != null ? inequalVariableX.compareTo(inequalVariableY) : 0;
         }
+    }
+
+    default Op op() {
+        return null;
+    }
+
+    default boolean isSorted() {
+        int s = subs();
+        if (s < 2) return true;
+
+
+        for (int i = 1; i < s; i++) {
+            if (sub(i - 1).compareTo(sub(i)) >= 0)
+                return false;
+        }
+        return true;
     }
 
 //    /**
@@ -176,7 +183,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Iterator<Term> iterator() {
         throw new TODO();
     }
-
 
 
     default boolean subEquals(int i, /*@NotNull*/ Term x) {
@@ -395,8 +401,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 
-
-
     /*@NotNull*/
     default Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter) {
         List<Term> l = $.newArrayList(subs());
@@ -469,8 +473,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default int hashCodeSubterms() {
         return hashCode();
     }
-
-
 
 
     default boolean unifyLinearSimple(Subterms Y, /*@NotNull*/ Unify u) {
@@ -709,7 +711,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-
     default boolean recurseTerms(Predicate<Term> aSuperCompoundMust, Predicate<Term> whileTrue, Term parent) {
         return AND(s -> whileTrue.test(s) && s.recurseTerms(aSuperCompoundMust, whileTrue, parent));
     }
@@ -729,6 +730,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default int hashWith(Op op) {
         return hashWith(op.id);
     }
+
     default int hashWith(byte op) {
         return Util.hashCombine(this.hashCodeSubterms(), op);
     }
