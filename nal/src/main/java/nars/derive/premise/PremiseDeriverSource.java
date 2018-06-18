@@ -56,7 +56,6 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     /**
      * return this to being a inline evaluable functor
      */
-    @Deprecated
     static final IntroVars introVars = new IntroVars();
     /**
      * conditions which can be tested before unification
@@ -67,7 +66,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     private final MutableSet<PrediTerm> pre;
     protected final ImmutableSet<PrediTerm> PRE;
     protected final Occurrify.TaskTimeMerge time;
-    protected final boolean doIntroVars;
+    protected final boolean varIntro;
     protected final byte taskPunc;
     protected final Term postcons;
     protected final byte puncOverride;
@@ -357,6 +356,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         Occurrify.TaskTimeMerge time = Occurrify.mergeDefault;
 
         Term[] modifiers = Terms.sorted(postcons[1].arrayShared());
+        boolean varIntro = false;
         for (Term m: modifiers) {
             if (m.op() != Op.INH)
                 throw new RuntimeException("Unknown postcondition format: " + m);
@@ -366,6 +366,13 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
             switch (type.toString()) {
 
+                case "Also":
+                    switch (which.toString()) {
+                        case "VarIntro":
+                            varIntro = true;
+                            break;
+                    }
+                    break;
                 case "Punctuation":
                     switch (which.toString()) {
                         case "Question":
@@ -426,16 +433,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
         Term finalConcPattern = this.concPattern;
-        boolean doIntroVars;
-        {
-            Pair<Termed, Term> varIntroPattern = Functor.ifFunc(finalConcPattern, i -> i.equals(introVars.ref) ? introVars.ref : null);
-            if (varIntroPattern != null) {
-                doIntroVars = true;
-                finalConcPattern = varIntroPattern.getTwo().sub(0);
-            } else {
-                doIntroVars = false;
-            }
-        }
+
 
         {
             //add subIfUnify prefilter
@@ -524,7 +522,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
         this.truthify = Truthify.the(puncOverride, beliefTruthOp, goalTruthOp, projection, time);
         this.time = time;
-        this.doIntroVars = doIntroVars;
+        this.varIntro = varIntro;
         this.taskPunc = taskPunc;
 
         this.postcons = postcons[0];
@@ -559,7 +557,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         this.constraints = raw.constraints;
         this.pre = raw.pre;
         this.time = raw.time;
-        this.doIntroVars = raw.doIntroVars;
+        this.varIntro = raw.varIntro;
         this.taskPunc = raw.taskPunc;
         this.postcons = raw.postcons;
         this.puncOverride = raw.puncOverride;

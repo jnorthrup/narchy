@@ -50,8 +50,8 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
 
         PrediTerm<Derivation> conc = AndCondition.the(
                 new Termify(concPattern, this, truthify, time),
-                doIntroVars ?
-                        AndCondition.the(introVars, taskify)
+                varIntro ?
+                        AndCondition.the(taskify, introVars, taskify)
                         :
                         taskify
         );

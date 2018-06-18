@@ -50,8 +50,6 @@ abstract class TemporalStabilityTest {
     private long maxInput = ETERNAL;
 
     private void validate(Task t) {
-        if (t.isQuestionOrQuest())
-            return; //ignore. it is natural for it to be curious!!!!
 
         long ts = t.start();
         long te = Math.max(ts+t.term().dtRange(), t.end());
@@ -65,6 +63,8 @@ abstract class TemporalStabilityTest {
                     maxInput = te;
             }
         } else {
+            if (t.isQuestionOrQuest())
+                return; //ignore. it is natural for it to be curious!!!!
 
             if (ts < minInput || te > maxInput) {
                 System.err.println("  OOB: " + "\n" + t.proof() + "\n");

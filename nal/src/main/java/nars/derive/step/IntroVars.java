@@ -32,8 +32,8 @@ public final class IntroVars extends AbstractPred<Derivation> {
         )
             return false;
 
-        Map<Term, Term> changes = xy.getTwo();
-        changes.forEach((cx,cy)->d.untransform.put(cy, cx));
+//        Map<Term, Term> changes = xy.getTwo();
+//        changes.forEach((cx,cy)->d.untransform.put(cy, cx));
         d.derivedTerm = y;
 
         return true;

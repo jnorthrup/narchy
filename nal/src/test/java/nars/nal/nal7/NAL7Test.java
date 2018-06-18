@@ -2,6 +2,7 @@ package nars.nal.nal7;
 
 import nars.$;
 import nars.Narsese;
+import nars.Param;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -24,13 +25,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
-    private int cycles = 200;
+    private int cycles = 300;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         //test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(20);
+        test.nar.termVolumeMax.set(17);
         //test.nar.confMin.set(0.1f);
     }
 
@@ -1281,11 +1282,23 @@ public class NAL7Test extends NALTest {
 
     @Test
     void nal5_conditional_induction0Simple() {
-        TestNAR tester = test;
-        tester.believe("((x1 && a) ==>+2 c)");
-        tester.believe("((y1 && a) ==>+1 c)");
-        tester.mustBelieve(cycles * 4, "(x1 ==>+1 y1)", 1.00f, 0.45f);
-        tester.mustBelieve(cycles * 4, "(y1 ==>-1 x1)", 1.00f, 0.45f);
+        test.believe("((x1 && a) ==>+2 c)");
+        test.believe("((y1 && a) ==>+1 c)");
+        test.mustBelieve(cycles * 4, "(x1 ==>+1 y1)", 1.00f, 0.45f);
+        test.mustBelieve(cycles * 4, "(y1 ==>-1 x1)", 1.00f, 0.45f);
+    }
+
+    @Test public void testGetShiftWorkingRight() {
+        Param.DEBUG = true;
+        /*
+        WRONG:
+            $.16 (b &&+5 (--,b)). 1 %1.0;.40% {13: 1;2} ((%1,(%2==>%3),(--,is(%1,"==>"))),(subIfUnifiesAny(%3,%2,%1),((DeductionRecursive-->Belief),(Induction-->Goal),(TaskPlusBeliefDT-->Time))))
+              $.50 (a &&+5 (--,a)). 1 %1.0;.90% {1: 1}
+              $.10 ((a &&+5 (--,a))=|>(b &&+5 (--,b))). 1 %1.0;.44% {7: 1;2} ((%1,%2,(--,is(%1,"==>"))),((%2 ==>+- %1),((Induction-->Belief),(BeliefRelative-->Time))))
+         */
+        test.inputAt(1, "(a &&+5 (--,a)). |");
+        test.inputAt(1, "((a &&+5 (--,a))=|>(b &&+5 (--,b))). |");
+        test.mustNotOutput(cycles , "(b &&+5 (--,b))", BELIEF, 0f, 1f, 0f, 1f, (t) -> t!=6);
     }
 
 }

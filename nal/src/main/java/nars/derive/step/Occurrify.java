@@ -75,7 +75,7 @@ public class Occurrify extends TimeGraph {
     /**
      * temporary set for filtering duplicates
      */
-    private final Set<Event> seen = new UnifiedSet(Param.TEMPORAL_SOLVER_ITERATIONS * 2);
+    private final Set<Event> seen = new UnifiedSet(Param.TEMPORAL_SOLVER_ITERATIONS * 2, 0.99f);
     private final Set<Term> expandedUntransforms = new UnifiedSet<>();
     private final Set<Term> expanded = new UnifiedSet<>();
 
@@ -86,6 +86,10 @@ public class Occurrify extends TimeGraph {
     private long curTaskAt = XTERNAL, curBeliefAt = XTERNAL;
     private Termed curBelief;
     private Map<Term, Term> prevUntransform = Map.of();
+    private boolean curSingle;
+
+    /** re-used */
+    private final transient Set<Term> autoNegNext = new UnifiedSet<>(8, 0.99f);
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -134,7 +138,7 @@ public class Occurrify extends TimeGraph {
         return d.random;
     }
 
-    public void know(Task t, long when) {
+    public Event know(Task t, long when) {
         assert (when != TIMELESS);
 
 
@@ -142,9 +146,9 @@ public class Occurrify extends TimeGraph {
 
         long range;
         if (when == ETERNAL || t.isEternal() || (range = t.range() - 1) == 0) {
-            event(tt, when, true);
+            return event(tt, when, true);
         } else {
-            event(tt, when, when + range, true);
+            return event(tt, when, when + range, true);
         }
     }
 
@@ -157,7 +161,7 @@ public class Occurrify extends TimeGraph {
 
         Task task = d.task;
         Term taskTerm = task.term();
-        boolean single = d.concSingle;
+        final boolean single = d.concSingle;
         Task belief = !single ? d.belief : null;
         long beliefAt = single ? TIMELESS : d.beliefAt;
         long taskAt = d.taskAt;
@@ -165,17 +169,18 @@ public class Occurrify extends TimeGraph {
         Term beliefTerm = bb.term();
 
 
-        Set<Term> autoNeg;
+        Set<Term> autoNegNext = this.autoNegNext;
         if (pattern.hasAny(NEG)) {
-            if (pattern.containsRecursively(taskTerm) && pattern.containsRecursively(beliefTerm)) {
-                //dont need to autoNeg, these will be easy to find
-                autoNeg = null;
-            } else {
-                autoNeg = new UnifiedSet<>(4);
+//            if (pattern.containsRecursively(taskTerm.neg()) && (!single || pattern.containsRecursively(beliefTerm))) {
+//                //dont need to autoNeg, these will be easy to find
+//                //autoNeg = null;
+//            } else {
+            {
+                autoNegNext.clear();
 
                 Predicate<Term> hasNeg = x -> x.hasAny(NEG);
 
-                Set<Term> nn = autoNeg;
+                Set<Term> nn = autoNegNext;
                 pattern.recurseTerms(hasNeg, y -> {
                     if (y.op()==NEG)
                         nn.add(y);
@@ -183,22 +188,22 @@ public class Occurrify extends TimeGraph {
 
                 Predicate<Term> eliminate = y-> y.op() != NEG || (!nn.remove(y) || !nn.isEmpty());
                 taskTerm.recurseTerms(hasNeg,eliminate, null);
-                if (autoNeg.isEmpty()) {
-                    autoNeg = null; //all eliminated
+                if (autoNegNext.isEmpty()) {
+                    autoNegNext = null; //all eliminated
                 } else {
                     beliefTerm.recurseTerms(hasNeg, eliminate, null);
-                    if (autoNeg.isEmpty()) {
-                        autoNeg = null; //all eliminated
+                    if (autoNegNext.isEmpty()) {
+                        autoNegNext = null; //all eliminated
                     } else {
                         //TODO more cases that eliminate the need for autoNeg
-                        autoNeg.forEach(t -> {
-
-                        });
+//                        autoNeg.forEach(t -> {
+//
+//                        });
                     }
                 }
             }
         } else {
-            autoNeg = null;
+            autoNegNext = null;
         }
 
 
@@ -215,7 +220,12 @@ public class Occurrify extends TimeGraph {
 
 
         boolean reUse =
-                Objects.equals(autoNeg, this.autoNeg) && this.curBeliefAt == beliefAt && this.curTaskAt == taskAt && Objects.equals(d.task, curTask) && Objects.equals(bb, curBelief);
+                Objects.equals(autoNeg, this.autoNeg) &&
+                this.curSingle == single &&
+                this.curBeliefAt == beliefAt &&
+                this.curTaskAt == taskAt &&
+                Objects.equals(d.task, curTask) &&
+                Objects.equals(bb, curBelief);
 
         //determine re-usability:
         Map<Term, Term> nextUntransform = d.untransform;
@@ -235,14 +245,33 @@ public class Occurrify extends TimeGraph {
             clear();
             expanded.clear();
             expandedUntransforms.clear();
-            this.autoNeg = autoNeg;
+            this.autoNeg = autoNegNext!=null ? ((UnifiedSet<Term>) autoNegNext).toImmutable() : null;
             this.curBeliefAt = beliefAt;
             this.curTaskAt = taskAt;
+            this.curSingle = single;
 
             if (single) {
-                know(task, taskAt);
-//                if (!task.term().equals(bb))
-//                    know((Term)bb);
+                Event s = know(task, taskAt);
+                if (taskTerm.op()==IMPL) {
+                    /* HACK since impl absolute time are not linked,
+                       link here to reify the implication subj as its own event in the single case
+                       this will in turn link the predicate if it is temporally calculable.
+                     */
+                    Term t0 = taskTerm.sub(0);
+                    know(t0, taskAt);
+                    if (taskAt!=ETERNAL && taskAt!=XTERNAL) {
+                        int tdt = taskTerm.dt();
+                        if (tdt != DTERNAL && tdt != XTERNAL) {
+                            know(taskTerm.sub(1), taskAt + tdt + t0.dtRange());
+                        }
+                    }
+                }
+//                if (d.concPunc == QUESTION || d.concPunc == QUEST) {
+//                    //if doing this then punctuation must be a caching condition
+//                    //use the beliefTerm in question/quest cases because there could be timing information
+//                    //but in belief/goal derivations, i consider such temporal info potentially interfering with purely single premise derivation
+//                    know(beliefTerm);
+//                }
             } else {
                 know(task, taskAt);
 
@@ -479,7 +508,8 @@ public class Occurrify extends TimeGraph {
         TaskRelative() {
             @Override
             public Pair<Term, long[]> solve(Derivation d, Term x) {
-                return solveDT(d, x, d.occ(x));
+                Pair<Term, long[]> p = solveDT(d, x, d.occ(x));
+                return p;
             }
 
             @Override
@@ -611,7 +641,7 @@ public class Occurrify extends TimeGraph {
 
 
             int bdt = d.beliefTerm.dt();
-            if (bdt != DTERNAL && bdt != 0 && bdt != XTERNAL) {
+            if (bdt != DTERNAL && bdt != XTERNAL) {
 
                 long[] o = p.getTwo();
                 long s = o[0];

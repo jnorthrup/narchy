@@ -1,4 +1,3 @@
-
 package nars.perf;
 
 import nars.NAR;
@@ -25,31 +24,32 @@ public class NARBenchmark {
     String cycles;
 
 
-
-
-    @Param({"12", "24" })
+    @Param({"12", "24"})
     private
     String termVolumeMax;
 
     private long concepts;
     private NAR n;
 
+    public static void main(String[] args) throws RunnerException {
+        perf(NARBenchmark.class, (o) -> {
+            o.warmupIterations(1);
+            o.measurementIterations(2);
+
+            o.forks(1);
+
+        });
+    }
+
     @Setup
     public void start() {
         Function<Term[], Subterms> h = null;
 
 
-
-
-
-
-
         n = NARS.tmp();
         n.termVolumeMax.set(Integer.parseInt(termVolumeMax));
 
-        
-        
-        
+
     }
 
     @TearDown
@@ -57,56 +57,11 @@ public class NARBenchmark {
         concepts = n.concepts.size();
     }
 
-
-
-
-
-
-
-
-
     @Benchmark
     @BenchmarkMode(Mode.AverageTime)
     public void deductiveMeshTest1() {
         new DeductiveMeshTest(n, 8, 8);
         n.run(Integer.parseInt(cycles));
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static void main(String[] args) throws RunnerException {
-        perf(NARBenchmark.class,(o)->{
-            o.warmupIterations(1);
-            o.measurementIterations(2);
-            
-            o.forks(1);
-
-        });
     }
 
 }
