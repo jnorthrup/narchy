@@ -21,19 +21,8 @@ public abstract class PreDerivation extends Unify {
     public Term beliefTerm;
     public byte taskPunc;
 
-
-
-
     public Truth taskTruth;
     public Truth beliefTruth, beliefTruthDuringTask;
-
-
-    public byte _taskOp;
-    public byte _beliefOp;
-
-    public int _taskStruct;
-    public int _beliefStruct;
-
 
     /**
      * choices mapping the available post targets
@@ -45,12 +34,6 @@ public abstract class PreDerivation extends Unify {
         super(type, random, stackMax, initialTTL, termMap);
         varSymmetric = false;
     }
-
-
-
-
-
-
 
     public boolean hasBeliefTruth() {
         return beliefTruth!=null || beliefTruthDuringTask!=null;

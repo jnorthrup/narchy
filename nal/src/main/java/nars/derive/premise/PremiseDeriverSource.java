@@ -1,6 +1,5 @@
 package nars.derive.premise;
 
-import com.google.common.collect.Iterables;
 import jcog.TODO;
 import nars.$;
 import nars.Narsese;
@@ -23,9 +22,9 @@ import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.match.Ellipsislike;
-import nars.unify.op.TaskBeliefHas;
-import nars.unify.op.TaskBeliefIs;
+import nars.unify.op.TaskBeliefMatch;
 import nars.unify.op.TaskPunctuation;
+import nars.unify.op.TermMatch;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
@@ -264,7 +263,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
                 case "subsMin":
-                    subsMin(X,$.intValue(Y));
+                    subsMin(X,(short)$.intValue(Y));
                     break;
 
                 case "notImaged":
@@ -273,16 +272,16 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
                 case "notSet":
                     /** deprecated soon */
-                    termIsNot(X, Op.SetBits);
+                    isNot(X, Op.SetBits);
                     break;
 
 
                 case "is": {
                     Op o = Op.the($.unquote(Y));
                     if (!negated) {
-                        termIs(X, o);
+                        is(X, o);
                     } else {
-                        termIsNot(X, o.bit);
+                        isNot(X, o.bit);
                         negationApplied = true;
                     }
 
@@ -452,15 +451,15 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
             }
         }
         if (!taskIsPatVar) {
-            pre.add(new TaskBeliefIs(to, true, false));
-            pre.addAll(TaskBeliefHas.get(true, taskPattern1.structure(), true));
+            pre.add(new TaskBeliefMatch(new TermMatch.Is(to), true, false, true, true));
+            //pre.addAll(TaskBeliefHas.get(true, taskPattern1.structure(), true));
         }
         if (!belIsPatVar) {
 //            if (to == bo) {
 //                //pre.add(AbstractPatternOp.TaskBeliefOpEqual); //<- probably not helpful and just misaligns the trie
 //            } else {
-            pre.add(new TaskBeliefIs(bo, false, true));
-            pre.addAll(TaskBeliefHas.get(false, beliefPattern1.structure(), true));
+            pre.add(new TaskBeliefMatch(new TermMatch.Is(bo), false, true, true, true));
+            //pre.addAll(TaskBeliefHas.get(false, beliefPattern1.structure(), true));
 //            }
         }
 
@@ -613,7 +612,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     void eventPrefilter(Collection<PrediTerm> pres, Term conj, Term taskPattern, Term beliefPattern) {
 
 
-        termIs(conj, CONJ);
+        is(conj, CONJ);
 
 //        boolean isTask = taskPattern.equals(conj);
 //        boolean isBelief = beliefPattern.equals(conj);
@@ -656,41 +655,54 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
 
-    void termIs(Term x, Op struct) {
+    private void is(Term x, Op struct) {
+        filter(x, new TermMatch.Is(struct), true);
+    }
+    private void isNot(Term x, int struct) {
+        filter(x, new TermMatch.Is(struct), false);
+    }
+    private void subsMin(Term x, short subsMin) {
+        filter(x, new TermMatch.SubsMin(subsMin), true);
+    }
+
+    private void filter(Term x, TermMatch m) {
+        filter(x, m, true);
+    }
+
+    private void filter(Term x, TermMatch m, boolean trueOrFalse) {
         filter(x, (pt, pb)->
-                TaskBeliefIs.preOrConstraint(pre, pt, pb, struct.bit, true),
+                TaskBeliefMatch.pre(pre, pt, pb, m, trueOrFalse),
 
                 (inTask,inBelief)->{
+
                     if (inTask)
-                        pre.addAll(TaskBeliefHas.get(true, struct.bit, true));
+                        TaskBeliefMatch.preSuper(pre, true, m, trueOrFalse);
                     if (inBelief)
-                        pre.addAll(TaskBeliefHas.get(false, struct.bit, true));
-                    constraints.add(new OpIs(x, struct));
+                        TaskBeliefMatch.preSuper(pre, false, m, trueOrFalse);
+
+                    if (!inTask && !inBelief) {
+                        throw new TODO(); //can this happen?
+                    }
+                    constraints.add(m.constraint(x));
                 }
         );
     }
 
-    private void termIsNot(Term x, int struct) {
-        filter(x, (pt, pb)->{
-            TaskBeliefIs.preOrConstraint(pre, pt, pb, struct, false);
-        }, (inTask, inBelief) -> {
-            throw new TODO();
-        });
-    }
 
-    void subsMin(Term X, int min) {
-        if (taskPattern.equals(X)) {
-            pre.add(new SubsMin.SubsMinProto(true, min));
-        } else if (beliefPattern.equals(X)) {
-            pre.add(new SubsMin.SubsMinProto(false, min));
-        } else {
-            constraints.add(new SubsMin(X, min));
-        }
 
-        //TODO
-        //filter(x, (pt, pb)->
-
-    }
+//    void subsMin(Term X, int min) {
+//        if (taskPattern.equals(X)) {
+//            pre.add(new SubsMin.SubsMinProto(true, min));
+//        } else if (beliefPattern.equals(X)) {
+//            pre.add(new SubsMin.SubsMinProto(false, min));
+//        } else {
+//            constraints.add(new SubsMin(X, min));
+//        }
+//
+//        //TODO
+//        //filter(x, (pt, pb)->
+//
+//    }
     private void termIsNotImaged(Term x) {
         if (!taskPattern.containsRecursively(x) && !taskPattern.equals(x))
             throw new TODO("expected/tested occurrence in task concPattern ");
@@ -701,23 +713,23 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
 
-    private void termHasNot(Term taskPattern, Term beliefPattern, Collection<PrediTerm> pre, Set<MatchConstraint> constraints, Term t, int structure) {
-
-        //TODO: filter(x, )
-
-        boolean inTask = taskPattern.equals(t) || taskPattern.containsRecursively(t);
-        boolean inBelief = beliefPattern.equals(t) || beliefPattern.containsRecursively(t);
-        if (inTask || inBelief) {
-            if (inTask)
-                pre.addAll(TaskBeliefHas.get(true, structure, false));
-            if (inBelief)
-                pre.addAll(TaskBeliefHas.get(false, structure, false));
-        } else {
-
-            throw new TODO();
-        }
-
-    }
+//    private void termHasNot(Term taskPattern, Term beliefPattern, Collection<PrediTerm> pre, Set<MatchConstraint> constraints, Term t, int structure) {
+//
+////        //TODO: filter(x, )
+////
+////        boolean inTask = taskPattern.equals(t) || taskPattern.containsRecursively(t);
+////        boolean inBelief = beliefPattern.equals(t) || beliefPattern.containsRecursively(t);
+////        if (inTask || inBelief) {
+////            if (inTask)
+////                pre.addAll(TaskBeliefHas.get(true, structure, false));
+////            if (inBelief)
+////                pre.addAll(TaskBeliefHas.get(false, structure, false));
+////        } else {
+////
+////            throw new TODO();
+////        }
+//
+//    }
 
     private static void neq(Set<MatchConstraint> constraints, Term x, Term y) {
         constraints.add(new NotEqualConstraint(x, y));

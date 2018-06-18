@@ -348,8 +348,6 @@ public class Derivation extends PreDerivation {
 
             this.task = new TaskWithTerm(taskTerm, _task);
 
-            this._taskStruct = taskTerm.structure();
-            this._taskOp = taskTerm.op().id;
         }
 
         long tAt = _task.start();
@@ -398,8 +396,7 @@ public class Derivation extends PreDerivation {
         }
 
         assert (beliefTerm != null) : (_beliefTerm + " could not be anonymized");
-        this._beliefStruct = beliefTerm.structure();
-        this._beliefOp = beliefTerm.op().id;
+
 
 
         this.taskBeliefTimeIntersects = this._belief == null || this._task.intersectsTime(this._belief);

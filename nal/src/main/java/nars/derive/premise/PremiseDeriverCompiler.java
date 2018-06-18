@@ -10,7 +10,8 @@ import nars.term.control.AndCondition;
 import nars.term.control.Fork;
 import nars.term.control.OpSwitch;
 import nars.term.control.PrediTerm;
-import nars.unify.op.TaskBeliefIs;
+import nars.unify.op.TaskBeliefMatch;
+import nars.unify.op.TermMatch;
 import nars.unify.op.UnifyTerm;
 import nars.util.term.TermTrie;
 import org.apache.commons.lang3.ArrayUtils;
@@ -314,18 +315,22 @@ public enum PremiseDeriverCompiler {
 
     private static Set<PrediTerm<Derivation>> factorSubOpToSwitch(Set<PrediTerm<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
-            Map<TaskBeliefIs, PrediTerm<Derivation>> cases = new UnifiedMap(8);
+            /** TermMatch as field of TaskBeliefMatch */
+            Map<TermMatch.Is, PrediTerm<Derivation>> cases = new UnifiedMap(8);
             Set<PrediTerm<Derivation>> removed = new UnifiedSet(8);
             bb.forEach(p -> {
                 if (p instanceof AndCondition) {
                     AndCondition ac = (AndCondition) p;
                     ac.forEach(x -> {
-                        if (x instanceof TaskBeliefIs) {
-                            TaskBeliefIs so = (TaskBeliefIs) x;
-                            if (so.isOrIsnt && so.task == taskOrBelief && so.belief == !taskOrBelief) {
-                                PrediTerm acw = ac.without(so);
-                                if (null == cases.putIfAbsent(so, acw)) {
-                                    removed.add(p);
+                        if (x instanceof TaskBeliefMatch) {
+                            TaskBeliefMatch tb = (TaskBeliefMatch) x;
+                            TermMatch m = tb.match;
+                            if (m instanceof TermMatch.Is) {
+                                if (tb.trueOrFalse && tb.task == taskOrBelief && tb.belief == !taskOrBelief) {
+                                    PrediTerm acw = ac.without(tb);
+                                    if (null == cases.putIfAbsent((TermMatch.Is)m, acw)) {
+                                        removed.add(p);
+                                    }
                                 }
                             }
                         }

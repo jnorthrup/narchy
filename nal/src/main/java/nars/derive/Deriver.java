@@ -75,7 +75,7 @@ abstract public class Deriver extends Causable {
     }
 
     public Deriver(Consumer<Predicate<Activate>> source, Consumer<Collection<Task>> target, Set<PremiseDeriverProto> rules, NAR nar) {
-        this(source, target, PremiseDeriverCompiler.the(rules, null), nar);
+        this(source, target, PremiseDeriverCompiler.the(rules), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
