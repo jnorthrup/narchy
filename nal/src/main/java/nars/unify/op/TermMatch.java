@@ -19,9 +19,12 @@ abstract public class TermMatch  {
     /** term representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms */
     public abstract Term param();
 
-    public MatchConstraint constraint(Term x) {
-        return new MyMatchConstraint(x);
+    public MatchConstraint constraint(Term x, boolean trueOrFalse) {
+        return new MyMatchConstraint(x, trueOrFalse);
     }
+
+    public abstract float cost();
+
 
 
     /** is the op one of the true bits of the provide vector ("is any") */
@@ -39,6 +42,11 @@ abstract public class TermMatch  {
         @Override
         public Term param() {
             return Op.strucTerm(struct);
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
         }
 
         @Override
@@ -70,6 +78,11 @@ abstract public class TermMatch  {
         }
 
         @Override
+        public float cost() {
+            return 0.11f;
+        }
+
+        @Override
         public boolean test(Term term) {
             return term.hasAny(struct);
         }
@@ -95,12 +108,20 @@ abstract public class TermMatch  {
         public boolean test(Term term) {
             return term.subs() >= minSubs;
         }
+
+        @Override
+        public float cost() {
+            return 0.15f;
+        }
     }
 
     private final class MyMatchConstraint extends MatchConstraint {
 
-        MyMatchConstraint(Term x) {
+        private final boolean trueOrFalse;
+
+        MyMatchConstraint(Term x, boolean trueOrFalse) {
             super(x, TermMatch.this.getClass().getSimpleName(), TermMatch.this.param());
+            this.trueOrFalse = trueOrFalse;
         }
 
         @Override
@@ -110,7 +131,7 @@ abstract public class TermMatch  {
 
         @Override
         public boolean invalid(Term y, Unify f) {
-            return TermMatch.this.test(y);
+            return TermMatch.this.test(y)==trueOrFalse;
         }
     }
 }

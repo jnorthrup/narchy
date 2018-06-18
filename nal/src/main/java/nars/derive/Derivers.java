@@ -11,7 +11,7 @@ import java.util.*;
 public class Derivers {
 
     /** HACK range is inclusive */
-    public static Set<String> standard(int minLevel, int maxLevel, String... otherFiles) {
+    private static Set<String> standard(int minLevel, int maxLevel, String... otherFiles) {
         Set<String> files = new TreeSet();
         for (int level = minLevel; level <= maxLevel; level++) {
             switch (level) {
@@ -80,7 +80,7 @@ public class Derivers {
         return files(nar, List.of(filename));
     }
 
-    public static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
+    private static PremiseDeriverRuleSet files(NAR nar, Collection<String> filename) {
         return PremiseDeriverRuleSet.files(nar, filename);
     }
     public static PremiseDeriverRuleSet parse(NAR nar, String... rules) {

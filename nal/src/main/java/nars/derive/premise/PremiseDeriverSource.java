@@ -22,7 +22,7 @@ import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.match.Ellipsislike;
-import nars.unify.op.TaskBeliefMatch;
+import nars.term.match.TermMatchPred;
 import nars.unify.op.TaskPunctuation;
 import nars.unify.op.TermMatch;
 import nars.util.term.transform.TermTransform;
@@ -33,7 +33,6 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -51,8 +50,8 @@ import static nars.unify.op.TaskPunctuation.Goal;
  */
 public class PremiseDeriverSource extends ProxyTerm implements Function<PremisePatternIndex, PremiseDeriverProto> {
 
-    static final Pattern ruleImpl = Pattern.compile("\\|\\-");
-    public final String source;
+    private static final Pattern ruleImpl = Pattern.compile("\\|\\-");
+    private final String source;
     public final Truthify truthify;
     /**
      * return this to being a inline evaluable functor
@@ -83,7 +82,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
     private static final PremisePatternIndex INDEX = new PremisePatternIndex();
 
-    public PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
+    private PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
         super(
                 INDEX.pattern($.pFast(parseRuleComponents(ruleSrc))
                         .transform(new UppercaseAtomsToPatternVariables()))
@@ -220,36 +219,52 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
                 case "eventOf":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern);
+
+
+                    match(X, new TermMatch.Is(CONJ));
+
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event));
                     break;
 
                 case "eventOfNeg":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern);
+
+
+                    match(X, new TermMatch.Is(CONJ));
+
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, -1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, -1));
                     break;
 
                 case "eventOfPosOrNeg":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern);
+
+
+                    match(X, new TermMatch.Is(CONJ));
+
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
                     break;
 
                 case "eventsOf":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern);
+
+
+                    match(X, new TermMatch.Is(CONJ));
 
                     constraints.add(new SubOfConstraint(X, Y, false, false, Events, 1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Events, 1));
                     break;
 
                 case "eventCommon":
-                    eventPrefilter(pre, X, taskPattern, beliefPattern);
-                    eventPrefilter(pre, Y, taskPattern, beliefPattern);
+
+
+                    match(X, new TermMatch.Is(CONJ));
+
+
+                    match(Y, new TermMatch.Is(CONJ));
+
                     constraints.add(new CommonSubEventConstraint(X, Y));
                     constraints.add(new CommonSubEventConstraint(Y, X));
                     break;
@@ -261,7 +276,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
                 case "subsMin":
-                    subsMin(X,(short)$.intValue(Y));
+                    match(X, new TermMatch.SubsMin((short)$.intValue(Y)));
                     break;
 
                 case "notImaged":
@@ -270,18 +285,18 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
                 case "notSet":
                     /** deprecated soon */
-                    isNot(X, Op.SetBits);
+                    matchNot(X, new TermMatch.Is(Op.SetBits));
                     break;
 
 
                 case "is": {
-                    is(X, Op.the($.unquote(Y)), !negated);
+                    match(X, new TermMatch.Is(Op.the($.unquote(Y))), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
                 }
                 case "has": {
-                    has(X, Op.the($.unquote(Y)), !negated);
+                    match(X, new TermMatch.Has(Op.the($.unquote(Y))), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
@@ -450,14 +465,14 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
             }
         }
         if (!taskIsPatVar) {
-            pre.add(new TaskBeliefMatch(new TermMatch.Is(to), true, false, true, true));
+            pre.add(new TermMatchPred(new TermMatch.Is(to), true, true, TaskTerm));
             //pre.addAll(TaskBeliefHas.get(true, taskPattern1.structure(), true));
         }
         if (!belIsPatVar) {
 //            if (to == bo) {
 //                //pre.add(AbstractPatternOp.TaskBeliefOpEqual); //<- probably not helpful and just misaligns the trie
 //            } else {
-            pre.add(new TaskBeliefMatch(new TermMatch.Is(bo), false, true, true, true));
+            pre.add(new TermMatchPred(new TermMatch.Is(bo),  true, true, BeliefTerm));
             //pre.addAll(TaskBeliefHas.get(false, beliefPattern1.structure(), true));
 //            }
         }
@@ -560,7 +575,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
     }
 
-    static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
+    private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
 
 
         String[] ab = ruleImpl.split(src);
@@ -580,55 +595,30 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         return Op.terms.subtermsInstance(a, b);
     }
 
+    void matchSuper(boolean taskOrBelief, TermMatch m, boolean trueOrFalse) {
+        pre.add(new TermMatchPred(m, trueOrFalse, false, TaskOrBelief(taskOrBelief)));
+    }
+
+
+    void match(boolean taskOrBelief, byte[] path, TermMatch m, boolean isOrIsnt) {
+        if (path.length == 0) {
+            //root
+            pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief)));
+        } else {
+            //subterm
+            pre.add(new TermMatchPred.Subterm(path, m, isOrIsnt, TaskOrBelief(taskOrBelief)));
+        }
+    }
+
     @Override
     public PremiseDeriverProto apply(PremisePatternIndex i) {
         return new PremiseDeriverProto(this, i);
     }
 
-    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform {
 
-        public UppercaseAtomsToPatternVariables() {
-            super(8);
-        }
-
-        @Override
-        public Term transformAtomic(Atomic atomic) {
-            if (atomic instanceof Atom) {
-                if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) {
-                    String name = atomic.toString();
-                    if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return this.computeIfAbsent(name, (n) -> $.varPattern(1 + this.size()));
-
-                    }
-                }
-            }
-            return atomic;
-        }
-
-    }
-
-
-    void eventPrefilter(Collection<PrediTerm> pres, Term conj, Term taskPattern, Term beliefPattern) {
-
-
-        is(conj, CONJ, true);
-
-//        boolean isTask = taskPattern.equals(conj);
-//        boolean isBelief = beliefPattern.equals(conj);
-//        if (isTask || isBelief)
-//            pres.add(new TaskBeliefOp(CONJ, isTask, isBelief));
-//        boolean inTask = !isTask && taskPattern.containsRecursively(conj);
-//        boolean inBelief = !isBelief && beliefPattern.containsRecursively(conj);
-//        if (inTask || inBelief) {
-//            pres.add(new TaskBeliefHasOrHasnt(true, CONJ.bit, isTask || inTask, isBelief || inBelief));
-//        }
-    }
-
-
-
-    private void filter(Term x,
-                               BiConsumer<byte[], byte[]> preDerivationExactFilter,
-                               BiConsumer<Boolean, Boolean> preDerivationSuperFilter /* task,belief*/
+    private void match(Term x,
+                       BiConsumer<byte[], byte[]> preDerivationExactFilter,
+                       BiConsumer<Boolean, Boolean> preDerivationSuperFilter /* task,belief*/
     ) {
 
 
@@ -654,39 +644,31 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
 
-    private void is(Term x, Op struct, boolean trueOrFalse) {
-        filter(x, new TermMatch.Is(struct), trueOrFalse);
-    }
-    private void has(Term x, Op struct, boolean trueOrFalse) {
-        filter(x, new TermMatch.Has(struct), trueOrFalse);
-    }
-    private void isNot(Term x, int struct) {
-        filter(x, new TermMatch.Is(struct), false);
-    }
-    private void subsMin(Term x, short subsMin) {
-        filter(x, new TermMatch.SubsMin(subsMin), true);
+    private void match(Term x, TermMatch m) {
+        match(x, m, true);
     }
 
-    private void filter(Term x, TermMatch m) {
-        filter(x, m, true);
+    private void matchNot(Term x, TermMatch m) {
+        match(x, m, false);
     }
 
-    private void filter(Term x, TermMatch m, boolean trueOrFalse) {
-        filter(x, (pt, pb)->
-                TaskBeliefMatch.pre(pre, pt, pb, m, trueOrFalse),
+    private void match(Term x, TermMatch m, boolean trueOrFalse) {
+        match(x, (pathInTask, pathInBelief)-> {
 
-                (inTask,inBelief)->{
+                if (pathInTask != null)
+                    match(true, pathInTask, m, trueOrFalse);
+                if (pathInBelief != null)
+                    match(false, pathInBelief, m, trueOrFalse);
 
-                    if (inTask)
-                        TaskBeliefMatch.preSuper(pre, true, m, trueOrFalse);
-                    if (inBelief)
-                        TaskBeliefMatch.preSuper(pre, false, m, trueOrFalse);
+            }, (inTask, inBelief)->{
 
-                    if (!inTask && !inBelief) {
-                        throw new TODO(); //can this happen?
-                    }
-                    constraints.add(m.constraint(x));
-                }
+                if (inTask)
+                    matchSuper(true, m, trueOrFalse);
+                if (inBelief)
+                    matchSuper(false, m, trueOrFalse);
+
+                constraints.add(m.constraint(x, trueOrFalse));
+            }
         );
     }
 
@@ -746,7 +728,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         private final byte[] ypInB;
         private final boolean isStrict;
 
-        public UnifyPreFilter(byte[] xpInT, byte[] xpInB, byte[] ypInT, byte[] ypInB, boolean isStrict) {
+        UnifyPreFilter(byte[] xpInT, byte[] xpInB, byte[] ypInT, byte[] ypInB, boolean isStrict) {
             super($.func("unifyPreFilter", $.p(xpInT), $.p(xpInB), $.p(ypInT), $.p(ypInB)));
             this.xpInT = xpInT;
             this.xpInB = xpInB;
@@ -799,7 +781,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         }
     }
 
-    protected static class DoublePremiseRequired extends AbstractPred<Derivation> {
+    static class DoublePremiseRequired extends AbstractPred<Derivation> {
 
         final static Atomic key = (Atomic) $.the("DoublePremise");
         final boolean ifBelief, ifGoal, ifQuestionOrQuest;
@@ -841,7 +823,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         }
     }
 
-    protected static final class SubOf extends AbstractPred<Derivation> {
+    static final class SubOf extends AbstractPred<Derivation> {
         private final Term y;
 
         boolean task;
@@ -870,11 +852,11 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
 
-    protected static class NotImaged extends AbstractPred<Derivation> {
+    static class NotImaged extends AbstractPred<Derivation> {
 
         private final byte[] pp;
 
-        public NotImaged(Term x, byte[] pp) {
+        NotImaged(Term x, byte[] pp) {
             super($.func("notImaged", x));
             this.pp = pp;
         }
@@ -889,6 +871,60 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
             Term prod = o.taskTerm.subPath(pp);
             return prod.op() == PROD && !Image.imaged(prod);
         }
+    }
+
+
+    private static Function<PreDerivation, Term> TaskOrBelief(boolean taskOrBelief) {
+        return taskOrBelief ? TaskTerm : BeliefTerm;
+    }
+
+    protected final static Function<PreDerivation,Term> TaskTerm = new Function<PreDerivation,Term>() {
+
+        @Override
+        public String toString() {
+            return "taskTerm";
+        }
+
+        @Override
+        public Term apply(PreDerivation d) {
+            return d.taskTerm;
+        }
+    };
+
+    protected final static Function<PreDerivation,Term> BeliefTerm = new Function<PreDerivation,Term>() {
+
+        @Override
+        public String toString() {
+            return "beliefTerm";
+        }
+
+        @Override
+        public Term apply(PreDerivation d) {
+            return d.beliefTerm;
+        }
+    };
+
+
+    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform {
+
+        UppercaseAtomsToPatternVariables() {
+            super(8);
+        }
+
+        @Override
+        public Term transformAtomic(Atomic atomic) {
+            if (atomic instanceof Atom) {
+                if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) {
+                    String name = atomic.toString();
+                    if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
+                        return this.computeIfAbsent(name, (n) -> $.varPattern(1 + this.size()));
+
+                    }
+                }
+            }
+            return atomic;
+        }
+
     }
 
 }

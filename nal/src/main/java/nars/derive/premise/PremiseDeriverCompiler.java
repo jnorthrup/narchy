@@ -10,7 +10,7 @@ import nars.term.control.AndCondition;
 import nars.term.control.Fork;
 import nars.term.control.OpSwitch;
 import nars.term.control.PrediTerm;
-import nars.unify.op.TaskBeliefMatch;
+import nars.term.match.TermMatchPred;
 import nars.unify.op.TermMatch;
 import nars.unify.op.UnifyTerm;
 import nars.util.term.TermTrie;
@@ -25,6 +25,9 @@ import org.roaringbitmap.RoaringBitmap;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Function;
+
+import static nars.derive.premise.PremiseDeriverSource.BeliefTerm;
+import static nars.derive.premise.PremiseDeriverSource.TaskTerm;
 
 /**
  * high-level interface for compiling premise deriver rules
@@ -322,11 +325,11 @@ public enum PremiseDeriverCompiler {
                 if (p instanceof AndCondition) {
                     AndCondition ac = (AndCondition) p;
                     ac.forEach(x -> {
-                        if (x instanceof TaskBeliefMatch) {
-                            TaskBeliefMatch tb = (TaskBeliefMatch) x;
+                        if (x instanceof TermMatchPred) {
+                            TermMatchPred tb = (TermMatchPred) x;
                             TermMatch m = tb.match;
                             if (m instanceof TermMatch.Is) {
-                                if (tb.trueOrFalse && tb.task == taskOrBelief && tb.belief == !taskOrBelief) {
+                                if ((taskOrBelief && tb.resolve==TaskTerm) || (!taskOrBelief && tb.resolve==BeliefTerm)) {
                                     PrediTerm acw = ac.without(tb);
                                     if (null == cases.putIfAbsent((TermMatch.Is)m, acw)) {
                                         removed.add(p);
