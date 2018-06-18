@@ -9,6 +9,7 @@ import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFuncti
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
 abstract public class AbstractUnitSubterm implements Subterms {
@@ -57,16 +58,6 @@ abstract public class AbstractUnitSubterm implements Subterms {
     @Override
     public int hashCode() {
         return Util.hashCombine1(sub());
-    }
-
-    @Override
-    public int volume() {
-        return 1+sub().volume();
-    }
-
-    @Override
-    public int complexity() {
-        return 1+sub().complexity();
     }
 
     @Override
@@ -122,6 +113,11 @@ abstract public class AbstractUnitSubterm implements Subterms {
     @Override
     public Iterator<Term> iterator() {
         return com.google.common.collect.Iterators.singletonIterator(sub());
+    }
+
+    @Override
+    public int sum(ToIntFunction<Term> value) {
+        return value.applyAsInt(sub());
     }
 
     @Override

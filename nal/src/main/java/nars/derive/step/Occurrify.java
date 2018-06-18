@@ -24,7 +24,10 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Random;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -404,6 +407,26 @@ public class Occurrify extends TimeGraph {
             }
 
         },
+
+        /** happens in current present focus. no projection */
+        TaskInstant() {
+            @Override
+            public Pair<Term, long[]> solve(Derivation d, Term x) {
+
+                Pair<Term, long[]> p = Task.solve(d, x);
+                if (p != null) {
+                    System.arraycopy(d.nar.timeFocus(), 0, p.getTwo(), 0, 2);
+                }
+                return p;
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                return new long[]{d.task.start(), d.task.end()};
+            }
+
+        },
+
 //        Belief() {
 //            @Override
 //            public Pair<Term, long[]> solve(Derivation d, Term x) {

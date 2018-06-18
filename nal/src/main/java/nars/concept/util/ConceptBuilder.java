@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
 import static nars.Op.DIFFi;
 import static nars.Op.INH;
 

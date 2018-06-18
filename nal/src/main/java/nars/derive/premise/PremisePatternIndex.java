@@ -1,17 +1,15 @@
 package nars.derive.premise;
 
 import jcog.TODO;
+import nars.Builtin;
 import nars.NAR;
 import nars.Op;
-import nars.derive.Derivation;
 import nars.index.concept.MapConceptIndex;
 import nars.subterm.Subterms;
-import nars.term.Compound;
-import nars.term.Term;
-import nars.term.Termed;
-import nars.term.Variable;
+import nars.term.*;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.compound.LightDTCompound;
-import nars.term.control.PrediTerm;
 import nars.unify.Unify;
 import nars.unify.constraint.MatchConstraint;
 import nars.unify.match.Ellipsis;
@@ -34,7 +32,7 @@ import static nars.time.Tense.XTERNAL;
 public class PremisePatternIndex extends MapConceptIndex {
 
     //final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
-    private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
+//    private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
     private final Map<Term, MatchConstraint> constra = new HashMap<>(1024);
 
     public PremisePatternIndex() {
@@ -140,13 +138,13 @@ public class PremisePatternIndex extends MapConceptIndex {
      * returns an normalized, optimized pattern term for the given compound
      */
     public /*@NotNull*/ Term pattern(Term x) {
-        return get(x.transform(new PremiseRuleVariableNormalization()), true).term();
+        return get(x.transform(new PremiseRuleNormalization()), true).term();
     }
 
-    public final PrediTerm<Derivation> intern(PrediTerm<Derivation> x) {
-        PrediTerm<Derivation> y = pred.putIfAbsent(x.term(), x);
-        return y != null ? y : x;
-    }
+//    public final PrediTerm<Derivation> intern(PrediTerm<Derivation> x) {
+//        PrediTerm<Derivation> y = pred.putIfAbsent(x.term(), x);
+//        return y != null ? y : x;
+//    }
     public final MatchConstraint intern(MatchConstraint x) {
         MatchConstraint y = constra.putIfAbsent(x.term(), x);
         return y != null ? y : x;
@@ -156,7 +154,24 @@ public class PremisePatternIndex extends MapConceptIndex {
         return get(x, true).term();
     }
 
-    public static final class PremiseRuleVariableNormalization extends VariableNormalization {
+    public static final class PremiseRuleNormalization extends VariableNormalization {
+
+        @Override
+        public Term transformCompound(Compound x) {
+            /** process completely to resolve built-in functors,
+             * to override VariableNormalization's override */
+            return transformCompound(x, x.op(), x.dt());
+        }
+
+
+        @Override
+        public Term transformAtomic(Atomic x) {
+            if (x instanceof Atom) {
+                Functor f = Builtin.functor(x);
+                return f != null ? f : x;
+            }
+            return super.transformAtomic(x);
+        }
 
         /*@NotNull*/
         @Override
@@ -181,8 +196,8 @@ public class PremisePatternIndex extends MapConceptIndex {
 
     }
 
-    @Deprecated
-    abstract public static class PremisePatternCompound extends LightDTCompound {
+    /** seems used only if op==CONJ */
+    @Deprecated abstract public static class PremisePatternCompound extends LightDTCompound {
 
 
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {

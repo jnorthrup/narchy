@@ -39,6 +39,11 @@ public interface SeparateSubtermsCompound extends Compound {
     }
 
     @Override
+    default boolean subIs(int i, Op o) {
+        return subterms().subIs(i, o);
+    }
+
+    @Override
     default int subs(Op matchingOp) {
         return subterms().subs(matchingOp);
     }

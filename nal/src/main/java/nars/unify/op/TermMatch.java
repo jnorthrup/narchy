@@ -6,17 +6,23 @@ import nars.term.Term;
 import nars.unify.Unify;
 import nars.unify.constraint.MatchConstraint;
 
-abstract public class TermMatch  {
+abstract public class TermMatch {
 
-    /** test the exact term, if found */
+    /**
+     * test the exact term, if found
+     */
     abstract public boolean test(Term t);
 
-    /** test what can be inferred from the superterm if the direct locator was not possible */
+    /**
+     * test what can be inferred from the superterm if the direct locator was not possible
+     */
     public boolean testSuper(Term superTerm) {
         return true;
     }
 
-    /** term representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms */
+    /**
+     * term representing any unique parameters beyond the the class name which is automatically incorporated into the predicate it forms
+     */
     public abstract Term param();
 
     public MatchConstraint constraint(Term x, boolean trueOrFalse) {
@@ -26,8 +32,9 @@ abstract public class TermMatch  {
     public abstract float cost();
 
 
-
-    /** is the op one of the true bits of the provide vector ("is any") */
+    /**
+     * is the op one of the true bits of the provide vector ("is any")
+     */
     public final static class Is extends TermMatch {
 
         public final int struct;
@@ -35,6 +42,7 @@ abstract public class TermMatch  {
         public Is(Op op) {
             this(op.bit);
         }
+
         public Is(int struct) {
             this.struct = struct;
         }
@@ -60,53 +68,70 @@ abstract public class TermMatch  {
         }
     }
 
-    /** has the term in its structure, one of the true bits of the provide vector ("has any") */
+    /**
+     * has the term in its structure, one of the true bits of the provide vector ("has any")
+     */
     public final static class Has extends TermMatch {
         final int struct;
+        private final boolean anyOrAll;
 
-        public Has(Op op) {
-            this(op.bit);
+        public Has(Op op, boolean anyOrAll) {
+            this(op.bit, anyOrAll);
+        }
+
+        public Has(int struct, boolean anyOrAll) {
+            this.struct = struct;
+            this.anyOrAll = anyOrAll;
         }
 
         @Override
         public Term param() {
-            return Op.strucTerm(struct);
-        }
-
-        public Has(int struct) {
-            this.struct = struct;
+            return $.func((anyOrAll ? Op.SECTi.strAtom : Op.SECTe.strAtom),Op.strucTerm(struct));
         }
 
         @Override
         public float cost() {
-            return 0.11f;
+
+            //all is more specific so should be prioritized ahead
+            //more # of bits decreases the cost
+            return Math.max(
+                    (anyOrAll ? 0.11f : 0.09f) - 0.001f * Integer.bitCount(struct),
+                    0.001f);
+
         }
 
         @Override
         public boolean test(Term term) {
-            return term.hasAny(struct);
+            return term.has(struct, anyOrAll);
         }
 
         @Override
         public boolean testSuper(Term superTerm) {
-            return superTerm.hasAny(struct);
+            return superTerm.has(struct, anyOrAll);
         }
     }
 
     public final static class SubsMin extends TermMatch {
 
-        final short minSubs;
+        final short subsMin;
 
-        public SubsMin(short minSubs) {
-            this.minSubs = minSubs;
+        public SubsMin(short subsMin) {
+            this.subsMin = subsMin;
         }
+
         @Override
         public Term param() {
-            return $.the(minSubs);
+            return $.the(subsMin);
         }
+
         @Override
         public boolean test(Term term) {
-            return term.subs() >= minSubs;
+            return term.subs() >= subsMin;
+        }
+
+        @Override
+        public boolean testSuper(Term superTerm) {
+            return superTerm.volume() >= subsMin + 1; //this is the minimum possible volume, if it was the term and if it was only atoms
         }
 
         @Override
@@ -126,12 +151,12 @@ abstract public class TermMatch  {
 
         @Override
         public float cost() {
-            return 0.1f; //TODO
+            return TermMatch.this.cost(); //TODO
         }
 
         @Override
         public boolean invalid(Term y, Unify f) {
-            return TermMatch.this.test(y)==trueOrFalse;
+            return !(TermMatch.this.test(y) == trueOrFalse);
         }
     }
 }

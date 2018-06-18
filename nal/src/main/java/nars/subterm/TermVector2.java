@@ -1,9 +1,7 @@
 package nars.subterm;
 
 import jcog.util.ArrayIterator;
-import nars.Op;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -15,46 +13,40 @@ public final class TermVector2 extends TermVector {
 
     public final Term x, y;
 
-    /** uses an array argument so that the input array can be used directly without needing to create a new one when it calls the superclass constructor */
+    /**
+     * uses an array argument so that the input array can be used directly without needing to create a new one when it calls the superclass constructor
+     */
     public TermVector2(Term... xy) {
         super(xy);
-        assert(xy.length == 2);
+        assert (xy.length == 2);
         this.x = xy[0];
         this.y = xy[1];
     }
 
-    @NotNull
+
     @Override
     public Term[] arrayClone() {
-        return new Term[] { x, y };
+        return new Term[]{x, y};
     }
 
     @Override
-    public @NotNull Term sub(int i) {
+    public Term sub(int i) {
         switch (i) {
-            case 0: return x;
-            case 1: return y;
+            case 0:
+                return x;
+            case 1:
+                return y;
             default:
                 throw new ArrayIndexOutOfBoundsException();
         }
     }
 
     @Override
-    public boolean subIs(int i, Op o) {
-        return sub(i).op()==o;
-    }
-
-    @Override
-    public boolean subEquals(int i, Term maybeEquals) {
-        return sub(i).equals(maybeEquals);
-    }
-
-    @Override
-    public boolean equals(@NotNull Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj instanceof Subterms) {
-            if (hash == obj.hashCode()) {
-                Subterms t = (Subterms) obj;
+            Subterms t;
+            if (hash == (t = ((Subterms) obj)).hashCodeSubterms()) {
                 return (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y));
             }
         }
@@ -73,16 +65,13 @@ public final class TermVector2 extends TermVector {
 
     @Override
     public void forEach(Consumer<? super Term> action, int start, int stop) {
-        int howMany = stop - start;
-
-        if (!(howMany <= 2 && howMany >= 1 && start >= 0 && start < 2))
-            throw new ArrayIndexOutOfBoundsException();
-
-        if (howMany ==1) {
-            action.accept( start == 0 ? x : y );
+        int n = stop - start;
+        if (n == 1 && start == 0 || start == 1) {
+            action.accept(start == 0 ? x : y);
+        } else if (start == 0) {
+            forEach(action);
         } else {
-            action.accept(x);
-            action.accept(y);
+            throw new ArrayIndexOutOfBoundsException();
         }
     }
 
@@ -91,11 +80,6 @@ public final class TermVector2 extends TermVector {
         action.accept(x);
         action.accept(y);
     }
-
-
-
-
-
 
 
 }

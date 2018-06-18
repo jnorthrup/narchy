@@ -305,17 +305,18 @@ public enum PremiseDeriverCompiler {
         return Fork.fork(x, builder);
     }
 
-    protected static Set<PrediTerm<Derivation>> compileSwitch(Set<PrediTerm<Derivation>> branches, int minCases) {
+    private static Set<PrediTerm<Derivation>> compileSwitch(Set<PrediTerm<Derivation>> branches, int minCases) {
 
         if (branches.size() < minCases)
             return branches; //dont bother
 
-        branches = factorSubOpToSwitch(branches, true, minCases);
-        branches = factorSubOpToSwitch(branches, false, minCases);
+//        branches = factorSubOpToSwitch(branches, true, minCases);
+//        branches = factorSubOpToSwitch(branches, false, minCases);
 
         return branches;
     }
 
+    //broken temporarily
     private static Set<PrediTerm<Derivation>> factorSubOpToSwitch(Set<PrediTerm<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
             /** TermMatch as field of TaskBeliefMatch */
@@ -368,7 +369,7 @@ public enum PremiseDeriverCompiler {
     }
 
     private static class SubCond {
-        public final PrediTerm p;
+        final PrediTerm p;
         final RoaringBitmap branches = new RoaringBitmap();
 
         private SubCond(PrediTerm p, int branch) {
@@ -400,12 +401,12 @@ public enum PremiseDeriverCompiler {
             return p + " x " + branches;
         }
 
-        public int size() {
+        int size() {
             return branches.getCardinality();
         }
 
 
-        public float costIfBranch() {
+        float costIfBranch() {
             int s = size();
             if (s > 1)
                 return s * p.cost();

@@ -7,10 +7,11 @@ import nars.term.Term;
 public abstract class VariableTransform implements TermTransform.NegObliviousTermTransform {
 
     @Override
-    public final Term transformCompound(Compound t) {
+    public Term transformCompound(Compound t) {
         return t.hasVars() ? TermTransform.NegObliviousTermTransform.super.transformCompound((Compound)t) : t;
     }
-    
+
+
     @Override
     public boolean eval() {
         return false;

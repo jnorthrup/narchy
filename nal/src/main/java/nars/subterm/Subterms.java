@@ -125,65 +125,62 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
 
-        if (a.equals(b)) return 0;
+        //if (a.equals(b)) return 0;
 
         int s;
         int diff;
-        if ((diff = Integer.compare((s = a.subs()), b.subs())) != 0)
+        if ((diff = Integer.compare(s = a.subs(), b.subs())) != 0)
             return diff;
 
-
-        if ((diff = Integer.compare(a.structure(), b.structure())) != 0)
-            return diff;
-
-
-        Term inequalVariableX = null, inequalVariableY = null;
-
-        for (int i = 0; i < s; i++) {
-            Term x = a.sub(i);
-            Term y = b.sub(i);
-            if (x instanceof Variable && y instanceof Variable) {
-                if (inequalVariableX == null && !x.equals(y)) {
-
-                    inequalVariableX = x;
-                    inequalVariableY = y;
-                }
-            } else {
-                int d = x.compareTo(y);
-                if (d != 0) {
-                    return d;
-                }
-            }
-        }
-
-
-        if (inequalVariableX != null) {
-            return inequalVariableX.compareTo(inequalVariableY);
+        if (s == 1) {
+            return a.sub(0).compareTo(b.sub(0));
         } else {
+
+//            Term inequalVariableX = null, inequalVariableY = null;
+
+            for (int i = 0; i < s; i++) {
+                Term x = a.sub(i);
+                Term y = b.sub(i);
+//                if (x instanceof Variable && y instanceof Variable) {
+//                    if (inequalVariableX == null && !x.equals(y)) {
+//
+//                        inequalVariableX = x;
+//                        inequalVariableY = y;
+//                    }
+//                } else {
+                    int d = x.compareTo(y);
+                    if (d != 0) {
+                        return d;
+                    }
+//                }
+            }
+
+
+//            return inequalVariableX != null ? inequalVariableX.compareTo(inequalVariableY) : 0;
             return 0;
         }
     }
 
-    /**
-     * a and b must be instances of input, and output must be of size input.length-2
-     */
-    /*@NotNull*/
-    static Term[] except(/*@NotNull*/ Subterms input, Term a, Term b, /*@NotNull*/ Term[] output) {
-
-
-        int j = 0;
-        int l = input.subs();
-        for (int i = 0; i < l; i++) {
-            Term x = input.sub(i);
-            if ((x != a) && (x != b))
-                output[j++] = x;
-        }
-
-        if (j != output.length)
-            throw new RuntimeException("permute underflow");
-
-        return output;
-    }
+//    /**
+//     * a and b must be instances of input, and output must be of size input.length-2
+//     */
+//    /*@NotNull*/
+//    static Term[] except(/*@NotNull*/ Subterms input, Term a, Term b, /*@NotNull*/ Term[] output) {
+//
+//
+//        int j = 0;
+//        int l = input.subs();
+//        for (int i = 0; i < l; i++) {
+//            Term x = input.sub(i);
+//            if ((x != a) && (x != b))
+//                output[j++] = x;
+//        }
+//
+//        if (j != output.length)
+//            throw new RuntimeException("permute underflow");
+//
+//        return output;
+//    }
 
     /*@NotNull*/
     @Override

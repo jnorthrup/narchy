@@ -14,7 +14,6 @@ import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DynamicConjTest {
     @Test

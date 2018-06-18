@@ -1,6 +1,5 @@
 package nars.derive.premise;
 
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.eclipse.collections.api.set.ImmutableSet;

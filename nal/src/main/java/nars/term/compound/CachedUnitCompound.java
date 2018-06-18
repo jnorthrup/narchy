@@ -51,6 +51,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
     }
 
 
+
     @Override
     public final int structure() {
         return cstruct;

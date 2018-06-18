@@ -1,12 +1,10 @@
 package nars.concept.dynamic;
 
-import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -24,7 +22,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Created by me on 12/4/16.

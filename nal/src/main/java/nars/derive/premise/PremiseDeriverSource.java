@@ -18,11 +18,11 @@ import nars.term.atom.Atomic;
 import nars.term.compound.util.Image;
 import nars.term.control.AbstractPred;
 import nars.term.control.PrediTerm;
+import nars.term.match.TermMatchPred;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunc;
 import nars.unify.constraint.*;
 import nars.unify.match.Ellipsislike;
-import nars.term.match.TermMatchPred;
 import nars.unify.op.TaskPunctuation;
 import nars.unify.op.TermMatch;
 import nars.util.term.transform.TermTransform;
@@ -295,8 +295,10 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
                         negationApplied = true;
                     break;
                 }
+
                 case "has": {
-                    match(X, new TermMatch.Has(Op.the($.unquote(Y))), !negated);
+                    //hasAny
+                    match(X, new TermMatch.Has(Op.the($.unquote(Y)), true), !negated);
                     if (negated)
                         negationApplied = true;
                     break;
@@ -406,12 +408,9 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
         }
 
-        final Term taskPattern1 = taskPattern;
-        final Term beliefPattern1 = beliefPattern;
-
-        Op to = taskPattern1.op();
+        Op to = taskPattern.op();
         boolean taskIsPatVar = to == Op.VAR_PATTERN;
-        Op bo = beliefPattern1.op();
+        Op bo = beliefPattern.op();
         boolean belIsPatVar = bo == Op.VAR_PATTERN;
 
 
@@ -466,6 +465,14 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         }
         if (!taskIsPatVar) {
             pre.add(new TermMatchPred(new TermMatch.Is(to), true, true, TaskTerm));
+
+            int ts = taskPattern.structure() & (~Op.VAR_PATTERN.bit);
+            if (Integer.bitCount(ts) > 1) {
+                //if there are additional bits that the structure can filter, include the hasAll predicate
+                pre.add(new TermMatchPred(new TermMatch.Has(
+                        ts, false /* all */),
+                        true, true, TaskTerm));
+            }
             //pre.addAll(TaskBeliefHas.get(true, taskPattern1.structure(), true));
         }
         if (!belIsPatVar) {
@@ -473,6 +480,14 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 //                //pre.add(AbstractPatternOp.TaskBeliefOpEqual); //<- probably not helpful and just misaligns the trie
 //            } else {
             pre.add(new TermMatchPred(new TermMatch.Is(bo),  true, true, BeliefTerm));
+            int bs = beliefPattern.structure() & (~Op.VAR_PATTERN.bit);
+            if (Integer.bitCount(bs) > 1) {
+                //if there are additional bits that the structure can filter, include the hasAll predicate
+                pre.add(new TermMatchPred(new TermMatch.Has(
+                        bs, false /* all */),
+                        true, true, BeliefTerm));
+            }
+
             //pre.addAll(TaskBeliefHas.get(false, beliefPattern1.structure(), true));
 //            }
         }
@@ -595,12 +610,12 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         return Op.terms.subtermsInstance(a, b);
     }
 
-    void matchSuper(boolean taskOrBelief, TermMatch m, boolean trueOrFalse) {
+    private void matchSuper(boolean taskOrBelief, TermMatch m, boolean trueOrFalse) {
         pre.add(new TermMatchPred(m, trueOrFalse, false, TaskOrBelief(taskOrBelief)));
     }
 
 
-    void match(boolean taskOrBelief, byte[] path, TermMatch m, boolean isOrIsnt) {
+    private void match(boolean taskOrBelief, byte[] path, TermMatch m, boolean isOrIsnt) {
         if (path.length == 0) {
             //root
             pre.add(new TermMatchPred<>(m, isOrIsnt, true, TaskOrBelief(taskOrBelief)));
@@ -624,8 +639,8 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
         boolean checkedTask = false, checkedBelief = false;
 
-        final byte[] pt = !checkedTask && (taskPattern.equals(x) || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(taskPattern, x) : null;
-        final byte[] pb = !checkedBelief && (beliefPattern.equals(x) || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(beliefPattern, x) : null;
+        final byte[] pt = (taskPattern.equals(x) || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(taskPattern, x) : null;
+        final byte[] pb = (beliefPattern.equals(x) || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(beliefPattern, x) : null;
         if (pt != null || pb != null) {
             if (pt != null)
                 checkedTask = true;
@@ -878,7 +893,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         return taskOrBelief ? TaskTerm : BeliefTerm;
     }
 
-    protected final static Function<PreDerivation,Term> TaskTerm = new Function<PreDerivation,Term>() {
+    final static Function<PreDerivation,Term> TaskTerm = new Function<PreDerivation,Term>() {
 
         @Override
         public String toString() {
@@ -891,7 +906,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         }
     };
 
-    protected final static Function<PreDerivation,Term> BeliefTerm = new Function<PreDerivation,Term>() {
+    final static Function<PreDerivation,Term> BeliefTerm = new Function<PreDerivation,Term>() {
 
         @Override
         public String toString() {
@@ -905,7 +920,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     };
 
 
-    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform {
+    static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform.NegObliviousTermTransform {
 
         UppercaseAtomsToPatternVariables() {
             super(8);

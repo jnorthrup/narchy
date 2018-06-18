@@ -37,7 +37,7 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
         parsed.distinct().map(x -> x.apply(patterns)).forEach(super::add);
     }
 
-    final static Memoize<String, Collection<PremiseDeriverSource>> ruleCache = CaffeineMemoize.build((String n) -> {
+    private final static Memoize<String, Collection<PremiseDeriverSource>> ruleCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
         try (InputStream nn =
@@ -62,11 +62,11 @@ public class PremiseDeriverRuleSet extends ArrayUnenforcedSet<PremiseDeriverProt
                 filename.stream().flatMap(n -> PremiseDeriverRuleSet.ruleCache.apply(n).stream()));
     }
 
-    static Stream<String> load(byte[] data) {
+    private static Stream<String> load(byte[] data) {
         return preprocess(Streams.stream(Splitter.on('\n').split(new String(data))));
     }
 
-    static Stream<String> preprocess(Stream<String> lines) {
+    private static Stream<String> preprocess(Stream<String> lines) {
 
         return lines.map(String::trim).filter(s -> !s.isEmpty() && !s.startsWith("//")).map(s -> {
 

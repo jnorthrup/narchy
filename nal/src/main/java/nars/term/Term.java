@@ -349,7 +349,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
      */
     default boolean isAny(int bitsetOfOperators) {
         int s = op().bit;
-        return (bitsetOfOperators & s) > 0;
+        return (bitsetOfOperators & s) != 0;
     }
 
     void appendTo(Appendable w) throws IOException;
@@ -684,6 +684,12 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
             return false;
         }
     }
+
+    /** returns subterms transformed by the provided transform  */
+    default Subterms subterms(TermTransform termTransform) {
+        return subterms().transformSubs(termTransform);
+    }
+
 
     /**
      * Created by me on 2/26/16.

@@ -42,6 +42,11 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
+    public boolean subIs(int i, Op o) {
+        return sub().op()==o;
+    }
+
+    @Override
     public boolean contains(Term t) {
         return sub().equals(t);
     }

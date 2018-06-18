@@ -16,14 +16,14 @@ import java.util.function.Function;
  */
 public final class TermMatchPred<X> extends AbstractPred<X> {
 
-    public final boolean trueOrFalse;
+    private final boolean trueOrFalse;
     private final boolean exactOrSuper;
 
     public final TermMatch match;
     public final Function<X, Term> resolve;
 
     public TermMatchPred(TermMatch match, boolean trueOrFalse, boolean exactOrSuper, Function<X, Term> resolve) {
-        super($.func(Atomic.the(match.getClass().getSimpleName()), match.param(), $.quote(resolve.toString())).negIf(!trueOrFalse));
+        super($.func(Atomic.the(match.getClass().getSimpleName()), $.the(resolve.toString()), match.param()).negIf(!trueOrFalse));
 
         this.resolve = resolve;
         this.match = match;
@@ -62,9 +62,9 @@ public final class TermMatchPred<X> extends AbstractPred<X> {
         private final boolean preTestSuper;
 
         public Subterm(byte[] path, TermMatch m, boolean trueOrFalse, Function<X, Term> resolve) {
-            super($.func(Atomic.the(m.getClass().getSimpleName()),m.param(),
-                    $.quote(resolve.toString()),
-                    $.pFast(path)
+            super($.func(Atomic.the(m.getClass().getSimpleName()),
+                    $.the(resolve.toString()), m.param(),
+                    $.p(path)
             ).negIf(!trueOrFalse));
 
             assert(path.length > 0): "use TermMatchPred for 0-length (root) paths";

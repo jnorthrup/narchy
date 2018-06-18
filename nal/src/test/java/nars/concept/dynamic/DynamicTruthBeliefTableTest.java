@@ -1,19 +1,19 @@
 package nars.concept.dynamic;
 
-import nars.*;
-import nars.concept.Concept;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
+import nars.Task;
 import nars.link.TaskLink;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by me on 10/27/16.

@@ -35,7 +35,7 @@ class DeriverTest {
     private static void print(NAR n, PrintStream p) {
         derivers(n).forEach(d -> {
             p.println(d);
-            d.rules.print(p);
+            d.rules.printRecursive(p);
             p.println();
         });
     }

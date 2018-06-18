@@ -47,16 +47,20 @@ public interface TermTransform extends Evaluation.TermContext {
     @Nullable
     default Term transformCompound(Compound x, Op op, int dt) {
 
+        //Subterms yy = x.subterms(this /* op, dt, eval */);
         Subterms xx = x.subterms();
-
         Subterms yy = xx.transformSubs(this);
+
         return yy == null ? Null : transformedCompound(x, op, dt, xx, yy);
+
+        /* return LazyCompound */
 
     }
 
     /** called after subterms transform has been applied */
     @Nullable default Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
         Term y;
+        //Subterms xx = x.subterms();
         if (yy != xx) {
             y = the(op, dt, ((TermList)yy).arraySharedKeep()); //transformed subterms
         } else if (op != x.op()) {

@@ -82,6 +82,8 @@ public class ArrayTermVector extends TermVector {
         return terms[i];
     }
 
+
+
     @Override public final Term[] arrayClone() {
         return terms.clone();
     }

@@ -19,6 +19,8 @@ import nars.term.atom.Int;
 import nars.term.compound.util.Conj;
 import nars.term.compound.util.Image;
 import nars.term.obj.QuantityTerm;
+import org.eclipse.collections.api.map.ImmutableMap;
+import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -118,7 +120,7 @@ public class Builtin {
 
     };
 
-    public static final Concept[] statik = {
+    public static final Functor[] statik = {
 
             Subst.replace,
 
@@ -317,6 +319,17 @@ public class Builtin {
             Functor.f1("quote", x -> x)
     };
 
+    private static final ImmutableMap<Term, Functor> statiks;
+    static {
+        MutableMap<Term,Functor> s = new UnifiedMap(statik.length);
+        for (Functor f : statik) {
+            s.put(f.term(), f);
+        }
+        statiks = s.toImmutable();
+    }
+    @Nullable public static Functor functor(Term x) {
+        return statiks.get(x);
+    }
 
     public static void init(NAR nar) {
         registerFunctors(nar);
@@ -704,6 +717,8 @@ public class Builtin {
             });
         });
     }
+
+
 //
 //    static void save(NAR nar, Term id, Predicate<Task> filter) {
 //        ByteArrayOutputStream memDump;

@@ -169,6 +169,10 @@ public interface Termlike {
         return Op.hasAny(structure(), structuralVector);
     }
 
+    default boolean has(int structuralVector, boolean anyOrAll) {
+        return anyOrAll ? hasAny(structuralVector) : hasAll(structuralVector);
+    }
+
     default boolean hasAny(Op... oo) {
         if (oo.length == 0)
             return false;

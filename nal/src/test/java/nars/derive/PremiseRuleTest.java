@@ -205,28 +205,28 @@ class PremiseRuleTest {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "X,Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("Is(\"*\",task)"), ()->s);
+        assertTrue( s.contains("Is(taskTerm,\"*\")"), ()->s);
     }
 
     @Test
     void testOpIsPreFilterSubPath() {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
-        assertTrue( d.what.toString().contains("Is(\"*\",task,(1))"), ()-> d.what.toString());
+        assertTrue( d.what.toString().contains("Is(taskTerm,\"*\",(1))"), ()-> d.what.toString());
     }
     @Test
     void testOpIsPreFilterSubPathNot() {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((Z),X),Y, --is(X,\"{\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("(--,Is(\"{\",task,(1)))"), ()->s);
+        assertTrue( s.contains("(--,Is(taskTerm,\"{\",(1)))"), ()->s);
     }
     @Test
     void testOpIsPreFilterSubPathRepeatIsOKButChooseShortestPath() {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((X),X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("Is(\"*\",task,(1))"), ()->s); //and not: (0,0)
+        assertTrue( s.contains("Is(taskTerm,\"*\",(1))"), ()->s); //and not: (0,0)
     }
 
     @Test
@@ -234,7 +234,7 @@ class PremiseRuleTest {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((X),X),Y,subsMin(Y,2) |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("SubsMin(2,belief)"), ()->s); //and not: (0,0)
+        assertTrue( s.contains("SubsMin(beliefTerm,2)"), ()->s); //and not: (0,0)
     }
 
     @Test
@@ -242,16 +242,10 @@ class PremiseRuleTest {
         PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
                 "((X),Z),Y,subsMin(X,2) |- (X,Y), (Belief:Intersection)"));
         String s = d.what.toString();
-        assertTrue( s.contains("SubsMin(2,task,(0,0))"), ()->s); //and not: (0,0)
+        assertTrue( s.contains("SubsMin(taskTerm,2,(0,0))"), ()->s); //and not: (0,0)
     }
 
-    @Test
-    void testOpIsCantPreFilterCommutive() {
-        PremiseDeriver d = PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(NARS.shell(),
-                "{Z,X},Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
-        assertTrue( !d.what.toString().contains("opIs("));
-        //TODO test that constraint was added in conclusion
-    }
+
 
     @Test
     void testTryFork() {
