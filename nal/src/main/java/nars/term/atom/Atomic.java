@@ -271,8 +271,6 @@ public interface Atomic extends Term {
         return false;
     }
 
-    @Override
-    default boolean containsRoot(Term t) { return false; }
 
     @Override
     default boolean isCommutative() {

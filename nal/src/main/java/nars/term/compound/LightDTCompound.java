@@ -124,10 +124,6 @@ public class LightDTCompound implements SeparateSubtermsCompound {
         return ref.containsRecursively(t);
     }
 
-    @Override
-    public boolean containsRoot(Term x) {
-        return ref.containsRoot(x);
-    }
 
     @Override
     public final Op op() {

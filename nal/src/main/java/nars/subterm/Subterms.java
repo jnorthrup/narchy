@@ -141,22 +141,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
             for (int i = 0; i < s; i++) {
                 Term x = a.sub(i);
                 Term y = b.sub(i);
-//                if (x instanceof Variable && y instanceof Variable) {
-//                    if (inequalVariableX == null && !x.equals(y)) {
-//
-//                        inequalVariableX = x;
-//                        inequalVariableY = y;
-//                    }
-//                } else {
-                    int d = x.compareTo(y);
-                    if (d != 0) {
-                        return d;
-                    }
-//                }
+                int d = x.compareTo(y);
+                if (d != 0) {
+                    return d;
+                }
             }
-
-
-//            return inequalVariableX != null ? inequalVariableX.compareTo(inequalVariableY) : 0;
             return 0;
         }
     }

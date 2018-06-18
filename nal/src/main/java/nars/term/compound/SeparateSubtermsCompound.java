@@ -5,6 +5,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
+import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -41,6 +42,16 @@ public interface SeparateSubtermsCompound extends Compound {
     @Override
     default boolean subIs(int i, Op o) {
         return subterms().subIs(i, o);
+    }
+
+    @Override
+    default void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {
+        subterms().forEach(action, start, stop);
+    }
+
+    @Override
+    default Iterator<Term> iterator() {
+        return subterms().iterator();
     }
 
     @Override

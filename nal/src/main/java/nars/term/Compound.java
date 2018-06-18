@@ -37,7 +37,6 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -309,29 +308,9 @@ public interface Compound extends Term, IPair, Subterms {
         throw new UnsupportedOperationException();
     }
 
-
-
-
-
-
-    @Override
-    default boolean containsRoot(Term x) {
-        if (!impossibleSubTerm(x)) {
-            Term xr = x.root();
-            return (OR(y -> y.root().equals(xr)));
-        }
-        return false;
-    }
-
-
-
-
     @Override
     default boolean isCommutative() {
         Op op = op();
-        if (!op.commutative)
-            return false;
-
         if (op == CONJ) {
             int dt = dt();
             switch (dt) {
@@ -344,20 +323,13 @@ public interface Compound extends Term, IPair, Subterms {
                     return false;
             }
         } else
-            return subs() > 1;
+            return op.commutative && subs() > 1;
     }
 
 
-    @Override
-    default void forEach(/*@NotNull*/ Consumer<? super Term> action, int start, int stop) {
-        subterms().forEach(action, start, stop);
-    }
 
 
-    @Override
-    default Iterator<Term> iterator() {
-        return subterms().iterator();
-    }
+
 
     @Override
     default void copyInto(/*@NotNull*/ Collection<Term> set) {
@@ -369,26 +341,10 @@ public interface Compound extends Term, IPair, Subterms {
 
 
 
-
-
-
-
     @Override
     default boolean isNormalized() {
         return subterms().isNormalized();
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * gets temporal relation value
@@ -402,9 +358,9 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
     default Term replace(Term from, Term to) {
-        if (!from.equals(to)) {
-            if (this.equals(from))
-                return to;
+        if (this.equals(from))
+            return to;
+        if (!impossibleSubTerm(from)) {
 
             Subterms oldSubs = subterms();
             Subterms newSubs = oldSubs.replaceSubs(from, to);

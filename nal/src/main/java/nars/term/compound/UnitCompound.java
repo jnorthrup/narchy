@@ -34,6 +34,7 @@ public abstract class UnitCompound implements Compound {
         return sub();
     }
 
+
     @Override
     public int hashCode() {
          return Util.hashCombine(
@@ -43,7 +44,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean subIs(int i, Op o) {
-        return sub().op()==o;
+        return i == 0 && sub().op()==o;
     }
 
     @Override
@@ -54,11 +55,6 @@ public abstract class UnitCompound implements Compound {
     @Override
     public boolean containsNeg(Term x) {
         return sub().equalsNeg(x);
-    }
-
-    @Override
-    public boolean containsRoot(Term x) {
-        return sub().equalsRoot(x);
     }
 
     @Override
@@ -122,6 +118,16 @@ public abstract class UnitCompound implements Compound {
     @Override
     public Term dt(int nextDT) {
         assert(nextDT == DTERNAL);
+        return this;
+    }
+    public Term replace(Term from, Term to) {
+        if (this.equals(from))
+            return to;
+
+        Term s;
+        if ((s = sub()).equals(from) && !s.equals(to)) {
+            return op().the(s);
+        }
         return this;
     }
 

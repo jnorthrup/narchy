@@ -148,10 +148,6 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
     Op op();
 
-
-    boolean containsRoot(Term t);
-
-
     void appendTo(ByteArrayDataOutput out);
 
     @Override
