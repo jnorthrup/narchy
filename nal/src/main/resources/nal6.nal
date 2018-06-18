@@ -136,7 +136,7 @@
     //Same as for inheritance
     //union/intersection assymmetry: union if subj, intersect if pred
 
-     //Union and frequency maintained
+     (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym, Also:VarIntro)
      (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:Implsition, Also:VarIntro)
 
         ((&&,P,A..+) ==> X), ((&&,S,A..+) ==> X), neq(P,S) |- ((&&,--(--P &&+- --S),A..+) ==>+- X), (Belief:Implsition, Also:VarIntro)
@@ -151,7 +151,7 @@
      (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized, Also:VarIntro)
 
 
-    //(P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
+
     //(P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
     //(M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
 
@@ -185,7 +185,7 @@
 
 
     (M ==> C), X, eventOfPosOrNeg(C,X) |- (M ==>+- conjWithoutPosOrNeg(C,X)), (Belief:StructuralReduction)
-            (M ==> C), X, task("?"), eventOfPosOrNeg(C,X) |- (M ==>+- conjWithoutPosOrNeg(C,X)), (Punctuation:Question)
+            //(M ==> C), X, task("?"), eventOfPosOrNeg(C,X) |- (M ==>+- conjWithoutPosOrNeg(C,X)), (Punctuation:Question)
         //(M ==> C), X, eventOfNeg(C,X) |- (M ==>+- conjWithout(C,--X)), (Belief:StructuralReduction)
             //(M ==> C), X, task("?"), eventOfNeg(C,X) |- (M ==>+- conjWithout(C,--X)), (Punctuation:Question)
     //(M ==> C), C, is(C,"&&") |- (--,(M ==>+- dropAnyEvent(C))), (Belief:StructuralReductionN)
@@ -194,11 +194,11 @@
           //(--M ==> C), D, belief("&&") |- (--M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D, strict)), (Belief:StructuralDeduction)
         //(M ==> (&&,(--,%S),A..+)), M |- (M ==>+- (&&,A..+)), (Belief:StructuralDeduction)
     (C ==> M), X, eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==>+- M), (Belief:StructuralReduction)
-            (C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==>+- M), (Punctuation:Question)
+            //(C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- (conjWithoutPosOrNeg(C,X) ==>+- M), (Punctuation:Question)
         //(C ==> M), X, eventOfNeg(C,X) |- (conjWithout(C,--X) ==>+- M), (Belief:StructuralReduction)
             //(C ==> M), X, task("?"), eventOfNeg(C,X) |- (conjWithout(C,--X) ==>+- M), (Punctuation:Question)
     (--C ==> M), X, eventOfPosOrNeg(C,X) |- ((--,conjWithoutPosOrNeg(C,X)) ==>+- M), (Belief:StructuralReduction)
-            (--C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==>+- M), (Punctuation:Question)
+            //(--C ==> M), X, task("?"), eventOfPosOrNeg(C,X) |- (--conjWithoutPosOrNeg(C,X) ==>+- M), (Punctuation:Question)
         //(--C ==> M), X, eventOfNeg(C,X) |- ((--,conjWithout(C,--X)) ==>+- M), (Belief:StructuralReduction)
             //(--C ==> M), X, task("?"), eventOfNeg(C,X) |- ((--,conjWithout(C,--X)) ==>+- M), (Punctuation:Question)
 
@@ -239,9 +239,6 @@
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
 
-    (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:AbductionPB)
-    (C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((--X ==>+- Y) && (Y ==>+- --X)), (Belief:AbductionPBN)
-    
 
     (C ==> Y), (D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
         (--C ==> Y), (--D ==> Y), eventsOf(C,D)          |- conjWithoutAll(C,D), (Belief:AbductionPB)
@@ -253,7 +250,6 @@
             //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (X ==>+- Y), (Belief:Abduction)
             //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- (Y ==>+- X), (Belief:Abduction)
 
-    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:InductionPB)
         //    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
         //    ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- (Y ==>+- X), (Belief:Induction)
         //        (--(&&,X,A..+) ==> C), (--(&&,Y,A..+) ==> C)   |- (X ==>+- Y), (Belief:Induction)
@@ -291,18 +287,27 @@
     (C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB)
 
 //precondition/post-condition combiner inference rule (variable_unification6):
+
+
+
+
 //        <patham9>
 //      this rule says:
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
 //        it might be that these different preconditions in the specific conjunctions imply each other
 //        because the premises can be swapped for this rule and it is still valid
     (A ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
-        //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
-        //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:InductionPB)
+        //((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C)   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:InductionPB)
+            //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
+            //(A ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:InductionPB)
     ((--,A) ==> X), (B ==> X), neq(A,B), eventCommon(A,B) |- (((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)) && ((--,conjWithoutAll(B,A)) ==>+- conjWithoutAll(A,B))), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- ((--,conjWithoutAll(A,B)) ==>+- conjWithoutAll(B,A)), (Belief:InductionPB)
         //((--,A) ==> X), (B ==> X), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- (--,conjWithoutAll(A,B))), (Belief:InductionPB)
     (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- ((conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B))), (Belief:AbductionPB)
+        (X ==> A), (X ==> B), neq(A,B), eventCommon(A,B) |- ((--conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)) && (conjWithoutAll(B,A) ==>+- --conjWithoutAll(A,B))), (Belief:AbductionPBN)
+        //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((X ==>+- Y) && (Y ==>+- X)), (Belief:AbductionPB)
+        //(C ==> (&&,X,A..+)), (C ==> (&&,Y,A..+))   |- ((--X ==>+- Y) && (Y ==>+- --X)), (Belief:AbductionPBN)
+
         //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(A,B) ==>+- conjWithoutAll(B,A)), (Belief:AbductionPB)
         //(X ==> A), (X ==> B), neqTaskBelief(), eventCommon(A,B) |- (conjWithoutAll(B,A) ==>+- conjWithoutAll(A,B)), (Belief:AbductionPB)
 
@@ -333,8 +338,8 @@
     X, C, eventOf(C,X)    |- conjWithout(C,X), (Goal:Weak, Time:TaskImmediate)
     X, C, eventOfNeg(C,X) |- conjWithout(C,--X), (Goal:WeakN, Time:TaskImmediate)
 
-    C, X, eventOf(C,X) |- conjDropIfEarliest(C,X), (Goal:Strong, Time:TaskImmediate)
-    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN, Time:TaskImmediate)
+    C, X, eventOf(C,X)    |- conjDropIfEarliest(C,X), (Goal:Strong)
+    C, X, eventOfNeg(C,X) |- conjDropIfEarliest(C,--X), (Goal:StrongPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
@@ -362,7 +367,8 @@
 
 
     //Conjunction structural decompose: C = (&&,a,b,..)
-    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction, Goal:StructuralStrong)
+    C, X, eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Belief:StructuralDeduction)
+            //, Goal:StructuralStrong)
     //C, X, task("!"), eventOfPosOrNeg(C,X)  |- conjWithoutPosOrNeg(C,X), (Punctuation:Quest)
 
     //Disjunction structural decompose: D = (||,a,b,..) = --(&&,--a, --b, ..)

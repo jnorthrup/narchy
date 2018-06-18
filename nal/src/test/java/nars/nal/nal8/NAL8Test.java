@@ -190,8 +190,8 @@ class NAL8Test extends NALTest {
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
                 .mustGoal(cycles, "x", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "x", GOAL, (t) -> !(t != 0 && t != ETERNAL))
-                .mustNotOutput(cycles, "y", GOAL, (t) -> !(t != 0 && t != ETERNAL))
+                .mustNotOutput(cycles, "x", GOAL, (t) -> t != 0)
+                .mustNotOutput(cycles, "y", GOAL, (t) -> t != 3)
         ;
     }
 
