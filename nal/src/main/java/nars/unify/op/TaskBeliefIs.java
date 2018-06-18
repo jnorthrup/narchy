@@ -15,9 +15,10 @@ import java.util.Collection;
  * Created by me on 5/19/17.
  */
 public final class TaskBeliefIs extends AbstractPred<Derivation> {
-    public final int struct;
     public final boolean task;
     public final boolean belief;
+
+    public final int struct;
     public final boolean isOrIsnt;
 
     public TaskBeliefIs(Op op, boolean testTask, boolean testBelief) {
@@ -28,7 +29,7 @@ public final class TaskBeliefIs extends AbstractPred<Derivation> {
 
 
 
-    public TaskBeliefIs(int struct, boolean testTask, boolean testBelief, boolean isOrIsnt) {
+    private TaskBeliefIs(int struct, boolean testTask, boolean testBelief, boolean isOrIsnt) {
         super($.func(is, Op.strucTerm(struct), testTask ? Derivation.Task : Derivation.Belief).negIf(!isOrIsnt));
         if (testTask == testBelief) throw new TODO("easy to impl");
         this.isOrIsnt = isOrIsnt;
@@ -49,16 +50,16 @@ public final class TaskBeliefIs extends AbstractPred<Derivation> {
                (!belief || (isOrIsnt == (((1 << d._beliefOp) & struct) != 0)));
     }
 
-    public static void add(Collection<PrediTerm> pres, boolean isOrIsnt, int struct, byte[] pt, byte[] pb) {
+    public static void preOrConstraint(Collection<PrediTerm> pre, byte[] pt, byte[] pb, int struct, boolean isOrIsnt) {
         if (pt != null) {
-            pres.add(add(isOrIsnt, struct, true, pt));
+            pre.add(preOrConstraint(true, pt, struct, isOrIsnt));
         }
         if (pb != null) {
-            pres.add(add(isOrIsnt, struct, false, pb));
+            pre.add(preOrConstraint(false, pb, struct, isOrIsnt));
         }
     }
 
-    static PrediTerm<Derivation> add(boolean isOrIsnt, int struct, boolean taskOrBelief, byte[] path) {
+    private static PrediTerm<Derivation> preOrConstraint(boolean taskOrBelief, byte[] path, int struct, boolean isOrIsnt) {
         if (path.length == 0) {
             //root
             return new TaskBeliefIs(struct, taskOrBelief, !taskOrBelief, isOrIsnt);

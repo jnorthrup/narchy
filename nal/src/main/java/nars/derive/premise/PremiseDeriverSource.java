@@ -1,5 +1,6 @@
 package nars.derive.premise;
 
+import com.google.common.collect.Iterables;
 import jcog.TODO;
 import nars.$;
 import nars.Narsese;
@@ -26,10 +27,16 @@ import nars.unify.op.TaskBeliefHas;
 import nars.unify.op.TaskBeliefIs;
 import nars.unify.op.TaskPunctuation;
 import nars.util.term.transform.TermTransform;
+import org.eclipse.collections.api.set.ImmutableSet;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -57,8 +64,10 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
      * conditions which can be tested before unification
      */
 
-    protected final Set<MatchConstraint> constraints;
-    protected final Set<PrediTerm> pre;
+    private final MutableSet<MatchConstraint> constraints;
+    protected final ImmutableSet<MatchConstraint> CONSTRAINTS;
+    private final MutableSet<PrediTerm> pre;
+    protected final ImmutableSet<PrediTerm> PRE;
     protected final Occurrify.TaskTimeMerge time;
     protected final boolean doIntroVars;
     protected final byte taskPunc;
@@ -81,9 +90,10 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
                         .transform(new UppercaseAtomsToPatternVariables()))
         );
 
-        this.constraints = new HashSet();
         this.source = ruleSrc;
-        final Set<PrediTerm> pre = new HashSet(8);
+
+        constraints = new UnifiedSet(8);
+        pre = new UnifiedSet(8);
 
         /**
          * deduplicate and generate match-optimized compounds for rules
@@ -213,36 +223,36 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
                 case "eventOf":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern, constraints);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event));
                     break;
 
                 case "eventOfNeg":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern, constraints);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, -1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, -1));
                     break;
 
                 case "eventOfPosOrNeg":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern, constraints);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
                     constraints.add(new SubOfConstraint(X, Y, false, false, Event, 0));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Event, 0));
                     break;
 
                 case "eventsOf":
                     neq(constraints, X, Y);
-                    eventPrefilter(pre, X, taskPattern, beliefPattern, constraints);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
 
                     constraints.add(new SubOfConstraint(X, Y, false, false, Events, 1));
                     constraints.add(new SubOfConstraint(Y, X, true, false, Events, 1));
                     break;
 
                 case "eventCommon":
-                    eventPrefilter(pre, X, taskPattern, beliefPattern, constraints);
-                    eventPrefilter(pre, Y, taskPattern, beliefPattern, constraints);
+                    eventPrefilter(pre, X, taskPattern, beliefPattern);
+                    eventPrefilter(pre, Y, taskPattern, beliefPattern);
                     constraints.add(new CommonSubEventConstraint(X, Y));
                     constraints.add(new CommonSubEventConstraint(Y, X));
                     break;
@@ -254,44 +264,30 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
 
                 case "subsMin":
-                    int min = $.intValue(Y);
-                    constraints.add(new SubsMin(X, min));
-                    if (taskPattern.equals(X)) {
-                        pre.add(SubsMin.proto(true, min));
-                    }
-                    if (beliefPattern.equals(X)) {
-                        pre.add(SubsMin.proto(false, min));
-                    }
+                    subsMin(X,$.intValue(Y));
                     break;
 
                 case "notImaged":
-                    termIsNotImaged(pre, taskPattern, X);
+                    termIsNotImaged(X);
                     break;
 
                 case "notSet":
                     /** deprecated soon */
-                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.SetBits);
+                    termIsNot(X, Op.SetBits);
                     break;
 
 
                 case "is": {
                     Op o = Op.the($.unquote(Y));
                     if (!negated) {
-                        termIs(pre, taskPattern, beliefPattern, constraints, X, o);
+                        termIs(X, o);
                     } else {
-                        termIsNot(pre, taskPattern, beliefPattern, constraints, X, o.bit);
+                        termIsNot(X, o.bit);
                         negationApplied = true;
                     }
 
                     break;
                 }
-
-
-                case "hasNoDiffed":
-
-                    termHasNot(taskPattern, beliefPattern, pre, constraints, X, Op.DiffBits);
-                    termIsNot(pre, taskPattern, beliefPattern, constraints, X, Op.INH.bit);
-                    break;
 
 
                 case "task":
@@ -497,8 +493,8 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         });
 
 
+
         this.truthify = Truthify.the(puncOverride, beliefTruthOp, goalTruthOp, projection, time);
-        this.pre = pre;
         this.time = time;
         this.doIntroVars = doIntroVars;
         this.taskPunc = taskPunc;
@@ -507,15 +503,32 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         this.puncOverride = puncOverride;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
+        this.CONSTRAINTS = Sets.immutable.of(theInterned(constraints));
+        this.PRE = Sets.immutable.ofAll(
+                //Iterables.transform(pre, INDEX::intern)
+                pre //can not intern pre conditions apparently
+        );
 
+    }
+
+    private static MatchConstraint[] theInterned(MutableSet<MatchConstraint> constraints) {
+        if (constraints.isEmpty())
+            return MatchConstraint.EmptyMatchConstraints;
+
+        MatchConstraint[] mc = MatchConstraint.the(constraints);
+        for (int i = 0, mcLength = mc.length; i < mcLength; i++)
+            mc[i] = INDEX.intern(mc[i]);
+        return mc;
     }
 
     protected PremiseDeriverSource(PremiseDeriverSource raw, PremisePatternIndex index) {
         super((index.pattern(raw.ref)));
 
+        this.PRE = null;
+        this.CONSTRAINTS = null;
         this.source = raw.source;
         this.truthify = raw.truthify;
-        this.constraints = new HashSet(raw.constraints); //clone
+        this.constraints = raw.constraints;
         this.pre = raw.pre;
         this.time = raw.time;
         this.doIntroVars = raw.doIntroVars;
@@ -597,10 +610,10 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
 
-    void eventPrefilter(Collection<PrediTerm> pres, Term conj, Term taskPattern, Term beliefPattern, Set<MatchConstraint> constraints) {
+    void eventPrefilter(Collection<PrediTerm> pres, Term conj, Term taskPattern, Term beliefPattern) {
 
 
-        termIs(pres, taskPattern, beliefPattern, constraints, conj, CONJ);
+        termIs(conj, CONJ);
 
 //        boolean isTask = taskPattern.equals(conj);
 //        boolean isBelief = beliefPattern.equals(conj);
@@ -613,7 +626,12 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 //        }
     }
 
-    private static void termIs(Collection<PrediTerm> pres, Term taskPattern, Term beliefPattern, Set<MatchConstraint> constraints, Term x, Op struct) {
+
+
+    private void filter(Term x,
+                               BiConsumer<byte[], byte[]> preDerivationExactFilter,
+                               BiConsumer<Boolean, Boolean> preDerivationSuperFilter /* task,belief*/
+    ) {
 
 
         boolean checkedTask = false, checkedBelief = false;
@@ -626,72 +644,74 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
             if (pb != null)
                 checkedBelief = true;
 
-            TaskBeliefIs.add(pres, true, struct.bit, pt, pb);
+            preDerivationExactFilter.accept(pt, pb);
         }
 
         if (!checkedTask && !checkedBelief) {
             //non-exact filter
             boolean inTask = (taskPattern.equals(x) || taskPattern.containsRecursively(x));
             boolean inBelief = (beliefPattern.equals(x) || beliefPattern.containsRecursively(x));
-            if (inTask)
-                pres.addAll(TaskBeliefHas.get(true, struct.bit, true));
-            if (inBelief)
-                pres.addAll(TaskBeliefHas.get(false, struct.bit, true));
-
-
-            constraints.add(new OpIs(x, struct));
+            preDerivationSuperFilter.accept(inTask, inBelief);
         }
     }
 
 
-    private static void termIsNot(Set<PrediTerm> pres, Term taskPattern, Term beliefPattern, Set<MatchConstraint> constraints, Term x, int struct) {
+    void termIs(Term x, Op struct) {
+        filter(x, (pt, pb)->
+                TaskBeliefIs.preOrConstraint(pre, pt, pb, struct.bit, true),
 
+                (inTask,inBelief)->{
+                    if (inTask)
+                        pre.addAll(TaskBeliefHas.get(true, struct.bit, true));
+                    if (inBelief)
+                        pre.addAll(TaskBeliefHas.get(false, struct.bit, true));
+                    constraints.add(new OpIs(x, struct));
+                }
+        );
+    }
 
-        boolean checkedTask = false, checkedBelief = false;
-
-        final byte[] pt = !checkedTask && (taskPattern.equals(x) || !taskPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(taskPattern, x) : null;
-        final byte[] pb = !checkedBelief && (beliefPattern.equals(x) || !beliefPattern.ORrecurse(s -> s instanceof Ellipsislike)) ? Terms.extractFixedPath(beliefPattern, x) : null;
-        if (pt != null || pb != null) {
-            if (pt != null)
-                checkedTask = true;
-            if (pb != null)
-                checkedBelief = true;
-            TaskBeliefIs.add(pres, false, struct, pt, pb);
-        }
-
-        if (!checkedTask && !checkedBelief) {
-            //non-exact filter
+    private void termIsNot(Term x, int struct) {
+        filter(x, (pt, pb)->{
+            TaskBeliefIs.preOrConstraint(pre, pt, pb, struct, false);
+        }, (inTask, inBelief) -> {
             throw new TODO();
-//
-//            boolean inTask = !checkedTask && (taskPattern.equals(x) || taskPattern.containsRecursively(x));
-//            boolean inBelief = !checkedBelief && (beliefPattern.equals(x) || beliefPattern.containsRecursively(x));
-//            if (inTask || inBelief) {
-//                pres.add(new TaskBeliefHasOrHasnt(false, struct, inTask, inBelief));
-//            }
-//
-//            constraints.add(new OpIsNot(x, struct));
-
-        }
+        });
     }
 
-    private static void termIsNotImaged(Collection<PrediTerm> pres, Term taskPattern, Term x) {
+    void subsMin(Term X, int min) {
+        if (taskPattern.equals(X)) {
+            pre.add(new SubsMin.SubsMinProto(true, min));
+        } else if (beliefPattern.equals(X)) {
+            pre.add(new SubsMin.SubsMinProto(false, min));
+        } else {
+            constraints.add(new SubsMin(X, min));
+        }
+
+        //TODO
+        //filter(x, (pt, pb)->
+
+    }
+    private void termIsNotImaged(Term x) {
         if (!taskPattern.containsRecursively(x) && !taskPattern.equals(x))
             throw new TODO("expected/tested occurrence in task concPattern ");
 
         final byte[] pp = Terms.extractFixedPath(taskPattern, x);
         assert pp != null;
-        pres.add(new NotImaged(x, pp));
+        pre.add(new NotImaged(x, pp));
     }
 
 
-    private static void termHasNot(Term task, Term belief, Collection<PrediTerm> pres, Set<MatchConstraint> constraints, Term t, int structure) {
-        boolean inTask = task.equals(t) || task.containsRecursively(t);
-        boolean inBelief = belief.equals(t) || belief.containsRecursively(t);
+    private void termHasNot(Term taskPattern, Term beliefPattern, Collection<PrediTerm> pre, Set<MatchConstraint> constraints, Term t, int structure) {
+
+        //TODO: filter(x, )
+
+        boolean inTask = taskPattern.equals(t) || taskPattern.containsRecursively(t);
+        boolean inBelief = beliefPattern.equals(t) || beliefPattern.containsRecursively(t);
         if (inTask || inBelief) {
             if (inTask)
-                pres.addAll(TaskBeliefHas.get(true, structure, false));
+                pre.addAll(TaskBeliefHas.get(true, structure, false));
             if (inBelief)
-                pres.addAll(TaskBeliefHas.get(false, structure, false));
+                pre.addAll(TaskBeliefHas.get(false, structure, false));
         } else {
 
             throw new TODO();

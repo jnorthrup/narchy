@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 11/12/15.
  */
-public class TermVectorTest {
+class TermVectorTest {
 
     @Test
-    public void testSubtermsEquality() throws Narsese.NarseseException {
+    void testSubtermsEquality() throws Narsese.NarseseException {
 
         Term a = $.$("(a-->b)");
         
@@ -74,7 +74,8 @@ public class TermVectorTest {
 
     }
 
-    @Test public void testSortedTermContainer() throws Narsese.NarseseException {
+    @Test
+    void testSortedTermContainer() throws Narsese.NarseseException {
         Term aa = $.$("a");
         Term bb = $.$("b");
         Subterms a = Op.terms.newSubterms(aa, bb);

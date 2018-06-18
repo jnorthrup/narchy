@@ -69,7 +69,7 @@ public class PiTester {
     }
 
 
-    static void run(final Class<?> clazz, final Predicate<String> testFilter) {
+    private static void run(final Class<?> clazz, final Predicate<String> testFilter) {
 
         int concurrency = Util.concurrencyDefault(1);
 

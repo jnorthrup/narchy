@@ -27,7 +27,7 @@ public abstract class NativeTask implements ITask, Priority {
 
     @Override
     public boolean delete() {
-        return false;
+        throw new UnsupportedOperationException();
     }
 
     @Override

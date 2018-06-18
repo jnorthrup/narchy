@@ -18,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 8/7/15.
  */
-public class NARTest {
+class NARTest {
 
 
     @Test
     @Disabled
-    public void testMemoryTransplant() throws Narsese.NarseseException {
+    void testMemoryTransplant() throws Narsese.NarseseException {
 
 
         NAR nar = NARS.tmp();
@@ -51,7 +51,7 @@ public class NARTest {
     }
 
     @Test
-    public void testFluentBasics() throws Exception {
+    void testFluentBasics() throws Exception {
         int frames = 32;
         AtomicInteger cycCount = new AtomicInteger(0);
         StringWriter sw = new StringWriter();
@@ -78,7 +78,7 @@ public class NARTest {
     }
 
     @Test
-    public void testBeforeNextFrameOnlyOnce() {
+    void testBeforeNextFrameOnlyOnce() {
         AtomicInteger b = new AtomicInteger(0);
         NAR n = NARS.shell();
 
@@ -89,7 +89,7 @@ public class NARTest {
     }
 
     @Test
-    public void testConceptInstancing() throws Narsese.NarseseException {
+    void testConceptInstancing() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
         String statement1 = "<a --> b>.";
@@ -121,7 +121,7 @@ public class NARTest {
     }
 
     @Test
-    public void testCycleScheduling() {
+    void testCycleScheduling() {
         NAR n = NARS.tmp();
 
         final int[] runs = {0};

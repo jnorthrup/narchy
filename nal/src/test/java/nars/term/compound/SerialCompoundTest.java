@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 2/19/17.
  */
-public class SerialCompoundTest {
+class SerialCompoundTest {
 
     @Test
-    public void test1() throws Narsese.NarseseException {
+    void test1() throws Narsese.NarseseException {
 
         
         
@@ -25,11 +25,11 @@ public class SerialCompoundTest {
 
     }
 
-    static void assertEqual(String x) throws Narsese.NarseseException {
+    private static void assertEqual(String x) throws Narsese.NarseseException {
         assertEqual($(x));
     }
 
-    static void assertEqual(Compound x) {
+    private static void assertEqual(Compound x) {
         SerialCompound y = new SerialCompound(x);
 
         System.out.println(x + " encoded to " + y.length() + " bytes");

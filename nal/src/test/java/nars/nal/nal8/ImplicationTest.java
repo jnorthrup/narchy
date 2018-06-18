@@ -17,15 +17,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * exhaustive parametric implication deduction/induction belief/goal tests
  */
-public class ImplicationTest {
+class ImplicationTest {
 
-    static final Term x = $.the("x");
-    static final Term y = $.the("y");
-    static final boolean[] B = new boolean[]{true, false};
-    static final int CYCLES = 4;
-    static final int TERM_VOL_MAX = 5;
+    private static final Term x = $.the("x");
+    private static final Term y = $.the("y");
+    private static final boolean[] B = new boolean[]{true, false};
+    private static final int CYCLES = 4;
+    private static final int TERM_VOL_MAX = 5;
 
-    static void assertContains(String oo, String c) {
+    private static void assertContains(String oo, String c) {
         assertTrue(oo.contains(c));
     }
 
@@ -35,7 +35,7 @@ public class ImplicationTest {
 //    }
 
     @Test
-    public void testBelief() {
+    void testBelief() {
 
         StringBuilder o = new StringBuilder();
         for (float condFreq : new float[]{0, 1, 0.5f}) {
@@ -79,7 +79,7 @@ public class ImplicationTest {
     }
 
     @Test
-    public void testGoal() {
+    void testGoal() {
 
         StringBuilder o = new StringBuilder();
         for (boolean sp : B) {

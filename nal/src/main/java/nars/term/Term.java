@@ -171,6 +171,14 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return whileTrue.test(this);
     }
 
+    /** convenience method */
+    default boolean recurseTerms(Predicate<Term> descendFilter, Consumer<Term> each) {
+        return recurseTerms(descendFilter, (x) -> {
+            each.accept(x);
+            return true;
+        }, null);
+    }
+
     default boolean hasXternal() {
         return (dt() == XTERNAL) || Termed.super.hasXternal();
     }
@@ -357,34 +365,23 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     }
 
     /**
-     * computes the first occuring event's time relative to the start of a conjunction
-     *
-     * @param x subterm which must be present
-     */
-    default int subTime(Term x) {
-
-        int d = subTimeSafe(x);
-        if (d != DTERNAL)
-            return d;
-
-        throw new RuntimeException(x + " not contained by " + this);
+     * computes the occurrence times of an event within a compound.
+     * if equals or is the first event only, it will be [0]
+     * null if not contained or indeterminate (ex: XTERNAL)
+    */
+    @Nullable
+    default int[] subTimes(Term x) {
+        int t = subTimeOnly(x);
+        return t == DTERNAL ? null : new int[]{t};
     }
 
-
-    /**
-     * computes the first occuring event's time relative to the start of the
-     * temporal term
-     *
-     * @param dt the current offset in the search
-     * @return DTERNAL if the subterm was not found
-     */
-    default int subTimeSafe(Term x, int after) {
+    /** returns the unique sub-event time of the given term,
+     * or DTERNAL if not present or there is not one unique time. */
+    default int subTimeOnly(Term x) {
         return equals(x) ? 0 : DTERNAL;
     }
 
-    default int subTimeSafe(Term x) {
-        return subTimeSafe(x, 0);
-    }
+
 
     /**
      * total span across time represented by a sequence conjunction compound

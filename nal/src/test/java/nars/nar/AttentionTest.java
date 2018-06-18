@@ -8,7 +8,7 @@ package nars.nar;
 /**
  * TODO test this for each different kind of attention/bag etc
  */
-public class AttentionTest {
+class AttentionTest {
     
 
 

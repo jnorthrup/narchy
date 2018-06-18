@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 3/1/16.
  */
-public class SubtermsTest {
+class SubtermsTest {
 
     /**
      * recursively
      */
     @NotNull
-    static boolean commonSubtermOrContainment(@NotNull Term a, @NotNull Term b) {
+    private static boolean commonSubtermOrContainment(@NotNull Term a, @NotNull Term b) {
 
         boolean aCompound = a instanceof Compound;
         boolean bCompound = b instanceof Compound;
@@ -43,7 +43,7 @@ public class SubtermsTest {
 
     @Disabled
     @Test
-    public void testCommonSubterms() throws Narsese.NarseseException {
+    void testCommonSubterms() throws Narsese.NarseseException {
         assertTrue(commonSubtermOrContainment($("x"), $("x")));
         assertFalse(commonSubtermOrContainment($("x"), $("y")));
         assertTrue(commonSubtermOrContainment($("(x,y,z)"), $("y")));
@@ -53,7 +53,7 @@ public class SubtermsTest {
     }
 
     @Disabled @Test
-    public void testCommonSubtermsRecursion() throws Narsese.NarseseException {
+    void testCommonSubtermsRecursion() throws Narsese.NarseseException {
         assertTrue(Subterms.commonSubterms($("(x,y)"), $("{a,x}"), false));
         assertFalse(Subterms.commonSubterms($("(x,y)"), $("{a,b}"), false));
 
@@ -62,7 +62,7 @@ public class SubtermsTest {
     }
 
     @Test
-    public void testUnionReusesInstance() throws Narsese.NarseseException {
+    void testUnionReusesInstance() throws Narsese.NarseseException {
         Compound container = $("{a,b}");
         Compound contained = $("{a}");
         assertSame(SetFunc.union(container.op(), container, contained), container);
@@ -71,20 +71,20 @@ public class SubtermsTest {
     }
 
     @Test
-    public void testDifferReusesInstance() throws Narsese.NarseseException {
+    void testDifferReusesInstance() throws Narsese.NarseseException {
         Compound x = $("{x}");
         Compound y = $("{y}");
         assertSame(Op.differenceSet(x.op(), x, y), x);
     }
     @Test
-    public void testIntersectReusesInstance() throws Narsese.NarseseException {
+    void testIntersectReusesInstance() throws Narsese.NarseseException {
         Compound x = $("{x,y}");
         Compound y = $("{x,y}");
         assertSame(SetFunc.intersect(x.op(), x, y), x);
     }
 
     @Test
-    public void testSomething() throws Narsese.NarseseException {
+    void testSomething() throws Narsese.NarseseException {
         Compound x = $("{e,f}");
         Compound y = $("{e,d}");
 
@@ -95,7 +95,7 @@ public class SubtermsTest {
     }
 
     @Test
-    public void testEqualityOfUnitSubtermsImpls() {
+    void testEqualityOfUnitSubtermsImpls() {
         Term a = Atomic.the("a");
         Subterms x = new UnitSubterm(a);
         Subterms x0 = new UnitSubterm(a);

@@ -5,5 +5,5 @@ package nars.perf.analyze;
  * of their possible values and whether they contribute to
  * success or fail
  */
-public class TestState {
+class TestState {
 }

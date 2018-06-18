@@ -6,7 +6,7 @@ import nars.NARS;
 import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
-public class MathTest {
+class MathTest {
 
 
 
@@ -16,7 +16,7 @@ public class MathTest {
 
 
     @Test
-    public void testImplVarAdd1() throws Narsese.NarseseException {
+    void testImplVarAdd1() throws Narsese.NarseseException {
 
         NAR t = new NARS().get();
         

@@ -33,7 +33,7 @@ abstract public class AbstractExec extends Exec {
     }
 
     @Override
-    protected void clear() {
+    public void clear() {
         synchronized (this) {
             if (active != null)
                 active.clear();

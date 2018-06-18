@@ -14,11 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by me on 10/29/16.
  */
-public class NAL6MultistepTest {
+class NAL6MultistepTest {
 
 
     /** https://dtai.cs.kuleuven.be/problog/tutorial/basic/02_bayes.html */
-    @Test public void testBurglarEarthquake1() throws Narsese.NarseseException {
+    @Test
+    void testBurglarEarthquake1() throws Narsese.NarseseException {
 
 
 
@@ -72,7 +73,8 @@ public class NAL6MultistepTest {
 
 
     /** https://dtai.cs.kuleuven.be/problog/tutorial/basic/02_bayes.html */
-    @Test public void testBurglarEarthquake2() throws Narsese.NarseseException {
+    @Test
+    void testBurglarEarthquake2() throws Narsese.NarseseException {
 
 
 

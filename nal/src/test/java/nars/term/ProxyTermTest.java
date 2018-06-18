@@ -7,11 +7,11 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.function.Function;
 
-public class ProxyTermTest {
+class ProxyTermTest {
 
     @Disabled
     @Test
-    public void testEveryTermMethodProxied() {
+    void testEveryTermMethodProxied() {
 
         Function<Method, String> methodSummarizer = x ->
                 x.getName() + "(" + Arrays.toString(x.getParameterTypes()) + ")";

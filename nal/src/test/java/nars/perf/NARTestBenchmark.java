@@ -28,7 +28,7 @@ public class NARTestBenchmark {
         });
     }
 
-    public static final Class[] tests = {
+    private static final Class[] tests = {
             NAL1Test.class,
             NAL2Test.class,
             NAL3Test.class,
@@ -40,7 +40,7 @@ public class NARTestBenchmark {
     };
 
 
-    void runTests() {
+    private void runTests() {
         new JUnitPlanetX().test(tests).run();
     }
 

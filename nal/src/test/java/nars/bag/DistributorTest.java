@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
  */
 
 
-public class DistributorTest {
+class DistributorTest {
 
     @Test
-    public void testDistributorProbabilities() {
+    void testDistributorProbabilities() {
 
         int levels = 20;
         Distributor d = Distributor.get(levels);

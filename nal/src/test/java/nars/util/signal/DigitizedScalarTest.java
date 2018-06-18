@@ -26,14 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 7/2/16.
  */
-public class DigitizedScalarTest {
+class DigitizedScalarTest {
 
 
-    final static float tolerance = 0.2f;
+    private final static float tolerance = 0.2f;
 
 
     @Test
-    public void testRewardConceptsFuzzification3() {
+    void testRewardConceptsFuzzification3() {
         NAR n = NARS.shell();
         MutableFloat m = new MutableFloat(0f);
 
@@ -48,7 +48,7 @@ public class DigitizedScalarTest {
         }, n);
     }
 
-    public void testSteadyFreqCondition(MutableFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
+    private void testSteadyFreqCondition(MutableFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
 
 
         for (int i = 0; i < 5; i++) {
@@ -71,7 +71,7 @@ public class DigitizedScalarTest {
     }
 
     @Test
-    public void testRewardConceptsFuzzification2() {
+    void testRewardConceptsFuzzification2() {
         NAR n = NARS.tmp();
         MutableFloat x = new MutableFloat(0f);
 
@@ -85,7 +85,7 @@ public class DigitizedScalarTest {
 
     @Disabled
     @Test
-    public void testServiceAndFluidEncoder() throws Narsese.NarseseException {
+    void testServiceAndFluidEncoder() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
         FloatRange x = new FloatRange(0f, 0f, 1f);

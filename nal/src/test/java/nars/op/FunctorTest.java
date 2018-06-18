@@ -16,10 +16,10 @@ import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class FunctorTest {
+class FunctorTest {
 
     @Test
-    public void testImmediateTransformOfInput() throws Narsese.NarseseException { 
+    void testImmediateTransformOfInput() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
 
@@ -40,7 +40,7 @@ public class FunctorTest {
     }
 
     @Test
-    public void testAdd1() throws Narsese.NarseseException {
+    void testAdd1() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
 
         d.input("add(1,2,#x)!");
@@ -50,7 +50,7 @@ public class FunctorTest {
     }
 
     @Test
-    public void testAdd1Temporal() throws Narsese.NarseseException {
+    void testAdd1Temporal() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
 
         d.input("add(1,2,#x)! :|:");
@@ -60,7 +60,8 @@ public class FunctorTest {
     }
 
     /** tests correct TRUE fall-through behavior, also backward question triggered execution */
-    @Test public void testFunctor1() throws Narsese.NarseseException {
+    @Test
+    void testFunctor1() throws Narsese.NarseseException {
 
 
         TestNAR t = new TestNAR(NARS.tmp());
@@ -78,7 +79,7 @@ public class FunctorTest {
     }
 
     @Test
-    public void testFunctor2() throws Narsese.NarseseException {
+    void testFunctor2() throws Narsese.NarseseException {
         
 
         int TIME = 512;
@@ -97,20 +98,22 @@ public class FunctorTest {
 
     @Disabled
     @Test
-    public void testExecutionResultIsCondition() throws Narsese.NarseseException {
+    void testExecutionResultIsCondition() throws Narsese.NarseseException {
         NAR d = NARS.tmp();
         d.input("(add($x,1,$y) ==> ($y <-> inc($x))).");
         d.input("((inc(2) <-> $x) ==> its($x)).");
         d.run(64);
     }
 
-    @Test public void testAnon1() {
+    @Test
+    void testAnon1() {
         NAR d = NARS.shell();
         Set<Term> result = Evaluation.solveAll($$("anon((a,b),#x)"), d);
         assertEquals("[anon((a,b),(_1,_2))]", result.toString());
     }
 
-    @Test public void testAnon2() throws Narsese.NarseseException {
+    @Test
+    void testAnon2() throws Narsese.NarseseException {
         NAR d = NARS.shell();
         d.log();
         d.input("anon((a,b),#x)?");

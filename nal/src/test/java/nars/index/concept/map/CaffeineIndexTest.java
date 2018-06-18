@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class CaffeineIndexTest {
 
     @Test
-    public void testDynamicWeight() throws Narsese.NarseseException {
+    void testDynamicWeight() throws Narsese.NarseseException {
         StringBuilder log = new StringBuilder();
         CaffeineIndex index;
         NAR n = new NARS().index(

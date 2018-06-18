@@ -5,9 +5,9 @@ import nars.NARS;
 import nars.Narsese;
 import org.junit.jupiter.api.Test;
 
-public class NAL7RealtimeTest {
+class NAL7RealtimeTest {
     @Test
-    public void test1() throws Narsese.NarseseException {
+    void test1() throws Narsese.NarseseException {
         
         NAR n = NARS.realtime(1f).withNAL(1,8).get();
         
@@ -20,7 +20,7 @@ public class NAL7RealtimeTest {
         n.run(100);
     }
     @Test
-    public void test2() throws Narsese.NarseseException {
+    void test2() throws Narsese.NarseseException {
         NAR n = NARS.realtime(1f).withNAL(1,8).get();
 
         //n.log();

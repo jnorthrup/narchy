@@ -27,7 +27,7 @@ public class NarseseTest {
         return (T) Narsese.term(s);
     }
 
-    public void assertInvalidTerms(@NotNull String... inputs) {
+    protected void assertInvalidTerms(@NotNull String... inputs) {
         for (String s : inputs) {
             
             try {
@@ -44,7 +44,7 @@ public class NarseseTest {
     }
 
 
-    protected void testProductABC(@NotNull Compound p) {
+    void testProductABC(@NotNull Compound p) {
         assertEquals(3, p.subs(), p + " should have 3 sub-terms");
         assertEquals("a", p.sub(0).toString());
         assertEquals("b", p.sub(1).toString());
@@ -95,7 +95,7 @@ public class NarseseTest {
 
 
 
-    protected void taskParses(@NotNull String s) throws Narsese.NarseseException {
+    void taskParses(@NotNull String s) throws Narsese.NarseseException {
         Task t = task(s);
         assertNotNull(t);
 

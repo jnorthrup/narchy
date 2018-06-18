@@ -22,14 +22,14 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 
-public class StampTest {
+class StampTest {
 
-    static long[] a(long... x) {
+    private static long[] a(long... x) {
         return x;
     }
 
     @Test
-    public void testOverlap() {
+    void testOverlap() {
 
 
         assertTrue(Stamp.overlapsAny(a(1, 2), a(2)));
@@ -47,7 +47,8 @@ public class StampTest {
 
     }
 
-    @Test public void testStampZipForward() {
+    @Test
+    void testStampZipForward() {
         assertEquals(
                 Arrays.toString(new long[] { 7, 8, 12, 13 }),
                 Arrays.toString(zipForward(
@@ -57,7 +58,8 @@ public class StampTest {
     }
 
     @Disabled
-    @Test public void testStampZipReverse() {
+    @Test
+    void testStampZipReverse() {
 
         long[] a = {1, 2};
         long[] b = {3, 4};
@@ -90,7 +92,8 @@ public class StampTest {
         );
     }
 
-    @Test public void directionInvariance() {
+    @Test
+    void directionInvariance() {
         
         final boolean[] both = { false, true };
         for (boolean dir : both) {
@@ -103,18 +106,21 @@ public class StampTest {
         }
     }
 
-    @NotNull public static long[] zipReverse(@NotNull long[] a, @NotNull long[] b, int i) {
+    @NotNull
+    private static long[] zipReverse(@NotNull long[] a, @NotNull long[] b, int i) {
         return zip(a, b, 0.5f, i, false);
     }
-    @NotNull public static long[] zipForward(@NotNull long[] a, @NotNull long[] b, int i) {
+    @NotNull
+    private static long[] zipForward(@NotNull long[] a, @NotNull long[] b, int i) {
         return zip(a, b, 0.5f, i, true);
     }
-    @NotNull public static long[] zipForward(@NotNull long[] a, @NotNull long[] b, float aToB, int i) {
+    @NotNull
+    private static long[] zipForward(@NotNull long[] a, @NotNull long[] b, float aToB, int i) {
         return zip(a, b, aToB, i, true);
     }
 
     @Test
-    public void testStampToSetArray() {
+    void testStampToSetArray() {
         assertEquals(3, toSetArray(new long[]{1, 2, 3}).length);
         assertEquals(2, toSetArray(new long[]{1, 1, 3}).length);
         assertEquals(1, toSetArray(new long[]{1}).length);
@@ -129,7 +135,7 @@ public class StampTest {
 
     @Disabled
     @Test
-    public void testStampReversePreservesOldestEvidence() {
+    void testStampReversePreservesOldestEvidence() {
         assertArrayEquals(
                 new long[] { 1, 3 },
                 zipReverse(new long[] { 1, 2}, new long[] { 3, 4}, 2)
@@ -149,7 +155,8 @@ public class StampTest {
     }
 
 
-    @Test public void testStampZipForwardWeighted() {
+    @Test
+    void testStampZipForwardWeighted() {
 
         long[] a = {1, 2, 8, 12};
         long[] b = {3, 4, 7, 13};
@@ -173,7 +180,8 @@ public class StampTest {
 
     }
 
-    @Test public void testStampZipForwardWeighted2() {
+    @Test
+    void testStampZipForwardWeighted2() {
 
         long[] a = {0, 2, 4, 6, 8, 10, 12};
         long[] b = {1, 3, 5, 7, 9, 11, 13};
@@ -199,7 +207,8 @@ public class StampTest {
                 Arrays.toString(zipForward(a,b, 0.1f, 7))
         );
     }
-    @Test public void testStampZipForwardWeighted3() {
+    @Test
+    void testStampZipForwardWeighted3() {
 
         
         long[] a = {0, 2};
@@ -220,16 +229,19 @@ public class StampTest {
 
     }
 
-    @Test public void testOverlapFractionIndependent() {
+    @Test
+    void testOverlapFractionIndependent() {
         assertEquals(0f, Stamp.overlapFraction(a(1), a(3)), 0.01f);
         assertEquals(0f, Stamp.overlapFraction(a(1, 2), a(3)), 0.01f);
         assertEquals(0f, Stamp.overlapFraction(a(1, 2), a(3, 4)), 0.01f);
     }
-    @Test public void testOverlapFraction2() {
+    @Test
+    void testOverlapFraction2() {
         assertEquals(1 / 2f, Stamp.overlapFraction(a(1, 2), a(2, 3)), 0.01f);
         assertEquals(1f, Stamp.overlapFraction(a(1, 2), a(1, 2, 3)), 0.01f);
     }
-    @Test public void testOverlapFraction3() {
+    @Test
+    void testOverlapFraction3() {
         
         
         
@@ -241,7 +253,8 @@ public class StampTest {
         assertEquals(1f, Stamp.overlapFraction(a(1,2,3,4), a(2,3,4)), 0.01f);
     }
 
-    @Test public void testDetectOverlapAfterZipOverflow() {
+    @Test
+    void testDetectOverlapAfterZipOverflow() {
         ObjectFloatPair<long[]> p = Stamp.zip(List.of(
                 new NALTask($.the(0), QUESTION, null, 0, 0, 0,
                         new long[]{1, 2, 8, 9}),

@@ -45,17 +45,12 @@ public enum PremiseDeriverCompiler {
         /** indexed by local (deriver-specific) id */
         int rules = r.size();
 
-
         /** map preconditions to conclusions by local conclusion id.
          * the key is an array with a null placeholder at the end to be completed later in this stage
          * */
         final List<Pair<PrediTerm<Derivation>[], DeriveAction>> pairs = new FasterList<>(rules);
 
-        ///** local conclusion id requiring this precondition */
-        //Map<PrediTerm<Derivation>, RoaringBitmap> reach = new HashMap<>(r.size());
-
-
-        r.forEach(rule -> pairs.add(rule.build()));
+        r.forEach(rule -> pairs.add(rule.rule));
 
         final TermTrie<PrediTerm<Derivation>, DeriveAction> path = new TermTrie<>();
 

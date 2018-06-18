@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 450;
+    private static final int cycles = 450;
 
 
     @Override
@@ -55,7 +55,7 @@ public class NAL2Test extends NALTest {
 */
 
     @Disabled @Test
-    public void setDefinition() {
+    void setDefinition() {
 
         TestNAR tester = test;
 
@@ -67,7 +67,7 @@ public class NAL2Test extends NALTest {
 
     @Disabled
     @Test
-    public void setDefinition2() {
+    void setDefinition2() {
 
         TestNAR tester = test;
         tester.believe("<[smart] --> [bright]>");
@@ -76,7 +76,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void setDefinition3() {
+    void setDefinition3() {
 
         TestNAR tester = test;
         tester.believe("<{Birdie} <-> {Tweety}>");
@@ -86,7 +86,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void setDefinition4() {
+    void setDefinition4() {
 
         TestNAR tester = test;
         tester.believe("<[bright] <-> [smart]>");
@@ -96,7 +96,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void structureTransformation() throws nars.Narsese.NarseseException {
+    void structureTransformation() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<Birdie <-> Tweety>", 0.9f, 0.9f);
@@ -106,7 +106,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void structureTransformation2() throws nars.Narsese.NarseseException {
+    void structureTransformation2() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bright <-> smart>", 0.9f, 0.9f);
@@ -116,7 +116,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void structureTransformation3() throws nars.Narsese.NarseseException {
+    void structureTransformation3() throws nars.Narsese.NarseseException {
         /*
         <bright <-> smart>. %0.9;0.9%
         <{bright} --> {smart}>?
@@ -130,7 +130,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void backwardInference() throws nars.Narsese.NarseseException {
+    void backwardInference() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
 
@@ -143,7 +143,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void analogyPos() {
+    void analogyPos() {
         
         
         
@@ -160,7 +160,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void analogyNeg() {
+    void analogyNeg() {
 
         test
         .believe("--(p1 --> p2)")
@@ -171,7 +171,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void testUnion() {
+    void testUnion() {
 
         test
                 .believe("a:{x}.")
@@ -180,7 +180,7 @@ public class NAL2Test extends NALTest {
 
     }
     @Test
-    public void testSetDecomposePositive() {
+    void testSetDecomposePositive() {
         test
                 .believe("<{x,y}-->c>")
                 .mustBelieve(cycles,"({x}-->c)", 1f, 0.81f)
@@ -189,7 +189,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void testSetDecomposeNegativeExt() {
+    void testSetDecomposeNegativeExt() {
         
         test
                 .believe("<{--x,y}-->c>")
@@ -198,7 +198,7 @@ public class NAL2Test extends NALTest {
         ;
     }
     @Test
-    public void testSetDecomposeNegativeInt() {
+    void testSetDecomposeNegativeInt() {
         
         test
                 .believe("<c-->[--x,y]>")
@@ -208,7 +208,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void testIntersectDiffUnionOfCommonSubterms() {
+    void testIntersectDiffUnionOfCommonSubterms() {
         test
                 .believe("<{x,y}-->c>")
                 .believe("<{x,z}-->c>")
@@ -227,7 +227,7 @@ public class NAL2Test extends NALTest {
 
 
     @Test
-    public void set_operations() {
+    void set_operations() {
 
         test
                 .believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f) 
@@ -238,7 +238,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void set_operationsSetExt_union() {
+    void set_operationsSetExt_union() {
 
         TestNAR tester = test;
         tester.believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f); 
@@ -247,7 +247,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void set_operationsSetExt_unionNeg() {
+    void set_operationsSetExt_unionNeg() {
 
         TestNAR tester = test;
         tester.believe("<planetX --> {Earth}>", 0.1f, 0.9f); 
@@ -257,7 +257,7 @@ public class NAL2Test extends NALTest {
 
 
     @Test
-    public void set_operationsSetInt_union_2_3_4() {
+    void set_operationsSetInt_union_2_3_4() {
 
         TestNAR tester = test;
         tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f); 
@@ -266,7 +266,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void set_operationsSetInt_union1_1_2_3() {
+    void set_operationsSetInt_union1_1_2_3() {
 
         TestNAR tester = test;
         tester.believe("<planetX --> [marsy,venusy]>", 1.0f, 0.9f); 
@@ -276,7 +276,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void set_operations2_difference() throws Narsese.NarseseException {
+    void set_operations2_difference() throws Narsese.NarseseException {
         assertEquals("{Mars,Venus}", DIFFe.the($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
 
         TestNAR tester = test;
@@ -288,7 +288,7 @@ public class NAL2Test extends NALTest {
 
 
     @Test
-    public void set_operations3_difference() {
+    void set_operations3_difference() {
 
         TestNAR tester = test;
         tester.believe("<planetX --> [marsy,earthly,venusy]>", 1.0f, 0.9f); 
@@ -298,7 +298,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void set_operations4() {
+    void set_operations4() {
 
         TestNAR tester = test;
         tester.believe("<[marsy,earthly,venusy] --> planetX>", 1.0f, 0.9f); 
@@ -309,7 +309,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void set_operations5Half() {
+    void set_operations5Half() {
 
         TestNAR tester = test;
         tester.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f); 
@@ -317,7 +317,7 @@ public class NAL2Test extends NALTest {
     }
 
     @Test
-    public void set_operations5() {
+    void set_operations5() {
 
         TestNAR tester = test;
         tester.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f); 

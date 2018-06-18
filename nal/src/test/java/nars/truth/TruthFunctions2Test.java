@@ -8,11 +8,11 @@ import static nars.truth.TruthFunctions2.intersectionX;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** experiments with alternate truth functions */
-public class TruthFunctions2Test {
+class TruthFunctions2Test {
 
 
     @Test
-    public void testIntersectionX() {
+    void testIntersectionX() {
         assertEquals("%1.0;.67%", intersectionX($.t(1f, 0.5f), $.t(1f, 0.5f), 0).toString());
         assertEquals("%.50;.25%", intersectionX($.t(1f, 0.5f), $.t(0f, 0.5f), 0).toString());
 
@@ -26,7 +26,7 @@ public class TruthFunctions2Test {
     }
 
     @Test
-    public void testDifferenceX() {
+    void testDifferenceX() {
         assertEquals("%0.0;.67%", differenceX($.t(1f, 0.5f), $.t(1f, 0.5f), 0).toString());
         assertEquals("%.50;.25%", differenceX($.t(1f, 0.5f), $.t(0.5f, 0.5f), 0).toString());
         assertEquals("%1.0;.67%", differenceX($.t(1f, 0.5f), $.t(0f, 0.5f), 0).toString());

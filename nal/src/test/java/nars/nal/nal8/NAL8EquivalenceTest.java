@@ -10,12 +10,12 @@ import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 
 @Disabled
-public class NAL8EquivalenceTest extends NALTest {
+class NAL8EquivalenceTest extends NALTest {
 
-    static final int cycles = NAL8Test.cycles;
+    private static final int cycles = NAL8Test.cycles;
 
     @Test
-    public void testPosGoalEquivalenceSpreading() {
+    void testPosGoalEquivalenceSpreading() {
 
         test
                 .input("(R)!")
@@ -24,7 +24,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void testNegatedGoalEquivalenceSpreading() {
+    void testNegatedGoalEquivalenceSpreading() {
 
         test
                 .input("--(R)!")
@@ -33,7 +33,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void testGoalEquivComponent() {
+    void testGoalEquivComponent() {
 
         test
                 .input("(happy)!")
@@ -42,7 +42,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void testGoalEquivComponentNeg() {
+    void testGoalEquivComponentNeg() {
 
         test
                 .input("(happy)!")
@@ -51,7 +51,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void testPredictiveEquivalenceTemporalTemporal() {
+    void testPredictiveEquivalenceTemporalTemporal() {
 
         test
                 .inputAt(0, "((out) <=>-3 (happy)). :|:")
@@ -61,7 +61,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
        @Test
-    public void goal_deduction_equi_pos_pospos() {
+       void goal_deduction_equi_pos_pospos() {
 
         TestNAR tester = test;
         tester.input("x:y! :|:");
@@ -70,7 +70,7 @@ public class NAL8EquivalenceTest extends NALTest {
         tester.mustNotOutput(cycles, "goto(z)", GOAL, ETERNAL);
     }
     @Test
-    public void goal_deduction_equi_neg_pospos() {
+    void goal_deduction_equi_neg_pospos() {
 
         TestNAR tester = test;
         tester.input("--x:y! :|:");
@@ -80,7 +80,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_equi_pos_posneg() {
+    void goal_deduction_equi_pos_posneg() {
 
         test
                 .input("(R)! :|:")
@@ -90,7 +90,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_equi_pos_posneg_var() {
+    void goal_deduction_equi_pos_posneg_var() {
 
         test
 
@@ -102,7 +102,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_equi_neg_posneg() {
+    void goal_deduction_equi_neg_posneg() {
 
         test
                 .input("--(R)! :|:")
@@ -114,7 +114,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_equi_subst() {
+    void goal_deduction_equi_subst() {
 
         TestNAR tester = test;
         tester.input("x:y! :|:");
@@ -122,7 +122,7 @@ public class NAL8EquivalenceTest extends NALTest {
         tester.mustGoal(cycles, "goto(x)", 1.0f, 0.81f, 0);
     }
     @Test
-    public void goalInferredFromEquivAndImplEternalAndPresent() {
+    void goalInferredFromEquivAndImplEternalAndPresent() {
 
         TestNAR tester = test;
 
@@ -134,7 +134,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void conjunctionSubstitutionViaEquiv() {
+    void conjunctionSubstitutionViaEquiv() {
 
         TestNAR tester = test;
 
@@ -145,7 +145,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void conjunctionGoalSubstitutionViaEquiv() {
+    void conjunctionGoalSubstitutionViaEquiv() {
 
         TestNAR tester = test;
 
@@ -156,7 +156,7 @@ public class NAL8EquivalenceTest extends NALTest {
     }
 
     @Test
-    public void conjunctionSubstitutionViaEquivSimultaneous() {
+    void conjunctionSubstitutionViaEquivSimultaneous() {
 
         TestNAR tester = test;
 
@@ -168,7 +168,7 @@ public class NAL8EquivalenceTest extends NALTest {
 
 
     @Test
-    public void conjunctionSubstitutionViaEquivTemporal() {
+    void conjunctionSubstitutionViaEquivTemporal() {
 
         TestNAR tester = test;
 
@@ -179,7 +179,7 @@ public class NAL8EquivalenceTest extends NALTest {
         
     }
   @Test
-    public void equiSubstitutionViaEquivalence() {
+  void equiSubstitutionViaEquivalence() {
 
         test
                 .input("(a:b<->c:d).") 
@@ -188,7 +188,7 @@ public class NAL8EquivalenceTest extends NALTest {
                 .mustNotOutput(cycles, "(e:f <=>+1 a:b)", BELIEF, ETERNAL);
     }
     @Test
-    public void testPredictiveEquivalenceTemporalEternal() {
+    void testPredictiveEquivalenceTemporalEternal() {
 
         
 

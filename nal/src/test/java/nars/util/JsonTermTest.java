@@ -10,9 +10,10 @@ import nars.term.obj.JsonTerm;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
-public class JsonTermTest {
+class JsonTermTest {
 
-    @Test public void testJsonArray() throws Narsese.NarseseException {
+    @Test
+    void testJsonArray() throws Narsese.NarseseException {
         NAR d = new NARS().get();
         d.log();
 
@@ -30,7 +31,8 @@ public class JsonTermTest {
         d.run(256);
     }
 
-    @Test public void testBigJSON() {
+    @Test
+    void testBigJSON() {
         NAR d = new NARS().get();
         
 
@@ -46,7 +48,8 @@ public class JsonTermTest {
         d.run(256);
     }
 
-    @Test public void testBigJSON2() {
+    @Test
+    void testBigJSON2() {
         /*
         * https://eonet.sci.gsfc.nasa.gov/api/v2.1/events?limit=5&days=20&source=InciWeb&status=open
         * https://worldview.earthdata.nasa.gov/config/wv.json

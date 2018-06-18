@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ActivateTest {
+class ActivateTest {
 
-    final NAR n = new NARS().shell();
+    private final NAR n = new NARS().shell();
 
     @Test
-    public void testConceptFireLinkSelection() throws Narsese.NarseseException {
+    void testConceptFireLinkSelection() throws Narsese.NarseseException {
         int count = 8;
 
         n.input("$0.01 a:b."); 
@@ -91,7 +91,7 @@ public class ActivateTest {
     }
 
     @Test
-    public void testDerivedBudgets() throws Narsese.NarseseException {
+    void testDerivedBudgets() throws Narsese.NarseseException {
 
 
 
@@ -107,7 +107,8 @@ public class ActivateTest {
         n.conceptsActive().forEach(System.out::println);
     }
 
-    @Test public void testConceptualizeNonTaskable_IndepVarUnbalanced() throws Narsese.NarseseException {
+    @Test
+    void testConceptualizeNonTaskable_IndepVarUnbalanced() throws Narsese.NarseseException {
         assertNotNull(NARS.tmp(1).conceptualize($("(x --> $1)")));
     }
 

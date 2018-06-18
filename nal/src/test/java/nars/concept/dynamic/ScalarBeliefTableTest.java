@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ScalarBeliefTableTest {
 
     @Test
-    public void test1() {
+    void test1() {
         NAR n = NARS.shell();
 
         MutableFloat xx = new MutableFloat(0);

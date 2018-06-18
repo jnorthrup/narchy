@@ -41,13 +41,13 @@ import java.io.InputStream;
  * @author Eric Bruneton
  * @author Eugene Kuleshov
  */
-public class ClassReader {
+class ClassReader {
 
   /**
    * A flag to skip the Code attributes. If this flag is set the Code attributes are neither parsed
    * nor visited.
    */
-  public static final int SKIP_CODE = 1;
+  private static final int SKIP_CODE = 1;
 
   /**
    * A flag to skip the SourceFile, SourceDebugExtension, LocalVariableTable, LocalVariableTypeTable
@@ -55,7 +55,7 @@ public class ClassReader {
    * visited (i.e. {@link ClassVisitor#visitSource}, {@link MethodVisitor#visitLocalVariable} and
    * {@link MethodVisitor#visitLineNumber} are not called).
    */
-  public static final int SKIP_DEBUG = 2;
+  private static final int SKIP_DEBUG = 2;
 
   /**
    * A flag to skip the StackMap and StackMapTable attributes. If this flag is set these attributes
@@ -63,7 +63,7 @@ public class ClassReader {
    * is useful when the {@link ClassWriter#COMPUTE_FRAMES} option is used: it avoids visiting frames
    * that will be ignored and recomputed from scratch.
    */
-  public static final int SKIP_FRAMES = 4;
+  private static final int SKIP_FRAMES = 4;
 
   /**
    * A flag to expand the stack map frames. By default stack map frames are visited in their
@@ -72,7 +72,7 @@ public class ClassReader {
    * format (this option adds a decompression/compression step in ClassReader and ClassWriter which
    * degrades performance quite a lot).
    */
-  public static final int EXPAND_FRAMES = 8;
+  private static final int EXPAND_FRAMES = 8;
 
   /**
    * A flag to expand the ASM specific instructions into an equivalent sequence of standard bytecode
@@ -85,7 +85,7 @@ public class ClassReader {
    * infinite loops where a goto_w is replaced with a goto in ClassReader and converted back to a
    * goto_w in ClassWriter cannot occur.
    */
-  static final int EXPAND_ASM_INSNS = 256;
+  private static final int EXPAND_ASM_INSNS = 256;
 
   /** The size of the temporary byte array used to read class input streams chunk by chunk. */
   private static final int INPUT_STREAM_DATA_CHUNK_SIZE = 4096;
@@ -99,7 +99,7 @@ public class ClassReader {
    * necessarily start at offset 0. Use {@link #getItem} and {@link #header} to get correct
    * ClassFile element offsets within this byte array.
    */
-  public final byte[] b;
+  private final byte[] b;
 
   /**
    * The offset in bytes, in {@link #b}, of each cp_info entry of the ClassFile's constant_pool
@@ -121,7 +121,7 @@ public class ClassReader {
   private final int maxStringLength;
 
   /** The offset in bytes, in {@link #b}, of the ClassFile's access_flags field. */
-  public final int header;
+  private final int header;
 
   
   
@@ -132,7 +132,7 @@ public class ClassReader {
    *
    * @param classFile the JVMS ClassFile structure to be read.
    */
-  public ClassReader(final byte[] classFile) {
+  private ClassReader(final byte[] classFile) {
     this(classFile, 0, classFile.length);
   }
 
@@ -143,8 +143,8 @@ public class ClassReader {
    * @param classFileOffset the offset in byteBuffer of the first byte of the ClassFile to be read.
    * @param classFileLength the length in bytes of the ClassFile to be read.
    */
-  public ClassReader(
-      final byte[] classFileBuffer, final int classFileOffset, final int classFileLength) {
+  private ClassReader(
+          final byte[] classFileBuffer, final int classFileOffset, final int classFileLength) {
     this(classFileBuffer, classFileOffset, /* checkClassVersion = */ true);
   }
 
@@ -156,8 +156,8 @@ public class ClassReader {
    * @param classFileOffset the offset in byteBuffer of the first byte of the ClassFile to be read.
    * @param checkClassVersion whether to check the class version or not.
    */
-  ClassReader(
-      final byte[] classFileBuffer, final int classFileOffset, final boolean checkClassVersion) {
+  private ClassReader(
+          final byte[] classFileBuffer, final int classFileOffset, final boolean checkClassVersion) {
     this.b = classFileBuffer;
     
     
@@ -372,10 +372,10 @@ public class ClassReader {
    * @param parsingOptions the options to use to parse this class. One or more of {@link
    *     #SKIP_CODE}, {@link #SKIP_DEBUG}, {@link #SKIP_FRAMES} or {@link #EXPAND_FRAMES}.
    */
-  public void accept(
-      final ClassVisitor classVisitor,
-      final Attribute[] attributePrototypes,
-      final int parsingOptions) {
+  private void accept(
+          final ClassVisitor classVisitor,
+          final Attribute[] attributePrototypes,
+          final int parsingOptions) {
     Context context = new Context();
     context.attributePrototypes = attributePrototypes;
     context.parsingOptions = parsingOptions;
@@ -2405,7 +2405,7 @@ public class ClassReader {
    *     label in this array.
    * @return a non null Label, which must be equal to labels[bytecodeOffset].
    */
-  protected Label readLabel(final int bytecodeOffset, final Label[] labels) {
+  private Label readLabel(final int bytecodeOffset, final Label[] labels) {
     if (labels[bytecodeOffset] == null) {
       labels[bytecodeOffset] = new Label();
     }
@@ -3148,7 +3148,7 @@ public class ClassReader {
   
 
   /** @return the offset in {@link #b} of the first ClassFile's 'attributes' array field entry. */
-  final int getFirstAttributeOffset() {
+  private int getFirstAttributeOffset() {
     
     
     int currentOffset = header + 8 + readUnsignedShort(header + 6) * 2;
@@ -3267,7 +3267,7 @@ public class ClassReader {
    * @param offset the start offset of the value to be read in {@link #b}.
    * @return the read value.
    */
-  public int readByte(final int offset) {
+  private int readByte(final int offset) {
     return b[offset] & 0xFF;
   }
 
@@ -3278,7 +3278,7 @@ public class ClassReader {
    * @param offset the start index of the value to be read in {@link #b}.
    * @return the read value.
    */
-  public int readUnsignedShort(final int offset) {
+  private int readUnsignedShort(final int offset) {
     byte[] classFileBuffer = b;
     return ((classFileBuffer[offset] & 0xFF) << 8) | (classFileBuffer[offset + 1] & 0xFF);
   }
@@ -3290,7 +3290,7 @@ public class ClassReader {
    * @param offset the start offset of the value to be read in {@link #b}.
    * @return the read value.
    */
-  public short readShort(final int offset) {
+  private short readShort(final int offset) {
     byte[] classFileBuffer = b;
     return (short) (((classFileBuffer[offset] & 0xFF) << 8) | (classFileBuffer[offset + 1] & 0xFF));
   }
@@ -3302,7 +3302,7 @@ public class ClassReader {
    * @param offset the start offset of the value to be read in {@link #b}.
    * @return the read value.
    */
-  public int readInt(final int offset) {
+  private int readInt(final int offset) {
     byte[] classFileBuffer = b;
     return ((classFileBuffer[offset] & 0xFF) << 24)
         | ((classFileBuffer[offset + 1] & 0xFF) << 16)
@@ -3317,7 +3317,7 @@ public class ClassReader {
    * @param offset the start offset of the value to be read in {@link #b}.
    * @return the read value.
    */
-  public long readLong(final int offset) {
+  private long readLong(final int offset) {
     long l1 = readInt(offset);
     long l0 = readInt(offset + 4) & 0xFFFFFFFFL;
     return (l1 << 32) | l0;
@@ -3333,7 +3333,7 @@ public class ClassReader {
    *     large. It is not automatically resized.
    * @return the String corresponding to the specified CONSTANT_Utf8 entry.
    */
-  public String readUTF8(final int offset, final char[] charBuffer) {
+  private String readUTF8(final int offset, final char[] charBuffer) {
     int constantPoolEntryIndex = readUnsignedShort(offset);
     if (offset == 0 || constantPoolEntryIndex == 0) {
       return null;
@@ -3350,7 +3350,7 @@ public class ClassReader {
    *     large. It is not automatically resized.
    * @return the String corresponding to the specified CONSTANT_Utf8 entry.
    */
-  final String readUTF(final int constantPoolEntryIndex, final char[] charBuffer) {
+  private String readUTF(final int constantPoolEntryIndex, final char[] charBuffer) {
     String value = constantUtf8Values[constantPoolEntryIndex];
     if (value != null) {
       return value;
@@ -3420,7 +3420,7 @@ public class ClassReader {
    *     large. It is not automatically resized.
    * @return the String corresponding to the specified CONSTANT_Class entry.
    */
-  public String readClass(final int offset, final char[] charBuffer) {
+  private String readClass(final int offset, final char[] charBuffer) {
     return readStringish(offset, charBuffer);
   }
 
@@ -3434,7 +3434,7 @@ public class ClassReader {
    *     large. It is not automatically resized.
    * @return the String corresponding to the specified CONSTANT_Module entry.
    */
-  public String readModule(final int offset, final char[] charBuffer) {
+  private String readModule(final int offset, final char[] charBuffer) {
     return readStringish(offset, charBuffer);
   }
 
@@ -3448,7 +3448,7 @@ public class ClassReader {
    *     large. It is not automatically resized.
    * @return the String corresponding to the specified CONSTANT_Package entry.
    */
-  public String readPackage(final int offset, final char[] charBuffer) {
+  private String readPackage(final int offset, final char[] charBuffer) {
     return readStringish(offset, charBuffer);
   }
 
@@ -3464,7 +3464,7 @@ public class ClassReader {
    * @return the {@link Integer}, {@link Float}, {@link Long}, {@link Double}, {@link String},
    *     {@link Type} or {@link Handle} corresponding to the specified constant pool entry.
    */
-  public Object readConst(final int constantPoolEntryIndex, final char[] charBuffer) {
+  private Object readConst(final int constantPoolEntryIndex, final char[] charBuffer) {
     int cpInfoOffset = cpInfoOffsets[constantPoolEntryIndex];
     switch (b[cpInfoOffset - 1]) {
       case Symbol.CONSTANT_INTEGER_TAG:

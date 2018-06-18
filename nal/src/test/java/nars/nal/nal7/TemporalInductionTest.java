@@ -25,45 +25,45 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 6/8/15.
  */
-public class TemporalInductionTest {
+class TemporalInductionTest {
 
     @Test
-    public void inductionDiffEventsAtom() {
+    void inductionDiffEventsAtom() {
         testInduction("before", "after", 10);
     }
 
     @Test
-    public void inductionDiffEventsCompound() {
+    void inductionDiffEventsCompound() {
         testInduction("x:before", "x:after", 10);
     }
 
     @Test
-    public void inductionDiffEventsCompoundNear() {
+    void inductionDiffEventsCompoundNear() {
         testInduction("x:before", "x:after", 3);
     }
 
     @Test
-    public void inductionDiffEventsNegPos() {
+    void inductionDiffEventsNegPos() {
         testInduction("--x:before", "x:after", 4);
     }
 
     @Test
-    public void inductionSameEvents() {
+    void inductionSameEvents() {
         testInduction("x", "x", 3);
     }
 
     @Test
-    public void inductionSameEventsNeg() {
+    void inductionSameEventsNeg() {
         testInduction("--x", "--x", 10);
     }
 
     @Test
-    public void inductionSameEventsInvertPosNeg() {
+    void inductionSameEventsInvertPosNeg() {
         testInduction("x", "--x", 10);
     }
 
     @Test
-    public void inductionSameEventsInvertNegPos() {
+    void inductionSameEventsInvertNegPos() {
         testInduction("--x", "x", 10);
     }
 
@@ -72,7 +72,7 @@ public class TemporalInductionTest {
      * would ordinarily happen due to using projected belief truth
      * rather than raw belief truth
      */
-    static void testInduction(String a, String b, int dt) {
+    private static void testInduction(String a, String b, int dt) {
         int cycles = dt * 24;
         TestNAR t = new TestNAR(NARS.tmp())
                 
@@ -90,7 +90,7 @@ public class TemporalInductionTest {
 
 
     @Test
-    public void testTemporalRevision() throws Narsese.NarseseException {
+    void testTemporalRevision() throws Narsese.NarseseException {
 
         NAR n = NARS.tmp();
         n.time.dur(1);
@@ -135,7 +135,7 @@ public class TemporalInductionTest {
     }
 
     @Test
-    public void testTemporalRevisionOfTemporalRelation() throws Narsese.NarseseException {
+    void testTemporalRevisionOfTemporalRelation() throws Narsese.NarseseException {
 
         NAR n = NARS.tmp();
 
@@ -152,7 +152,7 @@ public class TemporalInductionTest {
     }
 
     @Test
-    public void testQuestionProjection() throws Narsese.NarseseException {
+    void testQuestionProjection() throws Narsese.NarseseException {
 
         NAR n = NARS.tmp();
 
@@ -176,7 +176,7 @@ public class TemporalInductionTest {
     }
 
     @Test
-    public void testInductionStability() throws Narsese.NarseseException {
+    void testInductionStability() throws Narsese.NarseseException {
         
         NAR d = NARS.tmp();
         d.input("a:b. :|:");
@@ -213,7 +213,7 @@ public class TemporalInductionTest {
 
         private final FloatSupplier getter;
 
-        public PriMeter(NAR n, String id) {
+        PriMeter(NAR n, String id) {
             super("pri(" + id + ")", true);
             Term term = $.$$(id);
             this.getter = ()->{
@@ -240,7 +240,8 @@ public class TemporalInductionTest {
      * events, "should" ultimately accumulate a higher priority than
      * the events themselves.
      */
-    @Test public void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() throws FileNotFoundException {
+    @Test
+    void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() throws FileNotFoundException {
         NAR n = NARS.tmp();
 
         n.beliefPriDefault.set(0.1f);

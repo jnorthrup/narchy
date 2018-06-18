@@ -26,12 +26,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 
-public class LinkageTest extends NALTest {
+class LinkageTest extends NALTest {
 
-    final int runCycles = 70;
+    private final int runCycles = 70;
 
 
-    void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {
+    private void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {
 
         test.requireConditions = false;
         TestNAR tester = test;
@@ -48,7 +48,7 @@ public class LinkageTest extends NALTest {
 
     }
 
-    public boolean isPassed2(String premise1Str, @Nullable Concept ret2) {
+    private boolean isPassed2(String premise1Str, @Nullable Concept ret2) {
         Term premise1 = null;
         try {
             premise1 = $.$(premise1Str).concept();
@@ -66,12 +66,12 @@ public class LinkageTest extends NALTest {
         return false;
     }
 
-    public void ProperlyLinkedIndirectlyTest(@NotNull String spremise1, @NotNull String spremise2) throws Exception {
+    private void ProperlyLinkedIndirectlyTest(@NotNull String spremise1, @NotNull String spremise2) throws Exception {
         ProperlyLinkedIndirectlyTest(spremise1, BELIEF, spremise2);
     }
 
     
-    public void ProperlyLinkedIndirectlyTest(@NotNull String spremise1, byte punc, @NotNull String spremise2) throws Exception {
+    private void ProperlyLinkedIndirectlyTest(@NotNull String spremise1, byte punc, @NotNull String spremise2) throws Exception {
 
 
         test.requireConditions = false;
@@ -150,13 +150,13 @@ public class LinkageTest extends NALTest {
 
     }
 
-    static Supplier<String> why(NAR nar, Termed premise1, Termed premise2) {
+    private static Supplier<String> why(NAR nar, Termed premise1, Termed premise2) {
         return ()->premise1 + " no link to " + premise2 + "\n" +
                 (((nar.concept(premise1)!=null) ? nar.concept(premise1).printToString() : (premise1 + " unconceptualized"))) + "\n" +
                 (((nar.concept(premise2)!=null) ? nar.concept(premise2).printToString() : (premise2 + " unconceptualized"))) + "\n";
     }
 
-    String getTask(byte punc, Termed premise1) {
+    private String getTask(byte punc, Termed premise1) {
         if (punc == QUESTION) {
             return premise1.toString() + (char) (QUESTION);
         } else {
@@ -164,7 +164,7 @@ public class LinkageTest extends NALTest {
         }
     }
 
-    boolean linksIndirectly(@NotNull Concept src, @NotNull Concept target, @NotNull NAR nar) {
+    private boolean linksIndirectly(@NotNull Concept src, @NotNull Concept target, @NotNull NAR nar) {
 
 
         for (PriReference<Term> entry : src.termlinks()) {
@@ -200,7 +200,7 @@ public class LinkageTest extends NALTest {
 
 
     
-    public void ProperlyLinkedIndirectlyLayer2Test(@NotNull String premise1, @NotNull String premise2) throws Exception {
+    void ProperlyLinkedIndirectlyLayer2Test(@NotNull String premise1, @NotNull String premise2) throws Exception {
 
         TestNAR tester = test;
         tester.believe(premise1); 
@@ -218,7 +218,7 @@ public class LinkageTest extends NALTest {
         tester.mustBelieve(1, "<a --> b>", 0.9f);
     }
 
-    public boolean links(@NotNull String premise1, String premise2, @NotNull TestNAR tester) throws Narsese.NarseseException {
+    private boolean links(@NotNull String premise1, String premise2, @NotNull TestNAR tester) throws Narsese.NarseseException {
         Concept ret = tester.nar.conceptualize(premise1);
         boolean passed = false;
         if (ret != null) {
@@ -261,24 +261,24 @@ public class LinkageTest extends NALTest {
 
 
     @Test
-    public void Linkage_NAL5_abduction() throws Exception {
+    void Linkage_NAL5_abduction() throws Exception {
         ProperlyLinkedTest("((robin-->bird)==>(robin-->animal))", "(robin-->animal)");
     }
 
 
     @Test
-    public void Linkage_NAL5_detachment() throws Exception {
+    void Linkage_NAL5_detachment() throws Exception {
         ProperlyLinkedTest("((robin-->bird)==>(robin-->animal))", "(robin-->bird)");
     }
 
     @Test
-    public void Linkage_NAL6_variable_elimination2() throws Exception {
+    void Linkage_NAL6_variable_elimination2() throws Exception {
         ProperlyLinkedIndirectlyTest("<<$1-->bird>==><$1-->animal>>", "(tiger-->animal)");
     }
 
     
     @Test
-    public void Part_Indirect_Linkage_NAL6_multiple_variable_elimination4() throws Exception {
+    void Part_Indirect_Linkage_NAL6_multiple_variable_elimination4() throws Exception {
         ProperlyLinkedIndirectlyTest("<#1 --> lock>", "<{lock1} --> lock>");
     }
 
@@ -303,7 +303,7 @@ public class LinkageTest extends NALTest {
 
 
     @Test
-    public void Indirect_Linkage_NAL6_multiple_variable_elimination() throws Exception {
+    void Indirect_Linkage_NAL6_multiple_variable_elimination() throws Exception {
         ProperlyLinkedIndirectlyTest("<(&&, <$1 --> lock>, <$2 --> key>) ==> open($2, $1)>",
                 "<{lock1} --> lock>");
     }
@@ -316,28 +316,28 @@ public class LinkageTest extends NALTest {
 
 
     @Test
-    public void Indirect_Linkage_NAL6_variable_elimination_deduction() throws Exception {
+    void Indirect_Linkage_NAL6_variable_elimination_deduction() throws Exception {
         ProperlyLinkedIndirectlyTest(
                 "<lock1 --> lock>",
                 "<(&&, open($2, #1), <#1 --> lock>) ==> <$2 --> key>>");
     }
 
     @Test
-    public void Indirect_Linkage_NAL6_variable_unification7() throws Exception {
+    void Indirect_Linkage_NAL6_variable_unification7() throws Exception {
         ProperlyLinkedIndirectlyTest(
                 "<(&&, <$1 --> flyer>, <($1, worms) --> food>) ==> <$1 --> bird>>",
                 "<<$1 --> flyer> ==> <$1 --> [withWings]>>");
     }
 
     @Test
-    public void Indirect_Linkage_NAL6_variable_unification6() throws Exception {
+    void Indirect_Linkage_NAL6_variable_unification6() throws Exception {
         ProperlyLinkedIndirectlyTest(
                 "<(&&, <$1 --> flyer>, <$1 --> [chirping]>, <($1, worms) --> food>) ==> <$1 --> bird>>",
                 "<(&&, <$1 --> [chirping]>, <$1 --> [withWings]>) ==> <$1 --> bird>>");
     }
 
     @Test
-    public void Indirect_Linkage_NAL6_second_level_variable_unification() throws Exception {
+    void Indirect_Linkage_NAL6_second_level_variable_unification() throws Exception {
         
         ProperlyLinkedIndirectlyTest(
                 "(lock:#1 && (key:$2 ==> ($2, #1):open))",
@@ -350,50 +350,47 @@ public class LinkageTest extends NALTest {
 
 
     @Test
-    public void Indirect_Linkage_Basic() throws Exception {
+    void Indirect_Linkage_Basic() throws Exception {
         ProperlyLinkedIndirectlyTest("<a --> b>", "<b --> c>");
     }
 
     @Test
-    public void Indirect_Linkage_Layer2_Basic() throws Exception {
+    void Indirect_Linkage_Layer2_Basic() throws Exception {
         ProperlyLinkedIndirectlyTest("<a --> <b --> <k --> x>>>", "<k --> x>");
     }
 
     @Test
-    public void Indirect_Linkage_Layer2_Basic_WithVar() throws Exception {
+    void Indirect_Linkage_Layer2_Basic_WithVar() throws Exception {
         ProperlyLinkedIndirectlyTest("<#1 --> <b --> <k --> x>>>", "<k --> x>");
     }
 
     @Test
-    public void Indirect_Linkage_Inh_WithSect() throws Exception {
+    void Indirect_Linkage_Inh_WithSect() throws Exception {
         ProperlyLinkedIndirectlyTest("(a-->b)", "(a --> (b & c))");
     }
 
     @Test
-    public void Indirect_Linkage_Inh_WithSectVar() throws Exception {
+    void Indirect_Linkage_Inh_WithSectVar() throws Exception {
         ProperlyLinkedIndirectlyTest("(#1-->b)", "<a --> (b & c)>");
     }
 
 
     @Test
-    @Disabled /* requires inheritance to have termlink templates to level 2, but this doesnt seem critical otherwise */
-    public void Indirect_Linkage_Layer2_Basic_WithVar2() throws Exception {
+    @Disabled /* requires inheritance to have termlink templates to level 2, but this doesnt seem critical otherwise */ void Indirect_Linkage_Layer2_Basic_WithVar2() throws Exception {
         ProperlyLinkedIndirectlyTest("<a --> <b --> <#1 --> x>>>", BELIEF, "<k --> x>");
     }
 
     @Test
-    @Disabled /* requires inheritance to have termlink templates to level 2, but this doesnt seem critical otherwise */
-    public void Indirect_Linkage_Layer2_Basic_WithVar2_Goal() throws Exception {
+    @Disabled /* requires inheritance to have termlink templates to level 2, but this doesnt seem critical otherwise */ void Indirect_Linkage_Layer2_Basic_WithVar2_Goal() throws Exception {
         ProperlyLinkedIndirectlyTest("<a --> <b --> <#1 --> x>>>", GOAL, "<k --> x>");
     }
 
     @Test
-    @Disabled /* requires inheritance to have termlink templates to level 2, but this doesnt seem critical otherwise */
-    public void Indirect_Linkage_Layer2_Basic_WithVar2_Question() throws Exception {
+    @Disabled /* requires inheritance to have termlink templates to level 2, but this doesnt seem critical otherwise */ void Indirect_Linkage_Layer2_Basic_WithVar2_Question() throws Exception {
         ProperlyLinkedIndirectlyTest("<a --> <b --> <#1 --> x>>>", QUESTION, "<k --> x>");
     }
 
-    public void testConceptFormed(@NotNull String s) throws Exception {
+    private void testConceptFormed(@NotNull String s) throws Exception {
 
         test.requireConditions = false;
         TestNAR tester = test;
@@ -405,27 +402,27 @@ public class LinkageTest extends NALTest {
     }
 
     @Test
-    public void Basic_Concept_Formation_Test() throws Exception {
+    void Basic_Concept_Formation_Test() throws Exception {
         testConceptFormed("<a --> b>");
     }
 
     @Test
-    public void Advanced_Concept_Formation_Test() throws Exception {
+    void Advanced_Concept_Formation_Test() throws Exception {
         testConceptFormed("<#1 --> b>");
     }
 
     @Test
-    public void Advanced_Concept_Formation_Test2() throws Exception {
+    void Advanced_Concept_Formation_Test2() throws Exception {
         testConceptFormed("<<$1 --> a> ==> <$1 --> b>>");
     }
 
     @Test
-    public void Advanced_Concept_Formation_Test2_2() throws Exception {
+    void Advanced_Concept_Formation_Test2_2() throws Exception {
         testConceptFormed("<<$1 --> bird> ==> <$1 --> animal>>");
     }
 
     @Test
-    public void Advanced_Concept_Formation_Test3() throws Exception {
+    void Advanced_Concept_Formation_Test3() throws Exception {
         testConceptFormed("(&&,<#1 --> lock>,<<$2 --> key> ==> open($2, #1)>)");
     }
 
@@ -436,7 +433,7 @@ public class LinkageTest extends NALTest {
 
 
     @Test
-    public void Variable_Normalization_1() throws Exception {
+    void Variable_Normalization_1() throws Exception {
         
         NAR tester = NARS.tmp();
         test.requireConditions = false;

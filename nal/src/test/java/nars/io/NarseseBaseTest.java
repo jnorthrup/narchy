@@ -16,10 +16,10 @@ import java.util.List;
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class NarseseBaseTest extends NarseseTest {
+class NarseseBaseTest extends NarseseTest {
 
     @Test
-    public void testParseCompleteEternalTask() throws Narsese.NarseseException {
+    void testParseCompleteEternalTask() throws Narsese.NarseseException {
         Task t = task("$0.99 (a --> b)! %0.93;0.95%");
 
         assertNotNull(t);
@@ -30,7 +30,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testTaskTruthParsing() throws Narsese.NarseseException {
+    void testTaskTruthParsing() throws Narsese.NarseseException {
         {
             Task u = task("(y,())! %0.50;0.50%");
             assertEquals(0.5f, u.freq(), 0.001f);
@@ -44,7 +44,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testTaskTruthParsing2() throws Narsese.NarseseException {
+    void testTaskTruthParsing2() throws Narsese.NarseseException {
 
 
             Task u = task("(y,())! %0.55%");
@@ -55,7 +55,7 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     @Test
-    public void testTruth() throws Narsese.NarseseException {
+    void testTruth() throws Narsese.NarseseException {
         testTruth("%1.0;0.90%", 1f, 0.9f);
         testTruth("%1;0.9%", 1f, 0.9f);
         testTruth("%1.00;0.90%", 1f, 0.9f);
@@ -69,7 +69,7 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     @Test
-    public void testIncompleteTask() throws Narsese.NarseseException {
+    void testIncompleteTask() throws Narsese.NarseseException {
         Task t = task("<a --> b>.");
         assertNotNull(t);
         assertEquals(Op.INH, t.op());
@@ -84,22 +84,22 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testPropertyInstance1() throws Narsese.NarseseException {
+    void testPropertyInstance1() throws Narsese.NarseseException {
         taskParses("(a -{- b).");
     }
     @Test
-    public void testPropertyInstance2() throws Narsese.NarseseException {
+    void testPropertyInstance2() throws Narsese.NarseseException {
         taskParses("(a -]- b).");
         assertEquals("(a-->[b])", $.$("(a -]- b)").toString());
     }
     @Test
-    public void testPropertyInstance3() throws Narsese.NarseseException {
+    void testPropertyInstance3() throws Narsese.NarseseException {
         taskParses("(a {-] b).");
         assertEquals("({a}-->[b])", $.$("(a {-] b)").toString());
     }
 
     @Test
-    public void testBudget() throws Narsese.NarseseException {
+    void testBudget() throws Narsese.NarseseException {
         Task t = task("$0.70 <a ==> b>. %0.00;0.93");
         assertEquals(0.7f, t.pri(), 0.01f);
 
@@ -108,7 +108,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testNoBudget() throws Narsese.NarseseException {
+    void testNoBudget() throws Narsese.NarseseException {
         Task t = task("<a ==> b>. %0.00;0.93");
         assertNotNull(t);
         assertEquals(Op.IMPL, t.op());
@@ -121,7 +121,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testMultiCompound() throws Narsese.NarseseException {
+    void testMultiCompound() throws Narsese.NarseseException {
         String tt = "((a==>b)-->(c==>d))";
         Task t = task(tt + '?');
         assertNotNull(t);
@@ -134,12 +134,12 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     @Test
-    public void testFailureOfMultipleDistinctInfixOperators() {
+    void testFailureOfMultipleDistinctInfixOperators() {
         assertInvalidTerms("(a * b & c)");
     }
 
     @Test
-    public void testQuest() throws Narsese.NarseseException {
+    void testQuest() throws Narsese.NarseseException {
         String tt = "(a,b,c)";
         Task t = task(tt + '@');
         assertNotNull(t);
@@ -151,7 +151,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testStatementTerms() throws Narsese.NarseseException {
+    void testStatementTerms() throws Narsese.NarseseException {
 
         assertNotNull(term("< a --> b >"));
         assertNotNull(term("(a-->b)"));
@@ -159,7 +159,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testProduct() throws Narsese.NarseseException {
+    void testProduct() throws Narsese.NarseseException {
 
         Compound pt = term("(a, b, c)");
 
@@ -178,20 +178,22 @@ public class NarseseBaseTest extends NarseseTest {
         
     }
 
-    @Test public void testDisjunction() throws Narsese.NarseseException {
+    @Test
+    void testDisjunction() throws Narsese.NarseseException {
         assertEquals("(||,a,b)", $.$("(||,a,b)").toString());
         assertEquals("(||,a,b,c)", $.$("(||,a,b,c)").toString());
         assertEquals("(||,(b&&c),a)", $.$("(||,a,(b&&c))").toString());
         assertEquals("a", $.$("(||,a)").toString());
     }
 
-    @Test public void testDisjunctionBinary() throws Narsese.NarseseException {
+    @Test
+    void testDisjunctionBinary() throws Narsese.NarseseException {
         assertEquals("(||,a,b)", $.$("(a||b)").toString());
         assertEquals("(||,a,b)", $.$("(a || b)").toString());
     }
 
     @Test
-    public void testInfix2() throws Narsese.NarseseException {
+    void testInfix2() throws Narsese.NarseseException {
         Compound t = term("(x & y)");
         assertEquals(Op.SECTe, t.op());
         assertEquals(2, t.subs());
@@ -215,7 +217,7 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     @Test
-    public void testShortFloat() throws Narsese.NarseseException {
+    void testShortFloat() throws Narsese.NarseseException {
 
         taskParses("<{a} --> [b]>. %0;0.9%");
         taskParses("<a --> b>. %0.95;0.9%");
@@ -225,7 +227,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testNegation() throws Narsese.NarseseException {
+    void testNegation() throws Narsese.NarseseException {
         taskParses("(--,(negated)).");
         taskParses("(--, (negated)).");
 
@@ -245,7 +247,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testOperationNoArgs() throws Narsese.NarseseException {
+    void testOperationNoArgs() throws Narsese.NarseseException {
         Term t = term("op()");
         assertNotNull(t);
         assertEquals(Op.INH, t.op(), t.toString());
@@ -257,19 +259,19 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     @Test
-    public void testOperation2() throws Narsese.NarseseException {
+    void testOperation2() throws Narsese.NarseseException {
         testOperationStructure(term("believe(a,b)"));
         testOperationStructure(term("believe(a, b)"));
     }
 
     @Test
-    public void testImplIsNotOperation() throws Narsese.NarseseException {
+    void testImplIsNotOperation() throws Narsese.NarseseException {
         assertEquals("((b)==>a)", $.impl($.$("(b)"), Atomic.the("a")).toString());
         assertEquals("((b) ==>+1 a)", $.impl($.$("(b)"), 1, Atomic.the("a")).toString());
     }
 
     @Test
-    public void testOperationEquivalence() throws Narsese.NarseseException {
+    void testOperationEquivalence() throws Narsese.NarseseException {
         Term a, b;
         a = term("a(b,c)");
         b = term("((b,c) --> a)");
@@ -279,7 +281,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testOperationEquivalenceWithOper() throws Narsese.NarseseException {
+    void testOperationEquivalenceWithOper() throws Narsese.NarseseException {
         Term a;
         a = term("a(b,c)");
         Compound b = term("((b,c) --> a)");
@@ -294,19 +296,19 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testOperationTask() throws Narsese.NarseseException {
+    void testOperationTask() throws Narsese.NarseseException {
         taskParses("break({t001},SELF)! %1.00;0.95%");
     }
 
     @Test
-    public void testWeirdParse() throws Narsese.NarseseException {
+    void testWeirdParse() throws Narsese.NarseseException {
         assertThrows(Narsese.NarseseException.class,()-> $.$("( &&-59 ,a, b, c)").toString());
         assertEquals("(&&,a,b,c,-59)", $.$("(&&,a,b,c,-59)").toString());
         assertEquals("(&&,a,b,c,-59)", $.$("(&&,-59,a,b,c)").toString());
     }
 
     @Test
-    public void testCompoundTermOpenerCloserStatements() throws Narsese.NarseseException {
+    void testCompoundTermOpenerCloserStatements() throws Narsese.NarseseException {
         Term a = term("<a --> b>");
         Term x = term("(a --> b)");
         Term y = term("(a-->b)");
@@ -329,7 +331,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @NotNull
-    protected Variable testVar(char prefix) throws Narsese.NarseseException {
+    private Variable testVar(char prefix) throws Narsese.NarseseException {
         Term x = term(prefix + "x");
         assertNotNull(x);
         assertTrue(x instanceof Variable);
@@ -339,7 +341,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testVariables() throws Narsese.NarseseException {
+    void testVariables() throws Narsese.NarseseException {
         Variable v;
         v = testVar(Op.VAR_DEP.ch);
         assertTrue(v.hasVarDep());
@@ -352,21 +354,21 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testQueryVariableTask() throws Narsese.NarseseException {
+    void testQueryVariableTask() throws Narsese.NarseseException {
         String term = "hear(Time,(the,?x))";
         assertEquals("hear(Time,(the,?x))", term(term).toString());
         assertEquals("hear(Time,(the,?1))?", task(term + "?").toStringWithoutBudget());
     }
 
     @Test
-    public void testQueryVariableTaskQuotes() throws Narsese.NarseseException {
+    void testQueryVariableTaskQuotes() throws Narsese.NarseseException {
         String term = "hear(\"Time\",(\"the\",?x))";
         assertEquals("hear(\"Time\",(\"the\",?x))", term(term).toString());
         assertEquals("hear(\"Time\",(\"the\",?1))?", task(term + "?").toStringWithoutBudget());
     }
 
     @Test
-    public void testSet() throws Narsese.NarseseException {
+    void testSet() throws Narsese.NarseseException {
         Compound xInt = term("[x]");
         assertEquals(Op.SETi, xInt.op());
         assertEquals(1, xInt.subs());
@@ -391,7 +393,7 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     @Test
-    public void testQuoteEscape() throws Narsese.NarseseException {
+    void testQuoteEscape() throws Narsese.NarseseException {
         assertEquals("\"ab c\"", term("\"ab c\"").toString());
         for (String x : new String[]{"a", "a b"}) {
             taskParses("<a --> \"" + x + "\">.");
@@ -400,24 +402,24 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testQuoteEscapeBackslash() {
+    void testQuoteEscapeBackslash() {
         
         
     }
 
     @Test
-    public void testFuzzyKeywords() {
+    void testFuzzyKeywords() {
         
         
     }
 
     @Test
-    public void testEmbeddedJavascript() {
+    void testEmbeddedJavascript() {
 
     }
 
     @Test
-    public void testEmbeddedPrologRules() {
+    void testEmbeddedPrologRules() {
 
     }
 
@@ -425,30 +427,30 @@ public class NarseseBaseTest extends NarseseTest {
      * test ability to report meaningful parsing errors
      */
     @Test
-    public void testError() {
+    void testError() {
 
     }
 
     @Test
-    public void testSimpleTask() throws Narsese.NarseseException {
+    void testSimpleTask() throws Narsese.NarseseException {
         taskParses("(-,mammal,swimmer). %0.00;0.90%");
 
     }
 
     @Test
-    public void testCompleteTask() throws Narsese.NarseseException {
+    void testCompleteTask() throws Narsese.NarseseException {
         taskParses("$0.80 <<lock1 --> (/,open,$1,_)> ==> <$1 --> key>>. %1.00;0.90%");
     }
 
     @Test
-    public void testNonNegativeIntegerAtoms() throws Narsese.NarseseException {
+    void testNonNegativeIntegerAtoms() throws Narsese.NarseseException {
         
         Term a = term("1");
         assertEquals("1", a.toString());
     }
 
     @Test
-    public void testNegativeIntegerAtoms() throws Narsese.NarseseException {
+    void testNegativeIntegerAtoms() throws Narsese.NarseseException {
         
         Term a = term("-1");
         assertNotNull(a);
@@ -456,7 +458,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testFloatAtom() throws Narsese.NarseseException {
+    void testFloatAtom() throws Narsese.NarseseException {
         
         float f = 1.24f;
         String ff = Float.toString(f);
@@ -466,7 +468,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testMultiline() throws Narsese.NarseseException {
+    void testMultiline() throws Narsese.NarseseException {
         String a = "<a --> b>.";
         assertEquals(1, tasks(a).size());
 
@@ -496,7 +498,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test
-    public void testMultilineQuotes() throws Narsese.NarseseException {
+    void testMultilineQuotes() throws Narsese.NarseseException {
 
         String a = "js(\"\"\"\n" + "1\n" + "\"\"\")";
         System.out.println(a + " " + $.$(a));
@@ -539,13 +541,13 @@ public class NarseseBaseTest extends NarseseTest {
 
 
     @Test
-    public void testEmptySets() {
+    void testEmptySets() {
         assertInvalidTerms("{}", "[]");
     }
 
 
     @Test
-    public void testEmptyProduct() throws Narsese.NarseseException {
+    void testEmptyProduct() throws Narsese.NarseseException {
         Term e = term("()");
         assertSame(Op.EmptyProduct, e);
         assertEquals(PROD, e.op());

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.SortedMap;
 
-public class MetaGoalTest {
+class MetaGoalTest {
 
     @Test
-    public void test1() {
+    void test1() {
         NAR n = NARS.tmp(6);
 
         n.emotion.want(MetaGoal.Believe, 0.05f);
@@ -26,7 +26,7 @@ public class MetaGoalTest {
         analyzeCauses(n);
     }
 
-    static void analyzeCauses(NAR n) {
+    private static void analyzeCauses(NAR n) {
 
         SortedMap<String, Object> x = n.stats();
         x.forEach((k, v) -> {

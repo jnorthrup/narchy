@@ -14,7 +14,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL4Test extends NALTest {
 
 
-    static final int CYCLES = 350;
+    private static final int CYCLES = 350;
 
     @Override protected NAR nar() {
         NAR n =  NARS.tmp(6);
@@ -23,7 +23,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformationExt_forward() {
+    void structural_transformationExt_forward() {
         test
         .believe("((acid,base) --> reaction)", 1.0f, 0.9f) 
         .mustBelieve(CYCLES, "(acid --> (reaction,/,base))", 1.0f, 0.9f) 
@@ -31,7 +31,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformationExt_forward_repeats2() {
+    void structural_transformationExt_forward_repeats2() {
         test
                 .believe("((a,b,a) --> bitmap)", 1.0f, 0.9f) 
                 .mustBelieve(CYCLES, "(b --> (bitmap,a,/,a))", 1.0f, 0.9f) 
@@ -39,7 +39,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformationExt_forward_repeats2numeric() {
+    void structural_transformationExt_forward_repeats2numeric() {
         test
                 .believe("((0,1,0) --> bitmap)", 1.0f, 0.9f) 
                 .mustBelieve(CYCLES, "(1 --> (bitmap,0,/,0))", 1.0f, 0.9f) 
@@ -47,7 +47,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformationExt_forward_repeats3() {
+    void structural_transformationExt_forward_repeats3() {
         test
                 .believe("((0,1,0,1) --> bitmap)", 1.0f, 0.9f) 
                 .mustBelieve(CYCLES, "(1 --> (bitmap, 0,/,0,/))", 1.0f, 0.9f) 
@@ -55,14 +55,14 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformationExt_reverse() {
+    void structural_transformationExt_reverse() {
         test
         .believe("(acid --> (reaction,/,base))", 1.0f, 0.9f)
         .mustBelieve(CYCLES, "((acid,base) --> reaction)", 1.0f, 0.9f);
     }
 
     @Test
-    public void structural_transformationInt() {
+    void structural_transformationInt() {
         test
         .believe("(neutralization --> (acid,base))", 1.0f, 0.9f) 
         .mustBelieve(CYCLES, "((neutralization,\\,base) --> acid)", 1.0f, 0.9f) 
@@ -71,7 +71,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformationInt_reverse() {
+    void structural_transformationInt_reverse() {
         test
                 .believe("((neutralization,\\,base) --> acid)", 1.0f, 0.9f)
                 .mustBelieve(CYCLES, "(neutralization --> (acid,base))", 1.0f, 0.9f)
@@ -80,20 +80,20 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void structural_transformation_DepVar1()  {
+    void structural_transformation_DepVar1()  {
         test.believe("reaction(#1,base)",1.0f,0.9f); 
         test.mustBelieve(CYCLES, "(base --> (reaction,#1,/))", 1.0f, 0.9f); 
         test.mustBelieve(CYCLES, "(#1 --> (reaction,/,base))", 1.0f, 0.9f); 
     }
     @Test
-     public void structural_transformation_DepVar2()  {
+    void structural_transformation_DepVar2()  {
         test.believe("reaction(acid,#1)",1.0f,0.9f); 
         test.mustBelieve(CYCLES, "(acid --> (reaction,/,#1))", 1.0f, 0.9f); 
         test.mustBelieve(CYCLES, "(#1 --> (reaction,acid,/))", 1.0f, 0.9f); 
     }
 
     @Test
-    public void concludeImageIntInheritImageExt() {
+    void concludeImageIntInheritImageExt() {
         test
                 .believe("(neutralization --> (acid,base))")
                 .believe("((acid,base) --> reaction)")
@@ -103,7 +103,7 @@ public class NAL4Test extends NALTest {
     }
     @Disabled
     @Test
-    public void testCompositionFromProductInh() throws nars.Narsese.NarseseException {
+    void testCompositionFromProductInh() throws nars.Narsese.NarseseException {
         
 
         test
@@ -114,7 +114,7 @@ public class NAL4Test extends NALTest {
 
     @Disabled
     @Test
-    public void testCompositionFromProductSim() throws nars.Narsese.NarseseException {
+    void testCompositionFromProductSim() throws nars.Narsese.NarseseException {
 
         test
                 .believe("(soda <-> deadly)", 1.0f, 0.9f)
@@ -123,7 +123,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void testIntersectionOfProductSubterms1() {
+    void testIntersectionOfProductSubterms1() {
         test
                 .believe("f(x)", 1.0f, 0.9f)
                 .believe("f(y)", 1.0f, 0.9f)
@@ -133,7 +133,7 @@ public class NAL4Test extends NALTest {
     }
 
     @Test
-    public void testIntersectionOfProductSubterms2() {
+    void testIntersectionOfProductSubterms2() {
 
         test
                 .believe("f(x,z)", 1.0f, 0.9f)
@@ -146,7 +146,7 @@ public class NAL4Test extends NALTest {
 
     }
     @Test
-    public void testIntersectionOfProductSubterms2Reverse() {
+    void testIntersectionOfProductSubterms2Reverse() {
 
         test
                 .believe("f((x|y),z)", 1.0f, 0.9f)
@@ -161,7 +161,7 @@ public class NAL4Test extends NALTest {
 
     @Test
     @Disabled
-    public void testNeqComRecursiveConstraint() {
+    void testNeqComRecursiveConstraint() {
 
         /*
         SHOULD NOT HAPPEN:
@@ -180,7 +180,7 @@ public class NAL4Test extends NALTest {
 
     @ValueSource(bytes={QUESTION, QUEST})
     @ParameterizedTest
-    public void testTransformQuestionSubj(byte punc) {
+    void testTransformQuestionSubj(byte punc) {
         test
             .input("((a,b)-->?4)" + Character.valueOf((char)punc))
             .mustOutput(CYCLES, "(b-->(?1,a,/))", punc)
@@ -189,7 +189,7 @@ public class NAL4Test extends NALTest {
     }
     @ValueSource(bytes={QUESTION, QUEST})
     @ParameterizedTest
-    public void testTransformQuestionPred(byte punc) {
+    void testTransformQuestionPred(byte punc) {
         test
                 .input("(x --> (a,b))" + Character.valueOf((char)punc))
                 .mustOutput(CYCLES, "b(x,a,\\)", punc)
@@ -197,7 +197,8 @@ public class NAL4Test extends NALTest {
         ;
     }
 
-    @Disabled @Test public void testQuestionAnswering() {
+    @Disabled @Test
+    void testQuestionAnswering() {
         test
             .input("((0,1)-->?1)?")
             .input("((1,1)-->x).")
@@ -206,7 +207,7 @@ public class NAL4Test extends NALTest {
 
     @ValueSource(bytes={QUESTION, QUEST})
     @ParameterizedTest
-    public void testTransformRawQuestionSubj(byte punc) {
+    void testTransformRawQuestionSubj(byte punc) {
         test
                 .input("(a,b)" + Character.valueOf((char)punc))
                 .mustOutput(CYCLES, "(b-->(?1,a,/))", punc)

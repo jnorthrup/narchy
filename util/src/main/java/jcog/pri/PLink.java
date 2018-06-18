@@ -21,4 +21,6 @@ public class PLink<X> extends NLink<X> {
         return "$" + super.toString();
     }
 
+
+
 }

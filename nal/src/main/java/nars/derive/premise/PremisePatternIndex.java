@@ -3,6 +3,7 @@ package nars.derive.premise;
 import jcog.TODO;
 import nars.NAR;
 import nars.Op;
+import nars.derive.Derivation;
 import nars.index.concept.MapConceptIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -10,7 +11,9 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Variable;
 import nars.term.compound.LightDTCompound;
+import nars.term.control.PrediTerm;
 import nars.unify.Unify;
+import nars.unify.constraint.MatchConstraint;
 import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.Choose1;
@@ -18,6 +21,7 @@ import nars.unify.mutate.Choose2;
 import nars.util.term.transform.VariableNormalization;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -30,6 +34,8 @@ import static nars.time.Tense.XTERNAL;
 public class PremisePatternIndex extends MapConceptIndex {
 
     //final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
+    private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
+    private final Map<Term, MatchConstraint> constra = new HashMap<>(1024);
 
     public PremisePatternIndex() {
         super(new HashMap<>(1024));
@@ -135,6 +141,15 @@ public class PremisePatternIndex extends MapConceptIndex {
      */
     public /*@NotNull*/ Term pattern(Term x) {
         return get(x.transform(new PremiseRuleVariableNormalization()), true).term();
+    }
+
+    public final PrediTerm<Derivation> intern(PrediTerm<Derivation> x) {
+        PrediTerm<Derivation> y = pred.putIfAbsent(x.term(), x);
+        return y != null ? y : x;
+    }
+    public final MatchConstraint intern(MatchConstraint x) {
+        MatchConstraint y = constra.putIfAbsent(x.term(), x);
+        return y != null ? y : x;
     }
 
     public final Term intern(Term x) {

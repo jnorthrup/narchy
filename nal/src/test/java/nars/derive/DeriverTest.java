@@ -28,11 +28,11 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 12/12/15.
  */
-public class DeriverTest {
+class DeriverTest {
 
     private final List<TestNAR> tests = $.newArrayList();
 
-    public static void print(NAR n, PrintStream p) {
+    private static void print(NAR n, PrintStream p) {
         derivers(n).forEach(d -> {
             p.println(d);
             d.rules.print(p);
@@ -40,11 +40,11 @@ public class DeriverTest {
         });
     }
 
-    static PremiseDeriverRuleSet testCompile(String... rules) {
+    private static PremiseDeriverRuleSet testCompile(String... rules) {
         return testCompile(false, rules);
     }
 
-    static PremiseDeriverRuleSet testCompile(boolean debug, String... rules) {
+    private static PremiseDeriverRuleSet testCompile(boolean debug, String... rules) {
 
         assertNotEquals(0, rules.length);
 
@@ -63,13 +63,13 @@ public class DeriverTest {
     }
 
     @Test
-    public void printTrie() {
+    void printTrie() {
 
         print(NARS.tmp(), System.out);
     }
 
     @Test
-    public void testConclusionWithXTERNAL() {
+    void testConclusionWithXTERNAL() {
         NAR n = NARS.shell();
         PremisePatternIndex idx = new PremisePatternIndex(n) {
             @Override
@@ -106,7 +106,7 @@ public class DeriverTest {
     }
 
     @Test
-    public void testAmbiguousPunctuation() {
+    void testAmbiguousPunctuation() {
         assertThrows(Exception.class, () -> {
             PremiseDeriverCompiler.the(new PremiseDeriverRuleSet(new PremisePatternIndex(NARS.shell()),
                     "Y, Y |- (?1 &| Y), ()"
@@ -115,7 +115,7 @@ public class DeriverTest {
     }
 
     @Test
-    public void testCompile() {
+    void testCompile() {
         testCompile(
                 "(A --> B), (B --> C), neqRCom(A,C) |- (A --> C), (Belief:Deduction, Goal:Strong)"
         );
@@ -123,7 +123,7 @@ public class DeriverTest {
     }
 
     @Test
-    public void testCompilePatternOpSwitch() {
+    void testCompilePatternOpSwitch() {
         testCompile(
                 "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
                 "(A ==> B), C, task(\"?\") |- (A ==> C), (Punctuation:Question)"
@@ -132,7 +132,7 @@ public class DeriverTest {
     }
 
     @Test
-    public void testConclusionFold() throws Narsese.NarseseException {
+    void testConclusionFold() throws Narsese.NarseseException {
 
         TestNAR t = test(
                 "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
@@ -145,7 +145,7 @@ public class DeriverTest {
     }
 
     @Test
-    public void testDeriveQuest() throws Narsese.NarseseException {
+    void testDeriveQuest() throws Narsese.NarseseException {
 
         @NotNull TestNAR t = test("(P --> S), (S --> P), task(\"?\") |- (P --> S),   (Punctuation:Quest)")
                 .ask("b:a")
@@ -155,7 +155,7 @@ public class DeriverTest {
 
     }
 
-    protected TestNAR test(String... rules) {
+    private TestNAR test(String... rules) {
         NAR n = new NARS().get();
         new MatrixDeriver(new PremiseDeriverRuleSet(n, rules));
         TestNAR t = new TestNAR(n);
@@ -164,7 +164,7 @@ public class DeriverTest {
     }
 
     @AfterEach
-    public void runTests() {
+    void runTests() {
         tests.forEach(TestNAR::test);
     }
 

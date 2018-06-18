@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class NARServiceTest {
     @Test
-    public void testRemoveDurServiceWhenOff() {
+    void testRemoveDurServiceWhenOff() {
         NAR n = NARS.shell();
 
         Set<Service<NAR>> before = n.services.stream().collect(toSet());

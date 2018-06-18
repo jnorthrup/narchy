@@ -20,9 +20,9 @@ import static nars.term.atom.Int.the;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class IntTest {
+class IntTest {
 
-    public static Term differenceSafe(/*@NotNull*/ Term a, Term b) {
+    private static Term differenceSafe(/*@NotNull*/ Term a, Term b) {
         Op o = a.op();
         assert (b.op() == o);
         return Op.differenceSet(o, a, b);
@@ -30,7 +30,7 @@ public class IntTest {
 
     @Disabled
     @Test
-    public void testVariableIntroduction() throws Narsese.NarseseException {
+    void testVariableIntroduction() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.log();
         n.input(" ((3,x) ==>+1 (4,y)).");
@@ -40,7 +40,7 @@ public class IntTest {
     }
 
     @Test
-    public void testIntRange1() throws Narsese.NarseseException {
+    void testIntRange1() throws Narsese.NarseseException {
         Atomic ii = range(0, 2);
         assertEquals("0..2", ii.toString());
 
@@ -51,14 +51,15 @@ public class IntTest {
         n.run(10);
     }
 
-    @Test public void testDifferRangeInt() {
+    @Test
+    void testDifferRangeInt() {
         assertEquals(range(1,2), differenceSafe(range(0,2), the(0)));
         assertEquals(range(0,2), differenceSafe(range(0,2), the(3))); 
         assertEquals("(0&2)", differenceSafe(range(0,2), the(1)).toString());
     }
 
     @Test
-    public void testIntIntersectionReduction() {
+    void testIntIntersectionReduction() {
         
         
 
@@ -82,7 +83,7 @@ public class IntTest {
 
 
     @Test
-    public void testIntInProductIntersectionReduction() {
+    void testIntInProductIntersectionReduction() {
 
         
         assertEquals(
@@ -100,19 +101,20 @@ public class IntTest {
     }
 
     @Test
-    public void testMultidimUnroll() throws Narsese.NarseseException {
+    void testMultidimUnroll() throws Narsese.NarseseException {
         Term a = SECTi.the($("(1,1)"), $("(1,2)"));
         assertEquals("(1,1..2)", a.toString());
         assertEquals("[(1,1), (1,2)]", unroll(a));
     }
 
-    static String unroll(Term a) {
+    private static String unroll(Term a) {
         Iterator<Term> unroll = Int.unroll(a);
         assertNotNull(unroll);
         return Arrays.toString(Iterators.toArray(unroll, Term.class));
     }
 
-    @Test public void testRecursiveUnroll() {
+    @Test
+    void testRecursiveUnroll() {
         assertEquals("TODO",
                 unroll(
                     
@@ -123,7 +125,7 @@ public class IntTest {
     }
 
     @Disabled @Test
-    public void testRangeUnification() {
+    void testRangeUnification() {
         TestNAR n = new TestNAR(NARS.tmp());
         
         n.nar.believe(
@@ -141,12 +143,14 @@ public class IntTest {
         n.test();
     }
 
-    @Test public void testInvalidDifference() throws Narsese.NarseseException {
+    @Test
+    void testInvalidDifference() throws Narsese.NarseseException {
         assertEquals(Null, $("(((happy~(0,0))~(0,0))-->tetris)"));
         assertEquals(Null, $("(((happy-(0,0))-(0,0))-->tetris)"));
     }
 
-    @Test public void testIntAndNonInts() throws Narsese.NarseseException {
+    @Test
+    void testIntAndNonInts() throws Narsese.NarseseException {
         assertEquals("[1..2]", Arrays.toString(
                 Int.intersect($("1"),$("2"))
         ));
@@ -165,12 +169,14 @@ public class IntTest {
         ));
     }
 
-    @Test public void testIntInttersectProd() {
+    @Test
+    void testIntInttersectProd() {
         assertEquals("[(1,1..2)]", Arrays.toString(
                 Int.intersect($.p(1, 1), $.p(1, 2))
         ));
     }
-    @Test public void testIntInttersectProdSplit1() {
+    @Test
+    void testIntInttersectProdSplit1() {
         assertEquals("[(1,1..2), (3,3)]", Arrays.toString(
                 Int.intersect($.p(1, 1), $.p(1, 2), $.p(3, 3))
         ));
@@ -178,13 +184,15 @@ public class IntTest {
                 Int.intersect($.p(1, 1), $.p(1, 2), $.p(3, 3), $.the("x"))
         ));
     }
-    @Test public void testIntInttersectProdSplit2() {
+    @Test
+    void testIntInttersectProdSplit2() {
         assertEquals("[(1,1..2), (3..4,3)]", Arrays.toString(
                 Int.intersect($.p(1,1), $.p(1,2), $.p(3,3), $.p(4,3))
         ));
     }
 
-    @Test public void testNonRangeableIntersection() throws Narsese.NarseseException {
+    @Test
+    void testNonRangeableIntersection() throws Narsese.NarseseException {
         Term[] r = Int.intersect(
                 $("(isRow,(6,true),true)"), $("(isRow,(7,true),true)"));
         String rangeable = Arrays.toString(r);
@@ -199,7 +207,7 @@ public class IntTest {
 
 
     @Test
-    public void testIntersectionRange() {
+    void testIntersectionRange() {
         assertEquals("(8|4..5)", Op.SECTi.the(Int.the(4), Int.the(8), Int.range(4, 5)).toString());
         assertEquals("(8&4..5)", Op.SECTe.the(Int.the(4), Int.the(8), Int.range(4, 5)).toString());
         

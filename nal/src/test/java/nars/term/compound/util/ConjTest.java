@@ -18,9 +18,10 @@ import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ConjTest {
+class ConjTest {
 
-    @Test public void testSimpleEternals() {
+    @Test
+    void testSimpleEternals() {
         Conj c = new Conj();
         c.add(ETERNAL, $.the("x"));
         c.add(ETERNAL, $.the("y"));
@@ -29,14 +30,16 @@ public class ConjTest {
         assertEquals(byte[].class, c.event.get(ETERNAL).getClass());
     }
 
-    @Test public void testSimpleEternalsNeg() {
+    @Test
+    void testSimpleEternalsNeg() {
         Conj c = new Conj();
         c.add(ETERNAL, $.the("x"));
         c.add(ETERNAL, $.the("y").neg());
         assertEquals("((--,y)&&x)", c.term().toString());
     }
 
-    @Test public void testSimpleEvents() {
+    @Test
+    void testSimpleEvents() {
         Conj c = new Conj();
         c.add(1, $.the("x"));
         c.add(2, $.the("y"));
@@ -45,7 +48,8 @@ public class ConjTest {
         assertEquals(2, c.event.size());
     }
 
-    @Test public void testRoaringBitmapNeededManyEventsAtSameTime() {
+    @Test
+    void testRoaringBitmapNeededManyEventsAtSameTime() {
         Conj b = new Conj();
         for (int i = 0; i < Conj.ROARING_UPGRADE_THRESH-1; i++)
             b.add(1, $.the(String.valueOf((char)('a' + i))));
@@ -61,20 +65,23 @@ public class ConjTest {
         assertEquals(RoaringBitmap.class, c.event.get(1).getClass());
     }
 
-    @Test public void testSimpleEventsNeg() {
+    @Test
+    void testSimpleEventsNeg() {
         Conj c = new Conj();
         c.add(1, $.the("x"));
         c.add(2, $.the("y").neg());
         assertEquals("(x &&+1 (--,y))", c.term().toString());
     }
 
-    @Test public void testEventContradiction() {
+    @Test
+    void testEventContradiction() {
         Conj c = new Conj();
         c.add(1, $.the("x"));
         assertFalse(c.add(1, $.the("x").neg()));
         assertEquals(False, c.term());
     }
-    @Test public void testEventContradictionAmongNonContradictions() {
+    @Test
+    void testEventContradictionAmongNonContradictions() {
         Conj c = new Conj();
         c.add(1, $.the("x"));
         c.add(1, $.the("y"));
@@ -82,26 +89,30 @@ public class ConjTest {
         assertFalse(c.add(1, $.the("x").neg()));
         assertEquals(False, c.term());
     }
-    @Test public void testEventContradictionAmongNonContradictionsRoaring() {
+    @Test
+    void testEventContradictionAmongNonContradictionsRoaring() {
         Conj c = new Conj();
         c.add(ETERNAL, $$("(&&,a,b,c,d,e,f,g,h)"));
         boolean added = c.add(1, $.the("a").neg());
         assertEquals(False, c.term());
     }
-    @Test public void testEventContradictionWithEternal() {
+    @Test
+    void testEventContradictionWithEternal() {
         Conj c = new Conj();
         c.add(ETERNAL, $.the("x"));
         boolean added = c.add(1, $.the("x").neg());
         assertEquals(False, c.term());
     }
-    @Test public void testEventNonContradictionWithEternal() {
+    @Test
+    void testEventNonContradictionWithEternal() {
         Conj c = new Conj();
         c.add(ETERNAL, $.the("x"));
         boolean added = c.add(1, $.the("y"));
         assertTrue(added);
         assertEquals("(x&&y)", c.term().toString());
     }
-    @Test public void testEventNonContradictionWithEternal2() {
+    @Test
+    void testEventNonContradictionWithEternal2() {
         Conj c = new Conj();
         c.add(ETERNAL, $.the("x"));
         c.add(1, $.the("y"));
@@ -109,22 +120,22 @@ public class ConjTest {
         assertEquals("((y &&+1 z)&&x)", c.term().toString());
     }
 
-    final Random rng = new XoRoShiRo128PlusRandom(1);
+    private final Random rng = new XoRoShiRo128PlusRandom(1);
 
     @Test
-    public void testConjEventConsistency3ary() {
+    void testConjEventConsistency3ary() {
         for (int i = 0; i < 100; i++) {
             assertConsistentConj(3, 0, 7);
         }
     }
     @Test
-    public void testConjEventConsistency4ary() {
+    void testConjEventConsistency4ary() {
         for (int i = 0; i < 100; i++) {
             assertConsistentConj(4, 0, 11);
         }
     }
     @Test
-    public void testConjEventConsistency5ary() {
+    void testConjEventConsistency5ary() {
         for (int i = 0; i < 300; i++) {
             assertConsistentConj(5, 0, 17);
         }
@@ -162,7 +173,8 @@ public class ConjTest {
         return e;
     }
 
-    @Test public void testConjComplexAddRemove() {
+    @Test
+    void testConjComplexAddRemove() {
         Term x = $$("(( ( ((_1-->_2),_3) &| (--,_4)) &| (_5 &| _6)) &&+8 ( (((_1-->_2),_3) &| (--,_4)) &| (_5 &|_6))))");
         Conj c = Conj.from(x);
         assertEquals(x, c.term());
@@ -180,7 +192,7 @@ public class ConjTest {
     }
 
     @Test
-    public void testWrappingCommutiveConjunction() {
+    void testWrappingCommutiveConjunction() {
 
         {
 
@@ -191,7 +203,7 @@ public class ConjTest {
         }
     }
     @Test @Disabled
-    public void testWrappingCommutiveConjunctionX() {
+    void testWrappingCommutiveConjunctionX() {
         {
             
             Term xFactored = $$("((x&&y) &&+1 (y&&z))");
@@ -254,7 +266,7 @@ public class ConjTest {
 
     @Disabled
     @Test
-    public void testFactorFromEventSequence() {
+    void testFactorFromEventSequence() {
         Term yParallel1 = $$("((((--,angX) &&+4 x) &&+10244 angX) &&+0 y)");
         String yParallel2Str = "((((--,angX)&|y) &&+4 (x&|y)) &&+10244 (angX&|y))";
         Term yParallel2 = $$(yParallel2Str);
@@ -263,7 +275,7 @@ public class ConjTest {
     }
     @Disabled
     @Test
-    public void testFactorFromEventParallel() {
+    void testFactorFromEventParallel() {
         Term yParallelOK = $$("(((a&&x) &| (b&&x)) &| (c&&x))");
         assertEquals("", yParallelOK.toString());
         
@@ -272,7 +284,8 @@ public class ConjTest {
         assertEquals(False, yParallelContradict);
     }
 
-    @Test public void testConjWithoutAll() {
+    @Test
+    void testConjWithoutAll() {
         assertEquals("(a&&b)", Conj.withoutAll(
                 $$("(&&,a,b,c)"),
                 $$("(&&,c,d,e)")).toString());
@@ -294,7 +307,8 @@ public class ConjTest {
                 $$("(&&,--c,d,e)")).toString());
     }
 
-    @Test public void testConjWithoutAllMixEternalAndParallel() {
+    @Test
+    void testConjWithoutAllMixEternalAndParallel() {
 
         Term x = $$("((b&&c)&|(x&&y))");
         assertEquals("((b&&c)&|(x&&y))", x.toString());
@@ -306,31 +320,37 @@ public class ConjTest {
 
     }
 
-    @Test public void testEmptyConjResultTerm() {
+    @Test
+    void testEmptyConjResultTerm() {
         Conj c = new Conj();
         assertEquals(True, c.term());
     }
-    @Test public void testEmptyConjTrueEternal() {
+    @Test
+    void testEmptyConjTrueEternal() {
         Conj c = new Conj();
         c.add(ETERNAL, True);
         assertEquals(True, c.term());
     }
-    @Test public void testEmptyConjTrueTemporal() {
+    @Test
+    void testEmptyConjTrueTemporal() {
         Conj c = new Conj();
         c.add(0, True);
         assertEquals(True, c.term());
     }
-    @Test public void testEmptyConjFalseEternal() {
+    @Test
+    void testEmptyConjFalseEternal() {
         Conj c = new Conj();
         c.add(ETERNAL, False);
         assertEquals(False, c.term());
     }
-    @Test public void testEmptyConjFalseTemporal() {
+    @Test
+    void testEmptyConjFalseTemporal() {
         Conj c = new Conj();
         c.add(0, False);
         assertEquals(False, c.term());
     }
-    @Test public void testEmptyConjFalseEternalShortCircuit() {
+    @Test
+    void testEmptyConjFalseEternalShortCircuit() {
         Conj c = new Conj();
         c.add(ETERNAL, $$("x"));
         boolean addedFalse = c.add(ETERNAL, False);
@@ -339,7 +359,8 @@ public class ConjTest {
         assertEquals(False, c.term());
     }
 
-    @Test public void testEmptyConjFalseTemporalShortCircuit() {
+    @Test
+    void testEmptyConjFalseTemporalShortCircuit() {
         Conj c = new Conj();
         c.add(0, $$("x"));
         boolean addedFalse = c.add(0, False);

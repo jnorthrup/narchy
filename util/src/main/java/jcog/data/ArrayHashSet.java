@@ -39,7 +39,6 @@ package jcog.data;
 
 import jcog.list.FasterList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -172,8 +171,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         list.add(element);
     }
 
-    @NotNull
-    public UnifiedSet newSet() {
+    public Set<X> newSet() {
         return new UnifiedSet(1);
     }
 

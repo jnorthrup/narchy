@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class TextsTest {
+class TextsTest {
 
     @Test
-    public void testN2() {
+    void testN2() {
         
         assertEquals("1.0", Texts.n2(1.00f));
         assertEquals(".50", Texts.n2(0.5f));

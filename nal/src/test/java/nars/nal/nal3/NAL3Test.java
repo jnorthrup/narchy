@@ -13,7 +13,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL3Test extends NALTest {
 
-    public static final int cycles = 300;
+    private static final int cycles = 300;
     
     @Override protected NAR nar() {
         NAR n= NARS.tmp(3);
@@ -22,7 +22,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_composition_two_premises() {
+    void compound_composition_two_premises() {
 
         TestNAR tester = test;
         tester.believe("(swan --> swimmer)", 0.9f, 0.9f); 
@@ -33,7 +33,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_composition_two_premises2() {
+    void compound_composition_two_premises2() {
 
         TestNAR tester = test;
         tester.believe("<sport --> competition>", 0.9f, 0.9f); 
@@ -44,7 +44,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_decomposition_two_premises() {
+    void compound_decomposition_two_premises() {
 
         TestNAR tester = test;
         tester.believe("<robin --> (|,bird,swimmer)>", 1.0f, 0.9f); 
@@ -53,8 +53,8 @@ public class NAL3Test extends NALTest {
 
     }
 
-    @Test 
-    public void compound_decomposition_two_premises2() {
+    @Test
+    void compound_decomposition_two_premises2() {
 
         TestNAR tester = test;
 
@@ -66,7 +66,7 @@ public class NAL3Test extends NALTest {
 
 
     @Test
-    public void composition_on_both_sides_of_a_statement() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement() throws Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f); 
@@ -76,7 +76,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void composition_on_both_sides_of_a_statement_2() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement_2() throws Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f); 
@@ -88,7 +88,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void composition_on_both_sides_of_a_statement2() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement2() throws Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f); 
@@ -98,7 +98,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void composition_on_both_sides_of_a_statement2_2() throws Narsese.NarseseException {
+    void composition_on_both_sides_of_a_statement2_2() throws Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bird --> animal>", 0.9f, 0.9f); 
@@ -108,7 +108,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_composition_one_premise() throws Narsese.NarseseException {
+    void compound_composition_one_premise() throws Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f); 
@@ -118,7 +118,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_composition_one_premise2() throws Narsese.NarseseException {
+    void compound_composition_one_premise2() throws Narsese.NarseseException {
         test
         .believe("(swan --> bird)", 0.9f, 0.9f)
         .ask("((swan&swimmer) --> bird)")
@@ -126,7 +126,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void intersectionComposition(){
+    void intersectionComposition(){
         test
                 .believe("(swan --> bird)")
                 .believe("(swimmer--> bird)")
@@ -134,7 +134,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void intersectionCompositionWrappedInProd(){
+    void intersectionCompositionWrappedInProd(){
         test
                 .believe("((swan) --> bird)")
                 .believe("((swimmer)--> bird)")
@@ -142,7 +142,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_composition_one_premise3() {
+    void compound_composition_one_premise3() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f); 
@@ -152,7 +152,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_composition_one_premise4() {
+    void compound_composition_one_premise4() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f); 
@@ -162,7 +162,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_decomposition_one_premise() {
+    void compound_decomposition_one_premise() {
 
         TestNAR tester = test;
 
@@ -172,7 +172,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_decomposition_one_premise3() {
+    void compound_decomposition_one_premise3() {
 
         TestNAR tester = test;
         tester.believe("<(boy ~ girl) --> [strong]>", 0.9f, 0.9f); 
@@ -180,7 +180,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void compound_decomposition_one_premise2() {
+    void compound_decomposition_one_premise2() {
 
         TestNAR tester = test;
         tester.believe("<(boy | girl) --> youth>", 0.9f, 0.9f); 
@@ -190,7 +190,7 @@ public class NAL3Test extends NALTest {
 
 
     @Test
-    public void testDifference() {
+    void testDifference() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f); 
@@ -200,7 +200,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void testArity1_Decomposition_IntersectExt() {
+    void testArity1_Decomposition_IntersectExt() {
         
 
         test
@@ -211,7 +211,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void testArity1_Decomposition_IntersectExt2() {
+    void testArity1_Decomposition_IntersectExt2() {
         test
                 .believe("(b-->a)", 0.25f, 0.9f)
                 .believe("((b&c)-->a)", 0.25f, 0.9f)
@@ -219,7 +219,7 @@ public class NAL3Test extends NALTest {
     }
 
     @Test
-    public void testArity1_Decomposition_IntersectInt() {
+    void testArity1_Decomposition_IntersectInt() {
         
 
         test
@@ -228,7 +228,8 @@ public class NAL3Test extends NALTest {
                 .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);
     }
 
-    @Test public void testDisjoint2() {
+    @Test
+    void testDisjoint2() {
         
         
         test
@@ -238,7 +239,8 @@ public class NAL3Test extends NALTest {
         ;
 
     }
-    @Test public void testDisjoint3() {
+    @Test
+    void testDisjoint3() {
 
         test
             .believe("--(x-->(&,RealNumber,ComplexNumber,Letter))")
@@ -248,7 +250,8 @@ public class NAL3Test extends NALTest {
         ;
 
     }
-    @Test public void testDisjointWithVar() {
+    @Test
+    void testDisjointWithVar() {
         
 
         test

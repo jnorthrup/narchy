@@ -19,18 +19,19 @@ import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class NAL8Test extends NALTest {
+class NAL8Test extends NALTest {
 
-    public static final int cycles = 300;
+    public static final int cycles = 100;
 
     @BeforeEach
-    public void setTolerance() {
+    void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
+        test.nar.confResolution.set(0.04f); //coarse
         test.nar.termVolumeMax.set(22);
     }
 
     @Test
-    public void subsent_1_even_simpler_simplerBeliefTemporal() {
+    void subsent_1_even_simpler_simplerBeliefTemporal() {
 
         test
 
@@ -43,7 +44,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void subsent_1_even_simpler_simplerGoalTemporal() {
+    void subsent_1_even_simpler_simplerGoalTemporal() {
 
         test
 
@@ -57,7 +58,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testCorrectGoalOccAndDuration() throws Narsese.NarseseException {
+    void testCorrectGoalOccAndDuration() throws Narsese.NarseseException {
         /*
         $1.0 (happy-->dx)! 1751 %.46;.15% {1753: _gpeß~Èkw;_gpeß~Èky} (((%1-->%2),(%3-->%2),neqRCom(%1,%3)),((%1-->%3),((Induction-->Belief),(Weak-->Goal),(Backwards-->Permute))))
             $NaN (happy-->noid)! 1754⋈1759 %1.0;.90% {1748: _gpeß~Èky}
@@ -77,7 +78,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void subgoal_2() {
+    void subgoal_2() {
 
         test
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) && open({t001})))! :|:")
@@ -86,7 +87,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void subgoal_2_inner_dt() {
+    void subgoal_2_inner_dt() {
 
         test
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))! :|:")
@@ -95,7 +96,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void subbelief_2() throws Narsese.NarseseException {
+    void subbelief_2() throws Narsese.NarseseException {
 
         {
             Term t = $.$("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))");
@@ -111,7 +112,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void subbelief_2easy() {
+    void subbelief_2easy() {
         test
                 .input("(a:b &&+5 x:y). :|:")
                 .mustBelieve(cycles, "a:b", 1.0f, 0.81f, (t->t==0))
@@ -120,7 +121,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void temporal_deduction_1() {
+    void temporal_deduction_1() {
 
         TestNAR tester = test;
 
@@ -131,7 +132,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void subbelief_2medium() {
+    void subbelief_2medium() {
 
 
         test
@@ -144,7 +145,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testDesiredConjPos() {
+    void testDesiredConjPos() {
         TestNAR t = test;
         t
                 .believe("x")
@@ -153,14 +154,14 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testDesiredConjNeg() {
+    void testDesiredConjNeg() {
         test.believe("--x")
                 .goal("(--x && y)")
                 .mustGoal(cycles, "y", 1f, 0.81f);
     }
 
     @Test
-    public void testImplGoalDuration() {
+    void testImplGoalDuration() {
         /* wrong time
         $.30 x(intValue,(),3)! 5648⋈5696 %1.0;.13% {6874: 1;2;4;9;d;e;l;q} ((%1,(%2==>%3),notImpl(%1)),(subIfUnifiesAny(%2,%3,%1,"$"),((AbductionPB-->Belief),(DeciInduction-->Goal))))
             $1.0 x(intValue,(),3)! 5600 %1.0;.90% {5600: q}
@@ -174,7 +175,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testBelievedImplOfDesire() {
+    void testBelievedImplOfDesire() {
 
         TestNAR t = test;
         t
@@ -184,7 +185,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionDecompose() {
+    void testGoalConjunctionDecompose() {
 
         test
                 .goal("(x &&+3 y)", Tense.Present, 1f, 0.9f)
@@ -195,7 +196,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionDecomposeNeg() {
+    void testGoalConjunctionDecomposeNeg() {
         test
                 .goal("(x &&+3 y)", Tense.Present, 0f, 0.9f)
                 .mustNotOutput(cycles, "x", GOAL, 0);
@@ -203,7 +204,7 @@ public class NAL8Test extends NALTest {
 
     @Disabled
     @Test
-    public void testGoalConjunctionDecomposeViaStrongTruth() {
+    void testGoalConjunctionDecomposeViaStrongTruth() {
 
         test
                 .goal("(&&, x, y, z, w)", Tense.Present, 1f, 0.9f)
@@ -214,7 +215,7 @@ public class NAL8Test extends NALTest {
 
     @Disabled
     @Test
-    public void testGoalConjunctionDecomposeViaStrongTruthNeg() {
+    void testGoalConjunctionDecomposeViaStrongTruthNeg() {
 
         test
                 .goal("(&&, x, y, z, --w)", Tense.Present, 1f, 0.9f)
@@ -224,7 +225,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testStrongNegativePositiveInheritance() {
+    void testStrongNegativePositiveInheritance() {
 
         test
                 .goal("--(A-->B)")
@@ -234,7 +235,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testStrongNegativeNegativeInheritance() {
+    void testStrongNegativeNegativeInheritance() {
 
         test
                 .goal("--(A-->B)")
@@ -245,7 +246,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testConditionalGoalConjunctionDecomposePositiveGoal() {
+    void testConditionalGoalConjunctionDecomposePositiveGoal() {
 
         test
                 .goal("x", Tense.Present, 1f, 0.9f)
@@ -258,7 +259,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testConditionalGoalConjunctionDecomposePositivePostconditionGoal() {
+    void testConditionalGoalConjunctionDecomposePositivePostconditionGoal() {
 
         test
                 .goal("y", Tense.Present, 1f, 0.9f)
@@ -269,7 +270,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testConditionalGoalConjunctionDecomposePositiveGoalNegativeBeliefSubterm() {
+    void testConditionalGoalConjunctionDecomposePositiveGoalNegativeBeliefSubterm() {
 
         test
                 .goal("x", Tense.Present, 1f, 0.9f)
@@ -281,7 +282,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testConditionalGoalConjunctionDecomposeNegativeGoal() {
+    void testConditionalGoalConjunctionDecomposeNegativeGoal() {
 
         test
                 .goal("x", Tense.Present, 0f, 0.9f)
@@ -294,7 +295,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testConjSeqGoalDecomposeForward() {
+    void testConjSeqGoalDecomposeForward() {
 
 
         test
@@ -305,7 +306,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testConjParGoalDecomposeForward() {
+    void testConjParGoalDecomposeForward() {
 
         test
                 .goal("(x &| y)", Tense.Present, 1f, 0.9f)
@@ -315,7 +316,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testConjSeqGoalNegDecomposeForward() {
+    void testConjSeqGoalNegDecomposeForward() {
 
         test
                 .goal("(--x &&+3 y)", Tense.Present, 1f, 0.9f)
@@ -328,7 +329,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testInhibition() {
+    void testInhibition() {
 
 
         test
@@ -341,7 +342,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testInhibitionInverse() {
+    void testInhibitionInverse() {
 
         test
                 .goal("--reward")
@@ -354,7 +355,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testInhibition0() {
+    void testInhibition0() {
 
         test
                 .goal("reward")
@@ -364,7 +365,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testInhibition1() {
+    void testInhibition1() {
 
 
         test
@@ -379,7 +380,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testInhibitionReverse() {
+    void testInhibitionReverse() {
 
         test
                 .goal("(reward)")
@@ -392,7 +393,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testGoalSimilaritySpreading() {
+    void testGoalSimilaritySpreading() {
         test
                 .input("R!")
                 .input("(G <-> R).")
@@ -401,7 +402,7 @@ public class NAL8Test extends NALTest {
 
     @Disabled
     @Test
-    public void testGoalSimilaritySpreadingNeg() {
+    void testGoalSimilaritySpreadingNeg() {
         test
                 .input("R!")
                 .input("--(G <-> R).")
@@ -409,7 +410,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalSimilaritySpreadingNegInside() {
+    void testGoalSimilaritySpreadingNegInside() {
         test
                 .input("--R!")
                 .input("(G <-> --R).")
@@ -418,7 +419,7 @@ public class NAL8Test extends NALTest {
 
     @Disabled
     @Test
-    public void testGoalSimilaritySpreadingNegInsideNeg() {
+    void testGoalSimilaritySpreadingNegInsideNeg() {
         test
                 .input("--R!")
                 .input("--(G <-> --R).")
@@ -426,7 +427,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalSimilaritySpreadingParameter() {
+    void testGoalSimilaritySpreadingParameter() {
         test
                 .input("R(x)!")
                 .input("(x <-> y).")
@@ -436,7 +437,7 @@ public class NAL8Test extends NALTest {
 
     @Disabled
     @Test
-    public void testInheritanceDecompositionTemporalGoal() {
+    void testInheritanceDecompositionTemporalGoal() {
 
 
         test
@@ -448,7 +449,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testInheritanceDecompositionTemporalBelief() {
+    void testInheritanceDecompositionTemporalBelief() {
 
 
         test
@@ -460,7 +461,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     @Disabled
-    public void disjunctionBackwardsQuestionEternal() {
+    void disjunctionBackwardsQuestionEternal() {
 
 
         test
@@ -472,7 +473,7 @@ public class NAL8Test extends NALTest {
 
     @Disabled
     @Test
-    public void questConjunction() {
+    void questConjunction() {
 
         test
                 .input("(a && b).")
@@ -482,7 +483,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionPos1Eternal() {
+    void testGoalConjunctionPos1Eternal() {
 
         test
                 .input("a!")
@@ -491,7 +492,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionPos1Parallel() {
+    void testGoalConjunctionPos1Parallel() {
 
         test
                 .input("a!")
@@ -500,7 +501,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionNegative1N() {
+    void testGoalConjunctionNegative1N() {
 
 
         test
@@ -510,7 +511,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionNegative2() {
+    void testGoalConjunctionNegative2() {
 
         test
                 .input("a!")
@@ -521,7 +522,7 @@ public class NAL8Test extends NALTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"&|", "&&"})
-    public void testGoalImplComponentEternal(String conj) {
+    void testGoalImplComponentEternal(String conj) {
         test
                 .input("happy!")
                 .input("(in =|> (happy " + conj + " --out)).")
@@ -531,14 +532,14 @@ public class NAL8Test extends NALTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"&&", "&|"})
-    public void testGoalImplComponentEternalSubjNeg(String conj) {
+    void testGoalImplComponentEternalSubjNeg(String conj) {
         test.input("happy!")
                 .input("(--in =|> (happy " + conj + " --out)).")
                 .mustGoal(cycles, "in", 0f, 0.42f);
     }
 
     @Test
-    public void testConjDecomposeWithDepVar() {
+    void testConjDecomposeWithDepVar() {
 
         test
                 .input("(#1 && --out)! :|:")
@@ -546,7 +547,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testPredictiveImplicationTemporalTemporal() {
+    void testPredictiveImplicationTemporalTemporal() {
         /*
         wrong timing: should be (out)! @ 16
         $.36;.02$ (out)! 13 %.35;.05% {13: 9;a;b;t;S;Ü} ((%1,(%2==>%3),belief(negative),time(decomposeBelief)),((--,subIfUnifiesAny(%2,%3,%1)),((AbductionPN-->Belief),(DeductionPN-->Goal))))
@@ -562,7 +563,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testPredictiveImplicationTemporalTemporalOpposite() {
+    void testPredictiveImplicationTemporalTemporalOpposite() {
 
         test
                 .inputAt(0, "(happy ==>-3 out). :|:")
@@ -573,7 +574,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testConjDecomposeSequenceEmbedsAntiGoalNeg() {
+    void testConjDecomposeSequenceEmbedsAntiGoalNeg() {
 
         test
                 .input("(a &&+1 (x &&+1 y)).")
@@ -582,7 +583,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testConjDecomposeSequenceEmbedsAntiGoalPos() {
+    void testConjDecomposeSequenceEmbedsAntiGoalPos() {
 
         test
                 .input("(a &&+1 (--x &&+1 y)).")
@@ -591,7 +592,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testPredictiveImplicationTemporalTemporalNeg() {
+    void testPredictiveImplicationTemporalTemporalNeg() {
 
         test
                 .inputAt(0, "(--(out) ==>-3 (happy)). :|:")
@@ -602,7 +603,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testPredictiveEquivalenceTemporalTemporalNeg() {
+    void testPredictiveEquivalenceTemporalTemporalNeg() {
 
         test
                 .inputAt(0, "(--(out) ==>-3 (happy)). :|:")
@@ -615,36 +616,36 @@ public class NAL8Test extends NALTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate1(int dt) {
+    void implDecomposeGoalPredicate1(int dt) {
         testImplSubjPredImmanentize(dt, "a/b");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate2(int dt) {
+    void implDecomposeGoalPredicate2(int dt) {
         testImplSubjPredImmanentize(dt, "(a &&+1 a2)/b");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-3, +0, +3})
-    public void implDecomposeGoalPredicate2swap(int dt) {
+    void implDecomposeGoalPredicate2swap(int dt) {
         testImplSubjPredImmanentize(dt, "(a2 &&+1 a)/b");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate3(int dt) {
+    void implDecomposeGoalPredicate3(int dt) {
         testImplSubjPredImmanentize(dt, "(a &&+1 --a)/b");
     }
 
     @ParameterizedTest
     @ValueSource(ints = {-4, -3, +0, +3, +4})
-    public void implDecomposeGoalPredicate4(int dt) {
+    void implDecomposeGoalPredicate4(int dt) {
         testImplSubjPredImmanentize(dt, "(a &&+1 a)/b");
     }
 
 
-    void testImplSubjPredImmanentize(int dt, String sj) {
+    private void testImplSubjPredImmanentize(int dt, String sj) {
 
         int start = 1;
         int when = 6;
@@ -666,7 +667,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void conjDecomposeGoalAfter() {
+    void conjDecomposeGoalAfter() {
 
         test
                 .inputAt(1, "(a &&+3 b). :|:")
@@ -677,7 +678,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void conjDecomposeGoalAfterPosNeg() {
+    void conjDecomposeGoalAfterPosNeg() {
 
         test
                 .inputAt(3, "(--a &&+3 b). :|:")
@@ -687,17 +688,17 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void implDecomposeGoalAfterPosNeg() {
+    void implDecomposeGoalAfterPosNeg() {
 
         test
-                .inputAt(3, "(--a ==>+2 b). :|:")
-                .inputAt(5, "b! :|:")
-                .mustGoal(cycles, "a", 0f, 0.81f, 5 /* desired at same time as b since it precedes it */);
+            .inputAt(0, "(--a ==>+1 b). :|:")
+            .inputAt(1, "b! :|:")
+            .mustGoal(5, "a", 0f, 0.81f, (t) -> t > 1 /* desired at same time as b since it precedes it */);
 
     }
 
     @Test
-    public void conjDecomposeGoalAfterNegNeg() {
+    void conjDecomposeGoalAfterNegNeg() {
 
         test
                 .inputAt(3, "(a &&+3 --b). :|:")
@@ -707,7 +708,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void implDecomposeGoalBeforeTemporalEte() {
+    void implDecomposeGoalBeforeTemporalEte() {
 
         test
                 .inputAt(1, "(x ==>-1 y).")
@@ -717,7 +718,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void implDecomposeGoalBeforeTemporalSameTerm() {
+    void implDecomposeGoalBeforeTemporalSameTerm() {
         test
                 .inputAt(1, "(x ==>-1 x).")
                 .inputAt(2, "x! :|:")
@@ -725,7 +726,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void implDecomposeGoalBeforeTemporalSameTermNegated() {
+    void implDecomposeGoalBeforeTemporalSameTermNegated() {
         test
                 .inputAt(1, "(--x ==>-1 x).")
                 .inputAt(2, "x! :|:")
@@ -733,7 +734,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void implDecomposeGoalBeforeTemporalImpl() {
+    void implDecomposeGoalBeforeTemporalImpl() {
 
         test
                 .inputAt(1, "(x ==>-1 y). :|:")
@@ -742,7 +743,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void deriveNegInhGoal() {
+    void deriveNegInhGoal() {
 
         test
                 .input("b:a!")
@@ -756,7 +757,7 @@ public class NAL8Test extends NALTest {
 
     @Disabled
     @Test
-    public void questImplDt() {
+    void questImplDt() {
 
         test
                 .inputAt(0, "(a,b).")
@@ -768,28 +769,28 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    public void testConjPrior() {
+    void testConjPrior() {
         test.input("happy!")
                 .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
                 .mustGoal(cycles, "(y &&+2 (--,y))", 1f, 0.5f, (t) -> t >= 0);
     }
 
     @Test
-    public void testSimilarityGoalPosBelief() {
+    void testSimilarityGoalPosBelief() {
         test.goal("(it<->here)")
                 .believe("(here<->near)")
                 .mustGoal(cycles, "(it<->near)", 1f, 0.45f);
     }
 
     @Test
-    public void testSimilarityGoalNegBelief() {
+    void testSimilarityGoalNegBelief() {
         test.goal("--(it<->here)")
                 .believe("(here<->near)")
                 .mustGoal(cycles, "(it<->near)", 0f, 0.45f);
     }
 
     @Test
-    public void testGoalByConjAssociationPosPos() {
+    void testGoalByConjAssociationPosPos() {
 
         test.goal("a")
                 .believe("(b &&+1 (a &&+1 c))")
@@ -798,7 +799,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalByConjAssociationNegPos() {
+    void testGoalByConjAssociationNegPos() {
 
         test.goal("--a")
                 .believe("(b &&+1 (a &&+1 c))")
@@ -807,7 +808,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalByConjAssociationPosNeg() {
+    void testGoalByConjAssociationPosNeg() {
 
         test.goal("a")
                 .believe("(b &&+1 (--a &&+1 c))")
@@ -816,7 +817,7 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    public void testGoalByConjAssociationNegNeg() {
+    void testGoalByConjAssociationNegNeg() {
 
         test.goal("--a")
                 .believe("(b &&+1 (--a &&+1 c))")

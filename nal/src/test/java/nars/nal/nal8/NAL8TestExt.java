@@ -12,11 +12,9 @@ import static nars.time.Tense.ETERNAL;
  * Additional experimental tests,
  */
 @Disabled
-public class NAL8TestExt extends NALTest {
+class NAL8TestExt extends NALTest {
 
-        final int cycles = 96; 
-
-
+        private final int cycles = 96;
 
 
 
@@ -39,7 +37,10 @@ public class NAL8TestExt extends NALTest {
 
 
 
-    @Test public void subsent_1_even_simpler()  {
+
+
+    @Test
+    void subsent_1_even_simpler()  {
         int time = cycles * 4;
 
         test
@@ -52,7 +53,8 @@ public class NAL8TestExt extends NALTest {
                 .mustNotOutput(time, "open(t1)", BELIEF, 1f, 1f, 0.32f, 0.32f, 5) 
         ;
     }
-    @Test public void subsent_1_even_simplerGoal()  {
+    @Test
+    void subsent_1_even_simplerGoal()  {
         int time = cycles * 16;
 
         test
@@ -65,7 +67,7 @@ public class NAL8TestExt extends NALTest {
     }
 
     @Test
-    public void subsent_simultaneous()  {
+    void subsent_simultaneous()  {
 
         TestNAR tester = test;
 

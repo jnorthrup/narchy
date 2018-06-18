@@ -12,9 +12,9 @@ import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DynamicImageTest {
+class DynamicImageTest {
     @Test
-    public void testImageIdentity() throws Narsese.NarseseException {
+    void testImageIdentity() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         String x = "((x,y)-->z)";
         Term t = $$(x);

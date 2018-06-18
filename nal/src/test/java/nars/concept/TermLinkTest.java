@@ -12,12 +12,12 @@ import java.util.TreeSet;
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TermLinkTest {
+class TermLinkTest {
 
-    final NAR n = NARS.shell();
+    private final NAR n = NARS.shell();
 
     @Test
-    public void testTemplates1() {
+    void testTemplates1() {
 
         
         testTemplates("open:door",
@@ -25,7 +25,7 @@ public class TermLinkTest {
     }
 
     @Test
-    public void testTemplates2() {
+    void testTemplates2() {
         
         testTemplates("open(John,door)",
                 
@@ -34,7 +34,7 @@ public class TermLinkTest {
     }
 
     @Test
-    public void testTemplates3() {
+    void testTemplates3() {
         
         testTemplates("(open(John,door) ==> #x)",
                 
@@ -43,7 +43,7 @@ public class TermLinkTest {
     }
 
     @Test
-    public void testTemplates4() {
+    void testTemplates4() {
         
         testTemplates("(open(John,portal:interdimensional) ==> #x)",
                 
@@ -53,7 +53,7 @@ public class TermLinkTest {
     }
 
     @Test
-    public void testTemplates4b() {
+    void testTemplates4b() {
         testTemplates("(open(John,portal(a(d),b,c)) ==> #x)",
                 
                 "[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), open, #1]"
@@ -61,21 +61,21 @@ public class TermLinkTest {
     }
 
     @Test
-    public void testFunction() {
+    void testFunction() {
         testTemplates("f(x)",
                 
                 "[(x), f, x]"
         );
     }
     @Test
-    public void testIntersection() {
+    void testIntersection() {
         testTemplates("((0|1)-->2)",
                 "[(0|1), 0, 1, 2]"
         );
     }
 
     @Test
-    public void testTemplatesWithInt2() {
+    void testTemplatesWithInt2() {
         testTemplates("num((0))",
                 
                 "[((0)), (0), num]"
@@ -83,126 +83,131 @@ public class TermLinkTest {
     }
 
     @Test
-    public void testTemplatesWithInt1() {
+    void testTemplatesWithInt1() {
         testTemplates("(0)",
                 "[0]");
     }
 
     @Test
-    public void testTemplatesWithQueryVar() {
+    void testTemplatesWithQueryVar() {
         testTemplates("(x --> ?1)",
                 "[x, ?1]");
     }
 
     @Test
-    public void testTemplatesWithDepVar() {
+    void testTemplatesWithDepVar() {
         testTemplates("(x --> #1)",
                 "[x, #1]");
     }
 
     @Test
-    public void testTemplateConj1() {
+    void testTemplateConj1() {
         testTemplates("(x && y)",
                 "[x, y]");
     }
 
-    @Test public void testConjEventsNotInternalDternals() {
+    @Test
+    void testConjEventsNotInternalDternals() {
         testTemplates("((a&&b) &&+- (b&&c))",
-                //"[(a&&b), (b&&c)]"
-                "[a, b, c]"
+                "[(a&&b), (b&&c)]"
+                //"[a, b, c]"
         );
     }
 
-    @Test public void testConjEventsNotInternalDternals2() {
+    @Test
+    void testConjEventsNotInternalDternals2() {
+        assertEquals("((a&&b) &&+- (c&&d))", $$("(&&,(a&|b),(c&|d))").concept().toString());
         testTemplates("(&&,(a&|b),(c&|d))",
                 "[(a&&b), (c&&d)]");
     }
 
     @Test
-    public void testTemplateConjInsideConj() {
+    void testTemplateConjInsideConj() {
         testTemplates("(x && (y &&+1 z))",
-                "[x, y, z]");
+                //"[x, y, z]"
+                "[(y&&z), x]"
+        );
     }
     @Test
-    public void testTemplateConjInsideConjInsideImpl() {
+    void testTemplateConjInsideConjInsideImpl() {
         testTemplates("(a ==> (x && y))",
                 "[(x&&y), a, x, y]");
     }
 
     @Test
-    public void testTemplateConjInsideConjInsideImpl2() {
+    void testTemplateConjInsideConjInsideImpl2() {
         testTemplates("((a && b) ==> (x && (y &&+1 z)))",
                 "[((y&&z) &&+- x), (a&&b)]");
     }
 
     @Test
-    public void testTemplateConj1Neg() {
+    void testTemplateConj1Neg() {
         testTemplates("(x &&+- --x)",
                 "[x]");
     }
 
     @Test
-    public void testTemplateConj2() {
+    void testTemplateConj2() {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
                 "[(($1-->key)==>open($1,#2)), open($1,#2), (#2-->lock), ($1-->key), lock, #2]");
 
     }
 
     @Test
-    public void testTemplateDiffRaw() {
+    void testTemplateDiffRaw() {
         testTemplates("(x-y)",
                 "[x, y]");
     }
 
     @Test
-    public void testTemplateDiffRaw2() {
+    void testTemplateDiffRaw2() {
         testTemplates("((a,b)-y)",
                 "[(a,b), y]");
     }
 
     @Test
-    public void testTemplateProd() {
+    void testTemplateProd() {
         testTemplates("(a,b)",
                 "[a, b]");
     }
 
     @Test
-    public void testTemplateProdWithCompound() {
+    void testTemplateProdWithCompound() {
         testTemplates("(a,(b,c))",
                 "[(b,c), a]");
     }
 
     @Test
-    public void testTemplateSimProd() {
+    void testTemplateSimProd() {
         testTemplates("(c<->a)",
                 "[a, c]");
     }
     @Test
-    public void testInheritSet() {
+    void testInheritSet() {
         testTemplates("(x-->[y])",
                 "[[y], x, y]");
     }
     @Test
-    public void testImplicateInhSet() {
+    void testImplicateInhSet() {
         testTemplates("(($1-->[melted])=|>($1-->[pliable]))",
                 "[($1-->[pliable]), ($1-->[melted]), [pliable], [melted], $1]");
     }
     @Test
-    public void testImageExt() {
+    void testImageExt() {
 
         testTemplates("(chronic-->(trackXY,happy,/))",
                 "[(trackXY,happy,/), happy, chronic, trackXY]");
     }
 
     @Test
-    public void testImageExtWithNumbers() {
+    void testImageExtWithNumbers() {
         testTemplates("(1-->(bitmap,0,/))",
                 "[(bitmap,0,/), bitmap, 0, 1]");
     }
 
 
     @Test
-    public void testTemplateSimProdCompound() {
+    void testTemplateSimProdCompound() {
         testTemplates("((a,b)<->#1)",
                 "[(a,b), a, b, #1]");
     }
@@ -213,7 +218,7 @@ public class TermLinkTest {
 
 
 
-    void testTemplates(String term, String expect) {
+    private void testTemplates(String term, String expect) {
         
         Concept c = n.conceptualize($$(term));
         Activate a = new Activate(c, 0.5f);

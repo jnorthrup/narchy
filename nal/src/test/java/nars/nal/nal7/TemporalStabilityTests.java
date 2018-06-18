@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
  */
 public class TemporalStabilityTests {
 
-    static final int CYCLES = 1500;
+    private static final int CYCLES = 1500;
 
 
 
@@ -27,14 +27,14 @@ public class TemporalStabilityTests {
         private final int minT, maxT;
         final int tolerance = 0;
 
-        public T1(IntToObjectFunction<String> eventer, int... whens) {
+        T1(IntToObjectFunction<String> eventer, int... whens) {
             this.whens = new IntHashSet(whens);
             minT = this.whens.min();
             maxT = this.whens.max();
             this.eventer = eventer;
         }
 
-        public T1(IntToObjectFunction<String> eventer, int[] whens, int minT, int maxT) {
+        T1(IntToObjectFunction<String> eventer, int[] whens, int minT, int maxT) {
             this.whens = new IntHashSet(whens);
             this.minT = minT;
             this.maxT = maxT;
@@ -68,96 +68,110 @@ public class TemporalStabilityTests {
 
 
 
-    static final IntToObjectFunction<String> inheritencer = (j) -> {
+    private static final IntToObjectFunction<String> inheritencer = (j) -> {
         char c = (char) ('a' + j);
         return c + ":" + c + "" + c;
     };
-    static final IntToObjectFunction<String> implicator = (j) -> {
+    private static final IntToObjectFunction<String> implicator = (j) -> {
         char c = (char) ('a' + j);
         return "(" + (c + "==>" + (c + "" + c)) + ")";
     };
-    static final IntToObjectFunction<String> productor = (j) -> {
+    private static final IntToObjectFunction<String> productor = (j) -> {
         char c = (char) ('a' + j);
         return "(" + c + ")";
     };
-    static final IntToObjectFunction<String> biproductor = (j) -> {
+    private static final IntToObjectFunction<String> biproductor = (j) -> {
         char c = (char) ('a' + j);
         return "(" + c + "," + (c + "" + c) + ")";
     };
-    static final IntToObjectFunction<String> linkedproductor = (j) -> {
+    private static final IntToObjectFunction<String> linkedproductor = (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
         return "(" + c + "," + d + ")";
     };
-    static final IntToObjectFunction<String> linkedinh= (j) -> {
+    private static final IntToObjectFunction<String> linkedinh= (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
         return "(" + c + "-->" + d + ")";
     };
-    static final IntToObjectFunction<String> linkedimpl= (j) -> {
+    private static final IntToObjectFunction<String> linkedimpl= (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
         return "(" + c + "==>" + d + ")";
     };
-    static final IntToObjectFunction<String> conjSeq2 = (j) -> {
+    private static final IntToObjectFunction<String> conjSeq2 = (j) -> {
         char c = (char) ('a' + j);
         char d = (char) ('a' + (j+1)); 
         return "(" + c + " &&+5 " + d + ")";
     };
-    static final IntToObjectFunction<String> conjInvertor = (j) -> {
+    private static final IntToObjectFunction<String> conjInvertor = (j) -> {
         char c = (char) ('a' + j);
         return "(" + c + " &&+5 (--," + c + "))";
     };
 
 
-    @Test public void testTemporalStabilityInh3() {
+    @Test
+    void testTemporalStabilityInh3() {
         new T1(inheritencer, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityImpl() {
+    @Test
+    void testTemporalStabilityImpl() {
         new T1(implicator, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
-    @Test public void testTemporalStabilityProd() {
+    @Test
+    void testTemporalStabilityProd() {
         new T1(productor, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
-    @Test public void testTemporalStabilityBiProd() {
+    @Test
+    void testTemporalStabilityBiProd() {
         new T1(biproductor, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityLinkedProd_easy() {
+    @Test
+    void testTemporalStabilityLinkedProd_easy() {
         new T1(linkedproductor, 1, 2).test(500, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityLinkedProd() {
+    @Test
+    void testTemporalStabilityLinkedProd() {
         new T1(linkedproductor, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityLinkedInh() {
+    @Test
+    void testTemporalStabilityLinkedInh() {
         new T1(linkedinh, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
-    @Test public void testTemporalStabilityLinkedImpl() {
+    @Test
+    void testTemporalStabilityLinkedImpl() {
         new T1(linkedimpl, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityLinkedTemporalConjSmall() {
+    @Test
+    void testTemporalStabilityLinkedTemporalConjSmall() {
         new T1(conjSeq2, new int[] { 1, 6 }, 1, 16).test(100, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityLinkedTemporalConjOverlapping() {
+    @Test
+    void testTemporalStabilityLinkedTemporalConjOverlapping() {
         new T1(conjSeq2, new int[] { 1, 3 }, 1, 16).test(100, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityLinkedTemporalConj() {
+    @Test
+    void testTemporalStabilityLinkedTemporalConj() {
         new T1(conjSeq2, new int[] { 1, 6, 11 }, 1, 16).test(CYCLES, NARS.tmp());
     }
 
-    @Test public void testTemporalStabilityConjInvertor() {
+    @Test
+    void testTemporalStabilityConjInvertor() {
         new T1(conjInvertor, new int[] { 1, 6, 11 }, 1, 16).test(CYCLES, NARS.tmp());
     }
-    @Test public void testTemporalStabilityLinkedImplExt() {
+    @Test
+    void testTemporalStabilityLinkedImplExt() {
         new T1(linkedimpl, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
-    @Test public void testTemporalStabilityLinkedImplExt2() {
+    @Test
+    void testTemporalStabilityLinkedImplExt2() {
 
         
 

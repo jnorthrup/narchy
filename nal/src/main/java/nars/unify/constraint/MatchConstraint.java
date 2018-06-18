@@ -2,98 +2,120 @@ package nars.unify.constraint;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
-import jcog.TODO;
 import jcog.Util;
-import jcog.list.FasterList;
 import nars.$;
+import nars.Param;
 import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.term.control.AndCondition;
 import nars.term.control.PrediTerm;
 import nars.unify.Unify;
-import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.tuple.primitive.IntIntPair;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.PeekableIntIterator;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static nars.Op.SETe;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
 public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
+    @Override
+    public boolean test(Derivation p) {
+        return p.constrain(this);
+    }
+
+    /**
+     * cost of testing this, for sorting. higher value will be tested later than lower
+     */
+    @Override
+    abstract public float cost();
+
+
+
+    @Nullable
+    public PrediTerm<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
+        return null;
+    }
+
+    final static Atomic UnifyIf = Atomic.the("unifyIf");
     public final Variable x;
 
-    protected MatchConstraint(Term x, String func, Term... args) {
-        super($.func("unifyIf", x, $.func(func, args)));
+    protected MatchConstraint(Term x, Term id) {
+        super(id);
         this.x = (Variable) x;
     }
 
-    public static PrediTerm<Derivation> combineConstraints(AndCondition<Derivation> a) {
-        RoaringBitmap constraints = new RoaringBitmap();
-        @NotNull PrediTerm[] cond1 = a.cond;
-        for (int i = 0, cl = cond1.length; i < cl; i++) {
-            Term x = cond1[i];
-            if (x instanceof MatchConstraint) {
-                constraints.add(i);
-            }
-        }
-        if (constraints.getCardinality() < 2) {
-            return a;
-        } else {
-            
-            List<IntIntPair> ranges = new FasterList<>(1); 
-            int start = -1, end = -1;
-            PeekableIntIterator ii = constraints.getIntIterator();
-            while (ii.hasNext()) {
-                int next = ii.next();
-                if (start == -1) {
-                    start = end = next;
-                } else {
-                    if (next == end+1) {
-                        end++;
-                    } else {
-                        if (end - start >= 1) {
-                            
-                            ranges.add(pair(start, end));
-                        }
-                        start = -1; 
-                    }
-                }
-            }
-            if (end-start >= 1)
-                ranges.add(pair(start, end));
-
-            if (ranges.size() > 1) throw new TODO();
-            IntIntPair rr = ranges.get(0);
-
-
-            List<PrediTerm<Derivation>> l = new FasterList();
-            int i;
-            for (i = 0; i < start; i++) {
-                l.add(a.cond[i]);
-            }
-
-            CompoundConstraint.the(
-                    Util.map(MatchConstraint.class::cast, MatchConstraint[]::new, ArrayUtils.subarray(a.cond, rr.getOne(), rr.getTwo()+1))
-            ).forEach(l::add);
-
-            i = end+1;
-            for ( ; i < a.cond.length; i++) {
-                l.add(a.cond[i]);
-            }
-            return AndCondition.the((List)l);
-        }
+    protected MatchConstraint(Term x, String func, Term... args) {
+        this(x, $.func(UnifyIf, x, $.func(func, args)));
     }
+
+//    public static MatchConstraint[] combineConstraints(MatchConstraint[] cc) {
+//        RoaringBitmap constraints = new RoaringBitmap();
+//        for (int i = 0, cl = cc.length; i < cl; i++) {
+//            Term x = cc[i];
+//                constraints.add(i);
+//            }
+//        }
+//        if (constraints.getCardinality() < 2) {
+//            return cc;
+//        } else {
+//
+//            List<IntIntPair> ranges = new FasterList<>(1);
+//            int start = -1, end = -1;
+//            PeekableIntIterator ii = constraints.getIntIterator();
+//            while (ii.hasNext()) {
+//                int next = ii.next();
+//                if (start == -1) {
+//                    start = end = next;
+//                } else {
+//                    if (next == end + 1) {
+//                        end++;
+//                    } else {
+//                        if (end - start >= 1) {
+//
+//                            ranges.add(pair(start, end));
+//                        }
+//                        start = -1;
+//                    }
+//                }
+//            }
+//            if (end - start >= 1)
+//                ranges.add(pair(start, end));
+//
+//            if (ranges.size() > 1) throw new TODO();
+//            IntIntPair rr = ranges.get(0);
+//
+//
+//            List<PrediTerm<Derivation>> l = new FasterList();
+//            int i;
+//            for (i = 0; i < start; i++) {
+//                l.add(a.cond[i]);
+//            }
+//
+//            CompoundConstraint.the(
+//                    Util.map(MatchConstraint.class::cast, MatchConstraint[]::new, ArrayUtils.subarray(a.cond, rr.getOne(), rr.getTwo() + 1))
+//            ).forEach(l::add);
+//
+//            i = end + 1;
+//            for (; i < a.cond.length; i++) {
+//                l.add(a.cond[i]);
+//            }
+//            return AndCondition.the((List) l);
+//        }
+//    }
+
+    /**
+     * @param targetVariable current value of the target variable (null if none is set)
+     * @param potentialValue potential value to assign to the target variable
+     * @param f              match context
+     * @return true if match is INVALID, false if VALID (reversed)
+     */
+    abstract public boolean invalid(Term y, Unify f);
 
     final static class ConstraintAsPredicate extends AbstractPred<Derivation> {
 
@@ -128,86 +150,45 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
     }
 
+    public static final MatchConstraint[] EmptyMatchConstraints = new MatchConstraint[0];
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * cost of testing this, for sorting. higher value will be tested later than lower
-     */
-    @Override
-    abstract public float cost();
-
-    @Override
-    public boolean test(Derivation p) {
-        
-        return p.constrain(this);
+    public static MatchConstraint[] the(Set<MatchConstraint> c) {
+        if (c.size() < 2)
+            return c.toArray(EmptyMatchConstraints);
+        else
+            return CompoundConstraint.the(c.stream()).toArray(MatchConstraint[]::new);
     }
 
-    @Nullable
-    public PrediTerm<Derivation> preFilter(Term taskPattern, Term beliefPattern) {
-        return null;
-    }
+    static final class CompoundConstraint extends MatchConstraint {
 
 
-    static final class CompoundConstraint extends AbstractPred<Derivation> {
-
+        static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
 
         private final MatchConstraint[] cache;
-        final Variable target;
 
-        static final MultimapBuilder.ListMultimapBuilder<Object, Object> matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
+        private CompoundConstraint(MatchConstraint[] c) {
+            super(c[0].x, $.func(UnifyIf, c[0].x, SETe.the((Term[]) c)));
+            this.cache = c;
 
-        /** groups the constraints into their respective targets */
-        public static Stream<PrediTerm<Derivation>> the(MatchConstraint[] c) {
-            assert(c.length > 1);
-            ListMultimap<Term, MatchConstraint> m = matchConstraintMapBuilder.build();
-            for (MatchConstraint x : c) {
-                m.put(x.x, x);
+            if (Param.DEBUG) {
+                final Variable target = c[0].x;
+                for (int i = 1; i < c.length; i++)
+                    assert (c[i].x.equals(target));
             }
+        }
+
+        /**
+         * groups the constraints into their respective targets
+         */
+        private static Stream<MatchConstraint> the(Stream<MatchConstraint> c) {
+            ListMultimap<Term, MatchConstraint> m = matchConstraintMapBuilder.build();
+            c.forEach(x -> m.put(x.x, x));
             return m.asMap().entrySet().stream().map(e -> {
                 Collection<MatchConstraint> cc = e.getValue();
                 int ccn = cc.size();
 
-                assert(ccn > 0);
+                assert (ccn > 0);
                 if (ccn == 1) {
                     return (cc.iterator().next());
                 } else {
@@ -219,30 +200,23 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
         }
 
-        private CompoundConstraint(MatchConstraint[] c) {
-            super($.func("unifyIf", c[0].x, SETe.the((Term[]) c)));
-            this.cache = c;
-            this.target = c[0].x;
-            for (int i = 1; i < c.length; i++)
-                assert(c[i].x.equals(target));
-        }
-
         @Override
         public float cost() {
             return Util.sum(MatchConstraint::cost, cache);
         }
 
         @Override
+        public boolean invalid(Term y, Unify f) {
+            for (MatchConstraint c : cache) {
+                if (c.invalid(y, f))
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
         public boolean test(Derivation derivation) {
-            return derivation.constrain(target, cache);
+            return derivation.constrain(this);
         }
     }
-
-    /**
-     * @param targetVariable current value of the target variable (null if none is set)
-     * @param potentialValue potential value to assign to the target variable
-     * @param f              match context
-     * @return true if match is INVALID, false if VALID (reversed)
-     */
-    abstract public boolean invalid(Term y, Unify f);
 }

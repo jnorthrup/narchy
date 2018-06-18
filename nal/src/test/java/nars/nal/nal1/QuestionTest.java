@@ -21,22 +21,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 5/24/16.
  */
-public class QuestionTest {
+class QuestionTest {
 
-    final int withinCycles = 212;
+    private final int withinCycles = 212;
 
     @Test
-    public void whQuestionUnifyQueryVar() throws Narsese.NarseseException {
+    void whQuestionUnifyQueryVar() throws Narsese.NarseseException {
         testQuestionAnswer(withinCycles, "<bird --> swimmer>", "<?x --> swimmer>", "<bird --> swimmer>");
     }
 
     @Test
-    public void yesNoQuestion() throws Narsese.NarseseException {
+    void yesNoQuestion() throws Narsese.NarseseException {
         testQuestionAnswer(withinCycles, "<bird --> swimmer>", "<bird --> swimmer>", "<bird --> swimmer>");
     }
 
     @Test
-    public void testTemporalExact() throws Narsese.NarseseException {
+    void testTemporalExact() throws Narsese.NarseseException {
         testQuestionAnswer(withinCycles,
                 "((a &&+1 b) &&+1 c)",
                 "((a &&+1 b) &&+1 c)",
@@ -44,7 +44,7 @@ public class QuestionTest {
     }
 
     /** question to answer matching */
-    public void testQuestionAnswer(int cycles, @NotNull String belief, @NotNull String question, @NotNull String expectedSolution) throws Narsese.NarseseException {
+    private void testQuestionAnswer(int cycles, @NotNull String belief, @NotNull String question, @NotNull String expectedSolution) throws Narsese.NarseseException {
         AtomicInteger ok = new AtomicInteger(0);
 
 
@@ -130,7 +130,8 @@ public class QuestionTest {
 
 
     /** tests whether the use of a question guides inference as measured by the speed to reach a specific conclusion */
-    @Test public void questionDrivesInference() {
+    @Test
+    void questionDrivesInference() {
 
         final int[] dims = {3, 2};
         final int timelimit = 2400;
@@ -195,7 +196,7 @@ public class QuestionTest {
 
 
     @Test @Disabled
-    public void testMathBackchain() throws Narsese.NarseseException {
+    void testMathBackchain() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
 
@@ -228,21 +229,22 @@ public class QuestionTest {
     }
 
     @Disabled @Test
-    public void testDeriveQuestionOrdinary() throws Narsese.NarseseException {
+    void testDeriveQuestionOrdinary() throws Narsese.NarseseException {
         new TestNAR(NARS.tmp()) 
                 .ask("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuestion(512, "(P --> M)").test();
     }
     @Disabled @Test
-    public void testDeriveQuestOrdinary() throws Narsese.NarseseException {
+    void testDeriveQuestOrdinary() throws Narsese.NarseseException {
         new TestNAR(NARS.tmp()) 
                 .quest("((S | P) --> M)")
                 .believe("(S --> M)")
                 .mustQuest(256, "(P --> M)").test();
     }
 
-    @Test public void testExplicitEternalizationViaQuestion() {
+    @Test
+    void testExplicitEternalizationViaQuestion() {
         new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "x. :|: %0.50;0.90%")
@@ -252,7 +254,8 @@ public class QuestionTest {
                 .test();
     }
 
-    @Disabled @Test public void testExplicitEternalizationViaQuestionDynamic() {
+    @Disabled @Test
+    void testExplicitEternalizationViaQuestionDynamic() {
         new TestNAR(NARS.tmp())
                 .inputAt(1, "x. :|: %1.00;0.90%")
                 .inputAt(4, "y. :|: %1.00;0.90%")

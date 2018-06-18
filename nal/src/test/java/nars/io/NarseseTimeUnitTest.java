@@ -11,13 +11,13 @@ import static nars.io.NarseseTest.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class NarseseTimeUnitTest {
+class NarseseTimeUnitTest {
 
     /** milliseconds realtime */
-    final NAR n = NARS.realtime(1f).get();
+    private final NAR n = NARS.realtime(1f).get();
 
     @Test
-    public void testOccurence() throws Narsese.NarseseException {
+    void testOccurence() throws Narsese.NarseseException {
         @Deprecated Task now = task("<a --> b>. :|:");
         
         
@@ -33,7 +33,7 @@ public class NarseseTimeUnitTest {
     }
 
     @Test
-    public void testRealtimeOccurrence() throws Narsese.NarseseException {
+    void testRealtimeOccurrence() throws Narsese.NarseseException {
         Task day = n.inputTask("<a --> b>. +1day");
         assertEquals(day.start() - n.time(), 8.64E7, 10000);
 
@@ -55,7 +55,7 @@ public class NarseseTimeUnitTest {
     }
 
     @Test
-    public void testRealtimeRelativeOccurrenceRange() throws Narsese.NarseseException {
+    void testRealtimeRelativeOccurrenceRange() throws Narsese.NarseseException {
 
         {
             for (String nowStr : new String[] { "|", "+0", ":|:" }) {
@@ -99,7 +99,7 @@ public class NarseseTimeUnitTest {
     }
 
     @Test
-    public void testTimeDeltaUnits() {
+    void testTimeDeltaUnits() {
         
         assertEquals(
             "term(\"&&\",(a,b),(day,1))",
@@ -123,7 +123,7 @@ public class NarseseTimeUnitTest {
     }
 
     @Test
-    public void testTimeDeltaUnitsAndOccurrence() throws Narsese.NarseseException {
+    void testTimeDeltaUnitsAndOccurrence() throws Narsese.NarseseException {
         StringBuilder sb = new StringBuilder();
         n.log(sb);
         n.input("(a &&+1day b)! +5m..+2h %1.0;0.90%");

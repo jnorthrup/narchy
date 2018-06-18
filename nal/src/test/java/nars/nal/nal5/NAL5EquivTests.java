@@ -10,12 +10,12 @@ import static nars.time.Tense.ETERNAL;
 
 /** original nal5 tests involving the equivalence operator */
 @Disabled
-public class NAL5EquivTests extends NALTest {
-    final int cycles = 50;
+class NAL5EquivTests extends NALTest {
+    private final int cycles = 50;
 
 
     @Test
-    public void comparisonEqui() {
+    void comparisonEqui() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
@@ -24,7 +24,7 @@ public class NAL5EquivTests extends NALTest {
     }
 
     @Test
-    public void comparison2() {
+    void comparison2() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> bird> ==> <robin --> animal>>", 0.7f, 0.9f); 
@@ -33,7 +33,7 @@ public class NAL5EquivTests extends NALTest {
     }
 
     @Test
-    public void comparisonOppositeEqui() {
+    void comparisonOppositeEqui() {
 
         TestNAR tester = test;
         tester.believe("<(x) ==> (z)>", 0.1f, 0.9f);
@@ -41,7 +41,7 @@ public class NAL5EquivTests extends NALTest {
         tester.mustBelieve(cycles, "<(x) <=> (y)>", 0.10f, 0.45f);
     }
     @Test
-    public void comparisonImpl() {
+    void comparisonImpl() {
 
         TestNAR tester = test;
         tester.believe("<x ==> y>", 1f, 0.9f); 
@@ -52,7 +52,7 @@ public class NAL5EquivTests extends NALTest {
     }
 
     @Test
-    public void comparisonOppositeImpl() {
+    void comparisonOppositeImpl() {
 
         TestNAR t = test;
         t.believe("<x ==> z>", 0.1f, 0.9f);
@@ -64,7 +64,7 @@ public class NAL5EquivTests extends NALTest {
 
 
     @Test
-    public void resemblance() {
+    void resemblance() {
 
         TestNAR tester = test;
 
@@ -83,7 +83,7 @@ public class NAL5EquivTests extends NALTest {
 
 
     @Test
-    public void testNegNegEquivPred() {
+    void testNegNegEquivPred() {
 
         test
                 .input("(--,(y)).")
@@ -94,7 +94,7 @@ public class NAL5EquivTests extends NALTest {
     }
 
     @Test
-    public void testNegNegEquivPredInv() {
+    void testNegNegEquivPredInv() {
 
         test
                 .input("(y).")
@@ -105,7 +105,7 @@ public class NAL5EquivTests extends NALTest {
     }
 
     @Test
-    public void analogy() {
+    void analogy() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
@@ -116,7 +116,7 @@ public class NAL5EquivTests extends NALTest {
 
 
     @Test
-    public void analogy2() {
+    void analogy2() {
 
         TestNAR tester = test;
         tester.believe("<robin --> bird>"); 
@@ -127,7 +127,7 @@ public class NAL5EquivTests extends NALTest {
     }
 
     @Test
-    public void conversions_between_Implication_and_Equivalence() {
+    void conversions_between_Implication_and_Equivalence() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> [flying]> ==> <robin --> bird>>", 0.9f, 0.9f); 

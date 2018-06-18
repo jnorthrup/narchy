@@ -25,24 +25,14 @@ public class Pri implements Priority {
     }
 
     @Override
-    public final float pri() {
-        return pri;
+    public float priSet(float p) {
+        return this.pri = p;
     }
 
     @Override
-    public boolean delete() {
-        float p = pri;
-        if (p==p) {
-        
-            this.pri = Float.NaN;
-            return true;
-        }
-        
-
-        return false;
+    public final float pri() {
+        return pri;
     }
-
-
 
 
     /**
@@ -55,10 +45,13 @@ public class Pri implements Priority {
         return getBudgetString();
     }
 
-    @Override
-    public float priSet(float p) {
-        return this.pri = p;
+    public boolean delete() {
+        float p = pri;
+        if (p==p) {
+            pri = (Float.NaN);
+            return true;
+        }
+        return false;
     }
-
 
 }

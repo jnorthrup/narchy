@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.decide.MutableRoulette;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
+import jcog.pri.PriProxy;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -48,8 +49,20 @@ public class PremiseDeriver implements Predicate<Derivation> {
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
 
 
-        this.whats = new HijackMemoize<>(k -> PremiseKey.solve(what),
-                64 * 1024, 4, false);
+        this.whats = new HijackMemoize<>(k -> k.solve(what),
+                64 * 1024, 4) {
+
+            @Override
+            public PriProxy<PremiseKey, short[]> computation(PremiseKey premiseKey, short[] results) {
+                PremiseKey.PremiseKeyBuilder k = (PremiseKey.PremiseKeyBuilder) premiseKey;
+                return k.key(results);
+            }
+
+            @Override
+            public float value(PremiseKey premiseKey, short[] y) {
+                return ((PremiseKey.PremiseKeyBuilder)premiseKey).pri;
+            }
+        };
     }
 
     /**
@@ -136,8 +149,10 @@ public class PremiseDeriver implements Predicate<Derivation> {
         printRecursive(System.out);
     }
 
-    public void printRecursive(PrintStream out) {
-        PremiseDeriverCompiler.print(this, out);
+    public void printRecursive(PrintStream p) {
+        PremiseDeriverCompiler.print(what, p);
+        for (Object x : could)
+            PremiseDeriverCompiler.print(x, p);
     }
 
 
@@ -147,11 +162,12 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
     public void print(PrintStream p, int indent) {
         PremiseDeriverCompiler.print(what, p, indent);
-        PremiseDeriverCompiler.print(could, p, indent);
+        for (Object x : could)
+            PremiseDeriverCompiler.print(x, p, indent);
     }
 
 
     public boolean derivable(Derivation x) {
-        return (x.will = whats.apply(new PremiseKey(x))).length > 0;
+        return (x.will = whats.apply(PremiseKey.PremiseKeyBuilder.get(x))).length > 0;
     }
 }

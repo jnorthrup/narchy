@@ -10,12 +10,12 @@ import java.util.Set;
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SetFuncTest {
+class SetFuncTest {
 
-    final NAR n = NARS.shell();
+    private final NAR n = NARS.shell();
 
     @Test
-    public void testSortDirect() {
+    void testSortDirect() {
 
         assertEquals(
                 Set.of($$("(a,b,c)")),
@@ -26,7 +26,7 @@ public class SetFuncTest {
     }
 
     @Test
-    public void testSortApply() {
+    void testSortApply() {
         
         assertEquals(
                 Set.of($$("(a,b,(c,d))")),
@@ -38,7 +38,8 @@ public class SetFuncTest {
     }
 
 
-    @Test public void testSortSubst1() {
+    @Test
+    void testSortSubst1() {
         assertEquals(
                 Set.of($$("sort((2,1),quote,(1,2))")),
                 Evaluation.solveAll($$("sort((2,1),quote,#a)"), n));
@@ -48,12 +49,14 @@ public class SetFuncTest {
     }
 
 
-    @Test public void testSortSubst2() {
+    @Test
+    void testSortSubst2() {
         assertEquals(
                 Set.of($$("(&&,sort((1,2),quote,(1,2)),append(1,(),1),append(2,(),2))")),
                 Evaluation.solveAll($$("(&&, append(1,(),#a),append(2,(),#b),sort((#a,#b),quote,#sorted))"), n));
     }
-    @Test public void testSortSubst3() {
+    @Test
+    void testSortSubst3() {
         assertEquals(
                 Set.of($$("(sort((3,2),quote,(2,3))&&add(1,2,3))")),
                 Evaluation.solveAll(

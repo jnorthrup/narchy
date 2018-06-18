@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class UnifyTest {
 
-    public static final int INITIAL_TTL = 512;
+    private static final int INITIAL_TTL = 512;
 
     @Test
-    public void testFindSubst1() throws Narsese.NarseseException {
+    void testFindSubst1() throws Narsese.NarseseException {
         testUnify($.$("<a-->b>"), $.$("<?C-->b>"), true);
         testUnify($.$("(--,(a))"), $.$("<?C-->(b)>"), false);
     }
@@ -50,18 +50,18 @@ public class UnifyTest {
         return pattern(ss);
     }
 
-    public static Term pattern(Term ss) {
+    private static Term pattern(Term ss) {
         return new PremisePatternIndex().pattern(ss);
     }
 
 
-    void test(/**/ Op type,  String s1,  String s2, boolean shouldSub) {
+    private void test(/**/ Op type, String s1, String s2, boolean shouldSub) {
         test(type, s1, s2, shouldSub, false, false);
 
         test(type, s1, s2, shouldSub, true, true);
     }
 
-    Unify test(/**/ Op type,  String s1,  String s2, boolean shouldSub, boolean anon1, boolean anon2) {
+    private Unify test(/**/ Op type, String s1, String s2, boolean shouldSub, boolean anon1, boolean anon2) {
 
         
 
@@ -161,7 +161,7 @@ public class UnifyTest {
 
 
     @Test
-    public void unificationP0() {
+    void unificationP0() {
         test(Op.VAR_PATTERN,
                 "<%A ==> %B>",
                 "<<a --> A> ==> <b --> B>>",
@@ -170,7 +170,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void unificationP1() {
+    void unificationP1() {
         test(Op.VAR_DEP,
                 "<(#1,#1) --> wu>",
                 "<(a,b) --> wu>",
@@ -179,7 +179,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void unificationP2() {
+    void unificationP2() {
         test(Op.VAR_DEP,
                 "<(#1,c) --> wu>",
                 "<(a,b) --> wu>",
@@ -188,7 +188,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void unificationP3() {
+    void unificationP3() {
         test(Op.VAR_PATTERN,
                 "<(%1,%1,#1) --> wu>",
                 "<(lol,lol2,#1) --> wu>",
@@ -197,7 +197,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void unificationQ3() {
+    void unificationQ3() {
         test(Op.VAR_QUERY,
                 "<(?1,?2,a) --> wu>",
                 "<(lol,lol2,a) --> wu>",
@@ -211,7 +211,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void unificationP5() {
+    void unificationP5() {
         test(Op.VAR_DEP,
                 "<#x --> lock>",
                 "<{lock1} --> lock>",
@@ -230,7 +230,7 @@ public class UnifyTest {
 
 
     @Test
-    public void pattern_trySubs_Dep_Var() {
+    void pattern_trySubs_Dep_Var() {
         test(Op.VAR_PATTERN,
                 "<%A ==> %B>",
                 "<<#1 --> A> ==> <?1 --> B>>",
@@ -238,7 +238,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Var_2_parallel() {
+    void pattern_trySubs_Var_2_parallel() {
         test(Op.VAR_QUERY,
                 "(&&,<(?1,x) --> on>,<(SELF,#2) --> at>)",
                 "(&&,<({t002},x) --> on>,<(SELF,#1) --> at>)",
@@ -246,7 +246,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Var_2_product_and_common_depvar_bidirectional() {
+    void pattern_trySubs_Var_2_product_and_common_depvar_bidirectional() {
         test(Op.VAR_DEP,
                 "(<(#1,x) --> on>,<(SELF,x) --> at>)",
                 "(<(SELF,x) --> on>,<(#1,x) --> at>)",
@@ -259,7 +259,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_2_product() {
+    void pattern_trySubs_2_product() {
         test(Op.VAR_QUERY,
                 "(on(?1,x),     at(SELF,x))",
                 "(on({t002},x), at(SELF,x))",
@@ -267,7 +267,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Dep_Var_2_product() {
+    void pattern_trySubs_Dep_Var_2_product() {
         test(Op.VAR_DEP,
                 "(<(#1,x) --> on>,<(SELF,x) --> at>)",
                 "(<({t002},x) --> on>,<(SELF,x) --> at>)",
@@ -275,7 +275,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Indep_Var_2_set() {
+    void pattern_trySubs_Indep_Var_2_set() {
         test(Op.VAR_DEP,
                 "{<(#1,x) --> on>,<(SELF,x) --> at>}",
                 "{<({t002},x) --> on>,<(SELF,x) --> at>}",
@@ -283,7 +283,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Indep_Var_2_set2() {
+    void pattern_trySubs_Indep_Var_2_set2() {
         test(Op.VAR_DEP,
                 "{<(#1,x) --> on>,<(SELF,x) --> at>}",
                 "{<(z,x) --> on>,<(SELF,x) --> at>}",
@@ -291,7 +291,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setSimple() {
+    void pattern_trySubs_Pattern_Var_2_setSimple() {
         test(Op.VAR_PATTERN,
                 "{%1,y}",
                 "{z,y}",
@@ -301,7 +301,7 @@ public class UnifyTest {
 
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setSimpler() {
+    void pattern_trySubs_Pattern_Var_2_setSimpler() {
         test(Op.VAR_PATTERN,
                 "{%1}",
                 "{z}",
@@ -309,7 +309,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>,y}",
                 "{<(z,x) --> on>,y}",
@@ -318,7 +318,7 @@ public class UnifyTest {
 
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_1() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_1() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>,<x-->y>}",
                 "{<(z,x) --> on>,<x-->y>}",
@@ -326,7 +326,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_2() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_2() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>,(a,b)}",
                 "{<(z,x) --> on>,(a,b)}",
@@ -334,7 +334,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_3() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_3() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>, c:(a)}",
                 "{<(z,x) --> on>, c:(a)}",
@@ -342,7 +342,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_4() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_4() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>, c:a:b}",
                 "{<(z,x) --> on>, c:a:b}",
@@ -350,7 +350,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>, c:(a,b)}",
                 "{<(z,x) --> on>, c:(a,b)}",
@@ -358,7 +358,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5_n() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5_n() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>, c:(a,b)}",
                 "{<(z,x) --> on>, c:(b,a)}",
@@ -366,7 +366,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5_1() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5_1() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>, c:(a && b)}",
                 "{<(z,x) --> on>, c:(a && b)}",
@@ -374,7 +374,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5_c() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5_c() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>, c:{a,b}}",
                 "{<(z,x) --> on>, c:{a,b}}",
@@ -382,7 +382,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5_c1() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5_c1() {
         test(Op.VAR_PATTERN,
                 "{<(z,%1) --> on>, c:{a,b}}",
                 "{<(z,x) --> on>, c:{a,b}}",
@@ -390,7 +390,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5_c2() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5_c2() {
         test(Op.VAR_PATTERN,
                 "{<(%1, z) --> on>, w:{a,b,c}}",
                 "{<(x, z) --> on>, w:{a,b,c}}",
@@ -399,7 +399,7 @@ public class UnifyTest {
 
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5_s() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5_s() {
         
         test(Op.VAR_PATTERN,
                 "{<{%1,x} --> on>, c:{a,b}}",
@@ -408,7 +408,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex0_5_r() {
+    void pattern_trySubs_Pattern_Var_2_setComplex0_5_r() {
         test(Op.VAR_PATTERN,
                 "{on:{%1,x}, c}",
                 "{on:{z,x}, c}",
@@ -417,7 +417,7 @@ public class UnifyTest {
 
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex1() {
+    void pattern_trySubs_Pattern_Var_2_setComplex1() {
         test(Op.VAR_PATTERN,
                 "{%1,<(SELF,x) --> at>}",
                 "{z,<(SELF,x) --> at>}",
@@ -425,7 +425,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Pattern_Var_2_setComplex2() {
+    void pattern_trySubs_Pattern_Var_2_setComplex2() {
         test(Op.VAR_PATTERN,
                 "{<(%1,x) --> on>,<(SELF,x) --> at>}",
                 "{<(z,x) --> on>,<(SELF,x) --> at>}",
@@ -433,7 +433,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_Dep_Var_2_set() {
+    void pattern_trySubs_Dep_Var_2_set() {
         test(Op.VAR_DEP,
                 "{<(#1,x) --> on>,<(SELF,x) --> at>}",
                 "{<({t002},x) --> on>,<(SELF,x) --> at>}",
@@ -442,7 +442,7 @@ public class UnifyTest {
 
 
     @Test
-    public void pattern_trySubs_Indep_Var_32() {
+    void pattern_trySubs_Indep_Var_32() {
         test(Op.VAR_PATTERN,
                 "<%A ==> <(SELF,$1) --> reachable>>",
                 "<(&&,<($1,#2) --> on>,<(SELF,#2) --> at>) ==> <(SELF,$1) --> reachable>>",
@@ -450,7 +450,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set3() {
+    void pattern_trySubs_set3() {
         test(Op.VAR_PATTERN,
                 "{%1,%2,%3}",
                 "{a,b,c}",
@@ -459,21 +459,21 @@ public class UnifyTest {
 
 
     @Test
-    public void pattern_trySubs_set2_1() {
+    void pattern_trySubs_set2_1() {
         test(Op.VAR_PATTERN,
                 "{%1,b}", "{a,b}",
                 true);
     }
 
     @Test
-    public void pattern_trySubs_set2_2() {
+    void pattern_trySubs_set2_2() {
         test(Op.VAR_PATTERN,
                 "{a,%1}", "{a,b}",
                 true);
     }
 
     @Test
-    public void pattern_trySubs_set3_1_b() {
+    void pattern_trySubs_set3_1_b() {
         test(Op.VAR_PATTERN,
                 "{a,b,c}",
                 "{%1,b,%2}",
@@ -481,7 +481,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set3_1_b_reverse() {
+    void pattern_trySubs_set3_1_b_reverse() {
         test(Op.VAR_PATTERN,
                 "{%1,b,%2}",
                 "{a,b,c}",
@@ -489,7 +489,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set3_1_b_commutative_inside_statement() {
+    void pattern_trySubs_set3_1_b_commutative_inside_statement() {
         test(Op.VAR_PATTERN,
                 "<{a,b,c} --> d>",
                 "<{%1,b,%2} --> %3>",
@@ -497,7 +497,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set3_1_statement_of_specific_commutatives() {
+    void pattern_trySubs_set3_1_statement_of_specific_commutatives() {
         test(Op.VAR_PATTERN,
                 "<{a,b} --> {c,d}>",
                 "<{%1,b} --> {c,%2}>",
@@ -505,7 +505,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set3_1_statement_of_specific_commutatives_reverse() {
+    void pattern_trySubs_set3_1_statement_of_specific_commutatives_reverse() {
         test(Op.VAR_PATTERN,
                 "<{%1,b} --> {c,%2}>",
                 "<{a,b} --> {c,d}>",
@@ -513,7 +513,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set3_1_c() {
+    void pattern_trySubs_set3_1_c() {
         test(Op.VAR_PATTERN,
                 "{a,b,c}",
                 "{%1,%2,c}",
@@ -521,7 +521,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set3_1_c_reverse() {
+    void pattern_trySubs_set3_1_c_reverse() {
         test(Op.VAR_PATTERN,
                 "{%1,%2,c}",
                 "{a,b,c}",
@@ -529,7 +529,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void pattern_trySubs_set4() {
+    void pattern_trySubs_set4() {
         test(Op.VAR_PATTERN,
                 "{%1,%2,%3,%4}",
                 "{a,b,c,d}",
@@ -550,7 +550,7 @@ public class UnifyTest {
 
 
     @Test
-    public void impossibleMatch1() {
+    void impossibleMatch1() {
         test(Op.VAR_DEP,
                 "(a,#1)",
                 "(b,b)",
@@ -558,7 +558,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void posNegQuestion() {
+    void posNegQuestion() {
         
         
         RuleTest.get(new TestNAR(NARS.shell()),
@@ -568,7 +568,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void patternSimilarity1() {
+    void patternSimilarity1() {
         test(Op.VAR_PATTERN,
                 "<%1 <-> %2>",
                 "<a <-> b>",
@@ -576,7 +576,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void patternNAL2Sample() {
+    void patternNAL2Sample() {
         test(Op.VAR_PATTERN,
                 "(<%1 --> %2>, <%2 --> %1>)",
                 "(<bird --> {?1}>, <bird --> swimmer>)",
@@ -584,7 +584,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void patternNAL2SampleSim() {
+    void patternNAL2SampleSim() {
         test(Op.VAR_PATTERN,
                 "(<%1 <-> %2>, <%2 <-> %1>)",
                 "(<bird <-> {?1}>, <bird <-> swimmer>)",
@@ -592,7 +592,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void patternLongSeq_NO_1() {
+    void patternLongSeq_NO_1() {
         test(Op.VAR_PATTERN,
                 "(a,b,c,d,e,f,g,h,j)",
                 "(x,b,c,d,e,f,g,h,j)",
@@ -600,7 +600,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void patternLongSeq_NO_2() {
+    void patternLongSeq_NO_2() {
         test(Op.VAR_PATTERN,
                 "(a,b,c,d,e,f,g,h,j)",
                 "(a,b,c,d,e,f,g,h,x)",
@@ -616,28 +616,28 @@ public class UnifyTest {
 
 
     @Test
-    public void ellipsisCommutive1a() {
+    void ellipsisCommutive1a() {
         test(Op.VAR_PATTERN,
                 "{%X..+}",
                 "{a}", true);
     }
 
     @Test
-    public void ellipsisCommutive1b() {
+    void ellipsisCommutive1b() {
         test(Op.VAR_PATTERN,
                 "{a, %X..+}",
                 "{a}", false);
     }
 
     @Test
-    public void ellipsisCommutive1c() {
+    void ellipsisCommutive1c() {
         test(Op.VAR_PATTERN,
                 "{a, %X..*}",
                 "{a}", true);
     }
 
     @Test
-    public void ellipsisCommutive2a() {
+    void ellipsisCommutive2a() {
 
         test(Op.VAR_PATTERN,
                 "{a, %X..+}",
@@ -645,56 +645,56 @@ public class UnifyTest {
     }
 
     @Test
-    public void ellipsisCommutive2b() {
+    void ellipsisCommutive2b() {
         test(Op.VAR_PATTERN,
                 "{%X..+, a}",
                 "{a, b, c, d}", true);
     }
 
     @Test
-    public void ellipsisCommutive2c() {
+    void ellipsisCommutive2c() {
         test(Op.VAR_PATTERN,
                 "{a, %X..+, e}",
                 "{a, b, c, d}", false);
     }
 
     @Test
-    public void ellipsisLinearOneOrMoreAll() {
+    void ellipsisLinearOneOrMoreAll() {
         test(Op.VAR_PATTERN,
                 "(%X..+)",
                 "(a)", true);
     }
 
     @Test
-    public void ellipsisLinearOneOrMoreSuffix() {
+    void ellipsisLinearOneOrMoreSuffix() {
         test(Op.VAR_PATTERN,
                 "(a, %X..+)",
                 "(a, b, c, d)", true);
     }
 
     @Test
-    public void ellipsisLinearOneOrMoreSuffixNoneButRequired() {
+    void ellipsisLinearOneOrMoreSuffixNoneButRequired() {
         test(Op.VAR_PATTERN,
                 "(a, %X..+)",
                 "(a)", false);
     }
 
     @Test
-    public void ellipsisLinearOneOrMorePrefix() {
+    void ellipsisLinearOneOrMorePrefix() {
         test(Op.VAR_PATTERN,
                 "(%X..+, a)",
                 "(a, b, c, d)", false);
     }
 
     @Test
-    public void ellipsisLinearOneOrMoreInfix() {
+    void ellipsisLinearOneOrMoreInfix() {
         test(Op.VAR_PATTERN,
                 "(a, %X..+, a)",
                 "(a, b, c, d)", false);
     }
 
     @Test
-    public void ellipsisLinearZeroOrMore() {
+    void ellipsisLinearZeroOrMore() {
         test(Op.VAR_PATTERN,
                 "(a, %X..*)",
                 "(a)", true);
@@ -702,14 +702,14 @@ public class UnifyTest {
 
 
     @Test
-    public void ellipsisLinearRepeat1() {
+    void ellipsisLinearRepeat1() {
         test(Op.VAR_PATTERN,
                 "((a, %X..+), %X..+)",
                 "((a, b, c, d), b, c, d)", true);
     }
 
     @Test
-    public void ellipsisLinearRepeat2() {
+    void ellipsisLinearRepeat2() {
         test(Op.VAR_PATTERN,
                 "((a, %X..+), (z, %X..+))",
                 "((a, b, c, d), (z, b, c, d))", true);
@@ -717,7 +717,7 @@ public class UnifyTest {
 
 
     @Test
-    public void ellipsisCommutiveRepeat2_a() {
+    void ellipsisCommutiveRepeat2_a() {
         
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {z, %X..+}}",
@@ -725,7 +725,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void ellipsisCommutiveRepeat2_aa() {
+    void ellipsisCommutiveRepeat2_aa() {
         
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {z, b, %X..+}}",
@@ -733,21 +733,21 @@ public class UnifyTest {
     }
 
     @Test
-    public void ellipsisCommutiveRepeat2_set() {
+    void ellipsisCommutiveRepeat2_set() {
         test(Op.VAR_PATTERN,
                 "{{a, %X..+, %B}, {z, %X..+, %A}}",
                 "{{a, b, c, d}, {z, b, c, d}}", true);
     }
 
     @Test
-    public void ellipsisCommutiveRepeat2_product() {
+    void ellipsisCommutiveRepeat2_product() {
         test(Op.VAR_PATTERN,
                 "({a, %X..+, %B}, {z, %X..+, %A})",
                 "({a, b, c, d}, {z, b, c, d})", true);
     }
 
     @Test
-    public void ellipsisCommutiveRepeat2_c() {
+    void ellipsisCommutiveRepeat2_c() {
         
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {b, %Y..+}}",
@@ -755,7 +755,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void ellipsisCommutiveRepeat2_cc() {
+    void ellipsisCommutiveRepeat2_cc() {
         
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, {b, %Y..+}}",
@@ -763,7 +763,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void ellipsisLinearInner() {
+    void ellipsisLinearInner() {
 
         
         test(Op.VAR_PATTERN,
@@ -876,20 +876,20 @@ public class UnifyTest {
 
 
     @Test
-    public void ellipsisSequence() {
+    void ellipsisSequence() {
         
     }
 
 
     @Test
-    public void testA() {
+    void testA() {
         String somethingIsBird = "bird:$x";
         String somethingIsAnimal = "animal:$x";
         testIntroduction(somethingIsBird, Op.IMPL, somethingIsAnimal, "bird:robin", "animal:robin");
     }
 
 
-    void testIntroduction(String subj, Op relation, String pred, String belief,  String concl) {
+    private void testIntroduction(String subj, Op relation, String pred, String belief, String concl) {
 
         NAR n = NARS.shell();
 
@@ -924,14 +924,14 @@ public class UnifyTest {
      * this case is unrealistic as far as appearing in rules but it would be nice to get working
      */
     @Test
-    public void ellipsisCommutiveRepeat() {
+    void ellipsisCommutiveRepeat() {
         test(Op.VAR_PATTERN,
                 "{{a, %X..+}, %X..+}",
                 "{{a, b, c, d}, b, c, d}", true);
     }
 
     @Test
-    public void patternMatchesQuery1() {
+    void patternMatchesQuery1() {
         test(Op.VAR_PATTERN,
                 "(<%1 <-> %2>, <%3 <-> %2>)",
                 "(<x <-> ?1>, <y <-> ?1>)",
@@ -939,7 +939,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void patternMatchesQuery2() {
+    void patternMatchesQuery2() {
         test(Op.VAR_PATTERN,
                 "(<%1 <-> %2>, <%3 <-> %2>)",
                 "(<bird <-> {?1}>, <bird <-> {?1}>)",
@@ -947,7 +947,7 @@ public class UnifyTest {
     }
 
     @Test
-    public void varDep2() {
+    void varDep2() {
         test(Op.VAR_DEP,
                 "t:(#x | {#y})",
                 "t:(x | {y})",
@@ -964,7 +964,7 @@ public class UnifyTest {
 
 
     
-    Subst testUnify( Compound a,  Compound b, boolean matches) {
+    private Subst testUnify(Compound a, Compound b, boolean matches) {
 
         AtomicBoolean matched = new AtomicBoolean(false);
 

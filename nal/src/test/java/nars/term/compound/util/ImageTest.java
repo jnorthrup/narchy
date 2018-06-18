@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ImageTest {
 
     @Test
-    public void testNormlizeExt() {
+    void testNormlizeExt() {
         assertEquals(
                 "reaction(acid,base)",
                 Image.imageNormalize($$("(acid --> (reaction,/,base))")).toString()
@@ -19,7 +19,7 @@ class ImageTest {
     }
 
     @Test
-    public void testNormlizeInt() {
+    void testNormlizeInt() {
         assertEquals(
                 "(neutralization-->(acid,base))",
                 Image.imageNormalize($$("((neutralization,\\,base) --> acid)")).toString()
@@ -27,7 +27,7 @@ class ImageTest {
     }
 
     @Test
-    public void testCanNotNormlizeIntExt() {
+    void testCanNotNormlizeIntExt() {
         assertEquals(
                 "((neutralization,\\,base)-->(reaction,/,base))",
                 Image.imageNormalize($$("((neutralization,\\,base) --> (reaction,/,base))")).toString()
@@ -35,7 +35,7 @@ class ImageTest {
     }
 
     @Test
-    public void testNormlizeSubterms() {
+    void testNormlizeSubterms() {
         
         assertEquals(
                 "(reaction(acid,base)<->x)",
@@ -43,7 +43,8 @@ class ImageTest {
         );
     }
 
-    @Test public void testImageIntWithNumbers() {
+    @Test
+    void testImageIntWithNumbers() {
         String x = "((0,1,0)-->bitmap)";
         Term xx = $$(x);
 
@@ -61,7 +62,8 @@ class ImageTest {
 
     }
 
-    @Test public void testImagizeDepVar() {
+    @Test
+    void testImagizeDepVar() {
         Term x = $$("reaction(acid,#1)");
         Term y = Image.imageExt(x, $.varDep(1));
         assertEquals("(#1-->(reaction,acid,/))", y.toString());

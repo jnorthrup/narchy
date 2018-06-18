@@ -1,6 +1,6 @@
 package nars;
 
-public class DSpot {
+class DSpot {
 
 
 

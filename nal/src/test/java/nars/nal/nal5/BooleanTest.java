@@ -15,29 +15,29 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * NAL5 Boolean / Boolean Satisfiability / Boolean Conditionality
  */
-public class BooleanTest {
+class BooleanTest {
 
     @Test
-    public void testSAT2Individual00() throws Narsese.NarseseException {
+    void testSAT2Individual00() throws Narsese.NarseseException {
         testSAT2Individual(0, 0);
     }
 
     @Test
-    public void testSAT2Individual01() throws Narsese.NarseseException {
+    void testSAT2Individual01() throws Narsese.NarseseException {
         testSAT2Individual(0, 1);
     }
 
     @Test
-    public void testSAT2Individual10() throws Narsese.NarseseException {
+    void testSAT2Individual10() throws Narsese.NarseseException {
         testSAT2Individual(1, 0);
     }
 
     @Test
-    public void testSAT2Individual11() throws Narsese.NarseseException {
+    void testSAT2Individual11() throws Narsese.NarseseException {
         testSAT2Individual(1, 1);
     }
 
-    void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
+    private void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
 
         final float confThresh = 0.7f;
 
@@ -131,7 +131,7 @@ public class BooleanTest {
     }
 
     @Test
-    public void testEternalcept() throws Narsese.NarseseException {
+    void testEternalcept() throws Narsese.NarseseException {
 
         NAR n = NARS.tmp();
         n.believe("((&&,(0,x),(1,x),(2,x),(3,x))==>a)");
@@ -143,7 +143,7 @@ public class BooleanTest {
     }
 
     @Test
-    public void testConditionalImplication() {
+    void testConditionalImplication() {
         boolean[] booleans = {true, false};
         Term x = $.the("x");
         Term y = $.the("y");

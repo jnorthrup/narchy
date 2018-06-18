@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TermListTest {
+class TermListTest {
 
     @ParameterizedTest
     @ValueSource(strings={
@@ -25,11 +25,11 @@ public class TermListTest {
         "((a),[?c])",
         "((a),{$b,(#a)},[?c],(%d|e),(f&&g),{1,b,()},(h ==>+1 j),--(k-->m),((l &&+1 k) ==>-3 n))",
     })
-    public void test1(String i) {
+    void test1(String i) {
         assertReallyEquals(i);
     }
 
-    static void assertReallyEquals(String s) {
+    private static void assertReallyEquals(String s) {
         Subterms immutable = $.$$(s).subterms();
         TermList mutable = new TermList(immutable);
         assertNotSame(immutable, mutable);

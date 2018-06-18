@@ -9,7 +9,7 @@ import static nars.$.$$;
 class MemoryTest {
 
     @Test
-    public void testURLDirectory() {
+    void testURLDirectory() {
         Memory m = new Memory();
         Term url = $$("file:///tmp");
         System.out.println(

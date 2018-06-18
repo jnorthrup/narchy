@@ -9,7 +9,7 @@ import static nars.time.Tense.ETERNAL;
 
 abstract class TemporalStabilityTest {
 
-    boolean unstable;
+    private boolean unstable;
 
     
 
@@ -46,11 +46,16 @@ abstract class TemporalStabilityTest {
         assert(!unstable);
     }
 
-    long minInput = ETERNAL, maxInput = ETERNAL;
+    private long minInput = ETERNAL;
+    private long maxInput = ETERNAL;
 
-    public void validate(Task t) {
+    private void validate(Task t) {
+        if (t.isQuestionOrQuest())
+            return; //ignore. it is natural for it to be curious!!!!
+
         long ts = t.start();
         long te = Math.max(ts+t.term().dtRange(), t.end());
+
         if (t.isInput()) {
             System.out.println("in: " + t);
             if (!t.isEternal()) {
@@ -120,10 +125,10 @@ abstract class TemporalStabilityTest {
 
 
 
-    abstract public boolean validOccurrence(long o);
+    protected abstract boolean validOccurrence(long o);
 
     /**
      * inputs the tasks for a test
      */
-    abstract public void input(NAR n);
+    protected abstract void input(NAR n);
 }

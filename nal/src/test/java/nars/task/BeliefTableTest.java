@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 7/5/15.
  */
-public class BeliefTableTest {
+class BeliefTableTest {
 
 
-    static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
+    private static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
         TaskConcept cc = (TaskConcept) n.conceptualize(c);
         assertNotNull(cc, c + " unconceptualized");
 
@@ -41,12 +41,12 @@ public class BeliefTableTest {
         }
     }
 
-    static float dtDiff(String x, String y) {
+    private static float dtDiff(String x, String y) {
         return Revision.dtDiff($.$$(x), $.$$(y));
     }
 
     @Test
-    public void testEternalBeliefRanking() {
+    void testEternalBeliefRanking() {
 
 
 
@@ -89,7 +89,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testPolation0() {
+    void testPolation0() {
 
         int spacing = 4;
         float conf = 0.9f;
@@ -160,7 +160,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testLinearTruthpolation() throws Narsese.NarseseException {
+    void testLinearTruthpolation() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.time.dur(5);
         n.inputAt(10, "(x). :|:");
@@ -181,7 +181,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testDurationDithering() {
+    void testDurationDithering() {
         NAR n = NARS.tmp();
         n.dtDither.set(3);
         n.time.dur(3);
@@ -199,7 +199,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testTemporalIntersection() throws Narsese.NarseseException {
+    void testTemporalIntersection() throws Narsese.NarseseException {
 
         
         NAR n = NARS.tmp();
@@ -218,7 +218,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testDurationIntersection() {
+    void testDurationIntersection() {
         /*
         WRONG: t=25 is not common to both; 30 is however
         $.12 ((happy|i)-->L). 25 %.49;.81% {37: b;k} (((%1-->%2),(%3-->%2),task("."),notSet(%3),notSet(%1),neqRCom(%3,%1)),(((%1|%3)-->%2),((Intersection-->Belief))))
@@ -229,7 +229,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testConceptualizationIntermpolation() throws Narsese.NarseseException {
+    void testConceptualizationIntermpolation() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present, Eternal}) {
             NAR n = NARS.tmp();
             n.dtMergeOrChoose.set(true);
@@ -265,12 +265,12 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testBestMatchConjSimple() throws Narsese.NarseseException {
+    void testBestMatchConjSimple() throws Narsese.NarseseException {
         
     }
 
     @Test
-    public void testBestMatchImplSimple() throws Narsese.NarseseException {
+    void testBestMatchImplSimple() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present/*, Eternal*/}) {
             NAR n = NARS.tmp();
             n.dtMergeOrChoose.set(false);
@@ -298,7 +298,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testDTDiffSame() {
+    void testDTDiffSame() {
 
         
         float same = dtDiff("(x ==>+5 y)", "(x ==>+5 y)");
@@ -307,7 +307,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testDTImpl1() {
+    void testDTImpl1() {
 
         float a52 = dtDiff("(x ==>+5 y)", "(x ==>+2 y)");
         float a54 = dtDiff("(x ==>+5 y)", "(x ==>+4 y)");
@@ -316,7 +316,7 @@ public class BeliefTableTest {
         assertTrue(a52 > a54);
     }
     @Test
-    public void testConjSequence1() {
+    void testConjSequence1() {
 
         float a52 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+2 y) &&+1 z)");
         float a54 = dtDiff("((x &&+5 y) &&+1 z)", "((x &&+4 y) &&+1 z)");
@@ -326,7 +326,7 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testDTImplEmbeddedConj() {
+    void testDTImplEmbeddedConj() {
 
         
         float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");

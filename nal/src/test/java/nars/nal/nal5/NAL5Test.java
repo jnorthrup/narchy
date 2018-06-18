@@ -16,9 +16,9 @@ import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-public class NAL5Test extends NALTest {
+class NAL5Test extends NALTest {
 
-    final int cycles = 400;
+    private final int cycles = 100;
 
     @Override
     protected NAR nar() {
@@ -32,7 +32,7 @@ public class NAL5Test extends NALTest {
     } 
 
     @Test
-    public void revision() {
+    void revision() {
 
         test
                 .mustBelieve(cycles, "<<robin --> [flying]> ==> <robin --> bird>>", 0.85f, 0.92f) 
@@ -42,7 +42,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void deduction() {
+    void deduction() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
@@ -51,7 +51,7 @@ public class NAL5Test extends NALTest {
 
     }
     @Test
-    public void deductionPosCommon() {
+    void deductionPosCommon() {
 
         test
                 .believe("(x ==> z)")
@@ -61,7 +61,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void deductionNegCommon() {
+    void deductionNegCommon() {
 
         test
             .believe("(x ==> --z)")
@@ -71,7 +71,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void exemplification() {
+    void exemplification() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> [flying]> ==> <robin --> bird>>"); 
@@ -84,7 +84,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void induction() {
+    void induction() {
         /*
          <<robin --> bird> ==> <robin --> animal>>.
          <<robin --> [flying]> ==> <robin --> animal>>. %0.8%
@@ -107,7 +107,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void abduction() {
+    void abduction() {
 
         /*
         <<robin --> bird> ==> <robin --> animal>>.         
@@ -127,7 +127,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testImplBeliefPosPos() {
+    void testImplBeliefPosPos() {
         
 
         test
@@ -145,7 +145,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testImplBeliefPosNeg() {
+    void testImplBeliefPosNeg() {
         
 
         test
@@ -155,7 +155,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void detachment() {
+    void detachment() {
 
         test
                 .believe("<<robin --> bird> ==> <robin --> animal>>") 
@@ -166,7 +166,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void detachment2() {
+    void detachment2() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> bird> ==> <robin --> animal>>", 0.70f, 0.90f); 
@@ -189,7 +189,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void anonymous_analogy1_depvar() {
+    void anonymous_analogy1_depvar() {
         test
                 .believe("(a:#1 && y)")
                 .believe("a:x", 0.80f, 0.9f)
@@ -197,7 +197,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void anonymous_analogy1_pos2() {
+    void anonymous_analogy1_pos2() {
         test
                 
                 .believe("(x && y)")
@@ -208,7 +208,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void anonymous_analogy1_pos3() {
+    void anonymous_analogy1_pos3() {
         test
                 .believe("(&&, x, y, z)")
                 .believe("x", 0.80f, 0.9f)
@@ -218,7 +218,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void anonymous_analogy1_neg2() {
+    void anonymous_analogy1_neg2() {
         test
                 .believe("(&&, --x, y, z)")
                 .believe("x", 0.20f, 0.9f)
@@ -228,7 +228,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void compound_composition_Pred() {
+    void compound_composition_Pred() {
 
         TestNAR tester = test;
         tester.believe("<<robin --> bird> ==> <robin --> animal>>"); 
@@ -238,7 +238,7 @@ public class NAL5Test extends NALTest {
 
     }
     @Test
-    public void compound_composition_PredPosNeg() {
+    void compound_composition_PredPosNeg() {
 
         TestNAR tester = test;
         tester.believe("(a ==> b)");
@@ -250,7 +250,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void compound_composition_Subj() {
+    void compound_composition_Subj() {
         TestNAR tester = test;
         tester.believe("(bird:robin ==> animal:robin)"); 
         tester.believe("([flying]:robin ==> animal:robin)", 0.9f, 0.81f); 
@@ -258,7 +258,7 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles," ((bird:robin || [flying]:robin) ==> animal:robin)",1f,0.73f); 
     }
     @Test
-    public void compound_composition_SubjNeg() {
+    void compound_composition_SubjNeg() {
         TestNAR tester = test;
         tester.believe("--(bird:robin ==> animal:nonRobin)"); 
         tester.believe("--([flying]:robin ==> animal:nonRobin)", 0.9f, 0.81f); 
@@ -275,7 +275,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void compound_decomposition_two_premises1() {
+    void compound_decomposition_two_premises1() {
 
         TestNAR tester = test;
         tester.believe("--(bird:robin ==> (animal:robin && [flying]:robin))", 1.0f, 0.9f); 
@@ -285,14 +285,14 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void compound_decomposition_subj_posneg() {
+    void compound_decomposition_subj_posneg() {
         test.believe("((b && --c)==>a)", 1.0f, 0.9f)
                 .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
                 .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
     }
 
     @Test
-    public void compound_decomposition_pred_posneg() {
+    void compound_decomposition_pred_posneg() {
 
         test.believe("(a==>(b && --c))", 1.0f, 0.9f)
                 .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
@@ -300,7 +300,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void compound_decomposition_one_premise_pos() {
+    void compound_decomposition_one_premise_pos() {
 
         TestNAR tester = test;
 
@@ -309,7 +309,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testConjStructuralDeduction() {
+    void testConjStructuralDeduction() {
         test
                 .believe("(&&, a, b)")
                 .mustBelieve(cycles, "a", 1f, 0.81f)
@@ -318,7 +318,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test @Disabled
-    public void testDisjStructuralDeduction() {
+    void testDisjStructuralDeduction() {
         test
                 .believe("(||, a, b)")
                 .mustBelieve(cycles, "a", 1f, 0.40f)
@@ -326,7 +326,8 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test public void testDisjStructuralDeductionQuestion() {
+    @Test
+    void testDisjStructuralDeductionQuestion() {
         test
                 .input("a?")
                 .believe("(||, a, b)")
@@ -335,7 +336,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test @Disabled
-    public void compound_decomposition_one_premise_neg() {
+    void compound_decomposition_one_premise_neg() {
         
 
         TestNAR tester = test;
@@ -345,7 +346,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void compound_decomposition_two_premises3() {
+    void compound_decomposition_two_premises3() {
 
         TestNAR tester = test;
         tester.believe("(||,<robin --> [flying]>,<robin --> swimmer>)"); 
@@ -360,7 +361,7 @@ public class NAL5Test extends NALTest {
      */
     @Disabled
     @Test
-    public void compound_composition_one_premises() throws nars.Narsese.NarseseException {
+    void compound_composition_one_premises() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<robin --> [flying]>"); 
@@ -374,7 +375,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void compound_decomposition_one_premises() {
+    void compound_decomposition_one_premises() {
 
         test
 
@@ -394,7 +395,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void negation0() {
+    void negation0() {
 
         test
                 .mustBelieve(cycles, "<robin --> [flying]>", 0.10f, 0.90f) 
@@ -404,7 +405,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void negation1() {
+    void negation1() {
 
         test
                 .mustBelieve(cycles, "<robin <-> parakeet>", 0.10f, 0.90f)
@@ -426,7 +427,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void contraposition() {
+    void contraposition() {
 
         TestNAR tester = test;
 
@@ -442,7 +443,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void contrapositionPos() {
+    void contrapositionPos() {
         
         test
         .believe("(--B ==> A)", 0.9f, 0.9f)
@@ -450,14 +451,14 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void contrapositionNeg() {
+    void contrapositionNeg() {
         test
         .believe("(--B ==> A)", 0.1f, 0.9f)
         .mustBelieve(cycles, " (--A ==> B)", 0f, 0.45f);
     }
 
     @Test
-    public void conditional_deduction() {
+    void conditional_deduction() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<robin --> [flying]>,<robin --> [withWings]>) ==> <robin --> bird>>"); 
@@ -467,7 +468,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_deduction_neg() {
+    void conditional_deduction_neg() {
 
         TestNAR tester = test;
         tester.believe("<(&&,--<robin --> [swimming]>,<robin --> [withWings]>) ==> <robin --> bird>>"); 
@@ -478,7 +479,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void conditional_deduction2() {
+    void conditional_deduction2() {
 
 
         
@@ -491,7 +492,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void conditional_deduction3() {
+    void conditional_deduction3() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<robin --> bird>,<robin --> [living]>) ==> <robin --> animal>>"); 
@@ -502,7 +503,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void conditional_abduction_viaMultiConditionalSyllogism() {
+    void conditional_abduction_viaMultiConditionalSyllogism() {
         
 
         TestNAR tester = test;
@@ -514,7 +515,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_abduction_viaMultiConditionalSyllogismEasier() {
+    void conditional_abduction_viaMultiConditionalSyllogismEasier() {
         
 
         TestNAR tester = test;
@@ -526,7 +527,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_abduction2_viaMultiConditionalSyllogism() {
+    void conditional_abduction2_viaMultiConditionalSyllogism() {
         
 
         test
@@ -549,7 +550,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void conditional_abduction3_semigeneric2() {
+    void conditional_abduction3_semigeneric2() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<ro --> [f]>,<ro --> [w]>) ==> <ro --> [l]>>", 0.9f, 0.9f);
@@ -560,7 +561,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void conditional_abduction3_semigeneric3() {
+    void conditional_abduction3_semigeneric3() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<R --> [f]>,<R --> [w]>) ==> <R --> [l]>>", 0.9f, 0.9f);
@@ -570,7 +571,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_abduction3() {
+    void conditional_abduction3() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<robin --> [flying]>,<robin --> [withWings]>) ==> <robin --> [living]>>", 0.9f, 0.9f); 
@@ -583,7 +584,7 @@ public class NAL5Test extends NALTest {
 
     }
     @Test
-    public void conditional_abduction3_generic_simpler() {
+    void conditional_abduction3_generic_simpler() {
 
         test
         .believe("((a && b) ==> d)", 0.9f, 0.9f)
@@ -593,7 +594,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_abduction3_generic() {
+    void conditional_abduction3_generic() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<r --> [f]>,<r --> [w]>) ==> <r --> [l]>>", 0.9f, 0.9f);
@@ -603,7 +604,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction() {
+    void conditional_induction() {
 
         TestNAR tester = test;
         tester.believe("<(&&,<robin --> [chirping]>,<robin --> [flying]>) ==> <robin --> bird>>"); 
@@ -614,7 +615,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0Simple() {
+    void conditional_induction0Simple() {
         TestNAR tester = test;
         tester.believe("((&&,x1,a) ==> c)");
         tester.believe("((&&,y1,a) ==> c)");
@@ -623,7 +624,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0SimpleDepVar() {
+    void conditional_induction0SimpleDepVar() {
         TestNAR tester = test;
         tester.believe("((&&,x1,#1) ==> c)");
         tester.believe("((&&,y1,#1) ==> c)");
@@ -632,7 +633,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0SimpleDepVar2() {
+    void conditional_induction0SimpleDepVar2() {
         TestNAR tester = test;
         tester.believe("((&&,x1,#1) ==> (a && #1))");
         tester.believe("((&&,y1,#1) ==> (a && #1))");
@@ -641,7 +642,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0SimpleDepVar3() {
+    void conditional_induction0SimpleDepVar3() {
         TestNAR tester = test;
         tester.believe("((&&,x1,#1) ==> (a && #1))");
         tester.believe("((&&,#1,#2) ==> (a && #2))");
@@ -650,7 +651,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0SimpleIndepVar() {
+    void conditional_induction0SimpleIndepVar() {
         TestNAR tester = test;
         tester.believe("((&&,x1,$1) ==> (a,$1))");
         tester.believe("((&&,y1,$1) ==> (a,$1))");
@@ -659,7 +660,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0() {
+    void conditional_induction0() {
         
 
         TestNAR tester = test;
@@ -671,7 +672,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0NegBothSimple() {
+    void conditional_induction0NegBothSimple() {
         TestNAR tester = test;
         tester.believe("--((x&&a) ==> c)");
         tester.believe("--((x&&b) ==> c)");
@@ -680,7 +681,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0NegBoth() {
+    void conditional_induction0NegBoth() {
         Term both = $$("(((x1&&x2) ==> (y1&&y2))&&((y1&&y2) ==> (x1&&x2)))");
         assertEquals("(((x1&&x2)==>(y1&&y2))&&((y1&&y2)==>(x1&&x2)))",
                 both.toString());
@@ -693,7 +694,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void conditional_induction0NegInner() {
+    void conditional_induction0NegInner() {
         TestNAR tester = test;
         tester.believe("((x&&a) ==> c)");
         tester.believe("(--(x&&b) ==> c)");
@@ -730,7 +731,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testPosPosImplicationConc() {
+    void testPosPosImplicationConc() {
 
         
         test
@@ -754,7 +755,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testImplNegPos() {
+    void testImplNegPos() {
 
         test
                 .input("--x.")
@@ -767,7 +768,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testImplNegNeg() {
+    void testImplNegNeg() {
 
         test
                 
@@ -791,7 +792,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testAbductionNegPosImplicationPred() {
+    void testAbductionNegPosImplicationPred() {
 
         test
                 
@@ -804,8 +805,8 @@ public class NAL5Test extends NALTest {
 
 
     @Disabled
-    @Test 
-    public void testAbductionPosNegImplicationPred() {
+    @Test
+    void testAbductionPosNegImplicationPred() {
 
         test
                 .input("y. %1.0;0.90%")
@@ -816,8 +817,8 @@ public class NAL5Test extends NALTest {
     }
 
     @Disabled
-    @Test 
-    public void testAbductionNegNegImplicationPred() {
+    @Test
+    void testAbductionNegNegImplicationPred() {
 
         /*
         via contraposition:
@@ -835,7 +836,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testDeductionPosNegImplicationPred() {
+    void testDeductionPosNegImplicationPred() {
 
         test
                 .believe("y")
@@ -864,7 +865,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testConversion0() {
+    void testConversion0() {
 
         test
                 .input("(x==>y)?")
@@ -874,7 +875,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testConversion() {
+    void testConversion() {
 
         test
                 
@@ -885,7 +886,7 @@ public class NAL5Test extends NALTest {
     }
 
     @Test
-    public void testConversionNeg() {
+    void testConversionNeg() {
 
         test
                 .input("(x ==> y)?")
@@ -904,7 +905,7 @@ public class NAL5Test extends NALTest {
 
 
     @Test
-    public void testConversionNeg3() {
+    void testConversionNeg3() {
         test
                 .input("(--x ==> y)?")
                 .input("(y ==> --x).")

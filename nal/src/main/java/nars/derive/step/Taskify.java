@@ -169,31 +169,31 @@ public class Taskify extends AbstractPred<Derivation> {
         return false;
     }
 
-    @Deprecated
-    protected boolean same(Task derived, Task parent, float truthResolution) {
-        if (parent.isDeleted())
-            return false;
-
-        if (derived.equals(parent)) return true;
-
-        if (FILTER_SIMILAR_DERIVATIONS) {
-
-            if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() &&
-                    parent.start() == derived.start() && parent.end() == derived.end()) {
-                /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
-                if (parent.isQuestionOrQuest() ||
-                        (Util.equals(parent.freq(), derived.freq(), truthResolution) &&
-                                parent.evi() >= derived.evi())
-                ) {
-                    if (Param.DEBUG_SIMILAR_DERIVATIONS)
-                        logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
-
-
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
+//    @Deprecated
+//    protected boolean same(Task derived, Task parent, float truthResolution) {
+//        if (parent.isDeleted())
+//            return false;
+//
+//        if (derived.equals(parent)) return true;
+//
+//        if (FILTER_SIMILAR_DERIVATIONS) {
+//
+//            if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() &&
+//                    parent.start() == derived.start() && parent.end() == derived.end()) {
+//                /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
+//                if (parent.isQuestionOrQuest() ||
+//                        (Util.equals(parent.freq(), derived.freq(), truthResolution) &&
+//                                parent.evi() >= derived.evi())
+//                ) {
+//                    if (Param.DEBUG_SIMILAR_DERIVATIONS)
+//                        logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
+//
+//
+//                    return true;
+//                }
+//            }
+//        }
+//        return false;
+//    }
 
 }

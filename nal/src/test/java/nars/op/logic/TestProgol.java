@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
  * http:
  * http:
  */
-public class TestProgol {
+class TestProgol {
     @Test
-    public void testAnimals() throws Narsese.NarseseException {
+    void testAnimals() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
         /*

@@ -11,10 +11,10 @@ import org.junit.jupiter.api.Test;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ConjClusteringTest {
+class ConjClusteringTest {
 
     @Test
-    public void testSameTruthSameTime() throws Narsese.NarseseException {
+    void testSameTruthSameTime() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
         int ccap = 4;
@@ -26,7 +26,7 @@ public class ConjClusteringTest {
         assertEquals(1, n.concept($.$("(&&,x0,x1,x2,x3)")).beliefs().size());
     }
     @Test
-    public void testNeg() throws Narsese.NarseseException {
+    void testNeg() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
         int ccap = 4;

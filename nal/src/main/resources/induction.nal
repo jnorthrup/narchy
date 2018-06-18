@@ -65,8 +65,8 @@
 
 
 //NAL3 difference comparator
-    B, A, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B) |- (B ~ A), (Belief:Difference)
-    B, A, neqRCom(A,B), hasNoDiffed(A), hasNoDiffed(B) |- (A ~ B), (Belief:DifferenceReverse)
+    B, A, neqRCom(A,B) |- (B ~ A), (Belief:Difference)
+    B, A, neqRCom(A,B) |- (A ~ B), (Belief:DifferenceReverse)
 
         //the hasNoDiffs constraint is not entirely necessary;
         //for now it is just meant to prevent derivations like:

@@ -3,7 +3,7 @@ package nars.util.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.HashCachedBytes;
-import jcog.memoize.HijackMemoize;
+import jcog.pri.PriProxy;
 import jcog.pri.UnitPri;
 import nars.Op;
 import nars.term.Compound;
@@ -11,7 +11,7 @@ import nars.term.Term;
 
 import java.util.Arrays;
 
-public final class InternedCompound extends UnitPri implements HijackMemoize.Computation<InternedCompound, Term> {
+public final class InternedCompound extends UnitPri implements PriProxy<InternedCompound, Term> {
 
     public final byte op;
     public final int dt;

@@ -11,19 +11,19 @@ import static nars.Op.GOAL;
 /**
  * tests goals involving &,|,~,-, etc..
  */
-public class GoalDecompositionTest extends NALTest {
+class GoalDecompositionTest extends NALTest {
 
     public static final int cycles = 150;
 
 
     @BeforeEach
-    public void setTolerance() {
+    void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(3);
     }
 
     @Test
-    public void testIntersectionSinglePremiseDecomposeGoal1Pos() {
+    void testIntersectionSinglePremiseDecomposeGoal1Pos() {
         test
                 .input("((a|b)-->g)!")
 
@@ -32,7 +32,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testIntersectionConditionalDecomposeGoalPos() {
+    void testIntersectionConditionalDecomposeGoalPos() {
         test
                 .input("((a|b)-->g)!")
                 .input("(a-->g).")
@@ -48,7 +48,7 @@ public class GoalDecompositionTest extends NALTest {
 //    }
 
     @Test
-    public void testUnionConditionalDecomposeGoalPosNeg() {
+    void testUnionConditionalDecomposeGoalPosNeg() {
         test
                 .input("((a&b)-->g)!")
                 .input("--(a-->g).")
@@ -56,7 +56,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testIntersectionConditionalDecomposeGoalNeg() {
+    void testIntersectionConditionalDecomposeGoalNeg() {
         test
                 .input("--((a|b)-->g)!")
                 .input("--(a-->g).")
@@ -64,7 +64,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testIntersectionConditionalDecomposeGoalConfused() {
+    void testIntersectionConditionalDecomposeGoalConfused() {
         test
                 .input("--((a|b)-->g)!")
                 .input("(a-->g).")
@@ -72,7 +72,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testDiffGoal1SemiPos1st() {
+    void testDiffGoal1SemiPos1st() {
         test
                 .input("((a~b)-->g)! %0.50;0.90%")
                 .input("(a-->g). %1.00;0.90%")
@@ -80,7 +80,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testMutexDiffGoal1Pos2nd() {
+    void testMutexDiffGoal1Pos2nd() {
         test
                 .input("((a~b)-->g)!")
                 .input("--(b-->g).")
@@ -88,7 +88,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testConjBeliefPos() {
+    void testConjBeliefPos() {
 //        Param.DEBUG = true;
 //        test.log();
         test
@@ -98,7 +98,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testConjBeliefNeg() {
+    void testConjBeliefNeg() {
         test
                 .input("(&&,--a,b).")
                 .input("--a.")
@@ -106,7 +106,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testDisjBeliefPos() {
+    void testDisjBeliefPos() {
 
         test
                 .input("(||,a,b). %0.9;0.9%")
@@ -114,7 +114,7 @@ public class GoalDecompositionTest extends NALTest {
                 .mustBelieve(cycles, "b", 0.81f, 0.66f);
     }
     @Test
-    public void testDisjBeliefNeg() {
+    void testDisjBeliefNeg() {
 
         test
                 .input("(||,--a,b).  %0.9;0.9%")
@@ -123,7 +123,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testDisj() {
+    void testDisj() {
         test
             .input("(||,a,b)!")
             .input("--a.")
@@ -134,7 +134,7 @@ public class GoalDecompositionTest extends NALTest {
 
     @Disabled
     @Test
-    public void testDisjOpposite() {
+    void testDisjOpposite() {
 //        Param.DEBUG = true;
 //        test.log();
         //produces output from structural deduction
@@ -145,7 +145,7 @@ public class GoalDecompositionTest extends NALTest {
                 ;
     }
     @Test
-    public void testDisjNeg() {
+    void testDisjNeg() {
         test
                 .input("(||,a,--b)!")
                 .input("--a.")
@@ -156,7 +156,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testDisjNeg2() {
+    void testDisjNeg2() {
         test
                 .input("(||,--a, b)!")
                 .input("a.")
@@ -164,7 +164,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testDisjNeg3() {
+    void testDisjNeg3() {
         test
                 .input("(||,--a,--b)!")
                 .input("a.")
@@ -174,7 +174,7 @@ public class GoalDecompositionTest extends NALTest {
 
 
     @Test
-    public void testAndConj() {
+    void testAndConj() {
         test
                 .input("(&&,a,b)!")
                 .input("a.")
@@ -183,7 +183,7 @@ public class GoalDecompositionTest extends NALTest {
 
 
     @Test
-    public void testMutexDiffGoal1Neg() {
+    void testMutexDiffGoal1Neg() {
         test
                 .input("--((a~b)-->g)!")
                 .input("(a-->g).")
@@ -191,7 +191,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testIntersectSinglePremiseGoal1Neg() {
+    void testIntersectSinglePremiseGoal1Neg() {
         test
                 .input("--((a|b)-->g)!")
 
@@ -200,7 +200,7 @@ public class GoalDecompositionTest extends NALTest {
     }
 
     @Test
-    public void testDiffGoal1Pos1st() {
+    void testDiffGoal1Pos1st() {
         test
                 .input("((a~b)-->g)! %1.00;0.90%")
                 .input("(a-->g).")

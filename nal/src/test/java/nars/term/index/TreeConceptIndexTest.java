@@ -1,4 +1,4 @@
-package nars.term;
+package nars.term.index;
 
 import jcog.data.byt.ArrayBytes;
 import jcog.data.byt.ConcatBytes;
@@ -6,6 +6,7 @@ import jcog.tree.radix.MyConcurrentRadixTree;
 import nars.$;
 import nars.Narsese;
 import nars.index.concept.TreeConceptIndex;
+import nars.term.Term;
 import nars.util.term.TermRadixTree;
 import org.junit.jupiter.api.Test;
 
@@ -19,9 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 10/21/16.
  */
-public class TreeConceptIndexTest {
+class TreeConceptIndexTest {
 
-    @Test public void testTermIndex() {
+    @Test
+    void testTermIndex() {
         TermRadixTree<Term> t = new TermRadixTree<>();
         byte[] a = t.key($.func("x", $.the("y"))).array();
         System.out.println(Arrays.toString(a));
@@ -45,7 +47,7 @@ public class TreeConceptIndexTest {
 
     }
     @Test
-    public void testVolumeSubTrees() throws Narsese.NarseseException {
+    void testVolumeSubTrees() throws Narsese.NarseseException {
         TreeConceptIndex t = new TreeConceptIndex( 128);
         t.set($("a"));
         t.set($("(a)"));

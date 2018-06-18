@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AnonTest {
 
     @Test
-    public void testAtoms() {
+    void testAtoms() {
         assertAnon("_1", "a");
         assertAnon("#1", $.varDep(1)); 
         assertAnon("_1", $.the(2)); 
@@ -38,12 +38,13 @@ public class AnonTest {
         assertNotEquals(Anom.the(2), $.the(2));
     }
 
-    @Test public void testThatAnonDoesntEatEllipsis() throws Narsese.NarseseException {
+    @Test
+    void testThatAnonDoesntEatEllipsis() throws Narsese.NarseseException {
         assertEquals("(_1,%1..*)", UnifyTest.pattern("(a, %X..*)").anon().toString());
     }
 
     @Test
-    public void testCompounds() {
+    void testCompounds() {
         assertAnon("(_1-->_2)", "(a-->b)");
 
         assertAnon("(_1-->#1)", "(a-->#1)");
@@ -64,14 +65,14 @@ public class AnonTest {
     }
 
     @Test
-    public void testCompoundsWithNegations() {
+    void testCompoundsWithNegations() {
         assertAnon("((--,_1),_1,_2)", "((--,a), a, c)");
         assertAnon("(--,((--,_1),_1,_2))", "--((--,a), a, c)");
     }
 
     @Test
     @Disabled
-    public void testIntRange() throws Narsese.NarseseException {
+    void testIntRange() throws Narsese.NarseseException {
         assertEquals("(4..6-->x)", $("((|,4,5,6)-->x)").toString());
         assertAnon("(_0-->_1)", "((|,4,5,6)-->x)");
     }
@@ -79,7 +80,7 @@ public class AnonTest {
 
 
     @Test
-    public void testAnomVector() {
+    void testAnomVector() {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
@@ -89,7 +90,7 @@ public class AnonTest {
     }
 
     @Test
-    public void testAnomVectorNegations() {
+    void testAnomVectorNegations() {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2).neg()};
 
@@ -115,7 +116,7 @@ public class AnonTest {
     }
 
     @Test
-    public void testMixedAnonVector() {
+    void testMixedAnonVector() {
 
         Term[] x = {$.varDep(1), $.varIndep(2), $.varQuery(3), Anom.the(4)};
         Random rng = new XoRoShiRo128PlusRandom(1);
@@ -129,14 +130,14 @@ public class AnonTest {
         }
     }
 
-    static Anon assertAnon(String expect, String test)  {
+    private static Anon assertAnon(String expect, String test)  {
         return assertAnon(expect, $$(test));
     }
 
     /**
      * roundtrip test
      */
-    static Anon assertAnon(String expect, Term x) {
+    private static Anon assertAnon(String expect, Term x) {
         Anon a = new Anon();
         Term y = a.put(x);
         Term z = a.get(y);
@@ -145,7 +146,7 @@ public class AnonTest {
         return a;
     }
 
-    static void assertEqual(Subterms v, AnonVector a) {
+    private static void assertEqual(Subterms v, AnonVector a) {
         assertEquals(v, a);
         assertEquals(v.toString(), a.toString());
         assertEquals(v.hashCode(), a.hashCode());
@@ -158,7 +159,8 @@ public class AnonTest {
         assertArrayEquals(bytesExpected, bytesActual);
     }
 
-    @Test public void testAnonSorting() {
+    @Test
+    void testAnonSorting() {
         assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,1,2,--3,4,5)");
         assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,--1,2,3,4,5)");
         assertAnon("(_2(_1)&&_3)", "(&&,1(2),3)");
@@ -172,7 +174,8 @@ public class AnonTest {
 //        assertAnon("(_2,_1,_1)", "(1,2,2)");
 //    }
 
-    @Test public void testTermSubs() {
+    @Test
+    void testTermSubs() {
         Term x = $$("(%1,%2)").normalize();
         assertEquals(AnonVector.class, x.subterms().getClass());
         for (Termlike t : new Termlike[] { x, x.subterms() }) {
@@ -190,7 +193,8 @@ public class AnonTest {
         }
     }
 
-    @Test public void testAutoNormalization() throws Narsese.NarseseException {
+    @Test
+    void testAutoNormalization() throws Narsese.NarseseException {
         for (String s : new String[] { "($1)", "($1,$2)", "($1,#2)", "(%1,%1,%2)" }) {
             Term t = $$(s);
             assertEquals(s, t.toString());

@@ -120,6 +120,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
         return h;
     }
 
+
+
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
 
 

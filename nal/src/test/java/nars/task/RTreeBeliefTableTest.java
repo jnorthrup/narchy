@@ -19,19 +19,19 @@ import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RTreeBeliefTableTest {
+class RTreeBeliefTableTest {
 
-    static final LongToFloatFunction stepFunction = (t) -> (Math.sin(t) / 2f + 0.5f) >= 0.5 ? 1f : 0f;
+    private static final LongToFloatFunction stepFunction = (t) -> (Math.sin(t) / 2f + 0.5f) >= 0.5 ? 1f : 0f;
 
     @NotNull
-    static Task add(RTreeBeliefTable r, Termed x, float freq, float conf, int start, int end, NAR n) {
+    private static Task add(RTreeBeliefTable r, Termed x, float freq, float conf, int start, int end, NAR n) {
         Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).apply(n);
         a.pri(0.5f);
         r.add(a, (TaskConcept) n.concept(x), n);
         return a;
     }
 
-    static void testAccuracy(int dur, int period, int end, int cap, LongToFloatFunction func) {
+    private static void testAccuracy(int dur, int period, int end, int cap, LongToFloatFunction func) {
 
         NAR n = NARS.shell();
 
@@ -110,7 +110,7 @@ public class RTreeBeliefTableTest {
     }
 
     @Test
-    public void testBasicOperations() throws Narsese.NarseseException {
+    void testBasicOperations() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         Term ab = nars.$.$("a:b");
         TaskConcept X = (TaskConcept) n.conceptualize(ab);
@@ -159,7 +159,7 @@ public class RTreeBeliefTableTest {
     }
 
     @Test
-    public void testProjection() throws Narsese.NarseseException {
+    void testProjection() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         Term ab = nars.$.$("a:b");
         TaskConcept AB = (TaskConcept) n.conceptualize(ab);
@@ -189,35 +189,35 @@ public class RTreeBeliefTableTest {
     }
 
     @Test
-    public void testAccuracyFlat() {
+    void testAccuracyFlat() {
 
         testAccuracy(1, 1, 20, 8, (t) -> 0.5f); 
     }
 
     @Test
-    public void testAccuracySineDur1() {
+    void testAccuracySineDur1() {
 
         testAccuracy(1, 1, 20, 8, (t) -> (float) (Math.sin(t / 5f) / 2f + 0.5f));
     }
 
     @Test
-    public void testAccuracySineDur1Ext() {
+    void testAccuracySineDur1Ext() {
         testAccuracy(1, 1, 50, 8, (t) -> (float) (Math.sin(t / 1f) / 2f + 0.5f));
     }
 
     @Test
-    public void testAccuracySineDur() {
+    void testAccuracySineDur() {
         testAccuracy(2, 2, 50, 8, (t) -> (float) (Math.sin(t / 5f) / 2f + 0.5f));
     }
 
     @Test
-    public void testAccuracySawtoothWave() {
+    void testAccuracySawtoothWave() {
         
         testAccuracy(1, 3, 15, 5, stepFunction);
     }
 
     @Test
-    public void testAccuracySquareWave() {
+    void testAccuracySquareWave() {
         testAccuracy(1, 1, 7, 5, stepFunction);
     }
 

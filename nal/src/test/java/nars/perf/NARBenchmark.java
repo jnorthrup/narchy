@@ -21,15 +21,17 @@ public class NARBenchmark {
 
 
     @Param("8000")
+    private
     String cycles;
 
 
 
 
     @Param({"12", "24" })
+    private
     String termVolumeMax;
 
-    public long concepts;
+    private long concepts;
     private NAR n;
 
     @Setup

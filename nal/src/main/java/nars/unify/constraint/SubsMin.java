@@ -1,11 +1,10 @@
 package nars.unify.constraint;
 
 import nars.$;
+import nars.derive.Derivation;
 import nars.derive.premise.PreDerivation;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.term.control.PrediTerm;
 import nars.unify.Unify;
 
 public class SubsMin extends MatchConstraint {
@@ -13,7 +12,7 @@ public class SubsMin extends MatchConstraint {
     final int min;
 
     public SubsMin(Term target, int min) {
-        super(target, "SubsMin", $.the(min));
+        super(target, "subsMin", $.the(min));
         assert(min > 1);
         this.min = min;
     }
@@ -25,19 +24,17 @@ public class SubsMin extends MatchConstraint {
 
     @Override
     public boolean invalid(Term y, Unify f) {
-        return (!(y instanceof Compound)) || y.subs() < min;
+        return y.subs() < min;
     }
 
-    public static PrediTerm<PreDerivation> proto(boolean taskOrBelief, int min) {
-        return new SubsMinProto(taskOrBelief, min);
-    }
 
-    private static final class SubsMinProto extends AbstractPred<PreDerivation> {
+
+    public static final class SubsMinProto extends AbstractPred<PreDerivation> {
         private final boolean taskOrBelief;
         private final int min;
 
-        SubsMinProto(boolean taskOrBelief, int min) {
-            super($.func("SubsMin", $.the(taskOrBelief ? "task" : "belief"), $.the(min)));
+        public SubsMinProto(boolean taskOrBelief, int min) {
+            super($.func("subsMin", taskOrBelief ? Derivation.Task: Derivation.Belief , $.the(min)));
             this.taskOrBelief = taskOrBelief;
             this.min = min;
         }

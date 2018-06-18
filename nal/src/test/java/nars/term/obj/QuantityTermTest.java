@@ -6,10 +6,10 @@ import javax.measure.Quantity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class QuantityTermTest {
+class QuantityTermTest {
 
     @Test
-    public void test1() {
+    void test1() {
         
 
 

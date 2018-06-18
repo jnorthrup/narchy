@@ -20,73 +20,34 @@ import java.util.function.Function;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
-/** generic immutable Task implementation,
- *  with mutable cause[] and initially empty meta table */
+/**
+ * generic immutable Task implementation,
+ * with mutable cause[] and initially empty meta table
+ */
 public class NALTask extends UnitPri implements Task {
 
     public final Term term;
     public final Truth truth;
     public final byte punc;
-
-    private final long creation, start, end;
-
-    /*@Stable*/ private final long[] stamp;
-
     final int hash;
-
+    private final long creation, start, end;
+    /*@Stable*/ private final long[] stamp;
     public volatile short[] cause = ArrayUtils.EMPTY_SHORT_ARRAY;
 
     private volatile boolean cyclic;
 
-    /** extended: with meta table */
-    public static class NALTaskX extends NALTask implements jcog.data.map.MetaMap {
-
-        private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
-
-        public NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
-            super(term, punc, truth, creation, start, end, stamp);
-        }
-
-        @Override
-        public @Nullable List log(boolean createIfMissing) {
-            if (createIfMissing)
-                return meta("!", (x) -> new FasterList(1));
-            else
-                return meta("!");
-        }
-
-        @Override
-        public <X> X meta(String key, Function<String,Object> valueIfAbsent) {
-            CompactArrayMap<String, Object> m = this.meta;
-            return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
-        }
-
-        @Override
-        public void meta(String key, Object value) {
-            CompactArrayMap<String, Object> m = this.meta;
-            if (m!=null) m.put(key, value);
-        }
-
-        @Override
-        public <X> X meta(String key) {
-            CompactArrayMap<String, Object> m = this.meta;
-            return m!=null ? (X) m.get(key) : null;
-        }
-    }
-
-
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
         super();
 
-        
+
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
             throw new InvalidTaskException(term, "null truth");
 
-        
+
         if ((start == ETERNAL && end != ETERNAL) ||
-            (start != ETERNAL && start > end) ||
-            (start == TIMELESS) || (end == TIMELESS)
-           )
+                (start != ETERNAL && start > end) ||
+                (start == TIMELESS) || (end == TIMELESS)
+        )
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
 
         if (Param.DEBUG_EXTRA)
@@ -94,7 +55,7 @@ public class NALTask extends UnitPri implements Task {
 
         this.hash = Task.hash(
                 this.term = term,
-                (this.truth = truth!=null ? truth.truth() : null),
+                (this.truth = truth != null ? truth.truth() : null),
                 this.punc = punc,
                 this.start = start,
                 this.end = end,
@@ -115,8 +76,13 @@ public class NALTask extends UnitPri implements Task {
     }
 
     @Override
-    public void setCyclic(boolean c) {
-        this.cyclic = c;
+    public boolean delete() {
+        float p = pri;
+        if (p==p) {
+            pri = Float.NaN;
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -124,6 +90,10 @@ public class NALTask extends UnitPri implements Task {
         return cyclic;
     }
 
+    @Override
+    public void setCyclic(boolean c) {
+        this.cyclic = c;
+    }
 
     /**
      * combine cause: should be called in all Task bags and belief tables on merge
@@ -133,9 +103,9 @@ public class NALTask extends UnitPri implements Task {
 
         Param.taskMerge.merge(this, incoming);
 
-        
+
         if (!Arrays.equals(cause(), incoming.cause())) {
-            int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); 
+            int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length);
             this.cause = Cause.sample(causeCap, this, incoming);
         }
         return this;
@@ -162,7 +132,6 @@ public class NALTask extends UnitPri implements Task {
         return creation;
     }
 
-
     @Override
     public Term term() {
         return term;
@@ -178,7 +147,6 @@ public class NALTask extends UnitPri implements Task {
         return end;
     }
 
-
     @Override
     public long[] stamp() {
         return stamp;
@@ -189,7 +157,9 @@ public class NALTask extends UnitPri implements Task {
         return cause;
     }
 
-    /** set the cause[] */
+    /**
+     * set the cause[]
+     */
     public Task cause(short[] cause) {
         if (!Arrays.equals(this.cause, cause))
             this.cause = cause;
@@ -197,60 +167,9 @@ public class NALTask extends UnitPri implements Task {
     }
 
     @Override
-    public boolean delete() {
-        if (super.delete()) {
-            if (Param.DEBUG) {
-                
-            } else {
-
-
-            }
-            return true;
-        }
-        return false;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Override
     public String toString() {
         return appendTo(null).toString();
     }
-
 
     @Override
     public double coord(boolean maxOrMin, int dimension) {
@@ -266,7 +185,6 @@ public class NALTask extends UnitPri implements Task {
         }
     }
 
-
     @Override
     public final double range(int dim) {
         switch (dim) {
@@ -277,6 +195,44 @@ public class NALTask extends UnitPri implements Task {
                 return 0;
             default:
                 throw new UnsupportedOperationException();
+        }
+    }
+
+    /**
+     * extended: with meta table
+     */
+    public static class NALTaskX extends NALTask implements jcog.data.map.MetaMap {
+
+        private final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
+
+        public NALTaskX(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
+            super(term, punc, truth, creation, start, end, stamp);
+        }
+
+        @Override
+        public @Nullable List log(boolean createIfMissing) {
+            if (createIfMissing)
+                return meta("!", (x) -> new FasterList(1));
+            else
+                return meta("!");
+        }
+
+        @Override
+        public <X> X meta(String key, Function<String, Object> valueIfAbsent) {
+            CompactArrayMap<String, Object> m = this.meta;
+            return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
+        }
+
+        @Override
+        public void meta(String key, Object value) {
+            CompactArrayMap<String, Object> m = this.meta;
+            if (m != null) m.put(key, value);
+        }
+
+        @Override
+        public <X> X meta(String key) {
+            CompactArrayMap<String, Object> m = this.meta;
+            return m != null ? (X) m.get(key) : null;
         }
     }
 

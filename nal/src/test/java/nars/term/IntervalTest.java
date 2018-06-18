@@ -5,7 +5,7 @@ package nars.term;
  * @author me
  */
 
-public class IntervalTest {
+class IntervalTest {
 
 	
 	

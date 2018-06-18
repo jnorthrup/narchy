@@ -8,10 +8,10 @@ import org.junit.jupiter.api.Test;
 /**
  * https:
  */
-public class STRIPSTest {
+class STRIPSTest {
 
     @Test
-    public void testBanana1() throws Narsese.NarseseException {
+    void testBanana1() throws Narsese.NarseseException {
         NAR n = new NARS().tmp();
         //n.log();
         n.input(

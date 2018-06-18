@@ -25,12 +25,12 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 5/8/16.
  */
-public class RevectionTest {
+class RevectionTest {
 
-    final NAR n = NARS.shell();
+    private final NAR n = NARS.shell();
 
     @Test
-    public void testRevisionEquivalence() throws Narsese.NarseseException {
+    void testRevisionEquivalence() throws Narsese.NarseseException {
         TaskBuilder a = t(1f, 0.5f, 0); 
         a.evidence(0);
         TaskBuilder b = t(1f, 0.5f, 0);
@@ -50,7 +50,7 @@ public class RevectionTest {
 
 
     @Test
-    public void testRevisionInequivalenceDueToTemporalSeparation() throws Narsese.NarseseException {
+    void testRevisionInequivalenceDueToTemporalSeparation() throws Narsese.NarseseException {
         TaskBuilder a = t(1f, 0.5f, -4).evidence(1);
         TaskBuilder b = t(0f, 0.5f, 4).evidence(2);
 
@@ -65,14 +65,14 @@ public class RevectionTest {
 
 
     @Test
-    public void testRevisionEquivalence2Instant() throws Narsese.NarseseException {
+    void testRevisionEquivalence2Instant() throws Narsese.NarseseException {
         TaskBuilder a = t(1f, 0.5f, 0);
         TaskBuilder b = t(0f, 0.5f, 0);
         assertEquals( Revision.revise(a, b), new FocusingLinearTruthPolation(0, 0, 1).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth());
     }
 
     @Test
-    public void testPolation1() throws Narsese.NarseseException {
+    void testPolation1() throws Narsese.NarseseException {
 
         int dur = 1;
 
@@ -98,7 +98,7 @@ public class RevectionTest {
     }
 
     @Test
-    public void testRevisionEquivalence4() throws Narsese.NarseseException {
+    void testRevisionEquivalence4() throws Narsese.NarseseException {
         Task a = t(0f, 0.1f, 3).evidence(1).apply(n);
         Task b = t(0f, 0.1f, 4).evidence(2).apply(n);
         Task c = t(1f, 0.1f, 5).evidence(3).apply(n);
@@ -111,10 +111,10 @@ public class RevectionTest {
 
     }
 
-    public static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
+    private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
         return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, occ);
     }
-    public static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
+    static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
         return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
     }
 
@@ -134,7 +134,7 @@ public class RevectionTest {
 
 
 
-    public static void print(@NotNull List<Task> l, int start, int end) {
+    static void print(@NotNull List<Task> l, int start, int end) {
         
         System.out.println("INPUT");
         for (Task t : l) {
@@ -152,7 +152,7 @@ public class RevectionTest {
 
 
     @Test
-    public void testTemporalProjectionInterpolation() throws Narsese.NarseseException {
+    void testTemporalProjectionInterpolation() throws Narsese.NarseseException {
 
 
 
@@ -193,16 +193,16 @@ public class RevectionTest {
     }
 
     @Test
-    public void testTemporalProjectionConfidenceAccumulation2_1() {
+    void testTemporalProjectionConfidenceAccumulation2_1() {
         testConfidenceAccumulation(2, 1f, 0.1f);
     }
 
     @Test
-    public void testTemporalProjectionConfidenceAccumulation2_5() {
+    void testTemporalProjectionConfidenceAccumulation2_5() {
         testConfidenceAccumulation(2, 1f, 0.5f);
     }
     @Test
-    public void testTemporalProjectionConfidenceAccumulation2_9() {
+    void testTemporalProjectionConfidenceAccumulation2_9() {
 
         testConfidenceAccumulation(2, 1f, 0.9f);
         testConfidenceAccumulation(2, 0.5f, 0.9f);
@@ -210,30 +210,30 @@ public class RevectionTest {
     }
 
     @Test
-    public void testTemporalProjectionConfidenceAccumulation3_1_pos() {
+    void testTemporalProjectionConfidenceAccumulation3_1_pos() {
         testConfidenceAccumulation(3, 1f, 0.1f);
     }
     @Test
-    public void testTemporalProjectionConfidenceAccumulation3_1_neg() {
+    void testTemporalProjectionConfidenceAccumulation3_1_neg() {
         testConfidenceAccumulation(3, 0f, 0.1f);
     }
     @Test
-    public void testTemporalProjectionConfidenceAccumulation3_1_mid() {
+    void testTemporalProjectionConfidenceAccumulation3_1_mid() {
         testConfidenceAccumulation(3, 0.5f, 0.1f);
     }
 
     @Test
-    public void testTemporalProjectionConfidenceAccumulation3_5() {
+    void testTemporalProjectionConfidenceAccumulation3_5() {
         testConfidenceAccumulation(3, 1f, 0.5f);
     }
 
     @Test
-    public void testTemporalProjectionConfidenceAccumulation3_9() {
+    void testTemporalProjectionConfidenceAccumulation3_9() {
         testConfidenceAccumulation(3, 1f, 0.9f);
     }
 
 
-    public void testConfidenceAccumulation(int repeats, float freq, float inConf) {
+    private void testConfidenceAccumulation(int repeats, float freq, float inConf) {
         int maxBeliefs = repeats*4;
 
         NAR n = newNAR(maxBeliefs);
@@ -266,7 +266,7 @@ public class RevectionTest {
 
 
     @Test
-    public void testTemporalRevection() throws Narsese.NarseseException {
+    void testTemporalRevection() throws Narsese.NarseseException {
 
 
 
@@ -309,7 +309,8 @@ public class RevectionTest {
 
     }
 
-    @Test public void testSequenceIntermpolation1() throws Narsese.NarseseException {
+    @Test
+    void testSequenceIntermpolation1() throws Narsese.NarseseException {
 
         
         
@@ -349,7 +350,8 @@ public class RevectionTest {
         assertTrue(!outcomes.isEmpty());
     }
 
-    @Test public void testSequenceIntermpolationInBeliefTable() throws Narsese.NarseseException {
+    @Test
+    void testSequenceIntermpolationInBeliefTable() throws Narsese.NarseseException {
 
 
         Term a = $.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");

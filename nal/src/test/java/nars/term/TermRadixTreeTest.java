@@ -18,10 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 10/14/16.
  */
-public class TermRadixTreeTest {
+class TermRadixTreeTest {
 
     @Test
-    public void testAtomInsertion() throws Narsese.NarseseException {
+    void testAtomInsertion() throws Narsese.NarseseException {
 
         TermRadixTree tree = new TermRadixTree();
 
@@ -56,7 +56,7 @@ public class TermRadixTreeTest {
 
 
     @Test
-    public void testCompoundInsertion() throws Narsese.NarseseException {
+    void testCompoundInsertion() throws Narsese.NarseseException {
 
         TreeConceptIndex index;
         new NARS().index(

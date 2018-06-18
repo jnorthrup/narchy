@@ -6,13 +6,13 @@ import nars.test.NALTest;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
-public class NAL3IntegerTest extends NALTest {
+class NAL3IntegerTest extends NALTest {
 
-    public static final int cycles = 2500;
+    private static final int cycles = 2500;
 
 
     @Test
-    public void testIntRangeStructuralDecomposition() {
+    void testIntRangeStructuralDecomposition() {
 
         test
                 .nar.believe($.inh(Int.range(1, 3), $.the("a")), Tense.Eternal, 1f, 0.9f);
@@ -22,7 +22,7 @@ public class NAL3IntegerTest extends NALTest {
     }
 
     @Test
-    public void testIntRangeStructuralDecomposition2d() {
+    void testIntRangeStructuralDecomposition2d() {
 
         test
                 .nar.believe(

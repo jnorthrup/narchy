@@ -8,14 +8,14 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    final int cycles = 150;
+    private final int cycles = 30;
 
     @Override protected NAR nar() {
         return NARS.tmp(1);
     }
 
     @Test
-    public void deduction()  {
+    void deduction()  {
 
         test
                 .believe("<bird --> animal>")
@@ -30,7 +30,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    public void revision()  {
+    void revision()  {
 
         String belief = "<bird --> swimmer>";
 
@@ -43,7 +43,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    public void abduction()  {
+    void abduction()  {
 
 
         
@@ -62,7 +62,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void abduction2()  {
+    void abduction2()  {
         
         /*
         <swan --> swimmer>. %0.9;0.9%
@@ -82,7 +82,8 @@ public class NAL1Test extends NALTest {
 
 
 
-    @Test public void induction() {
+    @Test
+    void induction() {
         
 
 
@@ -100,7 +101,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    public void exemplification()  {
+    void exemplification()  {
 
         test
 
@@ -110,7 +111,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void conversion() throws nars.Narsese.NarseseException {
+    void conversion() throws nars.Narsese.NarseseException {
         test.believe("<bird --> swimmer>")
             .ask("<swimmer --> bird>") 
             .mustOutput(cycles, "<swimmer --> bird>. %1.00;0.47%");
@@ -126,7 +127,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    public void backwardInference() throws nars.Narsese.NarseseException {
+    void backwardInference() throws nars.Narsese.NarseseException {
 
         test
                 .believe("<bird --> swimmer>", 1.0f, 0.8f) 
@@ -136,7 +137,7 @@ public class NAL1Test extends NALTest {
         ;
     }
     @Test
-    public void backwardInference2() throws nars.Narsese.NarseseException {
+    void backwardInference2() throws nars.Narsese.NarseseException {
 
         /*
         $.14 (1-->(?1,0,/))? {866: 1©}
@@ -154,7 +155,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    public void structureTransformation_InhQuestion_SimBelief() throws nars.Narsese.NarseseException {
+    void structureTransformation_InhQuestion_SimBelief() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bright <-> smart>", 0.9f, 0.9f);
@@ -163,7 +164,7 @@ public class NAL1Test extends NALTest {
 
     }
     @Test
-    public void revisionSim() {
+    void revisionSim() {
 
         TestNAR tester = test;
         tester.mustBelieve(cycles, "<robin <-> swan>", 0.87f, 0.91f);
@@ -172,7 +173,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void comparison() {
+    void comparison() {
 
         TestNAR tester = test;
         tester.believe("<swan --> swimmer>", 0.9f, 0.9f);
@@ -182,7 +183,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void comparison2() {
+    void comparison2() {
 
         TestNAR tester = test;
         tester.believe("<sport --> competition>"); 
@@ -203,7 +204,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    public void analogy() {
+    void analogy() {
 
         TestNAR tester = test;
         tester.believe("<swan --> swimmer>");
@@ -213,7 +214,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void analogy2() {
+    void analogy2() {
 
         TestNAR tester = test;
         tester.believe("<gull --> swimmer>");
@@ -224,7 +225,7 @@ public class NAL1Test extends NALTest {
 
 
     @Test
-    public void resemblance() {
+    void resemblance() {
 
         TestNAR tester = test;
         tester.believe("<robin <-> swan>");
@@ -234,7 +235,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void inheritanceToSimilarity() {
+    void inheritanceToSimilarity() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>");
@@ -244,7 +245,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void inheritanceToSimilarity2() {
+    void inheritanceToSimilarity2() {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>");
@@ -254,7 +255,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void inheritanceToSimilarity3() throws nars.Narsese.NarseseException {
+    void inheritanceToSimilarity3() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f);
@@ -264,7 +265,7 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
-    public void inheritanceToSimilarity4() throws nars.Narsese.NarseseException {
+    void inheritanceToSimilarity4() throws nars.Narsese.NarseseException {
 
         TestNAR tester = test;
         tester.believe("<bird <-> swan>", 0.9f, 0.9f);

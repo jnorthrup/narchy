@@ -29,7 +29,7 @@ public class WorkerMultiExecTest {
 
     @Disabled
     @Test
-    public void test1() {
+    void test1() {
 
         int threads = 3;
         Focus.DefaultRevaluator reval = new Focus.DefaultRevaluator();
@@ -72,12 +72,13 @@ public class WorkerMultiExecTest {
 
     }
 
-    public static float expectedDuty(DummyCan a) {
+    private static float expectedDuty(DummyCan a) {
         
         return a.value;
     }
 
-    @Test public void testValueDerivationBranches() throws Narsese.NarseseException {
+    @Test
+    void testValueDerivationBranches() throws Narsese.NarseseException {
 
 
         Exec exe = new UniExec(32);
@@ -128,18 +129,18 @@ public class WorkerMultiExecTest {
         final IntToIntFunction duty;
         final AtomicInteger executed = new AtomicInteger();
 
-        protected DummyCan(String id, AtomicLong dutyTimeNS, NAR nar, IntProcedure duty) {
+        DummyCan(String id, AtomicLong dutyTimeNS, NAR nar, IntProcedure duty) {
             this(id, dutyTimeNS, nar, (i)->{ duty.accept(i); return i; });
         }
 
-        protected DummyCan(String id, AtomicLong dutyTimeNS, NAR nar, IntToIntFunction duty) {
+        DummyCan(String id, AtomicLong dutyTimeNS, NAR nar, IntToIntFunction duty) {
             super(nar, $.the(id));
             this.dutyTimeNS = dutyTimeNS;
             this.duty = duty;
         }
 
 
-        public DummyCan value(float v) {
+        DummyCan value(float v) {
             this.value = v;
             return this;
         }

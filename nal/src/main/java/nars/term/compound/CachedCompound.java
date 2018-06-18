@@ -80,14 +80,10 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         }
 
         @Override
-        public int subTimeSafe(Term x, int after) {
+        public int subTimeOnly(Term x) {
             return equals(x) ? 0 : DTERNAL;
         }
 
-        @Override
-        public boolean isCommutative() {
-            return op().commutative && subs() > 1;
-        }
 
         @Override
         public int dt() {
@@ -98,8 +94,8 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
 
     /** caches a reference to the root for use in terms that are inequal to their root */
     public static final  class TemporalCachedCompound extends CachedCompound  {
-        private transient Term rooted = null;
-        private transient Term concepted = null;
+//        private transient Term rooted = null;
+//        private transient Term concepted = null;
         final int dt;
 
         public TemporalCachedCompound(Op op, int dt, Subterms subterms) {
@@ -112,17 +108,17 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
             return dt;
         }
 
-        @Override
-        public Term root() {
-            Term rooted = this.rooted;
-            return (rooted != null) ? rooted : (this.rooted = super.root());
-        }
-
-        @Override
-        public Term concept() {
-            Term concepted = this.concepted;
-            return (concepted != null) ? concepted : (this.concepted = super.concept());
-        }
+//        @Override
+//        public Term root() {
+//            Term rooted = this.rooted;
+//            return (rooted != null) ? rooted : (this.rooted = super.root());
+//        }
+//
+//        @Override
+//        public Term concept() {
+//            Term concepted = this.concepted;
+//            return (concepted != null) ? concepted : (this.concepted = super.concept());
+//        }
 
     }
 

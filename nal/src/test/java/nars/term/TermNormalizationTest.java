@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 3/19/15.
  */
-public class TermNormalizationTest {
+class TermNormalizationTest {
 
     @Test
-    public void reuseVariableTermsDuringNormalization2() throws Narsese.NarseseException {
+    void reuseVariableTermsDuringNormalization2() throws Narsese.NarseseException {
         for (String v : new String[] { "?a", "?b", "#a", "#c" }) {
             Compound x = $("<<" + v +" --> b> ==> <" + v + " --> c>>");
             Term a = x.subPath((byte)0, (byte)0);
@@ -26,7 +26,8 @@ public class TermNormalizationTest {
         }
     }
 
-    @Test public void testConjNorm() throws Narsese.NarseseException {
+    @Test
+    void testConjNorm() throws Narsese.NarseseException {
         String a = "(&&,(#1-->key),(#2-->lock),open(#1,#2))";
         String b = "(&&,(#2-->key),(#1-->lock),open(#2,#1))";
 

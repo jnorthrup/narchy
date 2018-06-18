@@ -8,9 +8,10 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$;
 
 
-public class FastCompoundTest {
+class FastCompoundTest {
 
-    @Test public void testVar() throws Narsese.NarseseException {
+    @Test
+    void testVar() throws Narsese.NarseseException {
         assertEquivalent("(?1-->x)");
         assertEquivalent("(?x-->x)");
         assertEquivalent("(x-->?1)");
@@ -18,12 +19,12 @@ public class FastCompoundTest {
     }
 
     @Test
-    public void test1() throws Narsese.NarseseException {
+    void test1() throws Narsese.NarseseException {
         assertEquivalent("(((x)))");
         assertEquivalent("((x))");
     }
     @Test
-    public void test2() throws Narsese.NarseseException {
+    void test2() throws Narsese.NarseseException {
 
         assertEquivalent("(P-->S)");
         assertEquivalent("(((P-->S)))");
@@ -32,7 +33,7 @@ public class FastCompoundTest {
         assertEquivalent("(x,(P-->S))");
     }
     @Test
-    public void test2b() throws Narsese.NarseseException {
+    void test2b() throws Narsese.NarseseException {
         assertEquivalent("((P-->S),x)");
 
         assertEquivalent("(((P-->S)),x)");
@@ -44,20 +45,20 @@ public class FastCompoundTest {
     }
 
     @Test
-    public void testComplex() throws Narsese.NarseseException {
+    void testComplex() throws Narsese.NarseseException {
         assertEquivalent("(&&,(MedicalCode-->MedicalIntangible),(MedicalIntangible-->#1),(SuperficialAnatomy-->#1),label(MedicalCode,MedicalCode),label(MedicalIntangible,MedicalIntangible),label(SuperficialAnatomy,SuperficialAnatomy))");
     }
 
     @Test
-    public void test3() throws Narsese.NarseseException {
+    void test3() throws Narsese.NarseseException {
         assertEquivalent("(((P-->S),(S-->P),task(\"?\")),((P-->S),((Conversion-->Belief),(Belief-->Punctuation))))");
     }
 
-    static void assertEquivalent(String c) throws Narsese.NarseseException {
+    private static void assertEquivalent(String c) throws Narsese.NarseseException {
         assertEquivalent($(c));
     }
 
-    static void assertEquivalent(Compound c) {
+    private static void assertEquivalent(Compound c) {
         FastCompound f = FastCompound.get(c);
         TermTest.assertReallyEquals(c, f);
 

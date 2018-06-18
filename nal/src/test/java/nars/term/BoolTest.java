@@ -14,11 +14,11 @@ import static nars.term.TermReductionsTest.assertReduction;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** Bool and Tautology tests */
-public class BoolTest {
+class BoolTest {
 
 
     @Test
-    public void testNegationTautologies() {
+    void testNegationTautologies() {
         assertEquals(True, True.unneg());
         assertEquals(False, True.neg());
         assertEquals(True, False.unneg());
@@ -27,7 +27,8 @@ public class BoolTest {
         assertEquals(Null, Null.unneg());
     }
 
-    @Test public void testStatementTautologies()  {
+    @Test
+    void testStatementTautologies()  {
         for (Op o : new Op[]{INH, SIM, IMPL}) {
             assertEquals(True, o.the(True, True));
             assertEquals(True, o.the(False, False));
@@ -68,7 +69,7 @@ public class BoolTest {
 
 
     @Test
-    public void testImplicationTautologies() {
+    void testImplicationTautologies() {
         assertEquals("x", IMPL.the(True, x).toString());
         assertEquals(Null, IMPL.the(False, x));
         assertEquals(Null, IMPL.the(Null, x));
@@ -80,7 +81,7 @@ public class BoolTest {
     }
 
     @Test
-    public void testConjTautologies() {
+    void testConjTautologies() {
         assertEquals("x", CONJ.the(True, x).toString());
         assertEquals(False, CONJ.the(False, x));
         assertEquals(False, CONJ.the(False, True));
@@ -92,7 +93,7 @@ public class BoolTest {
 
 
     @Test
-    public void testDiffTautologies() {
+    void testDiffTautologies() {
 
         @Nullable Truth selfDiff = NALTruth.Difference.apply($.t(1, 0.9f), $.t(1f, 0.9f), null, 0);
         assertEquals($.t(0, 0.81f), selfDiff);
@@ -155,7 +156,7 @@ public class BoolTest {
     }
 
     @Test
-    public void testDiffOfIntersectionsWithCommonSubterms() {
+    void testDiffOfIntersectionsWithCommonSubterms() {
         
         
         
@@ -173,7 +174,7 @@ public class BoolTest {
     }
 
     @Test
-    public void testDiffOfUnionsWithCommonSubterms() {
+    void testDiffOfUnionsWithCommonSubterms() {
 
         
             
@@ -186,7 +187,7 @@ public class BoolTest {
 
     @Disabled
     @Test
-    public void testIntersectionOfDiffsWithCommonSubterms() {
+    void testIntersectionOfDiffsWithCommonSubterms() {
 
         
 
@@ -202,7 +203,7 @@ public class BoolTest {
     }
 
     @Test
-    public void testIntersectionTautologies() {
+    void testIntersectionTautologies() {
         for (Op o : new Op[] { SECTe, SECTi } ) {
 
             String sect = o.str;
@@ -218,11 +219,11 @@ public class BoolTest {
     }
 
     @Test
-    public void testSetTautologies() {
+    void testSetTautologies() {
         
     }
 
-    static final Term x = $$("x");
+    private static final Term x = $$("x");
     static final Term y = $$("y");
 
 }

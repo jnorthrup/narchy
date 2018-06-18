@@ -105,9 +105,9 @@ public class AndCondition<D> extends AbstractPred<D> {
         return null;
     }
 
-    @Override
-    public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
-        return transform(o -> o, f);
+    /** recursive */
+    @Override public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
+        return transform((Function)f, (Function)f);
     }
 
     public PrediTerm<D> transform(Function<AndCondition<D>,PrediTerm<D>> outer, @Nullable Function<PrediTerm<D>, PrediTerm<D>> f) {

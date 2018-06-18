@@ -12,10 +12,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * test term hash and structure bits
  */
-public class TermHashTest {
+class TermHashTest {
 
     @Test
-    public void testStructureIsVsHas() throws Narsese.NarseseException {
+    void testStructureIsVsHas() throws Narsese.NarseseException {
 
         assertTrue(inh("a", "b").hasAny(Op.ATOM));
         assertTrue(inh(p("a"), $("b"))
@@ -32,7 +32,8 @@ public class TermHashTest {
         assertFalse(inh("a", "b").hasAny(SIM));
     }
 
-    @Test public void testHasAnyVSAll() throws Narsese.NarseseException {
+    @Test
+    void testHasAnyVSAll() throws Narsese.NarseseException {
         @Nullable Term iii = impl(inh("a", "b"), $("c"));
         assertTrue(iii.hasAll(or(IMPL, INH)));
         assertFalse(iii.hasAll(or(IMPL, SIM)));

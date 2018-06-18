@@ -117,7 +117,7 @@ public class WorkerMultiExec extends AbstractExec {
     }
 
     @Override
-    protected void clear() {
+    public void clear() {
         synchronized (this) {
             super.clear();
             activeThreads.forEach(Thread::interrupt);

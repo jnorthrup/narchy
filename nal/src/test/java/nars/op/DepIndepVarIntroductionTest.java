@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Created by me on 3/30/17.
  */
-public class DepIndepVarIntroductionTest {
+class DepIndepVarIntroductionTest {
 
-    final NAR n = NARS.shell();
+    private final NAR n = NARS.shell();
 
     @Test
-    public void testIntroduceIndepVar() throws Narsese.NarseseException {
+    void testIntroduceIndepVar() throws Narsese.NarseseException {
 
         assertEquals("[((a-->$X)==>(b-->$X))]",
                 introduce("((a-->c)==>(b-->c))", 16).toString());
@@ -29,13 +29,13 @@ public class DepIndepVarIntroductionTest {
     }
 
     @Test
-    public void testIntroduceIndepVar2() throws Narsese.NarseseException {
+    void testIntroduceIndepVar2() throws Narsese.NarseseException {
         assertEquals("[((a-->($X,#1))=|>(b-->($X,#1))), ((a-->$X)=|>(b-->$X))]",
                 introduce("((a-->(x,#1))=|>(b-->(x,#1)))", 16).toString());
     }
 
     @Test
-    public void testIntroduceDepVar() throws Narsese.NarseseException {
+    void testIntroduceDepVar() throws Narsese.NarseseException {
 
         assertEquals("[((a-->#Y)&&(b-->#Y))]",
                 introduce("(&&,(a-->c),(b-->c))", 16).toString());

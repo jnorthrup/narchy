@@ -14,12 +14,12 @@ import static nars.Op.False;
 import static nars.Op.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ListFuncTest {
+class ListFuncTest {
     
-    final NAR n = NARS.shell();
+    private final NAR n = NARS.shell();
 
     @Test
-    public void testAppendTransform() {
+    void testAppendTransform() {
         
 
         assertEquals(
@@ -32,7 +32,7 @@ public class ListFuncTest {
     }
 
     @Test
-    public void testAppendResult() {
+    void testAppendResult() {
         
 
 
@@ -50,7 +50,7 @@ public class ListFuncTest {
 
 
     @Test
-    public void testTestResult() {
+    void testTestResult() {
         
 
 
@@ -69,7 +69,7 @@ public class ListFuncTest {
     }
 
     @Test
-    public void testAppendTail() {
+    void testAppendTail() {
         
 
 
@@ -96,7 +96,7 @@ public class ListFuncTest {
     }
 
     @Test
-    public void testAppendHeadAndTail() {
+    void testAppendHeadAndTail() {
         
 
 
@@ -110,7 +110,7 @@ public class ListFuncTest {
                 Evaluation.solveAll($$("append(#x,#y,(x,y,z))"), n));
     }
     @Test
-    public void testAppendHeadAndTailMulti() {
+    void testAppendHeadAndTailMulti() {
         
 
 
@@ -146,7 +146,7 @@ public class ListFuncTest {
     }
 
     @Test
-    public void testAppendHead() {
+    void testAppendHead() {
         
         
 
@@ -162,7 +162,7 @@ public class ListFuncTest {
     }
 
     @Test
-    public void testHanoi() throws Narsese.NarseseException {
+    void testHanoi() throws Narsese.NarseseException {
         /*
         http:
         An analytic solution to the Towers of Hanoi

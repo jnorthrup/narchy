@@ -64,7 +64,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             .build();
 
 
-    protected boolean autoNeg = true;
+    protected Set<Term> autoNeg = null;
 
 
 
@@ -396,7 +396,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     }
 
     protected void onNewTerm(Term t) {
-        if (autoNeg) {
+        if (autoNeg!=null && autoNeg.contains(t)) {
             link(shadow(t), 0, shadow(t.neg()));
         }
     }
@@ -993,9 +993,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         return byTerm;
     }
 
-    public void autoNeg(boolean b) {
-        autoNeg = b;
-    }
+
 
     static class TimeSpan {
         public final static TimeSpan TS_ZERO = new TimeSpan(0);
@@ -1301,9 +1299,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
     protected long[] pathDT(Node<TimeGraph.Event, TimeGraph.TimeSpan> n, Term a, Term b, List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
         Term endTerm = n.id.id;
         int adjEnd;
-        boolean endA = ((adjEnd = a.subTimeSafe(endTerm)) == 0); 
+        boolean endA = ((adjEnd = choose(a.subTimes(endTerm))) == 0);
         boolean endB = !endA &&
-                ((adjEnd = b.subTimeSafe(endTerm)) == 0); 
+                ((adjEnd = choose(b.subTimes(endTerm))) == 0);
 
         if (adjEnd == DTERNAL)
             return null;
@@ -1313,9 +1311,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
             Term startTerm = startEvent.id;
 
-            boolean fwd = endB && (startTerm.equals(a) || a.subTimeSafe(startTerm) == 0);
+            boolean fwd = endB && (startTerm.equals(a) || choose(a.subTimes(startTerm)) == 0);
             boolean rev = !fwd && (
-                    endA && (startTerm.equals(b) || b.subTimeSafe(startTerm) == 0));
+                    endA && (startTerm.equals(b) || choose(b.subTimes(startTerm)) == 0));
             if (fwd || rev) {
 
                 long startTime = startEvent.start();
@@ -1376,6 +1374,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             }
         }
         return null;
+    }
+
+    private int choose(int[] subTimes) {
+        if (subTimes == null)
+            return DTERNAL;
+        else {
+            if (subTimes.length == 1)
+                return subTimes[0];
+            else
+                return subTimes[random().nextInt(subTimes.length)];
+        }
     }
 
     /**

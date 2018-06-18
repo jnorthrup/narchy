@@ -22,17 +22,17 @@ import org.jetbrains.annotations.NotNull;
 import java.text.DecimalFormat;
 
 public abstract class Performance {
-	public final int repeats;
-	final String name;
+	private final int repeats;
+	private final String name;
 	private long totalTime;
 	private long totalMemory;
-	protected final DecimalFormat df = new DecimalFormat("#.###");
+	private final DecimalFormat df = new DecimalFormat("#.###");
 
 	protected Performance(String name, int repeats, int warmups) {
 		this(name, repeats, warmups, true);
 	}
 
-	protected Performance(String name, int repeats, int warmups, boolean gc) {
+	private Performance(String name, int repeats, int warmups, boolean gc) {
 		this.repeats = repeats;
 		this.name = name;
 
@@ -83,7 +83,7 @@ public abstract class Performance {
 	public abstract void init();
 	public abstract void run(boolean warmup);
 
-	public double getCycleTimeMS() {
+	private double getCycleTimeMS() {
 		return totalTime / repeats / 1000000.0;
 	}
 }

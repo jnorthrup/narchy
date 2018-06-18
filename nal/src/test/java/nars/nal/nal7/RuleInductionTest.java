@@ -23,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * tests the time constraints in which a repeatedly inducted
  * conj/impl belief can or can't "snowball" into significant confidence
  */
-public class RuleInductionTest {
+class RuleInductionTest {
     @Test
-    public void test1() {
+    void test1() {
         int dur = 3;
         int loops = 10;
         int period = 5;
@@ -136,7 +136,7 @@ public class RuleInductionTest {
     }
 
 
-    static float observe(NAR n, Term x, long now) {
+    private static float observe(NAR n, Term x, long now) {
         Task nb = n.belief(x, now);
         Truth xTruth = nb!=null ? nb.truth(now, n.dur()) : null;
 

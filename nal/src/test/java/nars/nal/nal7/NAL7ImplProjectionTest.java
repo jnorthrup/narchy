@@ -13,9 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class NAL7ImplProjectionTest {
+class NAL7ImplProjectionTest {
 
-    @Test public void test1() {
+    @Test
+    void test1() {
 
         int implDT = 5;
         int dur = 1;
@@ -63,7 +64,7 @@ public class NAL7ImplProjectionTest {
         
     }
 
-    public static class MyBrentOptimizer /*extends UnivariateOptimizer*/ {
+    static class MyBrentOptimizer /*extends UnivariateOptimizer*/ {
     /**
      * Golden section.
      */
@@ -123,8 +124,8 @@ public class NAL7ImplProjectionTest {
      * @throws NotStrictlyPositiveException if {@code abs <= 0}.
      * @throws NumberIsTooSmallException if {@code rel < 2 * Math.ulp(1d)}.
      */
-    public MyBrentOptimizer(double rel,
-                            double abs, double min, double max, DoubleToDoubleFunction func) {
+    MyBrentOptimizer(double rel,
+                     double abs, double min, double max, DoubleToDoubleFunction func) {
 
 
         this.min = min;
@@ -142,7 +143,7 @@ public class NAL7ImplProjectionTest {
     }
 
 
-    protected double[] max(double... xStart) {
+    double[] max(double... xStart) {
         double[] previous = new double [] { Double.NaN, Double.NEGATIVE_INFINITY };
         for(double x : xStart) {
             previous = max(x, previous);
@@ -150,7 +151,7 @@ public class NAL7ImplProjectionTest {
         return previous;
     }
 
-    protected double[] max(double xStart, double[] previous) {
+    double[] max(double xStart, double[] previous) {
         final boolean isMinim = false; 
         final double lo = min;
         

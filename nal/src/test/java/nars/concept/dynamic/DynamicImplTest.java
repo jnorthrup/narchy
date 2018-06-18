@@ -10,7 +10,7 @@ import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DynamicImplTest {
+class DynamicImplTest {
     @Test
     void testDynamicImplSubj() throws Narsese.NarseseException {
         NAR n = NARS.shell();

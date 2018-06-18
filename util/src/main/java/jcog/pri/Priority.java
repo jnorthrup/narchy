@@ -8,86 +8,9 @@ import static jcog.Util.lerp;
 
 /**
  * Mutable Prioritized
+ * implementations need only implement priSet() and pri()
  */
 public interface Priority extends Prioritized {
-
-    static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
-        return fund(maxPri, copyOrTransfer, (x->x), src);
-    }
-
-    /** X[] may contain nulls */
-    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X,Priority> getPri, X... src) {
-
-        assert(src.length > 0);
-
-        float priSum = Util.sum((X s) -> {
-            if (s==null) return 0;
-            Priority p = getPri.apply(s);
-            return p.priElseZero();
-        }, src);
-
-        float priTarget = Math.min(maxPri, priSum);
-
-        UnitPri u = new UnitPri();
-
-        if (priTarget > Prioritized.EPSILON) {
-            float perSrc = priTarget / src.length;
-            for (X t : src) {
-                if (t!=null)
-                    u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
-            }
-        }
-        assert(u.priElseZero() <= maxPri + Prioritized.EPSILON);
-        return u;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Change priority value
@@ -96,6 +19,19 @@ public interface Priority extends Prioritized {
      * @return value after set
      */
     float priSet(float p);
+
+    /**
+     * the result of this should be that pri() is not finite (ex: NaN)
+     * returns false if already deleted (allowing overriding subclasses to know if they shold also delete)
+     */
+    default boolean delete() {
+        float p = pri();
+        if (p==p) {
+            this.priSet(Float.NaN);
+            return true;
+        }
+        return false;
+    }
 
     default void priSet(Prioritized p) {
         priSet(p.pri());
@@ -110,11 +46,11 @@ public interface Priority extends Prioritized {
     }
 
     default float priAdd(float toAdd) {
-        
+
         float e = pri();
         if (e != e) {
             if (toAdd <= 0) {
-                return Float.NaN; 
+                return Float.NaN;
             } /*else {
                 e = 0; 
             }*/
@@ -142,10 +78,12 @@ public interface Priority extends Prioritized {
     }
 
 
-    /** assumes 1 max value (Plink not NLink) */
+    /**
+     * assumes 1 max value (Plink not NLink)
+     */
     default float priAddOverflow(float toAdd) {
         if (Math.abs(toAdd) <= EPSILON) {
-            return 0; 
+            return 0;
         }
 
         float before = priElseZero();
@@ -179,87 +117,16 @@ public interface Priority extends Prioritized {
     }
 
 
-
-
-
-
     default Priority setPriThen(float p) {
         priSet(p);
         return this;
     }
 
     default float priSub(float toSubtract) {
-        assert(toSubtract >= 0): "trying to subtract negative priority: " + toSubtract;
-        
+        assert (toSubtract >= 0) : "trying to subtract negative priority: " + toSubtract;
+
         return priAdd(-toSubtract);
     }
-
-
-
-
-
-
-
-
-
-
-    /** the result of this should be that pri() is not finite (ex: NaN)
-     * returns false if already deleted (allowing overriding subclasses to know if they shold also delete) */
-    boolean delete();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -284,26 +151,53 @@ public interface Priority extends Prioritized {
     }
 
 
-
     /**
      * normalizes the current value to within: min..(range+min), (range=max-min)
      */
     default void normalizePri(float min, float range, float lerp) {
         float p = priElseNeg1();
-        if (p < 0) return; 
+        if (p < 0) return;
 
         priLerp((p - min) / range, lerp);
     }
 
-     default Priority priLerp(float target, float speed) {
+    default Priority priLerp(float target, float speed) {
         float pri = pri();
         if (pri == pri)
             priSet(lerp(speed, pri, target));
         return this;
     }
 
+    static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
+        return fund(maxPri, copyOrTransfer, (x -> x), src);
+    }
 
+    /**
+     * X[] may contain nulls
+     */
+    static <X> UnitPri fund(float maxPri, boolean copyOrTransfer, Function<X, Priority> getPri, X... src) {
 
+        assert (src.length > 0);
 
+        float priSum = Util.sum((X s) -> {
+            if (s == null) return 0;
+            Priority p = getPri.apply(s);
+            return p.priElseZero();
+        }, src);
+
+        float priTarget = Math.min(maxPri, priSum);
+
+        UnitPri u = new UnitPri();
+
+        if (priTarget > Prioritized.EPSILON) {
+            float perSrc = priTarget / src.length;
+            for (X t: src) {
+                if (t != null)
+                    u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
+            }
+        }
+        assert (u.priElseZero() <= maxPri + Prioritized.EPSILON);
+        return u;
+    }
 
 }

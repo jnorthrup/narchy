@@ -14,29 +14,29 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * parallel and dternal sub-conjunctions
  * TODO TO BE DECIDED */
 @Disabled
-public class ConjReductionsTest {
+class ConjReductionsTest {
 
     @Test
-    public void testConjParaEteReductionInvalid() {
+    void testConjParaEteReductionInvalid() {
         assertEquals(False,
                 $$("(((--,a)&&b)&|(--,b)))")
         );
     }
     @Test
-    public void testConjParaEteReductionInvalid2() {
+    void testConjParaEteReductionInvalid2() {
         assertEquals(False,
                 $$("(((--,a)&&(--,b))&|b))")
         );
     }
     @Test
-    public void testConjParaEteReduction2simpler() throws Narsese.NarseseException {
+    void testConjParaEteReduction2simpler() throws Narsese.NarseseException {
         String o = "(((--,x)&|y) ==>+1 (((--,x)&&y)&|y))";
         String q = "(((--,x)&|y) ==>+1 ((--,x)&|y))";
         Term oo = $(o);
         assertEquals(q, oo.toString());
     }
     @Test
-    public void testConjParaEteReduction2() throws Narsese.NarseseException {
+    void testConjParaEteReduction2() throws Narsese.NarseseException {
         String o = "(((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)) ==>-807 (((--,tetris(isRow,2,true))&&tetris(isRowClear,8,true))&|tetris(isRowClear,8,true)))";
         String q = "(((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)) ==>-807 ((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)))";
         Term oo = $(o);
@@ -44,7 +44,7 @@ public class ConjReductionsTest {
     }
 
     @Test
-    public void testConjParaEteReduction() throws Narsese.NarseseException {
+    void testConjParaEteReduction() throws Narsese.NarseseException {
         String o = "(((--,a)&&b)&|b))";
         String q = "((--,a)&|b)";
         Term oo = $(o);
@@ -52,13 +52,14 @@ public class ConjReductionsTest {
     }
 
     @Test
-    public void testConjEteParaReduction() throws Narsese.NarseseException {
+    void testConjEteParaReduction() throws Narsese.NarseseException {
         String o = "(((--,a)&|b)&&b))";
         String q = "((--,a)&|b)";
         Term oo = $(o);
         assertEquals(q, oo.toString());
     }
-    @Test public void testConjParallelOverrideEternal() {
+    @Test
+    void testConjParallelOverrideEternal() {
 
         TermReductionsTest.assertReduction(
                 "(a&|b)",
@@ -66,7 +67,7 @@ public class ConjReductionsTest {
 
     }
     @Test
-    public void testConjNearIdentity() {
+    void testConjNearIdentity() {
         TermReductionsTest.assertReduction(True, "( (a&&b) ==> (a&|b) )");
 
         TermReductionsTest.assertReduction(

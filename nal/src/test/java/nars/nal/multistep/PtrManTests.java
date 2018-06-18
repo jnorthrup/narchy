@@ -6,11 +6,11 @@ import nars.Narsese;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class PtrManTests {
+class PtrManTests {
     
     @Disabled
     @Test
-    public void testOps1() throws Narsese.NarseseException {
+    void testOps1() throws Narsese.NarseseException {
 
         NAR n = NARS.tmp();
         n.input("opProximity2(OPmov(0,5),OPsub(0,5)).",

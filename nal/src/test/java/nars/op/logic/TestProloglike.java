@@ -12,7 +12,7 @@ import static nars.time.Tense.ETERNAL;
  * Created by me on 4/17/17.
  */
 @Disabled
-public class TestProloglike {
+class TestProloglike {
 
 
 
@@ -22,7 +22,7 @@ public class TestProloglike {
      * http:
      */
     @Test
-    public void testProloglike1() throws Narsese.NarseseException {
+    void testProloglike1() throws Narsese.NarseseException {
 
         NAR n = NARS.tmp();
         /*
@@ -56,7 +56,7 @@ public class TestProloglike {
     }
 
     @Test
-    public void testRiddle1() throws Exception {
+    void testRiddle1() throws Exception {
         
         NAR n = NARS.tmp();
 
@@ -71,7 +71,7 @@ public class TestProloglike {
     }
 
     @Test
-    public void testMetagol() throws Exception {
+    void testMetagol() throws Exception {
         NAR n = NARS.tmp();
 
         
@@ -100,7 +100,8 @@ public class TestProloglike {
 
     }
 
-    @Test public void testTuring() throws Narsese.NarseseException {
+    @Test
+    void testTuring() throws Narsese.NarseseException {
         /*
         http:
         Pure Prolog is based on a subset of first-order predicate logic, Horn clauses, which is Turing-complete. The completeness of Prolog can be shown by using it to simulate a Turing machine:

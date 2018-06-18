@@ -9,9 +9,9 @@ import org.junit.jupiter.api.Test;
 import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DynamicDiffTest {
+class DynamicDiffTest {
     @Test
-    public void testRawDifference() throws Narsese.NarseseException {
+    void testRawDifference() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("x", 0.75f, 0.50f);
         n.believe("y", 0.25f, 0.50f);
@@ -30,7 +30,7 @@ public class DynamicDiffTest {
     }
 
     @Test
-    public void testDiffE() throws Narsese.NarseseException {
+    void testDiffE() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("c:x", 0.75f, 0.50f);
         n.believe("c:y", 0.25f, 0.50f);

@@ -69,8 +69,9 @@ public abstract class NALTest {
     public static Stream<Method> tests(Class<? extends NALTest>... c) {
 
         return Stream.of(c)
-                .flatMap(cc -> Stream.of(cc.getMethods())
+                .flatMap(cc -> Stream.of(cc.getDeclaredMethods())
                         .filter(x -> x.getAnnotation(Test.class) != null))
+                        .peek(m -> m.trySetAccessible())
                         .collect(toList()).stream();
     }
 

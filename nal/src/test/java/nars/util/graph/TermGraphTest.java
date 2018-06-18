@@ -1,6 +1,6 @@
 package nars.util.graph;
 
-public class TermGraphTest {
+class TermGraphTest {
 
 
 

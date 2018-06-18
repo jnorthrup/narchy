@@ -24,21 +24,20 @@ import static nars.Op.CONJ;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TimeGraphTest {
+class TimeGraphTest {
 
     /**
      * example time graphs
      */
-    final TimeGraph A; {
+    private final TimeGraph A; {
         A = newTimeGraph(1);
-        A.autoNeg(false);
         A.know($$("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
         A.know($$("one"), 1);
         A.know($$("two"), 20);
 
     }
 
-    final TimeGraph B; {
+    private final TimeGraph B; {
         
         
         
@@ -55,13 +54,13 @@ public class TimeGraphTest {
 
 
     @Test
-    public void testAtomEvent() {
+    void testAtomEvent() {
         
         assertSolved("one", A, "one@1", "one@19");
     }
 
     @Test
-    public void testSimpleConjWithOneKnownAbsoluteSubEvent1() {
+    void testSimpleConjWithOneKnownAbsoluteSubEvent1() {
 
         assertSolved("(one &&+1 two)", A,
                 "(one &&+1 two)@1", "(one &&+1 two)@19");
@@ -69,20 +68,20 @@ public class TimeGraphTest {
     }
 
     @Test
-    public void testSimpleConjWithOneKnownAbsoluteSubEvent2() {
+    void testSimpleConjWithOneKnownAbsoluteSubEvent2() {
         assertSolved("(one &&+- two)", A,
                 "(one &&+1 two)","(one &&+1 two)@1", "(one &&+19 two)@1", "(one &&+1 two)@19", "(two &&+17 one)@2");
 
     }
 
     @Test
-    public void testSimpleConjOfTermsAcrossImpl1() {
+    void testSimpleConjOfTermsAcrossImpl1() {
 
         assertSolved("(two &&+1 three)", A,
                 "(two &&+1 three)@2", "(two &&+1 three)@20");
     }
     @Test
-    public void testSimpleConjOfTermsAcrossImpl2() {
+    void testSimpleConjOfTermsAcrossImpl2() {
 
         assertSolved("(two &&+- three)", A,
 
@@ -91,24 +90,27 @@ public class TimeGraphTest {
     }
 
     @Test
-    public void testSimpleImplWithOneKnownAbsoluteSubEvent() {
+    void testSimpleImplWithOneKnownAbsoluteSubEvent() {
         
         assertSolved("(one ==>+- three)", A,
                 "(one ==>+2 three)", "(one ==>+20 three)", "(one ==>-16 three)");
     }
 
-    @Test public void testImplChain1() {
+    @Test
+    void testImplChain1() {
         
         assertSolved("(z ==>+- x)", B, "(z ==>+1 x)");
     }
 
-    @Test public void testImplChain2() {
+    @Test
+    void testImplChain2() {
         assertSolved("(x ==>+- z)", B, "(x ==>-1 z)");
     }
 
 
 
-    @Test public void testConjChain1() throws Narsese.NarseseException {
+    @Test
+    void testConjChain1() throws Narsese.NarseseException {
         /** c is the same event, @6 */
         TimeGraph cc1 = newTimeGraph(1);
         cc1.know($.$("(a &&+5 b)"), 1);
@@ -118,17 +120,18 @@ public class TimeGraphTest {
                 "(a &&+10 c)", "(a &&+10 c)@1");
     }
 
-    @Test public void testExact() throws Narsese.NarseseException {
+    @Test
+    void testExact() throws Narsese.NarseseException {
 
         TimeGraph cc1 = newTimeGraph(1);
-        cc1.autoNeg(false);
         cc1.know($.$("(a &&+5 b)"), 1);
         
         assertSolved("(a &&+- b)", cc1,
                 "(a &&+5 b)","(a &&+5 b)@1");
     }
 
-    @Test public void testLinkedTemporalConj() throws Narsese.NarseseException {
+    @Test
+    void testLinkedTemporalConj() throws Narsese.NarseseException {
 
         TimeGraph cc1 = newTimeGraph(1);
         cc1.know($.$("(a &&+5 b)"), 1);
@@ -139,20 +142,21 @@ public class TimeGraphTest {
     }
 
     @Test
-    public void testImplWithConjPredicate1() {
+    void testImplWithConjPredicate1() {
         ExpectSolutions t = assertSolved(
                 "(one ==>+- (two &&+1 three))", A,
                 "(one ==>+1 (two &&+1 three))", "(one ==>+19 (two &&+1 three))", "(one ==>-17 (two &&+1 three))");
     }
 
     @Test
-    public void testImplWithConjPredicate1a() {
+    void testImplWithConjPredicate1a() {
         ExpectSolutions t = assertSolved(
                 "(one ==>+- two)", A,
                 "(one ==>+1 two)", "(one ==>+19 two)", "(one ==>-17 two)");
     }
 
-    @Test public void testDecomposeImplConj() throws Narsese.NarseseException {
+    @Test
+    void testDecomposeImplConj() throws Narsese.NarseseException {
         /*
           $.02 ((b &&+10 d)==>a). 6 %1.0;.38% {320: 1;2;3;;} (((%1==>%2),(%1==>%2),is(%1,"&&")),((dropAnyEvent(%1) ==>+- %2),((StructuralDeduction-->Belief))))
             $.06 (((b &&+5 c) &&+5 d) ==>-15 a). 6 %1.0;.42% {94: 1;2;3} ((%1,%2,time(raw),belief(positive),task("."),notImpl(%2),notImpl(%1)),((%2 ==>+- %1),((Induction-->Belief))))
@@ -163,7 +167,7 @@ public class TimeGraphTest {
     }
 
     @Test
-    public void testImplWithConjPredicate2() {
+    void testImplWithConjPredicate2() {
         assertSolved("(one ==>+- (two &&+- three))", A, 
 
                 "(one ==>+- (two &&+1 three))", "(one ==>+1 (two &&+1 three))",
@@ -173,7 +177,7 @@ public class TimeGraphTest {
         );
     }
     @Test
-    public void testImplWithTwoConjPredicates() throws Narsese.NarseseException {
+    void testImplWithTwoConjPredicates() throws Narsese.NarseseException {
 
         
         
@@ -186,7 +190,7 @@ public class TimeGraphTest {
                 "((a &&+5 b) ==>-3 (b &&+5 c))","((a &&+5 b) ==>+5 c)");
     }
     @Test
-    public void testImplWithConjSubjDecomposeProperly() throws Narsese.NarseseException {
+    void testImplWithConjSubjDecomposeProperly() throws Narsese.NarseseException {
 
         
 
@@ -202,7 +206,8 @@ public class TimeGraphTest {
         
     }
 
-    @Test public void testNobrainerNegation() throws Narsese.NarseseException {
+    @Test
+    void testNobrainerNegation() throws Narsese.NarseseException {
 
         TimeGraph C = newTimeGraph(1);
         C.know($.$("x"), 1);
@@ -214,9 +219,8 @@ public class TimeGraphTest {
         
     }
     @Test
-    public void testConjSimpleOccurrences() throws Narsese.NarseseException {
+    void testConjSimpleOccurrences() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
-        C.autoNeg(false);
         C.know($.$("(x &&+5 y)"), 1);
         C.know($.$("(y &&+5 z)"), 6);
         C.know($.$("(w &&+5 x)"), -4);
@@ -229,7 +233,7 @@ public class TimeGraphTest {
         
     }
     @Test
-    public void testConjTrickyOccurrences() throws Narsese.NarseseException {
+    void testConjTrickyOccurrences() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
         C.know($.$("(x &&+5 y)"), 1);
         C.know($.$("(y &&+5 z)"), 3);
@@ -239,7 +243,7 @@ public class TimeGraphTest {
     }
 
     @Test
-    public void testImplCrossDternalInternalConj() throws Narsese.NarseseException {
+    void testImplCrossDternalInternalConj() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
 
         C.know($.$("((a&&x) ==>+1 b)"), 1);
@@ -248,7 +252,7 @@ public class TimeGraphTest {
         
     }
     @Test
-    public void testImplCrossParallelInternalConj() throws Narsese.NarseseException {
+    void testImplCrossParallelInternalConj() throws Narsese.NarseseException {
         TimeGraph C = newTimeGraph(1);
         C.know($.$("((a&|x) ==>+1 b)"), 1);
         assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
@@ -290,14 +294,14 @@ public class TimeGraphTest {
 
 
 
-    final List<Runnable> afterEach = $.newArrayList();
+    private final List<Runnable> afterEach = $.newArrayList();
 
     @AfterEach
     void test() {
         afterEach.forEach(Runnable::run);
     }
 
-    ExpectSolutions assertSolved(String inputTerm, TimeGraph t, String... solutions) {
+    private ExpectSolutions assertSolved(String inputTerm, TimeGraph t, String... solutions) {
 
 
 
@@ -339,7 +343,7 @@ public class TimeGraphTest {
             }
         };
 
-        public ExpectSolutions(TimeGraph time, String... solutions) {
+        ExpectSolutions(TimeGraph time, String... solutions) {
             this.time = time;
             this.solutions = solutions;
             errorMsg = () ->
@@ -358,11 +362,11 @@ public class TimeGraphTest {
             return true;
         }
 
-        public void solve(String x) {
+        void solve(String x) {
             solve($$(x));
         }
 
-        public void solve(Term x) {
+        void solve(Term x) {
             time.solve(x, false, seen, this);
         }
 
@@ -407,13 +411,13 @@ public class TimeGraphTest {
 
         }
 
-        public void print() {
+        void print() {
             time.print();
             System.out.println( uniqueSolutions + " unique solutions / " + repeatSolutions + " repeat solutions" );
         }
     }
 
-    static TimeGraph newTimeGraph(long seed) {
+    private static TimeGraph newTimeGraph(long seed) {
         return new TimeGraph() {
             XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(seed);
             @Override

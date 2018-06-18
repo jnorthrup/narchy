@@ -584,6 +584,9 @@ public enum Util {
      */
     public static float unitize(float x) {
         finite(x);
+        return unitizeSafe(x);
+    }
+    public static float unitizeSafe(float x) {
         return Util.clamp(x, 0, 1f);
     }
 
@@ -2021,7 +2024,9 @@ public enum Util {
     }
 
     public static short[] toShort(int[] x) {
-        if (x.length == 0) return ArrayUtils.EMPTY_SHORT_ARRAY;
+        if (x.length == 0)
+            return ArrayUtils.EMPTY_SHORT_ARRAY;
+
         short[] s = new short[x.length];
         int i = 0;
         for (int xx : x) {

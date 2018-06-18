@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TermHashMapTest {
+class TermHashMapTest {
     @Test
-    public void test1() {
+    void test1() {
         TermHashMap m = new TermHashMap();
 
         m.put($.the("x"), "a");

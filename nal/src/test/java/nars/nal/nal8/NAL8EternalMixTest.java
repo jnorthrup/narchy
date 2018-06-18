@@ -17,19 +17,19 @@ import static nars.time.Tense.ETERNAL;
 /**
  * NAL8 tests specifically involving one or more eternal input tasks
  */
-public class NAL8EternalMixTest extends NALTest {
+class NAL8EternalMixTest extends NALTest {
 
-    final int cycles = 300;
+    private final int cycles = 300;
 
     @BeforeEach
-    public void setTolerance() {
+    void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(1);
         test.nar.termVolumeMax.set(16);
     }
 
     @Test
-    public void subsent_1_even_simpler_simplerGoalEternal() {
+    void subsent_1_even_simpler_simplerGoalEternal() {
 
         test
 
@@ -41,7 +41,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void subsent_1() {
+    void subsent_1() {
 
         TestNAR tester = test;
 
@@ -76,7 +76,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void conditional_abduction_temporal_vs_eternal() { 
+    void conditional_abduction_temporal_vs_eternal() {
 
         TestNAR tester = test;
 
@@ -88,7 +88,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void ded_with_indep_var_temporal() {
+    void ded_with_indep_var_temporal() {
 
         TestNAR tester = test;
 
@@ -100,7 +100,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void ded_with_var_temporal() {
+    void ded_with_var_temporal() {
 
         test
 
@@ -110,7 +110,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void ded_with_var_temporal2() {
+    void ded_with_var_temporal2() {
 
         TestNAR tester = test;
 
@@ -123,7 +123,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void goal_deduction_tensed_conseq() {
+    void goal_deduction_tensed_conseq() {
 
         TestNAR tester = test;
 
@@ -135,7 +135,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void condition_goal_deductionWithVariableEliminationOpposite() {
+    void condition_goal_deductionWithVariableEliminationOpposite() {
 
         test
 
@@ -146,7 +146,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_impl() {
+    void goal_deduction_impl() {
 
         TestNAR tester = test;
         tester.input("x:y! :|:");
@@ -155,7 +155,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_impl_after() {
+    void goal_deduction_impl_after() {
 
         TestNAR tester = test;
         tester.input("x:y! :|:");
@@ -164,7 +164,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_delayed_impl() {
+    void goal_deduction_delayed_impl() {
 
         TestNAR tester = test;
         tester.input("x:y!");
@@ -174,7 +174,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void goal_deduction_tensed_conseq_noVar() {
+    void goal_deduction_tensed_conseq_noVar() {
 
         TestNAR tester = test;
 
@@ -185,7 +185,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void belief_deduction_by_condition() {
+    void belief_deduction_by_condition() {
 
         TestNAR tester = test;
 
@@ -197,7 +197,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_goal_deduction2() {
+    void condition_goal_deduction2() {
 
         test
 
@@ -209,7 +209,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_goal_deduction_interval() {
+    void condition_goal_deduction_interval() {
 
         test
 
@@ -219,7 +219,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_goal_deductionEternal() {
+    void condition_goal_deductionEternal() {
 
         test
 
@@ -231,7 +231,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void further_detachment() {
+    void further_detachment() {
 
         test
                 .input("reachable(SELF,{t002}). :|:")
@@ -241,7 +241,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_goal_deduction_eternal_belief() {
+    void condition_goal_deduction_eternal_belief() {
 
         test
                 .input("reachable(SELF,{t002})! :|:")
@@ -252,7 +252,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void goal_ded_2() {
+    void goal_ded_2() {
 
         TestNAR tester = test;
 
@@ -264,7 +264,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_goal_deduction_3simplerReverse() {
+    void condition_goal_deduction_3simplerReverse() {
 
         test
 
@@ -278,7 +278,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void further_detachment_2() {
+    void further_detachment_2() {
 
         test
                 .input("reachable(SELF,{t002}). :|:")
@@ -290,7 +290,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void goal_deduction_2() {
+    void goal_deduction_2() {
 
         TestNAR tester = test;
 
@@ -305,7 +305,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_goal_deduction_2() {
+    void condition_goal_deduction_2() {
 
         test
                 .input("on({t002},{t003}). :|:")
@@ -316,7 +316,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_belief_deduction_2() {
+    void condition_belief_deduction_2() {
 
         test
                 .input("on({t002},{t003}). :|:")
@@ -327,7 +327,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void condition_belief_deduction_2_neg() {
+    void condition_belief_deduction_2_neg() {
 
         test
                 .input("(--,on({t002},{t003})). :|:")
@@ -337,7 +337,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void condition_belief_deduction_2_easier() {
+    void condition_belief_deduction_2_easier() {
 
         test
                 .input("on(t002,t003). :|:")
@@ -348,7 +348,7 @@ public class NAL8EternalMixTest extends NALTest {
 
     @Disabled
     @Test
-    public void condition_belief_deduction_2_dternal() {
+    void condition_belief_deduction_2_dternal() {
 
 
         test
@@ -361,7 +361,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void temporal_goal_detachment_1() {
+    void temporal_goal_detachment_1() {
 
         test
 
@@ -373,7 +373,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void temporal_goal_detachment_2() {
+    void temporal_goal_detachment_2() {
         
 
         test
@@ -384,7 +384,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void temporal_goal_detachment_3_valid() {
+    void temporal_goal_detachment_3_valid() {
 
         test
                 .input("(use)! :|:")
@@ -396,7 +396,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void temporal_goal_detachment_3_valid_negate() {
+    void temporal_goal_detachment_3_valid_negate() {
 
         test
                 .input("--(use)! :|:")
@@ -407,7 +407,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void detaching_condition0() {
+    void detaching_condition0() {
 
         TestNAR tester = test;
 
@@ -421,7 +421,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void detaching_condition() {
+    void detaching_condition() {
 
         test
                 .input("( ( hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))) ==>+5 [opened]:{t001}).")
@@ -431,7 +431,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void subgoal_1_abd() {
+    void subgoal_1_abd() {
 
         TestNAR tester = test;
 
@@ -445,7 +445,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void temporal_deduction_2() {
+    void temporal_deduction_2() {
 
         TestNAR tester = test;
 
@@ -458,7 +458,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void implSubstitutionViaSimilarity() {
+    void implSubstitutionViaSimilarity() {
 
         test
                 .input("(a:b<->c:d).") 
@@ -468,7 +468,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void implSubstitutionViaSimilarityReverse() {
+    void implSubstitutionViaSimilarityReverse() {
 
         test
 
@@ -480,7 +480,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void testDesiredConjDelayed() {
+    void testDesiredConjDelayed() {
 
         test
                 .believe("(x)", Tense.Present, 1f, 0.9f)
@@ -490,7 +490,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testDesiredConjDelayedNeg() {
+    void testDesiredConjDelayedNeg() {
 
         test
                 .believe("(x)", Tense.Present, 0f, 0.9f)
@@ -500,7 +500,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testBelievedImplOfDesireDelayed() {
+    void testBelievedImplOfDesireDelayed() {
 
         test
                 .goal("(x)", Tense.Present, 1f, 0.9f)
@@ -511,7 +511,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testGoalConjunctionDecomposeSuffix() {
+    void testGoalConjunctionDecomposeSuffix() {
 
         test
                 .goal("((x) &&+3 (y))", Tense.Eternal, 1f, 0.9f)
@@ -523,7 +523,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testNegatedImplicationS() {
+    void testNegatedImplicationS() {
 
         test
                 .goal("(R)")
@@ -532,7 +532,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testNegatedImplicationP() {
+    void testNegatedImplicationP() {
 
         test
 
@@ -542,7 +542,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testNegatedImplicationTerm2() {
+    void testNegatedImplicationTerm2() {
 
         test
                 .input("(R)! :|:")
@@ -552,7 +552,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testNegatedImplicationTerm3() {
+    void testNegatedImplicationTerm3() {
 
         test
                 .input("(R). :|:")
@@ -563,7 +563,7 @@ public class NAL8EternalMixTest extends NALTest {
 
     @Disabled
     @Test
-    public void disjunctionBackwardsQuestionTemporal() {
+    void disjunctionBackwardsQuestionTemporal() {
 
         test
                 .inputAt(0, "(||, (x), (y))?")
@@ -572,7 +572,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testGoalImplComponentTemporal() {
+    void testGoalImplComponentTemporal() {
 
         test
                 .input("(happy)! :|:")
@@ -581,7 +581,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testGoalImplComponentWithVar() {
+    void testGoalImplComponentWithVar() {
 
         test.nar.runAt(cycles * 4, () -> {
             try {
@@ -600,7 +600,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testPredictiveImplicationTemporalEternal() {
+    void testPredictiveImplicationTemporalEternal() {
 
         test
                 .inputAt(0, "((out) ==>-3 (happy)).")
@@ -610,7 +610,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testPredictiveImplicationEternalTemporal() {
+    void testPredictiveImplicationEternalTemporal() {
 
         test
                 .inputAt(0, "((out) ==>-3 (happy)). :|:")
@@ -621,7 +621,7 @@ public class NAL8EternalMixTest extends NALTest {
 
 
     @Test
-    public void deriveNegInhGoalTemporal() {
+    void deriveNegInhGoalTemporal() {
 
         test
                 .input("b:a! :|:") 
@@ -633,7 +633,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testStrongUnificationDeductionPN() {
+    void testStrongUnificationDeductionPN() {
         
         test
                 .input("((--,Y) ==>+1 (X)).")
@@ -644,7 +644,7 @@ public class NAL8EternalMixTest extends NALTest {
     }
 
     @Test
-    public void testStrongUnificationAbductionPN() {
+    void testStrongUnificationAbductionPN() {
 
         test
                 .input("(--X ==>+1 Y).")

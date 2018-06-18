@@ -101,15 +101,13 @@ public abstract class Unify extends Versioning implements Subst {
 
         if (++next < chain.length) {
 
-            if (!use(Param.TTL_MUTATE))
-                return false;
-
             chain[next].mutate(this, chain, next);
 
         } else {
             tryMatch();
         }
-        return true;
+
+        return use(Param.TTL_MUTATE);
     }
 
 
@@ -249,7 +247,7 @@ public abstract class Unify extends Versioning implements Subst {
         return constrain(m.x, m);
     }
 
-    public boolean constrain(Variable target, MatchConstraint... mm) {
+    private boolean constrain(Variable target, MatchConstraint... mm) {
         ((ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target)).constrain(mm);
         return true;
     }
@@ -303,12 +301,13 @@ public abstract class Unify extends Versioning implements Subst {
 
             Versioned<MatchConstraint> c = this.constraints;
             if (c == null)
-                c = constraints = new Versioned(Unify.this, 4);
+                c = constraints = new Versioned<>(Unify.this, 4);
 
             for (MatchConstraint m : mm) {
                 Versioned<MatchConstraint> wasSet = c.set(m);
                 assert (wasSet != null);
             }
+
         }
 
     }

@@ -17,14 +17,14 @@ import java.util.function.Consumer;
  * Created by me on 12/11/15.
  */
 @Disabled
-public enum JmhBenchmark {
+enum JmhBenchmark {
 	;
 
 	public static void perf(Class c, Consumer<ChainedOptionsBuilder> config) throws RunnerException {
 		perf(c.getName(), config);
 	}
 
-	public static void perf(String include, Consumer<ChainedOptionsBuilder> config) throws RunnerException {
+	private static void perf(String include, Consumer<ChainedOptionsBuilder> config) throws RunnerException {
 		ChainedOptionsBuilder opt = new OptionsBuilder()
 				.include(include)
 				.shouldDoGC(true)

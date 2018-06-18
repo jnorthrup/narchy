@@ -10,9 +10,9 @@ import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DynamicSectTest {
+class DynamicSectTest {
     @Test
-    public void testDynamicIntersection() throws Narsese.NarseseException {
+    void testDynamicIntersection() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("a:x", 1f, 0.9f);
         n.believe("a:y", 1f, 0.9f);

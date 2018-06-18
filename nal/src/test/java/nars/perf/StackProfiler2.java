@@ -175,7 +175,7 @@ public class StackProfiler2 implements InternalProfiler {
             }
         }
 
-        public void measure(ThreadInfo[] infos) {
+        void measure(ThreadInfo[] infos) {
 
 
             info:
@@ -233,11 +233,11 @@ public class StackProfiler2 implements InternalProfiler {
             }
         }
 
-        public void start() {
+        void start() {
             thread.start();
         }
 
-        public void stop() {
+        void stop() {
             thread.interrupt();
             try {
                 thread.join();
@@ -248,7 +248,7 @@ public class StackProfiler2 implements InternalProfiler {
 
     }
 
-    public boolean exclude(String className) {
+    private boolean exclude(String className) {
         return excludePackageNames.has(className, TrieMatch.STARTS_WITH);
     }
 
@@ -270,11 +270,11 @@ public class StackProfiler2 implements InternalProfiler {
             this(16);
         }
 
-        public StackRecord(int cap) {
+        StackRecord(int cap) {
             super(cap);
         }
 
-        public void commit() {
+        void commit() {
             compact();
             this.hash = super.hashCode();
         }
@@ -292,7 +292,7 @@ public class StackProfiler2 implements InternalProfiler {
             return hash;
         }
 
-        public void add(StackTraceElement l) {
+        void add(StackTraceElement l) {
             add(
                     Tuples.pair(
                             l.getClassName(),
@@ -317,7 +317,7 @@ public class StackProfiler2 implements InternalProfiler {
         private final int topStacks, topCallees;
         private final HashBag<Pair<String, IntObjectPair<String>>> calledSum;
 
-        public StackResult(Map<Thread.State, HashBag<StackRecord>> calleeSum, HashBag<Pair<String, IntObjectPair<String>>> calledSum, int topStacks) {
+        StackResult(Map<Thread.State, HashBag<StackRecord>> calleeSum, HashBag<Pair<String, IntObjectPair<String>>> calledSum, int topStacks) {
             super(ResultRole.SECONDARY, Defaults.PREFIX + "stack", of(Double.NaN), "---", AggregationPolicy.AVG);
             this.calleeSum = calleeSum;
             this.calledSum = calledSum;
@@ -347,7 +347,7 @@ public class StackProfiler2 implements InternalProfiler {
 
 
 
-        public String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
+        String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
 
             int top = 32;
 
@@ -445,7 +445,7 @@ public class StackProfiler2 implements InternalProfiler {
         }
     }
 
-    public static class StackResultAggregator implements Aggregator<StackResult> {
+    static class StackResultAggregator implements Aggregator<StackResult> {
         @Override
         public StackResult aggregate(Collection<StackResult> results) {
             int topStacks = 0;

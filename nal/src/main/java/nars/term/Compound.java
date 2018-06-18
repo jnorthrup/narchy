@@ -33,6 +33,7 @@ import nars.util.term.transform.Retemporalize;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -416,90 +417,42 @@ public interface Compound extends Term, IPair, Subterms {
         return this;
     }
 
+    default int subTimeOnly(Term x) {
+        int[] t = subTimes(x);
+        if (t == null || t.length != 1) return DTERNAL;
+        return t[0];
+    }
 
     /**
-     * TODO do shuffled search to return different repeated results wherever they may appear
+     * TODO return XTERNAL not DTERNAL on missing, it is more appropriate
+     * expect the output array to be sorted
      */
-    @Override
-    default int subTimeSafe(Term x, int after) {
+    default int[] subTimes(Term x) {
         if (equals(x))
-            return 0;
+            return new int[] { 0 };
+
+
+        int dt = dt();
+        if (dt == XTERNAL || dt == DTERNAL)
+            return null;
 
         Op op = op();
         if (op != CONJ)
-            return DTERNAL;
-
-        int dt = dt();
-        if (dt == XTERNAL) 
-            return DTERNAL;
+            return null;
 
         if (impossibleSubTerm(x))
-            return DTERNAL;
+            return null;
 
-        /*@NotNull*/
-        Subterms yy = subterms();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /*} else */
-
-        /* HACK apply to other cases too */
-        if (after >= dt) {
-            Term yy1 = yy.sub(1);
-            if (yy.sub(0).equals(yy1)) {
-                
-                
-                if (x.equals(yy1))
-                    return dt;
+        RoaringBitmap found = new RoaringBitmap();
+        eventsWhile((when, what)->{
+            if (what.equals(x)) {
+                assert(when >= 0 && when < Integer.MAX_VALUE);
+                found.add((int) when);
             }
-        }
+            return true;
+        }, 0, true, true, false, 0);
 
-        boolean reverse;
-        int idt;
-        if (dt == DTERNAL || dt == 0) {
-            idt = 0; 
-            reverse = false;
-        } else {
-            idt = dt;
-            if (idt < 0) {
-                idt = -idt;
-                reverse = true;
-            } else {
-                reverse = false;
-            }
-        }
-
-        int ys = yy.subs();
-        int offset = 0;
-        for (int yi = 0; yi < ys; yi++) {
-            Term yyy = yy.sub(reverse ? ((ys - 1) - yi) : yi);
-            int sdt = yyy.subTimeSafe(x, after - offset);
-            if (sdt != DTERNAL)
-                return sdt + offset;
-            offset += idt + yyy.dtRange();
-        }
-
-        return DTERNAL;
+        return found.isEmpty() ? null : found.toArray();
     }
 
 

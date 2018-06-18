@@ -1,4 +1,4 @@
 package nars.derive;
 
-public class TestPuncBalance {
+class TestPuncBalance {
 }

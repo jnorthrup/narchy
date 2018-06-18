@@ -32,10 +32,7 @@ import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -65,13 +62,18 @@ public class Derivation extends PreDerivation {
     };
     private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     public final ArrayHashSet<Premise> premiseBuffer =
-            new ArrayHashSet<>();
+            new ArrayHashSet<>(256) {
+                @Override
+                public Set<Premise> newSet() {
+                    return new HashSet<>(256);
+                }
+            };
 
     public final Anon anon;
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
-    private final Map<Task, Task> derivedTasks = new HashMap<>();
+    private final Map<Task, Task> derivedTasks = new LinkedHashMap<>(4096,0.9f);
     private final SubIfUnify mySubIfUnify = new SubIfUnify(this);
     private final Functor polarizeFunc = new Functor.AbstractInlineFunctor2("polarize") {
         @Override
@@ -617,7 +619,7 @@ public class Derivation extends PreDerivation {
     }
 
     public Occurrify occ(Term pattern) {
-        occ.reset(pattern.hasAny(NEG));
+        occ.reset(pattern);
         return occ;
     }
 

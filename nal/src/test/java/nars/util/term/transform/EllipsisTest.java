@@ -155,13 +155,13 @@ public class EllipsisTest {
     }
 
     abstract static class CommutiveEllipsisTest implements EllipsisTestCase {
-        protected final String prefix;
-        protected final String suffix;
+        final String prefix;
+        final String suffix;
         @NotNull
-        protected final Compound p;
-        public final String ellipsisTerm;
+        final Compound p;
+        final String ellipsisTerm;
 
-        protected CommutiveEllipsisTest(String ellipsisTerm, String prefix, String suffix) throws Narsese.NarseseException {
+        CommutiveEllipsisTest(String ellipsisTerm, String prefix, String suffix) throws Narsese.NarseseException {
             this.prefix = prefix;
             this.suffix = suffix;
             this.ellipsisTerm = ellipsisTerm;
@@ -206,7 +206,7 @@ public class EllipsisTest {
         static final Term fixedTerm = $.varPattern(1);
 
 
-        public CommutiveEllipsisTest1(String ellipsisTerm, String[] openClose) throws Narsese.NarseseException {
+        CommutiveEllipsisTest1(String ellipsisTerm, String[] openClose) throws Narsese.NarseseException {
             super(ellipsisTerm, openClose[0], openClose[1]);
         }
 
@@ -256,7 +256,7 @@ public class EllipsisTest {
      */
     static class CommutiveEllipsisTest2 extends CommutiveEllipsisTest {
 
-        public CommutiveEllipsisTest2(String ellipsisTerm, String[] openClose) throws Narsese.NarseseException {
+        CommutiveEllipsisTest2(String ellipsisTerm, String[] openClose) throws Narsese.NarseseException {
             super(ellipsisTerm, openClose[0], openClose[1]);
         }
 
@@ -304,7 +304,7 @@ public class EllipsisTest {
 
 
     @Test
-    public void testEllipsisOneOrMore() throws Narsese.NarseseException {
+    void testEllipsisOneOrMore() throws Narsese.NarseseException {
         String s = "%prefix..+";
         Term t = $(s);
         assertNotNull(t);
@@ -316,7 +316,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testEllipsisZeroOrMore() throws Narsese.NarseseException {
+    void testEllipsisZeroOrMore() throws Narsese.NarseseException {
         String s = "%prefix..*";
         Term t = $(s);
         assertNotNull(t);
@@ -333,12 +333,12 @@ public class EllipsisTest {
 
 
 
-    public static String[] p(String a, String b) {
+    private static String[] p(String a, String b) {
         return new String[]{a, b};
     }
 
     @Disabled @Test
-    public void testVarArg0() throws Narsese.NarseseException {
+    void testVarArg0() throws Narsese.NarseseException {
         
         String rule = "(%S ==> %M), ((&&,%S,%A..+) ==> %M) |- ((&&,%A..+) ==> %M), (Belief:DecomposeNegativePositivePositive, Order:ForAllSame, SequenceIntervals:FromBelief)";
 
@@ -356,60 +356,62 @@ public class EllipsisTest {
 
     }
 
-    @Test public void testEllipsisMatchCommutive1_0a() throws Narsese.NarseseException {
+    @Test
+    void testEllipsisMatchCommutive1_0a() throws Narsese.NarseseException {
         testSect("|");
     }
-    @Test public void testEllipsisMatchCommutive1_0b() throws Narsese.NarseseException {
+    @Test
+    void testEllipsisMatchCommutive1_0b() throws Narsese.NarseseException {
         testSect("&");
     }
 
-    void testSect(String o) throws Narsese.NarseseException {
+    private void testSect(String o) throws Narsese.NarseseException {
         new CommutiveEllipsisTest1("%2..+", p("(" + o + ",", ")")).test(2, 2, 4);
     }
 
 
     @Test
-    public void testEllipsisMatchCommutive1_1() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive1_1() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest1("%2..+", p("{", "}")).test(2, 4, 4);
     }
 
     @Test
-    public void testEllipsisMatchCommutive1_2() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive1_2() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest1("%2..+", p("[", "]")).test(2, 4, 4);
     }
 
     @Test
-    public void testEllipsisMatchCommutive1_3() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive1_3() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest1("%2..+", p("(&&,", ")")).test(2, 4, 4);
     }
 
     @Test
-    public void testEllipsisMatchCommutive1_3with() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive1_3with() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest1("%2..+", p("(&&,x,", ")")).test(2, 4, 4);
     }
 
 
     @Test
-    public void testEllipsisMatchCommutive2one_sete() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive2one_sete() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest2("%1..+", p("{", "}")).test(1, 5, 0);
     }
 
     @Test
-    public void testEllipsisMatchCommutive2one_seti() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive2one_seti() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest2("%1..+", p("[", "]")).test(1, 5, 0);
     }
 
     @Test
-    public void testEllipsisMatchCommutive2one_prod() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive2one_prod() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest2("%1..+", p("(Z,", ")")).test(1, 5, 0);
     }
 
     @Test
-    public void testEllipsisMatchCommutive2empty_prod() throws Narsese.NarseseException {
+    void testEllipsisMatchCommutive2empty_prod() throws Narsese.NarseseException {
         new EllipsisTest.CommutiveEllipsisTest2("%1..*", p("(Z,", ")")).test(0, 2, 0);
     }
 
-    static void testCombinations(Compound _X, Compound Y, int expect) {
+    private static void testCombinations(Compound _X, Compound Y, int expect) {
         Compound X = (Compound) new PremisePatternIndex().pattern(_X);
 
         for (int seed = 0; seed < 3 /*expect*5*/; seed++) {
@@ -433,7 +435,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testEllipsisCombinatorics1() throws Narsese.NarseseException {
+    void testEllipsisCombinatorics1() throws Narsese.NarseseException {
         
         testCombinations(
                 $("(&&, %1..+, %2)"),
@@ -442,7 +444,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testMatchAll2() throws Narsese.NarseseException {
+    void testMatchAll2() throws Narsese.NarseseException {
         testCombinations(
                 $("((|,%1,%2) --> (|,%2,%3))"),
                 $("((|,bird,swimmer)-->(|,animal,swimmer))"),
@@ -450,7 +452,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testMatchAll3() throws Narsese.NarseseException {
+    void testMatchAll3() throws Narsese.NarseseException {
         testCombinations(
                 $("((|,%X,%Z,%A) --> (|,%Y,%Z,%A))"),
                 $("((|,bird,man, swimmer)-->(|,man, animal,swimmer))"),
@@ -458,7 +460,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testRepeatEllipsisAWithoutEllipsis() throws Narsese.NarseseException {
+    void testRepeatEllipsisAWithoutEllipsis() throws Narsese.NarseseException {
         testCombinations(
                 $("((|,%X,%Y) --> (|,%Y,%Z))"),
                 $("((|,bird,swimmer)-->(|,animal,swimmer))"),
@@ -466,7 +468,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testRepeatEllipsisA() throws Narsese.NarseseException {
+    void testRepeatEllipsisA() throws Narsese.NarseseException {
 
         
         testCombinations(
@@ -476,7 +478,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testRepeatEllipsisA2() throws Narsese.NarseseException {
+    void testRepeatEllipsisA2() throws Narsese.NarseseException {
 
         testCombinations(
                 $("((%X,%A..+) --> (%Y,%A..+))"),
@@ -485,7 +487,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testRepeatEllipsisA0() throws Narsese.NarseseException {
+    void testRepeatEllipsisA0() throws Narsese.NarseseException {
         testCombinations(
                 $("((%A, %X) --> (%B, %X))"),
                 $("((bird,swimmer)-->(animal,swimmer))"),
@@ -493,7 +495,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testRepeatEllipsisB() throws Narsese.NarseseException {
+    void testRepeatEllipsisB() throws Narsese.NarseseException {
 
         
         testCombinations(
@@ -503,7 +505,7 @@ public class EllipsisTest {
     }
 
     @Test
-    public void testIntersection1() throws Narsese.NarseseException {
+    void testIntersection1() throws Narsese.NarseseException {
         testCombinations(
                 $("(%M --> (|,%S,%A..+))"),
                 $("(m-->(|,s,a))"),
@@ -516,7 +518,7 @@ public class EllipsisTest {
 
 
     @Test
-    public void testEllipsisInMinArity() {
+    void testEllipsisInMinArity() {
         Atomic a = Atomic.the("a");
         Ellipsis b = new EllipsisOneOrMore($.varPattern(1));
 

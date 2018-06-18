@@ -31,19 +31,19 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Term serialization
  */
-public class TermIOTest {
+class TermIOTest {
 
-    final NAR nar = NARS.shell();
+    private final NAR nar = NARS.shell();
 
-    void assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException, IOException {
+    private void assertEqualSerialize(@NotNull String orig) throws Narsese.NarseseException, IOException {
         assertEqualSerialize($.$(orig).term());
     }
 
-    void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException, IOException {
+    private void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException, IOException {
         assertEqualSerialize((Object)nar.inputTask(orig));
     }
 
-    static byte[] assertEqualSerialize(@NotNull Object orig) throws IOException {
+    private static byte[] assertEqualSerialize(@NotNull Object orig) throws IOException {
         
 
 
@@ -97,7 +97,7 @@ public class TermIOTest {
 
     
     @Test
-    public void testTermSerialization() throws Exception {
+    void testTermSerialization() throws Exception {
 
         assertEqualSerialize("<a-->b>" /* term, not the concept */);
         assertEqualSerialize("<aa-->b>" /* term, not the concept */);
@@ -107,7 +107,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testNegationSerialization() throws Exception {
+    void testNegationSerialization() throws Exception {
         assertEqualSerialize("--x");
 
         
@@ -117,7 +117,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testTemporalSerialization() throws Exception {
+    void testTemporalSerialization() throws Exception {
 
         assertEqualSerialize("(a &&+1 b)" /* term, not the concept */);
         assertEqualSerialize("(a &&+1 (a &&+1 a))" /* term, not the concept */);
@@ -131,7 +131,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testImageSerialization() throws Exception {
+    void testImageSerialization() throws Exception {
         assertEqualSerialize("/");
         assertEqualSerialize("\\");
         assertEqualSerialize("(a,/,1)");
@@ -142,7 +142,8 @@ public class TermIOTest {
         assertEqualSerialize("((a,\\,1)--> y)");
     }
 
-    @Test public void testUnnormalizedVariableSerialization() throws Exception {
+    @Test
+    void testUnnormalizedVariableSerialization() throws Exception {
         assertEqualSerialize("#abc");
         assertEqualSerialize("$abc");
         assertEqualSerialize("?abc");
@@ -150,7 +151,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testAnonSerialization() throws IOException {
+    void testAnonSerialization() throws IOException {
 
         Term[] anons = new Term[] {
                 $.v(VAR_DEP, (byte)1),
@@ -183,17 +184,17 @@ public class TermIOTest {
     }
 
     @Test
-    public void testTermSerialization2() throws Exception {
+    void testTermSerialization2() throws Exception {
         assertTermEqualSerialize("(a-->(be))");
     }
 
     @Test
-    public void testTermSerialization3() throws Exception {
+    void testTermSerialization3() throws Exception {
         assertTermEqualSerialize("(#1 --> b)");
     }
 
     @Test
-    public void testTermSerialization3_2() throws Exception {
+    void testTermSerialization3_2() throws Exception {
         
 
         Variable q = $.varQuery(1);
@@ -212,14 +213,14 @@ public class TermIOTest {
 
     }
 
-    static void assertTermEqualSerialize(String s) throws Narsese.NarseseException, IOException {
+    private static void assertTermEqualSerialize(String s) throws Narsese.NarseseException, IOException {
         Termed t = $.$(s);
         assertTrue(t.term().isNormalized());
         assertEqualSerialize(t.term() /* term, not the concept */);
     }
 
     @Test
-    public void testTaskSerialization() throws Exception {
+    void testTaskSerialization() throws Exception {
         assertEqualTask("(a-->b).");
         assertEqualTask("(a-->(b,c))!");
         assertEqualTask("(a-->(b==>c))?");
@@ -246,7 +247,7 @@ public class TermIOTest {
     }
 
     @Test
-    public void testTaskSerialization2() throws Exception {
+    void testTaskSerialization2() throws Exception {
         assertEqualSerialize((Object)nar.inputTask("$0.3 (a-->(bd))! %1.0;0.8%"));
     }
 
@@ -257,7 +258,7 @@ public class TermIOTest {
         "d(x,c). :|: (x<->c)?",
         "((x &&+1 b) &&+1 c). :|: (c && --b)!"
     })
-    public void testNARTaskSaveAndReload(String input) throws Exception {
+    void testNARTaskSaveAndReload(String input) throws Exception {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream(16384);
 
@@ -325,39 +326,39 @@ public class TermIOTest {
     }
 
     @Test
-    public void testByteMappingAtom() throws Exception {
+    void testByteMappingAtom() throws Exception {
         assertEquals("(0,0)=. ", map("x"));
     }
 
 
     @Test
-    public void testByteMappingInh() throws Exception {
+    void testByteMappingInh() throws Exception {
         assertEquals("(0,0)=--> (1,2)=. (1,6)=. ", map("a:b"));
     }
 
     @Test
-    public void testByteMappingCompoundDT() throws Exception {
+    void testByteMappingCompoundDT() throws Exception {
         assertEquals("(0,0)===> (1,2)=. (1,6)=. ",
                 map("(a ==>+1 b)"));
     }
 
     @Test
-    public void testByteMappingCompoundDTExt() throws Exception {
+    void testByteMappingCompoundDTExt() throws Exception {
         assertEquals("(0,0)=--> (1,2)===> (2,4)=. (2,8)=. (1,16)=. ",
                 map("((a ==>+1 b) --> c)"));
     }
 
     @Test
-    public void testByteMappingCompound() throws Exception {
+    void testByteMappingCompound() throws Exception {
         assertEquals("(0,0)===> (1,2)=--> (2,4)=* (3,6)=. (3,10)=. (2,16)=. (1,20)=. ",
                 map("(a(b,\"c\") ==>+1 d)"));
     }
 
-    public String map(String x) throws IOException, Narsese.NarseseException {
+    private String map(String x) throws IOException, Narsese.NarseseException {
         return map($.$(x));
     }
 
-    public String map(Term x) throws IOException {
+    private String map(Term x) throws IOException {
         byte[] xb = IO.termToBytes(x);
         StringBuilder sb = new StringBuilder();
         IO.mapSubTerms(xb, (o, depth, i) -> {

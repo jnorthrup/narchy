@@ -16,13 +16,14 @@ import static org.junit.jupiter.api.Assertions.*;
  * parameterically generated implication
  * networks
  */
-public class ImplicationNetworkTest {
+class ImplicationNetworkTest {
 
-    static final Term a = $.the("a");
-    static final Term b = $.the("b");
-    static final Term c = $.the("c");
+    private static final Term a = $.the("a");
+    private static final Term b = $.the("b");
+    private static final Term c = $.the("c");
 
-    @Test public void testEternal_A_PosBelief_ToBC() {
+    @Test
+    void testEternal_A_PosBelief_ToBC() {
 
         NAR n = NARS.tmp();
 
@@ -63,7 +64,8 @@ public class ImplicationNetworkTest {
 
     }
 
-    @Test public void testEternal_A_PosGoal_ToBC() {
+    @Test
+    void testEternal_A_PosGoal_ToBC() {
 
         NAR n = NARS.tmp();
 
@@ -106,7 +108,8 @@ public class ImplicationNetworkTest {
 
     }
 
-    @Test public void testEternal_A_NegBelief_ToBC() {
+    @Test
+    void testEternal_A_NegBelief_ToBC() {
 
         NAR n = NARS.tmp();
 
@@ -129,7 +132,8 @@ public class ImplicationNetworkTest {
         assertNull(bBelief); 
 
     }
-    @Test public void testEternal_A_NegBelief_NegToBC_AB_only() {
+    @Test
+    void testEternal_A_NegBelief_NegToBC_AB_only() {
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(16);
 
@@ -152,7 +156,8 @@ public class ImplicationNetworkTest {
         assertEquals("%1.0;.81%" ,bBelief.toString());
 
     }
-    @Test public void testEternal_A_NegBelief_NegToBC() {
+    @Test
+    void testEternal_A_NegBelief_NegToBC() {
 
         NAR n = NARS.tmp(6);
         n.termVolumeMax.set(16);
@@ -182,7 +187,8 @@ public class ImplicationNetworkTest {
         assertEquals("%1.0;.73%" ,cBelief.toString());
     }
 
-    @Test public void testEternal_A_NegBelief_NegToB_NegToC() {
+    @Test
+    void testEternal_A_NegBelief_NegToB_NegToC() {
 
         NAR n = NARS.tmp();
 

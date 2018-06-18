@@ -98,7 +98,7 @@ abstract public class Exec implements Executor {
         this.nar = null;
     }
 
-    abstract void clear();
+    public abstract void clear();
 
     /**
      * true if this executioner executes procedures concurrently.

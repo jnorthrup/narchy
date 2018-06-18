@@ -17,31 +17,34 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 12/26/15.
  */
-public class QuestTest {
+class QuestTest {
 
 
-    @Test public void testQuestAfterGoal1() throws Narsese.NarseseException {
+    @Test
+    void testQuestAfterGoal1() throws Narsese.NarseseException {
         testQuest(true, 0, 256);
     }
-    @Test public void testQuestAfterGoal2() throws Narsese.NarseseException {
+    @Test
+    void testQuestAfterGoal2() throws Narsese.NarseseException {
         testQuest(true, 1, 256);
     }
-    @Test public void testQuestAfterGoal3() throws Narsese.NarseseException {
+    @Test
+    void testQuestAfterGoal3() throws Narsese.NarseseException {
         testQuest(true, 4, 256);
     }
 
     @Test
-    public void testQuestBeforeGoal() throws Narsese.NarseseException {
+    void testQuestBeforeGoal() throws Narsese.NarseseException {
         testQuest(false, 1, 32);
         testQuest(false, 4, 32);
     }
     @Test
-    public void testQuestBeforeGoal0() throws Narsese.NarseseException {
+    void testQuestBeforeGoal0() throws Narsese.NarseseException {
         testQuest(false, 0, 64);
     }
 
 
-    public void testQuest(boolean goalFirst, int timeBetween, int timeAfter) throws Narsese.NarseseException {
+    private void testQuest(boolean goalFirst, int timeBetween, int timeAfter) throws Narsese.NarseseException {
         
         final NAR nar = NARS.tmpEternal();
         
@@ -63,7 +66,7 @@ public class QuestTest {
         assertTrue(valid.get());
     }
 
-    public void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
+    private void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
         nar.question($("a:?b@"), ETERNAL, QUEST, (q, a) -> {
             
             
@@ -72,7 +75,7 @@ public class QuestTest {
         });
     }
 
-    public void goal(NAR nar) throws Narsese.NarseseException {
+    private void goal(NAR nar) throws Narsese.NarseseException {
         nar.goal($.$("a:b"), Tense.Eternal, 1.0f, 0.9f);
     }
 

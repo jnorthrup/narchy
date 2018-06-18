@@ -19,21 +19,21 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 11/16/16.
  */
-public class UnitCompoundTest {
+class UnitCompoundTest {
 
     @Test
-    public void testUnitCompound_viaProd() {
+    void testUnitCompound_viaProd() {
         Atomic x = Atomic.the("x");
         assertEqual(PROD, x, new CachedUnitCompound(PROD, x));
     }
 
     @Test
-    public void testCachedUnitCompound1() {
+    void testCachedUnitCompound1() {
         Atomic x = Atomic.the("x");
         assertEqual(PROD, x, new CachedUnitCompound(PROD, x));
     }
 
-    static void assertEqual(Op o, Atomic x, Compound u) {
+    private static void assertEqual(Op o, Atomic x, Compound u) {
         Compound g = Op.terms.theCompound(o, new UnitSubterm(x));
         assertEquals(g.hashCode(), u.hashCode());
         assertEquals(g.hashCodeSubterms(), u.hashCodeSubterms());
@@ -47,7 +47,7 @@ public class UnitCompoundTest {
     }
 
     @Test
-    public void testUnitCompound2() {
+    void testUnitCompound2() {
         Atomic x = Atomic.the("x");
         Term c = $.p(x);
         System.out.println(c);
@@ -58,7 +58,7 @@ public class UnitCompoundTest {
     }
 
     @Test
-    public void testUnitCompound3() {
+    void testUnitCompound3() {
         Atomic x = Atomic.the("x");
         Atomic y = Atomic.the("y");
         Term c = $.func(x, y);
@@ -93,7 +93,7 @@ public class UnitCompoundTest {
 
 
     @Test
-    public void testRecursiveContains() throws Narsese.NarseseException {
+    void testRecursiveContains() throws Narsese.NarseseException {
         Term s = $.$("(--,(x))");
         Term p = $.$("((--,(x)) &&+0 (--,(y)))");
         assertTrue(p.contains(s));
@@ -101,7 +101,7 @@ public class UnitCompoundTest {
     }
 
     @Test
-    public void testImpossibleSubterm() throws Narsese.NarseseException {
+    void testImpossibleSubterm() throws Narsese.NarseseException {
         assertFalse($.$("(--,(x))").impossibleSubTerm($.$("(x)")));
     }
 }

@@ -15,7 +15,7 @@ import static nars.$.$;
  * see Natural_Language_Processing2.md
  */
 
-public class PatrickTests extends NALTest {
+class PatrickTests extends NALTest {
 
 
 
@@ -28,7 +28,7 @@ public class PatrickTests extends NALTest {
 
 
     @Test
-    public void testExample1() {
+    void testExample1() {
         /*
         
         
@@ -98,7 +98,7 @@ public class PatrickTests extends NALTest {
 
 
     @Test
-    public void testToothbrush() {
+    void testToothbrush() {
         /*
         <(*,toothbrush,plastic) --> made_of>.
         <(&/,<(*,$1,plastic) --> made_of>,<({SELF},$1) --> op_lighter>) =/> <$1 --> [heated]>>.
@@ -169,7 +169,7 @@ public class PatrickTests extends NALTest {
     }
 
     @Test
-    public void testToothbrushSimpler() {
+    void testToothbrushSimpler() {
 
 
         TestNAR tt = test;
@@ -216,7 +216,7 @@ public class PatrickTests extends NALTest {
 
     /** TODO */
     @Disabled @Test
-    public void testConditioningWithoutAnticipation() throws Narsese.NarseseException {
+    void testConditioningWithoutAnticipation() throws Narsese.NarseseException {
         /*
         <a --> A>. :|: <b --> B>. :|: %0% <c --> C>. %0%
         8
@@ -276,7 +276,7 @@ public class PatrickTests extends NALTest {
 
     /** TODO */
     @Test @Disabled
-    public void testPixelImage() throws Narsese.NarseseException {
+    void testPixelImage() throws Narsese.NarseseException {
 
         
         NAR n = NARS.tmp();

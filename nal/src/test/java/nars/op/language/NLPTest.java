@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Created by me on 2/18/17.
  */
-public class NLPTest {
+class NLPTest {
 
 
 
@@ -19,7 +19,7 @@ public class NLPTest {
 
 
     @Test @Disabled
-    public void testNLP0() throws Narsese.NarseseException {
+    void testNLP0() throws Narsese.NarseseException {
         
 
         NAR n = new NARS().get();

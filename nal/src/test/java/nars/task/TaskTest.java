@@ -14,9 +14,10 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 11/3/15.
  */
-public class TaskTest {
+class TaskTest {
 
-    @Test public void testTenseEternality() throws Narsese.NarseseException {
+    @Test
+    void testTenseEternality() throws Narsese.NarseseException {
         NAR n = new NARS().get();
 
         String s = "<a --> b>.";
@@ -105,7 +106,7 @@ public class TaskTest {
 
 
     @Test
-    public void inputTwoUniqueTasksDef() throws Narsese.NarseseException {
+    void inputTwoUniqueTasksDef() throws Narsese.NarseseException {
         inputTwoUniqueTasks(new NARS().get());
     }
     /*@Test public void inputTwoUniqueTasksSolid() {
@@ -118,7 +119,7 @@ public class TaskTest {
         inputTwoUniqueTasks(new Default());
     }*/
 
-    public void inputTwoUniqueTasks(@NotNull NAR n) throws Narsese.NarseseException {
+    private void inputTwoUniqueTasks(@NotNull NAR n) throws Narsese.NarseseException {
 
         
 
@@ -143,7 +144,7 @@ public class TaskTest {
 
 
     @Test
-    public void testDoublePremiseMultiEvidence() throws Narsese.NarseseException {
+    void testDoublePremiseMultiEvidence() throws Narsese.NarseseException {
 
         
         
@@ -167,7 +168,8 @@ public class TaskTest {
 
     }
 
-    @Test public void testValid() throws Narsese.NarseseException {
+    @Test
+    void testValid() throws Narsese.NarseseException {
         NAR tt = NARS.shell();
         Task t = $.task("((&&,#1,(#1 &&+0 #3),(#2 &&+0 #3),(#2 &&+0 (toothbrush-->here))) ==>+0 lighter(I,toothbrush))", BELIEF, 1f, 0.9f).apply(tt);
         assertNotNull(t);

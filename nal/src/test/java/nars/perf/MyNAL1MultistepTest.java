@@ -4,7 +4,7 @@ import jcog.math.FloatSupplier;
 import nars.Param;
 import nars.nal.nal1.NAL1MultistepTest;
 
-public class MyNAL1MultistepTest implements FloatSupplier {
+class MyNAL1MultistepTest implements FloatSupplier {
     @Override
     public float asFloat() {
         try {

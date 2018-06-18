@@ -17,11 +17,11 @@ import static nars.term.Functor.funcArgsArray;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class OperatorTest {
+class OperatorTest {
 
 
     @Test
-    public void testEcho() throws Narsese.NarseseException {
+    void testEcho() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         AtomicBoolean invoked = new AtomicBoolean();
         n.on("c", (args) -> {
@@ -42,7 +42,8 @@ public class OperatorTest {
     }
 
     /** tests Builtin.System and evaluating a term input as a command */
-    @Test public void testThe() throws Narsese.NarseseException {
+    @Test
+    void testThe() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
 
@@ -58,7 +59,7 @@ public class OperatorTest {
     }
 
     @Test
-    public void testAtomicExec() throws Narsese.NarseseException {
+    void testAtomicExec() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         final int[] count = {0};
         
@@ -79,7 +80,7 @@ public class OperatorTest {
     }
 
     @Test
-    public void testChoose() throws Narsese.NarseseException {
+    void testChoose() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.time.dur(10);
         n.onOp("x", new AtomicExec((x, nar) -> {
@@ -108,7 +109,7 @@ public class OperatorTest {
     }
 
     @Test
-    public void testGoal2() throws Narsese.NarseseException {
+    void testGoal2() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.onOp("x", new AtomicExec((t, nar) -> {
             Term x = t.term();
@@ -127,7 +128,7 @@ public class OperatorTest {
     }
 
     @Test
-    public void testSliceAssertEtc() throws Narsese.NarseseException {
+    void testSliceAssertEtc() throws Narsese.NarseseException {
         
         
 
@@ -151,7 +152,7 @@ public class OperatorTest {
     }
 
     @Test
-    public void testCommandDefault() throws Narsese.NarseseException {
+    void testCommandDefault() throws Narsese.NarseseException {
         final NAR t = NARS.shell();
         Task a = t.input("(a, b, c);").get(0);
         assertNotNull(a);
@@ -198,7 +199,7 @@ public class OperatorTest {
 
     @Disabled
     @Test
-    public void testRecursiveEvaluation2() {
+    void testRecursiveEvaluation2() {
         
 
         testIO("count({ count({a,b}), 2})!",
@@ -206,7 +207,7 @@ public class OperatorTest {
         );
     }
 
-    static void testIO(String input, String output) {
+    private static void testIO(String input, String output) {
 
         TestNAR t = new TestNAR(NARS.tmp());
         t.mustOutput(16, output);

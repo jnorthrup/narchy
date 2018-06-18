@@ -1,13 +1,11 @@
 package nars.derive.premise;
 
-import jcog.pri.Priority;
+import jcog.pri.Prioritized;
 import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.step.Taskify;
 import nars.derive.step.Truthify;
 import nars.term.control.AndCondition;
-import nars.term.control.PrediTerm;
-import nars.unify.constraint.MatchConstraint;
 import nars.unify.op.UnifyTerm;
 
 class DeriveAction extends AndCondition<Derivation> /*implements ThrottledAction<Derivation>*/ {
@@ -21,27 +19,19 @@ class DeriveAction extends AndCondition<Derivation> /*implements ThrottledAction
         this.truth = t;
     }
 
-    static DeriveAction action(AndCondition<Derivation> procedure) {
-        PrediTerm<Derivation> POST = procedure instanceof AndCondition ?
-                ((AndCondition) procedure).transform(y -> y instanceof AndCondition ?
-                                MatchConstraint.combineConstraints((AndCondition) y)
-                                :
-                                y
-                        , null)
-                :
-                procedure;
+    static DeriveAction action(AndCondition<Derivation> POST) {
 
         PremiseDeriverProto.RuleCause cause = ((Taskify) AndCondition.last(
                 ((UnifyTerm.UnifySubtermThenConclude)
                 AndCondition.last(POST)
         ).eachMatch)).channel;
 
-        Truthify t = (Truthify) AndCondition.first((AndCondition)POST, x -> x instanceof Truthify);
+        Truthify t = (Truthify) AndCondition.first(POST, x -> x instanceof Truthify);
         if (t == null)
             throw new NullPointerException();
 
 
-        return new DeriveAction(procedure, cause, t);
+        return new DeriveAction(POST, cause, t);
     }
 
 
@@ -64,7 +54,7 @@ class DeriveAction extends AndCondition<Derivation> /*implements ThrottledAction
             return 0f; //disabled or not applicable to the premise
 
         float puncFactor = d.deriver.puncFactor(punc);
-        if (puncFactor <= Priority.EPSILON)
+        if (puncFactor <= Prioritized.EPSILON)
             return 0f; //entirely disabled by deriver
 
         float causeValue = cause.amp();

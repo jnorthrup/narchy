@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 @Disabled
-public class BasicRulesTest {
+class BasicRulesTest {
 
     @Test
-    public void testNAL1() throws Narsese.NarseseException {
+    void testNAL1() throws Narsese.NarseseException {
         
 
         NAR n = NARS.shell();
@@ -30,7 +30,8 @@ public class BasicRulesTest {
         n.run(150);
     }
 
-    @Test public void testSubstitution() throws Narsese.NarseseException {
+    @Test
+    void testSubstitution() throws Narsese.NarseseException {
         
         NAR n = NARS.shell();
         n.input("<<$1 --> M> ==> <C1 --> C2>>. <S --> M>.");
@@ -43,7 +44,8 @@ public class BasicRulesTest {
 
     }
 
-    @Test public void testSubstitution2() throws Narsese.NarseseException {
+    @Test
+    void testSubstitution2() throws Narsese.NarseseException {
         
         NAR n = NARS.shell();
         n.input("<<$1 --> happy> ==> <$1--> dead>>. <S --> happy>.");

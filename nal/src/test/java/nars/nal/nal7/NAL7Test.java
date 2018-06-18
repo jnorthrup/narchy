@@ -24,18 +24,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
-    public int cycles = 100;
+    private int cycles = 200;
 
     @BeforeEach
-    public void setTolerance() {
+    void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.termVolumeMax.set(18);
+        //test.nar.confResolution.set(0.04f); //coarse
+        test.nar.termVolumeMax.set(20);
         //test.nar.confMin.set(0.1f);
     }
 
 
     @Test
-    public void induction_on_events_neg2() {
+    void induction_on_events_neg2() {
 
         test
                 .input("x:before. :|:")
@@ -48,7 +49,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void temporal_explification() {
+    void temporal_explification() {
 
         TestNAR tester = test;
         tester.believe("(enter($x, room) ==>-5 open($x, door))", 0.9f, 0.9f);
@@ -60,7 +61,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void temporal_analogy() {
+    void temporal_analogy() {
 
         test
 
@@ -74,7 +75,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testConjDecomposeAGAIN() {
+    void testConjDecomposeAGAIN() {
         /*
           WRONG TIME
           $.20 (b &&+5 c). 11 %1.0;.73% {105: 2;3} ((%1,%2,task("."),notImpl(%2)),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief))))
@@ -89,7 +90,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testConjDecomposeWrongDirection() {
+    void testConjDecomposeWrongDirection() {
         /*
         $.13 b. -4 %1.0;.81% {399: 1;;} ((%1,%1,task("&&")),(dropAnyEvent(%1),((StructuralDeduction-->Belief),(StructuralDeduction-->Goal))))
             $.50 (a &&+5 b). 1⋈6 %1.0;.90% {1: 1}
@@ -107,7 +108,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testConjDecomposeShift() {
+    void testConjDecomposeShift() {
         /*
         WRONG:
             $.02 (b &&+5 #1). 16⋈21 %1.0;.59% {410: 1;2;3;;} ((%1,%1,task("&&")),(dropAnyEvent(%1),((StructuralDeduction-->Belief),(StructuralDeduction-->Goal))))
@@ -123,7 +124,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testConjDecomposeParallelBelief() {
+    void testConjDecomposeParallelBelief() {
         test
                 .inputAt(1, "(a &| b). :|:")
                 .mustBelieve(cycles, "a", 1.00f, 0.81f, 1)
@@ -132,7 +133,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testConjDecomposeParallelGoal() {
+    void testConjDecomposeParallelGoal() {
         test
                 .inputAt(1, "(a &| b)! :|:")
                 .mustGoal(cycles, "a", 1.00f, 0.81f, 1)
@@ -141,7 +142,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testInduct3Events() {
+    void testInduct3Events() {
         /*
           instability:
             $0.0 c. 7 %1.0;.73% {89: 2;3;;} ((%1,%1,task("&&")),(dropAnyEvent(%1),((StructuralDeduction-->Belief),(StructuralDeduction-->Goal))))
@@ -159,7 +160,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testShiftPlus() {
+    void testShiftPlus() {
         test
                 .inputAt(1, "((x &&+1 y) ==>+1 z).")
                 .inputAt(3, "z. :|:")
@@ -170,7 +171,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDropAnyEventSimple2a() {
+    void testDropAnyEventSimple2a() {
         test
                 .inputAt(1, "((happy &&+4120 i) &&+1232 j). :|:")
                 .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
@@ -179,7 +180,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDropAnyEventSimple2ba() {
+    void testDropAnyEventSimple2ba() {
         test
                 .inputAt(1, "(happy &&+4120 (i &&+1232 (--,i))). :|:")
                 .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
@@ -189,7 +190,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDropAnyEventSimple2bb() {
+    void testDropAnyEventSimple2bb() {
         test
                 .inputAt(1, "((happy &&+4120 i) &&+1232 --i). :|:")
                 .mustBelieve(cycles * 2, "(happy &&+4120 i)", 1f, 0.81f, 1)
@@ -199,16 +200,16 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void updating_and_revision() {
+    void updating_and_revision() {
         testTemporalRevision(10, 0.50f, 0.7f, "hold(John,key)");
     }
 
     @Test
-    public void updating_and_revision2() {
+    void updating_and_revision2() {
         testTemporalRevision(1, 0.5f, 0.7f, "hold(John,key)");
     }
 
-    void testTemporalRevision(int delay, float freq, float conf, @NotNull String belief) {
+    private void testTemporalRevision(int delay, float freq, float conf, @NotNull String belief) {
 
         TestNAR tester = test;
 
@@ -219,7 +220,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testSumNeg() {
+    void testSumNeg() {
 
 
         test
@@ -232,7 +233,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testSum() {
+    void testSum() {
 
         test
                 .believe("(x ==>+2 y)")
@@ -241,7 +242,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testBminT() {
+    void testBminT() {
 
 
         test
@@ -254,7 +255,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testSameDamnConjunction() {
+    void testSameDamnConjunction() {
         test
                 .inputAt(6, "(b &&+5 c). :|: %1.0;0.66%")
                 .inputAt(6, "(b &&+5 c). :|: %1.0;0.90%")
@@ -265,7 +266,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testTminB() {
+    void testTminB() {
 
 
         test
@@ -283,7 +284,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void intervalPreserve_and_shift_occurence() {
+    void intervalPreserve_and_shift_occurence() {
 
         test
 
@@ -299,7 +300,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void temporal_deduction() {
+    void temporal_deduction() {
 
         test
                 .believe("(enter($x, room) ==>-3 open($x, door))", 0.9f, 0.9f)
@@ -310,7 +311,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void temporal_induction_comparison() {
+    void temporal_induction_comparison() {
 
         test
 
@@ -326,7 +327,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void inference_on_tense() {
+    void inference_on_tense() {
 
         test
                 .input("(hold($x, key) ==>+1 enter($x, room)).")
@@ -336,7 +337,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void inference_on_tense_reverse() {
+    void inference_on_tense_reverse() {
 
         test
                 .input("(hold($x, key) ==>+7 enter($x, room)).")
@@ -346,7 +347,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void inference_on_tense_reverse_novar() {
+    void inference_on_tense_reverse_novar() {
 
         test
 
@@ -357,7 +358,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void inference_on_tense_3() {
+    void inference_on_tense_3() {
 
         test
                 .inputAt(0, "hold(John,key). :|:")
@@ -368,7 +369,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void inference_on_tense_4() {
+    void inference_on_tense_4() {
 
         test
                 .believe("(hold(John,key) ==>+3 enter(John,room))")
@@ -377,7 +378,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_0() {
+    void induction_on_events_0() {
 
         test
 
@@ -388,7 +389,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_0_neg() {
+    void induction_on_events_0_neg() {
 
         test
                 .input("(--,open(John,door)). :|:")
@@ -401,7 +402,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events2() {
+    void induction_on_events2() {
 
         test
                 .input("<(John,door) --> open>. :|:")
@@ -412,7 +413,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events3() {
+    void induction_on_events3() {
 
         test
                 .input("open(John,door). :|:")
@@ -427,7 +428,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events3_simple() {
+    void induction_on_events3_simple() {
 
         TestNAR tester = test;
 
@@ -440,7 +441,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_pos_neg() {
+    void induction_on_events_pos_neg() {
 
         test
                 .inputAt(1, "a. :|:")
@@ -452,7 +453,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_conj_pos_neg() {
+    void induction_on_events_conj_pos_neg() {
         test
                 .inputAt(1, "(a &&+5 (--,a)). :|:")
                 .inputAt(6, "(b &&+5 (--,b)). :|:")
@@ -461,7 +462,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_neg_pos() {
+    void induction_on_events_neg_pos() {
 
         test
                 .inputAt(1, "--b. :|:")
@@ -473,7 +474,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_neg_neg() {
+    void induction_on_events_neg_neg() {
 
         test
                 .inputAt(1, "--a. :|:")
@@ -484,7 +485,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_with_variable_introduction() {
+    void induction_on_events_with_variable_introduction() {
 
         TestNAR tester = test;
 
@@ -502,7 +503,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void induction_on_events_with_variable_introduction2() {
+    void induction_on_events_with_variable_introduction2() {
 
         TestNAR tester = test;
 
@@ -522,7 +523,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_composition_pre() {
+    void induction_on_events_composition_pre() {
 
         test
 
@@ -534,26 +535,26 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void induction_on_events_composition1() {
+    void induction_on_events_composition1() {
         test.nar.confMin.set(0.1f);
         compositionTest(1, 5);
     }
 
     @Test
-    public void induction_on_events_composition2() {
+    void induction_on_events_composition2() {
         test.nar.confMin.set(0.1f);
         compositionTest(1, 7);
     }
 
     @Test
-    public void induction_on_events_composition3() {
+    void induction_on_events_composition3() {
         compositionTest(4, 3);
     }
 
 
     @ValueSource(ints = {0, 1, 2, 3, 4})
     @ParameterizedTest
-    public void induction_on_events_composition_post(int dt) {
+    void induction_on_events_composition_post(int dt) {
         TestNAR tester = test;
 
         int t = 0;
@@ -592,7 +593,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void variable_introduction_on_events() {
+    void variable_introduction_on_events() {
 
         TestNAR tester = test;
 
@@ -612,7 +613,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void variable_introduction_on_events_with_negation() {
+    void variable_introduction_on_events_with_negation() {
 
         test
                 .input("(--,a:x). :|: %0.9;0.8% ")
@@ -629,7 +630,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void variable_elimination_on_temporal_statements() {
+    void variable_elimination_on_temporal_statements() {
 
         test
                 .inputAt(0, "(on({t002},#1) &| at(SELF,#1)). :|:")
@@ -640,7 +641,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testTemporalImplicationDecompositionIsntEternal() {
+    void testTemporalImplicationDecompositionIsntEternal() {
 
         /*
         Test that this eternal derivation does not happen, and that it is temporal with the right occ time
@@ -660,7 +661,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testEternalImplicationDecompositionIsntEternal() {
+    void testEternalImplicationDecompositionIsntEternal() {
         test
                 .confTolerance(0.01f)
                 .inputAt(0, "a. :|:")
@@ -671,7 +672,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testEternalImplicationDecompositionWithConj() {
+    void testEternalImplicationDecompositionWithConj() {
 
         test
 
@@ -684,7 +685,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testImplicationDecompositionContradictionFairness() {
+    void testImplicationDecompositionContradictionFairness() {
 
         test
                 .inputAt(0, "b. :|:")
@@ -699,7 +700,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testTemporalConjunctionWithDepVarIntroduction() {
+    void testTemporalConjunctionWithDepVarIntroduction() {
         /* WRONG:
         $1.0;.05;.10$ ((#1-->a) &&-3 (#1-->d)). 7-5 %1.0;.40% {7-5: 1;2;3} (((%1-->%2),(%1-->%3),neq(%2,%3),time(dtIfEvent)),((($4-->%2)==>($4-->%3)),((Induction-->Belief)),(($4-->%3)==>($4-->%2)),((Abduction-->Belief)),(($4-->%2)<=>($4-->%3)),((Comparison-->Belief)),((#5-->%2)&&(#5-->%3)),((Intersection-->Belief))))
             $.50;.50;.95$ (c-->d). 5+0 %1.0;.90% {5+0: 3} Input
@@ -716,7 +717,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testProjectedQuestion() {
+    void testProjectedQuestion() {
         /*
         Since the question asks about a future time, the belief should
         be projected to it */
@@ -727,7 +728,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testConjInductionEternalTemporal() {
+    void testConjInductionEternalTemporal() {
         test
                 .input("a:x.")
                 .input("a:y. :|:")
@@ -738,7 +739,7 @@ public class NAL7Test extends NALTest {
 
     @Disabled
     @Test
-    public void testImplInductionEternalTemporal() {
+    void testImplInductionEternalTemporal() {
         test
                 .input("a:x.")
                 .input("a:y. :|:")
@@ -747,7 +748,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testComparison1_Eternal() {
+    void testComparison1_Eternal() {
         /* (P ==> M), (S ==> M), neq(S,P) |- (S <=> P), (Belief:Comparison, Derive:AllowBackward)
            (M ==> P), (M ==> S), neq(S,P) |- (S <=> P), (Belief:Comparison, Derive:AllowBackward) */
 
@@ -759,7 +760,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testComparison2() {
+    void testComparison2() {
 
         test
                 .input("(m ==>+1 p).")
@@ -769,7 +770,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testDTTaskEnd() {
+    void testDTTaskEnd() {
 
         test
                 .inputAt(2, "x. :|:")
@@ -784,7 +785,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDecomposeConjunctionTemporal() {
+    void testDecomposeConjunctionTemporal() {
 
         test
                 .input("(x &&+0 (y)). :|:")
@@ -793,7 +794,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDecomposeConjunctionEmbedded() {
+    void testDecomposeConjunctionEmbedded() {
 
         test
                 .input("((x &&+1 (y)) &&+1 (z)). :|:")
@@ -803,7 +804,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDecomposeConjunctionEmbedded2() {
+    void testDecomposeConjunctionEmbedded2() {
 
         test
                 .input("(z &&+1 (x &&+1 y)). :|:")
@@ -813,7 +814,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDecomposeConjunctionEmbeddedInnerCommute() {
+    void testDecomposeConjunctionEmbeddedInnerCommute() {
 
         test
                 .input("((&|,a,b,c) &&+1 z). :|:")
@@ -824,7 +825,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testWTFDontDecomposeConjunctionDTERNAL() {
+    void testWTFDontDecomposeConjunctionDTERNAL() {
 
         test
                 .input("(x&&(y)). :|:")
@@ -837,7 +838,7 @@ public class NAL7Test extends NALTest {
 
     @Disabled
     @Test
-    public void testDecomposeConjunctionQuestion() {
+    void testDecomposeConjunctionQuestion() {
 
         test
 
@@ -849,7 +850,7 @@ public class NAL7Test extends NALTest {
 
     @Disabled
     @Test
-    public void testDecomposeConjunctionQuest() {
+    void testDecomposeConjunctionQuest() {
 
         test
 
@@ -860,7 +861,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testWTFDontDecomposeConjunction() {
+    void testWTFDontDecomposeConjunction() {
 
 
         test
@@ -881,7 +882,7 @@ public class NAL7Test extends NALTest {
      * conj subset decomposition
      */
     @Test
-    public void testConjSubsetDecomposition() throws Narsese.NarseseException {
+    void testConjSubsetDecomposition() throws Narsese.NarseseException {
 
         test
 
@@ -898,7 +899,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testIntersectionTemporalSimultaneous() {
+    void testIntersectionTemporalSimultaneous() {
 
         test
                 .inputAt(0, "(x --> a). :|:")
@@ -911,7 +912,7 @@ public class NAL7Test extends NALTest {
      * less confident than testIntersectionTemporalNear due to further distance between task and belief
      */
     @Test
-    public void testIntersectionTemporalFar() {
+    void testIntersectionTemporalFar() {
 
         test
                 .dur(1)
@@ -924,7 +925,7 @@ public class NAL7Test extends NALTest {
 
     @Disabled
     @Test
-    public void testPrediction1() throws Narsese.NarseseException {
+    void testPrediction1() throws Narsese.NarseseException {
 
 
         int eventDT = 16;
@@ -958,14 +959,14 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void multiConditionSyllogismPrePre() {
+    void multiConditionSyllogismPrePre() {
         test
                 .input("((open(door)&|hold(key))=|>enter(room)). :|:")
                 .mustBelieve(cycles, "(open(door)=|>enter(room))", 1f, 0.73f, 0);
     }
 
     @Test
-    public void multiConditionSyllogismPre() {
+    void multiConditionSyllogismPre() {
 
 
         test
@@ -982,7 +983,7 @@ public class NAL7Test extends NALTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"", " :|:"})
-    public void multiConditionSyllogismPost(String implSuffix) {
+    void multiConditionSyllogismPost(String implSuffix) {
 
 
         long implTime = implSuffix.equals("") ? ETERNAL : 0;
@@ -998,7 +999,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void preconImplyConjPre() throws Narsese.NarseseException {
+    void preconImplyConjPre() throws Narsese.NarseseException {
 
 
         assertEquals("((x &&+2 y) ==>+3 z)",
@@ -1016,7 +1017,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void preconImplyConjPost() {
+    void preconImplyConjPost() {
 
 
         test
@@ -1029,7 +1030,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void preconImplyConjPost2() {
+    void preconImplyConjPost2() {
 
 
         test
@@ -1041,7 +1042,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testPreconditionCombine() {
+    void testPreconditionCombine() {
 
         test
                 .believe("(x ==>+5 (z))")
@@ -1050,7 +1051,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testPreconditionCombineVarying() {
+    void testPreconditionCombineVarying() {
 
         test
                 .believe("(x ==>+5 z)")
@@ -1065,7 +1066,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testPreconditionCombineNeg() {
+    void testPreconditionCombineNeg() {
 
         test
                 .believe("(x ==>+5 (z))")
@@ -1074,7 +1075,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testPropositionalDecompositionPositive() {
+    void testPropositionalDecompositionPositive() {
 
         test
                 .believe("(s)")
@@ -1084,7 +1085,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testDTTMinB() {
+    void testDTTMinB() {
 
 
         test
@@ -1099,7 +1100,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testInductionInterval() {
+    void testInductionInterval() {
         /*
         $.02;.69$ (((a-->b) &&+4 (c==>#1)) &&+9 (#1-->e)). 1⋈14 %1.0;.73% {1⋈14: 3;5;8} ((%1,%2,task(positive),belief(positive),task("."),time(raw),time(dtAfterOrEternal),neqAndCom(%1,%2)),(varIntro((%1 &&+- %2)),((Intersection-->Belief))))
             $.50;.90$ (d-->e). 10 %1.0;.90% {10: 8} Scheduled
@@ -1115,7 +1116,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testInductionInterval2() {
+    void testInductionInterval2() {
         /*
         $.02;.69$ ((a==>b) &&+4 ((b-->#1) &&+3 (#1-->d))). 1⋈8 %1.0;.73% {1⋈8: 1;6;7} ((%1,%2,task(positive),belief(positive),task("."),time(raw),time(dtAfter)),((%1 &&+- %2),((Intersection-->Belief))))
             $.48;.90$ (a==>b). 1 %1.0;.90% {1: 1}
@@ -1131,7 +1132,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testInductionIntervalMerge1() {
+    void testInductionIntervalMerge1() {
         /*
         1: a
         3: b
@@ -1149,7 +1150,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testInductionIntervalMerge2() throws Narsese.NarseseException {
+    void testInductionIntervalMerge2() throws Narsese.NarseseException {
 
 
         assertEquals("(a &&+2 (&|,b,c,d))",
@@ -1166,7 +1167,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testInductionIntervalMerge3() {
+    void testInductionIntervalMerge3() {
 
 
         test
@@ -1178,7 +1179,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testInductionIntervalMerge3Neg() throws Narsese.NarseseException {
+    void testInductionIntervalMerge3Neg() throws Narsese.NarseseException {
 
         List m = $.newArrayList();
         Term d = $("--(a &&+3 --c)");
@@ -1199,7 +1200,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDecomposeTaskSubset() {
+    void testDecomposeTaskSubset() {
         /*
         $0.0;.23$ (((d&&((a-->b) &&+1 (b-->c))) ==>+8 e) &&+9 (d-->e)). 1⋈10 %1.0;.31% {1⋈10: 4;5;6;7;8} ((%1,%2,task(positive),belief(positive),task("."),time(raw),time(conjoin)),((%1 &&+- %2),((Intersection-->Belief))))
         $.03;.40$ ((d&&((a-->b) &&+1 (b-->c))) ==>+8 e). 1 %1.0;.42% {1: 4;5;6} ((%1,%2,belief(positive),task("."),time(raw),time(dtAfterReverse),notEqui(%1),notImpl(%2)),((%2 ==>+- %1),((Abduction-->Belief))))
@@ -1215,7 +1216,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testForwardImplChainDTUnion() {
+    void testForwardImplChainDTUnion() {
         /** wrong direction: this should have been dt = +20
          $.29;.69$ ((reshape(I,$1)&&($1-->[heated])) ==>-20 ($1-->[hardened])). %1.0;.73% {3: 3;4;5} ((((%2&&%1073742337..+)==>%3),(%4==>%2),time(dtUnion),neq(%3,%2),notImpl(%2),notEqui(%3)),(((%4&&%1073742337..+) ==>+- %3),((Deduction-->Belief))))
          $.50;.90$ ((reshape(I,$1) &&+0 ($1-->[pliable])) ==>+10 ($1-->[hardened])). %1.0;.90% {0: 5}
@@ -1234,7 +1235,7 @@ public class NAL7Test extends NALTest {
 
 
     @Test
-    public void testDecomposeImplPred() {
+    void testDecomposeImplPred() {
 
         test
                 .believe("( (a,#1) =|> ( ( (x,#1) &| y) &| z ) )", Tense.Present, 1f, 0.9f);
@@ -1248,7 +1249,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDecomposeImplPredSimpler() {
+    void testDecomposeImplPredSimpler() {
 
         test
 
@@ -1261,7 +1262,7 @@ public class NAL7Test extends NALTest {
 
     @Disabled
     @Test
-    public void testImplInductionAndConjReduction() {
+    void testImplInductionAndConjReduction() {
         /*
         test for 2 things:
             a) the inducted implication should not lose its temporal information in the result
@@ -1279,7 +1280,7 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void nal5_conditional_induction0Simple() {
+    void nal5_conditional_induction0Simple() {
         TestNAR tester = test;
         tester.believe("((x1 && a) ==>+2 c)");
         tester.believe("((y1 && a) ==>+1 c)");

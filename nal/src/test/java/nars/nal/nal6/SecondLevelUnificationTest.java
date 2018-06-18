@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 /**
  * Created by me on 11/6/15.
  */
-public class SecondLevelUnificationTest {
+class SecondLevelUnificationTest {
 
 
     @Test
-    public void test1() throws Narsese.NarseseException {
+    void test1() throws Narsese.NarseseException {
         
         NAR n = new NARS().get();
 
@@ -27,7 +27,7 @@ public class SecondLevelUnificationTest {
         n.run(250);
     }
     @Test
-    public void test2() throws Narsese.NarseseException {
+    void test2() throws Narsese.NarseseException {
         
         NAR n = new NARS().get();
 

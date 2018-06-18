@@ -16,10 +16,10 @@ import static nars.truth.TruthFunctions.c2wSafe;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AIMATests {
+class AIMATests {
 
 
-    static void assertBelief(NAR n, boolean expcted, String x, int time) {
+    private static void assertBelief(NAR n, boolean expcted, String x, int time) {
 
         final int metricPeriod = time / 4;
 
@@ -60,10 +60,10 @@ public class AIMATests {
 
     @ParameterizedTest
     @ValueSource(doubles = {0.01, 0.02, 0.05, 0.1, 0.2, 0.25, 0.5})
-    public void testAIMAExample(double truthRes) throws Narsese.NarseseException {
+    void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolumeMax.set(14);
+        n.termVolumeMax.set(18);
         n.freqResolution.set((float) truthRes);
 
         n.believe("(P ==> Q)",
@@ -79,7 +79,7 @@ public class AIMATests {
     }
 
     @Test
-    public void testWeaponsDomain() throws Narsese.NarseseException {
+    void testWeaponsDomain() throws Narsese.NarseseException {
         final NAR n = NARS.tmp(7);
 
         n.freqResolution.set(0.1f);

@@ -15,55 +15,55 @@ import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class QueryVariableTest {
+class QueryVariableTest {
 
     @Test
-    public void testNoVariableAnswer() throws Narsese.NarseseException {
+    void testNoVariableAnswer() throws Narsese.NarseseException {
         testQuestionAnswer("<a --> b>", "<a --> b>");
     }
 
     @Test
-    public void testQueryVariableAnswerUnified() throws Narsese.NarseseException {
+    void testQueryVariableAnswerUnified() throws Narsese.NarseseException {
 
         testQuestionAnswer("<a --> b>", "<?x --> b>");
     }
 
     @Test
-    public void testQueryVariableAnswerUnified2() throws Narsese.NarseseException {
+    void testQueryVariableAnswerUnified2() throws Narsese.NarseseException {
         testQuestionAnswer("<c --> (a&b)>", "<?x --> (a&b)>");
     }
 
     @Test
-    public void testQueryVariableMatchesDepVar() throws Narsese.NarseseException {
+    void testQueryVariableMatchesDepVar() throws Narsese.NarseseException {
         testQuestionAnswer("<#c --> (a&b)>", "<?x --> (a&b)>");
     }
 
     @Test
-    public void testQueryVariableMatchesIndepVar() throws Narsese.NarseseException {
+    void testQueryVariableMatchesIndepVar() throws Narsese.NarseseException {
         testQuestionAnswer("($x ==> y($x))", "(?x ==> y(?x))");
     }
 
     @Test
-    public void testQueryVariableMatchesTemporally() throws Narsese.NarseseException {
+    void testQueryVariableMatchesTemporally() throws Narsese.NarseseException {
         testQuestionAnswer("(x &&+1 y)", "(?x && y)");
     }
 
     @Test
-    public void testQueryVariableMatchesTemporally2() throws Narsese.NarseseException {
+    void testQueryVariableMatchesTemporally2() throws Narsese.NarseseException {
         testQuestionAnswer("(e ==> (x &&+1 y))", "(e ==> (?x && y))");
     }
 
     @Test
-    public void testQuery2() throws Narsese.NarseseException {
+    void testQuery2() throws Narsese.NarseseException {
         testQueryAnswered(32, 512);
     }
 
     @Test
-    public void testQuery1() throws Narsese.NarseseException {
+    void testQuery1() throws Narsese.NarseseException {
         testQueryAnswered(1, 512);
     }
 
-    void testQuestionAnswer(@NotNull String beliefString, @NotNull String question) throws Narsese.NarseseException {
+    private void testQuestionAnswer(@NotNull String beliefString, @NotNull String question) throws Narsese.NarseseException {
 
         int time = 512;
 
@@ -94,7 +94,7 @@ public class QueryVariableTest {
     }
 
 
-    void testQueryAnswered(int cyclesBeforeQuestion, int cyclesAfterQuestion) throws Narsese.NarseseException {
+    private void testQueryAnswered(int cyclesBeforeQuestion, int cyclesAfterQuestion) throws Narsese.NarseseException {
 
         AtomicBoolean b = new AtomicBoolean(false);
 

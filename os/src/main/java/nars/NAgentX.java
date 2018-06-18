@@ -3,14 +3,12 @@ package nars;
 import jcog.Util;
 import jcog.exe.Exe;
 import jcog.exe.Loop;
-import jcog.math.random.SplitMix64Random;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.agent.NAgent;
 import nars.derive.Derivers;
 import nars.derive.deriver.MatrixDeriver;
-import nars.exe.Focus;
-import nars.exe.WorkerMultiExec;
+import nars.exe.MixMultiExec;
 import nars.gui.NARui;
 import nars.index.concept.CaffeineIndex;
 import nars.index.concept.HijackConceptIndex;
@@ -91,22 +89,9 @@ abstract public class NAgentX extends NAgent {
         NAR n = new NARS()
 
 
-//                .exe(new MixMultiExec.WorkerMultiExec(
-//                            1024,
-//                             Util.concurrencyDefault(2)) {
-//
-//                         {
-//                             Exe.setExecutor(this);
-//                         }
-//
-//
-//                     }
-//                )
-                .exe(new WorkerMultiExec(
-
-                             new Focus.AERevaluator(new SplitMix64Random(1)),
-                             Util.concurrencyDefault(2),
-                             1024, 2048) {
+                .exe(new MixMultiExec.WorkerMultiExec(
+                            1024,
+                             Util.concurrencyDefault(2)) {
 
                          {
                              Exe.setExecutor(this);
@@ -115,6 +100,19 @@ abstract public class NAgentX extends NAgent {
 
                      }
                 )
+//                .exe(new WorkerMultiExec(
+//
+//                             new Focus.AERevaluator(new SplitMix64Random(1)),
+//                             Util.concurrencyDefault(2),
+//                             1024, 2048) {
+//
+//                         {
+//                             Exe.setExecutor(this);
+//                         }
+//
+//
+//                     }
+//                )
 
 
                 .time(clock)

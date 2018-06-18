@@ -12,10 +12,10 @@ import static nars.Op.BELIEF;
 import static nars.truth.TruthFunctions.c2w;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TruthletTaskTest {
+class TruthletTaskTest {
 
     @Test
-    public void testImpulseTruthlet() {
+    void testImpulseTruthlet() {
         NAR n = NARS.shell();
         Term x = $.the("x");
         float conf = 0.9f;
@@ -37,7 +37,7 @@ public class TruthletTaskTest {
     }
 
     @Test
-    public void test_LinearTruthlet_And_SustainTruthlet() {
+    void test_LinearTruthlet_And_SustainTruthlet() {
 
         float conf = 0.9f;
 

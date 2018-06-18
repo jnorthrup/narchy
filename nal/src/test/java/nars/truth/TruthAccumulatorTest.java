@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 /**
  * Created by me on 3/22/17.
  */
-public class TruthAccumulatorTest {
+class TruthAccumulatorTest {
 
     @Test
-    public void test1() {
+    void test1() {
         TruthAccumulator a = new TruthAccumulator();
         assertNull(a.commitAverage());
         a.add($.t(0, 0.5f));

@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class BagClusteringTest {
+class BagClusteringTest {
 
     @Test
-    public void testBagCluster1() {
+    void testBagCluster1() {
         BagClustering<String> b = newClusteredBag(3, 8);
         b.put("aaaa", 0.5f);
         b.put("aaab", 0.5f);
@@ -29,13 +29,13 @@ public class BagClusteringTest {
         b.print();
     }
 
-    static BagClustering<String> newClusteredBag(int clusters, int cap) {
+    private static BagClustering<String> newClusteredBag(int clusters, int cap) {
         return new BagClustering<>(new StringFeatures(), clusters, cap);
     }
 
     private static class StringFeatures extends BagClustering.Dimensionalize<String> {
 
-        protected StringFeatures() {
+        StringFeatures() {
             super(2);
         }
 

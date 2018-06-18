@@ -13,7 +13,6 @@ import nars.concept.Concept;
 import nars.op.mental.AliasConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.truth.Stamp;
 import nars.unify.UnifySubst;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
@@ -140,12 +139,7 @@ public class Premise {
         if (belief != null) {
             beliefTerm = belief.term(); 
         } else {
-
             beliefTerm = beliefTerm.unneg();
-
-            if (beliefTerm instanceof Bool) {
-                throw new RuntimeException("beliefTerm boolean; termLink=" + termLink + ", belief=" + belief);
-            }
         }
 
         return d.reset(task, belief, beliefTerm);

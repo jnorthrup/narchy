@@ -9,10 +9,12 @@ import nars.derive.step.Termify;
 import nars.term.Compound;
 import nars.term.control.AndCondition;
 import nars.term.control.PrediTerm;
+import nars.unify.constraint.MatchConstraint;
 import nars.unify.op.TaskPunctuation;
 import nars.unify.op.UnifyTerm;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 
 import java.util.List;
@@ -34,19 +36,15 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class PremiseDeriverProto extends PremiseDeriverSource {
 
 
-    private final PrediTerm[] PRE;
-
-    /**
-     * consequences applied after unification
-     */
-    private final PostCondition POST;
-
-    final List<PrediTerm<Derivation>> post;
+    public final Pair<PrediTerm<Derivation>[], DeriveAction> rule;
 
     public PremiseDeriverProto(PremiseDeriverSource raw, PremisePatternIndex index) {
         super(raw, index);
 
-        this.post = new FasterList<>(8);
+        final List<PrediTerm<Derivation>> post = new FasterList<>(8);
+
+        MutableSet<MatchConstraint> constraints = raw.CONSTRAINTS.toSet();
+        MutableSet<PrediTerm> pre = raw.PRE.toSet();
 
         Taskify taskify = new Taskify(index.nar.newCause(s -> new RuleCause(this, s)));
 
@@ -67,79 +65,64 @@ public class PremiseDeriverProto extends PremiseDeriverSource {
         }
 
 
-        PostCondition pc = new PostCondition(postcons, beliefTruth, goalTruth, puncOverride);
+        {
+            PostCondition POST = new PostCondition(postcons, beliefTruth, goalTruth, puncOverride);
 
-        if (!pc.modifiesPunctuation() && postcons instanceof Compound) {
-            assert !taskPattern.equals(postcons) :
+            assert POST.modifiesPunctuation() || !(postcons instanceof Compound) || !taskPattern.equals(postcons) :
                     "punctuation not modified yet rule task equals pattern: " + this;
-//            assert !rule.getBelief().equals(pattern) :
-//                    "punctuation not modified yet rule belief equals pattern: " + rule + "\n\t" + rule.getBelief() + "\n\t" + pattern;
-        }
-
-        POST = pc;
 
 
-        //this.POST = postConditions.toArray(new PostCondition[pcs]);
+            if (taskPunc == 0) {
+                //no override, determine automaticaly by presence of belief or truth
 
-        if (taskPunc == 0) {
-            //no override, determine automaticaly by presence of belief or truth
+                boolean b = false, g = false;
+                //for (PostCondition x : POST) {
+                if (POST.puncOverride != 0) {
+                    throw new RuntimeException("puncOverride with no input punc specifier");
+                } else {
+                    b |= POST.beliefTruth != null;
+                    g |= POST.goalTruth != null;
+                }
+                //}
 
-            boolean b = false, g = false;
-            //for (PostCondition x : POST) {
-            if (POST.puncOverride != 0) {
-                throw new RuntimeException("puncOverride with no input punc specifier");
-            } else {
-                b |= POST.beliefTruth != null;
-                g |= POST.goalTruth != null;
+                if (!b && !g) {
+                    throw new RuntimeException("can not assume this applies only to questions");
+                } else if (b && g) {
+                    pre.add(TaskPunctuation.BeliefOrGoal);
+                } else if (b) {
+                    pre.add(Belief);
+                } else /* if (g) */ {
+                    pre.add(Goal);
+                }
             }
-            //}
-
-            if (!b && !g) {
-                throw new RuntimeException("can not assume this applies only to questions");
-            } else if (b && g) {
-                pre.add(TaskPunctuation.BeliefOrGoal);
-            } else if (b) {
-                pre.add(Belief);
-            } else /* if (g) */ {
-                pre.add(Goal);
-            }
-
         }
 
 
         int rules = pre.size();
-        this.PRE = pre.toArray(new PrediTerm[rules + 1 /* extra to be filled in later stage */]);
+        PrediTerm[] PRE = pre.toArray(new PrediTerm[rules + 1 /* extra to be filled in later stage */]);
         ArrayUtils.sort(PRE, 0, rules-1, (x)-> -x.cost());
         //Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
-        if (rules > 1)
-            assert(PRE[0].cost() <= PRE[rules-2].cost()); //increasing cost
-    }
+        assert rules <= 1 || (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
 
+        PrediTerm<Derivation>[] postpost = new PrediTerm[
+                1 + constraints.size() + post.size()
+        ];
 
-
-    /**
-     * compiles the conditions which are necessary to activate this rule
-     */
-    public Pair<PrediTerm<Derivation>[], DeriveAction> build() {
-
-        int n = 1 + this.constraints.size() + this.post.size();
-
-
-        PrediTerm<Derivation>[] post = new PrediTerm[n];
         int k = 0;
-        post[k++] = this.truthify;
-        for (PrediTerm p : this.constraints) {
-            post[k++] = p;
-        }
-        for (PrediTerm p : this.post) {
-            post[k++] = p;
-        }
 
-        DeriveAction POST =
-                DeriveAction.action((AndCondition<Derivation>)AndCondition.the(post));
+        postpost[k++] = this.truthify;
 
-        return pair(PRE, POST);
+        for (PrediTerm p : constraints)
+            postpost[k++] = p;
+
+        for (PrediTerm p : post)
+            postpost[k++] = p;
+
+        this.rule = pair(PRE,
+                DeriveAction.action((AndCondition)AndCondition.the(postpost)));
     }
+
+
 
     /**
      * just a cause, not an input channel.

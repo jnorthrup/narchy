@@ -26,7 +26,7 @@ package nars.nal.multistep;
  * Any ideas of a strategy to generate statements like "(&/,a,b,c) =/> d" with
  * temporal induction in an effective way?
  */
-public class GoalSequence {
+class GoalSequence {
 	
 
 	

@@ -18,11 +18,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 10/27/16.
  */
-public class DynamicTruthBeliefTableTest {
+class DynamicTruthBeliefTableTest {
 
 
     @Test
-    public void testDynamicBeliefTableSampling() throws Narsese.NarseseException {
+    void testDynamicBeliefTableSampling() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("x", 0f, 0.50f);
         n.believe("y", 0f, 0.50f);
@@ -36,7 +36,7 @@ public class DynamicTruthBeliefTableTest {
     }
 
     @Test
-    public void testDynamicBeliefTableSamplingTemporalFlexible() throws Narsese.NarseseException {
+    void testDynamicBeliefTableSamplingTemporalFlexible() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.input("x. +1");
         n.input("y. +2");

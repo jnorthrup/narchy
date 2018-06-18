@@ -26,11 +26,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 12/22/15.
  */
-public class TermutatorTest {
+class TermutatorTest {
 
-    final int TTL = 256;
+    private final int TTL = 256;
 
-    final Unify unifier = new Unify(Op.VAR_PATTERN, new XorShift128PlusRandom(1),
+    private final Unify unifier = new Unify(Op.VAR_PATTERN, new XorShift128PlusRandom(1),
             Param.UnificationStackMax, TTL) {
         @Override public void tryMatch() {
             stop();
@@ -38,7 +38,7 @@ public class TermutatorTest {
     };
 
     @Test
-    public void testChoose1_2() {
+    void testChoose1_2() {
 
         assertTermutatorProducesUniqueResults(
                 new Choose1(e1, p2,
@@ -47,7 +47,7 @@ public class TermutatorTest {
     }
 
     @Test
-    public void testChoose1_3() {
+    void testChoose1_3() {
 
         assertTermutatorProducesUniqueResults(
                 new Choose1(e1, p2,
@@ -55,7 +55,7 @@ public class TermutatorTest {
     }
 
     @Test
-    public void testChoose1_4() {
+    void testChoose1_4() {
 
         assertTermutatorProducesUniqueResults(
                 new Choose1(e1, p2,
@@ -63,7 +63,7 @@ public class TermutatorTest {
     }
 
 
-    static final Term e0;
+    private static final Term e0;
     static {
         
         Term ee0;
@@ -76,13 +76,14 @@ public class TermutatorTest {
         }
         e0 = ee0;
     }
-    static final @NotNull Ellipsis e1 = Ellipsis.EllipsisPrototype.make((byte) 1,1);
+    private static final @NotNull Ellipsis e1 = Ellipsis.EllipsisPrototype.make((byte) 1,1);
 
 
-    static final Variable p2= v(Op.VAR_PATTERN, (byte) 2);
-    static final SortedSet<Term> p2p3 = ((Compound)$.p( p2, v(Op.VAR_PATTERN, (byte) 3) )).toSetSorted();
+    private static final Variable p2= v(Op.VAR_PATTERN, (byte) 2);
+    private static final SortedSet<Term> p2p3 = ((Compound)$.p( p2, v(Op.VAR_PATTERN, (byte) 3) )).toSetSorted();
 
-    @Test public void testChoose2_2() {
+    @Test
+    void testChoose2_2() {
 
 
 
@@ -92,13 +93,15 @@ public class TermutatorTest {
                         ((Compound)p("a", "b")).toSetSorted()), 2);
     }
 
-    @Test public void testChoose2_3() {
+    @Test
+    void testChoose2_3() {
 
         assertTermutatorProducesUniqueResults(
                 new Choose2(e1, unifier, p2p3,
                         ((Compound)p("a", "b", "c")).toSetSorted()), 6);
     }
-    @Test public void testChoose2_4() {
+    @Test
+    void testChoose2_4() {
 
         Set<String> series = new HashSet();
         for (int i = 0; i < 5; i++) {
@@ -115,28 +118,32 @@ public class TermutatorTest {
 
 
 
-    @Test public void testComm2() throws Narsese.NarseseException {
+    @Test
+    void testComm2() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
                 new CommutivePermutations($("{%A,%B}"),
                         $("{x,y}")), 2);
     }
-    @Test public void testComm3() throws Narsese.NarseseException {
+    @Test
+    void testComm3() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
                 new CommutivePermutations($("{%A,%B,%C}"),
                         $("{x,y,z}")), 6);
     }
-    @Test public void testComm3Conj() throws Narsese.NarseseException {
+    @Test
+    void testComm3Conj() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
                 new CommutivePermutations($("(&&,%A,%B,%C)"),
                         $("(&&,x,y,z)")), 6);
     }
-    @Test public void testComm4() throws Narsese.NarseseException {
+    @Test
+    void testComm4() throws Narsese.NarseseException {
         assertTermutatorProducesUniqueResults(
                 new CommutivePermutations($("{%A,%B,%C,%D}"),
                         $("{w,x,y,z}")), 24);
     }
 
-    String assertTermutatorProducesUniqueResults(@NotNull Termutator t, int num) {
+    private String assertTermutatorProducesUniqueResults(@NotNull Termutator t, int num) {
 
         
 

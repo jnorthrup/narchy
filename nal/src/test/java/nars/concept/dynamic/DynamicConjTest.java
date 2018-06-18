@@ -16,9 +16,9 @@ import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DynamicConjTest {
+class DynamicConjTest {
     @Test
-    public void testDynamicConjunction2() throws Narsese.NarseseException {
+    void testDynamicConjunction2() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("a:x", 1f, 0.9f);
         n.believe("a:y", 1f, 0.9f);
@@ -38,7 +38,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConjunctionEternalOverride() throws Narsese.NarseseException {
+    void testDynamicConjunctionEternalOverride() throws Narsese.NarseseException {
         NAR n = NARS.shell()
                 .believe($$("a:x"), 0)
                 .believe($$("a:y"), 0);
@@ -100,7 +100,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConjunctionEternalTemporalMix() throws Narsese.NarseseException {
+    void testDynamicConjunctionEternalTemporalMix() throws Narsese.NarseseException {
 
         assertEquals("((x&|y)&&e)", $$("((x&|y)&&e)").toString());
 
@@ -127,7 +127,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConjunctionTemporalOverride() throws Narsese.NarseseException {
+    void testDynamicConjunctionTemporalOverride() throws Narsese.NarseseException {
         NAR n = NARS.shell()
                 .believe("a:x", 1f, 0.9f)
                 .believe("a:y", 1f, 0.9f);
@@ -144,7 +144,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConjunction3() throws Narsese.NarseseException {
+    void testDynamicConjunction3() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("a:x", 1f, 0.9f);
         n.believe("a:y", 1f, 0.9f);
@@ -192,7 +192,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConjunctionEternal() throws Narsese.NarseseException {
+    void testDynamicConjunctionEternal() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe($("x"));
         n.believe($("y"));
@@ -207,7 +207,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConjunction2Temporal() throws Narsese.NarseseException {
+    void testDynamicConjunction2Temporal() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe($("(x)"), (long) 0);
         n.believe($("(y)"), (long) 4);
@@ -227,7 +227,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConceptValid1() throws Narsese.NarseseException {
+    void testDynamicConceptValid1() throws Narsese.NarseseException {
         Term c =
 
                 Op.CONJ.compound(XTERNAL, new Term[]{$.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"), $.$("(joy-->fz)"), $.$("fwd")}).normalize();
@@ -237,7 +237,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConceptValid2() throws Narsese.NarseseException {
+    void testDynamicConceptValid2() throws Narsese.NarseseException {
         Term c =
 
                 Op.CONJ.compound(XTERNAL, new Term[]{$.$("(--,((--,#1)&&#2))"), $.$("(--,#2)"), $.varDep(1)}).normalize();
@@ -247,7 +247,7 @@ public class DynamicConjTest {
     }
 
     @Test
-    public void testDynamicConjunctionXYZ() throws Narsese.NarseseException {
+    void testDynamicConjunctionXYZ() throws Narsese.NarseseException {
 
 
         NAR n = NARS.shell();
@@ -293,7 +293,7 @@ public class DynamicConjTest {
 
 
     @Test
-    public void testDynamicConjConceptWithNegations() throws Narsese.NarseseException {
+    void testDynamicConjConceptWithNegations() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
         for (String s: new String[]{

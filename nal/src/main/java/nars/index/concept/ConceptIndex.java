@@ -92,11 +92,11 @@ public abstract class ConceptIndex {
 
 
         Term xx = x.concept();
-        if (!(xx.op().conceptualizable)) {
-
-
-            return null;
-        }
+//        if (!(xx.op().conceptualizable)) {
+//
+//
+//            return null;
+//        }
 
         return (Concept) get(xx, createIfMissing);
     }

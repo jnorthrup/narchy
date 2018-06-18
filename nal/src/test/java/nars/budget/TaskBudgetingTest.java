@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
  * Created by me on 10/28/16.
  */
 @Disabled
-public class TaskBudgetingTest {
+class TaskBudgetingTest {
 
     /** taskbudgeting - structural deduction test
     decompose large conj, analyze the durability, quality decay */
     @Test
-    public void structuralDeduction1() throws Narsese.NarseseException {
+    void structuralDeduction1() throws Narsese.NarseseException {
 
 
         NAR d = NARS.tmp();

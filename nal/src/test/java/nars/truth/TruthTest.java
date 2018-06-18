@@ -14,9 +14,10 @@ import static nars.truth.TruthFunctions.w2cSafe;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class TruthTest {
+class TruthTest {
 
-    @Test public void testRounding() {
+    @Test
+    void testRounding() {
         int discrete = 10;
         float precision = 1f/discrete;
 
@@ -33,14 +34,15 @@ public class TruthTest {
         }
     }
 
-    @Test public void testEternalize() {
+    @Test
+    void testEternalize() {
         assertEquals(0.47f, w2cSafe(t(1f, 0.9f).eviEternalized()), 0.01f);
         assertEquals(0.31f, w2cSafe(t(1f, 0.45f).eviEternalized()), 0.01f);
         assertEquals(0.09f, w2cSafe(t(1f, 0.10f).eviEternalized()), 0.01f);
     }
 
     @Test
-    public void testPreciseTruthEquality() {
+    void testPreciseTruthEquality() {
 
         float insignificant = Param.TRUTH_EPSILON / 5f;
         float significant = Param.TRUTH_EPSILON;
@@ -62,7 +64,7 @@ public class TruthTest {
     }
 
     @Test
-    public void testDiscreteTruth_FreqEquality() {
+    void testDiscreteTruth_FreqEquality() {
         Truth a = new DiscreteTruth(1.0f, 0.9f);
         Truth aCopy = new DiscreteTruth(1.0f, 0.9f);
         assertEquals(a, aCopy);
@@ -82,7 +84,7 @@ public class TruthTest {
     }
 
     @Test
-    public void testConfEquality() {
+    void testConfEquality() {
         Truth a = new DiscreteTruth(1.0f, 0.5f);
 
         Truth aEqualWithinThresh = new DiscreteTruth(1.0f, 0.5f - Param.TRUTH_EPSILON / 2.1f /* slightly less than half the epsilon */);
@@ -111,7 +113,8 @@ public class TruthTest {
 
 
 
-    @Test public void testTruthHash() {
+    @Test
+    void testTruthHash() {
         assertEquals( new DiscreteTruth(0.5f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
         assertNotEquals( new DiscreteTruth(1.0f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
         assertNotEquals( new DiscreteTruth(0.51f, 0.5f).hashCode(), new DiscreteTruth(0.5f, 0.5f).hashCode() );
@@ -127,13 +130,14 @@ public class TruthTest {
 
     }
 
-    @Test public void testTruthHashUnhash() {
+    @Test
+    void testTruthHashUnhash() {
         XorShift128PlusRandom rng = new XorShift128PlusRandom(2);
         for (int i = 0; i < 1000; i++)
             hashUnhash(rng.nextFloat(), rng.nextFloat() * (1f-Param.TRUTH_EPSILON*2));
     }
 
-    static void hashUnhash(float f, float c) {
+    private static void hashUnhash(float f, float c) {
         Truth t = new DiscreteTruth(f, c);
         if (t == null)
             return;
@@ -166,13 +170,14 @@ public class TruthTest {
 
 
     @Test
-    public void testExpectation() {
+    void testExpectation() {
         assertEquals(0.75f, new DiscreteTruth(1f, 0.5f).expectation(), 0.01f);
         assertEquals(0.95f, new DiscreteTruth(1f, 0.9f).expectation(), 0.01f);
         assertEquals(0.05f, new DiscreteTruth(0f, 0.9f).expectation(), 0.01f);
     }
 
-    @Test public void testTruthRevision() {
+    @Test
+    void testTruthRevision() {
         Truth d = Revision.revise(new DiscreteTruth(1f, 0.1f), new DiscreteTruth(1f, 0.1f));
         assertEquals(1f, d.freq(), 0.01f);
         assertEquals(0.18f, d.conf(), 0.01f);
@@ -219,7 +224,7 @@ public class TruthTest {
 
 
 
-    public static void printTruthChart() {
+    static void printTruthChart() {
         float c = 0.9f;
         for (float f1 = 0f; f1 <= 1.001f; f1+=0.1f) {
             for (float f2 = 0f; f2 <= 1.001f; f2+=0.1f) {
@@ -231,7 +236,8 @@ public class TruthTest {
         }
     }
 
-    @Test public void testTruthPolarity() {
+    @Test
+    void testTruthPolarity() {
         assertEquals(0f, t(0.5f, 0.9f).polarity(), 0.01f);
         assertEquals(1f, t(0f, 0.9f).polarity(), 0.01f);
         assertEquals(1f, t(1f, 0.9f).polarity(), 0.01f);
@@ -239,7 +245,8 @@ public class TruthTest {
     }
 
     @Disabled
-    @Test public void testEvidenceHorizonDistortion() {
+    @Test
+    void testEvidenceHorizonDistortion() {
         Truth a = t(1f, 0.9f);
         float eviA = a.evi();
         Truth b = t(1f, 0.9f);

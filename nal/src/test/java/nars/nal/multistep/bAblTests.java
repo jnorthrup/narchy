@@ -9,12 +9,12 @@ import static nars.Op.BELIEF;
 /**
  * see bAbl.nal
  */
-public class bAblTests extends NALTest {
+class bAblTests extends NALTest {
 
 
 
     @Test
-    public void test1() throws nars.Narsese.NarseseException {
+    void test1() throws nars.Narsese.NarseseException {
 
         test
                 .believe("in(john,playground)") 
@@ -36,7 +36,7 @@ public class bAblTests extends NALTest {
     }
 
     @Test
-    public void test2() {
+    void test2() {
 
         
         
@@ -65,7 +65,7 @@ public class bAblTests extends NALTest {
      * TODO find a better problem representation, this one isnt good
      */
     @Test
-    public void test19() {
+    void test19() {
 
         
 

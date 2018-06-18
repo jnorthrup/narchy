@@ -15,7 +15,7 @@ import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 
 import java.util.function.Supplier;
 
-public class NARTestOptimize {
+class NARTestOptimize {
 
     static class NAL1Optimize {
         public static void main(String[] args) {

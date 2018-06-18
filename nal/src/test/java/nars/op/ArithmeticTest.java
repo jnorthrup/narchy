@@ -15,11 +15,11 @@ import static nars.Op.False;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** arithmetic operators and arithmetic introduction tests */
-public class ArithmeticTest {
+class ArithmeticTest {
 
 
     @Test
-    public void testAdd() throws Narsese.NarseseException {
+    void testAdd() throws Narsese.NarseseException {
         NAR t = NARS.shell();
         assertEquals("2",
                 $.$("add(1,1)").eval(t, false).toString());
@@ -29,7 +29,7 @@ public class ArithmeticTest {
                 $.$("add(#1,0)").eval(t, false).toString());
     }
     @Test
-    public void testMul() throws Narsese.NarseseException {
+    void testMul() throws Narsese.NarseseException {
         NAR t = NARS.shell();
         assertEquals("0",
                 $.$("mul(x,0)").eval(t, false).toString());
@@ -38,7 +38,7 @@ public class ArithmeticTest {
     }
 
     @Test
-    public void testAddCommutive() throws Narsese.NarseseException {
+    void testAddCommutive() throws Narsese.NarseseException {
         NAR t = NARS.shell();
         String fwd = $.$("add(#x,1)").eval(t, false).toString();
         String rev = $.$("add(1,#x)").eval(t, false).toString();
@@ -52,7 +52,7 @@ public class ArithmeticTest {
     }
 
     @Test
-    public void testAddMulIdentity() throws Narsese.NarseseException {
+    void testAddMulIdentity() throws Narsese.NarseseException {
         NAR t = NARS.shell();
         assertEquals("#1",
                 $.$("add(#1,0)").eval(t, false).toString());
@@ -65,10 +65,10 @@ public class ArithmeticTest {
 
     }
 
-    final Random rng = new XoRoShiRo128PlusRandom(1);
+    private final Random rng = new XoRoShiRo128PlusRandom(1);
     
     @Test
-    public void test1() throws Narsese.NarseseException {
+    void test1() throws Narsese.NarseseException {
         assertEquals(
                 //"((#1,add(#1,1))&&(#1<->2))",
                 "((#1,add(#1,1))&&(#1<->2))",
@@ -77,13 +77,15 @@ public class ArithmeticTest {
                 ArithmeticIntroduction.apply($.$("(2,3)"), true, rng).toString());
     }
 
-    @Test public void test2() throws Narsese.NarseseException {
+    @Test
+    void test2() throws Narsese.NarseseException {
         assertEquals(
                 "(x(#1,add(#1,1))&&(#1<->2))",
                 
                 ArithmeticIntroduction.apply($.$("x(2,3)"), true, rng).toString());
     }
-    @Test public void test2b() throws Narsese.NarseseException {
+    @Test
+    void test2b() throws Narsese.NarseseException {
         assertEquals(
                 "(x(#1,add(#1,1))&|(#1<->2))",
                 
@@ -92,14 +94,15 @@ public class ArithmeticTest {
     }
 
     @Test
-    public void testContradictionResultsInFalse() {
+    void testContradictionResultsInFalse() {
         assertEquals(
                 False,
                 $$("(add(1,1,#2) && add(#2,1,1))").eval(NARS.shell(), false)
         );
     }
 
-    @Test public void testEqBackSubstitution() throws Narsese.NarseseException {
+    @Test
+    void testEqBackSubstitution() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.termVolumeMax.set(12);
         TestNAR t = new TestNAR(n);
@@ -108,7 +111,8 @@ public class ArithmeticTest {
         n.input("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2)).");
         t.test();
     }
-    @Test public void testSimBackSubstitution() throws Narsese.NarseseException {
+    @Test
+    void testSimBackSubstitution() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.termVolumeMax.set(14);
         TestNAR t = new TestNAR(n);
@@ -119,7 +123,8 @@ public class ArithmeticTest {
         t.test();
     }
 
-    @Test public void testSimBackSubstitution2() throws Narsese.NarseseException {
+    @Test
+    void testSimBackSubstitution2() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.termVolumeMax.set(14);
         TestNAR t = new TestNAR(n);
@@ -129,7 +134,7 @@ public class ArithmeticTest {
     }
 
     @Test
-    public void testCompleteAddInduction() {
+    void testCompleteAddInduction() {
         NAR n = NARS.tmp(6);
         new ArithmeticIntroduction(4, n);
 

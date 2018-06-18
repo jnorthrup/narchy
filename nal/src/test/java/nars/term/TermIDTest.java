@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 /**
  * Created by me on 6/3/15.
  */
-public class TermIDTest {
+class TermIDTest {
 
     final TimeAware timeAware = NARS.shell();
 
@@ -26,12 +26,12 @@ public class TermIDTest {
 
     
     @Test
-    public void testInternalRepresentation28() {
+    void testInternalRepresentation28() {
         testBytesRepresentation("(a&&b)", 5);
     }
 
     @Test
-    public void testInternalRepresentation28cc() {
+    void testInternalRepresentation28cc() {
         testBytesRepresentation("((--,(b,c))&&a)", 5);
     }
 
@@ -43,7 +43,7 @@ public class TermIDTest {
 
     
     @Test
-    public void testInternalRepresentation2z() {
+    void testInternalRepresentation2z() {
         testBytesRepresentation("(a,b)", 5);
     }
 
@@ -54,28 +54,28 @@ public class TermIDTest {
      */
 
     @Test
-    public void testInternalRepresentation23() {
+    void testInternalRepresentation23() {
         testBytesRepresentation("x", 1);
     }
 
     @Test
-    public void testInternalRepresentation24() {
+    void testInternalRepresentation24() {
         testBytesRepresentation("xyz", 3);
     }
 
     @Test
-    public void testInternalRepresentation25() {
+    void testInternalRepresentation25() {
         testBytesRepresentation("\u00ea", 2);
     }
 
     @Test
-    public void testInternalRepresentation26() {
+    void testInternalRepresentation26() {
         testBytesRepresentation("xyz\u00e3", 3 + 2);
     }
 
     
     @Test
-    public void testInternalRepresentation27() {
+    void testInternalRepresentation27() {
         testBytesRepresentation("(a-->b)", 5);
     }
 
@@ -94,7 +94,7 @@ public class TermIDTest {
 
 
     @NotNull
-    public Term testBytesRepresentation(@NotNull String expectedCompactOutput, int expectedLength) {
+    private Term testBytesRepresentation(@NotNull String expectedCompactOutput, int expectedLength) {
         try {
             return testBytesRepresentation(
                     null,
@@ -107,7 +107,7 @@ public class TermIDTest {
     }
 
     @NotNull
-    public Term testBytesRepresentation(@Nullable String expectedCompactOutput, @NotNull String expectedPrettyOutput, int expectedLength) throws Narsese.NarseseException {
+    private Term testBytesRepresentation(@Nullable String expectedCompactOutput, @NotNull String expectedPrettyOutput, int expectedLength) throws Narsese.NarseseException {
         
         Termed i = $.$(expectedPrettyOutput);
         
@@ -123,11 +123,11 @@ public class TermIDTest {
         return i.term();
     }
 
-    static void areEqualAndIfNotWhy(@NotNull String a, @NotNull String b) {
+    private static void areEqualAndIfNotWhy(@NotNull String a, @NotNull String b) {
         assertEquals(a, b, charComparison(a, b));
     }
 
-    static String charComparison(String a, String b) {
+    private static String charComparison(String a, String b) {
         return Arrays.toString(a.toCharArray()) + " != " + Arrays.toString(b.toCharArray());
     }
 
