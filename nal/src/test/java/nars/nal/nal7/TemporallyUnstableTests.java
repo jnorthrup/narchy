@@ -1,15 +1,14 @@
 package nars.nal.nal7;
 
 import nars.NARS;
-import nars.Param;
 import org.junit.jupiter.api.Test;
 
 /** temporal stability tests still remaning to be completely solved */
 public class TemporallyUnstableTests {
 
-    static {
-        Param.DEBUG = true;
-    }
+//    static {
+//        Param.DEBUG = true;
+//    }
 
     @Test
     void testTemporalStabilityConjInvertor () {

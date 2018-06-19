@@ -95,10 +95,10 @@ class SubtermsTest {
     }
 
     @Test
-    void testEqualityOfUnitSubtermsImpls() {
+    void testEqualityOfUniSubtermsImpls() {
         Term a = Atomic.the("a");
-        Subterms x = new UnitSubterm(a);
-        Subterms x0 = new UnitSubterm(a);
+        Subterms x = new UniSubterm(a);
+        Subterms x0 = new UniSubterm(a);
         assertEquals(x, x0);
 
         Subterms y = new ArrayTermVector(a);
@@ -107,7 +107,7 @@ class SubtermsTest {
         assertEquals(x, y);
         assertEquals(y, x);
 
-        Subterms z = new UnitSubterm(a);
+        Subterms z = new UniSubterm(a);
         assertEquals(y.hashCode(), z.hashCode());
         assertEquals(y.hashCodeSubterms(), z.hashCodeSubterms());
         assertEquals(y, z);
@@ -117,9 +117,55 @@ class SubtermsTest {
 
     }
 
+    @Test
+    void testEqualityOfBiSubtermsImpls() {
+        Term a = Atomic.the("a");
+        Term b = Atomic.the("b");
+        Subterms x = new BiSubterm(a,b);
+        Subterms x0 = new BiSubterm(a, b);
+        assertEquals(x, x0);
 
+        Subterms y = new ArrayTermVector(a, b);
+        assertEquals(y.hashCode(), x.hashCode());
+        assertEquals(y.hashCodeSubterms(), x.hashCodeSubterms());
+        assertEquals(x, y);
+        assertEquals(y, x);
 
+        Subterms z =  new BiSubterm(a,b);
+        assertEquals(y.hashCode(), z.hashCode());
+        assertEquals(y.hashCodeSubterms(), z.hashCodeSubterms());
+        assertEquals(y, z);
+        assertEquals(x, z);
+        assertEquals(z, y);
+        assertEquals(z, x);
 
+    }
+
+    @Test
+    void testEqualityOfBiSubtermReverseImpls() {
+        Term a = Atomic.the("a");
+        Term b = Atomic.the("b");
+        Subterms ab = new BiSubterm(a,b);
+        Subterms x = new BiSubterm.ReversibleBiSubterm(a,b).reverse();
+        Subterms x0 = new BiSubterm.ReversibleBiSubterm(a,b).reverse();
+        assertEquals(x, x0);
+        assertNotEquals(ab, x);
+
+        Subterms y = new ArrayTermVector(b, a);
+        assertEquals(y.hashCode(), x.hashCode());
+        assertEquals(y.hashCodeSubterms(), x.hashCodeSubterms());
+        assertEquals(x, y);
+        assertEquals(y, x);
+
+        Subterms z =  new BiSubterm.ReversibleBiSubterm(a,b).reverse();
+        assertEquals(y.hashCode(), z.hashCode());
+        assertEquals(y.hashCodeSubterms(), z.hashCodeSubterms());
+        assertEquals(y, z);
+        assertEquals(x, z);
+        assertEquals(z, y);
+        assertEquals(z, x);
+
+    }
 
 
 

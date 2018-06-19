@@ -13,7 +13,7 @@ import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 
-class NAL6Test extends NALTest {
+public class NAL6Test extends NALTest {
 
     private static final int cycles = 300;
 

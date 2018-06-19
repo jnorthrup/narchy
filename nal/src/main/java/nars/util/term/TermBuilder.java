@@ -1,10 +1,7 @@
 package nars.util.term;
 
 import nars.Op;
-import nars.subterm.ArrayTermVector;
-import nars.subterm.Neg;
-import nars.subterm.Subterms;
-import nars.subterm.UnitSubterm;
+import nars.subterm.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.anon.AnonID;
@@ -85,11 +82,16 @@ public abstract class TermBuilder {
             switch (t.length) {
                 case 0:
                     throw new UnsupportedOperationException();
+
                 case 1:
-                    
-                    return new UnitSubterm(t[0]);
-                
-                
+                    return new UniSubterm(t[0]);
+
+                case 2:
+                    return
+//                    return (this instanceof InterningTermBuilder) ?
+//                            new BiSubterm.ReversibleBiSubterm(t[0], t[1]) :
+                            new BiSubterm(t[0], t[1]);
+
                 default:
                     return new ArrayTermVector(t);
             }

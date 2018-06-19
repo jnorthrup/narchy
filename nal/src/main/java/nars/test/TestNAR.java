@@ -44,7 +44,7 @@ public class TestNAR {
     /**
      * -1 = failure,
      * 0 = hasnt been determined yet by the end of the test,
-     * (0..1) = success in > 1 cycles,
+     * (1..n) = success in > 1 cycles,
      * +1 = success in <= 1 cycles
      */
     public float score;
@@ -134,11 +134,11 @@ public class TestNAR {
 
 
         long time = nar.time();
-        int runtime = (int) (time - startTime);
+        int runtime = Math.max(0, (int) (time - startTime));
 
         this.score = success ?
 
-                (+1f / (1f + ((1f + runtime) / (1f + finalCycle - startTime))))
+                1 + (+1f / (1f + ((1f + runtime) / (1f + Math.max(0,finalCycle - startTime)))))
                 :
                 0;
 

@@ -18,15 +18,15 @@ abstract public class TermMetadata implements Termlike {
     /**
      * stored as volume+1 as if this termvector were already wrapped in its compound
      */
-    public final short volume;
+    private final short volume;
     /**
      * stored as complexity+1 as if this termvector were already wrapped in its compound
      */
-    public final short complexity;
-    public final byte varPattern;
-    public final byte varDep;
-    public final byte varQuery;
-    public final byte varIndep;
+    private final short complexity;
+    private final byte varPattern;
+    private final byte varDep;
+    private final byte varQuery;
+    private final byte varIndep;
 
     /**
      * normal high-entropy "content" hash of the terms
@@ -46,7 +46,7 @@ abstract public class TermMetadata implements Termlike {
         }
     }
 
-    public TermMetadata(Term... terms) {
+    protected TermMetadata(Term... terms) {
         assert (terms.length <= Param.COMPOUND_SUBTERMS_MAX);
 
         SubtermMetadataCollector s = new SubtermMetadataCollector();

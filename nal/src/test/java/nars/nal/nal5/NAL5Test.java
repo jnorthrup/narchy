@@ -16,7 +16,7 @@ import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
-class NAL5Test extends NALTest {
+public class NAL5Test extends NALTest {
 
     private final int cycles = 100;
 

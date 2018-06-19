@@ -20,7 +20,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
-import nars.subterm.UnitSubterm;
+import nars.subterm.UniSubterm;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.match.EllipsisMatch;
@@ -607,7 +607,7 @@ public class TermTest {
     @Test
     void testHashConsistent() {
         Term x = $.the("z");
-        Subterms a = new UnitSubterm(x);
+        Subterms a = new UniSubterm(x);
         Subterms b = new ArrayTermVector(x);
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
@@ -617,8 +617,8 @@ public class TermTest {
 
     @Test
     void testHashDistribution() {
-        int ah = new UnitSubterm($.the("x")).hashCode(); 
-        int bh = new UnitSubterm($.the("y")).hashCode();
+        int ah = new UniSubterm($.the("x")).hashCode();
+        int bh = new UniSubterm($.the("y")).hashCode();
         assertTrue(Math.abs(ah-bh) > 1, ah + " vs " + bh);
     }
 

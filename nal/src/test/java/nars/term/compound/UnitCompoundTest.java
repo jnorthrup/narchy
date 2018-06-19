@@ -4,7 +4,7 @@ import nars.$;
 import nars.IO;
 import nars.Narsese;
 import nars.Op;
-import nars.subterm.UnitSubterm;
+import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -34,7 +34,7 @@ class UnitCompoundTest {
     }
 
     private static void assertEqual(Op o, Atomic x, Compound u) {
-        Compound g = Op.terms.theCompound(o, new UnitSubterm(x));
+        Compound g = Op.terms.theCompound(o, new UniSubterm(x));
         assertEquals(g.hashCode(), u.hashCode());
         assertEquals(g.hashCodeSubterms(), u.hashCodeSubterms());
         assertEquals(u, g);

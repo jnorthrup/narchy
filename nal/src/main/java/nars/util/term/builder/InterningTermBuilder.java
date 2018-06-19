@@ -1,12 +1,12 @@
 package nars.util.term.builder;
 
 import jcog.Util;
-import jcog.memoize.HijackMemoize;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atomic;
 import nars.util.term.HijackTermCache;
 import nars.util.term.InternedCompound;
 import org.jetbrains.annotations.Nullable;
@@ -30,15 +30,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
     /** attempts to recursively intern the elements of a subterm being interned */
     final boolean deepIntern;
 
-    final int cacheSizePerOp = 32 * 1024;
+    final int cacheSizePerOp;
 
 
     public InterningTermBuilder() {
-        this(32 * 1024, false);
+        this(32 * 1024, true);
     }
 
     public InterningTermBuilder(int sizePerOp, boolean deep) {
         this.deepIntern = deep;
+        this.cacheSizePerOp = sizePerOp;
         termCache = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
             if (Op.ops[i].atomic || Op.ops[i]==NEG) continue;
@@ -61,6 +62,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public Subterms newSubterms(Op inOp, Term... s) {
+
         if (inOp != PROD && internable(s)) {
 
             if (deepIntern) {
@@ -74,16 +76,33 @@ public class InterningTermBuilder extends HeapTermBuilder {
             }
 
             return compound(PROD, s).subterms();
-        } else
+        } else {
+//            if (s.length == 2 && s[0].compareTo(s[1]) > 0) {
+//                //TODO filter purely anon
+//                return ((BiSubterm.ReversibleBiSubterm)newSubterms(inOp, s[1], s[0])).reverse();
+//            }
+
             return super.newSubterms(inOp, s);
+        }
 
     }
 
 
     protected boolean internable(Term x) {
+        return (x instanceof The) && (
+                    internable(x.op(), x.dt()) &&
+                    x.AND(this::internableSubterm)
+                );
+    }
+
+    protected boolean internableSubterm(Term x) {
         return (x instanceof The) &&
-                internable(x.op(), x.dt()) &&
-                x.AND(this::internable);
+                (x instanceof Atomic)
+                ||
+                (
+                        internable(x.op(), x.dt()) &&
+                                x.AND(this::internable)
+                );
     }
 
     protected boolean internable(Op op, int dt, Term[] u) {
@@ -137,11 +156,12 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     public String summary() {
-        return
-                summary(termCache);
+        return summary(termCache);
     }
 
     public static String summary(HijackTermCache[] termCache) {
-        return Arrays.toString(Util.map(HijackMemoize::summary, new String[termCache.length], termCache));
+        return Arrays.toString(Util.map(x -> termCache[x]!=null ?
+                (Op.ops[x] + ": " + termCache[x].summary() + "\n")
+                : "", new String[termCache.length], termCache.length));
     }
 }

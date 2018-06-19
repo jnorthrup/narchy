@@ -214,7 +214,7 @@ public class Lab<X> {
 
     private Optimization.OptimizationStrategy newDefaultOptimizer()
     {
-        return newDefaultOptimizer(64);
+        return newDefaultOptimizer(512);
     }
 
     private Optimization.OptimizationStrategy newDefaultOptimizer(int maxIter) {

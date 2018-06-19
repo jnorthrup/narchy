@@ -17,23 +17,19 @@ import static nars.Op.NEG;
  */
 public abstract class TermVector extends TermMetadata implements Subterms, The {
 
-    protected transient boolean normalized;
+    private transient boolean normalized;
 
     protected TermVector(Term... terms) {
         super(terms);
-        this.normalized = Subterms.super.isNormalized();
+        this.normalized = Subterms.super.isNormalized(); //TODO other tests
     }
 
-    @Override public boolean containsNeg(Term x) {
-        return x.op()==NEG ? contains(x.unneg()) : (hasAny(NEG) && contains(x.neg()));
+    @Override
+    public boolean containsNeg(Term x) {
+        return x.op() == NEG ? contains(x.unneg()) : (hasAny(NEG) && contains(x.neg()));
     }
 
-    protected void equivalentTo(TermVector that) {
-        
-
-
-
-
+    void equivalentTo(TermVector that) {
 
 
         boolean an, bn = that.normalized;
@@ -43,20 +39,18 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
             that.normalized = true;
 
 
-
-
-
-        
     }
 
     /**
      * if the compound tracks normalization state, this will set the flag internally
      */
-    @Override public void setNormalized() {
+    @Override
+    public void setNormalized() {
         normalized = true;
     }
 
-    @Override public boolean isTemporal() {
+    @Override
+    public boolean isTemporal() {
         return hasAny(Op.Temporal) && super.isTemporal();
     }
 
@@ -79,12 +73,8 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     public abstract Iterator<Term> iterator();
 
 
-    @Override abstract public boolean equals(Object obj);
-
-
-
-
-
+    @Override
+    abstract public boolean equals(Object obj);
 
 
     @Override
@@ -96,22 +86,6 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
     public int hashCode() {
         return hash;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

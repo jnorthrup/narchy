@@ -11,6 +11,7 @@ import nars.util.term.builder.HeapTermBuilder;
 import nars.util.term.builder.InterningTermBuilder;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.profile.GCProfiler;
 import org.openjdk.jmh.runner.RunnerException;
 
 import java.util.function.Supplier;
@@ -22,8 +23,10 @@ import static nars.perf.JmhBenchmark.perf;
 @Disabled
 public class NARTestBenchmark {
 
-    @Param({"interning", "interningDeep", "heap"})
+    @Param({ "interning", "heap", "interningDeep" })
     private String termBuilder;
+    @Param({ "true", "false"})
+    private String parallel;
 
     private static final Class[] tests = {
             NAL1Test.class,
@@ -37,14 +40,16 @@ public class NARTestBenchmark {
             x.measurementIterations(3);
             x.warmupIterations(1);
 
-            x.forks(1);
-            x.threads(1);
+            x.addProfiler(GCProfiler.class);
+
+//            x.forks(1);
+//            x.threads(1);
         });
     }
 
     private void runTests(Supplier<NAR> n) {
         //new JUnitPlanetX().test(tests).run();
-        new TestNARSuite(n, tests).run(false);
+        new TestNARSuite(n, tests).run(parallel.equals("true"));
     }
 
     @Benchmark

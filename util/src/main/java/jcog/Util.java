@@ -19,6 +19,7 @@ import jcog.io.BinTxt;
 import jcog.list.FasterList;
 import jcog.math.NumberException;
 import jcog.math.OneDHaar;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.Frequency;
 import org.eclipse.collections.api.block.function.primitive.DoubleToFloatFunction;
@@ -1432,11 +1433,13 @@ public enum Util {
         return sb.toString();
     }
 
+    final static Random insecureRandom = new XoRoShiRo128PlusRandom(System.nanoTime());
     public static String uuid64() {
-        UUID u = UUID.randomUUID();
-        long a = u.getLeastSignificantBits();
-        long b = u.getMostSignificantBits();
-        long c = a ^ b;
+        //UUID u = UUID.randomUUID();
+        //long a = u.getLeastSignificantBits();
+        //long b = u.getMostSignificantBits();
+        //long c = a ^ b;
+        long c = insecureRandom.nextLong();
         return BinTxt.toString(c);
     }
 

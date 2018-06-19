@@ -11,6 +11,7 @@ import nars.derive.step.Occurrify;
 import nars.derive.step.Truthify;
 import nars.op.SubIfUnify;
 import nars.op.Subst;
+import nars.subterm.BiSubterm;
 import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.atom.Atom;
@@ -603,7 +604,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
-        return Op.terms.subtermsInstance(a, b);
+        return new BiSubterm(a, b);
     }
 
     private void matchSuper(boolean taskOrBelief, TermMatch m, boolean trueOrFalse) {

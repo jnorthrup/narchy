@@ -5,7 +5,7 @@ import jcog.Util;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.subterm.UnitSubterm;
+import nars.subterm.UniSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -138,7 +138,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public Subterms subterms() {
-        return new UnitSubterm(sub());
+        return new UniSubterm(sub());
     }
 
     @Override

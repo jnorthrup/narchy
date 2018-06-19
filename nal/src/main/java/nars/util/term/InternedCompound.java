@@ -10,6 +10,7 @@ import nars.term.Compound;
 import nars.term.Term;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 public final class InternedCompound extends UnitPri implements PriProxy<InternedCompound, Term> {
 
@@ -17,7 +18,7 @@ public final class InternedCompound extends UnitPri implements PriProxy<Interned
     public final int dt;
     final byte[] subs;
     private final int hash;
-    public transient Term[] rawSubs;
+    public transient Supplier<Term[]> rawSubs;
 
     public Term y = null;
 
@@ -29,7 +30,7 @@ public final class InternedCompound extends UnitPri implements PriProxy<Interned
         x.forEach(s -> s.appendTo((ByteArrayDataOutput) key));
         this.subs = key.array();
         this.hash = key.hashCode();
-        this.rawSubs = null;
+        this.rawSubs = x::arrayShared;
     }
 
     public InternedCompound(Op o, int dt, Term... subs) {
@@ -41,7 +42,7 @@ public final class InternedCompound extends UnitPri implements PriProxy<Interned
 
         this.subs = key.array();
         this.hash = key.hashCode();
-        this.rawSubs = subs;
+        this.rawSubs = ()->subs;
 
     }
 
@@ -80,7 +81,7 @@ public final class InternedCompound extends UnitPri implements PriProxy<Interned
     }
 
     public Term compute() {
-        return compute(Op.terms.compoundInstance(Op.ops[op], dt, this.rawSubs));
+        return compute(Op.terms.compoundInstance(Op.ops[op], dt, this.rawSubs.get()));
     }
 
     public Term compute(Term computed) {

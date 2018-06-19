@@ -8,8 +8,8 @@ import nars.Narsese;
 import nars.Op;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
-import nars.subterm.TermVector2;
-import nars.subterm.UnitSubterm;
+import nars.subterm.BiSubterm;
+import nars.subterm.UniSubterm;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
@@ -84,8 +84,8 @@ public class AnonTest {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
-        assertEqual(new UnitSubterm(x[0]), new AnonVector(x[0]));
-        assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
+        assertEqual(new UniSubterm(x[0]), new AnonVector(x[0]));
+        assertEqual(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
         assertEqual(new ArrayTermVector(x), new AnonVector(x));
     }
 
@@ -124,8 +124,8 @@ public class AnonTest {
 
             ArrayUtils.shuffle(x, rng);
 
-            assertEqual(new UnitSubterm(x[0]), new AnonVector(x[0]));
-            assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
+            assertEqual(new UniSubterm(x[0]), new AnonVector(x[0]));
+            assertEqual(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
             assertEqual(new ArrayTermVector(x), new AnonVector(x));
         }
     }
@@ -199,7 +199,7 @@ public class AnonTest {
             Term t = $$(s);
             assertEquals(s, t.toString());
             assertTrue(
-                    UnitSubterm.class == t.subterms().getClass() ||
+                    UniSubterm.class == t.subterms().getClass() ||
                     AnonVector.class == t.subterms().getClass());
             assertTrue(t.isNormalized(), ()->t + " not auto-normalized but it could be");
         }
@@ -207,7 +207,7 @@ public class AnonTest {
             Term t = Narsese.term(s, false);
             assertEquals(s, t.toString());
             assertTrue(
-                    UnitSubterm.class == t.subterms().getClass() ||
+                    UniSubterm.class == t.subterms().getClass() ||
                             AnonVector.class == t.subterms().getClass(),
                     ()-> t.getClass().toString() + " " + t.subterms().getClass());
             assertFalse(t.isNormalized(), ()->t + " auto-normalized but should not be" );

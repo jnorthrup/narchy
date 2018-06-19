@@ -16,6 +16,7 @@ import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
+import nars.util.term.TermBuilder;
 import nars.util.term.transform.VariableNormalization;
 
 import java.util.HashMap;
@@ -30,6 +31,8 @@ import static nars.time.Tense.XTERNAL;
  * Index which specifically holds the term components of a deriver ruleset.
  */
 public class PremisePatternIndex extends MapConceptIndex {
+
+    final static TermBuilder terms = Op.terms;
 
     //final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
 //    private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
@@ -123,14 +126,15 @@ public class PremisePatternIndex extends MapConceptIndex {
         if (!changed && Ellipsis.firstEllipsis(s) == null)
             return x;
 
+
         //Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
-        Subterms v = Op.terms.newSubterms(bb);
+        Subterms v = terms.newSubterms(bb);
 
 
         Ellipsis e = Ellipsis.firstEllipsis(bb);
         return e != null ?
                 ellipsis(x, v, e) :
-                Op.terms.theCompound(x.op(), x.dt(), v);
+                terms.theCompound(x.op(), x.dt(), v);
 
     }
 
@@ -211,7 +215,7 @@ public class PremisePatternIndex extends MapConceptIndex {
 
 
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
-            super((Compound) op.the(subterms.arrayShared()), dt);
+            super((Compound) terms.compound(op, subterms.arrayShared()), dt);
         }
 
         @Override

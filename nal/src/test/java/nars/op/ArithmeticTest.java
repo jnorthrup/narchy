@@ -136,15 +136,15 @@ class ArithmeticTest {
     @Test
     void testCompleteAddInduction() {
         NAR n = NARS.tmp(6);
-        new ArithmeticIntroduction(4, n);
+        new ArithmeticIntroduction(8, n);
 
-        final int cycles = 3000;
+        final int cycles = 4000;
 
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
         //n.freqResolution.set(0.1f);
         n.termVolumeMax.set(14);
-//        t.log();
+        //t.log();
 
 
         for (int a = 0; a <= 2; a++) {

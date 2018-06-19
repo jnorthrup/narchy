@@ -12,9 +12,9 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 
-abstract public class AbstractUnitSubterm implements Subterms {
+abstract class AbstractUnitSubterm implements Subterms {
 
-    abstract public Term sub();
+    protected abstract Term sub();
 
     @Override
     public final void append(ByteArrayDataOutput out) {

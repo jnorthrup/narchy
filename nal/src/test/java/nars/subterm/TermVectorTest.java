@@ -20,40 +20,8 @@ class TermVectorTest {
     void testSubtermsEquality() throws Narsese.NarseseException {
 
         Term a = $.$("(a-->b)");
-        
-
-        
 
 
-
-
-
-
-
-
-
-
-
-
-
-        
-        
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
         Compound b = $.impl(Atomic.the("a"), Atomic.the("b"));
 
         assertEquals(a.subterms(), b.subterms());
@@ -87,7 +55,6 @@ class TermVectorTest {
         assertEquals(a, s);
         assertNotEquals(b, s);
     }
-
 
 
 }

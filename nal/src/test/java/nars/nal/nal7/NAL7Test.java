@@ -2,7 +2,6 @@ package nars.nal.nal7;
 
 import nars.$;
 import nars.Narsese;
-import nars.Param;
 import nars.term.Term;
 import nars.test.NALTest;
 import nars.test.TestNAR;
@@ -25,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.99f;
-    private int cycles = 300;
+    private int cycles = 100;
 
     @BeforeEach
     void setTolerance() {
         test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         //test.nar.confResolution.set(0.04f); //coarse
-        test.nar.termVolumeMax.set(17);
+        test.nar.termVolumeMax.set(20);
         //test.nar.confMin.set(0.1f);
     }
 
@@ -1289,7 +1288,6 @@ public class NAL7Test extends NALTest {
     }
 
     @Test public void testGetShiftWorkingRight() {
-        Param.DEBUG = true;
         /*
         WRONG:
             $.16 (b &&+5 (--,b)). 1 %1.0;.40% {13: 1;2} ((%1,(%2==>%3),(--,is(%1,"==>"))),(subIfUnifiesAny(%3,%2,%1),((DeductionRecursive-->Belief),(Induction-->Goal),(TaskPlusBeliefDT-->Time))))

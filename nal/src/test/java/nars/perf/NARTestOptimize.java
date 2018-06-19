@@ -5,10 +5,17 @@ import jcog.lab.util.Opti;
 import jcog.lab.util.Optimization;
 import nars.NAR;
 import nars.NARS;
+import nars.derive.Deriver;
+import nars.derive.budget.DefaultDeriverBudgeting;
+import nars.derive.deriver.MatrixDeriver;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal4.NAL4Test;
+import nars.nal.nal5.NAL5Test;
+import nars.nal.nal6.NAL6Test;
+import nars.nal.nal7.NAL7Test;
+import nars.nal.nal8.NAL8Test;
 import nars.test.TestNARSuite;
 import nars.test.impl.DeductiveMeshTest;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -21,8 +28,8 @@ class NARTestOptimize {
         public static void main(String[] args) {
             int nalLevel = 4;
             Class[] testClasses = new Class[] {
-                    NAL1Test.class, NAL2Test.class, NAL3Test.class, NAL4Test.class
-                    //NAL6Test.class
+                    NAL1Test.class, NAL2Test.class, NAL3Test.class, NAL4Test.class,
+                    NAL5Test.class, NAL6Test.class, NAL7Test.class, NAL8Test.class
             };
 
             Lab<NAR> l = new Lab<>(() -> NARS.tmp(nalLevel))
@@ -30,8 +37,16 @@ class NARTestOptimize {
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
                 .var("forgetRate", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.forgetRate.set(f))
-                .var("activationRate", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.activateConceptRate.set(f))
+//                .var("activationRate", 0, 1f, 0.1f,
+//                        (NAR n, float f) -> n.activateConceptRate.set(f))
+                .var("derivationComplexityExponent", 1, 3f, 0.1f,
+                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
+                                        relGrowthExponent.set(f)))
+                .var("derivationScale", 0, 2f, 0.1f,
+                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
+                                ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
+                                        scale.set(f)))
             ;
 
 
@@ -75,15 +90,8 @@ class NARTestOptimize {
 
 
             Opti<DeductiveMeshTest> o = l.optimize(d -> {
-                        try {
-                            d.test.test();
-                        } catch (Throwable t) {
-
-                        }
-                    },
-
-                    d -> d.test.score
-            );
+                d.test.test();
+            }, d -> d.test.score);
             o.run();
             o.print();
             o.tree(4, 6).print();
