@@ -29,6 +29,8 @@ import nars.term.anon.AnonID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.VAR_DEP;
+
 /**
  * Normalized variable
  * "highly immutable" and re-used
@@ -114,7 +116,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
             case '%':
                 return Op.VAR_PATTERN;
             case '#':
-                return Op.VAR_DEP;
+                return VAR_DEP;
             case '$':
                 return Op.VAR_INDEP;
             case '?':
@@ -123,7 +125,6 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         throw new RuntimeException("invalid variable character");
     }
 
-    
 
 
 
@@ -137,19 +138,25 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 
 
 
-    public static int opToVarIndex(/*@NotNull*/ Op o) {
-        switch (o) {
-            case VAR_PATTERN:
-                return 0;
-            case VAR_DEP:
-                return 1;
-            case VAR_INDEP:
-                return 2;
-            case VAR_QUERY:
-                return 3;
-            default:
-                throw new UnsupportedOperationException();
-        }
+
+    private static int opToVarIndex(/*@NotNull*/ Op o) {
+        return opToVarIndex(o.id);
+    }
+    private static int opToVarIndex(/*@NotNull*/ byte oid) {
+        return oid - VAR_DEP.id;
+//        //TODO verify this is consistent with the variable's natural ordering
+//        switch (o) {
+//            case VAR_DEP:
+//                return 0;
+//            case VAR_INDEP:
+//                return 1;
+//            case VAR_QUERY:
+//                return 2;
+//            case VAR_PATTERN:
+//                return 3;
+//            default:
+//                throw new UnsupportedOperationException();
+//        }
     }
 
 
@@ -158,7 +165,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 
     static {
         
-        for (Op o : new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, Op.VAR_DEP, Op.VAR_INDEP}) {
+        for (Op o : new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, VAR_DEP, Op.VAR_INDEP}) {
             int t = opToVarIndex(o);
             for (byte i = 1; i < Param.MAX_INTERNED_VARS; i++) {
                 varCache[t][i] = vNew(o, i);
@@ -170,7 +177,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
      * TODO move this to TermBuilder
      */
     @NotNull
-    static NormalizedVariable vNew(/*@NotNull*/ Op type, byte id) {
+    private static NormalizedVariable vNew(/*@NotNull*/ Op type, byte id) {
         switch (type) {
             case VAR_PATTERN:
                 return new VarPattern(id);
@@ -193,13 +200,15 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         }
     }
 
-    public static NormalizedVariable the(/*@NotNull*/ Op type, byte id) {
-        assert(id > 0);
-        if (id < Param.MAX_INTERNED_VARS) {
-            return varCache[NormalizedVariable.opToVarIndex(type)][id];
+    public static NormalizedVariable the(/*@NotNull*/ Op op, byte id) {
+        return the(op.id, id);
+    }
+
+    public static NormalizedVariable the(/*@NotNull*/ byte op, byte id) {
+        if (id > 0 && id < Param.MAX_INTERNED_VARS) {
+            return varCache[NormalizedVariable.opToVarIndex(op)][id];
         } else {
-            
-            return vNew(type, id);
+            return vNew(Op.ops[op], id);
         }
     }
 

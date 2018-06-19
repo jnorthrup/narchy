@@ -30,7 +30,7 @@ import nars.Task;
 import nars.The;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
-import nars.subterm.util.TermMetadata;
+import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
@@ -142,6 +142,12 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return x;
     }
 
+    static boolean commonStructure(Termlike x, Termlike y) {
+        int xStruct = x.structure();
+        int yStruct = y.structure();
+        return (xStruct & yStruct) != 0;
+    }
+
     default Term term() {
         return this;
     }
@@ -218,7 +224,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
         }
 
-        return src.op().compound(src.dt(), target);
+        return src.op().the(src.dt(), target);
     }
 
     default <X> boolean pathsTo(Function<Term, X> target, Predicate<Term> descendIf, BiPredicate<ByteList, X> receiver) {
@@ -626,7 +632,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         return Termed.super.structure() | op().bit;
     }
 
-    default void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
+    default void collectMetadata(SubtermMetadataCollector s) {
 
         int xstructure = structure();
         s.structure |= xstructure;

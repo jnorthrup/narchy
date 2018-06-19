@@ -11,11 +11,9 @@ import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.LongToLongFunction;
 import org.eclipse.collections.api.iterator.LongIterator;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.ImmutableBitmapDataProvider;
 import org.roaringbitmap.PeekableIntIterator;
@@ -100,7 +98,7 @@ public class Conj extends AnonMap {
                 if (csDropped.length == 1)
                     return csDropped[0];
                 else
-                    return CONJ.compound(cdt, csDropped);
+                    return CONJ.the(cdt, csDropped);
             }
         }
 
@@ -315,13 +313,13 @@ public class Conj extends AnonMap {
                 int ls = left.subs(), rs = right.subs();
                 if ((ls > 1 + rs) || (rs > ls)) {
 
-                    return CONJ.compound(dt, new Term[]{left, right});
+                    return CONJ.the(dt, new Term[]{left, right});
                 }
             }
         }
 
 
-        return Op.compound(CONJ, dt, left, right);
+        return Op.compoundExact(CONJ, dt, left, right);
     }
 
     /**
@@ -768,7 +766,7 @@ public class Conj extends AnonMap {
                             }
                         }
                         if (toRemove.cardinality() > 0) {
-                            return CONJ.compound(ciDT, cci.termsExcept(toRemove));
+                            return CONJ.the(ciDT, cci.termsExcept(toRemove));
                         }
                     }
 
@@ -823,7 +821,7 @@ public class Conj extends AnonMap {
 
 
         final boolean[] negatives = {false};
-        MutableSet<Term> t = new UnifiedSet(4);
+        TreeSet<Term> t = new TreeSet<>();
         if (b != null) {
             for (byte x: b) {
                 if (x == 0)
@@ -875,7 +873,7 @@ public class Conj extends AnonMap {
             case 0:
                 return True;
             case 1:
-                return t.getOnly();
+                return t.first();
             default: {
                 int dt;
                 if (when == ETERNAL) {
@@ -883,7 +881,7 @@ public class Conj extends AnonMap {
                 } else {
                     dt = 0;
                 }
-                return Op.compound(CONJ, dt, t.toArray(Op.EmptyTermArray));
+                return Op.compoundExact(CONJ, dt, t.toArray(Op.EmptyTermArray) /* sorted iff t is SortedSet */);
 
             }
         }

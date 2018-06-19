@@ -177,7 +177,7 @@ public class Revision {
                     ab[i] = ai;
                 }
 
-                return !change ? a : ao.compound(choose(a, b, aProp, nar.random()).dt(), ab);
+                return !change ? a : ao.the(choose(a, b, aProp, nar.random()).dt(), ab);
             }
 
         }
@@ -237,7 +237,7 @@ public class Revision {
             if (na == Null) return Null;
             Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
             if (nb == Null) return Null;
-            return a.op().compound(dt, na, nb);
+            return a.op().the(dt, na, nb);
         }
 
     }

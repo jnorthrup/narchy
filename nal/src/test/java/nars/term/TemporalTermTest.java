@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import static nars.$.*;
+import static nars.Op.CONJ;
 import static nars.Op.False;
 import static nars.Op.Null;
 import static nars.time.Tense.DTERNAL;
@@ -42,6 +43,25 @@ class TemporalTermTest {
     private static void assertConceptual(String cexp, String c) throws Narsese.NarseseException {
         Term p = $(c);
         assertEquals(cexp, p.concept().toString());
+    }
+
+    @Test public void testSortingTemporalImpl() {
+        assertEquals(-1, $$("(x ==>+1 y)").compareTo($$("(x ==>+10 y)")));
+        assertEquals(+1, $$("(x ==>+1 y)").compareTo($$("(x ==>-1 y)")));
+        assertEquals(-1, $$("(x ==>-1 y)").compareTo($$("(x ==>+1 y)")));
+    }
+
+    @Test public void testSortingTemporalConj() {
+        assertEquals(0, $$("(x &&+1 y)").compareTo($$("(x &&+1 y)")));
+
+        assertEquals(-1, $$("(x &| y)").compareTo($$("(x &&+1 y)")));
+        assertEquals(-1, $$("(x &&+1 y)").compareTo($$("(x &&+2 y)")));
+        assertEquals(-1, $$("(x &&-1 y)").compareTo($$("(x &&+1 y)")));
+
+        assertEquals(+1, $$("(x &&+2 y)").compareTo($$("(x &&+1 y)")));
+        assertEquals(+1, $$("(x &&+10 y)").compareTo($$("(x &&-10 y)")));
+
+        assertEquals(-1, $$("(x &&+1 y)").compareTo($$("(x &&+10 y)")));
     }
 
     @Test
@@ -483,8 +503,8 @@ class TemporalTermTest {
         Term[] a = Terms.sorted(t0, t1);
         Term[] b = Terms.sorted(t1, t0);
         assertEquals(
-                Op.terms.newSubterms(a),
-                Op.terms.newSubterms(b)
+                Op.terms.subterms(a),
+                Op.terms.subterms(b)
         );
     }
 
@@ -641,8 +661,8 @@ class TemporalTermTest {
         Term b = $("((else_0) &&-10 ((--,(b0)) &&+0 (pre_1)))");
         assertEquals(a, b);
 
-        Term c = seq($("((--,(b0)) &&+0 (pre_1))"), 10, $("(else_0)"));
-        Term d = seq($("(else_0)"), -10, $("((--,(b0)) &&+0 (pre_1))"));
+        Term c = CONJ.the($("((--,(b0)) &&+0 (pre_1))"), 10, $("(else_0)"));
+        Term d = CONJ.the($("(else_0)"), -10, $("((--,(b0)) &&+0 (pre_1))"));
 
 
 
@@ -1110,9 +1130,9 @@ class TemporalTermTest {
     void testXternalConjCommutiveAllowsPosNeg() {
         String s = "( &&+- ,(--,x),x,y)";
         assertEquals(s,
-                Op.CONJ.compound(XTERNAL, new Term[]{the("x"), the("x").neg(), the("y")}).toString());
+                Op.CONJ.the(XTERNAL, new Term[]{the("x"), the("x").neg(), the("y")}).toString());
         assertEquals(s,
-                Op.CONJ.compound(XTERNAL, new Term[]{the("y"), the("x"), the("x").neg()}).toString()); 
+                Op.CONJ.the(XTERNAL, new Term[]{the("y"), the("x"), the("x").neg()}).toString());
     }
 
 

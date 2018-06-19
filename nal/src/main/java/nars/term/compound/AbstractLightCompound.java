@@ -22,7 +22,7 @@ public interface AbstractLightCompound extends Compound {
 
     @Override
     default Term the() {
-        return op().compound(dt(), arrayShared());
+        return op().the(dt(), arrayShared());
     }
 
     @Override

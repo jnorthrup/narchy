@@ -30,10 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeSet;
+import java.util.*;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
@@ -204,7 +201,7 @@ public class Builtin {
                     if (indices == null)
                         return Null;
                     else {
-                        return $.sete(indices);
+                        return SETe.the((Collection) indices);
 
                     }
                 }
@@ -232,7 +229,7 @@ public class Builtin {
                                 return indices.first();
                             default:
 
-                                return $.sete(indices);
+                                return SETe.the((Collection) indices);
                         }
                     }
                 }
@@ -357,7 +354,7 @@ public class Builtin {
 
                     long dt = nar.time.toCycles(((QuantityTerm) dtTerm).quant);
                     if (Math.abs(dt) < Integer.MAX_VALUE - 2) {
-                        return o.compound((int) dt, args);
+                        return o.the((int) dt, args);
                     } else {
                         throw new UnsupportedOperationException("time unit too large for 32-bit DT interval");
                     }

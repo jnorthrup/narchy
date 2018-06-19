@@ -37,6 +37,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
 
+
     @Override
     public FasterList<Term> toList() {
         return clone();

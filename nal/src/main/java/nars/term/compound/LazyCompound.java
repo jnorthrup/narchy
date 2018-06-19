@@ -126,7 +126,7 @@ public class LazyCompound {
             if (s == null)
                 return null;
 
-            next = op.compound(dt, s);
+            next = op.the(dt, s);
             if (next == Null)
                 return null;
         } else {

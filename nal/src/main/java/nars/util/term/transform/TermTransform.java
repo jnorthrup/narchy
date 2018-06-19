@@ -139,7 +139,7 @@ public interface TermTransform {
     }
 
     default Term the(Op op, int dt, Term[] subterms) {
-        return op.compound(dt, subterms);
+        return op.the(dt, subterms);
     }
     /**
      * change all query variables to dep vars by use of Op.imdex

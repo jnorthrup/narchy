@@ -115,7 +115,7 @@ public enum $ {
      * returns a Term if the two inputs are equal to each other
      */
     public static <T extends Term> T inh(Term subj, Term pred) {
-        return (T) INH.compound(DTERNAL, subj, pred);
+        return (T) INH.the(subj, pred);
     }
 
 
@@ -179,7 +179,7 @@ public enum $ {
 
 
     public static <T extends Term> T impl(Term a, int dt, Term b) {
-        return (T) IMPL.compound(dt, new Term[]{a, b});
+        return (T) IMPL.the(a, dt, b);
     }
 
 
@@ -323,10 +323,6 @@ public enum $ {
         return new TaskBuilder(term, punct, truth);
     }
 
-    public static Term sete(Collection<? extends Term> t) {
-        return SETe.the(DTERNAL, (Collection) t);
-    }
-
 
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
         Term[] x = new Term[c.length];
@@ -396,25 +392,13 @@ public enum $ {
         return NormalizedVariable.the(type, id);
     }
 
-    public static Term conj(@NotNull Collection<Term> collection, @NotNull Term... append) {
-        if (append.length == 0)
-            throw new RuntimeException("unnecessary append");
-        int cs = collection.size();
-        Term[] ca = new Term[cs + append.length];
-        collection.toArray(ca);
-        int i = cs;
-        for (Term t: append) {
-            ca[i++] = t;
-        }
-        return CONJ.compound(DTERNAL, ca);
-    }
 
 
     /**
      * parallel conjunction &| aka &&+0
      */
     public static Term parallel(Term... s) {
-        return CONJ.compound(0, s);
+        return CONJ.the(0, s);
     }
 
     public static Term parallel(Collection<Term> s) {
@@ -424,7 +408,7 @@ public enum $ {
     public static Term disj(Term... a) {
         Term[] b = a.clone();
         neg(b);
-        return CONJ.compound(DTERNAL, b).neg();
+        return CONJ.the(b).neg();
     }
 
 
@@ -567,25 +551,6 @@ public enum $ {
 
             return Atomic.the(n.toString());
         }
-    }
-
-    /**
-     * conjunction sequence (2-ary)
-     */
-    public static Term seq(Term x, int dt, Term y) {
-
-        return CONJ.compound(dt, new Term[]{x, y});
-    }
-
-
-    public static <K, V> Map<K, V> newHashMap() {
-        return newHashMap(0);
-    }
-
-    public static <K, V> Map<K, V> newHashMap(int capacity) {
-        return new HashMap<>(capacity);
-
-
     }
 
     public static <X> List<X> newArrayList() {

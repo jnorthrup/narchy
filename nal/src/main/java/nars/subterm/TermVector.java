@@ -1,8 +1,8 @@
 package nars.subterm;
 
-import com.google.common.base.Joiner;
 import nars.Op;
 import nars.The;
+import nars.subterm.util.SubtermMetadataCollector;
 import nars.subterm.util.TermMetadata;
 import nars.term.Term;
 
@@ -18,6 +18,11 @@ import static nars.Op.NEG;
 public abstract class TermVector extends TermMetadata implements Subterms, The {
 
     private transient boolean normalized;
+
+    protected TermVector(SubtermMetadataCollector s) {
+        super(s);
+        this.normalized = Subterms.super.isNormalized(); //TODO other tests
+    }
 
     protected TermVector(Term... terms) {
         super(terms);
@@ -65,8 +70,9 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
 
     @Override
     public String toString() {
-        return '(' + Joiner.on(',').join(arrayShared()) + ')';
+        return Subterms.toString(this);
     }
+
 
 
     @Override

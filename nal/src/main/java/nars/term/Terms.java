@@ -19,7 +19,9 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Random;
+import java.util.SortedSet;
 import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
@@ -206,19 +208,17 @@ public enum Terms {
 
     }
 
-//    /**
-//     * a Set is already duplicate free, so just sort it
-//     */
-//    public static Term[] sorted(Collection<Term> s) {
-//
-//        Term[] x = s.toArray(Op.EmptyTermArray);
-//
-//
-//        if ((x.length >= 2) && (!(s instanceof SortedSet)))
-//            return sorted(x);
-//        else
-//            return x;
-//    }
+    /**
+     * a Set is already duplicate free, so just sort it
+     */
+    public static Term[] sorted(Collection<Term> s) {
+        Term[] x = s.toArray(Op.EmptyTermArray);
+        if ((x.length >= 2) && (!(s instanceof SortedSet)))
+            return sorted(x);
+        else
+            return x;
+    }
+
 //
 //    public static Term[] neg(Term... modified) {
 //        int l = modified.length;
@@ -249,12 +249,7 @@ public enum Terms {
                 new BytesHashProvider<>(IO::termToBytes));
     }
 
-    public static boolean commonStructure(Termlike x, Termlike y) {
-        int xStruct = x.structure();
-        int yStruct = y.structure();
-        return (xStruct & yStruct) != 0;
-    }
-//
+    //
 //    public static boolean commonStructureExcept(Termlike x, Termlike y, int maskedBits) {
 //        int xStruct = x.structure() & ~(maskedBits);
 //        int yStruct = y.structure() & ~(maskedBits);

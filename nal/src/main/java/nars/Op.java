@@ -54,7 +54,7 @@ public enum Op {
     ATOM(".", Op.ANY_LEVEL, OpType.Other),
 
     NEG("--", 1, Args.One) {
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
 
             if (u.length != 1)
                 throw new RuntimeException("negation requires one subterm");
@@ -65,14 +65,14 @@ public enum Op {
 
     INH("-->", 1, OpType.Statement, Args.Two) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
             assert (u.length == 2): " requires 2 arguments, but got: " + Arrays.toString(u);
             return statement(this, dt, u[0], u[1]);
         }
     },
     SIM("<->", true, 2, OpType.Statement, Args.Two) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
             if (u.length == 1) {
                 assert (this == SIM);
                 return u[0] == Null ? Null : True;
@@ -88,7 +88,7 @@ public enum Op {
      */
     SECTe("&", true, 3, Args.GTETwo) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
             return intersect(/*Int.intersect*/(u),
                     SECTe,
                     SETe,
@@ -101,7 +101,7 @@ public enum Op {
      */
     SECTi("|", true, 3, Args.GTETwo) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
             return intersect(/*Int.intersect*/(u),
                     SECTi,
                     SETi,
@@ -114,7 +114,7 @@ public enum Op {
      */
     DIFFe("~", false, 3, Args.Two) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
             return differ(this, u);
         }
     },
@@ -124,7 +124,7 @@ public enum Op {
      */
     DIFFi("-", false, 3, Args.Two) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
             return differ(this, u);
         }
     },
@@ -144,7 +144,7 @@ public enum Op {
      */
     CONJ("&&", true, 5, Args.GTETwo) {
         @Override
-        public Term compound(int dt, Term[] u) {
+        public Term the(int dt, Term[] u) {
             final int n = u.length;
             switch (n) {
 
@@ -155,12 +155,12 @@ public enum Op {
                     Term only = u[0];
                     if (only instanceof EllipsisMatch) {
 
-                        return compound(dt, ((EllipsisMatch) only).arrayShared());
+                        return the(dt, ((EllipsisMatch) only).arrayShared());
                     } else {
 
 
                         return only instanceof Ellipsislike ?
-                                compound(CONJ, dt, only)
+                                compoundExact(CONJ, dt, only)
                                 :
                                 only;
                     }
@@ -216,7 +216,7 @@ public enum Op {
 
                         Term a = u[0];
                         Term b = u[1];
-                        if (Terms.commonStructure(a, b)) {
+                        if (Term.commonStructure(a, b)) {
                             if (a.equals(b))
                                 return u[0];
                             if (a.equalsNeg(b))
@@ -226,7 +226,7 @@ public enum Op {
                         if (!a.hasAny(Op.CONJ.bit) && !b.hasAny(Op.CONJ.bit)) {
 
 
-                            return compound(CONJ, dt, sorted(u[0], u[1]));
+                            return compoundExact(CONJ, dt, sorted(u[0], u[1]));
                         }
 
                     }
@@ -294,9 +294,9 @@ public enum Op {
                                     if ((va - vamin) > (vb + vamin)) {
                                         int min = va0 <= va1 ? 0 : 1;
 
-                                        Term[] xu = {CONJ.compound(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
+                                        Term[] xu = {CONJ.the(XTERNAL, new Term[]{b, aa[min]}), aa[1 - min]};
                                         Arrays.sort(xu);
-                                        return compound(CONJ, XTERNAL, xu);
+                                        return compoundExact(CONJ, XTERNAL, xu);
                                     }
                                 }
 
@@ -309,7 +309,7 @@ public enum Op {
                     }
 
                     if (u.length > 1) {
-                        return compound(CONJ, XTERNAL, u);
+                        return compoundExact(CONJ, XTERNAL, u);
                     } else {
                         return u[0];
                     }
@@ -338,6 +338,11 @@ public enum Op {
         public boolean isSet() {
             return true;
         }
+
+        @Override
+        public final Term the(int dt, Collection<Term> sub) {
+            return compoundExact(this, dt, Terms.sorted(sub));
+        }
     },
 
     /**
@@ -348,6 +353,11 @@ public enum Op {
         public boolean isSet() {
             return true;
         }
+
+        @Override
+        public final Term the(int dt, Collection<Term> sub) {
+            return compoundExact(this, dt, Terms.sorted(sub));
+        }
     },
 
 
@@ -356,7 +366,7 @@ public enum Op {
      */
     IMPL("==>", 5, OpType.Statement, Args.Two) {
         @Override
-        public Term compound(int dt, Term... u) {
+        public Term the(int dt, Term... u) {
             assert (u.length == 2);
             return statement(this, dt, u[0], u[1]);
         }
@@ -735,7 +745,7 @@ public enum Op {
     public static Term dt(Compound base, int nextDT) {
 
 
-        return base.op().compound(nextDT, base.arrayShared());
+        return base.op().the(nextDT, base.arrayShared());
 
 
     }
@@ -776,7 +786,7 @@ public enum Op {
                     return differ(op, ((Subterms) single).arrayShared());
                 }
                 return single instanceof Ellipsislike ?
-                        compound(op, DTERNAL, single) :
+                        compoundExact(op, DTERNAL, single) :
                         Null;
             case 2:
                 Term et0 = t[0], et1 = t[1];
@@ -871,7 +881,7 @@ public enum Op {
             }
         }
 
-        return compound(diffOp, DTERNAL, a, b);
+        return compoundExact(diffOp, DTERNAL, a, b);
     }
 
     /*@NotNull*/
@@ -896,22 +906,22 @@ public enum Op {
 
 
         int size = a.subs();
-        Collection<Term> terms = o.commutative ? new TreeSet() : new FasterList(size);
+        Collection<Term> xx = o.commutative ? new TreeSet() : new FasterList(size);
 
         for (int i = 0; i < size; i++) {
             Term x = a.sub(i);
             if (!b.contains(x)) {
-                terms.add(x);
+                xx.add(x);
             }
         }
 
-        int retained = terms.size();
+        int retained = xx.size();
         if (retained == size) {
             return a;
         } else if (retained == 0) {
             return Null;
         } else {
-            return o.the(DTERNAL, terms);
+            return o.the(DTERNAL, xx);
         }
 
     }
@@ -969,7 +979,7 @@ public enum Op {
 
             if (predicate.op() == NEG) {
 
-                return IMPL.compound(dt, subject, predicate.unneg()).neg();
+                return IMPL.the(dt, subject, predicate.unneg()).neg();
             }
 
 
@@ -979,7 +989,7 @@ public enum Op {
 
             switch (predicate.op()) {
                 case IMPL: {
-                    return IMPL.compound(predicate.dt(), CONJ.compound(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1));
+                    return IMPL.the(predicate.dt(), CONJ.the(dt, new Term[]{subject, predicate.sub(0)}), predicate.sub(1));
                 }
 
 
@@ -1041,7 +1051,7 @@ public enum Op {
 
                                         for (int i = 0; i < subPextsN; i++) {
                                             Term subPext = subPexts.sub(i);
-                                            Term merge = CONJ.compound(dt, new Term[]{sset, subPext});
+                                            Term merge = CONJ.the(dt, new Term[]{sset, subPext});
                                             if (merge == Null) return Null;
                                             else if (merge == False) {
 
@@ -1062,7 +1072,7 @@ public enum Op {
 
                                         pi.remove();
                                     } else {
-                                        pi.set(pair(at, CONJ.compound(pdt, subPexts.termsExcept(pextRemovals))));
+                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
                                     }
                                     peChange[0] = true;
                                 }
@@ -1094,7 +1104,7 @@ public enum Op {
                         newPredicate = Conj.conj(pe);
                     }
 
-                    return IMPL.compound(ndt, new Term[]{subject, newPredicate});
+                    return IMPL.the(ndt, new Term[]{subject, newPredicate});
                 }
 
 
@@ -1134,7 +1144,9 @@ public enum Op {
         }
 
 
-        return compound(op, dt, subject, predicate);
+        return op == SIM && subject.compareTo(predicate) > 0 ?
+                compoundExact(op, dt, predicate, subject) :
+                compoundExact(op, dt, subject, predicate);
     }
 
     public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
@@ -1142,7 +1154,7 @@ public enum Op {
         int yv = y.volume();
         boolean root = false;
         if (xv == yv)
-            return Terms.commonStructure(x, y) &&
+            return Term.commonStructure(x, y) &&
                     (x.containsRecursively(y, root, delim) || y.containsRecursively(x, root, delim));
         else if (xv > yv)
             return x.containsRecursively(y, root, delim);
@@ -1208,7 +1220,7 @@ public enum Op {
                     return intersect(((Subterms) single).arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
-                        compound(intersection, DTERNAL, single) :
+                        compoundExact(intersection, DTERNAL, single) :
                         single;
 
             case 2:
@@ -1273,7 +1285,7 @@ public enum Op {
         if (aaa == 1)
             return args.first();
         else {
-            return compound(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
+            return compoundExact(intersection, DTERNAL, args.toArray(Op.EmptyTermArray));
         }
     }
 
@@ -1304,7 +1316,7 @@ public enum Op {
                 Op o = container.op();
                 return o.isSet() ? o.the(remain) : remain;
             default:
-                return container.op().compound(container.dt(), cs.termsExcept(i));
+                return container.op().the(container.dt(), cs.termsExcept(i));
         }
 
     }
@@ -1326,14 +1338,6 @@ public enum Op {
         }
     }
 
-    /**
-     * direct constructor
-     * no reductions or validatios applied
-     * use with caution
-     */
-    public static Term compound(Op o, int dt, Term... u) {
-        return terms.compound(o, dt, u);
-    }
 
     /**
      * encodes a structure vector as a human-readable term.
@@ -1368,7 +1372,7 @@ public enum Op {
     }
 
     public final Term the(/*@NotNull*/ Term... u) {
-        return compound(DTERNAL, u);
+        return the(DTERNAL, u);
     }
 
     @Override
@@ -1435,25 +1439,22 @@ public enum Op {
     }
 
     public final Term[] sortedIfNecessary(int dt, Term[] u) {
-        if (commutative && commute(dt, u.length)) {
-            return sorted(u);
-        }
-        return u;
+        return commutative && commute(dt, u.length) ? sorted(u) : u;
     }
 
     public final Term the(/*@NotNull*/ Collection<Term> sub) {
         return the(DTERNAL, sub);
     }
 
-    public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
-        return compound(dt, sub.toArray(EmptyTermArray));
+    public Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
+        return the(dt, sub.toArray(EmptyTermArray));
     }
 
     /**
      * alternate method args order for 2-term w/ infix DT
      */
     public final Term the(Term a, int dt, Term b) {
-        return compound(dt, a, b);
+        return the(dt, a, b);
     }
 
     /**
@@ -1462,8 +1463,17 @@ public enum Op {
      * - instance(..)
      * - reduction to another term or True/False/Null
      */
-    public Term compound(int dt, Term... u) {
-        return terms.compound(this, dt, u);
+    public Term the(int dt, Term... u) {
+        return compoundExact(this, dt, sortedIfNecessary(dt,u));
+    }
+
+    /**
+     * direct constructor
+     * no reductions or validations applied
+     * use with caution
+     */
+    public static Term compoundExact(Op o, int dt, Term... u) {
+        return terms.compound(o, dt, u);
     }
 
     /**

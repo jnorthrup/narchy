@@ -28,6 +28,17 @@ public abstract class ActionConcept extends Sensor {
         ((ScalarBeliefTable)beliefs()).res(resolution);
     }
 
+    @Override
+    public boolean add(Task t, NAR n) {
+        if (t.isBeliefOrGoal() && t.isEternal()) {
+            /** reject eternal beliefs and goals of any type
+             * TODO avoid creation of Eternal tables
+             *  */
+            return false;
+        }
+        return super.add(t, n);
+    }
+
     abstract public Stream<ITask> update(long start, long end, int dur, NAR nar);
 
     @Override

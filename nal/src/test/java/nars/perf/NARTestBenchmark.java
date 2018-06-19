@@ -60,7 +60,7 @@ public class NARTestBenchmark {
 
         switch (termBuilder) {
             case "heap":
-                Op.terms = new HeapTermBuilder();
+                Op.terms = HeapTermBuilder.the;
                 break;
             case "interning":
                 Op.terms = new InterningTermBuilder(size, false);

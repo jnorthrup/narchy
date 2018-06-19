@@ -1,8 +1,10 @@
-package nars.term.compound.util;
+package nars.term.compound;
 
 import nars.$;
 import nars.term.Term;
 import nars.term.atom.Int;
+import nars.term.compound.util.Image;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -12,7 +14,7 @@ class ImageTest {
 
     @Test
     void testNormlizeExt() {
-        assertEquals(
+        Assertions.assertEquals(
                 "reaction(acid,base)",
                 Image.imageNormalize($$("(acid --> (reaction,/,base))")).toString()
         );
@@ -36,7 +38,6 @@ class ImageTest {
 
     @Test
     void testNormlizeSubterms() {
-        
         assertEquals(
                 "(reaction(acid,base)<->x)",
                 $$("(x <-> (acid --> (reaction,/,base)))").toString()

@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 /** bypasses interning and */
 public interface DirectTermTransform extends TermTransform.NegObliviousTermTransform {
 
-    TermBuilder localBuilder = new HeapTermBuilder();
+    TermBuilder localBuilder = HeapTermBuilder.the;
 
     @Override
     default Term the(Op op, int dt, Term[] t) {

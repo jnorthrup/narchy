@@ -29,6 +29,11 @@ public class ArrayTermVector extends TermVector {
     }
 
     @Override
+    public String toString() {
+        return Subterms.toString(terms);
+    }
+
+    @Override
     public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         for (Term t : terms)
             v = reduce.intValueOf(v, t);

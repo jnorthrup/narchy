@@ -38,7 +38,7 @@ public abstract class flat extends Functor.AbstractInlineFunctor1 {
     public static List<Term> collect(@NotNull Term[] x, @NotNull List<Term> l) {
         for (Term a : x) {
             if (a.op() == Op.PROD || a.op().isSet() || a.op() == Op.CONJ) {
-                ((Subterms) a).copyInto(l);
+                ((Subterms) a).addTo(l);
             } else
                 l.add(a);
         }

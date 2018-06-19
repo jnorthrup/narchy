@@ -23,6 +23,12 @@ public class AnonVector extends TermVector {
     /*@Stable*/
     private final short[] subterms;
 
+    protected AnonVector(short[] s) {
+        super(AnonID.subtermMetadata(s));
+        this.subterms = s;
+        testIfInitiallyNormalized();
+    }
+
     /** assumes the array contains only AnonID instances */
     public AnonVector(Term... s) {
         super(s); 
@@ -45,6 +51,10 @@ public class AnonVector extends TermVector {
             t[i] = tt;
         }
 
+        testIfInitiallyNormalized();
+    }
+
+    protected void testIfInitiallyNormalized() {
         /* checks for monotonically increasing variable numbers starting from 1,
          which will indicate that the subterms is normalized
          */
@@ -81,23 +91,69 @@ public class AnonVector extends TermVector {
 
     @Override
     public Subterms replaceSubs(Term from, Term to) {
-        int found;
-        if ((found = indexOf(from))==-1)
+
+        short fid = AnonID.id(from);
+        if (fid == 0)
+            return this; //no change
+
+        boolean found = false;
+        if (fid > 0) {
+            //find positive or negative subterm
+            for (short x: subterms) {
+                if (Math.abs(x) == fid) {
+                    found = true;
+                    break;
+                }
+            }
+        } else {
+            //find exact negative only
+            for (short x: subterms) {
+                if (x == fid) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+        if (!found)
             return this;
 
-        short eq = subterms[found]; 
-        int n = subs();
-        TermList t = new TermList(n);
-        for (int i = 0; i < n; i++) {
-            short si = subterms[i];
-            t.addWithoutResizeCheck(si == eq ? to : idToTermWithNegationTest(si)); 
+
+        short tid = AnonID.id(to);
+        if (tid!=0) {
+            assert(from!=to);
+            short[] a = this.subterms.clone();
+            if (fid > 0) {
+                //replace positive or negative, with original polarity
+                for (int i = 0, aLength = a.length; i < aLength; i++) {
+                    short x = a[i];
+                    if (x == fid) {
+                        a[i] = tid;
+                    } else if (-x == fid) {
+                        a[i] = (short) -tid;
+                    }
+                }
+            } else {
+                //replace negative only
+                for (int i = 0, aLength = a.length; i < aLength; i++) {
+                    if (a[i] == fid)
+                        a[i] = tid;
+                }
+            }
+            return new AnonVector(a);
+        } else {
+            int n = subs();
+            TermList t = new TermList(n);
+            for (int i = 0; i < n; i++) {
+                short si = subterms[i];
+                t.addWithoutResizeCheck(si == fid ? to : idToTermPosOrNeg(si));
+            }
+            return t;
         }
-        return t;
     }
 
     @Override
     public final Term sub(int i) {
-        return idToTermWithNegationTest(subterms[i]);
+        return idToTermPosOrNeg(subterms[i]);
     }
 
     @Override
@@ -148,26 +204,24 @@ public class AnonVector extends TermVector {
         return subterms.length;
     }
 
+    public int indexOf(short id) {
+        return ArrayUtils.indexOf(subterms, id);
+    }
     private int indexOf(AnonID t, boolean neg) {
-        return ArrayUtils.indexOf(subterms, t.anonID(neg));
+        return indexOf(t.anonID(neg));
     }
     private int indexOf(AnonID t) {
-        return ArrayUtils.indexOf(subterms, t.anonID());
+        return indexOf(t.anonID());
     }
 
     @Override
     public int indexOf(Term t) {
-        boolean neg = false;
-        if (t.op()==NEG) {
-            if (!anyNeg())
-                return -1;
-            t = t.unneg();
-            neg = true;
+        short tid = AnonID.id(t);
+        if (tid!=0) {
+            //if (tid >= 1 || anyNeg())
+            return indexOf(tid);
         }
-        if (t instanceof AnonID)
-            return indexOf((AnonID) t, neg);
-        else
-            return -1; 
+        return -1;
     }
 
     @Override

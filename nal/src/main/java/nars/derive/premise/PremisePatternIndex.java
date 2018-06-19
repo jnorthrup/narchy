@@ -128,7 +128,7 @@ public class PremisePatternIndex extends MapConceptIndex {
 
 
         //Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
-        Subterms v = terms.newSubterms(bb);
+        Subterms v = terms.subterms(bb);
 
 
         Ellipsis e = Ellipsis.firstEllipsis(bb);

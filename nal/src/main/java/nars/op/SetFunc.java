@@ -81,18 +81,19 @@ public class SetFunc {
         if (a instanceof Term && a.equals(b))
             return (Term) a;
 
-
-        Set<Term> cc = Subterms.intersect(a, b);
-        if (cc == null) return Null;
+        SortedSet<Term> cc = Subterms.intersectSorted(a, b);
+        if (cc == null)
+            return Null;
 
         int ssi = cc.size();
-        if (ssi == 0) return Null;
+        switch (ssi) {
+            case 0: return Null;
+            case 1: return cc.first();
+            default:
+                return Op.compoundExact(o, DTERNAL, cc.toArray(Op.EmptyTermArray));
+        }
 
-        Term[] c = cc.toArray(new Term[ssi]);
-        if (ssi > 1)
-            Arrays.sort(c);
 
-        return o.the(c);
     }
 
     public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
@@ -101,8 +102,8 @@ public class SetFunc {
             return (Term) a;
 
         TreeSet<Term> t = new TreeSet<>();
-        a.copyInto(t);
-        b.copyInto(t);
+        a.addTo(t);
+        b.addTo(t);
         if (bothTerms) {
             int as = a.subs();
             int bs = b.subs();

@@ -240,7 +240,7 @@ public class Evaluation {
                 xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
             }
 
-            u = o.compound(c.dt(), xy);
+            u = o.the(c.dt(), xy);
             o = u.op();
             uu = u.subterms();
         } else {

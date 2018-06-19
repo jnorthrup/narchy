@@ -35,14 +35,13 @@ import spacegraph.video.Tex;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL2.GL_POLYGON;
 import static nars.Op.BELIEF;
+import static nars.Op.SETe;
 import static nars.time.Tense.ETERNAL;
 
 
@@ -373,7 +372,7 @@ public class ShapeSensor extends NARService {
             }
 
             if(!ts.isEmpty())
-                image.add($.sete(ts));
+                image.add(SETe.the((Collection) ts));
         }
     }
 

@@ -5,15 +5,21 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.util.term.TermBuilder;
 
+/** stateless implementation */
 public class HeapTermBuilder extends TermBuilder {
 
+    public final static HeapTermBuilder the = new HeapTermBuilder();
+
+    protected HeapTermBuilder() {
+    }
+
     @Override
-    protected Term newCompound(Op o, int dt, Term[] u) {
+    public Term compound(Op o, int dt, Term[] u) {
         return compoundInstance(o, dt, u);
     }
 
     @Override
-    public Subterms newSubterms(Op inOp, Term... s) {
+    public Subterms subterms(Op inOp, Term... s) {
         return subtermsInstance(s);
     }
 }

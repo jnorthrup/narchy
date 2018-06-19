@@ -2,8 +2,11 @@ package nars.term.anon;
 
 import nars.Op;
 import nars.The;
+import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
+
+import static nars.Op.NEG;
 
 /**
  * indicates the term has an anonymous, canonical identifier (16-bit short)
@@ -43,7 +46,7 @@ public interface AnonID extends Term, The {
         return (short) (mask | id);
     }
 
-    static Term idToTermWithNegationTest(short /* short */ i) {
+    static Term idToTermPosOrNeg(short /* short */ i) {
         if (i < 0) {
             return idToTerm((short) -i).neg();
         } else {
@@ -52,7 +55,7 @@ public interface AnonID extends Term, The {
     }
 
     /** fast Anom (non-Var) test. works for either positive or negative */
-    static boolean isAnomOrNegatedAnom(short i) {
+    static boolean isAnonPosOrNeg(short i) {
         return isAnom(Math.abs(i));
     }
 
@@ -65,7 +68,7 @@ public interface AnonID extends Term, The {
         return ((i & 0xff00) != ATOM_MASK) ? (i & 0xff) : ifNot;
     }
 
-    /** assumes non-negative */
+    /** assumes non-negative; if the input is negative use idToTermPosOrNeg */
     static Term idToTerm(short /* short */ i) {
         byte num = (byte) (i & 0xff);
         int m = idtoMask(i);
@@ -73,13 +76,13 @@ public interface AnonID extends Term, The {
             case ATOM_MASK:
                 return Anom.the[num];
             case VARDEP_MASK:
-                return NormalizedVariable.the(Op.VAR_DEP, num);
+                return NormalizedVariable.the(Op.VAR_DEP.id, num);
             case VARINDEP_MASK:
-                return NormalizedVariable.the(Op.VAR_INDEP, num);
+                return NormalizedVariable.the(Op.VAR_INDEP.id, num);
             case VARQUERY_MASK:
-                return NormalizedVariable.the(Op.VAR_QUERY, num);
+                return NormalizedVariable.the(Op.VAR_QUERY.id, num);
             case VARPATTERN_MASK:
-                return NormalizedVariable.the(Op.VAR_PATTERN, num);
+                return NormalizedVariable.the(Op.VAR_PATTERN.id, num);
             default:
                 throw new UnsupportedOperationException();
         }
@@ -87,6 +90,27 @@ public interface AnonID extends Term, The {
 
     static int idtoMask(short i) {
         return i & 0xff00;
+    }
+
+    public static boolean isAnonPosOrNeg(Term t0) {
+        return t0 instanceof AnonID || t0.unneg() instanceof AnonID;
+    }
+
+    /** returns 0 if the term is not anon ID */
+    public static short id(Term t) {
+        boolean neg = false;
+        if (t.op()==NEG) {
+            t = t.unneg();
+            neg = true;
+        }
+        return !(t instanceof AnonID) ? 0 : ((AnonID) t).anonID(neg);
+    }
+
+    static SubtermMetadataCollector subtermMetadata(short[] s) {
+        SubtermMetadataCollector c = new SubtermMetadataCollector();
+        for (short x : s)
+            idToTermPosOrNeg(x).collectMetadata(c);
+        return c;
     }
 
     @Override

@@ -395,7 +395,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             return null;
         else {
             if (timeDelta instanceof Integer) {
-                return o.compound((int)timeDelta, subj, pred);
+                return o.the((int)timeDelta, subj, pred);
             } else {
                 
                 QuantityTerm q = (QuantityTerm)timeDelta;

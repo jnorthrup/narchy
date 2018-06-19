@@ -332,8 +332,8 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default void copyInto(/*@NotNull*/ Collection<Term> set) {
-        subterms().copyInto(set);
+    default void addTo(/*@NotNull*/ Collection<Term> set) {
+        subterms().addTo(set);
     }
 
 

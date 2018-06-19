@@ -62,6 +62,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return null;
     }
+    static @Nullable SortedSet<Term> intersectSorted(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+        if ((a.structure() & b.structure()) != 0) {
+
+            Set<Term> as = a.toSet();
+            SortedSet<Term> ab = b.toSetSorted(as::contains);
+            if (ab != null)
+                return ab;
+        }
+        return null;
+    }
 
     /**
      * recursively
@@ -101,6 +111,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static String toString(/*@NotNull*/ Iterable<? extends Term> subterms) {
+        return '(' + Joiner.on(',').join(subterms) + ')';
+    }
+    static String toString(/*@NotNull*/ Term... subterms) {
         return '(' + Joiner.on(',').join(subterms) + ')';
     }
 
@@ -195,13 +208,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
         forEach(u::add);
         return u;
     }
-
-    default /*@NotNull*/ SortedSet<Term> toSetSortedExcept(Predicate<Term> t) {
-        TreeSet u = new TreeSet();
+    default /*@NotNull*/ SortedSet<Term> toSetSorted(Predicate<Term> t) {
+        TreeSet<Term> u = new TreeSet<>();
         forEach(x -> {
-            if (!t.test(x)) u.add(x);
+            if (t.test(x)) u.add(x);
         });
         return u;
+    }
+
+    default /*@NotNull*/ SortedSet<Term> toSetSortedExcept(Predicate<Term> t) {
+        return toSetSorted(x -> !t.test(x));
     }
 
     default /*@NotNull*/ FasterList<Term> toList() {
@@ -371,7 +387,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    default void copyInto(Collection<Term> target) {
+    default void addTo(Collection<Term> target) {
         forEach(target::add);
     }
 
@@ -720,7 +736,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms sorted() {
-        return isSorted() ? this : Op.terms.newSubterms(Terms.sorted(arrayShared()));
+        return isSorted() ? this : Op.terms.subterms(Terms.sorted(arrayShared()));
     }
 
     default Term[] termsExcept(int i) {

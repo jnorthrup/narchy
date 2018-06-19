@@ -38,7 +38,7 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 
         @Override
         public Term reconstruct(Term superterm, List<TaskRegion> components) {
-            return Op.DIFFe.compound(DTERNAL, new Term[]{
+            return Op.DIFFe.the(DTERNAL, new Term[]{
                     components.get(0).task().term(),
                     components.get(1).task().term()});
         }

@@ -54,14 +54,14 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Override
-    public final Term newCompound(Op op, int dt, Term[] u) {
+    public final Term compound(Op op, int dt, Term[] u) {
         return internable(op, dt, u) ?
                 termCache[op.id].apply(new InternedCompound(op, dt, u)) :
-                super.newCompound(op, dt, u);
+                super.compound(op, dt, u);
     }
 
     @Override
-    public Subterms newSubterms(Op inOp, Term... s) {
+    public Subterms subterms(Op inOp, Term... s) {
 
         if (inOp != PROD && internable(s)) {
 
@@ -82,7 +82,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //                return ((BiSubterm.ReversibleBiSubterm)newSubterms(inOp, s[1], s[0])).reverse();
 //            }
 
-            return super.newSubterms(inOp, s);
+            return super.subterms(inOp, s);
         }
 
     }

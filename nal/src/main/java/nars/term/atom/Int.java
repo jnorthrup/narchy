@@ -8,7 +8,7 @@ import jcog.data.SimpleIntSet;
 import jcog.list.FasterList;
 import jcog.math.Longerval;
 import nars.*;
-import nars.subterm.util.TermMetadata;
+import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -85,7 +85,7 @@ public class Int implements Intlike, The {
     }
 
     @Override
-    public final void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
+    public final void collectMetadata(SubtermMetadataCollector s) {
         s.collectNonVar(op(), hashCode());
     }
 

@@ -12,16 +12,14 @@ import nars.term.atom.Int;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.INT;
 import static nars.Op.PROD;
+import static nars.Op.SETe;
 
 
 /**
@@ -190,7 +188,7 @@ public class DefaultTermizer implements Termizer {
         if (o instanceof Set) {
             Collection<Term> arg = (Collection<Term>) ((Collection) o).stream().map(this::term).collect(Collectors.toList());
             if (arg.isEmpty()) return EMPTY;
-            return $.sete(arg);
+            return SETe.the((Collection) arg);
         } else if (o instanceof Map) {
 
             Map mapo = (Map) o;
@@ -207,7 +205,7 @@ public class DefaultTermizer implements Termizer {
                 }
             });
             if (components.isEmpty()) return EMPTY;
-            return $.sete(components);
+            return SETe.the((Collection) components);
         }
 
 
@@ -463,20 +461,20 @@ public class DefaultTermizer implements Termizer {
 
     }
 
-    @NotNull
-    public static <T extends Term> Map<Atomic,T> mapStaticClassFields(@NotNull Class c, @NotNull Function<Field, T> each) {
-        Field[] ff = c.getFields();
-        Map<Atomic,T> t = $.newHashMap(ff.length);
-        for (Field f : ff) {
-            if (Modifier.isStatic(f.getModifiers())) {
-                T xx = each.apply(f);
-                if (xx!=null) {
-                    t.put(Atomic.the(f.getName()), xx);
-                }
-            }
-        }
-        return t;
-    }
+//    @NotNull
+//    public static <T extends Term> Map<Atomic,T> mapStaticClassFields(@NotNull Class c, @NotNull Function<Field, T> each) {
+//        Field[] ff = c.getFields();
+//        Map<Atomic,T> t = $.newHashMap(ff.length);
+//        for (Field f : ff) {
+//            if (Modifier.isStatic(f.getModifiers())) {
+//                T xx = each.apply(f);
+//                if (xx!=null) {
+//                    t.put(Atomic.the(f.getName()), xx);
+//                }
+//            }
+//        }
+//        return t;
+//    }
 
 
 }

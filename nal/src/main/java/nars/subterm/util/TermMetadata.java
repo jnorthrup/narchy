@@ -1,8 +1,5 @@
 package nars.subterm.util;
 
-import jcog.Util;
-import nars.Op;
-import nars.Param;
 import nars.term.Term;
 import nars.term.Termlike;
 
@@ -33,25 +30,11 @@ abstract public class TermMetadata implements Termlike {
      */
     public final int hash;
 
-    public static final class SubtermMetadataCollector {
-        public int structure = 0;
-        public short vol = 1;
-        public byte varPattern = 0, varQuery = 0, varDep = 0, varIndep = 0;
-        public int hash = 1;
-
-        public void collectNonVar(Op type, int hash) {
-            this.vol++;
-            this.structure |= type.bit;
-            this.hash = Util.hashCombine(this.hash, hash);
-        }
+    protected TermMetadata(Term... terms) {
+        this(new SubtermMetadataCollector(terms));
     }
 
-    protected TermMetadata(Term... terms) {
-        assert (terms.length <= Param.COMPOUND_SUBTERMS_MAX);
-
-        SubtermMetadataCollector s = new SubtermMetadataCollector();
-        for (Term x : terms)
-            x.collectMetadata(s);
+    protected TermMetadata(SubtermMetadataCollector s) {
 
         this.hash = s.hash;
         this.structure = s.structure;

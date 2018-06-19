@@ -28,8 +28,11 @@ import nars.util.TimeAware;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import static java.lang.Long.toBinaryString;
 import static nars.$.$;
@@ -155,13 +158,17 @@ public class TermTest {
     }
 
     @Test
-    void testOtherCommutivity() throws Exception {
+    void testSectCommutivity() throws Exception {
         assertEquivalentTerm("(&,a,b)", "(&,b,a)");
         assertEquivalentTerm("(|,a,b)", "(|,b,a)");
+    }
 
+    @Test
+    void testSimCommutivity() throws Exception {
         assertEquivalentTerm("<{Birdie}<->{Tweety}>", "<{Tweety}<->{Birdie}>");
         assertEquivalentTerm($("<{Birdie}<->{Tweety}>"),
                         $("<{Tweety}<->{Birdie}>"));
+
         assertEquivalentTerm(
                 $.sim($("{Birdie}"),$("{Tweety}")),
                 $.sim($("{Tweety}"),$("{Birdie}"))
@@ -169,15 +176,42 @@ public class TermTest {
 
 
 
-
-
-
     }
 
     @Test
     void testCommutativivity()  {
-        assertFalse(SETe.the(Atomic.the("x")).isCommutative());
-        assertTrue(SETe.the(Atomic.the("x"), Atomic.the("y")).isCommutative());
+        Atomic W = Atomic.the("w");
+        Atomic X = Atomic.the("x");
+        Atomic Y = Atomic.the("y");
+        Atomic Z = Atomic.the("z");
+        Stream.of(Op.ops).filter(x -> x.commutative).forEach(o -> {
+            assertFalse(o.the(X).isCommutative());
+
+            Term xy = o.the(X, Y);
+            assertTrue(xy.isCommutative());
+            assertEquals(xy, o.the(Y, X), ()->"commutivity failed for " + xy);
+            assertEquals(xy, o.the(List.of(Y, X)), ()->"commutivity failed for " + xy);
+            assertEquals(xy, o.the(Set.of(Y, X)), ()->"commutivity failed for " + xy);
+
+            if (o.maxSize > 2) {
+                Term xyz = o.the(X, Y, Z);
+                assertTrue(xy.isCommutative());
+                assertEquals(xyz, o.the(Y, X, Z), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(List.of(Y, X, Z)), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(Set.of(Y, X, Z)), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(X, Z, Y), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(X, Y, Z), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(Z, Y, X), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(Z, X, Y), () -> "commutivity failed for " + xyz);
+                assertEquals(xyz, o.the(Y, Z, X), () -> "commutivity failed for " + xyz);
+
+                Term wxyz = o.the(W, X, Y, Z);
+                assertEquals(wxyz, o.the(Y, W, X, Z), () -> "commutivity failed for " + wxyz);
+                assertEquals(wxyz, o.the(List.of(Y, W, X, Z)), () -> "commutivity failed for " + wxyz);
+                assertEquals(wxyz, o.the(Set.of(Y, W, X, Z)), () -> "commutivity failed for " + wxyz);
+                //TODO other permutes
+            }
+        });
     }
 
 
@@ -405,7 +439,7 @@ public class TermTest {
         Term xy = EllipsisMatch.match($.the("x"), $.the("y"));
 
         for (Op o : new Op[] { Op.SECTi, SECTe, DIFFe, DIFFi, CONJ }) {
-            Term z = o.compound(DTERNAL, xy);
+            Term z = o.the(DTERNAL, xy);
             assertEquals("(x" + o.str + "y)", z.toString());
             assertEquals(3, z.volume());
             assertEquals(Op.ATOM, z.sub(0).op());

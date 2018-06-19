@@ -2,7 +2,7 @@ package nars.term.atom;
 
 import nars.Op;
 import nars.The;
-import nars.subterm.util.TermMetadata;
+import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
@@ -152,7 +152,7 @@ public class Atom extends AtomicConst implements The {
     }
 
     @Override
-    public void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
+    public void collectMetadata(SubtermMetadataCollector s) {
        s.collectNonVar(ATOM, hash);
     }
 }
