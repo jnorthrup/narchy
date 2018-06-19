@@ -23,8 +23,8 @@ import org.oakgp.util.Signature;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.oakgp.TestUtils.*;
 import static org.oakgp.NodeType.integerType;
+import static org.oakgp.TestUtils.*;
 import static org.oakgp.function.math.IntFunc.the;
 
 public class FnNodeTest {

@@ -31,8 +31,8 @@ import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 import org.oakgp.node.VariableNode;
 import org.oakgp.primitive.VariableSet;
-import org.oakgp.rank.Ranking;
 import org.oakgp.rank.Evolved;
+import org.oakgp.rank.Ranking;
 import org.oakgp.serialize.NodeReader;
 import org.oakgp.serialize.NodeWriter;
 

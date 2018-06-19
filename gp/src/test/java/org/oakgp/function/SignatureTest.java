@@ -22,9 +22,9 @@ import org.oakgp.util.Signature;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oakgp.TestUtils.assertUnmodifiable;
 import static org.oakgp.NodeType.booleanType;
 import static org.oakgp.NodeType.integerType;
+import static org.oakgp.TestUtils.assertUnmodifiable;
 
 public class SignatureTest {
     @Test

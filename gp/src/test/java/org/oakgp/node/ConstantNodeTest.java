@@ -18,8 +18,8 @@ package org.oakgp.node;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oakgp.TestUtils.*;
 import static org.oakgp.NodeType.*;
+import static org.oakgp.TestUtils.*;
 
 public class ConstantNodeTest {
     @Test

@@ -31,8 +31,8 @@ import org.oakgp.util.Signature;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oakgp.TestUtils.assertUnmodifiable;
 import static org.oakgp.NodeType.*;
+import static org.oakgp.TestUtils.assertUnmodifiable;
 
 public class FnSetTest {
     private static final Fn ADD = IntFunc.the.add;

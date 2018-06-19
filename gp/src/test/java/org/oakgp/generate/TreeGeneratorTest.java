@@ -26,10 +26,10 @@ import org.oakgp.primitive.*;
 import org.oakgp.util.DummyRandom;
 import org.oakgp.util.Signature;
 
-import static org.oakgp.TestUtils.assertNodeEquals;
-import static org.oakgp.TestUtils.integerConstant;
 import static org.oakgp.NodeType.integerType;
 import static org.oakgp.NodeType.type;
+import static org.oakgp.TestUtils.assertNodeEquals;
+import static org.oakgp.TestUtils.integerConstant;
 import static org.oakgp.function.math.IntFunc.the;
 import static org.oakgp.util.DummyRandom.random;
 

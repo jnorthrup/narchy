@@ -30,8 +30,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.oakgp.TestUtils.readNode;
 import static org.oakgp.NodeType.integerType;
+import static org.oakgp.TestUtils.readNode;
 import static org.oakgp.function.math.ArithmeticExpressionSimplifier.assertEvaluateToSameResult;
 import static org.oakgp.util.NodeSimplifier.simplify;
 

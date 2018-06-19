@@ -1,12 +1,10 @@
 package nars.util.term;
 
-import jcog.WTF;
 import nars.Op;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
-import nars.subterm.util.DisposableTermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.anon.AnonID;
@@ -140,8 +138,8 @@ public abstract class TermBuilder {
     }
 
     public Compound theCompound(Op op, int dt, Subterms subterms) {
-        if (subterms instanceof DisposableTermList)
-            throw new WTF();
+//        if (subterms instanceof DisposableTermList)
+//            throw new WTF();
         if (!op.temporal && !subterms.isTemporal()) {
 //            if (dt!=DTERNAL) {
 //                throw new WTF();

@@ -22,8 +22,8 @@ import java.util.List;
 
 import static java.lang.Boolean.TRUE;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oakgp.TestUtils.*;
 import static org.oakgp.NodeType.*;
+import static org.oakgp.TestUtils.*;
 
 public class NodeSetTest {
     @Test

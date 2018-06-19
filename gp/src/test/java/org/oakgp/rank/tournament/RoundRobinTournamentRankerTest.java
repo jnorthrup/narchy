@@ -17,8 +17,8 @@ package org.oakgp.rank.tournament;
 
 import org.junit.jupiter.api.Test;
 import org.oakgp.node.Node;
-import org.oakgp.rank.Ranking;
 import org.oakgp.rank.GenerationRanker;
+import org.oakgp.rank.Ranking;
 
 import java.util.stream.Stream;
 

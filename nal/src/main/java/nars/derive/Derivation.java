@@ -216,21 +216,21 @@ public class Derivation extends PreDerivation {
 
 
 
-        this.anon = new CachedAnon(ANON_INITIAL_CAPACITY, 16 * 1024) {
+        this.anon = new CachedAnon(ANON_INITIAL_CAPACITY, 64 * 1024) {
             @Override
             protected boolean cacheGet() {
                 return false;
             }
-
-            @Override
-            public Term put(Term x) {
-                if (x instanceof Atom) {
-                    Termed f = staticFunctors.get(x);
-                    if (f != null)
-                        x = (Term)f;
-                }
-                return super.put(x);
-            }
+//
+//            @Override
+//            public Term put(Term x) {
+//                if (x instanceof Atom) {
+//                    Termed f = staticFunctors.get(x);
+//                    if (f != null)
+//                        x = (Term)f;
+//                }
+//                return super.put(x);
+//            }
 
         };
 
@@ -287,12 +287,12 @@ public class Derivation extends PreDerivation {
         }
 
         {
-            Map<Term, Termed> m = new HashMap<>(Builtin.statik.length);
+            Map<Term, Termed> n = new HashMap<>(Builtin.statik.length);
             for (Termed s : Builtin.statik) {
                 if (s instanceof Functor.InlineFunctor)
-                    m.put(s.term(), s);
+                    n.put(s.term(), s);
             }
-            this.staticFunctors = Maps.immutable.ofMap(m);
+            this.staticFunctors = Maps.immutable.ofMap(n);
         }
 
     }

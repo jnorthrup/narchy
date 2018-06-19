@@ -25,8 +25,8 @@ import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.oakgp.TestUtils.*;
 import static org.oakgp.NodeType.*;
+import static org.oakgp.TestUtils.*;
 import static org.oakgp.util.Void.VOID_CONSTANT;
 
 public class NodeWriterTest {

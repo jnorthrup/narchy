@@ -26,8 +26,8 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.oakgp.TestUtils.*;
 import static org.oakgp.NodeType.integerType;
+import static org.oakgp.TestUtils.*;
 import static org.oakgp.util.DummyRandom.GetIntExpectation.nextInt;
 
 public class ConstantToFnMutationTest {

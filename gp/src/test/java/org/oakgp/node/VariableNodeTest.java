@@ -20,9 +20,9 @@ import org.oakgp.Assignments;
 import org.oakgp.NodeType;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.oakgp.NodeType.integerType;
 import static org.oakgp.TestUtils.createVariable;
 import static org.oakgp.TestUtils.integerConstant;
-import static org.oakgp.NodeType.integerType;
 
 public class VariableNodeTest {
     @Test

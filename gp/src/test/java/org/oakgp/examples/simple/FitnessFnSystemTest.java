@@ -35,8 +35,8 @@ import org.oakgp.rank.fitness.FitFn;
 
 import java.util.*;
 
-import static org.oakgp.TestUtils.createArguments;
 import static org.oakgp.NodeType.*;
+import static org.oakgp.TestUtils.createArguments;
 import static org.oakgp.rank.fitness.TestDataFitFn.createIntegerTestDataFitnessFunction;
 import static org.oakgp.util.Utils.intArrayType;
 import static org.oakgp.util.Utils.intConsts;

@@ -21,8 +21,8 @@ import org.oakgp.function.classify.IsNegative;
 import org.oakgp.function.classify.IsPositive;
 import org.oakgp.function.classify.IsZero;
 
-import static org.oakgp.TestUtils.createArguments;
 import static org.oakgp.NodeType.integerType;
+import static org.oakgp.TestUtils.createArguments;
 
 public class FilterTest extends AbstractFnTest {
     @Override

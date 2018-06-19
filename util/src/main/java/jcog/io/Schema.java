@@ -2,7 +2,6 @@ package jcog.io;
 
 import jcog.io.arff.ARFF;
 import jcog.list.FasterList;
-import org.eclipse.collections.api.list.ImmutableList;
 
 import java.util.HashMap;
 import java.util.List;

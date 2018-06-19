@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.jetbrains.annotations.Nullable;
 

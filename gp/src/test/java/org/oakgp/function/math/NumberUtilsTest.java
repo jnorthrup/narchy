@@ -21,8 +21,8 @@ import org.oakgp.node.FnNode;
 import org.oakgp.node.Node;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oakgp.TestUtils.*;
 import static org.oakgp.NodeType.integerType;
+import static org.oakgp.TestUtils.*;
 
 public class NumberUtilsTest {
     private static final IntFunc NUMBER_UTILS = IntFunc.the;

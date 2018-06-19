@@ -21,8 +21,8 @@ import org.oakgp.node.VariableNode;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.oakgp.TestUtils.assertUnmodifiable;
 import static org.oakgp.NodeType.*;
+import static org.oakgp.TestUtils.assertUnmodifiable;
 
 public class VariableSetTest {
     @Test

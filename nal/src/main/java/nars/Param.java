@@ -43,14 +43,6 @@ public abstract class Param {
     public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = true;
 
 
-    /** extends the time all unit tests are allowed to run for.
-     *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 1.5f;
-
-
-    @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
-
     /** full causal feedback: applied as mult to every task on input */
     public static boolean CAUSE_MULTIPLY_EVERY_TASK = false;
 
@@ -180,6 +172,14 @@ public abstract class Param {
 
     public final IntRange deriveBranchTTL = new IntRange(TTL_MIN*2, 0, 2048);
 
+
+    /** extends the time all unit tests are allowed to run for.
+     *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
+    public static float TEST_TIME_MULTIPLIER = 2f;
+
+
+    @Range(min=1, max=32)
+    public static int TEMPORAL_SOLVER_ITERATIONS = 4;
 
 
 

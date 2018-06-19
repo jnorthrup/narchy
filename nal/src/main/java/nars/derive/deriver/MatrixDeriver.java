@@ -38,7 +38,7 @@ public class MatrixDeriver extends Deriver {
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min = 1, max = 8)
-    public int premisesPerConcept = 2;
+    public int premisesPerConcept = 3;
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
