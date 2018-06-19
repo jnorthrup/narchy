@@ -564,7 +564,7 @@ public class Int implements Intlike, The {
                 y = subs[0];
                 for (Map.Entry<ByteList, Object /*Intlike*/> e : data.entrySet()) {
                     Object v = e.getValue();
-                    y = y.transform(e.getKey(), (Term) v);
+                    y = y.replaceAt(e.getKey(), (Term) v);
                 }
             } else {
                 y = null;
@@ -745,7 +745,7 @@ public class Int implements Intlike, The {
                 int min = i1.min;
                 List<Term> t = $.newArrayList(1 + max - min);
                 for (int i = min; i <= max; i++) {
-                    @Nullable Term c1 = cc.transform(e.getKey(), $.the(i));
+                    @Nullable Term c1 = cc.replaceAt(e.getKey(), $.the(i));
                     if (c1 != null)
                         t.add(c1);
                 }
@@ -763,8 +763,8 @@ public class Int implements Intlike, The {
 
                 for (int i = min1; i <= max1; i++) {
                     for (int j = min2; j <= max2; j++) {
-                        Term c1 = cc.transform(e1.getKey(), $.the(i));
-                        Term c2 = c1.transform(e2.getKey(), $.the(j));
+                        Term c1 = cc.replaceAt(e1.getKey(), $.the(i));
+                        Term c2 = c1.replaceAt(e2.getKey(), $.the(j));
                         if (!(c2 instanceof Compound))
                             
                             continue;

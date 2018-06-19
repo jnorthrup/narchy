@@ -42,20 +42,10 @@ public interface Variable extends Atomic {
         return 0;
     }
 
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
+    @Override
+    default boolean hasVars() {
+        return true;
+    }
 
     @Override
     default float voluplexity() {

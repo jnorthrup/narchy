@@ -5,10 +5,10 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.Compound;
-import nars.term.Evaluation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.compound.LazyCompound;
 import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,13 +17,25 @@ import static nars.Op.*;
 /**
  * I = input term type, T = transformable subterm type
  */
-public interface TermTransform extends Evaluation.TermContext {
-    /**
-     * general pathway. generally should not be overridden
-     */
-    @Override
-    default @Nullable Term apply(Term x) {
-        return x.transform(this);
+public interface TermTransform {
+
+    default Term transform(Term x) {
+        return (x instanceof Compound) ?
+                transformCompound((Compound)x)
+                :
+                transformAtomic((Atomic)x);
+    }
+
+    default boolean transform(Term x, LazyCompound out) {
+        if (x instanceof Compound) {
+            return transformCompound((Compound)x, out);
+        } else {
+            @Nullable Term y = transformAtomic((Atomic) x);
+            if (y == null)
+                return false;
+            out.add(y);
+            return true;
+        }
     }
 
     /**
@@ -41,6 +53,7 @@ public interface TermTransform extends Evaluation.TermContext {
         return transformCompound(x, x.op(), x.dt());
     }
 
+
     /**
      * should not be called directly except by implementations of TermTransform
      */
@@ -52,9 +65,27 @@ public interface TermTransform extends Evaluation.TermContext {
         Subterms yy = xx.transformSubs(this);
 
         return yy == null ? Null : transformedCompound(x, op, dt, xx, yy);
+    }
 
-        /* return LazyCompound */
 
+//    /** default lazy implementation, doesnt offer any benefit by just calling the non-lazy */
+//    default boolean transformCompound(Compound x, LazyCompound out) {
+//        Term y = transformCompound(x, x.op(), x.dt());
+//        if (y == null)
+//            return false;
+//
+//        out.add(y);
+//        return true;
+//    }
+
+    default boolean transformCompound(Compound x, LazyCompound out) {
+        out.compound(x.op(), x.dt());
+        return transformSubterms(x.subterms(), out);
+    }
+
+    default boolean transformSubterms(Subterms x, LazyCompound out) {
+        out.subs((byte)x.subs());
+        return x.AND(sub -> transform(sub, out));
     }
 
     /** called after subterms transform has been applied */
@@ -147,10 +178,9 @@ public interface TermTransform extends Evaluation.TermContext {
         @Override
         @Nullable
         default Term transformCompound(Compound x) {
-            Op op = x.op();
-            if (op == NEG) {
-                Term xx = x.unneg();
-                Term yy = apply(xx);
+            Term xx = x.unneg();
+            if (xx!=x) {
+                Term yy = transform(xx);
                 if (yy == null)
                     return null;
                 if (yy==xx)

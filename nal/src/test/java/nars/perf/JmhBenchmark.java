@@ -8,7 +8,6 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
-import org.openjdk.jmh.runner.options.VerboseMode;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -30,37 +29,37 @@ enum JmhBenchmark {
 				.shouldDoGC(true)
 				.warmupIterations(1)
 				.threads(1)
-				
-
-
+				//.forks(1)
+//				.measurementIterations(iterations)
+//				.measurementBatchSize(batchSize)
 
 				.resultFormat(ResultFormatType.TEXT)
-				.verbosity(VerboseMode.EXTRA) 
-				
+				//.verbosity(VerboseMode.EXTRA) //VERBOSE OUTPUT
+				.addProfiler(StackProfiler2.class)
 
-
-
-
-
-
-
-
-
+//			    .addProfiler(PausesProfiler.class, "period=10" /*uS */)
+//        		.addProfiler(SafepointsProfiler.class)
 				 
-
+//				.addProfiler(StackProfiler.class,
+//			 "lines=10;top=10;period=3;detailLine=true;excludePackages=true" +
+//					";excludePackageNames=java., jdk., javax., sun., " +
+//					 "sunw., com.sun., org.openjdk.jmh."
+//				)
+				//.addProfiler(GCProfiler.class)
 				
-				
-				
+				//.addProfiler(HotspotRuntimeProfiler.class)
+				//.addProfiler(HotspotMemoryProfiler.class)
+				//.addProfiler(HotspotThreadProfiler.class)
 
-				
-				
+				//.addProfiler(HotspotCompilationProfiler.class)
+				// .addProfiler(HotspotClassloadingProfiler.class)
 
-				
+				// sudo sysctl kernel.perf_event_paranoid=0
+//				.addProfiler(LinuxPerfProfiler.class)
+//			    .addProfiler(LinuxPerfAsmProfiler.class)
+//				.addProfiler(LinuxPerfNormProfiler.class)
 
-
-
-
-				
+				//.addProfiler(CompilerProfiler.class)
 
 
 				.timeout(TimeValue.seconds(500))

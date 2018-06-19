@@ -136,7 +136,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         x = x.normalize();
 
         if (x.hasAny(Op.VAR_INDEP) && !Task.validTaskCompound(x, true)) {
-            x = x.transform(VariableTransform.indepToDepVar);
+            x = VariableTransform.indepToDepVar.transform(x);
         }
 
         return x;
@@ -187,17 +187,13 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
     int subs();
 
 
-
     @Nullable
-    Term transform(TermTransform t);
-
-    @Nullable
-    default Term transform(ByteList path, Term replacement) {
-        return transform(path, 0, replacement);
+    default Term replaceAt(ByteList path, Term replacement) {
+        return replaceAt(path, 0, replacement);
     }
 
     @Nullable
-    default Term transform(ByteList path, int depth, Term replacement) {
+    default Term replaceAt(ByteList path, int depth, Term replacement) {
         final Term src = this;
         int ps = path.size();
         if (ps == depth)
@@ -215,11 +211,9 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
         for (int i = 0; i < n; i++) {
             Term x = css.sub(i);
             if (path.get(depth) != i)
-
                 target[i] = x;
             else {
-
-                target[i] = x.subs() == 0 ? replacement : x.transform(path, depth + 1, replacement);
+                target[i] = x.subs() == 0 ? replacement : x.replaceAt(path, depth + 1, replacement);
             }
 
         }
@@ -604,7 +598,7 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
                 return replace(e.getKey(), e.getValue());
             }
             default:
-                return transform(new MapSubst(m));
+                return new MapSubst(m).transform(this);
         }
     }
 

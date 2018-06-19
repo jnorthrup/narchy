@@ -51,7 +51,7 @@ public final class Termify extends AbstractPred<Derivation> {
 
         d.untransform.clear();
 
-        Term c1 = pattern.transform(d);
+        Term c1 = d.transform(pattern);
         if (c1 == null || !c1.op().conceptualizable)
             return false;
 

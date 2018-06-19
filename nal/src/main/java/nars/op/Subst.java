@@ -42,15 +42,9 @@ public class Subst extends Functor implements Functor.InlineFunctor {
     }
 
     public @Nullable Term apply(Subterms xx, Term input, Term x, Term y) {
-        Term result = input.replace(x, y);
+        Term result = !x.equals(y) ? input.replace(x, y) : input;
         if (xx.subEquals(3, STRICT) && input.equals(result))
             return Null;
-
-
-
-
-
-
 
         return result;
     }

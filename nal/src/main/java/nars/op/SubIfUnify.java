@@ -313,7 +313,7 @@ public class SubIfUnify extends Functor implements Functor.InlineFunctor {
         public void tryMatch() {
 
             if (transformed != null) {
-                Term result = transformed.transform(this);
+                Term result = transform(transformed);
                 if (result != null && tryMatch(result)) {
                 
 

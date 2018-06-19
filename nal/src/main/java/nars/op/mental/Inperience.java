@@ -115,7 +115,7 @@ public class Inperience extends LeakBack {
 
     private static Term reifyQuestion(Term x, byte punc, NAR nar) {
         x = x.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-        x = x.hasAny(VAR_QUERY) ? x.transform(TermTransform.queryToDepVar) : x;
+        x = x.hasAny(VAR_QUERY) ? TermTransform.queryToDepVar.transform(x) : x;
         if (x == Null) return Null;
 
         return $.func(punc == QUESTION ? wonder : evaluate, nar.self(), x);

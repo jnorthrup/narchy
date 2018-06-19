@@ -167,6 +167,24 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
         return subterms;
     }
 
+    @Override
+    public int varPattern() {
+        return hasVarPattern() ? subterms().varPattern() : 0;
+    }
+    @Override
+    public int varQuery() {
+        return hasVarQuery() ? subterms().varQuery() : 0;
+    }
+
+    @Override
+    public int varDep() {
+        return hasVarDep() ? subterms().varDep() : 0;
+    }
+
+    @Override
+    public int varIndep() {
+        return hasVarIndep() ? subterms().varIndep() : 0;
+    }
 
     @Override
     public final int hashCode() {

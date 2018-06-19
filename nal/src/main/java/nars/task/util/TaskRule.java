@@ -6,6 +6,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Bool;
 import nars.unify.Unify;
+import nars.util.term.transform.TermTransform;
 import nars.util.term.transform.VariableNormalization;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class TaskRule extends TaskMatch {
 
         VariableNormalization varNorm = new VariableNormalization(outputRaw.subs() /* est */, 0);
 
-        this.output = compoundOrNull(outputRaw.transform(varNorm));
+        this.output = compoundOrNull(((TermTransform) varNorm).transformCompound(outputRaw));
         if (this.output == null)
             throw new RuntimeException("output pattern is not compound");
 

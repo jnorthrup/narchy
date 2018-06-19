@@ -1,18 +1,19 @@
-//goal search
-    (X-->Y), X, task("!") |-          (?1 ==>+- (X-->Y)), (Punctuation:Question)
-    (X-->Y), X, task("!") |-          ((X-->Y) ==>+- ?1), (Punctuation:Question)
-    (X-->Y), X, task("!") |-        (--(X-->Y) ==>+- ?1), (Punctuation:Question)
-    (X-->Y), X, task("!") |-         (?1 &&+- --(X-->Y)), (Punctuation:Question)
-    
-    
-//    X, X, task("!") |-           (?1 && X), (Punctuation:Question)
+    X, X, task("!") |-          (?1 ==>+- X), (Punctuation:Quest)
+    X, X, task("!") |-          (X ==>+- ?1), (Punctuation:Quest)
+    X, X, task("!") |-        (--X ==>+- ?1), (Punctuation:Quest)
+    X, X, task("!") |-           (?1 &&+- X), (Punctuation:Quest)
+    X, X, task("!") |-         (?1 &&+- --X), (Punctuation:Quest)
+
     X, X, task("!") |-           (?1 &&+- X), (Punctuation:Question)
     X, X, task("!") |-           (?1 &&+- X), (Punctuation:Quest)
     X, X, task("!") |-         (?1 &&+- --X), (Punctuation:Question)
     X, X, task("!") |-         (?1 &&+- --X), (Punctuation:Quest)
 
-    //X, X, task("!") |-           (#1 && X), (Goal:StructuralDeduction)
-    //X, X, task("!") |- (--,(#1 && (--,X))), (Goal:StructuralDeduction)
+//goal search
+    (X-->Y), X, task("!") |-          (?1 ==>+- (X-->Y)), (Punctuation:Question)
+    (X-->Y), X, task("!") |-          ((X-->Y) ==>+- ?1), (Punctuation:Question)
+    (X-->Y), X, task("!") |-        (--(X-->Y) ==>+- ?1), (Punctuation:Question)
+    (X-->Y), X, task("!") |-         (?1 &&+- --(X-->Y)), (Punctuation:Question)
 
 
     X, (Y==>X), task("!"), neq(X,Y)      |-          Y, (Punctuation:Quest)
@@ -22,10 +23,10 @@
     X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 &&+- --Y), (Punctuation:Question)
     X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 ==>+- Y), (Punctuation:Question)
 
-    X, (X==>Y), task("!"), neq(X,Y)         |- Y, (Punctuation:Quest)
-    X, (--X==>Y), task("!"), neq(X,Y)       |- Y, (Punctuation:Quest)
-    X, (X && Y), task("!"), neqUnneg(X,Y)   |- Y, (Punctuation:Quest)
-    X, (--X && Y), task("!"), neqUnneg(X,Y) |- Y, (Punctuation:Quest)
+    //X, (X==>Y), task("!"), neq(X,Y)         |- Y, (Punctuation:Quest)
+    //X, (--X==>Y), task("!"), neq(X,Y)       |- Y, (Punctuation:Quest)
+    //X, (X && Y), task("!"), neqUnneg(X,Y)   |- Y, (Punctuation:Quest)
+    //X, (--X && Y), task("!"), neqUnneg(X,Y) |- Y, (Punctuation:Quest)
 
 //general impl question induction
     (X ==> Y), Z, task("?")       |- ((X &&+-   Z) ==>+- Y), (Punctuation:Question)

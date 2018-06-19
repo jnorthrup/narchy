@@ -1,10 +1,15 @@
 package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.TODO;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.util.term.transform.TermTransform;
+import org.eclipse.collections.api.list.primitive.ByteList;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Map;
 
 
 public class ProxyTerm implements Compound {
@@ -33,6 +38,49 @@ public class ProxyTerm implements Compound {
     @Override
     public Op op() {
         return ref.op();
+    }
+
+    @Override
+    public int opX() {
+        return ref.opX();
+    }
+
+    @Override
+    public Term unneg() {
+        return differentValueOrThis(ref.unneg());
+    }
+
+    final Term differentValueOrThis(Term u) {
+        if (u == ref)
+            return this; //continue proxying
+        else
+            return u;
+    }
+
+
+    @Override
+    public @Nullable Term replace(Map<? extends Term, Term> m) {
+        return differentValueOrThis(ref.replace(m));
+    }
+
+    @Override
+    public Term replace(Term from, Term to) {
+        return differentValueOrThis(ref.replace(from, to));
+    }
+
+    @Override
+    public @Nullable Term replaceAt(ByteList path, Term replacement) {
+        throw new TODO();
+    }
+
+    @Override
+    public @Nullable Term replaceAt(ByteList path, int depth, Term replacement) {
+        throw new TODO();
+    }
+
+    @Override
+    public @Nullable Term normalize() {
+        return differentValueOrThis(ref.normalize());
     }
 
     @Override
@@ -68,12 +116,12 @@ public class ProxyTerm implements Compound {
 
     @Override
     public Term root() {
-        return ref.root();
+        return differentValueOrThis(ref.root());
     }
 
     @Override
     public Term concept() {
-        return ref.concept();
+        return differentValueOrThis(ref.concept());
     }
     
     @Override

@@ -146,14 +146,14 @@ public interface TaskLink extends Priority, Termed {
         }
 
         public static Tasklike seed(Task t, boolean polarizeBeliefsAndGoals, NAR n) {
-            Term tt = t.term();
             long when = t.isEternal() ? ETERNAL : Tense.dither(
                     
-                    t.mid() + tt.dtRange() / 2
+                    t.mid()
+                        //+ tt.dtRange() / 2
                     , n);
             return seed(
-                    tt
-                        .root()
+                    t.term()
+                        .concept()
                         .negIf(
                             polarizeBeliefsAndGoals && t.isBeliefOrGoal() && t.isNegative()
                         ),

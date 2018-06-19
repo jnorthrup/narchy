@@ -37,7 +37,7 @@ abstract public class RelationConstraint extends MatchConstraint {
 
     @Override
     public final boolean invalid(Term xx, Unify f) {
-        Term yy = f.apply(yUnneg);
+        Term yy = f.transform(yUnneg);
         return yy != yUnneg
                 &&
                invalid(xx, yy.term().negIf(yNeg));

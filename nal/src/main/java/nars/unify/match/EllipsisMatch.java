@@ -6,7 +6,6 @@ import nars.term.Term;
 import nars.term.compound.LightCompound;
 import nars.unify.Unify;
 import nars.util.term.transform.Retemporalize;
-import nars.util.term.transform.TermTransform;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -118,12 +117,6 @@ public class EllipsisMatch extends LightCompound {
         return match(y.toArraySubRange(from, to));
 
 
-    }
-
-    @Override
-    public @Nullable Term transform(TermTransform t) {
-
-        return this;
     }
 
     @Override

@@ -7,7 +7,6 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.util.term.transform.Retemporalize;
-import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,11 +43,6 @@ public interface Atomic extends Term {
     @Override
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return false;
-    }
-
-    @Override
-    @Nullable default Term transform(TermTransform t) {
-        return t.transformAtomic(this);
     }
 
     @Override

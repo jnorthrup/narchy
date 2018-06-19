@@ -33,7 +33,7 @@ public interface Subst extends TermTransform {
     default Term transformCompound(Compound x) {
         Term y = xy(x);
         if (y!=null) {
-            return y.transform(this);
+            return transform(y);
         } else {
             return TermTransform.super.transformCompound((Compound) x);
         }

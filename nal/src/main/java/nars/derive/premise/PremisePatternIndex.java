@@ -138,7 +138,7 @@ public class PremisePatternIndex extends MapConceptIndex {
      * returns an normalized, optimized pattern term for the given compound
      */
     public /*@NotNull*/ Term pattern(Term x) {
-        return get(x.transform(new PremiseRuleNormalization()), true).term();
+        return get(new PremiseRuleNormalization().transform(x), true).term();
     }
 
 //    public final PrediTerm<Derivation> intern(PrediTerm<Derivation> x) {
@@ -156,6 +156,16 @@ public class PremisePatternIndex extends MapConceptIndex {
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
 
+        @Override
+        public Term transform(Term x) {
+            /** process completely to resolve built-in functors,
+             * to override VariableNormalization's override */
+            //return TermTransform.NegObliviousTermTransform.super.transform(x);
+            return (x instanceof Compound) ?
+                    transformCompound((Compound)x)
+                    :
+                    transformAtomic((Atomic)x);
+        }
         @Override
         public Term transformCompound(Compound x) {
             /** process completely to resolve built-in functors,

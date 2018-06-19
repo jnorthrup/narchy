@@ -116,8 +116,7 @@ public class EllipsisTest {
                         }
 
 
-                        
-                        Term s = r.transform(this);
+                        Term s = transform(r);
                         if (s != null) {
                             
                             if (s.varPattern() == 0)

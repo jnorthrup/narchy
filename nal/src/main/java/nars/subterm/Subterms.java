@@ -748,12 +748,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default Subterms replaceSubs(Term from, Term to) {
         if (!impossibleSubTerm(from)) {
-
             return transformSubs(new MapSubst.MapSubst1(from, to));
         } else {
             return this;
         }
     }
+
+
 
     /**
      * returns 'x' unchanged if no changes were applied,
@@ -770,7 +771,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             Term xi = sub(i);
 
-            Term yi = xi.transform(f);
+            Term yi = f.transform(xi);
 
             if (yi == null)
                 return null;
@@ -785,7 +786,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
                 if (xes > 0) {
                     for (int j = 0; j < xes; j++) {
-                        @Nullable Term k = xe.sub(j).transform(f);
+                        @Nullable Term k = f.transform(xe.sub(j));
                         if (k == null) {
                             return null;
                         } else {

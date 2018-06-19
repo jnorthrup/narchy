@@ -40,17 +40,8 @@ public class UnifySubst extends Unify {
     @Override
     public void tryMatch() {
 
-        
 
-        
-
-
-        
-
-        
-
-
-        Termed aa = apply(a); 
+        Termed aa = transform(a);
         if (aa != null) {
             Term aaa = aa.term();
             if (aaa.op().conceptualizable) {

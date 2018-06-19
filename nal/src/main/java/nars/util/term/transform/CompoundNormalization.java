@@ -21,27 +21,13 @@ public class CompoundNormalization extends VariableNormalization {
         if (!x.equals(root)) {
             Term y = Image.imageNormalize(x);
             if (y!=x) {
-                Termed yy = apply(y);
+                Termed yy = transform(y);
                 if (yy != null)
                     return yy.term();
             }
         }
         return super.transformCompoundUnneg(x);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

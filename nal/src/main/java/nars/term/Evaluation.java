@@ -71,7 +71,7 @@ public class Evaluation {
         @Override
         public @Nullable Term transformCompoundUnneg(Compound x) {
             if (Functor.funcName(x).equals(TRUE)) {
-                return Operator.arg(x, 0).transform(this);
+                return transform(Operator.arg(x, 0));
             }
             return TermTransform.NegObliviousTermTransform.super.transformCompoundUnneg(x);
         }
@@ -84,7 +84,7 @@ public class Evaluation {
     public static ArrayHashSet<Term> solveAll(Evaluation e, Term x, Function<Term,Functor> resolver, boolean wrapBool) {
         ArrayHashSet<Term> all = new ArrayHashSet<>(1);
         Evaluation.solve(e, x, wrapBool, resolver, (y) -> {
-            y = (wrapBool && possiblyNeedsEval(y)) ? y.transform(trueUnwrapper) : y;
+            y = (wrapBool && possiblyNeedsEval(y)) ? trueUnwrapper.transform(y) : y;
             all.add(y);
             return true;
         });
@@ -106,7 +106,7 @@ public class Evaluation {
             return null;
 
         MyFunctorResolver ft = new MyFunctorResolver(context);
-        Term y = x.transform(ft);
+        Term y = ft.transform(x);
 
         if (y == Null) {
             return Null;
@@ -376,43 +376,6 @@ public class Evaluation {
         return (m) -> subst(x, xx).test(m) && subst(y, yy).test(m);
     }
 
-    /**
-     * interface necessary for evaluating terms
-     */
-    public interface TermContext extends Function<Term, Term> {
-
-
-        /**
-         * elides superfluous .term() call
-         */
-        default Term applyTermIfPossible(/*@NotNull*/ Term x, Op supertermOp, int subterm) {
-            Term y = apply(x);
-            return y != null ? y.term() : x;
-        }
-
-
-//        class MapTermContext implements TermContext {
-//            private final ImmutableMap<Term, Term> resolvedImm;
-//
-//            public MapTermContext(MutableMap<Term, Term> resolved) {
-//                this(resolved.toImmutable());
-//            }
-//
-//            public MapTermContext(ImmutableMap<Term, Term> resolvedImm) {
-//                this.resolvedImm = resolvedImm;
-//            }
-//
-//            @Override
-//            public Term apply(Term term) {
-//                if (term.op() == ATOM) {
-//                    Term r = resolvedImm.get(term);
-//                    if (r != null)
-//                        return r;
-//                }
-//                return term;
-//            }
-//        }
-    }
 
     private static final class MyFunctorResolver implements DirectTermTransform {
 

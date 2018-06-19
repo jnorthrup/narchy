@@ -30,13 +30,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
             return x.isTemporal();
         }
 
-        @Override
-        public @Nullable Term transformCompound(Compound x, Op op, int dt) {
 
-
-
-            throw new UnsupportedOperationException("apparently this is never called");
-        }
 
         @Override
         public Term transformTemporal(Compound x, int dtNext) {

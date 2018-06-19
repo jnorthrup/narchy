@@ -28,7 +28,6 @@ import nars.unify.op.TermMatch;
 import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -83,8 +82,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
     private PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
         super(
-                INDEX.pattern($.pFast(parseRuleComponents(ruleSrc))
-                        .transform(new UppercaseAtomsToPatternVariables()))
+                INDEX.pattern(new UppercaseAtomsToPatternVariables().transform($.pFast(parseRuleComponents(ruleSrc))))
         );
 
         this.source = ruleSrc;

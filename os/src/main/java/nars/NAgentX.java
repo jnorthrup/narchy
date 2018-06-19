@@ -121,7 +121,7 @@ abstract public class NAgentX extends NAgent {
 
 
                         //newCaffeineIndex()
-                        new HijackConceptIndex(64 * 1024, 4)
+                        new HijackConceptIndex(96 * 1024, 4)
 
 
                 )
@@ -134,21 +134,21 @@ abstract public class NAgentX extends NAgent {
         n.dtMergeOrChoose.set(true);
 
         n.dtDither.set(10); //100fps base
-        n.timeFocus.set(8);
+        n.timeFocus.set(2);
 
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(28);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
 
-        n.beliefPriDefault.set(0.25f);
+        n.beliefPriDefault.set(0.2f);
         n.goalPriDefault.set(0.5f);
         n.questionPriDefault.set(0.1f);
-        n.questPriDefault.set(0.2f);
+        n.questPriDefault.set(0.15f);
 
         n.forgetRate.set(0.85f);
 
@@ -185,7 +185,8 @@ abstract public class NAgentX extends NAgent {
         n.on(a);
         n.synch();
 
-        SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input, Derivers.nal(n, 0, 0, "curiosity.nal"));
+        SimpleDeriver sd = new SimpleDeriver(a.fire(), n::input,
+                Derivers.nal(n, 1, 8, "curiosity.nal", "motivation.nal"));
         a.curiosity.set(0);
 
         Loop loop = n.startFPS(narFPS);

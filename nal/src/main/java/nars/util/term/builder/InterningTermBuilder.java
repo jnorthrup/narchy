@@ -28,11 +28,17 @@ public class InterningTermBuilder extends HeapTermBuilder {
     final HijackTermCache[] termCache;
 
     /** attempts to recursively intern the elements of a subterm being interned */
-    final boolean deepIntern = true;
+    final boolean deepIntern;
 
-    static final int cacheSizePerOp = 32 * 1024;
+    final int cacheSizePerOp = 32 * 1024;
 
-    {
+
+    public InterningTermBuilder() {
+        this(32 * 1024, false);
+    }
+
+    public InterningTermBuilder(int sizePerOp, boolean deep) {
+        this.deepIntern = deep;
         termCache = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
             if (Op.ops[i].atomic || Op.ops[i]==NEG) continue;

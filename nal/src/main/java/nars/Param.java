@@ -40,7 +40,7 @@ public abstract class Param {
     public static final boolean STRONG_COMPOSITION = false;
 
     /** warning: can interfere with expected test results */
-    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
+    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = true;
 
 
     /** extends the time all unit tests are allowed to run for.
@@ -49,7 +49,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 4;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 3;
 
     /** full causal feedback: applied as mult to every task on input */
     public static boolean CAUSE_MULTIPLY_EVERY_TASK = false;

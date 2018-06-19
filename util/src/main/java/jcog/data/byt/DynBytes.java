@@ -201,9 +201,12 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         return p;
     }
 
-    @Override
-    public final byte[] array() {
+    @Override public final byte[] array() {
         compact();
+        return arrayDirect();
+    }
+
+    public final byte[] arrayDirect() {
         return bytes;
     }
 

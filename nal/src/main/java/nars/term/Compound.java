@@ -29,8 +29,8 @@ import nars.subterm.Subterms;
 import nars.subterm.util.TermList;
 import nars.term.anon.Anon;
 import nars.unify.Unify;
+import nars.util.term.transform.CompoundNormalization;
 import nars.util.term.transform.Retemporalize;
-import nars.util.term.transform.TermTransform;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
@@ -578,27 +578,23 @@ public interface Compound extends Term, IPair, Subterms {
         return op() == NEG ? sub(0) : this;
     }
 
-
-
     @Override
     @Nullable
     default Term normalize(byte varOffset) {
+
         if (varOffset == 0 && this.isNormalized())
             return this;
 
+        Term y = new CompoundNormalization(
+                this, varOffset).transformCompound(this);
 
-
-
-
-
-        Term y = transform(
-                new nars.util.term.transform.CompoundNormalization(this, varOffset)
-        );
+//        LazyCompound yy = new LazyCompound();
+//        new nars.util.term.transform.CompoundNormalization(this, varOffset)
+//                .transform(this, yy);
+//        Term y = yy.get();
 
         if (varOffset == 0 && y instanceof Compound) {
-            
-                y.subterms().setNormalized();
-            
+            y.subterms().setNormalized();
         }
 
         return y;
@@ -606,22 +602,11 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    @Nullable
-    default Term transform(TermTransform t) {
-        return t.transformCompound(this);
-    }
-
-    @Override
     default int dtRange() {
         Op o = op();
         switch (o) {
 
-
-
-
-
             case CONJ:
-
                 Subterms tt = subterms();
                 int l = tt.subs();
                 if (l == 2) {

@@ -123,6 +123,33 @@ public class Atom extends AtomicConst implements The {
     }
 
 
+    @Override
+    public final int vars() {
+        return 0;
+    }
+
+
+
+    @Override
+    public final boolean hasVars() {
+        return false;
+    }
+    @Override
+    public final boolean hasVarDep() {
+        return false;
+    }
+    @Override
+    public final boolean hasVarQuery() {
+        return false;
+    }
+    @Override
+    public final boolean hasVarIndep() {
+        return false;
+    }
+    @Override
+    public final boolean hasVarPattern() {
+        return false;
+    }
 
     @Override
     public void collectMetadata(TermMetadata.SubtermMetadataCollector s) {

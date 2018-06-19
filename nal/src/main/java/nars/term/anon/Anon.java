@@ -8,7 +8,6 @@ import nars.term.compound.util.AnonMap;
 import nars.term.var.UnnormalizedVariable;
 import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
-import org.eclipse.collections.api.block.function.primitive.ByteFunction;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -48,12 +47,6 @@ public class Anon extends AnonMap {
         return false;
     }
 
-    private final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
-        int s = idToTerm.addAndGetSize(next);
-        assert (s < Byte.MAX_VALUE);
-        return (byte) s;
-    };
-
     TermTransform newPut() {
 
         return new DirectTermTransform() {
@@ -87,7 +80,7 @@ public class Anon extends AnonMap {
             if (x instanceof UnnormalizedVariable || x instanceof Int.IntRange)
                 return x;
 
-            return Anom.the[termToId.getIfAbsentPutWithKey(x, nextUniqueAtom)];
+            return Anom.the[intern(x)];
 
         } else {
             return PUT.transformCompound((Compound)x);
@@ -96,7 +89,7 @@ public class Anon extends AnonMap {
 
     public Term get(Term x) {
         if (x instanceof Anom) {
-            return idToTerm.get(((Int) x).id - 1);
+            return interned((byte) ((Int) x).id);
         } else if (x instanceof Compound) {
             return GET.transformCompound((Compound) x);
         } else {
