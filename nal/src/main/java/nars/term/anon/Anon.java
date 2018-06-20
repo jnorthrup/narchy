@@ -64,7 +64,8 @@ public class Anon extends AnonMap {
 
     TermTransform newGet() {
 
-        return new TermTransform.NegObliviousTermTransform() {
+        //return new TermTransform.NegObliviousTermTransform() {
+        return new TermTransform() {
             @Override
             public final @Nullable Term transformAtomic(Atomic atomic) {
                 return get(atomic);

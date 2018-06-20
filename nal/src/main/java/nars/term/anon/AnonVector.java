@@ -239,16 +239,22 @@ public class AnonVector extends TermVector implements FullyInternable {
     @Override
     public int indexOf(Term t) {
         short tid = AnonID.id(t);
-        if (tid != 0) {
-            //if (tid >= 1 || anyNeg())
-            return indexOf(tid);
-        }
-        return -1;
+        return tid != 0 ? indexOf(tid) : -1;
+    }
+
+    public int indexOfNeg(Term x) {
+        short tid = AnonID.id(x);
+        return tid != 0 ? indexOf((short) -tid) : -1;
     }
 
     @Override
-    public boolean contains(Term t) {
-        return indexOf(t) != -1;
+    public boolean contains(Term x) {
+        return indexOf(x) != -1;
+    }
+
+    @Override
+    public boolean containsNeg(Term x) {
+        return indexOfNeg(x) != -1;
     }
 
     @Override

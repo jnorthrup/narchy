@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.The;
 import nars.term.Term;
+import nars.term.anon.Anom;
 import nars.term.compound.UnitCompound;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,13 +16,17 @@ public final class Neg extends UnitCompound implements The {
 
     public static Term the(Term x) {
         switch (x.op()) {
+            case ATOM:
+                if (x instanceof Anom) {
+                    return x.neg();
+                }
+                break;
             case BOOL:
                 return x.neg();
             case NEG:
                 return x.unneg();
-            default:
-                return new Neg(x);
         }
+        return new Neg(x);
     }
 
     /** condensed NEG compound byte serialization - elides length byte */
@@ -40,7 +45,7 @@ public final class Neg extends UnitCompound implements The {
         return sub;
     }
 
-    private Neg(Term negated) {
+    public Neg(Term negated) {
         this.sub = negated;
     }
 

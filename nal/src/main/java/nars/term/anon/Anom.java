@@ -3,6 +3,7 @@ package nars.term.anon;
 import jcog.Util;
 import nars.IO;
 import nars.Op;
+import nars.subterm.Neg;
 import nars.term.Term;
 import nars.term.atom.Int;
 
@@ -76,7 +77,7 @@ public final class Anom extends Int implements AnonID {
     }
 
     static final Anom[] the = Util.map(0, Byte.MAX_VALUE, (i) -> new Anom((byte) i), Anom[]::new);
-    static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, (i) -> the[i].neg(), Term[]::new);
+    static final Term[] theNeg = Util.map(0, Byte.MAX_VALUE, (i) -> new Neg(the[i]), Term[]::new);
     static {
         the[0] = null;
         theNeg[0] = null;
@@ -86,5 +87,8 @@ public final class Anom extends Int implements AnonID {
         return the[i];
     }
 
-
+    @Override
+    public final Term neg() {
+        return theNeg[id];
+    }
 }

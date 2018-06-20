@@ -590,7 +590,7 @@ public enum Op {
     private static final int ANY_LEVEL = 0;
     private static final int InvalidImplicationSubj = or(IMPL);
     public static TermBuilder terms =
-            //new HeapTermBuilder();
+            //HeapTermBuilder.the;
             new InterningTermBuilder();
 
     public static int AtomicConstants = Op.ATOM.bit | Op.INT.bit;

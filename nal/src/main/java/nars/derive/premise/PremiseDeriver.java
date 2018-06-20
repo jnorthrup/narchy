@@ -2,9 +2,7 @@ package nars.derive.premise;
 
 import jcog.Util;
 import jcog.decide.MutableRoulette;
-import jcog.memoize.HijackMemoize;
-import jcog.memoize.Memoize;
-import jcog.pri.PriProxy;
+import jcog.memoize.byt.ByteHijackMemoize;
 import nars.Param;
 import nars.control.Cause;
 import nars.derive.Derivation;
@@ -32,7 +30,8 @@ public class PremiseDeriver implements Predicate<Derivation> {
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
-    public final Memoize<PremiseKey, short[]> whats;
+    public final ByteHijackMemoize<PremiseKey, short[]> whats;
+
     /**
      * repertoire
      */
@@ -48,19 +47,11 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
         this.causes = Stream.of(actions).flatMap(b -> Stream.of(b.cause)).toArray(Cause[]::new);
 
-
-        this.whats = new HijackMemoize<>(k -> k.solve(what),
-                64 * 1024, 4) {
+        this.whats = new ByteHijackMemoize<>(k -> k.solve(what), 64 * 1024, 4) {
 
             @Override
-            public PriProxy<PremiseKey, short[]> computation(PremiseKey premiseKey, short[] results) {
-                PremiseKey.PremiseKeyBuilder k = (PremiseKey.PremiseKeyBuilder) premiseKey;
-                return k.key(results);
-            }
-
-            @Override
-            public float value(PremiseKey premiseKey, short[] y) {
-                return ((PremiseKey.PremiseKeyBuilder)premiseKey).pri;
+            public float value(PremiseKey premiseKey, short[] shorts) {
+                return premiseKey.pri;
             }
         };
     }
@@ -168,6 +159,7 @@ public class PremiseDeriver implements Predicate<Derivation> {
 
 
     public boolean derivable(Derivation x) {
-        return (x.will = whats.apply(PremiseKey.PremiseKeyBuilder.get(x))).length > 0;
+        return (x.will = whats.apply(PremiseKey.get(x))).length > 0;
     }
+
 }

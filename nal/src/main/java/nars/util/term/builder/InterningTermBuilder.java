@@ -25,7 +25,7 @@ import static nars.time.Tense.XTERNAL;
 public class InterningTermBuilder extends HeapTermBuilder {
 
 
-    private final HijackTermCache[] termCache;
+    protected final HijackTermCache[] termCache;
 
     /** attempts to recursively intern the elements of a subterm being interned */
     private final boolean deepIntern;
@@ -62,7 +62,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //        }
 
         return internable ?
-                termCache[op.id].apply(new InternedCompound(op, dt, u)) :
+                termCache[op.id].apply(InternedCompound.get(op, dt, u)) :
                 super.compound(op, dt, u);
     }
 
@@ -159,7 +159,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         HijackTermCache tc = termCache[x.op().id];
         if (tc == null)
             return x;
-        Term y = tc.apply(new InternedCompound((Compound)x));
+        Term y = tc.apply(InternedCompound.get((Compound)x));
         if (y!=null)
             return y;
         return x;

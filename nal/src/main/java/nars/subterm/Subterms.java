@@ -444,7 +444,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
-     * follows normal indexOf() semantics; -1 if not found
+     * first index of; follows normal indexOf() semantics; -1 if not found
      */
     default int indexOf(/*@NotNull*/ Term t) {
         if (!impossibleSubTerm(t)) {
@@ -739,6 +739,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return isSorted() ? this : Op.terms.subterms(Terms.sorted(arrayShared()));
     }
 
+    /** removes first occurrence only */
     default Term[] termsExcept(int i) {
         return ArrayUtils.remove(arrayShared(), Term[]::new, i);
     }
