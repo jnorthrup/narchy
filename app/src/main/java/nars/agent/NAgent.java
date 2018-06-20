@@ -91,10 +91,6 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      */
     @Deprecated public FloatRange curiosity;
 
-    /** dampens the dynamically normalized happiness range toward sadness as a motivation strategy */
-    public final FloatRange depress = new FloatRange(0f, 0f, 1f);
-
-
     public final AtomicBoolean enabled = new AtomicBoolean(false);
 
     public FilteredScalar happy;
@@ -262,62 +258,14 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             Term id = (this.id == null) ? nar.self() : this.id;
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            FloatSupplier happyValue = new FloatCached(
-                    () -> reward - depress.floatValue(),
-                    nar::time
-            );
-
-
-
-
-
             this.happy =
                     
                     new FilteredScalar(
-                            happyValue,
-                            nar,
+                            new FloatCached( () -> reward, nar::time ),
 
+                            nar,
                             
                             pair(id, ///$.inh(id, "happy"),
-                                
                                 new FloatNormalizer().relax(Param.HAPPINESS_RE_SENSITIZATION_RATE)),
 
                             

@@ -134,12 +134,12 @@ abstract public class NAgentX extends NAgent {
         n.dtMergeOrChoose.set(true);
 
         n.dtDither.set(10); //100fps base
-        n.timeFocus.set(2);
+        n.timeFocus.set(8);
 
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(28);
+        n.termVolumeMax.set(36);
 
         n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);

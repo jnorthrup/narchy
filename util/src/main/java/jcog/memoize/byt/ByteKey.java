@@ -1,5 +1,6 @@
 package jcog.memoize.byt;
 
+import jcog.Texts;
 import jcog.data.byt.DynBytes;
 import jcog.pri.PriProxy;
 import jcog.pri.Priority;
@@ -18,7 +19,10 @@ public class ByteKey {
     }
 
     public ByteKey(DynBytes key) {
-        this(key.array(), key.hashCode());
+        this(
+                //key.arrayDeflate(),
+                key.array(),
+                key.hashCode());
     }
 
     @Override
@@ -35,6 +39,12 @@ public class ByteKey {
     @Override
     public final int hashCode() {
         return hash;
+    }
+
+    @Override
+    public String toString() {
+
+        return Texts.i(key,16) + " [" + Integer.toUnsignedString(hash,32) + "]";
     }
 
     static class ByteKeyInternal<Y> extends ByteKey implements Priority, PriProxy<ByteKey,Y> {
@@ -66,6 +76,11 @@ public class ByteKey {
         @Override
         public float pri() {
             return pri;
+        }
+
+        @Override
+        public String toString() {
+            return result + " = $" + Texts.n4(pri) + " " + super.toString();
         }
     }
 

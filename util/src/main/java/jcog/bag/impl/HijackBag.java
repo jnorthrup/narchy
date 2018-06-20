@@ -707,6 +707,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return stream().iterator();
     }
 
+
+
     @Override
     public Stream<V> stream() {
         final AtomicReferenceArray<V> map = this.map;

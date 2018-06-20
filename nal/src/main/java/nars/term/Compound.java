@@ -112,7 +112,17 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default int opX() {
-        return Term.opX(op(), (short) volume());
+        //return Term.opX(op(), (short) volume());
+        //return Term.opX(op(), (short) subs());
+
+        //upper 11 bits: volume
+        //next 5: op
+        //lower 16: ? subs ? structure hash
+        return ((volume() & 0b11111111111) << (16 + 5))
+                |
+               (op().id << 16)
+                |
+               (short) subs();
     }
 
     @Override

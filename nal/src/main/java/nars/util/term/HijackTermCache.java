@@ -1,13 +1,14 @@
 package nars.util.term;
 
 import jcog.memoize.byt.ByteHijackMemoize;
-import nars.Op;
 import nars.term.Term;
+
+import java.util.function.Function;
 
 public class HijackTermCache/*<I extends InternedCompound>*/ extends ByteHijackMemoize<InternedCompound, Term> {
 
-    public HijackTermCache(int capacity, int reprobes) {
-        super((x)->Op.terms.compoundInstance(Op.ops[x.op], x.dt, x.rawSubs.get()), capacity, reprobes);
+    public HijackTermCache(Function<InternedCompound,Term> f, int capacity, int reprobes) {
+        super(f, capacity, reprobes);
     }
 
     //TODO

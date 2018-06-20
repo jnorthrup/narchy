@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.term.HijackTermCache;
@@ -27,18 +26,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     protected final HijackTermCache[] termCache;
 
-    /** attempts to recursively intern the elements of a subterm being interned */
-    private final boolean deepIntern;
 
     private final int cacheSizePerOp;
 
 
     public InterningTermBuilder() {
-        this(32 * 1024, false);
+        this(32 * 1024);
     }
 
-    public InterningTermBuilder(int sizePerOp, boolean deep) {
-        this.deepIntern = deep;
+    public InterningTermBuilder(int sizePerOp) {
         this.cacheSizePerOp = sizePerOp;
         termCache = new HijackTermCache[Op.ops.length];
         for (int i = 0; i < Op.ops.length; i++) {
@@ -50,7 +46,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     private HijackTermCache newOpCache(int capacity) {
-        return new HijackTermCache(capacity, 4);
+        return new HijackTermCache(this::compoundInterned, capacity, 4);
+    }
+    private Term apply(InternedCompound x) {
+        return termCache[x.op].apply(x);
+    }
+
+
+    protected Term compoundInterned(InternedCompound x) {
+        return compoundInstance(Op.ops[x.op], x.dt, x.rawSubs.get());
     }
 
     @Override
@@ -62,24 +66,16 @@ public class InterningTermBuilder extends HeapTermBuilder {
 //        }
 
         return internable ?
-                termCache[op.id].apply(InternedCompound.get(op, dt, u)) :
+                apply(InternedCompound.get(op, dt, u)) :
                 super.compound(op, dt, u);
     }
+
+
 
     @Override
     public Subterms subterms(Op inOp, Term... s) {
 
         if (inOp != PROD && internable(s)) {
-
-            if (deepIntern) {
-                for (int i = 0, subtermsLength = s.length; i < subtermsLength; i++) {
-                    Term x = s[i];
-                    Term ux = x.unneg();
-                    Term y = resolveInternable(ux); //already determined to be internable
-                    if (y != null && y!=ux)
-                        s[i] = y.negIf(x != ux);
-                }
-            }
 
             return compound(PROD, s).subterms();
         } else {
@@ -94,15 +90,15 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    private boolean internable(Term x) {
-        return (x instanceof The) && (
-            (x instanceof Atomic) || (internable(x.op(), x.dt(),true) && internable(x.subterms()))
-        );
-    }
+//    private boolean internable(Term x) {
+//        return (x instanceof The) && (
+//            (x instanceof Atomic) || (internable(x.op(), x.dt(),true) && internable(x.subterms()))
+//        );
+//    }
 
-    private boolean internable(Subterms x) {
-        return x instanceof The.FullyInternable || x.AND(this::internableSubterm);
-    }
+//    private boolean internable(Subterms x) {
+//        return x instanceof The.FullyInternable || x.AND(this::internableSubterm);
+//    }
 
     private boolean internableSubterm(Term x) {
         return (x instanceof The) &&
@@ -151,19 +147,19 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return true;
     }
 
-    @Override protected Term resolve(Term x){
-        return !internable(x) ? x : resolveInternable(x);
-    }
-
-    private Term resolveInternable(Term x){
-        HijackTermCache tc = termCache[x.op().id];
-        if (tc == null)
-            return x;
-        Term y = tc.apply(InternedCompound.get((Compound)x));
-        if (y!=null)
-            return y;
-        return x;
-    }
+//    @Override protected Term resolve(Term x){
+//        return !internable(x) ? x : resolveInternable(x);
+//    }
+//
+//    private Term resolveInternable(Term x){
+//        HijackTermCache tc = termCache[x.op().id];
+//        if (tc == null)
+//            return x;
+//        Term y = tc.apply(InternedCompound.get((Compound)x));
+//        if (y!=null)
+//            return y;
+//        return x;
+//    }
 
     public String summary() {
         return summary(termCache);

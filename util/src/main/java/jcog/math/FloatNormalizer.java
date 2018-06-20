@@ -6,9 +6,9 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 
 public class FloatNormalizer implements FloatToFloatFunction  {
     /** precision threshold */
-    static final float epsilon = Float.MIN_NORMAL;
-    protected final float minStart;
-    protected final float maxStart;
+    private static final float epsilon = Float.MIN_NORMAL;
+    private final float minStart;
+    private final float maxStart;
     protected float min;
     protected float max;
     /** relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables */
@@ -18,7 +18,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
         this(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY);
     }
 
-    public FloatNormalizer(float minStart, float maxStart) {
+    FloatNormalizer(float minStart, float maxStart) {
         this.minStart = minStart;
         this.maxStart = maxStart;
         reset();
@@ -38,6 +38,8 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     }
 
     public float valueOf(float raw) {
+        if (raw!=raw)
+            return Float.NaN;
 
         updateRange(raw);
 
@@ -45,6 +47,9 @@ public class FloatNormalizer implements FloatToFloatFunction  {
     }
 
     protected float normalize(float x, float min, float max) {
+        if (x!=x)
+            return Float.NaN;
+
         float r = max - min;
         assert(r >= 0);
         if (r <= epsilon)
@@ -64,7 +69,7 @@ public class FloatNormalizer implements FloatToFloatFunction  {
         return this;
     }
 
-    public FloatNormalizer updateRange(float raw) {
+    FloatNormalizer updateRange(float raw) {
         if (relax > 0) {
             float range = max - min;
             if (range > Prioritized.EPSILON) {
@@ -85,4 +90,28 @@ public class FloatNormalizer implements FloatToFloatFunction  {
 
         return this;
     }
+
+//    public static class FloatBiasedNormalizer extends FloatNormalizer {
+//        public final FloatRange bias;
+//
+//        public FloatBiasedNormalizer(FloatRange bias) {
+//            this.bias = bias;
+//        }
+//
+//        @Override
+//        protected float normalize(float x, float min, float max) {
+//            float y = super.normalize(x, min, max);
+//            if (y == y) {
+//                float balance = Util.unitize(bias.floatValue());
+//                if (y >= 0.5f) {
+//                    return Util.lerp(2f * (y - 0.5f), balance, 1f);
+//                } else {
+//                    return Util.lerp(2f * (0.5f - y), balance, 0f);
+//                }
+//            } else
+//                return Float.NaN;
+//
+//            //return Util.unitize(y + (b - 0.5f));
+//        }
+//    }
 }

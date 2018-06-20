@@ -128,13 +128,12 @@ public enum Util {
     }
 
     private static int hashFNV(byte[] bytes, int from, int to) {
-
-
         int h = 0x811c9dc5;
         for (int i = from; i < to; i++)
             h = (h * 16777619) ^ bytes[i];
         return h;
     }
+
 
     public static long hash64(byte[] bytes) {
         return hash64(bytes, 0, bytes.length);

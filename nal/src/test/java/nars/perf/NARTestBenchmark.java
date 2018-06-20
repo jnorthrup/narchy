@@ -24,7 +24,7 @@ import static nars.perf.JmhBenchmark.perf;
 @Disabled
 public class NARTestBenchmark {
 
-    @Param({ "interning", "heap"/*, "interningDeep"*/ })
+    @Param({ "interning", "heap" })
     private String termBuilder;
     @Param({ "true"/*, "false"*/})
     private String parallel;
@@ -66,11 +66,9 @@ public class NARTestBenchmark {
                 Op.terms = HeapTermBuilder.the;
                 break;
             case "interning":
-                Op.terms = new InterningTermBuilder(size, false);
+                Op.terms = new InterningTermBuilder(size);
                 break;
-            case "interningDeep":
-                Op.terms = new InterningTermBuilder(size, true);
-                break;
+
         }
 
         runTests(() -> NARS.tmp());

@@ -106,7 +106,7 @@ public class Inperience extends LeakBack {
                 return want;
             else {
 
-                return CONJ.the(want, $.func(believe, self, bb.negIf(belief.isNegative())));
+                return CONJ.the(want, 0, $.func(believe, self, bb.negIf(belief.isNegative())));
             }
         }
 

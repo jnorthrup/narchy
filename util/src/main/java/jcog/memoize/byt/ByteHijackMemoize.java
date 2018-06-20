@@ -1,5 +1,6 @@
 package jcog.memoize.byt;
 
+import jcog.io.Huffman;
 import jcog.memoize.HijackMemoize;
 import jcog.pri.PriProxy;
 
@@ -21,5 +22,15 @@ public class ByteHijackMemoize<X extends ByteKey,Y> extends HijackMemoize<X,Y> {
         return p.equals(k);
     }
 
+
+    public Huffman buildCodec() {
+        return buildCodec(new Huffman(stream().map((b) -> key(b).key),
+                Huffman.fastestCompDecompTime()));
+    }
+
+    public Huffman buildCodec(Huffman h) {
+        //TODO add incremental codec building from multiple ByteHijackMemoize's
+        return h;
+    }
 
 }

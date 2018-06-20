@@ -34,9 +34,9 @@ public abstract class TermBuilder {
         return compound(o, DTERNAL, u);
     }
 
-    protected Term resolve(Term x){
-        return x;
-    }
+//    protected Term resolve(Term x){
+//        return x;
+//    }
 
     public final Subterms subterms(Term... s) {
         return subterms(null, s);
@@ -101,7 +101,7 @@ public abstract class TermBuilder {
     }
 
 
-    public Term compoundInstance(Op o, int dt, Term[] u) {
+    protected Term compoundInstance(Op o, int dt, Term[] u) {
         assert (!o.atomic) : o + " is atomic, with subterms: " + (u);
 
         boolean hasEllipsis = false;
@@ -120,7 +120,7 @@ public abstract class TermBuilder {
                 "subterm underflow: " + o + ' ' + Arrays.toString(u);
 
         if (s == 1 && !AnonID.isAnonPosOrNeg(u[0])) {
-            Term x = resolve(u[0]);
+            Term x = /*resolve*/(u[0]);
             switch (o) {
                 case NEG:
                     return Neg.the(x);

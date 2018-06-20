@@ -73,7 +73,9 @@ public class FZero extends NAgentX {
                 16,16
                 
                 
-        )/*.blur()*/).diff().resolution(0.05f);
+        )/*.blur()*/)
+                //.diff()
+                .resolution(0.05f);
         
 
 

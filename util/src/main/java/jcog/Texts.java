@@ -419,6 +419,17 @@ public enum Texts {
         }
     }
 
+    public static String i(byte[] b, int radix) {
+        assert(radix==16); //TODO other options
+        byte[] c = new byte[b.length * 2];
+        int i = 0;
+        for(byte x : b) {
+            c[i++] = (byte) ((x/radix) + '0');
+            c[i++] = (byte) ((x%radix) + '0');
+        }
+        return new String(c);
+    }
+
     public static int i(String s, int offset, int ifMissing) {
         int sl = s.length() - offset;
         if (sl <= 0)

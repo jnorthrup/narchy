@@ -417,14 +417,15 @@ public interface Term extends Termlike, Termed, Comparable<Termed> {
 
     default int compareTo(Term y) {
 
-        if (this == y) return 0;
+        //if (this == y) return 0;
+        if (this.equals(y)) return 0;
 
 
         int vc = Integer.compare(y.volume(), this.volume());
         if (vc != 0)
             return vc;
 
-        int oc = Integer.compare(this.opX(), y.opX());
+        int oc = Integer.compareUnsigned(this.opX(), y.opX());
         if (oc != 0)
             return oc;
 

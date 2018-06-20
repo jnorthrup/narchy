@@ -10,6 +10,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
 import java.util.Arrays;
+import java.util.zip.Deflater;
+
+import static java.util.zip.Deflater.BEST_COMPRESSION;
+import static java.util.zip.Deflater.FULL_FLUSH;
 
 /**
  * dynamic byte array with mostly append-oriented functionality
@@ -203,6 +207,28 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     @Override public final byte[] array() {
         compact();
+        return arrayDirect();
+    }
+    public final byte[] arrayDeflate() {
+        Deflater d = new Deflater(
+                //BEST_SPEED,
+                BEST_COMPRESSION,
+                false);
+        d.reset();
+        d.setInput(bytes, 0, len);
+        d.finish();
+
+        ensureSized(len);
+        int newLen = d
+                .deflate(bytes, len, len, FULL_FLUSH);
+        d.end();
+        if (newLen < len) {
+
+            //d.end();
+            len = newLen;
+            //compact();
+            this.bytes = Arrays.copyOfRange(bytes, len, len + newLen);
+        }
         return arrayDirect();
     }
 
