@@ -4,7 +4,6 @@ import nars.$;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_PATTERN;
@@ -14,7 +13,7 @@ import static nars.Op.VAR_PATTERN;
  */
 public class EllipsisOneOrMore extends Ellipsis {
 
-    public EllipsisOneOrMore(@NotNull NormalizedVariable /*Variable*/ name) {
+    public EllipsisOneOrMore(NormalizedVariable /*Variable*/ name) {
         super(name, 1); 
     }
 
@@ -26,13 +25,5 @@ public class EllipsisOneOrMore extends Ellipsis {
 
     private final static int RANK = Term.opX(VAR_PATTERN, 2 /* different from normalized variables with a subOp of 0 */);
     @Override public int opX() { return RANK;    }
-
-
-    @NotNull
-    @Override
-    public String toString() {
-        return super.toString() + "..+";
-    }
-
 
 }

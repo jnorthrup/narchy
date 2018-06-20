@@ -739,11 +739,11 @@ class TemporalTermTest {
 
     @Test
     void testSubtermTimeRecursive() throws Narsese.NarseseException {
-        Compound c = $("(hold:t2 &&+1 (at:t1 &&+3 ([opened]:t1 &&+5 open(t1))))");
+        Compound c = $("(hold:t2 &&+1 (at:t1 &&+3 ((t1-->[opened]) &&+5 open(t1))))");
         assertEquals("(((t2-->hold) &&+1 (t1-->at)) &&+3 ((t1-->[opened]) &&+5 open(t1)))", c.toString());
         assertEquals(0, c.subTimeOnly($("hold:t2")));
         assertEquals(1, c.subTimeOnly($("at:t1")));
-        assertEquals(4, c.subTimeOnly($("[opened]:t1")));
+        assertEquals(4, c.subTimeOnly($("(t1-->[opened])")));
         assertEquals(9, c.subTimeOnly($("open(t1)")));
         assertEquals(9, c.dtRange());
     }

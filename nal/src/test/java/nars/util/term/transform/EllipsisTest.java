@@ -51,7 +51,7 @@ public class EllipsisTest {
 
             PremisePatternIndex index = new PremisePatternIndex();
 
-            Term y = index.pattern(getMatchable(arity)).normalize();
+            Term y = /*index.patternify*/(getMatchable(arity));
 
             assertTrue(!(y instanceof Bool));
             assertNotNull(y);
@@ -60,9 +60,9 @@ public class EllipsisTest {
             assertEquals(0, y.vars());
             assertEquals(0, y.varPattern());
 
-            Term r = index.pattern( getResult() ).normalize();
+            Term r = /*index.patternify*/( getResult() );
 
-            Term x = index.pattern( getPattern() ).normalize();
+            Term x = index.patternify(index.rule( getPattern() ));
 
 
             
@@ -164,9 +164,7 @@ public class EllipsisTest {
             this.prefix = prefix;
             this.suffix = suffix;
             this.ellipsisTerm = ellipsisTerm;
-            p = (Compound) new PremisePatternIndex().pattern(
-                    getPattern(prefix, suffix)
-            );
+            p =  getPattern(prefix, suffix);
         }
 
 
@@ -236,7 +234,6 @@ public class EllipsisTest {
         @NotNull
         @Override
         public Compound getPattern(String prefix, String suffix) throws Narsese.NarseseException {
-            PremisePatternIndex pi = new PremisePatternIndex();
             Compound pattern = (Compound) Narsese.term(prefix + "%1, " + ellipsisTerm + suffix, true).term();
             return pattern;
         }
@@ -244,7 +241,6 @@ public class EllipsisTest {
 
         @Override
         public @NotNull Term getResult() throws Narsese.NarseseException {
-            final PremisePatternIndex pi = new PremisePatternIndex();
             return Narsese.term("<%1 --> (" + ellipsisTerm + ")>", true).normalize().term();
         }
 
@@ -307,8 +303,9 @@ public class EllipsisTest {
         String s = "%prefix..+";
         Term t = $(s);
         assertNotNull(t);
-        
-        
+        assertEquals("%prefixU..+", t.toString());
+
+
         assertEquals(EllipsisOneOrMore.class, t.normalize((byte) 1).getClass());
 
         
@@ -319,8 +316,8 @@ public class EllipsisTest {
         String s = "%prefix..*";
         Term t = $(s);
         assertNotNull(t);
-        assertEquals(s, t.toString());
-        
+        assertEquals("%prefixU..*", t.toString());
+
         Term tn = t.normalize((byte) 1);
         assertEquals(EllipsisZeroOrMore.class, tn.getClass());
         assertEquals("%1..*", tn.toString());
@@ -411,7 +408,7 @@ public class EllipsisTest {
     }
 
     private static void testCombinations(Compound _X, Compound Y, int expect) {
-        Compound X = (Compound) new PremisePatternIndex().pattern(_X);
+        Compound X = (Compound) new PremisePatternIndex().rule(_X);
 
         for (int seed = 0; seed < 3 /*expect*5*/; seed++) {
 

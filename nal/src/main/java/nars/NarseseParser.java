@@ -256,7 +256,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         QuotedAtom(),
                         URIAtom(),
 
-                        seq(oper, temporal, ColonReverseInheritance()),
+
 
 
                         
@@ -309,6 +309,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                                 )
 
                         ),
+
+                        seq(oper, temporal, ColonReverseInheritance()),
 
                         NumberAtom(),
 

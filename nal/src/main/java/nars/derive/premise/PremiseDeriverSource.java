@@ -84,7 +84,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
     private PremiseDeriverSource(String ruleSrc) throws Narsese.NarseseException {
         super(
-                INDEX.pattern(new UppercaseAtomsToPatternVariables().transform($.pFast(parseRuleComponents(ruleSrc))))
+                INDEX.rule(new UppercaseAtomsToPatternVariables().transform($.pFast(parseRuleComponents(ruleSrc))))
         );
 
         this.source = ruleSrc;
@@ -589,7 +589,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     }
 
     protected PremiseDeriverSource(PremiseDeriverSource raw, PremisePatternIndex index) {
-        super((index.pattern(raw.ref)));
+        super((index.rule(raw.ref)));
 
         this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
         this.CONSTRAINTS = null;
@@ -971,6 +971,8 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
                 Atomic.the("Punctuation"),
                 Atomic.the("Time")
         );
+
+
 
         UppercaseAtomsToPatternVariables() {
             super(8);

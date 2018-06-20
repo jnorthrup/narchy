@@ -26,6 +26,7 @@ import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 import nars.util.TimeAware;
 import nars.util.term.TermHashMap;
+import nars.util.term.builder.HeapTermBuilder;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
@@ -196,6 +197,7 @@ public class Derivation extends PreDerivation {
     private long[] evidenceDouble, evidenceSingle;
     private int taskUniques;
     private ImmutableLongSet taskStamp;
+
 
     /**
      * if using this, must set: nar, index, random, DerivationBudgeting

@@ -16,7 +16,7 @@ import nars.unify.match.Ellipsis;
 import nars.unify.match.EllipsisMatch;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
-import nars.util.term.TermBuilder;
+import nars.util.term.builder.HeapTermBuilder;
 import nars.util.term.transform.VariableNormalization;
 
 import java.util.HashMap;
@@ -31,8 +31,6 @@ import static nars.time.Tense.XTERNAL;
  * Index which specifically holds the term components of a deriver ruleset.
  */
 public class PremisePatternIndex extends MapConceptIndex {
-
-    final static TermBuilder terms = Op.terms;
 
     //final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
     //private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
@@ -98,7 +96,7 @@ public class PremisePatternIndex extends MapConceptIndex {
         }
     }
 
-    private Term patternify(Term x) {
+    public Term patternify(Term x) {
         if (x instanceof Compound)
             return patternify((Compound) x);
         return x;
@@ -127,21 +125,20 @@ public class PremisePatternIndex extends MapConceptIndex {
             return x;
 
 
+        //Pattern V
         //Subterms v = subterms.computeIfAbsent(new InternedSubterms(bb), InternedSubterms::compute);
-        Subterms v = terms.subterms(bb);
+        Subterms v = HeapTermBuilder.the.subtermsInstance(bb); //dont intern
 
 
         Ellipsis e = Ellipsis.firstEllipsis(bb);
         return e != null ?
                 ellipsis(x, v, e) :
-                terms.theCompound(x.op(), x.dt(), v);
+                HeapTermBuilder.the.theCompound(x.op(), x.dt(), v);
 
     }
 
-    /**
-     * returns an normalized, optimized pattern term for the given compound
-     */
-    public /*@NotNull*/ Term pattern(Term x) {
+
+    public /*@NotNull*/ Term rule(Term x) {
         return get(new PremiseRuleNormalization().transform(x), true).term();
     }
 
@@ -162,6 +159,8 @@ public class PremisePatternIndex extends MapConceptIndex {
     }
 
     public static final class PremiseRuleNormalization extends VariableNormalization {
+
+
 
         @Override
         public Term transform(Term x) {
@@ -218,7 +217,7 @@ public class PremisePatternIndex extends MapConceptIndex {
 
 
         PremisePatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
-            super((Compound) terms.compound(op, subterms.arrayShared()), dt);
+            super((Compound) HeapTermBuilder.the.compound(op, subterms.arrayShared()), dt);
         }
 
         @Override

@@ -143,14 +143,15 @@ class NarseseExtendedTest extends NarseseTest {
     void testNamespaceTermsNonAtomicSubject() {
         eqTerm("c:{a,b}", "({a,b}-->c)");
     }
-    @Test
+
+    @Disabled  @Test
     void testNamespaceTermsNonAtomicPredicate() {
         eqTerm("<a-->b>:c", "(c-->(a-->b))");
         eqTerm("{a,b}:c", "(c-->{a,b})");
         eqTerm("(a,b):c", "(c-->(a,b))");
     }
 
-    @Test
+    @Disabled @Test
     void testNamespaceTermsChain() {
 
         eqTerm("d:{a,b}:c", "((c-->{a,b})-->d)");

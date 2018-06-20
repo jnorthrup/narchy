@@ -21,7 +21,7 @@ public class Fork<X> extends AbstractPred<X> {
     public final PrediTerm<X>[] branch;
 
     public Fork(PrediTerm<X>[] actions) {
-        super($.p((Term[]) actions) /* doesnt force sorting. in some impl, the index order must remain intact */);
+        super($.pFast((Term[]) actions) /* doesnt force sorting. in some impl, the index order must remain intact */);
         assert (actions.length > 0);
         this.branch = actions;
     }

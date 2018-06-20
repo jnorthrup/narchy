@@ -340,7 +340,7 @@ class LinkageTest extends NALTest {
     void Indirect_Linkage_NAL6_second_level_variable_unification() throws Exception {
         
         ProperlyLinkedIndirectlyTest(
-                "(lock:#1 && (key:$2 ==> ($2, #1):open))",
+                "(lock:#1 && (key:$2 ==> (open-->($2, #1))))",
                 "key:{key1}");
     }
 

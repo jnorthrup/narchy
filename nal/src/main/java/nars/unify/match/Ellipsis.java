@@ -18,12 +18,20 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
 
     Ellipsis(NormalizedVariable target, int minArity) {
-        super(VAR_PATTERN, target.toString());
+        super(VAR_PATTERN, label(target, minArity));
 
         assert (target.op() == VAR_PATTERN);
         this.minArity = minArity;
         this.num = target.anonNum();
 
+    }
+
+    private static String label(NormalizedVariable target, int minArity) {
+        switch (minArity) {
+            case 0: return target + "..*";
+            case 1: return target + "..+";
+        }
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -70,10 +78,10 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
         public EllipsisPrototype(/*@NotNull*/ Op type, Variable target, int minArity) {
             super(type, target
-                    + ".." + (minArity == 0 ? '*' : '+'));
+                    + "U.." /* +U instead of 2 to differentiate the prototype from any matching normalized ellipsis */ + (minArity == 0 ? '*' : '+'));
             this.minArity = minArity;
-
         }
+
 
         public static Ellipsis make(byte serial, int minArity) {
             NormalizedVariable v = $.v(VAR_PATTERN, serial);

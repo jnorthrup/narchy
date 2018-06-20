@@ -29,7 +29,7 @@ public class AndCondition<D> extends AbstractPred<D> {
     }
 
     protected AndCondition(PrediTerm<D>[] p) {
-        super($.p( p));
+        super($.pFast( p));
         assert (p.length >= 2) : "unnecessary use of AndCondition";
         this.cond = p;
     }

@@ -7,7 +7,6 @@ import nars.subterm.util.TermList;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.anon.AnonVector;
 import nars.term.atom.Atomic;
 import nars.term.compound.LazyCompound;
 import nars.term.var.UnnormalizedVariable;
@@ -94,30 +93,45 @@ public interface TermTransform {
         Term y;
         //Subterms xx = x.subterms();
         if (yy != xx) {
-            y = the(op, dt, ((TermList)yy).arraySharedKeep()); //transformed subterms
+            Term[] a = ((TermList) yy).arraySharedKeep();
+            if (op == INH && eval() && a[1] instanceof Functor && a[0].op()==PROD) {
+                Term pred = a[1];
+                Term args = a[0];
+                Term v = ((Functor.InlineFunctor) pred).applyInline(args);
+                if (v != null)
+                    return v;
+            }
+            y = the(op, dt, a); //transformed subterms
         } else if (op != x.op()) {
+            if (op == INH && eval() && xx.sub(1) instanceof Functor && xx.sub(0).op()==PROD) {
+                Term pred = xx.sub(1);
+                Term args = xx.sub(0);
+                Term v = ((Functor.InlineFunctor) pred).applyInline(args);
+                if (v != null)
+                    return v;
+            }
             y = the(op, dt, xx); //same subterms
         } else {
             y = x.dt(dt);
         }
 
-        if (eval()) {
-            if ((op = y.op()) == INH) {
-                yy = y.subterms();
-                if (yy.subs() == 2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit)) {
-                    Term pred;
-                    if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) {
-                        Term args = yy.sub(0);
-                        if (args.op() == PROD) {
-                            Term v = ((Functor.InlineFunctor) pred).applyInline(args);
-                            if (v != null)
-                                return v;
-
-                        }
-                    }
-                }
-            }
-        }
+//        if (eval()) {
+//            if ((op = y.op()) == INH) {
+//                yy = y.subterms();
+//                if (yy.subs() == 2 && yy.hasAll(Op.PROD.bit | Op.ATOM.bit)) {
+//                    Term pred;
+//                    if ((pred = yy.sub(1)) instanceof Functor.InlineFunctor) {
+//                        Term args = yy.sub(0);
+//                        if (args.op() == PROD) {
+//                            Term v = ((Functor.InlineFunctor) pred).applyInline(args);
+//                            if (v != null)
+//                                return v;
+//
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         return y;
     }

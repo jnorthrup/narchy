@@ -107,11 +107,10 @@ public abstract class TermBuilder {
         boolean hasEllipsis = false;
 
         for (Term x : u) {
+            if (x == Null)
+                return Null;
             if (!hasEllipsis && (x instanceof Ellipsislike))
                 hasEllipsis = true;
-            if (x == Null)
-                throw new NullPointerException();
-//                return Null;
         }
 
         int s = u.length;

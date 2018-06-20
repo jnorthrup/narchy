@@ -298,9 +298,9 @@ public class NAL6Test extends NALTest {
 
 
         test
-                .believe("((&&, flyer:$x, [chirping]:$x, food($x, worms)) ==> bird:$x)")
+                .believe("((&&, flyer:$x, ($x-->[chirping]), food($x, worms)) ==> bird:$x)")
                 .believe("flyer:Tweety")
-                .mustBelieve(cycles * 2, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
+                .mustBelieve(cycles * 2, "(((Tweety-->[chirping]) && food(Tweety,worms)) ==> bird:Tweety)",
                         1.0f,
                         0.73f);
 

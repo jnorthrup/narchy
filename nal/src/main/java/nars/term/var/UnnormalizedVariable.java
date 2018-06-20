@@ -3,23 +3,21 @@ package nars.term.var;
 import nars.$;
 import nars.IO;
 import nars.Op;
+import nars.The;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.AtomicConst;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Unnormalized, labeled variable
  */
-public class UnnormalizedVariable extends AtomicConst implements Variable {
+public class UnnormalizedVariable extends AtomicConst implements Variable, The {
 
     public final Op type;
 
     @Override public int opX() { return Term.opX(op(), 10);    }
 
-    public UnnormalizedVariable(/*@NotNull*/ Op type, String label) {
-        
-        
+    public UnnormalizedVariable(Op type, String label) {
         super(bytes(IO.SPECIAL_OP, label));
         this.type = type;
     }
@@ -40,7 +38,6 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
         return false;
     }
 
-    @NotNull
     @Override
     public final Op op() {
         return type;

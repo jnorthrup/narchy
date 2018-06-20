@@ -34,7 +34,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     public InterningTermBuilder() {
-        this(32 * 1024, true);
+        this(32 * 1024, false);
     }
 
     public InterningTermBuilder(int sizePerOp, boolean deep) {
@@ -55,7 +55,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     @Override
     public final Term compound(Op op, int dt, Term[] u) {
-        return internable(op, dt, u) ?
+        boolean internable = internable(op, dt, u);
+//        if (!internable) {
+//            //internable(op, dt, u);
+//            System.out.println("why: " + op + " " + dt + " " + Arrays.toString(u));
+//        }
+
+        return internable ?
                 termCache[op.id].apply(new InternedCompound(op, dt, u)) :
                 super.compound(op, dt, u);
     }
@@ -90,7 +96,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     private boolean internable(Term x) {
         return (x instanceof The) && (
-            (x instanceof Atomic) || (internable(x.op(), x.dt()) && internable(x.subterms()))
+            (x instanceof Atomic) || (internable(x.op(), x.dt(),true) && internable(x.subterms()))
         );
     }
 
@@ -103,17 +109,18 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 (x instanceof Atomic)
                 ||
                 (
-                        internable(x.op(), x.dt()) &&
-                                x.AND(this::internable)
+                        internable(x.op(), x.dt(), false) &&
+                                x.AND(this::internableSubterm)
                 );
     }
 
+    /** root */
     private boolean internable(Op op, int dt, Term[] u) {
-        return internable(op, dt) && internable(u);
+        return internable(op, dt, true) && internable(u);
     }
 
-    private boolean internable(Op op, int dt) {
-        return !op.atomic && (op!=NEG) && (!op.temporal || internable(dt));
+    private boolean internable(Op op, int dt, boolean root) {
+        return !op.atomic && (!root || op!=NEG) && (!op.temporal || internable(dt));
     }
 
     @Nullable
@@ -135,7 +142,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         for (Term x : subterms) {
 
-            if (!internable(x))
+            if (!internableSubterm(x))
                 return false;
 
         }

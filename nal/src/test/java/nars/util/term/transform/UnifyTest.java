@@ -51,7 +51,7 @@ public class UnifyTest {
     }
 
     private static Term pattern(Term ss) {
-        return new PremisePatternIndex().pattern(ss);
+        return new PremisePatternIndex().rule(ss);
     }
 
 
