@@ -1,8 +1,6 @@
 package nars.nal.nal8;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
+import nars.*;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -113,6 +111,7 @@ class ImplicationNetworkTest {
 
         NAR n = NARS.tmp();
 
+        //Param.DEBUG = true;
 
 
         n.believe(IMPL.the(a, b));
@@ -123,15 +122,12 @@ class ImplicationNetworkTest {
         BeliefTable aBeliefs = n.concept(a).beliefs();
 
 
-        
-        
-        
-
-
-        Truth bBelief = n.concept(b).beliefs().truth(ETERNAL, n);
+        Task bBelief = n.belief(b);
+        //System.out.println(bBelief.proof());
         assertNull(bBelief); 
 
     }
+
     @Test
     void testEternal_A_NegBelief_NegToBC_AB_only() {
         NAR n = NARS.tmp(6);

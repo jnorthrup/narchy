@@ -448,9 +448,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, Priorit
 //        return eternalized(tx, 1);
 //    }
 
-    static Task eternalized(Task x, float eviFactor) {
+    static Task eternalized(Task x, float eviFactor, NAR n) {
+        Truth tt = x.truth().eternalized(eviFactor, n);
+        if (tt == null)
+            return null;
         return Task.clone(x, x.term(),
-                x.truth().eternalized(eviFactor),
+                tt,
                 x.punc(),
                 /* TODO current time, from NAR */
                 (c, t) ->

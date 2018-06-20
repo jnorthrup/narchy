@@ -126,7 +126,7 @@ class PatrickTests extends NALTest {
         tt.nar.confResolution.set(0.02f);
 
         
-        int dur = cycles/2;
+        int dur = cycles/4;
         tt.nar.time.dur(dur);
         tt.nar.termVolumeMax.set(24);
         

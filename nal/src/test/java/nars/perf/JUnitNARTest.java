@@ -34,7 +34,7 @@ class JUnitNARTest {
 
     @Test
     void testTestNARSuiteOutsideJUnit() {
-        TestNARSuite s = new TestNARSuite(NARS::shell, NAL1Test.class);
+        TestNARSuite s = new TestNARSuite(() -> NARS.tmp(1), NAL1Test.class);
         s.run(true);
         s.print();
         assertTrue(s.score() > 0);

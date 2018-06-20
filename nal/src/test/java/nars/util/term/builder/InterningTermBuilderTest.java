@@ -1,6 +1,7 @@
 package nars.util.term.builder;
 
 import com.google.common.collect.Iterators;
+import jcog.pri.PriProxy;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.term.InternedCompound;
@@ -18,8 +19,7 @@ class InterningTermBuilderTest {
         InterningTermBuilder t = new InterningTermBuilder();
         Term pab = t.compound(PROD, a, b);
         assertEquals( "(a,b)", pab.toString());
-        InternedCompound pabEntry = (InternedCompound) Iterators.get(t.termCache[PROD.id].iterator(), 0);
+        PriProxy<InternedCompound, Term> pabEntry = Iterators.get(t.termCache[PROD.id].iterator(), 0);
         assertEquals(pab, pabEntry.get());
-        assertEquals(null, pabEntry.rawSubs);
     }
 }

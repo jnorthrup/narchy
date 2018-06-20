@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;
 import jcog.memoize.byt.ByteKey;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 
@@ -36,7 +37,9 @@ public final class InternedCompound extends ByteKey  {
             assert(dt == DTERNAL);
         }
 
-        x.forEach(s -> s.appendTo((ByteArrayDataOutput) key));
+        Subterms xx = x.subterms();
+        key.writeByte(xx.subs());
+        xx.forEach(s -> s.appendTo((ByteArrayDataOutput) key));
 
         return new InternedCompound(key, o, dt, x::arrayShared);
     }
@@ -51,6 +54,9 @@ public final class InternedCompound extends ByteKey  {
         else
             assert(dt==DTERNAL);
 
+        int n = subs.length;
+        assert(n < Byte.MAX_VALUE);
+        key.writeByte(n);
         for (Term s : subs)
             s.appendTo((ByteArrayDataOutput) key);
 

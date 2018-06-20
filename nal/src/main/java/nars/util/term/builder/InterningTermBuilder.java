@@ -170,8 +170,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     public static String summary(HijackTermCache[] termCache) {
-        return Arrays.toString(Util.map(x -> termCache[x]!=null ?
+        return Arrays.toString(Util.map(0, termCache.length, x -> termCache[x]!=null ?
                 (Op.ops[x] + ": " + termCache[x].summary() + "\n")
-                : "", new String[termCache.length], termCache.length));
+                : "", String[]::new));
     }
 }

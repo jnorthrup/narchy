@@ -588,9 +588,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
             //float factor = 1f / size();
-            float factor = Util.unitize((float) (x.range()/tableDur()));
+            float factor = Math.min(1, Util.unitize((float) (x.range()/tableDur())));
 
-            Task eternalized = Task.eternalized(x, factor);
+            Task eternalized = Task.eternalized(x, factor, nar);
 
             if (eternalized != null) {
                 float xPri = x.priElseZero();

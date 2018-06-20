@@ -241,8 +241,14 @@ public interface Truth extends Truthed {
         return freq() * conf();
     }
 
-    default Truth eternalized(float factor) {
-        return new PreciseTruth(freq(), factor * eviEternalized(), false);
+    default Truth eternalized(float factor, @Nullable NAR n) {
+        float f = freq();
+        float e = factor * eviEternalized();
+        if (n!=null) {
+            return Truth.theDithered(f, e, n);
+        } else {
+            return new PreciseTruth(f, e, false);
+        }
     }
 
     default void ensureDithered(NAR n) {

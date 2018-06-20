@@ -33,9 +33,11 @@ public class TaskAddTask extends NativeTask {
 
         //verify dithering
         if (Param.DEBUG) {
-            Truth t = task.truth();
-            if (t != null)
-                t.ensureDithered(n);
+            if (!task.isInput()) {
+                Truth t = task.truth();
+                if (t != null)
+                    t.ensureDithered(n);
+            }
         }
 
 
@@ -47,7 +49,7 @@ public class TaskAddTask extends NativeTask {
 
         @Nullable Concept c = task.concept(n, true);
         if (c == null) {
-            return null; 
+            return null;
         } else if (!(c instanceof TaskConcept)) {
             task.delete();
             if (Param.DEBUG_EXTRA && task.isBeliefOrGoal()) {
@@ -55,7 +57,6 @@ public class TaskAddTask extends NativeTask {
             } else
                 return null;
         }
-
 
 
         if (add(n, (TaskConcept) c)) {
@@ -70,7 +71,9 @@ public class TaskAddTask extends NativeTask {
         return c.add(task, n);
     }
 
-    /** skips storage but proceeds with linking */
+    /**
+     * skips storage but proceeds with linking
+     */
     public static final class OnlyLink extends TaskAddTask {
 
         public OnlyLink(Task result) {
