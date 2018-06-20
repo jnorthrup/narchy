@@ -466,15 +466,10 @@ public enum $ {
         return Atomic.the(new String(string));
     }
 
-    public static Term p(@Nullable byte[] array) {
-        if (array == null) return Op.EmptySet;
+    public static Term p(byte[] array) {
         return p(Util.bytesToInts(array));
     }
 
-    public static Term pFast(@Nullable byte[] array) {
-        if (array == null) return Op.EmptySet;
-        return pFast(Util.bytesToInts(array));
-    }
 
     public static Atomic the(byte c) {
         return theAtomic(new byte[]{c});
@@ -684,7 +679,7 @@ public enum $ {
     }
 
     public static Term sFast(Subterms x) {
-        if (x.subs() == 0) return Op.EmptySet;
+        if (x.subs() == 0) throw new UnsupportedOperationException();
         return new LightCompound(Op.SETe, x);
     }
 
@@ -693,7 +688,7 @@ public enum $ {
     }
 
     public static Term sFast(boolean sort, Term... x) {
-        if (x.length == 0) return Op.EmptySet;
+        if (x.length == 0) throw new UnsupportedOperationException();
         if (x.length > 1 && sort)
             x = Terms.sorted(x);
         return new LightCompound(Op.SETe, x);

@@ -176,9 +176,11 @@ public class SubtermsTest {
             assertArrayEquals(bytesExpected, bytesActual);
         }
         {
-            byte[] bytesExpected = IO.termToBytes($.sFast(a));
-            byte[] bytesActual = IO.termToBytes($.sFast(b));
-            assertArrayEquals(bytesExpected, bytesActual);
+            if (a.subs() > 0) {
+                byte[] bytesExpected = IO.termToBytes($.sFast(a));
+                byte[] bytesActual = IO.termToBytes($.sFast(b));
+                assertArrayEquals(bytesExpected, bytesActual);
+            }
         }
         {
             byte[] bytesExpected = IO.termToBytes(PROD.the(a));
@@ -193,9 +195,11 @@ public class SubtermsTest {
         }
 
         {
-            byte[] bytesExpected = IO.termToBytes(SETe.the(a));
-            byte[] bytesActual = IO.termToBytes(SETe.the(b));
-            assertArrayEquals(bytesExpected, bytesActual);
+            if (a.subs() > 0) {
+                byte[] bytesExpected = IO.termToBytes(SETe.the(a));
+                byte[] bytesActual = IO.termToBytes(SETe.the(b));
+                assertArrayEquals(bytesExpected, bytesActual);
+            }
         }
 
     }

@@ -732,16 +732,20 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         constraints.add(new NotEqualConstraint(y, x));
     }
 
+    private static Term pp(byte[] b) {
+        if (b == null) return Op.EmptyProduct;
+        else return $.p(b);
+    }
+
     static class UnifyPreFilter extends AbstractPred<Derivation> {
 
-        private final byte[] xpInT;
-        private final byte[] xpInB;
-        private final byte[] ypInT;
-        private final byte[] ypInB;
+        private final byte[] xpInT, xpInB, ypInT, ypInB;
         private final boolean isStrict;
 
+        private static final Atomic UnifyPreFilter = Atomic.the("unifyPreFilter");
+
         UnifyPreFilter(byte[] xpInT, byte[] xpInB, byte[] ypInT, byte[] ypInB, boolean isStrict) {
-            super($.func("unifyPreFilter", $.p(xpInT), $.p(xpInB), $.p(ypInT), $.p(ypInB)));
+            super($.func(UnifyPreFilter, pp(xpInT), pp(xpInB), pp(ypInT), pp(ypInB)));
             this.xpInT = xpInT;
             this.xpInB = xpInB;
             this.ypInT = ypInT;

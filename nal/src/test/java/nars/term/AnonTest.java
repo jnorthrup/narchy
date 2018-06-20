@@ -295,12 +295,18 @@ public class AnonTest {
         }
 
         {
-
             Subterms xx = Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2));
             assertEquals("(#1,(--,_3),_3)", xx.replaceSubs(Anom.the(2), Anom.the(3)).toString());
             assertEquals("(#1,_3,_2)", xx.replaceSubs(Anom.the(2).neg(), Anom.the(3)).toString());
-
         }
+
+
+        {
+            Subterms xx = Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2));
+            assertEquals("(#1,(--,()),())", xx.replaceSubs(Anom.the(2), Op.EmptyProduct).toString());
+            assertEquals("(#1,(),_2)", xx.replaceSubs(Anom.the(2).neg(), Op.EmptyProduct).toString());
+        }
+
     }
 
 }

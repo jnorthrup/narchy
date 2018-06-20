@@ -569,7 +569,6 @@ public enum Op {
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Term EmptyProduct = new CachedCompound.SimpleCachedCompound(Op.PROD, EmptySubterms);
-    public static final Term EmptySet = new CachedCompound.SimpleCachedCompound(Op.SETe, EmptySubterms);
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
     public static final int[] NALLevelEqualAndAbove = new int[8 + 1];
     static final ImmutableMap<String, Op> stringToOperator;
