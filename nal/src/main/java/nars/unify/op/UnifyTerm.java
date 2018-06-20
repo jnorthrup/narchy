@@ -68,20 +68,6 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
             super($.func(UNIFY, label(subterm), pattern, eachMatch), pattern);
             this.subterm = subterm;
             this.eachMatch = eachMatch;
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
         }
 
         @Override

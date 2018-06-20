@@ -209,14 +209,7 @@ abstract public class CachedCompound implements SeparateSubtermsCompound, The {
 
     @Override
     public final boolean equals(@Nullable Object that) {
-        if (this == that) return true;
-
-        if (!(that instanceof Compound) || hash != that.hashCode())
-            return false;
-        return Compound.equals(this, (Term) that);
-
-
-
+        return Compound.equals(this, that);
     }
 
 

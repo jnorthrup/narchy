@@ -18,7 +18,7 @@ import static nars.term.anon.AnonID.*;
 /**
  * a vector which consists purely of AnonID terms
  */
-public class AnonVector extends TermVector {
+public class AnonVector extends TermVector implements FullyInternable {
 
     /*@Stable*/
     private final short[] subterms;

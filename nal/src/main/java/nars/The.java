@@ -8,7 +8,9 @@ package nars;
  */
 public interface The {
 
-    
+    public interface FullyInternable extends The {
+
+    }
 
 
 

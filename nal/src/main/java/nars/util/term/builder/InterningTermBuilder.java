@@ -25,12 +25,12 @@ import static nars.time.Tense.XTERNAL;
 public class InterningTermBuilder extends HeapTermBuilder {
 
 
-    final HijackTermCache[] termCache;
+    private final HijackTermCache[] termCache;
 
     /** attempts to recursively intern the elements of a subterm being interned */
-    final boolean deepIntern;
+    private final boolean deepIntern;
 
-    final int cacheSizePerOp;
+    private final int cacheSizePerOp;
 
 
     public InterningTermBuilder() {
@@ -88,14 +88,17 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
 
-    protected boolean internable(Term x) {
+    private boolean internable(Term x) {
         return (x instanceof The) && (
-                    internable(x.op(), x.dt()) &&
-                    x.AND(this::internableSubterm)
-                );
+            (x instanceof Atomic) || (internable(x.op(), x.dt()) && internable(x.subterms()))
+        );
     }
 
-    protected boolean internableSubterm(Term x) {
+    private boolean internable(Subterms x) {
+        return x instanceof The.FullyInternable || x.AND(this::internableSubterm);
+    }
+
+    private boolean internableSubterm(Term x) {
         return (x instanceof The) &&
                 (x instanceof Atomic)
                 ||
@@ -105,7 +108,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 );
     }
 
-    protected boolean internable(Op op, int dt, Term[] u) {
+    private boolean internable(Op op, int dt, Term[] u) {
         return internable(op, dt) && internable(u);
     }
 
@@ -126,7 +129,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
     }
 
-    protected boolean internable(Term[] subterms) {
+    private boolean internable(Term[] subterms) {
         if (subterms.length == 0)
             return false;
 
@@ -145,7 +148,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return !internable(x) ? x : resolveInternable(x);
     }
 
-    protected Term resolveInternable(Term x){
+    private Term resolveInternable(Term x){
         HijackTermCache tc = termCache[x.op().id];
         if (tc == null)
             return x;

@@ -26,7 +26,9 @@ class NARTestOptimize {
 
     static class NAL1Optimize {
         public static void main(String[] args) {
-            int nalLevel = 4;
+
+            int nalLevel = 8;
+            boolean parallel = true;
             Class[] testClasses = new Class[] {
                     NAL1Test.class, NAL2Test.class, NAL3Test.class, NAL4Test.class,
                     NAL5Test.class, NAL6Test.class, NAL7Test.class, NAL8Test.class
@@ -37,8 +39,8 @@ class NARTestOptimize {
 //                        (NAR n, int i) -> n.deriveBranchTTL.set(i))
                 .var("forgetRate", 0, 1f, 0.1f,
                         (NAR n, float f) -> n.forgetRate.set(f))
-//                .var("activationRate", 0, 1f, 0.1f,
-//                        (NAR n, float f) -> n.activateConceptRate.set(f))
+                .var("activationRate", 0, 1f, 0.1f,
+                        (NAR n, float f) -> n.activateConceptRate.set(f))
                 .var("derivationComplexityExponent", 1, 3f, 0.1f,
                         (NAR n, float f) -> Deriver.derivers(n).forEach(x ->
                                 ((DefaultDeriverBudgeting)(((MatrixDeriver)x).prioritize)).
@@ -53,7 +55,7 @@ class NARTestOptimize {
 
             Optimization<NAR, TestNARSuite> o = l.optimize((Supplier<NAR> s) -> {
                 TestNARSuite t = new TestNARSuite(s, testClasses);
-                t.run(true);
+                t.run(parallel);
                 return t;
             },
                 (TestNARSuite t) -> (float) t.score()

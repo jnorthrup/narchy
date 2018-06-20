@@ -17,7 +17,7 @@ public class CompoundNormalization extends VariableNormalization {
     }
 
     @Override
-    public @Nullable Term transformCompoundUnneg(Compound x) {
+    public @Nullable Term transformCompound(Compound x) {
         if (!x.equals(root)) {
             Term y = Image.imageNormalize(x);
             if (y!=x) {
@@ -26,7 +26,7 @@ public class CompoundNormalization extends VariableNormalization {
                     return yy.term();
             }
         }
-        return super.transformCompoundUnneg(x);
+        return super.transformCompound(x);
     }
 
 

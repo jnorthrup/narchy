@@ -27,6 +27,7 @@ import nars.unify.match.Ellipsislike;
 import nars.unify.op.TaskPunctuation;
 import nars.unify.op.TermMatch;
 import nars.util.term.transform.TermTransform;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -64,7 +65,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     private final MutableSet<MatchConstraint> constraints;
     protected final ImmutableSet<MatchConstraint> CONSTRAINTS;
     private final MutableSet<PrediTerm> pre;
-    protected final ImmutableSet<PrediTerm> PRE;
+    protected final PrediTerm[] PRE;
     protected final Occurrify.TaskTimeMerge time;
     protected final boolean varIntro;
     protected final byte taskPunc;
@@ -517,7 +518,37 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
             }
         });
 
+        {
 
+
+            assert (puncOverride > 0 )|| !taskPattern.equals(concPattern) :
+                    "punctuation not modified yet rule task equals pattern: " + this;
+
+
+            if (taskPunc == 0) {
+                //no override, determine automaticaly by presence of belief or truth
+
+                boolean b = false, g = false;
+                //for (PostCondition x : POST) {
+                if (puncOverride != 0) {
+                    throw new RuntimeException("puncOverride with no input punc specifier");
+                } else {
+                    b |= beliefTruth != null;
+                    g |= goalTruth != null;
+                }
+                //}
+
+                if (!b && !g) {
+                    throw new RuntimeException("can not assume this applies only to questions");
+                } else if (b && g) {
+                    pre.add(TaskPunctuation.BeliefOrGoal);
+                } else if (b) {
+                    pre.add(Belief);
+                } else /* if (g) */ {
+                    pre.add(Goal);
+                }
+            }
+        }
 
         this.truthify = Truthify.the(puncOverride, beliefTruthOp, goalTruthOp, projection, time);
         this.time = time;
@@ -529,10 +560,21 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
         this.CONSTRAINTS = Sets.immutable.of(theInterned(constraints));
-        this.PRE = Sets.immutable.ofAll(
-                //Iterables.transform(pre, INDEX::intern)
-                pre //can not intern pre conditions apparently
-        );
+
+
+        int rules = pre.size();
+        PrediTerm[] PRE = pre.toArray(new PrediTerm[rules + 1 /* extra to be filled in later stage */]);
+        ArrayUtils.sort(PRE, 0, rules-1, (x)-> -x.cost());
+        assert(PRE[PRE.length-1] == null);
+        //Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
+        assert rules <= 1 || (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
+
+    //not working yet:
+//        for (int i = 0, preLength = PRE.length; i < preLength; i++) {
+//            PRE[i] = INDEX.intern(PRE[i]);
+//        }
+
+        this.PRE = PRE;
 
     }
 
@@ -549,7 +591,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
     protected PremiseDeriverSource(PremiseDeriverSource raw, PremisePatternIndex index) {
         super((index.pattern(raw.ref)));
 
-        this.PRE = null;
+        this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
         this.CONSTRAINTS = null;
         this.source = raw.source;
         this.truthify = raw.truthify;
@@ -923,6 +965,13 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
 
     static class UppercaseAtomsToPatternVariables extends UnifiedMap<String, Term> implements TermTransform.NegObliviousTermTransform {
 
+        static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
+                Atomic.the("Belief"),
+                Atomic.the("Goal"),
+                Atomic.the("Punctuation"),
+                Atomic.the("Time")
+        );
+
         UppercaseAtomsToPatternVariables() {
             super(8);
         }
@@ -930,7 +979,7 @@ public class PremiseDeriverSource extends ProxyTerm implements Function<PremiseP
         @Override
         public Term transformAtomic(Atomic atomic) {
             if (atomic instanceof Atom) {
-                if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) {
+                if (!reservedMetaInfoCategories.contains(atomic)) {
                     String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
                         return this.computeIfAbsent(name, (n) -> $.varPattern(1 + this.size()));

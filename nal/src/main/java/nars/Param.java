@@ -170,12 +170,12 @@ public abstract class Param {
      * TTL = 'time to live'
      */
 
-    public final IntRange deriveBranchTTL = new IntRange(TTL_MIN*2, 0, 2048);
+    public final IntRange deriveBranchTTL = new IntRange(TTL_MIN*2, 0, TTL_MIN*16);
 
 
     /** extends the time all unit tests are allowed to run for.
      *  normally be kept to 1 but for debugging this may be increased to find what tests need more time */
-    public static float TEST_TIME_MULTIPLIER = 2f;
+    public static float TEST_TIME_MULTIPLIER = 1f;
 
 
     @Range(min=1, max=32)

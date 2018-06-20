@@ -33,7 +33,6 @@ public class LightDTCompound implements SeparateSubtermsCompound {
 
         Op op = base.op();
 
-        
 
         Subterms s = base.subterms();
 
@@ -60,12 +59,11 @@ public class LightDTCompound implements SeparateSubtermsCompound {
 
 
         if (dt != DTERNAL && dt < 0 && op == CONJ && s.subs() == 2) {
-            
+
             if (s.sub(0).equals(s.sub(1)))
-                dt = -dt; 
+                dt = -dt;
         }
 
-        
 
         assert dt == DTERNAL || dt == XTERNAL || (Math.abs(dt) < Param.DT_ABS_LIMIT) : "abs(dt) limit reached: " + dt;
 
@@ -96,19 +94,6 @@ public class LightDTCompound implements SeparateSubtermsCompound {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean contains(Term t) {
         return ref.contains(t);
@@ -131,7 +116,6 @@ public class LightDTCompound implements SeparateSubtermsCompound {
     }
 
 
-
     @Override
     public final int structure() {
         return ref.structure();
@@ -142,30 +126,6 @@ public class LightDTCompound implements SeparateSubtermsCompound {
     public String toString() {
         return Compound.toString(this);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -179,17 +139,10 @@ public class LightDTCompound implements SeparateSubtermsCompound {
             Compound thatRef = cthat.ref;
             Compound myRef = this.ref;
 
-            
+
             if (myRef != thatRef) {
                 if (!myRef.equals(thatRef))
                     return false;
-
-
-
-
-
-
-
 
 
             }
@@ -201,53 +154,6 @@ public class LightDTCompound implements SeparateSubtermsCompound {
         }
 
     }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Override
@@ -279,44 +185,6 @@ public class LightDTCompound implements SeparateSubtermsCompound {
     public final int dt() {
         return dt;
     }
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

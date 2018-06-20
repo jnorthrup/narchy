@@ -50,6 +50,12 @@ import static nars.time.Tense.*;
 public interface Compound extends Term, IPair, Subterms {
 
 
+    static boolean equals(/*@NotNull*/ Compound a, Object b) {
+        if (a == b) return true;
+        if (!(b instanceof Compound) || (a.hashCode()!=b.hashCode())) return false;
+        return equals(a, (Compound)b);
+    }
+
     static boolean equals(/*@NotNull*/ Compound a, @Nullable Term bb) {
         assert (a != bb) : "instance check should have already been performed before calling this";
 

@@ -35,7 +35,7 @@ public class PremisePatternIndex extends MapConceptIndex {
     final static TermBuilder terms = Op.terms;
 
     //final Map<InternedSubterms, Subterms> subterms = new HashMap<>(1024);
-//    private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
+    //private final Map<Term, PrediTerm<Derivation>> pred = new HashMap<>(1024);
     private final Map<Term, MatchConstraint> constra = new HashMap<>(1024);
 
     public PremisePatternIndex() {
@@ -145,10 +145,13 @@ public class PremisePatternIndex extends MapConceptIndex {
         return get(new PremiseRuleNormalization().transform(x), true).term();
     }
 
-//    public final PrediTerm<Derivation> intern(PrediTerm<Derivation> x) {
+//    public final PrediTerm<Derivation> intern(@Nullable PrediTerm<Derivation> x) {
+//        if (x == null)
+//            return null;
 //        PrediTerm<Derivation> y = pred.putIfAbsent(x.term(), x);
 //        return y != null ? y : x;
 //    }
+
     public final MatchConstraint intern(MatchConstraint x) {
         MatchConstraint y = constra.putIfAbsent(x.term(), x);
         return y != null ? y : x;
