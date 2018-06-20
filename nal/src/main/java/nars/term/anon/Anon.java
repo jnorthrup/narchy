@@ -6,7 +6,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.compound.util.AnonMap;
 import nars.term.var.UnnormalizedVariable;
-import nars.util.term.transform.DirectTermTransform;
 import nars.util.term.transform.TermTransform;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,7 +49,8 @@ public class Anon extends AnonMap {
 
     TermTransform newPut() {
 
-        return new DirectTermTransform() {
+        //return new DirectTermTransform() {
+        return new TermTransform.NegObliviousTermTransform() {
             @Override
             public final @Nullable Term transformAtomic(Atomic atomic) {
                 return put(atomic);
@@ -68,6 +68,11 @@ public class Anon extends AnonMap {
             @Override
             public final @Nullable Term transformAtomic(Atomic atomic) {
                 return get(atomic);
+            }
+
+            @Override
+            public boolean eval() {
+                return false;
             }
         };
     }

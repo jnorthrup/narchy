@@ -35,11 +35,11 @@ public class NAL8Test extends NALTest {
 
         test
 
-                .input("(open(t1) &&+5 [opened]:t1). :|:")
+                .input("(open(t1) &&+5 (t1-->[opened])). :|:")
                 .mustBelieve(cycles, "open(t1)", 1.0f, 0.81f, 0)
-                .mustBelieve(cycles, "[opened]:t1", 1.0f, 0.81f, 5)
+                .mustBelieve(cycles, "(t1-->[opened])", 1.0f, 0.81f, 5)
                 .mustNotOutput(cycles, "open(t1)", BELIEF, ETERNAL)
-                .mustNotOutput(cycles, "[opened]:t1", BELIEF, ETERNAL)
+                .mustNotOutput(cycles, "(t1-->[opened])", BELIEF, ETERNAL)
         ;
     }
 

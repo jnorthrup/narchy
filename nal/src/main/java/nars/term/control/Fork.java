@@ -1,13 +1,15 @@
 package nars.term.control;
 
 import jcog.TODO;
-import nars.$;
 import nars.term.Term;
+import nars.util.term.builder.HeapTermBuilder;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
+
+import static nars.Op.PROD;
 
 
 /**
@@ -21,7 +23,7 @@ public class Fork<X> extends AbstractPred<X> {
     public final PrediTerm<X>[] branch;
 
     public Fork(PrediTerm<X>[] actions) {
-        super($.pFast((Term[]) actions) /* doesnt force sorting. in some impl, the index order must remain intact */);
+        super(HeapTermBuilder.the.compound(PROD, (Term[]) actions) /* doesnt force sorting. in some impl, the index order must remain intact */);
         assert (actions.length > 0);
         this.branch = actions;
     }

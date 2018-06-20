@@ -31,7 +31,7 @@ public final class Termify extends AbstractPred<Derivation> {
     private final Occurrify.TaskTimeMerge time;
 
     public Termify(Term pattern, PremiseDeriverProto rule, Truthify solve, Occurrify.TaskTimeMerge time) {
-        super($.funcFast("derive", pattern, solve, time.term()));
+        super($.func("derive", pattern, solve, time.term()));
         this.rule = rule;
         this.pattern = pattern;
 

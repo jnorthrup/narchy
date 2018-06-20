@@ -1,8 +1,8 @@
 package nars.term.control;
 
 import jcog.Util;
-import nars.$;
 import nars.term.Term;
+import nars.util.term.builder.HeapTermBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static nars.Op.PROD;
 
 
 public class AndCondition<D> extends AbstractPred<D> {
@@ -29,7 +31,7 @@ public class AndCondition<D> extends AbstractPred<D> {
     }
 
     protected AndCondition(PrediTerm<D>[] p) {
-        super($.pFast( p));
+        super(HeapTermBuilder.the.compound(PROD, p));
         assert (p.length >= 2) : "unnecessary use of AndCondition";
         this.cond = p;
     }

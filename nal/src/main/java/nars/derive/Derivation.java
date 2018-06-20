@@ -15,7 +15,6 @@ import nars.task.NALTask;
 import nars.task.proxy.TaskWithTerm;
 import nars.term.*;
 import nars.term.anon.Anon;
-import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -26,7 +25,6 @@ import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 import nars.util.TimeAware;
 import nars.util.term.TermHashMap;
-import nars.util.term.builder.HeapTermBuilder;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.set.primitive.ImmutableLongSet;
 import org.eclipse.collections.impl.factory.Maps;
@@ -217,24 +215,24 @@ public class Derivation extends PreDerivation {
                 new SplitMix64Random(1);
 
 
-
-        this.anon = new CachedAnon(ANON_INITIAL_CAPACITY, 64 * 1024) {
-            @Override
-            protected boolean cacheGet() {
-                return false;
-            }
-//
+        this.anon = new Anon(ANON_INITIAL_CAPACITY);
+//        this.anon = new CachedAnon(ANON_INITIAL_CAPACITY, 64 * 1024) {
 //            @Override
-//            public Term put(Term x) {
-//                if (x instanceof Atom) {
-//                    Termed f = staticFunctors.get(x);
-//                    if (f != null)
-//                        x = (Term)f;
-//                }
-//                return super.put(x);
+//            protected boolean cacheGet() {
+//                return false;
 //            }
-
-        };
+////
+////            @Override
+////            public Term put(Term x) {
+////                if (x instanceof Atom) {
+////                    Termed f = staticFunctors.get(x);
+////                    if (f != null)
+////                        x = (Term)f;
+////                }
+////                return super.put(x);
+////            }
+//
+//        };
 
         this.termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
             x = anon.get(x);

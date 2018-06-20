@@ -96,7 +96,7 @@ class PremiseRuleTest {
 
 
 
-            PremiseDeriverSource x = PremiseDeriverSource.parse(" <A --> B>, <B --> A> |- <A <-> B>,  (Belief:Conversion, Punctuation:Belief)");
+            PremiseDeriverSource x = PremiseDeriverSource.parse(" <A --> B>, <B --> A> |- <A <-> (A,B)>,  (Belief:Conversion, Punctuation:Belief)");
             
             assertEquals(vv, x.ref.volume());
             
