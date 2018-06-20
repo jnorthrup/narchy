@@ -54,7 +54,9 @@ public interface DirectTermTransform extends TermTransform.NegObliviousTermTrans
 //        }
         @Nullable
         public final Term transformedCompound(Compound x, Op op, int dt, Subterms xx, Subterms yy) {
-            return localIntern.apply(new HashCachedPair<>(x, new TermList(yy.arrayShared())));
+            return localIntern.apply(
+                    new HashCachedPair<>(x,
+                    new TermList(yy.arrayShared())));
         }
 //        @Override
 //        public Term the(Op op, int dt, Term[] t) {

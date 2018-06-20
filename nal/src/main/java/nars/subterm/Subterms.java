@@ -117,7 +117,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return '(' + Joiner.on(',').join(subterms) + ')';
     }
 
-    static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+    public static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
 
         //if (a.equals(b)) return 0;
 

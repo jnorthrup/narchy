@@ -30,6 +30,7 @@ public class Anon extends AnonMap {
     public int uniques() {
         return idToTerm.size();
     }
+
     /** returns true if anything changed */
     public boolean rollback(int uniques) {
         if (uniques == 0) {

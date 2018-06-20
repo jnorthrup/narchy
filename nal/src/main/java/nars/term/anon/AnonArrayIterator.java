@@ -21,7 +21,7 @@ class AnonArrayIterator implements Iterator<Term> {
     @Override
     public Term next() {
 
-        return AnonID.idToTermPosOrNeg(values[this.current++]);
+        return AnonID.idToTerm(values[this.current++]);
     }
 
 }

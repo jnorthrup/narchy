@@ -46,14 +46,6 @@ public interface AnonID extends Term, The {
         return (short) (mask | id);
     }
 
-    static Term idToTermPosOrNeg(short /* short */ i) {
-        if (i < 0) {
-            return idToTerm((short) -i).neg();
-        } else {
-            return idToTerm(i);
-        }
-    }
-
     /** fast Anom (non-Var) test. works for either positive or negative */
     static boolean isAnonPosOrNeg(short i) {
         return isAnom(Math.abs(i));
@@ -68,8 +60,8 @@ public interface AnonID extends Term, The {
         return ((i & 0xff00) != ATOM_MASK) ? (i & 0xff) : ifNot;
     }
 
-    /** assumes non-negative; if the input is negative use idToTermPosOrNeg */
-    static Term idToTerm(short /* short */ i) {
+    /** POS ONLY assumes non-negative; if the input is negative use idToTermPosOrNeg */
+    static Term idToTermPos(short /* short */ i) {
         byte num = (byte) (i & 0xff);
         int m = idtoMask(i);
         switch (m) {
@@ -87,6 +79,30 @@ public interface AnonID extends Term, The {
                 throw new UnsupportedOperationException();
         }
     }
+    static Term idToTerm(short /* short */ i) {
+        boolean neg = i < 0;
+        if (neg)
+            i = (short) -i;
+
+        byte num = (byte) (i & 0xff);
+        int m = idtoMask(i);
+        byte varType;
+        switch (m) {
+            case ATOM_MASK:
+                return neg ? Anom.theNeg[num] : Anom.the[num];
+            case VARDEP_MASK:
+                varType = (Op.VAR_DEP.id); break;
+            case VARINDEP_MASK:
+                varType = (Op.VAR_INDEP.id); break;
+            case VARQUERY_MASK:
+                varType = (Op.VAR_QUERY.id); break;
+            case VARPATTERN_MASK:
+                varType = (Op.VAR_PATTERN.id); break;
+            default:
+                throw new UnsupportedOperationException();
+        }
+        return NormalizedVariable.the(varType, num).negIf(neg);
+    }
 
     static int idtoMask(short i) {
         return i & 0xff00;
@@ -98,18 +114,21 @@ public interface AnonID extends Term, The {
 
     /** returns 0 if the term is not anon ID */
     public static short id(Term t) {
-        boolean neg = false;
+        if (t instanceof AnonID) {
+            return ((AnonID)t).anonID();
+        }
         if (t.op()==NEG) {
             t = t.unneg();
-            neg = true;
+            if (t instanceof AnonID)
+                return (short) -((AnonID)t).anonID();
         }
-        return !(t instanceof AnonID) ? 0 : ((AnonID) t).anonID(neg);
+        return 0;
     }
 
     static SubtermMetadataCollector subtermMetadata(short[] s) {
         SubtermMetadataCollector c = new SubtermMetadataCollector();
         for (short x : s)
-            idToTermPosOrNeg(x).collectMetadata(c);
+            idToTerm(x).collectMetadata(c);
         return c;
     }
 

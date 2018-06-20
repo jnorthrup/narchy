@@ -18,7 +18,7 @@ public class TermList extends FasterList<Term> implements Subterms {
         super(0, new Term[initialCapacity]);
     }
 
-    public TermList(Term[] direct) {
+    public TermList(Term... direct) {
         super(direct.length, direct);
     }
 

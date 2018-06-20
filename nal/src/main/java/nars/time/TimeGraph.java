@@ -18,7 +18,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.util.Conj;
 import org.apache.commons.math3.exception.MathArithmeticException;
-import org.eclipse.collections.api.set.ImmutableSet;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -65,7 +65,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             .build();
 
 
-    protected ImmutableSet<Term> autoNeg = null;
+    protected final MutableSet<Term> autoNeg = new UnifiedSet();
 
 
 

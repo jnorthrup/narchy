@@ -32,6 +32,9 @@ class TermListTest {
     private static void assertReallyEquals(String s) {
         Subterms immutable = $.$$(s).subterms();
         TermList mutable = new TermList(immutable);
+
+        SubtermsTest.assertEquals(mutable, immutable);
+
         assertNotSame(immutable, mutable);
         assertNotEquals(immutable.getClass(), mutable.getClass());
         assertEquals(immutable, mutable);

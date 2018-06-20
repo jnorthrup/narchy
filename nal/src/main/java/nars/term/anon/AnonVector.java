@@ -145,7 +145,7 @@ public class AnonVector extends TermVector {
             TermList t = new TermList(n);
             for (int i = 0; i < n; i++) {
                 short si = subterms[i];
-                t.addWithoutResizeCheck(si == fid ? to : idToTermPosOrNeg(si));
+                t.addWithoutResizeCheck(si == fid ? to : idToTerm(si));
             }
             return t;
         }
@@ -153,7 +153,7 @@ public class AnonVector extends TermVector {
 
     @Override
     public final Term sub(int i) {
-        return idToTermPosOrNeg(subterms[i]);
+        return idToTerm(subterms[i]);
     }
 
     @Override
@@ -195,7 +195,7 @@ public class AnonVector extends TermVector {
                 out.writeByte(Op.NEG.id);
                 s = (short)-s;
             }
-            idToTerm(s).appendTo(out);
+            idToTermPos(s).appendTo(out);
         }
     }
 

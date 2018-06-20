@@ -1,6 +1,7 @@
 package nars.util.term;
 
 import nars.$;
+import nars.term.anon.Anom;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,4 +43,16 @@ class TermHashMapTest {
         assertNull(m.other);
 
     }
+
+    @Test public void testNegAnonKeys() {
+
+        TermHashMap m = new TermHashMap();
+        m.put(Anom.the(1), "p");
+        m.put(Anom.the(1).neg(), "n");
+        assertEquals(2, m.size());
+        assertEquals("p", m.get(Anom.the(1)));
+        assertEquals("n", m.get(Anom.the(1).neg()));
+        assertEquals(null, m.other); //no need to instantiate other for neg
+    }
+
 }

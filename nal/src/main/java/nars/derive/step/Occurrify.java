@@ -19,6 +19,7 @@ import nars.time.Tense;
 import nars.time.TimeGraph;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -72,6 +73,10 @@ public class Occurrify extends TimeGraph {
     }
 
 
+    /** re-used */
+    private final transient MutableSet<Term> nextNeg = new UnifiedSet<>(8, 0.99f);
+    private final transient MutableSet<Term> autoNegNext = new UnifiedSet<>(8, 0.99f);
+
     /**
      * temporary set for filtering duplicates
      */
@@ -88,8 +93,6 @@ public class Occurrify extends TimeGraph {
     private Map<Term, Term> prevUntransform = Map.of();
     private boolean curSingle;
 
-    /** re-used */
-    private final transient Set<Term> autoNegNext = new UnifiedSet<>(8, 0.99f);
 
     public Occurrify(Derivation d) {
         this.d = d;
@@ -169,33 +172,37 @@ public class Occurrify extends TimeGraph {
         Term beliefTerm = bb.term();
 
 
-        Set<Term> autoNegNext = this.autoNegNext;
+        Set<Term> nextNeg = this.nextNeg;
+        nextNeg.clear();
+        autoNegNext.clear();
         if (pattern.hasAny(NEG)) {
 //            if (pattern.containsRecursively(taskTerm.neg()) && (!single || pattern.containsRecursively(beliefTerm))) {
 //                //dont need to autoNeg, these will be easy to find
 //                //autoNeg = null;
 //            } else {
             {
-                autoNegNext.clear();
+                nextNeg.clear();
 
                 Predicate<Term> hasNeg = x -> x.hasAny(NEG);
 
-                Set<Term> nn = autoNegNext;
+                Set<Term> nn = nextNeg;
                 pattern.recurseTerms(hasNeg, y -> {
                     if (y.op()==NEG)
                         nn.add(y);
                 });
 
+
                 Predicate<Term> eliminate = y-> y.op() != NEG || (!nn.remove(y) || !nn.isEmpty());
                 taskTerm.recurseTerms(hasNeg,eliminate, null);
-                if (autoNegNext.isEmpty()) {
-                    autoNegNext = null; //all eliminated
+                if (nextNeg.isEmpty()) {
+                    nextNeg = null; //all eliminated
                 } else {
                     beliefTerm.recurseTerms(hasNeg, eliminate, null);
-                    if (autoNegNext.isEmpty()) {
-                        autoNegNext = null; //all eliminated
+                    if (nextNeg.isEmpty()) {
+                        nextNeg = null; //all eliminated
                     } else {
                         //TODO more cases that eliminate the need for autoNeg
+                        this.nextNeg.collect(Term::unneg, autoNegNext);
 //                        autoNeg.forEach(t -> {
 //
 //                        });
@@ -203,7 +210,7 @@ public class Occurrify extends TimeGraph {
                 }
             }
         } else {
-            autoNegNext = null;
+            nextNeg = null;
         }
 
 
@@ -220,7 +227,7 @@ public class Occurrify extends TimeGraph {
 
 
         boolean reUse =
-                Objects.equals(autoNeg, this.autoNeg) &&
+                Objects.equals(autoNeg, autoNegNext) &&
                 this.curSingle == single &&
                 this.curBeliefAt == beliefAt &&
                 this.curTaskAt == taskAt &&
@@ -245,7 +252,10 @@ public class Occurrify extends TimeGraph {
             clear();
             expanded.clear();
             expandedUntransforms.clear();
-            this.autoNeg = autoNegNext!=null ? ((UnifiedSet<Term>) autoNegNext).toImmutable() : null;
+
+            autoNeg.clear();
+            autoNeg.addAll(autoNegNext);
+
             this.curBeliefAt = beliefAt;
             this.curTaskAt = taskAt;
             this.curSingle = single;

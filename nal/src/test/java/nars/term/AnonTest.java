@@ -1,15 +1,11 @@
 package nars.term;
 
-import com.google.common.collect.Iterators;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
-import nars.IO;
 import nars.Narsese;
 import nars.Op;
-import nars.subterm.ArrayTermVector;
-import nars.subterm.BiSubterm;
-import nars.subterm.Subterms;
-import nars.subterm.UniSubterm;
+import nars.subterm.*;
+import nars.subterm.util.TermList;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
@@ -45,19 +41,6 @@ public class AnonTest {
         assertEquals(expect, y.toString());
         assertEquals(x, z);
         return a;
-    }
-
-    private static void assertEqual(Subterms v, AnonVector a) {
-        assertEquals(v, a);
-        assertEquals(v.toString(), a.toString());
-        assertEquals(v.hashCode(), a.hashCode());
-        assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
-        assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
-        assertEquals(Op.terms.theCompound(PROD, v), Op.terms.theCompound(PROD, a));
-
-        byte[] bytesExpected = IO.termToBytes($.pFast(v));
-        byte[] bytesActual = IO.termToBytes($.pFast(a));
-        assertArrayEquals(bytesExpected, bytesActual);
     }
 
     private static void testAnonTermVectorProducedByTermBuilder(TermBuilder b) {
@@ -145,9 +128,15 @@ public class AnonTest {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
-        assertEqual(new UniSubterm(x[0]), new AnonVector(x[0]));
-        assertEqual(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
-        assertEqual(new ArrayTermVector(x), new AnonVector(x));
+        SubtermsTest.assertEquals(new UniSubterm(x[0]), new AnonVector(x[0]));
+        SubtermsTest.assertEquals(new UniSubterm(x[0]), new TermList(x[0]));
+
+        SubtermsTest.assertEquals(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
+        SubtermsTest.assertEquals(new BiSubterm(x[0], x[1]), new TermList(x[0], x[1]));
+
+        SubtermsTest.assertEquals(new ArrayTermVector(x), new AnonVector(x));
+        SubtermsTest.assertEquals(new ArrayTermVector(x), new TermList(x));
+
     }
 
     @Test
@@ -157,7 +146,7 @@ public class AnonTest {
 
         AnonVector av = new AnonVector(x);
         ArrayTermVector bv = new ArrayTermVector(x);
-        assertEqual(bv, av);
+        SubtermsTest.assertEquals(bv, av);
 
         assertFalse(av.contains(x[0].neg()));
         assertFalse(av.containsRecursively(x[0].neg()));
@@ -184,9 +173,9 @@ public class AnonTest {
 
             ArrayUtils.shuffle(x, rng);
 
-            assertEqual(new UniSubterm(x[0]), new AnonVector(x[0]));
-            assertEqual(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
-            assertEqual(new ArrayTermVector(x), new AnonVector(x));
+            SubtermsTest.assertEquals(new UniSubterm(x[0]), new AnonVector(x[0]));
+            SubtermsTest.assertEquals(new BiSubterm(x[0], x[1]), new AnonVector(x[0], x[1]));
+            SubtermsTest.assertEquals(new ArrayTermVector(x), new AnonVector(x));
         }
     }
 

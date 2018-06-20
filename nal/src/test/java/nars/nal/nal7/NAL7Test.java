@@ -480,8 +480,8 @@ public class NAL7Test extends NALTest {
                 .inputAt(1, "--a. :|:")
                 .inputAt(2, "--b. :|:")
                 .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1)
-                .mustBelieve(cycles, "(--a ==>+1 b)", 0.00f, 0.45f, 1)
-                .mustBelieve(cycles, "(--b ==>-1 a)", 0.00f, 0.45f, 2);
+                .mustBelieve(cycles, "(--a ==>+1 b)", 0.00f, 0.45f, t -> t== 1)
+                .mustBelieve(cycles, "(--b ==>-1 a)", 0.00f, 0.45f, t -> t== 2);
     }
 
     @Test
