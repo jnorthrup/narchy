@@ -1,5 +1,6 @@
 package nars.concept.dynamic;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.LongInterval;
@@ -148,15 +149,37 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
 //        }
 
 
-        Term[] subs = stmtReconstruct(subjOrPred, components);
-        if (subs == null)
-            return null;
+        Term sect;
+        int outerDT;
+        if (superterm.isTemporal()) {
+            //IMPL: compute innerDT for the conjunction
+            Conj c = new Conj();
+            for (TaskRegion x : components) {
+                Term t = ((Task)x).term();
+                if (subjOrPred) {
+                    if (!c.add(-t.dt(), t.sub(0)))
+                        return null; //fail
+                } else {
+                    throw new TODO();
+                }
+            }
 
+            sect = c.term();
+            long shift = -c.shift() - sect.dtRange();
+            outerDT = (int) shift;
+        } else {
 
-        Term sect = superSect.op().the(subs);
+            Term[] subs = stmtReconstruct(subjOrPred, components);
+            if (subs == null)
+                return null;
+
+            sect = superSect.op().the(subs);
+            outerDT = DTERNAL;
+        }
+
         Term common = superterm.sub(subjOrPred ? 1 : 0);
         Op op = superterm.op();
-        Term x = subjOrPred ? op.the(sect, common) : op.the(common, sect);
+        Term x = subjOrPred ? op.the(sect, outerDT, common) : op.the(common, outerDT, sect);
         if (x.op() != op)
             return null;
         else
@@ -329,7 +352,8 @@ abstract public class DynamicTruthModel implements BiFunction<DynTruth, NAR, Tru
                     int decRange = decomposed.dtRange();
                     return decomposed.eventsWhile((when, y)->
                         each.accept(stmtDecompose(op, subjOrPred, y, common, (int) ((decRange - when)+outerDT)), start+when, end)
-                    , 0, innerDT == DTERNAL, innerDT == 0, false, 0);
+                    , 0, innerDT == 0,
+                            innerDT == DTERNAL, false, 0);
                 }
             }
 

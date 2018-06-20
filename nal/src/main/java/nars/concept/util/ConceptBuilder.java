@@ -106,10 +106,10 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
                     (z ==> (x && y))  //intersect conc
                     (z ==> --(--x && --y))  //union conc
                  */
-//                Term su = subj;
-//                if (su.op() == CONJ && validDynamicSubterms(su.subterms())) {
-//                    return DynamicTruthModel.IsectSubj;
-//                }
+                Term su = subj;
+                if (su.op() == CONJ && validDynamicSubterms(su.subterms())) {
+                    return DynamicTruthModel.IsectSubj;
+                }
                 //TODO if subj is negated
                 break;
 

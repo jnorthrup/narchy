@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DynamicImplTest {
+
     @Test
     void testDynamicImplSubj() throws Narsese.NarseseException {
         NAR n = NARS.shell();
@@ -43,15 +44,36 @@ class DynamicImplTest {
             //                assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x&z)-->a)")), now));
         }
 
-        {
-            Term pt_p = $$("((x &&+1 y) ==>+1 a)");
-            Task pt_p_Task = n.match(pt_p, BELIEF, 0);
-            assertEquals("((x &&+1 y) ==>+1 a)", pt_p_Task.term());
+    }
+
+    @Test
+    void testDynamicImplSubjTemporalExact() throws Narsese.NarseseException {
+        for (int inner : new int[] { 1, 0, 2 /*, -2, -1*/ } ) {
+            for (int outer: new int[]{ 1, 0, 2 /*,  -2, -1*/ }) {
+                NAR n = NARS.shell();
+                int xdt = inner >= 0 ? outer + inner : outer - inner;
+                String x = "(x ==>" + dtStr(xdt) + " a)";
+                String y = "(y ==>" + dtStr(xdt-inner) + " a)";
+                String xy = "((x &&" + dtStr(xdt - outer) + " y) ==>" + dtStr(outer) + " a)";
+
+                System.out.println("inner="  + inner + " outer=" + outer + "\t"
+                        + x + " " + y + " " + xy);
+
+                Term pt_p = $$(xy);
+                n.believe(x, 1f, 0.9f);
+                n.believe(y, 1f, 0.9f);
+
+                Task pt_p_Task = n.match(pt_p, BELIEF, 0);
+                assertEquals(pt_p.toString(), pt_p_Task.term().toString());
+            }
         }
 
-        Term p_tp = $$("((x && y) ==>+1 a)");
-        Term pttp = $$("((x &&+1 y) ==>+1 a)");
-
-
+        //Term p_tp = $$("((x && y) ==>+1 a)");
+        //Term pttp = $$("((x &&+1 y) ==>+1 a)");
     }
+
+    private String dtStr(int dt) {
+        return (dt >= 0 ? "+" : "") + (dt);
+    }
+
 }
